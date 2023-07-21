@@ -53,6 +53,7 @@
     "cancel": "يلغي"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "اضغط على <kbd> أدخل </kbd> أو <kbd> أو </kbd> أو <kbd> مسافة </ kbd> لإضافة عناوين بريد إلكتروني متعددة",
     "allowMultiDraft": "السماح بتحميل <strong> مسودة متعددة </ strong>",
     "formTitle": "عنوان النموذج",
     "formDescription": "وصف النموذج",
@@ -354,6 +355,7 @@
     "emailRequired": "البريد الالكتروني مطلوب"
   },
   "submissionsTable": {
+    "submissions": "التقديمات",
     "submissionsTable": "الجدول",
     "selectColumns": "حدد الأعمدة",
     "manageForm": "إدارة النموذج",

@@ -53,6 +53,7 @@
     "cancel": "キャンセル"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "<kbd>enter</kbd> または <kbd>、</kbd> または <kbd>space</kbd> を押して複数の電子メール アドレスを追加します",
     "allowMultiDraft": "<strong> 複数の下書き</strong> アップロードを許可する",
     "formTitle": "フォームのタイトル",
     "formDescription": "フォームの説明",
@@ -354,6 +355,7 @@
     "emailRequired": "電子メールは必須です"
   },
   "submissionsTable": {
+    "submissions": "提出物",
     "submissionsTable": "提出物テーブル",
     "selectColumns": "列の選択",
     "manageForm": "フォームの管理",

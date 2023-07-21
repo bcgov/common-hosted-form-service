@@ -53,6 +53,7 @@
     "cancel": "لغو کنید"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "برای افزودن چندین آدرس ایمیل، <kbd>enter</kbd> یا <kbd>،</kbd> یا <kbd>space</kbd> را فشار دهید",
     "allowMultiDraft": "آپلود <strong> پیش نویس چندگانه</strong> مجاز است",
     "formTitle": "عنوان فرم",
     "formDescription": "توضیحات فرم",
@@ -354,6 +355,7 @@
     "emailRequired": "ایمیل الزامی است"
   },
   "submissionsTable": {
+    "submissions": "موارد ارسالی",
     "submissionsTable": "جدول ارسالی",
     "selectColumns": "ستون ها را انتخاب کنید",
     "manageForm": "مدیریت فرم",

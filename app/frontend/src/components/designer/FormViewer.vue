@@ -67,11 +67,11 @@
           "
           transition="scale-transition"
         >
-          <div v-if="saving" :class="{ 'mr-1': isRTL }">
+          <div v-if="saving" :class="{ 'mr-2': isRTL }">
             <v-progress-linear indeterminate />
             {{ $t('trans.formViewer.saving') }}
           </div>
-          <div v-else :class="{ 'mr-1': isRTL }">
+          <div v-else :class="{ 'mr-2': isRTL }">
             {{ $t('trans.formViewer.draftSaved') }}
           </div>
         </v-alert>
@@ -79,43 +79,44 @@
         <slot name="alert" v-bind:form="form" :class="{ 'dir-rtl': isRTL }" />
 
         <BaseDialog
+          :class="{ 'dir-rtl': isRTL }"
           v-model="showSubmitConfirmDialog"
           type="CONTINUE"
           :enableCustomButton="canSaveDraft"
           @close-dialog="showSubmitConfirmDialog = false"
           @continue-dialog="continueSubmit"
-          :class="{ 'dir-rtl': isRTL }"
         >
           <template #title>{{ $t('trans.formViewer.pleaseConfirm') }}</template>
           <template #text
-            ><span :class="{ 'dir-rtl': isRTL }">{{
+            ><span>{{
               $t('trans.formViewer.submitFormWarningMsg')
             }}</span></template
           >
           <template #button-text-continue>
-            <span :class="{ 'dir-rtl': isRTL }">{{
-              $t('trans.formViewer.submit')
-            }}</span>
+            <span>{{ $t('trans.formViewer.submit') }} </span>
           </template>
         </BaseDialog>
         <v-alert
           v-if="isLoading && !bulkFile && submissionId == undefined"
           class="mt-2 mb-2"
           :value="isLoading"
-          :class="[NOTIFICATIONS_TYPES.INFO.class, { 'dir-rtl': isRTL }]"
+          :class="[NOTIFICATIONS_TYPES.INFO.class]"
           :color="NOTIFICATIONS_TYPES.INFO.color"
           :icon="NOTIFICATIONS_TYPES.INFO.icon"
           transition="scale-transition"
         >
-          <div color="info" icon="$info" :class="{ 'dir-rtl': isRTL }">
+          <div color="info" icon="$info">
             <v-progress-linear
               :indeterminate="true"
               color="blue-grey lighten-4"
               height="5"
             ></v-progress-linear>
-            {{ $t('trans.formViewer.formLoading') }}
+            <span :class="{ 'mr-2': isRTL }">
+              {{ $t('trans.formViewer.formLoading') }}s
+            </span>
           </div>
         </v-alert>
+
         <FormViewerMultiUpload
           v-if="!isLoading && allowSubmitterToUploadFile && bulkFile"
           :response="sbdMessage"
@@ -145,11 +146,7 @@
           @render="onFormRender"
           :language="multiLanguage"
         />
-        <p
-          v-if="version"
-          :class="isRTL ? 'text-left' : 'text-right'"
-          class="mt-9"
-        >
+        <p v-if="version" :class="{ 'text-left': isRTL }" class="mt-9">
           {{ $t('trans.formViewer.version', { version: version }) }}
         </p>
       </div>
@@ -164,24 +161,16 @@
       @continue-dialog="yes"
     >
       <template #title
-        ><span :class="{ 'dir-rtl': isRTL }">
-          {{ $t('trans.formViewer.pleaseConfirm') }}</span
-        ></template
+        ><span> {{ $t('trans.formViewer.pleaseConfirm') }}</span></template
       >
       <template #text
-        ><span :class="{ 'dir-rtl': isRTL }">
-          {{ $t('trans.formViewer.wantToSaveDraft') }}</span
-        ></template
+        ><span> {{ $t('trans.formViewer.wantToSaveDraft') }}</span></template
       >
       <template #button-text-continue>
-        <span :class="{ 'dir-rtl': isRTL }">
-          {{ $t('trans.formViewer.yes') }}</span
-        >
+        <span> {{ $t('trans.formViewer.yes') }}</span>
       </template>
       <template #button-text-delete>
-        <span :class="{ 'dir-rtl': isRTL }">
-          {{ $t('trans.formViewer.no') }}</span
-        >
+        <span> {{ $t('trans.formViewer.no') }}</span>
       </template>
     </BaseDialog>
   </v-skeleton-loader>

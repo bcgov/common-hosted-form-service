@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'dir-rtl': isRTL }">
+  <div>
     <h3 class="mb-5">
       {{ $t('trans.formDisclaimer.disclaimerAndStatement') }}
     </h3>

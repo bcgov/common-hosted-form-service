@@ -53,6 +53,7 @@
     "cancel": "取消"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "按 <kbd>enter</kbd> 或 <kbd>、</kbd> 或 <kbd>空格</kbd> 添加多個電子郵件地址",
     "allowMultiDraft": "允許<strong>多草稿</strong>上傳",
     "formTitle": "表格標題",
     "formDescription": "表格說明",
@@ -354,6 +355,7 @@
     "emailRequired": "電子郵件是必需的"
   },
   "submissionsTable": {
+    "submissions": "意見書",
     "submissionsTable": "提交表",
     "selectColumns": "選擇列",
     "manageForm": "管理表格",

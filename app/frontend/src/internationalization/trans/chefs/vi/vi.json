@@ -53,6 +53,7 @@
     "cancel": "Hủy bỏ"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "Nhấn <kbd>enter</kbd> hoặc <kbd>,</kbd> hoặc <kbd>dấu cách</kbd> để thêm nhiều địa chỉ email",
     "allowMultiDraft": "Cho phép tải lên <strong> nhiều bản nháp</strong>",
     "formTitle": "Tiêu đề mẫu",
     "formDescription": "Mô tả biểu mẫu",
@@ -354,6 +355,7 @@
     "emailRequired": "Email thì cần thiết"
   },
   "submissionsTable": {
+    "submissions": "đệ trình",
     "submissionsTable": "Đệ trìnhBảng",
     "selectColumns": "Chọn cột",
     "manageForm": "Quản lý biểu mẫu",

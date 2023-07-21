@@ -5,7 +5,7 @@
     >
       <!-- page title -->
       <div>
-        <h1>Submissions</h1>
+        <h1>{{ $t('trans.submissionsTable.submissions') }}</h1>
       </div>
       <!-- buttons -->
       <div>
@@ -103,7 +103,7 @@
             single-line
             hide-details
             class="pb-5"
-            :class="{ 'dir-rtl': isRTL, label: isRTL }"
+            :class="{ label: isRTL }"
           />
         </div>
       </div>
@@ -247,7 +247,9 @@
       @close-dialog="showDeleteDialog = false"
       @continue-dialog="delSub"
     >
-      <template #title>Confirm Deletion</template>
+      <template #title>{{
+        $t('trans.submissionsTable.confirmDeletion')
+      }}</template>
       <template #text>
         {{ singleSubmissionDelete ? singleDeleteMessage : multiDeleteMessage }}
       </template>

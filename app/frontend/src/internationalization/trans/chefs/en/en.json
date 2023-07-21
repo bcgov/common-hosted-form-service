@@ -49,6 +49,7 @@
     "cancel": "Cancel"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "Press <kbd>enter</kbd> or <kbd>,</kbd> or <kbd>space</kbd> to add multiple email addresses",
     "allowMultiDraft": "Allow <strong> multiple draft</strong> upload",
     "formTitle": "Form Title",
     "formDescription": "Form Description",
@@ -349,6 +350,7 @@
     "emailRequired": "E-mail is required"
   },
   "submissionsTable": {
+    "submissions": "Submissions",
     "submissionsTable": "SubmissionsTable",
     "selectColumns": "Select Columns",
     "manageForm": "Manage Form",

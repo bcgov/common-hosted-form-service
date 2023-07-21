@@ -53,6 +53,7 @@
     "cancel": "Annuler"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "Appuyez sur <kbd>entrée</kbd> ou <kbd>,</kbd> ou <kbd>espace</kbd> pour ajouter plusieurs adresses e-mail",
     "allowMultiDraft": "Autoriser le téléchargement de <strong> plusieurs brouillons</strong>",
     "formTitle": "Titre du formulaire",
     "formDescription": "Description du formulaire",
@@ -354,6 +355,7 @@
     "emailRequired": "L'e-mail est requis"
   },
   "submissionsTable": {
+    "submissions": "Soumissions",
     "submissionsTable": "Tableau des soumissions",
     "selectColumns": "Sélectionnez les colonnes",
     "manageForm": "Gérer le formulaire",

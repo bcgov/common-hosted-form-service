@@ -53,6 +53,7 @@
     "cancel": "ਰੱਦ ਕਰੋ"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "ਕਈ ਈਮੇਲ ਪਤੇ ਜੋੜਨ ਲਈ <kbd>enter</kbd> ਜਾਂ <kbd>,</kbd> ਜਾਂ <kbd>space</kbd> ਦਬਾਓ।",
     "allowMultiDraft": "<strong> ਮਲਟੀਪਲ ਡਰਾਫਟ</strong> ਅੱਪਲੋਡ ਕਰਨ ਦਿਓ",
     "formTitle": "ਫਾਰਮ ਦਾ ਸਿਰਲੇਖ",
     "formDescription": "ਫਾਰਮ ਦਾ ਵੇਰਵਾ",
@@ -354,6 +355,7 @@
     "emailRequired": "ਈ-ਮੇਲ ਦੀ ਲੋੜ ਹੈ"
   },
   "submissionsTable": {
+    "submissions": "ਬੇਨਤੀਆਂ",
     "submissionsTable": "ਸਬਮਿਸ਼ਨ ਟੇਬਲ",
     "selectColumns": "ਕਾਲਮ ਚੁਣੋ",
     "manageForm": "ਫਾਰਮ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ",

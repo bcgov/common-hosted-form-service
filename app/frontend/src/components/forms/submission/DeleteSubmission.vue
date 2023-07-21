@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <span :class="{ 'dir-rtl': isRTL }">
     <v-tooltip bottom>
       <template #activator="{ on, attrs }">
         <v-btn

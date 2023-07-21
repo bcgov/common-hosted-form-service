@@ -53,6 +53,7 @@
     "cancel": "Скасувати"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "Натисніть <kbd>enter</kbd> або <kbd>,</kbd> або <kbd>пробіл</kbd>, щоб додати кілька електронних адрес",
     "allowMultiDraft": "Дозволити завантаження <strong> кількох чернеток</strong>",
     "formTitle": "Назва форми",
     "formDescription": "Опис форми",
@@ -354,6 +355,7 @@
     "emailRequired": "Електронна пошта обов'язкова"
   },
   "submissionsTable": {
+    "submissions": "Подання",
     "submissionsTable": "SubmissionsTable",
     "selectColumns": "Виберіть Стовпці",
     "manageForm": "Керувати формою",
