@@ -1,10 +1,12 @@
 <template>
   <v-skeleton-loader :loading="loading" type="list-item-two-line">
-    <v-row no-gutters>
-      <v-col cols="11" sm="6">
+    <div
+      class="d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse"
+    >
+      <div>
         <h2 class="note-heading">{{ $t('trans.notesPanel.notes') }}</h2>
-      </v-col>
-      <v-col cols="11" sm="6" :class="isRTL ? 'text-left' : 'text-right'">
+      </div>
+      <div :class="{ 'text-left': isRTL }">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
@@ -20,12 +22,15 @@
           </template>
           <span>{{ $t('trans.notesPanel.addNewNote') }}</span>
         </v-tooltip>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
 
     <v-form v-if="showNoteField">
-      <label>{{ $t('trans.notesPanel.note') }}</label>
+      <div class="mb-2" :class="{ 'dir-rtl': isRTL }">
+        {{ $t('trans.notesPanel.note') }}
+      </div>
       <v-textarea
+        :class="{ 'dir-rtl': isRTL }"
         v-model="newNote"
         :rules="[
           (v) => v.length <= 4000 || this.$t('trans.notesPanel.maxChars'),
@@ -57,7 +62,7 @@
       </v-row>
     </v-form>
 
-    <ul class="mt-5">
+    <ul class="mt-5" :class="{ 'dir-rtl': isRTL, 'mr-2': isRTL }">
       <li class="mb-2" v-for="note in notes" :key="note.noteId">
         <strong>
           {{ note.createdAt | formatDateLong }} -

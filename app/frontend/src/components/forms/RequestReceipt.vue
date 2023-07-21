@@ -15,8 +15,8 @@
       v-model="showDialog"
       type="CONTINUE"
       @close-dialog="showDialog = false"
-      @continue-dialog="requestReceipt()"
       :class="{ 'dir-rtl': isRTL }"
+      @continue-dialog="requestReceipt()"
     >
       <template #icon>
         <v-icon large color="primary" class="d-none d-sm-flex"> email </v-icon>
@@ -37,14 +37,11 @@
             :rules="emailRules"
             v-model="to"
             data-test="text-form-to"
-            :class="{ 'dir-rtl': isRTL }"
           />
         </v-form>
       </template>
       <template v-slot:button-text-continue>
-        <span :class="{ 'dir-rtl': isRTL }">{{
-          $t('trans.requestReceipt.send')
-        }}</span>
+        <span>{{ $t('trans.requestReceipt.send') }}</span>
       </template>
     </BaseDialog>
   </div>

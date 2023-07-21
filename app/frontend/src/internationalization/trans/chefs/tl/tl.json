@@ -53,6 +53,7 @@
     "cancel": "Kanselahin"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "Pindutin ang <kbd>enter</kbd> o <kbd>,</kbd> o <kbd>space</kbd> para magdagdag ng maraming email address",
     "allowMultiDraft": "Payagan ang pag-upload ng <strong> maramihang draft</strong>",
     "formTitle": "Pamagat ng Form",
     "formDescription": "Paglalarawan ng Form",
@@ -354,6 +355,7 @@
     "emailRequired": "Kinakailangan ang e-mail"
   },
   "submissionsTable": {
+    "submissions": "Mga pagsusumite",
     "submissionsTable": "Talahanayan ng mga Pagsusumite",
     "selectColumns": "Piliin ang Mga Column",
     "manageForm": "Pamahalaan ang Form",

@@ -1,27 +1,17 @@
 <template>
-  <BaseSecure :idp="[IDP.IDIR]">
-    <h1 class="my-6 text-center" :class="{ 'dir-rtl': isRTL }">
+  <BaseSecure :idp="[IDP.IDIR]" :class="{ 'dir-rtl': isRTL }">
+    <h1 class="my-6 text-center">
       {{ $t('trans.create.createNewForm') }}
     </h1>
     <v-stepper v-model="creatorStep" class="elevation-0">
       <v-stepper-header class="elevation-0 px-0">
-        <v-stepper-step
-          :complete="creatorStep > 1"
-          step="1"
-          class="pl-1"
-          :class="{ 'dir-rtl': isRTL }"
-        >
+        <v-stepper-step :complete="creatorStep > 1" step="1" class="pl-1">
           <span :class="{ 'mr-2': isRTL }">
             {{ $t('trans.create.setUpForm') }}
           </span>
         </v-stepper-step>
         <v-divider />
-        <v-stepper-step
-          :complete="creatorStep > 2"
-          step="2"
-          class="pr-1"
-          :class="{ 'dir-rtl': isRTL }"
-        >
+        <v-stepper-step :complete="creatorStep > 2" step="2" class="pr-1">
           <span :class="{ 'mr-2': isRTL }">
             {{ $t('trans.create.designForm') }}
           </span>
@@ -29,14 +19,14 @@
       </v-stepper-header>
 
       <v-stepper-items>
-        <v-stepper-content step="1" class="pa-1" :class="{ 'dir-rtl': isRTL }">
+        <v-stepper-content step="1" class="pa-1">
           <v-form ref="settingsForm" v-model="settingsFormValid">
-            <h1 :class="{ 'dir-rtl': isRTL }">
+            <h1>
               {{ $t('trans.create.formSettings') }}
             </h1>
             <FormSettings />
 
-            <BasePanel class="my-6" :class="{ 'dir-rtl': isRTL }">
+            <BasePanel class="my-6">
               <template #title>{{ $t('trans.create.disclaimer') }}</template>
               <FormDisclaimer />
 
@@ -55,17 +45,13 @@
             :disabled="!settingsFormValid"
             @click="reRenderFormDesigner"
           >
-            <span :class="{ 'dir-rtl': isRTL }">{{
-              $t('trans.create.continue')
-            }}</span>
+            <span>{{ $t('trans.create.continue') }}</span>
           </v-btn>
         </v-stepper-content>
         <v-stepper-content step="2" class="pa-1">
           <FormDesigner ref="formDesigner" />
           <v-btn class="my-4" outlined @click="creatorStep = 1">
-            <span :class="{ 'dir-rtl': isRTL }">{{
-              $t('trans.create.back')
-            }}</span>
+            <span>{{ $t('trans.create.back') }}</span>
           </v-btn>
         </v-stepper-content>
       </v-stepper-items>

@@ -53,6 +53,7 @@
     "cancel": "Stornieren"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "Drücken Sie die <kbd>Eingabetaste</kbd> oder <kbd></kbd> oder die <kbd>Leertaste</kbd>, um mehrere E-Mail-Adressen hinzuzufügen",
     "allowMultiDraft": "Erlauben Sie das Hochladen von <strong>mehreren Entwürfen</strong>",
     "formTitle": "Formulartitel",
     "formDescription": "Formularbeschreibung",
@@ -350,6 +351,7 @@
     "emailRequired": "E-Mail ist erforderlich"
   },
   "submissionsTable": {
+    "submissions": "Einsendungen",
     "submissionsTable": "Einreichungstabelle",
     "selectColumns": "Wählen Sie Spalten aus",
     "manageForm": "Formular verwalten",

@@ -50,7 +50,7 @@
             {{ $t('trans.printOptions.uploadB') }}
           </p>
           <v-file-input
-            :class="{ 'dir-rtl': isRTL, label: isRTL }"
+            :class="{ label: isRTL }"
             :style="isRTL ? { gap: '10px' } : null"
             counter
             :clearable="true"

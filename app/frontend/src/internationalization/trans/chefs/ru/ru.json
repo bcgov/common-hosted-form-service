@@ -53,6 +53,7 @@
     "cancel": "Отмена"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "Нажмите <kbd>enter</kbd> или <kbd>,</kbd> или <kbd>пробел</kbd>, чтобы добавить несколько адресов электронной почты.",
     "allowMultiDraft": "Разрешить загрузку <strong>несколько черновиков</strong>",
     "formTitle": "Название формы",
     "formDescription": "Описание формы",
@@ -354,6 +355,7 @@
     "emailRequired": "Электронная почта обязательна"
   },
   "submissionsTable": {
+    "submissions": "Материалы",
     "submissionsTable": "МатериалыТаблица",
     "selectColumns": "Выберите столбцы",
     "manageForm": "Управление формой",

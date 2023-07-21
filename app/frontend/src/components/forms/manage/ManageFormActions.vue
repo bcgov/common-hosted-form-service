@@ -50,7 +50,6 @@
       </v-tooltip>
 
       <BaseDialog
-        :class="{ 'dir-rtl': isRTL }"
         v-model="showDeleteDialog"
         type="CONTINUE"
         @close-dialog="showDeleteDialog = false"

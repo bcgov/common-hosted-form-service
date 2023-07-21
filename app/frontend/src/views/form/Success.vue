@@ -2,13 +2,13 @@
   <div>
     <FormViewer :submissionId="s" :readOnly="true" displayTitle>
       <template #alert="{ form }">
-        <div class="mb-5">
-          <h1 class="mb-5" :class="{ 'dir-rtl': isRTL }">
+        <div class="mb-5" :class="{ 'dir-rtl': isRTL }">
+          <h1 class="mb-5">
             <v-icon large color="success">check_circle</v-icon>
             {{ $t('trans.sucess.sucessFormSubmissn') }}
           </h1>
           <div v-if="form.showSubmissionConfirmation">
-            <h3 :class="{ 'dir-rtl': isRTL }">
+            <h3>
               <span class="d-print-none">
                 {{ $t('trans.sucess.keepRecord') }}
               </span>

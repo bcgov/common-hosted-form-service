@@ -53,6 +53,7 @@
     "cancel": "Annulla"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "Premi <kbd>invio</kbd> o <kbd>,</kbd> o <kbd>spazio</kbd> per aggiungere più indirizzi email",
     "allowMultiDraft": "Consenti il ​​caricamento di <strong> più bozze</strong>",
     "formTitle": "Titolo del modulo",
     "formDescription": "Descrizione del modulo",
@@ -354,6 +355,7 @@
     "emailRequired": "L'e-mail è obbligatoria"
   },
   "submissionsTable": {
+    "submissions": "Contributi",
     "submissionsTable": "Tabella degli invii",
     "selectColumns": "Seleziona Colonne",
     "manageForm": "Gestisci modulo",

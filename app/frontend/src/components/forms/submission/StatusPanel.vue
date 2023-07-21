@@ -15,14 +15,14 @@
           <v-col cols="12">
             <label>{{ $t('trans.statusPanel.assignOrUpdateStatus') }}</label>
             <v-select
-              :class="{ 'dir-rtl': isRTL }"
+              :class="{ 'dir-rtl': isRTL, label: isRTL }"
               dense
               outlined
               :items="items"
               item-text="display"
               item-value="code"
               v-model="statusToSet"
-              :rules="[(v) => !!v || $t('trans.statusPanel.statusIsRequired')]"
+              :rules="statusRequired"
               @change="onStatusChange(statusToSet)"
             />
 
@@ -56,9 +56,7 @@
                   :no-data-text="$t('trans.statusPanel.noDataText')"
                   outlined
                   return-object
-                  :rules="[
-                    (v) => !!v || $t('trans.statusPanel.assigneeIsRequired'),
-                  ]"
+                  :rules="assigneeRequired"
                 >
                   <!-- selected user -->
                   <template #selection="data">
@@ -121,10 +119,7 @@
                   <v-textarea
                     :class="{ 'dir-rtl': isRTL }"
                     v-model="emailComment"
-                    :rules="[
-                      (v) =>
-                        v.length <= 4000 || $t('trans.statusPanel.maxChars'),
-                    ]"
+                    :rules="maxChars"
                     rows="1"
                     counter
                     auto-grow
@@ -253,6 +248,15 @@ export default {
     },
     showRevising() {
       return ['REVISING'].includes(this.statusToSet);
+    },
+    statusRequired() {
+      return [(v) => !!v || this.$t('trans.statusPanel.statusIsRequired')];
+    },
+    assigneeRequired() {
+      return [(v) => !!v || this.$t('trans.statusPanel.assigneeIsRequired')];
+    },
+    maxChars() {
+      return [(v) => v.length <= 4000 || this.$t('trans.statusPanel.maxChars')];
     },
     statusAction() {
       const obj = Object.freeze({
