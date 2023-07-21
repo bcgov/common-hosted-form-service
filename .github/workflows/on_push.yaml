@@ -55,6 +55,7 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           server_host: ${{ vars.SERVER_HOST }}
           route_path: /app
+          route_prefix: ${{ vars.ROUTE_PREFIX }}
 
   deploy-test:
     name: Deploy to Test
@@ -82,6 +83,7 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           server_host: ${{ vars.SERVER_HOST }}
           route_path: /app
+          route_prefix: ${{ vars.ROUTE_PREFIX }}
 
   deploy-prod:
     name: Deploy to Prod
@@ -110,3 +112,4 @@ jobs:
           openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
           server_host: ${{ vars.SERVER_HOST }}
           route_path: /app
+          route_prefix: ${{ vars.ROUTE_PREFIX }}
