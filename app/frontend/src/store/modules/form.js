@@ -887,11 +887,7 @@ export default {
     },
     async setMultiLanguage({ commit }, multiLanguage) {
       commit('SET_MULTI_LANGUAGE', multiLanguage);
-      if (
-        multiLanguage === 'ar' ||
-        multiLanguage === 'fa' ||
-        multiLanguage === 'pu'
-      ) {
+      if (multiLanguage === 'ar' || multiLanguage === 'fa') {
         commit('SET_IS_RTL', true);
       } else {
         commit('SET_IS_RTL', false);
