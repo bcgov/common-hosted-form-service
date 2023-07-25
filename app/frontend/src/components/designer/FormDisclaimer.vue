@@ -5,19 +5,13 @@
     </h3>
     <ul :class="isRTL ? 'mr-6' : null">
       <li>
-        <span>
-          {{ $t('trans.formDisclaimer.privacyLaw') }}
-        </span>
+        {{ $t('trans.formDisclaimer.privacyLaw') }}
       </li>
       <li>
-        <span>
-          {{ $t('trans.formDisclaimer.disclosure') }}
-        </span>
+        {{ $t('trans.formDisclaimer.disclosure') }}
       </li>
       <li>
-        <span>
-          {{ $t('trans.formDisclaimer.consent') }}
-        </span>
+        {{ $t('trans.formDisclaimer.consent') }}
       </li>
       <li>
         {{ $t('trans.formDisclaimer.formIntention') }}

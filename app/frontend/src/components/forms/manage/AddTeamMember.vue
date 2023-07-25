@@ -112,7 +112,7 @@
             <!-- buttons -->
             <v-btn
               color="primary"
-              class="isRTL ? mr-3 : ml-2"
+              class="isRTL ? mr-3 : ml-3"
               :disabled="!model"
               :loading="isLoading"
               @click="save"
