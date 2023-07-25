@@ -432,15 +432,20 @@
                     <v-text-field
                       v-model="schedule.openSubmissionDateTime"
                       :placeholder="$t('trans.date.date')"
-                      append-icon="event"
                       v-on:click:append="openSubmissionDateDraw = true"
                       :label="$t('trans.formSettings.opensubmissions')"
                       v-on="on"
                       dense
                       outlined
                       :rules="scheduleOpenDate"
-                      :class="{ 'dir-rtl': isRTL }"
-                    />
+                    >
+                      <template v-if="isRTL" #prepend-inner>
+                        <v-icon>event</v-icon>
+                      </template>
+                      <template v-if="!isRTL" #append>
+                        <v-icon>event</v-icon>
+                      </template>
+                    </v-text-field>
                   </template>
                   <v-date-picker
                     @change="openDateTypeChanged"
@@ -530,7 +535,6 @@
                     <v-text-field
                       v-model="schedule.closeSubmissionDateTime"
                       :placeholder="$t('trans.date.date')"
-                      append-icon="event"
                       v-on:click:append="closeSubmissionDateDraw = true"
                       :label="$t('trans.formSettings.closeSubmissions')"
                       v-on="on"
@@ -538,7 +542,14 @@
                       outlined
                       :rules="scheduleCloseDate"
                       :class="{ 'dir-rtl': isRTL }"
-                    />
+                    >
+                      <template v-if="isRTL" #prepend-inner>
+                        <v-icon>event</v-icon>
+                      </template>
+                      <template v-if="!isRTL" #append>
+                        <v-icon>event</v-icon>
+                      </template>
+                    </v-text-field>
                   </template>
                   <v-date-picker
                     v-model="schedule.closeSubmissionDateTime"
