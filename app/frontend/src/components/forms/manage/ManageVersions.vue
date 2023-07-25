@@ -57,12 +57,12 @@
       <!-- Status  -->
       <template #[`item.status`]="{ item }">
         <v-switch
-          :class="{ 'dir-rtl': isRTL }"
           data-cy="formPublishedSwitch"
           color="success"
           value
           :input-value="item.published"
           :disabled="!canPublish"
+          :class="{ 'dir-ltl': isRTL }"
           @change="togglePublish($event, item.id, item.version, item.isDraft)"
         >
           <template #label>
