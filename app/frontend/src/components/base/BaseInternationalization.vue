@@ -8,7 +8,7 @@
           <font-awesome-icon icon="fa-solid fa-caret-down" class="ml-3" />
         </v-btn>
       </template>
-      <v-list>
+      <v-list style="height: 90vh; overflow-y: scroll">
         <v-list-item-group color="primary" v-model="languageIndex">
           <v-list-item
             v-for="(item, i) in items"
