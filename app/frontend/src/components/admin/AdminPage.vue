@@ -1,5 +1,5 @@
 <template>
-  <v-tabs>
+  <v-tabs :class="{ 'dir-rtl': isRTL }" v-model="tab">
     <v-tab>{{ $t('trans.adminPage.forms') }}</v-tab>
     <v-tab>{{ $t('trans.adminPage.users') }}</v-tab>
     <v-tab>{{ $t('trans.adminPage.developer') }}</v-tab>
@@ -15,6 +15,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 export default {
   name: 'AdminPage',
   components: {
@@ -27,8 +28,17 @@ export default {
   },
   data() {
     return {
+      tab: null,
       adminDashboardUrl: this.$config.adminDashboardUrl,
     };
+  },
+  computed: {
+    ...mapGetters('form', ['isRTL']),
+  },
+  watch: {
+    isRTL() {
+      this.tab = null;
+    },
   },
 };
 </script>

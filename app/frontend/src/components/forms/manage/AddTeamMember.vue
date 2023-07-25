@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <span :class="{ 'dir-rtl': isRTL }">
     <span v-if="addingUsers" style="margin-right: 656px" elevation="1">
       <v-sheet
         elevation="1"
@@ -41,11 +41,13 @@
               :loading="isLoading"
               return-object
               :search-input.sync="searchUsers"
+              :class="{ label: isRTL }"
             >
               <!-- no data -->
               <template #no-data>
                 <div
                   class="px-2"
+                  :class="{ 'text-right': isRTL }"
                   v-html="$t('trans.addTeamMember.cantFindChefsUsers')"
                 ></div>
               </template>
@@ -110,22 +112,22 @@
             <!-- buttons -->
             <v-btn
               color="primary"
-              class="ml-2"
+              class="isRTL ? mr-3 : ml-3"
               :disabled="!model"
               :loading="isLoading"
               @click="save"
             >
-              <span>Add</span>
+              <span>{{ $t('trans.addTeamMember.add') }}</span>
             </v-btn>
             <v-btn
               outlined
-              class="ml-2"
+              class="isRTL ? mr-2 : ml-2"
               @click="
                 addingUsers = false;
                 showError = false;
               "
             >
-              <span>Cancel</span>
+              <span>{{ $t('trans.addTeamMember.cancel') }}</span>
             </v-btn>
           </v-col>
         </v-row>
@@ -207,7 +209,7 @@ export default {
     },
   },
   computed: {
-    ...mapFields('form', ['form.idps']),
+    ...mapFields('form', ['form.idps', 'isRTL']),
     ...mapGetters('auth', ['identityProvider']),
     ID_PROVIDERS() {
       return IdentityProviders;

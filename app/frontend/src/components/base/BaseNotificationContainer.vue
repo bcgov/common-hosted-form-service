@@ -1,5 +1,5 @@
 <template>
-  <div class="notification-container">
+  <div class="notification-container" :class="{ 'dir-rtl': isRTL }">
     <BaseNotificationBar
       v-for="notification in notifications"
       :key="notification.id"
@@ -9,10 +9,13 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 export default {
   name: 'BaseNotificationContainer',
-  computed: mapState('notifications', ['notifications']),
+  computed: {
+    ...mapState('notifications', ['notifications']),
+    ...mapGetters('form', ['isRTL']),
+  },
 };
 </script>
 

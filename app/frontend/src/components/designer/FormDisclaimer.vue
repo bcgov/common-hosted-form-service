@@ -3,7 +3,7 @@
     <h3 class="mb-5">
       {{ $t('trans.formDisclaimer.disclaimerAndStatement') }}
     </h3>
-    <ul>
+    <ul :class="isRTL ? 'mr-6' : null">
       <li>
         {{ $t('trans.formDisclaimer.privacyLaw') }}
       </li>
@@ -29,7 +29,11 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 export default {
   name: 'FormDisclaimer',
+  computed: {
+    ...mapGetters('form', ['isRTL']),
+  },
 };
 </script>

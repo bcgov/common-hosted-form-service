@@ -1,12 +1,14 @@
 <template>
-  <div>
-    <v-row class="mt-6" no-gutters>
+  <div :class="{ 'dir-rtl': isRTL }">
+    <div
+      class="mt-4 d-flex flex-md-row justify-space-between flex-sm-column flex-xs-column"
+    >
       <!-- page title -->
-      <v-col cols="12" sm="6" order="2" order-sm="1">
-        <h1>Submissions</h1>
-      </v-col>
+      <div>
+        <h1>{{ $t('trans.submissionsTable.submissions') }}</h1>
+      </div>
       <!-- buttons -->
-      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+      <div>
         <span v-if="checkFormManage">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
@@ -59,28 +61,39 @@
             <span>{{ $t('trans.submissionsTable.submissionsToFiles') }}</span>
           </v-tooltip>
         </span>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
 
-    <v-row no-gutters>
-      <v-spacer />
-      <v-col cols="4" sm="4">
+    <div
+      class="d-flex flex-md-row justify-space-between flex-sm-column flex-xs-column"
+    >
+      <div>
         <v-checkbox
           class="pl-3"
           v-model="deletedOnly"
-          :label="$t('trans.submissionsTable.showDeletedSubmissions')"
           @click="refreshSubmissions"
-        />
-      </v-col>
-      <v-col cols="4" sm="4">
+        >
+          <template #label>
+            <span :class="{ 'mr-2': isRTL }">
+              {{ $t('trans.submissionsTable.showDeletedSubmissions') }}
+            </span>
+          </template>
+        </v-checkbox>
+      </div>
+      <div>
         <v-checkbox
           class="pl-3"
           v-model="currentUserOnly"
-          :label="$t('trans.submissionsTable.showMySubmissions')"
           @click="refreshSubmissions"
-        />
-      </v-col>
-      <v-col cols="12" sm="4">
+        >
+          <template #label>
+            <span :class="{ 'mr-2': isRTL }">
+              {{ $t('trans.submissionsTable.showMySubmissions') }}
+            </span>
+          </template>
+        </v-checkbox>
+      </div>
+      <div>
         <!-- search input -->
         <div class="submissions-search">
           <v-text-field
@@ -90,10 +103,11 @@
             single-line
             hide-details
             class="pb-5"
+            :class="{ label: isRTL }"
           />
         </div>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
 
     <!-- table header -->
     <v-data-table
@@ -233,7 +247,9 @@
       @close-dialog="showDeleteDialog = false"
       @continue-dialog="delSub"
     >
-      <template #title>Confirm Deletion</template>
+      <template #title>{{
+        $t('trans.submissionsTable.confirmDeletion')
+      }}</template>
       <template #text>
         {{ singleSubmissionDelete ? singleDeleteMessage : multiDeleteMessage }}
       </template>
@@ -354,6 +370,7 @@ export default {
       'userFormPreferences',
       'roles',
       'deletedSubmissions',
+      'isRTL',
     ]),
     ...mapGetters('auth', ['user']),
 
@@ -759,7 +776,6 @@ export default {
 @media (min-width: 600px) {
   .submissions-search {
     max-width: 20em;
-    float: right;
   }
 }
 @media (max-width: 599px) {
@@ -777,6 +793,7 @@ export default {
     vertical-align: top;
   }
 }
+
 /* Want to use scss but the world hates me */
 .submissions-table >>> tbody tr:nth-of-type(odd) {
   background-color: #f5f5f5;
