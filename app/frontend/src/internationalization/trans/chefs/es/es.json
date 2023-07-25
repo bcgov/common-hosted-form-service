@@ -18,6 +18,10 @@
   "manageLayout": {
     "manageForm": "Administrar formulario"
   },
+  "preview": {
+    "preview": "Avance",
+    "previewToolTip": "Esto muestra una vista previa del diseño y el comportamiento de la versión del formulario tal como lo verán los remitentes. No puede enviar el formulario desde esta página."
+  },
   "shareForm": {
     "shareForm": "Compartir formulario",
     "shareLink": "Compartir enlace",
@@ -49,6 +53,8 @@
     "cancel": "Cancelar"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "Presione <kbd>enter</kbd> o <kbd>,</kbd> o <kbd>espacio</kbd> para agregar varias direcciones de correo electrónico",
+    "allowMultiDraft": "Permitir la carga de <strong> varios borradores</strong>",
     "formTitle": "Título del formulario",
     "formDescription": "Descripción del formulario",
     "formAccess": "Acceso al formulario",
@@ -349,6 +355,7 @@
     "emailRequired": "Correo electronico es requerido"
   },
   "submissionsTable": {
+    "submissions": "Presentaciones",
     "submissionsTable": "Tabla de envíos",
     "selectColumns": "Seleccionar columnas",
     "manageForm": "Administrar formulario",
@@ -721,7 +728,7 @@
     "createCustomFormTitle": "Cree formularios personalizados con el generador de formularios CHEFS",
     "createCustomFormSub1": "Con CHEFS, puede crear formularios seguros con una interfaz intuitiva de arrastrar y soltar. Puede agregar componentes de formulario, reorganizarlos y colocarlos en diferentes configuraciones de diseños.",
     "chefsHowToTitle": "Videos instructivos de CHEFS",
-    "chefsHowToSub": "Nuestra Guía de inicio rápido le presentará algunas de las funciones básicas de CHEFS. ¡Empezar!",
+    "chefsHowToSub": "Nuestra Guía de inicio rápido le presentará algunas de las funciones básicas de CHEFS.",
     "getStartedToChefs": "Comience a usar CHEFS",
     "createOnlineTitle": "Cree formularios en línea para recopilar información de sus clientes y mejorar sus flujos de trabajo.",
     "getStarted": "Empezar"
@@ -741,6 +748,7 @@
   "addTeamMember": {
     "cantFindChefsUsers": "¿No puedes encontrar a alguien? Es posible que no hayan iniciado sesión en CHEFS.<br /> Envíeles un enlace a CHEFS y pídales que inicien sesión.",
     "cancel": "Cancelar",
+    "add": "Agregar",
     "mustSelectAUser": "Debe seleccionar al menos un rol para agregar este usuario.",
     "addNewMember": "Agregar un nuevo miembro",
     "enterUsername": "Ingrese un nombre, correo electrónico o nombre de usuario",
@@ -770,13 +778,22 @@
     "copyToClipboard": "Copiar al portapapeles",
     "errCopyToClipboard": "Error al intentar copiar al portapapeles."
   },
-  "root": {
-    "admin": "Administración"
+  "admin": {
+    "root": {
+      "admin": "Administración"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "MIS FORMULARIOS",
+      "history": "HISTORIA",
+      "user": "Usuaria"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "Su formulario ha sido enviado exitosamente",
     "keepRecord": "Si desea mantener un registro de este envío, puede conservar lo siguiente",
-    "confirmationId": "Identificación de confirmación:"
+    "confirmationId": "Identificación de confirmación"
   },
   "permissionUtils": {
     "formNotAvailable": "El formulario no está disponible actualmente. Esto puede deberse a un enlace incorrecto, o puede que el propietario haya eliminado el formulario.",
@@ -828,8 +845,7 @@
       "updCurrUserFormPrefConsErrMsg": "Error al actualizar las preferencias del formulario de usuario usando formID {formId} y preferencias {preferencias}: {error}",
       "getCurrUserFormPrefErrMsg": "Se produjo un error al obtener sus preferencias para este formulario.",
       "getCurrUserFormPrefConsErrMsg": "Error al obtener las preferencias de formulario del usuario usando formID {formId}: {error}",
-      "delCurrformNotiMsg": "El formulario \"{state.form.name}\" se ha eliminado correctamente.",
-      "delCurrformErrMsg": "Se produjo un error al intentar eliminar \"${state.form.name}\".",
+      "delCurrformNotiMsg": "El formulario {name} se ha eliminado correctamente.",
       "delCurrFormConsErMsg": "Error al eliminar el formulario {id}: {error}",
       "delDraftErrMsg": "Se produjo un error al eliminar este borrador.",
       "delDraftConsErrMsg": "Error al eliminar {draftId}: {error}",

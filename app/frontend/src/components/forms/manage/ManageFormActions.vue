@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <span>
       <ShareForm :formId="form.id" :warning="!isPublished" />
     </span>
@@ -86,7 +86,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['form', 'permissions']),
+    ...mapGetters('form', ['form', 'permissions', 'isRTL']),
     // Permission checks
     canDeleteForm() {
       return this.permissions.includes(FormPermissions.FORM_DELETE);

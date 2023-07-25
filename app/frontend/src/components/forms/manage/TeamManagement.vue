@@ -1,8 +1,14 @@
 <template>
-  <div>
-    <v-container fluid class="d-flex">
-      <h1 class="mr-auto">{{ $t('trans.teamManagement.teamManagement') }}</h1>
-      <div style="z-index: 1">
+  <div :class="{ 'dir-rtl': isRTL }">
+    <div
+      class="d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse"
+    >
+      <div>
+        <h1 class="mr-auto">
+          {{ $t('trans.teamManagement.teamManagement') }}
+        </h1>
+      </div>
+      <div style="z-index: 50">
         <span>
           <AddTeamMember
             :disabled="!canManageTeam"
@@ -45,7 +51,7 @@
           </v-tooltip>
         </span>
       </div>
-    </v-container>
+    </div>
 
     <v-row no-gutters>
       <v-spacer />
@@ -59,6 +65,7 @@
           hide-details
           :label="$t('trans.teamManagement.search')"
           single-line
+          :class="{ label: isRTL }"
         />
       </v-col>
     </v-row>
@@ -200,7 +207,7 @@ export default {
   },
   computed: {
     ...mapFields('form', ['form.userType']),
-    ...mapGetters('form', ['permissions']),
+    ...mapGetters('form', ['permissions', 'isRTL']),
     ...mapGetters('auth', ['user']),
     canManageTeam() {
       return this.permissions.includes(FormPermissions.TEAM_UPDATE);
@@ -466,7 +473,7 @@ export default {
     },
     userError() {
       this.addNotification({
-        message: '',
+        message: this.$t('trans.teamManagement.formOwnerErrMsg'),
         consoleError: this.$t('trans.teamManagement.formOwnerRemovalWarning'),
       });
     },
@@ -597,6 +604,7 @@ export default {
 .team-table {
   clear: both;
 }
+
 @media (max-width: 1263px) {
   .team-table >>> th {
     vertical-align: top;

@@ -1,11 +1,14 @@
 <template>
-  <v-row class="d-print-none">
-    <v-col v-if="formId">
+  <div
+    class="d-print-none d-flex flex-md-row justify-space-between flex-sm-row flex-xs-column-reverse"
+    :class="{ 'dir-rtl': isRTL }"
+  >
+    <div v-if="formId">
       <v-btn outlined @click="goToAllSubmissionOrDraft">
-        <span>{{ $t('trans.formViewerActions.viewAllSubmissions') }}</span>
+        <span>{{ $t('trans.formViewerActions.viewAllSubmissions') }} </span>
       </v-btn>
-    </v-col>
-    <v-col class="text-right">
+    </div>
+    <div>
       <!-- Bulk button -->
       <span v-if="allowSubmitterToUploadFile && !block" class="ml-2">
         <v-tooltip bottom>
@@ -77,15 +80,15 @@
           :submissionId="submissionId"
         />
       </span>
-    </v-col>
-  </v-row>
+    </div>
+  </div>
 </template>
 
 <script>
 import { FormPermissions } from '@/utils/constants';
 import ManageSubmissionUsers from '@/components/forms/submission/ManageSubmissionUsers.vue';
 import PrintOptions from '@/components/forms/PrintOptions.vue';
-
+import { mapGetters } from 'vuex';
 export default {
   name: 'MySubmissionsActions',
   components: {
@@ -143,6 +146,7 @@ export default {
         this.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
       );
     },
+    ...mapGetters('form', ['isRTL']),
   },
   methods: {
     switchView() {

@@ -1,12 +1,12 @@
 <template>
-  <div class="about-layout">
+  <div class="about-layout" :class="{ 'dir-rtl': isRTL }">
     <v-sheet class="help-highlight pa-5 text-center">
       <v-row justify="center">
         <v-col lg="8">
           <h1 class="my-5 d-block">
             {{ $t('trans.homePage.title') }}
           </h1>
-          <p>{{ $t('trans.homePage.subTitle') }}<br /></p>
+          <p dir="rtl">{{ $t('trans.homePage.subTitle') }}<br /></p>
 
           <v-btn :to="{ name: 'FormCreate' }" class="mb-5" color="primary">
             <span v-if="!authenticated">{{
@@ -36,7 +36,9 @@
 
     <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
-        <h2>{{ $t('trans.homePage.chefsHowToTitle') }}</h2>
+        <h2>
+          {{ $t('trans.homePage.chefsHowToTitle') }}
+        </h2>
         <p>
           {{ $t('trans.homePage.chefsHowToSub') }}
           <a :href="howToVideoUrl" target="_blank"
@@ -55,7 +57,9 @@
 
     <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
-        <h2>{{ $t('trans.homePage.createCustomFormTitle') }}</h2>
+        <h2>
+          {{ $t('trans.homePage.createCustomFormTitle') }}
+        </h2>
         <p>
           {{ $t('trans.homePage.createCustomFormSub1') }}
         </p>
@@ -71,7 +75,9 @@
 
     <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
-        <h2>{{ $t('trans.homePage.manageAccessTitle') }}</h2>
+        <h2>
+          {{ $t('trans.homePage.manageAccessTitle') }}
+        </h2>
         <p>
           {{ $t('trans.homePage.manageAccessSub1') }}
         </p>
@@ -91,7 +97,9 @@
     <v-sheet class="help-highlight pa-5 text-center">
       <v-row justify="center">
         <v-col lg="8">
-          <h3 class="mb-5">{{ $t('trans.homePage.getStartedToChefs') }}</h3>
+          <h3 class="mb-5">
+            {{ $t('trans.homePage.getStartedToChefs') }}
+          </h3>
           <p>
             {{ $t('trans.homePage.createOnlineTitle') }}
           </p>
@@ -114,6 +122,7 @@ export default {
   name: 'About',
   computed: {
     ...mapGetters('auth', ['authenticated']),
+    ...mapGetters('form', ['isRTL']),
     howToVideoUrl() {
       return process.env.VUE_APP_HOWTOURL;
     },
