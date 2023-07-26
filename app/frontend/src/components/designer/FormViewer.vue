@@ -178,6 +178,8 @@ export default {
     if (!this.preview && !this.readOnly) {
       window.addEventListener('beforeunload', this.beforeWindowUnload);
     }
+
+    this.reRenderFormIo += 1;
   },
   beforeUnmount() {
     window.removeEventListener('beforeunload', this.beforeWindowUnload);
@@ -1139,7 +1141,6 @@ export default {
             :key="reRenderFormIo"
             ref="chefForm"
             :form="formSchema"
-            :form-element="formElement"
             :submission="submission"
             :options="viewerOptions"
             :language="multiLanguage"
