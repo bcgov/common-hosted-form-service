@@ -87,10 +87,7 @@
                       <span :class="{ 'mr-2': isRTL }"> IDIR </span>
                     </template>
                   </v-radio>
-                  <v-radio
-                    class="mx-2"
-                    :value="ID_PROVIDERS.BCEIDBASIC"
-                  >
+                  <v-radio class="mx-2" :value="ID_PROVIDERS.BCEIDBASIC">
                     <template #label>
                       <span :class="{ 'mr-2': isRTL }"> Basic BCeID </span>
                     </template>
