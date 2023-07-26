@@ -25,7 +25,6 @@ export default {
       currentUserOnly: false,
       deleteItem: {},
       deletedOnly: false,
-      filterData: [],
       filterIgnore: [
         {
           key: 'confirmationId',
@@ -75,68 +74,33 @@ export default {
       return this.permissions.some((p) => FormManagePermissions.includes(p));
     },
     DEFAULT_HEADERS() {
+      // Confirmation ID should always be in the table
+      // Default headers always include the submissionDate, submitter, and status
+      // The BaseFilter uses this data so it knows it exists
+      // If the table in THIS VIEW doesn't need it, it can filter it out in a computed value
+      // These however are the values that can exist in this table aside from form values
       let headers = [
         {
           title: i18n.t('trans.submissionsTable.confirmationID'),
           align: 'start',
           key: 'confirmationId',
         },
+        {
+          title: i18n.t('trans.submissionsTable.submissionDate'),
+          align: 'start',
+          key: 'date',
+        },
+        {
+          title: i18n.t('trans.submissionsTable.submitter'),
+          align: 'start',
+          key: 'submitter',
+        },
+        {
+          title: i18n.t('trans.submissionsTable.status'),
+          align: 'start',
+          key: 'status',
+        },
       ];
-      if (this.userFormPreferences?.preferences?.columns) {
-        if (this.userFormPreferences.preferences.columns.includes('date')) {
-          headers = [
-            ...headers,
-            {
-              title: i18n.t('trans.submissionsTable.submissionDate'),
-              align: 'start',
-              key: 'date',
-            },
-          ];
-        }
-
-        if (
-          this.userFormPreferences.preferences.columns.includes('submitter')
-        ) {
-          headers = [
-            ...headers,
-            {
-              title: i18n.t('trans.submissionsTable.submitter'),
-              align: 'start',
-              key: 'submitter',
-            },
-          ];
-        }
-
-        if (this.userFormPreferences.preferences.columns.includes('status')) {
-          headers = [
-            ...headers,
-            {
-              title: i18n.t('trans.submissionsTable.status'),
-              align: 'start',
-              key: 'status',
-            },
-          ];
-        }
-      } else {
-        headers = [
-          ...headers,
-          {
-            title: i18n.t('trans.submissionsTable.submissionDate'),
-            align: 'start',
-            key: 'date',
-          },
-          {
-            title: i18n.t('trans.submissionsTable.submitter'),
-            align: 'start',
-            key: 'submitter',
-          },
-          {
-            title: i18n.t('trans.submissionsTable.status'),
-            align: 'start',
-            key: 'status',
-          },
-        ];
-      }
 
       if (this.form && this.form.schedule && this.form.schedule.enabled) {
         //push new header for late submission if Form is setup for scheduling
@@ -150,6 +114,42 @@ export default {
         ];
       }
 
+      // Add the form fields to the headers
+      headers = headers.concat(
+        this.formFields.map((ff) => {
+          return {
+            title: ff,
+            align: 'start',
+            key: ff,
+          };
+        })
+      );
+
+      return headers;
+    },
+
+    // These are the headers that are displayed in this table, not in BaseFilter
+    HEADERS() {
+      // Start with the headers that can exist
+      let headers = this.DEFAULT_HEADERS;
+      // If there are any user preferences, then we can remove what isn't in there
+      // but do not remove the values set inside of filter ignore, as those
+      // should always exist (confirmationId, actions, event)
+      if (this.USER_PREFERENCES?.length > 0) {
+        headers = headers.filter(
+          (header) =>
+            // It must be in the user preferences
+            this.USER_PREFERENCES.some((up) => up.key === header.key) ||
+            // Or in the filterIgnore
+            this.filterIgnore.some((fi) => fi.key === header.key)
+        );
+      } else {
+        // Remove the form fields
+        headers = headers.filter(
+          (header) => !this.formFields.includes(header.key)
+        );
+      }
+
       // Actions column at the end
       headers.push({
         title: i18n.t('trans.submissionsTable.view'),
@@ -160,7 +160,7 @@ export default {
         width: '40px',
       });
 
-      // Actions column at the end
+      // Event column at the end
       headers.push({
         title: i18n.t('trans.submissionsTable.event'),
         align: 'end',
@@ -172,45 +172,14 @@ export default {
       return headers;
     },
 
-    SELECT_COLUMNS_HEADERS() {
-      return [...this.FILTER_HEADERS].concat(
-        this.formFields.map((ff) => {
-          return { title: ff, key: ff, align: 'end' };
-        })
-      );
-    },
-
-    HEADERS() {
-      let headers = [...this.DEFAULT_HEADERS];
-
-      if (headers.length > 1) {
-        headers.splice(1, 0, ...this.USER_PREFERENCES);
-      } else {
-        headers = headers.concat(this.USER_PREFERENCES);
-      }
-      return headers.filter(
-        (item, idx, inputArray) =>
-          inputArray.findIndex((arrayItem) => arrayItem.value === item.value) ==
-          idx
-      );
-    },
-
     FILTER_HEADERS() {
-      return [...this.DEFAULT_HEADERS].filter(
-        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
+      return this.DEFAULT_HEADERS.filter(
+        (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
       );
     },
     PRESELECTED_DATA() {
-      let headers = [...this.FILTER_HEADERS];
-      if (headers.length > 1) {
-        headers.splice(1, 0, ...this.USER_PREFERENCES);
-      } else {
-        headers = headers.concat(this.USER_PREFERENCES);
-      }
-      return headers.filter(
-        (item, idx, inputArray) =>
-          inputArray.findIndex((arrayItem) => arrayItem.value === item.value) ==
-          idx
+      return this.HEADERS.filter(
+        (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
       );
     },
     USER_PREFERENCES() {
@@ -220,27 +189,27 @@ export default {
           (column) => {
             if (column === 'date') {
               return {
-                text: this.$t('trans.submissionsTable.submissionDate'),
+                title: this.$t('trans.submissionsTable.submissionDate'),
                 align: 'start',
-                value: 'date',
+                key: 'date',
               };
             } else if (column === 'submitter') {
               return {
-                text: this.$t('trans.submissionsTable.submitter'),
+                title: this.$t('trans.submissionsTable.submitter'),
                 align: 'start',
-                value: 'submitter',
+                key: 'submitter',
               };
             } else if (column === 'status') {
               return {
-                text: this.$t('trans.submissionsTable.status'),
+                title: this.$t('trans.submissionsTable.status'),
                 align: 'start',
-                value: 'status',
+                key: 'status',
               };
             } else {
               return {
                 align: 'start',
-                text: column,
-                value: column,
+                title: column,
+                key: column,
               };
             }
           }
@@ -416,12 +385,11 @@ export default {
     },
     async updateFilter(data) {
       this.showColumnsDialog = false;
-      this.filterData = data;
       let preferences = {
         columns: [],
       };
       data.forEach((d) => {
-        preferences.columns.push(d);
+        preferences.columns.push(d.key);
       });
 
       await this.updateFormPreferencesForCurrentUser({
@@ -704,11 +672,12 @@ export default {
         :input-filter-placeholder="
           $t('trans.submissionsTable.searchSubmissionFields')
         "
-        input-item-key="key"
         :input-save-button-text="$t('trans.submissionsTable.save')"
-        :input-data="SELECT_COLUMNS_HEADERS"
-        :preselected-data="preSelectedData"
-        :reset-data="FILTER_HEADERS"
+        :input-data="FILTER_HEADERS"
+        :preselected-data="PRESELECTED_DATA"
+        :reset-data="
+          FILTER_HEADERS.filter((header) => !formFields.includes(header.key))
+        "
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >

@@ -53,19 +53,7 @@ export default {
     return {
       selectedData: this.preselectedData,
       inputFilter: '',
-      tableData: this.inputData,
     };
-  },
-  watch: {
-    selectedData() {
-      let filteredData = this.inputData.filter(
-        (item) =>
-          !this.selectedData.find(
-            (selectedItem) => selectedItem.text === item.text
-          )
-      );
-      this.tableData = this.selectedData.concat(filteredData);
-    },
   },
   methods: {
     savingFilterData() {
@@ -136,10 +124,13 @@ export default {
         hide-default-footer
         height="300px"
         :headers="inputHeaders"
-        :items="tableData"
+        :items="inputData"
+        items-per-page="-1"
         :item-value="inputItemKey"
         :search="inputFilter"
         class="bg-grey-lighten-5"
+        disable-pagination
+        return-object
       >
       </v-data-table>
       <v-btn
