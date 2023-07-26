@@ -82,18 +82,17 @@
             <v-expand-transition>
               <v-row v-if="userType === ID_MODE.LOGIN" class="pl-6">
                 <v-radio-group class="my-0" v-model="idps[0]">
-                  <v-radio class="mx-2" label="IDIR" :value="ID_PROVIDERS.IDIR">
+                  <v-radio class="mx-2" :value="ID_PROVIDERS.IDIR">
                     <template #label>
-                      <span :class="{ 'mr-2': isRTL }"> Business BCeID </span>
+                      <span :class="{ 'mr-2': isRTL }"> IDIR </span>
                     </template>
                   </v-radio>
                   <v-radio
                     class="mx-2"
-                    label="Basic BCeID"
                     :value="ID_PROVIDERS.BCEIDBASIC"
                   >
                     <template #label>
-                      <span :class="{ 'mr-2': isRTL }"> Business BCeIDs </span>
+                      <span :class="{ 'mr-2': isRTL }"> Basic BCeID </span>
                     </template>
                   </v-radio>
                   <v-radio class="mx-2" :value="ID_PROVIDERS.BCEIDBUSINESS">
