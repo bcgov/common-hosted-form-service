@@ -29,14 +29,13 @@ export default {
         },
       ],
       loading: true,
-      preSelectedData: [],
       search: '',
       showColumnsDialog: false,
       submissionsTable: [],
     };
   },
   computed: {
-    ...mapState(useFormStore, ['form', 'submissionList']),
+    ...mapState(useFormStore, ['form', 'formFields', 'submissionList']),
     DEFAULT_HEADERS() {
       let hdrs = [
         {
@@ -65,14 +64,6 @@ export default {
           key: 'submittedDate',
           sortable: true,
         },
-        {
-          title: i18n.t('trans.mySubmissionsTable.actions'),
-          align: 'end',
-          key: 'actions',
-          filterable: false,
-          sortable: false,
-          width: '140px',
-        },
       ];
       if (this.showDraftLastEdited || !this.formId) {
         hdrs.splice(hdrs.length - 1, 0, {
@@ -88,17 +79,61 @@ export default {
           sortable: true,
         });
       }
+
+      // Add the form fields to the headers
+      hdrs = hdrs.concat(
+        this.formFields.map((ff) => {
+          return {
+            title: ff,
+            align: 'start',
+            key: ff,
+          };
+        })
+      );
+
       return hdrs;
+    },
+    HEADERS() {
+      // Start with the headers that can exist
+      let headers = this.DEFAULT_HEADERS;
+      // If there is any filter data, then we can remove what isn't in there
+      // but do not remove the values set inside of filter ignore, as those
+      // should always exist (confirmationId, actions, event)
+      if (this.filterData?.length > 0) {
+        headers = headers.filter(
+          (header) =>
+            // It must be in the filter data
+            this.filterData.some((up) => up.key === header.key) ||
+            // Or in the filterIgnore
+            this.filterIgnore.some((fi) => fi.key === header.key)
+        );
+      } else {
+        // Remove the form fields
+        headers = headers.filter(
+          (header) => !this.formFields.includes(header.key)
+        );
+      }
+
+      headers.push({
+        title: i18n.t('trans.mySubmissionsTable.actions'),
+        align: 'end',
+        key: 'actions',
+        filterable: false,
+        sortable: false,
+        width: '140px',
+      });
+
+      return headers;
     },
     FILTER_HEADERS() {
       return this.DEFAULT_HEADERS.filter(
-        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
+        (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
       );
     },
-    HEADERS() {
-      return this.filterData.length === 0
-        ? this.FILTER_HEADERS
-        : this.filterData;
+    PRESELECTED_DATA() {
+      return this.HEADERS.filter(
+        (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
+      );
     },
     showDraftLastEdited() {
       return this.form && this.form.enableSubmitterDraft;
@@ -108,11 +143,20 @@ export default {
     },
   },
   async mounted() {
-    await this.fetchForm(this.formId);
+    await this.fetchForm(this.formId).then(async () => {
+      await this.fetchFormFields({
+        formId: this.formId,
+        formVersionId: this.form.versions[0].id,
+      });
+    });
     await this.populateSubmissionsTable();
   },
   methods: {
-    ...mapActions(useFormStore, ['fetchForm', 'fetchSubmissions']),
+    ...mapActions(useFormStore, [
+      'fetchForm',
+      'fetchFormFields',
+      'fetchSubmissions',
+    ]),
     // Status columns in the table
     getCurrentStatus(record) {
       // Current status is most recent status (top in array, query returns in
@@ -140,8 +184,6 @@ export default {
     },
 
     onShowColumnDialog() {
-      this.preSelectedData =
-        this.filterData.length === 0 ? this.FILTER_HEADERS : this.filterData;
       this.showColumnsDialog = true;
     },
 
@@ -155,7 +197,7 @@ export default {
       // Build up the list of forms for the table
       if (this.submissionList) {
         const tableRows = this.submissionList.map((s) => {
-          return {
+          const fields = {
             confirmationId: s.confirmationId,
             name: s.name,
             permissions: s.permissions,
@@ -170,6 +212,13 @@ export default {
                 ? s.submissionStatus[0].createdBy
                 : '',
           };
+          this.filterData.forEach((fd) => {
+            // If the field isn't already in fields
+            if (!(fd.key in fields)) {
+              fields[fd.key] = s.submission.submission.data[fd.key];
+            }
+          });
+          return fields;
         });
         this.submissionsTable = tableRows;
       }
@@ -179,6 +228,8 @@ export default {
     async updateFilter(data) {
       this.filterData = data;
       this.showColumnsDialog = false;
+
+      await this.populateSubmissionsTable();
     },
   },
 };
@@ -294,8 +345,8 @@ export default {
         "
         input-item-key="key"
         :input-save-button-text="$t('trans.mySubmissionsTable.save')"
-        :input-data="SELECT_COLUMNS_HEADERS"
-        :preselected-data="preSelectedData"
+        :input-data="FILTER_HEADERS"
+        :preselected-data="PRESELECTED_DATA"
         :reset-data="FILTER_HEADERS"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
