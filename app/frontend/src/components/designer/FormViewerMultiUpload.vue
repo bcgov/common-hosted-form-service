@@ -435,12 +435,12 @@ export default {
     },
     convertEmptyArraysToNull(obj) {
       /*
-      * This function is purely made to solve this https://github.com/formio/formio.js/issues/4515 formio bug 
-      * where setSubmission mislead payload for submission. In our case if setSubmission got triggered multiple
-      * time it cache submission key's with old values that leads to trigger false validation errors.
-      * This function clear object with some empty arrays to null. Main problem was occured to columns and grids components.
-      */
-      
+       * This function is purely made to solve this https://github.com/formio/formio.js/issues/4515 formio bug
+       * where setSubmission mislead payload for submission. In our case if setSubmission got triggered multiple
+       * time it cache submission key's with old values that leads to trigger false validation errors.
+       * This function clear object with some empty arrays to null. Main problem was occured to columns and grids components.
+       */
+
       if (_.isArray(obj)) {
         return obj.length === 0 ? null : obj.map(this.convertEmptyArraysToNull);
       } else if (_.isObject(obj)) {
