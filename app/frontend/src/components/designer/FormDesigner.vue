@@ -1,65 +1,66 @@
 <template>
   <div>
-    <v-row class="mt-6" no-gutters>
-      <!-- page title -->
-      <v-col cols="12" sm="6" order="2" order-sm="1">
-        <h1>{{ $t('trans.formDesigner.formDesign') }}</h1>
-      </v-col>
-      <!-- buttons -->
-      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              class="mx-1"
-              @click="onExportClick"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-icon>get_app</v-icon>
-            </v-btn>
-          </template>
-          <span>{{ $t('trans.formDesigner.exportDesign') }}</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              class="mx-1"
-              @click="$refs.uploader.click()"
-              color="primary"
-              icon
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-icon>publish</v-icon>
-              <input
-                class="d-none"
-                @change="loadFile"
-                ref="uploader"
-                type="file"
-                accept=".json"
-              />
-            </v-btn>
-          </template>
-          <span>{{ $t('trans.formDesigner.importDesign') }}</span>
-        </v-tooltip>
-      </v-col>
-      <!-- form name -->
-      <v-col cols="12" order="3">
-        <h3 v-if="name">{{ name }}</h3>
-      </v-col>
-      <!-- version number-->
-      <v-col cols="12" order="4">
-        <em
-          >{{ $t('trans.formDesigner.version') }} :
-          {{ this.displayVersion }}</em
-        >
-      </v-col>
-    </v-row>
-    <BaseInfoCard class="my-6">
+    <div :class="{ 'dir-rtl': isRTL }">
+      <div
+        class="mt-6 d-flex flex-md-row justify-space-between flex-sm-row flex-xs-column-reverse"
+      >
+        <!-- page title -->
+        <div>
+          <h1>
+            {{ $t('trans.formDesigner.formDesign') }}
+          </h1>
+          <h3 v-if="name">{{ name }}</h3>
+          <em
+            >{{ $t('trans.formDesigner.version') }} :
+            {{ this.displayVersion }}</em
+          >
+        </div>
+        <!-- buttons -->
+        <div>
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                class="mx-1"
+                @click="onExportClick"
+                color="primary"
+                icon
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>get_app</v-icon>
+              </v-btn>
+            </template>
+            <span>{{ $t('trans.formDesigner.exportDesign') }}</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                class="mx-1"
+                @click="$refs.uploader.click()"
+                color="primary"
+                icon
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>publish</v-icon>
+                <input
+                  class="d-none"
+                  @change="loadFile"
+                  ref="uploader"
+                  type="file"
+                  accept=".json"
+                />
+              </v-btn>
+            </template>
+            <span>{{ $t('trans.formDesigner.importDesign') }}</span>
+          </v-tooltip>
+        </div>
+        <!-- form name -->
+      </div>
+    </div>
+    <BaseInfoCard class="my-6" :class="{ 'dir-rtl': isRTL }">
       <h4 class="primary--text">
-        <v-icon class="mr-1" color="primary">info</v-icon
+        <v-icon :class="isRTL ? 'ml-1' : 'mr-1'" color="primary">info</v-icon
         >{{ $t('trans.formDesigner.important') }}!
       </h4>
       <p class="my-0" v-html="$t('trans.formDesigner.formDesignInfoA')"></p>
@@ -184,6 +185,7 @@ export default {
       'fcProactiveHelpImageUrl',
       'multiLanguage',
       'builder',
+      'isRTL',
     ]),
     ...mapGetters('auth', ['tokenParsed', 'user']),
     ...mapFields('form', [
@@ -801,7 +803,6 @@ export default {
 
   position: -webkit-sticky;
 }
-
 .formSetting {
   position: sticky;
   top: 0;

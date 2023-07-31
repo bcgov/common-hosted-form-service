@@ -6,7 +6,6 @@ import i18n from '@/internationalization';
 const localVue = createLocalVue();
 localVue.use(Vuex);
 
-
 describe('AdministerForm.vue', () => {
   const mockAdminGetter = jest.fn();
   const mockApiKey = jest.fn();

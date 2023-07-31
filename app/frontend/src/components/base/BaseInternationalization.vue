@@ -1,5 +1,5 @@
 <template>
-  <div class="text-center">
+  <div class="text-center" style="z-index: 100">
     <v-menu offset-y>
       <template v-slot:activator="{ on, attrs }">
         <v-btn dark outlined v-bind="attrs" v-on="on" class="ml-3">
@@ -8,7 +8,7 @@
           <font-awesome-icon icon="fa-solid fa-caret-down" class="ml-3" />
         </v-btn>
       </template>
-      <v-list>
+      <v-list style="height: 90vh; overflow-y: scroll">
         <v-list-item-group color="primary" v-model="languageIndex">
           <v-list-item
             v-for="(item, i) in items"
@@ -54,7 +54,7 @@ export default {
         { title: 'Italian (Italy)', keyword: 'it' },
         { title: '日本語 (Japanese)', keyword: 'ja' },
         { title: '한국어 (Korean)', keyword: 'ko' },
-        { title: 'ਪੰਜਾਬੀ (Punjabi)', keyword: 'pa' },
+        { title: 'ਪੰਜਾਬੀ (Punjabi - Gurmukhi)', keyword: 'pa' },
         { title: 'Portuguese (Portugal)', keyword: 'pt' },
         { title: 'Русский (Russian)', keyword: 'ru' },
         { title: 'Tagalog (Filipino)', keyword: 'tl' },
