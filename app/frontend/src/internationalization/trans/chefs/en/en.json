@@ -739,7 +739,7 @@
     "createOnlineTitle": "Create online forms to collect information from your clients and improve your workflows.",
     "getStarted": "Get started"
   },
-  "create": {
+  X"create": {
     "createNewForm": "Create New Form",
     "setUpForm": "Set up Form",
     "designForm": "Design Form",
@@ -751,7 +751,7 @@
     "confirmPageNav": "Do you really want to leave this page? Changes you made will not be saved.",
     "agreementErrMsg": "You must agree to the privacy disclaimer shown above."
   },
-  "addTeamMember": {
+  x"addTeamMember": {
     "cantFindChefsUsers": "Can't find someone? They may not have logged into CHEFS.<br /> Kindly send them a link to CHEFS and ask them to log in.",
     "cancel": "Cancel",
     "add": "Add",
@@ -777,7 +777,7 @@
     "saveAsADraft": "Save as a Draft",
     "editThisDraft": "Edit this Draft",
     "switchSingleSubmssn": "Switch to single submission",
-    "switchMultiSubmssn": "Switch to single submission"
+    "switchMultiSubmssn": "Switch to Multiple submission"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Link copied to clipboard",
