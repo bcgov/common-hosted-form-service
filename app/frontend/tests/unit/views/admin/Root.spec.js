@@ -16,7 +16,7 @@ describe('Root.vue', () => {
       },
     });
 
-    expect(wrapper.text()).toMatch('trans.root.admin');
+    expect(wrapper.text()).toMatch('trans.admin.root.admin');
     expect(wrapper.html()).toMatch('admin-page');
   });
 });
