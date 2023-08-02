@@ -598,6 +598,11 @@ a,
   left: auto !important;
 }
 
+
+.label span {
+  margin-right:30px;
+}
+
 .flex-xs-column-reverse {
   flex-direction: column-reverse;
 }
@@ -610,6 +615,11 @@ a,
   direction: rtl !important;
   text-align: right;
 }
+
+.dir-rtll {
+  direction: rtl !important;
+}
+
 
 .dir-ltl {
   direction: ltr !important;

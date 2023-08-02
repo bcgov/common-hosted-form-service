@@ -145,6 +145,7 @@
           @change="formChange"
           @render="onFormRender"
           :language="multiLanguage"
+          :class="{ '.dir-rtll': isRTL, label: isRTL }"
         />
         <p v-if="version" :class="{ 'text-left': isRTL }" class="mt-9">
           {{ $t('trans.formViewer.version', { version: version }) }}
