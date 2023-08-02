@@ -1,5 +1,8 @@
 <script>
 import { i18n } from '~/internationalization';
+import { mapState } from 'pinia';
+
+import { useFormStore } from '~/store/form';
 
 export default {
   props: {
@@ -54,6 +57,9 @@ export default {
       selectedData: this.preselectedData,
       inputFilter: '',
     };
+  },
+  computed: {
+    ...mapState(useFormStore, ['isRTL']),
   },
   methods: {
     savingFilterData() {
@@ -128,7 +134,7 @@ export default {
         items-per-page="-1"
         :item-value="inputItemKey"
         :search="inputFilter"
-        class="bg-grey-lighten-5"
+        class="bg-grey-lighten-5 mb-3"
         disable-pagination
         return-object
       >
@@ -142,7 +148,8 @@ export default {
       </v-btn>
       <v-btn
         data-test="cancel-btn"
-        class="mt-3 ml-3 text-primary"
+        class="mt-3 text-primary"
+        :class="isRTL ? 'mr-3' : 'ml-3'"
         variant="outlined"
         @click="cancelFilterData"
         >{{ $t('trans.baseFilter.cancel') }}</v-btn
@@ -164,7 +171,6 @@ export default {
   margin-bottom: 0px !important;
 }
 .titleWrapper {
-  text-align: left !important;
   font-style: normal !important;
   font-size: 22px !important;
   font-weight: bold !important;

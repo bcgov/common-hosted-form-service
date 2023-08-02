@@ -21,7 +21,7 @@ export default {
   },
   emits: ['draft-deleted'],
   computed: {
-    ...mapState(useFormStore, ['form']),
+    ...mapState(useFormStore, ['form', 'isRTL']),
     isCopyFromExistingSubmissionEnabled() {
       return this.form && this.form.enableCopyExistingSubmission;
     },
@@ -63,13 +63,12 @@ export default {
         <template #activator="{ props }">
           <v-btn
             color="primary"
-            :disabled="!hasViewPermission"
-            icon
-            size="x-small"
             v-bind="props"
-          >
-            <v-icon icon="mdi:mdi-eye"></v-icon>
-          </v-btn>
+            :disabled="!hasViewPermission"
+            size="x-small"
+            density="default"
+            icon="mdi:mdi-eye"
+          />
         </template>
         <span>{{ $t('trans.mySubmissionsActions.viewThisSubmission') }}</span>
       </v-tooltip>
@@ -94,13 +93,12 @@ export default {
           <template #activator="{ props }">
             <v-btn
               color="primary"
-              :disabled="!hasViewPermission"
-              icon
-              size="x-small"
               v-bind="props"
-            >
-              <v-icon icon="mdi:mdi-pencil-box-multiple"></v-icon>
-            </v-btn>
+              :disabled="!hasViewPermission"
+              size="x-small"
+              density="default"
+              icon="mdi:mdi-pencil-box-multiple"
+            />
           </template>
           <span>{{ $t('trans.mySubmissionsActions.copyThisSubmission') }}</span>
         </v-tooltip>
@@ -122,13 +120,13 @@ export default {
           <template #activator="{ props }">
             <v-btn
               color="primary"
-              :disabled="!hasEditPermission"
-              icon
-              size="x-small"
               v-bind="props"
-            >
-              <v-icon icon="mdi:mdi-pencil"></v-icon>
-            </v-btn>
+              :disabled="!hasEditPermission"
+              size="x-small"
+              :class="isRTL ? 'mr-1' : 'ml-1'"
+              density="default"
+              icon="mdi:mdi-pencil"
+            />
           </template>
           <span>{{ $t('trans.mySubmissionsActions.editThisDraft') }}</span>
         </v-tooltip>

@@ -1,8 +1,9 @@
 <script>
 import QrcodeVue from 'qrcode.vue';
-
+import { mapState } from 'pinia';
 import BaseCopyToClipboard from '~/components/base/BaseCopyToClipboard.vue';
 import { NotificationTypes } from '~/utils/constants';
+import { useFormStore } from '~/store/form';
 
 export default {
   components: {
@@ -27,6 +28,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useFormStore, ['isRTL']),
     formLink() {
       return `${window.location.origin}${
         import.meta.env.BASE_URL
@@ -53,15 +55,14 @@ export default {
       <template #activator="{ props }">
         <v-btn
           class="mx-1"
-          data-cy="shareFormButton"
           color="primary"
-          icon
+          data-cy="shareFormButton"
           v-bind="props"
-          size="small"
+          size="x-small"
+          density="default"
+          icon="mdi:mdi-share-variant"
           @click="dialog = true"
-        >
-          <v-icon icon="mdi:mdi-share-variant"></v-icon>
-        </v-btn>
+        />
       </template>
       <span>{{ $t('trans.shareForm.shareForm') }}</span>
     </v-tooltip>
@@ -101,16 +102,16 @@ export default {
                 <template #activator="{ props }">
                   <v-btn
                     class="mt-n1"
-                    color="primary"
+                    :class="isRTL ? 'mr-1' : 'ml-1'"
                     :href="formLink"
-                    icon
+                    color="primary"
                     target="_blank"
                     v-bind="props"
-                    size="small"
+                    size="x-small"
+                    density="default"
                     data-cy="shareFormLinkButton"
-                  >
-                    <v-icon icon="mdi:mdi-open-in-new"></v-icon>
-                  </v-btn>
+                    icon="mdi:mdi-open-in-new"
+                  />
                 </template>
                 <span>{{ $t('trans.shareForm.openThisForm') }}</span>
               </v-tooltip>

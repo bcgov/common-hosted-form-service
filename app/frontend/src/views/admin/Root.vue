@@ -10,7 +10,7 @@ export default {
 
 <template>
   <v-container>
-    <h1 class="mt-6">{{ $t('trans.root.admin') }}</h1>
+    <h1 class="mt-6">{{ $t('trans.admin.root.admin') }}</h1>
 
     <AdminPage />
   </v-container>

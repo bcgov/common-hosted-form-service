@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { describe, it } from 'vitest';
 import { nextTick } from 'vue';
+import { createTestingPinia } from '@pinia/testing';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 
@@ -12,6 +13,7 @@ describe('BaseDialog.vue', () => {
         type: 'OK',
       },
       global: {
+        plugins: [createTestingPinia()],
         stubs: {
           VDialog: {
             name: 'VDialog',
@@ -34,6 +36,7 @@ describe('BaseDialog.vue', () => {
         type: 'CONTINUE',
       },
       global: {
+        plugins: [createTestingPinia()],
         stubs: {
           VDialog: {
             name: 'VDialog',
@@ -58,6 +61,7 @@ describe('BaseDialog.vue', () => {
         showCloseButton: true,
       },
       global: {
+        plugins: [createTestingPinia()],
         stubs: {
           VDialog: {
             name: 'VDialog',
@@ -77,6 +81,7 @@ describe('BaseDialog.vue', () => {
         modelValue: true,
       },
       global: {
+        plugins: [createTestingPinia()],
         stubs: {
           VDialog: {
             name: 'VDialog',
@@ -97,6 +102,7 @@ describe('BaseDialog.vue', () => {
         type: 'SAVEDDELETE',
       },
       global: {
+        plugins: [createTestingPinia()],
         stubs: {
           VDialog: {
             name: 'VDialog',
@@ -122,6 +128,7 @@ describe('BaseDialog.vue', () => {
         enableCustomButton: true,
       },
       global: {
+        plugins: [createTestingPinia()],
         stubs: {
           VDialog: {
             name: 'VDialog',

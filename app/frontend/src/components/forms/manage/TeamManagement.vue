@@ -385,9 +385,11 @@ export default {
 
 <template>
   <div>
-    <v-container fluid class="d-flex">
+    <v-container
+      class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
+    >
       <h1 class="mr-auto">{{ $t('trans.teamManagement.teamManagement') }}</h1>
-      <div style="z-index: 1">
+      <div style="z-index: 50">
         <span>
           <AddTeamMember
             :disabled="!canManageTeam"

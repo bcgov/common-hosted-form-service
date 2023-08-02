@@ -63,12 +63,11 @@ export default {
             <v-btn
               class="mx-1"
               color="primary"
-              icon
               v-bind="props"
-              size="small"
-            >
-              <v-icon icon="mdi:mdi-list-box-outline"></v-icon>
-            </v-btn>
+              size="x-small"
+              density="default"
+              icon="mdi:mdi-list-box-outline"
+            />
           </router-link>
         </template>
         <span>{{ $t('trans.manageFormActions.viewSubmissions') }}</span>
@@ -82,12 +81,11 @@ export default {
             <v-btn
               class="mx-1"
               color="primary"
-              icon
               v-bind="props"
-              size="small"
-            >
-              <v-icon icon="mdi:mdi-account-multiple"></v-icon>
-            </v-btn>
+              size="x-small"
+              density="default"
+              icon="mdi:mdi-account-multiple"
+            />
           </router-link>
         </template>
         <span>{{ $t('trans.manageFormActions.teamManagement') }}</span>
@@ -100,13 +98,11 @@ export default {
           <v-btn
             class="mx-1"
             color="red"
-            icon
             v-bind="props"
-            size="small"
-            @click="showDeleteDialog = true"
-          >
-            <v-icon icon="mdi:mdi-delete"></v-icon>
-          </v-btn>
+            size="x-small"
+            density="default"
+            icon="mdi:mdi-delete"
+          />
         </template>
         <span>{{ $t('trans.manageFormActions.deleteForm') }}</span>
       </v-tooltip>

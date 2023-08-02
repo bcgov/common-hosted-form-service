@@ -173,13 +173,12 @@ export default {
         <v-btn
           class="mx-1"
           color="primary"
-          icon
-          size="small"
           v-bind="props"
+          size="x-small"
+          density="default"
+          icon="mdi:mdi-printer"
           @click="dialog = true"
-        >
-          <v-icon icon="mdi:mdi-printer"></v-icon>
-        </v-btn>
+        />
       </template>
       <span>{{ $t('trans.printOptions.print') }}</span>
     </v-tooltip>

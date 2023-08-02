@@ -64,7 +64,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['drafts', 'form', 'permissions']),
+    ...mapState(useFormStore, ['drafts', 'form', 'permissions', 'isRTL']),
     hasDraft() {
       return this.drafts?.length > 0;
     },
@@ -239,14 +239,22 @@ export default {
   <div>
     <BaseInfoCard class="my-4">
       <h4 class="text-primary">
-        <v-icon class="mr-1" color="primary" icon="mdi:mdi-information"></v-icon
+        <v-icon
+          :class="isRTL ? 'ml-1' : 'mr-1'"
+          color="primary"
+          icon="mdi:mdi-information"
+        ></v-icon
         >{{ $t('trans.manageVersions.important') }}!
       </h4>
       <p>{{ $t('trans.manageVersions.infoA') }}</p>
     </BaseInfoCard>
 
     <div class="mt-8 mb-5">
-      <v-icon class="mr-1" color="primary" icon="mdi:mdi-information"></v-icon
+      <v-icon
+        :class="isRTL ? 'ml-1' : 'mr-1'"
+        color="primary"
+        icon="mdi:mdi-information"
+      ></v-icon
       >{{ $t('trans.manageVersions.infoB') }}
     </div>
     <v-data-table

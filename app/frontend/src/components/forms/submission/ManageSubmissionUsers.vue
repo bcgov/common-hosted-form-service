@@ -318,7 +318,11 @@ export default {
             >
           </p>
 
-          <v-skeleton-loader :loading="isLoadingTable" type="table-row">
+          <v-skeleton-loader
+            :loading="isLoadingTable"
+            type="table-row"
+            class="bgtrans"
+          >
             <v-table dense>
               <thead>
                 <tr>

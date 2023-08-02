@@ -66,19 +66,19 @@ export default {
 </script>
 
 <template>
-  <v-row class="d-print-none">
-    <v-col v-if="formId">
-      <router-link :to="{ name: 'UserSubmissions', query: { f: formId } }">
-        <v-btn
-          color="primary"
-          variant="outlined"
-          @click="$emit('showdoYouWantToSaveTheDraftModal')"
-        >
-          <span>{{ $t('trans.formViewerActions.viewAllSubmissions') }}</span>
-        </v-btn>
-      </router-link>
-    </v-col>
-    <v-col v-if="draftEnabled" class="text-right">
+  <div
+    class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
+  >
+    <div v-if="formId">
+      <v-btn
+        color="primary"
+        variant="outlined"
+        @click="$emit('showdoYouWantToSaveTheDraftModal')"
+      >
+        <span>{{ $t('trans.formViewerActions.viewAllSubmissions') }}</span>
+      </v-btn>
+    </div>
+    <div v-if="draftEnabled">
       <!-- Bulk button -->
       <span v-if="allowSubmitterToUploadFile && !block" class="ml-2">
         <v-tooltip location="bottom">
@@ -154,6 +154,6 @@ export default {
           :submission-id="submissionId"
         />
       </span>
-    </v-col>
-  </v-row>
+    </div>
+  </div>
 </template>

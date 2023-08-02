@@ -77,8 +77,10 @@ export default {
         <div class="submissions-search">
           <v-text-field
             v-model="search"
-            append-icon="mdi-magnify"
+            density="compact"
+            variant="underlined"
             :label="$t('trans.adminFormsTable.search')"
+            append-inner-icon="mdi-magnify"
             single-line
             hide-details
             class="pb-5"

@@ -284,179 +284,188 @@ export default {
 
 <template>
   <div>
-    <v-skeleton-loader :loading="loading" type="list-item-two-line">
-      <p>
-        <strong>{{ $t('trans.statusPanel.currentStatus') }}</strong>
-        {{ currentStatus.code }}
-        <br />
-        <strong>{{ $t('trans.statusPanel.assignedTo') }}</strong>
-        {{ currentStatus.user ? currentStatus.user.fullName : 'N/A' }}
-        <span v-if="currentStatus.user">({{ currentStatus.user.email }})</span>
-      </p>
+    <v-skeleton-loader
+      :loading="loading"
+      type="list-item-two-line"
+      class="bgtrans"
+    >
+      <div class="d-flex flex-column flex-1-1-100">
+        <p>
+          <strong>{{ $t('trans.statusPanel.currentStatus') }}</strong>
+          {{ currentStatus.code }}
+          <br />
+          <strong>{{ $t('trans.statusPanel.assignedTo') }}</strong>
+          {{ currentStatus.user ? currentStatus.user.fullName : 'N/A' }}
+          <span v-if="currentStatus.user"
+            >({{ currentStatus.user.email }})</span
+          >
+        </p>
 
-      <v-form ref="statusPanelForm" v-model="valid" lazy-validation>
-        <v-row>
-          <v-col cols="12">
-            <label>{{ $t('trans.statusPanel.assignOrUpdateStatus') }}</label>
-            <v-select
-              v-model="statusToSet"
-              variant="outlined"
-              :items="items"
-              item-title="display"
-              item-value="code"
-              :rules="[(v) => !!v || $t('trans.statusPanel.statusIsRequired')]"
-              @update:model-value="onStatusChange(statusToSet)"
-            />
+        <v-form
+          ref="statusPanelForm"
+          v-model="valid"
+          lazy-validation
+          style="width: inherit"
+        >
+          <label>{{ $t('trans.statusPanel.assignOrUpdateStatus') }}</label>
+          <v-select
+            v-model="statusToSet"
+            variant="outlined"
+            :items="items"
+            item-title="display"
+            item-value="code"
+            style="width: 100% !important; padding: 0px !important"
+            :rules="[(v) => !!v || $t('trans.statusPanel.statusIsRequired')]"
+            @update:model-value="onStatusChange(statusToSet)"
+          />
 
-            <div v-show="statusFields">
-              <div v-if="showAssignee">
-                <label>
-                  Assign To
-                  <v-tooltip location="bottom">
-                    <template #activator="{ props }">
-                      <v-icon
-                        color="primary"
-                        v-bind="props"
-                        icon="mdi:mdi-help-circle-outline"
-                      ></v-icon>
-                    </template>
-                    <span
-                      v-html="
-                        $t('trans.statusPanel.assignSubmissnToFormReviewer')
-                      "
-                    >
-                    </span>
-                  </v-tooltip>
-                </label>
-                <v-autocomplete
-                  v-model="assignee"
-                  autocomplete="autocomplete_off"
-                  clearable
-                  :custom-filter="autoCompleteFilter"
-                  :items="formReviewers"
-                  item-title="fullName"
-                  :loading="loading"
-                  :no-data-text="$t('trans.statusPanel.noDataText')"
-                  variant="outlined"
-                  return-object
-                  :rules="[
-                    (v) => !!v || $t('trans.statusPanel.assigneeIsRequired'),
-                  ]"
-                >
-                  <!-- selected user -->
-                  <template #chip="{ props, item }">
-                    <v-chip v-bind="props" :text="item?.raw?.fullName" />
-                  </template>
-                  <!-- users found in dropdown -->
-                  <template #item="{ props, item }">
-                    <v-list-item
+          <div v-show="statusFields">
+            <div v-if="showAssignee">
+              <label>
+                Assign To
+                <v-tooltip location="bottom">
+                  <template #activator="{ props }">
+                    <v-icon
+                      color="primary"
                       v-bind="props"
-                      :title="`${item?.raw?.fullName} (${item?.raw?.email})`"
-                      :subtitle="`${item?.raw?.username} (${item?.raw?.idpCode})`"
-                    >
-                    </v-list-item>
+                      icon="mdi:mdi-help-circle-outline"
+                    ></v-icon>
                   </template>
-                </v-autocomplete>
-                <span v-if="assignee">Email: {{ assignee.email }}</span>
-
-                <div class="text-right">
-                  <v-btn
-                    variant="text"
-                    size="small"
-                    color="primary"
-                    class="pl-0 my-0 text-end"
-                    @click="assignToCurrentUser"
+                  <span
+                    v-html="
+                      $t('trans.statusPanel.assignSubmissnToFormReviewer')
+                    "
                   >
-                    <v-icon class="mr-1" icon="mdi:mdi-account"></v-icon>
-                    <span>{{ $t('trans.statusPanel.assignToMe') }}</span>
-                  </v-btn>
-                </div>
-              </div>
-              <div v-show="statusFields" v-if="showRevising">
-                <v-text-field
-                  v-model="submissionUserEmail"
-                  :label="$t('trans.statusPanel.recipientEmail')"
-                  variant="outlined"
-                  density="compact"
-                />
-              </div>
+                  </span>
+                </v-tooltip>
+              </label>
+              <v-autocomplete
+                v-model="assignee"
+                autocomplete="autocomplete_off"
+                clearable
+                :custom-filter="autoCompleteFilter"
+                :items="formReviewers"
+                item-title="fullName"
+                :loading="loading"
+                :no-data-text="$t('trans.statusPanel.noDataText')"
+                variant="outlined"
+                return-object
+                :rules="[
+                  (v) => !!v || $t('trans.statusPanel.assigneeIsRequired'),
+                ]"
+              >
+                <!-- selected user -->
+                <template #chip="{ props, item }">
+                  <v-chip v-bind="props" :text="item?.raw?.fullName" />
+                </template>
+                <!-- users found in dropdown -->
+                <template #item="{ props, item }">
+                  <v-list-item
+                    v-bind="props"
+                    :title="`${item?.raw?.fullName} (${item?.raw?.email})`"
+                    :subtitle="`${item?.raw?.username} (${item?.raw?.idpCode})`"
+                  >
+                  </v-list-item>
+                </template>
+              </v-autocomplete>
+              <span v-if="assignee">Email: {{ assignee.email }}</span>
 
-              <div v-if="showRevising || showAssignee || showCompleted">
-                <v-checkbox
-                  v-model="addComment"
-                  :label="$t('trans.statusPanel.attachCommentToEmail')"
-                />
-                <div v-if="addComment">
-                  <label>{{ $t('trans.statusPanel.emailComment') }}</label>
-                  <v-textarea
-                    v-model="emailComment"
-                    :rules="[
-                      (v) =>
-                        v.length <= 4000 || $t('trans.statusPanel.maxChars'),
-                    ]"
-                    rows="1"
-                    counter
-                    auto-grow
-                    density="compact"
-                    variant="outlined"
-                    solid
-                  />
-                </div>
+              <div class="text-right">
+                <v-btn
+                  variant="text"
+                  size="small"
+                  color="primary"
+                  class="pl-0 my-0 text-end"
+                  @click="assignToCurrentUser"
+                >
+                  <v-icon class="mr-1" icon="mdi:mdi-account"></v-icon>
+                  <span>{{ $t('trans.statusPanel.assignToMe') }}</span>
+                </v-btn>
               </div>
             </div>
-          </v-col>
-        </v-row>
+            <div v-show="statusFields" v-if="showRevising">
+              <v-text-field
+                v-model="submissionUserEmail"
+                :label="$t('trans.statusPanel.recipientEmail')"
+                variant="outlined"
+                density="compact"
+              />
+            </div>
 
-        <v-row>
-          <v-col cols="12" sm="6" xl="4">
-            <v-dialog v-model="historyDialog" width="1200">
-              <template #activator="{ props }">
-                <v-btn
-                  id="btnText"
-                  block
+            <div v-if="showRevising || showAssignee || showCompleted">
+              <v-checkbox
+                v-model="addComment"
+                :label="$t('trans.statusPanel.attachCommentToEmail')"
+              />
+              <div v-if="addComment">
+                <label>{{ $t('trans.statusPanel.emailComment') }}</label>
+                <v-textarea
+                  v-model="emailComment"
+                  :rules="[
+                    (v) => v.length <= 4000 || $t('trans.statusPanel.maxChars'),
+                  ]"
+                  rows="1"
+                  counter
+                  auto-grow
+                  density="compact"
                   variant="outlined"
-                  color="textLink"
-                  v-bind="props"
-                >
-                  <span>{{ $t('trans.statusPanel.viewHistory') }}</span>
-                </v-btn>
-              </template>
+                  solid
+                />
+              </div>
+            </div>
+          </div>
 
-              <v-card v-if="historyDialog">
-                <v-card-title class="text-h5 pb-0">{{
-                  $t('trans.statusPanel.statusHistory')
-                }}</v-card-title>
-
-                <v-card-text>
-                  <hr />
-                  <StatusTable :submission-id="submissionId" />
-                </v-card-text>
-
-                <v-card-actions class="justify-center">
+          <v-row class="mt-3">
+            <v-col cols="12" sm="6" xl="4">
+              <v-dialog v-model="historyDialog" width="1200">
+                <template #activator="{ props }">
                   <v-btn
-                    class="mb-5 close-dlg"
-                    color="primary"
-                    @click="historyDialog = false"
+                    id="btnText"
+                    block
+                    variant="outlined"
+                    color="textLink"
+                    v-bind="props"
                   >
-                    <span>{{ $t('trans.statusPanel.close') }}</span>
+                    <span>{{ $t('trans.statusPanel.viewHistory') }}</span>
                   </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </v-col>
+                </template>
 
-          <v-col cols="12" sm="6" xl="4" order="first" order-sm="last">
-            <v-btn
-              block
-              :disabled="!statusToSet"
-              color="primary"
-              @click="updateStatus"
-            >
-              <span>{{ statusAction }}</span>
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-form>
+                <v-card v-if="historyDialog">
+                  <v-card-title class="text-h5 pb-0">{{
+                    $t('trans.statusPanel.statusHistory')
+                  }}</v-card-title>
+
+                  <v-card-text>
+                    <hr />
+                    <StatusTable :submission-id="submissionId" />
+                  </v-card-text>
+
+                  <v-card-actions class="justify-center">
+                    <v-btn
+                      class="mb-5 close-dlg"
+                      color="primary"
+                      @click="historyDialog = false"
+                    >
+                      <span>{{ $t('trans.statusPanel.close') }}</span>
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-col>
+
+            <v-col cols="12" sm="6" xl="4" order="first" order-sm="last">
+              <v-btn
+                block
+                :disabled="!statusToSet"
+                color="primary"
+                @click="updateStatus"
+              >
+                <span>{{ statusAction }}</span>
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-form>
+      </div>
     </v-skeleton-loader>
   </div>
 </template>

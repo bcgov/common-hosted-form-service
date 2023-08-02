@@ -1,4 +1,7 @@
 <script>
+import { mapState } from 'pinia';
+import { useFormStore } from '~/store/form';
+
 export default {
   props: {
     modelValue: {
@@ -29,6 +32,9 @@ export default {
     'delete-dialog',
     'custom-dialog',
   ],
+  computed: {
+    ...mapState(useFormStore, ['isRTL']),
+  },
   methods: {
     closeDialog() {
       this.$emit('close-dialog');
@@ -95,7 +101,8 @@ export default {
         <div v-else-if="type === 'CONTINUE'">
           <v-btn
             data-test="continue-btn-continue"
-            class="mb-5 mr-5"
+            class="mb-5"
+            :class="isRTL ? 'ml-5' : 'mr-5'"
             color="primary"
             variant="flat"
             @click="continueDialog"
