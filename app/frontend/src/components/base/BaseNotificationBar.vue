@@ -1,5 +1,8 @@
 <script>
 import { useNotificationStore } from '~/store/notification';
+import { mapState } from 'pinia';
+import { useFormStore } from '~/store/form';
+
 export default {
   props: {
     notification: {
@@ -12,6 +15,10 @@ export default {
       timeout: null,
     };
   },
+  computed: {
+    ...mapState(useFormStore, ['form', 'isRTL']),
+  },
+
   mounted() {
     const notificationStore = useNotificationStore();
     this.timeout = setTimeout(
@@ -35,7 +42,14 @@ export default {
 <template>
   <v-alert
     :id="notification.id"
-    :class="'target-notification ' + notification.type"
+    :class="[
+      'target-notification ' + notification.type,
+      { 'v-locale--is-ltr': isRTL },
+    ]"
+    :style="{
+      direction: isRTL ? 'rtl' : 'ltl',
+      textAlign: isRTL ? 'right' : 'left',
+    }"
     :icon="notification.icon"
     prominent
     closable

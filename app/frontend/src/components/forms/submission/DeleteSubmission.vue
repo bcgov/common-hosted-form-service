@@ -47,15 +47,15 @@ export default {
     <v-tooltip location="bottom">
       <template #activator="{ props }">
         <v-btn
+          class="mx-1"
           color="red"
           :disabled="disabled"
-          icon
-          :size="iconSize"
           v-bind="props"
+          size="x-small"
+          density="default"
+          icon="mdi:mdi-delete"
           @click="showDeleteDialog = true"
-        >
-          <v-icon icon="mdi:mdi-delete"></v-icon>
-        </v-btn>
+        />
       </template>
       <span
         >{{ $t('trans.deleteSubmission.deleteThis') }}

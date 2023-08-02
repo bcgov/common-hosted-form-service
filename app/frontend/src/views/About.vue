@@ -2,6 +2,7 @@
 import { mapState } from 'pinia';
 import BaseImagePopout from '../components/base/BaseImagePopout.vue';
 import { useAuthStore } from '~/store/auth';
+import { useFormStore } from '~/store/form';
 
 export default {
   components: {
@@ -9,6 +10,7 @@ export default {
   },
   computed: {
     ...mapState(useAuthStore, ['authenticated']),
+    ...mapState(useFormStore, ['multiLanguage', 'isRTL']),
     howToVideoUrl() {
       return import.meta.env.VITE_HOWTOURL;
     },
@@ -24,10 +26,12 @@ export default {
     <v-sheet class="help-highlight pa-5 text-center">
       <v-row justify="center">
         <v-col lg="8">
-          <h1 class="my-5 d-block">
+          <h1 class="my-5 d-block" locale="multiLanguage">
             {{ $t('trans.homePage.title') }}
           </h1>
-          <p>{{ $t('trans.homePage.subTitle') }}<br /></p>
+          <p locale="multiLanguage">
+            {{ $t('trans.homePage.subTitle') }}<br />
+          </p>
 
           <v-btn
             :to="{ name: 'FormCreate' }"
@@ -35,13 +39,15 @@ export default {
             color="primary"
             data-test="create-or-login-btn"
           >
-            <span v-if="!authenticated">{{
+            <span v-if="!authenticated" locale="multiLanguage">{{
               $t('trans.homePage.loginToStart')
             }}</span>
-            <span v-else>{{ $t('trans.homePage.createFormLabel') }}</span>
+            <span v-else locale="multiLanguage">{{
+              $t('trans.homePage.createFormLabel')
+            }}</span>
           </v-btn>
 
-          <h2 id="video" class="pt-5">
+          <h2 id="video" class="pt-5" locale="multiLanguage">
             {{ $t('trans.homePage.takeATourOfChefs') }}
           </h2>
           <div class="video-wrapper">
@@ -61,10 +67,12 @@ export default {
 
     <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
-        <h2>{{ $t('trans.homePage.chefsHowToTitle') }}</h2>
-        <p>
+        <h2 locale="multiLanguage">
+          {{ $t('trans.homePage.chefsHowToTitle') }}
+        </h2>
+        <p locale="multiLanguage">
           {{ $t('trans.homePage.chefsHowToSub') }}
-          <a :href="howToVideoUrl" target="_blank"
+          <a :href="howToVideoUrl" target="_blank" locale="multiLanguage"
             >{{ $t('trans.homePage.getStarted') }}!</a
           >
         </p>
@@ -80,8 +88,10 @@ export default {
 
     <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
-        <h2>{{ $t('trans.homePage.createCustomFormTitle') }}</h2>
-        <p>
+        <h2 locale="multiLanguage">
+          {{ $t('trans.homePage.createCustomFormTitle') }}
+        </h2>
+        <p locale="multiLanguage">
           {{ $t('trans.homePage.createCustomFormSub1') }}
         </p>
       </v-col>
@@ -96,11 +106,13 @@ export default {
 
     <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
-        <h2>{{ $t('trans.homePage.manageAccessTitle') }}</h2>
-        <p>
+        <h2 locale="multiLanguage">
+          {{ $t('trans.homePage.manageAccessTitle') }}
+        </h2>
+        <p locale="multiLanguage">
           {{ $t('trans.homePage.manageAccessSub1') }}
         </p>
-        <p>
+        <p locale="multiLanguage">
           {{ $t('trans.homePage.manageAccessSub2') }}
         </p>
       </v-col>
@@ -116,15 +128,19 @@ export default {
     <v-sheet class="help-highlight pa-5 text-center">
       <v-row justify="center">
         <v-col lg="8">
-          <h3 class="mb-5">{{ $t('trans.homePage.getStartedToChefs') }}</h3>
-          <p>
+          <h3 class="mb-5" locale="multiLanguage">
+            {{ $t('trans.homePage.getStartedToChefs') }}
+          </h3>
+          <p locale="multiLanguage">
             {{ $t('trans.homePage.createOnlineTitle') }}
           </p>
           <v-btn :to="{ name: 'FormCreate' }" class="mb-5" color="primary">
-            <span v-if="!authenticated">{{
+            <span v-if="!authenticated" locale="multiLanguage">{{
               $t('trans.homePage.logInToGetStarted')
             }}</span>
-            <span v-else>{{ $t('trans.homePage.createFormLabel') }}</span>
+            <span v-else locale="multiLanguage">{{
+              $t('trans.homePage.createFormLabel')
+            }}</span>
           </v-btn>
         </v-col>
       </v-row>

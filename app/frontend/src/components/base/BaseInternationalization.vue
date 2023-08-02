@@ -41,6 +41,7 @@ export default {
           : lang.keyword;
       useFormStore().$patch({
         multiLanguage: lang.keyword,
+        isRTL: lang.keyword === 'ar' || lang.keyword === 'fa' ? true : false,
       });
     },
   },

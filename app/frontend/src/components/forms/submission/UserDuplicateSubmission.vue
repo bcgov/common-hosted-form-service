@@ -38,7 +38,7 @@ export default {
 </script>
 
 <template>
-  <v-skeleton-loader :loading="loading" type="article">
+  <v-skeleton-loader :loading="loading" type="article" class="bgtrans">
     <FormViewer
       display-title
       :read-only="readOnly"

@@ -24,7 +24,7 @@ export default {
     };
   },
   computed: {
-    ...mapWritableState(useFormStore, ['form']),
+    ...mapWritableState(useFormStore, ['form', 'isRTL']),
     ID_MODE() {
       return IdentityMode;
     },
@@ -72,7 +72,11 @@ export default {
       <v-expand-transition>
         <BaseInfoCard v-if="form.userType == ID_MODE.PUBLIC" class="mr-4 mb-3">
           <h4 class="text-primary">
-            <v-icon class="mr-1" color="primary" icon="mdi:mdi-information" />
+            <v-icon
+              :class="isRTL ? 'ml-1' : 'mr-1'"
+              color="primary"
+              icon="mdi:mdi-information"
+            />
             {{ $t('trans.formSettings.important') }}!
           </h4>
           <p class="mt-2 mb-0">
@@ -117,7 +121,7 @@ export default {
               >
                 <h4 class="text-primary">
                   <v-icon
-                    class="mr-1"
+                    :class="isRTL ? 'ml-1' : 'mr-1'"
                     color="primary"
                     icon="mdi:mdi-information"
                   />{{ $t('trans.formSettings.important') }}!

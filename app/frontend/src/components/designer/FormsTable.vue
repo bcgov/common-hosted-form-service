@@ -68,20 +68,15 @@ export default {
 
 <template>
   <div>
-    <v-row class="mt-6" no-gutters>
+    <div
+      class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
+    >
       <!-- page title -->
-      <v-col cols="12" sm="6" order="2" order-sm="1">
+      <div>
         <h1>{{ $t('trans.formsTable.myForms') }}</h1>
-      </v-col>
+      </div>
       <!-- buttons -->
-      <v-col
-        v-if="canCreateForm"
-        class="text-right"
-        cols="12"
-        sm="6"
-        order="1"
-        order-sm="2"
-      >
+      <div v-if="canCreateForm">
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <router-link
@@ -103,8 +98,8 @@ export default {
           </template>
           <span>{{ $t('trans.formsTable.createNewForm') }}</span>
         </v-tooltip>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
 
     <v-row class="my-3" no-gutters>
       <v-spacer />

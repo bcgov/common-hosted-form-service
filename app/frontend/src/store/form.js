@@ -77,6 +77,7 @@ export const useFormStore = defineStore('form', {
     formList: [],
     imageList: new Map(),
     multiLanguage: '',
+    isRTL: false,
     permissions: [],
     roles: [],
     submissionList: [],

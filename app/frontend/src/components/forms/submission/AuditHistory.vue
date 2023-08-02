@@ -61,13 +61,12 @@ export default {
         <v-btn
           class="mx-1"
           color="primary"
-          icon
-          size="small"
           v-bind="props"
+          size="x-small"
+          density="default"
+          icon="mdi:mdi-history"
           @click="loadHistory"
-        >
-          <v-icon icon="mdi:mdi-history"></v-icon>
-        </v-btn>
+        />
       </template>
       <span>{{ $t('trans.auditHistory.viewEditHistory') }}</span>
     </v-tooltip>

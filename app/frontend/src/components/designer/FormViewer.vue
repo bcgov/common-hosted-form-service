@@ -116,7 +116,7 @@ export default {
       'tokenParsed',
       'user',
     ]),
-    ...mapState(useFormStore, ['multiLanguage']),
+    ...mapState(useFormStore, ['multiLanguage', 'isRTL']),
 
     formScheduleExpireMessage() {
       return i18n.t('trans.formViewer.formScheduleExpireMessage');
@@ -955,7 +955,6 @@ export default {
           this.showModal
         )
           this.doYouWantToSaveTheDraft = true;
-        else this.leaveThisPage();
       } else {
         this.leaveThisPage();
       }
@@ -1018,7 +1017,11 @@ export default {
 </script>
 
 <template>
-  <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
+  <v-skeleton-loader
+    :loading="loadingSubmission"
+    type="article, actions"
+    class="bgtrans"
+  >
     <v-container fluid>
       <div v-if="isFormScheduleExpired">
         <v-alert
@@ -1140,6 +1143,7 @@ export default {
             v-if="!bulkFile"
             :key="reRenderFormIo"
             ref="chefForm"
+            :class="{ 'v-locale--is-ltr': isRTL }"
             :form="formSchema"
             :submission="submission"
             :options="viewerOptions"
@@ -1151,7 +1155,11 @@ export default {
             @change="formChange"
             @render="onFormRender"
           />
-          <p v-if="version" class="text-right">
+          <p
+            v-if="version"
+            :class="isRTL ? 'text-left' : 'text-right'"
+            class="mt-3"
+          >
             {{ $t('trans.formViewer.version', { version: version }) }}
           </p>
         </div>

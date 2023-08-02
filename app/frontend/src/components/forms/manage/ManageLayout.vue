@@ -45,25 +45,28 @@ export default {
 
 <template>
   <div>
-    <v-row class="mt-6" no-gutters>
+    <div
+      class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
+    >
       <!-- page title -->
-      <v-col cols="12" sm="6" order="2" order-sm="1">
+      <div>
         <h1>{{ $t('trans.manageLayout.manageForm') }}</h1>
-      </v-col>
+        <h3>{{ form.name }}</h3>
+      </div>
       <!-- buttons -->
-      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
-        <v-skeleton-loader :loading="loading" type="actions">
+      <div>
+        <v-skeleton-loader :loading="loading" type="actions" class="bgtrans">
           <ManageFormActions />
         </v-skeleton-loader>
-      </v-col>
-      <!-- form name -->
-      <v-col cols="12" order="3">
-        <h3>{{ form.name }}</h3>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
     <v-row no-gutters>
       <v-col cols="12" order="2">
-        <v-skeleton-loader :loading="loading" type="list-item-two-line">
+        <v-skeleton-loader
+          :loading="loading"
+          type="list-item-two-line"
+          class="bgtrans"
+        >
           <ManageForm />
         </v-skeleton-loader>
       </v-col>

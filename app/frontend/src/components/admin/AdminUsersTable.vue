@@ -60,8 +60,10 @@ export default {
         <div class="submissions-search">
           <v-text-field
             v-model="search"
-            append-icon="mdi-magnify"
+            density="compact"
+            variant="underlined"
             :label="$t('trans.adminUsersTable.search')"
+            append-inner-icon="mdi-magnify"
             single-line
             hide-details
             class="pb-5"
