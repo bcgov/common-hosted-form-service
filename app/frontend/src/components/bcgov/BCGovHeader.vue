@@ -3,6 +3,8 @@ import BCLogo from '~/assets/images/bc_logo.svg';
 import PrintLogo from '~/assets/images/bc_logo_print.svg';
 import BaseAuthButton from '~/components/base/BaseAuthButton.vue';
 import BaseInternationalization from '~/components/base/BaseInternationalization.vue';
+import { mapState } from 'pinia';
+import { useFormStore } from '~/store/form';
 
 export default {
   components: {
@@ -15,7 +17,9 @@ export default {
       PrintLogo: PrintLogo,
     };
   },
+
   computed: {
+    ...mapState(useFormStore, ['isRTL']),
     appTitle() {
       return this.$route && this.$route.meta && this.$route.meta.title
         ? this.$route.meta.title
@@ -35,6 +39,7 @@ export default {
       'elevation-20': true,
       'gov-header': true,
     }"
+    class="v-locale--is-ltr"
   >
     <!-- header for browser print only -->
     <div class="printHeader d-none d-print-block">
@@ -53,7 +58,12 @@ export default {
       </h1>
     </div>
 
-    <v-toolbar color="#003366" flat class="px-md-12 d-print-none">
+    <v-toolbar
+      color="#003366"
+      flat
+      class="px-md-12 d-print-none"
+      :class="{ 'v-locale--is-ltr': isRTL }"
+    >
       <!-- Navbar content -->
       <a href="https://www2.gov.bc.ca" data-test="btn-header-logo">
         <v-img
@@ -69,7 +79,7 @@ export default {
         data-test="btn-header-title"
         class="font-weight-bold text-h6 d-none d-md-flex pl-4"
       >
-        {{ appTitle }}
+        {{ appTitle }} fygfy
       </h1>
       <v-spacer />
       <BaseAuthButton data-test="base-auth-btn" />

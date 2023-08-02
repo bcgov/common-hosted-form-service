@@ -70,12 +70,18 @@ export default {
 </script>
 
 <template>
-  <v-skeleton-loader :loading="loading" type="list-item-two-line">
-    <v-row no-gutters>
-      <v-col cols="12" sm="6">
+  <v-skeleton-loader
+    :loading="loading"
+    type="list-item-two-line"
+    class="bgtrans"
+  >
+    <div
+      class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
+    >
+      <div cols="12" sm="6">
         <h2 class="note-heading">{{ $t('trans.notesPanel.notes') }}</h2>
-      </v-col>
-      <v-col cols="12" sm="6" class="text-sm-right">
+      </div>
+      <div>
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <v-btn
@@ -91,8 +97,8 @@ export default {
           </template>
           <span>{{ $t('trans.notesPanel.addNewNote') }}</span>
         </v-tooltip>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
 
     <v-form v-if="showNoteField">
       <label>{{ $t('trans.notesPanel.note') }}</label>

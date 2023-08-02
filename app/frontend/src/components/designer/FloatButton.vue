@@ -309,14 +309,14 @@ export default {
   >
     <div class="fabAction" @click="onOpenFABActionItems">
       {{ baseFABItemName }}
-      <v-avatar class="fabItemsInverColor" :size="fabItemsSize">
+      <v-btn class="fabItemsInverColor" :size="fabItemsSize">
         <v-icon
           :color="baseIconColor"
           :size="fabItemsIconsSize"
           :icon="baseIconName"
         >
         </v-icon>
-      </v-avatar>
+      </v-btn>
     </div>
     <div
       v-if="isFABActionsOpen"
@@ -339,7 +339,7 @@ export default {
           :class="{ fabAction: true, 'disabled-router': !formId }"
         >
           <div v-text="$t('trans.floatButton.publish')" />
-          <v-avatar
+          <v-btn
             class="fabItemsInverColor"
             :size="fabItemsSize"
             @click="navigate"
@@ -352,7 +352,7 @@ export default {
               icon="mdi:mdi-file-upload"
             >
             </v-icon>
-          </v-avatar>
+          </v-btn>
         </div>
       </router-link>
       <router-link
@@ -367,7 +367,7 @@ export default {
           :class="{ fabAction: true, 'disabled-router': !formId }"
         >
           <div class="text" v-text="$t('trans.floatButton.manage')" />
-          <v-avatar
+          <v-btn
             class="fabItemsInverColor"
             :size="fabItemsSize"
             @click="navigate"
@@ -380,7 +380,7 @@ export default {
               icon="mdi:mdi-cog"
             >
             </v-icon>
-          </v-avatar>
+          </v-btn>
         </div>
       </router-link>
 
@@ -391,18 +391,14 @@ export default {
         :class="{ 'disabled-router': !redoEnabled }"
       >
         <div class="text" v-text="$t('trans.floatButton.redo')" />
-        <v-avatar
-          class="fabItems"
-          :size="fabItemsSize"
-          @click="toParent('redo')"
-        >
+        <v-btn class="fabItems" :size="fabItemsSize" @click="toParent('redo')">
           <v-icon
             :color="redoEnabled ? fabItemsColor : disabledFabItemsColor"
             :size="fabItemsIconsSize"
             icon="mdi:mdi-redo"
           >
           </v-icon>
-        </v-avatar>
+        </v-btn>
       </div>
       <div
         ref="undoButton"
@@ -411,18 +407,14 @@ export default {
         :class="{ 'disabled-router': !undoEnabled }"
       >
         <div class="text" v-text="$t('trans.floatButton.undo')" />
-        <v-avatar
-          class="fabItems"
-          :size="fabItemsSize"
-          @click="toParent('undo')"
-        >
+        <v-btn class="fabItems" :size="fabItemsSize" @click="toParent('undo')">
           <v-icon
             :color="undoEnabled ? fabItemsColor : disabledFabItemsColor"
             :size="fabItemsIconsSize"
             icon="mdi:mdi-undo"
           >
           </v-icon>
-        </v-avatar>
+        </v-btn>
       </div>
       <div
         ref="previewRouterLink"
@@ -431,14 +423,14 @@ export default {
         @click="gotoPreview"
       >
         <div class="text" v-text="$t('trans.floatButton.preview')" />
-        <v-avatar class="fabItems" :size="fabItemsSize">
+        <v-btn class="fabItems" :size="fabItemsSize">
           <v-icon
             :color="formId ? fabItemsColor : disabledFabItemsColor"
             :size="fabItemsIconsSize"
             icon="mdi:mdi-eye"
           >
           </v-icon>
-        </v-avatar>
+        </v-btn>
       </div>
       <div
         ref="saveButton"
@@ -447,11 +439,7 @@ export default {
         :class="{ 'disabled-router': isFormSaved }"
       >
         <div class="text">{{ savedMsg }}</div>
-        <v-avatar
-          class="fabItems"
-          :size="fabItemsSize"
-          @click="toParent('save')"
-        >
+        <v-btn class="fabItems" :size="fabItemsSize" @click="toParent('save')">
           <v-icon
             v-if="!saving"
             :color="!isFormSaved ? fabItemsColor : disabledFabItemsColor"
@@ -467,31 +455,31 @@ export default {
             color="#1A5A96"
             size="25"
           ></v-progress-circular>
-        </v-avatar>
+        </v-btn>
       </div>
       <div class="fabAction">
         <div>{{ scrollName }}</div>
 
-        <v-avatar class="fabItems" :size="fabItemsSize" @click="onHandleScroll">
+        <v-btn class="fabItems" :size="fabItemsSize" @click="onHandleScroll">
           <v-icon
             :color="fabItemsColor"
             :size="fabItemsIconsSize"
             :icon="scrollIconName"
           >
           </v-icon>
-        </v-avatar>
+        </v-btn>
       </div>
     </div>
     <div v-if="!isFABActionsOpen" class="fabAction">
       <div>{{ scrollName }}</div>
-      <v-avatar class="fabItems" :size="fabItemsSize" @click="onHandleScroll">
+      <v-btn class="fabItems" :size="fabItemsSize" @click="onHandleScroll">
         <v-icon
           :color="fabItemsColor"
           :size="fabItemsIconsSize"
           :icon="scrollIconName"
         >
         </v-icon>
-      </v-avatar>
+      </v-btn>
     </div>
   </div>
 </template>

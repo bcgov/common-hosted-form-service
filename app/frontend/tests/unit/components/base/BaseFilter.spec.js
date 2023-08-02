@@ -1,12 +1,13 @@
 import { flushPromises, mount } from '@vue/test-utils';
 import { describe, it } from 'vitest';
-
+import { createTestingPinia } from '@pinia/testing';
 import BaseFilter from '~/components/base/BaseFilter.vue';
 
 describe('BaseFilter.vue', () => {
   it('renders', async () => {
     const wrapper = mount(BaseFilter, {
       global: {
+        plugins: [createTestingPinia()],
         stubs: {
           VDialog: {
             name: 'VCard',
@@ -55,6 +56,7 @@ describe('BaseFilter.vue', () => {
         inputFilterPlaceholder: 'Filter Something',
       },
       global: {
+        plugins: [createTestingPinia()],
         stubs: {
           VDialog: {
             name: 'VCard',
@@ -88,6 +90,7 @@ describe('BaseFilter.vue', () => {
   it('emits save', async () => {
     const wrapper = mount(BaseFilter, {
       global: {
+        plugins: [createTestingPinia()],
         stubs: {
           VDialog: {
             name: 'VCard',
@@ -120,6 +123,7 @@ describe('BaseFilter.vue', () => {
   it('emits cancel', async () => {
     const wrapper = mount(BaseFilter, {
       global: {
+        plugins: [createTestingPinia()],
         stubs: {
           VDialog: {
             name: 'VCard',

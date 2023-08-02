@@ -5,6 +5,7 @@ import { Formio } from '@formio/vue';
 import BaseInfoCard from '~/components/base/BaseInfoCard.vue';
 import { i18n } from '~/internationalization';
 import { useAppStore } from '~/store/app';
+import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
 export default {
@@ -65,6 +66,8 @@ export default {
   },
   computed: {
     ...mapState(useAppStore, ['config']),
+    ...mapState(useFormStore, ['isRTL']),
+
     txt_colour() {
       if (!this.error) return 'success-text';
       else return 'fail-text';
@@ -382,7 +385,11 @@ export default {
   <v-container fluid class="file-upload">
     <BaseInfoCard v-if="jsonCsv.data" class="mb-4">
       <h4 class="text-primary">
-        <v-icon class="mr-1" color="primary" icon="mdi:mdi-information"></v-icon
+        <v-icon
+          :class="isRTL ? 'ml-1' : 'mr-1'"
+          color="primary"
+          icon="mdi:mdi-information"
+        ></v-icon
         >{{ $t('trans.formViewerMultiUpload.important') }}!
       </h4>
       <p class="my-2">

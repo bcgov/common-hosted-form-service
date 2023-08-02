@@ -405,26 +405,27 @@ export default {
 
 <template>
   <div>
-    <v-row class="mt-6" no-gutters>
+    <div
+      class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
+    >
       <!-- page title -->
-      <v-col cols="12" sm="6" order="2" order-sm="1">
+      <div>
         <h1>{{ $t('trans.formsTable.submissions') }}</h1>
-      </v-col>
+      </div>
       <!-- buttons -->
-      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+      <div>
         <span v-if="checkFormManage">
           <v-tooltip location="bottom">
             <template #activator="{ props }">
               <v-btn
                 class="mx-1"
                 color="primary"
-                icon
-                size="small"
                 v-bind="props"
+                size="x-small"
+                density="default"
+                icon="mdi:mdi-view-column"
                 @click="showColumnsDialog = true"
-              >
-                <v-icon icon="mdi:mdi-view-column"></v-icon>
-              </v-btn>
+              />
             </template>
             <span>{{ $t('trans.submissionsTable.selectColumns') }}</span>
           </v-tooltip>
@@ -434,13 +435,12 @@ export default {
                 <v-btn
                   class="mx-1"
                   color="primary"
-                  :disabled="!formId"
-                  icon
-                  size="small"
                   v-bind="props"
-                >
-                  <v-icon icon="mdi:mdi-cog"></v-icon>
-                </v-btn>
+                  :disabled="!formId"
+                  size="x-small"
+                  density="default"
+                  icon="mdi:mdi-cog"
+                />
               </router-link>
             </template>
             <span>{{ $t('trans.submissionsTable.manageForm') }}</span>
@@ -453,52 +453,50 @@ export default {
                 <v-btn
                   class="mx-1"
                   color="primary"
-                  icon
-                  size="small"
                   v-bind="props"
-                >
-                  <v-icon icon="mdi:mdi-download"></v-icon>
-                </v-btn>
+                  size="x-small"
+                  density="default"
+                  icon="mdi:mdi-download"
+                />
               </router-link>
             </template>
             <span>{{ $t('trans.submissionsTable.submissionsToFiles') }}</span>
           </v-tooltip>
         </span>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
 
-    <v-row no-gutters>
-      <v-spacer />
-      <v-col cols="4" sm="4">
-        <v-checkbox
-          v-model="deletedOnly"
-          class="pl-3"
-          :label="$t('trans.submissionsTable.showDeletedSubmissions')"
-          @click="refreshSubmissions"
-        />
-      </v-col>
-      <v-col cols="4" sm="4">
-        <v-checkbox
-          v-model="currentUserOnly"
-          class="pl-3"
-          :label="$t('trans.submissionsTable.showMySubmissions')"
-          @click="refreshSubmissions"
-        />
-      </v-col>
-      <v-col cols="12" sm="4">
-        <!-- search input -->
-        <div class="submissions-search">
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            :label="$t('trans.submissionsTable.search')"
-            single-line
-            hide-details
-            class="pb-5"
-          />
-        </div>
-      </v-col>
-    </v-row>
+    <div
+      class="mt-5 mb-5 d-flex flex-md-row justify-space-between flex-sm-column flex-xs-column"
+    >
+      <v-checkbox
+        v-model="deletedOnly"
+        class="pl-3"
+        :label="$t('trans.submissionsTable.showDeletedSubmissions')"
+        @click="refreshSubmissions"
+      />
+
+      <v-checkbox
+        v-model="currentUserOnly"
+        class="pl-3"
+        :label="$t('trans.submissionsTable.showMySubmissions')"
+        @click="refreshSubmissions"
+      />
+
+      <!-- search input -->
+      <div class="submissions-search">
+        <v-text-field
+          v-model="search"
+          density="compact"
+          variant="underlined"
+          :label="$t('trans.submissionsTable.search')"
+          append-inner-icon="mdi-magnify"
+          single-line
+          hide-details
+          class="pb-5"
+        ></v-text-field>
+      </div>
+    </div>
 
     <!-- table header -->
     <v-data-table
@@ -691,17 +689,11 @@ export default {
 
 <style scoped>
 .submissions-search {
-  width: 100%;
+  width: 20em !important;
 }
-@media (min-width: 600px) {
+@media only screen and (max-width: 960px) {
   .submissions-search {
-    max-width: 20em;
-    float: right;
-  }
-}
-@media (max-width: 599px) {
-  .submissions-search {
-    padding-left: 16px;
+    padding-left: 20px;
     padding-right: 16px;
   }
 }

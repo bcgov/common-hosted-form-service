@@ -69,7 +69,7 @@ export default {
 </script>
 
 <template>
-  <v-skeleton-loader :loading="loading" type="article">
+  <v-skeleton-loader :loading="loading" type="article" class="bgtrans">
     <h3>{{ form.name }}</h3>
     <p>{{ form.description }}</p>
 

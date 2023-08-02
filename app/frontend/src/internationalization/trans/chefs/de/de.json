@@ -15,6 +15,10 @@
     "action": "Aktionen",
     "loadingText": "Laden, bitte warten"
   },
+  "preview": {
+    "preview": "Vorschau",
+    "previewToolTip": "Dies zeigt eine Vorschau des Designs und Verhaltens der Formularversion, wie es Ihren Einsendern angezeigt wird. Sie können das Formular nicht von dieser Seite aus senden."
+  },
   "manageLayout": {
     "manageForm": "Formular verwalten"
   },
@@ -49,6 +53,8 @@
     "cancel": "Stornieren"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "Drücken Sie die <kbd>Eingabetaste</kbd> oder <kbd></kbd> oder die <kbd>Leertaste</kbd>, um mehrere E-Mail-Adressen hinzuzufügen",
+    "allowMultiDraft": "Erlauben Sie das Hochladen von <strong>mehreren Entwürfen</strong>",
     "formTitle": "Formulartitel",
     "formDescription": "Formularbeschreibung",
     "formAccess": "Formularzugriff",
@@ -345,6 +351,7 @@
     "emailRequired": "E-Mail ist erforderlich"
   },
   "submissionsTable": {
+    "submissions": "Einsendungen",
     "submissionsTable": "Einreichungstabelle",
     "selectColumns": "Wählen Sie Spalten aus",
     "manageForm": "Formular verwalten",
@@ -721,7 +728,7 @@
     "createCustomFormTitle": "Erstellen Sie benutzerdefinierte Formulare mit dem CHEFS-Formular-Builder",
     "createCustomFormSub1": "Mit CHEFS können Sie sichere Formulare mit einer intuitiven Drag-and-Drop-Oberfläche erstellen. Sie können Formularkomponenten hinzufügen, sie neu anordnen und in verschiedenen Layoutkonfigurationen ablegen.",
     "chefsHowToTitle": "CHEFS-Anleitungsvideos",
-    "chefsHowToSub": "Unser Quickstart Guide führt Sie in einige Grundfunktionen von CHEFS ein. Loslegen!",
+    "chefsHowToSub": "Unser Quickstart Guide führt Sie in einige Grundfunktionen von CHEFS ein.",
     "getStartedToChefs": "Beginnen Sie mit der Nutzung von CHEFS",
     "createOnlineTitle": "Erstellen Sie Online-Formulare, um Informationen von Ihren Kunden zu sammeln und Ihre Arbeitsabläufe zu verbessern.",
     "getStarted": "Loslegen"
@@ -741,6 +748,7 @@
   "addTeamMember": {
     "cantFindChefsUsers": "Sie können niemanden finden? Möglicherweise haben sie sich nicht bei CHEFS angemeldet.<br /> Bitte senden Sie ihnen einen Link zu CHEFS und bitten Sie sie, sich anzumelden.",
     "cancel": "Stornieren",
+    "add": "Hinzufügen",
     "mustSelectAUser": "Sie müssen mindestens eine Rolle auswählen, um diesen Benutzer hinzuzufügen.",
     "addNewMember": "Fügen Sie ein neues Mitglied hinzu",
     "enterUsername": "Geben Sie einen Namen, eine E-Mail-Adresse oder einen Benutzernamen ein",
@@ -770,13 +778,22 @@
     "copyToClipboard": "In die Zwischenablage kopieren",
     "errCopyToClipboard": "Fehler beim Versuch, in die Zwischenablage zu kopieren."
   },
-  "root": {
-    "admin": "Administrator"
+  "admin": {
+    "root": {
+      "admin": "Administrator"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "Benutzer",
+      "history": "GESCHICHTE",
+      "user": "Benutzer"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "Ihr Formular wurde erfolgreich übermittelt",
     "keepRecord": "Wenn Sie diese Einreichung protokollieren möchten, können Sie Folgendes aufbewahren",
-    "confirmationId": "Bestätigungs-ID:"
+    "confirmationId": "Bestätigungs-ID"
   },
   "permissionUtils": {
     "formNotAvailable": "Das Formular ist derzeit nicht verfügbar. Dies kann an einem falschen Link liegen oder das Formular wurde vom Eigentümer gelöscht.",
@@ -828,8 +845,7 @@
       "updCurrUserFormPrefConsErrMsg": "Fehler beim Aktualisieren der Benutzerformulareinstellungen mithilfe der Formular-ID {formId} und der Einstellungen {preferences}: {error}",
       "getCurrUserFormPrefErrMsg": "Beim Abrufen Ihrer Einstellungen für dieses Formular ist ein Fehler aufgetreten.",
       "getCurrUserFormPrefConsErrMsg": "Fehler beim Abrufen der Benutzerformulareinstellungen mithilfe der Formular-ID {formId}: {Fehler}",
-      "delCurrformNotiMsg": "Das Formular „{state.form.name}“ wurde erfolgreich gelöscht.",
-      "delCurrformErrMsg": "Beim Versuch, „${state.form.name}“ zu löschen, ist ein Fehler aufgetreten.",
+      "delCurrformNotiMsg": "Das Formular {name} wurde erfolgreich gelöscht.",
       "delCurrFormConsErMsg": "Fehler beim Löschen des Formulars {id}: {error}",
       "delDraftErrMsg": "Beim Löschen dieses Entwurfs ist ein Fehler aufgetreten.",
       "delDraftConsErrMsg": "Fehler beim Löschen von {draftId}: {error}",

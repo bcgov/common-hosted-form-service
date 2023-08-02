@@ -492,3 +492,25 @@ a,
   justify-content: center;
   min-height: 300px;
 }
+
+.flex-xs-column-reverse {
+  flex-direction: column-reverse;
+}
+
+.flex-xs-column {
+  flex-direction: column;
+}
+
+.bgtrans {
+  background-color: transparent !important;
+}
+
+.gapRow {
+  @media only screen and (max-width: 960px) {
+      row-gap:5px;
+      margin-bottom: 5px;
+    }
+}
+
+
+

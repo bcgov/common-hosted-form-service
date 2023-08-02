@@ -244,29 +244,35 @@ export default {
   <div>
     <v-row class="mt-6" no-gutters>
       <v-col>
-        <v-row>
-          <v-col cols="12" sm="6" order="2" order-sm="1">
+        <div
+          class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
+        >
+          <div>
             <h1>
               {{ $t('trans.exportSubmissions.exportSubmissionsToFile') }}
             </h1>
-          </v-col>
-          <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+          </div>
+          <div>
             <span>
               <v-tooltip location="bottom">
                 <template #activator="{ props }">
                   <router-link
                     :to="{ name: 'FormSubmissions', query: { f: form.id } }"
                   >
-                    <v-btn class="mx-1" color="primary" icon v-bind="props">
-                      <v-icon icon="mdi:mdi-list-box-outline"></v-icon>
-                    </v-btn>
+                    <v-btn
+                      color="primary"
+                      v-bind="props"
+                      size="x-small"
+                      density="default"
+                      icon="mdi:mdi-list-box-outline"
+                    />
                   </router-link>
                 </template>
                 <span>{{ $t('trans.exportSubmissions.viewSubmissions') }}</span>
               </v-tooltip>
             </span>
-          </v-col>
-        </v-row>
+          </div>
+        </div>
         <v-row>
           <v-col>
             <v-row>
@@ -338,8 +344,7 @@ export default {
                           density="compact"
                           class="mt-3 submissions-table"
                           single-line
-                        >
-                        </v-text-field>
+                        />
                         <div
                           class="subTitleObjectStyle"
                           style="font-size: 14px !important"
@@ -547,7 +552,6 @@ export default {
 }
 
 .subTitleObjectStyle {
-  text-align: left !important;
   font-style: normal !important;
   font-size: 18px !important;
   font-variant: normal !important;
@@ -568,7 +572,6 @@ export default {
   color: #000000 !important;
 }
 .fileLabelStyle {
-  text-align: left !important;
   font-style: normal !important;
   font-size: 14px !important;
   font-variant: normal !important;

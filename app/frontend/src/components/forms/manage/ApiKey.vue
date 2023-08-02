@@ -94,7 +94,7 @@ export default {
       </li>
     </ul>
 
-    <v-skeleton-loader :loading="loading" type="button">
+    <v-skeleton-loader :loading="loading" type="button" class="bgtrans">
       <v-row class="mt-5">
         <v-col cols="12" sm="4" lg="3" xl="2">
           <v-btn
@@ -133,14 +133,12 @@ export default {
               <v-btn
                 color="primary"
                 :disabled="!canReadSecret"
-                icon
-                size="small"
                 v-bind="props"
+                size="x-small"
+                density="default"
+                :icon="showSecret ? 'mdi:mdi-eye-off' : 'mdi:mdi-eye'"
                 @click="showHideKey"
-              >
-                <v-icon v-if="showSecret" icon="mdi:mdi-eye-off"></v-icon>
-                <v-icon v-else icon="mdi:mdi-eye"></v-icon>
-              </v-btn>
+              />
             </template>
             <span v-if="showSecret">{{ $t('trans.apiKey.hideSecret') }}</span>
             <span v-else>{{ $t('trans.apiKey.showSecret') }}</span>
@@ -148,7 +146,7 @@ export default {
 
           <BaseCopyToClipboard
             :disabled="!canReadSecret || !showSecret"
-            class="ml-2"
+            class="ml-2 mr-2"
             :text-to-copy="secret"
             :snack-bar-text="$t('trans.apiKey.sCTC')"
             :tooltip-text="$t('trans.apiKey.cSTC')"
@@ -159,13 +157,12 @@ export default {
               <v-btn
                 color="red"
                 :disabled="!canDeleteKey"
-                icon
-                size="small"
                 v-bind="props"
+                size="x-small"
+                density="default"
+                icon="mdi:mdi-delete"
                 @click="showDeleteDialog = true"
-              >
-                <v-icon icon="mdi:mdi-delete"></v-icon>
-              </v-btn>
+              />
             </template>
             <span>{{ $t('trans.apiKey.deleteKey') }}</span>
           </v-tooltip>

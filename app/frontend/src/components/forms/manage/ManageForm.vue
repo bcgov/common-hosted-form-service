@@ -24,7 +24,13 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['apiKey', 'drafts', 'form', 'permissions']),
+    ...mapState(useFormStore, [
+      'apiKey',
+      'drafts',
+      'form',
+      'permissions',
+      'isRTL',
+    ]),
     canEditForm() {
       return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },
@@ -137,7 +143,11 @@ export default {
           </v-form>
 
           <div v-if="canEditForm && !formSettingsDisabled" class="mb-5">
-            <v-btn class="mr-5" color="primary" @click="updateSettings">
+            <v-btn
+              :class="isRTL ? 'ml-5' : 'mr-5'"
+              color="primary"
+              @click="updateSettings"
+            >
               <span>{{ $t('trans.manageForm.update') }}</span>
             </v-btn>
             <v-btn variant="outlined" @click="cancelSettingsEdit">

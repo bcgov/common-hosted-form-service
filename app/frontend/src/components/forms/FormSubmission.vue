@@ -79,9 +79,11 @@ export default {
   <div class="mt-5">
     <v-skeleton-loader v-if="loading" type="article" />
     <div v-else>
-      <v-row class="mt-6" no-gutters>
+      <div
+        class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
+      >
         <!-- page title -->
-        <v-col cols="12" sm="6" order="2" order-sm="1">
+        <div>
           <h1>{{ form.name }}</h1>
           <p>
             <strong>{{ $t('trans.formSubmission.submitted') }}</strong>
@@ -94,15 +96,9 @@ export default {
             {{ formSubmission.createdBy }}
             <br />
           </p>
-        </v-col>
+        </div>
         <!-- buttons -->
-        <v-col
-          class="text-right d-print-none"
-          cols="12"
-          sm="6"
-          order="1"
-          order-sm="2"
-        >
+        <div class="d-print-none">
           <span>
             <PrintOptions :submission-id="submissionId" />
           </span>
@@ -115,20 +111,19 @@ export default {
                   <v-btn
                     class="mx-1"
                     color="primary"
-                    icon
-                    size="small"
                     v-bind="props"
-                  >
-                    <v-icon icon="mdi:mdi-list-box-outline"></v-icon>
-                  </v-btn>
+                    size="x-small"
+                    density="default"
+                    icon="mdi:mdi-list-box-outline"
+                  />
                 </router-link>
               </template>
               <span>{{ $t('trans.formSubmission.viewAllSubmissions') }}</span>
             </v-tooltip>
           </span>
           <DeleteSubmission :submission-id="submissionId" @deleted="onDelete" />
-        </v-col>
-      </v-row>
+        </div>
+      </div>
     </div>
     <br />
     <v-row>
@@ -144,20 +139,17 @@ export default {
           :icon="NOTIFICATIONS_TYPES.INFO.icon"
           >{{ $t('trans.formSubmission.alertInfo') }}</v-alert
         >
-        <v-card variant="outlined" class="review-form">
-          <v-row no-gutters>
-            <v-col cols="12" sm="6">
+        <v-card variant="outlined" class="review-form mt-5">
+          <div
+            class="d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow mb-3"
+          >
+            <div>
               <h2 class="review-heading">
                 {{ $t('trans.formSubmission.submission') }}
               </h2>
-            </v-col>
-            <v-spacer />
-            <v-col
-              v-if="form.enableStatusUpdates"
-              class="text-sm-right d-print-none"
-              cols="12"
-              sm="6"
-            >
+            </div>
+
+            <div v-if="form.enableStatusUpdates" class="d-print-none">
               <span v-if="submissionReadOnly">
                 <AuditHistory :submission-id="submissionId" />
                 <v-tooltip location="bottom">
@@ -165,14 +157,13 @@ export default {
                     <v-btn
                       class="mx-1"
                       color="primary"
-                      :disabled="isDraft"
-                      icon
-                      size="small"
                       v-bind="props"
+                      :disabled="isDraft"
+                      size="x-small"
+                      density="default"
+                      icon="mdi:mdi-pencil"
                       @click="toggleSubmissionEdit(true)"
-                    >
-                      <v-icon icon="mdi:mdi-pencil"></v-icon>
-                    </v-btn>
+                    />
                   </template>
                   <span>{{
                     $t('trans.formSubmission.editThisSubmission')
@@ -187,8 +178,8 @@ export default {
               >
                 <span>{{ $t('trans.formSubmission.cancel') }}</span>
               </v-btn>
-            </v-col>
-          </v-row>
+            </div>
+          </div>
           <FormViewer
             :key="reRenderSubmission"
             :display-title="false"

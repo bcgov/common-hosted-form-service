@@ -82,6 +82,7 @@ export default {
       'fcProactiveHelpImageUrl',
       'multiLanguage',
       'form',
+      'isRTL',
     ]),
     ...mapState(useAuthStore, ['tokenParsed', 'user']),
     ID_MODE() {
@@ -660,13 +661,17 @@ export default {
 
 <template>
   <div>
-    <v-row class="mt-6" no-gutters>
+    <div
+      class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
+    >
       <!-- page title -->
-      <v-col cols="12" sm="6" order="2" order-sm="1">
+      <div>
         <h1>{{ $t('trans.formDesigner.formDesign') }}</h1>
-      </v-col>
+        <h3 v-if="form.name">{{ form.name }}</h3>
+        <em>{{ $t('trans.formDesigner.version') }} : {{ displayVersion }}</em>
+      </div>
       <!-- buttons -->
-      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+      <div>
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <v-btn
@@ -704,19 +709,15 @@ export default {
           </template>
           <span>{{ $t('trans.formDesigner.importDesign') }}</span>
         </v-tooltip>
-      </v-col>
-      <!-- form name -->
-      <v-col cols="12" order="3">
-        <h3 v-if="form.name">{{ form.name }}</h3>
-      </v-col>
-      <!-- version number-->
-      <v-col cols="12" order="4">
-        <em>{{ $t('trans.formDesigner.version') }} : {{ displayVersion }}</em>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
     <BaseInfoCard class="my-6">
       <h4 class="text-primary">
-        <v-icon class="mr-1" color="primary" icon="mdi:mdi-information"></v-icon
+        <v-icon
+          :class="isRTL ? 'ml-1' : 'mr-1'"
+          color="primary"
+          icon="mdi:mdi-information"
+        ></v-icon
         >{{ $t('trans.formDesigner.important') }}!
       </h4>
       <p class="my-0" v-html="$t('trans.formDesigner.formDesignInfoA')"></p>
@@ -728,6 +729,7 @@ export default {
       :form="formSchema"
       :options="designerOptions"
       class="form-designer"
+      :class="{ 'v-locale--is-ltr': isRTL }"
       @change="onChangeMethod"
       @render="onRenderMethod"
       @initialized="init"

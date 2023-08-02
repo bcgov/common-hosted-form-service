@@ -35,7 +35,12 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['form', 'formFields', 'submissionList']),
+    ...mapState(useFormStore, [
+      'form',
+      'formFields',
+      'submissionList',
+      'isRTL',
+    ]),
     DEFAULT_HEADERS() {
       let hdrs = [
         {
@@ -237,26 +242,29 @@ export default {
 
 <template>
   <div>
-    <v-skeleton-loader :loading="loading" type="heading">
-      <v-row class="mt-6" no-gutters>
+    <v-skeleton-loader :loading="loading" type="heading" class="bgtrans">
+      <div
+        class="mt-6 d-flex flex-md-row flex-1-1-100 justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
+      >
         <!-- page title -->
-        <v-col cols="12" sm="6" order="2" order-sm="1">
+        <div>
           <h1>{{ $t('trans.mySubmissionsTable.previousSubmissions') }}</h1>
-        </v-col>
+          <h3>{{ formId ? form.name : 'All Forms' }}</h3>
+        </div>
         <!-- buttons -->
-        <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+        <div>
           <v-tooltip location="bottom">
             <template #activator="{ props }">
               <v-btn
                 class="mx-1"
                 color="primary"
-                icon
-                size="small"
                 v-bind="props"
+                :disabled="isDraft"
+                size="x-small"
+                density="default"
+                icon="mdi:mdi-view-column"
                 @click="onShowColumnDialog"
-              >
-                <v-icon icon="mdi:mdi-view-column"></v-icon>
-              </v-btn>
+              />
             </template>
             <span>{{ $t('trans.mySubmissionsTable.selectColumns') }}</span>
           </v-tooltip>
@@ -271,42 +279,39 @@ export default {
                 <v-btn
                   class="mx-1"
                   color="primary"
-                  icon
-                  size="small"
                   v-bind="props"
-                >
-                  <v-icon icon="mdi:mdi-plus"></v-icon>
-                </v-btn>
+                  :disabled="isDraft"
+                  size="x-small"
+                  density="default"
+                  icon="mdi:mdi-plus"
+                />
               </router-link>
             </template>
             <span>{{
               $t('trans.mySubmissionsTable.createNewSubmission')
             }}</span>
           </v-tooltip>
-        </v-col>
-        <!-- form name -->
-        <v-col cols="12" order="3">
-          <h3>{{ formId ? form.name : 'All Forms' }}</h3>
-        </v-col>
-      </v-row>
+        </div>
+      </div>
     </v-skeleton-loader>
 
-    <v-row no-gutters>
-      <v-spacer />
-      <v-col cols="12" sm="4">
-        <!-- search input -->
-        <div class="submissions-search">
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            :label="$t('trans.mySubmissionsTable.search')"
-            single-line
-            hide-details
-            class="pb-5"
-          />
-        </div>
-      </v-col>
-    </v-row>
+    <!-- search input -->
+    <div
+      class="submissions-search"
+      :class="isRTL ? 'float-left' : 'float-right'"
+    >
+      <v-text-field
+        v-model="search"
+        density="compact"
+        variant="underlined"
+        :label="$t('trans.mySubmissionsTable.search')"
+        append-inner-icon="mdi-magnify"
+        single-line
+        hide-details
+        class="pb-5"
+      />
+    </div>
+
     <!-- table header -->
     <v-data-table
       class="submissions-table"
@@ -363,13 +368,12 @@ export default {
 .submissions-search {
   width: 100%;
 }
-@media (min-width: 600px) {
+@media (min-width: 960px) {
   .submissions-search {
     max-width: 20em;
-    float: right;
   }
 }
-@media (max-width: 599px) {
+@media (max-width: 959px) {
   .submissions-search {
     padding-left: 16px;
     padding-right: 16px;
