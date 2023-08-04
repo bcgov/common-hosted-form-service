@@ -86,7 +86,7 @@ export default {
       data: null,
       headers: null,
     },
-    multiLanguage: '',
+    multiLanguage: 'en',
     isRTL: false,
   },
   getters: {

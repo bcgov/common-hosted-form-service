@@ -13,7 +13,9 @@
             </v-btn>
           </router-link>
         </template>
-        <span>{{ $t('trans.manageFormActions.viewSubmissions') }}</span>
+        <span :lang="multiLanguage">{{
+          $t('trans.manageFormActions.viewSubmissions')
+        }}</span>
       </v-tooltip>
     </span>
 
@@ -26,7 +28,9 @@
             </v-btn>
           </router-link>
         </template>
-        <span>{{ $t('trans.manageFormActions.teamManagement') }}</span>
+        <span :lang="multiLanguage">{{
+          $t('trans.manageFormActions.teamManagement')
+        }}</span>
       </v-tooltip>
     </span>
 
@@ -45,7 +49,9 @@
           </v-btn>
         </template>
         <span
-          ><span>{{ $t('trans.manageFormActions.deleteForm') }}</span></span
+          ><span :lang="multiLanguage">{{
+            $t('trans.manageFormActions.deleteForm')
+          }}</span></span
         >
       </v-tooltip>
 
@@ -55,16 +61,22 @@
         @close-dialog="showDeleteDialog = false"
         @continue-dialog="deleteForm"
       >
-        <template #title>{{
-          $t('trans.manageFormActions.confirmDeletion')
-        }}</template>
+        <template #title
+          ><span :lang="multiLanguage">
+            {{ $t('trans.manageFormActions.confirmDeletion') }}
+          </span></template
+        >
         <template #text>
-          {{ $t('trans.manageFormActions.deleteMessageA') }}
-          <strong>{{ form.name }}</strong
-          >? {{ $t('trans.manageFormActions.deleteMessageB') }}
+          <span :lang="multiLanguage"
+            >{{ $t('trans.manageFormActions.deleteMessageA') }}
+            <strong>{{ form.name }}</strong
+            >? {{ $t('trans.manageFormActions.deleteMessageB') }}
+          </span>
         </template>
         <template #button-text-continue>
-          <span>{{ $t('trans.manageFormActions.deleteForm') }}</span>
+          <span :lang="multiLanguage">{{
+            $t('trans.manageFormActions.deleteForm')
+          }}</span>
         </template>
       </BaseDialog>
     </span>
@@ -86,7 +98,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['form', 'permissions', 'isRTL']),
+    ...mapGetters('form', ['form', 'permissions', 'isRTL', 'multiLanguage']),
     // Permission checks
     canDeleteForm() {
       return this.permissions.includes(FormPermissions.FORM_DELETE);

@@ -3,7 +3,11 @@
     <v-row>
       <v-col cols="12" md="6">
         <BasePanel class="fill-height">
-          <template #title>{{ $t('trans.formSettings.formTitle') }} </template>
+          <template #title
+            ><span :lang="multiLanguage"
+              >{{ $t('trans.formSettings.formTitle') }}
+            </span></template
+          >
           <v-text-field
             dense
             flat
@@ -13,6 +17,7 @@
             data-test="text-name"
             v-model="name"
             :rules="nameRules"
+            :lang="multiLanguage"
           />
 
           <v-text-field
@@ -24,13 +29,18 @@
             data-test="text-description"
             v-model="description"
             :rules="descriptionRules"
+            :lang="multiLanguage"
           />
         </BasePanel>
       </v-col>
 
       <v-col cols="12" md="6">
         <BasePanel class="fill-height">
-          <template #title>{{ $t('trans.formSettings.formAccess') }}</template>
+          <template #title>
+            <span :lang="multiLanguage">
+              {{ $t('trans.formSettings.formAccess') }}
+            </span></template
+          >
           <v-radio-group
             class="my-0"
             v-model="userType"
@@ -44,7 +54,7 @@
               :value="ID_MODE.PUBLIC"
             >
               <template #label>
-                <span :class="{ 'mr-2': isRTL }">
+                <span :class="{ 'mr-2': isRTL }" :lang="multiLanguage">
                   {{ $t('trans.formSettings.public') }}
                 </span>
               </template>
@@ -56,11 +66,11 @@
                 class="mr-4 mb-3"
                 :class="{ 'dir-rtl': isRTL }"
               >
-                <h4 class="primary--text">
+                <h4 class="primary--text" :lang="multiLanguage">
                   <v-icon class="mr-1" color="primary">info</v-icon
                   >{{ $t('trans.formSettings.important') }}!
                 </h4>
-                <p class="mt-2 mb-0">
+                <p class="mt-2 mb-0" :lang="multiLanguage">
                   {{ $t('trans.formSettings.info') }}
                   <a
                     href="https://engage.gov.bc.ca/govtogetherbc/"
@@ -74,7 +84,7 @@
             </v-expand-transition>
             <v-radio class="mb-4" value="login">
               <template #label>
-                <span :class="{ 'mr-2': isRTL }">
+                <span :class="{ 'mr-2': isRTL }" :lang="multiLanguage">
                   {{ $t('trans.formSettings.loginRequired') }}
                 </span>
               </template>
@@ -114,20 +124,21 @@
                       class="mr-4"
                       :class="{ 'dir-rtl': isRTL }"
                     >
-                      <h4 class="primary--text">
+                      <h4 class="primary--text" :lang="multiLanguage">
                         <v-icon class="mr-1" color="primary">info</v-icon
                         >{{ $t('trans.formSettings.important') }}!
                       </h4>
-                      <p class="my-2">
+                      <p class="my-2" :lang="multiLanguage">
                         {{ $t('trans.formSettings.idimNotifyA') }} (<a
                           href="mailto:IDIM.Consulting@gov.bc.ca"
                           >IDIM.Consulting@gov.bc.ca</a
                         >) {{ $t('trans.formSettings.idimNotifyB') }}
                       </p>
-                      <p class="mt-2 mb-0">
+                      <p class="mt-2 mb-0" :lang="multiLanguage">
                         {{ $t('trans.formSettings.referenceGuideA') }}
                         <a
                           href="https://github.com/bcgov/common-hosted-form-service/wiki/Accessing-forms#Notify-the-idim-team-if-you-are-using-bceid"
+                          :hreflang="multiLanguage"
                           >{{ $t('trans.formSettings.referenceGuideB') }}</a
                         >
                         {{ $t('trans.formSettings.referenceGuideC') }}.
@@ -137,12 +148,9 @@
                 </v-radio-group>
               </v-row>
             </v-expand-transition>
-            <v-radio
-              :label="$t('trans.formSettings.specificTeamMembers')"
-              value="team"
-            >
+            <v-radio value="team">
               <template #label>
-                <span :class="{ 'mr-2': isRTL }">
+                <span :class="{ 'mr-2': isRTL }" :lang="multiLanguage">
                   {{ $t('trans.formSettings.specificTeamMembers') }}
                 </span>
               </template>
@@ -155,9 +163,11 @@
     <v-row>
       <v-col cols="12" md="6">
         <BasePanel class="fill-height">
-          <template #title>{{
-            $t('trans.formSettings.formFunctionality')
-          }}</template>
+          <template #title
+            ><span :lang="multiLanguage">{{
+              $t('trans.formSettings.formFunctionality')
+            }}</span></template
+          >
           <v-checkbox
             class="my-0"
             @change="enableSubmitterDraftChanged"
@@ -168,8 +178,8 @@
               <span
                 :class="{ 'mr-2': isRTL }"
                 v-html="$t('trans.formSettings.canSaveAndEditDraftLabel')"
-              >
-              </span>
+                :lang="multiLanguage"
+              />
             </template>
           </v-checkbox>
 
@@ -178,8 +188,8 @@
               <span
                 :class="{ 'mr-2': isRTL }"
                 v-html="$t('trans.formSettings.canUpdateStatusAsReviewer')"
-              >
-              </span>
+                :lang="multiLanguage"
+              />
             </template>
           </v-checkbox>
 
@@ -191,7 +201,10 @@
           >
             <template #label>
               <div :class="{ 'mr-2': isRTL }">
-                <span v-html="$t('trans.formSettings.allowMultiDraft')" />
+                <span
+                  v-html="$t('trans.formSettings.allowMultiDraft')"
+                  :lang="multiLanguage"
+                />
                 <v-tooltip close-delay="3000" bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <font-awesome-icon
@@ -203,12 +216,13 @@
                       :class="{ 'mr-2': isRTL }"
                     />
                   </template>
-                  <span
+                  <span :lang="multiLanguage"
                     >{{ $t('trans.formSettings.experimental') }}
                     <a
                       :href="githubLinkBulkUpload"
                       class="preview_info_link_field_white"
                       :target="'_blank'"
+                      :hreflang="multiLanguage"
                     >
                       {{ $t('trans.formSettings.learnMore') }}
                       <font-awesome-icon
@@ -222,7 +236,7 @@
 
           <v-checkbox v-if="!isFormPublished" disabled class="my-0">
             <template #label>
-              <span :class="{ 'mr-2': isRTL }"
+              <span :class="{ 'mr-2': isRTL }" :lang="multiLanguage"
                 >{{ $t('trans.formSettings.formSubmissinScheduleMsg') }}
               </span>
             </template>
@@ -235,7 +249,7 @@
           >
             <template #label>
               <div :class="{ 'mr-2': isRTL }">
-                <span>{{
+                <span :lang="multiLanguage">{{
                   $t('trans.formSettings.formSubmissionsSchedule')
                 }}</span>
                 <v-tooltip bottom close-delay="2500">
@@ -249,12 +263,13 @@
                       v-on="on"
                     />
                   </template>
-                  <span
+                  <span :lang="multiLanguage"
                     >{{ $t('trans.formSettings.experimental') }}
                     <a
                       :href="githubLinkScheduleAndReminderFeature"
                       class="preview_info_link_field_white"
                       :target="'_blank'"
+                      :hreflang="multiLanguage"
                     >
                       {{ $t('trans.formSettings.learnMore') }}
                       <font-awesome-icon
@@ -277,6 +292,7 @@
                   v-html="
                     $t('trans.formSettings.submitterCanCopyExistingSubmissn')
                   "
+                  :lang="multiLanguage"
                 />
                 <v-tooltip bottom close-delay="2500">
                   <template v-slot:activator="{ on, attrs }">
@@ -289,12 +305,13 @@
                       v-on="on"
                     />
                   </template>
-                  <span
+                  <span :lang="multiLanguage"
                     >{{ $t('trans.formSettings.experimental') }}
                     <a
                       :href="githubLinkCopyFromExistingFeature"
                       class="preview_info_link_field_white"
                       :target="'_blank'"
+                      :hreflang="multiLanguage"
                     >
                       {{ $t('trans.formSettings.learnMore') }}
                       <font-awesome-icon
@@ -309,9 +326,11 @@
 
       <v-col cols="12" md="6">
         <BasePanel class="fill-height">
-          <template #title>{{
-            $t('trans.formSettings.afterSubmission')
-          }}</template>
+          <template #title
+            ><span :lang="multiLanguage">
+              {{ $t('trans.formSettings.afterSubmission') }}
+            </span></template
+          >
           <v-checkbox
             class="my-0"
             v-model="showSubmissionConfirmation"
@@ -319,7 +338,7 @@
           >
             <template #label>
               <div :class="{ 'mr-2': isRTL }">
-                <span>
+                <span :lang="multiLanguage">
                   {{ $t('trans.formSettings.submissionConfirmation') }}</span
                 >
 
@@ -340,10 +359,13 @@
                       v-html="
                         $t('trans.formSettings.submissionConfirmationToolTip')
                       "
+                      :lang="multiLanguage"
                     />
                     <ul>
-                      <li>{{ $t('trans.formSettings.theConfirmationID') }}</li>
-                      <li>
+                      <li :lang="multiLanguage">
+                        {{ $t('trans.formSettings.theConfirmationID') }}
+                      </li>
+                      <li :lang="multiLanguage">
                         {{ $t('trans.formSettings.infoB') }}
                       </li>
                     </ul>
@@ -356,7 +378,7 @@
           <v-checkbox class="my-0" v-model="sendSubRecieviedEmail">
             <template #label>
               <div :class="{ 'mr-2': isRTL }">
-                <span>
+                <span :lang="multiLanguage">
                   {{ $t('trans.formSettings.emailNotificatnToTeam') }}</span
                 >
 
@@ -372,7 +394,7 @@
                       help_outline
                     </v-icon>
                   </template>
-                  <span>
+                  <span :lang="multiLanguage">
                     {{ $t('trans.formSettings.emailNotificatnToTeamToolTip') }}
                   </span>
                 </v-tooltip>
@@ -397,11 +419,12 @@
             deletable-chips
             :delimiters="[' ', ',']"
             append-icon=""
+            :lang="multiLanguage"
           >
             <template v-slot:no-data>
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title>
+                  <v-list-item-title :lang="multiLanguage">
                     {{ $t('trans.formSettings.pressToAddMultiEmail') }}
                   </v-list-item-title>
                 </v-list-item-content>
@@ -414,9 +437,11 @@
       <v-expand-transition>
         <v-col cols="12" md="6" v-if="schedule.enabled && isFormPublished">
           <BasePanel class="fill-height">
-            <template #title>{{
-              $t('trans.formSettings.formScheduleSettings')
-            }}</template>
+            <template #title
+              ><span :lang="multiLanguage">
+                {{ $t('trans.formSettings.formScheduleSettings') }}</span
+              ></template
+            >
             <v-row class="m-0">
               <v-col cols="8" md="8" class="pl-0 pr-0 pb-0">
                 <v-menu
@@ -437,6 +462,7 @@
                       v-on="on"
                       dense
                       outlined
+                      :lang="multiLanguage"
                       :rules="scheduleOpenDate"
                     >
                       <template v-if="isRTL" #prepend-inner>
@@ -460,7 +486,7 @@
 
               <v-col cols="12" md="12" class="p-0">
                 <template>
-                  <p class="font-weight-black">
+                  <p class="font-weight-black" :lang="multiLanguage">
                     {{ $t('trans.formSettings.submissionsDeadline') }}
                   </p>
                 </template>
@@ -478,7 +504,7 @@
                         :value="SCHEDULE_TYPE.MANUAL"
                       >
                         <template #label>
-                          <span :class="{ 'mr-2': isRTL }"
+                          <span :class="{ 'mr-2': isRTL }" :lang="multiLanguage"
                             >{{
                               $t(
                                 'trans.formSettings.keepSubmissnOpenTilUnplished'
@@ -493,7 +519,7 @@
                         :value="SCHEDULE_TYPE.CLOSINGDATE"
                       >
                         <template #label>
-                          <span :class="{ 'mr-2': isRTL }"
+                          <span :class="{ 'mr-2': isRTL }" :lang="multiLanguage"
                             >{{
                               $t('trans.formSettings.submissionsClosingDate')
                             }}
@@ -506,7 +532,7 @@
                         :value="SCHEDULE_TYPE.PERIOD"
                       >
                         <template #label>
-                          <span :class="{ 'mr-2': isRTL }"
+                          <span :class="{ 'mr-2': isRTL }" :lang="multiLanguage"
                             >{{ $t('trans.formSettings.submissionPeriod') }}
                           </span>
                         </template>
@@ -542,6 +568,7 @@
                       outlined
                       :rules="scheduleCloseDate"
                       :class="{ 'dir-rtl': isRTL }"
+                      :lang="multiLanguage"
                     >
                       <template v-if="isRTL" #prepend-inner>
                         <v-icon>event</v-icon>
@@ -578,6 +605,7 @@
                   class="m-0 p-0"
                   :rules="roundNumber"
                   :class="{ 'dir-rtl': isRTL }"
+                  :lang="multiLanguage"
                 />
               </v-col>
 
@@ -597,6 +625,7 @@
                   class="mr-2 pl-2"
                   v-model="schedule.keepOpenForInterval"
                   :rules="intervalType"
+                  :lang="multiLanguage"
                 />
               </v-col>
             </v-row>
@@ -613,7 +642,7 @@
             >
               <template #label>
                 <div :class="{ 'mr-2': isRTL }">
-                  <span>
+                  <span :lang="multiLanguage">
                     {{ $t('trans.formSettings.allowLateSubmissions') }}
                   </span>
                   <v-tooltip bottom>
@@ -628,7 +657,7 @@
                         help_outline
                       </v-icon>
                     </template>
-                    <span>
+                    <span :lang="multiLanguage">
                       {{ $t('trans.formSettings.allowLateSubmissionsInfoTip') }}
                     </span>
                   </v-tooltip>
@@ -659,6 +688,7 @@
                     class="m-0 p-0"
                     :rules="roundNumber"
                     :class="{ 'dir-rtl': isRTL }"
+                    :lang="multiLanguage"
                   />
                 </v-col>
                 <v-col cols="4" md="4" class="m-0 p-0">
@@ -672,6 +702,7 @@
                     class="mr-1 pl-2"
                     v-model="schedule.allowLateSubmissions.forNext.intervalType"
                     :rules="intervalType"
+                    :lang="multiLanguage"
                   />
                 </v-col>
               </v-row>
@@ -684,7 +715,7 @@
               v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD"
             >
               <template #label>
-                <span :class="{ 'mr-2': isRTL }">
+                <span :class="{ 'mr-2': isRTL }" :lang="multiLanguage">
                   {{ $t('trans.formSettings.repeatPeriod') }}
                 </span>
               </template>
@@ -710,6 +741,7 @@
                     class="m-0 p-0"
                     :rules="repeatTerm"
                     :class="{ 'dir-rtl': isRTL, label: isRTL }"
+                    :lang="multiLanguage"
                   />
                 </v-col>
 
@@ -724,6 +756,7 @@
                     v-model="schedule.repeatSubmission.everyIntervalType"
                     :rules="repeatIntervalType"
                     :label="$t('trans.formSettings.period')"
+                    :lang="multiLanguage"
                   />
                 </v-col>
 
@@ -749,6 +782,7 @@
                         :rules="repeatUntilDate"
                         :label="$t('trans.formSettings.repeatUntil')"
                         :class="{ 'dir-rtl': isRTL, label: isRTL }"
+                        :lang="multiLanguage"
                       />
                     </template>
                     <v-date-picker
@@ -778,7 +812,7 @@
             >
               <v-col class="p-0 m-0" cols="12" md="12"
                 ><template>
-                  <p class="font-weight-black m-0">
+                  <p class="font-weight-black m-0" :lang="multiLanguage">
                     {{ $t('trans.formSettings.summary') }}
                   </p>
                 </template></v-col
@@ -792,27 +826,31 @@
                   schedule.openSubmissionDateTime &&
                   schedule.openSubmissionDateTime.length
                 "
-                >{{ $t('trans.formSettings.submissionsOpenDateRange') }}
-                <b>{{ schedule.openSubmissionDateTime }}</b>
-                {{ $t('trans.formSettings.to') }}
-                <b>
-                  {{
-                    schedule.scheduleType === SCHEDULE_TYPE.PERIOD
-                      ? AVAILABLE_DATES &&
-                        AVAILABLE_DATES[0] &&
-                        AVAILABLE_DATES[0]['closeDate'] &&
-                        AVAILABLE_DATES[0]['closeDate'].split(' ')[0]
-                      : ''
-                  }}
+              >
+                <span :lang="multiLanguage">
+                  {{ $t('trans.formSettings.submissionsOpenDateRange') }}
+                  <b :lang="multiLanguage">{{
+                    schedule.openSubmissionDateTime
+                  }}</b>
+                  {{ $t('trans.formSettings.to') }}
+                  <b>
+                    {{
+                      schedule.scheduleType === SCHEDULE_TYPE.PERIOD
+                        ? AVAILABLE_DATES &&
+                          AVAILABLE_DATES[0] &&
+                          AVAILABLE_DATES[0]['closeDate'] &&
+                          AVAILABLE_DATES[0]['closeDate'].split(' ')[0]
+                        : ''
+                    }}
 
-                  {{
-                    schedule.scheduleType === SCHEDULE_TYPE.CLOSINGDATE
-                      ? schedule.closeSubmissionDateTime
-                      : ''
-                  }}
-                </b>
-
-                <span>{{
+                    {{
+                      schedule.scheduleType === SCHEDULE_TYPE.CLOSINGDATE
+                        ? schedule.closeSubmissionDateTime
+                        : ''
+                    }}
+                  </b>
+                </span>
+                <span :lang="multiLanguage">{{
                   schedule.allowLateSubmissions.enabled &&
                   schedule.allowLateSubmissions.forNext.intervalType &&
                   schedule.allowLateSubmissions.forNext.term
@@ -832,6 +870,7 @@
                     schedule.repeatSubmission.everyIntervalType &&
                     AVAILABLE_DATES[1]
                   "
+                  :lang="multiLanguage"
                   >{{ $t('trans.formSettings.scheduleRepetition') }}
                   <b>{{ schedule.repeatSubmission.everyTerm }} </b>
                   <b>{{ schedule.repeatSubmission.everyIntervalType }}</b>
@@ -850,17 +889,18 @@
                         help_outline
                       </v-icon>
                     </template>
-                    <span>
+                    <span :lang="multiLanguage">
                       <!-- MORE FUTURE OCCURENCES -->
                       {{ $t('trans.formSettings.datesOfSubmissnInfo') }}
                       <ul>
                         <li
                           :key="date.startDate + Math.random()"
                           v-for="date in AVAILABLE_DATES"
+                          :lang="multiLanguage"
                         >
                           {{ $t('trans.formSettings.formOpenInterval') }}
                           {{ date.startDate.split(' ')[0] }}
-                          <span v-if="schedule.enabled">
+                          <span v-if="schedule.enabled" :lang="multiLanguage">
                             {{ $t('trans.formSettings.to') }}
                             {{ date.closeDate.split(' ')[0] }}
                             <span
@@ -868,6 +908,7 @@
                                 schedule.allowLateSubmissions.enabled &&
                                 date.closeDate !== date.graceDate
                               "
+                              :lang="multiLanguage"
                               >{{
                                 $t('trans.formSettings.allowDateSubmissionDate')
                               }}
@@ -908,7 +949,7 @@
                 >
                   <template #label>
                     <div>
-                      <span :class="{ 'mr-2': isRTL }">
+                      <span :class="{ 'mr-2': isRTL }" :lang="multiLanguage">
                         {{ $t('trans.formSettings.customClosingMessage') }}
                       </span>
                       <v-tooltip bottom>
@@ -923,7 +964,7 @@
                             help_outline
                           </v-icon>
                         </template>
-                        <span>
+                        <span :lang="multiLanguage">
                           {{
                             $t('trans.formSettings.customClosingMessageToolTip')
                           }}
@@ -938,9 +979,11 @@
                 <v-expand-transition v-if="schedule.closingMessageEnabled">
                   <v-row class="mb-0 mt-0">
                     <v-col class="mb-0 mt-0 pb-0 pt-0">
-                      <template #title>{{
-                        $t('trans.formSettings.closingMessage')
-                      }}</template>
+                      <template #title
+                        ><span :lang="multiLanguage">
+                          {{ $t('trans.formSettings.closingMessage') }}</span
+                        ></template
+                      >
                       <v-textarea
                         dense
                         rows="2"
@@ -952,6 +995,7 @@
                         v-model="schedule.closingMessage"
                         :rules="closeMessage"
                         :class="{ 'dir-rtl': isRTL, label: isRTL }"
+                        :lang="multiLanguage"
                       />
                     </v-col>
                   </v-row>
@@ -971,16 +1015,18 @@
                 >
                   <v-row class="mb-0 mt-0">
                     <v-col class="mb-0 mt-0 pb-0 pt-0">
-                      <template #title>{{
-                        $t('trans.formSettings.sendReminderEmail')
-                      }}</template>
+                      <template #title
+                        ><span :lang="multiLanguage">{{
+                          $t('trans.formSettings.sendReminderEmail')
+                        }}</span></template
+                      >
                       <v-checkbox
                         class="my-0 m-0 p-0"
                         v-model="reminder_enabled"
                       >
                         <template #label>
                           <div :class="{ 'mr-2': isRTL }">
-                            <span>
+                            <span :lang="multiLanguage">
                               {{ $t('trans.formSettings.sendReminderEmail') }}
                             </span>
                             <v-tooltip close-delay="2500" bottom>
@@ -995,7 +1041,7 @@
                                   help_outline
                                 </v-icon>
                               </template>
-                              <span>
+                              <span :lang="multiLanguage">
                                 {{
                                   $t(
                                     'trans.formSettings.autoReminderNotificatnToolTip'
@@ -1005,6 +1051,7 @@
                                   :href="githubLinkScheduleAndReminderFeature"
                                   class="preview_info_link_field_white"
                                   :target="'_blank'"
+                                  :hreflang="multiLanguage"
                                 >
                                   {{ $t('trans.formSettings.learnMore') }}
                                   <font-awesome-icon
@@ -1090,7 +1137,7 @@ export default {
       'form.reminder_enabled',
       'form.versions',
     ]),
-    ...mapGetters('form', ['isRTL']),
+    ...mapGetters('form', ['isRTL', 'multiLanguage']),
     ID_MODE() {
       return IdentityMode;
     },

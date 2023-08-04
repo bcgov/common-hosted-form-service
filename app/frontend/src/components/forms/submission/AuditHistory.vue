@@ -13,19 +13,22 @@
           <v-icon>history</v-icon>
         </v-btn>
       </template>
-      <span :class="{ 'dir-rtl': isRTL }">{{
+      <span :class="{ 'dir-rtl': isRTL }" :lang="multiLanguage">{{
         $t('trans.auditHistory.viewEditHistory')
       }}</span>
     </v-tooltip>
 
     <v-dialog v-model="dialog" width="900">
       <v-card>
-        <v-card-title class="text-h5 pb-0" :class="{ 'dir-rtl': isRTL }">{{
-          $t('trans.auditHistory.editHistory')
-        }}</v-card-title>
+        <v-card-title
+          class="text-h5 pb-0"
+          :class="{ 'dir-rtl': isRTL }"
+          :lang="multiLanguage"
+          >{{ $t('trans.auditHistory.editHistory') }}</v-card-title
+        >
         <v-card-text>
           <hr />
-          <p :class="{ 'dir-rtl': isRTL }">
+          <p :class="{ 'dir-rtl': isRTL }" :lang="multiLanguage">
             {{ $t('trans.auditHistory.auditLogMsg') }}
           </p>
 
@@ -37,6 +40,7 @@
             :loading-text="$t('trans.auditHistory.loadingText')"
             item-key="id"
             class="status-table"
+            :lang="multiLanguage"
           >
             <template #[`item.actionTimestamp`]="{ item }">
               {{ item.actionTimestamp | formatDateLong }}
@@ -46,7 +50,9 @@
 
         <v-card-actions class="justify-center">
           <v-btn class="mb-5 close-dlg" color="primary" @click="dialog = false">
-            <span>{{ $t('trans.auditHistory.close') }}</span>
+            <span :lang="multiLanguage">{{
+              $t('trans.auditHistory.close')
+            }}</span>
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -84,7 +90,7 @@ export default {
         { text: this.$t('trans.auditHistory.date'), value: 'actionTimestamp' },
       ];
     },
-    ...mapGetters('form', ['isRTL']),
+    ...mapGetters('form', ['isRTL', 'multiLanguage']),
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),

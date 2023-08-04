@@ -787,6 +787,12 @@
   "admin": {
     "root": {
       "admin": "Admin"
+    },
+    "form": {
+      "administerForm": "Administer Form"
+    },
+    "user": {
+      "administerUser": "Administer User"
     }
   },
   "sucess": {
@@ -900,5 +906,27 @@
     "loadingForm": "Error while loading {options}: {error}",
     "idpHintMsg": "This form requires {idpHint} authentication. Please re-login and try again.",
     "formIdpMissMatch": "Form IDP mismatch. Form requires {idpHint} but user has {userIdp}."
+  },
+  "download": {
+    "chefsDataExport": "CHEFS Data Export",
+    "preparingForDownloading": "Preparing for download...",
+    "downloadInfoA": "If your file does not automatically download",
+    "downloadInfoB": "click here to try again"
+  },
+  "history": {
+    "submissnHistory": "Your Submission History (TBD)"
+  },
+  "error": {
+    "logout": "Logout"
+  },
+  "login": {
+    "authenticateWith": "Authenticate with:",
+    "alreadyLoggedIn": "Already logged in",
+    "home": "Home",
+    "about": "About"
+  },
+  "notFound": {
+    "about": "About",
+    "pageNotFound": "404: Page not found. :"
   }
 }

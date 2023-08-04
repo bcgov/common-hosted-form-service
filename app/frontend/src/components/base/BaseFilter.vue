@@ -19,6 +19,7 @@
           dense
           class="mt-3"
           :class="{ label: isRTL }"
+          :lang="multiLanguage"
         />
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
@@ -30,14 +31,7 @@
               v-bind="attrs"
               v-on="on"
             >
-              <font-awesome-icon
-                icon="fa-solid fa-repeat"
-                color="primary"
-                v-bind="attrs"
-                style="pointer-events: none"
-                v-on="on"
-                size="xl"
-              />
+              <v-icon>repeat</v-icon>
             </v-btn>
           </template>
           <span>Reset Columns</span>
@@ -55,16 +49,21 @@
         :search="inputFilter"
         class="grey lighten-5"
         disable-pagination
+        :lang="multiLanguage"
       >
       </v-data-table>
-      <v-btn @click="savingFilterData" class="primary mt-3">{{
-        inputSaveButtonText
-      }}</v-btn>
+      <v-btn
+        @click="savingFilterData"
+        class="primary mt-3"
+        :lang="multiLanguage"
+        >{{ inputSaveButtonText }}</v-btn
+      >
       <v-btn
         @click="cancelFilterData"
         class="mt-3 primary--text"
         :class="isRTL ? 'mr-3' : 'ml-3'"
         outlined
+        :lang="multiLanguage"
         >{{ $t('trans.baseFilter.cancel') }}</v-btn
       >
     </v-card-text>
@@ -133,7 +132,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('form', ['isRTL']),
+    ...mapGetters('form', ['isRTL', 'multiLanguage']),
   },
   data() {
     return {

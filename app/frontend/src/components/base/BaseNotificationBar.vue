@@ -7,7 +7,9 @@
     @input="alertClosed"
     transition="slide-y-transition"
   >
-    <h3 v-if="notification.title">{{ notification.title }}</h3>
+    <h3 v-if="notification.title" :lang="multiLanguage">
+      {{ notification.title }}
+    </h3>
     {{ notification.message }}
   </v-alert>
 </template>
@@ -31,7 +33,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['isRTL']),
+    ...mapGetters('form', ['isRTL', 'multiLanguage']),
   },
   methods: {
     ...mapActions('notifications', ['deleteNotification']),

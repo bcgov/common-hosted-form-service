@@ -12,7 +12,7 @@
         <!-- page title -->
         <div>
           <h1>{{ form.name }}</h1>
-          <p>
+          <p :lang="multiLanguage">
             <strong>{{ $t('trans.formSubmission.submitted') }}</strong>
             {{ formSubmission.createdAt | formatDateLong }}
             <br />
@@ -47,7 +47,9 @@
                   </v-btn>
                 </router-link>
               </template>
-              <span>{{ $t('trans.formSubmission.viewAllSubmissions') }} </span>
+              <span :lang="multiLanguage"
+                >{{ $t('trans.formSubmission.viewAllSubmissions') }}
+              </span>
             </v-tooltip>
           </span>
           <DeleteSubmission @deleted="onDelete" :submissionId="submissionId" />
@@ -70,13 +72,14 @@
           ]"
           :icon="NOTIFICATIONS_TYPES.INFO.icon"
           transition="scale-transition"
+          :lang="multiLanguage"
           >{{ $t('trans.formSubmission.alertInfo') }}</v-alert
         >
         <v-card outlined class="review-form">
           <div :class="{ 'dir-rtl': isRTL }">
             <v-row no-gutters>
               <v-col cols="10">
-                <h2 class="review-heading">
+                <h2 class="review-heading" :lang="multiLanguage">
                   {{ $t('trans.formSubmission.submission') }}
                 </h2>
               </v-col>
@@ -103,7 +106,7 @@
                         <v-icon>mode_edit</v-icon>
                       </v-btn>
                     </template>
-                    <span>{{
+                    <span :lang="multiLanguage">{{
                       $t('trans.formSubmission.editThisSubmission')
                     }}</span>
                   </v-tooltip>
@@ -114,7 +117,9 @@
                   color="textLink"
                   @click="toggleSubmissionEdit(false)"
                 >
-                  <span>{{ $t('trans.formSubmission.cancel') }}</span>
+                  <span :lang="multiLanguage">{{
+                    $t('trans.formSubmission.cancel')
+                  }}</span>
                 </v-btn>
               </v-col>
             </v-row>
@@ -140,7 +145,11 @@
         order-md="last"
       >
         <v-card outlined class="review-form" :disabled="!submissionReadOnly">
-          <h2 class="review-heading" :class="{ 'dir-rtl': isRTL }">
+          <h2
+            class="review-heading"
+            :class="{ 'dir-rtl': isRTL }"
+            :lang="multiLanguage"
+          >
             {{ $t('trans.formSubmission.status') }}
           </h2>
           <StatusPanel
@@ -191,7 +200,13 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['form', 'formSubmission', 'permissions', 'isRTL']),
+    ...mapGetters('form', [
+      'form',
+      'formSubmission',
+      'permissions',
+      'isRTL',
+      'multiLanguage',
+    ]),
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
     },

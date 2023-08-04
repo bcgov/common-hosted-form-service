@@ -13,7 +13,7 @@
           <v-icon>delete</v-icon>
         </v-btn>
       </template>
-      <span
+      <span :lang="multiLanguage"
         >{{ $t('trans.deleteSubmission.deleteThis') }}
         {{
           isDraft
@@ -29,19 +29,25 @@
       @close-dialog="showDeleteDialog = false"
       @continue-dialog="delSub"
     >
-      <template #title>{{
-        $t('trans.deleteSubmission.confirmDeletion')
-      }}</template>
+      <template #title>
+        <span :lang="multiLanguage">{{
+          $t('trans.deleteSubmission.confirmDeletion')
+        }}</span></template
+      >
       <template #text>
-        {{ $t('trans.deleteSubmission.deleteWarning') }}
-        {{
-          isDraft
-            ? $t('trans.deleteSubmission.drafts')
-            : $t('trans.deleteSubmission.formSubmission')
-        }}?
+        <span :lang="multiLanguage">
+          {{ $t('trans.deleteSubmission.deleteWarning') }}
+          {{
+            isDraft
+              ? $t('trans.deleteSubmission.drafts')
+              : $t('trans.deleteSubmission.formSubmission')
+          }}?</span
+        >
       </template>
       <template #button-text-continue>
-        <span>{{ $t('trans.deleteSubmission.delete') }}</span>
+        <span :lang="multiLanguage">{{
+          $t('trans.deleteSubmission.delete')
+        }}</span>
       </template>
     </BaseDialog>
   </span>
@@ -70,7 +76,7 @@ export default {
       showDeleteDialog: false,
     };
   },
-  computed: mapGetters('form', ['form']),
+  computed: mapGetters('form', ['form', 'multiLanguage']),
   methods: {
     ...mapActions('form', ['deleteSubmission']),
     async delSub() {
