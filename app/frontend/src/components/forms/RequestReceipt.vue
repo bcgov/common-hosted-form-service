@@ -8,7 +8,9 @@
       :class="{ 'dir-rtl': isRTL }"
     >
       <v-icon class="mr-1">email</v-icon>
-      <span>{{ $t('trans.requestReceipt.emailReceipt') }}</span>
+      <span :lang="multiLanguage">{{
+        $t('trans.requestReceipt.emailReceipt')
+      }}</span>
     </v-btn>
 
     <BaseDialog
@@ -37,11 +39,12 @@
             :rules="emailRules"
             v-model="to"
             data-test="text-form-to"
+            :lang="multiLanguage"
           />
         </v-form>
       </template>
       <template v-slot:button-text-continue>
-        <span>{{ $t('trans.requestReceipt.send') }}</span>
+        <span :lang="multiLanguage">{{ $t('trans.requestReceipt.send') }}</span>
       </template>
     </BaseDialog>
   </div>
@@ -95,7 +98,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('form', ['isRTL']),
+    ...mapGetters('form', ['isRTL', 'multiLanguage']),
   },
   mounted() {
     this.resetDialog();

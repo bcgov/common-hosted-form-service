@@ -11,9 +11,9 @@
           <template v-slot:actions>
             <v-icon class="icon">$expand</v-icon>
           </template>
-          <div class="header">
+          <div class="header" :lang="multiLanguage">
             <strong>{{ $t('trans.manageForm.formSettings') }}</strong>
-            <span>
+            <span :lang="multiLanguage">
               <small>
                 {{ $t('trans.manageForm.created') }}:
                 {{ form.createdAt | formatDate }} ({{ form.createdBy }})
@@ -46,10 +46,14 @@
               color="primary"
               @click="updateSettings"
             >
-              <span>{{ $t('trans.manageForm.update') }}</span>
+              <span :lang="multiLanguage">{{
+                $t('trans.manageForm.update')
+              }}</span>
             </v-btn>
             <v-btn outlined @click="cancelSettingsEdit">
-              <span>{{ $t('trans.manageForm.cancel') }}</span>
+              <span :lang="multiLanguage">{{
+                $t('trans.manageForm.cancel')
+              }}</span>
             </v-btn>
           </div>
         </v-expansion-panel-content>
@@ -68,9 +72,9 @@
           <template v-slot:actions>
             <v-icon class="icon">$expand</v-icon>
           </template>
-          <div class="header">
+          <div class="header" :lang="multiLanguage">
             <strong>{{ $t('trans.manageForm.apiKey') }}</strong>
-            <span v-if="apiKey">
+            <span v-if="apiKey" :lang="multiLanguage">
               <small v-if="apiKey.updatedBy">
                 {{ $t('trans.manageForm.updated') }}:
                 {{ apiKey.updatedAt | formatDate }} ({{ apiKey.updatedBy }})
@@ -99,14 +103,14 @@
           <template v-slot:actions>
             <v-icon class="icon">$expand</v-icon>
           </template>
-          <div class="header">
+          <div class="header" :lang="multiLanguage">
             <strong>{{ $t('trans.manageForm.formDesignHistory') }}</strong>
             <div>
-              <span>
+              <span :lang="multiLanguage">
                 <strong>{{ $t('trans.manageForm.totalVersions') }}:</strong>
                 {{ combinedVersionAndDraftCount }}
               </span>
-              <span class="ml-12 mr-2">
+              <span class="ml-12 mr-2" :lang="multiLanguage">
                 <strong>{{ $t('trans.manageForm.status') }}:</strong>
                 {{ versionState }}
               </span>
@@ -142,7 +146,14 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['apiKey', 'drafts', 'form', 'permissions', 'isRTL']),
+    ...mapGetters('form', [
+      'apiKey',
+      'drafts',
+      'form',
+      'permissions',
+      'isRTL',
+      'multiLanguage',
+    ]),
     canEditForm() {
       return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },

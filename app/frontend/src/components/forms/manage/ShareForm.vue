@@ -14,17 +14,20 @@
           <v-icon class="mr-1">share</v-icon>
         </v-btn>
       </template>
-      <span>{{ $t('trans.shareForm.shareForm') }}</span>
+      <span :lang="multiLanguage">{{ $t('trans.shareForm.shareForm') }}</span>
     </v-tooltip>
 
     <v-dialog v-model="dialog" width="900">
       <v-card>
-        <v-card-title :class="{ 'dir-rtl': isRTL }" class="text-h5 pb-0">{{
-          $t('trans.shareForm.shareLink')
-        }}</v-card-title>
+        <v-card-title
+          :class="{ 'dir-rtl': isRTL }"
+          class="text-h5 pb-0"
+          :lang="multiLanguage"
+          >{{ $t('trans.shareForm.shareLink') }}</v-card-title
+        >
         <v-card-text>
           <hr />
-          <p class="mb-5" :class="{ 'dir-rtl': isRTL }">
+          <p class="mb-5" :class="{ 'dir-rtl': isRTL }" :lang="multiLanguage">
             {{ $t('trans.shareForm.copyQRCode') }}
           </p>
           <v-alert
@@ -32,6 +35,7 @@
             :class="[NOTIFICATIONS_TYPES.WARNING.class, { 'dir-rtl': isRTL }]"
             :icon="NOTIFICATIONS_TYPES.WARNING.icon"
             transition="scale-transition"
+            :lang="multiLanguage"
           >
             {{ $t('trans.shareForm.warningMessage') }}
           </v-alert>
@@ -53,6 +57,7 @@
                 class="mt-n1"
                 :copyText="formLink"
                 :tooltipText="$t('trans.shareForm.copyURLToClipboard')"
+                :lang="multiLanguage"
               />
               <v-tooltip bottom>
                 <template #activator="{ on, attrs }">
@@ -70,7 +75,7 @@
                     <v-icon class="mr-1">open_in_new</v-icon>
                   </v-btn>
                 </template>
-                <span :class="{ 'dir-rtl': isRTL }">{{
+                <span :class="{ 'dir-rtl': isRTL }" :lang="multiLanguage">{{
                   $t('trans.shareForm.openThisForm')
                 }}</span>
               </v-tooltip>
@@ -101,7 +106,9 @@
                     <v-icon>get_app</v-icon>
                   </v-btn>
                 </template>
-                <span>{{ $t('trans.shareForm.downloadQRCode') }}</span>
+                <span :lang="multiLanguage">{{
+                  $t('trans.shareForm.downloadQRCode')
+                }}</span>
               </v-tooltip>
             </v-col>
           </v-row>
@@ -114,7 +121,7 @@
             color="primary"
             @click="dialog = false"
           >
-            <span>{{ $t('trans.shareForm.close') }}</span>
+            <span :lang="multiLanguage">{{ $t('trans.shareForm.close') }}</span>
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -148,6 +155,8 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('form', ['multiLanguage']),
+
     formLink() {
       // TODO: Consider using vue-router to generate this url string instead
       return `${window.location.origin}${process.env.BASE_URL}form/submit?f=${this.formId}`;

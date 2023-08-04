@@ -9,6 +9,7 @@
       :loading-text="this.$t('trans.statusTable.loadingText')"
       item-key="statusId"
       class="status-table"
+      :lang="multiLanguage"
     >
       <template #[`item.createdAt`]="{ item }">
         <span>{{ item.createdAt | formatDate }}</span>
@@ -51,7 +52,7 @@ export default {
         { text: this.$t('trans.statusTable.updatedBy'), value: 'createdBy' },
       ];
     },
-    ...mapGetters('form', ['isRTL']),
+    ...mapGetters('form', ['isRTL', 'multiLanguage']),
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),

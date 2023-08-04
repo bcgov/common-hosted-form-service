@@ -4,7 +4,7 @@
       <v-col>
         <v-row>
           <v-col cols="11">
-            <h1>
+            <h1 :lang="multiLanguage">
               {{ $t('trans.exportSubmissions.exportSubmissionsToFile') }}
             </h1>
           </v-col>
@@ -26,29 +26,37 @@
                     </v-btn>
                   </router-link>
                 </template>
-                <span>{{ $t('trans.exportSubmissions.viewSubmissions') }}</span>
+                <span :lang="multiLanguage">{{
+                  $t('trans.exportSubmissions.viewSubmissions')
+                }}</span>
               </v-tooltip>
             </span>
           </v-col>
         </v-row>
         <v-row>
           <v-col>
-            <span class="subTitleObjectStyle">
+            <span class="subTitleObjectStyle" :lang="multiLanguage">
               {{ $t('trans.exportSubmissions.fileType') }}
             </span>
             <v-radio-group v-model="exportFormat" hide-details="auto">
-              <v-radio :label="$t('trans.exportSubmissions.json')" value="json">
+              <v-radio value="json">
                 <template v-slot:label>
-                  <span :class="{ 'mr-1': isRTL }" class="radioboxLabelStyle">{{
-                    $t('trans.exportSubmissions.json')
-                  }}</span>
+                  <span
+                    :class="{ 'mr-1': isRTL }"
+                    class="radioboxLabelStyle"
+                    :lang="multiLanguage"
+                    >{{ $t('trans.exportSubmissions.json') }}</span
+                  >
                 </template>
               </v-radio>
-              <v-radio :label="$t('trans.exportSubmissions.csv')" value="csv">
+              <v-radio value="csv">
                 <template v-slot:label>
-                  <span :class="{ 'mr-1': isRTL }" class="radioboxLabelStyle">{{
-                    $t('trans.exportSubmissions.csv')
-                  }}</span>
+                  <span
+                    :class="{ 'mr-1': isRTL }"
+                    class="radioboxLabelStyle"
+                    :lang="multiLanguage"
+                    >{{ $t('trans.exportSubmissions.csv') }}</span
+                  >
                 </template>
               </v-radio>
             </v-radio-group>
@@ -56,10 +64,14 @@
         </v-row>
         <v-row v-if="exportFormat === 'csv'" class="mt-5">
           <v-col>
-            <span class="subTitleObjectStyle">
+            <span class="subTitleObjectStyle" :lang="multiLanguage">
               {{ $t('trans.exportSubmissions.formVersion') }}
             </span>
-            <span class="red--text mt-3" v-if="versionRequired">
+            <span
+              class="red--text mt-3"
+              v-if="versionRequired"
+              :lang="multiLanguage"
+            >
               {{ $t('trans.exportSubmissions.versionIsRequired') }}
             </span>
             <v-select
@@ -75,7 +87,7 @@
         </v-row>
         <v-row v-if="exportFormat === 'csv' && showFieldsOptions" class="mt-0">
           <v-col>
-            <span class="subTitleObjectStyle">
+            <span class="subTitleObjectStyle" :lang="multiLanguage">
               {{ $t('trans.exportSubmissions.dataFields') }}
             </span>
             <v-row v-if="exportFormat === 'csv'">
@@ -93,11 +105,13 @@
                       class="mt-3 submissions-table"
                       single-line
                       :class="{ 'dir-rtl': isRTL, label: isRTL }"
+                      :lang="multiLanguage"
                     >
                     </v-text-field>
                     <span
                       class="subTitleObjectStyle"
                       style="font-size: 14px !important"
+                      :lang="multiLanguage"
                     >
                       {{ selected.length }}
                       {{ $t('trans.exportSubmissions.of') }}
@@ -129,28 +143,28 @@
         </v-row>
         <v-row class="mt-4">
           <v-col>
-            <span class="subTitleObjectStyle">
+            <span class="subTitleObjectStyle" :lang="multiLanguage">
               {{ $t('trans.exportSubmissions.submissionDate') }}
             </span>
             <v-radio-group v-model="dateRange" hide-details="auto">
-              <v-radio
-                :label="this.$t('trans.exportSubmissions.all')"
-                :value="false"
-              >
+              <v-radio :value="false">
                 <template v-slot:label>
-                  <span :class="{ 'mr-1': isRTL }" class="radioboxLabelStyle">{{
-                    $t('trans.exportSubmissions.all')
-                  }}</span>
+                  <span
+                    :class="{ 'mr-1': isRTL }"
+                    class="radioboxLabelStyle"
+                    :lang="multiLanguage"
+                    >{{ $t('trans.exportSubmissions.all') }}</span
+                  >
                 </template>
               </v-radio>
-              <v-radio
-                :label="$t('trans.exportSubmissions.selectDateRange')"
-                :value="true"
-              >
+              <v-radio :value="true">
                 <template v-slot:label>
-                  <span :class="{ 'mr-1': isRTL }" class="radioboxLabelStyle">{{
-                    $t('trans.exportSubmissions.SelectdateRange')
-                  }}</span>
+                  <span
+                    :class="{ 'mr-1': isRTL }"
+                    class="radioboxLabelStyle"
+                    :lang="multiLanguage"
+                    >{{ $t('trans.exportSubmissions.SelectdateRange') }}</span
+                  >
                 </template>
               </v-radio>
             </v-radio-group>
@@ -171,7 +185,9 @@
                     min-width="290px"
                   >
                     <template v-slot:activator="{ on }">
-                      <label>{{ $t('trans.exportSubmissions.from') }}</label>
+                      <label :lang="multiLanguage">{{
+                        $t('trans.exportSubmissions.from')
+                      }}</label>
                       <v-text-field
                         v-model="startDate"
                         :placeholder="$t('trans.date.date')"
@@ -182,6 +198,7 @@
                         dense
                         outlined
                         :class="{ 'dir-rtl': isRTL }"
+                        :lang="multiLanguage"
                       ></v-text-field>
                     </template>
                     <v-date-picker
@@ -203,7 +220,9 @@
                     min-width="290px"
                   >
                     <template v-slot:activator="{ on }">
-                      <label>{{ $t('trans.exportSubmissions.to') }}</label>
+                      <label :lang="multiLanguage">{{
+                        $t('trans.exportSubmissions.to')
+                      }}</label>
                       <v-text-field
                         v-model="endDate"
                         :placeholder="$t('trans.date.date')"
@@ -214,6 +233,7 @@
                         dense
                         outlined
                         :class="{ 'dir-rtl': isRTL }"
+                        :lang="multiLanguage"
                       ></v-text-field>
                     </template>
                     <v-date-picker
@@ -233,13 +253,12 @@
           class="mt-0 pt-0"
         >
           <v-col>
-            <span class="subTitleObjectStyle mr-1">
+            <span class="subTitleObjectStyle mr-1" :lang="multiLanguage">
               {{ $t('trans.exportSubmissions.CSVFormat') }}
             </span>
 
             <v-radio-group v-model="csvFormats" hide-details="auto">
               <v-radio
-                label="A"
                 value="multiRowEmptySpacesCSVExport"
                 style="display: flex; align-content: flex-start"
               >
@@ -248,41 +267,48 @@
                     :class="{ 'mr-1': isRTL }"
                     class="radioboxLabelStyle"
                     style="display: flex; align-content: flex-start"
+                    :lang="multiLanguage"
                   >
                     {{ $t('trans.exportSubmissions.multiRowPerSubmissionA') }}
                   </span>
                 </template>
               </v-radio>
               <v-radio
-                label="B"
                 value="multiRowBackFilledCSVExport"
                 class="mt-2"
                 style="display: flex; align-content: flex-start"
               >
                 <template v-slot:label>
-                  <span :class="{ 'mr-1': isRTL }" class="radioboxLabelStyle">
+                  <span
+                    :class="{ 'mr-1': isRTL }"
+                    class="radioboxLabelStyle"
+                    :lang="multiLanguage"
+                  >
                     {{ $t('trans.exportSubmissions.multiRowPerSubmissionB') }}
                   </span>
                 </template>
               </v-radio>
               <v-radio
-                label="C"
                 class="mt-2"
                 value="singleRowCSVExport"
                 style="display: flex; align-content: flex-start"
               >
                 <template v-slot:label>
-                  <span :class="{ 'mr-1': isRTL }" class="radioboxLabelStyle"
+                  <span
+                    :class="{ 'mr-1': isRTL }"
+                    class="radioboxLabelStyle"
+                    :lang="multiLanguage"
                     >{{ $t('trans.exportSubmissions.singleRowPerSubmission') }}
                   </span>
                 </template>
               </v-radio>
-              <v-radio label="D" value="unFormattedCSVExport" class="mt-2">
+              <v-radio value="unFormattedCSVExport" class="mt-2">
                 <template v-slot:label>
                   <span
                     :class="{ 'mr-1': isRTL }"
                     class="radioboxLabelStyle"
                     style="display: flex; align-content: flex-start"
+                    :lang="multiLanguage"
                   >
                     {{ $t('trans.exportSubmissions.unformatted') }}
                   </span>
@@ -293,7 +319,11 @@
         </v-row>
         <v-row>
           <v-col>
-            <span :class="{ 'mr-1': isRTL }" class="mt-7 fileLabelStyle">
+            <span
+              :class="{ 'mr-1': isRTL }"
+              class="mt-7 fileLabelStyle"
+              :lang="multiLanguage"
+            >
               {{ $t('trans.exportSubmissions.fileNameAndType') }}:
               <strong>{{ fileName }}</strong>
             </span>
@@ -305,7 +335,9 @@
           color="primary"
           @click="callExport"
         >
-          <span>{{ $t('trans.exportSubmissions.export') }}</span>
+          <span :lang="multiLanguage">{{
+            $t('trans.exportSubmissions.export')
+          }}</span>
         </v-btn>
       </v-col>
     </v-row>
@@ -381,6 +413,7 @@ export default {
       'formFields',
       'submissionList',
       'isRTL',
+      'multiLanguage',
     ]),
 
     ...mapGetters('auth', ['email']),

@@ -6,11 +6,11 @@
       >
         <!-- page title -->
         <div>
-          <h1>
+          <h1 :lang="multiLanguage">
             {{ $t('trans.formDesigner.formDesign') }}
           </h1>
           <h3 v-if="name">{{ name }}</h3>
-          <em
+          <em :lang="multiLanguage"
             >{{ $t('trans.formDesigner.version') }} :
             {{ this.displayVersion }}</em
           >
@@ -30,7 +30,9 @@
                 <v-icon>get_app</v-icon>
               </v-btn>
             </template>
-            <span>{{ $t('trans.formDesigner.exportDesign') }}</span>
+            <span :lang="multiLanguage">{{
+              $t('trans.formDesigner.exportDesign')
+            }}</span>
           </v-tooltip>
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
@@ -52,19 +54,29 @@
                 />
               </v-btn>
             </template>
-            <span>{{ $t('trans.formDesigner.importDesign') }}</span>
+            <span :lang="multiLanguage">{{
+              $t('trans.formDesigner.importDesign')
+            }}</span>
           </v-tooltip>
         </div>
         <!-- form name -->
       </div>
     </div>
     <BaseInfoCard class="my-6" :class="{ 'dir-rtl': isRTL }">
-      <h4 class="primary--text">
+      <h4 class="primary--text" :lang="multiLanguage">
         <v-icon :class="isRTL ? 'ml-1' : 'mr-1'" color="primary">info</v-icon
         >{{ $t('trans.formDesigner.important') }}!
       </h4>
-      <p class="my-0" v-html="$t('trans.formDesigner.formDesignInfoA')"></p>
-      <p class="my-0" v-html="$t('trans.formDesigner.formDesignInfoB')"></p>
+      <p
+        class="my-0"
+        v-html="$t('trans.formDesigner.formDesignInfoA')"
+        :lang="multiLanguage"
+      />
+      <p
+        class="my-0"
+        v-html="$t('trans.formDesigner.formDesignInfoB')"
+        :lang="multiLanguage"
+      />
     </BaseInfoCard>
     <FormBuilder
       :form="formSchema"

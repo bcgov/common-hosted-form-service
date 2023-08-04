@@ -2,12 +2,12 @@
   <div class="file-upload" :class="{ 'dir-rtl': isRTL }">
     <v-row>
       <BaseInfoCard v-if="json_csv.data" class="mb-4">
-        <h4 class="primary--text">
+        <h4 class="primary--text" :lang="multiLanguage">
           <v-icon class="mr-1" color="primary" :class="{ 'ml-2': isRTL }"
             >info</v-icon
           >{{ $t('trans.formViewerMultiUpload.important') }}!
         </h4>
-        <p class="my-2">
+        <p class="my-2" :lang="multiLanguage">
           {{ $t('trans.formViewerMultiUpload.uploadSucessMsg') }}
           <span class="link">
             <vue-blob-json-csv
@@ -17,6 +17,7 @@
               :title="$t('trans.formViewerMultiUpload.download')"
               :data="json_csv.data"
               :confirm="this.$t('trans.formViewerMultiUpload.confirmDownload')"
+              :lang="multiLanguage"
             />
             <v-icon class="mr-1" color="#003366">download</v-icon>
           </span>
@@ -35,8 +36,12 @@
         @dragover.prevent
       >
         <v-icon class="mr-1" color="#003366">upload</v-icon>
-        <h1>{{ this.$t('trans.formViewerMultiUpload.jsonFileUpload') }}</h1>
-        <p>{{ this.$t('trans.formViewerMultiUpload.dragNDrop') }}</p>
+        <h1 :lang="multiLanguage">
+          {{ this.$t('trans.formViewerMultiUpload.jsonFileUpload') }}
+        </h1>
+        <p :lang="multiLanguage">
+          {{ this.$t('trans.formViewerMultiUpload.dragNDrop') }}
+        </p>
 
         <v-file-input
           class="drop-zone__input"
@@ -47,6 +52,7 @@
           name="file"
           :label="this.$t('trans.formViewerMultiUpload.chooseAFile')"
           show-size
+          :lang="multiLanguage"
         >
         </v-file-input>
       </div>
@@ -95,6 +101,7 @@
             <p
               style="text-align: justify; line-height: 1.2"
               v-if="response.error && response.response.length > 0"
+              :lang="multiLanguage"
             >
               {{ this.$t('trans.formViewerMultiUpload.downloadDraftSubmns') }}
               <br />
@@ -108,6 +115,7 @@
                   :confirm="
                     this.$t('trans.formViewerMultiUpload.doYouWantToDownload')
                   "
+                  :lang="multiLanguage"
                 />
                 <v-icon class="mr-1" color="#003366">download</v-icon>
               </span>
@@ -125,7 +133,7 @@
           >
             <span class="m-1 pull-right">
               <v-btn @click="resetUpload" color="primary">
-                <span>{{
+                <span :lang="multiLanguage">{{
                   this.$t('trans.formViewerMultiUpload.uploadNewFile')
                 }}</span>
               </v-btn>
@@ -181,7 +189,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['isRTL']),
+    ...mapGetters('form', ['isRTL', 'multiLanguage']),
     txt_color() {
       if (!this.error) return 'success-text';
       else return 'fail-text';
