@@ -30,14 +30,7 @@
               v-bind="attrs"
               v-on="on"
             >
-              <font-awesome-icon
-                icon="fa-solid fa-repeat"
-                color="primary"
-                v-bind="attrs"
-                style="pointer-events: none"
-                v-on="on"
-                size="xl"
-              />
+              <v-icon>repeat</v-icon>
             </v-btn>
           </template>
           <span>Reset Columns</span>
@@ -55,6 +48,7 @@
         :search="inputFilter"
         class="grey lighten-5"
         disable-pagination
+        :custom-sort="customSort"
       >
       </v-data-table>
       <v-btn @click="savingFilterData" class="primary mt-3">{{
@@ -74,9 +68,6 @@
 <script>
 import { mapGetters } from 'vuex';
 import i18n from '@/internationalization';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faRepeat } from '@fortawesome/free-solid-svg-icons';
-library.add(faRepeat);
 
 export default {
   name: 'BaseFilter',
@@ -142,18 +133,15 @@ export default {
       tableData: this.inputData,
     };
   },
-  watch: {
-    selectedData() {
-      let filteredData = this.inputData.filter(
-        (item) =>
-          !this.selectedData.find(
-            (selectedItem) => selectedItem.text === item.text
-          )
-      );
-      this.tableData = this.selectedData.concat(filteredData);
-    },
-  },
+
   methods: {
+    customSort(items) {
+      return [...items].sort(
+        (a, b) =>
+          this.selectedData.findIndex((x) => x.text === b.text) -
+          this.selectedData.findIndex((x) => x.text === a.text)
+      );
+    },
     savingFilterData() {
       this.inputFilter = '';
       this.$emit('saving-filter-data', this.selectedData);

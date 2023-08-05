@@ -70,7 +70,7 @@ export default {
       showDeleteDialog: false,
     };
   },
-  computed: mapGetters('form', ['form']),
+  computed: mapGetters('form', ['form', 'isRTL']),
   methods: {
     ...mapActions('form', ['deleteSubmission']),
     async delSub() {
