@@ -154,6 +154,15 @@ export default {
           value: 'actions',
         },
       ],
+      tableFilterIgnore: [
+        { value: 'createdBy' },
+        { value: 'username' },
+        { value: 'status' },
+        { value: 'lateEntry' },
+        { value: 'lastEdited' },
+        { value: 'updatedBy' },
+        { value: 'submittedDate' },
+      ],
       showColumnsDialog: false,
       submissionTable: [],
       loading: true,
@@ -237,18 +246,19 @@ export default {
     },
 
     HEADERS() {
-      let headers = [...this.DEFAULT_HEADERS];
+      if (this.filterData.length > 0) {
+        let headers = [...this.DEFAULT_HEADERS].filter(
+          (h) => !this.tableFilterIgnore.some((fd) => fd.value === h.value)
+        );
 
-      if (headers.length > 1) {
-        headers.splice(1, 0, ...this.filterData);
-      } else {
-        headers = headers.concat(this.filterData);
+        if (headers.length > 1) {
+          headers.splice(1, 0, ...this.filterData);
+        } else {
+          headers = headers.concat(this.filterData);
+        }
+        return headers;
       }
-      return headers.filter(
-        (item, idx, inputArray) =>
-          inputArray.findIndex((arrayItem) => arrayItem.value === item.value) ==
-          idx
-      );
+      return this.DEFAULT_HEADERS;
     },
 
     showStatus() {
