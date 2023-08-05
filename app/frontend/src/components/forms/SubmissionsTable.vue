@@ -330,6 +330,12 @@ export default {
           value: 'event',
         },
       ],
+      tableFilterIgnore: [
+        { value: 'date' },
+        { value: 'submitter' },
+        { value: 'status' },
+        { value: 'lateEntry' },
+      ],
       loading: true,
       restoreItem: {},
       search: '',
@@ -384,62 +390,25 @@ export default {
           align: 'start',
           value: 'confirmationId',
         },
+
+        {
+          text: this.$t('trans.submissionsTable.submissionDate'),
+          align: 'start',
+          value: 'date',
+        },
+
+        {
+          text: this.$t('trans.submissionsTable.submitter'),
+          align: 'start',
+          value: 'submitter',
+        },
+
+        {
+          text: this.$t('trans.submissionsTable.status'),
+          align: 'start',
+          value: 'status',
+        },
       ];
-      if (this.userFormPreferences?.preferences?.columns) {
-        if (this.userFormPreferences.preferences.columns.includes('date')) {
-          headers = [
-            ...headers,
-            {
-              text: this.$t('trans.submissionsTable.submissionDate'),
-              align: 'start',
-              value: 'date',
-            },
-          ];
-        }
-
-        if (
-          this.userFormPreferences.preferences.columns.includes('submitter')
-        ) {
-          headers = [
-            ...headers,
-            {
-              text: this.$t('trans.submissionsTable.submitter'),
-              align: 'start',
-              value: 'submitter',
-            },
-          ];
-        }
-
-        if (this.userFormPreferences.preferences.columns.includes('status')) {
-          headers = [
-            ...headers,
-            {
-              text: this.$t('trans.submissionsTable.status'),
-              align: 'start',
-              value: 'status',
-            },
-          ];
-        }
-      } else {
-        headers = [
-          ...headers,
-          {
-            text: this.$t('trans.submissionsTable.submissionDate'),
-            align: 'start',
-            value: 'date',
-          },
-          {
-            text: this.$t('trans.submissionsTable.submitter'),
-            align: 'start',
-            value: 'submitter',
-          },
-          {
-            text: this.$t('trans.submissionsTable.status'),
-            align: 'start',
-            value: 'status',
-          },
-        ];
-      }
 
       if (this.form && this.form.schedule && this.form.schedule.enabled) {
         //push new header for late submission if Form is setup for scheduling
@@ -475,6 +444,12 @@ export default {
       return headers;
     },
 
+    FILTER_HEADERS() {
+      return [...this.DEFAULT_HEADER].filter(
+        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
+      );
+    },
+
     SELECT_COLUMNS_HEADERS() {
       return [...this.FILTER_HEADERS].concat(
         this.formFields.map((ff) => {
@@ -484,37 +459,25 @@ export default {
     },
 
     HEADERS() {
-      let headers = [...this.DEFAULT_HEADER];
+      if (this.USER_PREFERENCES.length > 0) {
+        let headers = [...this.DEFAULT_HEADER].filter(
+          (h) => !this.tableFilterIgnore.some((fd) => fd.value === h.value)
+        );
 
-      if (headers.length > 1) {
-        headers.splice(1, 0, ...this.USER_PREFERENCES);
-      } else {
-        headers = headers.concat(this.USER_PREFERENCES);
+        if (headers.length > 1) {
+          headers.splice(1, 0, ...this.USER_PREFERENCES);
+        } else {
+          headers = headers.concat(this.USER_PREFERENCES);
+        }
+        return headers;
       }
-      return headers.filter(
-        (item, idx, inputArray) =>
-          inputArray.findIndex((arrayItem) => arrayItem.value === item.value) ==
-          idx
-      );
+      return this.DEFAULT_HEADER;
     },
 
-    FILTER_HEADERS() {
-      return [...this.DEFAULT_HEADER].filter(
-        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
-      );
-    },
     PRESELECTED_DATA() {
-      let headers = [...this.FILTER_HEADERS];
-      if (headers.length > 1) {
-        headers.splice(1, 0, ...this.USER_PREFERENCES);
-      } else {
-        headers = headers.concat(this.USER_PREFERENCES);
-      }
-      return headers.filter(
-        (item, idx, inputArray) =>
-          inputArray.findIndex((arrayItem) => arrayItem.value === item.value) ==
-          idx
-      );
+      return this.USER_PREFERENCES.length === 0
+        ? this.FILTER_HEADERS
+        : this.USER_PREFERENCES;
     },
     USER_PREFERENCES() {
       let preselectedData = [];
