@@ -762,7 +762,8 @@
     "exampleText2": "Texto de ejemplo 2",
     "filterPlaceholderTxt": "Filtrar texto de marcador de posición",
     "filter": "Filtrar",
-    "value": "valor"
+    "value": "valor",
+    "resetColumns": "Restablecer columnas"
   },
   "formViewerActions": {
     "viewAllSubmissions": "Ver todas las presentaciones",

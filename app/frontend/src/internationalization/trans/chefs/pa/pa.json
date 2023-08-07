@@ -762,7 +762,8 @@
     "exampleText2": "ਉਦਾਹਰਨ ਟੈਕਸਟ 2",
     "filterPlaceholderTxt": "ਫਿਲਟਰ ਪਲੇਸਹੋਲਡਰ ਟੈਕਸਟ",
     "filter": "ਫਿਲਟਰ",
-    "value": "ਮੁੱਲ"
+    "value": "ਮੁੱਲ",
+    "resetColumns": "ਕਾਲਮ ਰੀਸੈਟ ਕਰੋ"
   },
   "formViewerActions": {
     "viewAllSubmissions": "ਸਾਰੀਆਂ ਬੇਨਤੀਆਂ ਦੇਖੋ",

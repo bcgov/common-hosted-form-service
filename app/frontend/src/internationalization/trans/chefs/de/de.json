@@ -762,7 +762,8 @@
     "exampleText2": "Beispieltext 2",
     "filterPlaceholderTxt": "Platzhaltertext filtern",
     "filter": "Filter",
-    "value": "Wert"
+    "value": "Wert",
+    "resetColumns": "Spalten zurücksetzen"
   },
   "formViewerActions": {
     "viewAllSubmissions": "Alle Einsendungen anzeigen",

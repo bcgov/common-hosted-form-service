@@ -762,7 +762,8 @@
     "exampleText2": "उदाहरण पाठ 2",
     "filterPlaceholderTxt": "प्लेसहोल्डर टेक्स्ट फ़िल्टर करें",
     "filter": "फ़िल्टर",
-    "value": "कीमत"
+    "value": "कीमत",
+    "resetColumns": "कॉलम रीसेट करें"
   },
   "formViewerActions": {
     "viewAllSubmissions": "सभी प्रस्तुतियाँ देखें",

@@ -762,7 +762,8 @@
     "exampleText2": "Пример текста 2",
     "filterPlaceholderTxt": "Текст заполнителя фильтра",
     "filter": "Фильтр",
-    "value": "ценить"
+    "value": "ценить",
+    "resetColumns": "Сбросить столбцы"
   },
   "formViewerActions": {
     "viewAllSubmissions": "Просмотреть все материалы",

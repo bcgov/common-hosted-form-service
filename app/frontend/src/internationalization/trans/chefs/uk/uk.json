@@ -762,7 +762,8 @@
     "exampleText2": "Приклад тексту 2",
     "filterPlaceholderTxt": "Фільтр тексту заповнювача",
     "filter": "фільтр",
-    "value": "значення"
+    "value": "значення",
+    "resetColumns": "Скинути стовпці"
   },
   "formViewerActions": {
     "viewAllSubmissions": "Переглянути всі подання",

@@ -763,7 +763,8 @@
     "exampleText2": "Example Text 2",
     "filterPlaceholderTxt": "Filter Placeholder Text",
     "filter": "Filter",
-    "value": "value"
+    "value": "value",
+    "resetColumns": "Reset Columns"
   },
   "formViewerActions": {
     "viewAllSubmissions": "View All Submissions",

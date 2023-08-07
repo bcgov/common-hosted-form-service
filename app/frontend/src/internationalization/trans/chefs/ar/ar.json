@@ -762,7 +762,8 @@
     "exampleText2": "نص مثال 2",
     "filterPlaceholderTxt": "تصفية نص العنصر النائب",
     "filter": "منقي",
-    "value": "قيمة"
+    "value": "قيمة",
+    "resetColumns": "إعادة تعيين الأعمدة"
   },
   "formViewerActions": {
     "viewAllSubmissions": "عرض جميع عمليات الإرسال",

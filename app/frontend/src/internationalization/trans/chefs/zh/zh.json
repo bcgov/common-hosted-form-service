@@ -762,7 +762,8 @@
     "exampleText2": "示例文本2",
     "filterPlaceholderTxt": "过滤占位符文本",
     "filter": "筛选",
-    "value": "价值"
+    "value": "价值",
+    "resetColumns": "重置列"
   },
   "formViewerActions": {
     "viewAllSubmissions": "查看所有提交内容",
