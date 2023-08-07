@@ -762,7 +762,8 @@
     "exampleText2": "예제 텍스트 2",
     "filterPlaceholderTxt": "자리 표시자 텍스트 필터링",
     "filter": "필터",
-    "value": "값"
+    "value": "값",
+    "resetColumns": "열 재설정"
   },
   "formViewerActions": {
     "viewAllSubmissions": "모든 제출물 보기",

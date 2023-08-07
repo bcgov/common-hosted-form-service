@@ -762,7 +762,8 @@
     "exampleText2": "Halimbawang Teksto 2",
     "filterPlaceholderTxt": "I-filter ang Teksto ng Placeholder",
     "filter": "Salain",
-    "value": "halaga"
+    "value": "halaga",
+    "resetColumns": "I-reset ang Mga Column"
   },
   "formViewerActions": {
     "viewAllSubmissions": "Tingnan ang Lahat ng Pagsusumite",

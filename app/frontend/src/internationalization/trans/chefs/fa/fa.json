@@ -762,7 +762,8 @@
     "exampleText2": "متن مثال 2",
     "filterPlaceholderTxt": "متن جای جای فیلتر کنید",
     "filter": "فیلتر کنید",
-    "value": "ارزش"
+    "value": "ارزش",
+    "resetColumns": "بازنشانی ستون ها"
   },
   "formViewerActions": {
     "viewAllSubmissions": "مشاهده همه موارد ارسالی",

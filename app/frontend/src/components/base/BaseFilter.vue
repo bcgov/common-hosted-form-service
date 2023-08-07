@@ -34,9 +34,10 @@
               <v-icon>repeat</v-icon>
             </v-btn>
           </template>
-          <span>Reset Columns</span>
+          <span>{{ $t('trans.baseFilter.resetColumns') }}</span>
         </v-tooltip>
       </div>
+
       <v-data-table
         fixed-header
         show-select

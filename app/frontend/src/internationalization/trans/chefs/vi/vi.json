@@ -762,7 +762,8 @@
     "exampleText2": "Văn bản mẫu 2",
     "filterPlaceholderTxt": "Lọc văn bản giữ chỗ",
     "filter": "Lọc",
-    "value": "giá trị"
+    "value": "giá trị",
+    "resetColumns": "Đặt lại cột"
   },
   "formViewerActions": {
     "viewAllSubmissions": "Xem tất cả bài dự thi",

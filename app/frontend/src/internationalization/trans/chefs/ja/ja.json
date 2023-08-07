@@ -762,7 +762,8 @@
     "exampleText2": "テキスト例 2",
     "filterPlaceholderTxt": "プレースホルダーテキストのフィルター",
     "filter": "フィルター",
-    "value": "価値"
+    "value": "価値",
+    "resetColumns": "列をリセット"
   },
   "formViewerActions": {
     "viewAllSubmissions": "すべての提出物を表示",

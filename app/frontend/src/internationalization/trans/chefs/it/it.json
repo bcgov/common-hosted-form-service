@@ -762,7 +762,8 @@
     "exampleText2": "Esempio di testo 2",
     "filterPlaceholderTxt": "Filtra testo segnaposto",
     "filter": "Filtro",
-    "value": "valore"
+    "value": "valore",
+    "resetColumns": "Reimposta colonne"
   },
   "formViewerActions": {
     "viewAllSubmissions": "Visualizza tutti gli invii",

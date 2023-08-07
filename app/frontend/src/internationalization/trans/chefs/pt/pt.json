@@ -762,7 +762,8 @@
     "exampleText2": "Texto de Exemplo 2",
     "filterPlaceholderTxt": "Filtrar texto de espaço reservado",
     "filter": "Filtro",
-    "value": "valor"
+    "value": "valor",
+    "resetColumns": "Redefinir colunas"
   },
   "formViewerActions": {
     "viewAllSubmissions": "Ver todos os envios",
