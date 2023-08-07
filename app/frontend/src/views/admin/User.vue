@@ -7,7 +7,6 @@
   </v-container>
 </template>
 
-
 <script>
 import AdministerUser from '@/components/admin/AdministerUser.vue';
 import { mapGetters } from 'vuex';
