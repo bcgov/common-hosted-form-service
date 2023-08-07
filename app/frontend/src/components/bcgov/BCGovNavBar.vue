@@ -6,7 +6,7 @@
           <router-link
             data-cy="aboutLinks"
             :to="{ name: 'About' }"
-            :lang="multiLanguage"
+            :lang="lang"
             >{{ $t('trans.bCGovNavBar.about') }}</router-link
           >
         </li>
@@ -14,12 +14,12 @@
           <router-link
             data-cy="userFormsLinks"
             :to="{ name: 'UserForms' }"
-            :lang="multiLanguage"
+            :lang="lang"
             >{{ $t('trans.bCGovNavBar.myForms') }}</router-link
           >
         </li>
         <li v-if="hasPrivileges">
-          <router-link :to="{ name: 'FormCreate' }" :lang="multiLanguage">{{
+          <router-link :to="{ name: 'FormCreate' }" :lang="lang">{{
             $t('trans.bCGovNavBar.createNewForm')
           }}</router-link>
         </li>
@@ -27,7 +27,7 @@
           <a
             href="https://github.com/bcgov/common-hosted-form-service/wiki"
             target="_blank"
-            :hreflang="multiLanguage"
+            :hreflang="lang"
             >{{ $t('trans.bCGovNavBar.help') }}</a
           >
         </li>
@@ -35,7 +35,7 @@
           <a
             href="https://chefs-fider.apps.silver.devops.gov.bc.ca/"
             target="_blank"
-            :hreflang="multiLanguage"
+            :hreflang="lang"
             >{{ $t('trans.bCGovNavBar.feedback') }}</a
           >
         </li>
@@ -43,7 +43,7 @@
           <router-link :to="{ name: 'User' }">User (TBD)</router-link>
         </li> -->
         <li v-if="isAdmin">
-          <router-link :to="{ name: 'Admin' }" :lang="multiLanguage">{{
+          <router-link :to="{ name: 'Admin' }" :lang="lang">{{
             $t('trans.bCGovNavBar.admin')
           }}</router-link>
         </li>
@@ -66,7 +66,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['authenticated', 'isAdmin', 'identityProvider']),
-    ...mapGetters('form', ['multiLanguage']),
+    ...mapGetters('form', ['lang']),
     hideNavBar() {
       // hide nav bar if user is on form submitter page
       return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;

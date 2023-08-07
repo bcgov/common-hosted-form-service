@@ -7,7 +7,7 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 
 describe('BCGovFooter.vue', () => {
-  const mockMultiLanguageGetter = jest.fn();
+  const mockLangGetter = jest.fn();
   let store;
   beforeEach(() => {
     store = new Vuex.Store({
@@ -15,7 +15,7 @@ describe('BCGovFooter.vue', () => {
         form: {
           namespaced: true,
           getters: {
-            multiLanguage: mockMultiLanguageGetter,
+            lang: mockLangGetter,
           },
         },
       },

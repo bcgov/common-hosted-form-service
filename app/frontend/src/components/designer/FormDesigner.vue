@@ -6,11 +6,11 @@
       >
         <!-- page title -->
         <div>
-          <h1 :lang="multiLanguage">
+          <h1 :lang="lang">
             {{ $t('trans.formDesigner.formDesign') }}
           </h1>
           <h3 v-if="name">{{ name }}</h3>
-          <em :lang="multiLanguage"
+          <em :lang="lang"
             >{{ $t('trans.formDesigner.version') }} :
             {{ this.displayVersion }}</em
           >
@@ -30,7 +30,7 @@
                 <v-icon>get_app</v-icon>
               </v-btn>
             </template>
-            <span :lang="multiLanguage">{{
+            <span :lang="lang">{{
               $t('trans.formDesigner.exportDesign')
             }}</span>
           </v-tooltip>
@@ -54,7 +54,7 @@
                 />
               </v-btn>
             </template>
-            <span :lang="multiLanguage">{{
+            <span :lang="lang">{{
               $t('trans.formDesigner.importDesign')
             }}</span>
           </v-tooltip>
@@ -63,19 +63,19 @@
       </div>
     </div>
     <BaseInfoCard class="my-6" :class="{ 'dir-rtl': isRTL }">
-      <h4 class="primary--text" :lang="multiLanguage">
+      <h4 class="primary--text" :lang="lang">
         <v-icon :class="isRTL ? 'ml-1' : 'mr-1'" color="primary">info</v-icon
         >{{ $t('trans.formDesigner.important') }}!
       </h4>
       <p
         class="my-0"
         v-html="$t('trans.formDesigner.formDesignInfoA')"
-        :lang="multiLanguage"
+        :lang="lang"
       />
       <p
         class="my-0"
         v-html="$t('trans.formDesigner.formDesignInfoB')"
-        :lang="multiLanguage"
+        :lang="lang"
       />
     </BaseInfoCard>
     <FormBuilder
@@ -195,7 +195,7 @@ export default {
     ...mapGetters('form', [
       'fcProactiveHelpGroupList',
       'fcProactiveHelpImageUrl',
-      'multiLanguage',
+      'lang',
       'builder',
       'isRTL',
     ]),
@@ -316,7 +316,7 @@ export default {
             },
           },
         },
-        language: this.multiLanguage ? this.multiLanguage : 'en',
+        language: this.lang ? this.lang : 'en',
         i18n: formioIl8next,
         templates: templateExtensions,
         evalContext: {
@@ -778,7 +778,7 @@ export default {
     userType() {
       this.reRenderFormIo += 1;
     },
-    multiLanguage(value) {
+    lang(value) {
       if (value) {
         this.reRenderFormIo += 1;
       }

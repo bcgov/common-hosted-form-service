@@ -13,7 +13,7 @@
             </v-btn>
           </router-link>
         </template>
-        <span :lang="multiLanguage">{{
+        <span :lang="lang">{{
           $t('trans.manageFormActions.viewSubmissions')
         }}</span>
       </v-tooltip>
@@ -28,7 +28,7 @@
             </v-btn>
           </router-link>
         </template>
-        <span :lang="multiLanguage">{{
+        <span :lang="lang">{{
           $t('trans.manageFormActions.teamManagement')
         }}</span>
       </v-tooltip>
@@ -49,7 +49,7 @@
           </v-btn>
         </template>
         <span
-          ><span :lang="multiLanguage">{{
+          ><span :lang="lang">{{
             $t('trans.manageFormActions.deleteForm')
           }}</span></span
         >
@@ -62,19 +62,19 @@
         @continue-dialog="deleteForm"
       >
         <template #title
-          ><span :lang="multiLanguage">
+          ><span :lang="lang">
             {{ $t('trans.manageFormActions.confirmDeletion') }}
           </span></template
         >
         <template #text>
-          <span :lang="multiLanguage"
+          <span :lang="lang"
             >{{ $t('trans.manageFormActions.deleteMessageA') }}
             <strong>{{ form.name }}</strong
             >? {{ $t('trans.manageFormActions.deleteMessageB') }}
           </span>
         </template>
         <template #button-text-continue>
-          <span :lang="multiLanguage">{{
+          <span :lang="lang">{{
             $t('trans.manageFormActions.deleteForm')
           }}</span>
         </template>
@@ -98,7 +98,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['form', 'permissions', 'isRTL', 'multiLanguage']),
+    ...mapGetters('form', ['form', 'permissions', 'isRTL', 'lang']),
     // Permission checks
     canDeleteForm() {
       return this.permissions.includes(FormPermissions.FORM_DELETE);

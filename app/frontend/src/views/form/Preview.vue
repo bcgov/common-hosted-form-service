@@ -2,7 +2,7 @@
   <BaseSecure :idp="[IDP.IDIR]">
     <h1
       :class="{ 'dir-rtl': isRTL }"
-      :lang="multiLanguage"
+      :lang="lang"
       style="text-align: left !important"
     >
       {{ $t('trans.preview.preview') }}
@@ -12,7 +12,7 @@
             help_outline
           </v-icon>
         </template>
-        <span :lang="multiLanguage">
+        <span :lang="lang">
           {{ $t('trans.preview.previewToolTip') }}
         </span>
       </v-tooltip>
@@ -37,7 +37,7 @@ export default {
     FormViewer,
   },
   computed: {
-    ...mapGetters('form', ['isRTL', 'multiLanguage']),
+    ...mapGetters('form', ['isRTL', 'lang']),
     IDP: () => IdentityProviders,
   },
 };

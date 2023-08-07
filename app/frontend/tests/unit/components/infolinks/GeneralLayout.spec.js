@@ -9,7 +9,7 @@ localVue.use(Vuex);
 
 describe('GeneralLayout.vue', () => {
 
-  const mockMultiLanguageGetter = jest.fn();
+  const mockLangGetter = jest.fn();
   let store;
   beforeEach(() => {
     store = new Vuex.Store({
@@ -17,7 +17,7 @@ describe('GeneralLayout.vue', () => {
         form: {
           namespaced: true,
           getters: {
-            multiLanguage: mockMultiLanguageGetter,
+            lang: mockLangGetter,
           },
         },
       },

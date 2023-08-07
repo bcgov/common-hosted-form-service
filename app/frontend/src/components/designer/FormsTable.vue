@@ -5,7 +5,7 @@
     >
       <!-- page title -->
       <div>
-        <h1 :lang="multiLanguage">{{ $t('trans.formsTable.myForms') }}</h1>
+        <h1 :lang="lang">{{ $t('trans.formsTable.myForms') }}</h1>
       </div>
       <!-- buttons -->
       <div v-if="user.idp === ID_PROVIDERS.IDIR">
@@ -17,9 +17,7 @@
               </v-btn>
             </router-link>
           </template>
-          <span :lang="multiLanguage"
-            >{{ $t('trans.formsTable.createNewForm') }}
-          </span>
+          <span :lang="lang">{{ $t('trans.formsTable.createNewForm') }} </span>
         </v-tooltip>
       </div>
     </div>
@@ -37,7 +35,7 @@
             hide-details
             class="pb-5"
             :class="{ label: isRTL }"
-            :lang="multiLanguage"
+            :lang="lang"
           />
         </div>
       </v-col>
@@ -52,7 +50,7 @@
       :search="search"
       :loading="loading"
       :loading-text="$t('trans.formsTable.loadingText')"
-      :lang="multiLanguage"
+      :lang="lang"
     >
       <template #[`item.name`]="{ item }">
         <router-link
@@ -67,7 +65,7 @@
             <template #activator="{ on, attrs }">
               <span v-bind="attrs" v-on="on">{{ item.name }}</span>
             </template>
-            <span v-if="item.published" :lang="multiLanguage">
+            <span v-if="item.published" :lang="lang">
               {{ $t('trans.formsTable.viewForm') }}
               <v-icon>open_in_new</v-icon>
             </span>
@@ -92,7 +90,7 @@
         >
           <v-btn color="primary" text small>
             <v-icon :class="isRTL ? 'ml-1' : 'mr-1'">settings</v-icon>
-            <span class="d-none d-sm-flex" :lang="multiLanguage">{{
+            <span class="d-none d-sm-flex" :lang="lang">{{
               $t('trans.formsTable.manage')
             }}</span>
           </v-btn>
@@ -104,7 +102,7 @@
         >
           <v-btn color="primary" text small>
             <v-icon :class="isRTL ? 'ml-1' : 'mr-1'">list_alt</v-icon>
-            <span class="d-none d-sm-flex" :lang="multiLanguage">{{
+            <span class="d-none d-sm-flex" :lang="lang">{{
               $t('trans.formsTable.submissions')
             }}</span>
           </v-btn>
@@ -118,7 +116,7 @@
       @close-dialog="showDescriptionDialog = false"
     >
       <template #title>
-        <span class="pl-5" :lang="multiLanguage">{{
+        <span class="pl-5" :lang="lang">{{
           $t('trans.formsTable.Description')
         }}</span>
       </template>
@@ -152,7 +150,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['formList', 'isRTL', 'multiLanguage']),
+    ...mapGetters('form', ['formList', 'isRTL', 'lang']),
     ...mapGetters('auth', ['user']),
     headers() {
       return [

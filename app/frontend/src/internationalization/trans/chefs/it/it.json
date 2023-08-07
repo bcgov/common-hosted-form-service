@@ -18,10 +18,6 @@
   "manageLayout": {
     "manageForm": "Gestisci modulo"
   },
-  "preview": {
-    "preview": "Anteprima",
-    "previewToolTip": "Questo mostra un'anteprima del design e del comportamento della versione del modulo come lo vedranno i tuoi mittenti. Non puoi inviare il modulo da questa pagina."
-  },
   "shareForm": {
     "shareForm": "Modulo di condivisione",
     "shareLink": "Condividi il link",
@@ -54,13 +50,13 @@
   },
   "formSettings": {
     "pressToAddMultiEmail": "Premi <kbd>invio</kbd> o <kbd>,</kbd> o <kbd>spazio</kbd> per aggiungere più indirizzi email",
-    "allowMultiDraft": "Consenti il ​​caricamento di <strong> più bozze</strong>",
+    "allowMultiDraft": "Consenti il caricamento <strong>di più bozze</strong>",
     "formTitle": "Titolo del modulo",
     "formDescription": "Descrizione del modulo",
     "formAccess": "Accesso al modulo",
     "info": "Se utilizzerai questo modulo per raccogliere informazioni dal pubblico in generale su argomenti di interesse generale per il pubblico, sei tenuto a contattare il GCPE in modo che il tuo impegno possa essere elencato su",
     "important": "IMPORTANTE",
-    "idimNotifyA": "È necessario informare il team Identity Information Management (IDIM) tramite e-mail",
+    "idimNotifyA": "È necessario informare il team IDIM (Identity Information Management) tramite e-mail",
     "idimNotifyB": "la tua intenzione di sfruttare BCeID per verificare le identità dei tuoi mittenti di moduli.",
     "referenceGuideA": "Si prega di fare riferimento al nostro",
     "referenceGuideB": "guida utente",
@@ -122,12 +118,12 @@
     "validEmailRequired": "Inserisci tutti gli indirizzi email validi",
     "fieldRequired": "Questo campo è obbligatorio.",
     "correctDateFormat": "La data deve essere nel formato corretto. cioè. aaaa-mm-gg",
-    "dateDiffMsg": "La data di chiusura dell'invio deve essere maggiore della data di apertura dell'invio.",
+    "dateDiffMsg": "La data di chiusura dell'invio deve essere successiva alla data di apertura dell'invio.",
     "valueMustBeNumber": "Il valore deve essere un numero. cioè. 1,2,3,5,99",
     "selectAnOptions": "Seleziona almeno 1 opzione",
     "validInterval": "Questo dovrebbe essere un intervallo valido.",
     "fieldRequiredAndInterval": "Questo campo è obbligatorio e dovrebbe essere un intervallo.",
-    "dateGrtOpenSubmissnDate": "Ripeti fino a quando la data dovrebbe essere maggiore della data di invio aperta",
+    "dateGrtOpenSubmissnDate": "La data di ripetizione deve essere maggiore della data di invio aperta",
     "public": "Pubblico (anonimo)"
   },
   "apiKey": {
@@ -157,7 +153,7 @@
   },
   "manageVersions": {
     "important": "IMPORTANTE!",
-    "infoA": "Se non ci sono versioni pubblicate, gli utenti non possono accedere a questo modulo finché non viene assegnata una versione pubblicata. Una volta pubblicata una versione, quella versione non è più modificabile. È necessario creare una nuova versione basata su una delle versioni precedenti del modulo per continuare a modificare.",
+    "infoA": "Se non sono presenti versioni pubblicate, gli utenti non possono accedere a questo modulo fino a quando non viene assegnata una versione pubblicata. Una volta pubblicata una versione, quella versione non è più modificabile. È necessario creare una nuova versione basata su una delle versioni precedenti del modulo per continuare a modificare.",
     "infoB": "Nota: è possibile pubblicare solo una versione.",
     "version": "Versione",
     "draft": "Bozza",
@@ -267,7 +263,6 @@
     "notificationMsg": "Impossibile ottenere l'utente da RBAC, vedere la console",
     "notificationConsErr": "Errore durante il recupero dell'utente da RBAC"
   },
-  "fcProactiveHelp": {},
   "baseAuthButton": {
     "logout": "Disconnettersi",
     "login": "Login"
@@ -305,7 +300,10 @@
     "formDesignSaveConsoleErrMsg": "Errore durante l'aggiornamento o la creazione del modulo (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Errore: {error}",
     "collapse": "Crollo",
     "actions": "Azioni",
-    "version": "Versione"
+    "version": "Versione",
+    "save": "Salva",
+    "saving": "Salvataggio",
+    "notSaved": "Non salvato"
   },
   "formViewerMultiUpload": {
     "important": "IMPORTANTE",
@@ -331,10 +329,6 @@
     "errAfterValidate": "Sono stati rilevati alcuni errori, vedere di seguito per ulteriori informazioni.",
     "fileIsEmpty": "questo file è vuoto.",
     "download": "Scaricamento"
-  },
-  "bcGovAlertBanner": {
-    "defaultErrMsg": "Errore: qualcosa è andato storto",
-    "error": "errore"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Dichiarazione di non responsabilità e dichiarazione di responsabilità per i progettisti di moduli:",
@@ -527,7 +521,7 @@
     "dateStatusChanged": "Data Stato Modificato",
     "assignee": "Assegnatario",
     "updatedBy": "Aggiornato da",
-    "getSubmissionStatusErr": "Si è verificato un errore durante il tentativo di recuperare gli stati.",
+    "getSubmissionStatusErr": "Si è verificato un errore durante il tentativo di recupero degli stati.",
     "getSubmissionStatusConsErr": "Errore durante l'aggiunta della nota:"
   },
   "exportSubmissions": {
@@ -548,7 +542,7 @@
     "from": "Da",
     "to": "A",
     "CSVFormat": "Formato CSV",
-    "multiRowPerSubmissionA": "1 - Righe multiple per invio con spazi di identificazione",
+    "multiRowPerSubmissionA": "1 - Righe multiple per invio con spazi di rientro",
     "multiRowPerSubmissionB": "2 - Righe multiple per invio",
     "singleRowPerSubmission": "3 - Riga singola per invio",
     "unformatted": "4 - Non formattato",
@@ -592,6 +586,10 @@
   },
   "proactiveHelpPreviewDialog": {
     "learnMore": "Saperne di più"
+  },
+  "preview": {
+    "preview": "Anteprima",
+    "previewToolTip": "Questo mostra un'anteprima del design e del comportamento della versione del modulo come lo vedranno i tuoi mittenti. Non puoi inviare il modulo da questa pagina."
   },
   "generalLayout": {
     "loadingText": "Attendere il caricamento prego",
@@ -637,8 +635,8 @@
     "formOwnerConsoleErrMsg": "Impossibile rimuovere {userId} poiché è l'unico proprietario rimasto di questo modulo.",
     "insufficientPermissnMsg": "Autorizzazioni insufficienti per gestire il team",
     "getUserErrMsg": "Errore durante il recupero degli utenti del modulo:",
-    "getRolesErrMsg": "Errore nell'ottenere l'elenco dei ruoli:",
-    "formOwnerRemovalWarning": "Impossibile rimuovere perché sono l'unico proprietario rimasto di questo modulo.",
+    "getRolesErrMsg": "Errore durante l'acquisizione dell'elenco dei ruoli:",
+    "formOwnerRemovalWarning": "Impossibile rimuovere poiché è l'unico proprietario rimasto di questo modulo.",
     "removeUsersErrMsg": "Si è verificato un errore durante il tentativo di eliminare gli utenti selezionati",
     "removeUserConsoleErrMsg": "Errore durante l'eliminazione degli utenti dal modulo {formId}: {error}",
     "updUserRolesErrMsg": "Si è verificato un errore durante il tentativo di aggiornare tutti i ruoli utente",
@@ -670,7 +668,7 @@
     "submitFormWarningMsg": "Sei sicuro di voler inviare il modulo?",
     "submit": "Invia",
     "wantToSaveDraft": "Vuoi salvare la bozza?",
-    "version": "Versione: {version}",
+    "version": "Versione: {versione}",
     "formScheduleExpireMessage": "L'invio del modulo non è disponibile poiché il periodo di invio programmato è scaduto.",
     "getUsersSubmissionsErrMsg": "Si è verificato un errore durante il recupero dell'invio per questo modulo",
     "getUsersSubmissionsConsoleErrMsg": "Errore durante il caricamento dei dati di invio del modulo {submissionId}: {error}",
@@ -692,7 +690,7 @@
     "no": "NO",
     "failedResSubmissn": "Risposta non riuscita dall'endpoint di invio. Codice di risposta: {stato}",
     "errSubmittingForm": "Si è verificato un errore durante l'invio di questo modulo",
-    "errorSavingFile": "Errore durante il salvataggio dei file. nome file: {nomeNfile}. Errore: {errore}",
+    "errorSavingFile": "Errore durante il salvataggio dei file. nome file: {nomefile}. Errore: {errore}",
     "submittingDraftErrMsg": "Si è verificato un errore durante il salvataggio di una bozza",
     "submittingDraftConsErrMsg": "Errore durante il salvataggio della bozza. SubmissionId: {submissionId}. Errore: {errore}",
     "formDraftAccessErrMsg": "L'invio richiesto è già stato inviato, reindirizzamento alla pagina Visualizza"
@@ -771,29 +769,21 @@
     "saveAsADraft": "Salva come bozza",
     "editThisDraft": "Modifica questa bozza",
     "switchSingleSubmssn": "Passa all'invio singolo",
-    "switchMultiSubmssn": "Passa all'invio singolo"
+    "switchMultiSubmssn": "Passa a Invio multiplo"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Link copiato negli appunti",
     "copyToClipboard": "Copia negli appunti",
     "errCopyToClipboard": "Errore nel tentativo di copiare negli appunti."
   },
-  "admin": {
-    "root": {
-      "admin": "Amministratore"
-    }
-  },
-  "user": {
-    "root": {
-      "myForms": "LE MIE FORME",
-      "history": "STORIA",
-      "user": "Utente"
-    }
-  },
   "sucess": {
     "sucessFormSubmissn": "Il tuo modulo è stato inviato con successo",
     "keepRecord": "Se desideri conservare una registrazione di questa presentazione, puoi conservare quanto segue",
     "confirmationId": "ID di conferma"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Errore: qualcosa è andato storto",
+    "error": "errore"
   },
   "permissionUtils": {
     "formNotAvailable": "Il modulo non è al momento disponibile. Ciò potrebbe essere dovuto a un collegamento errato o il modulo potrebbe essere stato eliminato dal suo proprietario.",
@@ -802,6 +792,28 @@
     "loadingForm": "Errore durante il caricamento di {options}: {error}",
     "idpHintMsg": "Questo modulo richiede l'autenticazione {idpHint}. Effettua nuovamente il login e riprova.",
     "formIdpMissMatch": "Form IDP non corrispondente. Il modulo richiede {idpHint} ma l'utente ha {userIdp}."
+  },
+  "download": {
+    "chefsDataExport": "Esportazione dati CHEFS",
+    "preparingForDownloading": "Preparazione per il download...",
+    "downloadInfoA": "Se il tuo file non viene scaricato automaticamente",
+    "downloadInfoB": "clicca qui per riprovare"
+  },
+  "history": {
+    "submissnHistory": "La tua cronologia di invio (TBD)"
+  },
+  "error": {
+    "logout": "Disconnettersi"
+  },
+  "login": {
+    "authenticateWith": "Autenticati con:",
+    "alreadyLoggedIn": "Ha già effettuato il login",
+    "home": "Casa",
+    "about": "Di"
+  },
+  "notFound": {
+    "about": "Di",
+    "pageNotFound": "404 pagina non trovata. :"
   },
   "store": {
     "admin": {
@@ -845,7 +857,7 @@
       "updCurrUserFormPrefConsErrMsg": "Errore durante l'aggiornamento delle preferenze del modulo utente utilizzando formID {formId} e preferenze {preferenze}: {errore}",
       "getCurrUserFormPrefErrMsg": "Si è verificato un errore durante il recupero delle tue preferenze per questo modulo.",
       "getCurrUserFormPrefConsErrMsg": "Errore nell'ottenere le preferenze del modulo utente utilizzando formID {formId}: {error}",
-      "delCurrformNotiMsg": "Il modulo {name} è stato eliminato correttamente.",
+      "delCurrformNotiMsg": "Il modulo {name} è stato eliminato con successo.",
       "delCurrFormConsErMsg": "Errore durante l'eliminazione del modulo {id}: {errore}",
       "delDraftErrMsg": "Si è verificato un errore durante l'eliminazione di questa bozza.",
       "delDraftConsErrMsg": "Errore durante l'eliminazione di {draftId}: {error}",
@@ -896,6 +908,24 @@
       "listFCPHConsErrMsg": "Errore durante il recupero dei componenti del generatore di moduli: {errore}",
       "downloadFileErrMsg": "Si è verificato un errore durante il download del file",
       "downloadFileConsErrMsg": "Errore durante il download del file: errore"
+    }
+  },
+  "admin": {
+    "root": {
+      "admin": "Amministratore"
+    },
+    "form": {
+      "administerForm": "Modulo Amministrare"
+    },
+    "user": {
+      "administerUser": "Amministra utente"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "LE MIE FORME",
+      "history": "STORIA",
+      "user": "Utente"
     }
   }
 }

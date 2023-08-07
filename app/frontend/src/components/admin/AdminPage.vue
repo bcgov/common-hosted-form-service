@@ -1,12 +1,12 @@
 <template>
   <v-tabs :class="{ 'dir-rtl': isRTL }" v-model="tab">
-    <v-tab :lang="multiLanguage">{{ $t('trans.adminPage.forms') }}</v-tab>
-    <v-tab :lang="multiLanguage">{{ $t('trans.adminPage.users') }}</v-tab>
-    <v-tab :lang="multiLanguage">{{ $t('trans.adminPage.developer') }}</v-tab>
-    <v-tab :lang="multiLanguage" data-cy="infoLinks">{{
+    <v-tab :lang="lang">{{ $t('trans.adminPage.forms') }}</v-tab>
+    <v-tab :lang="lang">{{ $t('trans.adminPage.users') }}</v-tab>
+    <v-tab :lang="lang">{{ $t('trans.adminPage.developer') }}</v-tab>
+    <v-tab :lang="lang" data-cy="infoLinks">{{
       $t('trans.adminPage.infoLinks')
     }}</v-tab>
-    <v-tab :lang="multiLanguage" v-if="adminDashboardUrl">{{
+    <v-tab :lang="lang" v-if="adminDashboardUrl">{{
       $t('trans.adminPage.metrics')
     }}</v-tab>
 
@@ -37,7 +37,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['isRTL', 'multiLanguage']),
+    ...mapGetters('form', ['isRTL', 'lang']),
   },
   watch: {
     isRTL() {

@@ -18,10 +18,6 @@
   "manageLayout": {
     "manageForm": "フォームの管理"
   },
-  "preview": {
-    "preview": "プレビュー",
-    "previewToolTip": "これは、送信者に表示されるフォーム バージョンのデザインと動作のプレビューを示します。このページからフォームを送信することはできません。"
-  },
   "shareForm": {
     "shareForm": "共有フォーム",
     "shareLink": "共有リンク",
@@ -53,8 +49,8 @@
     "cancel": "キャンセル"
   },
   "formSettings": {
-    "pressToAddMultiEmail": "<kbd>enter</kbd> または <kbd>、</kbd> または <kbd>space</kbd> を押して複数の電子メール アドレスを追加します",
-    "allowMultiDraft": "<strong> 複数の下書き</strong> アップロードを許可する",
+    "pressToAddMultiEmail": "<kbd>Enter</kbd>または<kbd>、</kbd>または<kbd>スペース</kbd>を押して複数の電子メール アドレスを追加します",
+    "allowMultiDraft": "<strong>複数の下書きの</strong>アップロードを許可する",
     "formTitle": "フォームのタイトル",
     "formDescription": "フォームの説明",
     "formAccess": "フォームアクセス",
@@ -127,7 +123,7 @@
     "selectAnOptions": "少なくとも 1 つのオプションを選択してください",
     "validInterval": "これは有効な間隔である必要があります。",
     "fieldRequiredAndInterval": "このフィールドは必須であり、間隔である必要があります。",
-    "dateGrtOpenSubmissnDate": "日付が提出開始日よりも後の日付になるまで繰り返します",
+    "dateGrtOpenSubmissnDate": "繰り返しの日付は提出開始日よりも後の日付にする必要があります",
     "public": "公開（匿名）"
   },
   "apiKey": {
@@ -267,7 +263,6 @@
     "notificationMsg": "RBAC からユーザーを取得できませんでした。コンソールを参照してください",
     "notificationConsErr": "RBAC からユーザーを取得中にエラーが発生しました"
   },
-  "fcProactiveHelp": {},
   "baseAuthButton": {
     "logout": "ログアウト",
     "login": "ログイン"
@@ -305,7 +300,10 @@
     "formDesignSaveConsoleErrMsg": "フォームの更新または作成中にエラーが発生しました (FormID: {formId}、versionId: {versionId}、draftId: {draftId}) エラー: {error}",
     "collapse": "崩壊",
     "actions": "行動",
-    "version": "バージョン"
+    "version": "バージョン",
+    "save": "保存",
+    "saving": "保存",
+    "notSaved": "保存されていません"
   },
   "formViewerMultiUpload": {
     "important": "重要",
@@ -331,10 +329,6 @@
     "errAfterValidate": "いくつかのエラーが見つかりました。詳細については、以下を参照してください。",
     "fileIsEmpty": "このファイルは空です。",
     "download": "ダウンロード"
-  },
-  "bcGovAlertBanner": {
-    "defaultErrMsg": "エラー: 何か問題が発生しました",
-    "error": "エラー"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "フォームデザイナーに対する免責事項と責任声明:",
@@ -548,7 +542,7 @@
     "from": "から",
     "to": "に",
     "CSVFormat": "CSV形式",
-    "multiRowPerSubmissionA": "1 - 識別スペースを含む送信ごとに複数の行",
+    "multiRowPerSubmissionA": "1 - インデントスペースを含む送信ごとに複数の行",
     "multiRowPerSubmissionB": "2 - 送信ごとに複数の行",
     "singleRowPerSubmission": "3 - 送信ごとに 1 行",
     "unformatted": "4 - 未フォーマット",
@@ -593,6 +587,10 @@
   "proactiveHelpPreviewDialog": {
     "learnMore": "もっと詳しく知る"
   },
+  "preview": {
+    "preview": "プレビュー",
+    "previewToolTip": "これは、送信者に表示されるフォーム バージョンのデザインと動作のプレビューを示します。このページからフォームを送信することはできません。"
+  },
   "generalLayout": {
     "loadingText": "読み込み中。。。待って下さい",
     "preview": "プレビュー",
@@ -608,7 +606,7 @@
     "alertInfo": "編集後、フォームを再送信して変更を保存します。",
     "viewAllSubmissions": "すべての提出物を表示",
     "submitted": "提出済み:",
-    "confirmationID": "確認ID：",
+    "confirmationID": "確認ID:",
     "submittedBy": "から提出された：",
     "cancel": "キャンセル",
     "status": "スターテス"
@@ -670,12 +668,12 @@
     "submitFormWarningMsg": "フォームを送信してもよろしいですか?",
     "submit": "送信",
     "wantToSaveDraft": "下書きを保存しますか?",
-    "version": "バージョン: {version}",
+    "version": "バージョン: {バージョン}",
     "formScheduleExpireMessage": "予定されていた提出期間が過ぎているため、フォームを提出することはできません。",
     "getUsersSubmissionsErrMsg": "このフォームの送信を取得中にエラーが発生しました",
     "getUsersSubmissionsConsoleErrMsg": "フォーム送信データ {submissionId} の読み込みエラー: {error}",
     "multiDraftUploadSuccess": "複数の下書きのアップロードが成功しました。",
-    "readVersionErrMsg": "スキーマが応答しません。バージョン ID: {バージョン ID}",
+    "readVersionErrMsg": "応答するスキーマがありません。バージョン ID: {バージョン ID}",
     "readDraftErrMsg": "スキーマが応答しません。ドラフトID: {ドラフトId}",
     "alertRouteMsg": "フォーム所有者がフォームを公開していないため、送信できません。",
     "fecthingFormErrMsg": "このフォームを取得中にエラーが発生しました",
@@ -692,7 +690,7 @@
     "no": "いいえ",
     "failedResSubmissn": "送信エンドポイントからの応答が失敗しました。レスポンスコード: {ステータス}",
     "errSubmittingForm": "このフォームの送信中にエラーが発生しました",
-    "errorSavingFile": "ファイルの保存中にエラーが発生しました。ファイル名: {fileNname}。エラー: {エラー}",
+    "errorSavingFile": "ファイルの保存中にエラーが発生しました。ファイル名: {ファイル名}。エラー: {エラー}",
     "submittingDraftErrMsg": "下書きの保存中にエラーが発生しました",
     "submittingDraftConsErrMsg": "下書きの保存中にエラーが発生しました。送信 ID: {submissionId}。エラー: {エラー}",
     "formDraftAccessErrMsg": "リクエストされた送信はすでに送信されており、[表示] ページにリダイレクトされます。"
@@ -746,7 +744,7 @@
     "agreementErrMsg": "上記のプライバシー免責事項に同意する必要があります。"
   },
   "addTeamMember": {
-    "cantFindChefsUsers": "誰かが見つかりませんか?彼らは CHEFS にログインしていない可能性があります。<br /> CHEFS へのリンクを送信し、ログインするようお願いしてください。",
+    "cantFindChefsUsers": "誰かが見つかりませんか?彼らは CHEFS にログインしていない可能性があります。<br /> CHEFS へのリンクを送信して、ログインするようお願いしてください。",
     "cancel": "キャンセル",
     "add": "追加",
     "mustSelectAUser": "このユーザーを追加するには、少なくとも 1 つの役割を選択する必要があります。",
@@ -771,29 +769,21 @@
     "saveAsADraft": "下書きとして保存",
     "editThisDraft": "この下書きを編集する",
     "switchSingleSubmssn": "単一の提出に切り替える",
-    "switchMultiSubmssn": "単一の提出に切り替える"
+    "switchMultiSubmssn": "複数提出に切り替える"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "リンクがクリップボードにコピーされました",
     "copyToClipboard": "クリップボードにコピー",
     "errCopyToClipboard": "クリップボードにコピーしようとしたときにエラーが発生しました。"
   },
-  "admin": {
-    "root": {
-      "admin": "管理者"
-    }
-  },
-  "user": {
-    "root": {
-      "myForms": "私のフォーム",
-      "history": "歴史",
-      "user": "ユーザー"
-    }
-  },
   "sucess": {
     "sucessFormSubmissn": "フォームは正常に送信されました",
     "keepRecord": "この提出の記録を保存したい場合は、以下を保存できます。",
     "confirmationId": "確認ID"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "エラー: 何か問題が発生しました",
+    "error": "エラー"
   },
   "permissionUtils": {
     "formNotAvailable": "現在フォームはご利用いただけません。これは、リンクが間違っているか、フォームが所有者によって削除されたことが原因である可能性があります。",
@@ -802,6 +792,28 @@
     "loadingForm": "{オプション} のロード中にエラーが発生しました: {エラー}",
     "idpHintMsg": "このフォームには {idpHint} 認証が必要です。再ログインしてもう一度お試しください。",
     "formIdpMissMatch": "フォーム IDP の不一致。フォームには {idpHint} が必要ですが、ユーザーには {userIdp} が必要です。"
+  },
+  "download": {
+    "chefsDataExport": "CHFS データのエクスポート",
+    "preparingForDownloading": "ダウンロードの準備をしています...",
+    "downloadInfoA": "ファイルが自動的にダウンロードされない場合",
+    "downloadInfoB": "ここをクリックしてもう一度試してください"
+  },
+  "history": {
+    "submissnHistory": "あなたの提出履歴 (TBD)"
+  },
+  "error": {
+    "logout": "ログアウト"
+  },
+  "login": {
+    "authenticateWith": "以下で認証します:",
+    "alreadyLoggedIn": "ログイン済み",
+    "home": "家",
+    "about": "だいたい"
+  },
+  "notFound": {
+    "about": "だいたい",
+    "pageNotFound": "404: ページが見つかりません。 :"
   },
   "store": {
     "admin": {
@@ -896,6 +908,24 @@
       "listFCPHConsErrMsg": "フォームビルダーコンポーネントの取得エラー: {error}",
       "downloadFileErrMsg": "ファイルのダウンロード中にエラーが発生しました",
       "downloadFileConsErrMsg": "ファイルのダウンロード中にエラーが発生しました: エラー"
+    }
+  },
+  "admin": {
+    "root": {
+      "admin": "管理者"
+    },
+    "form": {
+      "administerForm": "フォームの管理"
+    },
+    "user": {
+      "administerUser": "ユーザーの管理"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "私のフォーム",
+      "history": "歴史",
+      "user": "ユーザー"
     }
   }
 }

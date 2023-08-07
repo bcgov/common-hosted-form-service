@@ -585,13 +585,6 @@
     "save": "Save",
     "description": "Description"
   },
-  "user": {
-    "root": {
-      "myForms": "MY FORMS",
-      "history": "HISTORY",
-      "user": "User"
-    }
-  },
   "proactiveHelpPreviewDialog": {
     "learnMore": "Learn more"
   },
@@ -784,17 +777,6 @@
     "copyToClipboard": "Copy to Clipboard",
     "errCopyToClipboard": "Error attempting to copy to clipboard."
   },
-  "admin": {
-    "root": {
-      "admin": "Admin"
-    },
-    "form": {
-      "administerForm": "Administer Form"
-    },
-    "user": {
-      "administerUser": "Administer User"
-    }
-  },
   "sucess": {
     "sucessFormSubmissn": "Your form has been submitted successfully",
     "keepRecord": "If you wish to keep a record of this submission, you can keep the following",
@@ -928,5 +910,23 @@
   "notFound": {
     "about": "About",
     "pageNotFound": "404: Page not found. :"
+  },
+  "admin": {
+    "root": {
+      "admin": "Admin"
+    },
+    "form": {
+      "administerForm": "Administer Form"
+    },
+    "user": {
+      "administerUser": "Administer User"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "MY FORMS",
+      "history": "HISTORY",
+      "user": "User"
+    }
   }
 }

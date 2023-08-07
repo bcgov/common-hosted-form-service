@@ -1,42 +1,38 @@
 <template>
   <v-footer :class="{ 'gov-footer': true, 'd-print-none': formSubmitMode }">
     <v-btn text id="footer-home" href="https://www.gov.bc.ca/">
-      <span :lang="multiLanguage">{{ $t('trans.bCGovFooter.home') }}</span>
+      <span :lang="lang">{{ $t('trans.bCGovFooter.home') }}</span>
     </v-btn>
     <v-btn
       text
       id="footer-about"
       href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca"
     >
-      <span :lang="multiLanguage">{{ $t('trans.bCGovFooter.about') }}</span>
+      <span :lang="lang">{{ $t('trans.bCGovFooter.about') }}</span>
     </v-btn>
 
     <v-btn text id="footer-disclaimer" href="http://gov.bc.ca/disclaimer">
-      <span :lang="multiLanguage">{{
-        $t('trans.bCGovFooter.disclaimer')
-      }}</span>
+      <span :lang="lang">{{ $t('trans.bCGovFooter.disclaimer') }}</span>
     </v-btn>
     <v-btn text id="footer-privacy" href="http://gov.bc.ca/privacy">
-      <span :lang="multiLanguage">{{ $t('trans.bCGovFooter.privacy') }}</span>
+      <span :lang="lang">{{ $t('trans.bCGovFooter.privacy') }}</span>
     </v-btn>
     <v-btn
       text
       id="footer-accessibility"
       href="http://gov.bc.ca/webaccessibility"
     >
-      <span :lang="multiLanguage">{{
-        $t('trans.bCGovFooter.accessibility')
-      }}</span>
+      <span :lang="lang">{{ $t('trans.bCGovFooter.accessibility') }}</span>
     </v-btn>
     <v-btn text id="footer-copyright" href="http://gov.bc.ca/copyright">
-      <span :lang="multiLanguage">{{ $t('trans.bCGovFooter.copyRight') }}</span>
+      <span :lang="lang">{{ $t('trans.bCGovFooter.copyRight') }}</span>
     </v-btn>
     <v-btn
       text
       id="footer-contact"
       href="https://www2.gov.bc.ca/gov/content/home/contact-us"
     >
-      <span :lang="multiLanguage">{{ $t('trans.bCGovFooter.contactUs') }}</span>
+      <span :lang="lang">{{ $t('trans.bCGovFooter.contactUs') }}</span>
     </v-btn>
   </v-footer>
 </template>
@@ -46,7 +42,7 @@ import { mapGetters } from 'vuex';
 export default {
   name: 'BCGovFooter',
   computed: {
-    ...mapGetters('form', ['multiLanguage']),
+    ...mapGetters('form', ['lang']),
     formSubmitMode() {
       // don't include footer when printing form submitting pages
       return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;

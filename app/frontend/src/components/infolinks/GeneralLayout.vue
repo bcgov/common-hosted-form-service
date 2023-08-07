@@ -9,7 +9,7 @@
       :items="layoutList"
       :loading="loading"
       :loading-text="$t('trans.generalLayout.loadingText')"
-      :lang="multiLanguage"
+      :lang="lang"
     >
       <template #[`item.componentName`]="{ item }">
         <div>
@@ -34,7 +34,7 @@
               <span
                 class="d-none d-sm-flex"
                 style="font-size: 16px"
-                :lang="multiLanguage"
+                :lang="lang"
                 >{{ $t('trans.generalLayout.edit') }}</span
               >
             </v-btn>
@@ -52,7 +52,7 @@
               <span
                 class="d-none d-sm-flex"
                 style="font-size: 16px"
-                :lang="multiLanguage"
+                :lang="lang"
                 >{{ $t('trans.generalLayout.preview') }}</span
               >
             </v-btn>
@@ -76,7 +76,7 @@
               <span
                 style="width: 120px !important; font-size: 16px"
                 class="d-none d-sm-flex"
-                :lang="multiLanguage"
+                :lang="lang"
                 >{{
                   publish[index]
                     ? $t('trans.generalLayout.published')
@@ -150,7 +150,7 @@ export default {
       ];
     },
     ...mapGetters('admin', ['fcProactiveHelpImageUrl']),
-    ...mapGetters('form', ['multiLanguage']),
+    ...mapGetters('form', ['lang']),
   },
   props: {
     layoutList: {

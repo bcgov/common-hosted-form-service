@@ -7,7 +7,7 @@
           prominent
           type="error"
           :class="{ 'dir-rtl': isRTL }"
-          :lang="multiLanguage"
+          :lang="lang"
         >
           {{
             isLateSubmissionAllowed
@@ -23,7 +23,7 @@
               @click="isFormScheduleExpired = false"
               :class="{ 'dir-rtl': isRTL }"
             >
-              <span :lang="multiLanguage">{{
+              <span :lang="lang">{{
                 $t('trans.formViewer.createLateSubmission')
               }}</span>
             </v-btn>
@@ -76,10 +76,10 @@
           transition="scale-transition"
         >
           <div v-if="saving" :class="{ 'mr-2': isRTL }">
-            <v-progress-linear indeterminate :lang="multiLanguage" />
+            <v-progress-linear indeterminate :lang="lang" />
             {{ $t('trans.formViewer.saving') }}
           </div>
-          <div v-else :class="{ 'mr-2': isRTL }" :lang="multiLanguage">
+          <div v-else :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.formViewer.draftSaved') }}
           </div>
         </v-alert>
@@ -95,19 +95,17 @@
           @continue-dialog="continueSubmit"
         >
           <template #title
-            ><span :lang="multiLanguage">{{
+            ><span :lang="lang">{{
               $t('trans.formViewer.pleaseConfirm')
             }}</span></template
           >
           <template #text
-            ><span :lang="multiLanguage">{{
+            ><span :lang="lang">{{
               $t('trans.formViewer.submitFormWarningMsg')
             }}</span></template
           >
           <template #button-text-continue>
-            <span :lang="multiLanguage"
-              >{{ $t('trans.formViewer.submit') }}
-            </span>
+            <span :lang="lang">{{ $t('trans.formViewer.submit') }} </span>
           </template>
         </BaseDialog>
         <v-alert
@@ -125,7 +123,7 @@
               color="blue-grey lighten-4"
               height="5"
             ></v-progress-linear>
-            <span :class="{ 'mr-2': isRTL }" :lang="multiLanguage">
+            <span :class="{ 'mr-2': isRTL }" :lang="lang">
               {{ $t('trans.formViewer.formLoading') }}
             </span>
           </div>
@@ -158,13 +156,13 @@
           @customEvent="onCustomEvent"
           @change="formChange"
           @render="onFormRender"
-          :language="multiLanguage"
+          :language="lang"
         />
         <p
           v-if="version"
           :class="{ 'text-left': isRTL }"
           class="mt-9"
-          :lang="multiLanguage"
+          :lang="lang"
         >
           {{ $t('trans.formViewer.version', { version: version }) }}
         </p>
@@ -180,20 +178,20 @@
       @continue-dialog="yes"
     >
       <template #title
-        ><span :lang="multiLanguage">
+        ><span :lang="lang">
           {{ $t('trans.formViewer.pleaseConfirm') }}</span
         ></template
       >
       <template #text
-        ><span :lang="multiLanguage">
+        ><span :lang="lang">
           {{ $t('trans.formViewer.wantToSaveDraft') }}</span
         ></template
       >
       <template #button-text-continue>
-        <span :lang="multiLanguage"> {{ $t('trans.formViewer.yes') }}</span>
+        <span :lang="lang"> {{ $t('trans.formViewer.yes') }}</span>
       </template>
       <template #button-text-delete>
-        <span :lang="multiLanguage"> {{ $t('trans.formViewer.no') }}</span>
+        <span :lang="lang"> {{ $t('trans.formViewer.no') }}</span>
       </template>
     </BaseDialog>
   </v-skeleton-loader>
@@ -297,7 +295,7 @@ export default {
       return this.$t('trans.formViewer.formScheduleExpireMessage');
     },
     ...mapGetters('auth', ['authenticated', 'token', 'tokenParsed', 'user']),
-    ...mapGetters('form', ['multiLanguage', 'isRTL', 'multiLanguage']),
+    ...mapGetters('form', ['lang', 'isRTL', 'lang']),
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
     },
@@ -333,7 +331,7 @@ export default {
     },
   },
   watch: {
-    multiLanguage() {
+    lang() {
       this.reRenderFormIo += 1;
     },
   },

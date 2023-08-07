@@ -5,7 +5,7 @@
     >
       <!-- page title -->
       <div>
-        <h1 :lang="multiLanguage">
+        <h1 :lang="lang">
           {{ $t('trans.submissionsTable.submissions') }}
         </h1>
       </div>
@@ -25,7 +25,7 @@
                 <v-icon>view_column</v-icon>
               </v-btn>
             </template>
-            <span :lang="multiLanguage">{{
+            <span :lang="lang">{{
               $t('trans.submissionsTable.selectColumns')
             }}</span>
           </v-tooltip>
@@ -44,7 +44,7 @@
                 </v-btn>
               </router-link>
             </template>
-            <span :lang="multiLanguage">{{
+            <span :lang="lang">{{
               $t('trans.submissionsTable.manageForm')
             }}</span>
           </v-tooltip>
@@ -64,7 +64,7 @@
                 </v-btn>
               </router-link>
             </template>
-            <span :lang="multiLanguage">{{
+            <span :lang="lang">{{
               $t('trans.submissionsTable.submissionsToFiles')
             }}</span>
           </v-tooltip>
@@ -82,7 +82,7 @@
           @click="refreshSubmissions"
         >
           <template #label>
-            <span :class="{ 'mr-2': isRTL }" :lang="multiLanguage">
+            <span :class="{ 'mr-2': isRTL }" :lang="lang">
               {{ $t('trans.submissionsTable.showDeletedSubmissions') }}
             </span>
           </template>
@@ -95,7 +95,7 @@
           @click="refreshSubmissions"
         >
           <template #label>
-            <span :class="{ 'mr-2': isRTL }" :lang="multiLanguage">
+            <span :class="{ 'mr-2': isRTL }" :lang="lang">
               {{ $t('trans.submissionsTable.showMySubmissions') }}
             </span>
           </template>
@@ -112,7 +112,7 @@
             hide-details
             class="pb-5"
             :class="{ label: isRTL }"
-            :lang="multiLanguage"
+            :lang="lang"
           />
         </div>
       </div>
@@ -130,7 +130,7 @@
       v-model="selectedSubmissions"
       :loading-text="$t('trans.submissionsTable.loadingText')"
       :no-data-text="$t('trans.submissionsTable.noDataText')"
-      :lang="multiLanguage"
+      :lang="lang"
     >
       <template v-slot:[`header.event`]>
         <span v-if="!deletedOnly">
@@ -146,7 +146,7 @@
                   >remove_circle</v-icon
                 >
               </template>
-              <span :lang="multiLanguage">{{
+              <span :lang="lang">{{
                 $t('trans.submissionsTable.delSelectedSubmissions')
               }}</span>
             </v-tooltip>
@@ -167,7 +167,7 @@
                   >restore_from_trash</v-icon
                 >
               </template>
-              <span :lang="multiLanguage">{{
+              <span :lang="lang">{{
                 $t('trans.submissionsTable.resSelectedSubmissions')
               }}</span>
             </v-tooltip>
@@ -182,7 +182,7 @@
         {{ item.status }}
       </template>
       <template #[`item.lateEntry`]="{ item }">
-        <span :lang="multiLanguage">
+        <span :lang="lang">
           {{
             item.lateEntry === true
               ? $t('trans.submissionsTable.yes')
@@ -206,7 +206,7 @@
               </v-btn>
             </router-link>
           </template>
-          <span :lang="multiLanguage">{{
+          <span :lang="lang">{{
             $t('trans.submissionsTable.viewSubmission')
           }}</span>
         </v-tooltip>
@@ -229,7 +229,7 @@
                 <v-icon>remove_circle</v-icon>
               </v-btn>
             </template>
-            <span :lang="multiLanguage">{{
+            <span :lang="lang">{{
               $t('trans.submissionsTable.deleteSubmission')
             }}</span>
           </v-tooltip>
@@ -251,9 +251,7 @@
                 <v-icon>restore_from_trash</v-icon>
               </v-btn>
             </template>
-            <span :lang="multiLanguage">{{
-              $t('trans.submissionsTable.restore')
-            }}</span>
+            <span :lang="lang">{{ $t('trans.submissionsTable.restore') }}</span>
           </v-tooltip>
         </span>
       </template>
@@ -272,9 +270,7 @@
         {{ singleSubmissionDelete ? singleDeleteMessage : multiDeleteMessage }}
       </template>
       <template #button-text-continue>
-        <span :lang="multiLanguage">{{
-          $t('trans.submissionsTable.delete')
-        }}</span>
+        <span :lang="lang">{{ $t('trans.submissionsTable.delete') }}</span>
       </template>
     </BaseDialog>
     <BaseDialog
@@ -284,7 +280,7 @@
       @continue-dialog="restoreSub"
     >
       <template #title
-        ><span :lang="multiLanguage">
+        ><span :lang="lang">
           {{ $t('trans.submissionsTable.confirmRestoration') }}</span
         ></template
       >
@@ -294,9 +290,7 @@
         }}
       </template>
       <template #button-text-continue>
-        <span :lang="multiLanguage">{{
-          $t('trans.submissionsTable.restore')
-        }}</span>
+        <span :lang="lang">{{ $t('trans.submissionsTable.restore') }}</span>
       </template>
     </BaseDialog>
 
@@ -312,10 +306,10 @@
         :preselectedData="PRESELECTED_DATA"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
-        :lang="multiLanguage"
+        :lang="lang"
       >
         <template #filter-title
-          ><span :lang="multiLanguage">
+          ><span :lang="lang">
             {{ $t('trans.submissionsTable.searchTitle') }}
           </span></template
         >
@@ -398,7 +392,7 @@ export default {
       'roles',
       'deletedSubmissions',
       'isRTL',
-      'multiLanguage',
+      'lang',
     ]),
     ...mapGetters('auth', ['user']),
 

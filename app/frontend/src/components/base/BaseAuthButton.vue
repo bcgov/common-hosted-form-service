@@ -1,10 +1,10 @@
 <template>
   <div v-if="keycloakReady" class="d-print-none">
     <v-btn v-if="authenticated" dark outlined @click="logout">
-      <span :lang="multiLanguage">{{ $t('trans.baseAuthButton.logout') }}</span>
+      <span :lang="lang">{{ $t('trans.baseAuthButton.logout') }}</span>
     </v-btn>
     <v-btn v-else-if="hasLogin" dark outlined @click="login()">
-      <span :lang="multiLanguage">{{ $t('trans.baseAuthButton.login') }}</span>
+      <span :lang="lang">{{ $t('trans.baseAuthButton.login') }}</span>
     </v-btn>
   </div>
 </template>
@@ -16,7 +16,7 @@ export default {
   name: 'BaseAuthButton',
   computed: {
     ...mapGetters('auth', ['authenticated', 'keycloakReady']),
-    ...mapGetters('form', ['multiLanguage']),
+    ...mapGetters('form', ['lang']),
     hasLogin() {
       return this.$route && this.$route.meta && this.$route.meta.hasLogin;
     },

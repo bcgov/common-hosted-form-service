@@ -16,7 +16,7 @@
             hide-details
             class="pb-5"
             :class="{ 'dir-rtl': isRTL, label: isRTL }"
-            :lang="multiLanguage"
+            :lang="lang"
           />
         </div>
       </v-col>
@@ -31,7 +31,7 @@
       :search="search"
       :loading="loading"
       :loading-text="$t('trans.adminUsersTable.loadingText')"
-      :lang="multiLanguage"
+      :lang="lang"
     >
       <template #[`item.created`]="{ item }">
         {{ item.createdAt | formatDate }}
@@ -40,7 +40,7 @@
         <router-link :to="{ name: 'AdministerUser', query: { u: item.id } }">
           <v-btn color="primary" text small>
             <v-icon class="mr-1">build_circle</v-icon>
-            <span class="d-none d-sm-flex" :lang="multiLanguage">{{
+            <span class="d-none d-sm-flex" :lang="lang">{{
               $t('trans.adminUsersTable.admin')
             }}</span>
           </v-btn>
@@ -64,7 +64,7 @@ export default {
   },
   computed: {
     ...mapGetters('admin', ['userList']),
-    ...mapGetters('form', ['isRTL', 'multiLanguage']),
+    ...mapGetters('form', ['isRTL', 'lang']),
     headers() {
       return [
         {

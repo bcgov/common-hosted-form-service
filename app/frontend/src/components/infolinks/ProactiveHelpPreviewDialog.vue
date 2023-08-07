@@ -62,7 +62,7 @@
                   disabledLink: component && component.moreHelpInfoLink === '',
                 }"
               >
-                <div class="mr-1 cursor" :lang="multiLanguage">
+                <div class="mr-1 cursor" :lang="lang">
                   {{ $t('trans.proactiveHelpPreviewDialog.learnMore') }}
                   <font-awesome-icon
                     icon="fa-solid fa-square-arrow-up-right"
@@ -103,7 +103,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('form', ['isRTL', 'multiLanguage']),
+    ...mapGetters('form', ['isRTL', 'lang']),
   },
   watch: {
     showDialog() {
