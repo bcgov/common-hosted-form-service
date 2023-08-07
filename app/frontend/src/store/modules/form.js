@@ -5,7 +5,7 @@ import {
   formService,
   fileService,
   rbacService,
-  userService,
+  userService
 } from '@/services';
 import { generateIdps, parseIdps } from '@/utils/transformUtils';
 import i18n from '@/internationalization';
@@ -23,15 +23,15 @@ const genInitialSchedule = () => ({
     enabled: null,
     repeatUntil: null,
     everyTerm: null,
-    everyIntervalType: null,
+    everyIntervalType: null
   },
   allowLateSubmissions: {
     enabled: null,
     forNext: {
       term: null,
-      intervalType: null,
-    },
-  },
+      intervalType: null
+    }
+  }
 });
 
 const genInitialForm = () => ({
@@ -51,7 +51,7 @@ const genInitialForm = () => ({
   schedule: genInitialSchedule(),
   userType: IdentityMode.TEAM,
   versions: [],
-  enableCopyExistingSubmission: false,
+  enableCopyExistingSubmission: false
 });
 
 /**
@@ -69,8 +69,8 @@ export default {
       confirmationId: '',
       originalName: '',
       submission: {
-        data: {},
-      },
+        data: {}
+      }
     },
 
     permissions: [],
@@ -84,10 +84,10 @@ export default {
     fcProactiveHelpImageUrl: '',
     downloadedFile: {
       data: null,
-      headers: null,
+      headers: null
     },
     lang: 'en',
-    isRTL: false,
+    isRTL: false
   },
   getters: {
     getField, // vuex-map-fields
@@ -109,7 +109,7 @@ export default {
     fcProactiveHelpImageUrl: (state) => state.fcProactiveHelpImageUrl,
     downloadedFile: (state) => state.downloadedFile,
     lang: (state) => state.lang,
-    isRTL: (state) => state.isRTL,
+    isRTL: (state) => state.isRTL
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -176,7 +176,7 @@ export default {
     },
     SET_MULTI_LANGUAGE(state, lang) {
       state.lang = lang;
-    },
+    }
   },
   actions: {
     //
@@ -196,7 +196,7 @@ export default {
           name: f.formName,
           description: f.formDescription,
           permissions: f.permissions,
-          published: f.published,
+          published: f.published
         }));
         commit('SET_FORMLIST', forms);
       } catch (error) {
@@ -205,8 +205,8 @@ export default {
           {
             message: i18n.t('trans.store.form.getCurrUserFormsErrMsg'),
             consoleError: i18n.t('trans.store.form.getCurrUserFormsErrMsg', {
-              error: error,
-            }),
+              error: error
+            })
           },
           { root: true }
         );
@@ -230,8 +230,8 @@ export default {
             message: i18n.t('trans.store.form.getUserFormPermErrMsg'),
             consoleError: i18n.t('trans.store.form.getUserFormPermConsErrMsg', {
               formId: formId,
-              error: error,
-            }),
+              error: error
+            })
           },
           { root: true }
         );
@@ -256,7 +256,7 @@ export default {
             consoleError: i18n.t(
               'trans.store.form.getUserFormRolesConsErrmsg',
               { formId: formId, error: error }
-            ),
+            )
           },
           { root: true }
         );
@@ -273,8 +273,8 @@ export default {
             message: i18n.t('trans.store.form.getCurrUserFormPrefErrMsg'),
             consoleError: i18n.t('trans.store.form.getCurrUserFormPrefErrMsg', {
               formId: formId,
-              error: error,
-            }),
+              error: error
+            })
           },
           { root: true }
         );
@@ -298,7 +298,7 @@ export default {
             consoleError: i18n.t(
               'trans.store.form.updCurrUserFormPrefConsErrMsg',
               { formId: formId, preferences: preferences, error: error }
-            ),
+            )
           },
           { root: true }
         );
@@ -315,9 +315,9 @@ export default {
           'notifications/addNotification',
           {
             message: i18n.t('trans.store.form.delCurrformNotiMsg', {
-              name: state.form.name,
+              name: state.form.name
             }),
-            ...NotificationTypes.SUCCESS,
+            ...NotificationTypes.SUCCESS
           },
           { root: true }
         );
@@ -326,12 +326,12 @@ export default {
           'notifications/addNotification',
           {
             message: i18n.t('trans.store.form.delCurrformNotiMsg', {
-              name: state.form.name,
+              name: state.form.name
             }),
             consoleError: i18n.t('trans.store.form.delCurrFormConsErMsg', {
               id: state.form.id,
-              error: error,
-            }),
+              error: error
+            })
           },
           { root: true }
         );
@@ -347,8 +347,8 @@ export default {
             message: i18n.t('trans.store.form.delDraftErrMsg'),
             consoleError: i18n.t('trans.store.form.delDraftConsErrMsg', {
               draftId: draftId,
-              error: error,
-            }),
+              error: error
+            })
           },
           { root: true }
         );
@@ -366,8 +366,8 @@ export default {
             message: i18n.t('trans.store.form.fecthDraftErrMsg'),
             consoleError: i18n.t('trans.store.form.fecthDraftConsErrMsg', {
               formId: formId,
-              error: error,
-            }),
+              error: error
+            })
           },
           { root: true }
         );
@@ -385,7 +385,7 @@ export default {
           data.submissionReceivedEmails && data.submissionReceivedEmails.length;
         data.schedule = {
           ...genInitialSchedule(),
-          ...data.schedule,
+          ...data.schedule
         };
 
         commit('SET_FORM', data);
@@ -396,8 +396,8 @@ export default {
             message: i18n.t('trans.store.form.fecthFormErrMsg'),
             consoleError: i18n.t('trans.store.form.fecthFormErrMsg', {
               formId: formId,
-              error: error,
-            }),
+              error: error
+            })
           },
           { root: true }
         );
@@ -418,8 +418,8 @@ export default {
             message: i18n.t('trans.store.form.fetchFormFieldsErrMsg'),
             consoleError: i18n.t('trans.store.form.fetchFormFieldsConsErrMsg', {
               formId: formId,
-              error: error,
-            }),
+              error: error
+            })
           },
           { root: true }
         );
@@ -435,8 +435,8 @@ export default {
             message: i18n.t('trans.store.form.publishDraftErrMsg'),
             consoleError: i18n.t('trans.store.form.publishDraftConsErrMsg', {
               draftId: draftId,
-              error: error,
-            }),
+              error: error
+            })
           },
           { root: true }
         );
@@ -455,8 +455,8 @@ export default {
             consoleError: i18n.t('trans.store.form.toggleVersnPublConsErrMsg', {
               versionId: versionId,
               publish: publish,
-              error: error,
-            }),
+              error: error
+            })
           },
           { root: true }
         );
@@ -485,7 +485,7 @@ export default {
           enableStatusUpdates: state.form.enableStatusUpdates,
           identityProviders: generateIdps({
             idps: state.form.idps,
-            userType: state.form.userType,
+            userType: state.form.userType
           }),
           showSubmissionConfirmation: state.form.showSubmissionConfirmation,
           submissionReceivedEmails: emailList,
@@ -496,7 +496,7 @@ export default {
             : false,
           enableCopyExistingSubmission: state.form.enableCopyExistingSubmission
             ? state.form.enableCopyExistingSubmission
-            : false,
+            : false
         });
       } catch (error) {
         dispatch(
@@ -505,8 +505,8 @@ export default {
             message: i18n.t('trans.store.form.updateFormErrMsg'),
             consoleError: i18n.t('trans.store.form.updateFormConsErrMsg', {
               id: state.form.id,
-              error: error,
-            }),
+              error: error
+            })
           },
           { root: true }
         );
@@ -524,7 +524,7 @@ export default {
           'notifications/addNotification',
           {
             message: i18n.t('trans.store.form.deleteSubmissionNotifyMsg'),
-            ...NotificationTypes.SUCCESS,
+            ...NotificationTypes.SUCCESS
           },
           { root: true }
         );
@@ -536,7 +536,7 @@ export default {
             consoleError: i18n.t(
               'trans.store.form.deleteSubmissionConsErrMsg',
               { submissionId: submissionId, error: error }
-            ),
+            )
           },
           { root: true }
         );
@@ -546,13 +546,13 @@ export default {
     async deleteMultiSubmissions({ dispatch }, { formId, submissionIds }) {
       try {
         await formService.deleteMultipleSubmissions(submissionIds[0], formId, {
-          data: { submissionIds: submissionIds },
+          data: { submissionIds: submissionIds }
         });
         dispatch(
           'notifications/addNotification',
           {
             message: i18n.t('trans.store.form.deleteSubmissionsNotifyMsg'),
-            ...NotificationTypes.SUCCESS,
+            ...NotificationTypes.SUCCESS
           },
           { root: true }
         );
@@ -564,7 +564,7 @@ export default {
             consoleError: i18n.t(
               'trans.store.form.deleteSubmissionsConsErrMsg',
               { error: error }
-            ),
+            )
           },
           { root: true }
         );
@@ -575,13 +575,13 @@ export default {
       try {
         // Get this submission
         await formService.restoreMutipleSubmissions(submissionIds[0], formId, {
-          submissionIds: submissionIds,
+          submissionIds: submissionIds
         });
         dispatch(
           'notifications/addNotification',
           {
             message: i18n.t('trans.store.form.restoreSubmissionsNotiMsg'),
-            ...NotificationTypes.SUCCESS,
+            ...NotificationTypes.SUCCESS
           },
           { root: true }
         );
@@ -593,7 +593,7 @@ export default {
             consoleError: i18n.t(
               'trans.store.form.restoreSubmissionsConsErrMsg',
               { error: error }
-            ),
+            )
           },
           { root: true }
         );
@@ -608,7 +608,7 @@ export default {
           'notifications/addNotification',
           {
             message: i18n.t('trans.store.form.restoreSubmissionNotiMsg'),
-            ...NotificationTypes.SUCCESS,
+            ...NotificationTypes.SUCCESS
           },
           { root: true }
         );
@@ -620,7 +620,7 @@ export default {
             consoleError: i18n.t(
               'trans.store.form.restoreSubmissionsConsErrMsg',
               { error: error, submissionId: submissionId }
-            ),
+            )
           },
           { root: true }
         );
@@ -630,7 +630,7 @@ export default {
       try {
         // Get user list for this submission
         const response = await rbacService.getSubmissionUsers({
-          formSubmissionId,
+          formSubmissionId
         });
         commit('SET_SUBMISSIONUSERS', response);
       } catch (error) {
@@ -641,7 +641,7 @@ export default {
             consoleError: i18n.t(
               'trans.store.form.fecthSubmissnUsersConsErrMsg',
               { formSubmissionId: formSubmissionId, error: error }
-            ),
+            )
           },
           { root: true }
         );
@@ -660,8 +660,8 @@ export default {
             message: i18n.t('trans.store.form.fetchSubmissnErrMsg'),
             consoleError: i18n.t('trans.store.form.fetchSubmissnConsErrMsg', {
               submissionId: submissionId,
-              error: error,
-            }),
+              error: error
+            })
           },
           { root: true }
         );
@@ -689,7 +689,7 @@ export default {
             consoleError: i18n.t(
               'trans.store.form.fetchFormCSVExptFieldsErrMsg',
               { formId: formId, error: error }
-            ),
+            )
           },
           { root: true }
         );
@@ -712,7 +712,7 @@ export default {
               deleted: deletedOnly,
               fields: fields,
               createdBy: createdBy,
-              createdAt: createdAt,
+              createdAt: createdAt
             });
         commit('SET_SUBMISSIONLIST', response.data);
       } catch (error) {
@@ -722,8 +722,8 @@ export default {
             message: i18n.t('trans.store.form.fetchSubmissnsErrMsg'),
             consoleError: i18n.t('trans.store.form.fetchSubmissnsConsErrMsg', {
               formId: formId,
-              error: error,
-            }),
+              error: error
+            })
           },
           { root: true }
         );
@@ -734,8 +734,8 @@ export default {
         // TODO: need a better 'set back to initial state' ability
         commit('SET_FORMSUBMISSION', {
           submission: {
-            data: {},
-          },
+            data: {}
+          }
         });
         // Get details about the sepecific form version
         const response = await formService.readVersion(formId, versionId);
@@ -748,8 +748,8 @@ export default {
             consoleError: i18n.t('trans.store.form.fetchVersionConsErrMsg', {
               versionId: versionId,
               formId: formId,
-              error: error,
-            }),
+              error: error
+            })
           },
           { root: true }
         );
@@ -767,7 +767,7 @@ export default {
           'notifications/addNotification',
           {
             message: i18n.t('trans.store.form.deleteApiKeyNotifyMsg'),
-            ...NotificationTypes.SUCCESS,
+            ...NotificationTypes.SUCCESS
           },
           { root: true }
         );
@@ -778,8 +778,8 @@ export default {
             message: i18n.t('trans.store.form.deleteApiKeyErrMsg'),
             consoleError: i18n.t('trans.store.form.deleteApiKeyConsErrMsg', {
               formId: formId,
-              error: error,
-            }),
+              error: error
+            })
           },
           { root: true }
         );
@@ -793,7 +793,7 @@ export default {
           'notifications/addNotification',
           {
             message: i18n.t('trans.store.form.generateApiKeyNotifyMsg'),
-            ...NotificationTypes.SUCCESS,
+            ...NotificationTypes.SUCCESS
           },
           { root: true }
         );
@@ -804,8 +804,8 @@ export default {
             message: i18n.t('trans.store.form.generateApiKeyErrMsg'),
             consoleError: i18n.t('trans.store.form.generateApiKeyConsErrMsg', {
               formId: formId,
-              error: error,
-            }),
+              error: error
+            })
           },
           { root: true }
         );
@@ -822,8 +822,8 @@ export default {
             message: i18n.t('trans.store.form.readApiKeyErrMsg'),
             consoleError: i18n.t('trans.store.form.readApiKeyConsErrMsg', {
               formId: formId,
-              error: error,
-            }),
+              error: error
+            })
           },
           { root: true }
         );
@@ -850,8 +850,8 @@ export default {
           {
             message: i18n.t('trans.store.form.getFCPHImageUrlErrMsg'),
             consoleError: i18n.t('trans.store.form.getFCPHImageUrlConsErrMsg', {
-              error: error,
-            }),
+              error: error
+            })
           },
           { root: true }
         );
@@ -871,8 +871,8 @@ export default {
           {
             message: i18n.t('trans.store.form.listFCPHErrMsg'),
             consoleError: i18n.t('trans.store.form.listFCPHConsErrMsg', {
-              error: error,
-            }),
+              error: error
+            })
           },
           { root: true }
         );
@@ -887,7 +887,7 @@ export default {
     },
     async setMultiLanguage({ commit }, lang) {
       commit('SET_MULTI_LANGUAGE', lang);
-      if (lang === 'ar' || lang === 'fa' || lang === 'pu') {
+      if (lang === 'ar' || lang === 'fa') {
         commit('SET_IS_RTL', true);
       } else {
         commit('SET_IS_RTL', false);
@@ -906,12 +906,12 @@ export default {
           {
             message: i18n.t('trans.store.form.downloadFileErrMsg'),
             consoleError: i18n.t('trans.store.form.downloadFileConsErrMsg', {
-              error: error,
-            }),
+              error: error
+            })
           },
           { root: true }
         );
       }
-    },
-  },
+    }
+  }
 };
