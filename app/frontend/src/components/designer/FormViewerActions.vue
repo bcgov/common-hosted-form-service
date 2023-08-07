@@ -5,7 +5,7 @@
   >
     <div v-if="formId">
       <v-btn outlined @click="goToAllSubmissionOrDraft">
-        <span :lang="multiLanguage"
+        <span :lang="lang"
           >{{ $t('trans.formViewerActions.viewAllSubmissions') }}
         </span>
       </v-btn>
@@ -25,7 +25,7 @@
               <v-icon>repeat</v-icon>
             </v-btn>
           </template>
-          <span :lang="multiLanguage">{{
+          <span :lang="lang">{{
             bulkFile
               ? $t('trans.formViewerActions.switchSingleSubmssn')
               : $t('trans.formViewerActions.switchMultiSubmssn')
@@ -51,7 +51,7 @@
               <v-icon>save</v-icon>
             </v-btn>
           </template>
-          <span :lang="multiLanguage">{{
+          <span :lang="lang">{{
             $t('trans.formViewerActions.saveAsADraft')
           }}</span>
         </v-tooltip>
@@ -73,7 +73,7 @@
                 <v-icon>mode_edit</v-icon>
               </v-btn>
             </template>
-            <span :lang="multiLanguage">{{
+            <span :lang="lang">{{
               $t('trans.formViewerActions.editThisDraft')
             }}</span>
           </v-tooltip>
@@ -143,7 +143,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('form', ['multiLanguage']),
+    ...mapGetters('form', ['lang']),
     canSaveDraft() {
       return !this.readOnly;
     },

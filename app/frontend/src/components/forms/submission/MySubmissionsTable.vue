@@ -6,7 +6,7 @@
       >
         <!-- page title -->
         <div>
-          <h1 :lang="multiLanguage">
+          <h1 :lang="lang">
             {{ $t('trans.mySubmissionsTable.previousSubmissions') }}
           </h1>
           <h3>{{ formId ? form.name : 'All Forms' }}</h3>
@@ -26,7 +26,7 @@
                 <v-icon>view_column</v-icon>
               </v-btn>
             </template>
-            <span :lang="multiLanguage">{{
+            <span :lang="lang">{{
               $t('trans.mySubmissionsTable.selectColumns')
             }}</span>
           </v-tooltip>
@@ -49,7 +49,7 @@
                 </v-btn>
               </router-link>
             </template>
-            <span :lang="multiLanguage">{{
+            <span :lang="lang">{{
               $t('trans.mySubmissionsTable.createNewSubmission')
             }}</span>
           </v-tooltip>
@@ -72,7 +72,7 @@
             hide-details
             class="pb-5"
             :class="{ label: isRTL }"
-            :lang="multiLanguage"
+            :lang="lang"
           />
         </div>
       </v-col>
@@ -87,7 +87,7 @@
       :loading="loading"
       :loading-text="$t('trans.mySubmissionsTable.loadingText')"
       :no-data-text="$t('trans.mySubmissionsTable.noDataText')"
-      :lang="multiLanguage"
+      :lang="lang"
     >
       <template #[`item.lastEdited`]="{ item }">
         {{ item.lastEdited | formatDateLong }}
@@ -124,7 +124,7 @@
         @cancel-filter-data="showColumnsDialog = false"
       >
         <template #filter-title
-          ><span :lang="multiLanguage">{{
+          ><span :lang="lang">{{
             $t('trans.mySubmissionsTable.filterTitle')
           }}</span></template
         >
@@ -175,7 +175,7 @@ export default {
       'permissions',
       'formFields',
       'isRTL',
-      'multiLanguage',
+      'lang',
     ]),
     ...mapGetters('auth', ['user']),
     DEFAULT_HEADERS() {

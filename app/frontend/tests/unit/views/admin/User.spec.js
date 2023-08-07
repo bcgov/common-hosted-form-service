@@ -5,7 +5,6 @@ import User from '@/views/admin/User.vue';
 
 const localVue = createLocalVue();
 
-
 localVue.use(Vuex);
 
 describe('User.vue', () => {
@@ -27,6 +26,6 @@ describe('User.vue', () => {
     });
     await localVue.nextTick();
 
-    expect(wrapper.text()).toMatch('Admin');
+    expect(wrapper.text()).toMatch('Administer User');
   });
 });

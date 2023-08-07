@@ -4,7 +4,7 @@
       class="d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse"
     >
       <div>
-        <h1 class="mr-auto" :lang="multiLanguage">
+        <h1 class="mr-auto" :lang="lang">
           {{ $t('trans.teamManagement.teamManagement') }}
         </h1>
       </div>
@@ -30,7 +30,7 @@
                 <v-icon>view_column</v-icon>
               </v-btn>
             </template>
-            <span :lang="multiLanguage">{{
+            <span :lang="lang">{{
               $t('trans.teamManagement.selectColumns')
             }}</span>
           </v-tooltip>
@@ -49,7 +49,7 @@
                 </v-btn>
               </router-link>
             </template>
-            <span :lang="multiLanguage">{{
+            <span :lang="lang">{{
               $t('trans.teamManagement.manageForm')
             }}</span>
           </v-tooltip>
@@ -70,7 +70,7 @@
           :label="$t('trans.teamManagement.search')"
           single-line
           :class="{ label: isRTL }"
-          :lang="multiLanguage"
+          :lang="lang"
         />
       </v-col>
     </v-row>
@@ -88,7 +88,7 @@
       :no-data-text="$t('trans.teamManagement.noDataText')"
       :search="search"
       dense
-      :lang="multiLanguage"
+      :lang="lang"
     >
       <!-- custom header markup - add tooltip to heading that are roles -->
       <template v-for="h in HEADERS" v-slot:[`header.${h.value}`]="{ HEADERS }">
@@ -113,7 +113,7 @@
                 >remove_circle</v-icon
               >
             </template>
-            <span :lang="multiLanguage">{{
+            <span :lang="lang">{{
               $t('trans.teamManagement.removeSelectedUsers')
             }}</span>
           </v-tooltip>
@@ -145,7 +145,7 @@
                 >remove_circle</v-icon
               >
             </template>
-            <span :lang="multiLanguage">{{
+            <span :lang="lang">{{
               $t('trans.teamManagement.removeThisUser')
             }}</span>
           </v-tooltip>
@@ -160,7 +160,7 @@
       @continue-dialog="removeUser"
     >
       <template #title
-        ><span :lang="multiLanguage">
+        ><span :lang="lang">
           {{ $t('trans.teamManagement.confirmRemoval') }}</span
         ></template
       >
@@ -168,9 +168,7 @@
         {{ DeleteMessage }}
       </template>
       <template #button-text-continue>
-        <span :lang="multiLanguage">{{
-          $t('trans.teamManagement.remove')
-        }}</span>
+        <span :lang="lang">{{ $t('trans.teamManagement.remove') }}</span>
       </template>
     </BaseDialog>
 
@@ -188,7 +186,7 @@
         @cancel-filter-data="showColumnsDialog = false"
       >
         <template #filter-title
-          ><span :lang="multiLanguage">
+          ><span :lang="lang">
             {{ $t('trans.teamManagement.teamMebersTitle') }}</span
           ></template
         >
@@ -223,7 +221,7 @@ export default {
   },
   computed: {
     ...mapFields('form', ['form.userType']),
-    ...mapGetters('form', ['permissions', 'isRTL', 'multiLanguage']),
+    ...mapGetters('form', ['permissions', 'isRTL', 'lang']),
     ...mapGetters('auth', ['user']),
     canManageTeam() {
       return this.permissions.includes(FormPermissions.TEAM_UPDATE);

@@ -1,12 +1,10 @@
 <template>
   <v-container class="text-center">
-    <h1 class="my-6" :lang="multiLanguage">
-      {{ $t('trans.notFound.pageNotFound') }}(
-    </h1>
+    <h1 class="my-6" :lang="lang">{{ $t('trans.notFound.pageNotFound') }}(</h1>
     <router-link :to="{ name: 'About' }">
       <v-btn color="primary" large>
         <v-icon left>home</v-icon>
-        <span :lang="multiLanguage">{{ $t('trans.notFound.about') }}</span>
+        <span :lang="lang">{{ $t('trans.notFound.about') }}</span>
       </v-btn>
     </router-link>
   </v-container>
@@ -19,7 +17,7 @@ export default {
   name: 'NotFound',
 
   computed: {
-    ...mapGetters('form', ['multiLanguage']),
+    ...mapGetters('form', ['lang']),
   },
 };
 </script>

@@ -1,7 +1,7 @@
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
     <v-skeleton-loader :loading="loading" type="list-item-two-line">
-      <p :lang="multiLanguage">
+      <p :lang="lang">
         <strong>{{ $t('trans.statusPanel.currentStatus') }}</strong>
         {{ currentStatus.code }}
         <br />
@@ -13,7 +13,7 @@
       <v-form ref="form" v-model="valid" lazy-validation>
         <v-row>
           <v-col cols="12">
-            <label :lang="multiLanguage">{{
+            <label :lang="lang">{{
               $t('trans.statusPanel.assignOrUpdateStatus')
             }}</label>
             <v-select
@@ -42,7 +42,7 @@
                       v-html="
                         $t('trans.statusPanel.assignSubmissnToFormReviewer')
                       "
-                      :lang="multiLanguage"
+                      :lang="lang"
                     />
                   </v-tooltip>
                 </label>
@@ -59,7 +59,7 @@
                   outlined
                   return-object
                   :rules="assigneeRequired"
-                  :lang="multiLanguage"
+                  :lang="lang"
                 >
                   <!-- selected user -->
                   <template #selection="data">
@@ -98,7 +98,7 @@
                     @click="assignToCurrentUser"
                   >
                     <v-icon class="mr-1">person</v-icon>
-                    <span :lang="multiLanguage">{{
+                    <span :lang="lang">{{
                       $t('trans.statusPanel.assignToMe')
                     }}</span>
                   </v-btn>
@@ -111,7 +111,7 @@
                   outlined
                   dense
                   :class="{ 'dir-rtl': isRTL }"
-                  :lang="multiLanguage"
+                  :lang="lang"
                 />
               </div>
 
@@ -119,10 +119,10 @@
                 <v-checkbox
                   v-model="addComment"
                   :label="$t('trans.statusPanel.attachCommentToEmail')"
-                  :lang="multiLanguage"
+                  :lang="lang"
                 />
                 <div v-if="addComment">
-                  <label :lang="multiLanguage">{{
+                  <label :lang="lang">{{
                     $t('trans.statusPanel.emailComment')
                   }}</label>
                   <v-textarea
@@ -148,7 +148,7 @@
             <v-dialog v-model="historyDialog" width="1200">
               <template #activator="{ on }">
                 <v-btn block outlined color="textLink" v-on="on" id="btnText">
-                  <span :lang="multiLanguage">{{
+                  <span :lang="lang">{{
                     $t('trans.statusPanel.viewHistory')
                   }}</span>
                 </v-btn>
@@ -158,7 +158,7 @@
                 <v-card-title
                   class="text-h5 pb-0"
                   :class="{ 'dir-rtl': isRTL }"
-                  :lang="multiLanguage"
+                  :lang="lang"
                   >{{ $t('trans.statusPanel.statusHistory') }}</v-card-title
                 >
 
@@ -174,7 +174,7 @@
                     class="mb-5 close-dlg"
                     color="primary"
                   >
-                    <span :lang="multiLanguage">{{
+                    <span :lang="lang">{{
                       $t('trans.statusPanel.close')
                     }}</span>
                   </v-btn>
@@ -249,7 +249,7 @@ export default {
       'formSubmission',
       'submissionUsers',
       'isRTL',
-      'multiLanguage',
+      'lang',
     ]),
     // State Machine
     showActionDate() {

@@ -3,16 +3,16 @@
     <FormViewer :submissionId="s" :readOnly="true" displayTitle>
       <template #alert="{ form }">
         <div class="mb-5" :class="{ 'dir-rtl': isRTL }">
-          <h1 class="mb-5" :lang="multiLanguage">
+          <h1 class="mb-5" :lang="lang">
             <v-icon large color="success">check_circle</v-icon>
             {{ $t('trans.sucess.sucessFormSubmissn') }}
           </h1>
           <div v-if="form.showSubmissionConfirmation">
             <h3>
-              <span class="d-print-none" :lang="multiLanguage">
+              <span class="d-print-none" :lang="lang">
                 {{ $t('trans.sucess.keepRecord') }}
               </span>
-              <span :lang="multiLanguage">
+              <span :lang="lang">
                 {{ $t('trans.sucess.confirmationId') }}:
                 <mark>{{ s.substring(0, 8).toUpperCase() }}</mark>
               </span>
@@ -48,7 +48,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['email']),
-    ...mapGetters('form', ['isRTL', 'multiLanguage']),
+    ...mapGetters('form', ['isRTL', 'lang']),
   },
 };
 </script>

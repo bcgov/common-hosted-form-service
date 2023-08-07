@@ -3,23 +3,23 @@
     <v-sheet class="help-highlight pa-5 text-center">
       <v-row justify="center">
         <v-col lg="8">
-          <h1 class="my-5 d-block" :lang="multiLanguage">
+          <h1 class="my-5 d-block" :lang="lang">
             {{ $t('trans.homePage.title') }}
           </h1>
-          <p dir="rtl" :lang="multiLanguage">
+          <p dir="rtl" :lang="lang">
             {{ $t('trans.homePage.subTitle') }}<br />
           </p>
 
           <v-btn :to="{ name: 'FormCreate' }" class="mb-5" color="primary">
-            <span v-if="!authenticated" :lang="multiLanguage">{{
+            <span v-if="!authenticated" :lang="lang">{{
               $t('trans.homePage.loginToStart')
             }}</span>
-            <span v-else :lang="multiLanguage">{{
+            <span v-else :lang="lang">{{
               $t('trans.homePage.createFormLabel')
             }}</span>
           </v-btn>
 
-          <h2 id="video" class="pt-5" :lang="multiLanguage">
+          <h2 id="video" class="pt-5" :lang="lang">
             {{ $t('trans.homePage.takeATourOfChefs') }}
           </h2>
           <div class="video-wrapper">
@@ -40,12 +40,12 @@
 
     <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
-        <h2 :lang="multiLanguage">
+        <h2 :lang="lang">
           {{ $t('trans.homePage.chefsHowToTitle') }}
         </h2>
-        <p :lang="multiLanguage">
+        <p :lang="lang">
           {{ $t('trans.homePage.chefsHowToSub') }}
-          <a :href="howToVideoUrl" target="_blank" :hreflang="multiLanguage"
+          <a :href="howToVideoUrl" target="_blank" :hreflang="lang"
             >{{ $t('trans.homePage.getStarted') }}!</a
           >
         </p>
@@ -55,17 +55,17 @@
           alt="Drag and Drop demo"
           src="https://raw.githubusercontent.com/wiki/bcgov/common-hosted-form-service/images/quickstart.png"
           width="600px"
-          :lang="multiLanguage"
+          :lang="lang"
         />
       </v-col>
     </v-row>
 
     <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
-        <h2 :lang="multiLanguage">
+        <h2 :lang="lang">
           {{ $t('trans.homePage.createCustomFormTitle') }}
         </h2>
-        <p :lang="multiLanguage">
+        <p :lang="lang">
           {{ $t('trans.homePage.createCustomFormSub1') }}
         </p>
       </v-col>
@@ -74,20 +74,20 @@
           alt="Drag and Drop demo"
           src="https://raw.githubusercontent.com/wiki/bcgov/common-hosted-form-service/images/drag_drop.png"
           width="600px"
-          :lang="multiLanguage"
+          :lang="lang"
         />
       </v-col>
     </v-row>
 
     <v-row justify="center" class="example-text">
       <v-col cols="12" lg="4">
-        <h2 :lang="multiLanguage">
+        <h2 :lang="lang">
           {{ $t('trans.homePage.manageAccessTitle') }}
         </h2>
-        <p :lang="multiLanguage">
+        <p :lang="lang">
           {{ $t('trans.homePage.manageAccessSub1') }}
         </p>
-        <p :lang="multiLanguage">
+        <p :lang="lang">
           {{ $t('trans.homePage.manageAccessSub2') }}
         </p>
       </v-col>
@@ -96,7 +96,7 @@
           alt="Export demo"
           src="https://raw.githubusercontent.com/wiki/bcgov/common-hosted-form-service/images/team-management.png"
           width="600px"
-          :lang="multiLanguage"
+          :lang="lang"
         />
       </v-col>
     </v-row>
@@ -104,17 +104,17 @@
     <v-sheet class="help-highlight pa-5 text-center">
       <v-row justify="center">
         <v-col lg="8">
-          <h3 class="mb-5" :lang="multiLanguage">
+          <h3 class="mb-5" :lang="lang">
             {{ $t('trans.homePage.getStartedToChefs') }}
           </h3>
-          <p :lang="multiLanguage">
+          <p :lang="lang">
             {{ $t('trans.homePage.createOnlineTitle') }}
           </p>
           <v-btn :to="{ name: 'FormCreate' }" class="mb-5" color="primary">
-            <span v-if="!authenticated" :lang="multiLanguage">{{
+            <span v-if="!authenticated" :lang="lang">{{
               $t('trans.homePage.logInToGetStarted')
             }}</span>
-            <span v-else :lang="multiLanguage">{{
+            <span v-else :lang="lang">{{
               $t('trans.homePage.createFormLabel')
             }}</span>
           </v-btn>
@@ -131,7 +131,7 @@ export default {
   name: 'About',
   computed: {
     ...mapGetters('auth', ['authenticated']),
-    ...mapGetters('form', ['isRTL', 'multiLanguage']),
+    ...mapGetters('form', ['isRTL', 'lang']),
     howToVideoUrl() {
       return process.env.VUE_APP_HOWTOURL;
     },

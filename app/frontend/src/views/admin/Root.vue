@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h1 class="mt-6" :class="{ 'dir-rtl': isRTL }" :lang="multiLanguage">
+    <h1 class="mt-6" :class="{ 'dir-rtl': isRTL }" :lang="lang">
       {{ $t('trans.admin.root.admin') }}
     </h1>
 
@@ -17,7 +17,7 @@ export default {
     AdminPage,
   },
   computed: {
-    ...mapGetters('form', ['isRTL', 'multiLanguage']),
+    ...mapGetters('form', ['isRTL', 'lang']),
   },
 };
 </script>

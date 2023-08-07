@@ -13,8 +13,8 @@
       fabItemsPosition,
     ]"
   >
-    <div class="fabAction" @click="onOpenFABActionItems" :lang="multiLanguage">
-      <div class="text" v-text="baseFABItemName" :lang="multiLanguage" />
+    <div class="fabAction" @click="onOpenFABActionItems" :lang="lang">
+      <div class="text" v-text="baseFABItemName" :lang="lang" />
       <v-avatar class="fabItemsInverColor" :size="fabItemsSize">
         <v-icon :color="baseIconColor" :size="fabItemsIconsSize">
           {{ baseIconName }}
@@ -41,7 +41,7 @@
         <div
           class="text"
           v-text="$t('trans.floatButton.publish')"
-          :lang="multiLanguage"
+          :lang="lang"
         />
         <v-avatar class="fabItemsInverColor" :size="fabItemsSize">
           <v-icon
@@ -65,7 +65,7 @@
         <div
           class="text"
           v-text="$t('trans.floatButton.manage')"
-          :lang="multiLanguage"
+          :lang="lang"
         />
         <v-avatar class="fabItemsInverColor" :size="fabItemsSize">
           <v-icon
@@ -85,11 +85,7 @@
         data-cy="redoButton"
         :class="{ 'disabled-router': !redoEnabled }"
       >
-        <div
-          class="text"
-          v-text="$t('trans.floatButton.redo')"
-          :lang="multiLanguage"
-        />
+        <div class="text" v-text="$t('trans.floatButton.redo')" :lang="lang" />
         <v-avatar
           class="fabItems"
           :size="fabItemsSize"
@@ -109,11 +105,7 @@
         data-cy="undoButton"
         :class="{ 'disabled-router': !undoEnabled }"
       >
-        <div
-          class="text"
-          v-text="$t('trans.floatButton.undo')"
-          :lang="multiLanguage"
-        />
+        <div class="text" v-text="$t('trans.floatButton.undo')" :lang="lang" />
         <v-avatar
           class="fabItems"
           :size="fabItemsSize"
@@ -136,7 +128,7 @@
         <div
           class="text"
           v-text="$t('trans.floatButton.preview')"
-          :lang="multiLanguage"
+          :lang="lang"
         />
         <v-avatar class="fabItems" :size="fabItemsSize">
           <v-icon
@@ -153,7 +145,7 @@
         ref="saveButton"
         :class="{ 'disabled-router': isFormSaved }"
       >
-        <div class="text" :lang="multiLanguage">{{ this.savedMsg }}</div>
+        <div class="text" :lang="lang">{{ this.savedMsg }}</div>
         <v-avatar
           class="fabItems"
           :size="fabItemsSize"
@@ -177,7 +169,7 @@
         </v-avatar>
       </div>
       <div class="fabAction">
-        <div class="text" v-text="scrollName" :lang="multiLanguage" />
+        <div class="text" v-text="scrollName" :lang="lang" />
 
         <v-avatar class="fabItems" :size="fabItemsSize" @click="onHandleScroll">
           <v-icon :color="fabItemsColor" :size="fabItemsIconsSize">
@@ -187,7 +179,7 @@
       </div>
     </div>
     <div class="fabAction" v-if="!isFABActionsOpen">
-      <div :lang="multiLanguage">{{ scrollName }}</div>
+      <div :lang="lang">{{ scrollName }}</div>
       <v-avatar class="fabItems" :size="fabItemsSize" @click="onHandleScroll">
         <v-icon :color="fabItemsColor" :size="fabItemsIconsSize">
           {{ scrollIconName }}
@@ -227,7 +219,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['multiLanguage', 'isRTL']),
+    ...mapGetters('form', ['lang', 'isRTL']),
   },
   props: {
     formId: String,
@@ -448,7 +440,7 @@ export default {
         this.savedMsg = this.$t('trans.floatButton.notSaved');
       }
     },
-    multiLanguage() {
+    lang() {
       this.scrollName = this.$t('trans.floatButton.bottom');
 
       if (this.isFABActionsOpen) {

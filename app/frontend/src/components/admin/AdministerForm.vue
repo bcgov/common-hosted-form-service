@@ -3,11 +3,7 @@
     <h3>{{ form.name }}</h3>
     <p>{{ form.description }}</p>
 
-    <div
-      v-if="form.active === false"
-      class="red--text mb-6"
-      :lang="multiLanguage"
-    >
+    <div v-if="form.active === false" class="red--text mb-6" :lang="lang">
       ({{ $t('trans.administerForm.deleted') }})
       <v-btn
         color="primary"
@@ -17,7 +13,7 @@
         small
       >
         <v-icon class="mr-1">build_circle</v-icon>
-        <span class="d-none d-sm-flex" :lang="multiLanguage">{{
+        <span class="d-none d-sm-flex" :lang="lang">{{
           $t('trans.administerForm.restoreForm')
         }}</span>
       </v-btn>
@@ -26,13 +22,13 @@
     <v-container>
       <v-row no-gutters>
         <v-col md="6">
-          <h4 :lang="multiLanguage">
+          <h4 :lang="lang">
             {{ $t('trans.administerForm.formDetails') }}
           </h4>
           <vue-json-pretty :data="formDetails" />
 
           <div v-if="apiKey" class="mt-6">
-            <h4 :lang="multiLanguage">
+            <h4 :lang="lang">
               {{ $t('trans.administerForm.apiKeyDetails') }}
             </h4>
             <vue-json-pretty :data="apiKey" />
@@ -42,14 +38,14 @@
               :disabled="!apiKey"
               @click="showDeleteDialog = true"
             >
-              <span :lang="multiLanguage">{{
+              <span :lang="lang">{{
                 $t('trans.administerForm.deleteApiKey')
               }}</span>
             </v-btn>
           </div>
         </v-col>
         <v-col md="6">
-          <h4 :lang="multiLanguage">
+          <h4 :lang="lang">
             {{ $t('trans.administerForm.formUsers') }}
           </h4>
           <vue-json-pretty :data="roles" />
@@ -58,14 +54,14 @@
     </v-container>
 
     <div v-if="form.active" class="mt-12">
-      <h4 :lang="multiLanguage">
+      <h4 :lang="lang">
         {{ $t('trans.administerForm.formVersions') }}
       </h4>
       <AdminVersions />
     </div>
 
     <div v-if="form.active" class="mt-12">
-      <h4 :lang="multiLanguage">
+      <h4 :lang="lang">
         {{ $t('trans.administerForm.assignANewOwner') }}
       </h4>
       <AddOwner :formId="form.id" />
@@ -78,7 +74,7 @@
       @continue-dialog="restore"
     >
       <template #title
-        ><span :lang="multiLanguage">{{
+        ><span :lang="lang">{{
           $t('trans.administerForm.confirmRestore')
         }}</span></template
       >
@@ -88,21 +84,19 @@
             indeterminate
             color="primary"
             :size="100"
-            :lang="multiLanguage"
+            :lang="lang"
           >
             {{ $t('trans.administerForm.restoring') }}
           </v-progress-circular>
         </div>
-        <div v-else :lang="multiLanguage">
+        <div v-else :lang="lang">
           {{ $t('trans.administerForm.restore') }}
           <strong>{{ form.name }}</strong>
           {{ $t('trans.administerForm.toActiveState') }}?
         </div>
       </template>
       <template #button-text-continue>
-        <span :lang="multiLanguage">{{
-          $t('trans.administerForm.restore')
-        }}</span>
+        <span :lang="lang">{{ $t('trans.administerForm.restore') }}</span>
       </template>
     </BaseDialog>
 
@@ -114,19 +108,17 @@
       @continue-dialog="deleteKey"
     >
       <template #title
-        ><span :lang="multiLanguage">{{
+        ><span :lang="lang">{{
           $t('trans.administerForm.confirmDeletion')
         }}</span></template
       >
       <template #text
-        ><span :lang="multiLanguage">{{
+        ><span :lang="lang">{{
           $t('trans.administerForm.confirmDeletionMsg')
         }}</span>
       </template>
       <template #button-text-continue
-        ><span :lang="multiLanguage">{{
-          $t('trans.administerForm.delete')
-        }}</span>
+        ><span :lang="lang">{{ $t('trans.administerForm.delete') }}</span>
       </template>
     </BaseDialog>
   </v-skeleton-loader>
@@ -164,7 +156,7 @@ export default {
   },
   computed: {
     ...mapGetters('admin', ['form', 'roles', 'apiKey']),
-    ...mapGetters('form', ['multiLanguage']),
+    ...mapGetters('form', ['lang']),
   },
   methods: {
     ...mapActions('admin', [

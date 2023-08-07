@@ -2,10 +2,10 @@
   <div v-if="authenticated">
     <div v-if="isUser">
       <div v-if="admin && !isAdmin" class="text-center">
-        <h1 class="my-8" :lang="multiLanguage">
+        <h1 class="my-8" :lang="lang">
           {{ $t('trans.baseSecure.401UnAuthorized') }}(
         </h1>
-        <p :lang="multiLanguage">
+        <p :lang="lang">
           {{ $t('trans.baseSecure.401UnAuthorizedErrMsg') }}
         </p>
       </div>
@@ -13,10 +13,10 @@
         v-else-if="idp && !idp.includes(identityProvider)"
         class="text-center"
       >
-        <h1 class="my-8" :lang="multiLanguage">
+        <h1 class="my-8" :lang="lang">
           {{ $t('trans.baseSecure.403Forbidden') }}(
         </h1>
-        <p :lang="multiLanguage">
+        <p :lang="lang">
           {{
             $t('trans.baseSecure.403ErrorMsg', {
               idp: idp,
@@ -28,26 +28,23 @@
     </div>
     <!-- TODO: Figure out better way to alert when user lacks chefs user role -->
     <div v-else class="text-center">
-      <h1 class="my-8" :lang="multiLanguage">
+      <h1 class="my-8" :lang="lang">
         {{ $t('trans.baseSecure.401UnAuthorized') }}(
       </h1>
       <p>
-        <span
-          v-html="$t('trans.baseSecure.401ErrorMsg')"
-          :lang="multiLanguage"
-        />
+        <span v-html="$t('trans.baseSecure.401ErrorMsg')" :lang="lang" />
         <a :href="mailToLink">{{ contactInfo }}</a>
       </p>
       <router-link :to="{ name: 'About' }">
         <v-btn color="primary" class="about-btn" large>
           <v-icon left>home</v-icon>
-          <span :lang="multiLanguage">{{ $t('trans.baseSecure.about') }}</span>
+          <span :lang="lang">{{ $t('trans.baseSecure.about') }}</span>
         </v-btn>
       </router-link>
     </div>
   </div>
   <div v-else class="text-center">
-    <h1 class="my-8" :lang="multiLanguage">
+    <h1 class="my-8" :lang="lang">
       {{ $t('trans.baseSecure.loginInfo') }}
     </h1>
     <v-btn
@@ -57,7 +54,7 @@
       @click="login"
       large
     >
-      <span :lang="multiLanguage">{{ $t('trans.baseSecure.login') }}</span>
+      <span :lang="lang">{{ $t('trans.baseSecure.login') }}</span>
     </v-btn>
   </div>
 </template>
@@ -85,7 +82,7 @@ export default {
       'isUser',
       'keycloakReady',
     ]),
-    ...mapGetters('form', ['multiLanguage']),
+    ...mapGetters('form', ['lang']),
     mailToLink() {
       return `mailto:${
         process.env.VUE_APP_CONTACT

@@ -2,20 +2,17 @@
   <div :class="{ 'dir-rtl': isRTL }">
     <div v-if="!canGenerateKey" class="mt-3 mb-6">
       <v-icon class="mr-1" color="primary">info</v-icon
-      ><span
-        v-html="$t('trans.apiKey.formOwnerKeyAcess')"
-        :lang="multiLanguage"
-      ></span>
+      ><span v-html="$t('trans.apiKey.formOwnerKeyAcess')" :lang="lang"></span>
     </div>
-    <h3 class="mt-3" :lang="multiLanguage">
+    <h3 class="mt-3" :lang="lang">
       {{ $t('trans.apiKey.disclaimer') }}
     </h3>
     <ul :class="isRTL ? 'mr-6' : null">
-      <li :lang="multiLanguage">{{ $t('trans.apiKey.infoA') }}</li>
-      <li :lang="multiLanguage">
+      <li :lang="lang">{{ $t('trans.apiKey.infoA') }}</li>
+      <li :lang="lang">
         {{ $t('trans.apiKey.infoB') }}
       </li>
-      <li :lang="multiLanguage">
+      <li :lang="lang">
         {{ $t('trans.apiKey.infoC') }}
       </li>
     </ul>
@@ -29,7 +26,7 @@
             :disabled="!canGenerateKey"
             @click="showConfirmationDialog = true"
           >
-            <span :lang="multiLanguage"
+            <span :lang="lang"
               >{{
                 apiKey
                   ? $t('trans.apiKey.regenerate')
@@ -52,7 +49,7 @@
               showSecret ? $t('trans.apiKey.text') : $t('trans.apiKey.password')
             "
             :value="secret"
-            :lang="multiLanguage"
+            :lang="lang"
           />
         </v-col>
         <v-col cols="12" sm="3">
@@ -71,12 +68,10 @@
                 <v-icon v-else>visibility</v-icon>
               </v-btn>
             </template>
-            <span v-if="showSecret" :lang="multiLanguage">{{
+            <span v-if="showSecret" :lang="lang">{{
               $t('trans.apiKey.hideSecret')
             }}</span>
-            <span v-else :lang="multiLanguage">{{
-              $t('trans.apiKey.showSecret')
-            }}</span>
+            <span v-else :lang="lang">{{ $t('trans.apiKey.showSecret') }}</span>
           </v-tooltip>
 
           <BaseCopyToClipboard
@@ -85,7 +80,7 @@
             :copyText="secret"
             :snackBarText="$t('trans.apiKey.sCTC')"
             tooltipText="$t('trans.apiKey.cSTC')"
-            :lang="multiLanguage"
+            :lang="lang"
           />
 
           <v-tooltip bottom>
@@ -102,9 +97,7 @@
                 <v-icon>delete</v-icon>
               </v-btn>
             </template>
-            <span :lang="multiLanguage">{{
-              $t('trans.apiKey.deleteKey')
-            }}</span>
+            <span :lang="lang">{{ $t('trans.apiKey.deleteKey') }}</span>
           </v-tooltip>
         </v-col>
       </v-row>
@@ -118,7 +111,7 @@
       @continue-dialog="createKey"
     >
       <template #title
-        ><span :lang="multiLanguage">
+        ><span :lang="lang">
           {{ $t('trans.apiKey.confirmKeyGen') }}
         </span></template
       >
@@ -126,16 +119,16 @@
         <span
           v-if="!apiKey"
           v-html="$t('trans.apiKey.createAPIKey')"
-          :lang="multiLanguage"
+          :lang="lang"
         />
         <span
           v-else
           v-html="$t('trans.apiKey.regenerateAPIKey')"
-          :lang="multiLanguage"
+          :lang="lang"
         />
       </template>
       <template #button-text-continue>
-        <span :lang="multiLanguage"
+        <span :lang="lang"
           >{{
             apiKey ? $t('trans.apiKey.regenerate') : $t('trans.apiKey.generate')
           }}
@@ -152,17 +145,15 @@
       @continue-dialog="deleteKey"
     >
       <template #title
-        ><span :lang="multiLanguage"
+        ><span :lang="lang"
           >{{ $t('trans.apiKey.confirmDeletion') }}
         </span></template
       >
       <template #text
-        ><span :lang="multiLanguage">{{
-          $t('trans.apiKey.deleteMsg')
-        }}</span></template
+        ><span :lang="lang">{{ $t('trans.apiKey.deleteMsg') }}</span></template
       >
       <template #button-text-continue>
-        <span :lang="multiLanguage">{{ $t('trans.apiKey.delete') }}</span>
+        <span :lang="lang">{{ $t('trans.apiKey.delete') }}</span>
       </template>
     </BaseDialog>
   </div>
@@ -183,13 +174,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', [
-      'apiKey',
-      'form',
-      'permissions',
-      'isRTL',
-      'multiLanguage',
-    ]),
+    ...mapGetters('form', ['apiKey', 'form', 'permissions', 'isRTL', 'lang']),
     canDeleteKey() {
       return (
         this.permissions.includes(FormPermissions.FORM_API_DELETE) &&

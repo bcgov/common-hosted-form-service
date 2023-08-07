@@ -1,7 +1,7 @@
 <template>
   <v-container class="text-center">
     <div v-if="keycloakReady && !authenticated">
-      <h1 class="my-6" :lang="multiLanguage">
+      <h1 class="my-6" :lang="lang">
         {{ $t('trans.login.authenticateWith') }}
       </h1>
       <v-row v-for="button in buttons" justify="center" :key="button.type">
@@ -13,13 +13,13 @@
       </v-row>
     </div>
     <div v-else>
-      <h1 class="my-6" :lang="multiLanguage">
+      <h1 class="my-6" :lang="lang">
         {{ $t('trans.login.alreadyLoggedIn') }}
       </h1>
       <router-link :to="{ name: 'About' }">
-        <v-btn color="primary" large :lang="multiLanguage">
+        <v-btn color="primary" large :lang="lang">
           <v-icon left>home</v-icon>
-          <span :lang="multiLanguage">{{ $t('trans.login.about') }}</span>
+          <span :lang="lang">{{ $t('trans.login.about') }}</span>
         </v-btn>
       </router-link>
     </div>
@@ -49,7 +49,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['authenticated', 'createLoginUrl', 'keycloakReady']),
-    ...mapGetters('form', ['multiLanguage']),
+    ...mapGetters('form', ['lang']),
     buttons: () => [
       {
         label: 'IDIR',

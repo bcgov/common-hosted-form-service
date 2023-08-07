@@ -10,12 +10,9 @@
         <v-container>
           <v-row>
             <v-col>
-              <span
-                class="text-h5"
-                style="font-weight: bold"
-                :lang="multiLanguage"
-                >{{ $t('trans.proactiveHelpDialog.componentInfoLink') }}</span
-              >
+              <span class="text-h5" style="font-weight: bold" :lang="lang">{{
+                $t('trans.proactiveHelpDialog.componentInfoLink')
+              }}</span>
             </v-col>
           </v-row>
           <v-row v-if="linkError">
@@ -24,7 +21,7 @@
                 style="margin: 0px; padding: 0px"
                 :v-text="$t('trans.proactiveHelpDialog.learnMoreLinkTxt')"
                 class="red--text"
-                :lang="multiLanguage"
+                :lang="lang"
               />
             </v-col>
           </v-row>
@@ -34,7 +31,7 @@
                 style="margin: 0px; padding: 0px"
                 :v-text="$t('trans.proactiveHelpDialog.largeImgTxt')"
                 class="red--text"
-                :lang="multiLanguage"
+                :lang="lang"
               />
             </v-col>
           </v-row>
@@ -42,7 +39,7 @@
           <v-row class="mt-5" no-gutters>
             <span
               class="text-decoration-underline mr-2 blackColorWrapper"
-              :lang="multiLanguage"
+              :lang="lang"
             >
               {{ $t('trans.proactiveHelpDialog.componentName') }}
             </span>
@@ -53,7 +50,7 @@
               <div class="d-flex flex-row align-center">
                 <p
                   class="mr-2 mt-2 text-decoration-underline blueColorWrapper"
-                  :lang="multiLanguage"
+                  :lang="lang"
                 >
                   {{ $t('trans.proactiveHelpDialog.learnMoreLink') }}
                 </p>
@@ -76,7 +73,7 @@
                 </v-col>
                 <v-checkbox v-model="isLinkEnabled" class="checkbox_data_cy">
                   <template v-slot:label>
-                    <span class="v-label" :lang="multiLanguage">{{
+                    <span class="v-label" :lang="lang">{{
                       !isLinkEnabled
                         ? $t('trans.proactiveHelpDialog.clickToEnableLink')
                         : $t('trans.proactiveHelpDialog.clickToDisableLink')
@@ -95,7 +92,7 @@
               class="mb-2 blackColorWrapper"
               :class="{ 'dir-rtl': isRTL }"
             >
-              <span :lang="multiLanguage">
+              <span :lang="lang">
                 {{ $t('trans.proactiveHelpDialog.description') }}</span
               >
             </v-col>
@@ -135,7 +132,7 @@
                         : this.$t('trans.proactiveHelpDialog.imageUpload')
                     "
                     class="file_upload_data-cy"
-                    :lang="multiLanguage"
+                    :lang="lang"
                     @change="selectImage"
                   ></v-file-input>
                 </v-col>
@@ -150,7 +147,7 @@
                     class="mr-4 saveButtonWrapper"
                     @click="submit"
                     data-cy="more_help_info_link_save_button"
-                    :lang="multiLanguage"
+                    :lang="lang"
                   >
                     {{ $t('trans.proactiveHelpDialog.save') }}
                   </v-btn>
@@ -158,7 +155,7 @@
                     class="cancelButtonWrapper"
                     @click="onCloseDialog"
                     data-cy="more_help_info_link_cancel_button"
-                    :lang="multiLanguage"
+                    :lang="lang"
                   >
                     {{ $t('trans.proactiveHelpDialog.cancel') }}
                   </v-btn>
@@ -303,7 +300,7 @@ export default {
   },
   computed: {
     ...mapGetters('admin', ['fcHelpInfoImageUpload', 'fcProactiveHelpVersion']),
-    ...mapGetters('form', ['isRTL', 'multiLanguage']),
+    ...mapGetters('form', ['isRTL', 'lang']),
   },
 };
 </script>

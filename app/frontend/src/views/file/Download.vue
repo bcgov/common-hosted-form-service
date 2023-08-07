@@ -1,24 +1,24 @@
 <template>
   <BaseSecure :idp="[IDP.IDIR]">
     <v-container fluid class="center_vertical_content">
-      <h1 :lang="multiLanguage">{{ $t('trans.download.chefsDataExport') }}</h1>
+      <h1 :lang="lang">{{ $t('trans.download.chefsDataExport') }}</h1>
       <v-progress-circular
         v-if="!showDownloadLink"
         :size="50"
         color="primary"
         indeterminate
       ></v-progress-circular>
-      <div v-if="!showDownloadLink" :lang="multiLanguage">
+      <div v-if="!showDownloadLink" :lang="lang">
         {{ $t('trans.download.preparingForDownloading') }}
       </div>
       <div
         class="mt-5 center_vertical_content"
         v-if="showDownloadLink"
-        :lang="multiLanguage"
+        :lang="lang"
       >
         <v-icon class="mb-2" size="90">file_download</v-icon><br />
         {{ $t('trans.download.downloadInfoA') }}
-        <a href="#" @click="getFile(id)" :hreflang="multiLanguage">{{
+        <a href="#" @click="getFile(id)" :hreflang="lang">{{
           $t('trans.download.downloadInfoB')
         }}</a>
       </div>
@@ -40,7 +40,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['downloadedFile', 'multiLanguage', 'isRTL']),
+    ...mapGetters('form', ['downloadedFile', 'lang', 'isRTL']),
     IDP: () => IdentityProviders,
   },
   mounted() {

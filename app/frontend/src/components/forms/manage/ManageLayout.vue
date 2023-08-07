@@ -5,7 +5,7 @@
     >
       <div cols="12" sm="8">
         <!-- page title -->
-        <h1 :lang="multiLanguage">{{ $t('trans.manageLayout.manageForm') }}</h1>
+        <h1 :lang="lang">{{ $t('trans.manageLayout.manageForm') }}</h1>
         <!-- form name -->
         <h3>{{ this.form.name }}</h3>
       </div>
@@ -44,7 +44,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['form', 'permissions', 'isRTL', 'multiLanguage']),
+    ...mapGetters('form', ['form', 'permissions', 'isRTL', 'lang']),
     IDP: () => IdentityProviders,
   },
   methods: {
