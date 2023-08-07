@@ -259,13 +259,9 @@ export default {
                   <router-link
                     :to="{ name: 'FormSubmissions', query: { f: form.id } }"
                   >
-                    <v-btn
-                      color="primary"
-                      v-bind="props"
-                      size="x-small"
-                      density="default"
-                      icon="mdi:mdi-list-box-outline"
-                    />
+                    <v-btn class="mx-1" color="primary" icon v-bind="props">
+                      <v-icon icon="mdi:mdi-list-box-outline"></v-icon>
+                    </v-btn>
                   </router-link>
                 </template>
                 <span>{{ $t('trans.exportSubmissions.viewSubmissions') }}</span>

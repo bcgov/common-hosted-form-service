@@ -26,7 +26,6 @@ export default {
       default: i18n.t('trans.baseCopyToClipboard.copyToClipboard'),
     },
   },
-
   emits: ['copied'],
   methods: {
     onCopy() {
@@ -57,12 +56,12 @@ export default {
           v-clipboard:success="onCopy"
           v-clipboard:error="onError"
           color="primary"
-          v-bind="props"
-          size="x-small"
-          density="default"
           :disabled="disabled"
-          icon="mdi:mdi-content-copy"
+          icon
+          v-bind="props"
+          size="small"
         >
+          <v-icon icon="mdi:mdi-content-copy"></v-icon>
           <span v-if="buttonText">{{ buttonText }}</span>
         </v-btn>
       </template>
