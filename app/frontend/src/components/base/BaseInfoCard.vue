@@ -1,7 +1,7 @@
 <template>
   <v-card class="elevation-0">
     <v-card-title v-if="$slots.title">
-      <v-icon />
+      <v-icon icon="mdi:mdi-information" />
       <slot name="title" />
     </v-card-title>
     <v-card-text :class="$slots.title ? 'under-title' : ''">

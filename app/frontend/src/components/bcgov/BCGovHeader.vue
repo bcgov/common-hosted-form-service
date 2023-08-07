@@ -79,7 +79,7 @@ export default {
         data-test="btn-header-title"
         class="font-weight-bold text-h6 d-none d-md-flex pl-4"
       >
-        {{ appTitle }} fygfy
+        {{ appTitle }}
       </h1>
       <v-spacer />
       <BaseAuthButton data-test="base-auth-btn" />
