@@ -804,7 +804,8 @@
     "submissnHistory": "您的提交歷史記錄（待定）"
   },
   "error": {
-    "logout": "登出"
+    "logout": "登出",
+    "somethingWentWrong": "錯誤：出了點問題...:("
   },
   "login": {
     "authenticateWith": "通過以下方式進行身份驗證：",
@@ -814,7 +815,7 @@
   },
   "notFound": {
     "about": "關於",
-    "pageNotFound": "404頁面不存在。 :"
+    "pageNotFound": "404頁面不存在。 :("
   },
   "store": {
     "admin": {

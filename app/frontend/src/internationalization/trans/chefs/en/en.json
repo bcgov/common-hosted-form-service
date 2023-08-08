@@ -900,7 +900,8 @@
     "submissnHistory": "Your Submission History (TBD)"
   },
   "error": {
-    "logout": "Logout"
+    "logout": "Logout",
+    "somethingWentWrong": "Error: Something went wrong... :("
   },
   "login": {
     "authenticateWith": "Authenticate with:",
@@ -910,7 +911,7 @@
   },
   "notFound": {
     "about": "About",
-    "pageNotFound": "404: Page not found. :"
+    "pageNotFound": "404: Page not found. :("
   },
   "admin": {
     "root": {

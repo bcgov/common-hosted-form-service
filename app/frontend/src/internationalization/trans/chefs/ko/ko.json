@@ -804,7 +804,8 @@
     "submissnHistory": "귀하의 제출 내역(미정)"
   },
   "error": {
-    "logout": "로그 아웃"
+    "logout": "로그 아웃",
+    "somethingWentWrong": "오류: 문제가 발생했습니다... :("
   },
   "login": {
     "authenticateWith": "인증:",
@@ -814,7 +815,7 @@
   },
   "notFound": {
     "about": "에 대한",
-    "pageNotFound": "404 페이지를 찾을 수 없습니다. :"
+    "pageNotFound": "404 페이지를 찾을 수 없습니다. :("
   },
   "store": {
     "admin": {

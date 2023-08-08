@@ -804,7 +804,8 @@
     "submissnHistory": "あなたの提出履歴 (TBD)"
   },
   "error": {
-    "logout": "ログアウト"
+    "logout": "ログアウト",
+    "somethingWentWrong": "エラー: 何か問題が発生しました... :("
   },
   "login": {
     "authenticateWith": "以下で認証します:",
@@ -814,7 +815,7 @@
   },
   "notFound": {
     "about": "だいたい",
-    "pageNotFound": "404: ページが見つかりません。 :"
+    "pageNotFound": "404: ページが見つかりません。 :("
   },
   "store": {
     "admin": {

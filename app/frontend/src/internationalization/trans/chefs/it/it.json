@@ -804,7 +804,8 @@
     "submissnHistory": "La tua cronologia di invio (TBD)"
   },
   "error": {
-    "logout": "Disconnettersi"
+    "logout": "Disconnettersi",
+    "somethingWentWrong": "Errore: Qualcosa è andato storto... :("
   },
   "login": {
     "authenticateWith": "Autenticati con:",
@@ -814,7 +815,7 @@
   },
   "notFound": {
     "about": "Di",
-    "pageNotFound": "404 pagina non trovata. :"
+    "pageNotFound": "404 pagina non trovata. :("
   },
   "store": {
     "admin": {

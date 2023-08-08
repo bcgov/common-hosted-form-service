@@ -804,7 +804,8 @@
     "submissnHistory": "Ваша історія подання (уточнюється)"
   },
   "error": {
-    "logout": "Вийти"
+    "logout": "Вийти",
+    "somethingWentWrong": "Помилка: щось пішло не так... :("
   },
   "login": {
     "authenticateWith": "Автентифікувати за допомогою:",
@@ -814,7 +815,7 @@
   },
   "notFound": {
     "about": "про",
-    "pageNotFound": "404: Сторінка не знайдена. :"
+    "pageNotFound": "404: Сторінка не знайдена. :("
   },
   "store": {
     "admin": {

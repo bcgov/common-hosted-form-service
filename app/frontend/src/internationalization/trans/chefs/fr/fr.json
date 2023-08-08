@@ -804,7 +804,8 @@
     "submissnHistory": "Votre historique de soumission (à déterminer)"
   },
   "error": {
-    "logout": "Se déconnecter"
+    "logout": "Se déconnecter",
+    "somethingWentWrong": "Erreur : quelque chose s'est mal passé... :("
   },
   "login": {
     "authenticateWith": "Authentifiez-vous avec :",
@@ -814,7 +815,7 @@
   },
   "notFound": {
     "about": "À propos",
-    "pageNotFound": "404 Page non trouvée. :"
+    "pageNotFound": "404 Page non trouvée. :("
   },
   "store": {
     "admin": {

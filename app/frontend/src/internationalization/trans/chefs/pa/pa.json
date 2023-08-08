@@ -804,7 +804,8 @@
     "submissnHistory": "ਤੁਹਾਡਾ ਸਬਮਿਸ਼ਨ ਇਤਿਹਾਸ (TBD)"
   },
   "error": {
-    "logout": "ਲਾੱਗ ਆਊਟ, ਬਾਹਰ ਆਉਣਾ"
+    "logout": "ਲਾੱਗ ਆਊਟ, ਬਾਹਰ ਆਉਣਾ",
+    "somethingWentWrong": "ਗਲਤੀ: ਕੁਝ ਗਲਤ ਹੋ ਗਿਆ... :("
   },
   "login": {
     "authenticateWith": "ਇਸ ਨਾਲ ਪ੍ਰਮਾਣਿਤ ਕਰੋ:",
@@ -814,7 +815,7 @@
   },
   "notFound": {
     "about": "ਬਾਰੇ",
-    "pageNotFound": "404: ਪੰਨਾ ਨਹੀਂ ਮਿਲਿਆ। :"
+    "pageNotFound": "404: ਪੰਨਾ ਨਹੀਂ ਮਿਲਿਆ। :("
   },
   "store": {
     "admin": {

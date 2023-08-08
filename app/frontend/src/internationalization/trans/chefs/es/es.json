@@ -804,7 +804,8 @@
     "submissnHistory": "Su historial de envíos (TBD)"
   },
   "error": {
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "somethingWentWrong": "Error: Algo salió mal... :("
   },
   "login": {
     "authenticateWith": "Autenticar con:",
@@ -814,7 +815,7 @@
   },
   "notFound": {
     "about": "Acerca de",
-    "pageNotFound": "404 Pagina no encontrada. :"
+    "pageNotFound": "404 Pagina no encontrada. :("
   },
   "store": {
     "admin": {
