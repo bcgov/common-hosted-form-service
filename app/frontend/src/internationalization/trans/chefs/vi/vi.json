@@ -804,7 +804,8 @@
     "submissnHistory": "Lịch sử gửi của bạn (TBD)"
   },
   "error": {
-    "logout": "Đăng xuất"
+    "logout": "Đăng xuất",
+    "somethingWentWrong": "Lỗi: Đã xảy ra sự cố... :("
   },
   "login": {
     "authenticateWith": "Xác thực với:",
@@ -814,7 +815,7 @@
   },
   "notFound": {
     "about": "Về",
-    "pageNotFound": "Lôi 404 Không Tim Được Trang. :"
+    "pageNotFound": "Lôi 404 Không Tim Được Trang. :("
   },
   "store": {
     "admin": {

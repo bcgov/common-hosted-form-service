@@ -804,7 +804,8 @@
     "submissnHistory": "Ваша история отправки (подлежит уточнению)"
   },
   "error": {
-    "logout": "Выйти"
+    "logout": "Выйти",
+    "somethingWentWrong": "Ошибка: Что-то пошло не так... :("
   },
   "login": {
     "authenticateWith": "Авторизоваться с помощью:",
@@ -814,7 +815,7 @@
   },
   "notFound": {
     "about": "О",
-    "pageNotFound": "404 Страница не найдена. :"
+    "pageNotFound": "404 Страница не найдена. :("
   },
   "store": {
     "admin": {

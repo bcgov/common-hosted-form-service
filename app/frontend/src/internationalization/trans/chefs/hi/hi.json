@@ -804,7 +804,8 @@
     "submissnHistory": "आपका सबमिशन इतिहास (टीबीडी)"
   },
   "error": {
-    "logout": "लॉग आउट"
+    "logout": "लॉग आउट",
+    "somethingWentWrong": "त्रुटि: कुछ गलत हो गया... :("
   },
   "login": {
     "authenticateWith": "इसके साथ प्रमाणित करें:",
@@ -814,7 +815,7 @@
   },
   "notFound": {
     "about": "के बारे में",
-    "pageNotFound": "404 पृष्ठ नहीं मिला। :"
+    "pageNotFound": "404 पृष्ठ नहीं मिला। :("
   },
   "store": {
     "admin": {

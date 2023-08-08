@@ -11,12 +11,12 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-
+import i18n from '@/internationalization';
 export default {
   name: 'Error',
   props: {
     msg: {
-      default: 'Error: Something went wrong... :(',
+      default: i18n.t('trans.error.somethingWentWrong'),
       type: String,
     },
   },

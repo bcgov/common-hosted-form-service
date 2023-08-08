@@ -804,7 +804,8 @@
     "submissnHistory": "Ihr Einreichungsverlauf (TBD)"
   },
   "error": {
-    "logout": "Ausloggen"
+    "logout": "Ausloggen",
+    "somethingWentWrong": "Fehler: Etwas ist schiefgelaufen... :("
   },
   "login": {
     "authenticateWith": "Authentifizieren mit:",
@@ -814,7 +815,7 @@
   },
   "notFound": {
     "about": "Um",
-    "pageNotFound": "404 Seite nicht gefunden. :"
+    "pageNotFound": "404 Seite nicht gefunden. :("
   },
   "store": {
     "admin": {

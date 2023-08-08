@@ -804,7 +804,8 @@
     "submissnHistory": "سابقه ارسال شما (TBD)"
   },
   "error": {
-    "logout": "خروج"
+    "logout": "خروج",
+    "somethingWentWrong": "خطا: مشکلی پیش آمد... :("
   },
   "login": {
     "authenticateWith": "احراز هویت با:",
@@ -814,7 +815,7 @@
   },
   "notFound": {
     "about": "در باره",
-    "pageNotFound": "404: صفحه یافت نشد. :"
+    "pageNotFound": "404: صفحه یافت نشد. :("
   },
   "store": {
     "admin": {

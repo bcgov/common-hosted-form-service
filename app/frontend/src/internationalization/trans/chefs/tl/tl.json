@@ -804,7 +804,8 @@
     "submissnHistory": "Iyong Kasaysayan ng Pagsusumite (TBD)"
   },
   "error": {
-    "logout": "Mag-logout"
+    "logout": "Mag-logout",
+    "somethingWentWrong": "Error: Nagkaproblema... :("
   },
   "login": {
     "authenticateWith": "Patotohanan gamit ang:",
@@ -814,7 +815,7 @@
   },
   "notFound": {
     "about": "Tungkol sa",
-    "pageNotFound": "Hindi Natagpuan ang 404 Page. :"
+    "pageNotFound": "Hindi Natagpuan ang 404 Page. :("
   },
   "store": {
     "admin": {
