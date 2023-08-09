@@ -323,7 +323,7 @@
                 <span
                   >{{ $t('trans.formSettings.experimental') }}
                   <a
-                    :href="githubLinkCopyFromExistingFeature"
+                    :href="githubLinkEventSubscriptionFeature"
                     class="preview_info_link_field_white"
                     :target="'_blank'"
                   >
@@ -1094,6 +1094,8 @@ export default {
         'https://github.com/bcgov/common-hosted-form-service/wiki/Copy-an-existing-submission',
       githubLinkScheduleAndReminderFeature:
         'https://github.com/bcgov/common-hosted-form-service/wiki/Schedule-and-Reminder-notification',
+      githubLinkEventSubscriptionFeature:
+        'https://github.com/bcgov/common-hosted-form-service/wiki/Event-Subscription',
       repeatUntil: false,
       closeSubmissionDateDraw: false,
       openSubmissionDateDraw: false,
