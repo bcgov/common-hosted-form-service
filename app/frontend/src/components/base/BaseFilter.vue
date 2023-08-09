@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card :class="{ 'dir-rtl': isRTL }">
     <v-card-title class="text-h5 pb-0 titleWrapper">
       <slot name="filter-title"></slot>
     </v-card-title>
@@ -18,8 +18,8 @@
           filled
           dense
           class="mt-3"
-        >
-        </v-text-field>
+          :class="{ label: isRTL }"
+        />
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
@@ -62,7 +62,8 @@
       }}</v-btn>
       <v-btn
         @click="cancelFilterData"
-        class="mt-3 ml-3 primary--text"
+        class="mt-3 primary--text"
+        :class="isRTL ? 'mr-3' : 'ml-3'"
         outlined
         >{{ $t('trans.baseFilter.cancel') }}</v-btn
       >
@@ -71,6 +72,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import i18n from '@/internationalization';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faRepeat } from '@fortawesome/free-solid-svg-icons';
@@ -130,6 +132,9 @@ export default {
       default: i18n.t('trans.baseFilter.filter'),
     },
   },
+  computed: {
+    ...mapGetters('form', ['isRTL']),
+  },
   data() {
     return {
       selectedData: this.preselectedData,
@@ -186,7 +191,6 @@ export default {
   font-family: BCSans !important;
   color: #000000 !important;
 }
-
 .hr {
   height: 1px;
   border: none;

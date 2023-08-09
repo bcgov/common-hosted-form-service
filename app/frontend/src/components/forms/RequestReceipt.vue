@@ -1,6 +1,12 @@
 <template>
-  <div>
-    <v-btn color="primary" text small @click="displayDialog">
+  <div :class="{ 'dir-rtl': isRTL }">
+    <v-btn
+      color="primary"
+      text
+      small
+      @click="displayDialog"
+      :class="{ 'dir-rtl': isRTL }"
+    >
       <v-icon class="mr-1">email</v-icon>
       <span>{{ $t('trans.requestReceipt.emailReceipt') }}</span>
     </v-btn>
@@ -9,6 +15,7 @@
       v-model="showDialog"
       type="CONTINUE"
       @close-dialog="showDialog = false"
+      :class="{ 'dir-rtl': isRTL }"
       @continue-dialog="requestReceipt()"
     >
       <template #icon>
@@ -41,7 +48,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 import { NotificationTypes } from '@/utils/constants';
 import { formService } from '@/services';
@@ -86,6 +93,9 @@ export default {
       this.to = this.email;
       this.valid = false;
     },
+  },
+  computed: {
+    ...mapGetters('form', ['isRTL']),
   },
   mounted() {
     this.resetDialog();

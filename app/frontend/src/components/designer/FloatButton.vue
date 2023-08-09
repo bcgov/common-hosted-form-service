@@ -1,5 +1,6 @@
 <template>
   <div
+    :class="{ 'dir-rtl': isRTL }"
     :style="[
       {
         display: 'flex',
@@ -206,7 +207,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['multiLanguage']),
+    ...mapGetters('form', ['multiLanguage', 'isRTL']),
   },
   props: {
     formId: String,

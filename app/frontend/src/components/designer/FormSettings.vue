@@ -1,9 +1,9 @@
 <template>
-  <v-container class="px-0">
+  <v-container class="px-0" :class="{ 'dir-rtl': isRTL }">
     <v-row>
       <v-col cols="12" md="6">
         <BasePanel class="fill-height">
-          <template #title>{{ $t('trans.formSettings.formTitle') }}</template>
+          <template #title>{{ $t('trans.formSettings.formTitle') }} </template>
           <v-text-field
             dense
             flat
@@ -40,11 +40,22 @@
           >
             <v-radio
               class="mb-4"
-              :label="$t('trans.formSettings.public')"
+              :class="{ 'dir-rtl': isRTL }"
               :value="ID_MODE.PUBLIC"
-            />
+            >
+              <template #label>
+                <span :class="{ 'mr-2': isRTL }">
+                  {{ $t('trans.formSettings.public') }}
+                </span>
+              </template>
+            </v-radio>
+
             <v-expand-transition>
-              <BaseInfoCard v-if="userType == ID_MODE.PUBLIC" class="mr-4 mb-3">
+              <BaseInfoCard
+                v-if="userType == ID_MODE.PUBLIC"
+                class="mr-4 mb-3"
+                :class="{ 'dir-rtl': isRTL }"
+              >
                 <h4 class="primary--text">
                   <v-icon class="mr-1" color="primary">info</v-icon
                   >{{ $t('trans.formSettings.important') }}!
@@ -61,29 +72,31 @@
                 </p>
               </BaseInfoCard>
             </v-expand-transition>
-            <v-radio
-              class="mb-4"
-              :label="$t('trans.formSettings.loginRequired')"
-              value="login"
-            />
+            <v-radio class="mb-4" value="login">
+              <template #label>
+                <span :class="{ 'mr-2': isRTL }">
+                  {{ $t('trans.formSettings.loginRequired') }}
+                </span>
+              </template>
+            </v-radio>
             <v-expand-transition>
               <v-row v-if="userType === ID_MODE.LOGIN" class="pl-6">
                 <v-radio-group class="my-0" v-model="idps[0]">
-                  <v-radio
-                    class="mx-2"
-                    label="IDIR"
-                    :value="ID_PROVIDERS.IDIR"
-                  />
-                  <v-radio
-                    class="mx-2"
-                    label="Basic BCeID"
-                    :value="ID_PROVIDERS.BCEIDBASIC"
-                  />
-                  <v-radio
-                    class="mx-2"
-                    label="Business BCeID"
-                    :value="ID_PROVIDERS.BCEIDBUSINESS"
-                  />
+                  <v-radio class="mx-2" :value="ID_PROVIDERS.IDIR">
+                    <template #label>
+                      <span :class="{ 'mr-2': isRTL }"> IDIR </span>
+                    </template>
+                  </v-radio>
+                  <v-radio class="mx-2" :value="ID_PROVIDERS.BCEIDBASIC">
+                    <template #label>
+                      <span :class="{ 'mr-2': isRTL }"> Basic BCeID </span>
+                    </template>
+                  </v-radio>
+                  <v-radio class="mx-2" :value="ID_PROVIDERS.BCEIDBUSINESS">
+                    <template #label>
+                      <span :class="{ 'mr-2': isRTL }"> Business BCeID </span>
+                    </template>
+                  </v-radio>
                   <!-- Mandatory BCeID process notification -->
                   <v-expand-transition>
                     <BaseInfoCard
@@ -95,6 +108,7 @@
                         ].includes(idps[0])
                       "
                       class="mr-4"
+                      :class="{ 'dir-rtl': isRTL }"
                     >
                       <h4 class="primary--text">
                         <v-icon class="mr-1" color="primary">info</v-icon
@@ -122,7 +136,13 @@
             <v-radio
               :label="$t('trans.formSettings.specificTeamMembers')"
               value="team"
-            />
+            >
+              <template #label>
+                <span :class="{ 'mr-2': isRTL }">
+                  {{ $t('trans.formSettings.specificTeamMembers') }}
+                </span>
+              </template>
+            </v-radio>
           </v-radio-group>
         </BasePanel>
       </v-col>
@@ -141,14 +161,20 @@
             :disabled="userType === ID_MODE.PUBLIC"
           >
             <template #label>
-              <span v-html="$t('trans.formSettings.canSaveAndEditDraftLabel')">
+              <span
+                :class="{ 'mr-2': isRTL }"
+                v-html="$t('trans.formSettings.canSaveAndEditDraftLabel')"
+              >
               </span>
             </template>
           </v-checkbox>
 
           <v-checkbox class="my-0" v-model="enableStatusUpdates">
             <template #label>
-              <span v-html="$t('trans.formSettings.canUpdateStatusAsReviewer')">
+              <span
+                :class="{ 'mr-2': isRTL }"
+                v-html="$t('trans.formSettings.canUpdateStatusAsReviewer')"
+              >
               </span>
             </template>
           </v-checkbox>
@@ -160,8 +186,8 @@
             :disabled="userType === ID_MODE.PUBLIC"
           >
             <template #label>
-              <span>
-                Allow <strong> multiple draft</strong> upload
+              <div :class="{ 'mr-2': isRTL }">
+                <span v-html="$t('trans.formSettings.allowMultiDraft')" />
                 <v-tooltip close-delay="3000" bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <font-awesome-icon
@@ -170,28 +196,31 @@
                       class="ml-3"
                       v-bind="attrs"
                       v-on="on"
+                      :class="{ 'mr-2': isRTL }"
                     />
                   </template>
                   <span
-                    >Experimental
+                    >{{ $t('trans.formSettings.experimental') }}
                     <a
                       :href="githubLinkBulkUpload"
                       class="preview_info_link_field_white"
                       :target="'_blank'"
                     >
-                      Learn more
+                      {{ $t('trans.formSettings.learnMore') }}
                       <font-awesome-icon
                         icon="fa-solid fa-square-arrow-up-right"
                     /></a>
                   </span>
                 </v-tooltip>
-              </span>
+              </div>
             </template>
           </v-checkbox>
 
           <v-checkbox v-if="!isFormPublished" disabled class="my-0">
             <template #label>
-              {{ $t('trans.formSettings.formSubmissinScheduleMsg') }}
+              <span :class="{ 'mr-2': isRTL }"
+                >{{ $t('trans.formSettings.formSubmissinScheduleMsg') }}
+              </span>
             </template>
           </v-checkbox>
 
@@ -201,29 +230,34 @@
             v-model="schedule.enabled"
           >
             <template #label>
-              {{ $t('trans.formSettings.formSubmissionsSchedule') }}
-              <v-tooltip bottom close-delay="2500">
-                <template v-slot:activator="{ on, attrs }">
-                  <font-awesome-icon
-                    icon="fa-solid fa-flask"
-                    color="primary"
-                    class="ml-3"
-                    v-bind="attrs"
-                    v-on="on"
-                  />
-                </template>
-                <span
-                  >{{ $t('trans.formSettings.experimental') }}
-                  <a
-                    :href="githubLinkScheduleAndReminderFeature"
-                    class="preview_info_link_field_white"
-                    :target="'_blank'"
-                  >
-                    {{ $t('trans.formSettings.learnMore') }}
+              <div :class="{ 'mr-2': isRTL }">
+                <span>{{
+                  $t('trans.formSettings.formSubmissionsSchedule')
+                }}</span>
+                <v-tooltip bottom close-delay="2500">
+                  <template v-slot:activator="{ on, attrs }">
                     <font-awesome-icon
-                      icon="fa-solid fa-square-arrow-up-right" /></a
-                ></span>
-              </v-tooltip>
+                      icon="fa-solid fa-flask"
+                      color="primary"
+                      class="ml-3"
+                      :class="{ 'mr-2': isRTL }"
+                      v-bind="attrs"
+                      v-on="on"
+                    />
+                  </template>
+                  <span
+                    >{{ $t('trans.formSettings.experimental') }}
+                    <a
+                      :href="githubLinkScheduleAndReminderFeature"
+                      class="preview_info_link_field_white"
+                      :target="'_blank'"
+                    >
+                      {{ $t('trans.formSettings.learnMore') }}
+                      <font-awesome-icon
+                        icon="fa-solid fa-square-arrow-up-right" /></a
+                  ></span>
+                </v-tooltip>
+              </div>
             </template>
           </v-checkbox>
 
@@ -233,34 +267,37 @@
             :disabled="userType === ID_MODE.PUBLIC"
           >
             <template #label>
-              <span
-                style="max-width: 80%"
-                v-html="
-                  $t('trans.formSettings.submitterCanCopyExistingSubmissn')
-                "
-              />
-              <v-tooltip bottom close-delay="2500">
-                <template v-slot:activator="{ on, attrs }">
-                  <font-awesome-icon
-                    icon="fa-solid fa-flask"
-                    color="primary"
-                    class="ml-3"
-                    v-bind="attrs"
-                    v-on="on"
-                  />
-                </template>
+              <div :class="{ 'mr-2': isRTL }">
                 <span
-                  >{{ $t('trans.formSettings.experimental') }}
-                  <a
-                    :href="githubLinkCopyFromExistingFeature"
-                    class="preview_info_link_field_white"
-                    :target="'_blank'"
-                  >
-                    {{ $t('trans.formSettings.learnMore') }}
+                  style="max-width: 80%"
+                  v-html="
+                    $t('trans.formSettings.submitterCanCopyExistingSubmissn')
+                  "
+                />
+                <v-tooltip bottom close-delay="2500">
+                  <template v-slot:activator="{ on, attrs }">
                     <font-awesome-icon
-                      icon="fa-solid fa-square-arrow-up-right" /></a
-                ></span>
-              </v-tooltip>
+                      icon="fa-solid fa-flask"
+                      color="primary"
+                      class="ml-3"
+                      :class="{ 'mr-2': isRTL }"
+                      v-bind="attrs"
+                      v-on="on"
+                    />
+                  </template>
+                  <span
+                    >{{ $t('trans.formSettings.experimental') }}
+                    <a
+                      :href="githubLinkCopyFromExistingFeature"
+                      class="preview_info_link_field_white"
+                      :target="'_blank'"
+                    >
+                      {{ $t('trans.formSettings.learnMore') }}
+                      <font-awesome-icon
+                        icon="fa-solid fa-square-arrow-up-right" /></a
+                  ></span>
+                </v-tooltip>
+              </div>
             </template>
           </v-checkbox>
           <v-checkbox
@@ -305,45 +342,71 @@
           <template #title>{{
             $t('trans.formSettings.afterSubmission')
           }}</template>
-          <v-checkbox class="my-0" v-model="showSubmissionConfirmation">
+          <v-checkbox
+            class="my-0"
+            v-model="showSubmissionConfirmation"
+            :class="{ 'dir-rtl': isRTL }"
+          >
             <template #label>
-              {{ $t('trans.formSettings.submissionConfirmation') }}
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
-                    help_outline
-                  </v-icon>
-                </template>
+              <div :class="{ 'mr-2': isRTL }">
                 <span>
-                  <span
-                    v-html="
-                      $t('trans.formSettings.submissionConfirmationToolTip')
-                    "
-                  />
-                  <ul>
-                    <li>{{ $t('trans.formSettings.theConfirmationID') }}</li>
-                    <li>
-                      {{ $t('trans.formSettings.infoB') }}
-                    </li>
-                  </ul>
-                </span>
-              </v-tooltip>
+                  {{ $t('trans.formSettings.submissionConfirmation') }}</span
+                >
+
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
+                      color="primary"
+                      class="ml-3"
+                      v-bind="attrs"
+                      v-on="on"
+                      :class="{ 'mr-2': isRTL }"
+                    >
+                      help_outline
+                    </v-icon>
+                  </template>
+                  <span>
+                    <span
+                      v-html="
+                        $t('trans.formSettings.submissionConfirmationToolTip')
+                      "
+                    />
+                    <ul>
+                      <li>{{ $t('trans.formSettings.theConfirmationID') }}</li>
+                      <li>
+                        {{ $t('trans.formSettings.infoB') }}
+                      </li>
+                    </ul>
+                  </span>
+                </v-tooltip>
+              </div>
             </template>
           </v-checkbox>
 
           <v-checkbox class="my-0" v-model="sendSubRecieviedEmail">
             <template #label>
-              {{ $t('trans.formSettings.emailNotificatnToTeam') }}
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-icon color="primary" class="ml-3" v-bind="attrs" v-on="on">
-                    help_outline
-                  </v-icon>
-                </template>
+              <div :class="{ 'mr-2': isRTL }">
                 <span>
-                  {{ $t('trans.formSettings.emailNotificatnToTeamToolTip') }}
-                </span>
-              </v-tooltip>
+                  {{ $t('trans.formSettings.emailNotificatnToTeam') }}</span
+                >
+
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
+                      color="primary"
+                      class="ml-3"
+                      v-bind="attrs"
+                      v-on="on"
+                      :class="{ 'mr-2': isRTL }"
+                    >
+                      help_outline
+                    </v-icon>
+                  </template>
+                  <span>
+                    {{ $t('trans.formSettings.emailNotificatnToTeamToolTip') }}
+                  </span>
+                </v-tooltip>
+              </div>
             </template>
           </v-checkbox>
 
@@ -369,8 +432,7 @@
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title>
-                    Press <kbd>enter</kbd> or <kbd>,</kbd> or
-                    <kbd>space</kbd> to add multiple email addresses
+                    {{ $t('trans.formSettings.pressToAddMultiEmail') }}
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -400,17 +462,24 @@
                     <v-text-field
                       v-model="schedule.openSubmissionDateTime"
                       :placeholder="$t('trans.date.date')"
-                      append-icon="event"
                       v-on:click:append="openSubmissionDateDraw = true"
                       :label="$t('trans.formSettings.opensubmissions')"
                       v-on="on"
                       dense
                       outlined
                       :rules="scheduleOpenDate"
-                    ></v-text-field>
+                    >
+                      <template v-if="isRTL" #prepend-inner>
+                        <v-icon>event</v-icon>
+                      </template>
+                      <template v-if="!isRTL" #append>
+                        <v-icon>event</v-icon>
+                      </template>
+                    </v-text-field>
                   </template>
                   <v-date-picker
                     @change="openDateTypeChanged"
+                    :class="{ 'mr-2': isRTL }"
                     v-model="schedule.openSubmissionDateTime"
                     data-test="picker-form-openSubmissionDateDraw"
                     @input="openSubmissionDateDraw = false"
@@ -435,21 +504,43 @@
                     >
                       <v-radio
                         class="mx-2"
-                        :label="
-                          $t('trans.formSettings.keepSubmissnOpenTilUnplished')
-                        "
+                        :class="{ 'mr-2': isRTL }"
                         :value="SCHEDULE_TYPE.MANUAL"
-                      />
+                      >
+                        <template #label>
+                          <span :class="{ 'mr-2': isRTL }"
+                            >{{
+                              $t(
+                                'trans.formSettings.keepSubmissnOpenTilUnplished'
+                              )
+                            }}
+                          </span>
+                        </template>
+                      </v-radio>
                       <v-radio
                         class="mx-2"
-                        :label="$t('trans.formSettings.submissionsClosingDate')"
+                        :class="{ 'mr-2': isRTL }"
                         :value="SCHEDULE_TYPE.CLOSINGDATE"
-                      />
+                      >
+                        <template #label>
+                          <span :class="{ 'mr-2': isRTL }"
+                            >{{
+                              $t('trans.formSettings.submissionsClosingDate')
+                            }}
+                          </span>
+                        </template>
+                      </v-radio>
                       <v-radio
                         class="mx-2"
-                        :label="$t('trans.formSettings.submissionPeriod')"
+                        :class="{ 'mr-2': isRTL }"
                         :value="SCHEDULE_TYPE.PERIOD"
-                      />
+                      >
+                        <template #label>
+                          <span :class="{ 'mr-2': isRTL }"
+                            >{{ $t('trans.formSettings.submissionPeriod') }}
+                          </span>
+                        </template>
+                      </v-radio>
                     </v-radio-group>
                   </v-row>
                 </v-expand-transition>
@@ -474,14 +565,21 @@
                     <v-text-field
                       v-model="schedule.closeSubmissionDateTime"
                       :placeholder="$t('trans.date.date')"
-                      append-icon="event"
                       v-on:click:append="closeSubmissionDateDraw = true"
                       :label="$t('trans.formSettings.closeSubmissions')"
                       v-on="on"
                       dense
                       outlined
                       :rules="scheduleCloseDate"
-                    ></v-text-field>
+                      :class="{ 'dir-rtl': isRTL }"
+                    >
+                      <template v-if="isRTL" #prepend-inner>
+                        <v-icon>event</v-icon>
+                      </template>
+                      <template v-if="!isRTL" #append>
+                        <v-icon>event</v-icon>
+                      </template>
+                    </v-text-field>
                   </template>
                   <v-date-picker
                     v-model="schedule.closeSubmissionDateTime"
@@ -509,7 +607,8 @@
                   v-model="schedule.keepOpenForTerm"
                   class="m-0 p-0"
                   :rules="roundNumber"
-                ></v-text-field>
+                  :class="{ 'dir-rtl': isRTL }"
+                />
               </v-col>
 
               <v-col
@@ -528,7 +627,7 @@
                   class="mr-2 pl-2"
                   v-model="schedule.keepOpenForInterval"
                   :rules="intervalType"
-                ></v-select>
+                />
               </v-col>
             </v-row>
 
@@ -543,22 +642,27 @@
               :rules="allowLateSubmissionRule"
             >
               <template #label>
-                {{ $t('trans.formSettings.allowLateSubmissions') }}
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-icon
-                      color="primary"
-                      class="ml-3"
-                      v-bind="attrs"
-                      v-on="on"
-                    >
-                      help_outline
-                    </v-icon>
-                  </template>
+                <div :class="{ 'mr-2': isRTL }">
                   <span>
-                    {{ $t('trans.formSettings.allowLateSubmissionsInfoTip') }}
+                    {{ $t('trans.formSettings.allowLateSubmissions') }}
                   </span>
-                </v-tooltip>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-icon
+                        color="primary"
+                        class="ml-3"
+                        v-bind="attrs"
+                        v-on="on"
+                        :class="{ 'mr-2': isRTL }"
+                      >
+                        help_outline
+                      </v-icon>
+                    </template>
+                    <span>
+                      {{ $t('trans.formSettings.allowLateSubmissionsInfoTip') }}
+                    </span>
+                  </v-tooltip>
+                </div>
               </template>
             </v-checkbox>
 
@@ -584,8 +688,8 @@
                     v-model="schedule.allowLateSubmissions.forNext.term"
                     class="m-0 p-0"
                     :rules="roundNumber"
-                  >
-                  </v-text-field>
+                    :class="{ 'dir-rtl': isRTL }"
+                  />
                 </v-col>
                 <v-col cols="4" md="4" class="m-0 p-0">
                   <v-select
@@ -598,7 +702,7 @@
                     class="mr-1 pl-2"
                     v-model="schedule.allowLateSubmissions.forNext.intervalType"
                     :rules="intervalType"
-                  ></v-select>
+                  />
                 </v-col>
               </v-row>
             </v-expand-transition>
@@ -610,7 +714,9 @@
               v-if="schedule.scheduleType === SCHEDULE_TYPE.PERIOD"
             >
               <template #label>
-                {{ $t('trans.formSettings.repeatPeriod') }}
+                <span :class="{ 'mr-2': isRTL }">
+                  {{ $t('trans.formSettings.repeatPeriod') }}
+                </span>
               </template>
             </v-checkbox>
 
@@ -633,13 +739,13 @@
                     v-model="schedule.repeatSubmission.everyTerm"
                     class="m-0 p-0"
                     :rules="repeatTerm"
-                  ></v-text-field>
+                    :class="{ 'dir-rtl': isRTL, label: isRTL }"
+                  />
                 </v-col>
 
                 <v-col cols="4" class="m-0 p-0">
                   <v-select
                     :items="AVAILABLE_PERIOD_OPTIONS"
-                    :label="$t('trans.formSettings.period')"
                     dense
                     flat
                     solid
@@ -647,7 +753,8 @@
                     class="mr-2 pl-2"
                     v-model="schedule.repeatSubmission.everyIntervalType"
                     :rules="repeatIntervalType"
-                  ></v-select>
+                    :label="$t('trans.formSettings.period')"
+                  />
                 </v-col>
 
                 <v-col cols="4" class="m-0 p-0">
@@ -666,12 +773,13 @@
                         :placeholder="$t('trans.date.date')"
                         append-icon="event"
                         v-on:click:append="repeatUntil = true"
-                        :label="$t('trans.formSettings.repeatUntil')"
                         v-on="on"
                         dense
                         outlined
                         :rules="repeatUntilDate"
-                      ></v-text-field>
+                        :label="$t('trans.formSettings.repeatUntil')"
+                        :class="{ 'dir-rtl': isRTL, label: isRTL }"
+                      />
                     </template>
                     <v-date-picker
                       v-model="schedule.repeatSubmission.repeatUntil"
@@ -767,6 +875,7 @@
                         class="ml-3"
                         v-bind="attrs"
                         v-on="on"
+                        :class="{ 'mr-2': isRTL }"
                       >
                         help_outline
                       </v-icon>
@@ -828,24 +937,29 @@
                   v-model="schedule.closingMessageEnabled"
                 >
                   <template #label>
-                    {{ $t('trans.formSettings.customClosingMessage') }}
-                    <v-tooltip bottom>
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-icon
-                          color="primary"
-                          class="ml-3"
-                          v-bind="attrs"
-                          v-on="on"
-                        >
-                          help_outline
-                        </v-icon>
-                      </template>
-                      <span>
-                        {{
-                          $t('trans.formSettings.customClosingMessageToolTip')
-                        }}
+                    <div>
+                      <span :class="{ 'mr-2': isRTL }">
+                        {{ $t('trans.formSettings.customClosingMessage') }}
                       </span>
-                    </v-tooltip>
+                      <v-tooltip bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-icon
+                            color="primary"
+                            class="ml-3"
+                            v-bind="attrs"
+                            v-on="on"
+                            :class="{ 'mr-2': isRTL }"
+                          >
+                            help_outline
+                          </v-icon>
+                        </template>
+                        <span>
+                          {{
+                            $t('trans.formSettings.customClosingMessageToolTip')
+                          }}
+                        </span>
+                      </v-tooltip>
+                    </div>
                   </template>
                 </v-checkbox>
               </v-col>
@@ -867,6 +981,7 @@
                         data-test="text-name"
                         v-model="schedule.closingMessage"
                         :rules="closeMessage"
+                        :class="{ 'dir-rtl': isRTL, label: isRTL }"
                       />
                     </v-col>
                   </v-row>
@@ -894,35 +1009,40 @@
                         v-model="reminder_enabled"
                       >
                         <template #label>
-                          {{ $t('trans.formSettings.sendReminderEmail') }}
-                          <v-tooltip close-delay="2500" bottom>
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-icon
-                                color="primary"
-                                class="ml-3"
-                                v-bind="attrs"
-                                v-on="on"
-                              >
-                                help_outline
-                              </v-icon>
-                            </template>
+                          <div :class="{ 'mr-2': isRTL }">
                             <span>
-                              {{
-                                $t(
-                                  'trans.formSettings.autoReminderNotificatnToolTip'
-                                )
-                              }}
-                              <a
-                                :href="githubLinkScheduleAndReminderFeature"
-                                class="preview_info_link_field_white"
-                                :target="'_blank'"
-                              >
-                                {{ $t('trans.formSettings.learnMore') }}
-                                <font-awesome-icon
-                                  icon="fa-solid fa-square-arrow-up-right"
-                              /></a>
+                              {{ $t('trans.formSettings.sendReminderEmail') }}
                             </span>
-                          </v-tooltip>
+                            <v-tooltip close-delay="2500" bottom>
+                              <template v-slot:activator="{ on, attrs }">
+                                <v-icon
+                                  color="primary"
+                                  class="ml-3"
+                                  v-bind="attrs"
+                                  v-on="on"
+                                  :class="{ 'mr-2': isRTL }"
+                                >
+                                  help_outline
+                                </v-icon>
+                              </template>
+                              <span>
+                                {{
+                                  $t(
+                                    'trans.formSettings.autoReminderNotificatnToolTip'
+                                  )
+                                }}
+                                <a
+                                  :href="githubLinkScheduleAndReminderFeature"
+                                  class="preview_info_link_field_white"
+                                  :target="'_blank'"
+                                >
+                                  {{ $t('trans.formSettings.learnMore') }}
+                                  <font-awesome-icon
+                                    icon="fa-solid fa-square-arrow-up-right"
+                                /></a>
+                              </span>
+                            </v-tooltip>
+                          </div>
                         </template>
                       </v-checkbox>
                     </v-col>
@@ -938,7 +1058,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { mapGetters } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
 import {
@@ -981,25 +1101,66 @@ export default {
       enableReminderDraw: true,
       valid: false,
       // Validation
-      loginRequiredRules: [
+    };
+  },
+  computed: {
+    ...mapFields('form', [
+      'form.description',
+      'form.enableSubmitterDraft',
+      'form.enableCopyExistingSubmission',
+      'form.enableStatusUpdates',
+      'form.allowSubmitterToUploadFile',
+      'form.id',
+      'form.idps',
+      'form.name',
+      'form.sendSubRecieviedEmail',
+      'form.showSubmissionConfirmation',
+      'form.submissionReceivedEmails',
+      'form.userType',
+      'form.schedule',
+      'form.reminder_enabled',
+      'form.versions',
+    ]),
+    ...mapGetters('form', ['isRTL']),
+    ID_MODE() {
+      return IdentityMode;
+    },
+    ID_PROVIDERS() {
+      return IdentityProviders;
+    },
+    isFormPublished() {
+      return (
+        this.versions &&
+        this.versions.length &&
+        this.versions.some((v) => v.published)
+      );
+    },
+    loginRequiredRules() {
+      return [
         (v) =>
           v !== 'login' ||
           this.idps.length === 1 ||
           this.$t('trans.formSettings.selectLoginType'),
-      ],
-      descriptionRules: [
+      ];
+    },
+    descriptionRules() {
+      return [
         (v) =>
           !v ||
           v.length <= 255 ||
           this.$t('trans.formSettings.formDescriptnMaxChars'),
-      ],
-      nameRules: [
+      ];
+    },
+    nameRules() {
+      return [
         (v) => !!v || this.$t('trans.formSettings.formTitleReq'),
         (v) =>
           (v && v.length <= 255) ||
           this.$t('trans.formSettings.formTitlemaxChars'),
-      ],
-      emailArrayRules: [
+      ];
+    },
+    emailArrayRules() {
+      return [
         (v) =>
           !this.sendSubRecieviedEmail ||
           v.length > 0 ||
@@ -1008,8 +1169,10 @@ export default {
           !this.sendSubRecieviedEmail ||
           v.every((item) => new RegExp(Regex.EMAIL).test(item)) ||
           this.$t('trans.formSettings.validEmailRequired'),
-      ],
-      scheduleOpenDate: [
+      ];
+    },
+    scheduleOpenDate() {
+      return [
         (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
         (v) =>
           (v &&
@@ -1017,8 +1180,10 @@ export default {
               /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
             ).test(v)) ||
           this.$t('trans.formSettings.correctDateFormat'),
-      ],
-      scheduleCloseDate: [
+      ];
+    },
+    scheduleCloseDate() {
+      return [
         (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
         (v) =>
           (v &&
@@ -1029,40 +1194,56 @@ export default {
         (v) =>
           moment(v).isAfter(this.schedule.openSubmissionDateTime, 'day') ||
           this.$t('trans.formSettings.dateDiffMsg'),
-      ],
-      roundNumber: [
+      ];
+    },
+    roundNumber() {
+      return [
         (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
         (v) =>
           (v && new RegExp(/^[1-9]\d{0,5}(?:\.\d{1,2})?$/g).test(v)) ||
           this.$t('trans.formSettings.valueMustBeNumber'),
-      ],
-      repeatTerm: [
+      ];
+    },
+    repeatTerm() {
+      return [
         (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
         (v) =>
           (v && new RegExp(/^[1-9]\d{0,5}(?:\.\d{1,2})?$/g).test(v)) ||
           this.$t('trans.formSettings.valueMustBeNumber'),
-      ],
-      scheduleTypedRules: [
-        (v) => !!v || this.$t('trans.formSettings.selectAnOptions'),
-      ],
-      allowLateSubmissionRule: [
+      ];
+    },
+    scheduleTypedRules() {
+      return [(v) => !!v || this.$t('trans.formSettings.selectAnOptions')];
+    },
+    allowLateSubmissionRule() {
+      return [
         // (v) => !!v || 'This field is required'
-      ],
-      intervalType: [(v) => !!v || this.$t('trans.formSettings.fieldRequired')],
-      repeatIntervalType: [
+      ];
+    },
+    intervalType() {
+      return [(v) => !!v || this.$t('trans.formSettings.fieldRequired')];
+    },
+    repeatIntervalType() {
+      return [
         (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
         (v) =>
           this.AVAILABLE_PERIOD_OPTIONS.includes(v) ||
           this.$t('trans.formSettings.validInterval'),
-      ],
-      repeatIntervalTypeReminder: [
+      ];
+    },
+    repeatIntervalTypeReminder() {
+      return [
         (v) => !!v || this.$t('trans.formSettings.fieldRequiredAndInterval'),
         (v) =>
           this.AVAILABLE_PERIOD_INTERVAL.includes(v) ||
           this.$t('trans.formSettings.fieldRequiredAndInterval'),
-      ],
-      closeMessage: [(v) => !!v || this.$t('trans.formSettings.fieldRequired')],
-      repeatUntilDate: [
+      ];
+    },
+    closeMessage() {
+      return [(v) => !!v || this.$t('trans.formSettings.fieldRequired')];
+    },
+    repeatUntilDate() {
+      return [
         (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
         (v) =>
           (v &&
@@ -1101,16 +1282,6 @@ export default {
     },
     ID_MODE() {
       return IdentityMode;
-    },
-    ID_PROVIDERS() {
-      return IdentityProviders;
-    },
-    isFormPublished() {
-      return (
-        this.versions &&
-        this.versions.length &&
-        this.versions.some((v) => v.published)
-      );
     },
     AVAILABLE_DATES() {
       //return [];

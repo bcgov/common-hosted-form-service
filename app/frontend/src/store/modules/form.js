@@ -98,6 +98,7 @@ export default {
       headers: null,
     },
     multiLanguage: '',
+    isRTL: false,
     subscriptionData: genInitialSubscribeDetails(),
   },
   getters: {
@@ -120,6 +121,7 @@ export default {
     fcProactiveHelpImageUrl: (state) => state.fcProactiveHelpImageUrl,
     downloadedFile: (state) => state.downloadedFile,
     multiLanguage: (state) => state.multiLanguage,
+    isRTL: (state) => state.isRTL,
     subscriptionData: (state) => state.subscriptionData,
   },
   mutations: {
@@ -138,6 +140,9 @@ export default {
     },
     SET_FORM(state, form) {
       state.form = form;
+    },
+    SET_IS_RTL(state, isRTL) {
+      state.isRTL = isRTL;
     },
     SET_FORM_FIELDS(state, formFields) {
       state.formFields = formFields;
@@ -904,6 +909,11 @@ export default {
     },
     async setMultiLanguage({ commit }, multiLanguage) {
       commit('SET_MULTI_LANGUAGE', multiLanguage);
+      if (multiLanguage === 'ar' || multiLanguage === 'fa') {
+        commit('SET_IS_RTL', true);
+      } else {
+        commit('SET_IS_RTL', false);
+      }
     },
     async downloadFile({ commit, dispatch }, fileId) {
       try {

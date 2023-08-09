@@ -18,6 +18,10 @@
   "manageLayout": {
     "manageForm": "Gestisci modulo"
   },
+  "preview": {
+    "preview": "Anteprima",
+    "previewToolTip": "Questo mostra un'anteprima del design e del comportamento della versione del modulo come lo vedranno i tuoi mittenti. Non puoi inviare il modulo da questa pagina."
+  },
   "shareForm": {
     "shareForm": "Modulo di condivisione",
     "shareLink": "Condividi il link",
@@ -50,6 +54,8 @@
     "eventSubscription": "Abbonamento all'evento"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "Premi <kbd>invio</kbd> o <kbd>,</kbd> o <kbd>spazio</kbd> per aggiungere più indirizzi email",
+    "allowMultiDraft": "Consenti il ​​caricamento di <strong> più bozze</strong>",
     "formTitle": "Titolo del modulo",
     "formDescription": "Descrizione del modulo",
     "formAccess": "Accesso al modulo",
@@ -369,6 +375,7 @@
     "emailRequired": "L'e-mail è obbligatoria"
   },
   "submissionsTable": {
+    "submissions": "Contributi",
     "submissionsTable": "Tabella degli invii",
     "selectColumns": "Seleziona Colonne",
     "manageForm": "Gestisci modulo",
@@ -741,7 +748,7 @@
     "createCustomFormTitle": "Crea moduli personalizzati con il generatore di moduli CHEFS",
     "createCustomFormSub1": "Con CHEFS, puoi creare moduli sicuri con un'intuitiva interfaccia drag-and-drop. È possibile aggiungere componenti del modulo, riorganizzarli e rilasciarli in diverse configurazioni di layout.",
     "chefsHowToTitle": "Video dimostrativi per CHEF",
-    "chefsHowToSub": "La nostra guida rapida ti introdurrà ad alcune delle funzioni di base di CHEFS. Iniziare!",
+    "chefsHowToSub": "La nostra guida rapida ti introdurrà ad alcune delle funzioni di base di CHEFS.",
     "getStartedToChefs": "Inizia a usare CHEFS",
     "createOnlineTitle": "Crea moduli online per raccogliere informazioni dai tuoi clienti e migliorare i tuoi flussi di lavoro.",
     "getStarted": "Iniziare"
@@ -761,6 +768,7 @@
   "addTeamMember": {
     "cantFindChefsUsers": "Non riesci a trovare qualcuno? Potrebbero non aver effettuato l&#39;accesso a CHEFS.<br /> Si prega di inviare loro un collegamento a CHEFS e chiedere loro di accedere.",
     "cancel": "Annulla",
+    "add": "Aggiungere",
     "mustSelectAUser": "Devi selezionare almeno un ruolo per aggiungere questo utente.",
     "addNewMember": "Aggiungi un nuovo membro",
     "enterUsername": "Inserisci un nome, un'e-mail o un nome utente",
@@ -790,13 +798,22 @@
     "copyToClipboard": "Copia negli appunti",
     "errCopyToClipboard": "Errore nel tentativo di copiare negli appunti."
   },
-  "root": {
-    "admin": "Amministratore"
+  "admin": {
+    "root": {
+      "admin": "Amministratore"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "LE MIE FORME",
+      "history": "STORIA",
+      "user": "Utente"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "Il tuo modulo è stato inviato con successo",
     "keepRecord": "Se desideri conservare una registrazione di questa presentazione, puoi conservare quanto segue",
-    "confirmationId": "ID di conferma:"
+    "confirmationId": "ID di conferma"
   },
   "permissionUtils": {
     "formNotAvailable": "Il modulo non è al momento disponibile. Ciò potrebbe essere dovuto a un collegamento errato o il modulo potrebbe essere stato eliminato dal suo proprietario.",
@@ -848,8 +865,7 @@
       "updCurrUserFormPrefConsErrMsg": "Errore durante l'aggiornamento delle preferenze del modulo utente utilizzando formID {formId} e preferenze {preferenze}: {errore}",
       "getCurrUserFormPrefErrMsg": "Si è verificato un errore durante il recupero delle tue preferenze per questo modulo.",
       "getCurrUserFormPrefConsErrMsg": "Errore nell'ottenere le preferenze del modulo utente utilizzando formID {formId}: {error}",
-      "delCurrformNotiMsg": "Il modulo \"{state.form.name}\" è stato eliminato correttamente.",
-      "delCurrformErrMsg": "Si è verificato un errore durante il tentativo di eliminare \"${state.form.name}\".",
+      "delCurrformNotiMsg": "Il modulo {name} è stato eliminato correttamente.",
       "delCurrFormConsErMsg": "Errore durante l'eliminazione del modulo {id}: {errore}",
       "delDraftErrMsg": "Si è verificato un errore durante l'eliminazione di questa bozza.",
       "delDraftConsErrMsg": "Errore durante l'eliminazione di {draftId}: {error}",

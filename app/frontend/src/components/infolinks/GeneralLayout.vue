@@ -59,6 +59,7 @@
               :disabled="canDisabled(item.componentName)"
             >
               <v-switch
+                :class="{ 'dir-ltl': isRTL }"
                 small
                 color="success"
                 :input-value="isComponentPublish(item.componentName, index)"

@@ -18,6 +18,10 @@
   "manageLayout": {
     "manageForm": "管理表格"
   },
+  "preview": {
+    "preview": "预览",
+    "previewToolTip": "这显示了提交者将看到的表单版本设计和行为的预览。您无法从此页面提交表格。"
+  },
   "shareForm": {
     "shareForm": "分享表格",
     "shareLink": "分享链接",
@@ -50,6 +54,8 @@
     "eventSubscription": "E活动订阅"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "按 <kbd>enter</kbd> 或 <kbd>、</kbd> 或 <kbd>空格</kbd> 添加多个电子邮件地址",
+    "allowMultiDraft": "允许<strong>多草稿</strong>上传",
     "formTitle": "表格标题",
     "formDescription": "表格说明",
     "formAccess": "表单访问",
@@ -369,6 +375,7 @@
     "emailRequired": "电子邮件是必需的"
   },
   "submissionsTable": {
+    "submissions": "意见书",
     "submissionsTable": "提交表",
     "selectColumns": "选择列",
     "manageForm": "管理表格",
@@ -741,7 +748,7 @@
     "createCustomFormTitle": "使用 CHEFS 表单生成器创建自定义表单",
     "createCustomFormSub1": "借助 CHEFS，您可以使用直观的拖放界面创建安全表单。您可以添加表单组件，重新排列它们，并将它们放入不同的布局配置中。",
     "chefsHowToTitle": "CHEFS 操作视频",
-    "chefsHowToSub": "我们的快速入门指南将向您介绍 CHEFS 的一些基本功能。开始吧！",
+    "chefsHowToSub": "我们的快速入门指南将向您介绍 CHEFS 的一些基本功能。",
     "getStartedToChefs": "开始使用 CHEFS",
     "createOnlineTitle": "创建在线表格以从您的客户那里收集信息并改进您的工作流程。",
     "getStarted": "开始吧"
@@ -761,6 +768,7 @@
   "addTeamMember": {
     "cantFindChefsUsers": "找不到人？他们可能没有登录 CHEFS。<br />请向他们发送指向 CHEFS 的链接并请他们登录。",
     "cancel": "取消",
+    "add": "添加",
     "mustSelectAUser": "您必须选择至少一个角色才能添加此用户。",
     "addNewMember": "添加新成员",
     "enterUsername": "输入姓名、电子邮件或用户名",
@@ -790,13 +798,22 @@
     "copyToClipboard": "复制到剪贴板",
     "errCopyToClipboard": "尝试复制到剪贴板时出错。"
   },
-  "root": {
-    "admin": "行政"
+  "admin": {
+    "root": {
+      "admin": "行政"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "我的表格",
+      "history": "历史",
+      "user": "用户"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "您的表单已成功提交",
     "keepRecord": "如果您希望保留此提交的记录，您可以保留以下内容",
-    "confirmationId": "确认编号："
+    "confirmationId": "确认编号"
   },
   "permissionUtils": {
     "formNotAvailable": "该表格目前不可用。这可能是由于链接不正确，或者表单可能已被其所有者删除。",
@@ -848,8 +865,7 @@
       "updCurrUserFormPrefConsErrMsg": "使用 formID {formId} 和首选项 {preferences} 更新用户表单首选项时出错：{error}",
       "getCurrUserFormPrefErrMsg": "获取您对此表单的偏好设置时出错。",
       "getCurrUserFormPrefConsErrMsg": "使用 formID {formId} 获取用户表单首选项时出错：{error}",
-      "delCurrformNotiMsg": "表格“{state.form.name}”已成功删除。",
-      "delCurrformErrMsg": "尝试删除“${state.form.name}”时出错。",
+      "delCurrformNotiMsg": "表格 {name} 已成功删除。",
       "delCurrFormConsErMsg": "删除表单 {id} 时出错：{error}",
       "delDraftErrMsg": "删除此草稿时出错。",
       "delDraftConsErrMsg": "删除 {draftId} 时出错：{error}",

@@ -18,6 +18,10 @@
   "manageLayout": {
     "manageForm": "フォームの管理"
   },
+  "preview": {
+    "preview": "プレビュー",
+    "previewToolTip": "これは、送信者に表示されるフォーム バージョンのデザインと動作のプレビューを示します。このページからフォームを送信することはできません。"
+  },
   "shareForm": {
     "shareForm": "共有フォーム",
     "shareLink": "共有リンク",
@@ -50,6 +54,8 @@
     "eventSubscription": "イベントのサブスクリプション"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "<kbd>enter</kbd> または <kbd>、</kbd> または <kbd>space</kbd> を押して複数の電子メール アドレスを追加します",
+    "allowMultiDraft": "<strong> 複数の下書き</strong> アップロードを許可する",
     "formTitle": "フォームのタイトル",
     "formDescription": "フォームの説明",
     "formAccess": "フォームアクセス",
@@ -369,6 +375,7 @@
     "emailRequired": "電子メールは必須です"
   },
   "submissionsTable": {
+    "submissions": "提出物",
     "submissionsTable": "提出物テーブル",
     "selectColumns": "列の選択",
     "manageForm": "フォームの管理",
@@ -741,7 +748,7 @@
     "createCustomFormTitle": "CHEFS フォーム ビルダーを使用してカスタム フォームを作成する",
     "createCustomFormSub1": "CHEFS を使用すると、直感的なドラッグ アンド ドロップ インターフェイスで安全なフォームを作成できます。フォーム コンポーネントを追加したり、再配置したり、さまざまなレイアウト構成にドロップしたりできます。",
     "chefsHowToTitle": "シェフのハウツービデオ",
-    "chefsHowToSub": "クイックスタート ガイドでは、CHEFS の基本機能のいくつかを紹介します。始めましょう！",
+    "chefsHowToSub": "クイックスタート ガイドでは、CHEFS の基本機能のいくつかを紹介します。",
     "getStartedToChefs": "CHFS の使用を開始する",
     "createOnlineTitle": "オンライン フォームを作成してクライアントから情報を収集し、ワークフローを改善します。",
     "getStarted": "始めましょう"
@@ -761,6 +768,7 @@
   "addTeamMember": {
     "cantFindChefsUsers": "誰かが見つかりませんか?彼らは CHEFS にログインしていない可能性があります。<br /> CHEFS へのリンクを送信し、ログインするようお願いしてください。",
     "cancel": "キャンセル",
+    "add": "追加",
     "mustSelectAUser": "このユーザーを追加するには、少なくとも 1 つの役割を選択する必要があります。",
     "addNewMember": "新しいメンバーを追加する",
     "enterUsername": "名前、電子メール、またはユーザー名を入力してください",
@@ -790,13 +798,22 @@
     "copyToClipboard": "クリップボードにコピー",
     "errCopyToClipboard": "クリップボードにコピーしようとしたときにエラーが発生しました。"
   },
-  "root": {
-    "admin": "管理者"
+  "admin": {
+    "root": {
+      "admin": "管理者"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "私のフォーム",
+      "history": "歴史",
+      "user": "ユーザー"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "フォームは正常に送信されました",
     "keepRecord": "この提出の記録を保存したい場合は、以下を保存できます。",
-    "confirmationId": "確認ID："
+    "confirmationId": "確認ID"
   },
   "permissionUtils": {
     "formNotAvailable": "現在フォームはご利用いただけません。これは、リンクが間違っているか、フォームが所有者によって削除されたことが原因である可能性があります。",
@@ -848,8 +865,7 @@
       "updCurrUserFormPrefConsErrMsg": "formID {formId} および prefs {preferences} を使用してユーザー フォームの設定を更新中にエラーが発生しました: {error}",
       "getCurrUserFormPrefErrMsg": "このフォームの設定を取得中にエラーが発生しました。",
       "getCurrUserFormPrefConsErrMsg": "formID {formId} を使用したユーザー フォーム設定の取得エラー: {error}",
-      "delCurrformNotiMsg": "フォーム「{state.form.name}」は正常に削除されました。",
-      "delCurrformErrMsg": "「${state.form.name}」を削除しようとしたときにエラーが発生しました。",
+      "delCurrformNotiMsg": "フォーム {name} は正常に削除されました。",
       "delCurrFormConsErMsg": "フォーム {id} の削除中にエラーが発生しました: {error}",
       "delDraftErrMsg": "このドラフトの削除中にエラーが発生しました。",
       "delDraftConsErrMsg": "{draftId} の削除エラー: {error}",

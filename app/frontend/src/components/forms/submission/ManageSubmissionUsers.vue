@@ -15,9 +15,11 @@
       <span>{{ $t('trans.manageSubmissionUsers.manageTeamMembers') }}</span>
     </v-tooltip>
     <v-dialog v-model="dialog" width="600">
-      <v-card>
+      <v-card :class="{ 'dir-rtl': isRTL }">
         <v-card-title class="text-h5 pb-0">
           {{ $t('trans.manageSubmissionUsers.manageTeamMembers') }}
+        </v-card-title>
+        <v-card-subtitle class="mt-1">
           <v-radio-group v-model="selectedIdp" row>
             <v-radio label="IDIR" :value="ID_PROVIDERS.IDIR" />
             <v-radio label="Basic BCeID" :value="ID_PROVIDERS.BCEIDBASIC" />
@@ -26,15 +28,14 @@
               :value="ID_PROVIDERS.BCEIDBUSINESS"
             />
           </v-radio-group>
-        </v-card-title>
-
+        </v-card-subtitle>
         <v-card-text>
-          <hr />
-
+          <hr class="mt-1" />
           <v-row v-if="isDraft">
             <v-col cols="9">
               <form autocomplete="off">
                 <v-autocomplete
+                  :class="{ label: isRTL }"
                   autocomplete="autocomplete_off"
                   v-model="userSearchSelection"
                   clearable
@@ -96,7 +97,7 @@
                 :loading="isLoadingDropdown"
                 @click="addUser"
               >
-                <span>{{ $t('trans.manageSubmissionUsers.add') }}</span>
+                <span>{{ $t('trans.manageSubmissionUsers.add') }} </span>
               </v-btn>
             </v-col>
           </v-row>
@@ -117,16 +118,19 @@
               <template>
                 <thead>
                   <tr>
-                    <th class="text-left">
+                    <th :class="isRTL ? 'text-right' : 'text-left'">
                       {{ $t('trans.manageSubmissionUsers.name') }}
                     </th>
-                    <th class="text-left">
+                    <th :class="isRTL ? 'text-right' : 'text-left'">
                       {{ $t('trans.manageSubmissionUsers.username') }}
                     </th>
-                    <th class="text-left">
+                    <th :class="isRTL ? 'text-right' : 'text-left'">
                       {{ $t('trans.manageSubmissionUsers.email') }}
                     </th>
-                    <th class="text-left" v-if="isDraft">
+                    <th
+                      :class="isRTL ? 'text-right' : 'text-left'"
+                      v-if="isDraft"
+                    >
                       {{ $t('trans.manageSubmissionUsers.actions') }}
                     </th>
                   </tr>
@@ -161,6 +165,7 @@
       </v-card>
 
       <BaseDialog
+        :class="{ 'dir-rtl': isRTL }"
         v-model="showDeleteDialog"
         type="CONTINUE"
         @close-dialog="showDeleteDialog = false"
@@ -169,11 +174,15 @@
           showDeleteDialog = false;
         "
       >
-        <template #title>Remove {{ userToDelete.username }}</template>
+        <template #title
+          ><span>Remove {{ userToDelete.username }}</span></template
+        >
         <template #text>
-          {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg1') }}
-          <strong>{{ userToDelete.username }}</strong
-          >? {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg2') }}
+          <span>
+            {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg1') }}
+            <strong>{{ userToDelete.username }}</strong
+            >? {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg2') }}
+          </span>
         </template>
         <template #button-text-continue>
           <span>{{ $t('trans.manageSubmissionUsers.remove') }}</span>
@@ -222,8 +231,9 @@ export default {
       userSearchSelection: null,
     };
   },
+
   computed: {
-    ...mapGetters('form', ['form']),
+    ...mapGetters('form', ['form', 'isRTL']),
     ID_PROVIDERS() {
       return IdentityProviders;
     },

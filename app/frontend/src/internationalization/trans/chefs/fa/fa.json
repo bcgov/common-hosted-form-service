@@ -18,6 +18,10 @@
   "manageLayout": {
     "manageForm": "مدیریت فرم"
   },
+  "preview": {
+    "preview": "پیش نمایش",
+    "previewToolTip": "این یک پیش نمایش از طراحی و رفتار نسخه فرم را نشان می دهد که ارسال کنندگان شما آن را مشاهده می کنند. شما نمی توانید فرم را از این صفحه ارسال کنید."
+  },
   "shareForm": {
     "shareForm": "اشتراک گذاری فرم",
     "shareLink": "لینک را به اشتراک بگذارید",
@@ -50,6 +54,8 @@
     "eventSubscription": "اشتراک رویداد"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "برای افزودن چندین آدرس ایمیل، <kbd>enter</kbd> یا <kbd>،</kbd> یا <kbd>space</kbd> را فشار دهید",
+    "allowMultiDraft": "آپلود <strong> پیش نویس چندگانه</strong> مجاز است",
     "formTitle": "عنوان فرم",
     "formDescription": "توضیحات فرم",
     "formAccess": "دسترسی به فرم",
@@ -369,6 +375,7 @@
     "emailRequired": "ایمیل الزامی است"
   },
   "submissionsTable": {
+    "submissions": "موارد ارسالی",
     "submissionsTable": "جدول ارسالی",
     "selectColumns": "ستون ها را انتخاب کنید",
     "manageForm": "مدیریت فرم",
@@ -741,7 +748,7 @@
     "createCustomFormTitle": "با فرم ساز CHEFS فرم های سفارشی ایجاد کنید",
     "createCustomFormSub1": "با CHEFS، می‌توانید فرم‌های ایمن را با رابط بصری کشیدن و رها کردن ایجاد کنید. می‌توانید اجزای فرم را اضافه کنید، آنها را دوباره مرتب کنید و در پیکربندی‌های طرح‌بندی مختلف رها کنید.",
     "chefsHowToTitle": "فیلم‌های راهنمای سرآشپز",
-    "chefsHowToSub": "راهنمای شروع سریع ما شما را با برخی از عملکردهای اساسی CHEFS آشنا می کند. شروع کن!",
+    "chefsHowToSub": "راهنمای شروع سریع ما شما را با برخی از عملکردهای اساسی CHEFS آشنا می کند.",
     "getStartedToChefs": "شروع به استفاده از CHEFS کنید",
     "createOnlineTitle": "برای جمع آوری اطلاعات از مشتریان خود و بهبود گردش کار خود فرم های آنلاین ایجاد کنید.",
     "getStarted": "شروع کنید"
@@ -761,6 +768,7 @@
   "addTeamMember": {
     "cantFindChefsUsers": "نمی توانید کسی را پیدا کنید؟ آنها ممکن است وارد CHEFS نشده باشند.<br /> لطفاً یک پیوند به CHEFS برای آنها ارسال کنید و از آنها بخواهید که وارد شوند.",
     "cancel": "لغو کنید",
+    "add": "اضافه کردن",
     "mustSelectAUser": "برای افزودن این کاربر باید حداقل یک نقش را انتخاب کنید.",
     "addNewMember": "یک عضو جدید اضافه کنید",
     "enterUsername": "یک نام، ایمیل یا نام کاربری وارد کنید",
@@ -790,13 +798,22 @@
     "copyToClipboard": "کپی به کلیپ بورد",
     "errCopyToClipboard": "خطا در تلاش برای کپی کردن در کلیپ بورد."
   },
-  "root": {
-    "admin": "مدیر"
+  "admin": {
+    "root": {
+      "admin": "مدیر"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "فرم های من",
+      "history": "تاریخ",
+      "user": "کاربر"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "فرم شما با موفقیت ارسال شد",
     "keepRecord": "اگر مایل به حفظ سابقه این ارسال هستید، می توانید موارد زیر را حفظ کنید",
-    "confirmationId": "شناسه تایید:"
+    "confirmationId": "شناسه تایید"
   },
   "permissionUtils": {
     "formNotAvailable": "فرم در حال حاضر در دسترس نیست. این ممکن است به دلیل پیوند نادرست باشد، یا ممکن است فرم توسط مالک آن حذف شده باشد.",
@@ -848,8 +865,7 @@
       "updCurrUserFormPrefConsErrMsg": "خطا در به‌روزرسانی پیشفرض‌های فرم کاربر با استفاده از formID {formId}، و prefs {preferences}: {error}",
       "getCurrUserFormPrefErrMsg": "هنگام واکشی تنظیمات برگزیده شما برای این فرم خطایی روی داد.",
       "getCurrUserFormPrefConsErrMsg": "خطا در دریافت پیشفرض های فرم کاربر با استفاده از formID {formId}: {error}",
-      "delCurrformNotiMsg": "فرم \"{state.form.name}\" با موفقیت حذف شد.",
-      "delCurrformErrMsg": "هنگام تلاش برای حذف \"${state.form.name}\" خطایی روی داد.",
+      "delCurrformNotiMsg": "فرم {name} با موفقیت حذف شد.",
       "delCurrFormConsErMsg": "خطا در حذف فرم {id}: {error}",
       "delDraftErrMsg": "هنگام حذف این پیش‌نویس خطایی روی داد.",
       "delDraftConsErrMsg": "خطا در حذف {draftId}: {error}",

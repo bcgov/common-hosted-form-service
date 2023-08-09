@@ -18,6 +18,10 @@
   "manageLayout": {
     "manageForm": "إدارة النموذج"
   },
+  "preview": {
+    "preview": "معاينة",
+    "previewToolTip": "يعرض هذا معاينة لتصميم إصدار النموذج وسلوكه كما يراه مقدموه. لا يمكنك تقديم النموذج من هذه الصفحة."
+  },
   "shareForm": {
     "shareForm": "نموذج المشاركة",
     "shareLink": "رابط المشاركة",
@@ -50,6 +54,8 @@
     "eventSubscription": "اشتراك الحدث"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "اضغط على <kbd> أدخل </kbd> أو <kbd> أو </kbd> أو <kbd> مسافة </ kbd> لإضافة عناوين بريد إلكتروني متعددة",
+    "allowMultiDraft": "السماح بتحميل <strong> مسودة متعددة </ strong>",
     "formTitle": "عنوان النموذج",
     "formDescription": "وصف النموذج",
     "formAccess": "الوصول إلى النموذج",
@@ -369,6 +375,7 @@
     "emailRequired": "البريد الالكتروني مطلوب"
   },
   "submissionsTable": {
+    "submissions": "التقديمات",
     "submissionsTable": "الجدول",
     "selectColumns": "حدد الأعمدة",
     "manageForm": "إدارة النموذج",
@@ -741,7 +748,7 @@
     "createCustomFormTitle": "قم بإنشاء نماذج مخصصة باستخدام أداة إنشاء النماذج CHEFS",
     "createCustomFormSub1": "مع CHEFS ، يمكنك إنشاء نماذج آمنة بواجهة سحب وإفلات سهلة. يمكنك إضافة مكونات النموذج وإعادة ترتيبها وإفلاتها في تكوينات تخطيطات مختلفة.",
     "chefsHowToTitle": "فيديوهات شيفس إرشادية",
-    "chefsHowToSub": "سيقدم لك دليل البدء السريع بعض الوظائف الأساسية لـ CHEFS. البدء!",
+    "chefsHowToSub": "سيقدم لك دليل البدء السريع بعض الوظائف الأساسية لـ CHEFS.",
     "getStartedToChefs": "ابدأ باستخدام CHEFS",
     "createOnlineTitle": "قم بإنشاء نماذج عبر الإنترنت لجمع المعلومات من عملائك وتحسين سير العمل الخاص بك.",
     "getStarted": "البدء"
@@ -761,6 +768,7 @@
   "addTeamMember": {
     "cantFindChefsUsers": "لا يمكنك العثور على شخص ما؟ ربما لم يقوموا بتسجيل الدخول إلى CHEFS.<br /> يرجى إرسال رابط إلى CHEFS واطلب منهم تسجيل الدخول.",
     "cancel": "يلغي",
+    "add": "يضيف",
     "mustSelectAUser": "يجب تحديد دور واحد على الأقل لإضافة هذا المستخدم.",
     "addNewMember": "أضف عضو جديد",
     "enterUsername": "أدخل اسمًا أو بريدًا إلكترونيًا أو اسم مستخدم",
@@ -790,13 +798,22 @@
     "copyToClipboard": "نسخ إلى الحافظة",
     "errCopyToClipboard": "خطأ في محاولة النسخ إلى الحافظة."
   },
-  "root": {
-    "admin": "مسؤل"
+  "admin": {
+    "root": {
+      "admin": "مسؤل"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "نماذجي",
+      "history": "تاريخ",
+      "user": "مستخدم"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "تم تسليم إستمارتك بنجاح",
     "keepRecord": "إذا كنت ترغب في الاحتفاظ بسجل لهذا الإرسال ، فيمكنك الاحتفاظ بما يلي",
-    "confirmationId": "معرف التأكيد:"
+    "confirmationId": "معرف التأكيد"
   },
   "permissionUtils": {
     "formNotAvailable": "النموذج غير متوفر حاليا. قد يكون هذا بسبب ارتباط غير صحيح ، أو ربما تم حذف النموذج من قبل مالكه.",
@@ -848,8 +865,7 @@
       "updCurrUserFormPrefConsErrMsg": "خطأ في تحديث تفضيلات نموذج المستخدم باستخدام formID {formId} ، ويفضل {التفضيلات}: {error}",
       "getCurrUserFormPrefErrMsg": "حدث خطأ أثناء جلب تفضيلاتك لهذا النموذج.",
       "getCurrUserFormPrefConsErrMsg": "خطأ في الحصول على تفضيلات نموذج المستخدم باستخدام formID {formId}: {error}",
-      "delCurrformNotiMsg": "تم حذف النموذج \"{state.form.name}\" بنجاح.",
-      "delCurrformErrMsg": "حدث خطأ أثناء محاولة حذف \"$ {state.form.name}\".",
+      "delCurrformNotiMsg": "تم حذف النموذج {name} بنجاح.",
       "delCurrFormConsErMsg": "خطأ في حذف النموذج {id}: {error}",
       "delDraftErrMsg": "حدث خطأ أثناء حذف هذه المسودة.",
       "delDraftConsErrMsg": "خطأ في حذف {DraftId}: {error}",

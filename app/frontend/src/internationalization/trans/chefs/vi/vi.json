@@ -18,6 +18,10 @@
   "manageLayout": {
     "manageForm": "Quản lý biểu mẫu"
   },
+  "preview": {
+    "preview": "Xem trước",
+    "previewToolTip": "Điều này hiển thị bản xem trước của thiết kế và hành vi của phiên bản biểu mẫu khi người gửi của bạn sẽ nhìn thấy nó. Bạn không thể gửi biểu mẫu từ trang này."
+  },
   "shareForm": {
     "shareForm": "chia sẻ biểu mẫu",
     "shareLink": "Chia sẻ đường link",
@@ -50,6 +54,8 @@
     "eventSubscription": "Đăng ký sự kiện"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "Nhấn <kbd>enter</kbd> hoặc <kbd>,</kbd> hoặc <kbd>dấu cách</kbd> để thêm nhiều địa chỉ email",
+    "allowMultiDraft": "Cho phép tải lên <strong> nhiều bản nháp</strong>",
     "formTitle": "Tiêu đề mẫu",
     "formDescription": "Mô tả biểu mẫu",
     "formAccess": "Truy cập biểu mẫu",
@@ -369,6 +375,7 @@
     "emailRequired": "Email thì cần thiết"
   },
   "submissionsTable": {
+    "submissions": "đệ trình",
     "submissionsTable": "Đệ trìnhBảng",
     "selectColumns": "Chọn cột",
     "manageForm": "Quản lý biểu mẫu",
@@ -741,7 +748,7 @@
     "createCustomFormTitle": "Tạo biểu mẫu tùy chỉnh với trình tạo biểu mẫu CHEFS",
     "createCustomFormSub1": "Với CHEFS, bạn có thể tạo các biểu mẫu an toàn bằng giao diện kéo và thả trực quan. Bạn có thể thêm các thành phần biểu mẫu, sắp xếp lại chúng và thả chúng vào các cấu hình bố cục khác nhau.",
     "chefsHowToTitle": "Video hướng dẫn của CHEF",
-    "chefsHowToSub": "Hướng dẫn bắt đầu nhanh của chúng tôi sẽ giới thiệu cho bạn một số chức năng cơ bản của CHEFS. Bắt đầu!",
+    "chefsHowToSub": "Hướng dẫn bắt đầu nhanh của chúng tôi sẽ giới thiệu cho bạn một số chức năng cơ bản của CHEFS.",
     "getStartedToChefs": "Bắt đầu sử dụng CHEFS",
     "createOnlineTitle": "Tạo biểu mẫu trực tuyến để thu thập thông tin từ khách hàng của bạn và cải thiện quy trình làm việc của bạn.",
     "getStarted": "Bắt đầu"
@@ -761,6 +768,7 @@
   "addTeamMember": {
     "cantFindChefsUsers": "Không thể tìm thấy một người nào đó? Họ có thể chưa đăng nhập vào CHEFS.<br /> Vui lòng gửi cho họ một liên kết đến CHEFS và yêu cầu họ đăng nhập.",
     "cancel": "Hủy bỏ",
+    "add": "Thêm vào",
     "mustSelectAUser": "Bạn phải chọn ít nhất một vai trò để thêm người dùng này.",
     "addNewMember": "Thêm một thành viên mới",
     "enterUsername": "Nhập tên, e-mail hoặc tên người dùng",
@@ -790,13 +798,22 @@
     "copyToClipboard": "Sao chép vào clipboard",
     "errCopyToClipboard": "Lỗi khi cố sao chép vào khay nhớ tạm."
   },
-  "root": {
-    "admin": "Quản trị viên"
+  "admin": {
+    "root": {
+      "admin": "Quản trị viên"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "MẪU CỦA TÔI",
+      "history": "LỊCH SỬ",
+      "user": "Người dùng"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "Biểu mẫu của bạn đã được gửi thành công",
     "keepRecord": "Nếu bạn muốn giữ một bản ghi của bài nộp này, bạn có thể giữ như sau",
-    "confirmationId": "ID xác nhận:"
+    "confirmationId": "ID xác nhận"
   },
   "permissionUtils": {
     "formNotAvailable": "Các hình thức hiện không có sẵn. Điều này có thể là do một liên kết không chính xác hoặc biểu mẫu có thể đã bị xóa bởi chủ sở hữu của nó.",
@@ -848,8 +865,7 @@
       "updCurrUserFormPrefConsErrMsg": "Đã xảy ra lỗi khi cập nhật phần mở đầu biểu mẫu người dùng bằng cách sử dụng formID {formId} và phần mở đầu {preferences}: {error}",
       "getCurrUserFormPrefErrMsg": "Đã xảy ra lỗi khi tìm nạp tùy chọn của bạn cho biểu mẫu này.",
       "getCurrUserFormPrefConsErrMsg": "Lỗi khi tải trước biểu mẫu người dùng bằng formID {formId}: {error}",
-      "delCurrformNotiMsg": "Biểu mẫu \"{state.form.name}\" đã được xóa thành công.",
-      "delCurrformErrMsg": "Đã xảy ra lỗi khi cố xóa \"${state.form.name}\".",
+      "delCurrformNotiMsg": "Biểu mẫu {name} đã được xóa thành công.",
       "delCurrFormConsErMsg": "Lỗi khi xóa biểu mẫu {id}: {error}",
       "delDraftErrMsg": "Đã xảy ra lỗi khi xóa bản nháp này.",
       "delDraftConsErrMsg": "Đã xảy ra lỗi khi xóa {draftId}: {error}",

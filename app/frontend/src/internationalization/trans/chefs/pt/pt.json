@@ -15,6 +15,10 @@
     "action": "Ações",
     "loadingText": "Carregando, por favor espere"
   },
+  "preview": {
+    "preview": "Visualização",
+    "previewToolTip": "Isso mostra uma visualização do design e do comportamento da versão do formulário, conforme seus remetentes o verão. Você não pode enviar o formulário desta página."
+  },
   "manageLayout": {
     "manageForm": "Gerenciar formulário"
   },
@@ -50,6 +54,8 @@
     "eventSubscription": "Assinatura de evento"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "Pressione <kbd>enter</kbd> ou <kbd>,</kbd> ou <kbd>espaço</kbd> para adicionar vários endereços de e-mail",
+    "allowMultiDraft": "Permitir upload de <strong> vários rascunhos</strong>",
     "formTitle": "Título do formulário",
     "formDescription": "Descrição do formulário",
     "formAccess": "Acesso ao formulário",
@@ -369,6 +375,7 @@
     "emailRequired": "E-mail é obrigatório"
   },
   "submissionsTable": {
+    "submissions": "Envios",
     "submissionsTable": "Tabela de Envios",
     "selectColumns": "Selecionar colunas",
     "manageForm": "Gerenciar formulário",
@@ -741,7 +748,7 @@
     "createCustomFormTitle": "Crie formulários personalizados com o construtor de formulários CHEFS",
     "createCustomFormSub1": "Com o CHEFS, você pode criar formulários seguros com uma interface intuitiva de arrastar e soltar. Você pode adicionar componentes de formulário, reorganizá-los e soltá-los em diferentes configurações de layouts.",
     "chefsHowToTitle": "Vídeos de instruções do CHEFS",
-    "chefsHowToSub": "Nosso Guia de início rápido apresentará algumas das funções básicas do CHEFS. Iniciar!",
+    "chefsHowToSub": "Nosso Guia de início rápido apresentará algumas das funções básicas do CHEFS.",
     "getStartedToChefs": "Comece a usar o CHEFS",
     "createOnlineTitle": "Crie formulários online para coletar informações de seus clientes e melhorar seus fluxos de trabalho.",
     "getStarted": "iniciar"
@@ -761,6 +768,7 @@
   "addTeamMember": {
     "cantFindChefsUsers": "Não consegue encontrar alguém? Eles podem não ter logado no CHEFS.<br /> Por favor, envie-lhes um link para CHEFS e peça-lhes para fazer login.",
     "cancel": "Cancelar",
+    "add": "Adicionar",
     "mustSelectAUser": "Você deve selecionar pelo menos uma função para adicionar este usuário.",
     "addNewMember": "Adicionar um novo membro",
     "enterUsername": "Digite um nome, e-mail ou nome de usuário",
@@ -790,13 +798,22 @@
     "copyToClipboard": "Copiar para área de transferência",
     "errCopyToClipboard": "Erro ao tentar copiar para a área de transferência."
   },
-  "root": {
-    "admin": "Administrador"
+  "admin": {
+    "root": {
+      "admin": "Administrador"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "MEUS FORMULÁRIOS",
+      "history": "HISTÓRIA",
+      "user": "Do utilizador"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "Seu formulário foi submetido com sucesso",
     "keepRecord": "Se você deseja manter um registro desta submissão, você pode manter o seguinte",
-    "confirmationId": "ID de confirmação:"
+    "confirmationId": "ID de confirmação"
   },
   "permissionUtils": {
     "formNotAvailable": "O formulário está indisponível no momento. Isso pode ocorrer devido a um link incorreto ou o formulário pode ter sido excluído pelo proprietário.",
@@ -848,8 +865,7 @@
       "updCurrUserFormPrefConsErrMsg": "Erro ao atualizar as preferências de formulário do usuário usando formID {formId} e preferências {preferências}: {error}",
       "getCurrUserFormPrefErrMsg": "Ocorreu um erro ao buscar suas preferências para este formulário.",
       "getCurrUserFormPrefConsErrMsg": "Erro ao obter preferências de formulário do usuário usando formID {formId}: {error}",
-      "delCurrformNotiMsg": "O formulário \"{state.form.name}\" foi excluído com sucesso.",
-      "delCurrformErrMsg": "Ocorreu um erro ao tentar excluir \"${state.form.name}\".",
+      "delCurrformNotiMsg": "O formulário {name} foi excluído com sucesso.",
       "delCurrFormConsErMsg": "Erro ao excluir o formulário {id}: {error}",
       "delDraftErrMsg": "Ocorreu um erro ao excluir este rascunho.",
       "delDraftConsErrMsg": "Erro ao excluir {draftId}: {error}",

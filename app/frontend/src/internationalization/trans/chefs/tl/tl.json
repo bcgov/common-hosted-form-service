@@ -18,6 +18,10 @@
   "manageLayout": {
     "manageForm": "Pamahalaan ang Form"
   },
+  "preview": {
+    "preview": "Silipin",
+    "previewToolTip": "Nagpapakita ito ng preview ng disenyo at gawi ng bersyon ng form habang makikita ito ng iyong mga nagsumite. Hindi mo maaaring isumite ang form mula sa pahinang ito."
+  },
   "shareForm": {
     "shareForm": "Ibahagi ang Form",
     "shareLink": "Ibahagi ang Link",
@@ -50,6 +54,8 @@
     "eventSubscription": "Subscription sa Kaganapan"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "Pindutin ang <kbd>enter</kbd> o <kbd>,</kbd> o <kbd>space</kbd> para magdagdag ng maraming email address",
+    "allowMultiDraft": "Payagan ang pag-upload ng <strong> maramihang draft</strong>",
     "formTitle": "Pamagat ng Form",
     "formDescription": "Paglalarawan ng Form",
     "formAccess": "Pag-access sa Form",
@@ -369,6 +375,7 @@
     "emailRequired": "Kinakailangan ang e-mail"
   },
   "submissionsTable": {
+    "submissions": "Mga pagsusumite",
     "submissionsTable": "Talahanayan ng mga Pagsusumite",
     "selectColumns": "Piliin ang Mga Column",
     "manageForm": "Pamahalaan ang Form",
@@ -741,7 +748,7 @@
     "createCustomFormTitle": "Gumawa ng mga custom na form gamit ang CHEFS form builder",
     "createCustomFormSub1": "Sa CHEFS, makakagawa ka ng mga secure na form na may intuitive na drag-and-drop na interface. Maaari kang magdagdag ng mga bahagi ng form, muling ayusin ang mga ito, at i-drop ang mga ito sa iba't ibang mga configuration ng layout.",
     "chefsHowToTitle": "Mga Video na How-to ng CHEFS",
-    "chefsHowToSub": "Ang aming Quickstart Guide ay magpapakilala sa ilan sa mga pangunahing function ng CHEFS. Magsimula!",
+    "chefsHowToSub": "Ang aming Quickstart Guide ay magpapakilala sa ilan sa mga pangunahing function ng CHEFS.",
     "getStartedToChefs": "Magsimula sa paggamit ng CHEFS",
     "createOnlineTitle": "Lumikha ng mga online na form upang mangolekta ng impormasyon mula sa iyong mga kliyente at pagbutihin ang iyong mga daloy ng trabaho.",
     "getStarted": "Magsimula"
@@ -761,6 +768,7 @@
   "addTeamMember": {
     "cantFindChefsUsers": "Hindi mahanap ang isang tao? Maaaring hindi sila naka-log in sa CHEFS.<br /> Mangyaring magpadala sa kanila ng link sa CHEFS at hilingin sa kanila na mag-log in.",
     "cancel": "Kanselahin",
+    "add": "Idagdag",
     "mustSelectAUser": "Dapat kang pumili ng hindi bababa sa isang tungkulin upang idagdag ang user na ito.",
     "addNewMember": "Magdagdag ng Bagong Miyembro",
     "enterUsername": "Maglagay ng pangalan, e-mail, o username",
@@ -790,13 +798,22 @@
     "copyToClipboard": "Kopyahin sa clipboard",
     "errCopyToClipboard": "Error sa pagtatangkang kopyahin sa clipboard."
   },
-  "root": {
-    "admin": "Admin"
+  "admin": {
+    "root": {
+      "admin": "Admin"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "ANG AKING MGA FORM",
+      "history": "KASAYSAYAN",
+      "user": "Gumagamit"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "Ang iyong form ay matagumpay na naisumite",
     "keepRecord": "Kung nais mong panatilihin ang isang talaan ng pagsusumiteng ito, maaari mong panatilihin ang mga sumusunod",
-    "confirmationId": "ID ng Pagkumpirma:"
+    "confirmationId": "ID ng Pagkumpirma"
   },
   "permissionUtils": {
     "formNotAvailable": "Kasalukuyang hindi available ang form. Ito ay maaaring dahil sa isang maling link, o ang form ay maaaring tinanggal ng may-ari nito.",
@@ -848,8 +865,7 @@
       "updCurrUserFormPrefConsErrMsg": "Error sa pag-update ng user form prefs gamit ang formID {formId}, at prefs {preferences}: {error}",
       "getCurrUserFormPrefErrMsg": "May naganap na error habang kinukuha ang iyong mga kagustuhan para sa form na ito.",
       "getCurrUserFormPrefConsErrMsg": "Error sa pagkuha ng user form prefs gamit ang formID {formId}: {error}",
-      "delCurrformNotiMsg": "Ang form na \"{state.form.name}\" ay matagumpay na natanggal.",
-      "delCurrformErrMsg": "May naganap na error habang sinusubukang tanggalin ang \"${state.form.name}\".",
+      "delCurrformNotiMsg": "Ang form na {name} ay matagumpay na natanggal.",
       "delCurrFormConsErMsg": "Error sa pagtanggal ng form {id}: {error}",
       "delDraftErrMsg": "Nagkaroon ng error habang tinatanggal ang draft na ito.",
       "delDraftConsErrMsg": "Error sa pagtanggal ng {draftId}: {error}",
