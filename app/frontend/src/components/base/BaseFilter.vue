@@ -48,7 +48,6 @@
         :search="inputFilter"
         class="grey lighten-5"
         disable-pagination
-        :custom-sort="customSort"
       >
       </v-data-table>
       <v-btn @click="savingFilterData" class="primary mt-3">{{
@@ -135,13 +134,6 @@ export default {
   },
 
   methods: {
-    customSort(items) {
-      return [...items].sort(
-        (a, b) =>
-          this.selectedData.findIndex((x) => x.text === b.text) -
-          this.selectedData.findIndex((x) => x.text === a.text)
-      );
-    },
     savingFilterData() {
       this.inputFilter = '';
       this.$emit('saving-filter-data', this.selectedData);
