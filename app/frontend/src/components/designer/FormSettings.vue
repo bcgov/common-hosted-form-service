@@ -1121,15 +1121,16 @@ export default {
       'form.reminder_enabled',
       'form.versions',
     ]),
-    idirUser() {
-      return this.identityProvider === IdentityProviders.IDIR;
-    },
-    ...mapGetters('form', ['isRTL'], ['identityProvider']),
+    ...mapGetters('auth', ['identityProvider']),
+    ...mapGetters('form', ['isRTL']),
     ID_MODE() {
       return IdentityMode;
     },
     ID_PROVIDERS() {
       return IdentityProviders;
+    },
+    idirUser() {
+      return this.identityProvider === IdentityProviders.IDIR;
     },
     isFormPublished() {
       return (
