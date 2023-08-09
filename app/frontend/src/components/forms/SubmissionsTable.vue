@@ -1,12 +1,14 @@
 <template>
-  <div>
-    <v-row class="mt-6" no-gutters>
+  <div :class="{ 'dir-rtl': isRTL }">
+    <div
+      class="mt-4 d-flex flex-md-row justify-space-between flex-sm-column flex-xs-column"
+    >
       <!-- page title -->
-      <v-col cols="12" sm="6" order="2" order-sm="1">
-        <h1>Submissions</h1>
-      </v-col>
+      <div>
+        <h1>{{ $t('trans.submissionsTable.submissions') }}</h1>
+      </div>
       <!-- buttons -->
-      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+      <div>
         <span v-if="checkFormManage">
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
@@ -59,28 +61,39 @@
             <span>{{ $t('trans.submissionsTable.submissionsToFiles') }}</span>
           </v-tooltip>
         </span>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
 
-    <v-row no-gutters>
-      <v-spacer />
-      <v-col cols="4" sm="4">
+    <div
+      class="d-flex flex-md-row justify-space-between flex-sm-column flex-xs-column"
+    >
+      <div>
         <v-checkbox
           class="pl-3"
           v-model="deletedOnly"
-          :label="$t('trans.submissionsTable.showDeletedSubmissions')"
           @click="refreshSubmissions"
-        />
-      </v-col>
-      <v-col cols="4" sm="4">
+        >
+          <template #label>
+            <span :class="{ 'mr-2': isRTL }">
+              {{ $t('trans.submissionsTable.showDeletedSubmissions') }}
+            </span>
+          </template>
+        </v-checkbox>
+      </div>
+      <div>
         <v-checkbox
           class="pl-3"
           v-model="currentUserOnly"
-          :label="$t('trans.submissionsTable.showMySubmissions')"
           @click="refreshSubmissions"
-        />
-      </v-col>
-      <v-col cols="12" sm="4">
+        >
+          <template #label>
+            <span :class="{ 'mr-2': isRTL }">
+              {{ $t('trans.submissionsTable.showMySubmissions') }}
+            </span>
+          </template>
+        </v-checkbox>
+      </div>
+      <div>
         <!-- search input -->
         <div class="submissions-search">
           <v-text-field
@@ -90,10 +103,11 @@
             single-line
             hide-details
             class="pb-5"
+            :class="{ label: isRTL }"
           />
         </div>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
 
     <!-- table header -->
     <v-data-table
@@ -233,7 +247,9 @@
       @close-dialog="showDeleteDialog = false"
       @continue-dialog="delSub"
     >
-      <template #title>Confirm Deletion</template>
+      <template #title>{{
+        $t('trans.submissionsTable.confirmDeletion')
+      }}</template>
       <template #text>
         {{ singleSubmissionDelete ? singleDeleteMessage : multiDeleteMessage }}
       </template>
@@ -267,7 +283,8 @@
         "
         inputItemKey="value"
         :inputSaveButtonText="$t('trans.submissionsTable.save')"
-        :inputData="FILTER_HEADERS"
+        :inputData="SELECT_COLUMNS_HEADERS"
+        :resetData="FILTER_HEADERS"
         :preselectedData="PRESELECTED_DATA"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
@@ -353,14 +370,14 @@ export default {
       'userFormPreferences',
       'roles',
       'deletedSubmissions',
+      'isRTL',
     ]),
     ...mapGetters('auth', ['user']),
 
     checkFormManage() {
       return this.permissions.some((p) => FormManagePermissions.includes(p));
     },
-
-    DEFAULT_HEADERS() {
+    DEFAULT_HEADER() {
       let headers = [
         {
           text: this.$t('trans.submissionsTable.confirmationID'),
@@ -368,7 +385,6 @@ export default {
           value: 'confirmationId',
         },
       ];
-
       if (this.userFormPreferences?.preferences?.columns) {
         if (this.userFormPreferences.preferences.columns.includes('date')) {
           headers = [
@@ -437,19 +453,6 @@ export default {
         ];
       }
 
-      // Add any custom columns if the user has them
-      const maxHeaderLength = 25;
-      this.userColumns.forEach((col) => {
-        headers.push({
-          text:
-            col.length > maxHeaderLength
-              ? `${col.substring(0, maxHeaderLength)}...`
-              : col,
-          align: 'end',
-          value: col,
-        });
-      });
-
       // Actions column at the end
       headers.push({
         text: this.$t('trans.submissionsTable.view'),
@@ -469,70 +472,81 @@ export default {
         sortable: false,
         width: '40px',
       });
-
-      return headers.filter((x) => x.value !== 'updatedAt' || this.deletedOnly);
-    },
-
-    HEADERS() {
-      let headers = this.DEFAULT_HEADERS;
-      if (this.filterData.length > 0)
-        headers = headers.filter(
-          (h) =>
-            this.filterData.some((fd) => fd.value === h.value) ||
-            this.filterIgnore.some((ign) => ign.value === h.value)
-        );
       return headers;
     },
-    FILTER_HEADERS() {
-      let filteredHeader = this.DEFAULT_HEADERS.filter(
-        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
-      ).concat(
+
+    SELECT_COLUMNS_HEADERS() {
+      return [...this.FILTER_HEADERS].concat(
         this.formFields.map((ff) => {
           return { text: ff, value: ff, align: 'end' };
         })
       );
+    },
 
-      filteredHeader = [
-        {
-          text: this.$t('trans.submissionsTable.submissionDate'),
-          align: 'start',
-          value: 'date',
-        },
-        {
-          text: this.$t('trans.submissionsTable.submitter'),
-          align: 'start',
-          value: 'submitter',
-        },
-        {
-          text: this.$t('trans.submissionsTable.status'),
-          align: 'start',
-          value: 'status',
-        },
-        ...filteredHeader,
-      ];
+    HEADERS() {
+      let headers = [...this.DEFAULT_HEADER];
 
-      return filteredHeader.filter(function (item, index, inputArray) {
-        return (
+      if (headers.length > 1) {
+        headers.splice(1, 0, ...this.USER_PREFERENCES);
+      } else {
+        headers = headers.concat(this.USER_PREFERENCES);
+      }
+      return headers.filter(
+        (item, idx, inputArray) =>
           inputArray.findIndex((arrayItem) => arrayItem.value === item.value) ==
-          index
-        );
-      });
+          idx
+      );
+    },
+
+    FILTER_HEADERS() {
+      return [...this.DEFAULT_HEADER].filter(
+        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
+      );
     },
     PRESELECTED_DATA() {
+      let headers = [...this.FILTER_HEADERS];
+      if (headers.length > 1) {
+        headers.splice(1, 0, ...this.USER_PREFERENCES);
+      } else {
+        headers = headers.concat(this.USER_PREFERENCES);
+      }
+      return headers.filter(
+        (item, idx, inputArray) =>
+          inputArray.findIndex((arrayItem) => arrayItem.value === item.value) ==
+          idx
+      );
+    },
+    USER_PREFERENCES() {
       let preselectedData = [];
       if (this.userFormPreferences?.preferences?.columns) {
         preselectedData = this.userFormPreferences.preferences.columns.map(
           (column) => {
-            return {
-              align: 'end',
-              text: column,
-              value: column,
-            };
+            if (column === 'date') {
+              return {
+                text: this.$t('trans.submissionsTable.submissionDate'),
+                align: 'start',
+                value: 'date',
+              };
+            } else if (column === 'submitter') {
+              return {
+                text: this.$t('trans.submissionsTable.submitter'),
+                align: 'start',
+                value: 'submitter',
+              };
+            } else if (column === 'status') {
+              return {
+                text: this.$t('trans.submissionsTable.status'),
+                align: 'start',
+                value: 'status',
+              };
+            } else {
+              return {
+                align: 'start',
+                text: column,
+                value: column,
+              };
+            }
           }
-        );
-      } else {
-        preselectedData = this.DEFAULT_HEADERS.filter(
-          (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
         );
       }
       return preselectedData;
@@ -731,6 +745,7 @@ export default {
       this.selectedSubmissions = [];
     },
     async updateFilter(data) {
+      this.showColumnsDialog = false;
       this.filterData = data;
       let preferences = {
         columns: [],
@@ -743,7 +758,7 @@ export default {
         formId: this.form.id,
         preferences: preferences,
       });
-      this.showColumnsDialog = false;
+
       await this.populateSubmissionsTable();
     },
   },
@@ -761,7 +776,6 @@ export default {
 @media (min-width: 600px) {
   .submissions-search {
     max-width: 20em;
-    float: right;
   }
 }
 @media (max-width: 599px) {
@@ -779,6 +793,7 @@ export default {
     vertical-align: top;
   }
 }
+
 /* Want to use scss but the world hates me */
 .submissions-table >>> tbody tr:nth-of-type(odd) {
   background-color: #f5f5f5;

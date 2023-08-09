@@ -1,17 +1,20 @@
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <v-skeleton-loader :loading="loading" type="heading">
-      <v-row class="mt-6" no-gutters>
+      <div
+        class="mt-6 d-flex flex-md-row justify-space-between flex-sm-row flex-xs-column-reverse"
+      >
         <!-- page title -->
-        <v-col cols="12" sm="6" order="2" order-sm="1">
+        <div>
           <h1>{{ $t('trans.mySubmissionsTable.previousSubmissions') }}</h1>
-        </v-col>
+          <h3>{{ formId ? form.name : 'All Forms' }}</h3>
+        </div>
         <!-- buttons -->
-        <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+        <div>
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
-                @click="showColumnsDialog = true"
+                @click="onShowColumnDialog"
                 class="mx-1"
                 color="primary"
                 icon
@@ -46,19 +49,17 @@
               $t('trans.mySubmissionsTable.createNewSubmission')
             }}</span>
           </v-tooltip>
-        </v-col>
-        <!-- form name -->
-        <v-col cols="12" order="3">
-          <h3>{{ formId ? form.name : 'All Forms' }}</h3>
-        </v-col>
-      </v-row>
+        </div>
+      </div>
     </v-skeleton-loader>
 
     <v-row no-gutters>
-      <v-spacer />
-      <v-col cols="12" sm="4">
+      <v-col cols="12">
         <!-- search input -->
-        <div class="submissions-search">
+        <div
+          class="submissions-search"
+          :class="isRTL ? 'float-left' : 'float-right'"
+        >
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
@@ -66,6 +67,7 @@
             single-line
             hide-details
             class="pb-5"
+            :class="{ label: isRTL }"
           />
         </div>
       </v-col>
@@ -109,8 +111,9 @@
         "
         inputItemKey="value"
         :inputSaveButtonText="$t('trans.mySubmissionsTable.save')"
-        :inputData="FILTER_HEADERS"
-        :preselectedData="PRESELECTEDDATA"
+        :inputData="SELECT_COLUMNS_HEADERS"
+        :preselectedData="preSelectedData"
+        :resetData="FILTER_HEADERS"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >
@@ -142,6 +145,7 @@ export default {
     return {
       headers: [],
       filterData: [],
+      preSelectedData: [],
       filterIgnore: [
         {
           value: 'confirmationId',
@@ -157,7 +161,13 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['form', 'submissionList', 'permissions']),
+    ...mapGetters('form', [
+      'form',
+      'submissionList',
+      'permissions',
+      'formFields',
+      'isRTL',
+    ]),
     ...mapGetters('auth', ['user']),
     DEFAULT_HEADERS() {
       let headers = [
@@ -212,21 +222,33 @@ export default {
       }
       return headers;
     },
+    SELECT_COLUMNS_HEADERS() {
+      return [...this.FILTER_HEADERS].concat(
+        this.formFields?.map((ff) => {
+          return { text: ff, value: ff, align: 'end' };
+        })
+      );
+    },
 
     FILTER_HEADERS() {
       return this.DEFAULT_HEADERS.filter(
         (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
       );
     },
+
     HEADERS() {
-      return this.filterData.length === 0
-        ? this.DEFAULT_HEADERS
-        : this.filterData;
-    },
-    PRESELECTEDDATA() {
-      return this.filterData.length === 0
-        ? this.DEFAULT_HEADERS
-        : this.filterData;
+      let headers = [...this.DEFAULT_HEADERS];
+
+      if (headers.length > 1) {
+        headers.splice(1, 0, ...this.filterData);
+      } else {
+        headers = headers.concat(this.filterData);
+      }
+      return headers.filter(
+        (item, idx, inputArray) =>
+          inputArray.findIndex((arrayItem) => arrayItem.value === item.value) ==
+          idx
+      );
     },
 
     showStatus() {
@@ -240,7 +262,12 @@ export default {
     },
   },
   methods: {
-    ...mapActions('form', ['fetchForm', 'fetchSubmissions']),
+    ...mapActions('form', ['fetchForm', 'fetchSubmissions', 'fetchFormFields']),
+    onShowColumnDialog() {
+      this.preSelectedData =
+        this.filterData.length === 0 ? this.FILTER_HEADERS : this.filterData;
+      this.showColumnsDialog = true;
+    },
 
     // Status columns in the table
     getCurrentStatus(record) {
@@ -274,7 +301,7 @@ export default {
       // Build up the list of forms for the table
       if (this.submissionList) {
         const tableRows = this.submissionList.map((s) => {
-          return {
+          const fields = {
             confirmationId: s.confirmationId,
             name: s.name,
             permissions: s.permissions,
@@ -289,6 +316,11 @@ export default {
                 ? s.submissionStatus[0].createdBy
                 : '',
           };
+          s?.submission?.submission?.data &&
+            Object.keys(s.submission.submission.data).forEach((col) => {
+              fields[col] = s.submission.submission.data[col];
+            });
+          return fields;
         });
         this.submissionTable = tableRows;
       }
@@ -301,7 +333,13 @@ export default {
   },
 
   async mounted() {
-    await this.fetchForm(this.formId);
+    await this.fetchForm(this.formId).then(async () => {
+      await this.fetchFormFields({
+        formId: this.formId,
+        formVersionId: this.form.versions[0].id,
+      });
+    });
+
     await this.populateSubmissionsTable();
   },
 };
@@ -323,7 +361,6 @@ export default {
     padding-right: 16px;
   }
 }
-
 .submissions-table {
   clear: both;
 }

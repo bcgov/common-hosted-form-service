@@ -18,6 +18,10 @@
   "manageLayout": {
     "manageForm": "Gérer le formulaire"
   },
+  "preview": {
+    "preview": "Aperçu",
+    "previewToolTip": "Cela montre un aperçu de la conception et du comportement de la version du formulaire tels que vos expéditeurs le verront. Vous ne pouvez pas soumettre le formulaire à partir de cette page."
+  },
   "shareForm": {
     "shareForm": "Formulaire de partage",
     "shareLink": "Lien de partage",
@@ -49,6 +53,8 @@
     "cancel": "Annuler"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "Appuyez sur <kbd>entrée</kbd> ou <kbd>,</kbd> ou <kbd>espace</kbd> pour ajouter plusieurs adresses e-mail",
+    "allowMultiDraft": "Autoriser le téléchargement de <strong> plusieurs brouillons</strong>",
     "formTitle": "Titre du formulaire",
     "formDescription": "Description du formulaire",
     "formAccess": "Accès au formulaire",
@@ -349,6 +355,7 @@
     "emailRequired": "L'e-mail est requis"
   },
   "submissionsTable": {
+    "submissions": "Soumissions",
     "submissionsTable": "Tableau des soumissions",
     "selectColumns": "Sélectionnez les colonnes",
     "manageForm": "Gérer le formulaire",
@@ -721,7 +728,7 @@
     "createCustomFormTitle": "Créez des formulaires personnalisés avec le générateur de formulaires CHEFS",
     "createCustomFormSub1": "Avec CHEFS, vous pouvez créer des formulaires sécurisés avec une interface intuitive par glisser-déposer. Vous pouvez ajouter des composants de formulaire, les réorganiser et les déposer dans différentes configurations de mise en page.",
     "chefsHowToTitle": "CHEFS Vidéos explicatives",
-    "chefsHowToSub": "Notre guide de démarrage rapide vous présentera certaines des fonctions de base de CHEFS. Commencer!",
+    "chefsHowToSub": "Notre guide de démarrage rapide vous présentera certaines des fonctions de base de CHEFS.",
     "getStartedToChefs": "Commencez à utiliser CHEFS",
     "createOnlineTitle": "Créez des formulaires en ligne pour collecter des informations auprès de vos clients et améliorer vos flux de travail.",
     "getStarted": "Commencer"
@@ -741,6 +748,7 @@
   "addTeamMember": {
     "cantFindChefsUsers": "Vous ne trouvez pas quelqu&#39;un ? Ils ne se sont peut-être pas connectés à CHEFS.<br /> Veuillez leur envoyer un lien vers CHEFS et leur demander de se connecter.",
     "cancel": "Annuler",
+    "add": "Ajouter",
     "mustSelectAUser": "Vous devez sélectionner au moins un rôle pour ajouter cet utilisateur.",
     "addNewMember": "Ajouter un nouveau membre",
     "enterUsername": "Saisissez un nom, une adresse e-mail ou un nom d'utilisateur",
@@ -770,13 +778,22 @@
     "copyToClipboard": "Copier dans le presse-papier",
     "errCopyToClipboard": "Erreur lors de la tentative de copie dans le presse-papiers."
   },
-  "root": {
-    "admin": "Administrateur"
+  "admin": {
+    "root": {
+      "admin": "Administrateur"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "MES FORMULAIRES",
+      "history": "HISTOIRE",
+      "user": "Utilisateur"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "Votre formulaire a été soumis avec succès",
     "keepRecord": "Si vous souhaitez conserver une trace de cette soumission, vous pouvez conserver les éléments suivants",
-    "confirmationId": "Identifiant de confirmation :"
+    "confirmationId": "Identifiant de confirmation"
   },
   "permissionUtils": {
     "formNotAvailable": "Le formulaire est actuellement indisponible. Cela peut être dû à un lien incorrect, ou le formulaire a peut-être été supprimé par son propriétaire.",
@@ -828,8 +845,7 @@
       "updCurrUserFormPrefConsErrMsg": "Erreur lors de la mise à jour des préférences du formulaire utilisateur à l'aide de formID {formId} et des préférences {preferences} : {error}",
       "getCurrUserFormPrefErrMsg": "Une erreur s'est produite lors de la récupération de vos préférences pour ce formulaire.",
       "getCurrUserFormPrefConsErrMsg": "Erreur lors de l'obtention des préférences du formulaire utilisateur à l'aide du formID {formId} : {error}",
-      "delCurrformNotiMsg": "Le formulaire \"{state.form.name}\" a été supprimé avec succès.",
-      "delCurrformErrMsg": "Une erreur s'est produite lors de la tentative de suppression de \"${state.form.name}\".",
+      "delCurrformNotiMsg": "Le formulaire {name} a été supprimé avec succès.",
       "delCurrFormConsErMsg": "Erreur lors de la suppression du formulaire {id} : {error}",
       "delDraftErrMsg": "Une erreur s'est produite lors de la suppression de ce brouillon.",
       "delDraftConsErrMsg": "Erreur lors de la suppression de {draftId} : {error}",

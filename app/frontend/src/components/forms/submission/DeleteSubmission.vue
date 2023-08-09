@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <span :class="{ 'dir-rtl': isRTL }">
     <v-tooltip bottom>
       <template #activator="{ on, attrs }">
         <v-btn
@@ -36,8 +36,8 @@
         {{ $t('trans.deleteSubmission.deleteWarning') }}
         {{
           isDraft
-            ? "$t('trans.deleteSubmission.drafts')"
-            : "$t('trans.deleteSubmission.formSubmission')"
+            ? $t('trans.deleteSubmission.drafts')
+            : $t('trans.deleteSubmission.formSubmission')
         }}?
       </template>
       <template #button-text-continue>

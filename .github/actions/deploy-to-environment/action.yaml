@@ -7,6 +7,9 @@ inputs:
   acronym:
     description: Application acronym
     required: true
+  route_prefix:
+    description: Application domain prefix
+    required: true
   environment:
     description: Logical Github Environment
     required: true
@@ -81,9 +84,9 @@ runs:
       shell: bash
       run: |
         if [[ "${{ inputs.job_name }}" == pr-* ]]; then
-          oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/app.dc.yaml -p REPO_NAME=${{ inputs.app_name }} -p JOB_NAME=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p IMAGE_TAG=sha-$(git rev-parse --short HEAD) -p ROUTE_HOST=${{ inputs.acronym }}-${{ inputs.namespace_environment }}.apps.silver.devops.gov.bc.ca -p ROUTE_PATH=${{ inputs.route_path }} -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+          oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/app.dc.yaml -p REPO_NAME=${{ inputs.app_name }} -p JOB_NAME=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p IMAGE_TAG=sha-$(git rev-parse --short HEAD) -p ROUTE_HOST=${{ inputs.route_prefix }}-${{ inputs.namespace_environment }}.apps.silver.devops.gov.bc.ca -p ROUTE_PATH=${{ inputs.route_path }} -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
         else
-          oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/app.dc.yaml -p REPO_NAME=${{ inputs.app_name }} -p JOB_NAME=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p IMAGE_TAG=sha-$(git rev-parse --short HEAD) -p ROUTE_HOST=${{ inputs.acronym }}-${{ inputs.namespace_environment }}.apps.silver.devops.gov.bc.ca -p ROUTE_PATH=${{ inputs.route_path }} --param-file=openshift/app.${{ inputs.namespace_environment }}.param -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+          oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/app.dc.yaml -p REPO_NAME=${{ inputs.app_name }} -p JOB_NAME=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p IMAGE_TAG=sha-$(git rev-parse --short HEAD) -p ROUTE_HOST=${{ inputs.route_prefix }}-${{ inputs.namespace_environment }}.apps.silver.devops.gov.bc.ca -p ROUTE_PATH=${{ inputs.route_path }} --param-file=openshift/app.${{ inputs.namespace_environment }}.param -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
         fi
 
     - name: Wait on App
