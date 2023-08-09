@@ -13,7 +13,7 @@
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
-                @click="showColumnsDialog = true"
+                @click="onShowColumnDialog"
                 class="mx-1"
                 color="primary"
                 icon
@@ -560,6 +560,15 @@ export default {
       'updateFormPreferencesForCurrentUser',
     ]),
     ...mapActions('notifications', ['addNotification']),
+    onShowColumnDialog() {
+      this.SELECT_COLUMNS_HEADERS.sort(
+        (a, b) =>
+          this.PRESELECTED_DATA.findIndex((x) => x.text === b.text) -
+          this.PRESELECTED_DATA.findIndex((x) => x.text === a.text)
+      );
+
+      this.showColumnsDialog = true;
+    },
 
     async delSub() {
       this.singleSubmissionDelete
