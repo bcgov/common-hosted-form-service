@@ -276,6 +276,11 @@ export default {
     onShowColumnDialog() {
       this.preSelectedData =
         this.filterData.length === 0 ? this.FILTER_HEADERS : this.filterData;
+      this.SELECT_COLUMNS_HEADERS.sort(
+        (a, b) =>
+          this.preSelectedData.findIndex((x) => x.text === b.text) -
+          this.preSelectedData.findIndex((x) => x.text === a.text)
+      );
       this.showColumnsDialog = true;
     },
 
