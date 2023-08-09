@@ -1059,7 +1059,6 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { mapGetters } from 'vuex';
 import { mapFields } from 'vuex-map-fields';
 import {
   IdentityMode,
@@ -1118,10 +1117,14 @@ export default {
       'form.submissionReceivedEmails',
       'form.userType',
       'form.schedule',
+      'form.subscribe',
       'form.reminder_enabled',
       'form.versions',
     ]),
-    ...mapGetters('form', ['isRTL']),
+    idirUser() {
+      return this.identityProvider === IdentityProviders.IDIR;
+    },
+    ...mapGetters('form', ['isRTL'], ['identityProvider']),
     ID_MODE() {
       return IdentityMode;
     },
@@ -1254,34 +1257,7 @@ export default {
         (v) =>
           moment(v).isAfter(this.schedule.openSubmissionDateTime, 'day') ||
           this.$t('trans.formSettings.dateGrtOpenSubmissnDate'),
-      ],
-    };
-  },
-  computed: {
-    ...mapFields('form', [
-      'form.description',
-      'form.enableSubmitterDraft',
-      'form.enableCopyExistingSubmission',
-      'form.enableStatusUpdates',
-      'form.allowSubmitterToUploadFile',
-      'form.id',
-      'form.idps',
-      'form.name',
-      'form.sendSubRecieviedEmail',
-      'form.showSubmissionConfirmation',
-      'form.submissionReceivedEmails',
-      'form.userType',
-      'form.subscribe',
-      'form.schedule',
-      'form.reminder_enabled',
-      'form.versions',
-    ]),
-    ...mapGetters('auth', ['identityProvider']),
-    idirUser() {
-      return this.identityProvider === IdentityProviders.IDIR;
-    },
-    ID_MODE() {
-      return IdentityMode;
+      ];
     },
     AVAILABLE_DATES() {
       //return [];
