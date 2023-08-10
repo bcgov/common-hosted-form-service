@@ -183,7 +183,14 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['apiKey', 'drafts', 'form', 'permissions', 'isRTL', 'subscriptionData']),
+    ...mapGetters('form', [
+      'apiKey',
+      'drafts',
+      'form',
+      'permissions',
+      'isRTL',
+      'subscriptionData',
+    ]),
     canEditForm() {
       return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },
