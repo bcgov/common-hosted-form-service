@@ -62,7 +62,7 @@
                   disabledLink: component && component.moreHelpInfoLink === '',
                 }"
               >
-                <div class="mr-1 cursor">
+                <div class="mr-1 cursor" :lang="lang">
                   {{ $t('trans.proactiveHelpPreviewDialog.learnMore') }}
                   <font-awesome-icon
                     icon="fa-solid fa-square-arrow-up-right"
@@ -82,6 +82,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faXmark, faSquareArrowUpRight);
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'ProactiveHelpPreviewDialog',
@@ -100,6 +101,9 @@ export default {
     onCloseDialog() {
       this.$emit('close-dialog');
     },
+  },
+  computed: {
+    ...mapGetters('form', ['isRTL', 'lang']),
   },
   watch: {
     showDialog() {

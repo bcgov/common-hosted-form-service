@@ -1,18 +1,26 @@
 <template>
   <BaseSecure :idp="[IDP.IDIR]">
     <v-container fluid class="center_vertical_content">
-      <h1>CHEFS Data Export</h1>
+      <h1 :lang="lang">{{ $t('trans.download.chefsDataExport') }}</h1>
       <v-progress-circular
         v-if="!showDownloadLink"
         :size="50"
         color="primary"
         indeterminate
       ></v-progress-circular>
-      <div v-if="!showDownloadLink">Preparing for download...</div>
-      <div class="mt-5 center_vertical_content" v-if="showDownloadLink">
+      <div v-if="!showDownloadLink" :lang="lang">
+        {{ $t('trans.download.preparingForDownloading') }}
+      </div>
+      <div
+        class="mt-5 center_vertical_content"
+        v-if="showDownloadLink"
+        :lang="lang"
+      >
         <v-icon class="mb-2" size="90">file_download</v-icon><br />
-        If your file does not automatically download
-        <a href="#" @click="getFile(id)">click here to try again</a>
+        {{ $t('trans.download.downloadInfoA') }}
+        <a href="#" @click="getFile(id)" :hreflang="lang">{{
+          $t('trans.download.downloadInfoB')
+        }}</a>
       </div>
     </v-container>
   </BaseSecure>
@@ -32,7 +40,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['downloadedFile']),
+    ...mapGetters('form', ['downloadedFile', 'lang', 'isRTL']),
     IDP: () => IdentityProviders,
   },
   mounted() {
