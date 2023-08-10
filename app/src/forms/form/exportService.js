@@ -1,5 +1,5 @@
 const Problem = require('api-problem');
-const { flattenComponents, unwindPath, submissionHeaders } = require('../common/utils');
+const { flattenComponents, unwindPath, submissionHeaders /*, flattenObj*/ } = require('../common/utils');
 const { EXPORT_FORMATS, EXPORT_TYPES } = require('../common/constants');
 const { Form, FormVersion, SubmissionData } = require('../common/models');
 const _ = require('lodash');
@@ -12,6 +12,7 @@ const config = require('config');
 const fileService = require('../file/service');
 const emailService = require('../email/emailService');
 const { v4: uuidv4 } = require('uuid');
+const nestedObjectsUtil = require('nested-objects-util');
 
 const service = {
   /**
@@ -89,7 +90,7 @@ const service = {
     return await flattenComponents(schema.components);
   },
 
-  _buildCsvHeaders: async (form, data, version, fields) => {
+  _buildCsvHeaders: async (form, data, version, fields, singleRow = false) => {
     /**
      * get column order to match field order in form design
      * object key order is not preserved when submission JSON is saved to jsonb field type in postgres.
@@ -108,16 +109,22 @@ const service = {
      * eg: use field labels as headers
      * see: https://github.com/kaue/jsonexport
      */
-    let formSchemaheaders = metaHeaders.concat(fieldNames);
+    let formSchemaheaders = Array.isArray(data) && data.length > 0 && !singleRow ? metaHeaders.concat(fieldNames) : metaHeaders;
     if (Array.isArray(data) && data.length > 0) {
-      let flattenSubmissionHeaders = Array.from(submissionHeaders(data[0]));
+      // if we generate single row headers we need to keep in mind of possible multi children nested data thus do flattening
+      const flattenSubmissionHeaders = singleRow ? Object.keys(nestedObjectsUtil.flatten(data[0])) : Array.from(submissionHeaders(data[0]));
       formSchemaheaders = formSchemaheaders.concat(flattenSubmissionHeaders.filter((item) => formSchemaheaders.indexOf(item) < 0));
     }
 
     if (fields) {
-      return await formSchemaheaders.filter((header) => {
-        if (Array.isArray(fields) && fields.includes(header)) {
+      return formSchemaheaders.filter((header) => {
+        if (Array.isArray(fields) && fields.includes(header) && !singleRow) {
           return header;
+        } else if (Array.isArray(fields) && singleRow) {
+          const unFlattenHeader = header.replace(/\.\d\./gi, '.');
+          if (fields.includes(unFlattenHeader)) {
+            return header;
+          }
         }
       });
     }
@@ -264,7 +271,7 @@ const service = {
     return service._submissionCSVExport(opts, form, data, emailExport, currentUser, referer);
   },
   _singleRowCSVExport: async (form, data, version, fields, currentUser, emailExport, referer) => {
-    const headers = await service._buildCsvHeaders(form, data, version, fields);
+    const headers = await service._buildCsvHeaders(form, data, version, fields, true);
     const opts = {
       transforms: [flatten({ objects: true, arrays: true, separator: '.' })],
       fields: headers,
