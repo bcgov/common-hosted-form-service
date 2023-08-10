@@ -100,7 +100,6 @@ const service = {
     const latestFormDesign = await service._readLatestFormSchema(form.id, version);
 
     const fieldNames = await service._readSchemaFields(latestFormDesign, data);
-
     // get meta properties in 'form.<child.key>' string format
     const metaKeys = Object.keys(data.length > 0 && data[0].form);
     const metaHeaders = metaKeys.map((x) => 'form.' + x);
@@ -111,8 +110,17 @@ const service = {
      */
     let formSchemaheaders = Array.isArray(data) && data.length > 0 && !singleRow ? metaHeaders.concat(fieldNames) : metaHeaders;
     if (Array.isArray(data) && data.length > 0) {
+      let flattenSubmissionHeaders = [];
       // if we generate single row headers we need to keep in mind of possible multi children nested data thus do flattening
-      const flattenSubmissionHeaders = singleRow ? Object.keys(nestedObjectsUtil.flatten(data[0])) : Array.from(submissionHeaders(data[0]));
+      if (singleRow) {
+        flattenSubmissionHeaders = Object.keys(nestedObjectsUtil.flatten(data));
+        // '0**.field_name' remoing starting digits from flaten object properies to get unique fields after
+        flattenSubmissionHeaders = flattenSubmissionHeaders.map((header) => header.replace(/^\d*\./gi, ''));
+        // getting unique values
+        flattenSubmissionHeaders = [...new Set(flattenSubmissionHeaders)];
+      } else {
+        flattenSubmissionHeaders = Array.from(submissionHeaders(data[0]));
+      }
       formSchemaheaders = formSchemaheaders.concat(flattenSubmissionHeaders.filter((item) => formSchemaheaders.indexOf(item) < 0));
     }
 
