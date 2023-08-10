@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <div v-if="!canGenerateKey" class="mt-3 mb-6">
       <v-icon class="mr-1" color="primary">info</v-icon
       ><span v-html="$t('trans.apiKey.formOwnerKeyAcess')"></span>
     </div>
     <h3 class="mt-3">{{ $t('trans.apiKey.disclaimer') }}</h3>
-    <ul>
+    <ul :class="isRTL ? 'mr-6' : null">
       <li>{{ $t('trans.apiKey.infoA') }}</li>
       <li>
         {{ $t('trans.apiKey.infoB') }}
@@ -150,7 +150,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['apiKey', 'form', 'permissions']),
+    ...mapGetters('form', ['apiKey', 'form', 'permissions', 'isRTL']),
     canDeleteKey() {
       return (
         this.permissions.includes(FormPermissions.FORM_API_DELETE) &&

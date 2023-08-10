@@ -1,9 +1,10 @@
 <template>
-  <div class="file-upload">
+  <div class="file-upload" :class="{ 'dir-rtl': isRTL }">
     <v-row>
       <BaseInfoCard v-if="json_csv.data" class="mb-4">
         <h4 class="primary--text">
-          <v-icon class="mr-1" color="primary">info</v-icon
+          <v-icon class="mr-1" color="primary" :class="{ 'ml-2': isRTL }"
+            >info</v-icon
           >{{ $t('trans.formViewerMultiUpload.important') }}!
         </h4>
         <p class="my-2">
@@ -22,7 +23,7 @@
         </p>
       </BaseInfoCard>
     </v-row>
-    <v-row>
+    <v-row class="mt-3">
       <h3>{{ form.name }}</h3>
 
       <div
@@ -137,7 +138,7 @@
   </div>
 </template>
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { Formio } from 'vue-formio';
 // import { nextTick } from 'process';
 export default {
@@ -180,6 +181,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('form', ['isRTL']),
     txt_color() {
       if (!this.error) return 'success-text';
       else return 'fail-text';

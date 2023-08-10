@@ -15,6 +15,10 @@
     "action": "ਕਾਰਵਾਈਆਂ",
     "loadingText": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ... ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ"
   },
+  "preview": {
+    "preview": "ਝਲਕ",
+    "previewToolTip": "ਇਹ ਫਾਰਮ ਸੰਸਕਰਣ ਡਿਜ਼ਾਈਨ ਅਤੇ ਵਿਵਹਾਰ ਦਾ ਪੂਰਵਦਰਸ਼ਨ ਦਿਖਾਉਂਦਾ ਹੈ ਕਿਉਂਕਿ ਤੁਹਾਡੇ ਸਬਮਿਟਰ ਇਸਨੂੰ ਦੇਖਣਗੇ। ਤੁਸੀਂ ਇਸ ਪੰਨੇ ਤੋਂ ਫਾਰਮ ਜਮ੍ਹਾਂ ਨਹੀਂ ਕਰ ਸਕਦੇ।"
+  },
   "manageLayout": {
     "manageForm": "ਫਾਰਮ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ"
   },
@@ -49,6 +53,8 @@
     "cancel": "ਰੱਦ ਕਰੋ"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "ਕਈ ਈਮੇਲ ਪਤੇ ਜੋੜਨ ਲਈ <kbd>enter</kbd> ਜਾਂ <kbd>,</kbd> ਜਾਂ <kbd>space</kbd> ਦਬਾਓ।",
+    "allowMultiDraft": "<strong> ਮਲਟੀਪਲ ਡਰਾਫਟ</strong> ਅੱਪਲੋਡ ਕਰਨ ਦਿਓ",
     "formTitle": "ਫਾਰਮ ਦਾ ਸਿਰਲੇਖ",
     "formDescription": "ਫਾਰਮ ਦਾ ਵੇਰਵਾ",
     "formAccess": "ਫਾਰਮ ਪਹੁੰਚ",
@@ -349,6 +355,7 @@
     "emailRequired": "ਈ-ਮੇਲ ਦੀ ਲੋੜ ਹੈ"
   },
   "submissionsTable": {
+    "submissions": "ਬੇਨਤੀਆਂ",
     "submissionsTable": "ਸਬਮਿਸ਼ਨ ਟੇਬਲ",
     "selectColumns": "ਕਾਲਮ ਚੁਣੋ",
     "manageForm": "ਫਾਰਮ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ",
@@ -721,7 +728,7 @@
     "createCustomFormTitle": "CHEFS ਫਾਰਮ ਬਿਲਡਰ ਨਾਲ ਕਸਟਮ ਫਾਰਮ ਬਣਾਓ",
     "createCustomFormSub1": "CHEFS ਦੇ ਨਾਲ, ਤੁਸੀਂ ਇੱਕ ਅਨੁਭਵੀ ਡਰੈਗ-ਐਂਡ-ਡ੍ਰੌਪ ਇੰਟਰਫੇਸ ਨਾਲ ਸੁਰੱਖਿਅਤ ਫਾਰਮ ਬਣਾ ਸਕਦੇ ਹੋ। ਤੁਸੀਂ ਫਾਰਮ ਕੰਪੋਨੈਂਟ ਜੋੜ ਸਕਦੇ ਹੋ, ਉਹਨਾਂ ਨੂੰ ਮੁੜ-ਵਿਵਸਥਿਤ ਕਰ ਸਕਦੇ ਹੋ, ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਵੱਖ-ਵੱਖ ਲੇਆਉਟ ਸੰਰਚਨਾਵਾਂ ਵਿੱਚ ਛੱਡ ਸਕਦੇ ਹੋ।",
     "chefsHowToTitle": "CHEFS ਕਿਵੇਂ-ਕਰਨ ਵੀਡੀਓ",
-    "chefsHowToSub": "ਸਾਡੀ ਕਵਿੱਕਸਟਾਰਟ ਗਾਈਡ ਤੁਹਾਨੂੰ CHEFS ਦੇ ਕੁਝ ਬੁਨਿਆਦੀ ਫੰਕਸ਼ਨਾਂ ਤੋਂ ਜਾਣੂ ਕਰਵਾਏਗੀ। ਸ਼ੁਰੂ ਕਰੋ!",
+    "chefsHowToSub": "ਸਾਡੀ ਕਵਿੱਕਸਟਾਰਟ ਗਾਈਡ ਤੁਹਾਨੂੰ CHEFS ਦੇ ਕੁਝ ਬੁਨਿਆਦੀ ਫੰਕਸ਼ਨਾਂ ਤੋਂ ਜਾਣੂ ਕਰਵਾਏਗੀ।",
     "getStartedToChefs": "CHEFS ਦੀ ਵਰਤੋਂ ਸ਼ੁਰੂ ਕਰੋ",
     "createOnlineTitle": "ਆਪਣੇ ਗਾਹਕਾਂ ਤੋਂ ਜਾਣਕਾਰੀ ਇਕੱਠੀ ਕਰਨ ਅਤੇ ਆਪਣੇ ਵਰਕਫਲੋ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਔਨਲਾਈਨ ਫਾਰਮ ਬਣਾਓ।",
     "getStarted": "ਸ਼ੁਰੂ ਕਰੋ"
@@ -741,6 +748,7 @@
   "addTeamMember": {
     "cantFindChefsUsers": "ਕਿਸੇ ਨੂੰ ਨਹੀਂ ਲੱਭ ਸਕਦੇ? ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਉਹਨਾਂ ਨੇ CHEFS ਵਿੱਚ ਲੌਗਇਨ ਨਾ ਕੀਤਾ ਹੋਵੇ।<br /> ਕਿਰਪਾ ਕਰਕੇ ਉਹਨਾਂ ਨੂੰ CHEFS ਨੂੰ ਇੱਕ ਲਿੰਕ ਭੇਜੋ ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਲੌਗ ਇਨ ਕਰਨ ਲਈ ਕਹੋ।",
     "cancel": "ਰੱਦ ਕਰੋ",
+    "add": "ਸ਼ਾਮਲ ਕਰੋ",
     "mustSelectAUser": "ਤੁਹਾਨੂੰ ਇਸ ਉਪਭੋਗਤਾ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਘੱਟੋ-ਘੱਟ ਇੱਕ ਭੂਮਿਕਾ ਦੀ ਚੋਣ ਕਰਨੀ ਚਾਹੀਦੀ ਹੈ।",
     "addNewMember": "ਇੱਕ ਨਵਾਂ ਮੈਂਬਰ ਸ਼ਾਮਲ ਕਰੋ",
     "enterUsername": "ਇੱਕ ਨਾਮ, ਈ-ਮੇਲ, ਜਾਂ ਉਪਭੋਗਤਾ ਨਾਮ ਦਰਜ ਕਰੋ",
@@ -770,13 +778,22 @@
     "copyToClipboard": "ਕਲਿੱਪਬੋਰਡ ਵਿੱਚ ਕਾਪੀ ਕਰੋ",
     "errCopyToClipboard": "ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਵਿੱਚ ਤਰੁੱਟੀ।"
   },
-  "root": {
-    "admin": "ਐਡਮਿਨ"
+  "admin": {
+    "root": {
+      "admin": "ਐਡਮਿਨ"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "ਮੇਰੇ ਫਾਰਮ",
+      "history": "ਇਤਿਹਾਸ",
+      "user": "ਉਪਭੋਗਤਾ"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "ਤੁਹਾਡਾ ਫਾਰਮ ਸਫਲਤਾਪੂਰਵਕ ਜਮ੍ਹਾਂ ਹੋ ਗਿਆ ਹੈ",
     "keepRecord": "ਜੇਕਰ ਤੁਸੀਂ ਇਸ ਸਬਮਿਸ਼ਨ ਦਾ ਰਿਕਾਰਡ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ ਤੁਸੀਂ ਹੇਠ ਲਿਖੀਆਂ ਗੱਲਾਂ ਰੱਖ ਸਕਦੇ ਹੋ",
-    "confirmationId": "ਪੁਸ਼ਟੀ ID:"
+    "confirmationId": "ਪੁਸ਼ਟੀ ID"
   },
   "permissionUtils": {
     "formNotAvailable": "ਫਾਰਮ ਇਸ ਸਮੇਂ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਇਹ ਇੱਕ ਗਲਤ ਲਿੰਕ ਦੇ ਕਾਰਨ ਹੋ ਸਕਦਾ ਹੈ, ਜਾਂ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਫਾਰਮ ਇਸਦੇ ਮਾਲਕ ਦੁਆਰਾ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੋਵੇ।",
@@ -828,8 +845,7 @@
       "updCurrUserFormPrefConsErrMsg": "formID {formId}, ਅਤੇ prefs {preferences} ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਹੋਏ ਉਪਭੋਗਤਾ ਫਾਰਮ ਪ੍ਰੀਫਸ ਨੂੰ ਅਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "getCurrUserFormPrefErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਤੁਹਾਡੀਆਂ ਤਰਜੀਹਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
       "getCurrUserFormPrefConsErrMsg": "formID {formId} ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਹੋਏ ਉਪਭੋਗਤਾ ਫਾਰਮ ਪ੍ਰੀਫਸ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
-      "delCurrformNotiMsg": "ਫਾਰਮ \"{state.form.name}\" ਨੂੰ ਸਫਲਤਾਪੂਰਵਕ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।",
-      "delCurrformErrMsg": "\"${state.form.name}\" ਨੂੰ ਮਿਟਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "delCurrformNotiMsg": "ਫਾਰਮ {name} ਨੂੰ ਸਫਲਤਾਪੂਰਵਕ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।",
       "delCurrFormConsErMsg": "ਫਾਰਮ {id} ਨੂੰ ਮਿਟਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "delDraftErrMsg": "ਇਸ ਡਰਾਫਟ ਨੂੰ ਮਿਟਾਉਣ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
       "delDraftConsErrMsg": "{draftId} ਨੂੰ ਮਿਟਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",

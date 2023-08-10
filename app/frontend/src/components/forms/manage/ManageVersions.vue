@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <BaseInfoCard class="my-4">
       <h4 class="primary--text">
-        <v-icon class="mr-1" color="primary">info</v-icon
+        <v-icon :class="isRTL ? 'ml-1' : 'mr-1'" color="primary">info</v-icon
         >{{ $t('trans.manageVersions.important') }}
       </h4>
       <p>
@@ -11,7 +11,7 @@
     </BaseInfoCard>
 
     <div class="mt-8 mb-5">
-      <v-icon class="mr-1" color="primary">info</v-icon
+      <v-icon :class="isRTL ? 'ml-1' : 'mr-1'" color="primary">info</v-icon
       >{{ $t('trans.manageVersions.infoB') }}
     </div>
     <v-data-table
@@ -61,14 +61,20 @@
           color="success"
           value
           :input-value="item.published"
-          :label="
-            item.published
-              ? $t('trans.manageVersions.published')
-              : $t('trans.manageVersions.unpublished')
-          "
           :disabled="!canPublish"
+          :class="{ 'dir-ltl': isRTL }"
           @change="togglePublish($event, item.id, item.version, item.isDraft)"
-        />
+        >
+          <template #label>
+            <span :class="{ 'mr-2': isRTL }">
+              {{
+                item.published
+                  ? $t('trans.manageVersions.published')
+                  : $t('trans.manageVersions.unpublished')
+              }}</span
+            >
+          </template>
+        </v-switch>
       </template>
 
       <!-- Created date  -->
@@ -265,7 +271,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['drafts', 'form', 'permissions']),
+    ...mapGetters('form', ['drafts', 'form', 'permissions', 'isRTL']),
     headers() {
       return [
         {
@@ -481,6 +487,7 @@ export default {
 .submissions-table {
   clear: both;
 }
+
 @media (max-width: 1263px) {
   .submissions-table >>> th {
     vertical-align: top;
