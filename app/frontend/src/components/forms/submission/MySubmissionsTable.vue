@@ -246,8 +246,10 @@ export default {
     },
 
     HEADERS() {
+      let headers = this.DEFAULT_HEADERS;
+
       if (this.filterData.length > 0) {
-        let headers = [...this.DEFAULT_HEADERS].filter(
+        headers = [...this.DEFAULT_HEADERS].filter(
           (h) => !this.tableFilterIgnore.some((fd) => fd.value === h.value)
         );
 
@@ -256,9 +258,8 @@ export default {
         } else {
           headers = headers.concat(this.filterData);
         }
-        return headers;
       }
-      return this.DEFAULT_HEADERS;
+      return headers;
     },
 
     showStatus() {
