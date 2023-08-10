@@ -1,5 +1,5 @@
 const Problem = require('api-problem');
-const { flattenComponents, unwindPath, submissionHeaders /*, flattenObj*/ } = require('../common/utils');
+const { flattenComponents, unwindPath, submissionHeaders } = require('../common/utils');
 const { EXPORT_FORMATS, EXPORT_TYPES } = require('../common/constants');
 const { Form, FormVersion, SubmissionData } = require('../common/models');
 const _ = require('lodash');
