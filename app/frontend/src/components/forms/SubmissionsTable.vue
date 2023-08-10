@@ -461,7 +461,7 @@ export default {
     HEADERS() {
       let headers = this.DEFAULT_HEADER;
       if (this.USER_PREFERENCES.length > 0) {
-        let headers = [...this.DEFAULT_HEADER].filter(
+        headers = [...this.DEFAULT_HEADER].filter(
           (h) => !this.tableFilterIgnore.some((fd) => fd.value === h.value)
         );
 
@@ -471,6 +471,7 @@ export default {
           headers = headers.concat(this.USER_PREFERENCES);
         }
       }
+
       return headers;
     },
 
