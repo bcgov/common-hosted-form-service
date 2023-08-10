@@ -7,7 +7,7 @@ const { currentUser, hasSubmissionPermissions, filterMultipleSubmissions } = req
 
 routes.use(currentUser);
 
-routes.get('/:formSubmissionId', hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
+routes.get('/:formSubmissionId', apiAccess, hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
   await controller.read(req, res, next);
 });
 
