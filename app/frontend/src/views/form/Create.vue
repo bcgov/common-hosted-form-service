@@ -1,18 +1,18 @@
 <template>
   <BaseSecure :idp="[IDP.IDIR]" :class="{ 'dir-rtl': isRTL }">
-    <h1 class="my-6 text-center">
+    <h1 class="my-6 text-center" :lang="lang">
       {{ $t('trans.create.createNewForm') }}
     </h1>
     <v-stepper v-model="creatorStep" class="elevation-0">
       <v-stepper-header class="elevation-0 px-0">
         <v-stepper-step :complete="creatorStep > 1" step="1" class="pl-1">
-          <span :class="{ 'mr-2': isRTL }">
+          <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.create.setUpForm') }}
           </span>
         </v-stepper-step>
         <v-divider />
         <v-stepper-step :complete="creatorStep > 2" step="2" class="pr-1">
-          <span :class="{ 'mr-2': isRTL }">
+          <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.create.designForm') }}
           </span>
         </v-stepper-step>
@@ -21,18 +21,22 @@
       <v-stepper-items>
         <v-stepper-content step="1" class="pa-1">
           <v-form ref="settingsForm" v-model="settingsFormValid">
-            <h1>
+            <h1 :lang="lang">
               {{ $t('trans.create.formSettings') }}
             </h1>
             <FormSettings />
 
             <BasePanel class="my-6">
-              <template #title>{{ $t('trans.create.disclaimer') }}</template>
+              <template #title
+                ><span :lang="lang">{{
+                  $t('trans.create.disclaimer')
+                }}</span></template
+              >
               <FormDisclaimer />
 
               <v-checkbox :rules="disclaimerRules" required>
                 <template #label>
-                  <span :class="{ 'mr-2': isRTL }">{{
+                  <span :class="{ 'mr-2': isRTL }" :lang="lang">{{
                     $t('trans.create.disclaimerStmt')
                   }}</span>
                 </template>
@@ -45,13 +49,13 @@
             :disabled="!settingsFormValid"
             @click="reRenderFormDesigner"
           >
-            <span>{{ $t('trans.create.continue') }}</span>
+            <span :lang="lang">{{ $t('trans.create.continue') }}</span>
           </v-btn>
         </v-stepper-content>
         <v-stepper-content step="2" class="pa-1">
           <FormDesigner ref="formDesigner" />
           <v-btn class="my-4" outlined @click="creatorStep = 1">
-            <span>{{ $t('trans.create.back') }}</span>
+            <span :lang="lang">{{ $t('trans.create.back') }}</span>
           </v-btn>
         </v-stepper-content>
       </v-stepper-items>
@@ -76,7 +80,7 @@ export default {
   },
   computed: {
     ...mapFields('form', ['form.idps', 'form.isDirty', 'form.userType']),
-    ...mapGetters('form', ['isRTL']),
+    ...mapGetters('form', ['isRTL', 'lang']),
     IDP: () => IdentityProviders,
   },
   data() {

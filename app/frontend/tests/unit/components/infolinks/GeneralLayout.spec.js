@@ -3,10 +3,28 @@ import Vuex from 'vuex';
 import GeneralLayout from '@/components/infolinks/GeneralLayout.vue';
 import i18n from '@/internationalization';
 
+
 const localVue = createLocalVue();
 localVue.use(Vuex);
 
 describe('GeneralLayout.vue', () => {
+
+  const mockLangGetter = jest.fn();
+  let store;
+  beforeEach(() => {
+    store = new Vuex.Store({
+      modules: {
+        form: {
+          namespaced: true,
+          getters: {
+            lang: mockLangGetter,
+          },
+        },
+      },
+    });
+  });
+
+
   it('isComponentPublish()', async () => {
     const wrapper = shallowMount(GeneralLayout, {
       localVue,
@@ -22,7 +40,8 @@ describe('GeneralLayout.vue', () => {
           publish: [false, false],
         };
       },
-      i18n
+      i18n,
+      store
     });
     await wrapper.setProps({
       componentsList: [
@@ -54,7 +73,8 @@ describe('GeneralLayout.vue', () => {
           publish: [false, false],
         };
       },
-      i18n
+      i18n,
+      store
     });
     //wrapper.vm.onOpenDialog('Text Field');
     //expect(getComponentSpy).toHaveBeenCalledTimes(1);
@@ -76,7 +96,8 @@ describe('GeneralLayout.vue', () => {
           showPreviewDialog: false,
         };
       },
-      i18n
+      i18n,
+      store
     });
     //wrapper.vm.onPreviewDialog();
     //expect(wrapper.vm.showPreviewDialog).toBe(true);
@@ -97,7 +118,8 @@ describe('GeneralLayout.vue', () => {
           showDialog: false,
         };
       },
-      i18n
+      i18n,
+      store
     });
     //wrapper.vm.onDialog();
     //expect(wrapper.vm.showDialog).toBe(true);

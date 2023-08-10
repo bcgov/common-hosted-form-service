@@ -2,7 +2,13 @@
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
     <div v-if="isFormScheduleExpired">
       <template>
-        <v-alert text prominent type="error" :class="{ 'dir-rtl': isRTL }">
+        <v-alert
+          text
+          prominent
+          type="error"
+          :class="{ 'dir-rtl': isRTL }"
+          :lang="lang"
+        >
           {{
             isLateSubmissionAllowed
               ? $t('trans.formViewer.lateFormSubmissions')
@@ -17,7 +23,9 @@
               @click="isFormScheduleExpired = false"
               :class="{ 'dir-rtl': isRTL }"
             >
-              <span>{{ $t('trans.formViewer.createLateSubmission') }}</span>
+              <span :lang="lang">{{
+                $t('trans.formViewer.createLateSubmission')
+              }}</span>
             </v-btn>
           </v-col>
         </div>
@@ -68,10 +76,10 @@
           transition="scale-transition"
         >
           <div v-if="saving" :class="{ 'mr-2': isRTL }">
-            <v-progress-linear indeterminate />
+            <v-progress-linear indeterminate :lang="lang" />
             {{ $t('trans.formViewer.saving') }}
           </div>
-          <div v-else :class="{ 'mr-2': isRTL }">
+          <div v-else :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.formViewer.draftSaved') }}
           </div>
         </v-alert>
@@ -86,14 +94,18 @@
           @close-dialog="showSubmitConfirmDialog = false"
           @continue-dialog="continueSubmit"
         >
-          <template #title>{{ $t('trans.formViewer.pleaseConfirm') }}</template>
+          <template #title
+            ><span :lang="lang">{{
+              $t('trans.formViewer.pleaseConfirm')
+            }}</span></template
+          >
           <template #text
-            ><span>{{
+            ><span :lang="lang">{{
               $t('trans.formViewer.submitFormWarningMsg')
             }}</span></template
           >
           <template #button-text-continue>
-            <span>{{ $t('trans.formViewer.submit') }} </span>
+            <span :lang="lang">{{ $t('trans.formViewer.submit') }} </span>
           </template>
         </BaseDialog>
         <v-alert
@@ -111,7 +123,7 @@
               color="blue-grey lighten-4"
               height="5"
             ></v-progress-linear>
-            <span :class="{ 'mr-2': isRTL }">
+            <span :class="{ 'mr-2': isRTL }" :lang="lang">
               {{ $t('trans.formViewer.formLoading') }}
             </span>
           </div>
@@ -144,9 +156,14 @@
           @customEvent="onCustomEvent"
           @change="formChange"
           @render="onFormRender"
-          :language="multiLanguage"
+          :language="lang"
         />
-        <p v-if="version" :class="{ 'text-left': isRTL }" class="mt-9">
+        <p
+          v-if="version"
+          :class="{ 'text-left': isRTL }"
+          class="mt-9"
+          :lang="lang"
+        >
           {{ $t('trans.formViewer.version', { version: version }) }}
         </p>
       </div>
@@ -161,16 +178,20 @@
       @continue-dialog="yes"
     >
       <template #title
-        ><span> {{ $t('trans.formViewer.pleaseConfirm') }}</span></template
+        ><span :lang="lang">
+          {{ $t('trans.formViewer.pleaseConfirm') }}</span
+        ></template
       >
       <template #text
-        ><span> {{ $t('trans.formViewer.wantToSaveDraft') }}</span></template
+        ><span :lang="lang">
+          {{ $t('trans.formViewer.wantToSaveDraft') }}</span
+        ></template
       >
       <template #button-text-continue>
-        <span> {{ $t('trans.formViewer.yes') }}</span>
+        <span :lang="lang"> {{ $t('trans.formViewer.yes') }}</span>
       </template>
       <template #button-text-delete>
-        <span> {{ $t('trans.formViewer.no') }}</span>
+        <span :lang="lang"> {{ $t('trans.formViewer.no') }}</span>
       </template>
     </BaseDialog>
   </v-skeleton-loader>
@@ -274,7 +295,7 @@ export default {
       return this.$t('trans.formViewer.formScheduleExpireMessage');
     },
     ...mapGetters('auth', ['authenticated', 'token', 'tokenParsed', 'user']),
-    ...mapGetters('form', ['multiLanguage', 'isRTL']),
+    ...mapGetters('form', ['lang', 'isRTL', 'lang']),
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
     },
@@ -310,7 +331,7 @@ export default {
     },
   },
   watch: {
-    multiLanguage() {
+    lang() {
       this.reRenderFormIo += 1;
     },
   },
