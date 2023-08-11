@@ -674,7 +674,7 @@
     "getUsersSubmissionsConsoleErrMsg": "Ошибка при загрузке данных отправки формы {submissionId}: {error}",
     "multiDraftUploadSuccess": "Загрузка нескольких черновиков прошла успешно!",
     "readVersionErrMsg": "Схемы в ответ нет. Идентификатор версии: {versionId}",
-    "readDraftErrMsg": "Схемы в ответ нет. DraftId: {draftId}",
+    "readDraftErrMsg": "Схемы в ответ нет. draftId: {draftId}",
     "alertRouteMsg": "Владелец формы не опубликовал форму, и она недоступна для отправки.",
     "fecthingFormErrMsg": "При получении этой формы произошла ошибка",
     "fecthingFormConsoleErrMsg": "Ошибка при загрузке схемы формы {versionId}: {error}",

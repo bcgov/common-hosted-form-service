@@ -675,7 +675,7 @@
     "getUsersSubmissionsConsoleErrMsg": "Error loading form submission data {submissionId}: {error}",
     "multiDraftUploadSuccess": "Your multiple draft upload has been successful!",
     "readVersionErrMsg": "No schema in response. VersionId: {versionId}",
-    "readDraftErrMsg": "No schema in response. DraftId: {draftId}",
+    "readDraftErrMsg": "No schema in response. draftId: {draftId}",
     "alertRouteMsg": "The form owner has not published the form, and it is not available for submissions.",
     "fecthingFormErrMsg": "An error occurred fetching this form",
     "fecthingFormConsoleErrMsg": "Error loading form schema {versionId}: {error}",
