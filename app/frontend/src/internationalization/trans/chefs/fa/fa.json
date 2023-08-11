@@ -177,7 +177,7 @@
     "published": "منتشر شده",
     "unpublished": "منتشر نشده",
     "useVersionInfo": "از نسخه {version} به عنوان پایه نسخه جدید استفاده کنید",
-    "publishingVersionInfo": "با این کار نسخه {نسخه} فرم شما فعال می شود."
+    "publishingVersionInfo": "با این کار نسخه {version} فرم شما فعال می شود."
   },
   "addOwner": {
     "infoA": "این کار فقط در صورتی انجام می‌شود که مالک فعلی فرم دیگر فعال نباشد یا در یک رویداد اولویت‌دار با شما تماس نداشته باشد. در غیر این صورت از مالک فعلی یا مدیر تیم بخواهید که این کار را خودشان انجام دهند.",
@@ -464,9 +464,9 @@
     "multiDraftUploadSuccess": "بارگذاری چند پیش نویس شما با موفقیت انجام شد!",
     "failedResSubmissn": "پاسخ ناموفق از نقطه پایان ارسال. کد پاسخ: {status}",
     "errSubmittingForm": "هنگام ارسال این فرم خطایی روی داد",
-    "errorSavingFile": "خطا در ذخیره فایل ها. نام فایل: {fileName}. خطا: {خطا}",
+    "errorSavingFile": "خطا در ذخیره فایل ها. نام فایل: {fileName}. خطا: {error}",
     "submittingDraftErrMsg": "هنگام ذخیره پیش نویس خطایی روی داد",
-    "submittingDraftConsErrMsg": "خطا در ذخیره پیش نویس. SubmissionId: {submissionId}. خطا: {خطا}"
+    "submittingDraftConsErrMsg": "خطا در ذخیره پیش نویس. SubmissionId: {submissionId}. خطا: {error}"
   },
   "notesPanel": {
     "addNewNote": "یادداشت جدید اضافه کنید",
@@ -679,7 +679,7 @@
     "fecthingFormErrMsg": "هنگام واکشی این فرم خطایی روی داد",
     "fecthingFormConsoleErrMsg": "خطا در بارگیری طرحواره فرم {versionId}: {error}",
     "savingDraftErrMsg": "هنگام ذخیره پیش نویس خطایی روی داد",
-    "savingDraftConsoleErrMsg": "خطا در ذخیره پیش نویس. SubmissionId: {submissionId}. خطا: {خطا}",
+    "savingDraftConsoleErrMsg": "خطا در ذخیره پیش نویس. SubmissionId: {submissionId}. خطا: {error}",
     "submissionsPreviewAlert": "ارسال در حین پیش نمایش فرم غیرفعال شد",
     "submissionsSubmitErrMsg": "خطا در ارسال فرم: {errors}",
     "sendSubmissionErrMsg": "پاسخ ناموفق از نقطه پایان ارسال. کد پاسخ: {status}",
@@ -690,9 +690,9 @@
     "no": "خیر",
     "failedResSubmissn": "پاسخ ناموفق از نقطه پایان ارسال. کد پاسخ: {status}",
     "errSubmittingForm": "هنگام ارسال این فرم خطایی روی داد",
-    "errorSavingFile": "خطا در ذخیره فایل ها. نام فایل: {fileName}. خطا: {خطا}",
+    "errorSavingFile": "خطا در ذخیره فایل ها. نام فایل: {fileName}. خطا: {error}",
     "submittingDraftErrMsg": "هنگام ذخیره پیش نویس خطایی روی داد",
-    "submittingDraftConsErrMsg": "خطا در ذخیره پیش نویس. SubmissionId: {submissionId}. خطا: {خطا}",
+    "submittingDraftConsErrMsg": "خطا در ذخیره پیش نویس. SubmissionId: {submissionId}. خطا: {error}",
     "formDraftAccessErrMsg": "ارسال درخواستی قبلا ارسال شده است، به صفحه مشاهده هدایت می شود"
   },
   "bCGovFooter": {
