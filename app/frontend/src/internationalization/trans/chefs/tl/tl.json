@@ -674,7 +674,7 @@
     "getUsersSubmissionsConsoleErrMsg": "Error sa paglo-load ng data ng pagsusumite ng form {submissionId}: {error}",
     "multiDraftUploadSuccess": "Ang iyong maramihang draft na pag-upload ay naging matagumpay!",
     "readVersionErrMsg": "Walang schema bilang tugon. VersionId: {versionId}",
-    "readDraftErrMsg": "Walang schema bilang tugon. DraftId: {draftId}",
+    "readDraftErrMsg": "Walang schema bilang tugon. draftId: {draftId}",
     "alertRouteMsg": "Hindi nai-publish ng may-ari ng form ang form, at hindi ito available para sa mga pagsusumite.",
     "fecthingFormErrMsg": "Nagkaroon ng error sa pagkuha ng form na ito",
     "fecthingFormConsoleErrMsg": "Error sa paglo-load ng form schema {versionId}: {error}",

@@ -674,7 +674,7 @@
     "getUsersSubmissionsConsoleErrMsg": "Fehler beim Laden der Formularübermittlungsdaten {submissionId}: {error}",
     "multiDraftUploadSuccess": "Ihr mehrfacher Entwurfs-Upload war erfolgreich!",
     "readVersionErrMsg": "Kein Schema als Antwort. Versions-ID: {versionId}",
-    "readDraftErrMsg": "Kein Schema als Antwort. DraftId: {draftId}",
+    "readDraftErrMsg": "Kein Schema als Antwort. draftId: {draftId}",
     "alertRouteMsg": "Der Formulareigentümer hat das Formular nicht veröffentlicht und es ist nicht für Übermittlungen verfügbar.",
     "fecthingFormErrMsg": "Beim Abrufen dieses Formulars ist ein Fehler aufgetreten",
     "fecthingFormConsoleErrMsg": "Fehler beim Laden des Formularschemas {versionId}: {error}",
