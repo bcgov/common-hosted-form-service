@@ -33,7 +33,7 @@ export default {
   },
   methods: {
     ...mapActions(useFormStore, ['deleteSubmission']),
-    async deleteSubmission() {
+    async delSub() {
       await this.deleteSubmission(this.submissionId);
       this.showDeleteDialog = false;
       this.$emit('deleted');
@@ -71,7 +71,7 @@ export default {
       v-model="showDeleteDialog"
       type="CONTINUE"
       @close-dialog="showDeleteDialog = false"
-      @continue-dialog="deleteSubmission"
+      @continue-dialog="delSub"
     >
       <template #title>{{
         $t('trans.deleteSubmission.confirmDeletion')
