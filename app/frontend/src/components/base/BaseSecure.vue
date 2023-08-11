@@ -3,7 +3,7 @@
     <div v-if="isUser">
       <div v-if="admin && !isAdmin" class="text-center">
         <h1 class="my-8" :lang="lang">
-          {{ $t('trans.baseSecure.401UnAuthorized') }}(
+          {{ $t('trans.baseSecure.401UnAuthorized') }}
         </h1>
         <p :lang="lang">
           {{ $t('trans.baseSecure.401UnAuthorizedErrMsg') }}
@@ -14,7 +14,7 @@
         class="text-center"
       >
         <h1 class="my-8" :lang="lang">
-          {{ $t('trans.baseSecure.403Forbidden') }}(
+          {{ $t('trans.baseSecure.403Forbidden') }}
         </h1>
         <p :lang="lang">
           {{
@@ -29,7 +29,7 @@
     <!-- TODO: Figure out better way to alert when user lacks chefs user role -->
     <div v-else class="text-center">
       <h1 class="my-8" :lang="lang">
-        {{ $t('trans.baseSecure.401UnAuthorized') }}(
+        {{ $t('trans.baseSecure.401UnAuthorized') }}
       </h1>
       <p>
         <span v-html="$t('trans.baseSecure.401ErrorMsg')" :lang="lang" />
