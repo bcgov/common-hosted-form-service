@@ -674,7 +674,7 @@
     "getUsersSubmissionsConsoleErrMsg": "Помилка завантаження даних подання форми {submissionId}: {error}",
     "multiDraftUploadSuccess": "Ваше кілька чернеток завантажено успішно!",
     "readVersionErrMsg": "У відповіді немає схеми. VersionId: {versionId}",
-    "readDraftErrMsg": "У відповіді немає схеми. DraftId: {draftId}",
+    "readDraftErrMsg": "У відповіді немає схеми. draftId: {draftId}",
     "alertRouteMsg": "Власник форми не опублікував форму, і вона недоступна для подання.",
     "fecthingFormErrMsg": "Під час отримання цієї форми сталася помилка",
     "fecthingFormConsoleErrMsg": "Помилка завантаження схеми форми {versionId}: {error}",

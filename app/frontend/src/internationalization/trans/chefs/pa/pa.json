@@ -674,7 +674,7 @@
     "getUsersSubmissionsConsoleErrMsg": "ਫਾਰਮ ਸਬਮਿਸ਼ਨ ਡਾਟਾ ਲੋਡ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ {submissionId}: {error}",
     "multiDraftUploadSuccess": "ਤੁਹਾਡਾ ਮਲਟੀਪਲ ਡਰਾਫਟ ਅੱਪਲੋਡ ਸਫਲ ਰਿਹਾ ਹੈ!",
     "readVersionErrMsg": "ਜਵਾਬ ਵਿੱਚ ਕੋਈ ਸਕੀਮਾ ਨਹੀਂ। VersionId: {versionId}",
-    "readDraftErrMsg": "ਜਵਾਬ ਵਿੱਚ ਕੋਈ ਸਕੀਮਾ ਨਹੀਂ। DraftId: {draftId}",
+    "readDraftErrMsg": "ਜਵਾਬ ਵਿੱਚ ਕੋਈ ਸਕੀਮਾ ਨਹੀਂ। draftId: {draftId}",
     "alertRouteMsg": "ਫਾਰਮ ਮਾਲਕ ਨੇ ਫਾਰਮ ਪ੍ਰਕਾਸ਼ਿਤ ਨਹੀਂ ਕੀਤਾ ਹੈ, ਅਤੇ ਇਹ ਸਬਮਿਸ਼ਨ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।",
     "fecthingFormErrMsg": "ਇਸ ਫਾਰਮ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ",
     "fecthingFormConsoleErrMsg": "ਫਾਰਮ ਸਕੀਮਾ {versionId} ਲੋਡ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",

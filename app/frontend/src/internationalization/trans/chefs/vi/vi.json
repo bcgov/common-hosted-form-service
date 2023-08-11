@@ -674,7 +674,7 @@
     "getUsersSubmissionsConsoleErrMsg": "Lỗi khi tải dữ liệu gửi biểu mẫu {submissionId}: {error}",
     "multiDraftUploadSuccess": "Tải lên nhiều bản nháp của bạn đã thành công!",
     "readVersionErrMsg": "Không có lược đồ trong phản hồi. VersionId: {versionId}",
-    "readDraftErrMsg": "Không có lược đồ trong phản hồi. DraftId: {draftId}",
+    "readDraftErrMsg": "Không có lược đồ trong phản hồi. draftId: {draftId}",
     "alertRouteMsg": "Chủ sở hữu biểu mẫu chưa xuất bản biểu mẫu và biểu mẫu không có sẵn để gửi.",
     "fecthingFormErrMsg": "Đã xảy ra lỗi khi tìm nạp biểu mẫu này",
     "fecthingFormConsoleErrMsg": "Lỗi khi tải lược đồ biểu mẫu {versionId}: {error}",
