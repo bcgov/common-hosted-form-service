@@ -176,7 +176,7 @@
     "actions": "ਕਾਰਵਾਈਆਂ",
     "published": "ਪ੍ਰਕਾਸ਼ਿਤ",
     "unpublished": "ਅਪ੍ਰਕਾਸ਼ਿਤ",
-    "useVersionInfo": "ਨਵੇਂ ਸੰਸਕਰਣ ਲਈ ਆਧਾਰ ਵਜੋਂ ਵਰਜਨ {ਵਰਜਨ} ਦੀ ਵਰਤੋਂ ਕਰੋ",
+    "useVersionInfo": "ਨਵੇਂ ਸੰਸਕਰਣ ਲਈ ਆਧਾਰ ਵਜੋਂ ਵਰਜਨ {version} ਦੀ ਵਰਤੋਂ ਕਰੋ",
     "publishingVersionInfo": "ਇਹ ਤੁਹਾਡੇ ਫਾਰਮ ਦੇ ਸੰਸਕਰਣ {version} ਨੂੰ ਲਾਈਵ ਬਣਾ ਦੇਵੇਗਾ।"
   },
   "addOwner": {
@@ -870,7 +870,7 @@
       "fetchFormFieldsErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਖੇਤਰਾਂ ਦੀ ਸੂਚੀ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
       "fetchFormFieldsConsErrMsg": "ਫਾਰਮ {formId} ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "publishDraftErrMsg": "ਪ੍ਰਕਾਸ਼ਿਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
-      "publishDraftConsErrMsg": "${draftId} ਪ੍ਰਕਾਸ਼ਿਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: ${error}",
+      "publishDraftConsErrMsg": "{draftId} ਪ੍ਰਕਾਸ਼ਿਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "toggleVersnPublConsErrMsg": "toggleVersionPublish {versionId} {publish} ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "updateFormErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
       "updateFormConsErrMsg": "ਫਾਰਮ {id} ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
@@ -889,7 +889,7 @@
       "fecthSubmissnUsersErrMsg": "ਇਸ ਸਬਮਿਸ਼ਨ ਲਈ ਪ੍ਰਾਪਤਕਰਤਾ ਈਮੇਲ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
       "fecthSubmissnUsersConsErrMsg": "ਸਬਮਿਸ਼ਨ {formSubmissionId} ਲਈ ਪ੍ਰਾਪਤਕਰਤਾ ਈਮੇਲ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "fetchSubmissnErrMsg": "ਇਸ ਸਬਮਿਸ਼ਨ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ।",
-      "fetchSubmissnConsErrMsg": "ਸਬਮਿਸ਼ਨ {submissionId} ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: ${error}",
+      "fetchSubmissnConsErrMsg": "ਸਬਮਿਸ਼ਨ {submissionId} ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "fetchFormCSVExptFieldsErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਖੇਤਰਾਂ ਦੀ ਸੂਚੀ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
       "fetchFormCSVExptFieldsConsErrMsg": "ਫਾਰਮ {formId} ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "fetchSubmissnsErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਸਬਮਿਸ਼ਨਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
