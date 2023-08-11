@@ -668,7 +668,7 @@
     "submitFormWarningMsg": "Bạn có chắc chắn muốn gửi biểu mẫu của mình không?",
     "submit": "Nộp",
     "wantToSaveDraft": "Bạn có muốn lưu bản nháp không?",
-    "version": "Phiên bản: {version}",
+    "version": "Phiên bản: {phiên bản}",
     "formScheduleExpireMessage": "Gửi biểu mẫu không khả dụng vì thời gian gửi theo lịch trình đã hết hạn.",
     "getUsersSubmissionsErrMsg": "Đã xảy ra lỗi khi tìm nạp nội dung gửi cho biểu mẫu này",
     "getUsersSubmissionsConsoleErrMsg": "Lỗi khi tải dữ liệu gửi biểu mẫu {submissionId}: {error}",

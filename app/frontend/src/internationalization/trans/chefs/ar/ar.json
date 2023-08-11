@@ -681,7 +681,7 @@
     "savingDraftErrMsg": "حدث خطأ أثناء حفظ المسودة",
     "savingDraftConsoleErrMsg": "خطأ في حفظ المسودة. معرف التقديم: {submitId}. خطأ: {error}",
     "submissionsPreviewAlert": "الإرسال معطل أثناء معاينة النموذج",
-    "submissionsSubmitErrMsg": "خطأ في إرسال النموذج: {errors}",
+    "submissionsSubmitErrMsg": "خطأ في إرسال النموذج: {أخطاء}",
     "sendSubmissionErrMsg": "فشل الرد من نقطة نهاية الإرسال. رمز الاستجابة: {status}",
     "errMsg": "حدث خطأ أثناء إرسال هذا النموذج",
     "customEventAlert": "أحداث الزر المخصص غير مدعومة حتى الآن. نوع الحدث: {event}",
