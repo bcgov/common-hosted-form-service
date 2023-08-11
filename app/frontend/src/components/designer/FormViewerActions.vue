@@ -80,7 +80,10 @@ export default {
     </div>
     <div v-if="draftEnabled">
       <!-- Bulk button -->
-      <span v-if="allowSubmitterToUploadFile && !block" class="ml-2">
+      <span
+        v-if="allowSubmitterToUploadFile && !block && !readOnly"
+        class="ml-2"
+      >
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <v-btn

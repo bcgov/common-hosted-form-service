@@ -81,6 +81,8 @@ function initializeApp(kcSuccess = false, basePath = '/') {
 
   app.mount('#app');
 
+  axios.defaults.baseURL = import.meta.env.BASE_URL;
+
   NProgress.done();
 }
 

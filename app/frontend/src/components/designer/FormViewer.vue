@@ -71,6 +71,7 @@ export default {
       block: false,
       bulkFile: false,
       confirmSubmit: false,
+      confirmSubmitTimer: null,
       currentForm: {},
       doYouWantToSaveTheDraft: false,
       forceNewTabLinks: true,
@@ -247,6 +248,7 @@ export default {
             ? false
             : true;
         this.form = response.data.form;
+        this.versionIdToSubmitTo = response.data?.version?.id;
         if (!this.isDuplicate) {
           //As we know this is a Submission from existing one so we will wait for the latest version to be set on the getFormSchema
           this.formSchema = response.data.version.schema;
@@ -839,16 +841,19 @@ export default {
         // while 'confirm submit?' dialog is open..
         while (this.showSubmitConfirmDialog) {
           // await a promise that never resolves to block this thread
-          await new Promise((resolve) => setTimeout(resolve, 500));
+          await new Promise(
+            (resolve) => (this.confirmSubmitTimer = setTimeout(resolve, 500))
+          );
         }
         if (this.confirmSubmit) {
-          this.confirmSubmit = false; // clear for next attempt
+          clearTimeout(this.confirmSubmitTimer);
           next();
         } else {
           // Force re-render form.io to reset submit button state
           this.reRenderFormIo += 1;
         }
       } else {
+        clearTimeout(this.confirmSubmitTimer);
         next();
       }
     },
@@ -857,6 +862,7 @@ export default {
     async onSubmit(sub) {
       if (this.preview) {
         alert(i18n.t('trans.formViewer.submissionsPreviewAlert'));
+        this.confirmSubmit = false;
         return;
       }
 
@@ -907,6 +913,8 @@ export default {
       } catch (error) {
         console.error(error); // eslint-disable-line no-console
         errMsg = i18n.t('trans.formViewer.errMsg');
+      } finally {
+        this.confirmSubmit = false;
       }
       return errMsg;
     },
