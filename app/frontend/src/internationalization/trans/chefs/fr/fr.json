@@ -808,7 +808,7 @@
     "somethingWentWrong": "Erreur : quelque chose s'est mal passé... :("
   },
   "login": {
-    "authenticateWith": "Authentifiez-vous avec :",
+    "authenticateWith": "Authentifiez-vous avec :(",
     "alreadyLoggedIn": "Déjà connecté",
     "home": "Maison",
     "about": "À propos"

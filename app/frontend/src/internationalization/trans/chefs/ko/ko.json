@@ -668,7 +668,7 @@
     "submitFormWarningMsg": "양식을 제출하시겠습니까?",
     "submit": "제출하다",
     "wantToSaveDraft": "초안을 저장하시겠습니까?",
-    "version": "버전: {버전}",
+    "version": "버전: {version}",
     "formScheduleExpireMessage": "예정된 제출 기간이 만료되어 양식 제출이 불가능합니다.",
     "getUsersSubmissionsErrMsg": "이 양식에 대한 제출물을 가져오는 중에 오류가 발생했습니다.",
     "getUsersSubmissionsConsoleErrMsg": "양식 제출 데이터 {submissionId} 로드 오류: {error}",

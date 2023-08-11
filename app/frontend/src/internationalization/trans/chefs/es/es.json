@@ -688,7 +688,7 @@
     "formLoading": "¡Por favor espere mientras se carga el formulario!",
     "yes": "Sí",
     "no": "No",
-    "failedResSubmissn": "Respuesta fallida desde el punto final de envío. Código de respuesta: {satus}",
+    "failedResSubmissn": "Respuesta fallida desde el punto final de envío. Código de respuesta: {status}",
     "errSubmittingForm": "Ocurrió un error al enviar este formulario",
     "errorSavingFile": "Error al guardar archivos. Nombre de archivo: {fileName}. Error: {error}",
     "submittingDraftErrMsg": "Se produjo un error al guardar un borrador",
