@@ -176,8 +176,8 @@
     "actions": "Mga aksyon",
     "published": "Nai-publish",
     "unpublished": "Hindi na-publish",
-    "useVersionInfo": "Gamitin ang bersyon {bersyon} bilang batayan para sa isang bagong bersyon",
-    "publishingVersionInfo": "Gagawin nitong live ang Bersyon {bersyon} ng iyong form."
+    "useVersionInfo": "Gamitin ang bersyon {version} bilang batayan para sa isang bagong bersyon",
+    "publishingVersionInfo": "Gagawin nitong live ang Bersyon {version} ng iyong form."
   },
   "addOwner": {
     "infoA": "Dapat lang itong gawin kung sakaling ang kasalukuyang may-ari ng form ay hindi na aktibo o wala nang contact sa isang priority event. Kung hindi, ipagawa ito sa kasalukuyang May-ari o isang Administrator ng Team para sa form.",
@@ -870,7 +870,7 @@
       "fetchFormFieldsErrMsg": "May naganap na error habang kinukuha ang listahan ng mga field para sa form na ito.",
       "fetchFormFieldsConsErrMsg": "Error sa pagkuha ng form {formId}: {error}",
       "publishDraftErrMsg": "Nagkaroon ng error habang nagpa-publish.",
-      "publishDraftConsErrMsg": "Error sa pag-publish ng ${draftId}: ${error}",
+      "publishDraftConsErrMsg": "Error sa pag-publish ng {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "Error sa toggleVersionPublish {versionId} {publish}: {error}",
       "updateFormErrMsg": "May naganap na error habang ina-update ang mga setting para sa form na ito.",
       "updateFormConsErrMsg": "Error sa pag-update ng form {id}: {error}",
@@ -889,7 +889,7 @@
       "fecthSubmissnUsersErrMsg": "May naganap na error habang kinukuha ang email ng tatanggap para sa pagsusumiteng ito.",
       "fecthSubmissnUsersConsErrMsg": "Error sa pagkuha ng email ng tatanggap para sa pagsusumite {formSubmissionId}: {error}",
       "fetchSubmissnErrMsg": "May naganap na error habang kinukuha ang pagsusumiteng ito.",
-      "fetchSubmissnConsErrMsg": "Error sa pagkuha ng pagsusumite {submissionId}: ${error}",
+      "fetchSubmissnConsErrMsg": "Error sa pagkuha ng pagsusumite {submissionId}: {error}",
       "fetchFormCSVExptFieldsErrMsg": "May naganap na error habang kinukuha ang listahan ng mga field para sa form na ito.",
       "fetchFormCSVExptFieldsConsErrMsg": "Error sa pagkuha ng form {formId}: {error}",
       "fetchSubmissnsErrMsg": "May naganap na error habang kinukuha ang mga pagsusumite para sa form na ito.",
