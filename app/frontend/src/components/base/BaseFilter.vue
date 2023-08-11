@@ -34,7 +34,7 @@
               <v-icon>repeat</v-icon>
             </v-btn>
           </template>
-          <span>{{ $t('trans.baseFilter.resetColumns') }}</span>
+          <span :lang="lang">{{ $t('trans.baseFilter.resetColumns') }}</span>
         </v-tooltip>
       </div>
 
