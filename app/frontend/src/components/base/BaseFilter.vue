@@ -71,9 +71,6 @@
 <script>
 import { mapGetters } from 'vuex';
 import i18n from '@/internationalization';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faRepeat } from '@fortawesome/free-solid-svg-icons';
-library.add(faRepeat);
 
 export default {
   name: 'BaseFilter',
@@ -139,17 +136,7 @@ export default {
       tableData: this.inputData,
     };
   },
-  watch: {
-    selectedData() {
-      let filteredData = this.inputData.filter(
-        (item) =>
-          !this.selectedData.find(
-            (selectedItem) => selectedItem.text === item.text
-          )
-      );
-      this.tableData = this.selectedData.concat(filteredData);
-    },
-  },
+
   methods: {
     savingFilterData() {
       this.inputFilter = '';
