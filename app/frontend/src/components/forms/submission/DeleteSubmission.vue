@@ -74,7 +74,7 @@ export default {
       showDeleteDialog: false,
     };
   },
-  computed: mapGetters('form', ['form', 'lang']),
+  computed: mapGetters('form', ['form', 'lang', 'isRTL']),
   methods: {
     ...mapActions('form', ['deleteSubmission']),
     async delSub() {

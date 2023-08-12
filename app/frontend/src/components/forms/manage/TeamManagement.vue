@@ -20,7 +20,7 @@
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
-                @click="showColumnsDialog = true"
+                @click="onShowColumnDialog"
                 class="mx-1"
                 color="primary"
                 icon
@@ -355,6 +355,14 @@ export default {
           }
         });
       }
+    },
+    onShowColumnDialog() {
+      this.FILTER_HEADERS.sort(
+        (a, b) =>
+          this.PRESELECTED_DATA.findIndex((x) => x.text === b.text) -
+          this.PRESELECTED_DATA.findIndex((x) => x.text === a.text)
+      );
+      this.showColumnsDialog = true;
     },
     canRemoveOwner(userId) {
       if (
