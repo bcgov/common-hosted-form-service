@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <span :class="{ 'dir-rtl': isRTL }">
     <v-tooltip bottom>
       <template #activator="{ on, attrs }">
         <v-btn
@@ -13,7 +13,7 @@
           <v-icon>print</v-icon>
         </v-btn>
       </template>
-      <span>{{ $t('trans.printOptions.print') }}</span>
+      <span>{{ $t('trans.printOptions.print') }} </span>
     </v-tooltip>
 
     <v-dialog
@@ -21,7 +21,7 @@
       width="900"
       content-class="export-submissions-dlg"
     >
-      <v-card>
+      <v-card :class="{ 'dir-rtl': isRTL }">
         <v-card-title class="text-h5 pb-0">{{
           $t('trans.printOptions.downloadOptions')
         }}</v-card-title>
@@ -50,6 +50,8 @@
             {{ $t('trans.printOptions.uploadB') }}
           </p>
           <v-file-input
+            :class="{ label: isRTL }"
+            :style="isRTL ? { gap: '10px' } : null"
             counter
             :clearable="true"
             :label="$t('trans.printOptions.uploadTemplateFile')"
@@ -59,7 +61,14 @@
             mandatory
             show-size
             v-model="templateForm.files"
-          />
+          >
+            <template v-slot:prepend>
+              <span class="label">
+                <v-icon>attachment</v-icon>
+              </span>
+            </template>
+          </v-file-input>
+
           <v-card-actions>
             <v-tooltip top>
               <template #activator="{ on }">
@@ -86,7 +95,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { formService, utilsService } from '@/services';
 import { NotificationTypes } from '@/utils/constants';
 
@@ -110,10 +119,12 @@ export default {
       default: undefined,
     },
   },
+
   computed: {
     files() {
       return this.templateForm.files;
     },
+    ...mapGetters('form', ['isRTL']),
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),

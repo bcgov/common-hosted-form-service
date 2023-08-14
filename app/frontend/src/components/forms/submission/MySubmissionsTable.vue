@@ -1,13 +1,16 @@
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <v-skeleton-loader :loading="loading" type="heading">
-      <v-row class="mt-6" no-gutters>
+      <div
+        class="mt-6 d-flex flex-md-row justify-space-between flex-sm-row flex-xs-column-reverse"
+      >
         <!-- page title -->
-        <v-col cols="12" sm="6" order="2" order-sm="1">
+        <div>
           <h1>{{ $t('trans.mySubmissionsTable.previousSubmissions') }}</h1>
-        </v-col>
+          <h3>{{ formId ? form.name : 'All Forms' }}</h3>
+        </div>
         <!-- buttons -->
-        <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+        <div>
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
@@ -46,19 +49,17 @@
               $t('trans.mySubmissionsTable.createNewSubmission')
             }}</span>
           </v-tooltip>
-        </v-col>
-        <!-- form name -->
-        <v-col cols="12" order="3">
-          <h3>{{ formId ? form.name : 'All Forms' }}</h3>
-        </v-col>
-      </v-row>
+        </div>
+      </div>
     </v-skeleton-loader>
 
     <v-row no-gutters>
-      <v-spacer />
-      <v-col cols="12" sm="4">
+      <v-col cols="12">
         <!-- search input -->
-        <div class="submissions-search">
+        <div
+          class="submissions-search"
+          :class="isRTL ? 'float-left' : 'float-right'"
+        >
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
@@ -66,6 +67,7 @@
             single-line
             hide-details
             class="pb-5"
+            :class="{ label: isRTL }"
           />
         </div>
       </v-col>
@@ -152,6 +154,15 @@ export default {
           value: 'actions',
         },
       ],
+      tableFilterIgnore: [
+        { value: 'createdBy' },
+        { value: 'username' },
+        { value: 'status' },
+        { value: 'lateEntry' },
+        { value: 'lastEdited' },
+        { value: 'updatedBy' },
+        { value: 'submittedDate' },
+      ],
       showColumnsDialog: false,
       submissionTable: [],
       loading: true,
@@ -164,6 +175,7 @@ export default {
       'submissionList',
       'permissions',
       'formFields',
+      'isRTL',
     ]),
     ...mapGetters('auth', ['user']),
     DEFAULT_HEADERS() {
@@ -234,18 +246,20 @@ export default {
     },
 
     HEADERS() {
-      let headers = [...this.DEFAULT_HEADERS];
+      let headers = this.DEFAULT_HEADERS;
 
-      if (headers.length > 1) {
-        headers.splice(1, 0, ...this.filterData);
-      } else {
-        headers = headers.concat(this.filterData);
+      if (this.filterData.length > 0) {
+        headers = [...this.DEFAULT_HEADERS].filter(
+          (h) => !this.tableFilterIgnore.some((fd) => fd.value === h.value)
+        );
+
+        if (headers.length > 2) {
+          headers.splice(headers.length - 2, 0, ...this.filterData);
+        } else {
+          headers = headers.concat(this.filterData);
+        }
       }
-      return headers.filter(
-        (item, idx, inputArray) =>
-          inputArray.findIndex((arrayItem) => arrayItem.value === item.value) ==
-          idx
-      );
+      return headers;
     },
 
     showStatus() {
@@ -263,6 +277,11 @@ export default {
     onShowColumnDialog() {
       this.preSelectedData =
         this.filterData.length === 0 ? this.FILTER_HEADERS : this.filterData;
+      this.SELECT_COLUMNS_HEADERS.sort(
+        (a, b) =>
+          this.preSelectedData.findIndex((x) => x.text === b.text) -
+          this.preSelectedData.findIndex((x) => x.text === a.text)
+      );
       this.showColumnsDialog = true;
     },
 
@@ -358,7 +377,6 @@ export default {
     padding-right: 16px;
   }
 }
-
 .submissions-table {
   clear: both;
 }

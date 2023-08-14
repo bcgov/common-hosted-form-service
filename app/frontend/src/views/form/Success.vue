@@ -2,7 +2,7 @@
   <div>
     <FormViewer :submissionId="s" :readOnly="true" displayTitle>
       <template #alert="{ form }">
-        <div class="mb-5">
+        <div class="mb-5" :class="{ 'dir-rtl': isRTL }">
           <h1 class="mb-5">
             <v-icon large color="success">check_circle</v-icon>
             {{ $t('trans.sucess.sucessFormSubmissn') }}
@@ -46,6 +46,9 @@ export default {
     FormViewer,
     RequestReceipt,
   },
-  computed: mapGetters('auth', ['email']),
+  computed: {
+    ...mapGetters('auth', ['email']),
+    ...mapGetters('form', ['isRTL']),
+  },
 };
 </script>

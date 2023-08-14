@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <v-expansion-panels
       v-model="settingsPanel"
       flat
@@ -41,7 +41,11 @@
           </v-form>
 
           <div v-if="canEditForm && !formSettingsDisabled" class="mb-5">
-            <v-btn class="mr-5" color="primary" @click="updateSettings">
+            <v-btn
+              :class="isRTL ? 'ml-5' : 'mr-5'"
+              color="primary"
+              @click="updateSettings"
+            >
               <span>{{ $t('trans.manageForm.update') }}</span>
             </v-btn>
             <v-btn outlined @click="cancelSettingsEdit">
@@ -138,7 +142,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['apiKey', 'drafts', 'form', 'permissions']),
+    ...mapGetters('form', ['apiKey', 'drafts', 'form', 'permissions', 'isRTL']),
     canEditForm() {
       return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },

@@ -1,17 +1,27 @@
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <v-row no-gutters>
       <v-col cols="12" sm="8">
         <v-checkbox
           class="pl-3"
+          :class="isRTL ? 'float-right' : 'float-left'"
           v-model="activeOnly"
-          :label="$t('trans.adminFormsTable.showDeletedForms')"
           @click="refeshForms"
-        />
+        >
+          <template #label>
+            <span :class="{ 'mr-2': isRTL }">
+              {{ $t('trans.adminFormsTable.showDeletedForms') }}
+            </span>
+          </template>
+        </v-checkbox>
       </v-col>
+
       <v-col cols="12" sm="4">
         <!-- search input -->
-        <div class="submissions-search">
+        <div
+          class="submissions-search"
+          :class="isRTL ? 'float-left' : 'float-right'"
+        >
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
@@ -19,6 +29,7 @@
             single-line
             hide-details
             class="pb-5"
+            :class="{ 'dir-rtl': isRTL, label: isRTL }"
           />
         </div>
       </v-col>
@@ -85,6 +96,7 @@ export default {
   },
   computed: {
     ...mapGetters('admin', ['formList']),
+    ...mapGetters('form', ['isRTL']),
     calcHeaders() {
       return this.headers.filter(
         (x) => x.value !== 'updatedAt' || this.activeOnly

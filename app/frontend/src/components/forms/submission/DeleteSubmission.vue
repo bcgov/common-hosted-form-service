@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <span :class="{ 'dir-rtl': isRTL }">
     <v-tooltip bottom>
       <template #activator="{ on, attrs }">
         <v-btn
@@ -36,8 +36,8 @@
         {{ $t('trans.deleteSubmission.deleteWarning') }}
         {{
           isDraft
-            ? "$t('trans.deleteSubmission.drafts')"
-            : "$t('trans.deleteSubmission.formSubmission')"
+            ? $t('trans.deleteSubmission.drafts')
+            : $t('trans.deleteSubmission.formSubmission')
         }}?
       </template>
       <template #button-text-continue>
@@ -70,7 +70,7 @@ export default {
       showDeleteDialog: false,
     };
   },
-  computed: mapGetters('form', ['form']),
+  computed: mapGetters('form', ['form', 'isRTL']),
   methods: {
     ...mapActions('form', ['deleteSubmission']),
     async delSub() {

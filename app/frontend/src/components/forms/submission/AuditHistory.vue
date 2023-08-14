@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <span :class="{ 'dir-rtl': isRTL }">
     <v-tooltip bottom>
       <template #activator="{ on, attrs }">
         <v-btn
@@ -13,21 +13,24 @@
           <v-icon>history</v-icon>
         </v-btn>
       </template>
-      <span>{{ $t('trans.auditHistory.viewEditHistory') }}</span>
+      <span :class="{ 'dir-rtl': isRTL }">{{
+        $t('trans.auditHistory.viewEditHistory')
+      }}</span>
     </v-tooltip>
 
     <v-dialog v-model="dialog" width="900">
       <v-card>
-        <v-card-title class="text-h5 pb-0">{{
+        <v-card-title class="text-h5 pb-0" :class="{ 'dir-rtl': isRTL }">{{
           $t('trans.auditHistory.editHistory')
         }}</v-card-title>
         <v-card-text>
           <hr />
-          <p>
+          <p :class="{ 'dir-rtl': isRTL }">
             {{ $t('trans.auditHistory.auditLogMsg') }}
           </p>
 
           <v-data-table
+            :class="{ 'dir-rtl': isRTL }"
             :headers="headers"
             :items="history"
             :loading="loading"
@@ -52,7 +55,8 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
+
 import formService from '@/services/formService.js';
 
 export default {
@@ -80,6 +84,7 @@ export default {
         { text: this.$t('trans.auditHistory.date'), value: 'actionTimestamp' },
       ];
     },
+    ...mapGetters('form', ['isRTL']),
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),

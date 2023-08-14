@@ -2,7 +2,7 @@
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
     <div v-if="isFormScheduleExpired">
       <template>
-        <v-alert text prominent type="error">
+        <v-alert text prominent type="error" :class="{ 'dir-rtl': isRTL }">
           {{
             isLateSubmissionAllowed
               ? $t('trans.formViewer.lateFormSubmissions')
@@ -12,7 +12,11 @@
 
         <div v-if="isLateSubmissionAllowed">
           <v-col cols="3" md="2">
-            <v-btn color="primary" @click="isFormScheduleExpired = false">
+            <v-btn
+              color="primary"
+              @click="isFormScheduleExpired = false"
+              :class="{ 'dir-rtl': isRTL }"
+            >
               <span>{{ $t('trans.formViewer.createLateSubmission') }}</span>
             </v-btn>
           </v-col>
@@ -45,11 +49,12 @@
         <v-alert
           class="mt-2 mb-2"
           :value="saved || saving"
-          :class="
+          :class="[
             saving
               ? NOTIFICATIONS_TYPES.INFO.class
-              : NOTIFICATIONS_TYPES.SUCCESS.class
-          "
+              : NOTIFICATIONS_TYPES.SUCCESS.class,
+            { 'dir-rtl': isRTL },
+          ]"
           :color="
             saving
               ? NOTIFICATIONS_TYPES.INFO.color
@@ -62,16 +67,19 @@
           "
           transition="scale-transition"
         >
-          <div v-if="saving">
+          <div v-if="saving" :class="{ 'mr-2': isRTL }">
             <v-progress-linear indeterminate />
             {{ $t('trans.formViewer.saving') }}
           </div>
-          <div v-else>{{ $t('trans.formViewer.draftSaved') }}</div>
+          <div v-else :class="{ 'mr-2': isRTL }">
+            {{ $t('trans.formViewer.draftSaved') }}
+          </div>
         </v-alert>
 
-        <slot name="alert" v-bind:form="form" />
+        <slot name="alert" v-bind:form="form" :class="{ 'dir-rtl': isRTL }" />
 
         <BaseDialog
+          :class="{ 'dir-rtl': isRTL }"
           v-model="showSubmitConfirmDialog"
           type="CONTINUE"
           :enableCustomButton="canSaveDraft"
@@ -79,18 +87,20 @@
           @continue-dialog="continueSubmit"
         >
           <template #title>{{ $t('trans.formViewer.pleaseConfirm') }}</template>
-          <template #text>{{
-            $t('trans.formViewer.submitFormWarningMsg')
-          }}</template>
+          <template #text
+            ><span>{{
+              $t('trans.formViewer.submitFormWarningMsg')
+            }}</span></template
+          >
           <template #button-text-continue>
-            <span>{{ $t('trans.formViewer.submit') }}</span>
+            <span>{{ $t('trans.formViewer.submit') }} </span>
           </template>
         </BaseDialog>
         <v-alert
           v-if="isLoading && !bulkFile && submissionId == undefined"
           class="mt-2 mb-2"
           :value="isLoading"
-          :class="NOTIFICATIONS_TYPES.INFO.class"
+          :class="[NOTIFICATIONS_TYPES.INFO.class]"
           :color="NOTIFICATIONS_TYPES.INFO.color"
           :icon="NOTIFICATIONS_TYPES.INFO.icon"
           transition="scale-transition"
@@ -101,9 +111,12 @@
               color="blue-grey lighten-4"
               height="5"
             ></v-progress-linear>
-            {{ $t('trans.formViewer.formLoading') }}
+            <span :class="{ 'mr-2': isRTL }">
+              {{ $t('trans.formViewer.formLoading') }}
+            </span>
           </div>
         </v-alert>
+
         <FormViewerMultiUpload
           v-if="!isLoading && allowSubmitterToUploadFile && bulkFile"
           :response="sbdMessage"
@@ -133,12 +146,13 @@
           @render="onFormRender"
           :language="multiLanguage"
         />
-        <p v-if="version" class="text-right">
+        <p v-if="version" :class="{ 'text-left': isRTL }" class="mt-9">
           {{ $t('trans.formViewer.version', { version: version }) }}
         </p>
       </div>
     </div>
     <BaseDialog
+      :class="{ 'dir-rtl': isRTL }"
       v-model="doYouWantToSaveTheDraft"
       type="SAVEDDELETE"
       :enableCustomButton="false"
@@ -146,13 +160,17 @@
       @delete-dialog="no"
       @continue-dialog="yes"
     >
-      <template #title>{{ $t('trans.formViewer.pleaseConfirm') }}</template>
-      <template #text>{{ $t('trans.formViewer.wantToSaveDraft') }}</template>
+      <template #title
+        ><span> {{ $t('trans.formViewer.pleaseConfirm') }}</span></template
+      >
+      <template #text
+        ><span> {{ $t('trans.formViewer.wantToSaveDraft') }}</span></template
+      >
       <template #button-text-continue>
-        <span>{{ $t('trans.formViewer.yes') }}</span>
+        <span> {{ $t('trans.formViewer.yes') }}</span>
       </template>
       <template #button-text-delete>
-        <span>{{ $t('trans.formViewer.no') }}</span>
+        <span> {{ $t('trans.formViewer.no') }}</span>
       </template>
     </BaseDialog>
   </v-skeleton-loader>
@@ -256,7 +274,7 @@ export default {
       return this.$t('trans.formViewer.formScheduleExpireMessage');
     },
     ...mapGetters('auth', ['authenticated', 'token', 'tokenParsed', 'user']),
-    ...mapGetters('form', ['multiLanguage']),
+    ...mapGetters('form', ['multiLanguage', 'isRTL']),
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
     },
@@ -311,16 +329,38 @@ export default {
       function iterate(obj, stack, fields, propNeeded) {
         //Get property path from nested object
         for (let property in obj) {
-          if (typeof obj[property] == 'object') {
+          const innerObject = obj[property];
+
+          // When the form contains a Data Grid there will be an array that
+          // needs to be checked, and an array of properties to be unset.
+          if (Array.isArray(innerObject)) {
+            const fieldsArray = [];
+            for (let i = 0; i < innerObject.length; i++) {
+              const next = iterate(
+                innerObject[i],
+                stack + '.' + property + '[' + i + ']',
+                fields,
+                propNeeded
+              );
+
+              if (next) {
+                fieldsArray.push(next);
+              }
+            }
+
+            if (fieldsArray.length > 0) {
+              return fieldsArray;
+            }
+          } else if (typeof innerObject === 'object') {
             return iterate(
-              obj[property],
+              innerObject,
               stack + '.' + property,
               fields,
               propNeeded
             );
           } else if (propNeeded === property) {
             fields = fields + stack + '.' + property;
-            return fields;
+            return fields.replace(/^\./, '');
           }
         }
       }
@@ -340,8 +380,12 @@ export default {
           });
         } else if (fieldcomponent?.validate?.isUseForCopy === false) {
           const fieldPath = iterate(submission, '', '', fieldcomponent.key);
-          if (fieldPath) {
-            _.unset(submission, fieldPath.replace(/^\./, ''));
+          if (Array.isArray(fieldPath)) {
+            for (let path of fieldPath) {
+              _.unset(submission, path);
+            }
+          } else if (fieldPath) {
+            _.unset(submission, fieldPath);
           }
         }
       }

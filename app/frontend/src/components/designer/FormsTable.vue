@@ -1,19 +1,14 @@
 <template>
-  <div class="forms-table">
-    <v-row class="mt-6" no-gutters>
+  <div class="forms-table" :class="{ 'dir-rtl': isRTL }">
+    <div
+      class="mt-6 d-flex flex-md-row justify-space-between flex-sm-row flex-xs-column-reverse"
+    >
       <!-- page title -->
-      <v-col cols="12" sm="6" order="2" order-sm="1">
+      <div>
         <h1>{{ $t('trans.formsTable.myForms') }}</h1>
-      </v-col>
+      </div>
       <!-- buttons -->
-      <v-col
-        v-if="user.idp === ID_PROVIDERS.IDIR"
-        class="text-right"
-        cols="12"
-        sm="6"
-        order="1"
-        order-sm="2"
-      >
+      <div v-if="user.idp === ID_PROVIDERS.IDIR">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <router-link :to="{ name: 'FormCreate' }">
@@ -22,14 +17,14 @@
               </v-btn>
             </router-link>
           </template>
-          <span>{{ $t('trans.formsTable.createNewForm') }}</span>
+          <span>{{ $t('trans.formsTable.createNewForm') }} </span>
         </v-tooltip>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
 
     <v-row no-gutters>
       <v-spacer />
-      <v-col cols="12" sm="4">
+      <v-col cols="12">
         <!-- search input -->
         <div class="submissions-search">
           <v-text-field
@@ -39,6 +34,7 @@
             single-line
             hide-details
             class="pb-5"
+            :class="{ label: isRTL }"
           />
         </div>
       </v-col>
@@ -91,7 +87,7 @@
           :to="{ name: 'FormManage', query: { f: item.id } }"
         >
           <v-btn color="primary" text small>
-            <v-icon class="mr-1">settings</v-icon>
+            <v-icon :class="isRTL ? 'ml-1' : 'mr-1'">settings</v-icon>
             <span class="d-none d-sm-flex">{{
               $t('trans.formsTable.manage')
             }}</span>
@@ -103,7 +99,7 @@
           :to="{ name: 'FormSubmissions', query: { f: item.id } }"
         >
           <v-btn color="primary" text small>
-            <v-icon class="mr-1">list_alt</v-icon>
+            <v-icon :class="isRTL ? 'ml-1' : 'mr-1'">list_alt</v-icon>
             <span class="d-none d-sm-flex">{{
               $t('trans.formsTable.submissions')
             }}</span>
@@ -150,7 +146,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['formList']),
+    ...mapGetters('form', ['formList', 'isRTL']),
     ...mapGetters('auth', ['user']),
     headers() {
       return [

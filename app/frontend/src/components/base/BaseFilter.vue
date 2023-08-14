@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card :class="{ 'dir-rtl': isRTL }">
     <v-card-title class="text-h5 pb-0 titleWrapper">
       <slot name="filter-title"></slot>
     </v-card-title>
@@ -18,8 +18,8 @@
           filled
           dense
           class="mt-3"
-        >
-        </v-text-field>
+          :class="{ label: isRTL }"
+        />
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <v-btn
@@ -30,14 +30,7 @@
               v-bind="attrs"
               v-on="on"
             >
-              <font-awesome-icon
-                icon="fa-solid fa-repeat"
-                color="primary"
-                v-bind="attrs"
-                style="pointer-events: none"
-                v-on="on"
-                size="xl"
-              />
+              <v-icon>repeat</v-icon>
             </v-btn>
           </template>
           <span>Reset Columns</span>
@@ -62,7 +55,8 @@
       }}</v-btn>
       <v-btn
         @click="cancelFilterData"
-        class="mt-3 ml-3 primary--text"
+        class="mt-3 primary--text"
+        :class="isRTL ? 'mr-3' : 'ml-3'"
         outlined
         >{{ $t('trans.baseFilter.cancel') }}</v-btn
       >
@@ -71,10 +65,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import i18n from '@/internationalization';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faRepeat } from '@fortawesome/free-solid-svg-icons';
-library.add(faRepeat);
 
 export default {
   name: 'BaseFilter',
@@ -130,6 +122,9 @@ export default {
       default: i18n.t('trans.baseFilter.filter'),
     },
   },
+  computed: {
+    ...mapGetters('form', ['isRTL']),
+  },
   data() {
     return {
       selectedData: this.preselectedData,
@@ -137,17 +132,7 @@ export default {
       tableData: this.inputData,
     };
   },
-  watch: {
-    selectedData() {
-      let filteredData = this.inputData.filter(
-        (item) =>
-          !this.selectedData.find(
-            (selectedItem) => selectedItem.text === item.text
-          )
-      );
-      this.tableData = this.selectedData.concat(filteredData);
-    },
-  },
+
   methods: {
     savingFilterData() {
       this.inputFilter = '';
@@ -186,7 +171,6 @@ export default {
   font-family: BCSans !important;
   color: #000000 !important;
 }
-
 .hr {
   height: 1px;
   border: none;

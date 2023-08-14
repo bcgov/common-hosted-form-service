@@ -49,6 +49,8 @@
     "cancel": "Cancel"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "Press <kbd>enter</kbd> or <kbd>,</kbd> or <kbd>space</kbd> to add multiple email addresses",
+    "allowMultiDraft": "Allow <strong> multiple draft</strong> upload",
     "formTitle": "Form Title",
     "formDescription": "Form Description",
     "formAccess": "Form Access",
@@ -348,6 +350,7 @@
     "emailRequired": "E-mail is required"
   },
   "submissionsTable": {
+    "submissions": "Submissions",
     "submissionsTable": "SubmissionsTable",
     "selectColumns": "Select Columns",
     "manageForm": "Manage Form",
@@ -582,8 +585,19 @@
     "save": "Save",
     "description": "Description"
   },
+  "user": {
+    "root": {
+      "myForms": "MY FORMS",
+      "history": "HISTORY",
+      "user": "User"
+    }
+  },
   "proactiveHelpPreviewDialog": {
     "learnMore": "Learn more"
+  },
+  "preview": {
+    "preview": "Preview",
+    "previewToolTip": "This shows a preview of the form version design and behaviour as your submitters will see it. You cannot submit the form from this page."
   },
   "generalLayout": {
     "loadingText": "Loading... Please wait",
@@ -720,7 +734,7 @@
     "createCustomFormTitle": "Create custom forms with the CHEFS form builder",
     "createCustomFormSub1": "With CHEFS, you can create secure forms with an intuitive drag-and-drop interface. You can add form components, re-arrange them, and drop them into different layouts configurations.",
     "chefsHowToTitle": "CHEFS How-to Videos",
-    "chefsHowToSub": "Our Quickstart Guide will introduce you to some of the basic functions of CHEFS. Get started!",
+    "chefsHowToSub": "Our Quickstart Guide will introduce you to some of the basic functions of CHEFS.",
     "getStartedToChefs": "Get started using CHEFS",
     "createOnlineTitle": "Create online forms to collect information from your clients and improve your workflows.",
     "getStarted": "Get started"
@@ -740,6 +754,7 @@
   "addTeamMember": {
     "cantFindChefsUsers": "Can't find someone? They may not have logged into CHEFS.<br /> Kindly send them a link to CHEFS and ask them to log in.",
     "cancel": "Cancel",
+    "add": "Add",
     "mustSelectAUser": "You must select at least one role to add this user.",
     "addNewMember": "Add a New Member",
     "enterUsername": "Enter a name, e-mail, or username",
@@ -769,13 +784,15 @@
     "copyToClipboard": "Copy to Clipboard",
     "errCopyToClipboard": "Error attempting to copy to clipboard."
   },
-  "root": {
-    "admin": "Admin"
+  "admin": {
+    "root": {
+      "admin": "Admin"
+    }
   },
   "sucess": {
     "sucessFormSubmissn": "Your form has been submitted successfully",
     "keepRecord": "If you wish to keep a record of this submission, you can keep the following",
-    "confirmationId": "Confirmation ID:"
+    "confirmationId": "Confirmation ID"
   },
   "bcGovAlertBanner": {
     "defaultErrMsg": "Error: Something went wrong",
@@ -823,8 +840,7 @@
       "updCurrUserFormPrefConsErrMsg": "Error updating user form prefs using formID {formId}, and prefs {preferences}: {error}",
       "getCurrUserFormPrefErrMsg": "An error occurred while fetching your preferences for this form.",
       "getCurrUserFormPrefConsErrMsg": "Error getting user form prefs using formID {formId}: {error}",
-      "delCurrformNotiMsg": "Form \"{state.form.name}\" has been deleted successfully.",
-      "delCurrformErrMsg": "An error occurred while attempting to delete \"${state.form.name}\".",
+      "delCurrformNotiMsg": "Form {name} has been deleted successfully.",
       "delCurrFormConsErMsg": "Error deleting form {id}: {error}",
       "delDraftErrMsg": "An error occurred while deleting this draft.",
       "delDraftConsErrMsg": "Error deleting {draftId}: {error}",
