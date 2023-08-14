@@ -148,7 +148,9 @@
     "password": "کلمه عبور",
     "hideSecret": "پنهان کردن راز",
     "showSecret": "نمایش راز",
-    "key" : "کلید"
+    "key" : "کلید",
+    "saveSettingsErrMsg" : "هنگام تلاش برای به‌روزرسانی تنظیمات این فرم خطایی روی داد.",
+    "updateSettingsConsoleErrMsg" : "خطا در به‌روزرسانی تنظیمات فرم {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "سلب مسئولیت",

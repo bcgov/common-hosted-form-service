@@ -148,7 +148,9 @@
     "password": "密码",
     "hideSecret": "隐藏秘密",
     "showSecret": "显示秘密",
-    "key" : "钥匙"
+    "key" : "钥匙",
+    "saveSettingsErrMsg" : "尝试更新此表单的设置时发生错误。",
+    "updateSettingsConsoleErrMsg" : "更新表单 {formId} 设置时出错：{error}"
   },
   "apiKey": {
     "disclaimer": "免责声明",

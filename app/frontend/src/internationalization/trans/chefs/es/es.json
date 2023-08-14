@@ -148,7 +148,9 @@
     "password": "contraseña",
     "hideSecret": "Ocultar secreto",
     "showSecret": "Mostrar secreto",
-    "key" : "Llave"
+    "key" : "Llave",
+    "saveSettingsErrMsg" : "Se produjo un error al intentar actualizar la configuración de este formulario.",
+    "updateSettingsConsoleErrMsg" : "Error al actualizar la configuración del formulario {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "Descargo de responsabilidad",

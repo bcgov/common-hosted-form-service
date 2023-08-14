@@ -148,7 +148,9 @@
     "password": "كلمة المرور",
     "hideSecret": "إخفاء السر",
     "showSecret": "إظهار السر",
-    "key" : "مفتاح"
+    "key" : "مفتاح",
+    "saveSettingsErrMsg" : "حدث خطأ أثناء محاولة تحديث إعدادات هذا النموذج.",
+    "updateSettingsConsoleErrMsg" : "خطأ في تحديث إعدادات النموذج {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "تنصل",

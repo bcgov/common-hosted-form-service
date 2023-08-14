@@ -148,7 +148,9 @@
     "password": "पासवर्ड",
     "hideSecret": "गुप्त छुपाएं",
     "showSecret": "राज दिखाओ",
-    "key" : "चाबी"
+    "key" : "चाबी",
+    "saveSettingsErrMsg" : "इस फॉर्म के लिए सेटिंग्स को अद्यतन करने का प्रयास करते समय एक त्रुटि उत्पन्न हुई।",
+    "updateSettingsConsoleErrMsg" : "फ़ॉर्म {formId} के लिए सेटिंग अपडेट करने में त्रुटि: {त्रुटि}"
   },
   "apiKey": {
     "disclaimer": "अस्वीकरण",

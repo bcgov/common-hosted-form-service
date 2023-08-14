@@ -148,7 +148,9 @@
     "password": "mật khẩu",
     "hideSecret": "Ẩn bí mật",
     "showSecret": "Hiển thị bí mật",
-    "key" : "Chìa khóa"
+    "key" : "Chìa khóa",
+    "saveSettingsErrMsg" : "Đã xảy ra lỗi khi cố cập nhật cài đặt cho biểu mẫu này.",
+    "updateSettingsConsoleErrMsg" : "Lỗi khi cập nhật cài đặt cho biểu mẫu {formId} : {error}"
   },
   "apiKey": {
     "disclaimer": "từ chối trách nhiệm",

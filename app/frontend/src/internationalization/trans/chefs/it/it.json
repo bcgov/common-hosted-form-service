@@ -148,7 +148,9 @@
     "password": "parola d'ordine",
     "hideSecret": "Nascondi segreto",
     "showSecret": "Mostra Segreto",
-    "key" : "Chiave"
+    "key" : "Chiave",
+    "saveSettingsErrMsg" : "Si è verificato un errore durante il tentativo di aggiornare le impostazioni per questo modulo.",
+    "updateSettingsConsoleErrMsg" : "Errore durante l'aggiornamento delle impostazioni per il modulo {formId}: {errore}"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",

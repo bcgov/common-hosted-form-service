@@ -144,7 +144,9 @@
     "password": "password",
     "hideSecret": "Hide Secret",
     "showSecret": "Show Secret",
-    "key" : "Key"
+    "key" : "Key",
+    "saveSettingsErrMsg" : "An error occurred while attempting to update the settings for this form.",
+    "updateSettingsConsoleErrMsg" : "Error updating settings for form  {formId} : {error}"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",

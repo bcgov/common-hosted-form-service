@@ -148,7 +148,9 @@
     "password": "password",
     "hideSecret": "Itago ang Lihim",
     "showSecret": "Ipakita ang Lihim",
-    "key" : "Susi"
+    "key" : "Susi",
+    "saveSettingsErrMsg" : "May naganap na error habang sinusubukang i-update ang mga setting para sa form na ito.",
+    "updateSettingsConsoleErrMsg" : "Error sa pag-update ng mga setting para sa form {formId} : {error}"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",

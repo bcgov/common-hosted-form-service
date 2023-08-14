@@ -148,7 +148,9 @@
     "password": "ਪਾਸਵਰਡ",
     "hideSecret": "ਗੁਪਤ ਲੁਕਾਓ",
     "showSecret": "ਗੁਪਤ ਦਿਖਾਓ",
-    "key" : "ਕੁੰਜੀ"
+    "key" : "ਕੁੰਜੀ",
+    "saveSettingsErrMsg" : "ਇਸ ਫਾਰਮ ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+    "updateSettingsConsoleErrMsg" : "ਫਾਰਮ {formId} ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
   },
   "apiKey": {
     "disclaimer": "ਬੇਦਾਅਵਾ",

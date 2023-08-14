@@ -148,7 +148,9 @@
     "password": "パスワード",
     "hideSecret": "秘密を隠す",
     "showSecret": "シークレットを表示",
-    "key" : "鍵"
+    "key" : "鍵",
+    "saveSettingsErrMsg" : "このフォームの設定を更新しようとしたときにエラーが発生しました。",
+    "updateSettingsConsoleErrMsg" : "フォーム {formId} の設定更新中にエラーが発生しました: {error}"
   },
   "apiKey": {
     "disclaimer": "免責事項",

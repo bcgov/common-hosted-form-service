@@ -148,7 +148,9 @@
     "password": "пароль",
     "hideSecret": "Скрыть секрет",
     "showSecret": "Показать секрет",
-    "key" : "Ключ"
+    "key" : "Ключ",
+    "saveSettingsErrMsg" : "Произошла ошибка при попытке обновить настройки этой формы.",
+    "updateSettingsConsoleErrMsg" : "Ошибка при обновлении настроек для формы {formId} : {error}"
   },
   "apiKey": {
     "disclaimer": "Отказ от ответственности",

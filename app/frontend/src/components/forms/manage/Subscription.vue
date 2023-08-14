@@ -131,9 +131,11 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          message:
-            'An error occurred while attempting to update the settings for this form.',
-          consoleError: `Error updating settings for ${this.form.id}: ${error}`,
+          message: this.$t('trans.subscribeEvent.saveSettingsErrMsg'),
+          consoleError: this.$t('trans.subscribeEvent.updateSettingsConsoleErrMsg', {
+            formId: this.form.id,
+            error: error,
+          }),
         });
       }
     },
