@@ -50,7 +50,8 @@
     "totalVersions": "Gesamtversionen",
     "status": "Status",
     "update": "Aktualisieren",
-    "cancel": "Stornieren"
+    "cancel": "Stornieren",
+    "eventSubscription" : "Ereignisabonnement"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Drücken Sie die <kbd>Eingabetaste</kbd> oder <kbd></kbd> oder die <kbd>Leertaste</kbd>, um mehrere E-Mail-Adressen hinzuzufügen",
@@ -128,7 +129,28 @@
     "validInterval": "Dies sollte ein gültiges Intervall sein.",
     "fieldRequiredAndInterval": "Dieses Feld ist erforderlich und sollte ein Intervall sein.",
     "dateGrtOpenSubmissnDate": "Das Datum „Wiederholen bis“ sollte größer sein als das Datum der offenen Einreichung",
-    "public": "Öffentlich (anonym)"
+    "public": "Öffentlich (anonym)",
+    "allowEventSubscription": "Ereignisabonnement zulassen",
+    "eventSubscription": "Ereignisabonnement",
+    "validEndpointRequired": "Bitte geben Sie einen gültigen Endpunkt ein, beginnend mit https://",
+    "validBearerTokenRequired": "Bitte geben Sie ein gültiges Token ein. Beispiel: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+  },
+  "subscribeEvent": {
+    "eventType": "Ereignistyp",
+    "endpointUrl": "Endpunkt-URL",
+    "eventSubmission": "Eingabe",
+    "eventAssignment": "Zuordnung",
+    "eventStatusChange": "Statusänderung",
+    "endpointToken": "Endpunkttoken",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "Speichern",
+    "text": "Text",
+    "password": "Passwort",
+    "hideSecret": "Geheimnis verbergen",
+    "showSecret": "Geheimnis anzeigen",
+    "key" : "Taste",
+    "saveSettingsErrMsg" : "Beim Versuch, die Einstellungen für dieses Formular zu aktualisieren, ist ein Fehler aufgetreten.",
+    "updateSettingsConsoleErrMsg" : "Fehler beim Aktualisieren der Einstellungen für das Formular {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "Haftungsausschluss",
@@ -895,7 +917,12 @@
       "listFCPHErrMsg": "Beim Abrufen der Form Builder-Komponenten ist ein Fehler aufgetreten",
       "listFCPHConsErrMsg": "Fehler beim Abrufen der Formular-Builder-Komponenten: {error}",
       "downloadFileErrMsg": "Beim Herunterladen der Datei ist ein Fehler aufgetreten",
-      "downloadFileConsErrMsg": "Fehler beim Herunterladen der Datei: Fehler"
+      "downloadFileConsErrMsg": "Fehler beim Herunterladen der Datei: Fehler",
+      "readSubscriptionSettingsErrMsg": "Beim Versuch, die Abonnementeinstellungen abzurufen, ist ein Fehler aufgetreten.",
+      "readSubscriptionSettingsConsErrMsg": "Fehler beim Abrufen der Abonnementeinstellungen für das Formular {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "Die Abonnementeinstellungen für dieses Formular wurden gespeichert.",
+      "saveSubscriptionSettingsErrMsg": "Beim Versuch, die Abonnementeinstellungen zu speichern, ist ein Fehler aufgetreten.",
+      "saveSubscriptionSettingsConsErrMsg": "Fehler beim Speichern der Abonnementeinstellungen für das Formular {formId}: {error}"
     }
   }
 }

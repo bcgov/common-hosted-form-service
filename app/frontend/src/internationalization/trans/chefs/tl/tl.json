@@ -50,7 +50,8 @@
     "totalVersions": "Kabuuang Mga Bersyon",
     "status": "Katayuan",
     "update": "Update",
-    "cancel": "Kanselahin"
+    "cancel": "Kanselahin",
+    "eventSubscription": "Subscription sa Kaganapan"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Pindutin ang <kbd>enter</kbd> o <kbd>,</kbd> o <kbd>space</kbd> para magdagdag ng maraming email address",
@@ -128,7 +129,28 @@
     "validInterval": "Ito ay dapat na isang wastong agwat.",
     "fieldRequiredAndInterval": "Kinakailangan ang field na ito at dapat na isang pagitan.",
     "dateGrtOpenSubmissnDate": "Ulitin hanggang sa petsa ay dapat na mas malaki kaysa bukas na petsa ng pagsusumite",
-    "public": "Pampubliko (anonymous)"
+    "public": "Pampubliko (anonymous)",
+    "allowEventSubscription": "Payagan ang subscription sa kaganapan",
+    "eventSubscription": "Subscription sa Kaganapan",
+    "validEndpointRequired": "Mangyaring magpasok ng wastong endpoint na nagsisimula sa https://",
+    "validBearerTokenRequired": "Maglagay ng wastong halimbawa ng token ng maydala: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+  },
+  "subscribeEvent": {
+    "eventType": "Uri ng kaganapan",
+    "endpointUrl": "URL ng Endpoint",
+    "eventSubmission": "Pagsusumite",
+    "eventAssignment": "Assignment",
+    "eventStatusChange": "Pagbabago ng Katayuan",
+    "endpointToken": "Endpoint Token",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "I-save",
+    "text": "text",
+    "password": "password",
+    "hideSecret": "Itago ang Lihim",
+    "showSecret": "Ipakita ang Lihim",
+    "key" : "Susi",
+    "saveSettingsErrMsg" : "May naganap na error habang sinusubukang i-update ang mga setting para sa form na ito.",
+    "updateSettingsConsoleErrMsg" : "Error sa pag-update ng mga setting para sa form {formId} : {error}"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",
@@ -895,7 +917,13 @@
       "listFCPHErrMsg": "May naganap na error habang kinukuha ang mga bahagi ng tagabuo ng form",
       "listFCPHConsErrMsg": "Error sa pagkuha ng mga bahagi ng tagabuo ng form: {error}",
       "downloadFileErrMsg": "Nagkaroon ng error habang nagda-download ng file",
-      "downloadFileConsErrMsg": "Error sa pag-download ng file: error"
+      "downloadFileConsErrMsg": "Error sa pag-download ng file: error",
+      "readSubscriptionSettingsErrMsg": "Nagkaroon ng error habang sinusubukang kunin ang mga setting ng subscription.",
+      "readSubscriptionSettingsConsErrMsg": "Error sa pagkuha ng mga setting ng subscription para sa form {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "Nai-save na ang mga setting ng subscription para sa form na ito.",
+      "saveSubscriptionSettingsErrMsg": "May naganap na error habang sinusubukang i-save ang mga setting ng subscription.",
+      "saveSubscriptionSettingsConsErrMsg": "Error sa pag-save ng mga setting ng subscription para sa form {formId}: {error}"
+      
     }
   }
 }

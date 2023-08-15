@@ -50,7 +50,8 @@
     "totalVersions": "총 버전",
     "status": "상태",
     "update": "업데이트",
-    "cancel": "취소"
+    "cancel": "취소",
+    "eventSubscription": "イベントのサブスクリプション"
   },
   "formSettings": {
     "pressToAddMultiEmail": "여러 이메일 주소를 추가하려면 <kbd>enter</kbd> 또는 <kbd>,</kbd> 또는 <kbd>space</kbd>를 누르세요.",
@@ -128,7 +129,28 @@
     "validInterval": "유효한 간격이어야 합니다.",
     "fieldRequiredAndInterval": "이 필드는 필수이며 간격이어야 합니다.",
     "dateGrtOpenSubmissnDate": "날짜까지 반복은 공개 제출 날짜보다 커야 합니다.",
-    "public": "공개(익명)"
+    "public": "공개(익명)",
+    "allowEventSubscription": "イベントのサブスクリプションを許可する",
+    "eventSubscription": "イベントのサブスクリプション",
+    "validEndpointRequired": "で始まる有効なエンドポイントを入力してください https://",
+    "validBearerTokenRequired": "有効なベアラー トークンの例を入力してください: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+  },
+  "subscribeEvent": {
+    "eventType": "イベントタイプ",
+    "endpointUrl": "エンドポイント URL",
+    "eventSubmission": "提出",
+    "eventAssignment": "割り当て",
+    "eventStatusChange": "ステータス変更",
+    "endpointToken": "エンドポイントトークン",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "구하다",
+    "text": "텍스트",
+    "password": "비밀번호",
+    "hideSecret": "비밀 숨기기",
+    "showSecret": "비밀 표시",
+    "key" : "열쇠",
+    "saveSettingsErrMsg" : "이 양식에 대한 설정을 업데이트하는 동안 오류가 발생했습니다.",
+    "updateSettingsConsoleErrMsg" : "양식 {formId}에 대한 설정 업데이트 오류: {error}"
   },
   "apiKey": {
     "disclaimer": "부인 성명",
@@ -895,7 +917,12 @@
       "listFCPHErrMsg": "양식 작성기 구성 요소를 가져오는 동안 오류가 발생했습니다.",
       "listFCPHConsErrMsg": "양식 작성기 구성요소 가져오기 오류: {error}",
       "downloadFileErrMsg": "파일을 다운로드하는 동안 오류가 발생했습니다",
-      "downloadFileConsErrMsg": "파일 다운로드 오류: 오류"
+      "downloadFileConsErrMsg": "파일 다운로드 오류: 오류",
+      "readSubscriptionSettingsErrMsg": "구독 설정을 가져오는 중에 오류가 발생했습니다.",
+      "readSubscriptionSettingsConsErrMsg": "양식 {formId}에 대한 구독 설정을 가져오는 중에 오류가 발생했습니다: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "이 양식에 대한 구독 설정이 저장되었습니다.",
+      "saveSubscriptionSettingsErrMsg": "구독 설정을 저장하는 동안 오류가 발생했습니다.",
+      "saveSubscriptionSettingsConsErrMsg": "양식 {formId}에 대한 구독 설정 저장 오류: {error}"
     }
   }
 }

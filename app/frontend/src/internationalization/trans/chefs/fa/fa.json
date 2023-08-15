@@ -50,7 +50,8 @@
     "totalVersions": "مجموع نسخه ها",
     "status": "وضعیت",
     "update": "به روز رسانی",
-    "cancel": "لغو کنید"
+    "cancel": "لغو کنید",
+    "eventSubscription": "اشتراک رویداد"
   },
   "formSettings": {
     "pressToAddMultiEmail": "برای افزودن چندین آدرس ایمیل، <kbd>enter</kbd> یا <kbd>،</kbd> یا <kbd>space</kbd> را فشار دهید",
@@ -128,7 +129,28 @@
     "validInterval": "این باید یک فاصله زمانی معتبر باشد.",
     "fieldRequiredAndInterval": "این فیلد الزامی است و باید یک بازه باشد.",
     "dateGrtOpenSubmissnDate": "تکرار تا تاریخ باید بیشتر از تاریخ ارسال باز باشد",
-    "public": "عمومی (ناشناس)"
+    "public": "عمومی (ناشناس)",
+    "allowEventSubscription": "اجازه اشتراک رویداد",
+    "eventSubscription": "اشتراک رویداد",
+    "validEndpointRequired": "لطفاً یک نقطه پایان معتبر که با شروع آن شروع می شود وارد کنید https://",
+    "validBearerTokenRequired": "89abddfb-2cff-4fda-83e6-13221f0c3d4f یک نمونه توکن حامل معتبر وارد کنید"
+  },
+  "subscribeEvent": {
+    "eventType": "نوع رویدادe",
+    "endpointUrl": "نشانی وب نقطه پایانی",
+    "eventSubmission": "ارسال",
+    "eventAssignment": "وظیفه",
+    "eventStatusChange": "تغییر وضعیت",
+    "endpointToken": "نشانه نقطه پایانی",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "صرفه جویی",
+    "text": "متن",
+    "password": "کلمه عبور",
+    "hideSecret": "پنهان کردن راز",
+    "showSecret": "نمایش راز",
+    "key" : "کلید",
+    "saveSettingsErrMsg" : "هنگام تلاش برای به‌روزرسانی تنظیمات این فرم خطایی روی داد.",
+    "updateSettingsConsoleErrMsg" : "خطا در به‌روزرسانی تنظیمات فرم {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "سلب مسئولیت",
@@ -895,7 +917,13 @@
       "listFCPHErrMsg": "هنگام واکشی اجزای سازنده فرم خطایی روی داد",
       "listFCPHConsErrMsg": "خطا در دریافت اجزای فرم ساز: {error}",
       "downloadFileErrMsg": "هنگام دانلود فایل خطایی روی داد",
-      "downloadFileConsErrMsg": "خطا در دانلود فایل: خطا"
+      "downloadFileConsErrMsg": "خطا در دانلود فایل: خطا",
+      "readSubscriptionSettingsErrMsg": "هنگام تلاش برای واکشی تنظیمات اشتراک خطایی روی داد.",
+      "readSubscriptionSettingsConsErrMsg": "خطا در تنظیمات اشتراک برای فرم {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "تنظیمات اشتراک برای این فرم ذخیره شده است.",
+      "saveSubscriptionSettingsErrMsg": "هنگام تلاش برای ذخیره تنظیمات اشتراک خطایی روی داد.",
+      "saveSubscriptionSettingsConsErrMsg": "خطا در ذخیره تنظیمات اشتراک برای فرم {formId}: {error}"
+
     }
   }
 }

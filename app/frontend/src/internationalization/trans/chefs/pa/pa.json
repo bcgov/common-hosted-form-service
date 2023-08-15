@@ -50,7 +50,8 @@
     "totalVersions": "ਕੁੱਲ ਸੰਸਕਰਣ",
     "status": "ਸਥਿਤੀ",
     "update": "ਅੱਪਡੇਟ ਕਰੋ",
-    "cancel": "ਰੱਦ ਕਰੋ"
+    "cancel": "ਰੱਦ ਕਰੋ",
+    "eventSubscription": "د پیښې ګډون"
   },
   "formSettings": {
     "pressToAddMultiEmail": "ਕਈ ਈਮੇਲ ਪਤੇ ਜੋੜਨ ਲਈ <kbd>enter</kbd> ਜਾਂ <kbd>,</kbd> ਜਾਂ <kbd>space</kbd> ਦਬਾਓ।",
@@ -128,7 +129,28 @@
     "validInterval": "ਇਹ ਇੱਕ ਵੈਧ ਅੰਤਰਾਲ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।",
     "fieldRequiredAndInterval": "ਇਹ ਖੇਤਰ ਲੋੜੀਂਦਾ ਹੈ ਅਤੇ ਇੱਕ ਅੰਤਰਾਲ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।",
     "dateGrtOpenSubmissnDate": "ਓਪਨ ਸਪੁਰਦਗੀ ਮਿਤੀ ਤੋਂ ਵੱਧ ਹੋਣ ਤੱਕ ਦੁਹਰਾਓ",
-    "public": "ਜਨਤਕ (ਅਗਿਆਤ)"
+    "public": "ਜਨਤਕ (ਅਗਿਆਤ)",
+    "allowEventSubscription": "د پیښې ګډون ته اجازه ورکړئ",
+    "eventSubscription": "د پیښې ګډون",
+    "validEndpointRequired": "مهرباني وکړئ یو معتبر پای ټکی دننه کړئ چې پیل کیږي https://",
+    "validBearerTokenRequired": "89abddfb-2cff-4fda-83e6-13221f0c3d4f د اعتبار وړ وړونکي نښه مثال داخل کړئ"
+  },
+  "subscribeEvent": {
+    "eventType": "د پیښې ډول",
+    "endpointUrl": "د پای ټکی URL",
+    "eventSubmission": "سپارل",
+    "eventAssignment": "دنده",
+    "eventStatusChange": "د وضعیت بدلون",
+    "endpointToken": "د پای ټکی نښه",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "ਸੇਵ ਕਰੋ",
+    "text": "ਟੈਕਸਟ",
+    "password": "ਪਾਸਵਰਡ",
+    "hideSecret": "ਗੁਪਤ ਲੁਕਾਓ",
+    "showSecret": "ਗੁਪਤ ਦਿਖਾਓ",
+    "key" : "ਕੁੰਜੀ",
+    "saveSettingsErrMsg" : "ਇਸ ਫਾਰਮ ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+    "updateSettingsConsoleErrMsg" : "ਫਾਰਮ {formId} ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
   },
   "apiKey": {
     "disclaimer": "ਬੇਦਾਅਵਾ",
@@ -895,7 +917,12 @@
       "listFCPHErrMsg": "ਫਾਰਮ ਬਿਲਡਰ ਭਾਗਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
       "listFCPHConsErrMsg": "ਫਾਰਮ ਬਿਲਡਰ ਕੰਪੋਨੈਂਟਸ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "downloadFileErrMsg": "ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
-      "downloadFileConsErrMsg": "ਫਾਈਲ ਡਾਊਨਲੋਡ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: ਤਰੁੱਟੀ"
+      "downloadFileConsErrMsg": "ਫਾਈਲ ਡਾਊਨਲੋਡ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: ਤਰੁੱਟੀ",
+      "readSubscriptionSettingsErrMsg": "ਗਾਹਕੀ ਸੈਟਿੰਗਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "readSubscriptionSettingsConsErrMsg": "ਫਾਰਮ {formId} ਲਈ ਗਾਹਕੀ ਸੈਟਿੰਗਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}।",
+      "saveSubscriptionSettingsNotifyMsg": "ਇਸ ਫਾਰਮ ਲਈ ਗਾਹਕੀ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।",
+      "saveSubscriptionSettingsErrMsg": "ਗਾਹਕੀ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "saveSubscriptionSettingsConsErrMsg": "ਫਾਰਮ {formId} ਲਈ ਗਾਹਕੀ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
     }
   }
 }

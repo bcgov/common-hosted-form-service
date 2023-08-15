@@ -50,7 +50,8 @@
     "totalVersions": "Всего версий",
     "status": "Положение дел",
     "update": "Обновлять",
-    "cancel": "Отмена"
+    "cancel": "Отмена",
+    "eventSubscription": "Подписка на события"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Нажмите <kbd>enter</kbd> или <kbd>,</kbd> или <kbd>пробел</kbd>, чтобы добавить несколько адресов электронной почты.",
@@ -128,7 +129,28 @@
     "validInterval": "Это должен быть допустимый интервал.",
     "fieldRequiredAndInterval": "Это поле является обязательным и должно быть интервалом.",
     "dateGrtOpenSubmissnDate": "Повторяйте до тех пор, пока дата не должна быть больше, чем дата отправки.",
-    "public": "Публичный (анонимный)"
+    "public": "Публичный (анонимный)",
+    "allowEventSubscription": "Разрешить подписку на событие",
+    "eventSubscription": "Подписка на события",
+    "validEndpointRequired": "Введите допустимую конечную точку, начинающуюся с https://",
+    "validBearerTokenRequired": "Введите допустимый пример токена носителя: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+  },
+  "subscribeEvent": {
+    "eventType": "Тип события",
+    "endpointUrl": "URL-адрес конечной точки",
+    "eventSubmission": "Подчинение",
+    "eventAssignment": "Назначение",
+    "eventStatusChange": "Изменение статуса",
+    "endpointToken": "Токен конечной точки",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "Сохранять",
+    "text": "текст",
+    "password": "пароль",
+    "hideSecret": "Скрыть секрет",
+    "showSecret": "Показать секрет",
+    "key" : "Ключ",
+    "saveSettingsErrMsg" : "Произошла ошибка при попытке обновить настройки этой формы.",
+    "updateSettingsConsoleErrMsg" : "Ошибка при обновлении настроек для формы {formId} : {error}"
   },
   "apiKey": {
     "disclaimer": "Отказ от ответственности",
@@ -895,7 +917,12 @@
       "listFCPHErrMsg": "Произошла ошибка при загрузке компонентов конструктора форм.",
       "listFCPHConsErrMsg": "Ошибка при получении компонентов конструктора форм: {error}",
       "downloadFileErrMsg": "Произошла ошибка при загрузке файла",
-      "downloadFileConsErrMsg": "Ошибка загрузки файла: ошибка"
+      "downloadFileConsErrMsg": "Ошибка загрузки файла: ошибка",
+      "readSubscriptionSettingsErrMsg": "Произошла ошибка при попытке получить настройки подписки.",
+      "readSubscriptionSettingsConsErrMsg": "Ошибка получения настроек подписки для формы {formId}: {ошибка}.",
+      "saveSubscriptionSettingsNotifyMsg": "Настройки подписки для этой формы сохранены.",
+      "saveSubscriptionSettingsErrMsg": "Произошла ошибка при попытке сохранить настройки подписки.",
+      "saveSubscriptionSettingsConsErrMsg": "Ошибка сохранения настроек подписки для формы {formId}: {error}"
     }
   }
 }

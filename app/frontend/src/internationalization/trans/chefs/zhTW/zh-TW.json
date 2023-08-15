@@ -50,7 +50,8 @@
     "totalVersions": "總版本",
     "status": "地位",
     "update": "更新",
-    "cancel": "取消"
+    "cancel": "取消",
+    "eventSubscription": "活動訂閱"
   },
   "formSettings": {
     "pressToAddMultiEmail": "按 <kbd>enter</kbd> 或 <kbd>、</kbd> 或 <kbd>空格</kbd> 添加多個電子郵件地址",
@@ -128,7 +129,28 @@
     "validInterval": "這應該是一個有效的間隔。",
     "fieldRequiredAndInterval": "此字段是必需的並且應該是一個間隔。",
     "dateGrtOpenSubmissnDate": "重複直到日期應該大於開放提交日期",
-    "public": "公開（匿名）"
+    "public": "公開（匿名）",
+    "allowEventSubscription": "允許事件訂閱",
+    "eventSubscription": "活動訂閱",
+    "validEndpointRequired": "請輸入以以下開頭的有效端點 https://",
+    "validBearerTokenRequired": "輸入有效的不記名令牌示例: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+  },
+  "subscribeEvent": {
+    "eventType": "事件類型",
+    "endpointUrl": "端點 URL",
+    "eventSubmission": "提交",
+    "eventAssignment": "任務",
+    "eventStatusChange": "狀態改變",
+    "endpointToken": "端點令牌",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "節省",
+    "text": "文本",
+    "password": "密碼",
+    "hideSecret": "隱藏秘密",
+    "showSecret": "顯示秘密",
+    "key" : "鑰匙",
+    "saveSettingsErrMsg" : "嘗試更新此表單的設置時發生錯誤。",
+    "updateSettingsConsoleErrMsg" : "更新表單 {formId} 的設置時出錯：{error}"
   },
   "apiKey": {
     "disclaimer": "免責聲明",
@@ -895,7 +917,12 @@
       "listFCPHErrMsg": "獲取表單構建器組件時出錯",
       "listFCPHConsErrMsg": "獲取表單構建器組件時出錯：{error}",
       "downloadFileErrMsg": "下載文件時出錯",
-      "downloadFileConsErrMsg": "下載文件時出錯：error"
+      "downloadFileConsErrMsg": "下載文件時出錯：error",
+      "readSubscriptionSettingsErrMsg": "尝试获取订阅设置时出错。",
+      "readSubscriptionSettingsConsErrMsg": "获取表单 {formId} 的订阅设置时出错：{error}。",
+      "saveSubscriptionSettingsNotifyMsg": "此表单的订阅设置已保存。",
+      "saveSubscriptionSettingsErrMsg": "尝试保存订阅设置时出错。",
+      "saveSubscriptionSettingsConsErrMsg": "保存表单 {formId} 的订阅设置时出错：{error}"
     }
   }
 }

@@ -50,7 +50,8 @@
     "totalVersions": "Versions totales",
     "status": "Statut",
     "update": "Mise à jour",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "eventSubscription": "Abonnement à l'événement"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Appuyez sur <kbd>entrée</kbd> ou <kbd>,</kbd> ou <kbd>espace</kbd> pour ajouter plusieurs adresses e-mail",
@@ -128,7 +129,28 @@
     "validInterval": "Il doit s'agir d'un intervalle valide.",
     "fieldRequiredAndInterval": "Ce champ est obligatoire et doit être un intervalle.",
     "dateGrtOpenSubmissnDate": "La date de répétition jusqu'à doit être supérieure à la date de soumission ouverte",
-    "public": "Publique (anonyme)"
+    "public": "Publique (anonyme)",
+    "allowEventSubscription": "Autoriser l'abonnement aux événements",
+    "eventSubscription": "Abonnement à l'événement",
+    "validEndpointRequired": "Veuillez saisir un point de terminaison valide commençant par https://",
+    "validBearerTokenRequired": "Saisissez un exemple de jeton de support valide : 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+  },
+  "subscribeEvent": {
+    "eventType": "Type d'événement",
+    "endpointUrl": "URL du point de terminaison",
+    "eventSubmission": "Soumission",
+    "eventAssignment": "Mission",
+    "eventStatusChange": "Changement de statut",
+    "endpointToken": "Jeton de point de terminaison",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "Sauvegarder",
+    "text": "texte",
+    "password": "mot de passe",
+    "hideSecret": "Cacher le secret",
+    "showSecret": "Afficher le secret",
+    "key" : "Clé",
+    "saveSettingsErrMsg" : "Une erreur s'est produite lors de la tentative de mise à jour des paramètres de ce formulaire.",
+    "updateSettingsConsoleErrMsg" : "Erreur lors de la mise à jour des paramètres du formulaire {formId} : {error}"
   },
   "apiKey": {
     "disclaimer": "Clause de non-responsabilité",
@@ -895,7 +917,13 @@
       "listFCPHErrMsg": "Une erreur s'est produite lors de la récupération des composants du générateur de formulaires",
       "listFCPHConsErrMsg": "Erreur lors de l'obtention des composants du générateur de formulaire : {error}",
       "downloadFileErrMsg": "Une erreur s'est produite lors du téléchargement du fichier",
-      "downloadFileConsErrMsg": "Erreur lors du téléchargement du fichier : erreur"
+      "downloadFileConsErrMsg": "Erreur lors du téléchargement du fichier : erreur",
+      "readSubscriptionSettingsErrMsg": "Une erreur s'est produite lors de la tentative de récupération des paramètres d'abonnement.",
+      "readSubscriptionSettingsConsErrMsg": "Erreur lors de l'obtention des paramètres d'abonnement pour le formulaire {formId} : {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "Les paramètres d'abonnement pour ce formulaire ont été enregistrés.",
+      "saveSubscriptionSettingsErrMsg": "Une erreur s'est produite lors de la tentative d'enregistrement des paramètres d'abonnement.",
+      "saveSubscriptionSettingsConsErrMsg": "Erreur lors de l'enregistrement des paramètres d'abonnement pour le formulaire {formId} : {error}"
+      
     }
   }
 }
