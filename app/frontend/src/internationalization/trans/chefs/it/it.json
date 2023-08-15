@@ -856,7 +856,7 @@
       "getUserFormRolesErrmsg": "Si è verificato un errore durante il recupero dei dati utente per questo modulo.",
       "getUserFormRolesConsErrmsg": "Errore durante il recupero dei dati utente utilizzando formID {formId}: {error}",
       "updCurrUserFormPrefErrMsg": "Si è verificato un errore durante il salvataggio delle preferenze per questo modulo.",
-      "updCurrUserFormPrefConsErrMsg": "Errore durante l'aggiornamento delle preferenze del modulo utente utilizzando formID {formId} e preferenze {preferenze}: {errore}",
+      "updCurrUserFormPrefConsErrMsg": "Errore durante l'aggiornamento delle preferenze del modulo utente utilizzando formID {formId} e preferenze {preferences}: {error}",
       "getCurrUserFormPrefErrMsg": "Si è verificato un errore durante il recupero delle tue preferenze per questo modulo.",
       "getCurrUserFormPrefConsErrMsg": "Errore nell'ottenere le preferenze del modulo utente utilizzando formID {formId}: {error}",
       "delCurrformNotiMsg": "Il modulo {name} è stato eliminato con successo.",
