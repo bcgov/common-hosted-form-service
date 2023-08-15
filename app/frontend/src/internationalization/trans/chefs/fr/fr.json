@@ -462,11 +462,11 @@
     "yes": "Oui",
     "no": "Non",
     "multiDraftUploadSuccess": "Votre téléchargement de brouillons multiples a réussi !",
-    "failedResSubmissn": "Échec de la réponse du point de terminaison de soumission. Code de réponse : {statut}",
+    "failedResSubmissn": "Échec de la réponse du point de terminaison de soumission. Code de réponse : {status}",
     "errSubmittingForm": "Une erreur s'est produite lors de la soumission de ce formulaire",
     "errorSavingFile": "Erreur lors de l'enregistrement des fichiers. Nom de fichier : {fileName}. Erreur : {error}",
     "submittingDraftErrMsg": "Une erreur s'est produite lors de l'enregistrement d'un brouillon",
-    "submittingDraftConsErrMsg": "Erreur lors de l'enregistrement du brouillon. ID de soumission : {ID de soumission}. Erreur : {error}"
+    "submittingDraftConsErrMsg": "Erreur lors de l'enregistrement du brouillon. ID de soumission : {submissionId}. Erreur : {error}"
   },
   "notesPanel": {
     "addNewNote": "Ajouter une nouvelle note",
