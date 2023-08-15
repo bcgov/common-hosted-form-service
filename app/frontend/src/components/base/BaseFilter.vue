@@ -30,14 +30,7 @@
               v-bind="attrs"
               v-on="on"
             >
-              <font-awesome-icon
-                icon="fa-solid fa-repeat"
-                color="primary"
-                v-bind="attrs"
-                style="pointer-events: none"
-                v-on="on"
-                size="xl"
-              />
+              <v-icon>repeat</v-icon>
             </v-btn>
           </template>
           <span>Reset Columns</span>
@@ -74,9 +67,6 @@
 <script>
 import { mapGetters } from 'vuex';
 import i18n from '@/internationalization';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faRepeat } from '@fortawesome/free-solid-svg-icons';
-library.add(faRepeat);
 
 export default {
   name: 'BaseFilter',
@@ -142,17 +132,7 @@ export default {
       tableData: this.inputData,
     };
   },
-  watch: {
-    selectedData() {
-      let filteredData = this.inputData.filter(
-        (item) =>
-          !this.selectedData.find(
-            (selectedItem) => selectedItem.text === item.text
-          )
-      );
-      this.tableData = this.selectedData.concat(filteredData);
-    },
-  },
+
   methods: {
     savingFilterData() {
       this.inputFilter = '';
