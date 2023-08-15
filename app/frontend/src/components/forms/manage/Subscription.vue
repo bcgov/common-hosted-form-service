@@ -132,10 +132,13 @@ export default {
       } catch (error) {
         this.addNotification({
           message: this.$t('trans.subscribeEvent.saveSettingsErrMsg'),
-          consoleError: this.$t('trans.subscribeEvent.updateSettingsConsoleErrMsg', {
-            formId: this.form.id,
-            error: error,
-          }),
+          consoleError: this.$t(
+            'trans.subscribeEvent.updateSettingsConsoleErrMsg',
+            {
+              formId: this.form.id,
+              error: error,
+            }
+          ),
         });
       }
     },
