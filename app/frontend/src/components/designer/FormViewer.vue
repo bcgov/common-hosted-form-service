@@ -1058,6 +1058,7 @@ export default {
             <FormViewerActions
               :allow-submitter-to-upload-file="form.allowSubmitterToUploadFile"
               :block="block"
+              :bulk-file="bulkFile"
               :copy-existing-submission="form.enableCopyExistingSubmission"
               :draft-enabled="form.enableSubmitterDraft"
               :form-id="form.id"
