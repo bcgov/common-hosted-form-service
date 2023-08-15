@@ -840,7 +840,7 @@
       "getUserErrMsg": "Beim Abrufen dieses Benutzers ist ein Fehler aufgetreten.",
       "getUserConsErrMsg": "Fehler beim Abrufen der Daten des Administratorbenutzers {userId}: {error}",
       "storingFCHelpInfoErrMsg": "Beim Speichern der Hilfeinformationen zur Formularkomponente ist ein Fehler aufgetreten",
-      "storingFCHelpInfoConsErrMsg": "Fehler beim Speichern der Hilfeinformationen zur Formularkomponente: {Fehler}",
+      "storingFCHelpInfoConsErrMsg": "Fehler beim Speichern der Hilfeinformationen zur Formularkomponente: {error}",
       "gettingFCImgUrlErrMsg": "Beim Abrufen der Bild-URL ist ein Fehler aufgetreten",
       "gettingFCImgUrlConsErrMsg": "Fehler beim Abrufen der Bild-URL: {error}",
       "updatingFCStatusErrMsg": "Beim Aktualisieren des Veröffentlichungsstatus ist ein Fehler aufgetreten",
