@@ -150,7 +150,7 @@
     "showSecret": "Mostra Segreto",
     "key" : "Chiave",
     "saveSettingsErrMsg" : "Si è verificato un errore durante il tentativo di aggiornare le impostazioni per questo modulo.",
-    "updateSettingsConsoleErrMsg" : "Errore durante l'aggiornamento delle impostazioni per il modulo {formId}: {errore}"
+    "updateSettingsConsoleErrMsg" : "Errore durante l'aggiornamento delle impostazioni per il modulo {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",
