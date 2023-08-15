@@ -668,7 +668,7 @@
     "submitFormWarningMsg": "Sigurado ka bang gusto mong isumite ang iyong form?",
     "submit": "Ipasa",
     "wantToSaveDraft": "Gusto mo bang i-save ang draft?",
-    "version": "Bersyon: {bersyon}",
+    "version": "Bersyon: {version}",
     "formScheduleExpireMessage": "Ang pagsusumite ng form ay hindi magagamit dahil ang nakatakdang panahon ng pagsusumite ay nag-expire na.",
     "getUsersSubmissionsErrMsg": "Nagkaroon ng error sa pagkuha ng pagsusumite para sa form na ito",
     "getUsersSubmissionsConsoleErrMsg": "Error sa paglo-load ng data ng pagsusumite ng form {submissionId}: {error}",

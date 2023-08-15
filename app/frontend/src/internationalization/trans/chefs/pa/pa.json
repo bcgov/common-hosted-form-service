@@ -176,7 +176,7 @@
     "actions": "ਕਾਰਵਾਈਆਂ",
     "published": "ਪ੍ਰਕਾਸ਼ਿਤ",
     "unpublished": "ਅਪ੍ਰਕਾਸ਼ਿਤ",
-    "useVersionInfo": "ਨਵੇਂ ਸੰਸਕਰਣ ਲਈ ਆਧਾਰ ਵਜੋਂ ਵਰਜਨ {ਵਰਜਨ} ਦੀ ਵਰਤੋਂ ਕਰੋ",
+    "useVersionInfo": "ਨਵੇਂ ਸੰਸਕਰਣ ਲਈ ਆਧਾਰ ਵਜੋਂ ਵਰਜਨ {version} ਦੀ ਵਰਤੋਂ ਕਰੋ",
     "publishingVersionInfo": "ਇਹ ਤੁਹਾਡੇ ਫਾਰਮ ਦੇ ਸੰਸਕਰਣ {version} ਨੂੰ ਲਾਈਵ ਬਣਾ ਦੇਵੇਗਾ।"
   },
   "addOwner": {
