@@ -93,7 +93,6 @@ const service = {
   /**
    * Help function to make header column order same as it goes in form
    */
-
   mapOrder: (array, order) => {
     let result = [];
     let helpMap = {};
@@ -134,7 +133,6 @@ const service = {
     const latestFormDesign = await service._readLatestFormSchema(form.id, version);
 
     const fieldNames = await service._readSchemaFields(latestFormDesign, data);
-    //console.log(fieldNames);
     // get meta properties in 'form.<child.key>' string format
     const metaKeys = Object.keys(data.length > 0 && data[0].form);
     const metaHeaders = metaKeys.map((x) => 'form.' + x);
