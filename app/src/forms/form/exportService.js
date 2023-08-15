@@ -97,12 +97,19 @@ const service = {
     let result = [];
     let helpMap = {};
     array.map((ar) => {
-      if (ar.search(/\.\d*\./) !== -1) {
+      if (ar.search(/\.\d*\./) !== -1 || ar.search(/\.\d*$/) !== -1) {
         if (helpMap[ar.replace(/\.\d*\./gi, '.')] && Array.isArray(helpMap[ar.replace(/\.\d*\./gi, '.')])) {
           helpMap[ar.replace(/\.\d*\./gi, '.')].push(ar);
           Object.assign(helpMap, { [ar.replace(/\.\d*\./gi, '.')]: helpMap[ar.replace(/\.\d*\./gi, '.')] });
+        } else if (helpMap[ar.replace(/\.\d*$/gi, '')] && Array.isArray(helpMap[ar.replace(/\.\d*$/gi, '')])) {
+          helpMap[ar.replace(/\.\d*$/gi, '')].push(ar);
+          Object.assign(helpMap, { [ar.replace(/\.\d*$/gi, '')]: helpMap[ar.replace(/\.\d*$/gi, '')] });
         } else {
-          Object.assign(helpMap, { [ar.replace(/\.\d*\./gi, '.')]: [ar] });
+          if (ar.search(/\.\d*\./) !== -1) {
+            Object.assign(helpMap, { [ar.replace(/\.\d*\./gi, '.')]: [ar] });
+          } else if (ar.search(/\.\d*$/) !== -1) {
+            Object.assign(helpMap, { [ar.replace(/\.\d*$/gi, '')]: [ar] });
+          }
         }
       }
     });
@@ -112,12 +119,10 @@ const service = {
       }
     });
     order.map((ord) => {
-      if (array.includes(ord)) {
+      if (array.includes(ord) && !helpMap[ord]) {
         result.push(ord);
-      } else {
-        if (helpMap[ord]) {
-          helpMap[ord].map((h) => result.push(h));
-        }
+      } else if (helpMap[ord]) {
+        helpMap[ord].map((h) => result.push(h));
       }
     });
     return result;
@@ -147,7 +152,7 @@ const service = {
       // if we generate single row headers we need to keep in mind of possible multi children nested data thus do flattening
       if (singleRow) {
         flattenSubmissionHeaders = Object.keys(nestedObjectsUtil.flatten(data));
-        // '0**.field_name' remoing starting digits from flaten object properies to get unique fields after
+        // '0**.field_name' removing starting digits from flaten object properies to get unique fields after
         flattenSubmissionHeaders = flattenSubmissionHeaders.map((header) => header.replace(/^\d*\./gi, ''));
         // getting unique values
         flattenSubmissionHeaders = [...new Set(flattenSubmissionHeaders)];
@@ -155,7 +160,11 @@ const service = {
         flattenSubmissionHeaders = Array.from(submissionHeaders(data[0]));
       }
       // apply help function to make header column order same as it goes in form
-      flattenSubmissionHeaders = service.mapOrder(flattenSubmissionHeaders, fieldNames);
+      const flattenSubmissionHeadersOrdered = service.mapOrder(flattenSubmissionHeaders, fieldNames);
+      // we have 1 case when if field is DataGridMap type it'd not included into sorted flattened array,
+      // thus we add it manually from original flatten array
+      const dataGridFields = flattenSubmissionHeaders.filter((x) => !flattenSubmissionHeadersOrdered.includes(x));
+      dataGridFields.map((dgf) => flattenSubmissionHeaders.push(dgf));
       formSchemaheaders = formSchemaheaders.concat(flattenSubmissionHeaders.filter((item) => formSchemaheaders.indexOf(item) < 0));
     }
 
