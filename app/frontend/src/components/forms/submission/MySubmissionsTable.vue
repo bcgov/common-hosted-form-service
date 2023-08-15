@@ -154,6 +154,15 @@ export default {
           value: 'actions',
         },
       ],
+      tableFilterIgnore: [
+        { value: 'createdBy' },
+        { value: 'username' },
+        { value: 'status' },
+        { value: 'lateEntry' },
+        { value: 'lastEdited' },
+        { value: 'updatedBy' },
+        { value: 'submittedDate' },
+      ],
       showColumnsDialog: false,
       submissionTable: [],
       loading: true,
@@ -237,18 +246,20 @@ export default {
     },
 
     HEADERS() {
-      let headers = [...this.DEFAULT_HEADERS];
+      let headers = this.DEFAULT_HEADERS;
 
-      if (headers.length > 1) {
-        headers.splice(1, 0, ...this.filterData);
-      } else {
-        headers = headers.concat(this.filterData);
+      if (this.filterData.length > 0) {
+        headers = [...this.DEFAULT_HEADERS].filter(
+          (h) => !this.tableFilterIgnore.some((fd) => fd.value === h.value)
+        );
+
+        if (headers.length > 2) {
+          headers.splice(headers.length - 2, 0, ...this.filterData);
+        } else {
+          headers = headers.concat(this.filterData);
+        }
       }
-      return headers.filter(
-        (item, idx, inputArray) =>
-          inputArray.findIndex((arrayItem) => arrayItem.value === item.value) ==
-          idx
-      );
+      return headers;
     },
 
     showStatus() {
@@ -266,6 +277,11 @@ export default {
     onShowColumnDialog() {
       this.preSelectedData =
         this.filterData.length === 0 ? this.FILTER_HEADERS : this.filterData;
+      this.SELECT_COLUMNS_HEADERS.sort(
+        (a, b) =>
+          this.preSelectedData.findIndex((x) => x.text === b.text) -
+          this.preSelectedData.findIndex((x) => x.text === a.text)
+      );
       this.showColumnsDialog = true;
     },
 
