@@ -4,6 +4,7 @@ import { mapState } from 'pinia';
 import FormViewer from '~/components/designer/FormViewer.vue';
 import RequestReceipt from '~/components/forms/RequestReceipt.vue';
 import { useAuthStore } from '~/store/auth';
+import { useFormStore } from '~/store/form';
 
 export default {
   components: {
@@ -18,6 +19,7 @@ export default {
   },
   computed: {
     ...mapState(useAuthStore, ['email']),
+    ...mapState(useFormStore, ['form']),
   },
 };
 </script>

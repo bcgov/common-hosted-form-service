@@ -13,7 +13,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    isSingleSubmission: {
+    bulkFile: {
       type: Boolean,
       default: false,
     },
@@ -97,7 +97,7 @@ export default {
             </v-btn>
           </template>
           <span>{{
-            isSingleSubmission
+            bulkFile
               ? $t('trans.formViewerActions.switchSingleSubmssn')
               : $t('trans.formViewerActions.switchMultiSubmssn')
           }}</span>
@@ -105,10 +105,7 @@ export default {
       </span>
 
       <!-- Save a draft -->
-      <span
-        v-if="canSaveDraft && draftEnabled && isSingleSubmission"
-        class="ml-2"
-      >
+      <span v-if="canSaveDraft && draftEnabled && !bulkFile" class="ml-2">
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <v-btn

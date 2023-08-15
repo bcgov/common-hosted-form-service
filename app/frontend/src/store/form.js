@@ -117,7 +117,7 @@ export const useFormStore = defineStore('form', {
         });
       }
     },
-    async deleteDraft(formId, draftId) {
+    async deleteDraft({ formId, draftId }) {
       try {
         await formService.deleteDraft(formId, draftId);
       } catch (error) {

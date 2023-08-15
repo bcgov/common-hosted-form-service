@@ -128,7 +128,7 @@ export default {
     },
 
     filterObject(_itemTitle, queryText, item) {
-      return Object.values(item)
+      return Object.values(item.raw)
         .filter((v) => v)
         .some((v) =>
           v.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
