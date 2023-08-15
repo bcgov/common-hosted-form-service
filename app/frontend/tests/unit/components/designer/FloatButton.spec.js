@@ -11,7 +11,7 @@ localVue.use(VueRouter);
 localVue.use(Vuex);
 
 describe('FloatButton.vue', () => {
-  const mockMultiLanguageGetter = jest.fn();
+  const mockLangGetter = jest.fn();
   let store;
   beforeEach(() => {
     store = new Vuex.Store({
@@ -19,7 +19,7 @@ describe('FloatButton.vue', () => {
         form: {
           namespaced: true,
           getters: {
-            multiLanguage: mockMultiLanguageGetter
+            lang: mockLangGetter
           },
         }
       }

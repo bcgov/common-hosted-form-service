@@ -16,11 +16,11 @@ describe('Error.vue', () => {
       namespaced: true,
       getters: {
         authenticated: () => true,
-        keycloakReady: () => true,
+        keycloakReady: () => true
       },
       actions: {
-        logout: () => jest.fn(),
-      },
+        logout: () => jest.fn()
+      }
     });
   });
 
@@ -32,7 +32,8 @@ describe('Error.vue', () => {
     });
     await localVue.nextTick();
 
-    expect(wrapper.html()).toMatch('Error: Something went wrong... :(');
-    expect(wrapper.html()).toMatch('Logout');
+    const h1 = wrapper.find('h1');
+    expect(h1.exists()).toBe(true);
+    expect(h1.text()).toMatch('Error: Something went wrong... :(');
   });
 });

@@ -3,10 +3,11 @@
     class="submissions-table"
     :headers="headers"
     :items="versionList"
+    :lang="lang"
   >
     <!-- Version  -->
     <template #[`item.version`]="{ item }">
-      <span>
+      <span :lang="lang">
         {{
           $t('trans.adminVersions.version', {
             versionNo: item.version,
@@ -17,7 +18,7 @@
 
     <!-- Status  -->
     <template #[`item.status`]="{ item }">
-      <label>{{
+      <label :lang="lang">{{
         item.published
           ? $t('trans.adminVersions.published')
           : $t('trans.adminVersions.unpublished')
@@ -51,7 +52,9 @@
               <v-icon>get_app</v-icon>
             </v-btn>
           </template>
-          <span>{{ $t('trans.adminVersions.exportDesign') }} </span>
+          <span :lang="lang"
+            >{{ $t('trans.adminVersions.exportDesign') }}
+          </span>
         </v-tooltip>
       </span>
     </template>
@@ -109,6 +112,7 @@ export default {
   },
   computed: {
     ...mapGetters('admin', ['form']),
+    ...mapGetters('form', ['lang']),
     versionList() {
       return this.form ? this.form.versions : [];
     },
