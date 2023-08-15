@@ -90,6 +90,40 @@ const service = {
     return await flattenComponents(schema.components);
   },
 
+  /**
+   * Help function to make header column order same as it goes in form
+   */
+
+  mapOrder: (array, order) => {
+    let result = [];
+    let helpMap = {};
+    array.map((ar) => {
+      if (ar.search(/\.\d*\./) !== -1) {
+        if (helpMap[ar.replace(/\.\d*\./gi, '.')] && Array.isArray(helpMap[ar.replace(/\.\d*\./gi, '.')])) {
+          helpMap[ar.replace(/\.\d*\./gi, '.')].push(ar);
+          Object.assign(helpMap, { [ar.replace(/\.\d*\./gi, '.')]: helpMap[ar.replace(/\.\d*\./gi, '.')] });
+        } else {
+          Object.assign(helpMap, { [ar.replace(/\.\d*\./gi, '.')]: [ar] });
+        }
+      }
+    });
+    array.map((ar) => {
+      if (ar.substring(0, 5) === 'form.') {
+        result.push(ar);
+      }
+    });
+    order.map((ord) => {
+      if (array.includes(ord)) {
+        result.push(ord);
+      } else {
+        if (helpMap[ord]) {
+          helpMap[ord].map((h) => result.push(h));
+        }
+      }
+    });
+    return result;
+  },
+
   _buildCsvHeaders: async (form, data, version, fields, singleRow = false) => {
     /**
      * get column order to match field order in form design
@@ -100,6 +134,7 @@ const service = {
     const latestFormDesign = await service._readLatestFormSchema(form.id, version);
 
     const fieldNames = await service._readSchemaFields(latestFormDesign, data);
+    //console.log(fieldNames);
     // get meta properties in 'form.<child.key>' string format
     const metaKeys = Object.keys(data.length > 0 && data[0].form);
     const metaHeaders = metaKeys.map((x) => 'form.' + x);
@@ -121,6 +156,8 @@ const service = {
       } else {
         flattenSubmissionHeaders = Array.from(submissionHeaders(data[0]));
       }
+      // apply help function to make header column order same as it goes in form
+      flattenSubmissionHeaders = service.mapOrder(flattenSubmissionHeaders, fieldNames);
       formSchemaheaders = formSchemaheaders.concat(flattenSubmissionHeaders.filter((item) => formSchemaheaders.indexOf(item) < 0));
     }
 
