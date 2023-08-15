@@ -352,9 +352,12 @@ export default {
         for (let property in obj) {
           const innerObject = obj[property];
 
-          // When the form contains a Data Grid there will be an array that
-          // needs to be checked, and an array of properties to be unset.
-          if (Array.isArray(innerObject)) {
+          if (propNeeded === property) {
+            fields = fields + stack + '.' + property;
+            return fields.replace(/^\./, '');
+          } else if (Array.isArray(innerObject)) {
+            // When the form contains a Data Grid there will be an array that
+            // needs to be checked, and an array of properties to be unset.
             const fieldsArray = [];
             for (let i = 0; i < innerObject.length; i++) {
               const next = iterate(
@@ -379,9 +382,6 @@ export default {
               fields,
               propNeeded
             );
-          } else if (propNeeded === property) {
-            fields = fields + stack + '.' + property;
-            return fields.replace(/^\./, '');
           }
         }
       }
@@ -1202,9 +1202,10 @@ export default {
   },
   async created() {
     if (this.submissionId && this.isDuplicate) {
-      //Run when make new submission from existing one called.
+      // Run when make new submission from existing one called. Get the
+      // published version of form, and then get the submission data.
+      await this.getFormSchema();
       await this.getFormData();
-      await this.getFormSchema(); //We need this to be called as well, because we need latest version of form
     } else if (this.submissionId && !this.isDuplicate) {
       await this.getFormData();
     } else {
