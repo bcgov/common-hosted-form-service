@@ -9,7 +9,7 @@
           @click="refeshForms"
         >
           <template #label>
-            <span :class="{ 'mr-2': isRTL }">
+            <span :class="{ 'mr-2': isRTL }" :lang="lang">
               {{ $t('trans.adminFormsTable.showDeletedForms') }}
             </span>
           </template>
@@ -25,6 +25,7 @@
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
+            :lang="lang"
             :label="$t('trans.adminFormsTable.search')"
             single-line
             hide-details
@@ -43,6 +44,7 @@
       :items="formList"
       :search="search"
       :loading="loading"
+      :lang="lang"
       :loading-text="$t('trans.adminFormsTable.loadingText')"
       :no-data-text="$t('trans.adminFormsTable.noDataText')"
     >
@@ -56,7 +58,7 @@
         <router-link :to="{ name: 'AdministerForm', query: { f: item.id } }">
           <v-btn color="primary" text small>
             <v-icon class="mr-1">build_circle</v-icon>
-            <span class="d-none d-sm-flex">{{
+            <span class="d-none d-sm-flex" :lang="lang">{{
               $t('trans.adminFormsTable.admin')
             }}</span>
           </v-btn>
@@ -71,7 +73,7 @@
         >
           <v-btn color="primary" text small>
             <v-icon class="mr-1">note_add</v-icon>
-            <span class="d-none d-sm-flex">{{
+            <span class="d-none d-sm-flex" :lang="lang">{{
               $t('trans.adminFormsTable.launch')
             }}</span>
           </v-btn>
@@ -96,7 +98,7 @@ export default {
   },
   computed: {
     ...mapGetters('admin', ['formList']),
-    ...mapGetters('form', ['isRTL']),
+    ...mapGetters('form', ['isRTL', 'lang']),
     calcHeaders() {
       return this.headers.filter(
         (x) => x.value !== 'updatedAt' || this.activeOnly

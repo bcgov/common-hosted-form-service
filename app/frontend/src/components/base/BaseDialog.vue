@@ -23,7 +23,7 @@
               <v-icon medium>default-icon</v-icon>
             </slot>
           </div>
-          <div class="dialog-text">
+          <div class="dialog-text" :lang="lang">
             <slot name="text">{{ $t('trans.baseDialog.defaultText') }}</slot>
           </div>
         </v-card-text>
@@ -32,7 +32,7 @@
         <div v-if="type === 'OK'">
           <v-btn class="mb-5" color="primary" depressed @click="closeDialog">
             <slot name="button-text">
-              <span>{{ $t('trans.baseDialog.ok') }}</span>
+              <span :lang="lang">{{ $t('trans.baseDialog.ok') }}</span>
             </slot>
           </v-btn>
         </div>
@@ -44,7 +44,7 @@
             @click="continueDialog"
           >
             <slot name="button-text-continue">
-              <span>{{ $t('trans.baseDialog.continue') }}</span>
+              <span :lang="lang">{{ $t('trans.baseDialog.continue') }}</span>
             </slot>
           </v-btn>
           <v-btn
@@ -54,7 +54,7 @@
             @click="closeDialog"
           >
             <slot name="button-text-cancel">
-              <span>{{ $t('trans.baseDialog.cancel') }}</span>
+              <span :lang="lang">{{ $t('trans.baseDialog.cancel') }}</span>
             </slot>
           </v-btn>
         </div>
@@ -67,12 +67,12 @@
             @click="continueDialog"
           >
             <slot name="button-text-continue">
-              <span>{{ $t('trans.baseDialog.continue') }}</span>
+              <span :lang="lang">{{ $t('trans.baseDialog.continue') }}</span>
             </slot>
           </v-btn>
           <v-btn class="mb-5" outlined @click="deleteDialog">
             <slot name="button-text-delete">
-              <span>{{ $t('trans.baseDialog.cancel') }}</span>
+              <span :lang="lang">{{ $t('trans.baseDialog.cancel') }}</span>
             </slot>
           </v-btn>
         </div>
@@ -84,7 +84,7 @@
             @click="continueDialog"
           >
             <slot name="button-text-continue">
-              <span>{{ $t('trans.baseDialog.continue') }}</span>
+              <span :lang="lang">{{ $t('trans.baseDialog.continue') }}</span>
             </slot>
           </v-btn>
           <v-btn
@@ -95,12 +95,12 @@
             v-if="enableCustomButton"
           >
             <slot name="button-text-custom">
-              <span>{{ $t('trans.baseDialog.custom') }}</span>
+              <span :lang="lang">{{ $t('trans.baseDialog.custom') }}</span>
             </slot>
           </v-btn>
           <v-btn class="mb-5" outlined @click="closeDialog">
             <slot name="button-text-cancel">
-              <span>{{ $t('trans.baseDialog.cancel') }}</span>
+              <span :lang="lang">{{ $t('trans.baseDialog.cancel') }}</span>
             </slot>
           </v-btn>
         </div>
@@ -129,7 +129,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('form', ['isRTL']),
+    ...mapGetters('form', ['isRTL', 'lang']),
   },
   props: {
     value: {
