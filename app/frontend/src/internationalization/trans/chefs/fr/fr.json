@@ -18,10 +18,6 @@
   "manageLayout": {
     "manageForm": "Gérer le formulaire"
   },
-  "preview": {
-    "preview": "Aperçu",
-    "previewToolTip": "Cela montre un aperçu de la conception et du comportement de la version du formulaire tels que vos expéditeurs le verront. Vous ne pouvez pas soumettre le formulaire à partir de cette page."
-  },
   "shareForm": {
     "shareForm": "Formulaire de partage",
     "shareLink": "Lien de partage",
@@ -55,14 +51,14 @@
   },
   "formSettings": {
     "pressToAddMultiEmail": "Appuyez sur <kbd>entrée</kbd> ou <kbd>,</kbd> ou <kbd>espace</kbd> pour ajouter plusieurs adresses e-mail",
-    "allowMultiDraft": "Autoriser le téléchargement de <strong> plusieurs brouillons</strong>",
+    "allowMultiDraft": "Autoriser le téléchargement <strong>de plusieurs brouillons</strong>",
     "formTitle": "Titre du formulaire",
     "formDescription": "Description du formulaire",
     "formAccess": "Accès au formulaire",
     "info": "Si vous utilisez ce formulaire pour recueillir des informations auprès du grand public sur des sujets d'intérêt général pour le public, vous devez contacter le GCPE afin que votre engagement soit répertorié sur",
     "important": "IMPORTANT",
     "idimNotifyA": "Vous devez informer l'équipe de gestion des informations d'identité (IDIM) par e-mail",
-    "idimNotifyB": "votre intention d'utiliser BCeID pour vérifier les identités de vos soumissionnaires de formulaire.",
+    "idimNotifyB": "votre intention d'utiliser BCeID pour vérifier l'identité de vos expéditeurs de formulaires.",
     "referenceGuideA": "Veuillez vous référer à notre",
     "referenceGuideB": "mode d'emploi",
     "referenceGuideC": "pour plus de détails",
@@ -96,7 +92,7 @@
     "period": "Période",
     "allowLateSubmissions": "Autoriser les soumissions tardives",
     "allowLateSubmissionsInfoTip": "Si cette case est cochée, les soumissionnaires pourront soumettre des données après la date de clôture.",
-    "afterCloseDateFor": "Après la date de fermeture pour",
+    "afterCloseDateFor": "Après la date de clôture de",
     "repeatPeriod": "Période de répétition",
     "every": "Chaque",
     "repeatUntil": "Répète jusqu'à",
@@ -123,12 +119,12 @@
     "validEmailRequired": "Veuillez saisir toutes les adresses e-mail valides",
     "fieldRequired": "Ce champ est obligatoire.",
     "correctDateFormat": "La date doit être au format correct. c'est à dire. aaaa-mm-jj",
-    "dateDiffMsg": "La date de clôture de la soumission doit être supérieure à la date de soumission ouverte.",
+    "dateDiffMsg": "La date de clôture de la soumission doit être supérieure à la date d'ouverture de la soumission.",
     "valueMustBeNumber": "La valeur doit être un nombre. c'est à dire. 1,2,3,5,99",
     "selectAnOptions": "Veuillez sélectionner au moins 1 option",
     "validInterval": "Il doit s'agir d'un intervalle valide.",
     "fieldRequiredAndInterval": "Ce champ est obligatoire et doit être un intervalle.",
-    "dateGrtOpenSubmissnDate": "La date de répétition jusqu'à doit être supérieure à la date de soumission ouverte",
+    "dateGrtOpenSubmissnDate": "La date de répétition jusqu'au doit être supérieure à la date de soumission ouverte",
     "public": "Publique (anonyme)",
     "allowEventSubscription": "Autoriser l'abonnement aux événements",
     "eventSubscription": "Abonnement à l'événement",
@@ -289,7 +285,6 @@
     "notificationMsg": "Impossible d'obtenir l'utilisateur à partir du RBAC, voir la console",
     "notificationConsErr": "Erreur lors de l'obtention de l'utilisateur à partir du RBAC"
   },
-  "fcProactiveHelp": {},
   "baseAuthButton": {
     "logout": "Se déconnecter",
     "login": "Connexion"
@@ -327,7 +322,10 @@
     "formDesignSaveConsoleErrMsg": "Erreur lors de la mise à jour ou de la création du formulaire (FormID : {formId}, versionId : {versionId}, draftId : {draftId}) Erreur : {error}",
     "collapse": "Effondrement",
     "actions": "Actions",
-    "version": "Version"
+    "version": "Version",
+    "save": "Sauvegarder",
+    "saving": "Économie",
+    "notSaved": "Non enregistré"
   },
   "formViewerMultiUpload": {
     "important": "IMPORTANT",
@@ -336,7 +334,7 @@
     "jsonFileUpload": "Sélectionnez le fichier JSON à télécharger",
     "dragNDrop": "ou glissez-déposez-le ici",
     "chooseAFile": "Choisissez un fichier",
-    "downloadDraftSubmns": "Veuillez télécharger le projet de rapport de soumission et vous assurer que les données sont saisies correctement.",
+    "downloadDraftSubmns": "Veuillez télécharger le projet de rapport de soumission et assurez-vous que les données sont saisies correctement.",
     "downloadReport": "Télécharger le rapport",
     "doYouWantToDownload": "Voulez-vous le télécharger ?",
     "uploadNewFile": "Télécharger un nouveau fichier",
@@ -353,10 +351,6 @@
     "errAfterValidate": "Quelques erreurs trouvées, voir ci-dessous pour plus d'informations.",
     "fileIsEmpty": "ce fichier est vide.",
     "download": "Télécharger"
-  },
-  "bcGovAlertBanner": {
-    "defaultErrMsg": "Erreur : une erreur s'est produite",
-    "error": "erreur"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Clause de non-responsabilité et déclaration de responsabilité pour les concepteurs de formulaire :",
@@ -490,11 +484,11 @@
     "yes": "Oui",
     "no": "Non",
     "multiDraftUploadSuccess": "Votre téléchargement de brouillons multiples a réussi !",
-    "failedResSubmissn": "Échec de la réponse du point de terminaison de soumission. Code de réponse : {statut}",
+    "failedResSubmissn": "Échec de la réponse du point de terminaison de soumission. Code de réponse : {status}",
     "errSubmittingForm": "Une erreur s'est produite lors de la soumission de ce formulaire",
     "errorSavingFile": "Erreur lors de l'enregistrement des fichiers. Nom de fichier : {fileName}. Erreur : {error}",
     "submittingDraftErrMsg": "Une erreur s'est produite lors de l'enregistrement d'un brouillon",
-    "submittingDraftConsErrMsg": "Erreur lors de l'enregistrement du brouillon. ID de soumission : {ID de soumission}. Erreur : {error}"
+    "submittingDraftConsErrMsg": "Erreur lors de l'enregistrement du brouillon. ID de soumission : {submissionId}. Erreur : {error}"
   },
   "notesPanel": {
     "addNewNote": "Ajouter une nouvelle note",
@@ -570,7 +564,7 @@
     "from": "Depuis",
     "to": "Pour",
     "CSVFormat": "Format CSV",
-    "multiRowPerSubmissionA": "1 - Plusieurs lignes par soumission avec des espaces d'identification",
+    "multiRowPerSubmissionA": "1 - Plusieurs lignes par soumission avec des espaces d'indentation",
     "multiRowPerSubmissionB": "2 - Plusieurs lignes par soumission",
     "singleRowPerSubmission": "3 - Une seule ligne par soumission",
     "unformatted": "4 - Non formaté",
@@ -595,7 +589,7 @@
     "uploadA": "Télécharger un",
     "uploadB": "avoir une version structurée",
     "docGrnSucess": "Document généré avec succès",
-    "failedDocGenErrMsg": "Impossible de générer le document",
+    "failedDocGenErrMsg": "Échec de la génération du document",
     "failedDocGenConsErrMsg": "Erreur lors de l'envoi du modèle : {error}",
     "cDogsTemplate": "Modèle CDOGS"
   },
@@ -614,6 +608,10 @@
   },
   "proactiveHelpPreviewDialog": {
     "learnMore": "Apprendre encore plus"
+  },
+  "preview": {
+    "preview": "Aperçu",
+    "previewToolTip": "Cela montre un aperçu de la conception et du comportement de la version du formulaire tels que vos expéditeurs le verront. Vous ne pouvez pas soumettre le formulaire à partir de cette page."
   },
   "generalLayout": {
     "loadingText": "Chargement, veuillez patienter",
@@ -692,31 +690,31 @@
     "submitFormWarningMsg": "Êtes-vous sûr de vouloir soumettre votre formulaire ?",
     "submit": "Soumettre",
     "wantToSaveDraft": "Voulez-vous enregistrer le brouillon ?",
-    "version": "Version: {version}",
+    "version": "Version : {version}",
     "formScheduleExpireMessage": "La soumission du formulaire n'est pas disponible car la période de soumission prévue a expiré.",
     "getUsersSubmissionsErrMsg": "Une erreur s'est produite lors de la récupération de la soumission pour ce formulaire",
     "getUsersSubmissionsConsoleErrMsg": "Erreur lors du chargement des données d'envoi du formulaire {submissionId} : {error}",
     "multiDraftUploadSuccess": "Votre téléchargement de brouillons multiples a réussi !",
-    "readVersionErrMsg": "Pas de schéma en réponse. ID de version : {ID de version}",
-    "readDraftErrMsg": "Pas de schéma en réponse. ID brouillon : {ID brouillon}",
+    "readVersionErrMsg": "Pas de schéma en réponse. ID de version : {versionId}",
+    "readDraftErrMsg": "Pas de schéma en réponse. ID brouillon : {draftId}",
     "alertRouteMsg": "Le propriétaire du formulaire n'a pas publié le formulaire et il n'est pas disponible pour les soumissions.",
     "fecthingFormErrMsg": "Une erreur s'est produite lors de la récupération de ce formulaire",
     "fecthingFormConsoleErrMsg": "Erreur lors du chargement du schéma de formulaire {versionId} : {error}",
     "savingDraftErrMsg": "Une erreur s'est produite lors de l'enregistrement d'un brouillon",
-    "savingDraftConsoleErrMsg": "Erreur lors de l'enregistrement du brouillon. ID de soumission : {ID de soumission}. Erreur : {error}",
+    "savingDraftConsoleErrMsg": "Erreur lors de l'enregistrement du brouillon. ID de soumission : {submissionId}. Erreur : {error}",
     "submissionsPreviewAlert": "Soumission désactivée lors de l'aperçu du formulaire",
     "submissionsSubmitErrMsg": "Erreur lors de l'envoi du formulaire : {errors}",
-    "sendSubmissionErrMsg": "Échec de la réponse du point de terminaison de soumission. Code de réponse : {statut}",
+    "sendSubmissionErrMsg": "Échec de la réponse du point de terminaison de soumission. Code de réponse : {status}",
     "errMsg": "Une erreur s'est produite lors de la soumission de ce formulaire",
-    "customEventAlert": "Les événements de bouton personnalisés ne sont pas encore pris en charge. Type d'événement : {événement}",
+    "customEventAlert": "Les événements de bouton personnalisés ne sont pas encore pris en charge. Type d'événement : {event}",
     "formLoading": "Veuillez patienter pendant le chargement du formulaire !!!",
     "yes": "Oui",
     "no": "Non",
-    "failedResSubmissn": "Échec de la réponse du point de terminaison de soumission. Code de réponse : {statut}",
+    "failedResSubmissn": "Échec de la réponse du point de terminaison de soumission. Code de réponse : {status}",
     "errSubmittingForm": "Une erreur s'est produite lors de la soumission de ce formulaire",
-    "errorSavingFile": "Erreur lors de l'enregistrement des fichiers. Nom de fichier : {fileNname}. Erreur : {error}",
+    "errorSavingFile": "Erreur lors de l'enregistrement des fichiers. Nom de fichier : {fileName}. Erreur : {error}",
     "submittingDraftErrMsg": "Une erreur s'est produite lors de l'enregistrement d'un brouillon",
-    "submittingDraftConsErrMsg": "Erreur lors de l'enregistrement du brouillon. ID de soumission : {ID de soumission}. Erreur : {error}",
+    "submittingDraftConsErrMsg": "Erreur lors de l'enregistrement du brouillon. ID de soumission : {submissionId}. Erreur : {error}",
     "formDraftAccessErrMsg": "La soumission demandée est déjà soumise, redirigeant vers la page Afficher"
   },
   "bCGovFooter": {
@@ -749,7 +747,7 @@
     "manageAccessSub2": "Vous pouvez également attribuer des rôles à votre équipe pour gérer toutes vos soumissions.",
     "createCustomFormTitle": "Créez des formulaires personnalisés avec le générateur de formulaires CHEFS",
     "createCustomFormSub1": "Avec CHEFS, vous pouvez créer des formulaires sécurisés avec une interface intuitive par glisser-déposer. Vous pouvez ajouter des composants de formulaire, les réorganiser et les déposer dans différentes configurations de mise en page.",
-    "chefsHowToTitle": "CHEFS Vidéos explicatives",
+    "chefsHowToTitle": "Vidéos explicatives CHEFS",
     "chefsHowToSub": "Notre guide de démarrage rapide vous présentera certaines des fonctions de base de CHEFS.",
     "getStartedToChefs": "Commencez à utiliser CHEFS",
     "createOnlineTitle": "Créez des formulaires en ligne pour collecter des informations auprès de vos clients et améliorer vos flux de travail.",
@@ -786,36 +784,29 @@
     "exampleText2": "Exemple de texte 2",
     "filterPlaceholderTxt": "Filtrer le texte de l'espace réservé",
     "filter": "Filtre",
-    "value": "valeur"
+    "value": "valeur",
+    "resetColumns": "Réinitialiser les colonnes"
   },
   "formViewerActions": {
     "viewAllSubmissions": "Voir toutes les soumissions",
     "saveAsADraft": "Enregistrer en tant que projet",
     "editThisDraft": "Modifier ce brouillon",
     "switchSingleSubmssn": "Passer à la soumission unique",
-    "switchMultiSubmssn": "Passer à la soumission unique"
+    "switchMultiSubmssn": "Passer à la soumission multiple"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Lien copié dans le presse-papiers",
     "copyToClipboard": "Copier dans le presse-papier",
     "errCopyToClipboard": "Erreur lors de la tentative de copie dans le presse-papiers."
   },
-  "admin": {
-    "root": {
-      "admin": "Administrateur"
-    }
-  },
-  "user": {
-    "root": {
-      "myForms": "MES FORMULAIRES",
-      "history": "HISTOIRE",
-      "user": "Utilisateur"
-    }
-  },
   "sucess": {
     "sucessFormSubmissn": "Votre formulaire a été soumis avec succès",
     "keepRecord": "Si vous souhaitez conserver une trace de cette soumission, vous pouvez conserver les éléments suivants",
     "confirmationId": "Identifiant de confirmation"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Erreur : une erreur s'est produite",
+    "error": "erreur"
   },
   "permissionUtils": {
     "formNotAvailable": "Le formulaire est actuellement indisponible. Cela peut être dû à un lien incorrect, ou le formulaire a peut-être été supprimé par son propriétaire.",
@@ -824,6 +815,29 @@
     "loadingForm": "Erreur lors du chargement de {options} : {error}",
     "idpHintMsg": "Ce formulaire nécessite une authentification {idpHint}. Veuillez vous reconnecter et réessayer.",
     "formIdpMissMatch": "Non-concordance du formulaire IDP. Le formulaire nécessite {idpHint} mais l'utilisateur a {userIdp}."
+  },
+  "download": {
+    "chefsDataExport": "Exportation de données CHEFS",
+    "preparingForDownloading": "Préparation du téléchargement...",
+    "downloadInfoA": "Si votre fichier ne se télécharge pas automatiquement",
+    "downloadInfoB": "Cliquez ici pour essayer à nouveau"
+  },
+  "history": {
+    "submissnHistory": "Votre historique de soumission (à déterminer)"
+  },
+  "error": {
+    "logout": "Se déconnecter",
+    "somethingWentWrong": "Erreur : quelque chose s'est mal passé... :("
+  },
+  "login": {
+    "authenticateWith": "Authentifiez-vous avec :(",
+    "alreadyLoggedIn": "Déjà connecté",
+    "home": "Maison",
+    "about": "À propos"
+  },
+  "notFound": {
+    "about": "À propos",
+    "pageNotFound": "404 Page non trouvée. :("
   },
   "store": {
     "admin": {
@@ -878,7 +892,7 @@
       "fetchFormFieldsErrMsg": "Une erreur s'est produite lors de la récupération de la liste des champs de ce formulaire.",
       "fetchFormFieldsConsErrMsg": "Erreur lors de la récupération du formulaire {formId} : {error}",
       "publishDraftErrMsg": "Une erreur s'est produite lors de la publication.",
-      "publishDraftConsErrMsg": "Erreur lors de la publication de ${draftId} : ${error}",
+      "publishDraftConsErrMsg": "Erreur lors de la publication de {draftId} : {error}",
       "toggleVersnPublConsErrMsg": "Erreur dans toggleVersionPublish {versionId} {publish} : {error}",
       "updateFormErrMsg": "Une erreur s'est produite lors de la mise à jour des paramètres de ce formulaire.",
       "updateFormConsErrMsg": "Erreur lors de la mise à jour du formulaire {id} : {error}",
@@ -897,7 +911,7 @@
       "fecthSubmissnUsersErrMsg": "Une erreur s'est produite lors de la récupération de l'e-mail du destinataire pour cette soumission.",
       "fecthSubmissnUsersConsErrMsg": "Erreur lors de la réception de l'e-mail du destinataire pour la soumission {formSubmissionId} : {error}",
       "fetchSubmissnErrMsg": "Une erreur s'est produite lors de la récupération de cette soumission.",
-      "fetchSubmissnConsErrMsg": "Erreur lors de l'obtention de la soumission {submissionId} : ${error}",
+      "fetchSubmissnConsErrMsg": "Erreur lors de l'obtention de la soumission {submissionId} : {error}",
       "fetchFormCSVExptFieldsErrMsg": "Une erreur s'est produite lors de la récupération de la liste des champs de ce formulaire.",
       "fetchFormCSVExptFieldsConsErrMsg": "Erreur lors de la récupération du formulaire {formId} : {error}",
       "fetchSubmissnsErrMsg": "Une erreur s'est produite lors de la récupération des soumissions pour ce formulaire.",
@@ -924,6 +938,24 @@
       "saveSubscriptionSettingsErrMsg": "Une erreur s'est produite lors de la tentative d'enregistrement des paramètres d'abonnement.",
       "saveSubscriptionSettingsConsErrMsg": "Erreur lors de l'enregistrement des paramètres d'abonnement pour le formulaire {formId} : {error}"
       
+    }
+  },
+  "admin": {
+    "root": {
+      "admin": "Administrateur"
+    },
+    "form": {
+      "administerForm": "Formulaire d'administration"
+    },
+    "user": {
+      "administerUser": "Administrer l'utilisateur"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "MES FORMULAIRES",
+      "history": "HISTOIRE",
+      "user": "Utilisateur"
     }
   }
 }

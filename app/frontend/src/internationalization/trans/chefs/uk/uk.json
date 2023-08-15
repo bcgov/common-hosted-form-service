@@ -18,10 +18,6 @@
   "manageLayout": {
     "manageForm": "Керувати формою"
   },
-  "preview": {
-    "preview": "Попередній перегляд",
-    "previewToolTip": "Це показує попередній перегляд дизайну та поведінки версії форми, як це побачать ваші субмітенти. Ви не можете надіслати форму з цієї сторінки."
-  },
   "shareForm": {
     "shareForm": "Поділитися формою",
     "shareLink": "Розповсюдити посилання",
@@ -54,8 +50,8 @@
     "eventSubscription": "Підписка на подію"
   },
   "formSettings": {
-    "pressToAddMultiEmail": "Натисніть <kbd>enter</kbd> або <kbd>,</kbd> або <kbd>пробіл</kbd>, щоб додати кілька електронних адрес",
-    "allowMultiDraft": "Дозволити завантаження <strong> кількох чернеток</strong>",
+    "pressToAddMultiEmail": "Щоб додати кілька електронних адрес, натисніть <kbd>enter</kbd> або <kbd>,</kbd> або <kbd>пробіл</kbd>",
+    "allowMultiDraft": "Дозволити завантаження <strong>декількох чернеток</strong>",
     "formTitle": "Назва форми",
     "formDescription": "Опис форми",
     "formAccess": "Доступ до форми",
@@ -75,11 +71,11 @@
     "afterSubmission": "Після подачі",
     "submissionConfirmation": "Показати деталі підтвердження подання",
     "theConfirmationID": "ідентифікатор підтвердження",
-    "infoB": "можливість для користувача надсилати електронною поштою підтвердження подання",
-    "loginRequired": "Потрібна авторизація",
+    "infoB": "можливість для користувача надсилати собі електронною поштою підтвердження подання",
+    "loginRequired": "Необхідно ввійти",
     "canSaveAndEditDraftLabel": "Автори можуть <strong>зберігати та редагувати чернетки</strong>",
     "canUpdateStatusAsReviewer": "Рецензенти можуть <strong>оновити статус</strong> цієї форми (наприклад, подано, призначено, завершено)",
-    "submitterCanCopyExistingSubmissn": "Подавці можуть <strong>копіювати наявне подання</strong>",
+    "submitterCanCopyExistingSubmissn": "Відправники можуть <strong>скопіювати наявне подання</strong>",
     "submissionConfirmationToolTip": "Вибір цього параметра визначає, що користувач, який надсилає цю форму, бачитиме після успішного надсилання.<br /> Якщо позначено, воно відображатиметься",
     "emailNotificatnToTeam": "Надіслати моїй команді сповіщення електронною поштою",
     "emailNotificatnToTeamToolTip": "Надсилайте сповіщення на вказану вами адресу електронної пошти, коли будь-який користувач надсилає цю форму",
@@ -110,7 +106,7 @@
     "formOpenInterval": "Ця форма буде відкрита для подання від",
     "allowDateSubmissionDate": "з можливістю несвоєчасного подання до",
     "customClosingMessage": "Встановити спеціальне кінцеве повідомлення",
-    "customClosingMessageToolTip": "Дозволяє додавати персоналізовані повідомлення для ваших користувачів, коли вони відвідують закриту форму.",
+    "customClosingMessageToolTip": "Дозволяє додавати персоналізоване повідомлення для ваших користувачів, коли вони відвідують закриту форму.",
     "closingMessage": "Заключне повідомлення",
     "sendReminderEmail": "НАДІСЛАТИ електронний лист із нагадуванням",
     "autoReminderNotificatn": "Увімкнути автоматичне сповіщення про нагадування",
@@ -123,12 +119,12 @@
     "validEmailRequired": "Введіть усі дійсні адреси електронної пошти",
     "fieldRequired": "Це поле є обов'язковим.",
     "correctDateFormat": "Дата має бути в правильному форматі. тобто. рррр-мм-дд",
-    "dateDiffMsg": "Дата закриття подання має бути довшою за дату відкриття подання.",
+    "dateDiffMsg": "Дата закритого подання має бути більшою за дату відкритого подання.",
     "valueMustBeNumber": "Значення має бути числом. тобто. 1,2,3,5,99",
     "selectAnOptions": "Виберіть принаймні 1 варіант",
     "validInterval": "Це має бути дійсний інтервал.",
     "fieldRequiredAndInterval": "Це поле є обов’язковим і має бути інтервалом.",
-    "dateGrtOpenSubmissnDate": "Дата повторення має бути більшою за дату відкритого подання",
+    "dateGrtOpenSubmissnDate": "Повторювати, доки дата не має бути більшою за дату відкритого подання",
     "public": "Публічний (анонімний)",
     "allowEventSubscription": "Дозволити підписку на події",
     "eventSubscription": "Підписка на подію",
@@ -156,7 +152,7 @@
     "disclaimer": "Відмова від відповідальності",
     "infoA": "Переконайтеся, що ваш секретний ключ API зберігається в безпечному місці (тобто в сховищі ключів).",
     "infoB": "Ваш ключ API надає необмежений доступ до вашої форми. Нікому не передавайте свій ключ API.",
-    "infoC": "Ключ API слід використовувати ЛИШЕ для автоматизованої взаємодії з системою. Не використовуйте свій ключ API для доступу користувача",
+    "infoC": "Ключ API слід використовувати ЛИШЕ для автоматизованої взаємодії з системою. Не використовуйте свій ключ API для доступу на основі користувача",
     "deleteKey": "Видалити ключ",
     "apiKey": "ключ API",
     "hideSecret": "Приховати секрет",
@@ -289,7 +285,6 @@
     "notificationMsg": "Не вдалося отримати користувача з RBAC, див. консоль",
     "notificationConsErr": "Помилка отримання користувача з RBAC"
   },
-  "fcProactiveHelp": {},
   "baseAuthButton": {
     "logout": "Вийти",
     "login": "Логін"
@@ -317,17 +312,20 @@
     "exportDesign": "Експортний дизайн",
     "importDesign": "Імпортний дизайн",
     "important": "ВАЖЛИВО",
-    "formDesignInfoA": "Скористайтеся кнопкою <strong>ЗБЕРЕГТИ ДИЗАЙН</strong> , коли завершите створення цієї форми.",
+    "formDesignInfoA": "Скористайтеся кнопкою <strong>ЗБЕРЕГТИ ДИЗАЙН,</strong> коли завершите створення цієї форми.",
     "formDesignInfoB": "Кнопка <strong>НАДІСЛАТИ</strong> призначена для того, щоб ваш користувач міг надіслати цю форму, і вона буде активована після її збереження.",
     "formLoadErrMsg": "Під час завантаження дизайну форми сталася помилка.",
-    "formLoadConsoleErrMsg": "Помилка завантаження схеми форми {formId} (версія: {versionId} проект: {draftId}): {помилка}",
+    "formLoadConsoleErrMsg": "Помилка завантаження схеми форми {formId} (версія: {versionId} проект: {draftId}): {error}",
     "formSchemaImportErrMsg": "Під час імпорту схеми форми сталася помилка.",
     "formSchemaImportConsoleErrMsg": "Помилка імпорту схеми форми: {error}",
     "formDesignSaveErrMsg": "Під час спроби зберегти цей дизайн форми сталася помилка. Якщо вам потрібно оновити або залишити, щоб повторити спробу пізніше, ви можете експортувати наявний дизайн на сторінці, щоб зберегти на потім.",
     "formDesignSaveConsoleErrMsg": "Помилка оновлення або створення форми (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Помилка: {error}",
     "collapse": "Згорнути",
     "actions": "Дії",
-    "version": "Версія"
+    "version": "Версія",
+    "save": "зберегти",
+    "saving": "Збереження",
+    "notSaved": "Не збережено"
   },
   "formViewerMultiUpload": {
     "important": "ВАЖЛИВО",
@@ -353,10 +351,6 @@
     "errAfterValidate": "Знайдено деякі помилки, див. нижче для отримання додаткової інформації.",
     "fileIsEmpty": "цей файл порожній.",
     "download": "Завантажити"
-  },
-  "bcGovAlertBanner": {
-    "defaultErrMsg": "Помилка: щось пішло не так",
-    "error": "помилка"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Відмова від відповідальності та заява про відповідальність для дизайнерів форм:",
@@ -483,14 +477,14 @@
     "submissionDate": "Дата подання",
     "draftUpdatedBy": "Чернетку оновлено",
     "draftLastEdited": "Останнє редагування чернетки",
-    "createLateSubmissn": "Створити пізнє подання",
+    "createLateSubmissn": "Створіть пізнє подання",
     "formLoading": "Будь ласка, зачекайте, поки завантажується форма!!!",
     "pleaseConfirm": "Будь-ласка підтвердіть",
     "wantToSaveDraft": "Ви хочете зберегти чернетку?",
     "yes": "Так",
     "no": "Немає",
     "multiDraftUploadSuccess": "Ваше кілька чернеток завантажено успішно!",
-    "failedResSubmissn": "Помилка відповіді від кінцевої точки надсилання. Код відповіді: {статус}",
+    "failedResSubmissn": "Помилка відповіді від кінцевої точки надсилання. Код відповіді: {status}",
     "errSubmittingForm": "Під час надсилання цієї форми сталася помилка",
     "errorSavingFile": "Помилка збереження файлів. Ім'я файлу: {fileName}. Помилка: {error}",
     "submittingDraftErrMsg": "Під час збереження чернетки сталася помилка",
@@ -546,7 +540,7 @@
   "statusTable": {
     "loadingText": "Завантаження, будь ласка, зачекайте",
     "status": "Статус",
-    "dateStatusChanged": "Дата Статус змінено",
+    "dateStatusChanged": "Статус дати змінено",
     "assignee": "Цесіонарій",
     "updatedBy": "Оновлено",
     "getSubmissionStatusErr": "Під час спроби отримати статуси сталася помилка.",
@@ -570,7 +564,7 @@
     "from": "Від",
     "to": "до",
     "CSVFormat": "Формат CSV",
-    "multiRowPerSubmissionA": "1 – Кілька рядків на подання з пробілами для ідентифікації",
+    "multiRowPerSubmissionA": "1 – Кілька рядків на подання з відступами",
     "multiRowPerSubmissionB": "2 – Кілька рядків на подання",
     "singleRowPerSubmission": "3 – Один рядок на подання",
     "unformatted": "4 - Неформатований",
@@ -614,6 +608,10 @@
   },
   "proactiveHelpPreviewDialog": {
     "learnMore": "Вивчайте більше"
+  },
+  "preview": {
+    "preview": "Попередній перегляд",
+    "previewToolTip": "Це показує попередній перегляд дизайну та поведінки версії форми, як це побачать ваші субмітенти. Ви не можете надіслати форму з цієї сторінки."
   },
   "generalLayout": {
     "loadingText": "Завантаження, будь ласка, зачекайте",
@@ -666,7 +664,7 @@
     "updUserRolesErrMsg": "Під час спроби оновити всі ролі користувачів сталася помилка",
     "updUserRolesConsoleErrMsg": "Помилка встановлення всіх ролей користувача для форми {formId}: {error}",
     "setUserFormsErrMsg": "Під час спроби оновити ролі користувача сталася помилка",
-    "setUserFormsConsoleErrMsg": "Помилка налаштування ролей користувача для форми {formId}: {error}"
+    "setUserFormsConsoleErrMsg": "Помилка встановлення ролей користувача для форми {formId}: {error}"
   },
   "floatButton": {
     "publish": "Опублікувати",
@@ -685,7 +683,7 @@
   },
   "formViewer": {
     "lateFormSubmissions": "Термін подання форми закінчився! Ви все ще можете створити пізнє подання, натиснувши кнопку нижче.",
-    "createLateSubmission": "Створити пізнє подання",
+    "createLateSubmission": "Створіть пізнє подання",
     "draftSaved": "Чернетку збережено",
     "saving": "Збереження",
     "pleaseConfirm": "Будь-ласка підтвердіть",
@@ -698,7 +696,7 @@
     "getUsersSubmissionsConsoleErrMsg": "Помилка завантаження даних подання форми {submissionId}: {error}",
     "multiDraftUploadSuccess": "Ваше кілька чернеток завантажено успішно!",
     "readVersionErrMsg": "У відповіді немає схеми. VersionId: {versionId}",
-    "readDraftErrMsg": "У відповіді немає схеми. DraftId: {draftId}",
+    "readDraftErrMsg": "У відповіді немає схеми. draftId: {draftId}",
     "alertRouteMsg": "Власник форми не опублікував форму, і вона недоступна для подання.",
     "fecthingFormErrMsg": "Під час отримання цієї форми сталася помилка",
     "fecthingFormConsoleErrMsg": "Помилка завантаження схеми форми {versionId}: {error}",
@@ -706,15 +704,15 @@
     "savingDraftConsoleErrMsg": "Помилка збереження чернетки. SubmissionId: {submissionId}. Помилка: {error}",
     "submissionsPreviewAlert": "Надсилання вимкнено під час попереднього перегляду форми",
     "submissionsSubmitErrMsg": "Помилка надсилання форми: {errors}",
-    "sendSubmissionErrMsg": "Помилка відповіді від кінцевої точки надсилання. Код відповіді: {статус}",
+    "sendSubmissionErrMsg": "Помилка відповіді від кінцевої точки надсилання. Код відповіді: {status}",
     "errMsg": "Під час надсилання цієї форми сталася помилка",
     "customEventAlert": "Спеціальні події кнопки ще не підтримуються. Тип події: {event}",
     "formLoading": "Будь ласка, зачекайте, поки завантажується форма!!!",
     "yes": "Так",
     "no": "Немає",
-    "failedResSubmissn": "Помилка відповіді від кінцевої точки надсилання. Код відповіді: {статус}",
+    "failedResSubmissn": "Помилка відповіді від кінцевої точки надсилання. Код відповіді: {status}",
     "errSubmittingForm": "Під час надсилання цієї форми сталася помилка",
-    "errorSavingFile": "Помилка збереження файлів. Ім'я файлу: {fileNname}. Помилка: {error}",
+    "errorSavingFile": "Помилка збереження файлів. Ім'я файлу: {fileName}. Помилка: {error}",
     "submittingDraftErrMsg": "Під час збереження чернетки сталася помилка",
     "submittingDraftConsErrMsg": "Помилка збереження чернетки. SubmissionId: {submissionId}. Помилка: {error}",
     "formDraftAccessErrMsg": "Запитане подання вже подано, переспрямовує на сторінку перегляду"
@@ -749,10 +747,10 @@
     "manageAccessSub2": "Ви також можете призначити ролі своїй команді, щоб керувати всіма вашими заявками.",
     "createCustomFormTitle": "Створюйте власні форми за допомогою конструктора форм CHEFS",
     "createCustomFormSub1": "За допомогою CHEFS ви можете створювати безпечні форми за допомогою інтуїтивно зрозумілого інтерфейсу перетягування. Ви можете додавати компоненти форми, змінювати їх розташування та розміщувати в різних конфігураціях макетів.",
-    "chefsHowToTitle": "Відео з порадами КУХАРІВ",
+    "chefsHowToTitle": "Відео з інструкціями для КУХАРІВ",
     "chefsHowToSub": "Наш короткий посібник познайомить вас із деякими основними функціями CHEFS.",
     "getStartedToChefs": "Почніть використовувати CHEFS",
-    "createOnlineTitle": "Створюйте онлайн-форми для збору інформації від своїх клієнтів і покращуйте робочі процеси.",
+    "createOnlineTitle": "Створюйте онлайн-форми для збору інформації від своїх клієнтів і вдосконалення робочих процесів.",
     "getStarted": "Почати"
   },
   "create": {
@@ -786,44 +784,60 @@
     "exampleText2": "Приклад тексту 2",
     "filterPlaceholderTxt": "Фільтр тексту заповнювача",
     "filter": "фільтр",
-    "value": "значення"
+    "value": "значення",
+    "resetColumns": "Скинути стовпці"
   },
   "formViewerActions": {
     "viewAllSubmissions": "Переглянути всі подання",
     "saveAsADraft": "Зберегти як чернетку",
     "editThisDraft": "Відредагуйте цю чернетку",
     "switchSingleSubmssn": "Перейти до одноразової подачі",
-    "switchMultiSubmssn": "Перейти до одноразової подачі"
+    "switchMultiSubmssn": "Переключитися на багаторазове подання"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Посилання скопійовано в буфер обміну",
     "copyToClipboard": "Копіювати в буфер обміну",
     "errCopyToClipboard": "Помилка спроби скопіювати в буфер обміну."
   },
-  "admin": {
-    "root": {
-      "admin": "адмін"
-    }
-  },
-  "user": {
-    "root": {
-      "myForms": "МОЇ ФОРМИ",
-      "history": "ІСТОРІЯ",
-      "user": "Користувач"
-    }
-  },
   "sucess": {
     "sucessFormSubmissn": "Ваша форма успішно надіслана",
     "keepRecord": "Якщо ви бажаєте вести облік цього подання, ви можете зберегти наступне",
     "confirmationId": "ID підтвердження"
   },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Помилка: щось пішло не так",
+    "error": "помилка"
+  },
   "permissionUtils": {
-    "formNotAvailable": "Наразі форма недоступна. Це може бути через неправильне посилання, або форма може бути видалена її власником.",
+    "formNotAvailable": "Наразі форма недоступна. Це може бути через неправильне посилання або форма може бути видалена її власником.",
     "missingFormIdAndSubmssId": "У параметрах відсутні як formId, так і submissionId",
     "loadingFormErrMsg": "Під час завантаження цієї форми сталася помилка.",
-    "loadingForm": "Помилка під час завантаження {параметрів}: {помилка}",
+    "loadingForm": "Помилка під час завантаження {options}: {error}",
     "idpHintMsg": "Для цієї форми потрібна автентифікація {idpHint}. Увійдіть повторно та спробуйте ще раз.",
     "formIdpMissMatch": "Невідповідність форми IDP. Для форми потрібен {idpHint}, але користувач має {userIdp}."
+  },
+  "download": {
+    "chefsDataExport": "Експорт даних CHEFS",
+    "preparingForDownloading": "Підготовка до завантаження...",
+    "downloadInfoA": "Якщо ваш файл не завантажується автоматично",
+    "downloadInfoB": "натисніть тут, щоб спробувати ще раз"
+  },
+  "history": {
+    "submissnHistory": "Ваша історія подання (уточнюється)"
+  },
+  "error": {
+    "logout": "Вийти",
+    "somethingWentWrong": "Помилка: щось пішло не так... :("
+  },
+  "login": {
+    "authenticateWith": "Автентифікувати за допомогою:",
+    "alreadyLoggedIn": "Вже ввійшли",
+    "home": "додому",
+    "about": "про"
+  },
+  "notFound": {
+    "about": "про",
+    "pageNotFound": "404: Сторінка не знайдена. :("
   },
   "store": {
     "admin": {
@@ -860,25 +874,25 @@
       "getCurrUserFormsErrMsg": "Під час отримання ваших форм сталася помилка.",
       "getCurrUserFormsConsErrMsg": "Помилка отримання даних користувача: {error}",
       "getUserFormPermErrMsg": "Під час отримання даних користувача для цієї форми сталася помилка.",
-      "getUserFormPermConsErrMsg": "Помилка отримання даних користувача за допомогою ідентифікатора форми {formId}: {помилка}",
+      "getUserFormPermConsErrMsg": "Помилка отримання даних користувача за допомогою ідентифікатора форми {formId}: {error}",
       "getUserFormRolesErrmsg": "Під час отримання даних користувача для цієї форми сталася помилка.",
-      "getUserFormRolesConsErrmsg": "Помилка отримання даних користувача за допомогою ідентифікатора форми {formId}: {помилка}",
+      "getUserFormRolesConsErrmsg": "Помилка отримання даних користувача за допомогою ідентифікатора форми {formId}: {error}",
       "updCurrUserFormPrefErrMsg": "Під час збереження ваших налаштувань для цієї форми сталася помилка.",
-      "updCurrUserFormPrefConsErrMsg": "Помилка оновлення налаштувань форми користувача за допомогою ідентифікатора форми {formId} і налаштувань {налаштувань}: {помилка}",
+      "updCurrUserFormPrefConsErrMsg": "Помилка оновлення налаштувань форми користувача за допомогою ідентифікатора форми {formId} і налаштувань {preferences}: {error}",
       "getCurrUserFormPrefErrMsg": "Під час отримання ваших налаштувань для цієї форми сталася помилка.",
-      "getCurrUserFormPrefConsErrMsg": "Помилка отримання налаштувань форми користувача за допомогою ідентифікатора форми {formId}: {помилка}",
-      "delCurrformNotiMsg": "Форму {name} успішно видалено.",
+      "getCurrUserFormPrefConsErrMsg": "Помилка отримання налаштувань форми користувача за допомогою ідентифікатора форми {formId}: {error}",
+      "delCurrformNotiMsg": "Форма {name} була успішно видалена.",
       "delCurrFormConsErMsg": "Помилка видалення форми {id}: {error}",
       "delDraftErrMsg": "Під час видалення цієї чернетки сталася помилка.",
       "delDraftConsErrMsg": "Помилка видалення {draftId}: {error}",
-      "fecthDraftErrMsg": "Під час сканування чернеток для цієї форми сталася помилка.",
+      "fecthDraftErrMsg": "Під час сканування чернеток цієї форми сталася помилка.",
       "fecthDraftConsErrMsg": "Помилка отримання чернеток для форми {formId}: {error}",
       "fecthFormErrMsg": "Під час отримання цієї форми сталася помилка.",
       "fecthFormConsErrMsg": "Помилка отримання форми {formId}: {error}",
       "fetchFormFieldsErrMsg": "Під час отримання списку полів для цієї форми сталася помилка.",
       "fetchFormFieldsConsErrMsg": "Помилка отримання форми {formId}: {error}",
       "publishDraftErrMsg": "Під час публікації сталася помилка.",
-      "publishDraftConsErrMsg": "Помилка публікації ${draftId}: ${error}",
+      "publishDraftConsErrMsg": "Помилка публікації {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "Помилка в toggleVersionPublish {versionId} {publish}: {error}",
       "updateFormErrMsg": "Під час оновлення налаштувань цієї форми сталася помилка.",
       "updateFormConsErrMsg": "Помилка оновлення форми {id}: {error}",
@@ -897,7 +911,7 @@
       "fecthSubmissnUsersErrMsg": "Сталася помилка під час отримання електронної пошти одержувача для цього надсилання.",
       "fecthSubmissnUsersConsErrMsg": "Помилка отримання електронної пошти одержувача для подання {formSubmissionId}: {error}",
       "fetchSubmissnErrMsg": "Під час отримання цього подання сталася помилка.",
-      "fetchSubmissnConsErrMsg": "Помилка отримання подання {submissionId}: ${error}",
+      "fetchSubmissnConsErrMsg": "Помилка отримання подання {submissionId}: {error}",
       "fetchFormCSVExptFieldsErrMsg": "Під час отримання списку полів для цієї форми сталася помилка.",
       "fetchFormCSVExptFieldsConsErrMsg": "Помилка отримання форми {formId}: {error}",
       "fetchSubmissnsErrMsg": "Сталася помилка під час отримання документів для цієї форми.",
@@ -924,6 +938,24 @@
       "saveSubscriptionSettingsErrMsg": "Під час спроби зберегти налаштування підписки сталася помилка.",
       "saveSubscriptionSettingsConsErrMsg": "Помилка збереження налаштувань підписки для форми {formId}: {error}"
       
+    }
+  },
+  "admin": {
+    "root": {
+      "admin": "адмін"
+    },
+    "form": {
+      "administerForm": "Форма адміністрування"
+    },
+    "user": {
+      "administerUser": "Адміністратор користувача"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "МОЇ ФОРМИ",
+      "history": "ІСТОРІЯ",
+      "user": "Користувач"
     }
   }
 }

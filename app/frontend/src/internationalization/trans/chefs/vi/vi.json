@@ -18,10 +18,6 @@
   "manageLayout": {
     "manageForm": "Quản lý biểu mẫu"
   },
-  "preview": {
-    "preview": "Xem trước",
-    "previewToolTip": "Điều này hiển thị bản xem trước của thiết kế và hành vi của phiên bản biểu mẫu khi người gửi của bạn sẽ nhìn thấy nó. Bạn không thể gửi biểu mẫu từ trang này."
-  },
   "shareForm": {
     "shareForm": "chia sẻ biểu mẫu",
     "shareLink": "Chia sẻ đường link",
@@ -55,7 +51,7 @@
   },
   "formSettings": {
     "pressToAddMultiEmail": "Nhấn <kbd>enter</kbd> hoặc <kbd>,</kbd> hoặc <kbd>dấu cách</kbd> để thêm nhiều địa chỉ email",
-    "allowMultiDraft": "Cho phép tải lên <strong> nhiều bản nháp</strong>",
+    "allowMultiDraft": "Cho phép tải lên <strong>nhiều bản nháp</strong>",
     "formTitle": "Tiêu đề mẫu",
     "formDescription": "Mô tả biểu mẫu",
     "formAccess": "Truy cập biểu mẫu",
@@ -106,7 +102,7 @@
     "scheduleRepetition": "Lịch trình sẽ lặp lại mỗi",
     "allowLateSubmissnInterval": "cho phép nộp muộn cho",
     "until": "cho đến khi",
-    "datesOfSubmissnInfo": "Theo cài đặt, đây là những ngày gửi có sẵn:",
+    "datesOfSubmissnInfo": "Theo các cài đặt, đây là những ngày gửi có sẵn:",
     "formOpenInterval": "Biểu mẫu này sẽ được mở để gửi từ",
     "allowDateSubmissionDate": "với việc cho phép nộp muộn cho đến khi",
     "customClosingMessage": "Đặt thông báo đóng tùy chỉnh",
@@ -128,7 +124,7 @@
     "selectAnOptions": "Vui lòng chọn ít nhất 1 tùy chọn",
     "validInterval": "Đây phải là một khoảng thời gian hợp lệ.",
     "fieldRequiredAndInterval": "Trường này là bắt buộc & phải là một khoảng thời gian.",
-    "dateGrtOpenSubmissnDate": "Lặp lại cho đến khi ngày phải lớn hơn ngày gửi mở",
+    "dateGrtOpenSubmissnDate": "Lặp lại cho đến ngày phải lớn hơn ngày gửi mở",
     "public": "Công khai (ẩn danh)",
     "allowEventSubscription": "Cho phép đăng ký sự kiện",
     "eventSubscription": "Đăng ký sự kiện",
@@ -185,13 +181,13 @@
     "draft": "Bản nháp",
     "clickToPreview": "Nhấp để xem trước",
     "editVersion": "Chỉnh sửa phiên bản",
-    "exportDesign": "thiết kế xuất khẩu",
+    "exportDesign": "Thiết kế xuất khẩu",
     "infoC": "Vui lòng xuất bản hoặc xóa phiên bản nháp mới nhất của bạn trước khi bắt đầu phiên bản mới.",
     "deleteVersion": "Xóa phiên bản",
     "draftAlreadyExists": "Bản nháp đã tồn tại",
     "infoD": "Vui lòng chỉnh sửa, xuất bản hoặc xóa bản nháp hiện có trước khi bắt đầu một bản nháp mới.",
     "publishVersion": "Xuất bản phiên bản",
-    "unpublishVersion": "Hủy xuất bản phiên bản",
+    "unpublishVersion": "Phiên bản hủy xuất bản",
     "infoE": "Hủy xuất bản biểu mẫu này sẽ khiến biểu mẫu không được lưu hành cho đến khi một phiên bản được xuất bản lại.",
     "confirmDeletion": "Xác nhận xóa",
     "infoF": "Bạn có chắc chắn muốn xóa Phiên bản này không?",
@@ -289,7 +285,6 @@
     "notificationMsg": "Không lấy được người dùng từ RBAC, xem bảng điều khiển",
     "notificationConsErr": "Lỗi khi nhận Người dùng từ RBAC"
   },
-  "fcProactiveHelp": {},
   "baseAuthButton": {
     "logout": "Đăng xuất",
     "login": "Đăng nhập"
@@ -327,7 +322,10 @@
     "formDesignSaveConsoleErrMsg": "Lỗi khi cập nhật hoặc tạo biểu mẫu (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Lỗi: {error}",
     "collapse": "Sụp đổ",
     "actions": "hành động",
-    "version": "Phiên bản"
+    "version": "Phiên bản",
+    "save": "Cứu",
+    "saving": "Tiết kiệm",
+    "notSaved": "Chưa được lưu"
   },
   "formViewerMultiUpload": {
     "important": "QUAN TRỌNG",
@@ -349,17 +347,13 @@
     "jsonObjNotArrayConsErr": "Đã xảy ra lỗi không mong muốn.",
     "jsonArrayEmpty": "Tệp json này trống.",
     "errorWhileValidate": "Có gì đó sai với tập tin này",
-    "errWhileCheckValidity": "Có gì đó sai với tập tin này",
+    "errWhileCheckValidity": "Có gì đó không ổn với tập tin này",
     "errAfterValidate": "Đã tìm thấy một số lỗi, xem bên dưới để biết thêm thông tin.",
     "fileIsEmpty": "tập tin này là trống rỗng.",
     "download": "Tải xuống"
   },
-  "bcGovAlertBanner": {
-    "defaultErrMsg": "Lỗi: Đã xảy ra sự cố",
-    "error": "lỗi"
-  },
   "formDisclaimer": {
-    "disclaimerAndStatement": "Tuyên bố miễn trừ trách nhiệm và tuyên bố trách nhiệm đối với Người thiết kế biểu mẫu:",
+    "disclaimerAndStatement": "Tuyên bố từ chối trách nhiệm và tuyên bố trách nhiệm đối với Người thiết kế biểu mẫu:",
     "privacyLaw": "Bạn có trách nhiệm tuân thủ các luật về Quyền riêng tư điều chỉnh việc thu thập, sử dụng và tiết lộ thông tin nhận dạng cá nhân.",
     "disclosure": "Quyền truy cập vào công cụ thiết kế biểu mẫu này vốn không cấp quyền thu thập, sử dụng hoặc tiết lộ bất kỳ thông tin nhận dạng cá nhân nào.",
     "consent": "Bạn có trách nhiệm phải có được sự đồng ý để thu thập thông tin theo yêu cầu của pháp luật.",
@@ -451,7 +445,7 @@
     "getSubmissionUsersErr": "Đã xảy ra lỗi khi cố gắng tìm nạp người dùng cho nội dung gửi này.",
     "getSubmissionUsersConsoleErr": "Lỗi nhận người dùng cho {submissionId} : {error}",
     "sentInviteEmailTo": "Đã gửi email mời đến",
-    "sentUninvitedEmailTo": "Đã gửi email không mời tới",
+    "sentUninvitedEmailTo": "Đã gửi email không mời đến",
     "updateUserErrMsg": "Đã xảy ra lỗi khi cố gắng cập nhật người dùng cho lần gửi này.",
     "updateUserConsoleErrMsg": "Lỗi đặt quyền của người dùng. Phụ: {submissionId} Người dùng: {userId} Lỗi: {error}",
     "searchInputLength": "Đầu vào tìm kiếm cho tên người dùng/email BCeID phải lớn hơn 6 ký tự.",
@@ -492,9 +486,9 @@
     "multiDraftUploadSuccess": "Tải lên nhiều bản nháp của bạn đã thành công!",
     "failedResSubmissn": "Phản hồi không thành công từ điểm cuối gửi. Mã phản hồi: {status}",
     "errSubmittingForm": "Đã xảy ra lỗi khi gửi biểu mẫu này",
-    "errorSavingFile": "Lỗi khi lưu tệp. Tên tệp: {fileName}. Lỗi: {lỗi}",
+    "errorSavingFile": "Lỗi khi lưu tệp. Tên tệp: {fileName}. Lỗi: {error}",
     "submittingDraftErrMsg": "Đã xảy ra lỗi khi lưu bản nháp",
-    "submittingDraftConsErrMsg": "Lỗi khi lưu bản nháp. Đệ trìnhId: {submissionId}. Lỗi: {lỗi}"
+    "submittingDraftConsErrMsg": "Lỗi khi lưu bản nháp. Đệ trìnhId: {submissionId}. Lỗi: {error}"
   },
   "notesPanel": {
     "addNewNote": "Thêm ghi chú mới",
@@ -528,7 +522,7 @@
     "close": "ĐÓNG",
     "addNoteNoReponserErr": "Không có dữ liệu phản hồi từ API trong khi gửi ghi chú để cập nhật trạng thái",
     "addNoteConsoleErrMsg": "Lỗi khi cập nhật trạng thái: {error}",
-    "addNoteErrMsg": "Đã xảy ra lỗi khi cố cập nhật trạng thái",
+    "addNoteErrMsg": "Đã xảy ra lỗi khi cố gắng cập nhật trạng thái",
     "updtSubmissionsStatusErr": "Không có dữ liệu phản hồi từ API trong khi gửi biểu mẫu cập nhật trạng thái",
     "noStatus": "không có trạng thái",
     "noStatusesFound": "Không tìm thấy trạng thái nào",
@@ -570,7 +564,7 @@
     "from": "Từ",
     "to": "ĐẾN",
     "CSVFormat": "Định dạng CSV",
-    "multiRowPerSubmissionA": "1 - Nhiều hàng trên mỗi lần gửi có khoảng cách nhận dạng",
+    "multiRowPerSubmissionA": "1 - Nhiều hàng trên mỗi lần gửi có khoảng cách thụt đầu dòng",
     "multiRowPerSubmissionB": "2 - Nhiều hàng cho mỗi lần gửi",
     "singleRowPerSubmission": "3 - Một hàng cho mỗi lần gửi",
     "unformatted": "4 - Chưa định dạng",
@@ -580,7 +574,7 @@
     "apiCallErrorMsg": "Đã xảy ra lỗi khi cố gắng xuất nội dung gửi cho biểu mẫu này.",
     "apiCallConsErrorMsg": "Lỗi khi xuất nội dung gửi cho",
     "selectAllFields": "Chọn tất cả các lĩnh vực",
-    "emailSentMsg": "Một email sẽ được gửi tới {email} chứa liên kết để tải xuống dữ liệu của bạn khi sẵn sàng",
+    "emailSentMsg": "Một email sẽ được gửi tới {email} có chứa liên kết để tải xuống dữ liệu của bạn khi sẵn sàng",
     "exportInProgress": "Đang xuất",
     "of": "của"
   },
@@ -614,6 +608,10 @@
   },
   "proactiveHelpPreviewDialog": {
     "learnMore": "Tìm hiểu thêm"
+  },
+  "preview": {
+    "preview": "Xem trước",
+    "previewToolTip": "Điều này hiển thị bản xem trước của thiết kế và hành vi của phiên bản biểu mẫu khi người gửi của bạn sẽ nhìn thấy nó. Bạn không thể gửi biểu mẫu từ trang này."
   },
   "generalLayout": {
     "loadingText": "Tải vui lòng đợi",
@@ -698,25 +696,25 @@
     "getUsersSubmissionsConsoleErrMsg": "Lỗi khi tải dữ liệu gửi biểu mẫu {submissionId}: {error}",
     "multiDraftUploadSuccess": "Tải lên nhiều bản nháp của bạn đã thành công!",
     "readVersionErrMsg": "Không có lược đồ trong phản hồi. VersionId: {versionId}",
-    "readDraftErrMsg": "Không có lược đồ trong phản hồi. DraftId: {draftId}",
+    "readDraftErrMsg": "Không có lược đồ trong phản hồi. draftId: {draftId}",
     "alertRouteMsg": "Chủ sở hữu biểu mẫu chưa xuất bản biểu mẫu và biểu mẫu không có sẵn để gửi.",
     "fecthingFormErrMsg": "Đã xảy ra lỗi khi tìm nạp biểu mẫu này",
     "fecthingFormConsoleErrMsg": "Lỗi khi tải lược đồ biểu mẫu {versionId}: {error}",
     "savingDraftErrMsg": "Đã xảy ra lỗi khi lưu bản nháp",
-    "savingDraftConsoleErrMsg": "Lỗi khi lưu bản nháp. Đệ trìnhId: {submissionId}. Lỗi: {lỗi}",
+    "savingDraftConsoleErrMsg": "Lỗi khi lưu bản nháp. Đệ trìnhId: {submissionId}. Lỗi: {error}",
     "submissionsPreviewAlert": "Đệ trình bị vô hiệu hóa trong khi xem trước biểu mẫu",
     "submissionsSubmitErrMsg": "Lỗi khi gửi biểu mẫu: {errors}",
     "sendSubmissionErrMsg": "Phản hồi không thành công từ điểm cuối gửi. Mã phản hồi: {status}",
     "errMsg": "Đã xảy ra lỗi khi gửi biểu mẫu này",
-    "customEventAlert": "Sự kiện nút tùy chỉnh chưa được hỗ trợ. Loại sự kiện: {sự kiện}",
+    "customEventAlert": "Sự kiện nút tùy chỉnh chưa được hỗ trợ. Loại sự kiện: {event}",
     "formLoading": "Vui lòng đợi trong khi biểu mẫu đang tải!!!",
     "yes": "Đúng",
     "no": "KHÔNG",
     "failedResSubmissn": "Phản hồi không thành công từ điểm cuối gửi. Mã phản hồi: {status}",
     "errSubmittingForm": "Đã xảy ra lỗi khi gửi biểu mẫu này",
-    "errorSavingFile": "Lỗi khi lưu tệp. Tên tệp: {fileNname}. Lỗi: {lỗi}",
+    "errorSavingFile": "Lỗi khi lưu tệp. Tên tệp: {fileName}. Lỗi: {error}",
     "submittingDraftErrMsg": "Đã xảy ra lỗi khi lưu bản nháp",
-    "submittingDraftConsErrMsg": "Lỗi khi lưu bản nháp. Đệ trìnhId: {submissionId}. Lỗi: {lỗi}",
+    "submittingDraftConsErrMsg": "Lỗi khi lưu bản nháp. Đệ trìnhId: {submissionId}. Lỗi: {error}",
     "formDraftAccessErrMsg": "Yêu cầu gửi đã được gửi, chuyển hướng đến Xem trang"
   },
   "bCGovFooter": {
@@ -786,36 +784,29 @@
     "exampleText2": "Văn bản mẫu 2",
     "filterPlaceholderTxt": "Lọc văn bản giữ chỗ",
     "filter": "Lọc",
-    "value": "giá trị"
+    "value": "giá trị",
+    "resetColumns": "Đặt lại cột"
   },
   "formViewerActions": {
     "viewAllSubmissions": "Xem tất cả bài dự thi",
     "saveAsADraft": "Lưu dưới dạng Bản nháp",
     "editThisDraft": "Chỉnh sửa Bản nháp này",
     "switchSingleSubmssn": "Chuyển sang gửi một lần",
-    "switchMultiSubmssn": "Chuyển sang gửi một lần"
+    "switchMultiSubmssn": "Chuyển sang Gửi nhiều lần"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Liên kết được sao chép vào khay nhớ tạm",
     "copyToClipboard": "Sao chép vào clipboard",
     "errCopyToClipboard": "Lỗi khi cố sao chép vào khay nhớ tạm."
   },
-  "admin": {
-    "root": {
-      "admin": "Quản trị viên"
-    }
-  },
-  "user": {
-    "root": {
-      "myForms": "MẪU CỦA TÔI",
-      "history": "LỊCH SỬ",
-      "user": "Người dùng"
-    }
-  },
   "sucess": {
     "sucessFormSubmissn": "Biểu mẫu của bạn đã được gửi thành công",
     "keepRecord": "Nếu bạn muốn giữ một bản ghi của bài nộp này, bạn có thể giữ như sau",
     "confirmationId": "ID xác nhận"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Lỗi: Đã xảy ra sự cố",
+    "error": "lỗi"
   },
   "permissionUtils": {
     "formNotAvailable": "Các hình thức hiện không có sẵn. Điều này có thể là do một liên kết không chính xác hoặc biểu mẫu có thể đã bị xóa bởi chủ sở hữu của nó.",
@@ -824,6 +815,29 @@
     "loadingForm": "Lỗi khi tải {options}: {error}",
     "idpHintMsg": "Biểu mẫu này yêu cầu xác thực {idpHint}. Vui lòng đăng nhập lại và thử lại.",
     "formIdpMissMatch": "Mẫu IDP không khớp. Biểu mẫu yêu cầu {idpHint} nhưng người dùng có {userIdp}."
+  },
+  "download": {
+    "chefsDataExport": "Xuất dữ liệu CHEFS",
+    "preparingForDownloading": "Đang chuẩn bị tải xuống...",
+    "downloadInfoA": "Nếu tệp của bạn không tự động tải xuống",
+    "downloadInfoB": "Bấm vào đây để thử lại"
+  },
+  "history": {
+    "submissnHistory": "Lịch sử gửi của bạn (TBD)"
+  },
+  "error": {
+    "logout": "Đăng xuất",
+    "somethingWentWrong": "Lỗi: Đã xảy ra sự cố... :("
+  },
+  "login": {
+    "authenticateWith": "Xác thực với:",
+    "alreadyLoggedIn": "đã đăng nhập",
+    "home": "Trang chủ",
+    "about": "Về"
+  },
+  "notFound": {
+    "about": "Về",
+    "pageNotFound": "Lôi 404 Không Tim Được Trang. :("
   },
   "store": {
     "admin": {
@@ -846,7 +860,7 @@
       "getUsersErrMsg": "Đã xảy ra lỗi khi tìm nạp người dùng.",
       "getUsersConsErrMsg": "Lỗi nhận dữ liệu người dùng quản trị: {error}",
       "getUserErrMsg": "Đã xảy ra lỗi khi tìm nạp người dùng này.",
-      "getUserConsErrMsg": "Lỗi nhận dữ liệu người dùng quản trị {userId}: {error}",
+      "getUserConsErrMsg": "Đã xảy ra lỗi khi nhận dữ liệu {userId} của người dùng quản trị: {error}",
       "storingFCHelpInfoErrMsg": "Đã xảy ra lỗi khi lưu trữ thông tin trợ giúp về thành phần biểu mẫu",
       "storingFCHelpInfoConsErrMsg": "Lỗi khi lưu trữ thông tin trợ giúp về thành phần biểu mẫu: {error}",
       "gettingFCImgUrlErrMsg": "Đã xảy ra lỗi khi nhận url hình ảnh",
@@ -878,7 +892,7 @@
       "fetchFormFieldsErrMsg": "Đã xảy ra lỗi khi tìm nạp danh sách các trường cho biểu mẫu này.",
       "fetchFormFieldsConsErrMsg": "Lỗi khi nhận biểu mẫu {formId}: {error}",
       "publishDraftErrMsg": "Đã xảy ra lỗi khi xuất bản.",
-      "publishDraftConsErrMsg": "Lỗi xuất bản ${draftId}: ${error}",
+      "publishDraftConsErrMsg": "Lỗi xuất bản {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "Lỗi trong toggleVersionPublish {versionId} {publish}: {error}",
       "updateFormErrMsg": "Đã xảy ra lỗi khi cập nhật cài đặt cho biểu mẫu này.",
       "updateFormConsErrMsg": "Lỗi khi cập nhật biểu mẫu {id}: {error}",
@@ -897,7 +911,7 @@
       "fecthSubmissnUsersErrMsg": "Đã xảy ra lỗi khi tìm nạp email người nhận cho nội dung gửi này.",
       "fecthSubmissnUsersConsErrMsg": "Lỗi khi nhận email người nhận để gửi {formSubmissionId}: {error}",
       "fetchSubmissnErrMsg": "Đã xảy ra lỗi khi tìm nạp nội dung gửi này.",
-      "fetchSubmissnConsErrMsg": "Lỗi khi gửi {submissionId}: ${error}",
+      "fetchSubmissnConsErrMsg": "Lỗi khi gửi {submissionId}: {error}",
       "fetchFormCSVExptFieldsErrMsg": "Đã xảy ra lỗi khi tìm nạp danh sách các trường cho biểu mẫu này.",
       "fetchFormCSVExptFieldsConsErrMsg": "Lỗi khi nhận biểu mẫu {formId}: {error}",
       "fetchSubmissnsErrMsg": "Đã xảy ra lỗi khi tìm nạp nội dung gửi cho biểu mẫu này.",
@@ -923,6 +937,24 @@
       "saveSubscriptionSettingsNotifyMsg": "Cài đặt đăng ký cho biểu mẫu này đã được lưu.",
       "saveSubscriptionSettingsErrMsg": "Đã xảy ra lỗi khi cố lưu cài đặt đăng ký.",
       "saveSubscriptionSettingsConsErrMsg": "Lỗi khi lưu cài đặt đăng ký cho biểu mẫu {formId}: {error}"
+    }
+  },
+  "admin": {
+    "root": {
+      "admin": "Quản trị viên"
+    },
+    "form": {
+      "administerForm": "quản lý biểu mẫu"
+    },
+    "user": {
+      "administerUser": "Quản lý người dùng"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "MẪU CỦA TÔI",
+      "history": "LỊCH SỬ",
+      "user": "Người dùng"
     }
   }
 }

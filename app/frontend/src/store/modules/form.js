@@ -97,7 +97,7 @@ export default {
       data: null,
       headers: null,
     },
-    multiLanguage: '',
+    lang: 'en',
     isRTL: false,
     subscriptionData: genInitialSubscribeDetails(),
   },
@@ -120,7 +120,7 @@ export default {
     fcProactiveHelpGroupList: (state) => state.fcProactiveHelpGroupList,
     fcProactiveHelpImageUrl: (state) => state.fcProactiveHelpImageUrl,
     downloadedFile: (state) => state.downloadedFile,
-    multiLanguage: (state) => state.multiLanguage,
+    lang: (state) => state.lang,
     isRTL: (state) => state.isRTL,
     subscriptionData: (state) => state.subscriptionData,
   },
@@ -187,8 +187,8 @@ export default {
     SET_DOWNLOADEDFILE_HEADERS(state, headers) {
       state.downloadedFile.headers = headers;
     },
-    SET_MULTI_LANGUAGE(state, multiLanguage) {
-      state.multiLanguage = multiLanguage;
+    SET_MULTI_LANGUAGE(state, lang) {
+      state.lang = lang;
     },
     SET_SUBSCRIPTION_DATA(state, subscriptionData) {
       state.subscriptionData = subscriptionData;
@@ -907,9 +907,9 @@ export default {
       if (!state.form || state.form.isDirty === isDirty) return; // don't do anything if not changing the val (or if form is blank for some reason)
       commit('SET_FORM_DIRTY', isDirty);
     },
-    async setMultiLanguage({ commit }, multiLanguage) {
-      commit('SET_MULTI_LANGUAGE', multiLanguage);
-      if (multiLanguage === 'ar' || multiLanguage === 'fa') {
+    async setMultiLanguage({ commit }, lang) {
+      commit('SET_MULTI_LANGUAGE', lang);
+      if (lang === 'ar' || lang === 'fa') {
         commit('SET_IS_RTL', true);
       } else {
         commit('SET_IS_RTL', false);

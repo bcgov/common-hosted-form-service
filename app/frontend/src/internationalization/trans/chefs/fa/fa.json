@@ -18,10 +18,6 @@
   "manageLayout": {
     "manageForm": "مدیریت فرم"
   },
-  "preview": {
-    "preview": "پیش نمایش",
-    "previewToolTip": "این یک پیش نمایش از طراحی و رفتار نسخه فرم را نشان می دهد که ارسال کنندگان شما آن را مشاهده می کنند. شما نمی توانید فرم را از این صفحه ارسال کنید."
-  },
   "shareForm": {
     "shareForm": "اشتراک گذاری فرم",
     "shareLink": "لینک را به اشتراک بگذارید",
@@ -54,15 +50,15 @@
     "eventSubscription": "اشتراک رویداد"
   },
   "formSettings": {
-    "pressToAddMultiEmail": "برای افزودن چندین آدرس ایمیل، <kbd>enter</kbd> یا <kbd>،</kbd> یا <kbd>space</kbd> را فشار دهید",
-    "allowMultiDraft": "آپلود <strong> پیش نویس چندگانه</strong> مجاز است",
+    "pressToAddMultiEmail": "برای افزودن چندین آدرس ایمیل، <kbd>اینتر</kbd> یا <kbd>،</kbd> یا <kbd>فاصله</kbd> را فشار دهید",
+    "allowMultiDraft": "بارگذاری <strong>چند پیش نویس</strong> مجاز است",
     "formTitle": "عنوان فرم",
     "formDescription": "توضیحات فرم",
     "formAccess": "دسترسی به فرم",
     "info": "اگر از این فرم برای جمع‌آوری اطلاعات از عموم مردم در مورد موضوعاتی استفاده می‌کنید که مورد علاقه عمومی هستند، باید با GCPE تماس بگیرید تا تعامل شما در فهرست قرار گیرد.",
     "important": "مهم",
-    "idimNotifyA": "شما باید تیم مدیریت اطلاعات هویت (IDIM) را از طریق ایمیل مطلع کنید",
-    "idimNotifyB": "قصد دارید از BCeID برای تأیید هویت ارسال کنندگان فرم خود استفاده کنید.",
+    "idimNotifyA": "شما باید از طریق ایمیل به تیم مدیریت اطلاعات هویت (IDIM) اطلاع دهید",
+    "idimNotifyB": "قصد شما برای استفاده از BCeID برای تأیید هویت ارسال کنندگان فرم شما.",
     "referenceGuideA": "لطفا به ما مراجعه کنید",
     "referenceGuideB": "راهنمای کاربر",
     "referenceGuideC": "برای جزئیات بیشتر",
@@ -75,10 +71,10 @@
     "afterSubmission": "پس از ارسال",
     "submissionConfirmation": "جزئیات تایید ارسال را نشان دهید",
     "theConfirmationID": "شناسه تایید",
-    "infoB": "گزینه ای برای کاربر برای ایمیل تایید ارسال برای خود",
+    "infoB": "گزینه ای برای کاربر برای اینکه یک تایید ارسال را برای خود ایمیل کند",
     "loginRequired": "ورود به سیستم الزامی است",
     "canSaveAndEditDraftLabel": "ارسال کنندگان می توانند <strong>پیش نویس ها را ذخیره و ویرایش کنند</strong>",
-    "canUpdateStatusAsReviewer": "بازبینان می توانند <strong>وضعیت این فرم را به روز کنند</strong> (به عنوان مثال ارسال شده، اختصاص داده شده، تکمیل شده)",
+    "canUpdateStatusAsReviewer": "بازبینان می توانند <strong>وضعیت این فرم را به روز کنند</strong> (یعنی ارسال شده، اختصاص داده شده، تکمیل شده)",
     "submitterCanCopyExistingSubmissn": "ارسال کنندگان می توانند <strong>یک ارسال موجود را کپی کنند</strong>",
     "submissionConfirmationToolTip": "انتخاب این گزینه کنترل می کند که کاربر ارسال کننده این فرم در ارسال موفقیت آمیز چه چیزی را ببیند.<br /> اگر علامت زده شود نمایش داده می شود",
     "emailNotificatnToTeam": "برای تیم من یک ایمیل اعلان ارسال کنید",
@@ -95,7 +91,7 @@
     "keepOpenFor": "باز نگه دارید برای",
     "period": "دوره زمانی",
     "allowLateSubmissions": "اجازه ارسال دیرهنگام",
-    "allowLateSubmissionsInfoTip": "در صورت علامت زدن، ارسال‌کنندگان می‌توانند پس از تاریخ بسته شدن داده‌ها را ارسال کنند.",
+    "allowLateSubmissionsInfoTip": "در صورت علامت زدن، ارسال‌کنندگان می‌توانند پس از تاریخ بسته شدن، داده‌ها را ارسال کنند.",
     "afterCloseDateFor": "پس از تاریخ بسته برای",
     "repeatPeriod": "دوره تکرار",
     "every": "هر",
@@ -109,7 +105,7 @@
     "datesOfSubmissnInfo": "طبق تنظیمات، این تاریخ های موجود برای ارسال است:",
     "formOpenInterval": "این فرم برای ارسال از",
     "allowDateSubmissionDate": "با اجازه ارسال دیرهنگام تا",
-    "customClosingMessage": "تنظیم پیام بسته شدن سفارشی",
+    "customClosingMessage": "پیام بسته شدن سفارشی را تنظیم کنید",
     "customClosingMessageToolTip": "به شما امکان می دهد هنگام بازدید از یک فرم بسته، یک پیام سفارشی برای کاربران خود اضافه کنید.",
     "closingMessage": "بسته شدن پیام",
     "sendReminderEmail": "ارسال ایمیل یادآوری",
@@ -169,7 +165,7 @@
     "delete": "حذف",
     "confirmKeyGen": "تأیید تولید کلید",
     "createAPIKey": "یک کلید API برای این فرم ایجاد شود؟<br /> اطمینان حاصل کنید که سلب مسئولیت در این صفحه را دنبال می کنید.",
-    "regenerateAPIKey": "کلید API را دوباره تولید کنید؟<br /> <strong>ادامه دسترسی کلید API فعلی شما را حذف می‌کند</strong> .",
+    "regenerateAPIKey": "کلید API را دوباره تولید کنید؟<br /> <strong>ادامه دسترسی کلید API فعلی شما را حذف می کند</strong> .",
     "formOwnerKeyAcess": "برای مدیریت کلیدهای API باید <strong>مالک فرم</strong> باشید.",
     "regenerate": "بازسازی کنید",
     "generate": "تولید می کنند",
@@ -179,7 +175,7 @@
   },
   "manageVersions": {
     "important": "مهم!",
-    "infoA": "اگر هیچ نسخه منتشر شده ای وجود نداشته باشد، کاربران نمی توانند به این فرم دسترسی داشته باشند تا زمانی که نسخه منتشر شده اختصاص داده شود. پس از انتشار نسخه، آن نسخه دیگر قابل ویرایش نیست. برای ادامه ویرایش باید یک نسخه جدید بر اساس یکی از نسخه های فرم قبلی ایجاد کنید.",
+    "infoA": "اگر هیچ نسخه منتشر شده ای وجود نداشته باشد، کاربران نمی توانند به این فرم دسترسی داشته باشند تا زمانی که نسخه منتشر شده اختصاص داده شود. پس از انتشار نسخه، آن نسخه دیگر قابل ویرایش نیست. برای ادامه ویرایش، باید یک نسخه جدید بر اساس یکی از نسخه های فرم قبلی ایجاد کنید.",
     "infoB": "توجه: فقط یک نسخه قابل انتشار است.",
     "version": "نسخه",
     "draft": "پیش نویس",
@@ -189,7 +185,7 @@
     "infoC": "لطفاً قبل از شروع نسخه جدید آخرین نسخه پیش نویس خود را منتشر یا حذف کنید.",
     "deleteVersion": "حذف نسخه",
     "draftAlreadyExists": "پیش نویس از قبل وجود دارد",
-    "infoD": "لطفاً قبل از شروع پیش نویس جدید، پیش نویس موجود را ویرایش، منتشر یا حذف کنید.",
+    "infoD": "لطفاً قبل از شروع پیش‌نویس جدید، پیش‌نویس موجود را ویرایش، منتشر یا حذف کنید.",
     "publishVersion": "نسخه انتشار",
     "unpublishVersion": "لغو انتشار نسخه",
     "infoE": "لغو انتشار این فرم، فرم را تا انتشار مجدد نسخه از گردش خارج می کند.",
@@ -203,7 +199,7 @@
     "published": "منتشر شده",
     "unpublished": "منتشر نشده",
     "useVersionInfo": "از نسخه {version} به عنوان پایه نسخه جدید استفاده کنید",
-    "publishingVersionInfo": "با این کار نسخه {نسخه} فرم شما فعال می شود."
+    "publishingVersionInfo": "با این کار نسخه {version} فرم شما فعال می شود."
   },
   "addOwner": {
     "infoA": "این کار فقط در صورتی انجام می‌شود که مالک فعلی فرم دیگر فعال نباشد یا در یک رویداد اولویت‌دار با شما تماس نداشته باشد. در غیر این صورت از مالک فعلی یا مدیر تیم بخواهید که این کار را خودشان انجام دهند.",
@@ -289,7 +285,6 @@
     "notificationMsg": "دریافت کاربر از RBAC انجام نشد، به کنسول مراجعه کنید",
     "notificationConsErr": "خطا در دریافت کاربر از RBAC"
   },
-  "fcProactiveHelp": {},
   "baseAuthButton": {
     "logout": "خروج",
     "login": "وارد شدن"
@@ -327,7 +322,10 @@
     "formDesignSaveConsoleErrMsg": "خطا در به‌روزرسانی یا ایجاد فرم (FormID: {formId}، versionId: {versionId}، draftId: {draftId}) خطا: {error}",
     "collapse": "سقوط - فروپاشی",
     "actions": "اقدامات",
-    "version": "نسخه"
+    "version": "نسخه",
+    "save": "صرفه جویی",
+    "saving": "صرفه جویی در",
+    "notSaved": "ذخیره نشد"
   },
   "formViewerMultiUpload": {
     "important": "مهم",
@@ -354,18 +352,14 @@
     "fileIsEmpty": "این فایل خالی است",
     "download": "دانلود"
   },
-  "bcGovAlertBanner": {
-    "defaultErrMsg": "خطا: مشکلی پیش آمد",
-    "error": "خطا"
-  },
   "formDisclaimer": {
     "disclaimerAndStatement": "سلب مسئولیت و بیانیه مسئولیت برای طراحان فرم:",
-    "privacyLaw": "این مسئولیت شماست که از قوانین حفظ حریم خصوصی حاکم بر جمع آوری، استفاده و افشای اطلاعات قابل شناسایی شخصی پیروی کنید.",
+    "privacyLaw": "مسئولیت رعایت قوانین حفظ حریم خصوصی حاکم بر جمع آوری، استفاده و افشای اطلاعات قابل شناسایی شخصی بر عهده شماست.",
     "disclosure": "دسترسی به این ابزار طراح فرم ذاتاً اجازه جمع آوری، استفاده یا افشای اطلاعات قابل شناسایی شخصی را نمی دهد.",
     "consent": "کسب رضایت برای جمع آوری اطلاعات طبق قانون، مسئولیت شماست.",
     "formIntention": "قبل از انتشار یا توزیع فرم خود باید در مورد قصد فرم با خود صحبت کنید",
     "privacyOfficer": "افسر حریم خصوصی وزارت",
-    "assement": "و در صورت لزوم ارزیابی ها را تکمیل کنید."
+    "assement": "و ارزیابی ها را در صورت لزوم تکمیل کنید."
   },
   "requestReceipt": {
     "emailReceipt": "رسید این ارسال را ایمیل کنید",
@@ -447,7 +441,7 @@
     "email": "پست الکترونیک",
     "removeUserWarningMsg1": "آیا مطمئن هستید که می خواهید حذف کنید؟",
     "removeUserWarningMsg2": "آنها دیگر مجوزی برای این ارسال نخواهند داشت.",
-    "userExistInListMsg": "کاربر {username} قبلاً در لیست اعضای تیم است.",
+    "userExistInListMsg": "کاربر {username} در حال حاضر در لیست اعضای تیم است.",
     "getSubmissionUsersErr": "هنگام تلاش برای واکشی کاربران برای این ارسال، خطایی روی داد.",
     "getSubmissionUsersConsoleErr": "خطا در دریافت کاربران برای {submissionId} : {error}",
     "sentInviteEmailTo": "ایمیل دعوت به",
@@ -492,16 +486,16 @@
     "multiDraftUploadSuccess": "بارگذاری چند پیش نویس شما با موفقیت انجام شد!",
     "failedResSubmissn": "پاسخ ناموفق از نقطه پایان ارسال. کد پاسخ: {status}",
     "errSubmittingForm": "هنگام ارسال این فرم خطایی روی داد",
-    "errorSavingFile": "خطا در ذخیره فایل ها. نام فایل: {fileName}. خطا: {خطا}",
+    "errorSavingFile": "خطا در ذخیره فایل ها. نام فایل: {fileName}. خطا: {error}",
     "submittingDraftErrMsg": "هنگام ذخیره پیش نویس خطایی روی داد",
-    "submittingDraftConsErrMsg": "خطا در ذخیره پیش نویس. SubmissionId: {submissionId}. خطا: {خطا}"
+    "submittingDraftConsErrMsg": "خطا در ذخیره پیش نویس. SubmissionId: {submissionId}. خطا: {error}"
   },
   "notesPanel": {
     "addNewNote": "یادداشت جدید اضافه کنید",
     "cancel": "لغو کنید",
     "addNote": "اضافه کردن توجه",
     "noResponseErr": "هنگام ارسال فرم، هیچ داده پاسخی از API وجود ندارد",
-    "errorMesg": "هنگام تلاش برای افزودن یادداشت خطایی روی داد.",
+    "errorMesg": "هنگام تلاش برای افزودن یادداشت، خطایی روی داد.",
     "consoleErrMsg": "خطا در افزودن یادداشت:",
     "fetchErrMsg": "هنگام تلاش برای واکشی یادداشت برای این ارسال، خطایی روی داد.",
     "fetchConsoleErrMsg": "خطا در افزودن یادداشت:",
@@ -531,7 +525,7 @@
     "addNoteErrMsg": "هنگام تلاش برای به روز رسانی وضعیت خطایی روی داد",
     "updtSubmissionsStatusErr": "هنگام ارسال فرم به‌روزرسانی وضعیت، هیچ داده پاسخی از API وجود ندارد",
     "noStatus": "هیچ وضعیت",
-    "noStatusesFound": "هیچ وضعیتی یافت نشد",
+    "noStatusesFound": "هیچ وضعیتی پیدا نشد",
     "statusCodesErr": "خطا در یافتن کدهای وضعیت",
     "notifyErrorCode": "هنگام واکشی وضعیت این ارسال خطایی روی داد.",
     "notifyConsoleErrorCode": "خطا در گرفتن وضعیت ها:",
@@ -570,7 +564,7 @@
     "from": "از جانب",
     "to": "به",
     "CSVFormat": "فرمت CSV",
-    "multiRowPerSubmissionA": "1 - چندین ردیف در هر ارسال با فاصله های شناسایی",
+    "multiRowPerSubmissionA": "1 - چندین ردیف در هر ارسال با فاصله های تورفتگی",
     "multiRowPerSubmissionB": "2 - چندین ردیف در هر ارسال",
     "singleRowPerSubmission": "3 - تک ردیف در هر ارسال",
     "unformatted": "4 - فرمت نشده",
@@ -580,7 +574,7 @@
     "apiCallErrorMsg": "هنگام تلاش برای صادر کردن موارد ارسالی برای این فرم خطایی روی داد.",
     "apiCallConsErrorMsg": "خطا در ارسال‌های صادراتی برای",
     "selectAllFields": "همه فیلدها را انتخاب کنید",
-    "emailSentMsg": "ایمیلی به {email} ارسال می‌شود که حاوی پیوندی برای دانلود داده‌های شما پس از آماده شدن است",
+    "emailSentMsg": "ایمیلی به {email} ارسال می‌شود که حاوی پیوندی برای دانلود داده‌های شما در صورت آماده شدن است",
     "exportInProgress": "صادرات در حال انجام است",
     "of": "از"
   },
@@ -614,6 +608,10 @@
   },
   "proactiveHelpPreviewDialog": {
     "learnMore": "بیشتر بدانید"
+  },
+  "preview": {
+    "preview": "پیش نمایش",
+    "previewToolTip": "این یک پیش نمایش از طراحی و رفتار نسخه فرم را نشان می دهد که ارسال کنندگان شما آن را مشاهده می کنند. شما نمی توانید فرم را از این صفحه ارسال کنید."
   },
   "generalLayout": {
     "loadingText": "در حال بارگذاری لطفا صبر کنید",
@@ -665,7 +663,7 @@
     "removeUserConsoleErrMsg": "خطا در حذف کاربران از فرم {formId}: {error}",
     "updUserRolesErrMsg": "هنگام تلاش برای به‌روزرسانی همه نقش‌های کاربر خطایی روی داد",
     "updUserRolesConsoleErrMsg": "خطا در تنظیم همه نقش‌های کاربر برای فرم {formId}: {error}",
-    "setUserFormsErrMsg": "هنگام تلاش برای به‌روزرسانی نقش‌ها برای یک کاربر خطایی روی داد",
+    "setUserFormsErrMsg": "هنگام تلاش برای به‌روزرسانی نقش‌ها برای یک کاربر، خطایی روی داد",
     "setUserFormsConsoleErrMsg": "خطا در تنظیم نقش‌های کاربر برای فرم {formId}: {error}"
   },
   "floatButton": {
@@ -692,7 +690,7 @@
     "submitFormWarningMsg": "آیا مطمئن هستید که می خواهید فرم خود را ارسال کنید؟",
     "submit": "ارسال",
     "wantToSaveDraft": "آیا می خواهید پیش نویس را ذخیره کنید؟",
-    "version": "{version} :نسخه",
+    "version": "نسخه: {version}",
     "formScheduleExpireMessage": "ارسال فرم در دسترس نیست زیرا دوره برنامه ریزی شده ارسال به پایان رسیده است.",
     "getUsersSubmissionsErrMsg": "هنگام واکشی ارسال برای این فرم خطایی روی داد",
     "getUsersSubmissionsConsoleErrMsg": "خطا در بارگیری داده‌های ارسال فرم {submissionId}: {error}",
@@ -703,7 +701,7 @@
     "fecthingFormErrMsg": "هنگام واکشی این فرم خطایی روی داد",
     "fecthingFormConsoleErrMsg": "خطا در بارگیری طرحواره فرم {versionId}: {error}",
     "savingDraftErrMsg": "هنگام ذخیره پیش نویس خطایی روی داد",
-    "savingDraftConsoleErrMsg": "خطا در ذخیره پیش نویس. SubmissionId: {submissionId}. خطا: {خطا}",
+    "savingDraftConsoleErrMsg": "خطا در ذخیره پیش نویس. SubmissionId: {submissionId}. خطا: {error}",
     "submissionsPreviewAlert": "ارسال در حین پیش نمایش فرم غیرفعال شد",
     "submissionsSubmitErrMsg": "خطا در ارسال فرم: {errors}",
     "sendSubmissionErrMsg": "پاسخ ناموفق از نقطه پایان ارسال. کد پاسخ: {status}",
@@ -714,9 +712,9 @@
     "no": "خیر",
     "failedResSubmissn": "پاسخ ناموفق از نقطه پایان ارسال. کد پاسخ: {status}",
     "errSubmittingForm": "هنگام ارسال این فرم خطایی روی داد",
-    "errorSavingFile": "خطا در ذخیره فایل ها. نام فایل: {fileNname}. خطا: {خطا}",
+    "errorSavingFile": "خطا در ذخیره فایل ها. نام فایل: {fileName}. خطا: {error}",
     "submittingDraftErrMsg": "هنگام ذخیره پیش نویس خطایی روی داد",
-    "submittingDraftConsErrMsg": "خطا در ذخیره پیش نویس. SubmissionId: {submissionId}. خطا: {خطا}",
+    "submittingDraftConsErrMsg": "خطا در ذخیره پیش نویس. SubmissionId: {submissionId}. خطا: {error}",
     "formDraftAccessErrMsg": "ارسال درخواستی قبلا ارسال شده است، به صفحه مشاهده هدایت می شود"
   },
   "bCGovFooter": {
@@ -752,7 +750,7 @@
     "chefsHowToTitle": "فیلم‌های راهنمای سرآشپز",
     "chefsHowToSub": "راهنمای شروع سریع ما شما را با برخی از عملکردهای اساسی CHEFS آشنا می کند.",
     "getStartedToChefs": "شروع به استفاده از CHEFS کنید",
-    "createOnlineTitle": "برای جمع آوری اطلاعات از مشتریان خود و بهبود گردش کار خود فرم های آنلاین ایجاد کنید.",
+    "createOnlineTitle": "فرم های آنلاین برای جمع آوری اطلاعات از مشتریان خود و بهبود گردش کار خود ایجاد کنید.",
     "getStarted": "شروع کنید"
   },
   "create": {
@@ -786,36 +784,29 @@
     "exampleText2": "متن مثال 2",
     "filterPlaceholderTxt": "متن جای جای فیلتر کنید",
     "filter": "فیلتر کنید",
-    "value": "ارزش"
+    "value": "ارزش",
+    "resetColumns": "بازنشانی ستون ها"
   },
   "formViewerActions": {
     "viewAllSubmissions": "مشاهده همه موارد ارسالی",
     "saveAsADraft": "ذخیره به عنوان پیش نویس",
     "editThisDraft": "این پیش نویس را ویرایش کنید",
     "switchSingleSubmssn": "به ارسال تکی بروید",
-    "switchMultiSubmssn": "به ارسال تکی بروید"
+    "switchMultiSubmssn": "به ارسال چندگانه تغییر دهید"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "پیوند در کلیپ بورد کپی شد",
     "copyToClipboard": "کپی به کلیپ بورد",
     "errCopyToClipboard": "خطا در تلاش برای کپی کردن در کلیپ بورد."
   },
-  "admin": {
-    "root": {
-      "admin": "مدیر"
-    }
-  },
-  "user": {
-    "root": {
-      "myForms": "فرم های من",
-      "history": "تاریخ",
-      "user": "کاربر"
-    }
-  },
   "sucess": {
     "sucessFormSubmissn": "فرم شما با موفقیت ارسال شد",
     "keepRecord": "اگر مایل به حفظ سابقه این ارسال هستید، می توانید موارد زیر را حفظ کنید",
     "confirmationId": "شناسه تایید"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "خطا: مشکلی پیش آمد",
+    "error": "خطا"
   },
   "permissionUtils": {
     "formNotAvailable": "فرم در حال حاضر در دسترس نیست. این ممکن است به دلیل پیوند نادرست باشد، یا ممکن است فرم توسط مالک آن حذف شده باشد.",
@@ -824,6 +815,29 @@
     "loadingForm": "خطا هنگام بارگیری {options}: {error}",
     "idpHintMsg": "این فرم به احراز هویت {idpHint} نیاز دارد. لطفا دوباره وارد شوید و دوباره امتحان کنید.",
     "formIdpMissMatch": "عدم تطابق فرم IDP. فرم به {idpHint} نیاز دارد اما کاربر دارای {userIdp} است."
+  },
+  "download": {
+    "chefsDataExport": "CHEFS Data Export",
+    "preparingForDownloading": "آماده شدن برای دانلود...",
+    "downloadInfoA": "اگر فایل شما به صورت خودکار دانلود نمی شود",
+    "downloadInfoB": "جهت تلاش دوباره اینجا کلیک کنید"
+  },
+  "history": {
+    "submissnHistory": "سابقه ارسال شما (TBD)"
+  },
+  "error": {
+    "logout": "خروج",
+    "somethingWentWrong": "خطا: مشکلی پیش آمد... :("
+  },
+  "login": {
+    "authenticateWith": "احراز هویت با:",
+    "alreadyLoggedIn": "قبلا وارد شده اید",
+    "home": "صفحه اصلی",
+    "about": "در باره"
+  },
+  "notFound": {
+    "about": "در باره",
+    "pageNotFound": "404: صفحه یافت نشد. :("
   },
   "store": {
     "admin": {
@@ -850,7 +864,7 @@
       "storingFCHelpInfoErrMsg": "هنگام ذخیره اطلاعات راهنمای مؤلفه فرم خطایی روی داد",
       "storingFCHelpInfoConsErrMsg": "خطا در ذخیره اطلاعات راهنمای مؤلفه فرم: {error}",
       "gettingFCImgUrlErrMsg": "هنگام دریافت url تصویر خطایی روی داد",
-      "gettingFCImgUrlConsErrMsg": "خطا در دریافت url تصویر: {error}",
+      "gettingFCImgUrlConsErrMsg": "خطا در دریافت نشانی اینترنتی تصویر: {error}",
       "updatingFCStatusErrMsg": "هنگام به‌روزرسانی وضعیت انتشار خطایی روی داد",
       "updatingFCStatusConsErrMsg": "خطا در به‌روزرسانی وضعیت انتشار: {error}",
       "fecthingFormBuilderCompsErrMsg": "هنگام واکشی اجزای سازنده فرم خطایی روی داد",
@@ -878,7 +892,7 @@
       "fetchFormFieldsErrMsg": "هنگام واکشی لیست فیلدهای این فرم خطایی روی داد.",
       "fetchFormFieldsConsErrMsg": "خطا در دریافت فرم {formId}: {error}",
       "publishDraftErrMsg": "هنگام انتشار خطایی روی داد.",
-      "publishDraftConsErrMsg": "خطا در انتشار ${draftId}: ${error}",
+      "publishDraftConsErrMsg": "خطا در انتشار {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "خطا در toggleVersionPublish {versionId} {publish}: {error}",
       "updateFormErrMsg": "هنگام به روز رسانی تنظیمات این فرم خطایی روی داد.",
       "updateFormConsErrMsg": "خطا در به‌روزرسانی فرم {id}: {error}",
@@ -897,7 +911,7 @@
       "fecthSubmissnUsersErrMsg": "هنگام واکشی ایمیل گیرنده برای این ارسال، خطایی روی داد.",
       "fecthSubmissnUsersConsErrMsg": "خطا در دریافت ایمیل گیرنده برای ارسال {formSubmissionId}: {error}",
       "fetchSubmissnErrMsg": "هنگام واکشی این ارسال خطایی روی داد.",
-      "fetchSubmissnConsErrMsg": "خطا در دریافت ارسال {submissionId}: ${error}",
+      "fetchSubmissnConsErrMsg": "خطا در دریافت ارسال {submissionId}: {error}",
       "fetchFormCSVExptFieldsErrMsg": "هنگام واکشی لیست فیلدهای این فرم خطایی روی داد.",
       "fetchFormCSVExptFieldsConsErrMsg": "خطا در دریافت فرم {formId}: {error}",
       "fetchSubmissnsErrMsg": "هنگام واکشی موارد ارسالی برای این فرم خطایی روی داد.",
@@ -924,6 +938,24 @@
       "saveSubscriptionSettingsErrMsg": "هنگام تلاش برای ذخیره تنظیمات اشتراک خطایی روی داد.",
       "saveSubscriptionSettingsConsErrMsg": "خطا در ذخیره تنظیمات اشتراک برای فرم {formId}: {error}"
 
+    }
+  },
+  "admin": {
+    "root": {
+      "admin": "مدیر"
+    },
+    "form": {
+      "administerForm": "اداره فرم"
+    },
+    "user": {
+      "administerUser": "مدیریت کاربر"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "فرم های من",
+      "history": "تاریخ",
+      "user": "کاربر"
     }
   }
 }

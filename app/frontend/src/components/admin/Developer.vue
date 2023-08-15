@@ -5,42 +5,44 @@
       <v-col cols="6">
         <h3>Keycloak</h3>
         <br />
-        <h4>{{ $t('trans.developer.user') }}</h4>
-        <strong>{{ $t('trans.developer.name') }}:</strong>
+        <h4 :lang="lang">{{ $t('trans.developer.user') }}</h4>
+        <strong :lang="lang">{{ $t('trans.developer.name') }}:</strong>
         {{ fullName }}
         <br />
-        <strong>{{ $t('trans.developer.userName') }}:</strong>
+        <strong :lang="lang">{{ $t('trans.developer.userName') }}:</strong>
         {{ userName }}
         <br />
         <br />
-        <h4>
+        <h4 :lang="lang">
           {{ $t('trans.developer.JWTContents') }}
           <BaseCopyToClipboard
             :copyText="JSON.stringify(tokenParsed)"
             :snackBarText="$t('trans.developer.JWTContentsSBTxt')"
             :tooltipText="$t('trans.developer.JWTContentsTTTxt')"
+            :lang="lang"
           />
         </h4>
         <vue-json-pretty :data="tokenParsed" />
-        <h4>
+        <h4 :lang="lang">
           {{ $t('trans.developer.JWTToken') }}
           <BaseCopyToClipboard
             :copyText="token"
             :snackBarText="$t('trans.developer.JWTTokenSBTxt')"
             :tooltipText="$t('trans.developer.JWTTokenTTTxt')"
+            :lang="lang"
           />
         </h4>
         <div style="word-break: break-all">{{ token }}</div>
       </v-col>
       <v-col cols="5" offset="1">
-        <h3>{{ $t('trans.developer.chefsAPI') }}</h3>
+        <h3 :lang="lang">{{ $t('trans.developer.chefsAPI') }}</h3>
         <br />
         <h4>
-          /rbac/current
           <BaseCopyToClipboard
             :copyText="JSON.stringify(apiRes)"
             :snackBarText="$t('trans.developer.RBACSBTxt')"
             :tooltipText="$t('trans.developer.RBACTTTxt')"
+            :lang="lang"
           />
         </h4>
         <vue-json-pretty :data="apiRes" />
@@ -67,6 +69,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['fullName', 'token', 'tokenParsed', 'userName']),
+    ...mapGetters('form', ['lang']),
   },
   created() {
     this.getUser();

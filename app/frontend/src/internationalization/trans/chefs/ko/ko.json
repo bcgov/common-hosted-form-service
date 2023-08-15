@@ -15,10 +15,6 @@
     "action": "행위",
     "loadingText": "로딩 중 기다려주세요"
   },
-  "preview": {
-    "preview": "시사",
-    "previewToolTip": "이는 제출자가 볼 수 있는 양식 버전 디자인 및 동작의 미리보기를 보여줍니다. 이 페이지에서는 양식을 제출할 수 없습니다."
-  },
   "manageLayout": {
     "manageForm": "양식 관리"
   },
@@ -54,15 +50,15 @@
     "eventSubscription": "イベントのサブスクリプション"
   },
   "formSettings": {
-    "pressToAddMultiEmail": "여러 이메일 주소를 추가하려면 <kbd>enter</kbd> 또는 <kbd>,</kbd> 또는 <kbd>space</kbd>를 누르세요.",
-    "allowMultiDraft": "<strong> 여러 초안</strong> 업로드 허용",
+    "pressToAddMultiEmail": "여러 이메일 주소를 추가하려면 <kbd>enter</kbd> 또는 <kbd>,</kbd> 또는 <kbd>space를</kbd> 누르십시오.",
+    "allowMultiDraft": "<strong>여러 초안</strong> 업로드 허용",
     "formTitle": "양식 제목",
     "formDescription": "양식 설명",
     "formAccess": "양식 액세스",
-    "info": "이 양식을 사용하여 대중이 일반적으로 관심을 갖는 주제에 대한 정보를 일반 대중으로부터 수집하려는 경우 귀하의 참여가 목록에 표시될 수 있도록 GCPE에 연락해야 합니다.",
+    "info": "이 양식을 사용하여 대중이 일반적으로 관심을 갖는 주제에 대한 정보를 일반 대중으로부터 수집하려면 GCPE에 연락하여 참여가 목록에 표시될 수 있도록 해야 합니다.",
     "important": "중요한",
-    "idimNotifyA": "IDIM(Identity Information Management) 팀에 이메일로 알려야 합니다.",
-    "idimNotifyB": "BCeID를 활용하여 양식 제출자의 신원을 확인하려는 의도.",
+    "idimNotifyA": "IDIM(ID 정보 관리) 팀에 이메일로 알려야 합니다.",
+    "idimNotifyB": "양식 제출자의 신원을 확인하기 위해 BCeID를 활용하려는 귀하의 의도.",
     "referenceGuideA": "우리를 참조하십시오",
     "referenceGuideB": "사용자 설명서",
     "referenceGuideC": "상세 사항은",
@@ -128,7 +124,7 @@
     "selectAnOptions": "옵션을 1개 이상 선택하세요.",
     "validInterval": "유효한 간격이어야 합니다.",
     "fieldRequiredAndInterval": "이 필드는 필수이며 간격이어야 합니다.",
-    "dateGrtOpenSubmissnDate": "날짜까지 반복은 공개 제출 날짜보다 커야 합니다.",
+    "dateGrtOpenSubmissnDate": "날짜가 공개 제출 날짜보다 커질 때까지 반복합니다.",
     "public": "공개(익명)",
     "allowEventSubscription": "イベントのサブスクリプションを許可する",
     "eventSubscription": "イベントのサブスクリプション",
@@ -289,7 +285,6 @@
     "notificationMsg": "RBAC에서 사용자를 가져오지 못했습니다. 콘솔을 참조하세요.",
     "notificationConsErr": "RBAC에서 사용자를 가져오는 중 오류가 발생했습니다."
   },
-  "fcProactiveHelp": {},
   "baseAuthButton": {
     "logout": "로그 아웃",
     "login": "로그인"
@@ -327,7 +322,10 @@
     "formDesignSaveConsoleErrMsg": "양식 업데이트 또는 생성 오류(FormID: {formId}, versionId: {versionId}, draftId: {draftId}) 오류: {error}",
     "collapse": "무너지다",
     "actions": "행위",
-    "version": "버전"
+    "version": "버전",
+    "save": "구하다",
+    "saving": "절약",
+    "notSaved": "저장되지 않음"
   },
   "formViewerMultiUpload": {
     "important": "중요한",
@@ -353,10 +351,6 @@
     "errAfterValidate": "일부 오류가 발견되었습니다. 자세한 내용은 아래를 참조하세요.",
     "fileIsEmpty": "이 파일은 비어 있습니다.",
     "download": "다운로드"
-  },
-  "bcGovAlertBanner": {
-    "defaultErrMsg": "오류: 문제가 발생했습니다.",
-    "error": "오류"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "양식 설계자에 대한 면책 및 책임 진술:",
@@ -490,11 +484,11 @@
     "yes": "예",
     "no": "아니요",
     "multiDraftUploadSuccess": "여러 초안 업로드가 성공적으로 완료되었습니다!",
-    "failedResSubmissn": "제출 끝점에서 실패한 응답입니다. 응답 코드: {상태}",
+    "failedResSubmissn": "제출 끝점에서 실패한 응답입니다. 응답 코드: {status}",
     "errSubmittingForm": "이 양식을 제출하는 중에 오류가 발생했습니다.",
-    "errorSavingFile": "파일을 저장하는 중에 오류가 발생했습니다. 파일 이름: {파일 이름}. 오류: {오류}",
+    "errorSavingFile": "파일을 저장하는 중에 오류가 발생했습니다. 파일 이름: {fileName}. 오류: {error}",
     "submittingDraftErrMsg": "초안을 저장하는 중에 오류가 발생했습니다.",
-    "submittingDraftConsErrMsg": "초안을 저장하는 중에 오류가 발생했습니다. 제출 ID: {submissionId}. 오류: {오류}"
+    "submittingDraftConsErrMsg": "초안을 저장하는 중에 오류가 발생했습니다. 제출 ID: {submissionId}. 오류: {error}"
   },
   "notesPanel": {
     "addNewNote": "새 메모 추가",
@@ -503,7 +497,7 @@
     "noResponseErr": "양식을 제출하는 동안 API의 응답 데이터가 없습니다.",
     "errorMesg": "메모를 추가하는 중에 오류가 발생했습니다.",
     "consoleErrMsg": "메모 추가 오류:",
-    "fetchErrMsg": "이 제출물에 대한 메모를 가져오는 중에 오류가 발생했습니다.",
+    "fetchErrMsg": "이 제출물에 대한 메모를 가져오는 동안 오류가 발생했습니다.",
     "fetchConsoleErrMsg": "메모 추가 오류:",
     "notes": "노트",
     "note": "메모",
@@ -555,7 +549,7 @@
   "exportSubmissions": {
     "exportSubmissionsToFile": "제출물을 파일로 내보내기",
     "viewSubmissions": "제출물 보기",
-    "fileType": "파일 형식",
+    "fileType": "파일 유형",
     "json": "JSON",
     "csv": "CSV",
     "formVersion": "양식 버전",
@@ -570,7 +564,7 @@
     "from": "에서",
     "to": "에게",
     "CSVFormat": "CSV 형식",
-    "multiRowPerSubmissionA": "1 - 식별 공간이 있는 제출당 여러 행",
+    "multiRowPerSubmissionA": "1 - 들여쓰기 공간이 있는 제출물당 여러 행",
     "multiRowPerSubmissionB": "2 - 제출당 여러 행",
     "singleRowPerSubmission": "3 - 제출당 단일 행",
     "unformatted": "4 - 포맷되지 않음",
@@ -580,7 +574,7 @@
     "apiCallErrorMsg": "이 양식에 대한 제출을 내보내는 동안 오류가 발생했습니다.",
     "apiCallConsErrorMsg": "에 대한 내보내기 제출 오류",
     "selectAllFields": "모든 필드 선택",
-    "emailSentMsg": "데이터가 준비되면 데이터를 다운로드할 수 있는 링크가 포함된 이메일이 {email}로 전송됩니다.",
+    "emailSentMsg": "준비가 되면 데이터를 다운로드할 수 있는 링크가 포함된 이메일이 {email}로 전송됩니다.",
     "exportInProgress": "내보내기 진행 중",
     "of": "~의"
   },
@@ -614,6 +608,10 @@
   },
   "proactiveHelpPreviewDialog": {
     "learnMore": "더 알아보기"
+  },
+  "preview": {
+    "preview": "시사",
+    "previewToolTip": "이는 제출자가 볼 수 있는 양식 버전 디자인 및 동작의 미리보기를 보여줍니다. 이 페이지에서는 양식을 제출할 수 없습니다."
   },
   "generalLayout": {
     "loadingText": "로딩 중 기다려주세요",
@@ -697,26 +695,26 @@
     "getUsersSubmissionsErrMsg": "이 양식에 대한 제출물을 가져오는 중에 오류가 발생했습니다.",
     "getUsersSubmissionsConsoleErrMsg": "양식 제출 데이터 {submissionId} 로드 오류: {error}",
     "multiDraftUploadSuccess": "여러 초안 업로드가 성공적으로 완료되었습니다!",
-    "readVersionErrMsg": "응답에 스키마가 없습니다. 버전 ID: {버전 ID}",
-    "readDraftErrMsg": "응답에 스키마가 없습니다. 초안 ID: {초안 ID}",
+    "readVersionErrMsg": "응답에 스키마가 없습니다. 버전 ID: {versionId}",
+    "readDraftErrMsg": "응답에 스키마가 없습니다. 초안 ID: {draftId}",
     "alertRouteMsg": "양식 소유자가 양식을 게시하지 않았으며 제출할 수 없습니다.",
     "fecthingFormErrMsg": "이 양식을 가져오는 중에 오류가 발생했습니다.",
     "fecthingFormConsoleErrMsg": "양식 스키마 {versionId} 로드 오류: {error}",
     "savingDraftErrMsg": "초안을 저장하는 중에 오류가 발생했습니다.",
-    "savingDraftConsoleErrMsg": "초안을 저장하는 중에 오류가 발생했습니다. 제출 ID: {submissionId}. 오류: {오류}",
+    "savingDraftConsoleErrMsg": "초안을 저장하는 중에 오류가 발생했습니다. 제출 ID: {submissionId}. 오류: {error}",
     "submissionsPreviewAlert": "양식 미리보기 중 제출이 비활성화됨",
     "submissionsSubmitErrMsg": "양식 제출 오류: {errors}",
-    "sendSubmissionErrMsg": "제출 끝점에서 실패한 응답입니다. 응답 코드: {상태}",
+    "sendSubmissionErrMsg": "제출 끝점에서 실패한 응답입니다. 응답 코드: {status}",
     "errMsg": "이 양식을 제출하는 중에 오류가 발생했습니다.",
-    "customEventAlert": "사용자 정의 버튼 이벤트는 아직 지원되지 않습니다. 이벤트 유형: {이벤트}",
+    "customEventAlert": "사용자 정의 버튼 이벤트는 아직 지원되지 않습니다. 이벤트 유형: {event}",
     "formLoading": "폼이 로딩되는 동안 기다려주세요!!!",
     "yes": "예",
     "no": "아니요",
-    "failedResSubmissn": "제출 끝점에서 실패한 응답입니다. 응답 코드: {상태}",
+    "failedResSubmissn": "제출 끝점에서 실패한 응답입니다. 응답 코드: {status}",
     "errSubmittingForm": "이 양식을 제출하는 중에 오류가 발생했습니다.",
-    "errorSavingFile": "파일을 저장하는 중에 오류가 발생했습니다. 파일 이름: {fileNname}. 오류: {오류}",
+    "errorSavingFile": "파일을 저장하는 중에 오류가 발생했습니다. 파일 이름: {fileName}. 오류: {error}",
     "submittingDraftErrMsg": "초안을 저장하는 중에 오류가 발생했습니다.",
-    "submittingDraftConsErrMsg": "초안을 저장하는 중에 오류가 발생했습니다. 제출 ID: {submissionId}. 오류: {오류}",
+    "submittingDraftConsErrMsg": "초안을 저장하는 중에 오류가 발생했습니다. 제출 ID: {submissionId}. 오류: {error}",
     "formDraftAccessErrMsg": "요청한 제출이 이미 제출되었으며 보기 페이지로 리디렉션됩니다."
   },
   "bCGovFooter": {
@@ -786,36 +784,29 @@
     "exampleText2": "예제 텍스트 2",
     "filterPlaceholderTxt": "자리 표시자 텍스트 필터링",
     "filter": "필터",
-    "value": "값"
+    "value": "값",
+    "resetColumns": "열 재설정"
   },
   "formViewerActions": {
     "viewAllSubmissions": "모든 제출물 보기",
     "saveAsADraft": "초안으로 저장",
     "editThisDraft": "이 초안 편집",
     "switchSingleSubmssn": "단일 제출로 전환",
-    "switchMultiSubmssn": "단일 제출로 전환"
+    "switchMultiSubmssn": "다중 제출로 전환"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "클립보드에 복사된 링크",
     "copyToClipboard": "클립 보드에 복사",
     "errCopyToClipboard": "클립보드에 복사하는 동안 오류가 발생했습니다."
   },
-  "admin": {
-    "root": {
-      "admin": "관리자"
-    }
-  },
-  "user": {
-    "root": {
-      "myForms": "내 양식",
-      "history": "역사",
-      "user": "사용자"
-    }
-  },
   "sucess": {
     "sucessFormSubmissn": "귀하의 양식이 성공적으로 제출되었습니다",
     "keepRecord": "이 제출 기록을 보관하려면 다음을 보관할 수 있습니다.",
     "confirmationId": "확인 ID"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "오류: 문제가 발생했습니다.",
+    "error": "오류"
   },
   "permissionUtils": {
     "formNotAvailable": "현재 양식을 사용할 수 없습니다. 링크가 잘못되었거나 소유자가 양식을 삭제했기 때문일 수 있습니다.",
@@ -824,6 +815,29 @@
     "loadingForm": "{options} 로드 중 오류: {error}",
     "idpHintMsg": "이 양식에는 {idpHint} 인증이 필요합니다. 다시 로그인하고 다시 시도하십시오.",
     "formIdpMissMatch": "양식 IDP 불일치. 양식에는 {idpHint}가 필요하지만 사용자에게는 {userIdp}가 있습니다."
+  },
+  "download": {
+    "chefsDataExport": "CHEFS 데이터 내보내기",
+    "preparingForDownloading": "다운로드 준비 중...",
+    "downloadInfoA": "파일이 자동으로 다운로드되지 않는 경우",
+    "downloadInfoB": "다시 시도하려면 여기를 클릭하세요."
+  },
+  "history": {
+    "submissnHistory": "귀하의 제출 내역(미정)"
+  },
+  "error": {
+    "logout": "로그 아웃",
+    "somethingWentWrong": "오류: 문제가 발생했습니다... :("
+  },
+  "login": {
+    "authenticateWith": "인증:",
+    "alreadyLoggedIn": "이미 로그인",
+    "home": "집",
+    "about": "에 대한"
+  },
+  "notFound": {
+    "about": "에 대한",
+    "pageNotFound": "404 페이지를 찾을 수 없습니다. :("
   },
   "store": {
     "admin": {
@@ -878,7 +892,7 @@
       "fetchFormFieldsErrMsg": "이 양식의 필드 목록을 가져오는 동안 오류가 발생했습니다.",
       "fetchFormFieldsConsErrMsg": "양식 {formId} 가져오기 오류: {error}",
       "publishDraftErrMsg": "게시하는 동안 오류가 발생했습니다.",
-      "publishDraftConsErrMsg": "${draftId} 게시 오류: ${error}",
+      "publishDraftConsErrMsg": "{draftId} 게시 오류: {error}",
       "toggleVersnPublConsErrMsg": "toggleVersionPublish {versionId} {publish} 오류: {error}",
       "updateFormErrMsg": "이 양식의 설정을 업데이트하는 동안 오류가 발생했습니다.",
       "updateFormConsErrMsg": "양식 {id} 업데이트 오류: {error}",
@@ -897,7 +911,7 @@
       "fecthSubmissnUsersErrMsg": "이 제출물에 대한 수신자 이메일을 가져오는 동안 오류가 발생했습니다.",
       "fecthSubmissnUsersConsErrMsg": "제출 {formSubmissionId}에 대한 수신자 이메일 가져오기 오류: {error}",
       "fetchSubmissnErrMsg": "이 제출물을 가져오는 동안 오류가 발생했습니다.",
-      "fetchSubmissnConsErrMsg": "제출물 {submissionId} 가져오기 오류: ${error}",
+      "fetchSubmissnConsErrMsg": "제출물 {submissionId} 가져오기 오류: {error}",
       "fetchFormCSVExptFieldsErrMsg": "이 양식의 필드 목록을 가져오는 동안 오류가 발생했습니다.",
       "fetchFormCSVExptFieldsConsErrMsg": "양식 {formId} 가져오기 오류: {error}",
       "fetchSubmissnsErrMsg": "이 양식에 대한 제출물을 가져오는 동안 오류가 발생했습니다.",
@@ -923,6 +937,24 @@
       "saveSubscriptionSettingsNotifyMsg": "이 양식에 대한 구독 설정이 저장되었습니다.",
       "saveSubscriptionSettingsErrMsg": "구독 설정을 저장하는 동안 오류가 발생했습니다.",
       "saveSubscriptionSettingsConsErrMsg": "양식 {formId}에 대한 구독 설정 저장 오류: {error}"
+    }
+  },
+  "admin": {
+    "root": {
+      "admin": "관리자"
+    },
+    "form": {
+      "administerForm": "양식 관리"
+    },
+    "user": {
+      "administerUser": "사용자 관리"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "내 양식",
+      "history": "역사",
+      "user": "사용자"
     }
   }
 }

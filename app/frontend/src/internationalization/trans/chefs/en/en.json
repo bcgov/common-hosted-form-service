@@ -301,11 +301,11 @@
     "about": "About",
     "loginInfo": "You must be logged in to use this feature.",
     "login": "Login",
-    "401NotAuthorized": "401: not authorized. :",
+    "401NotAuthorized": "401: not authorized. :(",
     "401ErrorMsg": "Your account is not set up correctly.<br />Please contact",
-    "403Forbidden": "403: Forbidden. :",
+    "403Forbidden": "403: Forbidden. :(",
     "403ErrorMsg": "This page requires {idp} authentication.",
-    "401UnAuthorized": "401: Unauthorized. :",
+    "401UnAuthorized": "401: Unauthorized. :(",
     "401UnAuthorizedErrMsg": "You do not have permission to access this page."
   },
   "formDesigner": {
@@ -607,13 +607,6 @@
     "save": "Save",
     "description": "Description"
   },
-  "user": {
-    "root": {
-      "myForms": "MY FORMS",
-      "history": "HISTORY",
-      "user": "User"
-    }
-  },
   "proactiveHelpPreviewDialog": {
     "learnMore": "Learn more"
   },
@@ -704,7 +697,7 @@
     "getUsersSubmissionsConsoleErrMsg": "Error loading form submission data {submissionId}: {error}",
     "multiDraftUploadSuccess": "Your multiple draft upload has been successful!",
     "readVersionErrMsg": "No schema in response. VersionId: {versionId}",
-    "readDraftErrMsg": "No schema in response. DraftId: {draftId}",
+    "readDraftErrMsg": "No schema in response. draftId: {draftId}",
     "alertRouteMsg": "The form owner has not published the form, and it is not available for submissions.",
     "fecthingFormErrMsg": "An error occurred fetching this form",
     "fecthingFormConsoleErrMsg": "Error loading form schema {versionId}: {error}",
@@ -792,24 +785,20 @@
     "exampleText2": "Example Text 2",
     "filterPlaceholderTxt": "Filter Placeholder Text",
     "filter": "Filter",
-    "value": "value"
+    "value": "value",
+    "resetColumns": "Reset Columns"
   },
   "formViewerActions": {
     "viewAllSubmissions": "View All Submissions",
     "saveAsADraft": "Save as a Draft",
     "editThisDraft": "Edit this Draft",
     "switchSingleSubmssn": "Switch to single submission",
-    "switchMultiSubmssn": "Switch to single submission"
+    "switchMultiSubmssn": "Switch to Multiple submission"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Link copied to clipboard",
     "copyToClipboard": "Copy to Clipboard",
     "errCopyToClipboard": "Error attempting to copy to clipboard."
-  },
-  "admin": {
-    "root": {
-      "admin": "Admin"
-    }
   },
   "sucess": {
     "sucessFormSubmissn": "Your form has been submitted successfully",
@@ -928,5 +917,46 @@
     "loadingForm": "Error while loading {options}: {error}",
     "idpHintMsg": "This form requires {idpHint} authentication. Please re-login and try again.",
     "formIdpMissMatch": "Form IDP mismatch. Form requires {idpHint} but user has {userIdp}."
+  },
+  "download": {
+    "chefsDataExport": "CHEFS Data Export",
+    "preparingForDownloading": "Preparing for download...",
+    "downloadInfoA": "If your file does not automatically download",
+    "downloadInfoB": "click here to try again"
+  },
+  "history": {
+    "submissnHistory": "Your Submission History (TBD)"
+  },
+  "error": {
+    "logout": "Logout",
+    "somethingWentWrong": "Error: Something went wrong... :("
+  },
+  "login": {
+    "authenticateWith": "Authenticate with:",
+    "alreadyLoggedIn": "Already logged in",
+    "home": "Home",
+    "about": "About"
+  },
+  "notFound": {
+    "about": "About",
+    "pageNotFound": "404: Page not found. :("
+  },
+  "admin": {
+    "root": {
+      "admin": "Admin"
+    },
+    "form": {
+      "administerForm": "Administer Form"
+    },
+    "user": {
+      "administerUser": "Administer User"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "MY FORMS",
+      "history": "HISTORY",
+      "user": "User"
+    }
   }
 }

@@ -25,6 +25,6 @@ describe('Form.vue', () => {
     });
     await localVue.nextTick();
 
-    expect(wrapper.text()).toMatch('Admin');
+    expect(wrapper.text()).toMatch('Administer Form');
   });
 });

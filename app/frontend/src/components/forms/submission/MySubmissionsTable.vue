@@ -6,7 +6,9 @@
       >
         <!-- page title -->
         <div>
-          <h1>{{ $t('trans.mySubmissionsTable.previousSubmissions') }}</h1>
+          <h1 :lang="lang">
+            {{ $t('trans.mySubmissionsTable.previousSubmissions') }}
+          </h1>
           <h3>{{ formId ? form.name : 'All Forms' }}</h3>
         </div>
         <!-- buttons -->
@@ -24,7 +26,9 @@
                 <v-icon>view_column</v-icon>
               </v-btn>
             </template>
-            <span>{{ $t('trans.mySubmissionsTable.selectColumns') }}</span>
+            <span :lang="lang">{{
+              $t('trans.mySubmissionsTable.selectColumns')
+            }}</span>
           </v-tooltip>
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
@@ -45,7 +49,7 @@
                 </v-btn>
               </router-link>
             </template>
-            <span>{{
+            <span :lang="lang">{{
               $t('trans.mySubmissionsTable.createNewSubmission')
             }}</span>
           </v-tooltip>
@@ -68,6 +72,7 @@
             hide-details
             class="pb-5"
             :class="{ label: isRTL }"
+            :lang="lang"
           />
         </div>
       </v-col>
@@ -82,6 +87,7 @@
       :loading="loading"
       :loading-text="$t('trans.mySubmissionsTable.loadingText')"
       :no-data-text="$t('trans.mySubmissionsTable.noDataText')"
+      :lang="lang"
     >
       <template #[`item.lastEdited`]="{ item }">
         {{ item.lastEdited | formatDateLong }}
@@ -117,9 +123,11 @@
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >
-        <template #filter-title>{{
-          $t('trans.mySubmissionsTable.filterTitle')
-        }}</template>
+        <template #filter-title
+          ><span :lang="lang">{{
+            $t('trans.mySubmissionsTable.filterTitle')
+          }}</span></template
+        >
       </BaseFilter>
     </v-dialog>
   </div>
@@ -176,6 +184,7 @@ export default {
       'permissions',
       'formFields',
       'isRTL',
+      'lang',
     ]),
     ...mapGetters('auth', ['user']),
     DEFAULT_HEADERS() {
