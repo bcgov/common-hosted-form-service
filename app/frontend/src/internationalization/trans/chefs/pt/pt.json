@@ -466,7 +466,7 @@
     "errSubmittingForm": "Ocorreu um erro ao enviar este formulário",
     "errorSavingFile": "Erro ao salvar arquivos. Nome do arquivo: {fileName}. Erro: {error}",
     "submittingDraftErrMsg": "Ocorreu um erro ao salvar um rascunho",
-    "submittingDraftConsErrMsg": "Erro ao salvar rascunho. SubmissãoId: {submissãoId}. Erro: {error}"
+    "submittingDraftConsErrMsg": "Erro ao salvar rascunho. SubmissãoId: {submissionId}. Erro: {error}"
   },
   "notesPanel": {
     "addNewNote": "Adicionar nova nota",
@@ -668,7 +668,7 @@
     "submitFormWarningMsg": "Tem certeza que deseja enviar seu formulário?",
     "submit": "Enviar",
     "wantToSaveDraft": "Deseja salvar o rascunho?",
-    "version": "Versão: {versão}",
+    "version": "Versão: {version}",
     "formScheduleExpireMessage": "O envio do formulário não está disponível porque o período de envio agendado expirou.",
     "getUsersSubmissionsErrMsg": "Ocorreu um erro ao buscar o envio para este formulário",
     "getUsersSubmissionsConsoleErrMsg": "Erro ao carregar os dados de envio do formulário {submissionId}: {error}",

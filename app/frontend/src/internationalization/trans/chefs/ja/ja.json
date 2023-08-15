@@ -668,7 +668,7 @@
     "submitFormWarningMsg": "フォームを送信してもよろしいですか?",
     "submit": "送信",
     "wantToSaveDraft": "下書きを保存しますか?",
-    "version": "バージョン: {バージョン}",
+    "version": "バージョン: {version}",
     "formScheduleExpireMessage": "予定されていた提出期間が過ぎているため、フォームを提出することはできません。",
     "getUsersSubmissionsErrMsg": "このフォームの送信を取得中にエラーが発生しました",
     "getUsersSubmissionsConsoleErrMsg": "フォーム送信データ {submissionId} の読み込みエラー: {error}",
