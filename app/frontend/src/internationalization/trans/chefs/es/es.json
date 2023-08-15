@@ -18,17 +18,13 @@
   "manageLayout": {
     "manageForm": "Administrar formulario"
   },
-  "preview": {
-    "preview": "Avance",
-    "previewToolTip": "Esto muestra una vista previa del diseño y el comportamiento de la versión del formulario tal como lo verán los remitentes. No puede enviar el formulario desde esta página."
-  },
   "shareForm": {
     "shareForm": "Compartir formulario",
     "shareLink": "Compartir enlace",
     "copyQRCode": "Copie el enlace a continuación o descargue el código QR.",
     "warningMessage": "No hay una versión publicada del formulario en este momento. No se podrá acceder al siguiente enlace hasta que se publique una versión.",
     "openThisForm": "Abre este formulario",
-    "downloadQRCode": "Descargar código QR",
+    "downloadQRCode": "Descargar Código QR",
     "close": "Cerca",
     "copyURLToClipboard": "Copiar URL al portapapeles"
   },
@@ -53,12 +49,12 @@
     "cancel": "Cancelar"
   },
   "formSettings": {
-    "pressToAddMultiEmail": "Presione <kbd>enter</kbd> o <kbd>,</kbd> o <kbd>espacio</kbd> para agregar varias direcciones de correo electrónico",
-    "allowMultiDraft": "Permitir la carga de <strong> varios borradores</strong>",
+    "pressToAddMultiEmail": "Presiona <kbd>enter</kbd> o <kbd>,</kbd> o <kbd>espacio</kbd> para agregar varias direcciones de correo electrónico",
+    "allowMultiDraft": "Permitir la carga <strong>de varios borradores</strong>",
     "formTitle": "Título del formulario",
     "formDescription": "Descripción del formulario",
     "formAccess": "Acceso al formulario",
-    "info": "Si utilizará este formulario para recopilar información del público en general sobre temas que son de interés general para el público, debe comunicarse con la GCPE para que su compromiso pueda incluirse en",
+    "info": "Si utilizará este formulario para recopilar información del público en general sobre temas que son de interés general para el público, debe comunicarse con la GCPE para que su participación pueda incluirse en",
     "important": "IMPORTANTE",
     "idimNotifyA": "Debe notificar al equipo de Gestión de Información de Identidad (IDIM) por correo electrónico",
     "idimNotifyB": "su intención de aprovechar BCeID para verificar las identidades de los remitentes de su formulario.",
@@ -86,7 +82,7 @@
     "addMoreValidEmailAddrs": "Agregue una o más direcciones de correo electrónico válidas",
     "formScheduleSettings": "Configuración de programación de formularios",
     "opensubmissions": "Envíos abiertos",
-    "submissionsDeadline": "¿Cuánto tiempo desea recibir envíos?",
+    "submissionsDeadline": "¿Cuánto tiempo desea recibir las presentaciones?",
     "keepSubmissnOpenTilUnplished": "Mantener abierto hasta que no se publique manualmente",
     "submissionsClosingDate": "Programar una fecha de cierre",
     "submissionPeriod": "Configurar el período de presentación",
@@ -122,7 +118,7 @@
     "validEmailRequired": "Por favor, introduzca todas las direcciones de correo electrónico válidas",
     "fieldRequired": "Este campo es obligatorio.",
     "correctDateFormat": "La fecha debe estar en el formato correcto. es decir. aaaa-mm-dd",
-    "dateDiffMsg": "La fecha de cierre de la presentación debe ser mayor que la fecha de apertura de la presentación.",
+    "dateDiffMsg": "La fecha de cierre de la presentación debe ser posterior a la fecha de apertura de la presentación.",
     "valueMustBeNumber": "El valor debe ser un número. es decir. 1,2,3,5,99",
     "selectAnOptions": "Seleccione al menos 1 opción",
     "validInterval": "Este debería ser un intervalo válido.",
@@ -180,7 +176,7 @@
     "actions": "Comportamiento",
     "published": "Publicado",
     "unpublished": "Inédito",
-    "useVersionInfo": "Use la versión {version} como base para una nueva versión",
+    "useVersionInfo": "Utilice la versión {version} como base para una nueva versión",
     "publishingVersionInfo": "Esto hará que la versión {version} de su formulario esté activa."
   },
   "addOwner": {
@@ -235,7 +231,7 @@
     "loadingText": "Cargando por favor espere",
     "admin": "Administración",
     "fullName": "Nombre completo",
-    "userID": "ID de usuario",
+    "userID": "Identificación de usuario",
     "created": "Creado",
     "actions": "Comportamiento"
   },
@@ -267,7 +263,6 @@
     "notificationMsg": "No se pudo obtener el usuario de RBAC, consulte la consola",
     "notificationConsErr": "Error al obtener el usuario de RBAC"
   },
-  "fcProactiveHelp": {},
   "baseAuthButton": {
     "logout": "Cerrar sesión",
     "login": "Acceso"
@@ -305,7 +300,10 @@
     "formDesignSaveConsoleErrMsg": "Error al actualizar o crear el formulario (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Error: {error}",
     "collapse": "Colapsar",
     "actions": "Comportamiento",
-    "version": "Versión"
+    "version": "Versión",
+    "save": "Ahorrar",
+    "saving": "Ahorro",
+    "notSaved": "No guardado"
   },
   "formViewerMultiUpload": {
     "important": "IMPORTANTE",
@@ -331,10 +329,6 @@
     "errAfterValidate": "Se encontraron algunos errores, consulte a continuación para obtener más información.",
     "fileIsEmpty": "este archivo está vacío.",
     "download": "Descargar"
-  },
-  "bcGovAlertBanner": {
-    "defaultErrMsg": "Error: Algo salió mal",
-    "error": "error"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "Descargo de responsabilidad y declaración de responsabilidad para los diseñadores de formularios:",
@@ -425,12 +419,12 @@
     "email": "Correo electrónico",
     "removeUserWarningMsg1": "¿Está seguro de que desea eliminar",
     "removeUserWarningMsg2": "Ya no tendrán permisos para este envío.",
-    "userExistInListMsg": "El usuario {nombre de usuario} ya está en la lista de miembros del equipo.",
+    "userExistInListMsg": "El usuario {username} ya está en la lista de miembros del equipo.",
     "getSubmissionUsersErr": "Se produjo un error al intentar obtener usuarios para este envío.",
     "getSubmissionUsersConsoleErr": "Error al obtener usuarios para {submissionId}: {error}",
     "sentInviteEmailTo": "Enviado correo electrónico de invitación a",
     "sentUninvitedEmailTo": "Enviado correo electrónico no invitado a",
-    "updateUserErrMsg": "Ocurrió un error al intentar actualizar a los usuarios para este envío.",
+    "updateUserErrMsg": "Se produjo un error al intentar actualizar los usuarios para este envío.",
     "updateUserConsoleErrMsg": "Error al establecer los permisos de usuario. Sub: {submissionId} Usuario: {userId} Error: {error}",
     "searchInputLength": "La entrada de búsqueda para el nombre de usuario/correo electrónico de BCeID debe tener más de 6 caracteres.",
     "exactBCEIDSearch": "Las búsquedas de correo electrónico para BCeID deben ser exactas.",
@@ -468,11 +462,11 @@
     "yes": "Sí",
     "no": "No",
     "multiDraftUploadSuccess": "¡Tu carga de múltiples borradores ha sido exitosa!",
-    "failedResSubmissn": "Respuesta fallida desde el punto final de envío. Código de respuesta: {estado}",
+    "failedResSubmissn": "Respuesta fallida desde el punto final de envío. Código de respuesta: {status}",
     "errSubmittingForm": "Ocurrió un error al enviar este formulario",
-    "errorSavingFile": "Error al guardar archivos. Nombre de archivo: {nombre de archivo}. Error: {error}",
+    "errorSavingFile": "Error al guardar archivos. Nombre de archivo: {fileName}. Error: {error}",
     "submittingDraftErrMsg": "Se produjo un error al guardar un borrador",
-    "submittingDraftConsErrMsg": "Error al guardar el borrador. Id de envío: {Id de envío}. Error: {error}"
+    "submittingDraftConsErrMsg": "Error al guardar el borrador. Id de envío: {submissionId}. Error: {error}"
   },
   "notesPanel": {
     "addNewNote": "Agregar nueva nota",
@@ -548,7 +542,7 @@
     "from": "De",
     "to": "A",
     "CSVFormat": "Formato CSV",
-    "multiRowPerSubmissionA": "1 - Múltiples filas por envío con espacios de identificación",
+    "multiRowPerSubmissionA": "1 - Múltiples filas por envío con espacios de sangría",
     "multiRowPerSubmissionB": "2 - Múltiples filas por envío",
     "singleRowPerSubmission": "3 - Fila única por presentación",
     "unformatted": "4 - Sin formato",
@@ -592,6 +586,10 @@
   },
   "proactiveHelpPreviewDialog": {
     "learnMore": "Aprende más"
+  },
+  "preview": {
+    "preview": "Avance",
+    "previewToolTip": "Esto muestra una vista previa del diseño y el comportamiento de la versión del formulario tal como lo verán los remitentes. No puede enviar el formulario desde esta página."
   },
   "generalLayout": {
     "loadingText": "Cargando por favor espere",
@@ -675,26 +673,26 @@
     "getUsersSubmissionsErrMsg": "Se produjo un error al obtener el envío de este formulario",
     "getUsersSubmissionsConsoleErrMsg": "Error al cargar los datos de envío del formulario {submissionId}: {error}",
     "multiDraftUploadSuccess": "¡Tu carga de múltiples borradores ha sido exitosa!",
-    "readVersionErrMsg": "Sin esquema en respuesta. Id de versión: {id de versión}",
-    "readDraftErrMsg": "Sin esquema en respuesta. ID de borrador: {id de borrador}",
+    "readVersionErrMsg": "Sin esquema en respuesta. Id de versión: {versionId}",
+    "readDraftErrMsg": "Sin esquema en respuesta. ID de borrador: {draftId}",
     "alertRouteMsg": "El propietario del formulario no ha publicado el formulario y no está disponible para envíos.",
     "fecthingFormErrMsg": "Se produjo un error al obtener este formulario",
     "fecthingFormConsoleErrMsg": "Error al cargar el esquema del formulario {versionId}: {error}",
     "savingDraftErrMsg": "Se produjo un error al guardar un borrador",
-    "savingDraftConsoleErrMsg": "Error al guardar el borrador. Id de envío: {Id de envío}. Error: {error}",
+    "savingDraftConsoleErrMsg": "Error al guardar el borrador. Id de envío: {submissionId}. Error: {error}",
     "submissionsPreviewAlert": "Envío deshabilitado durante la vista previa del formulario",
-    "submissionsSubmitErrMsg": "Error al enviar el formulario: {errores}",
-    "sendSubmissionErrMsg": "Respuesta fallida desde el punto final de envío. Código de respuesta: {estado}",
+    "submissionsSubmitErrMsg": "Error al enviar el formulario: {errors}",
+    "sendSubmissionErrMsg": "Respuesta fallida desde el punto final de envío. Código de respuesta: {status}",
     "errMsg": "Ocurrió un error al enviar este formulario",
-    "customEventAlert": "Los eventos de botones personalizados aún no son compatibles. Tipo de evento: {evento}",
+    "customEventAlert": "Los eventos de botones personalizados aún no son compatibles. Tipo de evento: {event}",
     "formLoading": "¡Por favor espere mientras se carga el formulario!",
     "yes": "Sí",
     "no": "No",
-    "failedResSubmissn": "Respuesta fallida desde el punto final de envío. Código de respuesta: {estado}",
+    "failedResSubmissn": "Respuesta fallida desde el punto final de envío. Código de respuesta: {status}",
     "errSubmittingForm": "Ocurrió un error al enviar este formulario",
-    "errorSavingFile": "Error al guardar archivos. Nombre de archivo: {fileNname}. Error: {error}",
+    "errorSavingFile": "Error al guardar archivos. Nombre de archivo: {fileName}. Error: {error}",
     "submittingDraftErrMsg": "Se produjo un error al guardar un borrador",
-    "submittingDraftConsErrMsg": "Error al guardar el borrador. Id de envío: {Id de envío}. Error: {error}",
+    "submittingDraftConsErrMsg": "Error al guardar el borrador. Id de envío: {submissionId}. Error: {error}",
     "formDraftAccessErrMsg": "El envío solicitado ya se envió, redirigiendo a la página Ver"
   },
   "bCGovFooter": {
@@ -764,44 +762,60 @@
     "exampleText2": "Texto de ejemplo 2",
     "filterPlaceholderTxt": "Filtrar texto de marcador de posición",
     "filter": "Filtrar",
-    "value": "valor"
+    "value": "valor",
+    "resetColumns": "Restablecer columnas"
   },
   "formViewerActions": {
     "viewAllSubmissions": "Ver todas las presentaciones",
     "saveAsADraft": "Guardar como borrador",
     "editThisDraft": "Editar este borrador",
     "switchSingleSubmssn": "Cambiar a envío único",
-    "switchMultiSubmssn": "Cambiar a envío único"
+    "switchMultiSubmssn": "Cambiar a envío múltiple"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Enlace copiado al portapapeles",
     "copyToClipboard": "Copiar al portapapeles",
     "errCopyToClipboard": "Error al intentar copiar al portapapeles."
   },
-  "admin": {
-    "root": {
-      "admin": "Administración"
-    }
-  },
-  "user": {
-    "root": {
-      "myForms": "MIS FORMULARIOS",
-      "history": "HISTORIA",
-      "user": "Usuaria"
-    }
-  },
   "sucess": {
     "sucessFormSubmissn": "Su formulario ha sido enviado exitosamente",
     "keepRecord": "Si desea mantener un registro de este envío, puede conservar lo siguiente",
     "confirmationId": "Identificación de confirmación"
   },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Error: Algo salió mal",
+    "error": "error"
+  },
   "permissionUtils": {
     "formNotAvailable": "El formulario no está disponible actualmente. Esto puede deberse a un enlace incorrecto, o puede que el propietario haya eliminado el formulario.",
     "missingFormIdAndSubmssId": "Opciones que faltan tanto formId como submitId",
     "loadingFormErrMsg": "Ocurrió un error al cargar este formulario.",
-    "loadingForm": "Error al cargar {opciones}: {error}",
+    "loadingForm": "Error al cargar {options}: {error}",
     "idpHintMsg": "Este formulario requiere autenticación {idpHint}. Vuelva a iniciar sesión y vuelva a intentarlo.",
     "formIdpMissMatch": "Discrepancia de formulario IDP. El formulario requiere {idpHint} pero el usuario tiene {userIdp}."
+  },
+  "download": {
+    "chefsDataExport": "Exportación de datos CHEFS",
+    "preparingForDownloading": "Preparando para descargar...",
+    "downloadInfoA": "Si su archivo no se descarga automáticamente",
+    "downloadInfoB": "haga clic aquí para intentarlo de nuevo"
+  },
+  "history": {
+    "submissnHistory": "Su historial de envíos (TBD)"
+  },
+  "error": {
+    "logout": "Cerrar sesión",
+    "somethingWentWrong": "Error: Algo salió mal... :("
+  },
+  "login": {
+    "authenticateWith": "Autenticar con:",
+    "alreadyLoggedIn": "Ya iniciado sesión",
+    "home": "Hogar",
+    "about": "Acerca de"
+  },
+  "notFound": {
+    "about": "Acerca de",
+    "pageNotFound": "404 Pagina no encontrada. :("
   },
   "store": {
     "admin": {
@@ -842,7 +856,7 @@
       "getUserFormRolesErrmsg": "Se produjo un error al obtener sus datos de usuario para este formulario.",
       "getUserFormRolesConsErrmsg": "Error al obtener datos de usuario usando formID {formId}: {error}",
       "updCurrUserFormPrefErrMsg": "Ocurrió un error al guardar sus preferencias para este formulario.",
-      "updCurrUserFormPrefConsErrMsg": "Error al actualizar las preferencias del formulario de usuario usando formID {formId} y preferencias {preferencias}: {error}",
+      "updCurrUserFormPrefConsErrMsg": "Error al actualizar las preferencias del formulario de usuario usando formID {formId} y preferencias {preferences}: {error}",
       "getCurrUserFormPrefErrMsg": "Se produjo un error al obtener sus preferencias para este formulario.",
       "getCurrUserFormPrefConsErrMsg": "Error al obtener las preferencias de formulario del usuario usando formID {formId}: {error}",
       "delCurrformNotiMsg": "El formulario {name} se ha eliminado correctamente.",
@@ -856,8 +870,8 @@
       "fetchFormFieldsErrMsg": "Se produjo un error al obtener la lista de campos para este formulario.",
       "fetchFormFieldsConsErrMsg": "Error al obtener el formulario {formId}: {error}",
       "publishDraftErrMsg": "Ocurrió un error durante la publicación.",
-      "publishDraftConsErrMsg": "Error al publicar ${draftId}: ${error}",
-      "toggleVersnPublConsErrMsg": "Error en toggleVersionPublish {versionId} {publicar}: {error}",
+      "publishDraftConsErrMsg": "Error al publicar {draftId}: {error}",
+      "toggleVersnPublConsErrMsg": "Error en toggleVersionPublish {versionId} {publish}: {error}",
       "updateFormErrMsg": "Se produjo un error al actualizar la configuración de este formulario.",
       "updateFormConsErrMsg": "Error al actualizar el formulario {id}: {error}",
       "deleteSubmissionNotifyMsg": "Envío eliminado con éxito.",
@@ -875,7 +889,7 @@
       "fecthSubmissnUsersErrMsg": "Se produjo un error al obtener el correo electrónico del destinatario para este envío.",
       "fecthSubmissnUsersConsErrMsg": "Error al obtener el correo electrónico del destinatario para el envío {formSubmissionId}: {error}",
       "fetchSubmissnErrMsg": "Se produjo un error al obtener este envío.",
-      "fetchSubmissnConsErrMsg": "Error al obtener el envío {submissionId}: ${error}",
+      "fetchSubmissnConsErrMsg": "Error al obtener el envío {submissionId}: {error}",
       "fetchFormCSVExptFieldsErrMsg": "Se produjo un error al obtener la lista de campos para este formulario.",
       "fetchFormCSVExptFieldsConsErrMsg": "Error al obtener el formulario {formId}: {error}",
       "fetchSubmissnsErrMsg": "Se produjo un error al obtener envíos para este formulario.",
@@ -896,6 +910,24 @@
       "listFCPHConsErrMsg": "Error al obtener los componentes del generador de formularios: {error}",
       "downloadFileErrMsg": "Ocurrió un error al descargar el archivo",
       "downloadFileConsErrMsg": "Error al descargar el archivo: error"
+    }
+  },
+  "admin": {
+    "root": {
+      "admin": "Administración"
+    },
+    "form": {
+      "administerForm": "Administrar formulario"
+    },
+    "user": {
+      "administerUser": "Administrar usuario"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "MIS FORMULARIOS",
+      "history": "HISTORIA",
+      "user": "Usuario"
     }
   }
 }

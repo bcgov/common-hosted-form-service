@@ -19,6 +19,7 @@
           dense
           class="mt-3"
           :class="{ label: isRTL }"
+          :lang="lang"
         />
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
@@ -33,9 +34,10 @@
               <v-icon>repeat</v-icon>
             </v-btn>
           </template>
-          <span>Reset Columns</span>
+          <span :lang="lang">{{ $t('trans.baseFilter.resetColumns') }}</span>
         </v-tooltip>
       </div>
+
       <v-data-table
         fixed-header
         show-select
@@ -48,9 +50,10 @@
         :search="inputFilter"
         class="grey lighten-5"
         disable-pagination
+        :lang="lang"
       >
       </v-data-table>
-      <v-btn @click="savingFilterData" class="primary mt-3">{{
+      <v-btn @click="savingFilterData" class="primary mt-3" :lang="lang">{{
         inputSaveButtonText
       }}</v-btn>
       <v-btn
@@ -58,6 +61,7 @@
         class="mt-3 primary--text"
         :class="isRTL ? 'mr-3' : 'ml-3'"
         outlined
+        :lang="lang"
         >{{ $t('trans.baseFilter.cancel') }}</v-btn
       >
     </v-card-text>
@@ -123,7 +127,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('form', ['isRTL']),
+    ...mapGetters('form', ['isRTL', 'lang']),
   },
   data() {
     return {

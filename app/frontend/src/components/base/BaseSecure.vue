@@ -2,15 +2,21 @@
   <div v-if="authenticated">
     <div v-if="isUser">
       <div v-if="admin && !isAdmin" class="text-center">
-        <h1 class="my-8">{{ $t('trans.baseSecure.401UnAuthorized') }}(</h1>
-        <p>{{ $t('trans.baseSecure.401UnAuthorizedErrMsg') }}</p>
+        <h1 class="my-8" :lang="lang">
+          {{ $t('trans.baseSecure.401UnAuthorized') }}
+        </h1>
+        <p :lang="lang">
+          {{ $t('trans.baseSecure.401UnAuthorizedErrMsg') }}
+        </p>
       </div>
       <div
         v-else-if="idp && !idp.includes(identityProvider)"
         class="text-center"
       >
-        <h1 class="my-8">{{ $t('trans.baseSecure.403Forbidden') }}(</h1>
-        <p>
+        <h1 class="my-8" :lang="lang">
+          {{ $t('trans.baseSecure.403Forbidden') }}
+        </h1>
+        <p :lang="lang">
           {{
             $t('trans.baseSecure.403ErrorMsg', {
               idp: idp,
@@ -22,21 +28,25 @@
     </div>
     <!-- TODO: Figure out better way to alert when user lacks chefs user role -->
     <div v-else class="text-center">
-      <h1 class="my-8">{{ $t('trans.baseSecure.401UnAuthorized') }}(</h1>
+      <h1 class="my-8" :lang="lang">
+        {{ $t('trans.baseSecure.401UnAuthorized') }}
+      </h1>
       <p>
-        <span v-html="$t('trans.baseSecure.401ErrorMsg')"></span>
+        <span v-html="$t('trans.baseSecure.401ErrorMsg')" :lang="lang" />
         <a :href="mailToLink">{{ contactInfo }}</a>
       </p>
       <router-link :to="{ name: 'About' }">
         <v-btn color="primary" class="about-btn" large>
           <v-icon left>home</v-icon>
-          <span>{{ $t('trans.baseSecure.about') }}</span>
+          <span :lang="lang">{{ $t('trans.baseSecure.about') }}</span>
         </v-btn>
       </router-link>
     </div>
   </div>
   <div v-else class="text-center">
-    <h1 class="my-8">{{ $t('trans.baseSecure.loginInfo') }}</h1>
+    <h1 class="my-8" :lang="lang">
+      {{ $t('trans.baseSecure.loginInfo') }}
+    </h1>
     <v-btn
       v-if="keycloakReady"
       color="primary"
@@ -44,7 +54,7 @@
       @click="login"
       large
     >
-      <span>{{ $t('trans.baseSecure.login') }}</span>
+      <span :lang="lang">{{ $t('trans.baseSecure.login') }}</span>
     </v-btn>
   </div>
 </template>
@@ -72,6 +82,7 @@ export default {
       'isUser',
       'keycloakReady',
     ]),
+    ...mapGetters('form', ['lang']),
     mailToLink() {
       return `mailto:${
         process.env.VUE_APP_CONTACT

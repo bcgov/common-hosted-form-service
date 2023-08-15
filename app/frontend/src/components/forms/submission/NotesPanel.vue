@@ -4,7 +4,9 @@
       class="d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse"
     >
       <div>
-        <h2 class="note-heading">{{ $t('trans.notesPanel.notes') }}</h2>
+        <h2 class="note-heading" :lang="lang">
+          {{ $t('trans.notesPanel.notes') }}
+        </h2>
       </div>
       <div :class="{ 'text-left': isRTL }">
         <v-tooltip bottom>
@@ -20,13 +22,13 @@
               <v-icon>add_circle</v-icon>
             </v-btn>
           </template>
-          <span>{{ $t('trans.notesPanel.addNewNote') }}</span>
+          <span :lang="lang">{{ $t('trans.notesPanel.addNewNote') }}</span>
         </v-tooltip>
       </div>
     </div>
 
     <v-form v-if="showNoteField">
-      <div class="mb-2" :class="{ 'dir-rtl': isRTL }">
+      <div class="mb-2" :class="{ 'dir-rtl': isRTL }" :lang="lang">
         {{ $t('trans.notesPanel.note') }}
       </div>
       <v-textarea
@@ -41,11 +43,12 @@
         flat
         outlined
         solid
+        :lang="lang"
       />
       <v-row>
         <v-col cols="12" sm="6" xl="4">
           <v-btn block color="primary" @click="showNoteField = false" outlined>
-            <span>{{ $t('trans.notesPanel.cancel') }}</span>
+            <span :lang="lang">{{ $t('trans.notesPanel.cancel') }}</span>
           </v-btn>
         </v-col>
         <v-col cols="12" sm="6" xl="4" order="first" order-sm="last">
@@ -56,7 +59,7 @@
             :disabled="!newNote"
             @click="addNote"
           >
-            <span>{{ $t('trans.notesPanel.addNote') }}</span>
+            <span :lang="lang">{{ $t('trans.notesPanel.addNote') }}</span>
           </v-btn>
         </v-col>
       </v-row>
@@ -98,7 +101,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['isRTL']),
+    ...mapGetters('form', ['isRTL', 'lang']),
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
