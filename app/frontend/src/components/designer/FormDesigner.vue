@@ -210,6 +210,7 @@ export default {
       'form.sendSubRecieviedEmail',
       'form.allowSubmitterToUploadFile',
       'form.showSubmissionConfirmation',
+      'form.subscribe',
       'form.snake',
       'form.submissionReceivedEmails',
       'form.userType',

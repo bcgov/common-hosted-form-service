@@ -2,6 +2,9 @@ const Problem = require('api-problem');
 const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
 const { validateScheduleObject } = require('../common/utils');
+const { SubscriptionEvent } = require('../common/constants');
+const axios = require('axios');
+const log = require('../../components/log')(module.filename);
 
 const {
   FileStorage,
@@ -18,6 +21,7 @@ const {
   IdentityProvider,
   SubmissionMetadata,
   FormComponentsProactiveHelp,
+  FormSubscription,
 } = require('../common/models');
 const { falsey, queryUtils, checkIsFormExpired } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
@@ -70,6 +74,7 @@ const service = {
       obj.createdBy = currentUser.usernameIdp;
       obj.allowSubmitterToUploadFile = data.allowSubmitterToUploadFile;
       obj.schedule = data.schedule;
+      obj.subscribe = data.subscribe;
       obj.reminder_enabled = data.reminder_enabled;
       obj.enableCopyExistingSubmission = data.enableCopyExistingSubmission;
 
@@ -141,6 +146,7 @@ const service = {
         updatedBy: currentUser.usernameIdp,
         allowSubmitterToUploadFile: data.allowSubmitterToUploadFile,
         schedule: data.schedule,
+        subscribe: data.subscribe,
         reminder_enabled: data.reminder_enabled,
         enableCopyExistingSubmission: data.enableCopyExistingSubmission,
       };
@@ -248,6 +254,7 @@ const service = {
       query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
     }
     const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
+
     if (params.fields && params.fields.length) {
       let fields = [];
       if (Array.isArray(params.fields)) {
@@ -334,8 +341,7 @@ const service = {
     let trx;
     try {
       const formVersion = await service.readVersion(formVersionId);
-
-      const { identityProviders } = await service.readForm(formVersion.formId);
+      const { identityProviders, subscribe } = await service.readForm(formVersion.formId);
 
       trx = await FormSubmission.startTransaction();
 
@@ -358,7 +364,7 @@ const service = {
 
       if (!isPublicForm && !currentUser.public) {
         // Provide the submission creator appropriate CRUD permissions if this is a non-public form
-        // we decided that subitter cannot delete or update their own submission unless it's a draft
+        // we decided that submitter cannot delete or update their own submission unless it's a draft
         // We know this is the submission creator when we see the SUBMISSION_CREATE permission
         // These are adjusted at the update point if going from draft to submitted, or when adding
         // team submitters to a draft
@@ -389,6 +395,11 @@ const service = {
 
         await FormSubmissionStatus.query(trx).insert(stObj);
       }
+      if (subscribe && subscribe.enabled) {
+        const subscribeConfig = await service.readFormSubscriptionDetails(formVersion.formId);
+        const config = Object.assign({}, subscribe, subscribeConfig);
+        service.postSubscriptionEvent(config, formVersion, submissionId, SubscriptionEvent.FORM_SUBMITTED);
+      }
 
       // does this submission contain any file uploads?
       // if so, we need to update the file storage records.
@@ -400,6 +411,7 @@ const service = {
 
       await trx.commit();
       const result = await service.readSubmission(obj.id);
+
       return result;
     } catch (err) {
       if (trx) await trx.rollback();
@@ -641,6 +653,35 @@ const service = {
     return { url: imageUrl };
   },
 
+  postSubscriptionEvent: async (subscribe, formVersion, submissionId, subscriptionEvent) => {
+    try {
+      // Check if there are endpoints subscribed for form submission event
+      if (subscribe && subscribe.endpointUrl) {
+        const axiosOptions = { timeout: 10000 };
+        const axiosInstance = axios.create(axiosOptions);
+        const jsonData = { formId: formVersion.formId, formVersion: formVersion.id, submissionId: submissionId, subscriptionEvent: subscriptionEvent };
+
+        axiosInstance.interceptors.request.use(
+          (cfg) => {
+            cfg.headers = { [subscribe.key]: `${subscribe.endpointToken}` };
+            return Promise.resolve(cfg);
+          },
+          (error) => {
+            return Promise.reject(error);
+          }
+        );
+
+        axiosInstance.post(subscribe.endpointUrl, jsonData);
+
+        throw new Problem(401, jsonData);
+      }
+    } catch (err) {
+      log.error(err.message, err, {
+        function: 'postSubscriptionEvent',
+      });
+    }
+  },
+
   /**
    * @function listFormComponentsProactiveHelp
    * Search for all form components help information
@@ -670,6 +711,41 @@ const service = {
       }, Object.create(null));
     }
     return {};
+  },
+  // Get the current subscription settings for a form
+  readFormSubscriptionDetails: (formId) => {
+    return FormSubscription.query().modify('filterFormId', formId).first();
+  },
+  // Update subscription settings for a form
+  createOrUpdateSubscriptionDetails: async (formId, subscriptionData, currentUser) => {
+    let trx;
+    try {
+      const subscriptionDetails = await service.readFormSubscriptionDetails(formId);
+      trx = await FormSubscription.startTransaction();
+
+      if (subscriptionDetails) {
+        // Update new subscription settings for a form
+        await FormSubscription.query(trx)
+          .modify('filterFormId', formId)
+          .update({
+            ...subscriptionData,
+            updatedBy: currentUser.usernameIdp,
+          });
+      } else {
+        // Add new subscription settings for the form
+        await FormSubscription.query(trx).insert({
+          id: uuidv4(),
+          ...subscriptionData,
+          createdBy: currentUser.usernameIdp,
+        });
+      }
+
+      await trx.commit();
+      return service.readFormSubscriptionDetails(formId);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
   },
 };
 

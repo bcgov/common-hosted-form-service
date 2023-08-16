@@ -150,4 +150,12 @@ routes.get('/formcomponents/proactivehelp/imageUrl/:componentId', async (req, re
   await controller.getFCProactiveHelpImageUrl(req, res, next);
 });
 
+routes.get('/:formId/subscriptions', hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {
+  await controller.readFormSubscriptionDetails(req, res, next);
+});
+
+routes.put('/:formId/subscriptions', hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {
+  await controller.createOrUpdateSubscriptionDetails(req, res, next);
+});
+
 module.exports = routes;

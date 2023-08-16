@@ -46,7 +46,8 @@
     "totalVersions": "Tổng số phiên bản",
     "status": "Trạng thái",
     "update": "Cập nhật",
-    "cancel": "Hủy bỏ"
+    "cancel": "Hủy bỏ",
+    "eventSubscription": "Đăng ký sự kiện"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Nhấn <kbd>enter</kbd> hoặc <kbd>,</kbd> hoặc <kbd>dấu cách</kbd> để thêm nhiều địa chỉ email",
@@ -124,7 +125,28 @@
     "validInterval": "Đây phải là một khoảng thời gian hợp lệ.",
     "fieldRequiredAndInterval": "Trường này là bắt buộc & phải là một khoảng thời gian.",
     "dateGrtOpenSubmissnDate": "Lặp lại cho đến ngày phải lớn hơn ngày gửi mở",
-    "public": "Công khai (ẩn danh)"
+    "public": "Công khai (ẩn danh)",
+    "allowEventSubscription": "Cho phép đăng ký sự kiện",
+    "eventSubscription": "Đăng ký sự kiện",
+    "validEndpointRequired": "Vui lòng nhập một điểm cuối hợp lệ bắt đầu bằng https://",
+    "validBearerTokenRequired": "Nhập ví dụ về mã thông báo mang hợp lệ: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+  },
+  "subscribeEvent": {
+    "eventType": "Loại sự kiện",
+    "endpointUrl": "URL điểm cuối",
+    "eventSubmission": "Nộp hồ sơ",
+    "eventAssignment": "Phân công",
+    "eventStatusChange": "Thay đổi trạng thái",
+    "endpointToken": "Mã thông báo điểm cuối",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "Cứu",
+    "text": "chữ",
+    "password": "mật khẩu",
+    "hideSecret": "Ẩn bí mật",
+    "showSecret": "Hiển thị bí mật",
+    "key" : "Chìa khóa",
+    "saveSettingsErrMsg" : "Đã xảy ra lỗi khi cố cập nhật cài đặt cho biểu mẫu này.",
+    "updateSettingsConsoleErrMsg" : "Lỗi khi cập nhật cài đặt cho biểu mẫu {formId} : {error}"
   },
   "apiKey": {
     "disclaimer": "từ chối trách nhiệm",
@@ -909,7 +931,12 @@
       "listFCPHErrMsg": "Đã xảy ra lỗi khi tìm nạp các thành phần của trình tạo biểu mẫu",
       "listFCPHConsErrMsg": "Lỗi khi nhận các thành phần của trình tạo biểu mẫu: {error}",
       "downloadFileErrMsg": "Đã xảy ra lỗi khi tải xuống tệp",
-      "downloadFileConsErrMsg": "Lỗi khi tải xuống tệp: lỗi"
+      "downloadFileConsErrMsg": "Lỗi khi tải xuống tệp: lỗi",
+      "readSubscriptionSettingsErrMsg": "Đã xảy ra lỗi khi cố tìm nạp cài đặt đăng ký.",
+      "readSubscriptionSettingsConsErrMsg": "Lỗi nhận cài đặt đăng ký cho biểu mẫu {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "Cài đặt đăng ký cho biểu mẫu này đã được lưu.",
+      "saveSubscriptionSettingsErrMsg": "Đã xảy ra lỗi khi cố lưu cài đặt đăng ký.",
+      "saveSubscriptionSettingsConsErrMsg": "Lỗi khi lưu cài đặt đăng ký cho biểu mẫu {formId}: {error}"
     }
   },
   "admin": {

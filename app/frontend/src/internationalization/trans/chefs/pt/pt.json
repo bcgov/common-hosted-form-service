@@ -46,7 +46,8 @@
     "totalVersions": "Versões totais",
     "status": "Status",
     "update": "Atualizar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "eventSubscription": "Assinatura de evento"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Pressione <kbd>enter</kbd> ou <kbd>,</kbd> ou <kbd>espaço</kbd> para adicionar vários endereços de e-mail",
@@ -124,7 +125,28 @@
     "validInterval": "Este deve ser um intervalo válido.",
     "fieldRequiredAndInterval": "Este campo é obrigatório e deve ser um intervalo.",
     "dateGrtOpenSubmissnDate": "Repita até que a data seja maior que a data de envio aberto",
-    "public": "Público (anônimo)"
+    "public": "Público (anônimo)",
+    "allowEventSubscription": "Permitir assinatura de evento",
+    "eventSubscription": "Assinatura de evento",
+    "validEndpointRequired": "Insira um endpoint válido começando com https://",
+    "validBearerTokenRequired": "Insira um exemplo de token de portador válido: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+  },
+  "subscribeEvent": {
+    "eventType": "Tipo de evento",
+    "endpointUrl": "URL do terminal",
+    "eventSubmission": "Submissão",
+    "eventAssignment": "Assignment",
+    "eventStatusChange": "Mudança de status",
+    "endpointToken": "Token de terminal",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "Salvar",
+    "text": "texto",
+    "password": "senha",
+    "hideSecret": "Ocultar Segredo",
+    "showSecret": "Mostrar Segredo",
+    "key" : "Chave",
+    "saveSettingsErrMsg" : "Ocorreu um erro ao tentar atualizar as configurações deste formulário.",
+    "updateSettingsConsoleErrMsg" : "Erro ao atualizar as configurações do formulário {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "Isenção de responsabilidade",
@@ -909,7 +931,12 @@
       "listFCPHErrMsg": "Ocorreu um erro ao buscar os componentes do construtor de formulários",
       "listFCPHConsErrMsg": "Erro ao obter os componentes do construtor de formulário: {error}",
       "downloadFileErrMsg": "Ocorreu um erro durante o download do arquivo",
-      "downloadFileConsErrMsg": "Erro ao baixar o arquivo: erro"
+      "downloadFileConsErrMsg": "Erro ao baixar o arquivo: erro",
+      "readSubscriptionSettingsErrMsg": "Ocorreu um erro ao tentar buscar as configurações de assinatura.",
+      "readSubscriptionSettingsConsErrMsg": "Erro ao obter configurações de assinatura para o formulário {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "As configurações de inscrição para este formulário foram salvas.",
+      "saveSubscriptionSettingsErrMsg": "Ocorreu um erro ao tentar salvar as configurações de assinatura.",
+      "saveSubscriptionSettingsConsErrMsg": "Erro ao salvar as configurações de assinatura para o formulário {formId}: {error}"
     }
   },
   "admin": {
