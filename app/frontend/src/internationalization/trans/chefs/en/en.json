@@ -46,7 +46,8 @@
     "totalVersions": "Total Versions",
     "status": "Status",
     "update": "Update",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "eventSubscription" : "Event Subscription"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Press <kbd>enter</kbd> or <kbd>,</kbd> or <kbd>space</kbd> to add multiple email addresses",
@@ -123,8 +124,29 @@
     "selectAnOptions": "Please select at least 1 option",
     "validInterval": "This should be a valid interval.",
     "fieldRequiredAndInterval": "This field is required & should be an interval.",
-    "dateGrtOpenSubmissnDate": "Repeat until date should be greater than open submission date",
-    "public": "Public (anonymous)"
+    "dateGrtOpenSubmissnDate": "Repeat untill date should be greater then open submission date",
+    "public": "Public (anonymous)",
+    "allowEventSubscription": "Allow event subscription",
+    "eventSubscription": "Event Subscription",
+    "validEndpointRequired": "Please enter a valid endpoint starting with https://",
+    "validBearerTokenRequired": "Enter a valid bearer token example: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+  },
+  "subscribeEvent": {
+    "eventType": "Event Type",
+    "endpointUrl": "Endpoint URL",
+    "eventSubmission": "Submission",
+    "eventAssignment": "Assignment",
+    "eventStatusChange": "Status Change",
+    "endpointToken": "Endpoint Token",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "Save",
+    "text": "text",
+    "password": "password",
+    "hideSecret": "Hide Secret",
+    "showSecret": "Show Secret",
+    "key" : "Key",
+    "saveSettingsErrMsg" : "An error occurred while attempting to update the settings for this form.",
+    "updateSettingsConsoleErrMsg" : "Error updating settings for form  {formId} : {error}"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",
@@ -879,7 +901,13 @@
       "listFCPHErrMsg": "An error occurred while fetching form builder components",
       "listFCPHConsErrMsg": "Error getting form builder components: {error}",
       "downloadFileErrMsg": "An error occurred while downloading file",
-      "downloadFileConsErrMsg": "Error downloading file: error"
+      "downloadFileConsErrMsg": "Error downloading file: error",
+      "readSubscriptionSettingsErrMsg": "An error occurred while trying to fetch the subscription settings.",
+      "readSubscriptionSettingsConsErrMsg": "Error getting subscription settings for form {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "Subscription settings for this form has been saved.",
+      "saveSubscriptionSettingsErrMsg": "An error occurred while trying to save subscription settings.",
+      "saveSubscriptionSettingsConsErrMsg": "Error saving subscription settings for form {formId}: {error}"
+      
     }
   },
   "permissionUtils": {

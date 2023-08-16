@@ -46,7 +46,8 @@
     "totalVersions": "Versioni totali",
     "status": "Stato",
     "update": "Aggiornamento",
-    "cancel": "Annulla"
+    "cancel": "Annulla",
+    "eventSubscription": "Abbonamento all'evento"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Premi <kbd>invio</kbd> o <kbd>,</kbd> o <kbd>spazio</kbd> per aggiungere più indirizzi email",
@@ -124,7 +125,28 @@
     "validInterval": "Questo dovrebbe essere un intervallo valido.",
     "fieldRequiredAndInterval": "Questo campo è obbligatorio e dovrebbe essere un intervallo.",
     "dateGrtOpenSubmissnDate": "La data di ripetizione deve essere maggiore della data di invio aperta",
-    "public": "Pubblico (anonimo)"
+    "public": "Pubblico (anonimo)",
+    "allowEventSubscription": "Consenti l'iscrizione agli eventi",
+    "eventSubscription": "Abbonamento all'evento",
+    "validEndpointRequired": "Inserisci un endpoint valido che inizi con https://",
+    "validBearerTokenRequired": "Inserisci un esempio di token al portatore valido: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+  },
+  "subscribeEvent": {
+    "eventType": "Tipo di evento",
+    "endpointUrl": "URL dell'endpoint",
+    "eventSubmission": "Sottomissione",
+    "eventAssignment": "Incarico",
+    "eventStatusChange": "Cambio di stato",
+    "endpointToken": "Token dell'endpoint",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "Salva",
+    "text": "testo",
+    "password": "parola d'ordine",
+    "hideSecret": "Nascondi segreto",
+    "showSecret": "Mostra Segreto",
+    "key" : "Chiave",
+    "saveSettingsErrMsg" : "Si è verificato un errore durante il tentativo di aggiornare le impostazioni per questo modulo.",
+    "updateSettingsConsoleErrMsg" : "Errore durante l'aggiornamento delle impostazioni per il modulo {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",
@@ -909,7 +931,12 @@
       "listFCPHErrMsg": "Si è verificato un errore durante il recupero dei componenti del generatore di moduli",
       "listFCPHConsErrMsg": "Errore durante il recupero dei componenti del generatore di moduli: {errors}",
       "downloadFileErrMsg": "Si è verificato un errore durante il download del file",
-      "downloadFileConsErrMsg": "Errore durante il download del file: errore"
+      "downloadFileConsErrMsg": "Errore durante il download del file: errore",
+      "readSubscriptionSettingsErrMsg": "Si è verificato un errore durante il tentativo di recuperare le impostazioni dell'abbonamento.",
+      "readSubscriptionSettingsConsErrMsg": "Errore durante il recupero delle impostazioni di sottoscrizione per il modulo {formId}: {errore}.",
+      "saveSubscriptionSettingsNotifyMsg": "Le impostazioni di iscrizione per questo modulo sono state salvate.",
+      "saveSubscriptionSettingsErrMsg": "Si è verificato un errore durante il tentativo di salvare le impostazioni dell'abbonamento.",
+      "saveSubscriptionSettingsConsErrMsg": "Errore durante il salvataggio delle impostazioni di sottoscrizione per il modulo {formId}: {error}"
     }
   },
   "admin": {

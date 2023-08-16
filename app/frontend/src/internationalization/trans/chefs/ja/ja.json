@@ -46,7 +46,8 @@
     "totalVersions": "合計バージョン数",
     "status": "スターテス",
     "update": "アップデート",
-    "cancel": "キャンセル"
+    "cancel": "キャンセル",
+    "eventSubscription": "イベントのサブスクリプション"
   },
   "formSettings": {
     "pressToAddMultiEmail": "<kbd>Enter</kbd>または<kbd>、</kbd>または<kbd>スペース</kbd>を押して複数の電子メール アドレスを追加します",
@@ -124,7 +125,28 @@
     "validInterval": "これは有効な間隔である必要があります。",
     "fieldRequiredAndInterval": "このフィールドは必須であり、間隔である必要があります。",
     "dateGrtOpenSubmissnDate": "繰り返しの日付は提出開始日よりも後の日付にする必要があります",
-    "public": "公開（匿名）"
+    "public": "公開（匿名）",
+    "allowEventSubscription": "イベントのサブスクリプションを許可する",
+    "eventSubscription": "イベントのサブスクリプション",
+    "validEndpointRequired": "で始まる有効なエンドポイントを入力してください https://",
+    "validBearerTokenRequired": "有効なベアラー トークンの例を入力してください: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+  },
+  "subscribeEvent": {
+    "eventType": "イベントタイプ",
+    "endpointUrl": "エンドポイント URL",
+    "eventSubmission": "提出",
+    "eventAssignment": "課題",
+    "eventStatusChange": "ステータス変更",
+    "endpointToken": "エンドポイントトークン",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "保存",
+    "text": "文章",
+    "password": "パスワード",
+    "hideSecret": "秘密を隠す",
+    "showSecret": "シークレットを表示",
+    "key" : "鍵",
+    "saveSettingsErrMsg" : "このフォームの設定を更新しようとしたときにエラーが発生しました。",
+    "updateSettingsConsoleErrMsg" : "フォーム {formId} の設定更新中にエラーが発生しました: {error}"
   },
   "apiKey": {
     "disclaimer": "免責事項",
@@ -909,7 +931,12 @@
       "listFCPHErrMsg": "フォームビルダーコンポーネントの取得中にエラーが発生しました",
       "listFCPHConsErrMsg": "フォームビルダーコンポーネントの取得エラー: {error}",
       "downloadFileErrMsg": "ファイルのダウンロード中にエラーが発生しました",
-      "downloadFileConsErrMsg": "ファイルのダウンロード中にエラーが発生しました: エラー"
+      "downloadFileConsErrMsg": "ファイルのダウンロード中にエラーが発生しました: エラー",
+      "readSubscriptionSettingsErrMsg": "サブスクリプション設定を取得しようとしたときにエラーが発生しました。",
+      "readSubscriptionSettingsConsErrMsg": "フォーム {formId} のサブスクリプション設定の取得中にエラーが発生しました: {error}。",
+      "saveSubscriptionSettingsNotifyMsg": "このフォームの購読設定が保存されました。",
+      "saveSubscriptionSettingsErrMsg": "サブスクリプション設定を保存しようとしたときにエラーが発生しました。",
+      "saveSubscriptionSettingsConsErrMsg": "フォーム {formId} のサブスクリプション設定を保存中にエラーが発生しました: {error}"
     }
   },
   "admin": {

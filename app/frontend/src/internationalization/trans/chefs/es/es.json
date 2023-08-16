@@ -46,7 +46,8 @@
     "totalVersions": "Versiones totales",
     "status": "Estado",
     "update": "Actualizar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "eventSubscription" : "Suscripción a eventos"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Presiona <kbd>enter</kbd> o <kbd>,</kbd> o <kbd>espacio</kbd> para agregar varias direcciones de correo electrónico",
@@ -124,7 +125,28 @@
     "validInterval": "Este debería ser un intervalo válido.",
     "fieldRequiredAndInterval": "Este campo es obligatorio y debe ser un intervalo.",
     "dateGrtOpenSubmissnDate": "Repetir hasta la fecha debe ser mayor que la fecha de presentación abierta",
-    "public": "Público (anónimo)"
+    "public": "Público (anónimo)",
+    "allowEventSubscription": "Permitir suscripción a eventos",
+    "eventSubscription": "Suscripción a eventos",
+    "validEndpointRequired": "Ingrese un punto final válido que comience con https://",
+    "validBearerTokenRequired": "Introduzca un ejemplo de token de portador válido: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+  },
+  "subscribeEvent": {
+    "eventType": "Tipo de evento",
+    "endpointUrl": "URL de punto final",
+    "eventSubmission": "Envío",
+    "eventAssignment": "Asignación",
+    "eventStatusChange": "Cambio de estado",
+    "endpointToken": "Token de punto final",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "Ahorrar",
+    "text": "texto",
+    "password": "contraseña",
+    "hideSecret": "Ocultar secreto",
+    "showSecret": "Mostrar secreto",
+    "key" : "Llave",
+    "saveSettingsErrMsg" : "Se produjo un error al intentar actualizar la configuración de este formulario.",
+    "updateSettingsConsoleErrMsg" : "Error al actualizar la configuración del formulario {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "Descargo de responsabilidad",
@@ -909,7 +931,12 @@
       "listFCPHErrMsg": "Se produjo un error al obtener los componentes del generador de formularios",
       "listFCPHConsErrMsg": "Error al obtener los componentes del generador de formularios: {error}",
       "downloadFileErrMsg": "Ocurrió un error al descargar el archivo",
-      "downloadFileConsErrMsg": "Error al descargar el archivo: error"
+      "downloadFileConsErrMsg": "Error al descargar el archivo: error",
+      "readSubscriptionSettingsErrMsg": "Se produjo un error al intentar obtener la configuración de la suscripción.",
+      "readSubscriptionSettingsConsErrMsg": "Error al obtener la configuración de suscripción para el formulario {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "Se ha guardado la configuración de suscripción para este formulario.",
+      "saveSubscriptionSettingsErrMsg": "Se produjo un error al intentar guardar la configuración de la suscripción.",
+      "saveSubscriptionSettingsConsErrMsg": "Error al guardar la configuración de suscripción para el formulario {formId}: {error}"
     }
   },
   "admin": {

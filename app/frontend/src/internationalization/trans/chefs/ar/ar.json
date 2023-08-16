@@ -46,7 +46,8 @@
     "totalVersions": "إجمالي الإصدارات",
     "status": "حالة",
     "update": "تحديث",
-    "cancel": "يلغي"
+    "cancel": "يلغي",
+    "eventSubscription": "اشتراك الحدث"
   },
   "formSettings": {
     "pressToAddMultiEmail": "اضغط على <kbd>مفتاح الإدخال</kbd> أو <kbd>،</kbd> أو <kbd>مسافة</kbd> لإضافة عناوين بريد إلكتروني متعددة",
@@ -124,7 +125,28 @@
     "validInterval": "يجب أن يكون هذا الفاصل الزمني صالحًا.",
     "fieldRequiredAndInterval": "هذا الحقل مطلوب ويجب أن يكون فترة.",
     "dateGrtOpenSubmissnDate": "كرر حتى التاريخ يجب أن يكون أكبر من تاريخ التقديم المفتوح",
-    "public": "عام (مجهول)"
+    "public": "عام (مجهول)",
+    "allowEventSubscription": "السماح بالاشتراك في الحدث",
+    "eventSubscription": "اشتراك الحدث",
+    "validEndpointRequired": "الرجاء إدخال نقطة نهاية https://",
+    "validBearerTokenRequired": "89abddfb-2cff-4fda-83e6-13221f0c3d4f أدخل مثال رمز حامل صالح"
+  },
+  "subscribeEvent": {
+    "eventType": "نوع الحدث",
+    "endpointUrl": "عنوان URL لنقطة النهاية",
+    "eventSubmission": "استسلام",
+    "eventAssignment": "تكليف",
+    "eventStatusChange": "تغيير الوضع",
+    "endpointToken": "رمز نقطة النهاية",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "يحفظ",
+    "text": "نص",
+    "password": "كلمة المرور",
+    "hideSecret": "إخفاء السر",
+    "showSecret": "إظهار السر",
+    "key" : "مفتاح",
+    "saveSettingsErrMsg" : "حدث خطأ أثناء محاولة تحديث إعدادات هذا النموذج.",
+    "updateSettingsConsoleErrMsg" : "خطأ في تحديث إعدادات النموذج {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "تنصل",
@@ -908,7 +930,12 @@
       "listFCPHErrMsg": "حدث خطأ أثناء إحضار مكونات أداة إنشاء النماذج",
       "listFCPHConsErrMsg": "خطأ في الحصول على مكونات منشئ النموذج: {error}",
       "downloadFileErrMsg": "حدث خطأ أثناء تنزيل الملف",
-      "downloadFileConsErrMsg": "خطأ في تنزيل الملف: خطأ"
+      "downloadFileConsErrMsg": "خطأ في تنزيل الملف: خطأ",
+      "readSubscriptionSettingsErrMsg": "حدث خطأ أثناء محاولة جلب إعدادات الاشتراك.",
+      "readSubscriptionSettingsConsErrMsg": "خطأ في الحصول على إعدادات الاشتراك للنموذج {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "تم حفظ إعدادات الاشتراك لهذا النموذج.",
+      "saveSubscriptionSettingsErrMsg": "حدث خطأ أثناء محاولة حفظ إعدادات الاشتراك.",
+      "saveSubscriptionSettingsConsErrMsg": "خطأ في حفظ إعدادات الاشتراك للنموذج {formId}: {error}"
     }
   },
   "admin": {

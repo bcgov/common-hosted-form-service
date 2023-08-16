@@ -46,7 +46,8 @@
     "totalVersions": "कुल संस्करण",
     "status": "दर्जा",
     "update": "अद्यतन",
-    "cancel": "रद्द करना"
+    "cancel": "रद्द करना",
+    "eventSubscription": "इवेंट सदस्यता"
   },
   "formSettings": {
     "pressToAddMultiEmail": "एकाधिक ईमेल पते जोड़ने के लिए <kbd>एंटर</kbd> या <kbd>,</kbd> या <kbd>स्पेस</kbd> दबाएँ",
@@ -124,7 +125,28 @@
     "validInterval": "यह एक वैध अंतराल होना चाहिए.",
     "fieldRequiredAndInterval": "यह फ़ील्ड आवश्यक है और एक अंतराल होना चाहिए.",
     "dateGrtOpenSubmissnDate": "तब तक दोहराएँ जब तक दिनांक ओपन सबमिशन दिनांक से अधिक न हो जाए",
-    "public": "सार्वजनिक (गुमनाम)"
+    "public": "सार्वजनिक (गुमनाम)",
+    "allowEventSubscription": "ईवेंट सदस्यता की अनुमति दें",
+    "eventSubscription": "इवेंट सदस्यता",
+    "validEndpointRequired": "कृपया प्रारंभ करने वाला एक वैध समापन बिंदु दर्ज करें https://",
+    "validBearerTokenRequired": "एक वैध वाहक टोकन उदाहरण दर्ज करें: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+  },
+  "subscribeEvent": {
+    "eventType": "घटना प्रकार",
+    "endpointUrl": "समापन बिंदु यूआरएल",
+    "eventSubmission": "जमा करना",
+    "eventAssignment": "कार्यभार",
+    "eventStatusChange": "स्थिति परिवर्तन",
+    "endpointToken": "समापन बिंदु टोकन",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "बचाना",
+    "text": "मूलपाठ",
+    "password": "पासवर्ड",
+    "hideSecret": "गुप्त छुपाएं",
+    "showSecret": "राज दिखाओ",
+    "key": "चाबी",
+    "saveSettingsErrMsg": "इस फॉर्म के लिए सेटिंग्स को अद्यतन करने का प्रयास करते समय एक त्रुटि उत्पन्न हुई।",
+    "updateSettingsConsoleErrMsg": "फ़ॉर्म {formId} के लिए सेटिंग अपडेट करने में त्रुटि: {error}"
   },
   "apiKey": {
     "disclaimer": "अस्वीकरण",
@@ -909,7 +931,12 @@
       "listFCPHErrMsg": "फॉर्म बिल्डर घटकों को लाते समय एक त्रुटि उत्पन्न हुई",
       "listFCPHConsErrMsg": "प्रपत्र बिल्डर घटक प्राप्त करने में त्रुटि: {error}",
       "downloadFileErrMsg": "फ़ाइल डाउनलोड करते समय एक त्रुटि उत्पन्न हुई",
-      "downloadFileConsErrMsg": "फ़ाइल डाउनलोड करने में त्रुटि: त्रुटि"
+      "downloadFileConsErrMsg": "फ़ाइल डाउनलोड करने में त्रुटि: त्रुटि",
+      "readSubscriptionSettingsErrMsg": "सदस्यता सेटिंग लाने का प्रयास करते समय एक त्रुटि उत्पन्न हुई.",
+      "readSubscriptionSettingsConsErrMsg": "फ़ॉर्म {formId} के लिए सदस्यता सेटिंग प्राप्त करने में त्रुटि: {त्रुटि}।",
+      "saveSubscriptionSettingsNotifyMsg": "इस फॉर्म के लिए सदस्यता सेटिंग्स सहेज ली गई हैं।",
+      "saveSubscriptionSettingsErrMsg": "सदस्यता सेटिंग सहेजने का प्रयास करते समय एक त्रुटि उत्पन्न हुई.",
+      "saveSubscriptionSettingsConsErrMsg": "फ़ॉर्म {formId} के लिए सदस्यता सेटिंग सहेजने में त्रुटि: {त्रुटि}"
     }
   },
   "admin": {

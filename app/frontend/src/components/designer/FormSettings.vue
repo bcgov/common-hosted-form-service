@@ -317,6 +317,45 @@
               </div>
             </template>
           </v-checkbox>
+          <v-checkbox
+            class="my-0"
+            v-model="subscribe.enabled"
+            :disabled="idirUser === false || !isFormPublished"
+          >
+            <template #label>
+              <div :class="{ 'mr-2': isRTL }">
+                <span
+                  style="max-width: 80%"
+                  v-html="$t('trans.formSettings.allowEventSubscription')"
+                  :lang="lang"
+                />
+                <v-tooltip bottom close-delay="2500">
+                  <template v-slot:activator="{ on, attrs }">
+                    <font-awesome-icon
+                      icon="fa-solid fa-flask"
+                      color="primary"
+                      class="ml-3"
+                      :class="{ 'mr-2': isRTL }"
+                      v-bind="attrs"
+                      v-on="on"
+                    />
+                  </template>
+                  <span :lang="lang"
+                    >{{ $t('trans.formSettings.experimental') }}
+                    <a
+                      :href="githubLinkEventSubscriptionFeature"
+                      class="preview_info_link_field_white"
+                      :target="'_blank'"
+                      :hreflang="lang"
+                    >
+                      {{ $t('trans.formSettings.learnMore') }}
+                      <font-awesome-icon
+                        icon="fa-solid fa-square-arrow-up-right" /></a
+                  ></span>
+                </v-tooltip>
+              </div>
+            </template>
+          </v-checkbox>
         </BasePanel>
       </v-col>
 
@@ -1105,6 +1144,8 @@ export default {
         'https://github.com/bcgov/common-hosted-form-service/wiki/Copy-an-existing-submission',
       githubLinkScheduleAndReminderFeature:
         'https://github.com/bcgov/common-hosted-form-service/wiki/Schedule-and-Reminder-notification',
+      githubLinkEventSubscriptionFeature:
+        'https://github.com/bcgov/common-hosted-form-service/wiki/Event-Subscription',
       repeatUntil: false,
       closeSubmissionDateDraw: false,
       openSubmissionDateDraw: false,
@@ -1128,15 +1169,20 @@ export default {
       'form.submissionReceivedEmails',
       'form.userType',
       'form.schedule',
+      'form.subscribe',
       'form.reminder_enabled',
       'form.versions',
     ]),
+    ...mapGetters('auth', ['identityProvider']),
     ...mapGetters('form', ['isRTL', 'lang']),
     ID_MODE() {
       return IdentityMode;
     },
     ID_PROVIDERS() {
       return IdentityProviders;
+    },
+    idirUser() {
+      return this.identityProvider === IdentityProviders.IDIR;
     },
     isFormPublished() {
       return (
