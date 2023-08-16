@@ -254,7 +254,6 @@ export default {
           this.formSchema = response.data.version.schema;
           this.version = response.data.version.version;
         } else {
-          /** Let's remove all the values of such components that are not enabled for Copy existing submission feature */
           if (
             response.data?.version?.schema?.components &&
             response.data?.version?.schema?.components.length
@@ -963,6 +962,7 @@ export default {
           this.showModal
         )
           this.doYouWantToSaveTheDraft = true;
+        else this.leaveThisPage();
       } else {
         this.leaveThisPage();
       }
