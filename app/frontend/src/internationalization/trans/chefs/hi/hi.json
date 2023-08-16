@@ -144,9 +144,9 @@
     "password": "पासवर्ड",
     "hideSecret": "गुप्त छुपाएं",
     "showSecret": "राज दिखाओ",
-    "key" : "चाबी",
-    "saveSettingsErrMsg" : "इस फॉर्म के लिए सेटिंग्स को अद्यतन करने का प्रयास करते समय एक त्रुटि उत्पन्न हुई।",
-    "updateSettingsConsoleErrMsg" : "फ़ॉर्म {formId} के लिए सेटिंग अपडेट करने में त्रुटि: {error}"
+    "key": "चाबी",
+    "saveSettingsErrMsg": "इस फॉर्म के लिए सेटिंग्स को अद्यतन करने का प्रयास करते समय एक त्रुटि उत्पन्न हुई।",
+    "updateSettingsConsoleErrMsg": "फ़ॉर्म {formId} के लिए सेटिंग अपडेट करने में त्रुटि: {error}"
   },
   "apiKey": {
     "disclaimer": "अस्वीकरण",
@@ -931,7 +931,7 @@
       "listFCPHErrMsg": "फॉर्म बिल्डर घटकों को लाते समय एक त्रुटि उत्पन्न हुई",
       "listFCPHConsErrMsg": "प्रपत्र बिल्डर घटक प्राप्त करने में त्रुटि: {error}",
       "downloadFileErrMsg": "फ़ाइल डाउनलोड करते समय एक त्रुटि उत्पन्न हुई",
-      "downloadFileConsErrMsg": "फ़ाइल डाउनलोड करने में त्रुटि: त्रुटि"
+      "downloadFileConsErrMsg": "फ़ाइल डाउनलोड करने में त्रुटि: त्रुटि",
       "readSubscriptionSettingsErrMsg": "सदस्यता सेटिंग लाने का प्रयास करते समय एक त्रुटि उत्पन्न हुई.",
       "readSubscriptionSettingsConsErrMsg": "फ़ॉर्म {formId} के लिए सदस्यता सेटिंग प्राप्त करने में त्रुटि: {त्रुटि}।",
       "saveSubscriptionSettingsNotifyMsg": "इस फॉर्म के लिए सदस्यता सेटिंग्स सहेज ली गई हैं।",
