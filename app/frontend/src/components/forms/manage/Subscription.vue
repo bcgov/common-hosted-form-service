@@ -1,7 +1,9 @@
 <template>
   <v-container class="px-0">
     <template #title>
-      {{ $t('trans.formSettings.eventSubscription') }}
+      <span :lang="lang">
+        {{ $t('trans.formSettings.eventSubscription') }}
+      </span>
     </template>
     <v-form
       ref="subscriptionForm"
@@ -12,6 +14,7 @@
         <v-col cols="12" md="8" sm="12" lg="8" xl="8">
           <v-text-field
             :label="$t('trans.subscribeEvent.endpointUrl')"
+            :lang="lang"
             :placeholder="$t('trans.subscribeEvent.urlPlaceholder')"
             dense
             flat
@@ -24,6 +27,7 @@
         <v-col cols="12" md="8" sm="12" lg="8" xl="8">
           <v-text-field
             :label="$t('trans.subscribeEvent.key')"
+            :lang="lang"
             dense
             flat
             solid
@@ -34,6 +38,7 @@
         <v-col cols="12" md="8" sm="12" xl="8" lg="8">
           <v-text-field
             :label="$t('trans.subscribeEvent.endpointToken')"
+            :lang="lang"
             dense
             flat
             solid
@@ -62,17 +67,19 @@
                 <v-icon v-else>visibility</v-icon>
               </v-btn>
             </template>
-            <span v-if="showSecret">
+            <span v-if="showSecret" :lang="lang">
               {{ $t('trans.subscribeEvent.hideSecret') }}
             </span>
-            <span v-else>{{ $t('trans.subscribeEvent.showSecret') }}</span>
+            <span v-else :lang="lang">{{
+              $t('trans.subscribeEvent.showSecret')
+            }}</span>
           </v-tooltip>
         </v-col>
       </v-row>
       <v-row>
         <v-col>
           <v-btn class="mr-5" color="primary" @click="updateSettings">
-            <span>{{ $t('trans.subscribeEvent.save') }}</span>
+            <span :lang="lang">{{ $t('trans.subscribeEvent.save') }}</span>
           </v-btn>
         </v-col>
       </v-row>
@@ -109,7 +116,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['apiKey', 'form', 'permissions', 'version']),
+    ...mapGetters('form', ['apiKey', 'form', 'lang', 'permissions', 'version']),
     ...mapFields('form', ['subscriptionData']),
   },
   methods: {

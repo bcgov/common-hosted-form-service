@@ -71,9 +71,9 @@
           <template v-slot:actions>
             <v-icon class="icon">$expand</v-icon>
           </template>
-          <div class="header">
+          <div class="header" :lang="lang">
             <strong>{{ $t('trans.manageForm.eventSubscription') }}</strong>
-            <span v-if="subscriptionData">
+            <span v-if="subscriptionData" :lang="lang">
               <small v-if="subscriptionData.updatedBy">
                 {{ $t('trans.manageForm.updated') }}:
                 {{ subscriptionData.updatedAt | formatDate }} ({{
