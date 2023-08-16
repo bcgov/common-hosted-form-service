@@ -164,8 +164,8 @@ const service = {
       // we have 1 case when if field is DataGridMap type it'd not included into sorted flattened array,
       // thus we add it manually from original flatten array
       const dataGridFields = flattenSubmissionHeaders.filter((x) => !flattenSubmissionHeadersOrdered.includes(x));
-      dataGridFields.map((dgf) => flattenSubmissionHeaders.push(dgf));
-      formSchemaheaders = formSchemaheaders.concat(flattenSubmissionHeaders.filter((item) => formSchemaheaders.indexOf(item) < 0));
+      dataGridFields.map((dgf) => flattenSubmissionHeadersOrdered.push(dgf));
+      formSchemaheaders = formSchemaheaders.concat(flattenSubmissionHeadersOrdered.filter((item) => formSchemaheaders.indexOf(item) < 0));
     }
 
     if (fields) {
