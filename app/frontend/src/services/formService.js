@@ -531,9 +531,10 @@ export default {
       `${ApiRoutes.FORMS}/formcomponents/proactivehelp/imageUrl/${componentId}`
     );
   },
+
   /**
-   * @function readApiKey
-   * Get the current subsciption for the form
+   * @function readFormSubscriptionData
+   * Get the current subscription for the form
    * @param {string} formId The form uuid
    * @returns {Promise} An axios response
    */
@@ -543,7 +544,7 @@ export default {
 
   /**
    * @function updateSubscription
-   * Update a subsciption settings of a Form
+   * Update a subscription settings of a Form
    * @param {string} formId The form uuid
    * @param {Object} subscriptionData An object containing the form subscription details
    * @returns {Promise} An axios response
