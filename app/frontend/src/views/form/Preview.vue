@@ -12,15 +12,15 @@ export default {
   props: {
     d: {
       type: String,
-      required: true,
+      default: null,
     },
     f: {
       type: String,
-      required: true,
+      default: null,
     },
     v: {
       type: String,
-      required: true,
+      default: null,
     },
   },
   computed: {
