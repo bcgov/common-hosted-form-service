@@ -13,7 +13,7 @@
           <v-icon>print</v-icon>
         </v-btn>
       </template>
-      <span>{{ $t('trans.printOptions.print') }} </span>
+      <span :lang="lang">{{ $t('trans.printOptions.print') }} </span>
     </v-tooltip>
 
     <v-dialog
@@ -22,29 +22,33 @@
       content-class="export-submissions-dlg"
     >
       <v-card :class="{ 'dir-rtl': isRTL }">
-        <v-card-title class="text-h5 pb-0">{{
+        <v-card-title class="text-h5 pb-0" :lang="lang">{{
           $t('trans.printOptions.downloadOptions')
         }}</v-card-title>
         <v-card-text>
           <hr />
-          <p>
+          <p :lang="lang">
             <strong>1. </strong>
             <a
               href="https://github.com/bcgov/common-hosted-form-service/wiki/Printing-from-a-browser"
               target="blank"
+              :hreflang="lang"
               >{{ $t('trans.printOptions.print') }}</a
             >
             {{ $t('trans.printOptions.pageFromBrowser') }}
           </p>
           <v-btn class="mb-5 mr-5" color="primary" @click="printBrowser">
-            <span>{{ $t('trans.printOptions.browserPrint') }}</span>
+            <span :lang="lang">{{
+              $t('trans.printOptions.browserPrint')
+            }}</span>
           </v-btn>
 
-          <p>
+          <p :lang="lang">
             <strong>2.</strong> {{ $t('trans.printOptions.uploadA') }}
             <a
               href="https://github.com/bcgov/common-hosted-form-service/wiki/CDOGS-Template-Upload"
               target="blank"
+              :hreflang="lang"
               >{{ $t('trans.printOptions.cDogsTemplate') }}</a
             >
             {{ $t('trans.printOptions.uploadB') }}
@@ -61,6 +65,7 @@
             mandatory
             show-size
             v-model="templateForm.files"
+            :lang="lang"
           >
             <template v-slot:prepend>
               <span class="label">
@@ -82,10 +87,14 @@
                   v-on="on"
                 >
                   <v-icon :left="$vuetify.breakpoint.smAndUp">save</v-icon>
-                  <span>{{ $t('trans.printOptions.templatePrint') }}</span>
+                  <span :lang="lang">{{
+                    $t('trans.printOptions.templatePrint')
+                  }}</span>
                 </v-btn>
               </template>
-              <span>{{ $t('trans.printOptions.submitButtonTxt') }}</span>
+              <span :lang="lang">{{
+                $t('trans.printOptions.submitButtonTxt')
+              }}</span>
             </v-tooltip>
           </v-card-actions>
         </v-card-text>
@@ -124,7 +133,7 @@ export default {
     files() {
       return this.templateForm.files;
     },
-    ...mapGetters('form', ['isRTL']),
+    ...mapGetters('form', ['isRTL', 'lang']),
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),

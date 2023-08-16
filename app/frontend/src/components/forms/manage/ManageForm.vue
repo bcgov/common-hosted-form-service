@@ -11,9 +11,9 @@
           <template v-slot:actions>
             <v-icon class="icon">$expand</v-icon>
           </template>
-          <div class="header">
+          <div class="header" :lang="lang">
             <strong>{{ $t('trans.manageForm.formSettings') }}</strong>
-            <span>
+            <span :lang="lang">
               <small>
                 {{ $t('trans.manageForm.created') }}:
                 {{ form.createdAt | formatDate }} ({{ form.createdBy }})
@@ -37,7 +37,10 @@
             v-model="settingsFormValid"
             lazy-validation
           >
-            <FormSettings :disabled="formSettingsDisabled" />
+            <FormSettings
+              @onSubscription="onSubscription"
+              :disabled="formSettingsDisabled"
+            />
           </v-form>
 
           <div v-if="canEditForm && !formSettingsDisabled" class="mb-5">
@@ -46,17 +49,52 @@
               color="primary"
               @click="updateSettings"
             >
-              <span>{{ $t('trans.manageForm.update') }}</span>
+              <span :lang="lang">{{ $t('trans.manageForm.update') }}</span>
             </v-btn>
             <v-btn outlined @click="cancelSettingsEdit">
-              <span>{{ $t('trans.manageForm.cancel') }}</span>
+              <span :lang="lang">{{ $t('trans.manageForm.cancel') }}</span>
             </v-btn>
           </div>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
 
-    <!-- Api Key -->
+    <!-- Event Subscription-->
+    <v-expansion-panels
+      v-model="subscription"
+      flat
+      class="nrmc-expand-collapse"
+      v-if="isSubscribed"
+    >
+      <v-expansion-panel flat>
+        <v-expansion-panel-header>
+          <template v-slot:actions>
+            <v-icon class="icon">$expand</v-icon>
+          </template>
+          <div class="header" :lang="lang">
+            <strong>{{ $t('trans.manageForm.eventSubscription') }}</strong>
+            <span v-if="subscriptionData" :lang="lang">
+              <small v-if="subscriptionData.updatedBy">
+                {{ $t('trans.manageForm.updated') }}:
+                {{ subscriptionData.updatedAt | formatDate }} ({{
+                  subscriptionData.updatedBy
+                }})
+              </small>
+              <small v-else>
+                {{ $t('trans.manageForm.created') }}:
+                {{ subscriptionData.createdAt | formatDate }} ({{
+                  subscriptionData.createdBy
+                }})
+              </small>
+            </span>
+          </div>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <Subscription />
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+    </v-expansion-panels>
+    <!--  Key -->
     <v-expansion-panels
       v-model="apiKeyPanel"
       flat
@@ -68,9 +106,9 @@
           <template v-slot:actions>
             <v-icon class="icon">$expand</v-icon>
           </template>
-          <div class="header">
+          <div class="header" :lang="lang">
             <strong>{{ $t('trans.manageForm.apiKey') }}</strong>
-            <span v-if="apiKey">
+            <span v-if="apiKey" :lang="lang">
               <small v-if="apiKey.updatedBy">
                 {{ $t('trans.manageForm.updated') }}:
                 {{ apiKey.updatedAt | formatDate }} ({{ apiKey.updatedBy }})
@@ -99,14 +137,14 @@
           <template v-slot:actions>
             <v-icon class="icon">$expand</v-icon>
           </template>
-          <div class="header">
+          <div class="header" :lang="lang">
             <strong>{{ $t('trans.manageForm.formDesignHistory') }}</strong>
             <div>
-              <span>
+              <span :lang="lang">
                 <strong>{{ $t('trans.manageForm.totalVersions') }}:</strong>
                 {{ combinedVersionAndDraftCount }}
               </span>
-              <span class="ml-12 mr-2">
+              <span class="ml-12 mr-2" :lang="lang">
                 <strong>{{ $t('trans.manageForm.status') }}:</strong>
                 {{ versionState }}
               </span>
@@ -128,10 +166,11 @@ import { FormPermissions, NotificationTypes } from '@/utils/constants';
 import ApiKey from '@/components/forms/manage/ApiKey.vue';
 import FormSettings from '@/components/designer/FormSettings.vue';
 import ManageVersions from '@/components/forms/manage/ManageVersions.vue';
+import Subscription from '@/components/forms/manage/Subscription.vue';
 
 export default {
   name: 'ManageForm',
-  components: { ApiKey, FormSettings, ManageVersions },
+  components: { ApiKey, FormSettings, ManageVersions, Subscription },
   data() {
     return {
       apiKeyPanel: 1,
@@ -139,10 +178,20 @@ export default {
       settingsFormValid: false,
       settingsPanel: 1,
       versionsPanel: 0,
+      subscriptionsPanel: 0,
+      subscription: false,
     };
   },
   computed: {
-    ...mapGetters('form', ['apiKey', 'drafts', 'form', 'permissions', 'isRTL']),
+    ...mapGetters('form', [
+      'apiKey',
+      'drafts',
+      'form',
+      'permissions',
+      'isRTL',
+      'lang',
+      'subscriptionData',
+    ]),
     canEditForm() {
       return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },
@@ -179,9 +228,20 @@ export default {
         ].includes(p)
       );
     },
+    isSubscribed() {
+      if (this.form && this.form.subscribe && this.form.subscribe.enabled) {
+        return true;
+      } else {
+        return false;
+      }
+    },
   },
   methods: {
-    ...mapActions('form', ['fetchForm', 'updateForm']),
+    ...mapActions('form', [
+      'fetchForm',
+      'updateForm',
+      'readFormSubscriptionData',
+    ]),
     ...mapActions('notifications', ['addNotification']),
     cancelSettingsEdit() {
       this.formSettingsDisabled = true;
@@ -212,6 +272,12 @@ export default {
         });
       }
     },
+    onSubscription(value) {
+      this.subscriptionsPanel = value;
+    },
+  },
+  async mounted() {
+    await this.readFormSubscriptionData(this.form.id);
   },
 };
 </script>

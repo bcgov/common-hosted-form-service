@@ -34,6 +34,16 @@ const genInitialSchedule = () => ({
   },
 });
 
+const genInitialSubscribe = () => ({
+  enabled: null,
+});
+const genInitialSubscribeDetails = () => ({
+  subscribeEvent: '',
+  endpointUrl: null,
+  endpointToken: null,
+  key: '',
+});
+
 const genInitialForm = () => ({
   description: '',
   enableSubmitterDraft: false,
@@ -49,6 +59,7 @@ const genInitialForm = () => ({
   submissionReceivedEmails: [],
   reminder_enabled: false,
   schedule: genInitialSchedule(),
+  subscribe: genInitialSubscribe(),
   userType: IdentityMode.TEAM,
   versions: [],
   enableCopyExistingSubmission: false,
@@ -86,8 +97,9 @@ export default {
       data: null,
       headers: null,
     },
-    multiLanguage: '',
+    lang: 'en',
     isRTL: false,
+    subscriptionData: genInitialSubscribeDetails(),
   },
   getters: {
     getField, // vuex-map-fields
@@ -108,8 +120,9 @@ export default {
     fcProactiveHelpGroupList: (state) => state.fcProactiveHelpGroupList,
     fcProactiveHelpImageUrl: (state) => state.fcProactiveHelpImageUrl,
     downloadedFile: (state) => state.downloadedFile,
-    multiLanguage: (state) => state.multiLanguage,
+    lang: (state) => state.lang,
     isRTL: (state) => state.isRTL,
+    subscriptionData: (state) => state.subscriptionData,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -174,8 +187,11 @@ export default {
     SET_DOWNLOADEDFILE_HEADERS(state, headers) {
       state.downloadedFile.headers = headers;
     },
-    SET_MULTI_LANGUAGE(state, multiLanguage) {
-      state.multiLanguage = multiLanguage;
+    SET_MULTI_LANGUAGE(state, lang) {
+      state.lang = lang;
+    },
+    SET_SUBSCRIPTION_DATA(state, subscriptionData) {
+      state.subscriptionData = subscriptionData;
     },
   },
   actions: {
@@ -387,6 +403,10 @@ export default {
           ...genInitialSchedule(),
           ...data.schedule,
         };
+        data.subscribe = {
+          ...genInitialSubscribe(),
+          ...data.subscribe,
+        };
 
         commit('SET_FORM', data);
       } catch (error) {
@@ -475,8 +495,9 @@ export default {
             : [];
 
         const schedule = state.form.schedule.enabled ? state.form.schedule : {};
-
-        // const reminder = state.form.schedule.enabled ?  : false ;
+        const subscribe = state.form.subscribe.enabled
+          ? state.form.subscribe
+          : {};
 
         await formService.updateForm(state.form.id, {
           name: state.form.name,
@@ -490,6 +511,7 @@ export default {
           showSubmissionConfirmation: state.form.showSubmissionConfirmation,
           submissionReceivedEmails: emailList,
           schedule: schedule,
+          subscribe: subscribe,
           allowSubmitterToUploadFile: state.form.allowSubmitterToUploadFile,
           reminder_enabled: state.form.reminder_enabled
             ? state.form.reminder_enabled
@@ -885,9 +907,9 @@ export default {
       if (!state.form || state.form.isDirty === isDirty) return; // don't do anything if not changing the val (or if form is blank for some reason)
       commit('SET_FORM_DIRTY', isDirty);
     },
-    async setMultiLanguage({ commit }, multiLanguage) {
-      commit('SET_MULTI_LANGUAGE', multiLanguage);
-      if (multiLanguage === 'ar' || multiLanguage === 'fa') {
+    async setMultiLanguage({ commit }, lang) {
+      commit('SET_MULTI_LANGUAGE', lang);
+      if (lang === 'ar' || lang === 'fa') {
         commit('SET_IS_RTL', true);
       } else {
         commit('SET_IS_RTL', false);
@@ -908,6 +930,68 @@ export default {
             consoleError: i18n.t('trans.store.form.downloadFileConsErrMsg', {
               error: error,
             }),
+          },
+          { root: true }
+        );
+      }
+    },
+    async readFormSubscriptionData({ commit, dispatch }, formId) {
+      try {
+        const { data } = await formService.readFormSubscriptionData(formId);
+        if (data) {
+          commit('SET_SUBSCRIPTION_DATA', data);
+        }
+      } catch (error) {
+        dispatch(
+          'notifications/addNotification',
+          {
+            message: i18n.t('trans.store.form.readSubscriptionSettingsErrMsg'),
+            consoleError: i18n.t(
+              'trans.store.form.readSubscriptionSettingsConsErrMsg',
+              {
+                formId: formId,
+                error: error,
+              }
+            ),
+          },
+          { root: true }
+        );
+      }
+    },
+    async updateSubscription(
+      { commit, dispatch },
+      { formId, subscriptionData }
+    ) {
+      try {
+        const { data } = await formService.updateSubscription(
+          formId,
+          subscriptionData
+        );
+        if (data) {
+          commit('SET_SUBSCRIPTION_DATA', data);
+        }
+        dispatch(
+          'notifications/addNotification',
+          {
+            message: i18n.t(
+              'trans.store.form.saveSubscriptionSettingsNotifyMsg'
+            ),
+            ...NotificationTypes.SUCCESS,
+          },
+          { root: true }
+        );
+      } catch (error) {
+        dispatch(
+          'notifications/addNotification',
+          {
+            message: i18n.t('trans.store.form.saveSubscriptionSettingsErrMsg'),
+            consoleError: i18n.t(
+              'trans.store.form.saveSubscriptionSettingsConsErrMsg',
+              {
+                formId: formId,
+                error: error,
+              }
+            ),
           },
           { root: true }
         );

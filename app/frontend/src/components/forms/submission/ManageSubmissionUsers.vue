@@ -12,11 +12,13 @@
           <v-icon>group</v-icon>
         </v-btn>
       </template>
-      <span>{{ $t('trans.manageSubmissionUsers.manageTeamMembers') }}</span>
+      <span :lang="lang">{{
+        $t('trans.manageSubmissionUsers.manageTeamMembers')
+      }}</span>
     </v-tooltip>
     <v-dialog v-model="dialog" width="600">
       <v-card :class="{ 'dir-rtl': isRTL }">
-        <v-card-title class="text-h5 pb-0">
+        <v-card-title class="text-h5 pb-0" :lang="lang">
           {{ $t('trans.manageSubmissionUsers.manageTeamMembers') }}
         </v-card-title>
         <v-card-subtitle class="mt-1">
@@ -55,7 +57,8 @@
                       v-html="
                         $t('trans.manageSubmissionUsers.userNotFoundErrMsg')
                       "
-                    ></div>
+                      :lang="lang"
+                    />
                   </template>
                   <!-- selected user -->
                   <template #selection="data">
@@ -97,15 +100,17 @@
                 :loading="isLoadingDropdown"
                 @click="addUser"
               >
-                <span>{{ $t('trans.manageSubmissionUsers.add') }} </span>
+                <span :lang="lang"
+                  >{{ $t('trans.manageSubmissionUsers.add') }}
+                </span>
               </v-btn>
             </v-col>
           </v-row>
-          <div v-else>
+          <div v-else :lang="lang">
             {{ $t('trans.manageSubmissionUsers.draftFormInvite') }}
           </div>
 
-          <p class="mt-5">
+          <p class="mt-5" :lang="lang">
             <strong
               >{{
                 $t('trans.manageSubmissionUsers.submissionTeamMembers')
@@ -118,18 +123,28 @@
               <template>
                 <thead>
                   <tr>
-                    <th :class="isRTL ? 'text-right' : 'text-left'">
+                    <th
+                      :class="isRTL ? 'text-right' : 'text-left'"
+                      :lang="lang"
+                    >
                       {{ $t('trans.manageSubmissionUsers.name') }}
                     </th>
-                    <th :class="isRTL ? 'text-right' : 'text-left'">
+                    <th
+                      :class="isRTL ? 'text-right' : 'text-left'"
+                      :lang="lang"
+                    >
                       {{ $t('trans.manageSubmissionUsers.username') }}
                     </th>
-                    <th :class="isRTL ? 'text-right' : 'text-left'">
+                    <th
+                      :class="isRTL ? 'text-right' : 'text-left'"
+                      :lang="lang"
+                    >
                       {{ $t('trans.manageSubmissionUsers.email') }}
                     </th>
                     <th
                       :class="isRTL ? 'text-right' : 'text-left'"
                       v-if="isDraft"
+                      :lang="lang"
                     >
                       {{ $t('trans.manageSubmissionUsers.actions') }}
                     </th>
@@ -159,7 +174,9 @@
 
         <v-card-actions class="justify-center">
           <v-btn class="mb-5 close-dlg" color="primary" @click="dialog = false">
-            <span> {{ $t('trans.manageSubmissionUsers.close') }}</span>
+            <span :lang="lang">
+              {{ $t('trans.manageSubmissionUsers.close') }}</span
+            >
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -178,14 +195,16 @@
           ><span>Remove {{ userToDelete.username }}</span></template
         >
         <template #text>
-          <span>
+          <span :lang="lang">
             {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg1') }}
             <strong>{{ userToDelete.username }}</strong
             >? {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg2') }}
           </span>
         </template>
         <template #button-text-continue>
-          <span>{{ $t('trans.manageSubmissionUsers.remove') }}</span>
+          <span :lang="lang">{{
+            $t('trans.manageSubmissionUsers.remove')
+          }}</span>
         </template>
       </BaseDialog>
     </v-dialog>
@@ -233,7 +252,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('form', ['form', 'isRTL']),
+    ...mapGetters('form', ['form', 'isRTL', 'lang']),
     ID_PROVIDERS() {
       return IdentityProviders;
     },
