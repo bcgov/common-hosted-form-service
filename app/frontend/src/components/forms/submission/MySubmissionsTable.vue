@@ -262,8 +262,8 @@ export default {
           (h) => !this.tableFilterIgnore.some((fd) => fd.value === h.value)
         );
 
-        if (headers.length > 2) {
-          headers.splice(headers.length - 2, 0, ...this.filterData);
+        if (headers.length >= 2) {
+          headers.splice(headers.length - 1, 0, ...this.filterData);
         } else {
           headers = headers.concat(this.filterData);
         }
