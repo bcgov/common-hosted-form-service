@@ -487,11 +487,7 @@ export default {
           (h) => !this.tableFilterIgnore.some((fd) => fd.value === h.value)
         );
 
-        if (headers.length > 2) {
-          headers.splice(headers.length - 2, 0, ...this.USER_PREFERENCES);
-        } else {
-          headers = headers.concat(this.USER_PREFERENCES);
-        }
+        headers.splice(headers.length - 2, 0, ...this.USER_PREFERENCES);
       }
 
       return headers;
