@@ -329,4 +329,11 @@ describe('form actions', () => {
     expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
     expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
   });
+  it('readFormSubscriptionData should commit to SET_SUBSCRIPTION_DATA', async () => {
+    formService.readFormSubscriptionData.mockResolvedValue({ data: {} });
+    await store.actions.readFormSubscriptionData(mockStore, { formId: 'fId' });
+
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBSCRIPTION_DATA', expect.any(Object));
+  });
 });

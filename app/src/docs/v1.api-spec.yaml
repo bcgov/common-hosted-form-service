@@ -2957,6 +2957,14 @@ components:
                   type: string
                   description: Contains closing date of form schedule system when type of ScheduleType set to closingDate.
                   example: '2022-12-22'
+            subscribe:
+              type: Object
+              description: Contains subscription related data - future storage of subscribed events
+              properties:
+                enabled:
+                  type: boolean
+                  description: Used to indicate if subscribe feature enabled or not 
+                  example: true
             enableCopyExistingSubmission:
               type: boolean
               example: false
