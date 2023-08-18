@@ -1,6 +1,6 @@
 <template>
   <v-form ref="addUserForm" v-model="valid">
-    <p>
+    <p :lang="lang">
       {{ $t('trans.addOwner.infoA') }}
     </p>
     <v-row class="mt-4">
@@ -11,11 +11,12 @@
           :rules="userGuidRules"
           :hint="$t('trans.addOwner.hint')"
           persistent-hint
+          :lang="lang"
         />
       </v-col>
       <v-col cols="3" md="2">
         <v-btn color="primary" @click="addOwner" :disabled="!valid">
-          <span>{{ $t('trans.addOwner.addowner') }}</span>
+          <span :lang="lang">{{ $t('trans.addOwner.addowner') }}</span>
         </v-btn>
       </v-col>
     </v-row>
@@ -50,6 +51,7 @@ export default {
   },
   methods: {
     ...mapActions('admin', ['addFormUser', 'readRoles']),
+    ...mapActions('form', ['lang']),
     async addOwner() {
       if (this.$refs.addUserForm.validate()) {
         await this.addFormUser({

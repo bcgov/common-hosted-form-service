@@ -8,7 +8,7 @@ const ID = {
   versions: []
 };
 
-exports.seed = function(knex) {
+exports.seed = function (knex) {
   return Promise.resolve()
     .then(() => {
       return knex('form_identity_provider').where('createdBy', CREATED_BY).del();
@@ -39,6 +39,9 @@ exports.seed = function(knex) {
     })
     .then(() => {
       return knex('form').where('createdBy', CREATED_BY).del();
+    })
+    .then(() => {
+      return knex('form_subscription').where('createdBy', CREATED_BY).del();
     })
     .then(() => {
       const items = [
@@ -135,42 +138,41 @@ exports.seed = function(knex) {
       ID.forms = ids;
     })
     .then(() => {
-
       const items = [
         {
           id: uuidv4(),
           createdBy: CREATED_BY,
-          formId: ID.forms[0],
+          formId: ID.forms[0].id,
           code: 'idir'
         },
         {
           id: uuidv4(),
           createdBy: CREATED_BY,
-          formId: ID.forms[1],
+          formId: ID.forms[1].id,
           code: 'idir'
         },
         {
           id: uuidv4(),
           createdBy: CREATED_BY,
-          formId: ID.forms[2],
+          formId: ID.forms[2].id,
           code: 'idir'
         },
         {
           id: uuidv4(),
           createdBy: CREATED_BY,
-          formId: ID.forms[3],
+          formId: ID.forms[3].id,
           code: 'public'
         },
         {
           id: uuidv4(),
           createdBy: CREATED_BY,
-          formId: ID.forms[4],
+          formId: ID.forms[4].id,
           code: 'public'
         },
         {
           id: uuidv4(),
           createdBy: CREATED_BY,
-          formId: ID.forms[5],
+          formId: ID.forms[5].id,
           code: 'idir'
         }
       ];
@@ -181,7 +183,7 @@ exports.seed = function(knex) {
         return {
           id: uuidv4(),
           createdBy: CREATED_BY,
-          formId: f,
+          formId: f.id,
           version: 1,
           schema: {
             components: [{fieldA: {label: 'A', type: 'String'}}, {fieldB: {label: 'B', type: 'Number'}}]
@@ -200,7 +202,7 @@ exports.seed = function(knex) {
         return {
           id: uuidv4(),
           createdBy: CREATED_BY,
-          formId: f,
+          formId: f.id,
           version: 2,
           schema: {
             components: [{fieldA: {label: 'A', type: 'String'}}, {fieldB: {label: 'B', type: 'Number'}}, {fieldC: {label: 'C', type: 'Email'}}]
@@ -219,9 +221,9 @@ exports.seed = function(knex) {
         const item = {
           id: uuidv4(),
           createdBy: CREATED_BY,
-          formId: ID.forms[i],
+          formId: ID.forms[i].id,
           role: 'owner',
-          userId: u
+          userId: u.id
         };
         items.push(item);
       });
@@ -230,9 +232,9 @@ exports.seed = function(knex) {
         const item = {
           id: uuidv4(),
           createdBy: CREATED_BY,
-          formId: ID.forms[i],
+          formId: ID.forms[i].id,
           role: 'team_manager',
-          userId: u
+          userId: u.id
         };
         items.push(item);
       });
@@ -242,9 +244,9 @@ exports.seed = function(knex) {
         const item = {
           id: uuidv4(),
           createdBy: CREATED_BY,
-          formId: ID.forms[i],
+          formId: ID.forms[i].id,
           role: 'form_designer',
-          userId: u
+          userId: u.id
         };
         items.push(item);
       });
@@ -254,9 +256,9 @@ exports.seed = function(knex) {
         const item = {
           id: uuidv4(),
           createdBy: CREATED_BY,
-          formId: ID.forms[i],
+          formId: ID.forms[i].id,
           role: 'submission_reviewer',
-          userId: u
+          userId: u.id
         };
         items.push(item);
       });
@@ -267,9 +269,9 @@ exports.seed = function(knex) {
           const item = {
             id: uuidv4(),
             createdBy: CREATED_BY,
-            formId: f,
+            formId: f.id,
             role: 'form_submitter',
-            userId: u
+            userId: u.id
           };
           items.push(item);
         });
@@ -282,7 +284,7 @@ exports.seed = function(knex) {
         return {
           id: sid,
           createdBy: CREATED_BY,
-          formVersionId: ID.versions[5],
+          formVersionId: ID.versions[5].id,
           confirmationId: sid.substring(0, 8).toUpperCase(),
           draft: false,
           deleted: false,
@@ -291,5 +293,19 @@ exports.seed = function(knex) {
         };
       });
       return knex('form_submission').insert(items);
+    })
+    .then(() => {
+      const items = [
+        {
+          id: uuidv4(),
+          createdBy: CREATED_BY,
+          subscribeEvent: 'client_form_submit_event',
+          endpointUrl: 'http://test.com',
+          endpointToken: 'AbCdEf123456',
+          formId: ID.forms[0].id,
+          key: 'Authorization'
+        },
+      ];
+      return knex('form_subscription').insert(items);
     });
 };

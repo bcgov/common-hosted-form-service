@@ -1,11 +1,11 @@
 <template>
   <div>
     <h3>{{ user.fullName }}</h3>
-    <h4>{{ $t('trans.administerUser.userDetails') }}</h4>
+    <h4 :lang="lang">{{ $t('trans.administerUser.userDetails') }}</h4>
     <pre>{{ user }}</pre>
 
     <v-btn color="primary" text small :href="userUrl" target="_blank">
-      <span>{{ $t('trans.administerUser.openSSOConsole') }}</span>
+      <span :lang="lang">{{ $t('trans.administerUser.openSSOConsole') }}</span>
     </v-btn>
   </div>
 </template>
@@ -23,6 +23,7 @@ export default {
   },
   computed: {
     ...mapGetters('admin', ['user']),
+    ...mapGetters('form', ['lang']),
     userUrl() {
       return `${this.$config.keycloak.serverUrl}/admin/${this.$config.keycloak.realm}/console/#/realms/${this.$config.keycloak.realm}/users/${this.user.keycloakId}`;
     },

@@ -15,10 +15,6 @@
     "action": "ਕਾਰਵਾਈਆਂ",
     "loadingText": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ... ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ"
   },
-  "preview": {
-    "preview": "ਝਲਕ",
-    "previewToolTip": "ਇਹ ਫਾਰਮ ਸੰਸਕਰਣ ਡਿਜ਼ਾਈਨ ਅਤੇ ਵਿਵਹਾਰ ਦਾ ਪੂਰਵਦਰਸ਼ਨ ਦਿਖਾਉਂਦਾ ਹੈ ਕਿਉਂਕਿ ਤੁਹਾਡੇ ਸਬਮਿਟਰ ਇਸਨੂੰ ਦੇਖਣਗੇ। ਤੁਸੀਂ ਇਸ ਪੰਨੇ ਤੋਂ ਫਾਰਮ ਜਮ੍ਹਾਂ ਨਹੀਂ ਕਰ ਸਕਦੇ।"
-  },
   "manageLayout": {
     "manageForm": "ਫਾਰਮ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ"
   },
@@ -50,17 +46,18 @@
     "totalVersions": "ਕੁੱਲ ਸੰਸਕਰਣ",
     "status": "ਸਥਿਤੀ",
     "update": "ਅੱਪਡੇਟ ਕਰੋ",
-    "cancel": "ਰੱਦ ਕਰੋ"
+    "cancel": "ਰੱਦ ਕਰੋ",
+    "eventSubscription": "د پیښې ګډون"
   },
   "formSettings": {
-    "pressToAddMultiEmail": "ਕਈ ਈਮੇਲ ਪਤੇ ਜੋੜਨ ਲਈ <kbd>enter</kbd> ਜਾਂ <kbd>,</kbd> ਜਾਂ <kbd>space</kbd> ਦਬਾਓ।",
-    "allowMultiDraft": "<strong> ਮਲਟੀਪਲ ਡਰਾਫਟ</strong> ਅੱਪਲੋਡ ਕਰਨ ਦਿਓ",
+    "pressToAddMultiEmail": "ਕਈ ਈਮੇਲ ਪਤੇ ਜੋੜਨ ਲਈ <kbd>ਐਂਟਰ</kbd> <kbd>ਜਾਂ</kbd> <kbd>ਸਪੇਸ</kbd> ਦਬਾਓ",
+    "allowMultiDraft": "<strong>ਮਲਟੀਪਲ ਡਰਾਫਟ</strong> ਅੱਪਲੋਡ ਕਰਨ ਦਿਓ",
     "formTitle": "ਫਾਰਮ ਦਾ ਸਿਰਲੇਖ",
     "formDescription": "ਫਾਰਮ ਦਾ ਵੇਰਵਾ",
     "formAccess": "ਫਾਰਮ ਪਹੁੰਚ",
     "info": "ਜੇਕਰ ਤੁਸੀਂ ਇਸ ਫਾਰਮ ਦੀ ਵਰਤੋਂ ਆਮ ਲੋਕਾਂ ਤੋਂ ਆਮ ਲੋਕਾਂ ਦੀ ਦਿਲਚਸਪੀ ਵਾਲੇ ਵਿਸ਼ਿਆਂ 'ਤੇ ਜਾਣਕਾਰੀ ਇਕੱਠੀ ਕਰਨ ਲਈ ਕਰ ਰਹੇ ਹੋ, ਤਾਂ ਤੁਹਾਨੂੰ GCPE ਨਾਲ ਸੰਪਰਕ ਕਰਨ ਦੀ ਲੋੜ ਹੈ ਤਾਂ ਜੋ ਤੁਹਾਡੀ ਸ਼ਮੂਲੀਅਤ ਨੂੰ ਸੂਚੀਬੱਧ ਕੀਤਾ ਜਾ ਸਕੇ।",
     "important": "ਮਹੱਤਵਪੂਰਨ",
-    "idimNotifyA": "ਤੁਹਾਨੂੰ ਈ-ਮੇਲ ਦੁਆਰਾ ਪਛਾਣ ਜਾਣਕਾਰੀ ਪ੍ਰਬੰਧਨ (IDIM) ਟੀਮ ਨੂੰ ਸੂਚਿਤ ਕਰਨਾ ਚਾਹੀਦਾ ਹੈ",
+    "idimNotifyA": "ਤੁਹਾਨੂੰ ਈਮੇਲ ਦੁਆਰਾ ਪਛਾਣ ਜਾਣਕਾਰੀ ਪ੍ਰਬੰਧਨ (IDIM) ਟੀਮ ਨੂੰ ਸੂਚਿਤ ਕਰਨਾ ਚਾਹੀਦਾ ਹੈ",
     "idimNotifyB": "ਤੁਹਾਡੇ ਫਾਰਮ ਜਮ੍ਹਾਂ ਕਰਨ ਵਾਲਿਆਂ ਦੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ BCeID ਦਾ ਲਾਭ ਲੈਣ ਦਾ ਤੁਹਾਡਾ ਇਰਾਦਾ।",
     "referenceGuideA": "ਕਿਰਪਾ ਕਰਕੇ ਸਾਡਾ ਹਵਾਲਾ ਦਿਓ",
     "referenceGuideB": "ਉਪਭੋਗਤਾ ਗਾਈਡ",
@@ -127,8 +124,29 @@
     "selectAnOptions": "ਕਿਰਪਾ ਕਰਕੇ ਘੱਟੋ-ਘੱਟ 1 ਵਿਕਲਪ ਚੁਣੋ",
     "validInterval": "ਇਹ ਇੱਕ ਵੈਧ ਅੰਤਰਾਲ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।",
     "fieldRequiredAndInterval": "ਇਹ ਖੇਤਰ ਲੋੜੀਂਦਾ ਹੈ ਅਤੇ ਇੱਕ ਅੰਤਰਾਲ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।",
-    "dateGrtOpenSubmissnDate": "ਓਪਨ ਸਪੁਰਦਗੀ ਮਿਤੀ ਤੋਂ ਵੱਧ ਹੋਣ ਤੱਕ ਦੁਹਰਾਓ",
-    "public": "ਜਨਤਕ (ਅਗਿਆਤ)"
+    "dateGrtOpenSubmissnDate": "ਉਦੋਂ ਤੱਕ ਦੁਹਰਾਓ ਜਦੋਂ ਤੱਕ ਮਿਤੀ ਖੁੱਲੀ ਸਪੁਰਦਗੀ ਮਿਤੀ ਤੋਂ ਵੱਧ ਨਹੀਂ ਹੋਣੀ ਚਾਹੀਦੀ",
+    "public": "ਜਨਤਕ (ਅਗਿਆਤ)",
+    "allowEventSubscription": "د پیښې ګډون ته اجازه ورکړئ",
+    "eventSubscription": "د پیښې ګډون",
+    "validEndpointRequired": "مهرباني وکړئ یو معتبر پای ټکی دننه کړئ چې پیل کیږي https://",
+    "validBearerTokenRequired": "89abddfb-2cff-4fda-83e6-13221f0c3d4f د اعتبار وړ وړونکي نښه مثال داخل کړئ"
+  },
+  "subscribeEvent": {
+    "eventType": "د پیښې ډول",
+    "endpointUrl": "د پای ټکی URL",
+    "eventSubmission": "سپارل",
+    "eventAssignment": "دنده",
+    "eventStatusChange": "د وضعیت بدلون",
+    "endpointToken": "د پای ټکی نښه",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "ਸੇਵ ਕਰੋ",
+    "text": "ਟੈਕਸਟ",
+    "password": "ਪਾਸਵਰਡ",
+    "hideSecret": "ਗੁਪਤ ਲੁਕਾਓ",
+    "showSecret": "ਗੁਪਤ ਦਿਖਾਓ",
+    "key" : "ਕੁੰਜੀ",
+    "saveSettingsErrMsg" : "ਇਸ ਫਾਰਮ ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+    "updateSettingsConsoleErrMsg" : "ਫਾਰਮ {formId} ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
   },
   "apiKey": {
     "disclaimer": "ਬੇਦਾਅਵਾ",
@@ -146,7 +164,7 @@
     "deleteMsg": "ਕੀ ਤੁਸੀਂ ਯਕੀਨੀ ਤੌਰ 'ਤੇ ਆਪਣੀ API ਕੁੰਜੀ ਨੂੰ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?",
     "delete": "ਮਿਟਾਓ",
     "confirmKeyGen": "ਕੁੰਜੀ ਜਨਰੇਸ਼ਨ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ",
-    "createAPIKey": "ਕੀ ਇਸ ਫਾਰਮ ਲਈ API ਕੁੰਜੀ ਬਣਾਉਣੀ ਹੈ?<br /> ਯਕੀਨੀ ਬਣਾਓ ਕਿ ਤੁਸੀਂ ਇਸ ਪੰਨੇ &#39;ਤੇ ਬੇਦਾਅਵਾ ਦੀ ਪਾਲਣਾ ਕਰਦੇ ਹੋ।",
+    "createAPIKey": "ਕੀ ਇਸ ਫਾਰਮ ਲਈ ਇੱਕ API ਕੁੰਜੀ ਬਣਾਉਣਾ ਹੈ?<br /> ਯਕੀਨੀ ਬਣਾਓ ਕਿ ਤੁਸੀਂ ਇਸ ਪੰਨੇ &#39;ਤੇ ਬੇਦਾਅਵਾ ਦੀ ਪਾਲਣਾ ਕਰਦੇ ਹੋ।",
     "regenerateAPIKey": "ਕੀ API ਕੁੰਜੀ ਨੂੰ ਮੁੜ-ਬਣਾਉਣਾ ਹੈ?<br /> <strong>ਜਾਰੀ ਰੱਖਣ ਨਾਲ ਤੁਹਾਡੀ ਮੌਜੂਦਾ API ਕੁੰਜੀ ਪਹੁੰਚ ਮਿਟਾ ਦਿੱਤੀ ਜਾਵੇਗੀ</strong> ।",
     "formOwnerKeyAcess": "API ਕੁੰਜੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ ਤੁਹਾਨੂੰ <strong>ਫਾਰਮ ਦਾ ਮਾਲਕ</strong> ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।",
     "regenerate": "ਪੁਨਰਜਨਮ",
@@ -170,7 +188,7 @@
     "infoD": "ਕਿਰਪਾ ਕਰਕੇ ਨਵਾਂ ਡਰਾਫਟ ਸ਼ੁਰੂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਮੌਜੂਦਾ ਡਰਾਫਟ ਨੂੰ ਸੰਪਾਦਿਤ ਕਰੋ, ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ ਜਾਂ ਮਿਟਾਓ।",
     "publishVersion": "ਸੰਸਕਰਣ ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ",
     "unpublishVersion": "ਸੰਸਕਰਣ ਨੂੰ ਅਣਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ",
-    "infoE": "ਇਸ ਫ਼ਾਰਮ ਨੂੰ ਅਪ੍ਰਕਾਸ਼ਿਤ ਕਰਨ ਨਾਲ ਫ਼ਾਰਮ ਪ੍ਰਚਲਨ ਤੋਂ ਬਾਹਰ ਹੋ ਜਾਵੇਗਾ ਜਦੋਂ ਤੱਕ ਇੱਕ ਸੰਸਕਰਣ ਦੁਬਾਰਾ ਪ੍ਰਕਾਸ਼ਿਤ ਨਹੀਂ ਹੁੰਦਾ।",
+    "infoE": "ਇਸ ਫ਼ਾਰਮ ਨੂੰ ਅਪ੍ਰਕਾਸ਼ਿਤ ਕਰਨ ਨਾਲ ਫ਼ਾਰਮ ਸਰਕੂਲੇਸ਼ਨ ਤੋਂ ਬਾਹਰ ਹੋ ਜਾਵੇਗਾ ਜਦੋਂ ਤੱਕ ਇੱਕ ਸੰਸਕਰਣ ਦੁਬਾਰਾ ਪ੍ਰਕਾਸ਼ਿਤ ਨਹੀਂ ਹੁੰਦਾ।",
     "confirmDeletion": "ਮਿਟਾਉਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ",
     "infoF": "ਕੀ ਤੁਸੀਂ ਯਕੀਨੀ ਤੌਰ 'ਤੇ ਇਸ ਸੰਸਕਰਣ ਨੂੰ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?",
     "delete": "ਮਿਟਾਓ",
@@ -267,7 +285,6 @@
     "notificationMsg": "RBAC ਤੋਂ ਉਪਭੋਗਤਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ, ਕੰਸੋਲ ਦੇਖੋ",
     "notificationConsErr": "RBAC ਤੋਂ ਉਪਭੋਗਤਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ"
   },
-  "fcProactiveHelp": {},
   "baseAuthButton": {
     "logout": "ਲਾੱਗ ਆਊਟ, ਬਾਹਰ ਆਉਣਾ",
     "login": "ਲਾਗਿਨ"
@@ -305,7 +322,10 @@
     "formDesignSaveConsoleErrMsg": "ਫਾਰਮ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਜਾਂ ਬਣਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) ਤਰੁੱਟੀ: {error}",
     "collapse": "ਸਮੇਟਣਾ",
     "actions": "ਕਾਰਵਾਈਆਂ",
-    "version": "ਸੰਸਕਰਣ"
+    "version": "ਸੰਸਕਰਣ",
+    "save": "ਸੇਵ ਕਰੋ",
+    "saving": "ਸੰਭਾਲ ਰਿਹਾ ਹੈ",
+    "notSaved": "ਸੰਭਾਲਿਆ ਨਹੀਂ ਗਿਆ"
   },
   "formViewerMultiUpload": {
     "important": "ਮਹੱਤਵਪੂਰਨ",
@@ -332,15 +352,11 @@
     "fileIsEmpty": "ਇਹ ਫਾਈਲ ਖਾਲੀ ਹੈ।",
     "download": "ਡਾਊਨਲੋਡ ਕਰੋ"
   },
-  "bcGovAlertBanner": {
-    "defaultErrMsg": "ਤਰੁੱਟੀ: ਕੁਝ ਗਲਤ ਹੋ ਗਿਆ",
-    "error": "ਗਲਤੀ"
-  },
   "formDisclaimer": {
     "disclaimerAndStatement": "ਬੇਦਾਅਵਾ ਅਤੇ ਫਾਰਮ ਡਿਜ਼ਾਈਨਰਾਂ ਲਈ ਜ਼ਿੰਮੇਵਾਰੀ ਦਾ ਬਿਆਨ:",
     "privacyLaw": "ਨਿੱਜੀ ਤੌਰ 'ਤੇ ਪਛਾਣਨ ਯੋਗ ਜਾਣਕਾਰੀ ਦੇ ਸੰਗ੍ਰਹਿ, ਵਰਤੋਂ ਅਤੇ ਖੁਲਾਸੇ ਨੂੰ ਨਿਯੰਤਰਿਤ ਕਰਨ ਵਾਲੇ ਗੋਪਨੀਯਤਾ ਕਾਨੂੰਨਾਂ ਦੀ ਪਾਲਣਾ ਕਰਨਾ ਤੁਹਾਡੀ ਜ਼ਿੰਮੇਵਾਰੀ ਹੈ।",
-    "disclosure": "ਇਸ ਫਾਰਮ ਡਿਜ਼ਾਈਨਰ ਟੂਲ ਤੱਕ ਪਹੁੰਚ ਕਿਸੇ ਵੀ ਨਿੱਜੀ ਤੌਰ 'ਤੇ ਪਛਾਣਨ ਯੋਗ ਜਾਣਕਾਰੀ ਨੂੰ ਇਕੱਠਾ ਕਰਨ, ਵਰਤਣ ਜਾਂ ਪ੍ਰਗਟ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਦਿੰਦੀ ਹੈ।",
-    "consent": "ਕਾਨੂੰਨ ਦੁਆਰਾ ਲੋੜ ਅਨੁਸਾਰ ਜਾਣਕਾਰੀ ਇਕੱਠੀ ਕਰਨ ਲਈ ਸਹਿਮਤੀ ਪ੍ਰਾਪਤ ਕਰਨਾ ਤੁਹਾਡੀ ਜ਼ਿੰਮੇਵਾਰੀ ਹੈ।",
+    "disclosure": "ਇਸ ਫਾਰਮ ਡਿਜ਼ਾਈਨਰ ਟੂਲ ਤੱਕ ਪਹੁੰਚ ਕਿਸੇ ਵੀ ਨਿੱਜੀ ਤੌਰ 'ਤੇ ਪਛਾਣਨ ਯੋਗ ਜਾਣਕਾਰੀ ਨੂੰ ਇਕੱਠਾ ਕਰਨ, ਵਰਤਣ ਜਾਂ ਪ੍ਰਗਟ ਕਰਨ ਦੀ ਕੁਦਰਤੀ ਤੌਰ 'ਤੇ ਇਜਾਜ਼ਤ ਨਹੀਂ ਦਿੰਦੀ ਹੈ।",
+    "consent": "ਕਨੂੰਨ ਦੁਆਰਾ ਲੋੜੀਂਦੀ ਜਾਣਕਾਰੀ ਇਕੱਠੀ ਕਰਨ ਲਈ ਸਹਿਮਤੀ ਪ੍ਰਾਪਤ ਕਰਨਾ ਤੁਹਾਡੀ ਜ਼ਿੰਮੇਵਾਰੀ ਹੈ।",
     "formIntention": "ਆਪਣੇ ਫਾਰਮ ਨੂੰ ਪ੍ਰਕਾਸ਼ਿਤ ਕਰਨ ਜਾਂ ਵੰਡਣ ਤੋਂ ਪਹਿਲਾਂ ਤੁਹਾਨੂੰ ਫਾਰਮ ਦੇ ਇਰਾਦੇ ਬਾਰੇ ਆਪਣੇ ਨਾਲ ਚਰਚਾ ਕਰਨ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ",
     "privacyOfficer": "ਮੰਤਰਾਲੇ ਦੇ ਗੋਪਨੀਯਤਾ ਅਧਿਕਾਰੀ",
     "assement": "ਅਤੇ ਲੋੜ ਅਨੁਸਾਰ ਮੁਲਾਂਕਣਾਂ ਨੂੰ ਪੂਰਾ ਕਰਨਾ।"
@@ -425,7 +441,7 @@
     "email": "ਈ - ਮੇਲ",
     "removeUserWarningMsg1": "ਕੀ ਤੁਸੀਂ ਯਕੀਨੀ ਤੌਰ 'ਤੇ ਹਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ",
     "removeUserWarningMsg2": "ਉਹਨਾਂ ਕੋਲ ਹੁਣ ਇਸ ਸਪੁਰਦਗੀ ਲਈ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੋਵੇਗੀ।",
-    "userExistInListMsg": "ਯੂਜ਼ਰ {username} ਪਹਿਲਾਂ ਹੀ ਟੀਮ ਮੈਂਬਰਾਂ ਦੀ ਸੂਚੀ ਵਿੱਚ ਹੈ।",
+    "userExistInListMsg": "ਯੂਜ਼ਰ {username} ਪਹਿਲਾਂ ਹੀ ਟੀਮ ਦੇ ਮੈਂਬਰਾਂ ਦੀ ਸੂਚੀ ਵਿੱਚ ਹੈ।",
     "getSubmissionUsersErr": "ਇਸ ਸਬਮਿਸ਼ਨ ਲਈ ਉਪਭੋਗਤਾਵਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
     "getSubmissionUsersConsoleErr": "{submissionId} ਲਈ ਉਪਭੋਗਤਾਵਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ : {error}",
     "sentInviteEmailTo": "ਨੂੰ ਸੱਦਾ ਪੱਤਰ ਭੇਜਿਆ ਹੈ",
@@ -504,7 +520,7 @@
     "viewHistory": "ਇਤਿਹਾਸ ਦੇਖੋ",
     "statusHistory": "ਸਥਿਤੀ ਇਤਿਹਾਸ",
     "close": "ਬੰਦ ਕਰੋ",
-    "addNoteNoReponserErr": "ਸਥਿਤੀ ਅੱਪਡੇਟ ਲਈ ਨੋਟ ਜਮ੍ਹਾਂ ਕਰਦੇ ਸਮੇਂ API ਤੋਂ ਕੋਈ ਜਵਾਬ ਡੇਟਾ ਨਹੀਂ ਹੈ",
+    "addNoteNoReponserErr": "ਸਥਿਤੀ ਅੱਪਡੇਟ ਲਈ ਨੋਟ ਸਪੁਰਦ ਕਰਨ ਦੌਰਾਨ API ਤੋਂ ਕੋਈ ਜਵਾਬ ਡਾਟਾ ਨਹੀਂ ਹੈ",
     "addNoteConsoleErrMsg": "ਸਥਿਤੀ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
     "addNoteErrMsg": "ਸਥਿਤੀ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
     "updtSubmissionsStatusErr": "ਸਥਿਤੀ ਅੱਪਡੇਟ ਫਾਰਮ ਜਮ੍ਹਾਂ ਕਰਦੇ ਸਮੇਂ API ਤੋਂ ਕੋਈ ਜਵਾਬ ਡਾਟਾ ਨਹੀਂ ਹੈ",
@@ -518,7 +534,7 @@
     "assignSubmissnToFormReviewer": "ਸਬਮਿਸ਼ਨਾਂ ਨੂੰ ਫਾਰਮ ਸਮੀਖਿਅਕਾਂ ਨੂੰ ਸੌਂਪਿਆ ਜਾ ਸਕਦਾ ਹੈ।<br /> ਫਾਰਮ ਸਮੀਖਿਅਕਾਂ ਵਜੋਂ ਟੀਮ ਦੇ ਹੋਰ ਮੈਂਬਰਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, ਇਸ ਫਾਰਮ ਦੇ ਪ੍ਰਬੰਧਨ ਪੰਨੇ &#39;ਤੇ ਜਾਓ।",
     "update": "ਅੱਪਡੇਟ ਕਰੋ",
     "revise": "ਸੰਸ਼ੋਧਨ ਕਰੋ",
-    "complete": "ਪੂਰਾ",
+    "complete": "ਸੰਪੂਰਨ",
     "assign": "ਅਸਾਈਨ ਕਰੋ"
   },
   "statusTable": {
@@ -531,7 +547,7 @@
     "getSubmissionStatusConsErr": "ਨੋਟ ਜੋੜਨ ਵਿੱਚ ਤਰੁੱਟੀ:"
   },
   "exportSubmissions": {
-    "exportSubmissionsToFile": "ਬੇਨਤੀਆਂ ਨੂੰ ਫ਼ਾਈਲ ਵਿੱਚ ਨਿਰਯਾਤ ਕਰੋ",
+    "exportSubmissionsToFile": "ਫਾਈਲ ਵਿੱਚ ਬੇਨਤੀਆਂ ਨੂੰ ਨਿਰਯਾਤ ਕਰੋ",
     "viewSubmissions": "ਬੇਨਤੀਆਂ ਦੇਖੋ",
     "fileType": "ਫਾਈਲ ਦੀ ਕਿਸਮ",
     "json": "JSON",
@@ -548,7 +564,7 @@
     "from": "ਤੋਂ",
     "to": "ਨੂੰ",
     "CSVFormat": "CSV ਫਾਰਮੈਟ",
-    "multiRowPerSubmissionA": "1 - ਪਛਾਣ ਸਪੇਸ ਦੇ ਨਾਲ ਪ੍ਰਤੀ ਸਪੁਰਦਗੀ ਲਈ ਕਈ ਕਤਾਰਾਂ",
+    "multiRowPerSubmissionA": "1 - ਇੰਡੈਂਟੇਸ਼ਨ ਸਪੇਸ ਦੇ ਨਾਲ ਪ੍ਰਤੀ ਸਪੁਰਦਗੀ ਲਈ ਕਈ ਕਤਾਰਾਂ",
     "multiRowPerSubmissionB": "2 - ਪ੍ਰਤੀ ਸਪੁਰਦਗੀ ਲਈ ਕਈ ਕਤਾਰਾਂ",
     "singleRowPerSubmission": "3 - ਪ੍ਰਤੀ ਸਪੁਰਦਗੀ ਲਈ ਸਿੰਗਲ ਕਤਾਰ",
     "unformatted": "4 - ਗੈਰ-ਫਾਰਮੈਟ ਕੀਤਾ",
@@ -558,7 +574,7 @@
     "apiCallErrorMsg": "ਇਸ ਫਾਰਮ ਲਈ ਬੇਨਤੀਆਂ ਨੂੰ ਨਿਰਯਾਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
     "apiCallConsErrorMsg": "ਲਈ ਗਲਤੀ ਨਿਰਯਾਤ ਸਪੁਰਦਗੀ",
     "selectAllFields": "ਸਾਰੇ ਖੇਤਰ ਚੁਣੋ",
-    "emailSentMsg": "ਤੁਹਾਡੇ ਡੇਟਾ ਦੇ ਤਿਆਰ ਹੋਣ 'ਤੇ ਡਾਉਨਲੋਡ ਕਰਨ ਲਈ ਲਿੰਕ ਵਾਲੀ ਇੱਕ ਈਮੇਲ {email} ਨੂੰ ਭੇਜੀ ਜਾਵੇਗੀ",
+    "emailSentMsg": "{email} 'ਤੇ ਇੱਕ ਈਮੇਲ ਭੇਜੀ ਜਾਵੇਗੀ ਜਿਸ ਵਿੱਚ ਤੁਹਾਡਾ ਡੇਟਾ ਤਿਆਰ ਹੋਣ 'ਤੇ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਇੱਕ ਲਿੰਕ ਸ਼ਾਮਲ ਹੋਵੇਗਾ",
     "exportInProgress": "ਨਿਰਯਾਤ ਜਾਰੀ ਹੈ",
     "of": "ਦੇ"
   },
@@ -592,6 +608,10 @@
   },
   "proactiveHelpPreviewDialog": {
     "learnMore": "ਜਿਆਦਾ ਜਾਣੋ"
+  },
+  "preview": {
+    "preview": "ਝਲਕ",
+    "previewToolTip": "ਇਹ ਫਾਰਮ ਸੰਸਕਰਣ ਡਿਜ਼ਾਈਨ ਅਤੇ ਵਿਵਹਾਰ ਦਾ ਪੂਰਵਦਰਸ਼ਨ ਦਿਖਾਉਂਦਾ ਹੈ ਕਿਉਂਕਿ ਤੁਹਾਡੇ ਸਬਮਿਟਰ ਇਸਨੂੰ ਦੇਖਣਗੇ। ਤੁਸੀਂ ਇਸ ਪੰਨੇ ਤੋਂ ਫਾਰਮ ਜਮ੍ਹਾਂ ਨਹੀਂ ਕਰ ਸਕਦੇ।"
   },
   "generalLayout": {
     "loadingText": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ... ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ",
@@ -676,7 +696,7 @@
     "getUsersSubmissionsConsoleErrMsg": "ਫਾਰਮ ਸਬਮਿਸ਼ਨ ਡਾਟਾ ਲੋਡ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ {submissionId}: {error}",
     "multiDraftUploadSuccess": "ਤੁਹਾਡਾ ਮਲਟੀਪਲ ਡਰਾਫਟ ਅੱਪਲੋਡ ਸਫਲ ਰਿਹਾ ਹੈ!",
     "readVersionErrMsg": "ਜਵਾਬ ਵਿੱਚ ਕੋਈ ਸਕੀਮਾ ਨਹੀਂ। VersionId: {versionId}",
-    "readDraftErrMsg": "ਜਵਾਬ ਵਿੱਚ ਕੋਈ ਸਕੀਮਾ ਨਹੀਂ। DraftId: {draftId}",
+    "readDraftErrMsg": "ਜਵਾਬ ਵਿੱਚ ਕੋਈ ਸਕੀਮਾ ਨਹੀਂ। draftId: {draftId}",
     "alertRouteMsg": "ਫਾਰਮ ਮਾਲਕ ਨੇ ਫਾਰਮ ਪ੍ਰਕਾਸ਼ਿਤ ਨਹੀਂ ਕੀਤਾ ਹੈ, ਅਤੇ ਇਹ ਸਬਮਿਸ਼ਨ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।",
     "fecthingFormErrMsg": "ਇਸ ਫਾਰਮ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ",
     "fecthingFormConsoleErrMsg": "ਫਾਰਮ ਸਕੀਮਾ {versionId} ਲੋਡ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
@@ -692,7 +712,7 @@
     "no": "ਨੰ",
     "failedResSubmissn": "ਸਪੁਰਦਗੀ ਅੰਤਮ ਬਿੰਦੂ ਤੋਂ ਅਸਫਲ ਜਵਾਬ। ਜਵਾਬ ਕੋਡ: {status}",
     "errSubmittingForm": "ਇਸ ਫਾਰਮ ਨੂੰ ਸਪੁਰਦ ਕਰਨ ਵਿੱਚ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
-    "errorSavingFile": "ਫ਼ਾਈਲਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋਈ। ਫ਼ਾਈਲ ਦਾ ਨਾਮ: {fileNname}। ਗਲਤੀ: {error}",
+    "errorSavingFile": "ਫ਼ਾਈਲਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋਈ। ਫ਼ਾਈਲ ਦਾ ਨਾਮ: {fileName}। ਗਲਤੀ: {error}",
     "submittingDraftErrMsg": "ਡਰਾਫਟ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
     "submittingDraftConsErrMsg": "ਡਰਾਫਟ ਸੁਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ। SubmissionId: {submissionId}। ਗਲਤੀ: {error}",
     "formDraftAccessErrMsg": "ਬੇਨਤੀ ਕੀਤੀ ਸਪੁਰਦਗੀ ਪਹਿਲਾਂ ਹੀ ਸਪੁਰਦ ਕੀਤੀ ਗਈ ਹੈ, ਵੇਖੋ ਪੰਨੇ 'ਤੇ ਰੀਡਾਇਰੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
@@ -716,7 +736,7 @@
   },
   "homePage": {
     "title": "ਕਾਮਨ ਹੋਸਟਡ ਫਾਰਮ ਸਰਵਿਸ ਨਾਲ ਫਾਰਮ ਬਣਾਓ, ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ ਅਤੇ ਸਬਮਿਸ਼ਨ ਪ੍ਰਾਪਤ ਕਰੋ।",
-    "subTitle": "ਸਾਰੇ ਬੀ.ਸੀ. IDIR ਖਾਤੇ ਵਾਲੇ ਸਰਕਾਰੀ ਕਰਮਚਾਰੀ ਜਾਂ ਠੇਕੇਦਾਰ ਫਾਰਮ ਬਣਾਉਣ ਲਈ ਸਾਡੇ ਕਾਮਨ ਹੋਸਟਡ ਫਾਰਮ ਸਰਵਿਸ (CHEFS) ਦੇ ਹੋਸਟ ਕੀਤੇ ਸੰਸਕਰਣ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹਨ।",
+    "subTitle": "ਸਾਰੇ ਬੀ.ਸੀ. IDIR ਖਾਤੇ ਵਾਲੇ ਸਰਕਾਰੀ ਕਰਮਚਾਰੀ ਜਾਂ ਠੇਕੇਦਾਰ ਫਾਰਮ ਬਣਾਉਣ ਲਈ ਕਾਮਨ ਹੋਸਟਡ ਫਾਰਮ ਸਰਵਿਸ (CHEFS) ਦੇ ਸਾਡੇ ਹੋਸਟ ਕੀਤੇ ਸੰਸਕਰਣ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹਨ।",
     "takeATourOfChefs": "ਇਸ ਨੂੰ ਕਾਰਵਾਈ ਵਿੱਚ ਦੇਖਣ ਲਈ CHEFS ਦਾ ਦੌਰਾ ਕਰੋ।",
     "logInToGetStarted": "ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਲੌਗ ਇਨ ਕਰੋ",
     "loginToStart": "ਸ਼ੁਰੂਆਤ ਕਰਨ ਲਈ IDIR ਨਾਲ ਲੌਗ ਇਨ ਕਰੋ",
@@ -764,36 +784,29 @@
     "exampleText2": "ਉਦਾਹਰਨ ਟੈਕਸਟ 2",
     "filterPlaceholderTxt": "ਫਿਲਟਰ ਪਲੇਸਹੋਲਡਰ ਟੈਕਸਟ",
     "filter": "ਫਿਲਟਰ",
-    "value": "ਮੁੱਲ"
+    "value": "ਮੁੱਲ",
+    "resetColumns": "ਕਾਲਮ ਰੀਸੈਟ ਕਰੋ"
   },
   "formViewerActions": {
     "viewAllSubmissions": "ਸਾਰੀਆਂ ਬੇਨਤੀਆਂ ਦੇਖੋ",
     "saveAsADraft": "ਇੱਕ ਡਰਾਫਟ ਦੇ ਰੂਪ ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਕਰੋ",
     "editThisDraft": "ਇਸ ਡਰਾਫਟ ਨੂੰ ਸੰਪਾਦਿਤ ਕਰੋ",
     "switchSingleSubmssn": "ਸਿੰਗਲ ਸਬਮਿਸ਼ਨ 'ਤੇ ਸਵਿਚ ਕਰੋ",
-    "switchMultiSubmssn": "ਸਿੰਗਲ ਸਬਮਿਸ਼ਨ 'ਤੇ ਸਵਿਚ ਕਰੋ"
+    "switchMultiSubmssn": "ਮਲਟੀਪਲ ਸਬਮਿਸ਼ਨ 'ਤੇ ਸਵਿਚ ਕਰੋ"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "ਲਿੰਕ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ",
     "copyToClipboard": "ਕਲਿੱਪਬੋਰਡ ਵਿੱਚ ਕਾਪੀ ਕਰੋ",
     "errCopyToClipboard": "ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਵਿੱਚ ਤਰੁੱਟੀ।"
   },
-  "admin": {
-    "root": {
-      "admin": "ਐਡਮਿਨ"
-    }
-  },
-  "user": {
-    "root": {
-      "myForms": "ਮੇਰੇ ਫਾਰਮ",
-      "history": "ਇਤਿਹਾਸ",
-      "user": "ਉਪਭੋਗਤਾ"
-    }
-  },
   "sucess": {
     "sucessFormSubmissn": "ਤੁਹਾਡਾ ਫਾਰਮ ਸਫਲਤਾਪੂਰਵਕ ਜਮ੍ਹਾਂ ਹੋ ਗਿਆ ਹੈ",
     "keepRecord": "ਜੇਕਰ ਤੁਸੀਂ ਇਸ ਸਬਮਿਸ਼ਨ ਦਾ ਰਿਕਾਰਡ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ ਤੁਸੀਂ ਹੇਠ ਲਿਖੀਆਂ ਗੱਲਾਂ ਰੱਖ ਸਕਦੇ ਹੋ",
-    "confirmationId": "ਪੁਸ਼ਟੀ ID"
+    "confirmationId": "ਪੁਸ਼ਟੀ ਆਈ.ਡੀ"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "ਤਰੁੱਟੀ: ਕੁਝ ਗਲਤ ਹੋ ਗਿਆ",
+    "error": "ਗਲਤੀ"
   },
   "permissionUtils": {
     "formNotAvailable": "ਫਾਰਮ ਇਸ ਸਮੇਂ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਇਹ ਇੱਕ ਗਲਤ ਲਿੰਕ ਦੇ ਕਾਰਨ ਹੋ ਸਕਦਾ ਹੈ, ਜਾਂ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਫਾਰਮ ਇਸਦੇ ਮਾਲਕ ਦੁਆਰਾ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੋਵੇ।",
@@ -802,6 +815,29 @@
     "loadingForm": "{options} ਲੋਡ ਕਰਨ ਦੌਰਾਨ ਤਰੁੱਟੀ: {error}",
     "idpHintMsg": "ਇਸ ਫਾਰਮ ਲਈ {idpHint} ਪ੍ਰਮਾਣੀਕਰਨ ਦੀ ਲੋੜ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਲੌਗਇਨ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
     "formIdpMissMatch": "ਫਾਰਮ IDP ਬੇਮੇਲ। ਫਾਰਮ ਲਈ {idpHint} ਦੀ ਲੋੜ ਹੈ ਪਰ ਉਪਭੋਗਤਾ ਕੋਲ {userIdp} ਹੈ।"
+  },
+  "download": {
+    "chefsDataExport": "CHEFS ਡਾਟਾ ਨਿਰਯਾਤ",
+    "preparingForDownloading": "ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਤਿਆਰੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...",
+    "downloadInfoA": "ਜੇਕਰ ਤੁਹਾਡੀ ਫਾਈਲ ਆਪਣੇ ਆਪ ਡਾਊਨਲੋਡ ਨਹੀਂ ਹੁੰਦੀ ਹੈ",
+    "downloadInfoB": "ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਲਈ ਇੱਥੇ ਕਲਿੱਕ ਕਰੋ"
+  },
+  "history": {
+    "submissnHistory": "ਤੁਹਾਡਾ ਸਬਮਿਸ਼ਨ ਇਤਿਹਾਸ (TBD)"
+  },
+  "error": {
+    "logout": "ਲਾੱਗ ਆਊਟ, ਬਾਹਰ ਆਉਣਾ",
+    "somethingWentWrong": "ਗਲਤੀ: ਕੁਝ ਗਲਤ ਹੋ ਗਿਆ... :("
+  },
+  "login": {
+    "authenticateWith": "ਇਸ ਨਾਲ ਪ੍ਰਮਾਣਿਤ ਕਰੋ:",
+    "alreadyLoggedIn": "ਪਹਿਲਾਂ ਹੀ ਲੌਗ ਇਨ ਹੈ",
+    "home": "ਘਰ",
+    "about": "ਬਾਰੇ"
+  },
+  "notFound": {
+    "about": "ਬਾਰੇ",
+    "pageNotFound": "404: ਪੰਨਾ ਨਹੀਂ ਮਿਲਿਆ। :("
   },
   "store": {
     "admin": {
@@ -822,7 +858,7 @@
       "restoreFormErrMsg": "ਇਸ ਫਾਰਮ ਨੂੰ ਰੀਸਟੋਰ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
       "restoreFormConsErrMsg": "ਫਾਰਮ {formId} ਡੇਟਾ ਨੂੰ ਬਹਾਲ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "getUsersErrMsg": "ਉਪਭੋਗਤਾਵਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ।",
-      "getUsersConsErrMsg": "ਐਡਮਿਨ ਉਪਭੋਗਤਾ ਡੇਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "getUsersConsErrMsg": "ਪ੍ਰਸ਼ਾਸਕ ਉਪਭੋਗਤਾ ਡੇਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "getUserErrMsg": "ਇਸ ਉਪਭੋਗਤਾ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ।",
       "getUserConsErrMsg": "ਪ੍ਰਸ਼ਾਸਕ ਉਪਭੋਗਤਾ {userId} ਡੇਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "storingFCHelpInfoErrMsg": "ਫਾਰਮ ਕੰਪੋਨੈਂਟ ਮਦਦ ਜਾਣਕਾਰੀ ਨੂੰ ਸਟੋਰ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
@@ -856,7 +892,7 @@
       "fetchFormFieldsErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਖੇਤਰਾਂ ਦੀ ਸੂਚੀ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
       "fetchFormFieldsConsErrMsg": "ਫਾਰਮ {formId} ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "publishDraftErrMsg": "ਪ੍ਰਕਾਸ਼ਿਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
-      "publishDraftConsErrMsg": "${draftId} ਪ੍ਰਕਾਸ਼ਿਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: ${error}",
+      "publishDraftConsErrMsg": "{draftId} ਪ੍ਰਕਾਸ਼ਿਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "toggleVersnPublConsErrMsg": "toggleVersionPublish {versionId} {publish} ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "updateFormErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
       "updateFormConsErrMsg": "ਫਾਰਮ {id} ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
@@ -875,11 +911,11 @@
       "fecthSubmissnUsersErrMsg": "ਇਸ ਸਬਮਿਸ਼ਨ ਲਈ ਪ੍ਰਾਪਤਕਰਤਾ ਈਮੇਲ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
       "fecthSubmissnUsersConsErrMsg": "ਸਬਮਿਸ਼ਨ {formSubmissionId} ਲਈ ਪ੍ਰਾਪਤਕਰਤਾ ਈਮੇਲ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "fetchSubmissnErrMsg": "ਇਸ ਸਬਮਿਸ਼ਨ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ।",
-      "fetchSubmissnConsErrMsg": "ਸਬਮਿਸ਼ਨ {submissionId} ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: ${error}",
+      "fetchSubmissnConsErrMsg": "ਸਬਮਿਸ਼ਨ {submissionId} ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "fetchFormCSVExptFieldsErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਖੇਤਰਾਂ ਦੀ ਸੂਚੀ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
       "fetchFormCSVExptFieldsConsErrMsg": "ਫਾਰਮ {formId} ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "fetchSubmissnsErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਸਬਮਿਸ਼ਨਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
-      "fetchSubmissnsConsErrMsg": "{formId} ਲਈ ਸਬਮਿਸ਼ਨ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "fetchSubmissnsConsErrMsg": "{formId} ਲਈ ਬੇਨਤੀਆਂ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "fetchVersionErrMsg": "ਇਸ ਫਾਰਮ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
       "fetchVersionConsErrMsg": "ਫਾਰਮ {formId} ਲਈ ਸੰਸਕਰਣ {versionId} ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "deleteApiKeyNotifyMsg": "ਇਸ ਫਾਰਮ ਲਈ API ਕੁੰਜੀ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।",
@@ -895,7 +931,30 @@
       "listFCPHErrMsg": "ਫਾਰਮ ਬਿਲਡਰ ਭਾਗਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
       "listFCPHConsErrMsg": "ਫਾਰਮ ਬਿਲਡਰ ਕੰਪੋਨੈਂਟਸ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "downloadFileErrMsg": "ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
-      "downloadFileConsErrMsg": "ਫਾਈਲ ਡਾਊਨਲੋਡ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: ਤਰੁੱਟੀ"
+      "downloadFileConsErrMsg": "ਫਾਈਲ ਡਾਊਨਲੋਡ ਕਰਨ ਵਿੱਚ ਗਲਤੀ: ਗਲਤੀ",
+      "readSubscriptionSettingsErrMsg": "ਗਾਹਕੀ ਸੈਟਿੰਗਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "readSubscriptionSettingsConsErrMsg": "ਫਾਰਮ {formId} ਲਈ ਗਾਹਕੀ ਸੈਟਿੰਗਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}।",
+      "saveSubscriptionSettingsNotifyMsg": "ਇਸ ਫਾਰਮ ਲਈ ਗਾਹਕੀ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।",
+      "saveSubscriptionSettingsErrMsg": "ਗਾਹਕੀ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+      "saveSubscriptionSettingsConsErrMsg": "ਫਾਰਮ {formId} ਲਈ ਗਾਹਕੀ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
+    }
+  },
+  "admin": {
+    "root": {
+      "admin": "ਐਡਮਿਨ"
+    },
+    "form": {
+      "administerForm": "ਫਾਰਮ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ"
+    },
+    "user": {
+      "administerUser": "ਉਪਭੋਗਤਾ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "ਮੇਰੇ ਫਾਰਮ",
+      "history": "ਇਤਿਹਾਸ",
+      "user": "ਉਪਭੋਗਤਾ"
     }
   }
 }

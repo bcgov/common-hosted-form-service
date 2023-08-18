@@ -40,6 +40,11 @@ describe('form getters', () => {
     permissions: ['SUBMIT', 'READ'],
     submissionList: ['test', 'sub'],
     version: { type: 'form' },
+    subscriptionData: { 
+      subscribeEvent: 'test',
+      endpointUrl: 'http://localhost.com',
+      endpointToken: '89abddfb-2cff-4fda-83e6-13221f0c3d4f',
+    }
   };
 
   beforeEach(() => {
@@ -97,5 +102,9 @@ describe('form getters', () => {
 
   it('fcProactiveHelpImageUrl should return the state fcProactiveHelpImageUrl', () => {
     expect(store.getters.fcProactiveHelpImageUrl).toEqual(sampleState.fcProactiveHelpImageUrl);
+  });
+
+  it('subscriptionData should return the state subscriptionData', () => {
+    expect(store.getters.subscriptionData).toEqual(sampleState.subscriptionData);
   });
 });

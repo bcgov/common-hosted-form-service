@@ -214,7 +214,7 @@ describe('_buildCsvHeaders', () => {
 });
 
 describe('_buildCsvHeaders', () => {
-  it('should build correct csv headers', async () => {
+  it('should build correct csv headers for single row export option', async () => {
     //
 
     // form schema from db
@@ -233,10 +233,12 @@ describe('_buildCsvHeaders', () => {
 
     // build csv headers
     // gets a a list of form meta fieldfs followed by submission fields
-    const result = await exportService._buildCsvHeaders(form, submissionsExport, 1);
+    const result = await exportService._buildCsvHeaders(form, submissionsExport, 1, null, true);
 
-    expect(result).toHaveLength(19);
-    expect(result).toEqual(expect.arrayContaining(['form.confirmationId', 'oneRowPerLake.closestTown', 'oneRowPerLake.dataGrid.fishType']));
+    expect(result).toHaveLength(29);
+    expect(result).toEqual(
+      expect.arrayContaining(['form.confirmationId', 'oneRowPerLake.0.closestTown', 'oneRowPerLake.0.dataGrid.0.fishType', 'oneRowPerLake.0.dataGrid.1.fishType'])
+    );
     expect(exportService._readLatestFormSchema).toHaveBeenCalledTimes(1);
     expect(exportService._readLatestFormSchema).toHaveBeenCalledWith(123, 1);
 
@@ -265,9 +267,9 @@ describe('_buildCsvHeaders', () => {
 
     // build csv headers
     // gets a a list of form meta fieldfs followed by submission fields
-    const result = await exportService._buildCsvHeaders(form, submissionsExport, 1);
+    const result = await exportService._buildCsvHeaders(form, submissionsExport, 1, null, true);
 
-    expect(result).toHaveLength(42);
+    expect(result).toHaveLength(41);
     expect(result).toEqual(expect.arrayContaining(['number1', 'selectBoxes1.a', 'number']));
     expect(exportService._readLatestFormSchema).toHaveBeenCalledTimes(1);
     expect(exportService._readLatestFormSchema).toHaveBeenCalledWith(123, 1);

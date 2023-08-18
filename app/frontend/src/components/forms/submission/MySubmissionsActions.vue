@@ -20,7 +20,9 @@
             <v-icon>remove_red_eye</v-icon>
           </v-btn>
         </template>
-        <span>{{ $t('trans.mySubmissionsActions.viewThisSubmission') }}</span>
+        <span :lang="lang">{{
+          $t('trans.mySubmissionsActions.viewThisSubmission')
+        }}</span>
       </v-tooltip>
     </router-link>
 
@@ -51,7 +53,9 @@
               <v-icon>app_registration</v-icon>
             </v-btn>
           </template>
-          <span>{{ $t('trans.mySubmissionsActions.copyThisSubmission') }}</span>
+          <span :lang="lang">{{
+            $t('trans.mySubmissionsActions.copyThisSubmission')
+          }}</span>
         </v-tooltip>
       </router-link>
     </span>
@@ -79,7 +83,9 @@
               <v-icon>mode_edit</v-icon>
             </v-btn>
           </template>
-          <span>{{ $t('trans.mySubmissionsActions.editThisDraft') }}</span>
+          <span :lang="lang">{{
+            $t('trans.mySubmissionsActions.editThisDraft')
+          }}</span>
         </v-tooltip>
       </router-link>
       <DeleteSubmission
@@ -114,7 +120,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('form', ['form']),
+    ...mapGetters('form', ['form', 'lang']),
     isCopyFromExistingSubmissionEnabled() {
       return this.form && this.form.enableCopyExistingSubmission;
     },
