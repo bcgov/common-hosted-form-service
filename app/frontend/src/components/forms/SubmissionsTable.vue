@@ -344,8 +344,6 @@ export default {
       num: 50,
       itemsPerPage: 10,
       page: 0,
-      startOfItem: 1,
-      endOfItem: 10,
       filterData: [],
       filterIgnore: [
         {
@@ -377,10 +375,6 @@ export default {
       singleSubmissionRestore: false,
       deleteItem: {},
       switchSubmissionView: false,
-      pages: {},
-
-      listSize: [10, 25, 50, 100],
-      totalNumberOfItems: 0,
     };
   },
   computed: {
