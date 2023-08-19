@@ -743,7 +743,12 @@ export default {
             ? state.userFormPreferences.preferences.columns
             : undefined;
         const response = userView
-          ? await rbacService.getUserSubmissions({ formId: formId })
+          ? await rbacService.getUserSubmissions({
+              formId: formId,
+              page: page,
+              itemsPerPage: itemsPerPage,
+              totalSubmissions: state.totalSubmissions,
+            })
           : await formService.listSubmissions(formId, {
               deleted: deletedOnly,
               fields: fields,
@@ -752,12 +757,10 @@ export default {
               page: page,
               filterformSubmissionStatusCode: filterformSubmissionStatusCode,
               itemsPerPage: itemsPerPage,
+              totalSubmissions: state.totalSubmissions,
             });
-        commit(
-          'SET_SUBMISSIONLIST',
-          userView ? response.data : response.data.results
-        );
-        commit('SET_TOTALSUBMISSIONS', userView ? 0 : response.data.total);
+        commit('SET_SUBMISSIONLIST', response.data.results);
+        commit('SET_TOTALSUBMISSIONS', response.data.total);
       } catch (error) {
         dispatch(
           'notifications/addNotification',
