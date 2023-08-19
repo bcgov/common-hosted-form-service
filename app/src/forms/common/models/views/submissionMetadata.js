@@ -17,6 +17,12 @@ class SubmissionMetadata extends Model {
           query.where('confirmationId', value);
         }
       },
+      filterformSubmissionStatusCode(query, value) {
+        if (value) {
+          query.whereNot('formSubmissionStatusCode', null);
+        }
+      },
+
       filterDraft(query, value) {
         if (value !== undefined) {
           query.where('draft', value);

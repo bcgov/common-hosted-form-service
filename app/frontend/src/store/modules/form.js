@@ -100,6 +100,7 @@ export default {
     lang: 'en',
     isRTL: false,
     subscriptionData: genInitialSubscribeDetails(),
+    totalSubmissions: 0,
   },
   getters: {
     getField, // vuex-map-fields
@@ -123,6 +124,7 @@ export default {
     lang: (state) => state.lang,
     isRTL: (state) => state.isRTL,
     subscriptionData: (state) => state.subscriptionData,
+    totalSubmissions: (state) => state.totalSubmissions,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -192,6 +194,9 @@ export default {
     },
     SET_SUBSCRIPTION_DATA(state, subscriptionData) {
       state.subscriptionData = subscriptionData;
+    },
+    SET_TOTALSUBMISSIONS(state, totalSubmissions) {
+      state.totalSubmissions = totalSubmissions;
     },
   },
   actions: {
@@ -719,7 +724,16 @@ export default {
     },
     async fetchSubmissions(
       { commit, dispatch, state },
-      { formId, userView, deletedOnly = false, createdBy = '', createdAt }
+      {
+        formId,
+        userView,
+        deletedOnly = false,
+        createdBy = '',
+        createdAt,
+        page,
+        itemsPerPage,
+        filterformSubmissionStatusCode,
+      }
     ) {
       try {
         commit('SET_SUBMISSIONLIST', []);
@@ -735,8 +749,15 @@ export default {
               fields: fields,
               createdBy: createdBy,
               createdAt: createdAt,
+              page: page,
+              filterformSubmissionStatusCode: filterformSubmissionStatusCode,
+              itemsPerPage: itemsPerPage,
             });
-        commit('SET_SUBMISSIONLIST', response.data);
+        commit(
+          'SET_SUBMISSIONLIST',
+          userView ? response.data : response.data.results
+        );
+        commit('SET_TOTALSUBMISSIONS', userView ? 0 : response.data.total);
       } catch (error) {
         dispatch(
           'notifications/addNotification',
