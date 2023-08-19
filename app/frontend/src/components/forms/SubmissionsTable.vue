@@ -122,7 +122,6 @@
     <v-data-table
       class="submissions-table"
       :headers="HEADERS"
-      hide-default-footer
       item-key="submissionId"
       :items="submissionTable"
       :search="search"
@@ -132,7 +131,8 @@
       :loading-text="$t('trans.submissionsTable.loadingText')"
       :no-data-text="$t('trans.submissionsTable.noDataText')"
       :lang="lang"
-      disable-pagination
+      :server-items-length="totalSubmissions"
+      @update:options="updateTableOptions"
     >
       <template v-slot:[`header.event`]>
         <span v-if="!deletedOnly">
@@ -256,17 +256,6 @@
             <span :lang="lang">{{ $t('trans.submissionsTable.restore') }}</span>
           </v-tooltip>
         </span>
-      </template>
-      <template v-slot:[`footer`]>
-        <BasePagination
-          :length="TOTALPAGECOUNT"
-          :totalItems="totalSubmissions"
-          :itemsPerPage="itemsPerPage"
-          @next-page="nextPage"
-          @previous-page="previousPage"
-          :endOfItem="ENDOFPAGEITEM"
-          :startOfItem="STARTOFPAGEITEM"
-        />
       </template>
     </v-data-table>
 
@@ -423,23 +412,6 @@ export default {
       'totalSubmissions',
     ]),
     ...mapGetters('auth', ['user']),
-    TOTALPAGECOUNT() {
-      return Math.ceil(this.totalSubmissions / this.itemsPerPage);
-    },
-    STARTOFPAGEITEM() {
-      if (this.totalSubmissions === 0) {
-        return 0;
-      }
-      return this.page * this.itemsPerPage + 1;
-    },
-    ENDOFPAGEITEM() {
-      if (this.totalSubmissions === 0) {
-        return 0;
-      } else if (this.submissionList?.length < this.itemsPerPage) {
-        return this.itemsPerPage * this.page + this.submissionList?.length;
-      }
-      return this.itemsPerPage * this.page + this.itemsPerPage;
-    },
     checkFormManage() {
       return this.permissions.some((p) => FormManagePermissions.includes(p));
     },
@@ -659,13 +631,11 @@ export default {
       });
       this.refreshSubmissions();
     },
-    async nextPage(page) {
+    updateTableOptions({ page, itemsPerPage }) {
       this.page = page - 1;
-      await this.getSubmissionData();
-    },
-    async previousPage(page) {
-      this.page = page - 1;
-      await this.getSubmissionData();
+      this.itemsPerPage = itemsPerPage;
+
+      this.getSubmissionData();
     },
     async getSubmissionData() {
       let criteria = {
