@@ -122,6 +122,7 @@
     <v-data-table
       class="submissions-table"
       :headers="HEADERS"
+      hide-default-footer
       item-key="submissionId"
       :items="submissionTable"
       :search="search"
@@ -131,6 +132,7 @@
       :loading-text="$t('trans.submissionsTable.loadingText')"
       :no-data-text="$t('trans.submissionsTable.noDataText')"
       :lang="lang"
+      disable-pagination
     >
       <template v-slot:[`header.event`]>
         <span v-if="!deletedOnly">
@@ -255,6 +257,17 @@
           </v-tooltip>
         </span>
       </template>
+      <template v-slot:[`footer`]>
+        <BasePagination
+          :length="TOTALPAGECOUNT"
+          :totalItems="totalSubmissions"
+          :itemsPerPage="itemsPerPage"
+          @next-page="nextPage"
+          @previous-page="previousPage"
+          :endOfItem="ENDOFPAGEITEM"
+          :startOfItem="STARTOFPAGEITEM"
+        />
+      </template>
     </v-data-table>
 
     <BaseDialog
@@ -339,6 +352,11 @@ export default {
     return {
       currentUserOnly: false,
       deletedOnly: false,
+      num: 50,
+      itemsPerPage: 10,
+      page: 0,
+      startOfItem: 1,
+      endOfItem: 10,
       filterData: [],
       filterIgnore: [
         {
@@ -366,11 +384,14 @@ export default {
       submissionsCheckboxes: [],
       showDeleteDialog: false,
       selectedSubmissions: [],
-
       singleSubmissionDelete: false,
       singleSubmissionRestore: false,
       deleteItem: {},
       switchSubmissionView: false,
+      pages: {},
+
+      listSize: [10, 25, 50, 100],
+      totalNumberOfItems: 0,
     };
   },
   computed: {
@@ -399,9 +420,26 @@ export default {
       'deletedSubmissions',
       'isRTL',
       'lang',
+      'totalSubmissions',
     ]),
     ...mapGetters('auth', ['user']),
-
+    TOTALPAGECOUNT() {
+      return Math.ceil(this.totalSubmissions / this.itemsPerPage);
+    },
+    STARTOFPAGEITEM() {
+      if (this.totalSubmissions === 0) {
+        return 0;
+      }
+      return this.page * this.itemsPerPage + 1;
+    },
+    ENDOFPAGEITEM() {
+      if (this.totalSubmissions === 0) {
+        return 0;
+      } else if (this.submissionList?.length < this.itemsPerPage) {
+        return this.itemsPerPage * this.page + this.submissionList?.length;
+      }
+      return this.itemsPerPage * this.page + this.itemsPerPage;
+    },
     checkFormManage() {
       return this.permissions.some((p) => FormManagePermissions.includes(p));
     },
@@ -583,6 +621,7 @@ export default {
       'updateFormPreferencesForCurrentUser',
     ]),
     ...mapActions('notifications', ['addNotification']),
+    paginate() {},
     onShowColumnDialog() {
       this.SELECT_COLUMNS_HEADERS.sort(
         (a, b) =>
@@ -620,76 +659,86 @@ export default {
       });
       this.refreshSubmissions();
     },
-
+    async nextPage(page) {
+      this.page = page - 1;
+      await this.getSubmissionData();
+    },
+    async previousPage(page) {
+      this.page = page - 1;
+      await this.getSubmissionData();
+    },
+    async getSubmissionData() {
+      let criteria = {
+        formId: this.formId,
+        itemsPerPage: this.itemsPerPage,
+        page: this.page,
+        filterformSubmissionStatusCode: true,
+        createdAt: Object.values({
+          minDate:
+            this.userFormPreferences &&
+            this.userFormPreferences.preferences &&
+            this.userFormPreferences.preferences.filter
+              ? moment(
+                  this.userFormPreferences.preferences.filter[0],
+                  'YYYY-MM-DD hh:mm:ss'
+                )
+                  .utc()
+                  .format()
+              : moment()
+                  .subtract(50, 'years')
+                  .utc()
+                  .format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Min Date)
+          maxDate:
+            this.userFormPreferences &&
+            this.userFormPreferences.preferences &&
+            this.userFormPreferences.preferences.filter
+              ? moment(
+                  this.userFormPreferences.preferences.filter[1],
+                  'YYYY-MM-DD hh:mm:ss'
+                )
+                  .utc()
+                  .format()
+              : moment().add(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Max Date)
+        }),
+        deletedOnly: this.deletedOnly,
+        createdBy: this.currentUserOnly
+          ? `${this.user.username}@${this.user.idp}`
+          : '',
+      };
+      await this.fetchSubmissions(criteria);
+      if (this.submissionList) {
+        const tableRows = this.submissionList.map((s) => {
+          const fields = {
+            confirmationId: s.confirmationId,
+            date: s.createdAt,
+            formId: s.formId,
+            status: s.formSubmissionStatusCode,
+            submissionId: s.submissionId,
+            submitter: s.createdBy,
+            versionId: s.formVersionId,
+            deleted: s.deleted,
+            lateEntry: s.lateEntry,
+          };
+          // Add any custom columns
+          this.userColumns.forEach((col) => {
+            fields[col] = s[col];
+          });
+          return fields;
+        });
+        this.submissionTable = tableRows;
+        this.submissionsCheckboxes = new Array(
+          this.submissionTable.length
+        ).fill(false);
+      }
+    },
     async populateSubmissionsTable() {
       try {
         this.loading = true;
         // Get user prefs for this form
         await this.getFormPreferencesForCurrentUser(this.formId);
         // Get the submissions for this form
-        let criteria = {
-          formId: this.formId,
-          createdAt: Object.values({
-            minDate:
-              this.userFormPreferences &&
-              this.userFormPreferences.preferences &&
-              this.userFormPreferences.preferences.filter
-                ? moment(
-                    this.userFormPreferences.preferences.filter[0],
-                    'YYYY-MM-DD hh:mm:ss'
-                  )
-                    .utc()
-                    .format()
-                : moment()
-                    .subtract(50, 'years')
-                    .utc()
-                    .format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Min Date)
-            maxDate:
-              this.userFormPreferences &&
-              this.userFormPreferences.preferences &&
-              this.userFormPreferences.preferences.filter
-                ? moment(
-                    this.userFormPreferences.preferences.filter[1],
-                    'YYYY-MM-DD hh:mm:ss'
-                  )
-                    .utc()
-                    .format()
-                : moment().add(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Max Date)
-          }),
-          deletedOnly: this.deletedOnly,
-          createdBy: this.currentUserOnly
-            ? `${this.user.username}@${this.user.idp}`
-            : '',
-        };
-        await this.fetchSubmissions(criteria);
+        await this.getSubmissionData();
         // Build up the list of forms for the table
-        if (this.submissionList) {
-          const tableRows = this.submissionList
-            // Filtering out all submissions that has no status. (User has not submitted)
-            .filter((s) => s.formSubmissionStatusCode)
-            .map((s) => {
-              const fields = {
-                confirmationId: s.confirmationId,
-                date: s.createdAt,
-                formId: s.formId,
-                status: s.formSubmissionStatusCode,
-                submissionId: s.submissionId,
-                submitter: s.createdBy,
-                versionId: s.formVersionId,
-                deleted: s.deleted,
-                lateEntry: s.lateEntry,
-              };
-              // Add any custom columns
-              this.userColumns.forEach((col) => {
-                fields[col] = s[col];
-              });
-              return fields;
-            });
-          this.submissionTable = tableRows;
-          this.submissionsCheckboxes = new Array(
-            this.submissionTable.length
-          ).fill(false);
-        }
       } catch (error) {
         // Handled in state fetchSubmissions
       } finally {
