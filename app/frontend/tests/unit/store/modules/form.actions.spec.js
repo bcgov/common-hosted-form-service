@@ -216,7 +216,7 @@ describe('form actions', () => {
       formService.listSubmissions.mockResolvedValue({ data: [] });
       await store.actions.fetchSubmissions(mockStore, { formId: 'fId' });
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(2);
+      expect(mockStore.commit).toHaveBeenCalledTimes(3);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
       expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { deleted: false, createdBy: '' });
@@ -227,7 +227,7 @@ describe('form actions', () => {
       formService.listSubmissions.mockResolvedValue({ data: [] });
       await store.actions.fetchSubmissions(mockStore, { formId: 'fId', userView: false });
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(2);
+      expect(mockStore.commit).toHaveBeenCalledTimes(3);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
       expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { deleted: false, createdBy: '' });
@@ -238,7 +238,7 @@ describe('form actions', () => {
       rbacService.getUserSubmissions.mockResolvedValue({ data: [] });
       await store.actions.fetchSubmissions(mockStore, { formId: 'fId', userView: true });
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(2);
+      expect(mockStore.commit).toHaveBeenCalledTimes(3);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(0);
       expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(1);
