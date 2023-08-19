@@ -621,11 +621,11 @@ export default {
       });
       this.refreshSubmissions();
     },
-    updateTableOptions({ page, itemsPerPage }) {
+    async updateTableOptions({ page, itemsPerPage }) {
       this.page = page - 1;
       this.itemsPerPage = itemsPerPage;
 
-      this.getSubmissionData();
+      await this.getSubmissionData();
     },
     async getSubmissionData() {
       let criteria = {
