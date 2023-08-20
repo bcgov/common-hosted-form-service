@@ -154,6 +154,8 @@ export default {
   data() {
     return {
       headers: [],
+      itemsPerPage: 10,
+      page: 0,
       filterData: [],
       preSelectedData: [],
       filterIgnore: [

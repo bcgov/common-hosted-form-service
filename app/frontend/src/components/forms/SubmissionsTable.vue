@@ -341,7 +341,6 @@ export default {
     return {
       currentUserOnly: false,
       deletedOnly: false,
-      num: 50,
       itemsPerPage: 10,
       page: 0,
       filterData: [],
