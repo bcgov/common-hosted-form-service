@@ -238,14 +238,16 @@ describe('form actions', () => {
     });
 
     it('fetchSubmissions should call the rbacService if for userView', async () => {
+      let data = {page: 0,  itemsPerPage: 10, totalSubmissions: 0};
+
       rbacService.getUserSubmissions.mockResolvedValue({ data: [] });
-      await store.actions.fetchSubmissions(mockStore, { formId: 'fId', userView: true});
+      await store.actions.fetchSubmissions(mockStore, { formId: 'fId', userView: true, ...data});
 
       expect(mockStore.commit).toHaveBeenCalledTimes(3);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(0);
       expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(1);
-      expect(rbacService.getUserSubmissions).toHaveBeenCalledWith({ formId: 'fId'});
+      expect(rbacService.getUserSubmissions).toHaveBeenCalledWith({ formId: 'fId', ...data});
     });
 
     it('fetchSubmissions should dispatch to notifications/addNotification', async () => {
