@@ -707,6 +707,7 @@ export default {
 
     async refreshSubmissions() {
       this.loading = true;
+      this.page = 0;
       Promise.all([
         this.getFormRolesForUser(this.formId),
         this.getFormPermissionsForUser(this.formId),
