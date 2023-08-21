@@ -275,7 +275,7 @@ const service = {
       );
     }
 
-    if (params.itemsPerPage && parseInt(params.itemsPerPage) === -1) {
+    if (params.page && params.itemsPerPage && parseInt(params.itemsPerPage) === -1) {
       return await query.page(parseInt(params.page), parseInt(params.totalSubmissions));
     } else if (params.page && params.itemsPerPage && parseInt(params.page) >= 0) {
       return await query.page(parseInt(params.page), parseInt(params.itemsPerPage));
