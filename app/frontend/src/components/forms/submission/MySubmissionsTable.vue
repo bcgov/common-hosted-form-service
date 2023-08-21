@@ -88,6 +88,8 @@
       :loading-text="$t('trans.mySubmissionsTable.loadingText')"
       :no-data-text="$t('trans.mySubmissionsTable.noDataText')"
       :lang="lang"
+      :server-items-length="totalSubmissions"
+      @update:options="updateTableOptions"
     >
       <template #[`item.lastEdited`]="{ item }">
         {{ item.lastEdited | formatDateLong }}
@@ -152,6 +154,8 @@ export default {
   data() {
     return {
       headers: [],
+      itemsPerPage: 10,
+      page: 0,
       filterData: [],
       preSelectedData: [],
       filterIgnore: [
@@ -185,6 +189,7 @@ export default {
       'formFields',
       'isRTL',
       'lang',
+      'totalSubmissions',
     ]),
     ...mapGetters('auth', ['user']),
     DEFAULT_HEADERS() {
@@ -314,11 +319,21 @@ export default {
       }
       return '';
     },
+    async updateTableOptions({ page, itemsPerPage }) {
+      this.page = page - 1;
+      this.itemsPerPage = itemsPerPage;
 
+      await this.populateSubmissionsTable();
+    },
     async populateSubmissionsTable() {
       this.loading = true;
       // Get the submissions for this form
-      await this.fetchSubmissions({ formId: this.formId, userView: true });
+      await this.fetchSubmissions({
+        formId: this.formId,
+        userView: true,
+        itemsPerPage: this.itemsPerPage,
+        page: this.page,
+      });
       // Build up the list of forms for the table
       if (this.submissionList) {
         const tableRows = this.submissionList.map((s) => {
