@@ -47,7 +47,7 @@
     "status": "Status",
     "update": "Update",
     "cancel": "Cancel",
-    "eventSubscription" : "Event Subscription"
+    "eventSubscription": "Event Subscription"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Press <kbd>enter</kbd> or <kbd>,</kbd> or <kbd>space</kbd> to add multiple email addresses",
@@ -144,9 +144,9 @@
     "password": "password",
     "hideSecret": "Hide Secret",
     "showSecret": "Show Secret",
-    "key" : "Key",
-    "saveSettingsErrMsg" : "An error occurred while attempting to update the settings for this form.",
-    "updateSettingsConsoleErrMsg" : "Error updating settings for form  {formId} : {error}"
+    "key": "Key",
+    "saveSettingsErrMsg": "An error occurred while attempting to update the settings for this form.",
+    "updateSettingsConsoleErrMsg": "Error updating settings for form  {formId} : {error}"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",
@@ -285,7 +285,6 @@
     "notificationMsg": "Failed to get user from RBAC, see console",
     "notificationConsErr": "Error getting User from RBAC"
   },
-  "fcProactiveHelp": {},
   "baseAuthButton": {
     "logout": "Logout",
     "login": "Login"
@@ -862,7 +861,7 @@
       "fetchFormFieldsErrMsg": "An error occurred while fetching the list of fields for this form.",
       "fetchFormFieldsConsErrMsg": "Error getting form {formId}: {error}",
       "publishDraftErrMsg": "An error occurred while publishing.",
-      "publishDraftConsErrMsg": "Error publishing ${draftId}: ${error}",
+      "publishDraftConsErrMsg": "Error publishing {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "Error in toggleVersionPublish {versionId} {publish}: {error}",
       "updateFormErrMsg": "An error occurred while updating the settings for this form.",
       "updateFormConsErrMsg": "Error updating form {id}: {error}",
@@ -881,7 +880,7 @@
       "fecthSubmissnUsersErrMsg": "An error occurred while fetching the recipient email for this submission.",
       "fecthSubmissnUsersConsErrMsg": "Error getting recipient email for submission {formSubmissionId}: {error}",
       "fetchSubmissnErrMsg": "An error occurred while fetching this submission.",
-      "fetchSubmissnConsErrMsg": "Error getting submission {submissionId}: ${error}",
+      "fetchSubmissnConsErrMsg": "Error getting submission {submissionId}: {error}",
       "fetchFormCSVExptFieldsErrMsg": "An error occurred while fetching the list of fields for this form.",
       "fetchFormCSVExptFieldsConsErrMsg": "Error getting form {formId}: {error}",
       "fetchSubmissnsErrMsg": "An error occurred while fetching submissions for this form.",
@@ -907,7 +906,6 @@
       "saveSubscriptionSettingsNotifyMsg": "Subscription settings for this form has been saved.",
       "saveSubscriptionSettingsErrMsg": "An error occurred while trying to save subscription settings.",
       "saveSubscriptionSettingsConsErrMsg": "Error saving subscription settings for form {formId}: {error}"
-      
     }
   },
   "permissionUtils": {
