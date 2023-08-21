@@ -82,7 +82,7 @@ const service = {
 
   getCurrentUserSubmissions: async (currentUser, params) => {
     params = queryUtils.defaultActiveOnly(params);
-    const items = await UserSubmissions.query()
+    const query = UserSubmissions.query()
       .withGraphFetched('submissionStatus(orderDescending)')
       .withGraphFetched('submission')
       .modify('filterFormId', params.formId)
@@ -90,7 +90,14 @@ const service = {
       .modify('filterUserId', currentUser.id)
       .modify('filterActive', params.active)
       .modify('orderDefault');
-    return items;
+
+    if (params.page && params.itemsPerPage && parseInt(params.itemsPerPage) === -1) {
+      return await query.page(parseInt(params.page), parseInt(params.totalSubmissions));
+    } else if (params.page && params.itemsPerPage && parseInt(params.page) >= 0) {
+      return await query.page(parseInt(params.page), parseInt(params.itemsPerPage));
+    } else {
+      return await query;
+    }
   },
 
   getFormUsers: async (params) => {

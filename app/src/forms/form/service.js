@@ -249,6 +249,7 @@ const service = {
       .modify('filterCreatedBy', params.createdBy)
       .modify('filterFormVersionId', params.formVersionId)
       .modify('filterVersion', params.version)
+      .modify('filterformSubmissionStatusCode', params.filterformSubmissionStatusCode)
       .modify('orderDefault');
     if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length == 2) {
       query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
@@ -273,7 +274,14 @@ const service = {
         ['lateEntry'].map((f) => ref(`submission:data.${f}`).as(f.split('.').slice(-1)))
       );
     }
-    return query;
+
+    if (params.page && params.itemsPerPage && parseInt(params.itemsPerPage) === -1) {
+      return await query.page(parseInt(params.page), parseInt(params.totalSubmissions));
+    } else if (params.page && params.itemsPerPage && parseInt(params.page) >= 0) {
+      return await query.page(parseInt(params.page), parseInt(params.itemsPerPage));
+    } else {
+      return await query;
+    }
   },
 
   publishVersion: async (formId, formVersionId, params = {}, currentUser) => {
