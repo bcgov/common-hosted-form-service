@@ -134,6 +134,16 @@ export default {
           .catch(() => {});
       }
 
+      if (this.hasDraft) {
+        const idx = this.drafts.map((d) => d.id).indexOf(this.publishOpts.id);
+        this.drafts[idx].published = !this.drafts[idx].published;
+      } else {
+        const idx = this.form.versions
+          .map((d) => d.id)
+          .indexOf(this.publishOpts.id);
+        this.form.versions[idx].published = !this.form.versions[idx].published;
+      }
+
       this.rerenderTable += 1;
     },
     togglePublish(value, id, version, isDraft) {
