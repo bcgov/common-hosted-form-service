@@ -19,6 +19,7 @@
           dense
           class="mt-3"
           :class="{ label: isRTL }"
+          :lang="lang"
         />
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
@@ -30,19 +31,13 @@
               v-bind="attrs"
               v-on="on"
             >
-              <font-awesome-icon
-                icon="fa-solid fa-repeat"
-                color="primary"
-                v-bind="attrs"
-                style="pointer-events: none"
-                v-on="on"
-                size="xl"
-              />
+              <v-icon>repeat</v-icon>
             </v-btn>
           </template>
-          <span>Reset Columns</span>
+          <span :lang="lang">{{ $t('trans.baseFilter.resetColumns') }}</span>
         </v-tooltip>
       </div>
+
       <v-data-table
         fixed-header
         show-select
@@ -55,9 +50,10 @@
         :search="inputFilter"
         class="grey lighten-5"
         disable-pagination
+        :lang="lang"
       >
       </v-data-table>
-      <v-btn @click="savingFilterData" class="primary mt-3">{{
+      <v-btn @click="savingFilterData" class="primary mt-3" :lang="lang">{{
         inputSaveButtonText
       }}</v-btn>
       <v-btn
@@ -65,6 +61,7 @@
         class="mt-3 primary--text"
         :class="isRTL ? 'mr-3' : 'ml-3'"
         outlined
+        :lang="lang"
         >{{ $t('trans.baseFilter.cancel') }}</v-btn
       >
     </v-card-text>
@@ -74,9 +71,6 @@
 <script>
 import { mapGetters } from 'vuex';
 import i18n from '@/internationalization';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faRepeat } from '@fortawesome/free-solid-svg-icons';
-library.add(faRepeat);
 
 export default {
   name: 'BaseFilter',
@@ -133,7 +127,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('form', ['isRTL']),
+    ...mapGetters('form', ['isRTL', 'lang']),
   },
   data() {
     return {
@@ -142,17 +136,7 @@ export default {
       tableData: this.inputData,
     };
   },
-  watch: {
-    selectedData() {
-      let filteredData = this.inputData.filter(
-        (item) =>
-          !this.selectedData.find(
-            (selectedItem) => selectedItem.text === item.text
-          )
-      );
-      this.tableData = this.selectedData.concat(filteredData);
-    },
-  },
+
   methods: {
     savingFilterData() {
       this.inputFilter = '';

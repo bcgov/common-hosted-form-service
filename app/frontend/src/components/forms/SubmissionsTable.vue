@@ -5,7 +5,9 @@
     >
       <!-- page title -->
       <div>
-        <h1>{{ $t('trans.submissionsTable.submissions') }}</h1>
+        <h1 :lang="lang">
+          {{ $t('trans.submissionsTable.submissions') }}
+        </h1>
       </div>
       <!-- buttons -->
       <div>
@@ -13,7 +15,7 @@
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
               <v-btn
-                @click="showColumnsDialog = true"
+                @click="onShowColumnDialog"
                 class="mx-1"
                 color="primary"
                 icon
@@ -23,7 +25,9 @@
                 <v-icon>view_column</v-icon>
               </v-btn>
             </template>
-            <span>{{ $t('trans.submissionsTable.selectColumns') }}</span>
+            <span :lang="lang">{{
+              $t('trans.submissionsTable.selectColumns')
+            }}</span>
           </v-tooltip>
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
@@ -40,7 +44,9 @@
                 </v-btn>
               </router-link>
             </template>
-            <span>{{ $t('trans.submissionsTable.manageForm') }}</span>
+            <span :lang="lang">{{
+              $t('trans.submissionsTable.manageForm')
+            }}</span>
           </v-tooltip>
           <v-tooltip bottom>
             <template #activator="{ on, attrs }">
@@ -58,7 +64,9 @@
                 </v-btn>
               </router-link>
             </template>
-            <span>{{ $t('trans.submissionsTable.submissionsToFiles') }}</span>
+            <span :lang="lang">{{
+              $t('trans.submissionsTable.submissionsToFiles')
+            }}</span>
           </v-tooltip>
         </span>
       </div>
@@ -74,7 +82,7 @@
           @click="refreshSubmissions"
         >
           <template #label>
-            <span :class="{ 'mr-2': isRTL }">
+            <span :class="{ 'mr-2': isRTL }" :lang="lang">
               {{ $t('trans.submissionsTable.showDeletedSubmissions') }}
             </span>
           </template>
@@ -87,7 +95,7 @@
           @click="refreshSubmissions"
         >
           <template #label>
-            <span :class="{ 'mr-2': isRTL }">
+            <span :class="{ 'mr-2': isRTL }" :lang="lang">
               {{ $t('trans.submissionsTable.showMySubmissions') }}
             </span>
           </template>
@@ -104,6 +112,7 @@
             hide-details
             class="pb-5"
             :class="{ label: isRTL }"
+            :lang="lang"
           />
         </div>
       </div>
@@ -121,6 +130,7 @@
       v-model="selectedSubmissions"
       :loading-text="$t('trans.submissionsTable.loadingText')"
       :no-data-text="$t('trans.submissionsTable.noDataText')"
+      :lang="lang"
     >
       <template v-slot:[`header.event`]>
         <span v-if="!deletedOnly">
@@ -136,7 +146,7 @@
                   >remove_circle</v-icon
                 >
               </template>
-              <span>{{
+              <span :lang="lang">{{
                 $t('trans.submissionsTable.delSelectedSubmissions')
               }}</span>
             </v-tooltip>
@@ -157,7 +167,7 @@
                   >restore_from_trash</v-icon
                 >
               </template>
-              <span>{{
+              <span :lang="lang">{{
                 $t('trans.submissionsTable.resSelectedSubmissions')
               }}</span>
             </v-tooltip>
@@ -172,11 +182,13 @@
         {{ item.status }}
       </template>
       <template #[`item.lateEntry`]="{ item }">
-        {{
-          item.lateEntry === true
-            ? $t('trans.submissionsTable.yes')
-            : $t('trans.submissionsTable.no')
-        }}
+        <span :lang="lang">
+          {{
+            item.lateEntry === true
+              ? $t('trans.submissionsTable.yes')
+              : $t('trans.submissionsTable.no')
+          }}
+        </span>
       </template>
       <template #[`item.actions`]="{ item }">
         <v-tooltip bottom>
@@ -194,7 +206,9 @@
               </v-btn>
             </router-link>
           </template>
-          <span>{{ $t('trans.submissionsTable.viewSubmission') }}</span>
+          <span :lang="lang">{{
+            $t('trans.submissionsTable.viewSubmission')
+          }}</span>
         </v-tooltip>
       </template>
       <template #[`item.event`]="{ item }">
@@ -215,7 +229,9 @@
                 <v-icon>remove_circle</v-icon>
               </v-btn>
             </template>
-            <span>{{ $t('trans.submissionsTable.deleteSubmission') }}</span>
+            <span :lang="lang">{{
+              $t('trans.submissionsTable.deleteSubmission')
+            }}</span>
           </v-tooltip>
         </span>
         <span v-if="item.deleted">
@@ -235,7 +251,7 @@
                 <v-icon>restore_from_trash</v-icon>
               </v-btn>
             </template>
-            <span>{{ $t('trans.submissionsTable.restore') }}</span>
+            <span :lang="lang">{{ $t('trans.submissionsTable.restore') }}</span>
           </v-tooltip>
         </span>
       </template>
@@ -254,7 +270,7 @@
         {{ singleSubmissionDelete ? singleDeleteMessage : multiDeleteMessage }}
       </template>
       <template #button-text-continue>
-        <span>{{ $t('trans.submissionsTable.delete') }}</span>
+        <span :lang="lang">{{ $t('trans.submissionsTable.delete') }}</span>
       </template>
     </BaseDialog>
     <BaseDialog
@@ -263,16 +279,18 @@
       @close-dialog="showRestoreDialog = false"
       @continue-dialog="restoreSub"
     >
-      <template #title>{{
-        $t('trans.submissionsTable.confirmRestoration')
-      }}</template>
+      <template #title
+        ><span :lang="lang">
+          {{ $t('trans.submissionsTable.confirmRestoration') }}</span
+        ></template
+      >
       <template #text>
         {{
           singleSubmissionRestore ? singleRestoreMessage : multiRestoreMessage
         }}
       </template>
       <template #button-text-continue>
-        <span>{{ $t('trans.submissionsTable.restore') }}</span>
+        <span :lang="lang">{{ $t('trans.submissionsTable.restore') }}</span>
       </template>
     </BaseDialog>
 
@@ -288,10 +306,13 @@
         :preselectedData="PRESELECTED_DATA"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
+        :lang="lang"
       >
-        <template #filter-title>{{
-          $t('trans.submissionsTable.searchTitle')
-        }}</template>
+        <template #filter-title
+          ><span :lang="lang">
+            {{ $t('trans.submissionsTable.searchTitle') }}
+          </span></template
+        >
       </BaseFilter>
     </v-dialog>
   </div>
@@ -329,6 +350,12 @@ export default {
         {
           value: 'event',
         },
+      ],
+      tableFilterIgnore: [
+        { value: 'date' },
+        { value: 'submitter' },
+        { value: 'status' },
+        { value: 'lateEntry' },
       ],
       loading: true,
       restoreItem: {},
@@ -371,6 +398,7 @@ export default {
       'roles',
       'deletedSubmissions',
       'isRTL',
+      'lang',
     ]),
     ...mapGetters('auth', ['user']),
 
@@ -384,62 +412,25 @@ export default {
           align: 'start',
           value: 'confirmationId',
         },
+
+        {
+          text: this.$t('trans.submissionsTable.submissionDate'),
+          align: 'start',
+          value: 'date',
+        },
+
+        {
+          text: this.$t('trans.submissionsTable.submitter'),
+          align: 'start',
+          value: 'submitter',
+        },
+
+        {
+          text: this.$t('trans.submissionsTable.status'),
+          align: 'start',
+          value: 'status',
+        },
       ];
-      if (this.userFormPreferences?.preferences?.columns) {
-        if (this.userFormPreferences.preferences.columns.includes('date')) {
-          headers = [
-            ...headers,
-            {
-              text: this.$t('trans.submissionsTable.submissionDate'),
-              align: 'start',
-              value: 'date',
-            },
-          ];
-        }
-
-        if (
-          this.userFormPreferences.preferences.columns.includes('submitter')
-        ) {
-          headers = [
-            ...headers,
-            {
-              text: this.$t('trans.submissionsTable.submitter'),
-              align: 'start',
-              value: 'submitter',
-            },
-          ];
-        }
-
-        if (this.userFormPreferences.preferences.columns.includes('status')) {
-          headers = [
-            ...headers,
-            {
-              text: this.$t('trans.submissionsTable.status'),
-              align: 'start',
-              value: 'status',
-            },
-          ];
-        }
-      } else {
-        headers = [
-          ...headers,
-          {
-            text: this.$t('trans.submissionsTable.submissionDate'),
-            align: 'start',
-            value: 'date',
-          },
-          {
-            text: this.$t('trans.submissionsTable.submitter'),
-            align: 'start',
-            value: 'submitter',
-          },
-          {
-            text: this.$t('trans.submissionsTable.status'),
-            align: 'start',
-            value: 'status',
-          },
-        ];
-      }
 
       if (this.form && this.form.schedule && this.form.schedule.enabled) {
         //push new header for late submission if Form is setup for scheduling
@@ -475,6 +466,12 @@ export default {
       return headers;
     },
 
+    FILTER_HEADERS() {
+      return [...this.DEFAULT_HEADER].filter(
+        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
+      );
+    },
+
     SELECT_COLUMNS_HEADERS() {
       return [...this.FILTER_HEADERS].concat(
         this.formFields.map((ff) => {
@@ -484,37 +481,22 @@ export default {
     },
 
     HEADERS() {
-      let headers = [...this.DEFAULT_HEADER];
+      let headers = this.DEFAULT_HEADER;
+      if (this.USER_PREFERENCES.length > 0) {
+        headers = [...this.DEFAULT_HEADER].filter(
+          (h) => !this.tableFilterIgnore.some((fd) => fd.value === h.value)
+        );
 
-      if (headers.length > 1) {
-        headers.splice(1, 0, ...this.USER_PREFERENCES);
-      } else {
-        headers = headers.concat(this.USER_PREFERENCES);
+        headers.splice(headers.length - 2, 0, ...this.USER_PREFERENCES);
       }
-      return headers.filter(
-        (item, idx, inputArray) =>
-          inputArray.findIndex((arrayItem) => arrayItem.value === item.value) ==
-          idx
-      );
+
+      return headers;
     },
 
-    FILTER_HEADERS() {
-      return [...this.DEFAULT_HEADER].filter(
-        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
-      );
-    },
     PRESELECTED_DATA() {
-      let headers = [...this.FILTER_HEADERS];
-      if (headers.length > 1) {
-        headers.splice(1, 0, ...this.USER_PREFERENCES);
-      } else {
-        headers = headers.concat(this.USER_PREFERENCES);
-      }
-      return headers.filter(
-        (item, idx, inputArray) =>
-          inputArray.findIndex((arrayItem) => arrayItem.value === item.value) ==
-          idx
-      );
+      return this.USER_PREFERENCES.length === 0
+        ? this.FILTER_HEADERS
+        : this.USER_PREFERENCES;
     },
     USER_PREFERENCES() {
       let preselectedData = [];
@@ -597,6 +579,15 @@ export default {
       'updateFormPreferencesForCurrentUser',
     ]),
     ...mapActions('notifications', ['addNotification']),
+    onShowColumnDialog() {
+      this.SELECT_COLUMNS_HEADERS.sort(
+        (a, b) =>
+          this.PRESELECTED_DATA.findIndex((x) => x.text === b.text) -
+          this.PRESELECTED_DATA.findIndex((x) => x.text === a.text)
+      );
+
+      this.showColumnsDialog = true;
+    },
 
     async delSub() {
       this.singleSubmissionDelete

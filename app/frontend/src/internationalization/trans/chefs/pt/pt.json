@@ -8,16 +8,12 @@
     "search": "Procurar",
     "manage": "Gerenciar",
     "submissions": "Envios",
-    "formTitle": "Título do Formulário",
+    "formTitle": "Título do formulário",
     "viewForm": "Ver formulário",
     "description": "descrição",
     "Description": "Descrição:",
     "action": "Ações",
     "loadingText": "Carregando, por favor espere"
-  },
-  "preview": {
-    "preview": "Visualização",
-    "previewToolTip": "Isso mostra uma visualização do design e do comportamento da versão do formulário, conforme seus remetentes o verão. Você não pode enviar o formulário desta página."
   },
   "manageLayout": {
     "manageForm": "Gerenciar formulário"
@@ -50,11 +46,12 @@
     "totalVersions": "Versões totais",
     "status": "Status",
     "update": "Atualizar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "eventSubscription": "Assinatura de evento"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Pressione <kbd>enter</kbd> ou <kbd>,</kbd> ou <kbd>espaço</kbd> para adicionar vários endereços de e-mail",
-    "allowMultiDraft": "Permitir upload de <strong> vários rascunhos</strong>",
+    "allowMultiDraft": "Permitir upload <strong>de vários rascunhos</strong>",
     "formTitle": "Título do formulário",
     "formDescription": "Descrição do formulário",
     "formAccess": "Acesso ao formulário",
@@ -127,8 +124,29 @@
     "selectAnOptions": "Selecione pelo menos 1 opção",
     "validInterval": "Este deve ser um intervalo válido.",
     "fieldRequiredAndInterval": "Este campo é obrigatório e deve ser um intervalo.",
-    "dateGrtOpenSubmissnDate": "Repetir até a data deve ser maior que a data de envio aberta",
-    "public": "Público (anônimo)"
+    "dateGrtOpenSubmissnDate": "Repita até que a data seja maior que a data de envio aberto",
+    "public": "Público (anônimo)",
+    "allowEventSubscription": "Permitir assinatura de evento",
+    "eventSubscription": "Assinatura de evento",
+    "validEndpointRequired": "Insira um endpoint válido começando com https://",
+    "validBearerTokenRequired": "Insira um exemplo de token de portador válido: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+  },
+  "subscribeEvent": {
+    "eventType": "Tipo de evento",
+    "endpointUrl": "URL do terminal",
+    "eventSubmission": "Submissão",
+    "eventAssignment": "Assignment",
+    "eventStatusChange": "Mudança de status",
+    "endpointToken": "Token de terminal",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "Salvar",
+    "text": "texto",
+    "password": "senha",
+    "hideSecret": "Ocultar Segredo",
+    "showSecret": "Mostrar Segredo",
+    "key" : "Chave",
+    "saveSettingsErrMsg" : "Ocorreu um erro ao tentar atualizar as configurações deste formulário.",
+    "updateSettingsConsoleErrMsg" : "Erro ao atualizar as configurações do formulário {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "Isenção de responsabilidade",
@@ -267,7 +285,6 @@
     "notificationMsg": "Falha ao obter o usuário do RBAC, consulte o console",
     "notificationConsErr": "Erro ao obter o usuário do RBAC"
   },
-  "fcProactiveHelp": {},
   "baseAuthButton": {
     "logout": "Sair",
     "login": "Conecte-se"
@@ -305,7 +322,10 @@
     "formDesignSaveConsoleErrMsg": "Erro ao atualizar ou criar formulário (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Erro: {error}",
     "collapse": "Colapso",
     "actions": "Ações",
-    "version": "Versão"
+    "version": "Versão",
+    "save": "Salvar",
+    "saving": "salvando",
+    "notSaved": "Não salvo"
   },
   "formViewerMultiUpload": {
     "important": "IMPORTANTE",
@@ -332,12 +352,8 @@
     "fileIsEmpty": "este arquivo está vazio.",
     "download": "Download"
   },
-  "bcGovAlertBanner": {
-    "defaultErrMsg": "Erro: algo deu errado",
-    "error": "erro"
-  },
   "formDisclaimer": {
-    "disclaimerAndStatement": "Isenção de responsabilidade e declaração de responsabilidade para Designers de formulários:",
+    "disclaimerAndStatement": "Isenção de responsabilidade e declaração de responsabilidade para Form Designers:",
     "privacyLaw": "É sua responsabilidade cumprir as leis de privacidade que regem a coleta, uso e divulgação de informações de identificação pessoal.",
     "disclosure": "O acesso a esta ferramenta de criação de formulários não concede inerentemente permissão para coletar, usar ou divulgar qualquer informação de identificação pessoal.",
     "consent": "É sua responsabilidade obter consentimento para coletar informações conforme exigido por lei.",
@@ -369,7 +385,7 @@
     "resSelectedSubmissions": "Restaurar envios selecionados",
     "yes": "SIM",
     "no": "NÃO",
-    "viewSubmission": "Ver submissão",
+    "viewSubmission": "Ver Envio",
     "deleteSubmission": "Excluir Envio",
     "restore": "Restaurar",
     "confirmDeletion": "Confirmar exclusão",
@@ -392,7 +408,7 @@
   },
   "auditHistory": {
     "viewEditHistory": "Ver Histórico de Edição",
-    "editHistory": "Editar histórico",
+    "editHistory": "Editar Histórico",
     "auditLogMsg": "Este é um log de auditoria de quem fez alterações neste envio após o envio original.",
     "loadingText": "Carregando, por favor espere",
     "close": "Fechar",
@@ -470,9 +486,9 @@
     "multiDraftUploadSuccess": "O upload de vários rascunhos foi bem-sucedido!",
     "failedResSubmissn": "Falha na resposta do endpoint de envio. Código de resposta: {status}",
     "errSubmittingForm": "Ocorreu um erro ao enviar este formulário",
-    "errorSavingFile": "Erro ao salvar arquivos. Nome do arquivo: {fileName}. Erro: {erro}",
+    "errorSavingFile": "Erro ao salvar arquivos. Nome do arquivo: {fileName}. Erro: {error}",
     "submittingDraftErrMsg": "Ocorreu um erro ao salvar um rascunho",
-    "submittingDraftConsErrMsg": "Erro ao salvar rascunho. SubmissãoId: {submissãoId}. Erro: {erro}"
+    "submittingDraftConsErrMsg": "Erro ao salvar rascunho. SubmissãoId: {submissionId}. Erro: {error}"
   },
   "notesPanel": {
     "addNewNote": "Adicionar nova nota",
@@ -538,7 +554,7 @@
     "csv": "CSV",
     "formVersion": "Versão do formulário",
     "versionIsRequired": "A versão é necessária.",
-    "dataFields": "Campos de Dados",
+    "dataFields": "Campos de dados",
     "searchFields": "Campos de pesquisa",
     "selectedForExports": "selecionado para exportação",
     "submissionDate": "Data de submissão",
@@ -548,7 +564,7 @@
     "from": "De",
     "to": "Para",
     "CSVFormat": "Formato CSV",
-    "multiRowPerSubmissionA": "1 - Múltiplas linhas por submissão com espaços de identificação",
+    "multiRowPerSubmissionA": "1 - Várias linhas por envio com espaços de recuo",
     "multiRowPerSubmissionB": "2 - Múltiplas linhas por envio",
     "singleRowPerSubmission": "3 - Linha única por envio",
     "unformatted": "4 - Não formatado",
@@ -582,7 +598,7 @@
     "learnMoreLinkTxt": "Saiba mais O campo Link não pode ficar vazio.",
     "largeImgTxt": "Imagem grande. O tamanho da imagem não pode ser maior que 0,5 MB",
     "componentName": "Nome do componente:",
-    "learnMoreLink": "Link Saiba Mais:",
+    "learnMoreLink": "Link Saiba mais:",
     "clickToEnableLink": "Clique para ativar o link",
     "clickToDisableLink": "Clique para desativar o link",
     "imageUpload": "Carregamento de imagem:",
@@ -593,13 +609,17 @@
   "proactiveHelpPreviewDialog": {
     "learnMore": "Saber mais"
   },
+  "preview": {
+    "preview": "Visualização",
+    "previewToolTip": "Isso mostra uma visualização do design e do comportamento da versão do formulário, conforme seus remetentes o verão. Você não pode enviar o formulário desta página."
+  },
   "generalLayout": {
     "loadingText": "Carregando, por favor espere",
     "preview": "VISUALIZAR",
     "published": "PUBLICADOS",
     "unpublished": "NÃO PUBLICADO",
     "edit": "EDITAR",
-    "formTitle": "Título do Formulário",
+    "formTitle": "Título do formulário",
     "actions": "Ações"
   },
   "formSubmission": {
@@ -676,25 +696,25 @@
     "getUsersSubmissionsConsoleErrMsg": "Erro ao carregar os dados de envio do formulário {submissionId}: {error}",
     "multiDraftUploadSuccess": "O upload de vários rascunhos foi bem-sucedido!",
     "readVersionErrMsg": "Nenhum esquema em resposta. VersionId: {versionId}",
-    "readDraftErrMsg": "Nenhum esquema em resposta. RascunhoId: {rascunhoId}",
+    "readDraftErrMsg": "Nenhum esquema em resposta. RascunhoId: {draftId}",
     "alertRouteMsg": "O proprietário do formulário não publicou o formulário e ele não está disponível para envio.",
     "fecthingFormErrMsg": "Ocorreu um erro ao buscar este formulário",
     "fecthingFormConsoleErrMsg": "Erro ao carregar esquema de formulário {versionId}: {error}",
     "savingDraftErrMsg": "Ocorreu um erro ao salvar um rascunho",
-    "savingDraftConsoleErrMsg": "Erro ao salvar rascunho. SubmissãoId: {submissãoId}. Erro: {erro}",
+    "savingDraftConsoleErrMsg": "Erro ao salvar rascunho. SubmissãoId: {submissionId}. Erro: {error}",
     "submissionsPreviewAlert": "Envio desativado durante a visualização do formulário",
     "submissionsSubmitErrMsg": "Erro ao enviar o formulário: {errors}",
     "sendSubmissionErrMsg": "Falha na resposta do endpoint de envio. Código de resposta: {status}",
     "errMsg": "Ocorreu um erro ao enviar este formulário",
-    "customEventAlert": "Eventos de botão personalizados ainda não são suportados. Tipo de evento: {evento}",
+    "customEventAlert": "Eventos de botão personalizados ainda não são suportados. Tipo de evento: {event}",
     "formLoading": "Aguarde enquanto o formulário está carregando!!!",
     "yes": "Sim",
     "no": "Não",
     "failedResSubmissn": "Falha na resposta do endpoint de envio. Código de resposta: {status}",
     "errSubmittingForm": "Ocorreu um erro ao enviar este formulário",
-    "errorSavingFile": "Erro ao salvar arquivos. Nome do arquivo: {fileNname}. Erro: {erro}",
+    "errorSavingFile": "Erro ao salvar arquivos. Nome do arquivo: {fileName}. Erro: {error}",
     "submittingDraftErrMsg": "Ocorreu um erro ao salvar um rascunho",
-    "submittingDraftConsErrMsg": "Erro ao salvar rascunho. SubmissionId: {submissionId}. Erro: {erro}",
+    "submittingDraftConsErrMsg": "Erro ao salvar rascunho. SubmissãoId: {submissionId}. Erro: {error}",
     "formDraftAccessErrMsg": "O envio solicitado já foi enviado, redirecionando para a página Exibir"
   },
   "bCGovFooter": {
@@ -760,40 +780,33 @@
   "baseFilter": {
     "cancel": "Cancelar",
     "columnName": "Nome da coluna",
-    "exampleText": "Texto de exemplo",
-    "exampleText2": "Texto de exemplo 2",
+    "exampleText": "Texto de Exemplo",
+    "exampleText2": "Texto de Exemplo 2",
     "filterPlaceholderTxt": "Filtrar texto de espaço reservado",
     "filter": "Filtro",
-    "value": "valor"
+    "value": "valor",
+    "resetColumns": "Redefinir colunas"
   },
   "formViewerActions": {
     "viewAllSubmissions": "Ver todos os envios",
     "saveAsADraft": "Salve como um rascunho",
     "editThisDraft": "Editar este rascunho",
     "switchSingleSubmssn": "Alternar para envio único",
-    "switchMultiSubmssn": "Alternar para envio único"
+    "switchMultiSubmssn": "Alternar para envio múltiplo"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Link copiado para a área de transferência",
     "copyToClipboard": "Copiar para área de transferência",
     "errCopyToClipboard": "Erro ao tentar copiar para a área de transferência."
   },
-  "admin": {
-    "root": {
-      "admin": "Administrador"
-    }
-  },
-  "user": {
-    "root": {
-      "myForms": "MEUS FORMULÁRIOS",
-      "history": "HISTÓRIA",
-      "user": "Do utilizador"
-    }
-  },
   "sucess": {
     "sucessFormSubmissn": "Seu formulário foi submetido com sucesso",
     "keepRecord": "Se você deseja manter um registro desta submissão, você pode manter o seguinte",
     "confirmationId": "ID de confirmação"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Erro: algo deu errado",
+    "error": "erro"
   },
   "permissionUtils": {
     "formNotAvailable": "O formulário está indisponível no momento. Isso pode ocorrer devido a um link incorreto ou o formulário pode ter sido excluído pelo proprietário.",
@@ -802,6 +815,29 @@
     "loadingForm": "Erro ao carregar {options}: {error}",
     "idpHintMsg": "Este formulário requer autenticação {idpHint}. Faça login novamente e tente novamente.",
     "formIdpMissMatch": "Incompatibilidade de IDP de formulário. O formulário requer {idpHint}, mas o usuário tem {userIdp}."
+  },
+  "download": {
+    "chefsDataExport": "Exportação de Dados CHEFS",
+    "preparingForDownloading": "Preparando para download...",
+    "downloadInfoA": "Se o seu arquivo não baixar automaticamente",
+    "downloadInfoB": "Clique Aqui Para Tentar Novamente"
+  },
+  "history": {
+    "submissnHistory": "Seu histórico de envios (TBD)"
+  },
+  "error": {
+    "logout": "Sair",
+    "somethingWentWrong": "Erro: Algo deu errado... :("
+  },
+  "login": {
+    "authenticateWith": "Autenticar com:",
+    "alreadyLoggedIn": "já logado",
+    "home": "Lar",
+    "about": "Sobre"
+  },
+  "notFound": {
+    "about": "Sobre",
+    "pageNotFound": "404 Página Não Encontrada. :("
   },
   "store": {
     "admin": {
@@ -842,7 +878,7 @@
       "getUserFormRolesErrmsg": "Ocorreu um erro ao buscar seus dados de usuário para este formulário.",
       "getUserFormRolesConsErrmsg": "Erro ao obter dados do usuário usando formID {formId}: {error}",
       "updCurrUserFormPrefErrMsg": "Ocorreu um erro ao salvar suas preferências para este formulário.",
-      "updCurrUserFormPrefConsErrMsg": "Erro ao atualizar as preferências de formulário do usuário usando formID {formId} e preferências {preferências}: {error}",
+      "updCurrUserFormPrefConsErrMsg": "Erro ao atualizar as preferências de formulário do usuário usando formID {formId} e preferências {preferences}: {error}",
       "getCurrUserFormPrefErrMsg": "Ocorreu um erro ao buscar suas preferências para este formulário.",
       "getCurrUserFormPrefConsErrMsg": "Erro ao obter preferências de formulário do usuário usando formID {formId}: {error}",
       "delCurrformNotiMsg": "O formulário {name} foi excluído com sucesso.",
@@ -856,7 +892,7 @@
       "fetchFormFieldsErrMsg": "Ocorreu um erro ao buscar a lista de campos para este formulário.",
       "fetchFormFieldsConsErrMsg": "Erro ao obter o formulário {formId}: {error}",
       "publishDraftErrMsg": "Ocorreu um erro durante a publicação.",
-      "publishDraftConsErrMsg": "Erro ao publicar ${draftId}: ${error}",
+      "publishDraftConsErrMsg": "Erro ao publicar {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "Erro em toggleVersionPublish {versionId} {publish}: {error}",
       "updateFormErrMsg": "Ocorreu um erro ao atualizar as configurações deste formulário.",
       "updateFormConsErrMsg": "Erro ao atualizar o formulário {id}: {error}",
@@ -875,7 +911,7 @@
       "fecthSubmissnUsersErrMsg": "Ocorreu um erro ao buscar o e-mail do destinatário para este envio.",
       "fecthSubmissnUsersConsErrMsg": "Erro ao obter o e-mail do destinatário para envio {formSubmissionId}: {error}",
       "fetchSubmissnErrMsg": "Ocorreu um erro ao buscar este envio.",
-      "fetchSubmissnConsErrMsg": "Erro ao obter o envio {submissionId}: ${error}",
+      "fetchSubmissnConsErrMsg": "Erro ao obter o envio {submissionId}: {error}",
       "fetchFormCSVExptFieldsErrMsg": "Ocorreu um erro ao buscar a lista de campos para este formulário.",
       "fetchFormCSVExptFieldsConsErrMsg": "Erro ao obter o formulário {formId}: {error}",
       "fetchSubmissnsErrMsg": "Ocorreu um erro ao buscar envios para este formulário.",
@@ -891,11 +927,34 @@
       "readApiKeyErrMsg": "Ocorreu um erro ao tentar buscar a chave de API.",
       "readApiKeyConsErrMsg": "Erro ao obter chave de API para o formulário {formId}: {error}.",
       "getFCPHImageUrlErrMsg": "Ocorreu um erro ao obter o URL da imagem",
-      "getFCPHImageUrlConsErrMsg": "Erro ao obter o URL da imagem: {error}",
+      "getFCPHImageUrlConsErrMsg": "Erro ao obter URL da imagem: {error}",
       "listFCPHErrMsg": "Ocorreu um erro ao buscar os componentes do construtor de formulários",
       "listFCPHConsErrMsg": "Erro ao obter os componentes do construtor de formulário: {error}",
       "downloadFileErrMsg": "Ocorreu um erro durante o download do arquivo",
-      "downloadFileConsErrMsg": "Erro ao baixar o arquivo: erro"
+      "downloadFileConsErrMsg": "Erro ao baixar o arquivo: erro",
+      "readSubscriptionSettingsErrMsg": "Ocorreu um erro ao tentar buscar as configurações de assinatura.",
+      "readSubscriptionSettingsConsErrMsg": "Erro ao obter configurações de assinatura para o formulário {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "As configurações de inscrição para este formulário foram salvas.",
+      "saveSubscriptionSettingsErrMsg": "Ocorreu um erro ao tentar salvar as configurações de assinatura.",
+      "saveSubscriptionSettingsConsErrMsg": "Erro ao salvar as configurações de assinatura para o formulário {formId}: {error}"
+    }
+  },
+  "admin": {
+    "root": {
+      "admin": "Administrador"
+    },
+    "form": {
+      "administerForm": "Administrar formulário"
+    },
+    "user": {
+      "administerUser": "Administrar usuário"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "MEUS FORMULÁRIOS",
+      "history": "HISTÓRIA",
+      "user": "Do utilizador"
     }
   }
 }

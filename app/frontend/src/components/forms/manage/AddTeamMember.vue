@@ -49,7 +49,8 @@
                   class="px-2"
                   :class="{ 'text-right': isRTL }"
                   v-html="$t('trans.addTeamMember.cantFindChefsUsers')"
-                ></div>
+                  :lang="lang"
+                />
               </template>
               <!-- selected user -->
               <template #selection="data">
@@ -117,7 +118,7 @@
               :loading="isLoading"
               @click="save"
             >
-              <span>{{ $t('trans.addTeamMember.add') }}</span>
+              <span :lang="lang">{{ $t('trans.addTeamMember.add') }}</span>
             </v-btn>
             <v-btn
               outlined
@@ -127,13 +128,13 @@
                 showError = false;
               "
             >
-              <span>{{ $t('trans.addTeamMember.cancel') }}</span>
+              <span :lang="lang">{{ $t('trans.addTeamMember.cancel') }}</span>
             </v-btn>
           </v-col>
         </v-row>
         <v-row v-if="showError" class="px-4 my-0 py-0">
           <v-col class="text-left">
-            <span class="red--text">{{
+            <span class="red--text" :lang="lang">{{
               $t('trans.addTeamMember.mustSelectAUser')
             }}</span>
           </v-col>
@@ -155,7 +156,7 @@
             <v-icon>person_add</v-icon>
           </v-btn>
         </template>
-        <span>{{ $t('trans.addTeamMember.addNewMember') }}</span>
+        <span :lang="lang">{{ $t('trans.addTeamMember.addNewMember') }}</span>
       </v-tooltip>
     </span>
   </span>
@@ -209,8 +210,9 @@ export default {
     },
   },
   computed: {
-    ...mapFields('form', ['form.idps', 'isRTL']),
+    ...mapFields('form', ['form.idps']),
     ...mapGetters('auth', ['identityProvider']),
+    ...mapGetters('form', ['isRTL', 'lang']),
     ID_PROVIDERS() {
       return IdentityProviders;
     },

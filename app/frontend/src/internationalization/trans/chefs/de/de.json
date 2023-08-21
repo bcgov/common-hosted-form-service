@@ -15,10 +15,6 @@
     "action": "Aktionen",
     "loadingText": "Laden, bitte warten"
   },
-  "preview": {
-    "preview": "Vorschau",
-    "previewToolTip": "Dies zeigt eine Vorschau des Designs und Verhaltens der Formularversion, wie es Ihren Einsendern angezeigt wird. Sie können das Formular nicht von dieser Seite aus senden."
-  },
   "manageLayout": {
     "manageForm": "Formular verwalten"
   },
@@ -50,11 +46,12 @@
     "totalVersions": "Gesamtversionen",
     "status": "Status",
     "update": "Aktualisieren",
-    "cancel": "Stornieren"
+    "cancel": "Stornieren",
+    "eventSubscription" : "Ereignisabonnement"
   },
   "formSettings": {
-    "pressToAddMultiEmail": "Drücken Sie die <kbd>Eingabetaste</kbd> oder <kbd></kbd> oder die <kbd>Leertaste</kbd>, um mehrere E-Mail-Adressen hinzuzufügen",
-    "allowMultiDraft": "Erlauben Sie das Hochladen von <strong>mehreren Entwürfen</strong>",
+    "pressToAddMultiEmail": "Drücken Sie <kbd>die Eingabetaste</kbd> oder <kbd>die Leertaste</kbd> <kbd>,</kbd> um mehrere E-Mail-Adressen hinzuzufügen",
+    "allowMultiDraft": "Erlauben Sie das Hochladen <strong>mehrerer Entwürfe</strong>",
     "formTitle": "Formulartitel",
     "formDescription": "Formularbeschreibung",
     "formAccess": "Formularzugriff",
@@ -84,7 +81,7 @@
     "emailNotificatnToTeamToolTip": "Senden Sie eine Benachrichtigung an Ihre angegebene E-Mail-Adresse, wenn ein Benutzer dieses Formular absendet",
     "notificationEmailAddrs": "E-Mail-Adressen für Benachrichtigungen",
     "addMoreValidEmailAddrs": "Fügen Sie eine oder mehrere gültige E-Mail-Adressen hinzu",
-    "formScheduleSettings": "Formularzeitplaneinstellungen",
+    "formScheduleSettings": "Formularplaneinstellungen",
     "opensubmissions": "Offene Einreichungen",
     "submissionsDeadline": "Wie lange möchten Sie Einsendungen erhalten?",
     "keepSubmissnOpenTilUnplished": "Offen bleiben, bis die Veröffentlichung manuell aufgehoben wird",
@@ -128,11 +125,32 @@
     "validInterval": "Dies sollte ein gültiges Intervall sein.",
     "fieldRequiredAndInterval": "Dieses Feld ist erforderlich und sollte ein Intervall sein.",
     "dateGrtOpenSubmissnDate": "Das Datum „Wiederholen bis“ sollte größer sein als das Datum der offenen Einreichung",
-    "public": "Öffentlich (anonym)"
+    "public": "Öffentlich (anonym)",
+    "allowEventSubscription": "Ereignisabonnement zulassen",
+    "eventSubscription": "Ereignisabonnement",
+    "validEndpointRequired": "Bitte geben Sie einen gültigen Endpunkt ein, beginnend mit https://",
+    "validBearerTokenRequired": "Bitte geben Sie ein gültiges Token ein. Beispiel: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+  },
+  "subscribeEvent": {
+    "eventType": "Ereignistyp",
+    "endpointUrl": "Endpunkt-URL",
+    "eventSubmission": "Eingabe",
+    "eventAssignment": "Zuordnung",
+    "eventStatusChange": "Statusänderung",
+    "endpointToken": "Endpunkttoken",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "Speichern",
+    "text": "Text",
+    "password": "Passwort",
+    "hideSecret": "Geheimnis verbergen",
+    "showSecret": "Geheimnis anzeigen",
+    "key" : "Taste",
+    "saveSettingsErrMsg" : "Beim Versuch, die Einstellungen für dieses Formular zu aktualisieren, ist ein Fehler aufgetreten.",
+    "updateSettingsConsoleErrMsg" : "Fehler beim Aktualisieren der Einstellungen für das Formular {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "Haftungsausschluss",
-    "infoA": "Stellen Sie sicher, dass Ihr API-Schlüsselgeheimnis an einem sicheren Ort (d. h. Schlüsseltresor) gespeichert wird.",
+    "infoA": "Stellen Sie sicher, dass Ihr API-Schlüsselgeheimnis an einem sicheren Ort (d. h. im Schlüsseltresor) gespeichert wird.",
     "infoB": "Ihr API-Schlüssel gewährt uneingeschränkten Zugriff auf Ihr Formular. Geben Sie Ihren API-Schlüssel nicht an Dritte weiter.",
     "infoC": "Der API-Schlüssel sollte NUR für automatisierte Systeminteraktionen verwendet werden. Verwenden Sie Ihren API-Schlüssel nicht für den benutzerbasierten Zugriff",
     "deleteKey": "Schlüssel löschen",
@@ -166,7 +184,7 @@
     "exportDesign": "Design exportieren",
     "infoC": "Bitte veröffentlichen oder löschen Sie Ihre neueste Entwurfsversion, bevor Sie mit einer neuen Version beginnen.",
     "deleteVersion": "Version löschen",
-    "draftAlreadyExists": "Der Entwurf liegt bereits vor",
+    "draftAlreadyExists": "Entwurf existiert bereits",
     "infoD": "Bitte bearbeiten, veröffentlichen oder löschen Sie den vorhandenen Entwurf, bevor Sie mit einem neuen Entwurf beginnen.",
     "publishVersion": "Version veröffentlichen",
     "unpublishVersion": "Veröffentlichung der Version rückgängig machen",
@@ -267,7 +285,6 @@
     "notificationMsg": "Benutzer konnte nicht von RBAC abgerufen werden, siehe Konsole",
     "notificationConsErr": "Fehler beim Abrufen des Benutzers von RBAC"
   },
-  "fcProactiveHelp": {},
   "baseAuthButton": {
     "logout": "Ausloggen",
     "login": "Anmeldung"
@@ -305,7 +322,10 @@
     "formDesignSaveConsoleErrMsg": "Fehler beim Aktualisieren oder Erstellen des Formulars (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Fehler: {error}",
     "collapse": "Zusammenbruch",
     "actions": "Aktionen",
-    "version": "Ausführung"
+    "version": "Ausführung",
+    "save": "Speichern",
+    "saving": "Sparen",
+    "notSaved": "Nicht gespeichert"
   },
   "formViewerMultiUpload": {
     "important": "WICHTIG",
@@ -421,7 +441,7 @@
     "email": "Email",
     "removeUserWarningMsg1": "Sind Sie sicher, dass Sie es entfernen möchten?",
     "removeUserWarningMsg2": "Sie haben keine Berechtigungen mehr für diese Übermittlung.",
-    "userExistInListMsg": "Benutzer {Benutzername} ist bereits in der Liste der Teammitglieder.",
+    "userExistInListMsg": "Benutzer {username} ist bereits in der Liste der Teammitglieder.",
     "getSubmissionUsersErr": "Beim Versuch, Benutzer für diese Übermittlung abzurufen, ist ein Fehler aufgetreten.",
     "getSubmissionUsersConsoleErr": "Fehler beim Abrufen von Benutzern für {submissionId}: {error}",
     "sentInviteEmailTo": "Einladungs-E-Mail an gesendet",
@@ -544,7 +564,7 @@
     "from": "Aus",
     "to": "Zu",
     "CSVFormat": "CSV-Format",
-    "multiRowPerSubmissionA": "1 – Mehrere Zeilen pro Einreichung mit Identifikationsräumen",
+    "multiRowPerSubmissionA": "1 – Mehrere Zeilen pro Einreichung mit Einrückungsräumen",
     "multiRowPerSubmissionB": "2 – Mehrere Zeilen pro Einreichung",
     "singleRowPerSubmission": "3 – Eine Zeile pro Einreichung",
     "unformatted": "4 – Unformatiert",
@@ -588,6 +608,10 @@
   },
   "proactiveHelpPreviewDialog": {
     "learnMore": "Erfahren Sie mehr"
+  },
+  "preview": {
+    "preview": "Vorschau",
+    "previewToolTip": "Dies zeigt eine Vorschau des Designs und Verhaltens der Formularversion, wie es Ihren Einsendern angezeigt wird. Sie können das Formular nicht von dieser Seite aus senden."
   },
   "generalLayout": {
     "loadingText": "Laden, bitte warten",
@@ -657,10 +681,6 @@
     "saving": "Sparen",
     "notSaved": "Nicht gespeichert"
   },
-  "bcGovAlertBanner": {
-    "defaultErrMsg": "Fehler: Etwas ist schief gelaufen",
-    "error": "Fehler"
-  },
   "formViewer": {
     "lateFormSubmissions": "Die Frist zum Einreichen des Formulars ist abgelaufen! Sie können dennoch eine verspätete Einreichung erstellen, indem Sie auf die Schaltfläche unten klicken.",
     "createLateSubmission": "Erstellen Sie eine verspätete Einreichung",
@@ -670,13 +690,13 @@
     "submitFormWarningMsg": "Sind Sie sicher, dass Sie Ihr Formular absenden möchten?",
     "submit": "Einreichen",
     "wantToSaveDraft": "Möchten Sie den Entwurf speichern?",
-    "version": "Ausführung: {version}",
+    "version": "Version: {version}",
     "formScheduleExpireMessage": "Die Einreichung des Formulars ist nicht möglich, da die geplante Einreichungsfrist abgelaufen ist.",
     "getUsersSubmissionsErrMsg": "Beim Abrufen der Übermittlung für dieses Formular ist ein Fehler aufgetreten",
     "getUsersSubmissionsConsoleErrMsg": "Fehler beim Laden der Formularübermittlungsdaten {submissionId}: {error}",
-    "multiDraftUploadSuccess": "Ihr Upload mehrerer Entwürfe war erfolgreich!",
+    "multiDraftUploadSuccess": "Ihr mehrfacher Entwurfs-Upload war erfolgreich!",
     "readVersionErrMsg": "Kein Schema als Antwort. Versions-ID: {versionId}",
-    "readDraftErrMsg": "Kein Schema als Antwort. DraftId: {draftId}",
+    "readDraftErrMsg": "Kein Schema als Antwort. draftId: {draftId}",
     "alertRouteMsg": "Der Formulareigentümer hat das Formular nicht veröffentlicht und es ist nicht für Übermittlungen verfügbar.",
     "fecthingFormErrMsg": "Beim Abrufen dieses Formulars ist ein Fehler aufgetreten",
     "fecthingFormConsoleErrMsg": "Fehler beim Laden des Formularschemas {versionId}: {error}",
@@ -692,7 +712,7 @@
     "no": "NEIN",
     "failedResSubmissn": "Fehlgeschlagene Antwort vom Übermittlungsendpunkt. Antwortcode: {status}",
     "errSubmittingForm": "Beim Absenden dieses Formulars ist ein Fehler aufgetreten",
-    "errorSavingFile": "Fehler beim Speichern der Dateien. Dateiname: {fileNname}. Fehler: {error}",
+    "errorSavingFile": "Fehler beim Speichern der Dateien. Dateiname: {fileName}. Fehler: {error}",
     "submittingDraftErrMsg": "Beim Speichern eines Entwurfs ist ein Fehler aufgetreten",
     "submittingDraftConsErrMsg": "Fehler beim Speichern des Entwurfs. Einreichungs-ID: {submissionId}. Fehler: {error}",
     "formDraftAccessErrMsg": "Die angeforderte Übermittlung wurde bereits übermittelt und wird zur Ansichtsseite weitergeleitet"
@@ -764,44 +784,60 @@
     "exampleText2": "Beispieltext 2",
     "filterPlaceholderTxt": "Platzhaltertext filtern",
     "filter": "Filter",
-    "value": "Wert"
+    "value": "Wert",
+    "resetColumns": "Spalten zurücksetzen"
   },
   "formViewerActions": {
     "viewAllSubmissions": "Alle Einsendungen anzeigen",
     "saveAsADraft": "Als einen Entwurf sichern",
     "editThisDraft": "Bearbeiten Sie diesen Entwurf",
     "switchSingleSubmssn": "Wechseln Sie zur Einzeleinreichung",
-    "switchMultiSubmssn": "Wechseln Sie zur Einzeleinreichung"
+    "switchMultiSubmssn": "Wechseln Sie zu Mehrfacheinreichung"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Link in die Zwischenablage kopiert",
     "copyToClipboard": "In die Zwischenablage kopieren",
     "errCopyToClipboard": "Fehler beim Versuch, in die Zwischenablage zu kopieren."
   },
-  "admin": {
-    "root": {
-      "admin": "Administrator"
-    }
-  },
-  "user": {
-    "root": {
-      "myForms": "Benutzer",
-      "history": "GESCHICHTE",
-      "user": "Benutzer"
-    }
-  },
   "sucess": {
     "sucessFormSubmissn": "Ihr Formular wurde erfolgreich übermittelt",
     "keepRecord": "Wenn Sie diese Einreichung protokollieren möchten, können Sie Folgendes aufbewahren",
     "confirmationId": "Bestätigungs-ID"
   },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Fehler: Etwas ist schief gelaufen",
+    "error": "Fehler"
+  },
   "permissionUtils": {
     "formNotAvailable": "Das Formular ist derzeit nicht verfügbar. Dies kann an einem falschen Link liegen oder das Formular wurde vom Eigentümer gelöscht.",
     "missingFormIdAndSubmssId": "Bei den Optionen fehlen sowohl die Form-ID als auch die Einreichungs-ID",
     "loadingFormErrMsg": "Beim Laden dieses Formulars ist ein Fehler aufgetreten.",
-    "loadingForm": "Fehler beim Laden von {Optionen}: {Fehler}",
+    "loadingForm": "Fehler beim Laden von {options}: {error}",
     "idpHintMsg": "Dieses Formular erfordert eine {idpHint}-Authentifizierung. Bitte melden Sie sich erneut an und versuchen Sie es erneut.",
     "formIdpMissMatch": "Formular-IDP-Konflikt. Das Formular erfordert {idpHint}, aber der Benutzer hat {userIdp}."
+  },
+  "download": {
+    "chefsDataExport": "CHEFS-Datenexport",
+    "preparingForDownloading": "Download wird vorbereitet...",
+    "downloadInfoA": "Wenn Ihre Datei nicht automatisch heruntergeladen wird",
+    "downloadInfoB": "Klicken Sie hier, um es erneut zu versuchen"
+  },
+  "history": {
+    "submissnHistory": "Ihr Einreichungsverlauf (TBD)"
+  },
+  "error": {
+    "logout": "Ausloggen",
+    "somethingWentWrong": "Fehler: Etwas ist schiefgelaufen... :("
+  },
+  "login": {
+    "authenticateWith": "Authentifizieren mit:",
+    "alreadyLoggedIn": "Bereits angemeldet",
+    "home": "Heim",
+    "about": "Um"
+  },
+  "notFound": {
+    "about": "Um",
+    "pageNotFound": "404 Seite nicht gefunden. :("
   },
   "store": {
     "admin": {
@@ -844,8 +880,8 @@
       "updCurrUserFormPrefErrMsg": "Beim Speichern Ihrer Einstellungen für dieses Formular ist ein Fehler aufgetreten.",
       "updCurrUserFormPrefConsErrMsg": "Fehler beim Aktualisieren der Benutzerformulareinstellungen mithilfe der Formular-ID {formId} und der Einstellungen {preferences}: {error}",
       "getCurrUserFormPrefErrMsg": "Beim Abrufen Ihrer Einstellungen für dieses Formular ist ein Fehler aufgetreten.",
-      "getCurrUserFormPrefConsErrMsg": "Fehler beim Abrufen der Benutzerformulareinstellungen mithilfe der Formular-ID {formId}: {Fehler}",
-      "delCurrformNotiMsg": "Das Formular {name} wurde erfolgreich gelöscht.",
+      "getCurrUserFormPrefConsErrMsg": "Fehler beim Abrufen der Benutzerformulareinstellungen mithilfe der Formular-ID {formId}: {error}",
+      "delCurrformNotiMsg": "Formular {name} wurde erfolgreich gelöscht.",
       "delCurrFormConsErMsg": "Fehler beim Löschen des Formulars {id}: {error}",
       "delDraftErrMsg": "Beim Löschen dieses Entwurfs ist ein Fehler aufgetreten.",
       "delDraftConsErrMsg": "Fehler beim Löschen von {draftId}: {error}",
@@ -856,7 +892,7 @@
       "fetchFormFieldsErrMsg": "Beim Abrufen der Feldliste für dieses Formular ist ein Fehler aufgetreten.",
       "fetchFormFieldsConsErrMsg": "Fehler beim Abrufen des Formulars {formId}: {error}",
       "publishDraftErrMsg": "Beim Veröffentlichen ist ein Fehler aufgetreten.",
-      "publishDraftConsErrMsg": "Fehler beim Veröffentlichen von ${draftId}: ${error}",
+      "publishDraftConsErrMsg": "Fehler beim Veröffentlichen von {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "Fehler in toggleVersionPublish {versionId} {publish}: {error}",
       "updateFormErrMsg": "Beim Aktualisieren der Einstellungen für dieses Formular ist ein Fehler aufgetreten.",
       "updateFormConsErrMsg": "Fehler beim Aktualisieren des Formulars {id}: {error}",
@@ -875,7 +911,7 @@
       "fecthSubmissnUsersErrMsg": "Beim Abrufen der Empfänger-E-Mail für diese Übermittlung ist ein Fehler aufgetreten.",
       "fecthSubmissnUsersConsErrMsg": "Fehler beim Abrufen der Empfänger-E-Mail für die Übermittlung {formSubmissionId}: {error}",
       "fetchSubmissnErrMsg": "Beim Abrufen dieser Übermittlung ist ein Fehler aufgetreten.",
-      "fetchSubmissnConsErrMsg": "Fehler beim Abrufen der Einreichung {submissionId}: ${error}",
+      "fetchSubmissnConsErrMsg": "Fehler beim Abrufen der Einreichung {submissionId}: {error}",
       "fetchFormCSVExptFieldsErrMsg": "Beim Abrufen der Feldliste für dieses Formular ist ein Fehler aufgetreten.",
       "fetchFormCSVExptFieldsConsErrMsg": "Fehler beim Abrufen des Formulars {formId}: {error}",
       "fetchSubmissnsErrMsg": "Beim Abrufen der Übermittlungen für dieses Formular ist ein Fehler aufgetreten.",
@@ -895,7 +931,30 @@
       "listFCPHErrMsg": "Beim Abrufen der Form Builder-Komponenten ist ein Fehler aufgetreten",
       "listFCPHConsErrMsg": "Fehler beim Abrufen der Formular-Builder-Komponenten: {error}",
       "downloadFileErrMsg": "Beim Herunterladen der Datei ist ein Fehler aufgetreten",
-      "downloadFileConsErrMsg": "Fehler beim Herunterladen der Datei: Fehler"
+      "downloadFileConsErrMsg": "Fehler beim Herunterladen der Datei: Fehler",
+      "readSubscriptionSettingsErrMsg": "Beim Versuch, die Abonnementeinstellungen abzurufen, ist ein Fehler aufgetreten.",
+      "readSubscriptionSettingsConsErrMsg": "Fehler beim Abrufen der Abonnementeinstellungen für das Formular {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "Die Abonnementeinstellungen für dieses Formular wurden gespeichert.",
+      "saveSubscriptionSettingsErrMsg": "Beim Versuch, die Abonnementeinstellungen zu speichern, ist ein Fehler aufgetreten.",
+      "saveSubscriptionSettingsConsErrMsg": "Fehler beim Speichern der Abonnementeinstellungen für das Formular {formId}: {error}"
+    }
+  },
+  "admin": {
+    "root": {
+      "admin": "Administrator"
+    },
+    "form": {
+      "administerForm": "Formular verwalten"
+    },
+    "user": {
+      "administerUser": "Benutzer verwalten"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "MEINE FORMEN",
+      "history": "GESCHICHTE",
+      "user": "Benutzer"
     }
   }
 }
