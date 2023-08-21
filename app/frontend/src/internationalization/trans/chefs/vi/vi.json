@@ -144,9 +144,9 @@
     "password": "mật khẩu",
     "hideSecret": "Ẩn bí mật",
     "showSecret": "Hiển thị bí mật",
-    "key" : "Chìa khóa",
-    "saveSettingsErrMsg" : "Đã xảy ra lỗi khi cố cập nhật cài đặt cho biểu mẫu này.",
-    "updateSettingsConsoleErrMsg" : "Lỗi khi cập nhật cài đặt cho biểu mẫu {formId} : {error}"
+    "key": "Chìa khóa",
+    "saveSettingsErrMsg": "Đã xảy ra lỗi khi cố cập nhật cài đặt cho biểu mẫu này.",
+    "updateSettingsConsoleErrMsg": "Lỗi khi cập nhật cài đặt cho biểu mẫu {formId} : {error}"
   },
   "apiKey": {
     "disclaimer": "từ chối trách nhiệm",
@@ -631,7 +631,9 @@
     "confirmationID": "ID xác nhận:",
     "submittedBy": "Gửi bởi:",
     "cancel": "HỦY BỎ",
-    "status": "Trạng thái"
+    "status": "Trạng thái",
+    "updatedAt": "đã sửa đổi",
+    "updatedBy": "sửa đổi bởi"
   },
   "teamManagement": {
     "teamManagement": "quản lý nhóm",

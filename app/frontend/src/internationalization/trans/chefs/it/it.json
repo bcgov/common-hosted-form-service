@@ -144,9 +144,9 @@
     "password": "parola d'ordine",
     "hideSecret": "Nascondi segreto",
     "showSecret": "Mostra Segreto",
-    "key" : "Chiave",
-    "saveSettingsErrMsg" : "Si è verificato un errore durante il tentativo di aggiornare le impostazioni per questo modulo.",
-    "updateSettingsConsoleErrMsg" : "Errore durante l'aggiornamento delle impostazioni per il modulo {formId}: {error}"
+    "key": "Chiave",
+    "saveSettingsErrMsg": "Si è verificato un errore durante il tentativo di aggiornare le impostazioni per questo modulo.",
+    "updateSettingsConsoleErrMsg": "Errore durante l'aggiornamento delle impostazioni per il modulo {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",
@@ -631,7 +631,9 @@
     "confirmationID": "ID di conferma:",
     "submittedBy": "Inviato da:",
     "cancel": "ANNULLA",
-    "status": "Stato"
+    "status": "Stato",
+    "updatedAt": "Modificata",
+    "updatedBy": "Modificato da"
   },
   "teamManagement": {
     "teamManagement": "Gestione della squadra",

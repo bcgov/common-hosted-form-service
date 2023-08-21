@@ -144,9 +144,9 @@
     "password": "비밀번호",
     "hideSecret": "비밀 숨기기",
     "showSecret": "비밀 표시",
-    "key" : "열쇠",
-    "saveSettingsErrMsg" : "이 양식에 대한 설정을 업데이트하는 동안 오류가 발생했습니다.",
-    "updateSettingsConsoleErrMsg" : "양식 {formId}에 대한 설정 업데이트 오류: {error}"
+    "key": "열쇠",
+    "saveSettingsErrMsg": "이 양식에 대한 설정을 업데이트하는 동안 오류가 발생했습니다.",
+    "updateSettingsConsoleErrMsg": "양식 {formId}에 대한 설정 업데이트 오류: {error}"
   },
   "apiKey": {
     "disclaimer": "부인 성명",
@@ -631,7 +631,9 @@
     "confirmationID": "확인 ID:",
     "submittedBy": "에 의해 제출 된:",
     "cancel": "취소",
-    "status": "상태"
+    "status": "상태",
+    "updatedAt": "수정",
+    "updatedBy": "수정자"
   },
   "teamManagement": {
     "teamManagement": "팀 관리",

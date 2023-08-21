@@ -257,6 +257,14 @@ const service = {
 
     if (params.fields && params.fields.length) {
       let fields = [];
+      if (params.fields.includes('updatedAt')) {
+        selection.push('updatedAt');
+      }
+      if (params.fields.includes('updatedBy')) {
+        selection.push('updatedBy');
+      }
+      // remove updatedAt and updatedBy from custom select field so it won get from submission column
+      params.fields = params.fields.filter((f) => f !== 'updatedAt' && f !== 'updatedBy');
       if (Array.isArray(params.fields)) {
         fields = params.fields.flatMap((f) => f.split(',').map((s) => s.trim()));
       } else {

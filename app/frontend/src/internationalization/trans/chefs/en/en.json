@@ -47,7 +47,7 @@
     "status": "Status",
     "update": "Update",
     "cancel": "Cancel",
-    "eventSubscription" : "Event Subscription"
+    "eventSubscription": "Event Subscription"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Press <kbd>enter</kbd> or <kbd>,</kbd> or <kbd>space</kbd> to add multiple email addresses",
@@ -144,9 +144,9 @@
     "password": "password",
     "hideSecret": "Hide Secret",
     "showSecret": "Show Secret",
-    "key" : "Key",
-    "saveSettingsErrMsg" : "An error occurred while attempting to update the settings for this form.",
-    "updateSettingsConsoleErrMsg" : "Error updating settings for form  {formId} : {error}"
+    "key": "Key",
+    "saveSettingsErrMsg": "An error occurred while attempting to update the settings for this form.",
+    "updateSettingsConsoleErrMsg": "Error updating settings for form  {formId} : {error}"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",
@@ -632,7 +632,9 @@
     "confirmationID": "Confirmation ID:",
     "submittedBy": "Submitted By:",
     "cancel": "CANCEL",
-    "status": "Status"
+    "status": "Status",
+    "updatedAt": "Modified",
+    "updatedBy": "Modified By"
   },
   "teamManagement": {
     "teamManagement": "Team Management",
@@ -907,7 +909,6 @@
       "saveSubscriptionSettingsNotifyMsg": "Subscription settings for this form has been saved.",
       "saveSubscriptionSettingsErrMsg": "An error occurred while trying to save subscription settings.",
       "saveSubscriptionSettingsConsErrMsg": "Error saving subscription settings for form {formId}: {error}"
-      
     }
   },
   "permissionUtils": {

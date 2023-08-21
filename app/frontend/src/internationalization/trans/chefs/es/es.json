@@ -47,7 +47,7 @@
     "status": "Estado",
     "update": "Actualizar",
     "cancel": "Cancelar",
-    "eventSubscription" : "Suscripción a eventos"
+    "eventSubscription": "Suscripción a eventos"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Presiona <kbd>enter</kbd> o <kbd>,</kbd> o <kbd>espacio</kbd> para agregar varias direcciones de correo electrónico",
@@ -144,9 +144,9 @@
     "password": "contraseña",
     "hideSecret": "Ocultar secreto",
     "showSecret": "Mostrar secreto",
-    "key" : "Llave",
-    "saveSettingsErrMsg" : "Se produjo un error al intentar actualizar la configuración de este formulario.",
-    "updateSettingsConsoleErrMsg" : "Error al actualizar la configuración del formulario {formId}: {error}"
+    "key": "Llave",
+    "saveSettingsErrMsg": "Se produjo un error al intentar actualizar la configuración de este formulario.",
+    "updateSettingsConsoleErrMsg": "Error al actualizar la configuración del formulario {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "Descargo de responsabilidad",
@@ -631,7 +631,9 @@
     "confirmationID": "Identificación de confirmación:",
     "submittedBy": "Presentado por:",
     "cancel": "CANCELAR",
-    "status": "Estado"
+    "status": "Estado",
+    "updatedAt": "Modificado",
+    "updatedBy": "Modificado por"
   },
   "teamManagement": {
     "teamManagement": "Gestión de equipos",

@@ -144,9 +144,9 @@
     "password": "ਪਾਸਵਰਡ",
     "hideSecret": "ਗੁਪਤ ਲੁਕਾਓ",
     "showSecret": "ਗੁਪਤ ਦਿਖਾਓ",
-    "key" : "ਕੁੰਜੀ",
-    "saveSettingsErrMsg" : "ਇਸ ਫਾਰਮ ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
-    "updateSettingsConsoleErrMsg" : "ਫਾਰਮ {formId} ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
+    "key": "ਕੁੰਜੀ",
+    "saveSettingsErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+    "updateSettingsConsoleErrMsg": "ਫਾਰਮ {formId} ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
   },
   "apiKey": {
     "disclaimer": "ਬੇਦਾਅਵਾ",
@@ -631,7 +631,9 @@
     "confirmationID": "ਪੁਸ਼ਟੀ ID:",
     "submittedBy": "ਦੁਆਰਾ ਦਰਜ:",
     "cancel": "ਰੱਦ ਕਰੋ",
-    "status": "ਸਥਿਤੀ"
+    "status": "ਸਥਿਤੀ",
+    "updatedAt": "ਸੋਧਿਆ ਗਿਆ",
+    "updatedBy": "ਦੁਆਰਾ ਸੋਧਿਆ ਗਿਆ"
   },
   "teamManagement": {
     "teamManagement": "ਟੀਮ ਪ੍ਰਬੰਧਨ",

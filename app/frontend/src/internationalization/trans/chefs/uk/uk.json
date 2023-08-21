@@ -144,9 +144,9 @@
     "password": "пароль",
     "hideSecret": "Приховати секрет",
     "showSecret": "Показати секрет",
-    "key" : "ключ",
-    "saveSettingsErrMsg" : "Під час спроби оновити налаштування цієї форми сталася помилка.",
-    "updateSettingsConsoleErrMsg" : "Помилка оновлення налаштувань для форми {formId}: {error}"
+    "key": "ключ",
+    "saveSettingsErrMsg": "Під час спроби оновити налаштування цієї форми сталася помилка.",
+    "updateSettingsConsoleErrMsg": "Помилка оновлення налаштувань для форми {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "Відмова від відповідальності",
@@ -631,7 +631,9 @@
     "confirmationID": "ID підтвердження:",
     "submittedBy": "Представлений:",
     "cancel": "СКАСУВАТИ",
-    "status": "Статус"
+    "status": "Статус",
+    "updatedAt": "Змінено",
+    "updatedBy": "Змінено"
   },
   "teamManagement": {
     "teamManagement": "Керування командою",
@@ -937,7 +939,6 @@
       "saveSubscriptionSettingsNotifyMsg": "Налаштування підписки на цю форму збережено.",
       "saveSubscriptionSettingsErrMsg": "Під час спроби зберегти налаштування підписки сталася помилка.",
       "saveSubscriptionSettingsConsErrMsg": "Помилка збереження налаштувань підписки для форми {formId}: {error}"
-      
     }
   },
   "admin": {

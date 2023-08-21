@@ -178,6 +178,9 @@
       <template #[`item.date`]="{ item }">
         {{ item.date | formatDateLong }}
       </template>
+      <template #[`item.updatedAt`]="{ item }">
+        {{ item.updatedAt | formatDateLong }}
+      </template>
       <template #[`item.status`]="{ item }">
         {{ item.status }}
       </template>
@@ -472,8 +475,23 @@ export default {
       );
     },
 
+    MODIFY_HEADERS() {
+      return [
+        {
+          text: this.$t('trans.formSubmission.updatedAt'),
+          align: 'start',
+          value: 'updatedAt',
+        },
+        {
+          text: this.$t('trans.formSubmission.updatedBy'),
+          align: 'start',
+          value: 'updatedBy',
+        },
+      ];
+    },
+
     SELECT_COLUMNS_HEADERS() {
-      return [...this.FILTER_HEADERS].concat(
+      return [...this.FILTER_HEADERS, ...this.MODIFY_HEADERS].concat(
         this.formFields.map((ff) => {
           return { text: ff, value: ff, align: 'end' };
         })
@@ -520,6 +538,18 @@ export default {
                 text: this.$t('trans.submissionsTable.status'),
                 align: 'start',
                 value: 'status',
+              };
+            } else if (column === 'updatedAt') {
+              return {
+                text: this.$t('trans.formSubmission.updatedAt'),
+                align: 'start',
+                value: 'updatedAt',
+              };
+            } else if (column === 'updatedBy') {
+              return {
+                text: this.$t('trans.formSubmission.updatedBy'),
+                align: 'start',
+                value: 'updatedBy',
               };
             } else {
               return {
@@ -667,6 +697,8 @@ export default {
               const fields = {
                 confirmationId: s.confirmationId,
                 date: s.createdAt,
+                updatedAt: s.updatedAt,
+                updatedBy: s.updatedBy,
                 formId: s.formId,
                 status: s.formSubmissionStatusCode,
                 submissionId: s.submissionId,

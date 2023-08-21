@@ -22,6 +22,12 @@
             <strong>{{ $t('trans.formSubmission.submittedBy') }}</strong>
             {{ formSubmission.createdBy }}
             <br />
+            <strong>{{ $t('trans.formSubmission.updatedAt') }}:</strong>
+            {{ formSubmission.updatedAt | formatDateLong }}
+            <br />
+            <strong>{{ $t('trans.formSubmission.updatedBy') }}:</strong>
+            {{ formSubmission.updatedBy }}
+            <br />
           </p>
         </div>
 

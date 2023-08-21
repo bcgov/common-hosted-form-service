@@ -144,9 +144,9 @@
     "password": "пароль",
     "hideSecret": "Скрыть секрет",
     "showSecret": "Показать секрет",
-    "key" : "Ключ",
-    "saveSettingsErrMsg" : "Произошла ошибка при попытке обновить настройки этой формы.",
-    "updateSettingsConsoleErrMsg" : "Ошибка при обновлении настроек для формы {formId} : {error}"
+    "key": "Ключ",
+    "saveSettingsErrMsg": "Произошла ошибка при попытке обновить настройки этой формы.",
+    "updateSettingsConsoleErrMsg": "Ошибка при обновлении настроек для формы {formId} : {error}"
   },
   "apiKey": {
     "disclaimer": "Отказ от ответственности",
@@ -631,7 +631,9 @@
     "confirmationID": "Идентификатор подтверждения:",
     "submittedBy": "Представленный:",
     "cancel": "ОТМЕНА",
-    "status": "Положение дел"
+    "status": "Статус",
+    "updatedAt": "Изменено",
+    "updatedBy": "Кем изменено"
   },
   "teamManagement": {
     "teamManagement": "Управление командой",

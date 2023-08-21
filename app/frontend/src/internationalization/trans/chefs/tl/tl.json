@@ -144,9 +144,9 @@
     "password": "password",
     "hideSecret": "Itago ang Lihim",
     "showSecret": "Ipakita ang Lihim",
-    "key" : "Susi",
-    "saveSettingsErrMsg" : "May naganap na error habang sinusubukang i-update ang mga setting para sa form na ito.",
-    "updateSettingsConsoleErrMsg" : "Error sa pag-update ng mga setting para sa form {formId} : {error}"
+    "key": "Susi",
+    "saveSettingsErrMsg": "May naganap na error habang sinusubukang i-update ang mga setting para sa form na ito.",
+    "updateSettingsConsoleErrMsg": "Error sa pag-update ng mga setting para sa form {formId} : {error}"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",
@@ -631,7 +631,9 @@
     "confirmationID": "ID ng Pagkumpirma:",
     "submittedBy": "Ipinasa ni:",
     "cancel": "KANSELAHIN",
-    "status": "Katayuan"
+    "status": "Katayuan",
+    "updatedAt": "Binago",
+    "updatedBy": "Binago ni"
   },
   "teamManagement": {
     "teamManagement": "Pamamahala ng Koponan",
@@ -937,7 +939,6 @@
       "saveSubscriptionSettingsNotifyMsg": "Nai-save na ang mga setting ng subscription para sa form na ito.",
       "saveSubscriptionSettingsErrMsg": "May naganap na error habang sinusubukang i-save ang mga setting ng subscription.",
       "saveSubscriptionSettingsConsErrMsg": "Error sa pag-save ng mga setting ng subscription para sa form {formId}: {error}"
-      
     }
   },
   "admin": {
