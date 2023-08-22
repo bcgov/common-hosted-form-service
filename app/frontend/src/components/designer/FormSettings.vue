@@ -459,8 +459,11 @@
             <template v-slot:no-data>
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title :lang="lang">
-                    {{ $t('trans.formSettings.pressToAddMultiEmail') }}
+                  <v-list-item-title>
+                    <span
+                      v-html="$t('trans.formSettings.pressToAddMultiEmail')"
+                      :lang="lang"
+                    />
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
