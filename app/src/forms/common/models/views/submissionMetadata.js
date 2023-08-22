@@ -58,8 +58,18 @@ class SubmissionMetadata extends Model {
           query.where('version', value);
         }
       },
-      orderDefault(builder) {
-        builder.orderBy('createdAt', 'DESC');
+      orderDefault(builder, pagination, params) {
+        if (!pagination) {
+          builder.orderBy('createdAt', 'DESC');
+        } else {
+          let orderBy = params?.sortBy[0];
+          let orderDesc = params?.sortDesc[0];
+          if (orderDesc === 'true') {
+            builder.orderBy(orderBy, 'desc');
+          } else if (orderDesc === 'false') {
+            builder.orderBy(orderBy, 'asc');
+          }
+        }
       },
       filterCreatedAt(query, minDate, maxDate) {
         if (minDate && maxDate) {

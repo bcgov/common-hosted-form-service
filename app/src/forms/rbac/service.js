@@ -89,14 +89,26 @@ const service = {
       .modify('filterFormSubmissionId', params.formSubmissionId)
       .modify('filterUserId', currentUser.id)
       .modify('filterActive', params.active)
-      .modify('orderDefault');
+      .modify('orderDefault', params.sortBy && params.page ? true : false, params);
+    if (params.page) {
+      return await service.processPaginationData(
+        query,
+        params.page,
+        params.itemsPerPage,
+        params.filterformSubmissionStatusCode,
+        params.totalSubmissions,
+        params.sortBy,
+        params.sortDesc
+      );
+    }
+    return query;
+  },
 
-    if (params.page && params.itemsPerPage && parseInt(params.itemsPerPage) === -1) {
-      return await query.page(parseInt(params.page), parseInt(params.totalSubmissions));
-    } else if (params.page && params.itemsPerPage && parseInt(params.page) >= 0) {
-      return await query.page(parseInt(params.page), parseInt(params.itemsPerPage));
-    } else {
-      return await query;
+  async processPaginationData(query, page, itemsPerPage, filterformSubmissionStatusCode, totalSubmissions) {
+    if (itemsPerPage && parseInt(itemsPerPage) === -1) {
+      return await query.page(parseInt(page), parseInt(totalSubmissions || 0));
+    } else if (itemsPerPage && parseInt(page) >= 0) {
+      return await query.page(parseInt(page), parseInt(itemsPerPage));
     }
   },
 
