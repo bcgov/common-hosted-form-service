@@ -498,7 +498,7 @@ export default {
    * @function requestReceiptEmail
    * Send a receipt email
    * @param {string} submissionId The submission uuid
-   * @param {Object} requestBody The body for the api call: { to }
+   * @param {Object} requestBody The body for the api call: { priority, to }
    * @returns {Promise} An axios response
    */
   requestReceiptEmail(submissionId, requestBody) {

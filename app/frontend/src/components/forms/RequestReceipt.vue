@@ -39,6 +39,18 @@
             data-test="text-form-to"
             :lang="lang"
           />
+          <v-select
+            dense
+            outlined
+            :items="[
+              { text: $t('trans.requestReceipt.low'), value: 'low' },
+              { text: $t('trans.requestReceipt.normal'), value: 'normal' },
+              { text: $t('trans.requestReceipt.high'), value: 'high' },
+            ]"
+            :label="$t('trans.requestReceipt.emailPriority')"
+            :lang="lang"
+            v-model="priority"
+          />
         </v-form>
       </template>
       <template v-slot:button-text-continue>
@@ -58,6 +70,7 @@ export default {
   name: 'RequestReceipt',
   data: () => ({
     emailRules: [(v) => !!v || this.$t('trans.requestReceipt.emailRequired')],
+    priority: 'normal',
     showDialog: false,
     to: '',
     valid: false,
@@ -71,6 +84,7 @@ export default {
       if (this.valid) {
         try {
           await formService.requestReceiptEmail(this.submissionId, {
+            priority: this.priority,
             to: this.to,
           });
           this.addNotification({
