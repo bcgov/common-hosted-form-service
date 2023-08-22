@@ -249,8 +249,7 @@ const service = {
       .modify('filterCreatedBy', params.createdBy)
       .modify('filterFormVersionId', params.formVersionId)
       .modify('filterVersion', params.version)
-      .modify('filterformSubmissionStatusCode', params.filterformSubmissionStatusCode)
-      .modify('orderDefault');
+      .modify('orderDefault', params.sortBy && params.page ? true : false, params);
     if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length == 2) {
       query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
     }
@@ -275,12 +274,26 @@ const service = {
       );
     }
 
-    if (params.page && params.itemsPerPage && parseInt(params.itemsPerPage) === -1) {
-      return await query.page(parseInt(params.page), parseInt(params.totalSubmissions));
-    } else if (params.page && params.itemsPerPage && parseInt(params.page) >= 0) {
-      return await query.page(parseInt(params.page), parseInt(params.itemsPerPage));
-    } else {
-      return await query;
+    if (params.page) {
+      return await service.processPaginationData(
+        query,
+        params.page,
+        params.itemsPerPage,
+        params.filterformSubmissionStatusCode,
+        params.totalSubmissions,
+        params.sortBy,
+        params.sortDesc
+      );
+    }
+    return query;
+  },
+
+  async processPaginationData(query, page, itemsPerPage, filterformSubmissionStatusCode, totalSubmissions) {
+    await query.modify('filterformSubmissionStatusCode', filterformSubmissionStatusCode);
+    if (itemsPerPage && parseInt(itemsPerPage) === -1) {
+      return await query.page(parseInt(page), parseInt(totalSubmissions || 0));
+    } else if (itemsPerPage && parseInt(page) >= 0) {
+      return await query.page(parseInt(page), parseInt(itemsPerPage));
     }
   },
 
