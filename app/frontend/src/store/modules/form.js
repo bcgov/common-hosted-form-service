@@ -733,6 +733,8 @@ export default {
         page,
         itemsPerPage,
         filterformSubmissionStatusCode,
+        sortBy: sortBy,
+        sortDesc: sortDesc,
       }
     ) {
       try {
@@ -748,6 +750,8 @@ export default {
               page: page,
               itemsPerPage: itemsPerPage,
               totalSubmissions: state.totalSubmissions,
+              sortBy: sortBy,
+              sortDesc: sortDesc,
             })
           : await formService.listSubmissions(formId, {
               deleted: deletedOnly,
@@ -758,6 +762,8 @@ export default {
               filterformSubmissionStatusCode: filterformSubmissionStatusCode,
               itemsPerPage: itemsPerPage,
               totalSubmissions: state.totalSubmissions,
+              sortBy: sortBy,
+              sortDesc: sortDesc,
             });
         commit('SET_SUBMISSIONLIST', response.data.results);
         commit('SET_TOTALSUBMISSIONS', response.data.total);
