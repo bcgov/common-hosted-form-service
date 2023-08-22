@@ -79,6 +79,7 @@
           small
           class="description-icon ml-2 mr-4"
           color="primary"
+          :aria-label="$t('trans.formsTable.description')"
         >
           description
         </v-icon>

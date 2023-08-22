@@ -1,18 +1,5 @@
 <template>
-  <div
-    :class="{ 'dir-rtl': isRTL }"
-    :style="[
-      {
-        display: 'flex',
-        width: '92px',
-        flexDirection: fabItemsDirection,
-        gap: fabItemsGap,
-        zIndex: fabZIndex,
-        position: 'fixed',
-      },
-      fabItemsPosition,
-    ]"
-  >
+  <div :class="{ 'dir-rtl': isRTL }" :style="computedStyles">
     <div class="fabAction" @click="onOpenFABActionItems" :lang="lang">
       <div class="text" v-text="baseFABItemName" :lang="lang" />
       <v-avatar class="fabItemsInverColor" :size="fabItemsSize">
@@ -220,6 +207,28 @@ export default {
   },
   computed: {
     ...mapGetters('form', ['lang', 'isRTL']),
+    computedStyles() {
+      let baseStyles = {
+        display: 'flex',
+        width: '92px',
+        flexDirection: this.fabItemsDirection,
+        gap: this.fabItemsGap,
+        zIndex: this.fabZIndex,
+        position: 'fixed',
+      };
+
+      let conditionalStyles = {};
+      let fabItemsPosition = { ...this.fabItemsPosition };
+
+      switch (this.$i18n.locale) {
+        case 'uk':
+          baseStyles.width = '111px';
+          fabItemsPosition.right = '-.3vw';
+          break;
+      }
+
+      return [baseStyles, fabItemsPosition, conditionalStyles];
+    },
   },
   props: {
     formId: String,
@@ -529,9 +538,6 @@ export default {
   border: 1px solid #003366;
 }
 .text {
-  overflow-wrap: break-word;
-  width: 50px;
   text-align: center;
-  word-break: break-word;
 }
 </style>
