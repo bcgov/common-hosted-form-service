@@ -584,7 +584,6 @@ export default {
       'updateFormPreferencesForCurrentUser',
     ]),
     ...mapActions('notifications', ['addNotification']),
-    paginate() {},
     onShowColumnDialog() {
       this.SELECT_COLUMNS_HEADERS.sort(
         (a, b) =>
