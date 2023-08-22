@@ -158,7 +158,7 @@ export default {
       page: 0,
       filterData: [],
       preSelectedData: [],
-      sortBy: '',
+      sortBy: undefined,
       sortDesc: false,
       filterIgnore: [
         {
@@ -323,10 +323,9 @@ export default {
     },
     async updateTableOptions({ page, itemsPerPage, sortBy, sortDesc }) {
       this.page = page - 1;
-      this.sortBy = sortBy;
-      this.sortDesc = sortDesc;
+      this.sortBy = sortBy[0] === 'date' ? 'createdAt' : sortBy[0];
+      this.sortDesc = sortDesc[0];
       this.itemsPerPage = itemsPerPage;
-
       await this.populateSubmissionsTable();
     },
     async populateSubmissionsTable() {
