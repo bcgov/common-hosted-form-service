@@ -362,13 +362,17 @@
     "assement": "and to complete assessments as required."
   },
   "requestReceipt": {
+    "emailPriority": "Email Priority",
     "emailReceipt": "Email a receipt of this submission",
+    "high": "High",
+    "low": "Low",
+    "normal": "Normal",
     "send": "SEND",
-    "sendToEmailAddress": "Send to E-mail Address",
+    "sendToEmailAddress": "Send to Email Address",
     "emailSent": "An email has been sent to {to}.",
     "sendingEmailErrMsg": "An error occurred while attempting to send your email.",
     "sendingEmailConsErrMsg": "Email confirmation to {to} failed: {error}",
-    "emailRequired": "E-mail is required"
+    "emailRequired": "Email is required"
   },
   "submissionsTable": {
     "submissions": "Submissions",
@@ -451,8 +455,8 @@
     "searchInputLength": "Search input for BCeID username/email must be greater than 6 characters.",
     "exactBCEIDSearch": "Email searches for BCeID must be exact.",
     "getUsersErrMsg": "Error getting users: {error}",
-    "exactEmailOrUsername": "Enter an exact e-mail or username.",
-    "requiredFiled": "Enter a name, e-mail, or username"
+    "exactEmailOrUsername": "Enter an exact email or username.",
+    "requiredFiled": "Enter a name, email, or username"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "View This Submission",
@@ -771,8 +775,8 @@
     "add": "Add",
     "mustSelectAUser": "You must select at least one role to add this user.",
     "addNewMember": "Add a New Member",
-    "enterUsername": "Enter a name, e-mail, or username",
-    "enterExactUsername": "Enter an exact e-mail or username",
+    "enterUsername": "Enter a name, email, or username",
+    "enterExactUsername": "Enter an exact email or username",
     "BCeIDInputSearchMaxLen": "Search input for BCeID username/email must be greater than 6 characters.",
     "BCeIDMustBeExact": "Email searches for BCeID must be exact.",
     "errorGettingUsers": "Error getting users {error}"

@@ -362,7 +362,11 @@
     "assement": "und bei Bedarf Beurteilungen durchzuführen."
   },
   "requestReceipt": {
+    "emailPriority": "E-Mail-Priorität",
     "emailReceipt": "Senden Sie eine Quittung für diese Einreichung per E-Mail",
+    "high": "Hoch",
+    "low": "Niedrig",
+    "normal": "Normal",
     "send": "SCHICKEN",
     "sendToEmailAddress": "An E-Mail-Adresse senden",
     "emailSent": "Eine E-Mail wurde an {to} gesendet.",
