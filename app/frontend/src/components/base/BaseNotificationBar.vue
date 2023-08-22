@@ -50,6 +50,7 @@ export default {
       direction: isRTL ? 'rtl' : 'ltl',
       textAlign: isRTL ? 'right' : 'left',
     }"
+    :type="notification.type"
     :icon="notification.icon"
     prominent
     closable
