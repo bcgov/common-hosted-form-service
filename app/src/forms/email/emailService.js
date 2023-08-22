@@ -92,7 +92,7 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
       bodyTemplate: bodyTemplate,
       title: `${form.name} Accepted`,
       subject: `${form.name} Accepted`,
-      priority: 'normal',
+      priority: additionalProperties.body.priority,
       messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
       form,
     };
