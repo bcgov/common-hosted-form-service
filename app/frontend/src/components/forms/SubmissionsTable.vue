@@ -344,6 +344,8 @@ export default {
       itemsPerPage: 10,
       page: 0,
       filterData: [],
+      sortBy: '',
+      sortDesc: false,
       filterIgnore: [
         {
           value: 'confirmationId',
@@ -620,10 +622,11 @@ export default {
       });
       this.refreshSubmissions();
     },
-    async updateTableOptions({ page, itemsPerPage }) {
+    async updateTableOptions({ page, itemsPerPage, sortBy, sortDesc }) {
       this.page = page - 1;
+      this.sortBy = sortBy;
+      this.sortDesc = sortDesc;
       this.itemsPerPage = itemsPerPage;
-
       await this.getSubmissionData();
     },
     async getSubmissionData() {
@@ -632,6 +635,8 @@ export default {
         itemsPerPage: this.itemsPerPage,
         page: this.page,
         filterformSubmissionStatusCode: true,
+        sortBy: this.sortBy,
+        sortDesc: this.sortDesc,
         createdAt: Object.values({
           minDate:
             this.userFormPreferences &&

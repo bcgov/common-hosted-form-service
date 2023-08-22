@@ -158,6 +158,8 @@ export default {
       page: 0,
       filterData: [],
       preSelectedData: [],
+      sortBy: '',
+      sortDesc: false,
       filterIgnore: [
         {
           value: 'confirmationId',
@@ -319,8 +321,10 @@ export default {
       }
       return '';
     },
-    async updateTableOptions({ page, itemsPerPage }) {
+    async updateTableOptions({ page, itemsPerPage, sortBy, sortDesc }) {
       this.page = page - 1;
+      this.sortBy = sortBy;
+      this.sortDesc = sortDesc;
       this.itemsPerPage = itemsPerPage;
 
       await this.populateSubmissionsTable();
@@ -333,6 +337,8 @@ export default {
         userView: true,
         itemsPerPage: this.itemsPerPage,
         page: this.page,
+        sortBy: this.sortBy,
+        sortDesc: this.sortDesc,
       });
       // Build up the list of forms for the table
       if (this.submissionList) {
