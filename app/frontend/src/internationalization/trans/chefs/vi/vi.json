@@ -362,7 +362,11 @@
     "assement": "và hoàn thành các đánh giá theo yêu cầu."
   },
   "requestReceipt": {
+    "emailPriority": "Ưu tiên email",
     "emailReceipt": "Gửi email biên nhận của bài nộp này",
+    "high": "Cao",
+    "low": "Thấp",
+    "normal": "Bình thường",
     "send": "GỬI",
     "sendToEmailAddress": "Gửi đến địa chỉ email",
     "emailSent": "Một email đã được gửi tới {to}.",

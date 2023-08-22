@@ -50,7 +50,7 @@
     "eventSubscription": "Ereignisabonnement"
   },
   "formSettings": {
-    "pressToAddMultiEmail": "Drücken Sie <kbd>die Eingabetaste</kbd> oder <kbd>die Leertaste</kbd> <kbd>,</kbd> um mehrere E-Mail-Adressen hinzuzufügen",
+    "pressToAddMultiEmail": "Drücken Sie <kbd>die Eingabetaste</kbd> oder <kbd>die Leertaste</kbd> oder <kbd>,</kbd> um mehrere E-Mail-Adressen hinzuzufügen",
     "allowMultiDraft": "Erlauben Sie das Hochladen <strong>mehrerer Entwürfe</strong>",
     "formTitle": "Formulartitel",
     "formDescription": "Formularbeschreibung",
@@ -362,7 +362,11 @@
     "assement": "und bei Bedarf Beurteilungen durchzuführen."
   },
   "requestReceipt": {
+    "emailPriority": "E-Mail-Priorität",
     "emailReceipt": "Senden Sie eine Quittung für diese Einreichung per E-Mail",
+    "high": "Hoch",
+    "low": "Niedrig",
+    "normal": "Normal",
     "send": "SCHICKEN",
     "sendToEmailAddress": "An E-Mail-Adresse senden",
     "emailSent": "Eine E-Mail wurde an {to} gesendet.",

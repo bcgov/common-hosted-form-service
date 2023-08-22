@@ -362,7 +362,11 @@
     "assement": "필요에 따라 평가를 완료합니다."
   },
   "requestReceipt": {
+    "emailPriority": "이메일 우선순위",
     "emailReceipt": "이 제출 영수증을 이메일로 보내기",
+    "high": "높은",
+    "low": "낮은",
+    "normal": "정상",
     "send": "보내다",
     "sendToEmailAddress": "이메일 주소로 보내기",
     "emailSent": "{to}에게 이메일을 보냈습니다.",

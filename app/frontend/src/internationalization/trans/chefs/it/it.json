@@ -362,11 +362,15 @@
     "assement": "e per completare le valutazioni come richiesto."
   },
   "requestReceipt": {
+    "emailPriority": "Priorità e-mail",
     "emailReceipt": "Invia una ricevuta di questo invio tramite e-mail",
+    "high": "Alto",
+    "low": "Basso",
+    "normal": "Normale",
     "send": "INVIARE",
     "sendToEmailAddress": "Invia a indirizzo e-mail",
-    "emailSent": "È stata inviata un'email a {to}.",
-    "sendingEmailErrMsg": "Si è verificato un errore durante il tentativo di inviare la tua email.",
+    "emailSent": "È stata inviata un'e-mail a {to}.",
+    "sendingEmailErrMsg": "Si è verificato un errore durante il tentativo di inviare la tua e-mail.",
     "sendingEmailConsErrMsg": "Email di conferma a {to} non riuscita: {error}",
     "emailRequired": "L'e-mail è obbligatoria"
   },

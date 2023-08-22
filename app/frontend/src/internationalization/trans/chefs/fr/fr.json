@@ -362,7 +362,11 @@
     "assement": "et effectuer les évaluations nécessaires."
   },
   "requestReceipt": {
+    "emailPriority": "Priorité aux e-mails",
     "emailReceipt": "Envoyer un reçu de cette soumission par e-mail",
+    "high": "Haut",
+    "low": "Faible",
+    "normal": "Normale",
     "send": "ENVOYER",
     "sendToEmailAddress": "Envoyer à l'adresse e-mail",
     "emailSent": "Un e-mail a été envoyé à {to}.",

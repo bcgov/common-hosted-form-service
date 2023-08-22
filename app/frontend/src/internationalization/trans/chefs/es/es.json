@@ -362,13 +362,17 @@
     "assement": "y para completar las evaluaciones según sea necesario."
   },
   "requestReceipt": {
+    "emailPriority": "Prioridad de correo electrónico",
     "emailReceipt": "Enviar por correo electrónico un recibo de este envío",
+    "high": "Alta",
+    "low": "Baja",
+    "normal": "Normal",
     "send": "ENVIAR",
     "sendToEmailAddress": "Enviar a dirección de correo electrónico",
     "emailSent": "Se ha enviado un correo electrónico a {to}.",
     "sendingEmailErrMsg": "Ocurrió un error al intentar enviar su correo electrónico.",
     "sendingEmailConsErrMsg": "Error de confirmación por correo electrónico a {to}: {error}",
-    "emailRequired": "Correo electronico es requerido"
+    "emailRequired": "Correo electrónico es requerido"
   },
   "submissionsTable": {
     "submissions": "Presentaciones",

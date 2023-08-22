@@ -362,7 +362,11 @@
     "assement": "必要に応じて評価を完了します。"
   },
   "requestReceipt": {
+    "emailPriority": "電子メールの優先順位",
     "emailReceipt": "この提出物の受領書を電子メールで送信する",
+    "high": "高い",
+    "low": "低い",
+    "normal": "普通",
     "send": "送信",
     "sendToEmailAddress": "電子メールアドレスに送信",
     "emailSent": "電子メールが {to} に送信されました。",

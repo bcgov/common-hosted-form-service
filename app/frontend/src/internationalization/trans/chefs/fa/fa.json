@@ -362,7 +362,11 @@
     "assement": "و ارزیابی ها را در صورت لزوم تکمیل کنید."
   },
   "requestReceipt": {
+    "emailPriority": "اولویت ایمیل",
     "emailReceipt": "رسید این ارسال را ایمیل کنید",
+    "high": "بالا",
+    "low": "کم",
+    "normal": "طبیعی",
     "send": "ارسال",
     "sendToEmailAddress": "ارسال به آدرس ایمیل",
     "emailSent": "یک ایمیل به {to} ارسال شده است.",

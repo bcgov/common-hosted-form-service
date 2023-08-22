@@ -362,7 +362,11 @@
     "assement": "और आवश्यकतानुसार मूल्यांकन पूरा करना।"
   },
   "requestReceipt": {
+    "emailPriority": "ईमेल प्राथमिकता",
     "emailReceipt": "इस सबमिशन की रसीद ईमेल करें",
+    "high": "उच्च",
+    "low": "कम",
+    "normal": "सामान्य",
     "send": "भेजना",
     "sendToEmailAddress": "ई-मेल पते पर भेजें",
     "emailSent": "एक ईमेल इन्हें भेजी गई है {to}।",

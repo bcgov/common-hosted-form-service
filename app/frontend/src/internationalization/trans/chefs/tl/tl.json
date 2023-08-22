@@ -362,13 +362,17 @@
     "assement": "at upang kumpletuhin ang mga pagtatasa kung kinakailangan."
   },
   "requestReceipt": {
+    "emailPriority": "Priyoridad sa Email",
     "emailReceipt": "Mag-email ng resibo ng pagsusumiteng ito",
+    "high": "Mataas",
+    "low": "Mababa",
+    "normal": "Normal",
     "send": "IPADALA",
-    "sendToEmailAddress": "Ipadala sa E-mail Address",
+    "sendToEmailAddress": "Ipadala sa Email Address",
     "emailSent": "Isang email ang ipinadala kay {to}.",
     "sendingEmailErrMsg": "May naganap na error habang sinusubukang ipadala ang iyong email.",
     "sendingEmailConsErrMsg": "Nabigo ang pagkumpirma sa email kay {to}: {error}",
-    "emailRequired": "Kinakailangan ang e-mail"
+    "emailRequired": "Kinakailangan ang email"
   },
   "submissionsTable": {
     "submissions": "Mga pagsusumite",

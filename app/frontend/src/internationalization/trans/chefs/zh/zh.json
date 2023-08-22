@@ -362,7 +362,11 @@
     "assement": "并按要求完成评估。"
   },
   "requestReceipt": {
+    "emailPriority": "电子邮件优先",
     "emailReceipt": "通过电子邮件发送此提交的收据",
+    "high": "高的",
+    "low": "低的",
+    "normal": "普通的",
     "send": "发送",
     "sendToEmailAddress": "发送至电子邮件地址",
     "emailSent": "一封电子邮件已发送至 {to}。",
