@@ -323,7 +323,15 @@ export default {
     },
     async updateTableOptions({ page, itemsPerPage, sortBy, sortDesc }) {
       this.page = page - 1;
-      this.sortBy = sortBy[0] === 'date' ? 'createdAt' : sortBy[0];
+      if (sortBy[0] === 'date') {
+        this.sortBy = 'createdAt';
+      } else if (sortBy[0] === 'submitter') {
+        this.sortBy = 'createdBy';
+      } else if (sortBy[0] === 'status')
+        this.sortBy = 'formSubmissionStatusCode';
+      else {
+        this.sortBy = sortBy[0];
+      }
       this.sortDesc = sortDesc[0];
       this.itemsPerPage = itemsPerPage;
       await this.populateSubmissionsTable();
