@@ -263,13 +263,14 @@ const service = {
       if (typeof params.fields !== 'string' && params.fields.includes('updatedBy')) {
         selection.push('updatedBy');
       }
-      // remove updatedAt and updatedBy from custom select field so it won get from submission column
-      params.fields = params.fields.filter((f) => f !== 'updatedAt' && f !== 'updatedBy');
       if (Array.isArray(params.fields)) {
         fields = params.fields.flatMap((f) => f.split(',').map((s) => s.trim()));
       } else {
         fields = params.fields.split(',').map((s) => s.trim());
       }
+      // remove updatedAt and updatedBy from custom selected field so they won't be pulled from submission columns
+      fields = fields.filter((f) => f !== 'updatedAt' && f !== 'updatedBy');
+
       fields.push('lateEntry');
       query.select(
         selection,
