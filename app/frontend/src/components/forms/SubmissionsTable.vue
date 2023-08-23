@@ -695,6 +695,8 @@ export default {
 
     async refreshSubmissions() {
       this.loading = true;
+      // Hoping for a merge conflict here.
+      this.page = -1;
       Promise.all([
         this.getFormRolesForUser(this.formId),
         this.getFormPermissionsForUser(this.formId),
