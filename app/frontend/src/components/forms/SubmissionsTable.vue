@@ -712,6 +712,8 @@ export default {
           const fields = {
             confirmationId: s.confirmationId,
             date: s.createdAt,
+            updatedAt: s.updatedBy ? s.updatedAt : null,
+            updatedBy: s.updatedBy,
             formId: s.formId,
             status: s.formSubmissionStatusCode,
             submissionId: s.submissionId,
