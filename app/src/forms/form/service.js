@@ -257,10 +257,10 @@ const service = {
 
     if (params.fields && params.fields.length) {
       let fields = [];
-      if (params.fields.includes('updatedAt')) {
+      if (typeof params.fields !== 'string' && params.fields.includes('updatedAt')) {
         selection.push('updatedAt');
       }
-      if (params.fields.includes('updatedBy')) {
+      if (typeof params.fields !== 'string' && params.fields.includes('updatedBy')) {
         selection.push('updatedBy');
       }
       // remove updatedAt and updatedBy from custom select field so it won get from submission column
