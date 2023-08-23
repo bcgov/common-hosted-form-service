@@ -6,6 +6,13 @@ import { fa as FONTAWESOME } from 'vuetify/iconsets/fa';
 import { aliases, mdi } from 'vuetify/iconsets/mdi';
 import { VDataTable } from 'vuetify/labs/VDataTable';
 import { VSkeletonLoader } from 'vuetify/labs/VSkeletonLoader';
+import {
+  VStepper,
+  VStepperHeader,
+  VStepperItem,
+  VStepperWindow,
+  VStepperWindowItem,
+} from 'vuetify/labs/VStepper';
 import hi from '~/internationalization/trans/vuetify/locale/hi';
 import pa from '~/internationalization/trans/vuetify/locale/pa';
 import tl from '~/internationalization/trans/vuetify/locale/tl';
@@ -88,6 +95,11 @@ export default createVuetify({
     ...components,
     VDataTable,
     VSkeletonLoader,
+    VStepper,
+    VStepperHeader,
+    VStepperItem,
+    VStepperWindow,
+    VStepperWindowItem,
   },
   directives,
 });

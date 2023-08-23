@@ -136,7 +136,7 @@ export default {
                     color="primary"
                     icon
                     v-bind="props"
-                    size="small"
+                    size="x-small"
                     @click="downloadQr"
                   >
                     <v-icon icon="mdi:mdi-download"></v-icon>

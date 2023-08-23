@@ -90,7 +90,7 @@ export default {
               color="primary"
               icon
               v-bind="props"
-              size="small"
+              size="x-small"
               @click="$emit('switchView')"
             >
               <v-icon icon="mdi:mdi-repeat"></v-icon>
@@ -112,7 +112,7 @@ export default {
               color="primary"
               icon
               v-bind="props"
-              size="small"
+              size="x-small"
               @click="$emit('save-draft')"
             >
               <v-icon icon="mdi:mdi-content-save"></v-icon>

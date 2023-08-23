@@ -77,7 +77,6 @@ a {
 
 // Horizontal Rule
 hr {
-  border-top: 1px solid lightgrey;
   margin-bottom: 1em;
   .orange {
     border-top: 2px solid $bcgov-orange;
@@ -108,7 +107,6 @@ a,
 }
 
 .v-btn {
-
   span > span {
     font-weight: bold;
   }

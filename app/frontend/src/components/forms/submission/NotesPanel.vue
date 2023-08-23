@@ -88,7 +88,7 @@ export default {
               class="mx-1"
               color="primary"
               icon
-              size="small"
+              size="x-small"
               v-bind="props"
               @click="showNoteField = true"
             >

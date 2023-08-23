@@ -274,7 +274,7 @@ export default {
             :disabled="disabled"
             icon
             v-bind="props"
-            size="small"
+            size="x-small"
             @click="addingUsers = true"
           >
             <v-icon icon="mdi:mdi-account-plus"></v-icon>
