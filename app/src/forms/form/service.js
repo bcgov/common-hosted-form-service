@@ -269,10 +269,9 @@ const service = {
         fields = params.fields.split(',').map((s) => s.trim());
       }
       // remove updatedAt and updatedBy from custom selected field so they won't be pulled from submission columns
-      if (Array.isArray(params.fields)) {
-        fields = fields.filter((f) => f !== 'updatedAt' && f !== 'updatedBy');
-        fields.push('lateEntry');
-      }
+      fields = fields.filter((f) => f !== 'updatedAt' && f !== 'updatedBy');
+
+      fields.push('lateEntry');
       query.select(
         selection,
         fields.map((f) => ref(`submission:data.${f}`).as(f.split('.').slice(-1)))
