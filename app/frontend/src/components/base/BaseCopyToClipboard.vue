@@ -59,7 +59,7 @@ export default {
           :disabled="disabled"
           icon
           v-bind="props"
-          size="small"
+          size="x-small"
         >
           <v-icon icon="mdi:mdi-content-copy"></v-icon>
           <span v-if="buttonText">{{ buttonText }}</span>

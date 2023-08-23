@@ -227,7 +227,7 @@ export default {
           color="primary"
           icon
           v-bind="props"
-          size="small"
+          size="x-small"
           @click="dialog = true"
         >
           <v-icon icon="mdi:mdi-account-multiple"></v-icon>

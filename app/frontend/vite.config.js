@@ -1,6 +1,6 @@
+import Vue from '@vitejs/plugin-vue';
 import { resolve } from 'path';
 import { defineConfig, loadEnv } from 'vite';
-import Vue from '@vitejs/plugin-vue';
 import eslintPlugin from 'vite-plugin-eslint';
 import vuetify from 'vite-plugin-vuetify';
 
@@ -25,7 +25,7 @@ export default defineConfig(({ command, mode }) => {
         '^/app/config': proxyObject,
       },
     },
-    plugins: [Vue(), vuetify({ autoImport: true }), eslintPlugin()],
+    plugins: [Vue(), vuetify(), eslintPlugin()],
     resolve: {
       alias: {
         '~': resolve(__dirname, './src'),

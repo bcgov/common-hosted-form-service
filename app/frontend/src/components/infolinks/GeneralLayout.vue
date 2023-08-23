@@ -184,22 +184,19 @@ export default {
             >
               <v-switch
                 v-model="publish[index]"
-                small
+                density="compact"
+                hide-details
                 color="success"
+                :label="
+                  publish[index]
+                    ? $t('trans.generalLayout.published')
+                    : $t('trans.generalLayout.unpublished')
+                "
                 :model-value="isComponentPublish(item.raw.componentName, index)"
                 @update:model-value="
                   onSwitchChange(item.raw.componentName, index)
                 "
               ></v-switch>
-              <span
-                style="width: 120px !important; font-size: 16px"
-                class="d-none d-sm-flex"
-                >{{
-                  publish[index]
-                    ? $t('trans.generalLayout.published')
-                    : $t('trans.generalLayout.unpublished')
-                }}</span
-              >
             </v-btn>
           </div>
         </div>

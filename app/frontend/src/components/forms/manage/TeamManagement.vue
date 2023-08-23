@@ -404,7 +404,7 @@ export default {
                 class="mx-1"
                 color="primary"
                 icon
-                size="small"
+                size="x-small"
                 v-bind="props"
                 @click="showColumnsDialog = true"
               >
@@ -421,7 +421,7 @@ export default {
                   color="primary"
                   :disabled="!formId"
                   icon
-                  size="small"
+                  size="x-small"
                   v-bind="props"
                 >
                   <v-icon icon="mdi:mdi-cog"></v-icon>
