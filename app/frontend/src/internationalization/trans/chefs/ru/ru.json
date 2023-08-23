@@ -635,7 +635,9 @@
     "confirmationID": "Идентификатор подтверждения:",
     "submittedBy": "Представленный:",
     "cancel": "ОТМЕНА",
-    "status": "Положение дел"
+    "status": "Статус",
+    "updatedAt": "Изменено",
+    "updatedBy": "Кем изменено"
   },
   "teamManagement": {
     "teamManagement": "Управление командой",

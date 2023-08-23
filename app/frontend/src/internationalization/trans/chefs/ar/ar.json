@@ -635,7 +635,9 @@
     "confirmationID": "معرف التأكيد:",
     "submittedBy": "مقدم من:",
     "cancel": "يلغي",
-    "status": "حالة"
+    "status": "حالة",
+    "updatedAt": "معدل",
+    "updatedBy": "تم التعديل بواسطة"
   },
   "teamManagement": {
     "teamManagement": "ادارة فريق",

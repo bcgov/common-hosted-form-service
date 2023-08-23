@@ -22,6 +22,13 @@
             <strong>{{ $t('trans.formSubmission.submittedBy') }}</strong>
             {{ formSubmission.createdBy }}
             <br />
+            <span v-if="formSubmission.updatedBy">
+              <strong>{{ $t('trans.formSubmission.updatedAt') }}:</strong>
+              {{ formSubmission.updatedAt | formatDateLong }}
+              <br />
+              <strong>{{ $t('trans.formSubmission.updatedBy') }}:</strong>
+              {{ formSubmission.updatedBy }}
+            </span>
           </p>
         </div>
 
@@ -223,9 +230,10 @@ export default {
     setDraft(status) {
       this.isDraft = status === 'REVISING';
     },
-    toggleSubmissionEdit(editing) {
+    async toggleSubmissionEdit(editing) {
       this.submissionReadOnly = !editing;
       this.reRenderSubmission += 1;
+      await this.fetchSubmission({ submissionId: this.submissionId });
     },
   },
   async mounted() {

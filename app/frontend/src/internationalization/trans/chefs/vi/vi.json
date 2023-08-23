@@ -635,7 +635,9 @@
     "confirmationID": "ID xác nhận:",
     "submittedBy": "Gửi bởi:",
     "cancel": "HỦY BỎ",
-    "status": "Trạng thái"
+    "status": "Trạng thái",
+    "updatedAt": "đã sửa đổi",
+    "updatedBy": "sửa đổi bởi"
   },
   "teamManagement": {
     "teamManagement": "quản lý nhóm",
