@@ -728,7 +728,7 @@ export default {
               if (obj.component.validate.custom.length) {
                 validatorIdentity +=
                   '|custom:' +
-                  obj.component.validate[validity].trim().replaceAll(',', ';');
+                  obj.component.validate[validity].trim().replaceAll(',', '‚');
               }
               break;
 
@@ -736,7 +736,7 @@ export default {
               if (obj.component.validate.customMessage) {
                 validatorIdentity +=
                   '|customMessage:' +
-                  obj.component.validate[validity].trim().replaceAll(',', ';');
+                  obj.component.validate[validity].trim().replaceAll(',', '‚');
               }
               break;
 

@@ -328,27 +328,25 @@ export default {
             switch (component.type) {
               case 'number':
                 component.validate.custom =
-                  "if(component.validate.required === true){valid = _.isNumber(input) ? true : 'Only numbers are allowed in a number field.';} else if(input){valid = _.isNumber(input) ? true : 'Only numbers are allowed in a number field.';}" +
+                  "if(component.validate.required === true || input){valid = _.isNumber(input) ? true : 'Only numbers are allowed in a number field.';}" +
                   component.validate.custom;
                 break;
 
               case 'simplenumber':
                 component.validate.custom =
-                  "if(component.validate.required === true){valid = _.isNumber(input) ? true : 'Only numbers are allowed in a simple number field.';} else if(input){valid = _.isNumber(input) ? true : 'Only numbers are allowed in a simple number field.';}" +
+                  "if(component.validate.required === true || input){valid = _.isNumber(input) ? true : 'Only numbers are allowed in a simple number field.';}" +
                   component.validate.custom;
                 break;
 
               case 'simplenumberadvanced':
                 component.validate.custom =
-                  "if(component.validate.required === true){valid = _.isNumber(input) ? true : 'Only numbers are allowed in a simple number advanced field.';} else if(input){valid = _.isNumber(input) ? true : 'Only numbers are allowed in a simple number advanced field.';}" +
+                  "if(component.validate.required === true || input){valid = _.isNumber(input) ? true : 'Only numbers are allowed in a simple number advanced field.';}" +
                   component.validate.custom;
                 break;
 
               case 'simpledatetimeadvanced':
                 component.validate.custom =
-                  "if(component.validate.required === true){valid = moment(input, _.replace('" +
-                  component.widget.format +
-                  "','dd','DD'), true).isValid() === true ? true : 'Wrong DateTime format.';} else if(input){valid = moment(input, _.replace('" +
+                  "if(component.validate.required === true || input){valid = moment(input, _.replace('" +
                   component.widget.format +
                   "','dd','DD'), true).isValid() === true ? true : 'Wrong DateTime format.';}" +
                   component.validate.custom;
@@ -356,9 +354,7 @@ export default {
 
               case 'simpledatetime':
                 component.validate.custom =
-                  "if(component.validate.required === true){valid = moment(input, _.replace('" +
-                  component.widget.format +
-                  "','dd','DD'), true).isValid() === true ? true : 'Wrong Date/Time format.';} else if(input){valid = moment(input, _.replace('" +
+                  "if(component.validate.required === true || input){valid = moment(input, _.replace('" +
                   component.widget.format +
                   "','dd','DD'), true).isValid() === true ? true : 'Wrong Date/Time format.';}" +
                   component.validate.custom;
@@ -366,9 +362,7 @@ export default {
 
               case 'simpletimeadvanced':
                 component.validate.custom =
-                  "if(component.validate.required === true){valid = moment(input, _.replace('" +
-                  component.widget.format +
-                  "','dd','DD'), true).isValid() === true ? true : 'Wrong Time format.';} else if(input){valid = moment(input, _.replace('" +
+                  "if(component.validate.required === true || input){valid = moment(input, _.replace('" +
                   component.widget.format +
                   "','dd','DD'), true).isValid() === true ? true : 'Wrong Time format.';}" +
                   component.validate.custom;
