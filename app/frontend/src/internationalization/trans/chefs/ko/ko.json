@@ -635,7 +635,9 @@
     "confirmationID": "확인 ID:",
     "submittedBy": "에 의해 제출 된:",
     "cancel": "취소",
-    "status": "상태"
+    "status": "상태",
+    "updatedAt": "수정",
+    "updatedBy": "수정자"
   },
   "teamManagement": {
     "teamManagement": "팀 관리",

@@ -635,7 +635,9 @@
     "confirmationID": "ID de confirmação:",
     "submittedBy": "Enviado por:",
     "cancel": "CANCELAR",
-    "status": "Status"
+    "status": "Status",
+    "updatedAt": "Modificada",
+    "updatedBy": "Modificado por"
   },
   "teamManagement": {
     "teamManagement": "Gerenciamento de equipe",

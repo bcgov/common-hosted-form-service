@@ -635,7 +635,9 @@
     "confirmationID": "شناسه تایید:",
     "submittedBy": "ارسال شده توسط:",
     "cancel": "لغو",
-    "status": "وضعیت"
+    "status": "وضعیت",
+    "updatedAt": "اصلاح شده",
+    "updatedBy": "تغییر داده شده توسط"
   },
   "teamManagement": {
     "teamManagement": "مدیریت تیم",

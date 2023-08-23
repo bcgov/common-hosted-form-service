@@ -635,7 +635,9 @@
     "confirmationID": "Bestätigungs-ID:",
     "submittedBy": "Eingereicht von:",
     "cancel": "STORNIEREN",
-    "status": "Status"
+    "status": "Status",
+    "updatedAt": "Geändert",
+    "updatedBy": "Angepasst von"
   },
   "teamManagement": {
     "teamManagement": "Team Management",

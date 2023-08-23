@@ -635,7 +635,9 @@
     "confirmationID": "ਪੁਸ਼ਟੀ ID:",
     "submittedBy": "ਦੁਆਰਾ ਦਰਜ:",
     "cancel": "ਰੱਦ ਕਰੋ",
-    "status": "ਸਥਿਤੀ"
+    "status": "ਸਥਿਤੀ",
+    "updatedAt": "ਸੋਧਿਆ ਗਿਆ",
+    "updatedBy": "ਦੁਆਰਾ ਸੋਧਿਆ ਗਿਆ"
   },
   "teamManagement": {
     "teamManagement": "ਟੀਮ ਪ੍ਰਬੰਧਨ",
