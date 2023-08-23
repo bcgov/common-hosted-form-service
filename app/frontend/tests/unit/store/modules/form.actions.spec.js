@@ -214,47 +214,54 @@ describe('form actions', () => {
 
     it('fetchSubmissions should commit to SET_SUBMISSIONLIST', async () => {
       formService.listSubmissions.mockResolvedValue({ data: [] });
-      await store.actions.fetchSubmissions(mockStore, { formId: 'fId' });
+      let data = {fields: undefined, createdBy: '', createdAt: '', page: 0, filterformSubmissionStatusCode: true, itemsPerPage: 10, totalSubmissions: 0};
+      await store.actions.fetchSubmissions(mockStore, { formId: 'fId', ...data });
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(2);
+      expect(mockStore.commit).toHaveBeenCalledTimes(3);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
-      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { deleted: false, createdBy: '' });
+      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { deleted: false, createdBy: '', ...data});
       expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(0);
     });
 
     it('fetchSubmissions should call the formService if not for userView', async () => {
       formService.listSubmissions.mockResolvedValue({ data: [] });
-      await store.actions.fetchSubmissions(mockStore, { formId: 'fId', userView: false });
+      let data = {fields: undefined, createdBy: '', createdAt: '', page: 0, filterformSubmissionStatusCode: true, itemsPerPage: 10, totalSubmissions: 0};
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(2);
+      await store.actions.fetchSubmissions(mockStore, { formId: 'fId', userView: false, ...data });
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(3);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
-      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { deleted: false, createdBy: '' });
+      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { deleted: false, createdBy: '', ...data});
       expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(0);
     });
 
     it('fetchSubmissions should call the rbacService if for userView', async () => {
-      rbacService.getUserSubmissions.mockResolvedValue({ data: [] });
-      await store.actions.fetchSubmissions(mockStore, { formId: 'fId', userView: true });
+      let data = {page: 0,  itemsPerPage: 10, totalSubmissions: 0};
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(2);
+      rbacService.getUserSubmissions.mockResolvedValue({ data: [] });
+      await store.actions.fetchSubmissions(mockStore, { formId: 'fId', userView: true, ...data});
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(3);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(0);
       expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(1);
-      expect(rbacService.getUserSubmissions).toHaveBeenCalledWith({ formId: 'fId' });
+      expect(rbacService.getUserSubmissions).toHaveBeenCalledWith({ formId: 'fId', ...data});
     });
 
     it('fetchSubmissions should dispatch to notifications/addNotification', async () => {
       formService.listSubmissions.mockRejectedValue('');
-      await store.actions.fetchSubmissions(mockStore, { formId: 'fId' });
+      let data = {fields: undefined, createdBy: '', createdAt: '', page: 0, filterformSubmissionStatusCode: true, itemsPerPage: 10, totalSubmissions: 0};
+
+      await store.actions.fetchSubmissions(mockStore, { formId: 'fId', ...data });
 
       expect(mockStore.commit).toHaveBeenCalledTimes(1);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
-      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { deleted: false, createdBy: '' });
+      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { deleted: false, createdBy: '', ...data });
       expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(0);
     });
 
