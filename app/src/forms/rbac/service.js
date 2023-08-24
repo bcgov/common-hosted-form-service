@@ -4,6 +4,7 @@ const { FormRoleUser, FormSubmissionUser, IdentityProvider, User, UserFormAccess
 const { Roles } = require('../common/constants');
 const { queryUtils } = require('../common/utils');
 const authService = require('../auth/service');
+const _ = require('lodash');
 
 const service = {
   list: async () => {
@@ -97,18 +98,39 @@ const service = {
         params.itemsPerPage,
         params.filterformSubmissionStatusCode,
         params.totalSubmissions,
-        params.sortBy,
-        params.sortDesc
+        params.search,
+        params.searchEnabled
       );
     }
     return query;
   },
 
-  async processPaginationData(query, page, itemsPerPage, filterformSubmissionStatusCode, totalSubmissions) {
-    if (itemsPerPage && parseInt(itemsPerPage) === -1) {
-      return await query.page(parseInt(page), parseInt(totalSubmissions || 0));
-    } else if (itemsPerPage && parseInt(page) >= 0) {
-      return await query.page(parseInt(page), parseInt(itemsPerPage));
+  async processPaginationData(query, page, itemsPerPage, filterformSubmissionStatusCode, totalSubmissions, search, searchEnabled) {
+    if (searchEnabled === 'true') {
+      let submissionsData = await query;
+      let result = {
+        results: [],
+        total: 0,
+      };
+      let searchedData = [];
+      for (let data of submissionsData) {
+        for (let value of Object.values(data)) {
+          if (_.isPlainObject(value) === false && value === search) {
+            searchedData.push(data);
+            result.total = result.total + 1;
+          }
+        }
+      }
+      let start = page * itemsPerPage;
+      let end = page * itemsPerPage + (itemsPerPage - 1);
+      result.results = searchedData.slice(start, end);
+      return result;
+    } else {
+      if (itemsPerPage && parseInt(itemsPerPage) === -1) {
+        return await query.page(parseInt(page), parseInt(totalSubmissions || 0));
+      } else if (itemsPerPage && parseInt(page) >= 0) {
+        return await query.page(parseInt(page), parseInt(itemsPerPage));
+      }
     }
   },
 

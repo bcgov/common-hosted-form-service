@@ -735,6 +735,8 @@ export default {
         filterformSubmissionStatusCode,
         sortBy: sortBy,
         sortDesc: sortDesc,
+        search: search,
+        searchEnabled: searchEnabled,
       }
     ) {
       try {
@@ -752,6 +754,8 @@ export default {
               totalSubmissions: state.totalSubmissions,
               sortBy: sortBy,
               sortDesc: sortDesc,
+              search: search,
+              searchEnabled: searchEnabled,
             })
           : await formService.listSubmissions(formId, {
               deleted: deletedOnly,
@@ -759,6 +763,8 @@ export default {
               createdBy: createdBy,
               createdAt: createdAt,
               page: page,
+              search: search,
+              searchEnabled: searchEnabled,
               filterformSubmissionStatusCode: filterformSubmissionStatusCode,
               itemsPerPage: itemsPerPage,
               totalSubmissions: state.totalSubmissions,
