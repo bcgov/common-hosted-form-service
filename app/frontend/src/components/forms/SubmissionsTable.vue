@@ -105,12 +105,12 @@
         <!-- search input -->
         <div class="submissions-search">
           <v-text-field
-            v-model="search"
             append-icon="mdi-magnify"
             :label="$t('trans.submissionsTable.search')"
             single-line
             hide-details
             class="pb-5"
+            @input="handleSearch"
             :class="{ label: isRTL }"
             :lang="lang"
           />
@@ -124,7 +124,6 @@
       :headers="HEADERS"
       item-key="submissionId"
       :items="submissionTable"
-      :search="search"
       :loading="loading"
       :show-select="!switchSubmissionView"
       v-model="selectedSubmissions"
@@ -324,7 +323,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import { FormManagePermissions } from '@/utils/constants';
 import moment from 'moment';
-
+import _ from 'lodash';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faTrash);
@@ -366,6 +365,7 @@ export default {
       loading: true,
       restoreItem: {},
       search: '',
+      searchEnabled: false,
       showColumnsDialog: false,
       showRestoreDialog: false,
       submissionTable: [],
@@ -599,7 +599,6 @@ export default {
         ? this.deleteSingleSubs()
         : this.deleteMultiSubs();
     },
-
     async restoreSub() {
       this.singleSubmissionRestore
         ? this.restoreSingleSub()
@@ -644,6 +643,8 @@ export default {
         filterformSubmissionStatusCode: true,
         sortBy: this.sortBy,
         sortDesc: this.sortDesc,
+        search: this.search,
+        searchEnabled: this.searchEnabled,
         createdAt: Object.values({
           minDate:
             this.userFormPreferences &&
@@ -777,9 +778,24 @@ export default {
 
       await this.populateSubmissionsTable();
     },
+    async handleSearch(value) {
+      this.searchEnabled = true;
+      this.search = value;
+      this.page = 0;
+      this.itemsPerPage = 10;
+      if (value === '') {
+        this.searchEnabled = false;
+        this.itemsPerPage = 10;
+        await this.getSubmissionData();
+      } else {
+        this.debounceInput();
+      }
+    },
   },
-
   mounted() {
+    this.debounceInput = _.debounce(async () => {
+      await this.getSubmissionData();
+    }, 300);
     this.refreshSubmissions();
   },
 };

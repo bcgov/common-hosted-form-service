@@ -65,7 +65,7 @@
           :class="isRTL ? 'float-left' : 'float-right'"
         >
           <v-text-field
-            v-model="search"
+            @input="handleSearch"
             append-icon="mdi-magnify"
             :label="$t('trans.mySubmissionsTable.search')"
             single-line
@@ -158,6 +158,8 @@ export default {
       page: 0,
       filterData: [],
       preSelectedData: [],
+      search: '',
+      searchEnabled: false,
       sortBy: undefined,
       sortDesc: false,
       filterIgnore: [
@@ -180,7 +182,6 @@ export default {
       showColumnsDialog: false,
       submissionTable: [],
       loading: true,
-      search: '',
     };
   },
   computed: {
@@ -345,6 +346,8 @@ export default {
         itemsPerPage: this.itemsPerPage,
         page: this.page,
         sortBy: this.sortBy,
+        search: this.search,
+        searchEnabled: this.searchEnabled,
         sortDesc: this.sortDesc,
       });
       // Build up the list of forms for the table
@@ -379,6 +382,19 @@ export default {
       this.filterData = data;
       this.showColumnsDialog = false;
     },
+    async handleSearch(value) {
+      this.searchEnabled = true;
+      this.search = value;
+      this.page = 0;
+      this.itemsPerPage = 10;
+      if (value === '') {
+        this.searchEnabled = false;
+        this.itemsPerPage = 10;
+        await this.populateSubmissionsTable();
+      } else {
+        this.debounceInput();
+      }
+    },
   },
 
   async mounted() {
@@ -390,6 +406,10 @@ export default {
     });
 
     await this.populateSubmissionsTable();
+
+    this.debounceInput = _.debounce(async () => {
+      await this.populateSubmissionsTable();
+    }, 300);
   },
 };
 </script>
