@@ -5,7 +5,6 @@ const { SubscriptionEvent } = require('../common/constants');
 const axios = require('axios');
 const log = require('../../components/log')(module.filename);
 const moment = require('moment');
-
 const {
   FileStorage,
   Form,
@@ -322,7 +321,6 @@ const service = {
           return false;
         });
       });
-
       let start = page * itemsPerPage;
       let end = page * itemsPerPage + (itemsPerPage - 1);
       result.results = searchedData.slice(start, end);
