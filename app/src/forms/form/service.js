@@ -1,12 +1,10 @@
 const Problem = require('api-problem');
 const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
-const { validateScheduleObject } = require('../common/utils');
 const { SubscriptionEvent } = require('../common/constants');
 const axios = require('axios');
 const log = require('../../components/log')(module.filename);
-const _ = require('lodash');
-
+const moment = require('moment');
 const {
   FileStorage,
   Form,
@@ -24,7 +22,7 @@ const {
   FormComponentsProactiveHelp,
   FormSubscription,
 } = require('../common/models');
-const { falsey, queryUtils, checkIsFormExpired } = require('../common/utils');
+const { falsey, queryUtils, checkIsFormExpired, validateScheduleObject, typeUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
@@ -305,15 +303,24 @@ const service = {
         results: [],
         total: 0,
       };
-      let searchedData = [];
-      for (let data of submissionsData) {
-        for (let value of Object.values(data)) {
-          if (_.isPlainObject(value) === false && value === search) {
-            searchedData.push(data);
-            result.total = result.total + 1;
+      let searchedData = submissionsData.filter((data) => {
+        return Object.values(data).some((value) => {
+          if (!Array.isArray(value) && !typeUtils.isObject(value)) {
+            if (!typeUtils.isBoolean(value) && !typeUtils.isNil(value) && typeUtils.isDate(value) && moment(new Date(value)).format('YYYY-MM-DD hh:mm:ss a').includes(search)) {
+              result.total = result.total + 1;
+              return true;
+            }
+            if (typeUtils.isString(value) && value.includes(search)) {
+              result.total = result.total + 1;
+              return true;
+            } else if ((typeUtils.isNil(value) || typeUtils.isBoolean(value) || typeUtils.isNumeric(value)) && value === search) {
+              result.total = result.total + 1;
+              return true;
+            }
           }
-        }
-      }
+          return false;
+        });
+      });
       let start = page * itemsPerPage;
       let end = page * itemsPerPage + (itemsPerPage - 1);
       result.results = searchedData.slice(start, end);
