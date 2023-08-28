@@ -1,7 +1,7 @@
 const Problem = require('api-problem');
 const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
-const { SubscriptionEvent } = require('../common/constants');
+const { EmailTypes, SubscriptionEvent } = require('../common/constants');
 const axios = require('axios');
 const log = require('../../components/log')(module.filename);
 const moment = require('moment');
@@ -9,6 +9,7 @@ const {
   FileStorage,
   Form,
   FormApiKey,
+  FormEmailTemplate,
   FormIdentityProvider,
   FormRoleUser,
   FormVersion,
@@ -820,6 +821,7 @@ const service = {
       throw err;
     }
   },
+
   popFormLevelInfo: (jsonPayload = []) => {
     /** This function is purely made to remove un-necessery information
      * from the json payload of submissions. It will also help to remove crucial data
@@ -843,6 +845,91 @@ const service = {
       });
     }
     return jsonPayload;
+  },
+
+  // -----------------------------------------------------------------------------
+  // Email Templates
+  // -----------------------------------------------------------------------------
+
+  _getDefaultEmailTemplate: (formId, type) => {
+    let template;
+
+    switch (type) {
+      case EmailTypes.SUBMISSION_CONFIRMATION:
+        template = {
+          body: 'Thank you for your {{ form.name }} submission. You can view your submission details by visiting the following links:',
+          formId: formId,
+          subject: '{{ form.name }} Accepted',
+          title: '{{ form.name }} Accepted',
+          type: type,
+        };
+        break;
+    }
+
+    return template;
+  },
+
+  // Get a specific email template for a form.
+  readEmailTemplate: async (formId, type) => {
+    let result = await FormEmailTemplate.query().modify('filterFormId', formId).modify('filterType', type).first();
+
+    if (result === undefined) {
+      result = service._getDefaultEmailTemplate(formId, type);
+    }
+
+    return result;
+  },
+
+  // Get all the email templates for a form
+  readEmailTemplates: async (formId) => {
+    const hasEmailTemplate = (emailTemplates, type) => {
+      return emailTemplates.find((t) => t.type === type) !== undefined;
+    };
+
+    let result = await FormEmailTemplate.query().modify('filterFormId', formId);
+
+    // In the case that there is no email template in the database, use the
+    // default values.
+    if (!hasEmailTemplate(result, EmailTypes.SUBMISSION_CONFIRMATION)) {
+      result.push(service._getDefaultEmailTemplate(formId, EmailTypes.SUBMISSION_CONFIRMATION));
+    }
+
+    return result;
+  },
+
+  createOrUpdateEmailTemplate: async (formId, data, currentUser) => {
+    let transaction;
+    try {
+      const emailTemplate = await service.readEmailTemplate(formId, data.type);
+      transaction = await FormEmailTemplate.startTransaction();
+
+      if (emailTemplate.id) {
+        // Update new email template settings for a form
+        await FormEmailTemplate.query(transaction)
+          .modify('filterId', emailTemplate.id)
+          .update({
+            ...data,
+            updatedBy: currentUser.usernameIdp,
+          });
+      } else {
+        // Add new email template settings for the form
+        await FormEmailTemplate.query(transaction).insert({
+          id: uuidv4(),
+          ...data,
+          createdBy: currentUser.usernameIdp,
+        });
+      }
+
+      await transaction.commit();
+
+      return service.readEmailTemplates(formId);
+    } catch (error) {
+      if (transaction) {
+        await transaction.rollback();
+      }
+
+      throw error;
+    }
   },
 };
 
