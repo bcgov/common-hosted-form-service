@@ -147,8 +147,9 @@
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { Formio } from 'vue-formio';
+import { Formio, Utils } from 'vue-formio';
 // import { nextTick } from 'process';
+import _ from 'lodash';
 export default {
   name: 'FormViewerDownloadButton',
   components: {},
@@ -319,6 +320,59 @@ export default {
         this.progress = true;
         this.$emit('toggleBlock', true);
         const formHtml = document.getElementById('validateForm');
+        //Add custom validation to the Components those are not covered by FormIO Validation class
+        await Utils.eachComponent(
+          this.formSchema.components,
+          function (component) {
+            //Need to cover Validation parts those are not performed by FormIO validate funciton
+            switch (component.type) {
+              case 'number':
+                component.validate.custom =
+                  "if(component.validate.required === true || input){valid = _.isNumber(input) ? true : 'Only numbers are allowed in a number field.';}" +
+                  component.validate.custom;
+                break;
+
+              case 'simplenumber':
+                component.validate.custom =
+                  "if(component.validate.required === true || input){valid = _.isNumber(input) ? true : 'Only numbers are allowed in a simple number field.';}" +
+                  component.validate.custom;
+                break;
+
+              case 'simplenumberadvanced':
+                component.validate.custom =
+                  "if(component.validate.required === true || input){valid = _.isNumber(input) ? true : 'Only numbers are allowed in a simple number advanced field.';}" +
+                  component.validate.custom;
+                break;
+
+              case 'simpledatetimeadvanced':
+                component.validate.custom =
+                  "if(component.validate.required === true || input){valid = moment(input, _.replace('" +
+                  component.widget.format +
+                  "','dd','DD'), true).isValid() === true ? true : 'Wrong DateTime format.';}" +
+                  component.validate.custom;
+                break;
+
+              case 'simpledatetime':
+                component.validate.custom =
+                  "if(component.validate.required === true || input){valid = moment(input, _.replace('" +
+                  component.widget.format +
+                  "','dd','DD'), true).isValid() === true ? true : 'Wrong Date/Time format.';}" +
+                  component.validate.custom;
+                break;
+
+              case 'simpletimeadvanced':
+                component.validate.custom =
+                  "if(component.validate.required === true || input){valid = moment(input, _.replace('" +
+                  component.widget.format +
+                  "','dd','DD'), true).isValid() === true ? true : 'Wrong Time format.';}" +
+                  component.validate.custom;
+                break;
+
+              default:
+                break;
+            }
+          }
+        );
         this.vForm = await Formio.createForm(formHtml, this.formSchema, {
           highlightErrors: true,
           alwaysDirty: true,
@@ -371,6 +425,22 @@ export default {
       }
       return time;
     },
+    convertEmptyArraysToNull(obj) {
+      /*
+       * This function is purely made to solve this https://github.com/formio/formio.js/issues/4515 formio bug
+       * where setSubmission mislead payload for submission. In our case if setSubmission got triggered multiple
+       * time it cache submission key's with old values that leads to trigger false validation errors.
+       * This function clear object with some empty arrays to null. Main problem was occured to columns and grids components.
+       */
+
+      if (_.isArray(obj)) {
+        return obj.length === 0 ? null : obj.map(this.convertEmptyArraysToNull);
+      } else if (_.isObject(obj)) {
+        return _.mapValues(obj, this.convertEmptyArraysToNull);
+      } else {
+        return obj;
+      }
+    },
     async validate(element, errors) {
       await this.delay(500);
       //this.checkMemoryUsage();
@@ -414,13 +484,17 @@ export default {
           this.validate(this.Json[this.index], errors);
         });
       } else {
+        this.$nextTick(() => {
+          this.index++;
+          this.value = this.percentage(this.index);
+        });
         this.endValidation(errors);
       }
     },
     async formIOValidation(element) {
       return new Promise((resolve) => {
         this.vForm.setSubmission({
-          data: element,
+          data: this.convertEmptyArraysToNull(element),
         });
         this.vForm
           .submit()
