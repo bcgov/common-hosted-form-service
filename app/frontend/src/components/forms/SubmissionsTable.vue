@@ -782,7 +782,6 @@ export default {
       this.searchEnabled = true;
       this.search = value;
       this.page = 0;
-      this.itemsPerPage = 10;
       if (value === '') {
         this.searchEnabled = false;
         this.itemsPerPage = 10;
