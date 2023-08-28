@@ -88,6 +88,8 @@
       :loading-text="$t('trans.mySubmissionsTable.loadingText')"
       :no-data-text="$t('trans.mySubmissionsTable.noDataText')"
       :lang="lang"
+      :server-items-length="totalSubmissions"
+      @update:options="updateTableOptions"
     >
       <template #[`item.lastEdited`]="{ item }">
         {{ item.lastEdited | formatDateLong }}
@@ -152,8 +154,12 @@ export default {
   data() {
     return {
       headers: [],
+      itemsPerPage: 10,
+      page: 0,
       filterData: [],
       preSelectedData: [],
+      sortBy: undefined,
+      sortDesc: false,
       filterIgnore: [
         {
           value: 'confirmationId',
@@ -185,6 +191,7 @@ export default {
       'formFields',
       'isRTL',
       'lang',
+      'totalSubmissions',
     ]),
     ...mapGetters('auth', ['user']),
     DEFAULT_HEADERS() {
@@ -314,11 +321,32 @@ export default {
       }
       return '';
     },
-
+    async updateTableOptions({ page, itemsPerPage, sortBy, sortDesc }) {
+      this.page = page - 1;
+      if (sortBy[0] === 'date') {
+        this.sortBy = 'createdAt';
+      } else if (sortBy[0] === 'submitter') {
+        this.sortBy = 'createdBy';
+      } else if (sortBy[0] === 'status')
+        this.sortBy = 'formSubmissionStatusCode';
+      else {
+        this.sortBy = sortBy[0];
+      }
+      this.sortDesc = sortDesc[0];
+      this.itemsPerPage = itemsPerPage;
+      await this.populateSubmissionsTable();
+    },
     async populateSubmissionsTable() {
       this.loading = true;
       // Get the submissions for this form
-      await this.fetchSubmissions({ formId: this.formId, userView: true });
+      await this.fetchSubmissions({
+        formId: this.formId,
+        userView: true,
+        itemsPerPage: this.itemsPerPage,
+        page: this.page,
+        sortBy: this.sortBy,
+        sortDesc: this.sortDesc,
+      });
       // Build up the list of forms for the table
       if (this.submissionList) {
         const tableRows = this.submissionList.map((s) => {

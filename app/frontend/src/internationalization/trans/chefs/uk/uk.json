@@ -635,7 +635,9 @@
     "confirmationID": "ID підтвердження:",
     "submittedBy": "Представлений:",
     "cancel": "СКАСУВАТИ",
-    "status": "Статус"
+    "status": "Статус",
+    "updatedAt": "Змінено",
+    "updatedBy": "Змінено"
   },
   "teamManagement": {
     "teamManagement": "Керування командою",

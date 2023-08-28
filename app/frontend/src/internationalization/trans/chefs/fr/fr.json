@@ -635,7 +635,9 @@
     "confirmationID": "Identifiant de validation :",
     "submittedBy": "Proposé par:",
     "cancel": "ANNULER",
-    "status": "Statut"
+    "status": "Statut",
+    "updatedAt": "Modifié",
+    "updatedBy": "Modifié par"
   },
   "teamManagement": {
     "teamManagement": "Gestion d'équipe",
