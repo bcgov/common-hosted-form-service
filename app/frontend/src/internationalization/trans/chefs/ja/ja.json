@@ -2,6 +2,22 @@
   "date": {
     "date": "yyyy-mm-dd"
   },
+  "emailManagement": {
+    "emailManagement": "電子メール管理",
+    "manageForm": "フォームの管理",
+    "submissionConfirmation": "提出の確認"
+  },
+  "emailTemplate": {
+    "body": "体",
+    "save": "保存",
+    "saveEmailTemplateConsoleErrMsg": "フォーム {formId} の電子メール テンプレートの更新中にエラーが発生しました: {error}",
+    "saveEmailTemplateErrMsg": "電子メール テンプレートを更新しようとしたときにエラーが発生しました。",
+    "subject": "主題",
+    "title": "タイトル",
+    "validBodyRequired": "メールの本文を入力してください",
+    "validSubjectRequired": "メールの件名を入力してください",
+    "validTitleRequired": "メールのタイトルを入力してください"
+  },
   "formsTable": {
     "myForms": "私のフォーム",
     "createNewForm": "新しいフォームを作成する",
@@ -29,6 +45,7 @@
     "copyURLToClipboard": "URLをクリップボードにコピー"
   },
   "manageFormActions": {
+    "emailManagement": "電子メール管理",
     "viewSubmissions": "提出物を見る",
     "teamManagement": "チーム管理",
     "deleteForm": "フォームの削除",
@@ -883,6 +900,8 @@
       "fecthingFormBuilderCompsConsErrMsg": "フォームビルダーコンポーネントの取得エラー: {error}"
     },
     "form": {
+      "fetchEmailTemplatesConsErrMsg": "{formId} の電子メール テンプレートの読み込みエラー: {error}",
+      "fetchEmailTemplatesErrMsg": "このフォームの電子メール テンプレートを取得中にエラーが発生しました",
       "getCurrUserFormsErrMsg": "フォームの取得中にエラーが発生しました。",
       "getCurrUserFormsConsErrMsg": "ユーザーデータ取得エラー: {error}",
       "getUserFormPermErrMsg": "このフォームのユーザー データを取得中にエラーが発生しました。",
@@ -906,6 +925,8 @@
       "publishDraftErrMsg": "公開中にエラーが発生しました。",
       "publishDraftConsErrMsg": "{draftId} の公開エラー: {error}",
       "toggleVersnPublConsErrMsg": "toggleVersionPublish {versionId} {publish} でのエラー: {error}",
+      "updateEmailTemplateConsErrMsg": "フォーム {formId} の電子メール テンプレートの更新中にエラーが発生しました: {error}",
+      "updateEmailTemplateErrMsg": "このフォームの電子メール テンプレートを更新中にエラーが発生しました。",
       "updateFormErrMsg": "このフォームの設定を更新中にエラーが発生しました。",
       "updateFormConsErrMsg": "フォーム {id} の更新中にエラーが発生しました: {error}",
       "deleteSubmissionNotifyMsg": "提出物は正常に削除されました。",
