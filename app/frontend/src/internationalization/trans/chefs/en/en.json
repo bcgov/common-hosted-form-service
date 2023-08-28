@@ -47,7 +47,7 @@
     "status": "Status",
     "update": "Update",
     "cancel": "Cancel",
-    "eventSubscription" : "Event Subscription"
+    "eventSubscription": "Event Subscription"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Press <kbd>enter</kbd> or <kbd>,</kbd> or <kbd>space</kbd> to add multiple email addresses",
@@ -144,9 +144,9 @@
     "password": "password",
     "hideSecret": "Hide Secret",
     "showSecret": "Show Secret",
-    "key" : "Key",
-    "saveSettingsErrMsg" : "An error occurred while attempting to update the settings for this form.",
-    "updateSettingsConsoleErrMsg" : "Error updating settings for form  {formId} : {error}"
+    "key": "Key",
+    "saveSettingsErrMsg": "An error occurred while attempting to update the settings for this form.",
+    "updateSettingsConsoleErrMsg": "Error updating settings for form  {formId} : {error}"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",
@@ -285,7 +285,6 @@
     "notificationMsg": "Failed to get user from RBAC, see console",
     "notificationConsErr": "Error getting User from RBAC"
   },
-  "fcProactiveHelp": {},
   "baseAuthButton": {
     "logout": "Logout",
     "login": "Login"
@@ -363,13 +362,17 @@
     "assement": "and to complete assessments as required."
   },
   "requestReceipt": {
+    "emailPriority": "Email Priority",
     "emailReceipt": "Email a receipt of this submission",
+    "high": "High",
+    "low": "Low",
+    "normal": "Normal",
     "send": "SEND",
-    "sendToEmailAddress": "Send to E-mail Address",
+    "sendToEmailAddress": "Send to Email Address",
     "emailSent": "An email has been sent to {to}.",
     "sendingEmailErrMsg": "An error occurred while attempting to send your email.",
     "sendingEmailConsErrMsg": "Email confirmation to {to} failed: {error}",
-    "emailRequired": "E-mail is required"
+    "emailRequired": "Email is required"
   },
   "submissionsTable": {
     "submissions": "Submissions",
@@ -452,8 +455,8 @@
     "searchInputLength": "Search input for BCeID username/email must be greater than 6 characters.",
     "exactBCEIDSearch": "Email searches for BCeID must be exact.",
     "getUsersErrMsg": "Error getting users: {error}",
-    "exactEmailOrUsername": "Enter an exact e-mail or username.",
-    "requiredFiled": "Enter a name, e-mail, or username"
+    "exactEmailOrUsername": "Enter an exact email or username.",
+    "requiredFiled": "Enter a name, email, or username"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "View This Submission",
@@ -632,7 +635,9 @@
     "confirmationID": "Confirmation ID:",
     "submittedBy": "Submitted By:",
     "cancel": "CANCEL",
-    "status": "Status"
+    "status": "Status",
+    "updatedAt": "Modified",
+    "updatedBy": "Modified By"
   },
   "teamManagement": {
     "teamManagement": "Team Management",
@@ -772,8 +777,8 @@
     "add": "Add",
     "mustSelectAUser": "You must select at least one role to add this user.",
     "addNewMember": "Add a New Member",
-    "enterUsername": "Enter a name, e-mail, or username",
-    "enterExactUsername": "Enter an exact e-mail or username",
+    "enterUsername": "Enter a name, email, or username",
+    "enterExactUsername": "Enter an exact email or username",
     "BCeIDInputSearchMaxLen": "Search input for BCeID username/email must be greater than 6 characters.",
     "BCeIDMustBeExact": "Email searches for BCeID must be exact.",
     "errorGettingUsers": "Error getting users {error}"
@@ -862,7 +867,7 @@
       "fetchFormFieldsErrMsg": "An error occurred while fetching the list of fields for this form.",
       "fetchFormFieldsConsErrMsg": "Error getting form {formId}: {error}",
       "publishDraftErrMsg": "An error occurred while publishing.",
-      "publishDraftConsErrMsg": "Error publishing ${draftId}: ${error}",
+      "publishDraftConsErrMsg": "Error publishing {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "Error in toggleVersionPublish {versionId} {publish}: {error}",
       "updateFormErrMsg": "An error occurred while updating the settings for this form.",
       "updateFormConsErrMsg": "Error updating form {id}: {error}",
@@ -881,7 +886,7 @@
       "fecthSubmissnUsersErrMsg": "An error occurred while fetching the recipient email for this submission.",
       "fecthSubmissnUsersConsErrMsg": "Error getting recipient email for submission {formSubmissionId}: {error}",
       "fetchSubmissnErrMsg": "An error occurred while fetching this submission.",
-      "fetchSubmissnConsErrMsg": "Error getting submission {submissionId}: ${error}",
+      "fetchSubmissnConsErrMsg": "Error getting submission {submissionId}: {error}",
       "fetchFormCSVExptFieldsErrMsg": "An error occurred while fetching the list of fields for this form.",
       "fetchFormCSVExptFieldsConsErrMsg": "Error getting form {formId}: {error}",
       "fetchSubmissnsErrMsg": "An error occurred while fetching submissions for this form.",
@@ -907,7 +912,6 @@
       "saveSubscriptionSettingsNotifyMsg": "Subscription settings for this form has been saved.",
       "saveSubscriptionSettingsErrMsg": "An error occurred while trying to save subscription settings.",
       "saveSubscriptionSettingsConsErrMsg": "Error saving subscription settings for form {formId}: {error}"
-      
     }
   },
   "permissionUtils": {

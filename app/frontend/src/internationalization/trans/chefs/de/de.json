@@ -47,10 +47,10 @@
     "status": "Status",
     "update": "Aktualisieren",
     "cancel": "Stornieren",
-    "eventSubscription" : "Ereignisabonnement"
+    "eventSubscription": "Ereignisabonnement"
   },
   "formSettings": {
-    "pressToAddMultiEmail": "Drücken Sie <kbd>die Eingabetaste</kbd> oder <kbd>die Leertaste</kbd> <kbd>,</kbd> um mehrere E-Mail-Adressen hinzuzufügen",
+    "pressToAddMultiEmail": "Drücken Sie <kbd>die Eingabetaste</kbd> oder <kbd>die Leertaste</kbd> oder <kbd>,</kbd> um mehrere E-Mail-Adressen hinzuzufügen",
     "allowMultiDraft": "Erlauben Sie das Hochladen <strong>mehrerer Entwürfe</strong>",
     "formTitle": "Formulartitel",
     "formDescription": "Formularbeschreibung",
@@ -144,9 +144,9 @@
     "password": "Passwort",
     "hideSecret": "Geheimnis verbergen",
     "showSecret": "Geheimnis anzeigen",
-    "key" : "Taste",
-    "saveSettingsErrMsg" : "Beim Versuch, die Einstellungen für dieses Formular zu aktualisieren, ist ein Fehler aufgetreten.",
-    "updateSettingsConsoleErrMsg" : "Fehler beim Aktualisieren der Einstellungen für das Formular {formId}: {error}"
+    "key": "Taste",
+    "saveSettingsErrMsg": "Beim Versuch, die Einstellungen für dieses Formular zu aktualisieren, ist ein Fehler aufgetreten.",
+    "updateSettingsConsoleErrMsg": "Fehler beim Aktualisieren der Einstellungen für das Formular {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "Haftungsausschluss",
@@ -362,7 +362,11 @@
     "assement": "und bei Bedarf Beurteilungen durchzuführen."
   },
   "requestReceipt": {
+    "emailPriority": "E-Mail-Priorität",
     "emailReceipt": "Senden Sie eine Quittung für diese Einreichung per E-Mail",
+    "high": "Hoch",
+    "low": "Niedrig",
+    "normal": "Normal",
     "send": "SCHICKEN",
     "sendToEmailAddress": "An E-Mail-Adresse senden",
     "emailSent": "Eine E-Mail wurde an {to} gesendet.",
@@ -631,7 +635,9 @@
     "confirmationID": "Bestätigungs-ID:",
     "submittedBy": "Eingereicht von:",
     "cancel": "STORNIEREN",
-    "status": "Status"
+    "status": "Status",
+    "updatedAt": "Geändert",
+    "updatedBy": "Angepasst von"
   },
   "teamManagement": {
     "teamManagement": "Team Management",

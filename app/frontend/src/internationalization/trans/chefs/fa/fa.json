@@ -144,9 +144,9 @@
     "password": "کلمه عبور",
     "hideSecret": "پنهان کردن راز",
     "showSecret": "نمایش راز",
-    "key" : "کلید",
-    "saveSettingsErrMsg" : "هنگام تلاش برای به‌روزرسانی تنظیمات این فرم خطایی روی داد.",
-    "updateSettingsConsoleErrMsg" : "خطا در به‌روزرسانی تنظیمات فرم {formId}: {error}"
+    "key": "کلید",
+    "saveSettingsErrMsg": "هنگام تلاش برای به‌روزرسانی تنظیمات این فرم خطایی روی داد.",
+    "updateSettingsConsoleErrMsg": "خطا در به‌روزرسانی تنظیمات فرم {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "سلب مسئولیت",
@@ -362,7 +362,11 @@
     "assement": "و ارزیابی ها را در صورت لزوم تکمیل کنید."
   },
   "requestReceipt": {
+    "emailPriority": "اولویت ایمیل",
     "emailReceipt": "رسید این ارسال را ایمیل کنید",
+    "high": "بالا",
+    "low": "کم",
+    "normal": "طبیعی",
     "send": "ارسال",
     "sendToEmailAddress": "ارسال به آدرس ایمیل",
     "emailSent": "یک ایمیل به {to} ارسال شده است.",
@@ -631,7 +635,9 @@
     "confirmationID": "شناسه تایید:",
     "submittedBy": "ارسال شده توسط:",
     "cancel": "لغو",
-    "status": "وضعیت"
+    "status": "وضعیت",
+    "updatedAt": "اصلاح شده",
+    "updatedBy": "تغییر داده شده توسط"
   },
   "teamManagement": {
     "teamManagement": "مدیریت تیم",
@@ -937,7 +943,6 @@
       "saveSubscriptionSettingsNotifyMsg": "تنظیمات اشتراک برای این فرم ذخیره شده است.",
       "saveSubscriptionSettingsErrMsg": "هنگام تلاش برای ذخیره تنظیمات اشتراک خطایی روی داد.",
       "saveSubscriptionSettingsConsErrMsg": "خطا در ذخیره تنظیمات اشتراک برای فرم {formId}: {error}"
-
     }
   },
   "admin": {

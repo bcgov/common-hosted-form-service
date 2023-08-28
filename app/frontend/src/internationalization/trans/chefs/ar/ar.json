@@ -144,9 +144,9 @@
     "password": "كلمة المرور",
     "hideSecret": "إخفاء السر",
     "showSecret": "إظهار السر",
-    "key" : "مفتاح",
-    "saveSettingsErrMsg" : "حدث خطأ أثناء محاولة تحديث إعدادات هذا النموذج.",
-    "updateSettingsConsoleErrMsg" : "خطأ في تحديث إعدادات النموذج {formId}: {error}"
+    "key": "مفتاح",
+    "saveSettingsErrMsg": "حدث خطأ أثناء محاولة تحديث إعدادات هذا النموذج.",
+    "updateSettingsConsoleErrMsg": "خطأ في تحديث إعدادات النموذج {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "تنصل",
@@ -362,7 +362,11 @@
     "assement": "واستكمال التقييمات كما هو مطلوب."
   },
   "requestReceipt": {
+    "emailPriority": "أولوية البريد الإلكتروني",
     "emailReceipt": "إرسال إيصال هذا الإرسال بالبريد الإلكتروني",
+    "high": "عالي",
+    "low": "قليل",
+    "normal": "طبيعي",
     "send": "يرسل",
     "sendToEmailAddress": "أرسل إلى عنوان البريد الإلكتروني",
     "emailSent": "تم إرسال بريد إلكتروني إلى {to}.",
@@ -631,7 +635,9 @@
     "confirmationID": "معرف التأكيد:",
     "submittedBy": "مقدم من:",
     "cancel": "يلغي",
-    "status": "حالة"
+    "status": "حالة",
+    "updatedAt": "معدل",
+    "updatedBy": "تم التعديل بواسطة"
   },
   "teamManagement": {
     "teamManagement": "ادارة فريق",

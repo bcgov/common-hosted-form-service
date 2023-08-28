@@ -144,9 +144,9 @@
     "password": "パスワード",
     "hideSecret": "秘密を隠す",
     "showSecret": "シークレットを表示",
-    "key" : "鍵",
-    "saveSettingsErrMsg" : "このフォームの設定を更新しようとしたときにエラーが発生しました。",
-    "updateSettingsConsoleErrMsg" : "フォーム {formId} の設定更新中にエラーが発生しました: {error}"
+    "key": "鍵",
+    "saveSettingsErrMsg": "このフォームの設定を更新しようとしたときにエラーが発生しました。",
+    "updateSettingsConsoleErrMsg": "フォーム {formId} の設定更新中にエラーが発生しました: {error}"
   },
   "apiKey": {
     "disclaimer": "免責事項",
@@ -362,7 +362,11 @@
     "assement": "必要に応じて評価を完了します。"
   },
   "requestReceipt": {
+    "emailPriority": "電子メールの優先順位",
     "emailReceipt": "この提出物の受領書を電子メールで送信する",
+    "high": "高い",
+    "low": "低い",
+    "normal": "普通",
     "send": "送信",
     "sendToEmailAddress": "電子メールアドレスに送信",
     "emailSent": "電子メールが {to} に送信されました。",
@@ -631,7 +635,9 @@
     "confirmationID": "確認ID:",
     "submittedBy": "から提出された：",
     "cancel": "キャンセル",
-    "status": "スターテス"
+    "status": "スターテス",
+    "updatedAt": "修正済み",
+    "updatedBy": "によって変更"
   },
   "teamManagement": {
     "teamManagement": "チーム管理",

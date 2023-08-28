@@ -144,9 +144,9 @@
     "password": "password",
     "hideSecret": "Itago ang Lihim",
     "showSecret": "Ipakita ang Lihim",
-    "key" : "Susi",
-    "saveSettingsErrMsg" : "May naganap na error habang sinusubukang i-update ang mga setting para sa form na ito.",
-    "updateSettingsConsoleErrMsg" : "Error sa pag-update ng mga setting para sa form {formId} : {error}"
+    "key": "Susi",
+    "saveSettingsErrMsg": "May naganap na error habang sinusubukang i-update ang mga setting para sa form na ito.",
+    "updateSettingsConsoleErrMsg": "Error sa pag-update ng mga setting para sa form {formId} : {error}"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",
@@ -362,13 +362,17 @@
     "assement": "at upang kumpletuhin ang mga pagtatasa kung kinakailangan."
   },
   "requestReceipt": {
+    "emailPriority": "Priyoridad sa Email",
     "emailReceipt": "Mag-email ng resibo ng pagsusumiteng ito",
+    "high": "Mataas",
+    "low": "Mababa",
+    "normal": "Normal",
     "send": "IPADALA",
-    "sendToEmailAddress": "Ipadala sa E-mail Address",
+    "sendToEmailAddress": "Ipadala sa Email Address",
     "emailSent": "Isang email ang ipinadala kay {to}.",
     "sendingEmailErrMsg": "May naganap na error habang sinusubukang ipadala ang iyong email.",
     "sendingEmailConsErrMsg": "Nabigo ang pagkumpirma sa email kay {to}: {error}",
-    "emailRequired": "Kinakailangan ang e-mail"
+    "emailRequired": "Kinakailangan ang email"
   },
   "submissionsTable": {
     "submissions": "Mga pagsusumite",
@@ -631,7 +635,9 @@
     "confirmationID": "ID ng Pagkumpirma:",
     "submittedBy": "Ipinasa ni:",
     "cancel": "KANSELAHIN",
-    "status": "Katayuan"
+    "status": "Katayuan",
+    "updatedAt": "Binago",
+    "updatedBy": "Binago ni"
   },
   "teamManagement": {
     "teamManagement": "Pamamahala ng Koponan",
@@ -937,7 +943,6 @@
       "saveSubscriptionSettingsNotifyMsg": "Nai-save na ang mga setting ng subscription para sa form na ito.",
       "saveSubscriptionSettingsErrMsg": "May naganap na error habang sinusubukang i-save ang mga setting ng subscription.",
       "saveSubscriptionSettingsConsErrMsg": "Error sa pag-save ng mga setting ng subscription para sa form {formId}: {error}"
-      
     }
   },
   "admin": {

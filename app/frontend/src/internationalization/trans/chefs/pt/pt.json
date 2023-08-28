@@ -144,9 +144,9 @@
     "password": "senha",
     "hideSecret": "Ocultar Segredo",
     "showSecret": "Mostrar Segredo",
-    "key" : "Chave",
-    "saveSettingsErrMsg" : "Ocorreu um erro ao tentar atualizar as configurações deste formulário.",
-    "updateSettingsConsoleErrMsg" : "Erro ao atualizar as configurações do formulário {formId}: {error}"
+    "key": "Chave",
+    "saveSettingsErrMsg": "Ocorreu um erro ao tentar atualizar as configurações deste formulário.",
+    "updateSettingsConsoleErrMsg": "Erro ao atualizar as configurações do formulário {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "Isenção de responsabilidade",
@@ -362,7 +362,11 @@
     "assement": "e para completar as avaliações conforme necessário."
   },
   "requestReceipt": {
+    "emailPriority": "Prioridade de e-mail",
     "emailReceipt": "Enviar por e-mail o recibo desta submissão",
+    "high": "Alta",
+    "low": "Baixo",
+    "normal": "Normal",
     "send": "ENVIAR",
     "sendToEmailAddress": "Enviar para endereço de e-mail",
     "emailSent": "Um e-mail foi enviado para {to}.",
@@ -631,7 +635,9 @@
     "confirmationID": "ID de confirmação:",
     "submittedBy": "Enviado por:",
     "cancel": "CANCELAR",
-    "status": "Status"
+    "status": "Status",
+    "updatedAt": "Modificada",
+    "updatedBy": "Modificado por"
   },
   "teamManagement": {
     "teamManagement": "Gerenciamento de equipe",

@@ -144,9 +144,9 @@
     "password": "mật khẩu",
     "hideSecret": "Ẩn bí mật",
     "showSecret": "Hiển thị bí mật",
-    "key" : "Chìa khóa",
-    "saveSettingsErrMsg" : "Đã xảy ra lỗi khi cố cập nhật cài đặt cho biểu mẫu này.",
-    "updateSettingsConsoleErrMsg" : "Lỗi khi cập nhật cài đặt cho biểu mẫu {formId} : {error}"
+    "key": "Chìa khóa",
+    "saveSettingsErrMsg": "Đã xảy ra lỗi khi cố cập nhật cài đặt cho biểu mẫu này.",
+    "updateSettingsConsoleErrMsg": "Lỗi khi cập nhật cài đặt cho biểu mẫu {formId} : {error}"
   },
   "apiKey": {
     "disclaimer": "từ chối trách nhiệm",
@@ -362,7 +362,11 @@
     "assement": "và hoàn thành các đánh giá theo yêu cầu."
   },
   "requestReceipt": {
+    "emailPriority": "Ưu tiên email",
     "emailReceipt": "Gửi email biên nhận của bài nộp này",
+    "high": "Cao",
+    "low": "Thấp",
+    "normal": "Bình thường",
     "send": "GỬI",
     "sendToEmailAddress": "Gửi đến địa chỉ email",
     "emailSent": "Một email đã được gửi tới {to}.",
@@ -631,7 +635,9 @@
     "confirmationID": "ID xác nhận:",
     "submittedBy": "Gửi bởi:",
     "cancel": "HỦY BỎ",
-    "status": "Trạng thái"
+    "status": "Trạng thái",
+    "updatedAt": "đã sửa đổi",
+    "updatedBy": "sửa đổi bởi"
   },
   "teamManagement": {
     "teamManagement": "quản lý nhóm",

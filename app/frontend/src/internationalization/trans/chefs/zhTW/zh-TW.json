@@ -144,9 +144,9 @@
     "password": "密碼",
     "hideSecret": "隱藏秘密",
     "showSecret": "顯示秘密",
-    "key" : "鑰匙",
-    "saveSettingsErrMsg" : "嘗試更新此表單的設置時發生錯誤。",
-    "updateSettingsConsoleErrMsg" : "更新表單 {formId} 的設置時出錯：{error}"
+    "key": "鑰匙",
+    "saveSettingsErrMsg": "嘗試更新此表單的設置時發生錯誤。",
+    "updateSettingsConsoleErrMsg": "更新表單 {formId} 的設置時出錯：{error}"
   },
   "apiKey": {
     "disclaimer": "免責聲明",
@@ -362,7 +362,11 @@
     "assement": "並按要求完成評估。"
   },
   "requestReceipt": {
+    "emailPriority": "電子郵件優先",
     "emailReceipt": "通過電子郵件發送此提交的收據",
+    "high": "高的",
+    "low": "低的",
+    "normal": "普通的",
     "send": "發送",
     "sendToEmailAddress": "發送至電子郵件地址",
     "emailSent": "一封電子郵件已發送至 {to}。",
@@ -631,7 +635,9 @@
     "confirmationID": "確認ID：",
     "submittedBy": "由...所提交：",
     "cancel": "取消",
-    "status": "地位"
+    "status": "地位",
+    "updatedAt": "修改的",
+    "updatedBy": "修改者"
   },
   "teamManagement": {
     "teamManagement": "團隊管理",

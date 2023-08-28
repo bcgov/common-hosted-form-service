@@ -144,9 +144,9 @@
     "password": "mot de passe",
     "hideSecret": "Cacher le secret",
     "showSecret": "Afficher le secret",
-    "key" : "Clé",
-    "saveSettingsErrMsg" : "Une erreur s'est produite lors de la tentative de mise à jour des paramètres de ce formulaire.",
-    "updateSettingsConsoleErrMsg" : "Erreur lors de la mise à jour des paramètres du formulaire {formId} : {error}"
+    "key": "Clé",
+    "saveSettingsErrMsg": "Une erreur s'est produite lors de la tentative de mise à jour des paramètres de ce formulaire.",
+    "updateSettingsConsoleErrMsg": "Erreur lors de la mise à jour des paramètres du formulaire {formId} : {error}"
   },
   "apiKey": {
     "disclaimer": "Clause de non-responsabilité",
@@ -362,7 +362,11 @@
     "assement": "et effectuer les évaluations nécessaires."
   },
   "requestReceipt": {
+    "emailPriority": "Priorité aux e-mails",
     "emailReceipt": "Envoyer un reçu de cette soumission par e-mail",
+    "high": "Haut",
+    "low": "Faible",
+    "normal": "Normale",
     "send": "ENVOYER",
     "sendToEmailAddress": "Envoyer à l'adresse e-mail",
     "emailSent": "Un e-mail a été envoyé à {to}.",
@@ -631,7 +635,9 @@
     "confirmationID": "Identifiant de validation :",
     "submittedBy": "Proposé par:",
     "cancel": "ANNULER",
-    "status": "Statut"
+    "status": "Statut",
+    "updatedAt": "Modifié",
+    "updatedBy": "Modifié par"
   },
   "teamManagement": {
     "teamManagement": "Gestion d'équipe",
@@ -937,7 +943,6 @@
       "saveSubscriptionSettingsNotifyMsg": "Les paramètres d'abonnement pour ce formulaire ont été enregistrés.",
       "saveSubscriptionSettingsErrMsg": "Une erreur s'est produite lors de la tentative d'enregistrement des paramètres d'abonnement.",
       "saveSubscriptionSettingsConsErrMsg": "Erreur lors de l'enregistrement des paramètres d'abonnement pour le formulaire {formId} : {error}"
-      
     }
   },
   "admin": {

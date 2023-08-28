@@ -47,7 +47,7 @@
     "status": "Estado",
     "update": "Actualizar",
     "cancel": "Cancelar",
-    "eventSubscription" : "Suscripción a eventos"
+    "eventSubscription": "Suscripción a eventos"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Presiona <kbd>enter</kbd> o <kbd>,</kbd> o <kbd>espacio</kbd> para agregar varias direcciones de correo electrónico",
@@ -144,9 +144,9 @@
     "password": "contraseña",
     "hideSecret": "Ocultar secreto",
     "showSecret": "Mostrar secreto",
-    "key" : "Llave",
-    "saveSettingsErrMsg" : "Se produjo un error al intentar actualizar la configuración de este formulario.",
-    "updateSettingsConsoleErrMsg" : "Error al actualizar la configuración del formulario {formId}: {error}"
+    "key": "Llave",
+    "saveSettingsErrMsg": "Se produjo un error al intentar actualizar la configuración de este formulario.",
+    "updateSettingsConsoleErrMsg": "Error al actualizar la configuración del formulario {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "Descargo de responsabilidad",
@@ -362,13 +362,17 @@
     "assement": "y para completar las evaluaciones según sea necesario."
   },
   "requestReceipt": {
+    "emailPriority": "Prioridad de correo electrónico",
     "emailReceipt": "Enviar por correo electrónico un recibo de este envío",
+    "high": "Alta",
+    "low": "Baja",
+    "normal": "Normal",
     "send": "ENVIAR",
     "sendToEmailAddress": "Enviar a dirección de correo electrónico",
     "emailSent": "Se ha enviado un correo electrónico a {to}.",
     "sendingEmailErrMsg": "Ocurrió un error al intentar enviar su correo electrónico.",
     "sendingEmailConsErrMsg": "Error de confirmación por correo electrónico a {to}: {error}",
-    "emailRequired": "Correo electronico es requerido"
+    "emailRequired": "Correo electrónico es requerido"
   },
   "submissionsTable": {
     "submissions": "Presentaciones",
@@ -631,7 +635,9 @@
     "confirmationID": "Identificación de confirmación:",
     "submittedBy": "Presentado por:",
     "cancel": "CANCELAR",
-    "status": "Estado"
+    "status": "Estado",
+    "updatedAt": "Modificado",
+    "updatedBy": "Modificado por"
   },
   "teamManagement": {
     "teamManagement": "Gestión de equipos",

@@ -144,9 +144,9 @@
     "password": "ਪਾਸਵਰਡ",
     "hideSecret": "ਗੁਪਤ ਲੁਕਾਓ",
     "showSecret": "ਗੁਪਤ ਦਿਖਾਓ",
-    "key" : "ਕੁੰਜੀ",
-    "saveSettingsErrMsg" : "ਇਸ ਫਾਰਮ ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
-    "updateSettingsConsoleErrMsg" : "ਫਾਰਮ {formId} ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
+    "key": "ਕੁੰਜੀ",
+    "saveSettingsErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+    "updateSettingsConsoleErrMsg": "ਫਾਰਮ {formId} ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
   },
   "apiKey": {
     "disclaimer": "ਬੇਦਾਅਵਾ",
@@ -362,13 +362,17 @@
     "assement": "ਅਤੇ ਲੋੜ ਅਨੁਸਾਰ ਮੁਲਾਂਕਣਾਂ ਨੂੰ ਪੂਰਾ ਕਰਨਾ।"
   },
   "requestReceipt": {
+    "emailPriority": "ਈਮੇਲ ਤਰਜੀਹ",
     "emailReceipt": "ਇਸ ਸਬਮਿਸ਼ਨ ਦੀ ਇੱਕ ਰਸੀਦ ਈਮੇਲ ਕਰੋ",
+    "high": "ਉੱਚ",
+    "low": "ਘੱਟ",
+    "normal": "ਸਧਾਰਣ",
     "send": "ਭੇਜੋ",
-    "sendToEmailAddress": "ਈ-ਮੇਲ ਪਤੇ 'ਤੇ ਭੇਜੋ",
+    "sendToEmailAddress": "ਈਮੇਲ ਪਤੇ 'ਤੇ ਭੇਜੋ",
     "emailSent": "{to} ਨੂੰ ਇੱਕ ਈਮੇਲ ਭੇਜੀ ਗਈ ਹੈ।",
     "sendingEmailErrMsg": "ਤੁਹਾਡੀ ਈਮੇਲ ਭੇਜਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
     "sendingEmailConsErrMsg": "{to} ਨੂੰ ਈਮੇਲ ਪੁਸ਼ਟੀਕਰਨ ਅਸਫਲ: {error}",
-    "emailRequired": "ਈ-ਮੇਲ ਦੀ ਲੋੜ ਹੈ"
+    "emailRequired": "ਈਮੇਲ ਦੀ ਲੋੜ ਹੈ"
   },
   "submissionsTable": {
     "submissions": "ਬੇਨਤੀਆਂ",
@@ -631,7 +635,9 @@
     "confirmationID": "ਪੁਸ਼ਟੀ ID:",
     "submittedBy": "ਦੁਆਰਾ ਦਰਜ:",
     "cancel": "ਰੱਦ ਕਰੋ",
-    "status": "ਸਥਿਤੀ"
+    "status": "ਸਥਿਤੀ",
+    "updatedAt": "ਸੋਧਿਆ ਗਿਆ",
+    "updatedBy": "ਦੁਆਰਾ ਸੋਧਿਆ ਗਿਆ"
   },
   "teamManagement": {
     "teamManagement": "ਟੀਮ ਪ੍ਰਬੰਧਨ",

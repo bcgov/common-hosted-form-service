@@ -362,7 +362,11 @@
     "assement": "और आवश्यकतानुसार मूल्यांकन पूरा करना।"
   },
   "requestReceipt": {
+    "emailPriority": "ईमेल प्राथमिकता",
     "emailReceipt": "इस सबमिशन की रसीद ईमेल करें",
+    "high": "उच्च",
+    "low": "कम",
+    "normal": "सामान्य",
     "send": "भेजना",
     "sendToEmailAddress": "ई-मेल पते पर भेजें",
     "emailSent": "एक ईमेल इन्हें भेजी गई है {to}।",
@@ -631,7 +635,9 @@
     "confirmationID": "पुष्टिकरण आईडी:",
     "submittedBy": "द्वारा प्रस्तुत:",
     "cancel": "रद्द करना",
-    "status": "दर्जा"
+    "status": "दर्जा",
+    "updatedAt": "संशोधित",
+    "updatedBy": "द्वारा संशोधित"
   },
   "teamManagement": {
     "teamManagement": "टीम प्रबंधन",

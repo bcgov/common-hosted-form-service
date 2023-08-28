@@ -131,6 +131,8 @@
       :loading-text="$t('trans.submissionsTable.loadingText')"
       :no-data-text="$t('trans.submissionsTable.noDataText')"
       :lang="lang"
+      :server-items-length="totalSubmissions"
+      @update:options="updateTableOptions"
     >
       <template v-slot:[`header.event`]>
         <span v-if="!deletedOnly">
@@ -177,6 +179,9 @@
 
       <template #[`item.date`]="{ item }">
         {{ item.date | formatDateLong }}
+      </template>
+      <template #[`item.updatedAt`]="{ item }">
+        {{ item.updatedAt | formatDateLong }}
       </template>
       <template #[`item.status`]="{ item }">
         {{ item.status }}
@@ -339,7 +344,11 @@ export default {
     return {
       currentUserOnly: false,
       deletedOnly: false,
+      itemsPerPage: 10,
+      page: 0,
       filterData: [],
+      sortBy: undefined,
+      sortDesc: false,
       filterIgnore: [
         {
           value: 'confirmationId',
@@ -366,7 +375,6 @@ export default {
       submissionsCheckboxes: [],
       showDeleteDialog: false,
       selectedSubmissions: [],
-
       singleSubmissionDelete: false,
       singleSubmissionRestore: false,
       deleteItem: {},
@@ -399,9 +407,9 @@ export default {
       'deletedSubmissions',
       'isRTL',
       'lang',
+      'totalSubmissions',
     ]),
     ...mapGetters('auth', ['user']),
-
     checkFormManage() {
       return this.permissions.some((p) => FormManagePermissions.includes(p));
     },
@@ -472,8 +480,23 @@ export default {
       );
     },
 
+    MODIFY_HEADERS() {
+      return [
+        {
+          text: this.$t('trans.formSubmission.updatedAt'),
+          align: 'start',
+          value: 'updatedAt',
+        },
+        {
+          text: this.$t('trans.formSubmission.updatedBy'),
+          align: 'start',
+          value: 'updatedBy',
+        },
+      ];
+    },
+
     SELECT_COLUMNS_HEADERS() {
-      return [...this.FILTER_HEADERS].concat(
+      return [...this.FILTER_HEADERS, ...this.MODIFY_HEADERS].concat(
         this.formFields.map((ff) => {
           return { text: ff, value: ff, align: 'end' };
         })
@@ -520,6 +543,18 @@ export default {
                 text: this.$t('trans.submissionsTable.status'),
                 align: 'start',
                 value: 'status',
+              };
+            } else if (column === 'updatedAt') {
+              return {
+                text: this.$t('trans.formSubmission.updatedAt'),
+                align: 'start',
+                value: 'updatedAt',
+              };
+            } else if (column === 'updatedBy') {
+              return {
+                text: this.$t('trans.formSubmission.updatedBy'),
+                align: 'start',
+                value: 'updatedBy',
               };
             } else {
               return {
@@ -616,76 +651,97 @@ export default {
       });
       this.refreshSubmissions();
     },
-
+    async updateTableOptions({ page, itemsPerPage, sortBy, sortDesc }) {
+      this.page = page - 1;
+      if (sortBy[0] === 'date') {
+        this.sortBy = 'createdAt';
+      } else if (sortBy[0] === 'submitter') {
+        this.sortBy = 'createdBy';
+      } else if (sortBy[0] === 'status')
+        this.sortBy = 'formSubmissionStatusCode';
+      else {
+        this.sortBy = sortBy[0];
+      }
+      this.sortDesc = sortDesc[0];
+      this.itemsPerPage = itemsPerPage;
+      await this.getSubmissionData();
+    },
+    async getSubmissionData() {
+      let criteria = {
+        formId: this.formId,
+        itemsPerPage: this.itemsPerPage,
+        page: this.page,
+        filterformSubmissionStatusCode: true,
+        sortBy: this.sortBy,
+        sortDesc: this.sortDesc,
+        createdAt: Object.values({
+          minDate:
+            this.userFormPreferences &&
+            this.userFormPreferences.preferences &&
+            this.userFormPreferences.preferences.filter
+              ? moment(
+                  this.userFormPreferences.preferences.filter[0],
+                  'YYYY-MM-DD hh:mm:ss'
+                )
+                  .utc()
+                  .format()
+              : moment()
+                  .subtract(50, 'years')
+                  .utc()
+                  .format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Min Date)
+          maxDate:
+            this.userFormPreferences &&
+            this.userFormPreferences.preferences &&
+            this.userFormPreferences.preferences.filter
+              ? moment(
+                  this.userFormPreferences.preferences.filter[1],
+                  'YYYY-MM-DD hh:mm:ss'
+                )
+                  .utc()
+                  .format()
+              : moment().add(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Max Date)
+        }),
+        deletedOnly: this.deletedOnly,
+        createdBy: this.currentUserOnly
+          ? `${this.user.username}@${this.user.idp}`
+          : '',
+      };
+      await this.fetchSubmissions(criteria);
+      if (this.submissionList) {
+        const tableRows = this.submissionList.map((s) => {
+          const fields = {
+            confirmationId: s.confirmationId,
+            date: s.createdAt,
+            updatedAt: s.updatedBy ? s.updatedAt : null,
+            updatedBy: s.updatedBy,
+            formId: s.formId,
+            status: s.formSubmissionStatusCode,
+            submissionId: s.submissionId,
+            submitter: s.createdBy,
+            versionId: s.formVersionId,
+            deleted: s.deleted,
+            lateEntry: s.lateEntry,
+          };
+          // Add any custom columns
+          this.userColumns.forEach((col) => {
+            fields[col] = s[col];
+          });
+          return fields;
+        });
+        this.submissionTable = tableRows;
+        this.submissionsCheckboxes = new Array(
+          this.submissionTable.length
+        ).fill(false);
+      }
+    },
     async populateSubmissionsTable() {
       try {
         this.loading = true;
         // Get user prefs for this form
         await this.getFormPreferencesForCurrentUser(this.formId);
         // Get the submissions for this form
-        let criteria = {
-          formId: this.formId,
-          createdAt: Object.values({
-            minDate:
-              this.userFormPreferences &&
-              this.userFormPreferences.preferences &&
-              this.userFormPreferences.preferences.filter
-                ? moment(
-                    this.userFormPreferences.preferences.filter[0],
-                    'YYYY-MM-DD hh:mm:ss'
-                  )
-                    .utc()
-                    .format()
-                : moment()
-                    .subtract(50, 'years')
-                    .utc()
-                    .format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Min Date)
-            maxDate:
-              this.userFormPreferences &&
-              this.userFormPreferences.preferences &&
-              this.userFormPreferences.preferences.filter
-                ? moment(
-                    this.userFormPreferences.preferences.filter[1],
-                    'YYYY-MM-DD hh:mm:ss'
-                  )
-                    .utc()
-                    .format()
-                : moment().add(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Max Date)
-          }),
-          deletedOnly: this.deletedOnly,
-          createdBy: this.currentUserOnly
-            ? `${this.user.username}@${this.user.idp}`
-            : '',
-        };
-        await this.fetchSubmissions(criteria);
+        await this.getSubmissionData();
         // Build up the list of forms for the table
-        if (this.submissionList) {
-          const tableRows = this.submissionList
-            // Filtering out all submissions that has no status. (User has not submitted)
-            .filter((s) => s.formSubmissionStatusCode)
-            .map((s) => {
-              const fields = {
-                confirmationId: s.confirmationId,
-                date: s.createdAt,
-                formId: s.formId,
-                status: s.formSubmissionStatusCode,
-                submissionId: s.submissionId,
-                submitter: s.createdBy,
-                versionId: s.formVersionId,
-                deleted: s.deleted,
-                lateEntry: s.lateEntry,
-              };
-              // Add any custom columns
-              this.userColumns.forEach((col) => {
-                fields[col] = s[col];
-              });
-              return fields;
-            });
-          this.submissionTable = tableRows;
-          this.submissionsCheckboxes = new Array(
-            this.submissionTable.length
-          ).fill(false);
-        }
       } catch (error) {
         // Handled in state fetchSubmissions
       } finally {
@@ -695,6 +751,7 @@ export default {
 
     async refreshSubmissions() {
       this.loading = true;
+      this.page = 0;
       Promise.all([
         this.getFormRolesForUser(this.formId),
         this.getFormPermissionsForUser(this.formId),
