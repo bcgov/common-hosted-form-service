@@ -2,6 +2,22 @@
   "date": {
     "date": "yyyy-mm-dd"
   },
+  "emailManagement": {
+    "emailManagement": "Email Management",
+    "manageForm": "Manage Form",
+    "submissionConfirmation": "Submission Confirmation"
+  },
+  "emailTemplate": {
+    "body": "Body",
+    "save": "Save",
+    "saveEmailTemplateConsoleErrMsg": "Error updating email template for form {formId}: {error}",
+    "saveEmailTemplateErrMsg": "An error occurred while attempting to update the email template.",
+    "subject": "Subject",
+    "title": "Title",
+    "validBodyRequired": "Please enter a Body for the email",
+    "validSubjectRequired": "Please enter a Subject line for the email",
+    "validTitleRequired": "Please enter a Title for the email"
+  },
   "formsTable": {
     "myForms": "My Forms",
     "createNewForm": "Create a New Form",
@@ -29,6 +45,7 @@
     "copyURLToClipboard": "Copy URL to clipboard"
   },
   "manageFormActions": {
+    "emailManagement": "Email Management",
     "viewSubmissions": "View Submissions",
     "teamManagement": "Team Management",
     "deleteForm": "Delete Form",
@@ -146,7 +163,7 @@
     "showSecret": "Show Secret",
     "key": "Key",
     "saveSettingsErrMsg": "An error occurred while attempting to update the settings for this form.",
-    "updateSettingsConsoleErrMsg": "Error updating settings for form  {formId} : {error}"
+    "updateSettingsConsoleErrMsg": "Error updating settings for form {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",
@@ -846,6 +863,8 @@
       "fecthingFormBuilderCompsConsErrMsg": "Error getting form builder components: {error}"
     },
     "form": {
+      "fetchEmailTemplatesConsErrMsg": "Error loading email templates for {formId}: {error}",
+      "fetchEmailTemplatesErrMsg": "An error occurred fetching the email templates for this form",
       "getCurrUserFormsErrMsg": "An error occurred while fetching your forms.",
       "getCurrUserFormsConsErrMsg": "Error getting user data: {error}",
       "getUserFormPermErrMsg": "An error occurred while fetching your user data for this form.",
@@ -869,6 +888,8 @@
       "publishDraftErrMsg": "An error occurred while publishing.",
       "publishDraftConsErrMsg": "Error publishing {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "Error in toggleVersionPublish {versionId} {publish}: {error}",
+      "updateEmailTemplateConsErrMsg": "Error updating email templates for form {formId}: {error}",
+      "updateEmailTemplateErrMsg": "An error occurred while updating the email templates for this form.",
       "updateFormErrMsg": "An error occurred while updating the settings for this form.",
       "updateFormConsErrMsg": "Error updating form {id}: {error}",
       "deleteSubmissionNotifyMsg": "Submission deleted successfully.",

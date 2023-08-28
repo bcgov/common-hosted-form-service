@@ -2,6 +2,22 @@
   "date": {
     "date": "jjjj-mm-tt"
   },
+  "emailManagement": {
+    "emailManagement": "E-Mail-Management",
+    "manageForm": "Formular verwalten",
+    "submissionConfirmation": "Einreichungsbestätigung"
+  },
+  "emailTemplate": {
+    "body": "Körper",
+    "save": "Speichern",
+    "saveEmailTemplateConsoleErrMsg": "Fehler beim Aktualisieren der E-Mail-Vorlage für Formular {formId}: {error}",
+    "saveEmailTemplateErrMsg": "Beim Versuch, die E-Mail-Vorlage zu aktualisieren, ist ein Fehler aufgetreten.",
+    "subject": "Thema",
+    "title": "Titel",
+    "validBodyRequired": "Bitte geben Sie einen Text für die E-Mail ein",
+    "validSubjectRequired": "Bitte geben Sie eine Betreffzeile für die E-Mail ein",
+    "validTitleRequired": "Bitte geben Sie einen Titel für die E-Mail ein"
+  },
   "formsTable": {
     "myForms": "Meine Formulare",
     "createNewForm": "Erstellen Sie ein neues Formular",
@@ -29,6 +45,7 @@
     "copyURLToClipboard": "URL in die Zwischenablage kopieren"
   },
   "manageFormActions": {
+    "emailManagement": "E-Mail-Management",
     "viewSubmissions": "Einsendungen anzeigen",
     "teamManagement": "Team Management",
     "deleteForm": "Formular löschen",
@@ -877,6 +894,8 @@
       "fecthingFormBuilderCompsConsErrMsg": "Fehler beim Abrufen der Formular-Builder-Komponenten: {error}"
     },
     "form": {
+      "fetchEmailTemplatesConsErrMsg": "Fehler beim Laden der E-Mail-Vorlagen für {formId}: {error}",
+      "fetchEmailTemplatesErrMsg": "Beim Abrufen der E-Mail-Vorlagen für dieses Formular ist ein Fehler aufgetreten",
       "getCurrUserFormsErrMsg": "Beim Abrufen Ihrer Formulare ist ein Fehler aufgetreten.",
       "getCurrUserFormsConsErrMsg": "Fehler beim Abrufen der Benutzerdaten: {error}",
       "getUserFormPermErrMsg": "Beim Abrufen Ihrer Benutzerdaten für dieses Formular ist ein Fehler aufgetreten.",
@@ -900,6 +919,8 @@
       "publishDraftErrMsg": "Beim Veröffentlichen ist ein Fehler aufgetreten.",
       "publishDraftConsErrMsg": "Fehler beim Veröffentlichen von {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "Fehler in toggleVersionPublish {versionId} {publish}: {error}",
+      "updateEmailTemplateConsErrMsg": "Fehler beim Aktualisieren der E-Mail-Vorlagen für das Formular {formId}: {error}",
+      "updateEmailTemplateErrMsg": "Beim Aktualisieren der E-Mail-Vorlagen für dieses Formular ist ein Fehler aufgetreten.",
       "updateFormErrMsg": "Beim Aktualisieren der Einstellungen für dieses Formular ist ein Fehler aufgetreten.",
       "updateFormConsErrMsg": "Fehler beim Aktualisieren des Formulars {id}: {error}",
       "deleteSubmissionNotifyMsg": "Einreichung erfolgreich gelöscht.",

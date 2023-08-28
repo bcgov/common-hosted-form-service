@@ -147,6 +147,33 @@ export default {
   },
 
   //
+  // Form email template calls
+  //
+
+  /**
+   * @function listEmailTemplates
+   * Get all the email templates for a form
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  listEmailTemplates(formId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/emailTemplates`);
+  },
+
+  /**
+   * @function updateEmailTemplate
+   * Update a form's email template
+   * @param {Object} data The request body (containing formId)
+   * @returns {Promise} An axios response
+   */
+  updateEmailTemplate(data) {
+    return appAxios().put(
+      `${ApiRoutes.FORMS}/${data.formId}/emailTemplate`,
+      data
+    );
+  },
+
+  //
   // Form version calls
   //
 
