@@ -635,7 +635,9 @@
     "confirmationID": "पुष्टिकरण आईडी:",
     "submittedBy": "द्वारा प्रस्तुत:",
     "cancel": "रद्द करना",
-    "status": "दर्जा"
+    "status": "दर्जा",
+    "updatedAt": "संशोधित",
+    "updatedBy": "द्वारा संशोधित"
   },
   "teamManagement": {
     "teamManagement": "टीम प्रबंधन",

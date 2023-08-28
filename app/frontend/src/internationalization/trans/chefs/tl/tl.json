@@ -635,7 +635,9 @@
     "confirmationID": "ID ng Pagkumpirma:",
     "submittedBy": "Ipinasa ni:",
     "cancel": "KANSELAHIN",
-    "status": "Katayuan"
+    "status": "Katayuan",
+    "updatedAt": "Binago",
+    "updatedBy": "Binago ni"
   },
   "teamManagement": {
     "teamManagement": "Pamamahala ng Koponan",

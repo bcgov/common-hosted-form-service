@@ -635,7 +635,9 @@
     "confirmationID": "確認ID:",
     "submittedBy": "から提出された：",
     "cancel": "キャンセル",
-    "status": "スターテス"
+    "status": "スターテス",
+    "updatedAt": "修正済み",
+    "updatedBy": "によって変更"
   },
   "teamManagement": {
     "teamManagement": "チーム管理",
