@@ -2,6 +2,22 @@
   "date": {
     "date": "aaaa-mm-jj"
   },
+  "emailManagement": {
+    "emailManagement": "Gestion des e-mails",
+    "manageForm": "Gérer le formulaire",
+    "submissionConfirmation": "Confirmation de soumission"
+  },
+  "emailTemplate": {
+    "body": "Corps",
+    "save": "Sauvegarder",
+    "saveEmailTemplateConsoleErrMsg": "Erreur lors de la mise à jour du modèle d'e-mail pour le formulaire {formId} : {error}",
+    "saveEmailTemplateErrMsg": "Une erreur s'est produite lors de la tentative de mise à jour du modèle d'e-mail.",
+    "subject": "Sujet",
+    "title": "Titre",
+    "validBodyRequired": "Veuillez saisir un corps pour l'e-mail",
+    "validSubjectRequired": "Veuillez saisir une ligne d'objet pour l'e-mail",
+    "validTitleRequired": "Veuillez entrer un titre pour l'e-mail"
+  },
   "formsTable": {
     "myForms": "Mes formulaires",
     "createNewForm": "Créer un nouveau formulaire",
@@ -29,6 +45,7 @@
     "copyURLToClipboard": "Copier l'URL dans le presse-papiers"
   },
   "manageFormActions": {
+    "emailManagement": "Gestion des e-mails",
     "viewSubmissions": "Voir les soumissions",
     "teamManagement": "Gestion d'équipe",
     "deleteForm": "Supprimer le formulaire",
@@ -877,6 +894,8 @@
       "fecthingFormBuilderCompsConsErrMsg": "Erreur lors de l'obtention des composants du générateur de formulaire : {error}"
     },
     "form": {
+      "fetchEmailTemplatesConsErrMsg": "Erreur lors du chargement des modèles d'e-mail pour {formId} : {error}",
+      "fetchEmailTemplatesErrMsg": "Une erreur s'est produite lors de la récupération des modèles d'e-mail pour ce formulaire",
       "getCurrUserFormsErrMsg": "Une erreur s'est produite lors de la récupération de vos formulaires.",
       "getCurrUserFormsConsErrMsg": "Erreur lors de la récupération des données utilisateur : {error}",
       "getUserFormPermErrMsg": "Une erreur s'est produite lors de la récupération de vos données utilisateur pour ce formulaire.",
@@ -900,6 +919,8 @@
       "publishDraftErrMsg": "Une erreur s'est produite lors de la publication.",
       "publishDraftConsErrMsg": "Erreur lors de la publication de {draftId} : {error}",
       "toggleVersnPublConsErrMsg": "Erreur dans toggleVersionPublish {versionId} {publish} : {error}",
+      "updateEmailTemplateConsErrMsg": "Erreur lors de la mise à jour des modèles d'e-mail pour le formulaire {formId} : {error}",
+      "updateEmailTemplateErrMsg": "Une erreur s'est produite lors de la mise à jour des modèles d'e-mails pour ce formulaire.",
       "updateFormErrMsg": "Une erreur s'est produite lors de la mise à jour des paramètres de ce formulaire.",
       "updateFormConsErrMsg": "Erreur lors de la mise à jour du formulaire {id} : {error}",
       "deleteSubmissionNotifyMsg": "Soumission supprimée avec succès.",

@@ -1,4 +1,5 @@
 const fs = require('fs');
+const Handlebars = require('handlebars');
 const path = require('path');
 
 const chesService = require('../../components/chesService');
@@ -6,6 +7,20 @@ const log = require('../../components/log')(module.filename);
 const { EmailProperties, EmailTypes } = require('../common/constants');
 const formService = require('../form/service');
 const moment = require('moment');
+
+/**
+ * Replace the {{ handlebar }} expressions in a string with the values from a
+ * context object.
+ * @param {string} format the string that is to have handlebars replaced
+ * @param {object} context the values used to replace the handlebar items
+ * @returns the format string with the handlebar items replaced
+ */
+const _replaceHandlebars = (format, context) => {
+  const template = Handlebars.compile(format);
+
+  return template(context);
+};
+
 /** Helper function used to build the email template based on email type and contents */
 const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, additionalProperties = 0) => {
   const form = await formService.readForm(formId);
@@ -88,12 +103,15 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
       form.identityProviders.length > 0 && form.identityProviders[0].idp === 'public'
         ? 'submission-received-confirmation-public.html'
         : 'submission-received-confirmation-login.html';
+    const emailTemplate = await formService.readEmailTemplate(form.id, emailType);
+    const handlebarsData = { form: { ...form }, ...submission.submission.data };
+
     configData = {
       bodyTemplate: bodyTemplate,
-      title: `${form.name} Accepted`,
-      subject: `${form.name} Accepted`,
+      title: _replaceHandlebars(emailTemplate.title, handlebarsData),
+      subject: _replaceHandlebars(emailTemplate.subject, handlebarsData),
       priority: additionalProperties.body.priority,
-      messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
+      messageLinkText: _replaceHandlebars(emailTemplate.body, handlebarsData),
       form,
     };
   }
@@ -421,6 +439,7 @@ const service = {
       throw e;
     }
   },
+
   /**
    * @function formOpen
    * Manual email confirmation after form has been submitted

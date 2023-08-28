@@ -4,7 +4,7 @@ const formService = require('../../../../src/forms/form/service');
 const fs = require('fs');
 const mockedReadFileSync = jest.spyOn(fs, 'readFileSync');
 
-const referer = 'https://chefs.nrs.gov.bc.ca';
+const referer = 'https://submit.digital.gov.bc.ca';
 
 describe('_appUrl', () => {
   it('should format the url', () => {
@@ -101,9 +101,22 @@ describe('public methods', () => {
       },
     ],
   };
+  const form_idir = {
+    ...form,
+    identityProviders: [
+      {
+        idp: 'idir',
+      },
+    ],
+  };
   const submission = {
     confirmationId: 'abc',
     id: '123',
+    submission: {
+      data: {
+        problem: 'Testing',
+      },
+    },
   };
   const assignmentNotificationEmail = 'x@y.com';
   const body = { to: 'a@b.com' };
@@ -218,7 +231,57 @@ describe('public methods', () => {
     expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
   });
 
-  it('submissionConfirmation should call send a low priority conf email', async () => {
+  it('submissionConfirmation should send login email for idir', async () => {
+    formService.readEmailTemplate = jest.fn().mockReturnValue({
+      body: 'Thank you for your {{form.name}} submission. You can view your submission details by visiting the following links:',
+      subject: '{{form.name}} Accepted',
+      title: '{{form.name}} Accepted',
+    });
+    formService.readForm = jest.fn().mockReturnValue(form_idir);
+    formService.readSubmission = jest.fn().mockReturnValue(submission);
+    emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
+
+    const result = await emailService.submissionConfirmation(form_idir.id, submission.id, body_low, referer);
+
+    const configData = {
+      bodyTemplate: 'submission-received-confirmation-login.html',
+      subject: `${form_idir.name} Accepted`,
+      priority: 'low',
+      messageLinkText: `Thank you for your ${form_idir.name} submission. You can view your submission details by visiting the following links:`,
+      title: `${form_idir.name} Accepted`,
+      form: { ...form_idir },
+    };
+
+    const contexts = [
+      {
+        context: {
+          allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+          confirmationNumber: 'abc',
+          form: form_idir,
+          messageLinkText: `Thank you for your ${form_idir.name} submission. You can view your submission details by visiting the following links:`,
+          messageLinkUrl: `https://form/success?s=${form_idir.name}`,
+          revisionNotificationEmailContent: undefined,
+          title: `${form_idir.name} Accepted`,
+        },
+        to: ['a@b.com'],
+      },
+    ];
+
+    expect(result).toEqual('ret');
+    expect(formService.readForm).toHaveBeenCalledTimes(1);
+    expect(formService.readForm).toHaveBeenCalledWith(form_idir.id);
+    expect(formService.readSubmission).toHaveBeenCalledTimes(1);
+    expect(formService.readSubmission).toHaveBeenCalledWith(submission.id);
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+  });
+
+  it('submissionConfirmation should send a low priority email', async () => {
+    formService.readEmailTemplate = jest.fn().mockReturnValue({
+      body: 'Thank you for your {{form.name}} submission. You can view your submission details by visiting the following links:',
+      subject: '{{form.name}} Accepted',
+      title: '{{form.name}} Accepted',
+    });
     formService.readForm = jest.fn().mockReturnValue(form);
     formService.readSubmission = jest.fn().mockReturnValue(submission);
     emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
@@ -258,7 +321,12 @@ describe('public methods', () => {
     expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
   });
 
-  it('submissionConfirmation should call send a normal priority conf email', async () => {
+  it('submissionConfirmation should send a normal priority email', async () => {
+    formService.readEmailTemplate = jest.fn().mockReturnValue({
+      body: 'Thank you for your {{form.name}} submission. You can view your submission details by visiting the following links:',
+      subject: '{{form.name}} Accepted',
+      title: '{{form.name}} Accepted',
+    });
     formService.readForm = jest.fn().mockReturnValue(form);
     formService.readSubmission = jest.fn().mockReturnValue(submission);
     emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
@@ -298,7 +366,12 @@ describe('public methods', () => {
     expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
   });
 
-  it('submissionConfirmation should call send a high priority conf email', async () => {
+  it('submissionConfirmation should send a high priority email', async () => {
+    formService.readEmailTemplate = jest.fn().mockReturnValue({
+      body: 'Thank you for your {{form.name}} submission. You can view your submission details by visiting the following links:',
+      subject: '{{form.name}} Accepted',
+      title: '{{form.name}} Accepted',
+    });
     formService.readForm = jest.fn().mockReturnValue(form);
     formService.readSubmission = jest.fn().mockReturnValue(submission);
     emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
@@ -336,6 +409,60 @@ describe('public methods', () => {
     expect(formService.readSubmission).toHaveBeenCalledWith(submission.id);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
     expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+  });
+
+  it('submissionConfirmation should send an email with submission fields', async () => {
+    formService.readEmailTemplate = jest.fn().mockReturnValue({
+      body: 'Thank you for your {{form.name}} submission regarding {{problem}}. You can view your submission details by visiting the following links:',
+      subject: '{{form.name}} Accepted',
+      title: '{{form.name}} Accepted',
+    });
+    formService.readForm = jest.fn().mockReturnValue(form);
+    formService.readSubmission = jest.fn().mockReturnValue(submission);
+    emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
+
+    const result = await emailService.submissionConfirmation(form.id, submission.id, body_normal, referer);
+
+    const configData = {
+      bodyTemplate: 'submission-received-confirmation-public.html',
+      subject: `${form.name} Accepted`,
+      priority: 'normal',
+      messageLinkText: `Thank you for your ${form.name} submission regarding ${submission.submission.data.problem}. You can view your submission details by visiting the following links:`,
+      title: `${form.name} Accepted`,
+      form,
+    };
+
+    const contexts = [
+      {
+        context: {
+          allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+          confirmationNumber: 'abc',
+          form: form,
+          messageLinkText: `Thank you for your ${form.name} submission regarding ${submission.submission.data.problem}. You can view your submission details by visiting the following links:`,
+          messageLinkUrl: `https://form/success?s=${form.name}`,
+          revisionNotificationEmailContent: undefined,
+          title: `${form.name} Accepted`,
+        },
+        to: ['a@b.com'],
+      },
+    ];
+
+    expect(result).toEqual('ret');
+    expect(formService.readForm).toHaveBeenCalledTimes(1);
+    expect(formService.readForm).toHaveBeenCalledWith(form.id);
+    expect(formService.readSubmission).toHaveBeenCalledTimes(1);
+    expect(formService.readSubmission).toHaveBeenCalledWith(submission.id);
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+  });
+
+  it('submissionConfirmation should produce errors on failure', async () => {
+    formService.readEmailTemplate = jest.fn().mockRejectedValue(new Error('SQL Error'));
+    formService.readForm = jest.fn().mockReturnValue(form);
+    formService.readSubmission = jest.fn().mockReturnValue(submission);
+    emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
+
+    await expect(emailService.submissionConfirmation(form.id, submission.id, body_normal, referer)).rejects.toThrow();
   });
 
   it('submissionReceived should call send a submission email', async () => {
