@@ -2,6 +2,22 @@
   "date": {
     "date": "yyyy-mm-dd"
   },
+  "emailManagement": {
+    "emailManagement": "이메일 관리",
+    "manageForm": "양식 관리",
+    "submissionConfirmation": "제출 확인"
+  },
+  "emailTemplate": {
+    "body": "몸",
+    "save": "구하다",
+    "saveEmailTemplateConsoleErrMsg": "{formId} 양식의 이메일 템플릿을 업데이트하는 중에 오류가 발생했습니다. {error}",
+    "saveEmailTemplateErrMsg": "이메일 템플릿을 업데이트하는 동안 오류가 발생했습니다.",
+    "subject": "주제",
+    "title": "제목",
+    "validBodyRequired": "이메일 본문을 입력하세요.",
+    "validSubjectRequired": "이메일 제목을 입력하세요.",
+    "validTitleRequired": "이메일 제목을 입력하세요."
+  },
   "formsTable": {
     "myForms": "내 양식",
     "createNewForm": "새 양식 만들기",
@@ -29,6 +45,7 @@
     "copyURLToClipboard": "클립보드에 URL 복사"
   },
   "manageFormActions": {
+    "emailManagement": "이메일 관리",
     "viewSubmissions": "제출물 보기",
     "teamManagement": "팀 관리",
     "deleteForm": "양식 삭제",
@@ -879,6 +896,8 @@
       "fecthingFormBuilderCompsConsErrMsg": "양식 작성기 구성요소 가져오기 오류: {error}"
     },
     "form": {
+      "fetchEmailTemplatesConsErrMsg": "{formId}에 대한 이메일 템플릿을 로드하는 중에 오류가 발생했습니다. {error}",
+      "fetchEmailTemplatesErrMsg": "이 양식에 대한 이메일 템플릿을 가져오는 중 오류가 발생했습니다.",
       "getCurrUserFormsErrMsg": "양식을 가져오는 동안 오류가 발생했습니다.",
       "getCurrUserFormsConsErrMsg": "사용자 데이터 가져오기 오류: {error}",
       "getUserFormPermErrMsg": "이 양식에 대한 사용자 데이터를 가져오는 동안 오류가 발생했습니다.",
@@ -902,6 +921,8 @@
       "publishDraftErrMsg": "게시하는 동안 오류가 발생했습니다.",
       "publishDraftConsErrMsg": "{draftId} 게시 오류: {error}",
       "toggleVersnPublConsErrMsg": "toggleVersionPublish {versionId} {publish} 오류: {error}",
+      "updateEmailTemplateConsErrMsg": "{formId} 양식의 이메일 템플릿을 업데이트하는 중에 오류가 발생했습니다. {error}",
+      "updateEmailTemplateErrMsg": "이 양식의 이메일 템플릿을 업데이트하는 동안 오류가 발생했습니다.",
       "updateFormErrMsg": "이 양식의 설정을 업데이트하는 동안 오류가 발생했습니다.",
       "updateFormConsErrMsg": "양식 {id} 업데이트 오류: {error}",
       "deleteSubmissionNotifyMsg": "제출이 성공적으로 삭제되었습니다.",

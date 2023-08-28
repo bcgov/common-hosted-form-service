@@ -30,6 +30,14 @@ routes.post('/:formId/export/fields', middleware.publicRateLimiter, apiAccess, h
   await controller.exportWithFields(req, res, next);
 });
 
+routes.get('/:formId/emailTemplates', hasFormPermissions(P.EMAIL_TEMPLATE_READ), async (req, res, next) => {
+  await controller.readEmailTemplates(req, res, next);
+});
+
+routes.put('/:formId/emailTemplate', hasFormPermissions([P.EMAIL_TEMPLATE_READ, P.EMAIL_TEMPLATE_UPDATE]), async (req, res, next) => {
+  await controller.createOrUpdateEmailTemplate(req, res, next);
+});
+
 routes.get('/:formId/options', async (req, res, next) => {
   await controller.readFormOptions(req, res, next);
 });
