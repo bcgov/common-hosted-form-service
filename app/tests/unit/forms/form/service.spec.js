@@ -248,6 +248,27 @@ describe('_findFileIds', () => {
 });
 
 describe('readVersionFields', () => {
+  it('should not return hidden fields', async () => {
+    const schema = {
+      type: 'form',
+      components: [
+        {
+          input: true,
+          hidden: true,
+          key: 'firstName',
+          type: 'textfield',
+        },
+      ],
+    };
+
+    // mock readVersion function
+    service.readVersion = jest.fn().mockReturnValue({ schema });
+    // get fields
+    const fields = await service.readVersionFields();
+    // test cases
+    expect(fields.length).toEqual(0);
+  });
+
   it('should return right number of fields without columns', async () => {
     const schema = {
       type: 'form',
@@ -311,5 +332,35 @@ describe('readVersionFields', () => {
     const fields = await service.readVersionFields();
     // test cases
     expect(fields.length).toEqual(2);
+  });
+
+  it('should return right number of fields in a table', async () => {
+    const schema = {
+      type: 'form',
+      components: [
+        {
+          key: 'table',
+          rows: [
+            [
+              {
+                components: [
+                  {
+                    input: true,
+                    key: 'key',
+                  },
+                ],
+              },
+            ],
+          ],
+        },
+      ],
+    };
+
+    // mock readVersion function
+    service.readVersion = jest.fn().mockReturnValue({ schema });
+    // get fields
+    const fields = await service.readVersionFields();
+    // test cases
+    expect(fields.length).toEqual(1);
   });
 });
