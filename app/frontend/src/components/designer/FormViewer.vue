@@ -727,14 +727,16 @@ export default {
             case 'custom':
               if (obj.component.validate.custom.length) {
                 validatorIdentity +=
-                  '|custom:' + obj.component.validate[validity].trim();
+                  '|custom:' +
+                  obj.component.validate[validity].trim().replaceAll(',', '‚');
               }
               break;
 
             case 'customMessage':
               if (obj.component.validate.customMessage) {
                 validatorIdentity +=
-                  '|customMessage:' + obj.component.validate[validity].trim();
+                  '|customMessage:' +
+                  obj.component.validate[validity].trim().replaceAll(',', '‚');
               }
               break;
 
