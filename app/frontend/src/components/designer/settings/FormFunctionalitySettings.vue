@@ -2,7 +2,7 @@
 import { mapState, mapWritableState } from 'pinia';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
-import { IdentityMode } from '~/utils/constants';
+import { IdentityMode, IdentityProviders } from '~/utils/constants';
 
 export default {
   components: {
@@ -16,13 +16,18 @@ export default {
         'https://github.com/bcgov/common-hosted-form-service/wiki/Copy-an-existing-submission',
       githubLinkScheduleAndReminderFeature:
         'https://github.com/bcgov/common-hosted-form-service/wiki/Schedule-and-Reminder-notification',
+      githubLinkEventSubscriptionFeature:
+        'https://github.com/bcgov/common-hosted-form-service/wiki/Event-Subscription',
     };
   },
   computed: {
     ...mapWritableState(useFormStore, ['form']),
-    ...mapState(useFormStore, ['isFormPublished']),
+    ...mapState(useFormStore, ['isFormPublished', 'isRTL', 'lang']),
     ID_MODE() {
       return IdentityMode;
+    },
+    idirUser() {
+      return this.identityProvider === IdentityProviders.IDIR;
     },
   },
   methods: {
@@ -40,20 +45,31 @@ export default {
 
 <template>
   <BasePanel class="fill-height">
-    <template #title>{{ $t('trans.formSettings.formFunctionality') }}</template>
+    <template #title
+      ><span :lang="lang">{{
+        $t('trans.formSettings.formFunctionality')
+      }}</span></template
+    >
     <v-checkbox
       v-model="form.enableSubmitterDraft"
       class="my-0"
       :disabled="form.userType === ID_MODE.PUBLIC"
+      @update:model-value="enableSubmitterDraftChanged"
     >
       <template #label>
-        <span v-html="$t('trans.formSettings.canSaveAndEditDraftLabel')"></span>
+        <span
+          :class="{ 'mr-2': isRTL }"
+          :lang="lang"
+          v-html="$t('trans.formSettings.canSaveAndEditDraftLabel')"
+        ></span>
       </template>
     </v-checkbox>
 
     <v-checkbox v-model="form.enableStatusUpdates" class="my-0">
       <template #label>
         <span
+          :class="{ 'mr-2': isRTL }"
+          :lang="lang"
           v-html="$t('trans.formSettings.canUpdateStatusAsReviewer')"
         ></span>
       </template>
@@ -66,29 +82,36 @@ export default {
       @update:model-value="allowSubmitterToUploadFileChanged"
     >
       <template #label>
-        Allow <strong> multiple draft</strong> upload
-        <v-tooltip location="bottom" close-delay="2500">
-          <template #activator="{ props }">
-            <v-icon
-              color="primary"
-              class="ml-3"
-              v-bind="props"
-              icon="mdi:mdi-flask"
-            />
-          </template>
+        <div :class="{ 'mr-2': isRTL }">
           <span
-            >{{ $t('trans.formSettings.experimental') }}
-            <a
-              :href="githubLinkBulkUpload"
-              class="preview_info_link_field_white"
-              :target="'_blank'"
-            >
-              {{ $t('trans.formSettings.learnMore') }}
+            :lang="lang"
+            v-html="$t('trans.formSettings.allowMultiDraft')"
+          />
+          <v-tooltip location="bottom" close-delay="2500">
+            <template #activator="{ props }">
               <v-icon
-                icon="mdi:mdi-arrow-top-right-bold-box-outline"
-              ></v-icon></a
-          ></span>
-        </v-tooltip>
+                color="primary"
+                class="ml-3"
+                :class="{ 'mr-2': isRTL }"
+                v-bind="props"
+                icon="mdi:mdi-flask"
+              />
+            </template>
+            <span :lang="lang"
+              >{{ $t('trans.formSettings.experimental') }}
+              <a
+                :href="githubLinkBulkUpload"
+                class="preview_info_link_field_white"
+                :target="'_blank'"
+                :hreflang="lang"
+              >
+                {{ $t('trans.formSettings.learnMore') }}
+                <v-icon
+                  icon="mdi:mdi-arrow-top-right-bold-box-outline"
+                ></v-icon></a
+            ></span>
+          </v-tooltip>
+        </div>
       </template>
     </v-checkbox>
 
@@ -99,7 +122,9 @@ export default {
       class="my-0"
     >
       <template #label>
-        {{ $t('trans.formSettings.formSubmissinScheduleMsg') }}
+        <span :class="{ 'mr-2': isRTL }" :lang="lang"
+          >{{ $t('trans.formSettings.formSubmissinScheduleMsg') }}
+        </span>
       </template>
     </v-checkbox>
 
@@ -109,29 +134,35 @@ export default {
       class="my-0"
     >
       <template #label>
-        {{ $t('trans.formSettings.formSubmissionsSchedule') }}
-        <v-tooltip location="bottom" close-delay="2500">
-          <template #activator="{ props }">
-            <v-icon
-              color="primary"
-              class="ml-3"
-              v-bind="props"
-              icon="mdi:mdi-flask"
-            ></v-icon>
-          </template>
-          <span
-            >{{ $t('trans.formSettings.experimental') }}
-            <a
-              :href="githubLinkScheduleAndReminderFeature"
-              class="preview_info_link_field_white"
-              :target="'_blank'"
-            >
-              {{ $t('trans.formSettings.learnMore') }}
+        <div :class="{ 'mr-2': isRTL }">
+          <span :lang="lang">{{
+            $t('trans.formSettings.formSubmissionsSchedule')
+          }}</span>
+          <v-tooltip location="bottom" close-delay="2500">
+            <template #activator="{ props }">
               <v-icon
-                icon="mdi:mdi-arrow-top-right-bold-box-outline"
-              ></v-icon></a
-          ></span>
-        </v-tooltip>
+                color="primary"
+                class="ml-3"
+                :class="{ 'mr-2': isRTL }"
+                v-bind="props"
+                icon="mdi:mdi-flask"
+              ></v-icon>
+            </template>
+            <span :lang="lang"
+              >{{ $t('trans.formSettings.experimental') }}
+              <a
+                :href="githubLinkScheduleAndReminderFeature"
+                class="preview_info_link_field_white"
+                :target="'_blank'"
+                :hreflang="lang"
+              >
+                {{ $t('trans.formSettings.learnMore') }}
+                <v-icon
+                  icon="mdi:mdi-arrow-top-right-bold-box-outline"
+                ></v-icon></a
+            ></span>
+          </v-tooltip>
+        </div>
       </template>
     </v-checkbox>
 
@@ -141,32 +172,76 @@ export default {
       :disabled="form.userType === ID_MODE.PUBLIC"
     >
       <template #label>
-        <span
-          style="max-width: 80%"
-          v-html="$t('trans.formSettings.submitterCanCopyExistingSubmissn')"
-        />
-        <v-tooltip location="bottom" close-delay="2500">
-          <template #activator="{ props }">
-            <v-icon
-              color="primary"
-              class="ml-3"
-              v-bind="props"
-              icon="mdi:mdi-flask"
-            ></v-icon>
-          </template>
+        <div :class="{ 'mr-2': isRTL }">
           <span
-            >{{ $t('trans.formSettings.experimental') }}
-            <a
-              :href="githubLinkCopyFromExistingFeature"
-              class="preview_info_link_field_white"
-              :target="'_blank'"
-            >
-              {{ $t('trans.formSettings.learnMore') }}
+            style="max-width: 80%"
+            :lang="lang"
+            v-html="$t('trans.formSettings.submitterCanCopyExistingSubmissn')"
+          />
+          <v-tooltip location="bottom" close-delay="2500">
+            <template #activator="{ props }">
               <v-icon
-                icon="mdi:mdi-arrow-top-right-bold-box-outline"
-              ></v-icon></a
-          ></span>
-        </v-tooltip>
+                color="primary"
+                class="ml-3"
+                :class="{ 'mr-2': isRTL }"
+                v-bind="props"
+                icon="mdi:mdi-flask"
+              ></v-icon>
+            </template>
+            <span :lang="lang"
+              >{{ $t('trans.formSettings.experimental') }}
+              <a
+                :href="githubLinkCopyFromExistingFeature"
+                class="preview_info_link_field_white"
+                :target="'_blank'"
+                :hreflang="lang"
+              >
+                {{ $t('trans.formSettings.learnMore') }}
+                <v-icon
+                  icon="mdi:mdi-arrow-top-right-bold-box-outline"
+                ></v-icon></a
+            ></span>
+          </v-tooltip>
+        </div>
+      </template>
+    </v-checkbox>
+    <v-checkbox
+      v-model="form.subscribe.enabled"
+      class="my-0"
+      :disabled="idirUser === false || !isFormPublished"
+    >
+      <template #label>
+        <div :class="{ 'mr-2': isRTL }">
+          <span
+            style="max-width: 80%"
+            :lang="lang"
+            v-html="$t('trans.formSettings.allowEventSubscription')"
+          />
+          <v-tooltip location="bottom" close-delay="2500">
+            <template #activator="{ props }">
+              <v-icon
+                color="primary"
+                class="ml-3"
+                :class="{ 'mr-2': isRTL }"
+                v-bind="props"
+                icon="mdi:mdi-flask"
+              ></v-icon>
+            </template>
+            <span :lang="lang"
+              >{{ $t('trans.formSettings.experimental') }}
+              <a
+                :href="githubLinkEventSubscriptionFeature"
+                class="preview_info_link_field_white"
+                :target="'_blank'"
+                :hreflang="lang"
+              >
+                {{ $t('trans.formSettings.learnMore') }}
+                <v-icon
+                  icon="mdi:mdi-arrow-top-right-bold-box-outline"
+                ></v-icon></a
+            ></span>
+          </v-tooltip>
+        </div>
       </template>
     </v-checkbox>
   </BasePanel>

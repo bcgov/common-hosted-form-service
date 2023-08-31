@@ -1,5 +1,5 @@
 <script>
-import { mapWritableState } from 'pinia';
+import { mapState, mapWritableState } from 'pinia';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
 
@@ -28,6 +28,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useFormStore, ['lang']),
     ...mapWritableState(useFormStore, ['form']),
   },
 };
@@ -35,7 +36,11 @@ export default {
 
 <template>
   <BasePanel class="fill-height">
-    <template #title>{{ $t('trans.formSettings.formTitle') }}</template>
+    <template #title
+      ><span :lang="lang">{{
+        $t('trans.formSettings.formTitle')
+      }}</span></template
+    >
     <v-text-field
       v-model="form.name"
       density="compact"
@@ -44,6 +49,7 @@ export default {
       :label="$t('trans.formSettings.formTitle')"
       data-test="text-name"
       :rules="nameRules"
+      :lang="lang"
     />
 
     <v-text-field
@@ -54,6 +60,7 @@ export default {
       :label="$t('trans.formSettings.formDescription')"
       data-test="text-description"
       :rules="descriptionRules"
+      :lang="lang"
     />
   </BasePanel>
 </template>

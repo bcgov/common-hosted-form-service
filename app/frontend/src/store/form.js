@@ -35,6 +35,16 @@ const genInitialSchedule = () => ({
   },
 });
 
+const genInitialSubscribe = () => ({
+  enabled: null,
+});
+const genInitialSubscribeDetails = () => ({
+  subscribeEvent: '',
+  endpointUrl: null,
+  endpointToken: null,
+  key: '',
+});
+
 const genInitialForm = () => ({
   description: '',
   enableSubmitterDraft: false,
@@ -50,6 +60,7 @@ const genInitialForm = () => ({
   submissionReceivedEmails: [],
   reminder_enabled: false,
   schedule: genInitialSchedule(),
+  subscribe: genInitialSubscribe(),
   userType: IdentityMode.TEAM,
   versions: [],
   enableCopyExistingSubmission: false,
@@ -76,12 +87,14 @@ export const useFormStore = defineStore('form', {
     },
     formList: [],
     imageList: new Map(),
-    multiLanguage: '',
+    lang: 'en',
     isRTL: false,
     permissions: [],
     roles: [],
     submissionList: [],
     submissionUsers: [],
+    subscriptionData: genInitialSubscribeDetails(),
+    totalSubmissions: 0,
     userFormPreferences: {},
     version: {},
   }),
@@ -91,6 +104,10 @@ export const useFormStore = defineStore('form', {
       state.form.versions.some((v) => v.published),
   },
   actions: {
+    //
+    // Current User
+    //
+    //
     async getFormsForCurrentUser() {
       try {
         // Get the forms based on the user's permissions
@@ -116,116 +133,6 @@ export const useFormStore = defineStore('form', {
           }),
         });
       }
-    },
-    async deleteDraft({ formId, draftId }) {
-      try {
-        await formService.deleteDraft(formId, draftId);
-      } catch (error) {
-        const notificationStore = useNotificationStore();
-        notificationStore.addNotification({
-          text: i18n.t('trans.store.form.delDraftErrMsg'),
-          consoleError: i18n.t('trans.store.form.delDraftConsErrMsg', {
-            draftId: draftId,
-            error: error,
-          }),
-        });
-      }
-    },
-    async fetchDrafts(formId) {
-      try {
-        // Get any drafts for this form from the api
-        const { data } = await formService.listDrafts(formId);
-        this.drafts = data;
-      } catch (error) {
-        const notificationStore = useNotificationStore();
-        notificationStore.addNotification({
-          text: i18n.t('trans.store.form.fecthDraftErrMsg'),
-          consoleError: i18n.t('trans.store.form.fecthDraftConsErrMsg', {
-            formId: formId,
-            error: error,
-          }),
-        });
-      }
-    },
-    async fetchForm(formId) {
-      try {
-        this.apiKey = null;
-        // Get the form definition from the api
-        const { data } = await formService.readForm(formId);
-        const identityProviders = parseIdps(data.identityProviders);
-        data.idps = identityProviders.idps;
-        data.userType = identityProviders.userType;
-        data.sendSubRecieviedEmail =
-          data.submissionReceivedEmails && data.submissionReceivedEmails.length;
-        data.schedule = {
-          ...genInitialSchedule(),
-          ...data.schedule,
-        };
-
-        this.form = data;
-      } catch (error) {
-        const notificationStore = useNotificationStore();
-        notificationStore.addNotification({
-          text: i18n.t('trans.store.form.fecthFormErrMsg'),
-          consoleError: i18n.t('trans.store.form.fecthFormErrMsg', {
-            formId: formId,
-            error: error,
-          }),
-        });
-      }
-    },
-    async fetchFormFields({ formId, formVersionId }) {
-      try {
-        this.formFields = [];
-        const { data } = await formService.readVersionFields(
-          formId,
-          formVersionId
-        );
-        this.formFields = data;
-      } catch (error) {
-        const notificationStore = useNotificationStore();
-        notificationStore.addNotification({
-          text: i18n.t('trans.store.form.fetchFormFieldsErrMsg'),
-          consoleError: i18n.t('trans.store.form.fetchFormFieldsConsErrMsg', {
-            formId: formId,
-            error: error,
-          }),
-        });
-      }
-    },
-    async publishDraft({ formId, draftId }) {
-      try {
-        await formService.publishDraft(formId, draftId);
-      } catch (error) {
-        const notificationStore = useNotificationStore();
-        notificationStore.addNotification({
-          text: i18n.t('trans.store.form.publishDraftErrMsg'),
-          consoleError: i18n.t('trans.store.form.publishDraftConsErrMsg', {
-            draftId: draftId,
-            error: error,
-          }),
-        });
-      }
-    },
-    async toggleVersionPublish({ formId, versionId, publish }) {
-      try {
-        await formService.publishVersion(formId, versionId, publish);
-      } catch (error) {
-        const notificationStore = useNotificationStore();
-        notificationStore.addNotification({
-          text: `An error occurred while ${
-            publish ? 'publishing' : 'unpublishing'
-          }.`,
-          consoleError: i18n.t('trans.store.form.toggleVersnPublConsErrMsg', {
-            versionId: versionId,
-            publish: publish,
-            error: error,
-          }),
-        });
-      }
-    },
-    resetForm() {
-      this.form = genInitialForm();
     },
     async getFormPermissionsForUser(formId) {
       try {
@@ -333,6 +240,120 @@ export const useFormStore = defineStore('form', {
         });
       }
     },
+    async deleteDraft({ formId, draftId }) {
+      try {
+        await formService.deleteDraft(formId, draftId);
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.delDraftErrMsg'),
+          consoleError: i18n.t('trans.store.form.delDraftConsErrMsg', {
+            draftId: draftId,
+            error: error,
+          }),
+        });
+      }
+    },
+    async fetchDrafts(formId) {
+      try {
+        // Get any drafts for this form from the api
+        const { data } = await formService.listDrafts(formId);
+        this.drafts = data;
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.fecthDraftErrMsg'),
+          consoleError: i18n.t('trans.store.form.fecthDraftConsErrMsg', {
+            formId: formId,
+            error: error,
+          }),
+        });
+      }
+    },
+    async fetchForm(formId) {
+      try {
+        this.apiKey = null;
+        // Get the form definition from the api
+        const { data } = await formService.readForm(formId);
+        const identityProviders = parseIdps(data.identityProviders);
+        data.idps = identityProviders.idps;
+        data.userType = identityProviders.userType;
+        data.sendSubRecieviedEmail =
+          data.submissionReceivedEmails && data.submissionReceivedEmails.length;
+        data.schedule = {
+          ...genInitialSchedule(),
+          ...data.schedule,
+        };
+        data.subscribe = {
+          ...genInitialSubscribe(),
+          ...data.subscribe,
+        };
+
+        this.form = data;
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.fecthFormErrMsg'),
+          consoleError: i18n.t('trans.store.form.fecthFormErrMsg', {
+            formId: formId,
+            error: error,
+          }),
+        });
+      }
+    },
+    async fetchFormFields({ formId, formVersionId }) {
+      try {
+        this.formFields = [];
+        const { data } = await formService.readVersionFields(
+          formId,
+          formVersionId
+        );
+        this.formFields = data;
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.fetchFormFieldsErrMsg'),
+          consoleError: i18n.t('trans.store.form.fetchFormFieldsConsErrMsg', {
+            formId: formId,
+            error: error,
+          }),
+        });
+      }
+    },
+    async publishDraft({ formId, draftId }) {
+      try {
+        await formService.publishDraft(formId, draftId);
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.publishDraftErrMsg'),
+          consoleError: i18n.t('trans.store.form.publishDraftConsErrMsg', {
+            draftId: draftId,
+            error: error,
+          }),
+        });
+      }
+    },
+    async toggleVersionPublish({ formId, versionId, publish }) {
+      try {
+        await formService.publishVersion(formId, versionId, publish);
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: `An error occurred while ${
+            publish ? 'publishing' : 'unpublishing'
+          }.`,
+          consoleError: i18n.t('trans.store.form.toggleVersnPublConsErrMsg', {
+            versionId: versionId,
+            publish: publish,
+            error: error,
+          }),
+        });
+      }
+    },
+    resetForm() {
+      this.form = genInitialForm();
+    },
     async updateForm() {
       try {
         const emailList =
@@ -343,8 +364,9 @@ export const useFormStore = defineStore('form', {
             : [];
 
         const schedule = this.form.schedule.enabled ? this.form.schedule : {};
-
-        // const reminder = this.form.schedule.enabled ?  : false ;
+        const subscribe = this.form.subscribe.enabled
+          ? this.form.subscribe
+          : {};
 
         await formService.updateForm(this.form.id, {
           name: this.form.name,
@@ -358,6 +380,7 @@ export const useFormStore = defineStore('form', {
           showSubmissionConfirmation: this.form.showSubmissionConfirmation,
           submissionReceivedEmails: emailList,
           schedule: schedule,
+          subscribe: subscribe,
           allowSubmitterToUploadFile: this.form.allowSubmitterToUploadFile,
           reminder_enabled: this.form.reminder_enabled
             ? this.form.reminder_enabled
@@ -533,6 +556,11 @@ export const useFormStore = defineStore('form', {
       deletedOnly = false,
       createdBy = '',
       createdAt,
+      page,
+      itemsPerPage,
+      filterformSubmissionStatusCode,
+      sortBy: sortBy,
+      sortDesc: sortDesc,
     }) {
       try {
         this.submissionList = [];
@@ -542,14 +570,28 @@ export const useFormStore = defineStore('form', {
             ? this.userFormPreferences.preferences.columns
             : undefined;
         const response = userView
-          ? await rbacService.getUserSubmissions({ formId: formId })
+          ? await rbacService.getUserSubmissions({
+              formId: formId,
+              page: page,
+              itemsPerPage: itemsPerPage,
+              totalSubmissions: this.totalSubmissions,
+              sortBy: sortBy,
+              sortDesc: sortDesc,
+            })
           : await formService.listSubmissions(formId, {
               deleted: deletedOnly,
               fields: fields,
               createdBy: createdBy,
               createdAt: createdAt,
+              page: page,
+              filterformSubmissionStatusCode: filterformSubmissionStatusCode,
+              itemsPerPage: itemsPerPage,
+              totalSubmissions: this.totalSubmissions,
+              sortBy: sortBy,
+              sortDesc: sortDesc,
             });
         this.submissionList = response.data;
+        this.totalSubmissions = response.data.total;
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
@@ -686,6 +728,14 @@ export const useFormStore = defineStore('form', {
       if (!this.form || this.form.isDirty === isDirty) return; // don't do anything if not changing the val (or if form is blank for some reason)
       this.form.isDirty = isDirty;
     },
+    async setMultiLanguage(lang) {
+      this.lang = lang;
+      if (lang === 'ar' || lang === 'fa') {
+        this.isRTL = true;
+      } else {
+        this.isRTL = false;
+      }
+    },
     async downloadFile(fileId) {
       try {
         this.downloadedFile.data = null;
@@ -700,6 +750,54 @@ export const useFormStore = defineStore('form', {
           consoleError: i18n.t('trans.store.form.downloadFileConsErrMsg', {
             error: error,
           }),
+        });
+      }
+    },
+    async readFormSubscriptionData(formId) {
+      try {
+        const { data } = await formService.readFormSubscriptionData(formId);
+        if (data) {
+          this.subscriptionData = data;
+        }
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.readSubscriptionSettingsErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.form.readSubscriptionSettingsConsErrMsg',
+            {
+              formId: formId,
+              error: error,
+            }
+          ),
+        });
+      }
+    },
+    async updateSubscription({ formId, subscriptionData }) {
+      try {
+        const { data } = await formService.updateSubscription(
+          formId,
+          subscriptionData
+        );
+        if (data) {
+          this.subscriptionData = data;
+        }
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.saveSubscriptionSettingsNotifyMsg'),
+          ...NotificationTypes.SUCCESS,
+        });
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.saveSubscriptionSettingsErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.form.saveSubscriptionSettingsConsErrMsg',
+            {
+              formId: formId,
+              error: error,
+            }
+          ),
         });
       }
     },
