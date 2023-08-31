@@ -1,5 +1,5 @@
 <script>
-import { mapWritableState } from 'pinia';
+import { mapState, mapWritableState } from 'pinia';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
 import { Regex } from '~/utils/constants';
@@ -23,6 +23,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useFormStore, ['isRTL', 'lang']),
     ...mapWritableState(useFormStore, ['form']),
   },
 };
@@ -30,50 +31,71 @@ export default {
 
 <template>
   <BasePanel class="fill-height">
-    <template #title>{{ $t('trans.formSettings.afterSubmission') }}</template>
-    <v-checkbox v-model="form.showSubmissionConfirmation" class="my-0">
+    <template #title
+      ><span :lang="lang">
+        {{ $t('trans.formSettings.afterSubmission') }}
+      </span></template
+    >
+    <v-checkbox
+      v-model="form.showSubmissionConfirmation"
+      class="my-0"
+      :class="{ 'dir-rtl': isRTL }"
+    >
       <template #label>
-        {{ $t('trans.formSettings.submissionConfirmation') }}
-        <v-tooltip location="bottom">
-          <template #activator="{ props }">
-            <v-icon
-              color="primary"
-              class="ml-3"
-              v-bind="props"
-              icon="mdi:mdi-help-circle-outline"
-            />
-          </template>
-          <span>
-            <span
-              v-html="$t('trans.formSettings.submissionConfirmationToolTip')"
-            />
-            <ul>
-              <li>{{ $t('trans.formSettings.theConfirmationID') }}</li>
-              <li>
-                {{ $t('trans.formSettings.infoB') }}
-              </li>
-            </ul>
-          </span>
-        </v-tooltip>
+        <div :class="{ 'mr-2': isRTL }">
+          <span :lang="lang">
+            {{ $t('trans.formSettings.submissionConfirmation') }}</span
+          >
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <v-icon
+                color="primary"
+                class="ml-3"
+                :class="{ 'mr-2': isRTL }"
+                v-bind="props"
+                icon="mdi:mdi-help-circle-outline"
+              />
+            </template>
+            <span>
+              <span
+                :lang="lang"
+                v-html="$t('trans.formSettings.submissionConfirmationToolTip')"
+              />
+              <ul>
+                <li :lang="lang">
+                  {{ $t('trans.formSettings.theConfirmationID') }}
+                </li>
+                <li :lang="lang">
+                  {{ $t('trans.formSettings.infoB') }}
+                </li>
+              </ul>
+            </span>
+          </v-tooltip>
+        </div>
       </template>
     </v-checkbox>
 
     <v-checkbox v-model="form.sendSubReceivedEmail" class="my-0">
       <template #label>
-        {{ $t('trans.formSettings.emailNotificatnToTeam') }}
-        <v-tooltip location="bottom">
-          <template #activator="{ props }">
-            <v-icon
-              color="primary"
-              class="ml-3"
-              v-bind="props"
-              icon="mdi:mdi-help-circle-outline"
-            />
-          </template>
-          <span>
-            {{ $t('trans.formSettings.emailNotificatnToTeamToolTip') }}
-          </span>
-        </v-tooltip>
+        <div :class="{ 'mr-2': isRTL }">
+          <span :lang="lang">
+            {{ $t('trans.formSettings.emailNotificatnToTeam') }}</span
+          >
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <v-icon
+                color="primary"
+                class="ml-3"
+                :class="{ 'mr-2': isRTL }"
+                v-bind="props"
+                icon="mdi:mdi-help-circle-outline"
+              />
+            </template>
+            <span :lang="lang">
+              {{ $t('trans.formSettings.emailNotificatnToTeamToolTip') }}
+            </span>
+          </v-tooltip>
+        </div>
       </template>
     </v-checkbox>
 
@@ -93,12 +115,15 @@ export default {
       closable-chips
       :delimiters="[' ', ',']"
       append-icon=""
+      :lang="lang"
     >
       <template #no-data>
         <v-list-item>
           <v-list-item-title>
-            Press <kbd>enter</kbd> or <kbd>,</kbd> or <kbd>space</kbd> to add
-            multiple email addresses
+            <span
+              :lang="lang"
+              v-html="$t('trans.formSettings.pressToAddMultiEmail')"
+            />
           </v-list-item-title>
         </v-list-item>
       </template>
