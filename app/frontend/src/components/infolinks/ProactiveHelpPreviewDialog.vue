@@ -1,4 +1,7 @@
 <script>
+import { mapState } from 'pinia';
+import { useFormStore } from '~/store/form';
+
 export default {
   props: {
     showDialog: { type: Boolean, required: true },
@@ -10,6 +13,9 @@ export default {
     return {
       dialog: this.showDialog,
     };
+  },
+  computed: {
+    ...mapState(useFormStore, ['isRTL', 'lang']),
   },
   watch: {
     showDialog(value) {
@@ -83,8 +89,8 @@ export default {
                   disabledLink: component && component.moreHelpInfoLink === '',
                 }"
               >
-                <div class="mr-1 cursor">
-                  Learn more
+                <div class="mr-1 cursor" :lang="lang">
+                  {{ $t('trans.proactiveHelpPreviewDialog.learnMore') }}
                   <v-icon icon="mdi:mdi-arrow-top-right-bold-box" /></div
               ></a>
             </v-col>
@@ -94,7 +100,6 @@ export default {
     </v-dialog>
   </v-row>
 </template>
-
 <style lang="scss" scoped>
 .cursor {
   cursor: pointer !important;

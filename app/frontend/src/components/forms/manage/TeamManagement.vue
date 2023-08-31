@@ -6,6 +6,7 @@ import BaseFilter from '~/components/base/BaseFilter.vue';
 import AddTeamMember from '~/components/forms/manage/AddTeamMember.vue';
 import { i18n } from '~/internationalization';
 import { rbacService, roleService } from '~/services';
+import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import {
@@ -40,16 +41,17 @@ export default {
       itemsToDelete: [],
       loading: true,
       roleList: [],
+      search: '',
       selectedUsers: [],
       showColumnsDialog: false,
       showDeleteDialog: false,
       tableData: [],
-      totalItems: 0,
       updating: false,
     };
   },
   computed: {
-    ...mapState(useFormStore, ['form', 'permissions']),
+    ...mapState(useAuthStore, ['user']),
+    ...mapState(useFormStore, ['form', 'permissions', 'isRTL', 'lang']),
     canManageTeam() {
       return this.permissions.includes(FormPermissions.TEAM_UPDATE);
     },
@@ -123,7 +125,7 @@ export default {
     async loadItems() {
       this.loading = true;
 
-      Promise.all([
+      await Promise.all([
         await this.fetchForm(this.formId),
         await this.getFormPermissionsForUser(this.formId),
         await this.getRolesList(),
@@ -189,7 +191,6 @@ export default {
           .forEach((role) => (row[role] = user.roles.includes(role)));
         return row;
       });
-      this.totalItems = this.tableData.length;
     },
 
     disableRole(header, user, userType) {
@@ -216,12 +217,11 @@ export default {
     },
 
     async toggleRole(user) {
-      const u = {
+      await this.setUserForms(user.raw.id, {
         formId: user.raw.formId,
         ...user.columns,
         userId: user.raw.id,
-      };
-      await this.setUserForms(user.raw.id, u);
+      });
       this.selectedUsers = [];
     },
 
@@ -323,6 +323,14 @@ export default {
         });
       }
     },
+    onShowColumnDialog() {
+      this.FILTER_HEADERS.sort(
+        (a, b) =>
+          this.PRESELECTED_DATA.findIndex((x) => x.text === b.text) -
+          this.PRESELECTED_DATA.findIndex((x) => x.text === a.text)
+      );
+      this.showColumnsDialog = true;
+    },
 
     onRemoveClick(item = null) {
       if (this.tableData.length === 1) {
@@ -384,11 +392,15 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <v-container
       class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
     >
-      <h1 class="mr-auto">{{ $t('trans.teamManagement.teamManagement') }}</h1>
+      <div>
+        <h1 class="mr-auto" :lang="lang">
+          {{ $t('trans.teamManagement.teamManagement') }}
+        </h1>
+      </div>
       <div style="z-index: 50">
         <span>
           <AddTeamMember
@@ -406,12 +418,14 @@ export default {
                 icon
                 size="x-small"
                 v-bind="props"
-                @click="showColumnsDialog = true"
+                @click="onShowColumnDialog"
               >
                 <v-icon icon="mdi:mdi-view-column"></v-icon>
               </v-btn>
             </template>
-            <span>{{ $t('trans.teamManagement.selectColumns') }}</span>
+            <span :lang="lang">{{
+              $t('trans.teamManagement.selectColumns')
+            }}</span>
           </v-tooltip>
           <v-tooltip location="bottom">
             <template #activator="{ props }">
@@ -428,11 +442,31 @@ export default {
                 </v-btn>
               </router-link>
             </template>
-            <span>{{ $t('trans.teamManagement.manageForm') }}</span>
+            <span :lang="lang">{{
+              $t('trans.teamManagement.manageForm')
+            }}</span>
           </v-tooltip>
         </span>
       </div>
     </v-container>
+
+    <v-row no-gutters>
+      <v-spacer />
+      <v-col cols="12" sm="4">
+        <!-- search input -->
+        <v-text-field
+          v-model="search"
+          append-icon="mdi-magnify"
+          class="pb-5"
+          :disabled="!canManageTeam"
+          hide-details
+          :label="$t('trans.teamManagement.search')"
+          single-line
+          :class="{ label: isRTL }"
+          :lang="lang"
+        />
+      </v-col>
+    </v-row>
 
     <v-data-table
       v-model="selectedUsers"
@@ -444,7 +478,9 @@ export default {
       :loading="loading || updating"
       :loading-text="$t('trans.teamManagement.loadingText')"
       :no-data-text="$t('trans.teamManagement.noDataText')"
+      :search="search"
       dense
+      :lang="lang"
     >
       <!-- custom header markup - add tooltip to heading that are roles -->
       <template #column.form_designer="{ column }">
@@ -510,7 +546,9 @@ export default {
               ></v-icon>
             </v-btn>
           </template>
-          <span>{{ $t('trans.teamManagement.removeSelectedUsers') }}</span>
+          <span :lang="lang">{{
+            $t('trans.teamManagement.removeSelectedUsers')
+          }}</span>
         </v-tooltip>
       </template>
       <template #item.form_designer="{ item }">
@@ -581,7 +619,9 @@ export default {
               ></v-icon>
             </v-btn>
           </template>
-          <span>{{ $t('trans.teamManagement.removeThisUser') }}</span>
+          <span :lang="lang">{{
+            $t('trans.teamManagement.removeThisUser')
+          }}</span>
         </v-tooltip>
       </template>
     </v-data-table>
@@ -592,14 +632,16 @@ export default {
       @close-dialog="showDeleteDialog = false"
       @continue-dialog="removeUser"
     >
-      <template #title>{{
-        $t('trans.teamManagement.confirmRemoval')
-      }}</template>
+      <template #title
+        ><span :lang="lang">
+          {{ $t('trans.teamManagement.confirmRemoval') }}</span
+        ></template
+      >
       <template #text>
         {{ DeleteMessage }}
       </template>
       <template #button-text-continue>
-        <span>{{ $t('trans.teamManagement.remove') }}</span>
+        <span :lang="lang">{{ $t('trans.teamManagement.remove') }}</span>
       </template>
     </BaseDialog>
 
@@ -616,10 +658,36 @@ export default {
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >
-        <template #filter-title>{{
-          $t('trans.teamManagement.teamMebersTitle')
-        }}</template>
+        <template #filter-title
+          ><span :lang="lang">
+            {{ $t('trans.teamManagement.teamMebersTitle') }}</span
+          ></template
+        >
       </BaseFilter>
     </v-dialog>
   </div>
 </template>
+<style scoped>
+.role-col {
+  width: 12%;
+}
+.team-table {
+  clear: both;
+}
+
+@media (max-width: 1263px) {
+  .team-table >>> th {
+    vertical-align: top;
+  }
+}
+.team-table >>> thead tr th {
+  font-weight: normal;
+  color: #003366 !important;
+  font-size: 1.1em;
+}
+/* remove extra padding on data-table rows for mobile view */
+.team-table >>> thead.v-data-table-header-mobile th,
+.team-table tr.v-data-table__mobile-table-row td {
+  padding: 0;
+}
+</style>

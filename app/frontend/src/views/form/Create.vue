@@ -20,7 +20,7 @@ export default {
   },
   beforeRouteLeave(_to, _from, next) {
     this.form.isDirty
-      ? next(window.confirm(i18n.t('trans.create.agreementErrMsg')))
+      ? next(window.confirm(i18n.t('trans.create.confirmPageNav')))
       : next();
   },
   data() {
@@ -28,11 +28,11 @@ export default {
       creatorStep: 0,
       settingsFormValid: false,
       disclaimerCheckbox: false,
-      disclaimerRules: [(v) => !!v || i18n.t('trans.create.confirmPageNav')],
+      disclaimerRules: [(v) => !!v || i18n.t('trans.create.agreementErrMsg')],
     };
   },
   computed: {
-    ...mapState(useFormStore, ['form', 'isRTL']),
+    ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
     IDP: () => IdentityProviders,
   },
   watch: {
@@ -64,14 +64,17 @@ export default {
 </script>
 
 <template>
-  <BaseSecure :idp="[IDP.IDIR]">
-    <h1 class="my-6 text-center">{{ $t('trans.create.createNewForm') }}</h1>
+  <BaseSecure :idp="[IDP.IDIR]" :class="{ 'dir-rtl': isRTL }">
+    <h1 class="my-6 text-center" :lang="lang">
+      {{ $t('trans.create.createNewForm') }}
+    </h1>
     <v-stepper v-model="creatorStep">
       <v-stepper-header>
         <v-stepper-item
           :complete="creatorStep > 0"
           :title="$t('trans.create.createNewForm')"
           value="1"
+          :lang="lang"
         ></v-stepper-item>
 
         <v-divider></v-divider>
@@ -80,23 +83,36 @@ export default {
           :complete="creatorStep > 1"
           :title="$t('trans.create.designForm')"
           value="2"
+          :lang="lang"
         ></v-stepper-item>
       </v-stepper-header>
       <v-stepper-window>
         <v-stepper-window-item value="1">
           <v-form ref="settingsForm" v-model="settingsFormValid">
+            <h1 :lang="lang">
+              {{ $t('trans.create.formSettings') }}
+            </h1>
             <FormSettings />
 
             <BasePanel class="my-6">
-              <template #title>{{ $t('trans.create.disclaimer') }}</template>
+              <template #title
+                ><span :lang="lang">{{
+                  $t('trans.create.disclaimer')
+                }}</span></template
+              >
               <FormDisclaimer />
 
               <v-checkbox
                 v-model="disclaimerCheckbox"
                 :rules="disclaimerRules"
                 required="true"
-                :label="$t('trans.create.disclaimerStmt')"
-              />
+              >
+                <template #label>
+                  <span :class="{ 'mr-2': isRTL }" :lang="lang">{{
+                    $t('trans.create.disclaimerStmt')
+                  }}</span>
+                </template>
+              </v-checkbox>
             </BasePanel>
           </v-form>
           <v-btn
@@ -115,7 +131,7 @@ export default {
             data-test="back-btn"
             @click="creatorStep = 0"
           >
-            {{ $t('trans.create.back') }}
+            <span :lang="lang">{{ $t('trans.create.back') }}</span>
           </v-btn>
         </v-stepper-window-item>
       </v-stepper-window>

@@ -1,6 +1,11 @@
 <script>
+import { mapState } from 'pinia';
+
+import { useFormStore } from '~/store/form';
+
 export default {
   computed: {
+    ...mapState(useFormStore, ['lang']),
     formSubmitMode() {
       // don't include footer when printing form submitting pages
       return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;
@@ -20,21 +25,21 @@ export default {
   >
     <v-row no-gutters>
       <v-btn id="footer-home" variant="text" href="https://www.gov.bc.ca/">
-        <span>{{ $t('trans.bCGovFooter.home') }}</span>
+        <span :lang="lang">{{ $t('trans.bCGovFooter.home') }}</span>
       </v-btn>
       <v-btn
         id="footer-about"
         variant="text"
         href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca"
       >
-        <span>{{ $t('trans.bCGovFooter.about') }}</span>
+        <span :lang="lang">{{ $t('trans.bCGovFooter.about') }}</span>
       </v-btn>
       <v-btn
         id="footer-disclaimer"
         variant="text"
         href="http://gov.bc.ca/disclaimer"
       >
-        <span>{{ $t('trans.bCGovFooter.disclaimer') }}</span>
+        <span :lang="lang">{{ $t('trans.bCGovFooter.disclaimer') }}</span>
       </v-btn>
       <v-btn id="footer-privacy" variant="text" href="http://gov.bc.ca/privacy">
         <span>{{ $t('trans.bCGovFooter.privacy') }}</span>
@@ -44,21 +49,21 @@ export default {
         variant="text"
         href="http://gov.bc.ca/webaccessibility"
       >
-        <span>{{ $t('trans.bCGovFooter.accessibility') }}</span>
+        <span :lang="lang">{{ $t('trans.bCGovFooter.accessibility') }}</span>
       </v-btn>
       <v-btn
         id="footer-copyright"
         variant="text"
         href="http://gov.bc.ca/copyright"
       >
-        <span>{{ $t('trans.bCGovFooter.copyRight') }}</span>
+        <span :lang="lang">{{ $t('trans.bCGovFooter.copyRight') }}</span>
       </v-btn>
       <v-btn
         id="footer-contact"
         variant="text"
         href="https://www2.gov.bc.ca/gov/content/home/contact-us"
       >
-        <span>{{ $t('trans.bCGovFooter.contactUs') }}</span>
+        <span :lang="lang">{{ $t('trans.bCGovFooter.contactUs') }}</span>
       </v-btn>
     </v-row>
   </v-footer>

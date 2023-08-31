@@ -4,6 +4,7 @@ import { mapActions, mapState } from 'pinia';
 import ProactiveHelpDialog from '~/components/infolinks/ProactiveHelpDialog.vue';
 import ProactiveHelpPreviewDialog from '~/components/infolinks/ProactiveHelpPreviewDialog.vue';
 import { i18n } from '~/internationalization';
+import { useFormStore } from '~/store/form';
 import { useAdminStore } from '~/store/admin';
 
 export default {
@@ -31,11 +32,13 @@ export default {
       componentName: '',
       loading: false,
       publish: [],
+      publishStatus: 'UNPUBLISHED',
       showDialog: false,
       showPreviewDialog: false,
     };
   },
   computed: {
+    ...mapState(useFormStore, ['isRTL', 'lang']),
     ...mapState(useAdminStore, ['fcProactiveHelpImageUrl']),
     headers() {
       return [
@@ -135,6 +138,7 @@ export default {
       :items="layoutList"
       :loading="loading"
       :loading-text="$t('trans.generalLayout.loadingText')"
+      :lang="lang"
     >
       <template #item.componentName="{ item }">
         <div>
@@ -154,9 +158,12 @@ export default {
               @click="onOpenDialog(item.raw.componentName)"
             >
               <v-icon icon="mdi:mdi-pencil-box-outline"></v-icon>
-              <span class="d-none d-sm-flex" style="font-size: 16px">{{
-                $t('trans.generalLayout.edit')
-              }}</span>
+              <span
+                class="d-none d-sm-flex"
+                style="font-size: 16px"
+                :lang="lang"
+                >{{ $t('trans.generalLayout.edit') }}</span
+              >
             </v-btn>
           </div>
           <div>
@@ -169,9 +176,12 @@ export default {
               @click="onOpenPreviewDialog(item.raw.componentName)"
             >
               <v-icon icon="mdi:mdi-eye"></v-icon>
-              <span class="d-none d-sm-flex" style="font-size: 16px">{{
-                $t('trans.generalLayout.preview')
-              }}</span>
+              <span
+                class="d-none d-sm-flex"
+                style="font-size: 16px"
+                :lang="lang"
+                >{{ $t('trans.generalLayout.preview') }}</span
+              >
             </v-btn>
           </div>
           <div>
@@ -184,6 +194,7 @@ export default {
             >
               <v-switch
                 v-model="publish[index]"
+                :class="{ 'dir-ltl': isRTL }"
                 density="compact"
                 hide-details
                 color="success"
@@ -197,6 +208,16 @@ export default {
                   onSwitchChange(item.raw.componentName, index)
                 "
               ></v-switch>
+              <span
+                style="width: 120px !important; font-size: 16px"
+                class="d-none d-sm-flex"
+                :lang="lang"
+                >{{
+                  publish[index]
+                    ? $t('trans.generalLayout.published')
+                    : $t('trans.generalLayout.unpublished')
+                }}</span
+              >
             </v-btn>
           </div>
         </div>

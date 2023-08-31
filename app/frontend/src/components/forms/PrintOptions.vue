@@ -1,9 +1,11 @@
 <script>
+import { mapState, mapActions } from 'pinia';
 import { i18n } from '~/internationalization';
-import { useNotificationStore } from '~/store/notification';
 import { formService, utilsService } from '~/services';
 import { NotificationTypes } from '~/utils/constants';
-import { mapActions } from 'pinia';
+
+import { useFormStore } from '~/store/form';
+import { useNotificationStore } from '~/store/notification';
 
 export default {
   props: {
@@ -29,6 +31,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useFormStore, ['isRTL', 'lang']),
     files() {
       return this.templateForm.files;
     },
@@ -167,7 +170,7 @@ export default {
 </script>
 
 <template>
-  <span>
+  <span :class="{ 'dir-rtl': isRTL }">
     <v-tooltip location="bottom">
       <template #activator="{ props }">
         <v-btn
@@ -180,7 +183,7 @@ export default {
           @click="dialog = true"
         />
       </template>
-      <span>{{ $t('trans.printOptions.print') }}</span>
+      <span :lang="lang">{{ $t('trans.printOptions.print') }}</span>
     </v-tooltip>
 
     <v-dialog
@@ -188,31 +191,35 @@ export default {
       width="900"
       content-class="export-submissions-dlg"
     >
-      <v-card>
-        <v-card-title class="text-h5 pb-0">{{
+      <v-card :class="{ 'dir-rtl': isRTL }">
+        <v-card-title class="text-h5 pb-0" :lang="lang">{{
           $t('trans.printOptions.downloadOptions')
         }}</v-card-title>
         <v-card-text>
           <hr />
-          <p>
+          <p :lang="lang">
             <strong>1. </strong>
             <a
               href="https://github.com/bcgov/common-hosted-form-service/wiki/Printing-from-a-browser"
               target="blank"
+              :hreflang="lang"
             >
               {{ $t('trans.printOptions.print') }}
             </a>
             {{ $t('trans.printOptions.pageFromBrowser') }}
           </p>
           <v-btn class="mb-5 mr-5" color="primary" @click="printBrowser">
-            <span>{{ $t('trans.printOptions.browserPrint') }}</span>
+            <span :lang="lang">{{
+              $t('trans.printOptions.browserPrint')
+            }}</span>
           </v-btn>
 
-          <p>
+          <p :lang="lang">
             <strong>2.</strong> {{ $t('trans.printOptions.uploadA') }}
             <a
               href="https://github.com/bcgov/common-hosted-form-service/wiki/CDOGS-Template-Upload"
               target="blank"
+              :hreflang="lang"
             >
               {{ $t('trans.printOptions.cDogsTemplate') }}
             </a>
@@ -220,6 +227,8 @@ export default {
           </p>
           <v-file-input
             v-model="templateForm.files"
+            :class="{ label: isRTL }"
+            :style="isRTL ? { gap: '10px' } : null"
             counter
             :clearable="true"
             :label="$t('trans.printOptions.uploadTemplateFile')"
@@ -228,6 +237,7 @@ export default {
             required
             mandatory
             show-size
+            :lang="lang"
           />
           <v-card-actions>
             <v-tooltip location="top">
@@ -245,10 +255,14 @@ export default {
                     :start="$vuetify.display.smAndUp"
                     icon="mdi:mdi-content-save"
                   />
-                  <span>{{ $t('trans.printOptions.templatePrint') }}</span>
+                  <span :lang="lang">{{
+                    $t('trans.printOptions.templatePrint')
+                  }}</span>
                 </v-btn>
               </template>
-              <span>{{ $t('trans.printOptions.submitButtonTxt') }}</span>
+              <span :lang="lang">{{
+                $t('trans.printOptions.submitButtonTxt')
+              }}</span>
             </v-tooltip>
           </v-card-actions>
         </v-card-text>

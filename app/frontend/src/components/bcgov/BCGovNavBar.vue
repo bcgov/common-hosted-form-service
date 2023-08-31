@@ -1,6 +1,7 @@
 <script>
 import { mapState } from 'pinia';
 import { useAuthStore } from '~/store/auth';
+import { useFormStore } from '~/store/form';
 import { IdentityProviders } from '~/utils/constants';
 
 export default {
@@ -11,6 +12,7 @@ export default {
   },
   computed: {
     ...mapState(useAuthStore, ['authenticated', 'isAdmin', 'identityProvider']),
+    ...mapState(useFormStore, ['lang']),
     hideNavBar() {
       // hide nav bar if user is on form submitter page
       return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;
@@ -30,25 +32,35 @@ export default {
     <div class="nav-holder">
       <ul>
         <li>
-          <router-link data-cy="aboutLinks" :to="{ name: 'About' }">{{
-            $t('trans.bCGovNavBar.about')
-          }}</router-link>
+          <router-link
+            data-cy="aboutLinks"
+            :to="{ name: 'About' }"
+            :lang="lang"
+            >{{ $t('trans.bCGovNavBar.about') }}</router-link
+          >
         </li>
         <li v-if="authenticated">
-          <router-link data-cy="userFormsLinks" :to="{ name: 'UserForms' }">{{
-            $t('trans.bCGovNavBar.myForms')
-          }}</router-link>
+          <router-link
+            data-cy="userFormsLinks"
+            :to="{ name: 'UserForms' }"
+            :lang="lang"
+            >{{ $t('trans.bCGovNavBar.myForms') }}</router-link
+          >
         </li>
         <li v-if="hasPrivileges">
-          <router-link data-cy="createNewForm" :to="{ name: 'FormCreate' }">{{
-            $t('trans.bCGovNavBar.createNewForm')
-          }}</router-link>
+          <router-link
+            data-cy="createNewForm"
+            :to="{ name: 'FormCreate' }"
+            :lang="lang"
+            >{{ $t('trans.bCGovNavBar.createNewForm') }}</router-link
+          >
         </li>
         <li v-if="hasPrivileges">
           <a
             data-cy="help"
             href="https://github.com/bcgov/common-hosted-form-service/wiki"
             target="_blank"
+            :hreflang="lang"
             >{{ $t('trans.bCGovNavBar.help') }}</a
           >
         </li>
@@ -57,6 +69,7 @@ export default {
             data-cy="feedback"
             href="https://chefs-fider.apps.silver.devops.gov.bc.ca/"
             target="_blank"
+            :hreflang="lang"
             >{{ $t('trans.bCGovNavBar.feedback') }}</a
           >
         </li>
@@ -64,7 +77,7 @@ export default {
           <router-link :to="{ name: 'User' }">User (TBD)</router-link>
         </li> -->
         <li v-if="isAdmin">
-          <router-link data-cy="admin" :to="{ name: 'Admin' }">{{
+          <router-link data-cy="admin" :to="{ name: 'Admin' }" :lang="lang">{{
             $t('trans.bCGovNavBar.admin')
           }}</router-link>
         </li>

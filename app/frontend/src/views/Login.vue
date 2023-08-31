@@ -2,6 +2,7 @@
 import { mapActions, mapState } from 'pinia';
 
 import { useAuthStore } from '~/store/auth';
+import { useFormStore } from '~/store/form';
 import { IdentityProviders } from '~/utils/constants';
 
 export default {
@@ -17,6 +18,7 @@ export default {
   },
   computed: {
     ...mapState(useAuthStore, ['authenticated', 'createLoginUrl', 'ready']),
+    ...mapState(useFormStore, ['lang']),
     buttons: () => [
       {
         label: 'IDIR',
@@ -51,7 +53,9 @@ export default {
 <template>
   <v-container class="text-center">
     <div v-if="ready && !authenticated">
-      <h1 class="my-6">Authenticate with:</h1>
+      <h1 class="my-6" :lang="lang">
+        {{ $t('trans.login.authenticateWith') }}
+      </h1>
       <v-row v-for="button in buttons" :key="button.type" justify="center">
         <v-col v-if="buttonEnabled(button.type)" sm="3">
           <v-btn
@@ -67,11 +71,13 @@ export default {
       </v-row>
     </div>
     <div v-else-if="ready && authenticated">
-      <h1 class="my-6">Already logged in</h1>
+      <h1 class="my-6" :lang="lang">
+        {{ $t('trans.login.alreadyLoggedIn') }}
+      </h1>
       <router-link :to="{ name: 'About' }">
-        <v-btn class="ma-2" color="primary" size="large">
+        <v-btn class="ma-2" color="primary" size="large" :lang="lang">
           <v-icon start icon="mdi-home"></v-icon>
-          About
+          <span :lang="lang">{{ $t('trans.login.about') }}</span>
         </v-btn>
       </router-link>
     </div>

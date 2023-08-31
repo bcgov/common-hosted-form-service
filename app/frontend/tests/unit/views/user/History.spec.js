@@ -4,6 +4,21 @@ import { describe, expect, it } from 'vitest';
 import History from '~/views/user/History.vue';
 
 describe('History.vue', () => {
+  const mockLangGetter = jest.fn();
+  let store;
+  beforeEach(() => {
+    store = new Vuex.Store({
+      modules: {
+        form: {
+          namespaced: true,
+          getters: {
+            lang: mockLangGetter,
+          },
+        },
+      },
+    });
+  });
+
   it('renders', () => {
     const wrapper = mount(History, {
       global: {

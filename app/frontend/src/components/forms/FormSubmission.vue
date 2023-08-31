@@ -35,7 +35,13 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['form', 'formSubmission']),
+    ...mapState(useFormStore, [
+      'form',
+      'formSubmission',
+      'permissions',
+      'isRTL',
+      'lang',
+    ]),
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
     },
@@ -67,9 +73,10 @@ export default {
       this.isDraft = status === 'REVISING';
     },
 
-    toggleSubmissionEdit(editing) {
+    async toggleSubmissionEdit(editing) {
       this.submissionReadOnly = !editing;
       this.reRenderSubmission += 1;
+      await this.fetchSubmission({ submissionId: this.submissionId });
     },
   },
 };
@@ -77,15 +84,19 @@ export default {
 
 <template>
   <div class="mt-5">
-    <v-skeleton-loader v-if="loading" type="article" />
-    <div v-else>
+    <v-skeleton-loader
+      v-if="loading"
+      type="article"
+      :class="{ 'dir-rtl': isRTL }"
+    />
+    <div v-else :class="{ 'dir-rtl': isRTL }">
       <div
         class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
       >
         <!-- page title -->
         <div>
           <h1>{{ form.name }}</h1>
-          <p>
+          <p :lang="lang">
             <strong>{{ $t('trans.formSubmission.submitted') }}</strong>
             {{ $filters.formatDateLong(formSubmission.createdAt) }}
             <br />
@@ -95,6 +106,13 @@ export default {
             <strong>{{ $t('trans.formSubmission.submittedBy') }}</strong>
             {{ formSubmission.createdBy }}
             <br />
+            <span v-if="formSubmission.updatedBy">
+              <strong>{{ $t('trans.formSubmission.updatedAt') }}:</strong>
+              {{ $filters.formatDateLong(formSubmission.updatedAt) }}
+              <br />
+              <strong>{{ $t('trans.formSubmission.updatedBy') }}:</strong>
+              {{ formSubmission.updatedBy }}
+            </span>
           </p>
         </div>
         <!-- buttons -->
@@ -118,7 +136,9 @@ export default {
                   />
                 </router-link>
               </template>
-              <span>{{ $t('trans.formSubmission.viewAllSubmissions') }}</span>
+              <span :lang="lang"
+                >{{ $t('trans.formSubmission.viewAllSubmissions') }}
+              </span>
             </v-tooltip>
           </span>
           <DeleteSubmission :submission-id="submissionId" @deleted="onDelete" />
@@ -135,50 +155,61 @@ export default {
       >
         <v-alert
           :value="!submissionReadOnly"
-          :class="'d-print-none ' + NOTIFICATIONS_TYPES.INFO.class"
+          :class="[
+            'd-print-none ' + NOTIFICATIONS_TYPES.INFO.class,
+            { 'dir-rtl': isRTL },
+          ]"
           :icon="NOTIFICATIONS_TYPES.INFO.icon"
+          :lang="lang"
           >{{ $t('trans.formSubmission.alertInfo') }}</v-alert
         >
-        <v-card variant="outlined" class="review-form mt-5">
-          <div
-            class="d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow mb-3"
-          >
-            <div>
-              <h2 class="review-heading">
-                {{ $t('trans.formSubmission.submission') }}
-              </h2>
-            </div>
-
-            <div v-if="form.enableStatusUpdates" class="d-print-none">
-              <span v-if="submissionReadOnly">
-                <AuditHistory :submission-id="submissionId" />
-                <v-tooltip location="bottom">
-                  <template #activator="{ props }">
-                    <v-btn
-                      class="mx-1"
-                      color="primary"
-                      v-bind="props"
-                      :disabled="isDraft"
-                      size="x-small"
-                      density="default"
-                      icon="mdi:mdi-pencil"
-                      @click="toggleSubmissionEdit(true)"
-                    />
-                  </template>
-                  <span>{{
-                    $t('trans.formSubmission.editThisSubmission')
-                  }}</span>
-                </v-tooltip>
-              </span>
-              <v-btn
-                v-else
-                variant="outlined"
-                color="textLink"
-                @click="toggleSubmissionEdit(false)"
+        <v-card variant="outlined" class="review-form">
+          <div :class="{ 'dir-rtl': isRTL }">
+            <v-row no-gutters>
+              <v-col cols="10">
+                <h2 class="review-heading" :lang="lang">
+                  {{ $t('trans.formSubmission.submission') }}
+                </h2>
+              </v-col>
+              <v-spacer />
+              <v-col
+                v-if="form.enableStatusUpdates"
+                :class="isRTL ? 'text-left' : 'text-right'"
+                class="d-print-none"
+                cols="2"
               >
-                <span>{{ $t('trans.formSubmission.cancel') }}</span>
-              </v-btn>
-            </div>
+                <span v-if="submissionReadOnly">
+                  <AuditHistory :submission-id="submissionId" />
+                  <v-tooltip location="bottom">
+                    <template #activator="{ props }">
+                      <v-btn
+                        class="mx-1"
+                        color="primary"
+                        v-bind="props"
+                        :disabled="isDraft"
+                        size="x-small"
+                        density="default"
+                        icon="mdi:mdi-pencil"
+                        @click="toggleSubmissionEdit(true)"
+                      />
+                    </template>
+                    <span :lang="lang">{{
+                      $t('trans.formSubmission.editThisSubmission')
+                    }}</span>
+                  </v-tooltip>
+                </span>
+                <v-btn
+                  v-else
+                  variant="outlined"
+                  color="textLink"
+                  @click="toggleSubmissionEdit(false)"
+                >
+                  <span :lang="lang">{{
+                    $t('trans.formSubmission.cancel')
+                  }}</span>
+                </v-btn>
+              </v-col>
+            </v-row>
           </div>
           <FormViewer
             :key="reRenderSubmission"
@@ -205,7 +236,7 @@ export default {
           class="review-form"
           :disabled="!submissionReadOnly"
         >
-          <h2 class="review-heading">
+          <h2 class="review-heading" :class="{ 'dir-rtl': isRTL }" :lang="lang">
             {{ $t('trans.formSubmission.status') }}
           </h2>
           <StatusPanel

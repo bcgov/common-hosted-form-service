@@ -491,6 +491,16 @@ a,
   min-height: 300px;
 }
 
+.label .v-label {
+  right: 0 !important;
+  left: auto !important;
+}
+
+
+.label span {
+  margin-right:30px;
+}
+
 .flex-xs-column-reverse {
   flex-direction: column-reverse;
 }
@@ -499,16 +509,13 @@ a,
   flex-direction: column;
 }
 
-.bgtrans {
-  background-color: transparent !important;
-}
-
-.gapRow {
-  @media only screen and (max-width: 960px) {
-      row-gap:5px;
-      margin-bottom: 5px;
-    }
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
 }
 
 
-
+.dir-ltl {
+  direction: ltr !important;
+  text-align: left;
+}

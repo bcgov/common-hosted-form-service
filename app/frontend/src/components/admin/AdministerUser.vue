@@ -1,7 +1,9 @@
 <script>
+import { mapActions, mapState } from 'pinia';
+
 import { useAppStore } from '~/store/app';
 import { useAdminStore } from '~/store/admin';
-import { mapActions, mapState } from 'pinia';
+import { useFormStore } from '~/store/form';
 
 export default {
   props: {
@@ -13,6 +15,7 @@ export default {
   computed: {
     ...mapState(useAppStore, ['config']),
     ...mapState(useAdminStore, ['user']),
+    ...mapState(useFormStore, ['lang']),
     userUrl() {
       return `${this.config.keycloak.serverUrl}/admin/${this.config.keycloak.realm}/console/#/realms/${this.config.keycloak.realm}/users/${this.user.keycloakId}`;
     },
@@ -29,7 +32,7 @@ export default {
 <template>
   <div>
     <h3>{{ user.fullName }}</h3>
-    <h4>{{ $t('trans.administerUser.userDetails') }}</h4>
+    <h4 :lang="lang">{{ $t('trans.administerUser.userDetails') }}</h4>
     <pre>{{ user }}</pre>
 
     <v-btn
@@ -39,7 +42,7 @@ export default {
       :href="userUrl"
       target="_blank"
     >
-      <span>{{ $t('trans.administerUser.openSSOConsole') }}</span>
+      <span :lang="lang">{{ $t('trans.administerUser.openSSOConsole') }}</span>
     </v-btn>
   </div>
 </template>

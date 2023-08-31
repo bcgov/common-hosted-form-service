@@ -33,7 +33,7 @@ export default {
     'custom-dialog',
   ],
   computed: {
-    ...mapState(useFormStore, ['isRTL']),
+    ...mapState(useFormStore, ['isRTL', 'lang']),
   },
   methods: {
     closeDialog() {
@@ -61,7 +61,7 @@ export default {
     @keydown.esc="closeDialog"
   >
     <v-card>
-      <div>
+      <div class="dialog-body" :class="{ 'dir-rtl': isRTL }">
         <div v-if="showCloseButton">
           <v-spacer />
           <v-icon
@@ -80,7 +80,7 @@ export default {
               <v-icon size="medium">default-icon</v-icon>
             </slot>
           </div>
-          <div class="dialog-text">
+          <div class="dialog-text" :lang="lang">
             <slot name="text">{{ $t('trans.baseDialog.defaultText') }}</slot>
           </div>
         </v-card-text>
@@ -94,7 +94,7 @@ export default {
             @click="closeDialog"
           >
             <slot name="button-text">
-              <span>{{ $t('trans.baseDialog.ok') }}</span>
+              <span :lang="lang">{{ $t('trans.baseDialog.ok') }}</span>
             </slot>
           </v-btn>
         </div>
@@ -102,35 +102,36 @@ export default {
           <v-btn
             data-test="continue-btn-continue"
             class="mb-5"
-            :class="isRTL ? 'ml-5' : 'mr-5'"
             color="primary"
             variant="flat"
             @click="continueDialog"
           >
             <slot name="button-text-continue">
-              <span>{{ $t('trans.baseDialog.continue') }}</span>
+              <span :lang="lang">{{ $t('trans.baseDialog.continue') }}</span>
             </slot>
           </v-btn>
           <v-btn
             data-test="continue-btn-cancel"
             class="mb-5"
+            :class="isRTL ? 'ml-5' : 'mr-5'"
             variant="outlined"
             @click="closeDialog"
           >
             <slot name="button-text-cancel">
-              <span>{{ $t('trans.baseDialog.cancel') }}</span>
+              <span :lang="lang">{{ $t('trans.baseDialog.cancel') }}</span>
             </slot>
           </v-btn>
         </div>
         <div v-else-if="type === 'SAVEDDELETE'">
           <v-btn
             class="mb-5 mr-5"
+            :class="isRTL ? 'ml-5' : 'mr-5'"
             color="primary"
             variant="flat"
             @click="continueDialog"
           >
             <slot name="button-text-continue">
-              <span>{{ $t('trans.baseDialog.continue') }}</span>
+              <span :lang="lang">{{ $t('trans.baseDialog.continue') }}</span>
             </slot>
           </v-btn>
           <v-btn
@@ -140,7 +141,7 @@ export default {
             @click="deleteDialog"
           >
             <slot name="button-text-delete">
-              <span>{{ $t('trans.baseDialog.cancel') }}</span>
+              <span :lang="lang">{{ $t('trans.baseDialog.cancel') }}</span>
             </slot>
           </v-btn>
         </div>
@@ -152,7 +153,7 @@ export default {
             @click="continueDialog"
           >
             <slot name="button-text-continue">
-              <span>{{ $t('trans.baseDialog.continue') }}</span>
+              <span :lang="lang">{{ $t('trans.baseDialog.continue') }}</span>
             </slot>
           </v-btn>
           <v-btn
@@ -164,12 +165,12 @@ export default {
             @click="customDialog"
           >
             <slot name="button-text-custom">
-              <span>{{ $t('trans.baseDialog.custom') }}</span>
+              <span :lang="lang">{{ $t('trans.baseDialog.custom') }}</span>
             </slot>
           </v-btn>
           <v-btn class="mb-5" variant="outlined" @click="closeDialog">
             <slot name="button-text-cancel">
-              <span>{{ $t('trans.baseDialog.cancel') }}</span>
+              <span :lang="lang">{{ $t('trans.baseDialog.cancel') }}</span>
             </slot>
           </v-btn>
         </div>

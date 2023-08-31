@@ -38,7 +38,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['formList']),
+    ...mapState(useFormStore, ['formList', 'isRTL', 'lang']),
     ...mapState(useAuthStore, ['user']),
     canCreateForm() {
       return this.user.idp === IdentityProviders.IDIR;
@@ -67,13 +67,13 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="forms-table" :class="{ 'dir-rtl': isRTL }">
     <div
       class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
     >
       <!-- page title -->
       <div>
-        <h1>{{ $t('trans.formsTable.myForms') }}</h1>
+        <h1 :lang="lang">{{ $t('trans.formsTable.myForms') }}</h1>
       </div>
       <!-- buttons -->
       <div v-if="canCreateForm">
@@ -96,7 +96,7 @@ export default {
               </v-btn>
             </router-link>
           </template>
-          <span>{{ $t('trans.formsTable.createNewForm') }}</span>
+          <span :lang="lang">{{ $t('trans.formsTable.createNewForm') }}</span>
         </v-tooltip>
       </div>
     </div>
@@ -114,6 +114,8 @@ export default {
             single-line
             :label="$t('trans.formsTable.search')"
             class="pb-5"
+            :class="{ label: isRTL }"
+            :lang="lang"
           />
         </div>
       </v-col>
@@ -129,6 +131,7 @@ export default {
     :loading="loading"
     :loading-text="$t('trans.formsTable.loadingText')"
     :search="search"
+    :lang="lang"
   >
     <template #item.name="{ item }">
       <router-link
@@ -143,7 +146,7 @@ export default {
           <template #activator="{ props }">
             <span v-bind="props">{{ item.columns.name }}</span>
           </template>
-          <span>
+          <span :lang="lang">
             {{ $t('trans.formsTable.viewForm') }}
             <v-icon icon="mdi:mdi-open-in-new"></v-icon>
           </span>
@@ -156,6 +159,7 @@ export default {
         class="description-icon ml-2 mr-4"
         color="primary"
         icon="mdi:mdi-note-text"
+        :aria-label="$t('trans.formsTable.description')"
         @click="onDescriptionClick(item.raw.id, item.raw.description)"
       ></v-icon>
     </template>
@@ -165,8 +169,8 @@ export default {
         :to="{ name: 'FormManage', query: { f: item.raw.id } }"
       >
         <v-btn color="primary" variant="text" size="small">
-          <v-icon class="mr-1" icon="mdi:mdi-cog"></v-icon>
-          <span class="d-none d-sm-flex">{{
+          <v-icon :class="isRTL ? 'ml-1' : 'mr-1'" icon="mdi:mdi-cog"></v-icon>
+          <span class="d-none d-sm-flex" :lang="lang">{{
             $t('trans.formsTable.manage')
           }}</span>
         </v-btn>
@@ -177,8 +181,11 @@ export default {
         :to="{ name: 'FormSubmissions', query: { f: item.raw.id } }"
       >
         <v-btn color="primary" variant="text" size="small">
-          <v-icon class="mr-1" icon="mdi:mdi-list-box-outline"></v-icon>
-          <span class="d-none d-sm-flex">{{
+          <v-icon
+            :class="isRTL ? 'ml-1' : 'mr-1'"
+            icon="mdi:mdi-list-box-outline"
+          ></v-icon>
+          <span class="d-none d-sm-flex" :lang="lang">{{
             $t('trans.formsTable.submissions')
           }}</span>
         </v-btn>
@@ -192,7 +199,9 @@ export default {
     @close-dialog="showDescriptionDialog = false"
   >
     <template #title>
-      <span class="pl-5">{{ $t('trans.formsTable.Description') }}</span>
+      <span class="pl-5" :lang="lang">{{
+        $t('trans.formsTable.Description')
+      }}</span>
     </template>
     <template #text>
       <slot name="formDescription">{{ formDescription }}</slot>

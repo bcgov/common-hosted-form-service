@@ -22,7 +22,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['downloadedFile']),
+    ...mapState(useFormStore, ['downloadedFile', 'lang', 'isRTL']),
     IDP: () => IdentityProviders,
   },
   async mounted() {
@@ -79,18 +79,26 @@ export default {
 <template>
   <BaseSecure :idp="[IDP.IDIR]">
     <v-container fluid class="center_vertical_content">
-      <h1>CHEFS Data Export</h1>
+      <h1 :lang="lang">{{ $t('trans.download.chefsDataExport') }}</h1>
       <v-progress-circular
         v-if="!showDownloadLink"
         :size="50"
         color="primary"
         indeterminate
       ></v-progress-circular>
-      <div v-if="!showDownloadLink">Preparing for download...</div>
-      <div v-if="showDownloadLink" class="mt-5 center_vertical_content">
+      <div v-if="!showDownloadLink" :lang="lang">
+        {{ $t('trans.download.preparingForDownloading') }}
+      </div>
+      <div
+        v-if="showDownloadLink"
+        class="mt-5 center_vertical_content"
+        :lang="lang"
+      >
         <v-icon class="mb-2" size="90" icon="mdi:mdi-file-download" /><br />
         If your file does not automatically download
-        <a href="#" @click="getFile(id)">click here to try again</a>
+        <a href="#" @click="getFile(id)" :hreflang="lang">{{
+          $t('trans.download.downloadInfoB')
+        }}</a>
       </div>
     </v-container>
   </BaseSecure>

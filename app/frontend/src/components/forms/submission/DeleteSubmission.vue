@@ -1,5 +1,5 @@
 <script>
-import { mapActions } from 'pinia';
+import { mapActions, mapState } from 'pinia';
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { useFormStore } from '~/store/form';
 
@@ -20,16 +20,15 @@ export default {
       type: String,
       required: true,
     },
-    iconSize: {
-      type: String,
-      default: () => 'small',
-    },
   },
   emits: ['deleted'],
   data() {
     return {
       showDeleteDialog: false,
     };
+  },
+  computed: {
+    ...mapState(useFormStore, ['form', 'lang', 'isRTL']),
   },
   methods: {
     ...mapActions(useFormStore, ['deleteSubmission']),
@@ -43,7 +42,7 @@ export default {
 </script>
 
 <template>
-  <span>
+  <span :class="{ 'dir-rtl': isRTL }">
     <v-tooltip location="bottom">
       <template #activator="{ props }">
         <v-btn
@@ -57,7 +56,7 @@ export default {
           @click="showDeleteDialog = true"
         />
       </template>
-      <span
+      <span :lang="lang"
         >{{ $t('trans.deleteSubmission.deleteThis') }}
         {{
           isDraft
@@ -73,19 +72,23 @@ export default {
       @close-dialog="showDeleteDialog = false"
       @continue-dialog="delSub"
     >
-      <template #title>{{
-        $t('trans.deleteSubmission.confirmDeletion')
-      }}</template>
+      <template #title>
+        <span :lang="lang">{{
+          $t('trans.deleteSubmission.confirmDeletion')
+        }}</span></template
+      >
       <template #text>
-        {{ $t('trans.deleteSubmission.deleteWarning') }}
-        {{
-          isDraft
-            ? $t('trans.deleteSubmission.drafts')
-            : $t('trans.deleteSubmission.formSubmission')
-        }}?
+        <span :lang="lang">
+          {{ $t('trans.deleteSubmission.deleteWarning') }}
+          {{
+            isDraft
+              ? $t('trans.deleteSubmission.drafts')
+              : $t('trans.deleteSubmission.formSubmission')
+          }}?</span
+        >
       </template>
       <template #button-text-continue>
-        <span>{{ $t('trans.deleteSubmission.delete') }}</span>
+        <span :lang="lang">{{ $t('trans.deleteSubmission.delete') }}</span>
       </template>
     </BaseDialog>
   </span>

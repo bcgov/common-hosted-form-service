@@ -117,7 +117,7 @@ export default {
       'tokenParsed',
       'user',
     ]),
-    ...mapState(useFormStore, ['multiLanguage', 'isRTL']),
+    ...mapState(useFormStore, ['lang', 'isRTL']),
 
     formScheduleExpireMessage() {
       return i18n.t('trans.formViewer.formScheduleExpireMessage');
@@ -157,17 +157,16 @@ export default {
     },
   },
   watch: {
-    multiLanguage() {
+    lang() {
       this.reRenderFormIo += 1;
     },
   },
   async mounted() {
     if (this.submissionId && this.isDuplicate) {
-      //Run when make new submission from existing one called.
-      await Promise.all([
-        this.getFormData(),
-        this.getFormSchema(), //We need this to be called as well, because we need latest version of form
-      ]);
+      // Run when make new submission from existing one called. Get the
+      // published version of form, and then get the submission data.
+      await this.getFormSchema();
+      await this.getFormData();
     } else if (this.submissionId && !this.isDuplicate) {
       await this.getFormData();
     } else {
@@ -175,10 +174,7 @@ export default {
       await this.getFormSchema();
     }
 
-    // If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
-    if (!this.preview && !this.readOnly) {
-      window.addEventListener('beforeunload', this.beforeWindowUnload);
-    }
+    window.addEventListener('beforeunload', this.beforeWindowUnload);
 
     this.reRenderFormIo += 1;
   },
@@ -200,16 +196,38 @@ export default {
       function iterate(obj, stack, fields, propNeeded) {
         //Get property path from nested object
         for (let property in obj) {
-          if (typeof obj[property] == 'object') {
+          const innerObject = obj[property];
+
+          if (propNeeded === property) {
+            fields = fields + stack + '.' + property;
+            return fields.replace(/^\./, '');
+          } else if (Array.isArray(innerObject)) {
+            // When the form contains a Data Grid there will be an array that
+            // needs to be checked, and an array of properties to be unset.
+            const fieldsArray = [];
+            for (let i = 0; i < innerObject.length; i++) {
+              const next = iterate(
+                innerObject[i],
+                stack + '.' + property + '[' + i + ']',
+                fields,
+                propNeeded
+              );
+
+              if (next) {
+                fieldsArray.push(next);
+              }
+            }
+
+            if (fieldsArray.length > 0) {
+              return fieldsArray;
+            }
+          } else if (typeof innerObject === 'object') {
             return iterate(
-              obj[property],
+              innerObject,
               stack + '.' + property,
               fields,
               propNeeded
             );
-          } else if (propNeeded === property) {
-            fields = fields + stack + '.' + property;
-            return fields;
           }
         }
       }
@@ -229,8 +247,12 @@ export default {
           });
         } else if (fieldcomponent?.validate?.isUseForCopy === false) {
           const fieldPath = iterate(submission, '', '', fieldcomponent.key);
-          if (fieldPath) {
-            _.unset(submission, fieldPath.replace(/^\./, ''));
+          if (Array.isArray(fieldPath)) {
+            for (let path of fieldPath) {
+              _.unset(submission, path);
+            }
+          } else if (fieldPath) {
+            _.unset(submission, fieldPath);
           }
         }
       }
@@ -1025,11 +1047,7 @@ export default {
 </script>
 
 <template>
-  <v-skeleton-loader
-    :loading="loadingSubmission"
-    type="article, actions"
-    class="bgtrans"
-  >
+  <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
     <v-container fluid>
       <div v-if="isFormScheduleExpired">
         <v-alert
@@ -1040,13 +1058,21 @@ export default {
           "
           prominent
           type="error"
+          :class="{ 'dir-rtl': isRTL }"
+          :lang="lang"
         >
         </v-alert>
 
         <div v-if="isLateSubmissionAllowed">
           <v-col cols="3" md="2">
-            <v-btn color="primary" @click="isFormScheduleExpired = false">
-              <span>{{ $t('trans.formViewer.createLateSubmission') }}</span>
+            <v-btn
+              color="primary"
+              :class="{ 'dir-rtl': isRTL }"
+              @click="isFormScheduleExpired = false"
+            >
+              <span :lang="lang">{{
+                $t('trans.formViewer.createLateSubmission')
+              }}</span>
             </v-btn>
           </v-col>
         </div>
@@ -1090,14 +1116,16 @@ export default {
                 : NOTIFICATIONS_TYPES.SUCCESS.icon
             "
           >
-            <div v-if="saving">
-              <v-progress-linear indeterminate />
+            <div v-if="saving" :class="{ 'mr-2': isRTL }">
+              <v-progress-linear indeterminate :lang="lang" />
               {{ $t('trans.formViewer.saving') }}
             </div>
-            <div v-else>{{ $t('trans.formViewer.draftSaved') }}</div>
+            <div v-else :class="{ 'mr-2': isRTL }" :lang="lang">
+              {{ $t('trans.formViewer.draftSaved') }}
+            </div>
           </v-alert>
 
-          <slot name="alert" :form="form" />
+          <slot name="alert" :form="form" :class="{ 'dir-rtl': isRTL }" />
 
           <BaseDialog
             v-model="showSubmitConfirmDialog"
@@ -1106,14 +1134,18 @@ export default {
             @close-dialog="showSubmitConfirmDialog = false"
             @continue-dialog="continueSubmit"
           >
-            <template #title>{{
-              $t('trans.formViewer.pleaseConfirm')
-            }}</template>
-            <template #text>{{
-              $t('trans.formViewer.submitFormWarningMsg')
-            }}</template>
+            <template #title>
+              <span :lang="lang">{{
+                $t('trans.formViewer.pleaseConfirm')
+              }}</span></template
+            >
+            <template #text
+              ><span :lang="lang">{{
+                $t('trans.formViewer.submitFormWarningMsg')
+              }}</span></template
+            >
             <template #button-text-continue>
-              <span>{{ $t('trans.formViewer.submit') }}</span>
+              <span :lang="lang">{{ $t('trans.formViewer.submit') }}</span>
             </template>
           </BaseDialog>
 
@@ -1131,7 +1163,9 @@ export default {
                 color="blue-grey-lighten-4"
                 height="5"
               ></v-progress-linear>
-              {{ $t('trans.formViewer.formLoading') }}
+              <span :class="{ 'mr-2': isRTL }" :lang="lang">
+                {{ $t('trans.formViewer.formLoading') }}
+              </span>
             </div>
           </v-alert>
           <FormViewerMultiUpload
@@ -1156,7 +1190,7 @@ export default {
             :form="formSchema"
             :submission="submission"
             :options="viewerOptions"
-            :language="multiLanguage"
+            :language="lang"
             @submit="onSubmit"
             @submitDone="onSubmitDone"
             @submitButton="onSubmitButton"
@@ -1166,8 +1200,9 @@ export default {
           />
           <p
             v-if="version"
-            :class="isRTL ? 'text-left' : 'text-right'"
+            :class="{ 'text-left': isRTL }"
             class="mt-3"
+            :lang="lang"
           >
             {{ $t('trans.formViewer.version', { version: version }) }}
           </p>
@@ -1175,19 +1210,28 @@ export default {
       </div>
       <BaseDialog
         v-model="doYouWantToSaveTheDraft"
+        :class="{ 'dir-rtl': isRTL }"
         type="SAVEDDELETE"
         :enable-custom-button="false"
         @close-dialog="closeBulkYesOrNo"
         @delete-dialog="no"
         @continue-dialog="yes"
       >
-        <template #title>{{ $t('trans.formViewer.pleaseConfirm') }}</template>
-        <template #text>{{ $t('trans.formViewer.wantToSaveDraft') }}</template>
+        <template #title
+          ><span :lang="lang">
+            {{ $t('trans.formViewer.pleaseConfirm') }}</span
+          ></template
+        >
+        <template #text
+          ><span :lang="lang">
+            {{ $t('trans.formViewer.wantToSaveDraft') }}</span
+          ></template
+        >
         <template #button-text-continue>
-          <span>{{ $t('trans.formViewer.yes') }}</span>
+          <span :lang="lang"> {{ $t('trans.formViewer.yes') }}</span>
         </template>
         <template #button-text-delete>
-          <span>{{ $t('trans.formViewer.no') }}</span>
+          <span :lang="lang"> {{ $t('trans.formViewer.no') }}</span>
         </template>
       </BaseDialog>
     </v-container>

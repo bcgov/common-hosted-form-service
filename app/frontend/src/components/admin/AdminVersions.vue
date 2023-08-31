@@ -4,6 +4,7 @@ import { mapActions, mapState } from 'pinia';
 import { i18n } from '~/internationalization';
 import adminService from '~/services/adminService';
 import { useAdminStore } from '~/store/admin';
+import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
 export default {
@@ -18,6 +19,7 @@ export default {
   },
   computed: {
     ...mapState(useAdminStore, ['form']),
+    ...mapState(useFormStore, ['lang']),
     headers() {
       return [
         {
@@ -97,10 +99,11 @@ export default {
     class="submissions-table"
     :headers="headers"
     :items="versionList"
+    :lang="lang"
   >
     <!-- Version  -->
     <template #item.version="{ item }">
-      <span>
+      <span :lang="lang">
         {{
           $t('trans.adminVersions.version', {
             versionNo: item.raw.version,
@@ -111,7 +114,7 @@ export default {
 
     <!-- Status  -->
     <template #item.status="{ item }">
-      <label>{{
+      <label :lang="lang">{{
         item.raw.published
           ? $t('trans.adminVersions.published')
           : $t('trans.adminVersions.unpublished')
@@ -144,7 +147,9 @@ export default {
               <v-icon icon="mdi:mdi-download"></v-icon>
             </v-btn>
           </template>
-          <span>{{ $t('trans.adminVersions.exportDesign') }} </span>
+          <span :lang="lang"
+            >{{ $t('trans.adminVersions.exportDesign') }}
+          </span>
         </v-tooltip>
       </span>
     </template>

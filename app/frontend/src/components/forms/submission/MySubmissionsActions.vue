@@ -21,7 +21,7 @@ export default {
   },
   emits: ['draft-deleted'],
   computed: {
-    ...mapState(useFormStore, ['form', 'isRTL']),
+    ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
     isCopyFromExistingSubmissionEnabled() {
       return this.form && this.form.enableCopyExistingSubmission;
     },
@@ -70,7 +70,9 @@ export default {
             icon="mdi:mdi-eye"
           />
         </template>
-        <span>{{ $t('trans.mySubmissionsActions.viewThisSubmission') }}</span>
+        <span :lang="lang">{{
+          $t('trans.mySubmissionsActions.viewThisSubmission')
+        }}</span>
       </v-tooltip>
     </router-link>
 
@@ -100,7 +102,9 @@ export default {
               icon="mdi:mdi-pencil-box-multiple"
             />
           </template>
-          <span>{{ $t('trans.mySubmissionsActions.copyThisSubmission') }}</span>
+          <span :lang="lang">{{
+            $t('trans.mySubmissionsActions.copyThisSubmission')
+          }}</span>
         </v-tooltip>
       </router-link>
     </span>
@@ -128,7 +132,9 @@ export default {
               icon="mdi:mdi-pencil"
             />
           </template>
-          <span>{{ $t('trans.mySubmissionsActions.editThisDraft') }}</span>
+          <span :lang="lang">{{
+            $t('trans.mySubmissionsActions.editThisDraft')
+          }}</span>
         </v-tooltip>
       </router-link>
       <DeleteSubmission

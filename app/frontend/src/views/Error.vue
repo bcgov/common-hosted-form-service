@@ -1,16 +1,19 @@
 <script>
 import { mapActions, mapState } from 'pinia';
+import { i18n } from '~/internationalization';
 import { useAuthStore } from '~/store/auth';
+import { useFormStore } from '~/store/form';
 
 export default {
   props: {
     msg: {
-      default: 'Error: Something went wrong... :(',
+      default: i18n.t('trans.error.somethingWentWrong'),
       type: String,
     },
   },
   computed: {
     ...mapState(useAuthStore, ['authenticated', 'ready']),
+    ...mapState(useFormStore, ['lang']),
   },
   methods: mapActions(useAuthStore, ['logout']),
 };
@@ -21,7 +24,7 @@ export default {
     <h1 class="my-6">{{ msg }}</h1>
     <div v-if="ready" class="d-print-none">
       <v-btn v-if="authenticated" color="primary" size="large" @click="logout">
-        Logout
+        <span :lang="lang">{{ $t('trans.error.logout') }}</span>
       </v-btn>
     </div>
   </v-container>

@@ -28,7 +28,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['isRTL']),
+    ...mapState(useFormStore, ['isRTL', 'lang']),
     formLink() {
       return `${window.location.origin}${
         import.meta.env.BASE_URL
@@ -50,7 +50,7 @@ export default {
 </script>
 
 <template>
-  <span>
+  <span :class="{ 'dir-rtl': isRTL }">
     <v-tooltip location="bottom">
       <template #activator="{ props }">
         <v-btn
@@ -64,22 +64,25 @@ export default {
           @click="dialog = true"
         />
       </template>
-      <span>{{ $t('trans.shareForm.shareForm') }}</span>
+      <span :lang="lang">{{ $t('trans.shareForm.shareForm') }}</span>
     </v-tooltip>
 
     <v-dialog v-model="dialog" width="900">
       <v-card>
-        <v-card-title class="text-h5 pb-0">{{
+        <v-card-title class="text-h5 pb-0" :lang="lang">{{
           $t('trans.shareForm.shareLink')
         }}</v-card-title>
         <v-card-text>
           <hr />
-          <p class="mb-5">{{ $t('trans.shareForm.copyQRCode') }}</p>
+          <p class="mb-5" :class="{ 'dir-rtl': isRTL }" :lang="lang">
+            {{ $t('trans.shareForm.copyQRCode') }}
+          </p>
           <v-alert
             v-if="warning"
-            :class="NOTIFICATIONS_TYPES.WARNING.class"
+            :class="[NOTIFICATIONS_TYPES.WARNING.class, { 'dir-rtl': isRTL }]"
             :icon="NOTIFICATIONS_TYPES.WARNING.icon"
             :text="$t('trans.shareForm.warningMessage')"
+            :lang="lang"
           ></v-alert>
           <v-text-field
             readonly
@@ -88,6 +91,7 @@ export default {
             label="URL"
             data-test="text-shareUrl"
             :model-value="formLink"
+            :class="{ 'dir-rtl': isRTL }"
           >
             <template #prepend>
               <v-icon icon="mdi:mdi-link"></v-icon>
@@ -97,12 +101,13 @@ export default {
                 class="mt-n1"
                 :text-to-copy="formLink"
                 :tooltip-text="$t('trans.shareForm.copyURLToClipboard')"
+                :lang="lang"
               />
               <v-tooltip location="bottom">
                 <template #activator="{ props }">
                   <v-btn
                     class="mt-n1"
-                    :class="isRTL ? 'mr-1' : 'ml-1'"
+                    :class="{ 'dir-rtl': isRTL }"
                     :href="formLink"
                     color="primary"
                     target="_blank"
@@ -113,7 +118,9 @@ export default {
                     icon="mdi:mdi-open-in-new"
                   />
                 </template>
-                <span>{{ $t('trans.shareForm.openThisForm') }}</span>
+                <span :class="{ 'dir-rtl': isRTL }" :lang="lang">{{
+                  $t('trans.shareForm.openThisForm')
+                }}</span>
               </v-tooltip>
             </template>
           </v-text-field>
@@ -149,8 +156,13 @@ export default {
         </v-card-text>
 
         <v-card-actions class="justify-center">
-          <v-btn class="mb-5 close-dlg" color="primary" @click="dialog = false">
-            <span>{{ $t('trans.shareForm.close') }}</span>
+          <v-btn
+            :class="{ 'dir-rtl': isRTL }"
+            class="mb-5 close-dlg"
+            color="primary"
+            @click="dialog = false"
+          >
+            <span :lang="lang">{{ $t('trans.shareForm.close') }}</span>
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -172,7 +184,6 @@ export default {
     max-height: 250px;
   }
 }
-
 .close-dlg {
   margin-top: 50px;
 }

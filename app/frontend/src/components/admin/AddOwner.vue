@@ -3,6 +3,7 @@ import { mapActions } from 'pinia';
 import { version as uuidVersion, validate as uuidValidate } from 'uuid';
 
 import { useAdminStore } from '~/store/admin';
+import { useFormStore } from '~/store/form';
 import { FormRoleCodes } from '~/utils/constants';
 
 export default {
@@ -26,6 +27,7 @@ export default {
   },
   methods: {
     ...mapActions(useAdminStore, ['addFormUser', 'readRoles']),
+    ...mapActions(useFormStore, ['lang']),
     async addOwner() {
       if (this.$refs.addUserForm.validate()) {
         await this.addFormUser({
@@ -41,7 +43,7 @@ export default {
 
 <template>
   <v-form ref="addUserForm" v-model="valid">
-    <p>
+    <p :lang="lang">
       {{ $t('trans.addOwner.infoA') }}
     </p>
     <v-row class="mt-4">
@@ -52,11 +54,12 @@ export default {
           :rules="userGuidRules"
           :hint="$t('trans.addOwner.hint')"
           persistent-hint
+          :lang="lang"
         />
       </v-col>
       <v-col cols="3" md="2">
         <v-btn color="primary" :disabled="!valid" @click="addOwner">
-          <span>{{ $t('trans.addOwner.addowner') }}</span>
+          <span :lang="lang">{{ $t('trans.addOwner.addowner') }}</span>
         </v-btn>
       </v-col>
     </v-row>
