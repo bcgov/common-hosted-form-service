@@ -4,6 +4,20 @@ import { describe, expect, it } from 'vitest';
 import Preview from '~/views/form/Preview.vue';
 
 describe('Preview.vue', () => {
+  const mockisRTLGetter = jest.fn();
+  let store;
+  beforeEach(() => {
+    store = new Vuex.Store({
+      modules: {
+        form: {
+          namespaced: true,
+          getters: {
+            isRTL: mockisRTLGetter,
+          },
+        },
+      },
+    });
+  });
   it('renders', () => {
     const wrapper = mount(Preview, {
       props: {

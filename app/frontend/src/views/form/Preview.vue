@@ -1,7 +1,9 @@
 <script>
+import { mapState } from 'pinia';
 import BaseSecure from '~/components/base/BaseSecure.vue';
 import FormViewer from '~/components/designer/FormViewer.vue';
 
+import { useFormStore } from '~/store/form';
 import { IdentityProviders } from '~/utils/constants';
 
 export default {
@@ -24,6 +26,7 @@ export default {
     },
   },
   computed: {
+    ...mapState(useFormStore, ['isRTL', 'lang']),
     IDP: () => IdentityProviders,
   },
 };
@@ -31,8 +34,12 @@ export default {
 
 <template>
   <BaseSecure :idp="[IDP.IDIR]">
-    <h1>
-      PREVIEW
+    <h1
+      :class="{ 'dir-rtl': isRTL }"
+      :lang="lang"
+      style="text-align: left !important"
+    >
+      {{ $t('trans.preview.preview') }}
       <v-tooltip location="bottom">
         <template #activator="{ props }">
           <v-icon
@@ -42,9 +49,8 @@ export default {
             icon="mdi:mdi-help-circle-outline"
           />
         </template>
-        <span>
-          This shows a preview of the form version design and behaviour as your
-          submitters will see it. You cannot submit the form from this page.
+        <span :lang="lang">
+          {{ $t('trans.preview.previewToolTip') }}
         </span>
       </v-tooltip>
     </h1>

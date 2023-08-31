@@ -25,6 +25,11 @@ export default {
       currentUserOnly: false,
       deleteItem: {},
       deletedOnly: false,
+      itemsPerPage: 10,
+      page: 0,
+      filterData: [],
+      sortBy: undefined,
+      sortDesc: false,
       filterIgnore: [
         {
           key: 'confirmationId',
@@ -35,6 +40,12 @@ export default {
         {
           key: 'event',
         },
+      ],
+      tableFilterIgnore: [
+        { value: 'date' },
+        { value: 'submitter' },
+        { value: 'status' },
+        { value: 'lateEntry' },
       ],
       loading: true,
       restoreItem: {},
@@ -53,8 +64,12 @@ export default {
     ...mapState(useFormStore, [
       'form',
       'formFields',
+      'isRTL',
+      'lang',
       'permissions',
+      'roles',
       'submissionList',
+      'totalSubmissions',
       'userFormPreferences',
     ]),
     ...mapState(useAuthStore, ['user']),
@@ -100,6 +115,24 @@ export default {
           align: 'start',
           key: 'status',
         },
+
+        {
+          text: this.$t('trans.submissionsTable.submissionDate'),
+          align: 'start',
+          value: 'date',
+        },
+
+        {
+          text: this.$t('trans.submissionsTable.submitter'),
+          align: 'start',
+          value: 'submitter',
+        },
+
+        {
+          text: this.$t('trans.submissionsTable.status'),
+          align: 'start',
+          value: 'status',
+        },
       ];
 
       if (this.form && this.form.schedule && this.form.schedule.enabled) {
@@ -128,59 +161,52 @@ export default {
       return headers;
     },
 
-    // These are the headers that are displayed in this table, not in BaseFilter
+    FILTER_HEADERS() {
+      return [...this.DEFAULT_HEADER].filter(
+        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
+      );
+    },
+
+    MODIFY_HEADERS() {
+      return [
+        {
+          text: this.$t('trans.formSubmission.updatedAt'),
+          align: 'start',
+          value: 'updatedAt',
+        },
+        {
+          text: this.$t('trans.formSubmission.updatedBy'),
+          align: 'start',
+          value: 'updatedBy',
+        },
+      ];
+    },
+
+    SELECT_COLUMNS_HEADERS() {
+      return [...this.FILTER_HEADERS, ...this.MODIFY_HEADERS].concat(
+        this.formFields.map((ff) => {
+          return { text: ff, value: ff, align: 'end' };
+        })
+      );
+    },
+
     HEADERS() {
-      // Start with the headers that can exist
-      let headers = this.DEFAULT_HEADERS;
-      // If there are any user preferences, then we can remove what isn't in there
-      // but do not remove the values set inside of filter ignore, as those
-      // should always exist (confirmationId, actions, event)
-      if (this.USER_PREFERENCES?.length > 0) {
-        headers = headers.filter(
-          (header) =>
-            // It must be in the user preferences
-            this.USER_PREFERENCES.some((up) => up.key === header.key) ||
-            // Or in the filterIgnore
-            this.filterIgnore.some((fi) => fi.key === header.key)
+      let headers = this.DEFAULT_HEADER;
+      if (this.USER_PREFERENCES.length > 0) {
+        headers = [...this.DEFAULT_HEADER].filter(
+          (h) => !this.tableFilterIgnore.some((fd) => fd.value === h.value)
         );
-      } else {
-        // Remove the form fields
-        headers = headers.filter(
-          (header) => !this.formFields.includes(header.key)
-        );
+
+        headers.splice(headers.length - 2, 0, ...this.USER_PREFERENCES);
       }
 
-      // Actions column at the end
-      headers.push({
-        title: i18n.t('trans.submissionsTable.view'),
-        align: 'end',
-        key: 'actions',
-        filterable: false,
-        sortable: false,
-        width: '40px',
-      });
-
-      // Event column at the end
-      headers.push({
-        title: i18n.t('trans.submissionsTable.event'),
-        align: 'end',
-        key: 'event',
-        filterable: false,
-        sortable: false,
-        width: '40px',
-      });
       return headers;
     },
 
-    FILTER_HEADERS() {
-      return this.DEFAULT_HEADERS.filter(
-        (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
-      );
-    },
     PRESELECTED_DATA() {
-      return this.HEADERS.filter(
-        (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
-      );
+      return this.USER_PREFERENCES.length === 0
+        ? this.FILTER_HEADERS
+        : this.USER_PREFERENCES;
     },
     USER_PREFERENCES() {
       let preselectedData = [];
@@ -204,6 +230,18 @@ export default {
                 title: this.$t('trans.submissionsTable.status'),
                 align: 'start',
                 key: 'status',
+              };
+            } else if (column === 'updatedAt') {
+              return {
+                text: this.$t('trans.formSubmission.updatedAt'),
+                align: 'start',
+                value: 'updatedAt',
+              };
+            } else if (column === 'updatedBy') {
+              return {
+                text: this.$t('trans.formSubmission.updatedBy'),
+                align: 'start',
+                value: 'updatedBy',
               };
             } else {
               return {
@@ -254,6 +292,17 @@ export default {
       'restoreMultiSubmissions',
       'updateFormPreferencesForCurrentUser',
     ]),
+    ...mapActions('notifications', ['addNotification']),
+    onShowColumnDialog() {
+      this.SELECT_COLUMNS_HEADERS.sort(
+        (a, b) =>
+          this.PRESELECTED_DATA.findIndex((x) => x.text === b.text) -
+          this.PRESELECTED_DATA.findIndex((x) => x.text === a.text)
+      );
+
+      this.showColumnsDialog = true;
+    },
+
     async delSub() {
       this.singleSubmissionDelete
         ? this.deleteSingleSubs()
@@ -277,72 +326,97 @@ export default {
       });
       this.refreshSubmissions();
     },
+    async updateTableOptions({ page, itemsPerPage, sortBy, sortDesc }) {
+      this.page = page - 1;
+      if (sortBy[0] === 'date') {
+        this.sortBy = 'createdAt';
+      } else if (sortBy[0] === 'submitter') {
+        this.sortBy = 'createdBy';
+      } else if (sortBy[0] === 'status')
+        this.sortBy = 'formSubmissionStatusCode';
+      else {
+        this.sortBy = sortBy[0];
+      }
+      this.sortDesc = sortDesc[0];
+      this.itemsPerPage = itemsPerPage;
+      await this.getSubmissionData();
+    },
+    async getSubmissionData() {
+      let criteria = {
+        formId: this.formId,
+        itemsPerPage: this.itemsPerPage,
+        page: this.page,
+        filterformSubmissionStatusCode: true,
+        sortBy: this.sortBy,
+        sortDesc: this.sortDesc,
+        createdAt: Object.values({
+          minDate:
+            this.userFormPreferences &&
+            this.userFormPreferences.preferences &&
+            this.userFormPreferences.preferences.filter
+              ? moment(
+                  this.userFormPreferences.preferences.filter[0],
+                  'YYYY-MM-DD hh:mm:ss'
+                )
+                  .utc()
+                  .format()
+              : moment()
+                  .subtract(50, 'years')
+                  .utc()
+                  .format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Min Date)
+          maxDate:
+            this.userFormPreferences &&
+            this.userFormPreferences.preferences &&
+            this.userFormPreferences.preferences.filter
+              ? moment(
+                  this.userFormPreferences.preferences.filter[1],
+                  'YYYY-MM-DD hh:mm:ss'
+                )
+                  .utc()
+                  .format()
+              : moment().add(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Max Date)
+        }),
+        deletedOnly: this.deletedOnly,
+        createdBy: this.currentUserOnly
+          ? `${this.user.username}@${this.user.idp}`
+          : '',
+      };
+      await this.fetchSubmissions(criteria);
+      if (this.submissionList) {
+        const tableRows = this.submissionList.map((s) => {
+          const fields = {
+            confirmationId: s.confirmationId,
+            date: s.createdAt,
+            updatedAt: s.updatedBy ? s.updatedAt : null,
+            updatedBy: s.updatedBy,
+            formId: s.formId,
+            status: s.formSubmissionStatusCode,
+            submissionId: s.submissionId,
+            submitter: s.createdBy,
+            versionId: s.formVersionId,
+            deleted: s.deleted,
+            lateEntry: s.lateEntry,
+          };
+          // Add any custom columns
+          this.userColumns.forEach((col) => {
+            fields[col] = s[col];
+          });
+          return fields;
+        });
+        this.submissionTable = tableRows;
+        this.submissionsCheckboxes = new Array(
+          this.submissionTable.length
+        ).fill(false);
+      }
+    },
     async populateSubmissionsTable() {
       try {
         this.loading = true;
         // Get user prefs for this form
         await this.getFormPreferencesForCurrentUser(this.formId);
         // Get the submissions for this form
-        let criteria = {
-          formId: this.formId,
-          createdAt: Object.values({
-            minDate:
-              this.userFormPreferences &&
-              this.userFormPreferences.preferences &&
-              this.userFormPreferences.preferences.filter
-                ? moment(
-                    this.userFormPreferences.preferences.filter[0],
-                    'YYYY-MM-DD hh:mm:ss'
-                  )
-                    .utc()
-                    .format()
-                : moment()
-                    .subtract(50, 'years')
-                    .utc()
-                    .format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Min Date)
-            maxDate:
-              this.userFormPreferences &&
-              this.userFormPreferences.preferences &&
-              this.userFormPreferences.preferences.filter
-                ? moment(
-                    this.userFormPreferences.preferences.filter[1],
-                    'YYYY-MM-DD hh:mm:ss'
-                  )
-                    .utc()
-                    .format()
-                : moment().add(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Max Date)
-          }),
-          deletedOnly: this.deletedOnly,
-          createdBy: this.currentUserOnly
-            ? `${this.user.username}@${this.user.idp}`
-            : '',
-        };
-        await this.fetchSubmissions(criteria);
+        await this.getSubmissionData();
         // Build up the list of forms for the table
-        if (this.submissionList) {
-          const tableRows = this.submissionList
-            // Filtering out all submissions that has no status. (User has not submitted)
-            .filter((s) => s.formSubmissionStatusCode)
-            .map((s) => {
-              const fields = {
-                confirmationId: s.confirmationId,
-                date: s.createdAt,
-                formId: s.formId,
-                status: s.formSubmissionStatusCode,
-                submissionId: s.submissionId,
-                submitter: s.createdBy,
-                versionId: s.formVersionId,
-                deleted: s.deleted,
-                lateEntry: s.lateEntry,
-              };
-              // Add any custom columns
-              this.userColumns.forEach((col) => {
-                fields[col] = s[col];
-              });
-              return fields;
-            });
-          this.submissionTable = tableRows;
-        }
       } catch (error) {
         // Handled in state fetchSubmissions
       } finally {
@@ -351,6 +425,7 @@ export default {
     },
     async refreshSubmissions() {
       this.loading = true;
+      this.page = 0;
       Promise.all([
         await this.getFormRolesForUser(this.formId),
         await this.getFormPermissionsForUser(this.formId),
@@ -404,13 +479,13 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <div
       class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
     >
       <!-- page title -->
       <div>
-        <h1>{{ $t('trans.formsTable.submissions') }}</h1>
+        <h1 :lang="lang">{{ $t('trans.formsTable.submissions') }}</h1>
       </div>
       <!-- buttons -->
       <div>
@@ -424,10 +499,12 @@ export default {
                 size="x-small"
                 density="default"
                 icon="mdi:mdi-view-column"
-                @click="showColumnsDialog = true"
+                @click="onShowColumnDialog"
               />
             </template>
-            <span>{{ $t('trans.submissionsTable.selectColumns') }}</span>
+            <span :lang="lang">{{
+              $t('trans.submissionsTable.selectColumns')
+            }}</span>
           </v-tooltip>
           <v-tooltip location="bottom">
             <template #activator="{ props }">
@@ -443,7 +520,9 @@ export default {
                 />
               </router-link>
             </template>
-            <span>{{ $t('trans.submissionsTable.manageForm') }}</span>
+            <span :lang="lang">{{
+              $t('trans.submissionsTable.manageForm')
+            }}</span>
           </v-tooltip>
           <v-tooltip location="bottom">
             <template #activator="{ props }">
@@ -460,7 +539,9 @@ export default {
                 />
               </router-link>
             </template>
-            <span>{{ $t('trans.submissionsTable.submissionsToFiles') }}</span>
+            <span :lang="lang">{{
+              $t('trans.submissionsTable.submissionsToFiles')
+            }}</span>
           </v-tooltip>
         </span>
       </div>
@@ -469,32 +550,50 @@ export default {
     <div
       class="mt-5 mb-5 d-flex flex-md-row justify-space-between flex-sm-column flex-xs-column"
     >
-      <v-checkbox
-        v-model="deletedOnly"
-        class="pl-3"
-        :label="$t('trans.submissionsTable.showDeletedSubmissions')"
-        @click="refreshSubmissions"
-      />
+      <div>
+        <v-checkbox
+          v-model="deletedOnly"
+          class="pl-3"
+          @click="refreshSubmissions"
+        >
+          <template #label>
+            <span :class="{ 'mr-2': isRTL }" :lang="lang">
+              {{ $t('trans.submissionsTable.showDeletedSubmissions') }}
+            </span>
+          </template>
+        </v-checkbox>
+      </div>
 
-      <v-checkbox
-        v-model="currentUserOnly"
-        class="pl-3"
-        :label="$t('trans.submissionsTable.showMySubmissions')"
-        @click="refreshSubmissions"
-      />
+      <div>
+        <v-checkbox
+          v-model="currentUserOnly"
+          class="pl-3"
+          @click="refreshSubmissions"
+        >
+          <template #label>
+            <span :class="{ 'mr-2': isRTL }" :lang="lang">
+              {{ $t('trans.submissionsTable.showMySubmissions') }}
+            </span>
+          </template>
+        </v-checkbox>
+      </div>
 
-      <!-- search input -->
-      <div class="submissions-search">
-        <v-text-field
-          v-model="search"
-          density="compact"
-          variant="underlined"
-          :label="$t('trans.submissionsTable.search')"
-          append-inner-icon="mdi-magnify"
-          single-line
-          hide-details
-          class="pb-5"
-        ></v-text-field>
+      <div>
+        <!-- search input -->
+        <div class="submissions-search">
+          <v-text-field
+            v-model="search"
+            density="compact"
+            variant="underlined"
+            :label="$t('trans.submissionsTable.search')"
+            append-inner-icon="mdi-magnify"
+            single-line
+            hide-details
+            class="pb-5"
+            :class="{ label: isRTL }"
+            :lang="lang"
+          ></v-text-field>
+        </div>
       </div>
     </div>
 
@@ -510,6 +609,9 @@ export default {
       :show-select="!switchSubmissionView"
       :loading-text="$t('trans.submissionsTable.loadingText')"
       :no-data-text="$t('trans.submissionsTable.noDataText')"
+      :lang="lang"
+      :server-items-length="totalSubmissions"
+      @update:options="updateTableOptions"
     >
       <template #column.event>
         <span v-if="!deletedOnly">
@@ -524,7 +626,7 @@ export default {
               <template #activator="{ props }">
                 <v-icon color="white" dark v-bind="props" />
               </template>
-              <span>{{
+              <span :lang="lang">{{
                 $t('trans.submissionsTable.delSelectedSubmissions')
               }}</span>
             </v-tooltip>
@@ -549,7 +651,7 @@ export default {
                   size="24"
                 />
               </template>
-              <span>{{
+              <span :lang="lang">{{
                 $t('trans.submissionsTable.resSelectedSubmissions')
               }}</span>
             </v-tooltip>
@@ -564,11 +666,13 @@ export default {
         {{ item.columns.status }}
       </template>
       <template #item.lateEntry="{ item }">
-        {{
-          item.columns.lateEntry === true
-            ? $t('trans.submissionsTable.yes')
-            : $t('trans.submissionsTable.no')
-        }}
+        <span :lang="lang">
+          {{
+            item.lateEntry === true
+              ? $t('trans.submissionsTable.yes')
+              : $t('trans.submissionsTable.no')
+          }}
+        </span>
       </template>
       <template #item.actions="{ item }">
         <v-tooltip location="bottom">
@@ -586,7 +690,9 @@ export default {
               </v-btn>
             </router-link>
           </template>
-          <span>{{ $t('trans.submissionsTable.viewSubmission') }}</span>
+          <span :lang="lang">{{
+            $t('trans.submissionsTable.viewSubmission')
+          }}</span>
         </v-tooltip>
       </template>
       <template #item.event="{ item }">
@@ -607,7 +713,9 @@ export default {
                 <v-icon icon="mdi:mdi-minus" color="white"></v-icon>
               </v-btn>
             </template>
-            <span>{{ $t('trans.submissionsTable.deleteSubmission') }}</span>
+            <span :lang="lang">{{
+              $t('trans.submissionsTable.deleteSubmission')
+            }}</span>
           </v-tooltip>
         </span>
         <span v-if="item.raw.deleted">
@@ -626,7 +734,7 @@ export default {
                 <v-icon color="green" icon="mdi:mdi-delete-restore" size="24" />
               </v-btn>
             </template>
-            <span>{{ $t('trans.submissionsTable.restore') }}</span>
+            <span :lang="lang">{{ $t('trans.submissionsTable.restore') }}</span>
           </v-tooltip>
         </span>
       </template>
@@ -638,12 +746,14 @@ export default {
       @close-dialog="showDeleteDialog = false"
       @continue-dialog="delSub"
     >
-      <template #title>Confirm Deletion</template>
+      <template #title>{{
+        $t('trans.submissionsTable.confirmDeletion')
+      }}</template>
       <template #text>
         {{ singleSubmissionDelete ? singleDeleteMessage : multiDeleteMessage }}
       </template>
       <template #button-text-continue>
-        <span>{{ $t('trans.submissionsTable.delete') }}</span>
+        <span :lang="lang">{{ $t('trans.submissionsTable.delete') }}</span>
       </template>
     </BaseDialog>
     <BaseDialog
@@ -652,16 +762,18 @@ export default {
       @close-dialog="showRestoreDialog = false"
       @continue-dialog="restoreSub"
     >
-      <template #title>{{
-        $t('trans.submissionsTable.confirmRestoration')
-      }}</template>
+      <template #title
+        ><span :lang="lang">
+          {{ $t('trans.submissionsTable.confirmRestoration') }}</span
+        ></template
+      >
       <template #text>
         {{
           singleSubmissionRestore ? singleRestoreMessage : multiRestoreMessage
         }}
       </template>
       <template #button-text-continue>
-        <span>{{ $t('trans.submissionsTable.restore') }}</span>
+        <span :lang="lang">{{ $t('trans.submissionsTable.restore') }}</span>
       </template>
     </BaseDialog>
 
@@ -671,17 +783,17 @@ export default {
           $t('trans.submissionsTable.searchSubmissionFields')
         "
         :input-save-button-text="$t('trans.submissionsTable.save')"
-        :input-data="FILTER_HEADERS"
+        :input-data="SELECT_COLUMNS_HEADERS"
         :preselected-data="PRESELECTED_DATA"
-        :reset-data="
-          FILTER_HEADERS.filter((header) => !formFields.includes(header.key))
-        "
+        :reset-data="FILTER_HEADERS"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >
-        <template #filter-title>{{
-          $t('trans.submissionsTable.searchTitle')
-        }}</template>
+        <template #filter-title
+          ><span :lang="lang">
+            {{ $t('trans.submissionsTable.searchTitle') }}
+          </span></template
+        >
       </BaseFilter>
     </v-dialog>
   </div>
@@ -693,7 +805,12 @@ export default {
 }
 @media only screen and (max-width: 960px) {
   .submissions-search {
-    padding-left: 20px;
+    max-width: 20em;
+  }
+}
+@media (max-width: 599px) {
+  .submissions-search {
+    padding-left: 16px;
     padding-right: 16px;
   }
 }
@@ -706,6 +823,7 @@ export default {
     vertical-align: top;
   }
 }
+
 /* Want to use scss but the world hates me */
 .submissions-table :deep(tbody tr:nth-of-type(odd)) {
   background-color: #f5f5f5;

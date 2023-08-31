@@ -45,7 +45,13 @@ export default {
   },
   computed: {
     ...mapState(useAuthStore, ['identityProviderIdentity']),
-    ...mapState(useFormStore, ['form', 'formSubmission', 'submissionUsers']),
+    ...mapState(useFormStore, [
+      'form',
+      'formSubmission',
+      'submissionUsers',
+      'isRTL',
+      'lang',
+    ]),
     // State Machine
     showActionDate() {
       return ['ASSIGNED', 'COMPLETED'].includes(this.statusToSet);
@@ -58,6 +64,15 @@ export default {
     },
     showRevising() {
       return ['REVISING'].includes(this.statusToSet);
+    },
+    statusRequired() {
+      return [(v) => !!v || this.$t('trans.statusPanel.statusIsRequired')];
+    },
+    assigneeRequired() {
+      return [(v) => !!v || this.$t('trans.statusPanel.assigneeIsRequired')];
+    },
+    maxChars() {
+      return [(v) => v.length <= 4000 || this.$t('trans.statusPanel.maxChars')];
     },
     statusAction() {
       const obj = Object.freeze({
@@ -283,14 +298,14 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <v-skeleton-loader
       :loading="loading"
       type="list-item-two-line"
       class="bgtrans"
     >
       <div class="d-flex flex-column flex-1-1-100">
-        <p>
+        <p :lang="lang">
           <strong>{{ $t('trans.statusPanel.currentStatus') }}</strong>
           {{ currentStatus.code }}
           <br />
@@ -307,7 +322,9 @@ export default {
           lazy-validation
           style="width: inherit"
         >
-          <label>{{ $t('trans.statusPanel.assignOrUpdateStatus') }}</label>
+          <label :lang="lang">{{
+            $t('trans.statusPanel.assignOrUpdateStatus')
+          }}</label>
           <v-select
             v-model="statusToSet"
             variant="outlined"
@@ -332,6 +349,7 @@ export default {
                     ></v-icon>
                   </template>
                   <span
+                    :lang="lang"
                     v-html="
                       $t('trans.statusPanel.assignSubmissnToFormReviewer')
                     "
@@ -341,6 +359,7 @@ export default {
               </label>
               <v-autocomplete
                 v-model="assignee"
+                :class="{ 'dir-rtl': isRTL }"
                 autocomplete="autocomplete_off"
                 clearable
                 :custom-filter="autoCompleteFilter"
@@ -353,6 +372,7 @@ export default {
                 :rules="[
                   (v) => !!v || $t('trans.statusPanel.assigneeIsRequired'),
                 ]"
+                :lang="lang"
               >
                 <!-- selected user -->
                 <template #chip="{ props, item }">
@@ -379,7 +399,9 @@ export default {
                   @click="assignToCurrentUser"
                 >
                   <v-icon class="mr-1" icon="mdi:mdi-account"></v-icon>
-                  <span>{{ $t('trans.statusPanel.assignToMe') }}</span>
+                  <span :lang="lang">{{
+                    $t('trans.statusPanel.assignToMe')
+                  }}</span>
                 </v-btn>
               </div>
             </div>
@@ -389,6 +411,8 @@ export default {
                 :label="$t('trans.statusPanel.recipientEmail')"
                 variant="outlined"
                 density="compact"
+                :class="{ 'dir-rtl': isRTL }"
+                :lang="lang"
               />
             </div>
 
@@ -396,11 +420,15 @@ export default {
               <v-checkbox
                 v-model="addComment"
                 :label="$t('trans.statusPanel.attachCommentToEmail')"
+                :lang="lang"
               />
               <div v-if="addComment">
-                <label>{{ $t('trans.statusPanel.emailComment') }}</label>
+                <label :lang="lang">{{
+                  $t('trans.statusPanel.emailComment')
+                }}</label>
                 <v-textarea
                   v-model="emailComment"
+                  :class="{ 'dir-rtl': isRTL }"
                   :rules="[
                     (v) => v.length <= 4000 || $t('trans.statusPanel.maxChars'),
                   ]"
@@ -426,14 +454,19 @@ export default {
                     color="textLink"
                     v-bind="props"
                   >
-                    <span>{{ $t('trans.statusPanel.viewHistory') }}</span>
+                    <span :lang="lang">{{
+                      $t('trans.statusPanel.viewHistory')
+                    }}</span>
                   </v-btn>
                 </template>
 
                 <v-card v-if="historyDialog">
-                  <v-card-title class="text-h5 pb-0">{{
-                    $t('trans.statusPanel.statusHistory')
-                  }}</v-card-title>
+                  <v-card-title
+                    class="text-h5 pb-0"
+                    :class="{ 'dir-rtl': isRTL }"
+                    :lang="lang"
+                    >{{ $t('trans.statusPanel.statusHistory') }}</v-card-title
+                  >
 
                   <v-card-text>
                     <hr />
@@ -443,10 +476,13 @@ export default {
                   <v-card-actions class="justify-center">
                     <v-btn
                       class="mb-5 close-dlg"
+                      :class="{ 'dir-rtl': isRTL }"
                       color="primary"
                       @click="historyDialog = false"
                     >
-                      <span>{{ $t('trans.statusPanel.close') }}</span>
+                      <span :lang="lang">{{
+                        $t('trans.statusPanel.close')
+                      }}</span>
                     </v-btn>
                   </v-card-actions>
                 </v-card>

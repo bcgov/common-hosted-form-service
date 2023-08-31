@@ -2,10 +2,12 @@
 import { mapState, mapActions } from 'pinia';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '~/store/auth';
+import { useFormStore } from '~/store/form';
 
 export default {
   computed: {
     ...mapState(useAuthStore, ['authenticated', 'ready']),
+    ...mapState(useFormStore, ['lang']),
     hasLogin() {
       return useRoute()?.meta?.hasLogin;
     },
@@ -24,12 +26,10 @@ export default {
       variant="outlined"
       @click="logout"
     >
-      <span>{{ $t('trans.baseAuthButton.logout') }}</span>
+      <span :lang="lang">{{ $t('trans.baseAuthButton.logout') }}</span>
     </v-btn>
     <v-btn v-else-if="hasLogin" color="white" variant="outlined" @click="login">
-      <span>{{ $t('trans.baseAuthButton.login') }}</span>
+      <span :lang="lang">{{ $t('trans.baseAuthButton.login') }}</span>
     </v-btn>
   </div>
 </template>
-
-<style lang="scss" scoped></style>

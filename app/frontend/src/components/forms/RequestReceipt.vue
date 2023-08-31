@@ -1,7 +1,9 @@
 <script>
+import { mapState } from 'pinia';
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { i18n } from '~/internationalization';
 import { formService } from '~/services';
+import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
 
@@ -26,9 +28,13 @@ export default {
   data() {
     return {
       emailRules: [(v) => !!v || 'E-mail is required'],
+      priority: 'normal',
       showDialog: false,
       to: '',
     };
+  },
+  computed: {
+    ...mapState(useFormStore, ['isRTL', 'lang']),
   },
   mounted() {
     this.resetDialog();
@@ -43,6 +49,7 @@ export default {
         const notificationStore = useNotificationStore();
         try {
           await formService.requestReceiptEmail(this.submissionId, {
+            priority: this.priority,
             to: this.to,
           });
           notificationStore.addNotification({
@@ -73,15 +80,22 @@ export default {
 </script>
 
 <template>
-  <div>
-    <v-btn color="primary" variant="text" size="small" @click="displayDialog">
+  <div :class="{ 'dir-rtl': isRTL }">
+    <v-btn
+      color="primary"
+      variant="text"
+      size="small"
+      :class="{ 'dir-rtl': isRTL }"
+      @click="displayDialog"
+    >
       <v-icon icon="mdi:mdi-email"></v-icon>
-      <span>{{ $t('trans.requestReceipt.emailReceipt') }}</span>
+      <span :lang="lang">{{ $t('trans.requestReceipt.emailReceipt') }}</span>
     </v-btn>
 
     <BaseDialog
       v-model="showDialog"
       type="CONTINUE"
+      :class="{ 'dir-rtl': isRTL }"
       @close-dialog="showDialog = false"
       @continue-dialog="requestReceipt()"
     >
@@ -95,6 +109,7 @@ export default {
             :label="$t('trans.requestReceipt.sendToEmailAddress')"
             :rules="emailRules"
             data-test="text-form-to"
+            :lang="lang"
           >
             <template #prepend>
               <v-icon
@@ -104,10 +119,22 @@ export default {
               ></v-icon>
             </template>
           </v-text-field>
+          <v-select
+            v-model="priority"
+            density="compact"
+            variant="outlined"
+            :items="[
+              { text: $t('trans.requestReceipt.low'), value: 'low' },
+              { text: $t('trans.requestReceipt.normal'), value: 'normal' },
+              { text: $t('trans.requestReceipt.high'), value: 'high' },
+            ]"
+            :label="$t('trans.requestReceipt.emailPriority')"
+            :lang="lang"
+          />
         </v-form>
       </template>
       <template #button-text-continue>
-        <span>{{ $t('trans.requestReceipt.send') }}</span>
+        <span :lang="lang">{{ $t('trans.requestReceipt.send') }}</span>
       </template>
     </BaseDialog>
   </div>

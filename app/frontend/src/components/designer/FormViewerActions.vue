@@ -1,7 +1,9 @@
 <script>
+import { mapState } from 'pinia';
 import ManageSubmissionUsers from '~/components/forms/submission/ManageSubmissionUsers.vue';
 import PrintOptions from '~/components/forms/PrintOptions.vue';
 import { FormPermissions } from '~/utils/constants';
+import { useFormStore } from '~/store/form';
 
 export default {
   components: {
@@ -52,6 +54,7 @@ export default {
   },
   emits: ['save-draft', 'switchView', 'showdoYouWantToSaveTheDraftModal'],
   computed: {
+    ...mapState(useFormStore, ['lang', 'isRTL']),
     canSaveDraft() {
       return !this.readOnly;
     },
@@ -68,6 +71,7 @@ export default {
 <template>
   <div
     class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
+    :class="{ 'dir-rtl': isRTL }"
   >
     <div v-if="formId">
       <v-btn
@@ -75,15 +79,14 @@ export default {
         variant="outlined"
         @click="$emit('showdoYouWantToSaveTheDraftModal')"
       >
-        <span>{{ $t('trans.formViewerActions.viewAllSubmissions') }}</span>
+        <span :lang="lang">{{
+          $t('trans.formViewerActions.viewAllSubmissions')
+        }}</span>
       </v-btn>
     </div>
-    <div v-if="draftEnabled">
+    <div>
       <!-- Bulk button -->
-      <span
-        v-if="allowSubmitterToUploadFile && !block && !readOnly"
-        class="ml-2"
-      >
+      <span v-if="allowSubmitterToUploadFile && !block" class="ml-2">
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <v-btn
@@ -96,12 +99,16 @@ export default {
               <v-icon icon="mdi:mdi-repeat"></v-icon>
             </v-btn>
           </template>
-          <span>{{
+          <span :lang="lang">{{
             bulkFile
               ? $t('trans.formViewerActions.switchSingleSubmssn')
               : $t('trans.formViewerActions.switchMultiSubmssn')
           }}</span>
         </v-tooltip>
+      </span>
+
+      <span v-if="draftEnabled" class="ml-2">
+        <PrintOptions :submission="submission" />
       </span>
 
       <!-- Save a draft -->
@@ -118,12 +125,10 @@ export default {
               <v-icon icon="mdi:mdi-content-save"></v-icon>
             </v-btn>
           </template>
-          <span>{{ $t('trans.formViewerActions.saveAsADraft') }}</span>
+          <span :lang="lang">{{
+            $t('trans.formViewerActions.saveAsADraft')
+          }}</span>
         </v-tooltip>
-      </span>
-
-      <span v-if="draftEnabled" class="ml-2">
-        <PrintOptions :submission="submission" />
       </span>
 
       <!-- Go to draft edit -->
@@ -142,7 +147,9 @@ export default {
                 <v-icon icon="mdi:mdi-pencil"></v-icon>
               </v-btn>
             </template>
-            <span>{{ $t('trans.formViewerActions.editThisDraft') }}</span>
+            <span :lang="lang">{{
+              $t('trans.formViewerActions.editThisDraft')
+            }}</span>
           </v-tooltip>
         </router-link>
       </span>

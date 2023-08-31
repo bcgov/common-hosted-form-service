@@ -1,8 +1,11 @@
 <script>
+import { mapState } from 'pinia';
 import { i18n } from '~/internationalization';
 
 import userService from '~/services/userService';
 import { FormRoleCodes, IdentityProviders, Regex } from '~/utils/constants';
+import { useAuthStore } from '~/store/auth';
+import { useFormStore } from '~/store/form';
 
 export default {
   props: {
@@ -25,6 +28,8 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['identityProvider']),
+    ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
     ID_PROVIDERS() {
       return IdentityProviders;
     },
@@ -136,7 +141,7 @@ export default {
 </script>
 
 <template>
-  <span>
+  <span :class="{ 'dir-rtl': isRTL }">
     <span v-if="addingUsers" style="margin-right: 656px" elevation="1">
       <v-sheet
         elevation="1"
@@ -181,14 +186,18 @@ export default {
               :label="autocompleteLabel"
               :loading="isLoading"
               return-object
+              :class="{ label: isRTL }"
             >
               <!-- no data -->
               <template #no-data>
                 <div
                   class="px-2"
+                  :class="{ 'text-right': isRTL }"
+                  :lang="lang"
                   v-html="$t('trans.addTeamMember.cantFindChefsUsers')"
                 ></div>
               </template>
+              <!-- selected user -->
               <template #chip="{ props, item }">
                 <v-chip v-bind="props" :text="item?.raw?.fullName"></v-chip>
               </template>
@@ -237,28 +246,28 @@ export default {
             <!-- buttons -->
             <v-btn
               color="primary"
-              class="ml-2"
+              :class="isRTL ? 'mr-3' : 'ml-3'"
               :disabled="!model"
               :loading="isLoading"
               @click="save"
             >
-              <span>Add</span>
+              <span :lang="lang">{{ $t('trans.addTeamMember.add') }}</span>
             </v-btn>
             <v-btn
               variant="outlined"
-              class="ml-2"
+              :class="isRTL ? 'mr-2' : 'ml-2'"
               @click="
                 addingUsers = false;
                 showError = false;
               "
             >
-              <span>Cancel</span>
+              <span :lang="lang">{{ $t('trans.addTeamMember.cancel') }}</span>
             </v-btn>
           </v-col>
         </v-row>
         <v-row v-if="showError" class="px-4 my-0 py-0">
           <v-col class="text-left">
-            <span class="text-red">{{
+            <span class="text-red" :lang="lang">{{
               $t('trans.addTeamMember.mustSelectAUser')
             }}</span>
           </v-col>
@@ -280,7 +289,7 @@ export default {
             <v-icon icon="mdi:mdi-account-plus"></v-icon>
           </v-btn>
         </template>
-        <span>{{ $t('trans.addTeamMember.addNewMember') }}</span>
+        <span :lang="lang">{{ $t('trans.addTeamMember.addNewMember') }}</span>
       </v-tooltip>
     </span>
   </span>

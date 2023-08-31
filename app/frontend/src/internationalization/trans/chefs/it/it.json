@@ -50,17 +50,18 @@
     "totalVersions": "Versioni totali",
     "status": "Stato",
     "update": "Aggiornamento",
-    "cancel": "Annulla"
+    "cancel": "Annulla",
+    "eventSubscription": "Abbonamento all'evento"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Premi <kbd>invio</kbd> o <kbd>,</kbd> o <kbd>spazio</kbd> per aggiungere più indirizzi email",
-    "allowMultiDraft": "Consenti il ​​caricamento di <strong> più bozze</strong>",
+    "allowMultiDraft": "Consenti il caricamento <strong>di più bozze</strong>",
     "formTitle": "Titolo del modulo",
     "formDescription": "Descrizione del modulo",
     "formAccess": "Accesso al modulo",
     "info": "Se utilizzerai questo modulo per raccogliere informazioni dal pubblico in generale su argomenti di interesse generale per il pubblico, sei tenuto a contattare il GCPE in modo che il tuo impegno possa essere elencato su",
     "important": "IMPORTANTE",
-    "idimNotifyA": "È necessario informare il team Identity Information Management (IDIM) tramite e-mail",
+    "idimNotifyA": "È necessario informare il team IDIM (Identity Information Management) tramite e-mail",
     "idimNotifyB": "la tua intenzione di sfruttare BCeID per verificare le identità dei tuoi mittenti di moduli.",
     "referenceGuideA": "Si prega di fare riferimento al nostro",
     "referenceGuideB": "guida utente",
@@ -122,13 +123,34 @@
     "validEmailRequired": "Inserisci tutti gli indirizzi email validi",
     "fieldRequired": "Questo campo è obbligatorio.",
     "correctDateFormat": "La data deve essere nel formato corretto. cioè. aaaa-mm-gg",
-    "dateDiffMsg": "La data di chiusura dell'invio deve essere maggiore della data di apertura dell'invio.",
+    "dateDiffMsg": "La data di chiusura dell'invio deve essere successiva alla data di apertura dell'invio.",
     "valueMustBeNumber": "Il valore deve essere un numero. cioè. 1,2,3,5,99",
     "selectAnOptions": "Seleziona almeno 1 opzione",
     "validInterval": "Questo dovrebbe essere un intervallo valido.",
     "fieldRequiredAndInterval": "Questo campo è obbligatorio e dovrebbe essere un intervallo.",
-    "dateGrtOpenSubmissnDate": "Ripeti fino a quando la data dovrebbe essere maggiore della data di invio aperta",
-    "public": "Pubblico (anonimo)"
+    "dateGrtOpenSubmissnDate": "La data di ripetizione deve essere maggiore della data di invio aperta",
+    "public": "Pubblico (anonimo)",
+    "allowEventSubscription": "Consenti l'iscrizione agli eventi",
+    "eventSubscription": "Abbonamento all'evento",
+    "validEndpointRequired": "Inserisci un endpoint valido che inizi con https://",
+    "validBearerTokenRequired": "Inserisci un esempio di token al portatore valido: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+  },
+  "subscribeEvent": {
+    "eventType": "Tipo di evento",
+    "endpointUrl": "URL dell'endpoint",
+    "eventSubmission": "Sottomissione",
+    "eventAssignment": "Incarico",
+    "eventStatusChange": "Cambio di stato",
+    "endpointToken": "Token dell'endpoint",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "Salva",
+    "text": "testo",
+    "password": "parola d'ordine",
+    "hideSecret": "Nascondi segreto",
+    "showSecret": "Mostra Segreto",
+    "key": "Chiave",
+    "saveSettingsErrMsg": "Si è verificato un errore durante il tentativo di aggiornare le impostazioni per questo modulo.",
+    "updateSettingsConsoleErrMsg": "Errore durante l'aggiornamento delle impostazioni per il modulo {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",
@@ -157,7 +179,7 @@
   },
   "manageVersions": {
     "important": "IMPORTANTE!",
-    "infoA": "Se non ci sono versioni pubblicate, gli utenti non possono accedere a questo modulo finché non viene assegnata una versione pubblicata. Una volta pubblicata una versione, quella versione non è più modificabile. È necessario creare una nuova versione basata su una delle versioni precedenti del modulo per continuare a modificare.",
+    "infoA": "Se non sono presenti versioni pubblicate, gli utenti non possono accedere a questo modulo fino a quando non viene assegnata una versione pubblicata. Una volta pubblicata una versione, quella versione non è più modificabile. È necessario creare una nuova versione basata su una delle versioni precedenti del modulo per continuare a modificare.",
     "infoB": "Nota: è possibile pubblicare solo una versione.",
     "version": "Versione",
     "draft": "Bozza",
@@ -248,7 +270,7 @@
     "actions": "Azioni",
     "published": "Pubblicato",
     "unpublished": "Inedito",
-    "version": "Versione {versioneNo}",
+    "version": "Versione {versionNo}",
     "notificationMsg": "Si è verificato un errore durante il caricamento del progetto del modulo."
   },
   "developer": {
@@ -267,7 +289,6 @@
     "notificationMsg": "Impossibile ottenere l'utente da RBAC, vedere la console",
     "notificationConsErr": "Errore durante il recupero dell'utente da RBAC"
   },
-  "fcProactiveHelp": {},
   "baseAuthButton": {
     "logout": "Disconnettersi",
     "login": "Login"
@@ -298,14 +319,17 @@
     "formDesignInfoA": "Usa il pulsante <strong>SALVA PROGETTO</strong> quando hai finito di costruire questo modulo.",
     "formDesignInfoB": "Il pulsante <strong>INVIA</strong> viene fornito all&#39;utente per inviare questo modulo e verrà attivato dopo che è stato salvato.",
     "formLoadErrMsg": "Si è verificato un errore durante il caricamento del progetto del modulo.",
-    "formLoadConsoleErrMsg": "Errore durante il caricamento dello schema del modulo {formId} (versione: {versionId} bozza: {draftId}): {errore}",
+    "formLoadConsoleErrMsg": "Errore durante il caricamento dello schema del modulo {formId} (versione: {versionId} bozza: {draftId}): {error}",
     "formSchemaImportErrMsg": "Si è verificato un errore durante l'importazione dello schema del modulo.",
-    "formSchemaImportConsoleErrMsg": "Errore durante l'importazione dello schema del modulo: {errore}",
+    "formSchemaImportConsoleErrMsg": "Errore durante l'importazione dello schema del modulo: {error}",
     "formDesignSaveErrMsg": "Si è verificato un errore durante il tentativo di salvare questo modello di modulo. Se devi aggiornare o partire per riprovare più tardi, puoi esportare il design esistente sulla pagina per salvarlo per dopo.",
     "formDesignSaveConsoleErrMsg": "Errore durante l'aggiornamento o la creazione del modulo (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Errore: {error}",
     "collapse": "Crollo",
     "actions": "Azioni",
-    "version": "Versione"
+    "version": "Versione",
+    "save": "Salva",
+    "saving": "Salvataggio",
+    "notSaved": "Non salvato"
   },
   "formViewerMultiUpload": {
     "important": "IMPORTANTE",
@@ -332,10 +356,6 @@
     "fileIsEmpty": "questo file è vuoto.",
     "download": "Scaricamento"
   },
-  "bcGovAlertBanner": {
-    "defaultErrMsg": "Errore: qualcosa è andato storto",
-    "error": "errore"
-  },
   "formDisclaimer": {
     "disclaimerAndStatement": "Dichiarazione di non responsabilità e dichiarazione di responsabilità per i progettisti di moduli:",
     "privacyLaw": "È tua responsabilità rispettare le leggi sulla privacy che regolano la raccolta, l'uso e la divulgazione di informazioni di identificazione personale.",
@@ -346,11 +366,15 @@
     "assement": "e per completare le valutazioni come richiesto."
   },
   "requestReceipt": {
+    "emailPriority": "Priorità e-mail",
     "emailReceipt": "Invia una ricevuta di questo invio tramite e-mail",
+    "high": "Alto",
+    "low": "Basso",
+    "normal": "Normale",
     "send": "INVIARE",
     "sendToEmailAddress": "Invia a indirizzo e-mail",
-    "emailSent": "È stata inviata un'email a {to}.",
-    "sendingEmailErrMsg": "Si è verificato un errore durante il tentativo di inviare la tua email.",
+    "emailSent": "È stata inviata un'e-mail a {to}.",
+    "sendingEmailErrMsg": "Si è verificato un errore durante il tentativo di inviare la tua e-mail.",
     "sendingEmailConsErrMsg": "Email di conferma a {to} non riuscita: {error}",
     "emailRequired": "L'e-mail è obbligatoria"
   },
@@ -468,11 +492,11 @@
     "yes": "SÌ",
     "no": "NO",
     "multiDraftUploadSuccess": "Il caricamento di più bozze è andato a buon fine!",
-    "failedResSubmissn": "Risposta non riuscita dall'endpoint di invio. Codice di risposta: {stato}",
+    "failedResSubmissn": "Risposta non riuscita dall'endpoint di invio. Codice di risposta: {status}",
     "errSubmittingForm": "Si è verificato un errore durante l'invio di questo modulo",
-    "errorSavingFile": "Errore durante il salvataggio dei file. nome file: {nomefile}. Errore: {errore}",
+    "errorSavingFile": "Errore durante il salvataggio dei file. nome file: {fileName}. Errore: {error}",
     "submittingDraftErrMsg": "Si è verificato un errore durante il salvataggio di una bozza",
-    "submittingDraftConsErrMsg": "Errore durante il salvataggio della bozza. SubmissionId: {submissionId}. Errore: {errore}"
+    "submittingDraftConsErrMsg": "Errore durante il salvataggio della bozza. SubmissionId: {submissionId}. Errore: {error}"
   },
   "notesPanel": {
     "addNewNote": "Aggiungi nuova nota",
@@ -527,7 +551,7 @@
     "dateStatusChanged": "Data Stato Modificato",
     "assignee": "Assegnatario",
     "updatedBy": "Aggiornato da",
-    "getSubmissionStatusErr": "Si è verificato un errore durante il tentativo di recuperare gli stati.",
+    "getSubmissionStatusErr": "Si è verificato un errore durante il tentativo di recupero degli stati.",
     "getSubmissionStatusConsErr": "Errore durante l'aggiunta della nota:"
   },
   "exportSubmissions": {
@@ -548,7 +572,7 @@
     "from": "Da",
     "to": "A",
     "CSVFormat": "Formato CSV",
-    "multiRowPerSubmissionA": "1 - Righe multiple per invio con spazi di identificazione",
+    "multiRowPerSubmissionA": "1 - Righe multiple per invio con spazi di rientro",
     "multiRowPerSubmissionB": "2 - Righe multiple per invio",
     "singleRowPerSubmission": "3 - Riga singola per invio",
     "unformatted": "4 - Non formattato",
@@ -593,6 +617,10 @@
   "proactiveHelpPreviewDialog": {
     "learnMore": "Saperne di più"
   },
+  "preview": {
+    "preview": "Anteprima",
+    "previewToolTip": "Questo mostra un'anteprima del design e del comportamento della versione del modulo come lo vedranno i tuoi mittenti. Non puoi inviare il modulo da questa pagina."
+  },
   "generalLayout": {
     "loadingText": "Attendere il caricamento prego",
     "preview": "ANTEPRIMA",
@@ -611,7 +639,9 @@
     "confirmationID": "ID di conferma:",
     "submittedBy": "Inviato da:",
     "cancel": "ANNULLA",
-    "status": "Stato"
+    "status": "Stato",
+    "updatedAt": "Modificata",
+    "updatedBy": "Modificato da"
   },
   "teamManagement": {
     "teamManagement": "Gestione della squadra",
@@ -637,8 +667,8 @@
     "formOwnerConsoleErrMsg": "Impossibile rimuovere {userId} poiché è l'unico proprietario rimasto di questo modulo.",
     "insufficientPermissnMsg": "Autorizzazioni insufficienti per gestire il team",
     "getUserErrMsg": "Errore durante il recupero degli utenti del modulo:",
-    "getRolesErrMsg": "Errore nell'ottenere l'elenco dei ruoli:",
-    "formOwnerRemovalWarning": "Impossibile rimuovere perché sono l'unico proprietario rimasto di questo modulo.",
+    "getRolesErrMsg": "Errore durante l'acquisizione dell'elenco dei ruoli:",
+    "formOwnerRemovalWarning": "Impossibile rimuovere poiché è l'unico proprietario rimasto di questo modulo.",
     "removeUsersErrMsg": "Si è verificato un errore durante il tentativo di eliminare gli utenti selezionati",
     "removeUserConsoleErrMsg": "Errore durante l'eliminazione degli utenti dal modulo {formId}: {error}",
     "updUserRolesErrMsg": "Si è verificato un errore durante il tentativo di aggiornare tutti i ruoli utente",
@@ -675,26 +705,26 @@
     "getUsersSubmissionsErrMsg": "Si è verificato un errore durante il recupero dell'invio per questo modulo",
     "getUsersSubmissionsConsoleErrMsg": "Errore durante il caricamento dei dati di invio del modulo {submissionId}: {error}",
     "multiDraftUploadSuccess": "Il caricamento di più bozze è andato a buon fine!",
-    "readVersionErrMsg": "Nessuno schema in risposta. ID versione: {ID versione}",
+    "readVersionErrMsg": "Nessuno schema in risposta. ID versione: {versionId}",
     "readDraftErrMsg": "Nessuno schema in risposta. ID bozza: {draftId}",
     "alertRouteMsg": "Il proprietario del modulo non ha pubblicato il modulo e non è disponibile per l'invio.",
     "fecthingFormErrMsg": "Si è verificato un errore durante il recupero di questo modulo",
     "fecthingFormConsoleErrMsg": "Errore durante il caricamento dello schema del modulo {versionId}: {error}",
     "savingDraftErrMsg": "Si è verificato un errore durante il salvataggio di una bozza",
-    "savingDraftConsoleErrMsg": "Errore durante il salvataggio della bozza. SubmissionId: {submissionId}. Errore: {errore}",
+    "savingDraftConsoleErrMsg": "Errore durante il salvataggio della bozza. SubmissionId: {submissionId}. Errore: {error}",
     "submissionsPreviewAlert": "Invio disabilitato durante l'anteprima del modulo",
     "submissionsSubmitErrMsg": "Errore durante l'invio del modulo: {errors}",
-    "sendSubmissionErrMsg": "Risposta non riuscita dall'endpoint di invio. Codice di risposta: {stato}",
+    "sendSubmissionErrMsg": "Risposta non riuscita dall'endpoint di invio. Codice di risposta: {status}",
     "errMsg": "Si è verificato un errore durante l'invio di questo modulo",
-    "customEventAlert": "Eventi pulsante personalizzati non ancora supportati. Tipo di evento: {evento}",
+    "customEventAlert": "Eventi pulsante personalizzati non ancora supportati. Tipo di evento: {event}",
     "formLoading": "Attendere il caricamento del modulo !!!",
     "yes": "SÌ",
     "no": "NO",
-    "failedResSubmissn": "Risposta non riuscita dall'endpoint di invio. Codice di risposta: {stato}",
+    "failedResSubmissn": "Risposta non riuscita dall'endpoint di invio. Codice di risposta: {status}",
     "errSubmittingForm": "Si è verificato un errore durante l'invio di questo modulo",
-    "errorSavingFile": "Errore durante il salvataggio dei file. nome file: {nomeNfile}. Errore: {errore}",
+    "errorSavingFile": "Errore durante il salvataggio dei file. nome file: {fileName}. Errore: {error}",
     "submittingDraftErrMsg": "Si è verificato un errore durante il salvataggio di una bozza",
-    "submittingDraftConsErrMsg": "Errore durante il salvataggio della bozza. SubmissionId: {submissionId}. Errore: {errore}",
+    "submittingDraftConsErrMsg": "Errore durante il salvataggio della bozza. SubmissionId: {submissionId}. Errore: {error}",
     "formDraftAccessErrMsg": "L'invio richiesto è già stato inviato, reindirizzamento alla pagina Visualizza"
   },
   "bCGovFooter": {
@@ -764,36 +794,29 @@
     "exampleText2": "Esempio di testo 2",
     "filterPlaceholderTxt": "Filtra testo segnaposto",
     "filter": "Filtro",
-    "value": "valore"
+    "value": "valore",
+    "resetColumns": "Reimposta colonne"
   },
   "formViewerActions": {
     "viewAllSubmissions": "Visualizza tutti gli invii",
     "saveAsADraft": "Salva come bozza",
     "editThisDraft": "Modifica questa bozza",
     "switchSingleSubmssn": "Passa all'invio singolo",
-    "switchMultiSubmssn": "Passa all'invio singolo"
+    "switchMultiSubmssn": "Passa a Invio multiplo"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Link copiato negli appunti",
     "copyToClipboard": "Copia negli appunti",
     "errCopyToClipboard": "Errore nel tentativo di copiare negli appunti."
   },
-  "admin": {
-    "root": {
-      "admin": "Amministratore"
-    }
-  },
-  "user": {
-    "root": {
-      "myForms": "LE MIE FORME",
-      "history": "STORIA",
-      "user": "Utente"
-    }
-  },
   "sucess": {
     "sucessFormSubmissn": "Il tuo modulo è stato inviato con successo",
     "keepRecord": "Se desideri conservare una registrazione di questa presentazione, puoi conservare quanto segue",
     "confirmationId": "ID di conferma"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Errore: qualcosa è andato storto",
+    "error": "errore"
   },
   "permissionUtils": {
     "formNotAvailable": "Il modulo non è al momento disponibile. Ciò potrebbe essere dovuto a un collegamento errato o il modulo potrebbe essere stato eliminato dal suo proprietario.",
@@ -803,16 +826,39 @@
     "idpHintMsg": "Questo modulo richiede l'autenticazione {idpHint}. Effettua nuovamente il login e riprova.",
     "formIdpMissMatch": "Form IDP non corrispondente. Il modulo richiede {idpHint} ma l'utente ha {userIdp}."
   },
+  "download": {
+    "chefsDataExport": "Esportazione dati CHEFS",
+    "preparingForDownloading": "Preparazione per il download...",
+    "downloadInfoA": "Se il tuo file non viene scaricato automaticamente",
+    "downloadInfoB": "clicca qui per riprovare"
+  },
+  "history": {
+    "submissnHistory": "La tua cronologia di invio (TBD)"
+  },
+  "error": {
+    "logout": "Disconnettersi",
+    "somethingWentWrong": "Errore: Qualcosa è andato storto... :("
+  },
+  "login": {
+    "authenticateWith": "Autenticati con:",
+    "alreadyLoggedIn": "Ha già effettuato il login",
+    "home": "Casa",
+    "about": "Di"
+  },
+  "notFound": {
+    "about": "Di",
+    "pageNotFound": "404 pagina non trovata. :("
+  },
   "store": {
     "admin": {
       "addFormOwnerRole": "Aggiunto il ruolo Proprietario per questo modulo a {fullName}",
       "addRowError": "Si è verificato un errore durante l'aggiunta del ruolo.",
-      "addRowConsoleErr": "Errore durante l'aggiunta dell'utente {userId} al modulo {formId}: {errore}",
+      "addRowConsoleErr": "Errore durante l'aggiunta dell'utente {userId} al modulo {formId}: {error}",
       "apiKeyDelMsg": "La chiave API per questo modulo è stata eliminata.",
       "errDeletingApiKey": "Si è verificato un errore durante il tentativo di eliminare la chiave API.",
       "consErrDeletingApiKey": "Errore durante l'eliminazione della chiave API per il modulo {formId}: {error}",
       "fecthingFormsErrMsg": "Si è verificato un errore durante il recupero dei moduli.",
-      "fecthingFormsConsErrMsg": "Errore durante il recupero dei dati del modulo di amministrazione: {errore}",
+      "fecthingFormsConsErrMsg": "Errore durante il recupero dei dati del modulo di amministrazione: {error}",
       "fecthingFormErrMsg": "Si è verificato un errore durante il recupero di questo modulo.",
       "fecthingFormConsErrMsg": "Errore durante il recupero dei dati del modulo di amministrazione {formId}: {error}",
       "fecthFormUserRolesErrMsg": "Si è verificato un errore durante il recupero dei ruoli utente del modulo.",
@@ -826,13 +872,13 @@
       "getUserErrMsg": "Si è verificato un errore durante il recupero di questo utente.",
       "getUserConsErrMsg": "Errore durante il recupero dei dati dell'utente amministratore {userId}: {error}",
       "storingFCHelpInfoErrMsg": "Si è verificato un errore durante la memorizzazione delle informazioni della guida del componente del modulo",
-      "storingFCHelpInfoConsErrMsg": "Errore durante la memorizzazione delle informazioni della guida del componente del modulo: {errore}",
+      "storingFCHelpInfoConsErrMsg": "Errore durante la memorizzazione delle informazioni della guida del componente del modulo: {error}",
       "gettingFCImgUrlErrMsg": "Si è verificato un errore durante il recupero dell'URL dell'immagine",
       "gettingFCImgUrlConsErrMsg": "Errore durante l'acquisizione dell'URL dell'immagine: {error}",
       "updatingFCStatusErrMsg": "Si è verificato un errore durante l'aggiornamento dello stato di pubblicazione",
       "updatingFCStatusConsErrMsg": "Errore durante l'aggiornamento dello stato di pubblicazione: {error}",
       "fecthingFormBuilderCompsErrMsg": "Si è verificato un errore durante il recupero dei componenti del generatore di moduli",
-      "fecthingFormBuilderCompsConsErrMsg": "Errore durante il recupero dei componenti del generatore di moduli: {errore}"
+      "fecthingFormBuilderCompsConsErrMsg": "Errore durante il recupero dei componenti del generatore di moduli: {error}"
     },
     "form": {
       "getCurrUserFormsErrMsg": "Si è verificato un errore durante il recupero dei moduli.",
@@ -842,22 +888,22 @@
       "getUserFormRolesErrmsg": "Si è verificato un errore durante il recupero dei dati utente per questo modulo.",
       "getUserFormRolesConsErrmsg": "Errore durante il recupero dei dati utente utilizzando formID {formId}: {error}",
       "updCurrUserFormPrefErrMsg": "Si è verificato un errore durante il salvataggio delle preferenze per questo modulo.",
-      "updCurrUserFormPrefConsErrMsg": "Errore durante l'aggiornamento delle preferenze del modulo utente utilizzando formID {formId} e preferenze {preferenze}: {errore}",
+      "updCurrUserFormPrefConsErrMsg": "Errore durante l'aggiornamento delle preferenze del modulo utente utilizzando formID {formId} e preferenze {preferences}: {error}",
       "getCurrUserFormPrefErrMsg": "Si è verificato un errore durante il recupero delle tue preferenze per questo modulo.",
       "getCurrUserFormPrefConsErrMsg": "Errore nell'ottenere le preferenze del modulo utente utilizzando formID {formId}: {error}",
-      "delCurrformNotiMsg": "Il modulo {name} è stato eliminato correttamente.",
-      "delCurrFormConsErMsg": "Errore durante l'eliminazione del modulo {id}: {errore}",
+      "delCurrformNotiMsg": "Il modulo {name} è stato eliminato con successo.",
+      "delCurrFormConsErMsg": "Errore durante l'eliminazione del modulo {id}: {error}",
       "delDraftErrMsg": "Si è verificato un errore durante l'eliminazione di questa bozza.",
       "delDraftConsErrMsg": "Errore durante l'eliminazione di {draftId}: {error}",
       "fecthDraftErrMsg": "Si è verificato un errore durante la scansione delle bozze per questo modulo.",
       "fecthDraftConsErrMsg": "Errore durante il recupero delle bozze per il modulo {formId}: {error}",
       "fecthFormErrMsg": "Si è verificato un errore durante il recupero di questo modulo.",
-      "fecthFormConsErrMsg": "Errore durante l'acquisizione del modulo {formId}: {errore}",
+      "fecthFormConsErrMsg": "Errore durante l'acquisizione del modulo {formId}: {error}",
       "fetchFormFieldsErrMsg": "Si è verificato un errore durante il recupero dell'elenco dei campi per questo modulo.",
-      "fetchFormFieldsConsErrMsg": "Errore durante l'acquisizione del modulo {formId}: {errore}",
+      "fetchFormFieldsConsErrMsg": "Errore durante l'acquisizione del modulo {formId}: {error}",
       "publishDraftErrMsg": "Si è verificato un errore durante la pubblicazione.",
-      "publishDraftConsErrMsg": "Errore durante la pubblicazione di ${draftId}: ${error}",
-      "toggleVersnPublConsErrMsg": "Errore in toggleVersionPublish {versionId} {publish}: {errore}",
+      "publishDraftConsErrMsg": "Errore durante la pubblicazione di {draftId}: {error}",
+      "toggleVersnPublConsErrMsg": "Errore in toggleVersionPublish {versionId} {publish}: {error}",
       "updateFormErrMsg": "Si è verificato un errore durante l'aggiornamento delle impostazioni per questo modulo.",
       "updateFormConsErrMsg": "Errore durante l'aggiornamento del modulo {id}: {error}",
       "deleteSubmissionNotifyMsg": "Invio eliminato con successo.",
@@ -875,9 +921,9 @@
       "fecthSubmissnUsersErrMsg": "Si è verificato un errore durante il recupero dell'e-mail del destinatario per questo invio.",
       "fecthSubmissnUsersConsErrMsg": "Errore durante il recupero dell'email del destinatario per l'invio {formSubmissionId}: {error}",
       "fetchSubmissnErrMsg": "Si è verificato un errore durante il recupero di questo invio.",
-      "fetchSubmissnConsErrMsg": "Errore durante l'ottenimento dell'invio {submissionId}: ${error}",
+      "fetchSubmissnConsErrMsg": "Errore durante l'ottenimento dell'invio {submissionId}: {error}",
       "fetchFormCSVExptFieldsErrMsg": "Si è verificato un errore durante il recupero dell'elenco dei campi per questo modulo.",
-      "fetchFormCSVExptFieldsConsErrMsg": "Errore durante l'acquisizione del modulo {formId}: {errore}",
+      "fetchFormCSVExptFieldsConsErrMsg": "Errore durante l'acquisizione del modulo {formId}: {error}",
       "fetchSubmissnsErrMsg": "Si è verificato un errore durante il recupero degli invii per questo modulo.",
       "fetchSubmissnsConsErrMsg": "Errore durante la ricezione di invii per {formId}: {error}",
       "fetchVersionErrMsg": "Si è verificato un errore durante il recupero di questo modulo.",
@@ -889,13 +935,36 @@
       "generateApiKeyErrMsg": "Si è verificato un errore durante il tentativo di generare una chiave API.",
       "generateApiKeyConsErrMsg": "Errore durante la generazione della chiave API per il modulo {formId}: {error}",
       "readApiKeyErrMsg": "Si è verificato un errore durante il tentativo di recuperare la chiave API.",
-      "readApiKeyConsErrMsg": "Errore durante l'ottenimento della chiave API per il modulo {formId}: {errore}.",
+      "readApiKeyConsErrMsg": "Errore durante l'ottenimento della chiave API per il modulo {formId}: {error}.",
       "getFCPHImageUrlErrMsg": "Si è verificato un errore durante il recupero dell'URL dell'immagine",
       "getFCPHImageUrlConsErrMsg": "Errore durante l'acquisizione dell'URL dell'immagine: {error}",
       "listFCPHErrMsg": "Si è verificato un errore durante il recupero dei componenti del generatore di moduli",
-      "listFCPHConsErrMsg": "Errore durante il recupero dei componenti del generatore di moduli: {errore}",
+      "listFCPHConsErrMsg": "Errore durante il recupero dei componenti del generatore di moduli: {errors}",
       "downloadFileErrMsg": "Si è verificato un errore durante il download del file",
-      "downloadFileConsErrMsg": "Errore durante il download del file: errore"
+      "downloadFileConsErrMsg": "Errore durante il download del file: errore",
+      "readSubscriptionSettingsErrMsg": "Si è verificato un errore durante il tentativo di recuperare le impostazioni dell'abbonamento.",
+      "readSubscriptionSettingsConsErrMsg": "Errore durante il recupero delle impostazioni di sottoscrizione per il modulo {formId}: {errore}.",
+      "saveSubscriptionSettingsNotifyMsg": "Le impostazioni di iscrizione per questo modulo sono state salvate.",
+      "saveSubscriptionSettingsErrMsg": "Si è verificato un errore durante il tentativo di salvare le impostazioni dell'abbonamento.",
+      "saveSubscriptionSettingsConsErrMsg": "Errore durante il salvataggio delle impostazioni di sottoscrizione per il modulo {formId}: {error}"
+    }
+  },
+  "admin": {
+    "root": {
+      "admin": "Amministratore"
+    },
+    "form": {
+      "administerForm": "Modulo Amministrare"
+    },
+    "user": {
+      "administerUser": "Amministra utente"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "LE MIE FORME",
+      "history": "STORIA",
+      "user": "Utente"
     }
   }
 }

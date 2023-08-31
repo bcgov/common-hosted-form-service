@@ -23,7 +23,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['form', 'permissions']),
+    ...mapState(useFormStore, ['form', 'permissions', 'isRTL', 'lang']),
   },
   async mounted() {
     this.loading = true;
@@ -44,13 +44,13 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <div
       class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
     >
       <!-- page title -->
       <div>
-        <h1>{{ $t('trans.manageLayout.manageForm') }}</h1>
+        <h1 :lang="lang">{{ $t('trans.manageLayout.manageForm') }}</h1>
         <h3>{{ form.name }}</h3>
       </div>
       <!-- buttons -->

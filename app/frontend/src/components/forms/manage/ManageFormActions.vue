@@ -18,7 +18,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['form', 'permissions']),
+    ...mapState(useFormStore, ['form', 'permissions', 'isRTL', 'lang']),
     canDeleteForm() {
       return this.permissions.includes(FormPermissions.FORM_DELETE);
     },
@@ -51,7 +51,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <span>
       <ShareForm :form-id="form.id" :warning="!isPublished" />
     </span>
@@ -70,7 +70,9 @@ export default {
             />
           </router-link>
         </template>
-        <span>{{ $t('trans.manageFormActions.viewSubmissions') }}</span>
+        <span :lang="lang">{{
+          $t('trans.manageFormActions.viewSubmissions')
+        }}</span>
       </v-tooltip>
     </span>
 
@@ -88,7 +90,9 @@ export default {
             />
           </router-link>
         </template>
-        <span>{{ $t('trans.manageFormActions.teamManagement') }}</span>
+        <span :lang="lang">{{
+          $t('trans.manageFormActions.teamManagement')
+        }}</span>
       </v-tooltip>
     </span>
 
@@ -104,7 +108,11 @@ export default {
             icon="mdi:mdi-delete"
           />
         </template>
-        <span>{{ $t('trans.manageFormActions.deleteForm') }}</span>
+        <span
+          ><span :lang="lang">{{
+            $t('trans.manageFormActions.deleteForm')
+          }}</span></span
+        >
       </v-tooltip>
 
       <BaseDialog
@@ -113,16 +121,22 @@ export default {
         @close-dialog="showDeleteDialog = false"
         @continue-dialog="deleteForm"
       >
-        <template #title>{{
-          $t('trans.manageFormActions.confirmDeletion')
-        }}</template>
+        <template #title
+          ><span :lang="lang">
+            {{ $t('trans.manageFormActions.confirmDeletion') }}
+          </span></template
+        >
         <template #text>
-          {{ $t('trans.manageFormActions.deleteMessageA') }}
-          <strong>{{ form.name }}</strong
-          >? {{ $t('trans.manageFormActions.deleteMessageB') }}
+          <span :lang="lang"
+            >{{ $t('trans.manageFormActions.deleteMessageA') }}
+            <strong>{{ form.name }}</strong
+            >? {{ $t('trans.manageFormActions.deleteMessageB') }}
+          </span>
         </template>
         <template #button-text-continue>
-          <span>{{ $t('trans.manageFormActions.deleteForm') }}</span>
+          <span :lang="lang">{{
+            $t('trans.manageFormActions.deleteForm')
+          }}</span>
         </template>
       </BaseDialog>
     </span>

@@ -1,8 +1,9 @@
 <script>
-import { mapActions } from 'pinia';
+import { mapState, mapActions } from 'pinia';
 import { i18n } from '~/internationalization';
 
 import { formService } from '~/services';
+import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
 export default {
@@ -19,6 +20,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useFormStore, ['isRTL', 'lang']),
     headers() {
       return [
         { title: i18n.t('trans.statusTable.status'), key: 'code' },
@@ -59,7 +61,7 @@ export default {
 </script>
 
 <template>
-  <v-container>
+  <v-container :class="{ 'dir-rtl': isRTL }">
     <v-data-table
       disable-pagination
       :hide-default-footer="true"
@@ -69,6 +71,7 @@ export default {
       :loading-text="$t('trans.statusTable.loadingText')"
       item-key="statusId"
       class="status-table"
+      :lang="lang"
     >
       <template #item.createdAt="{ item }">
         <span>{{ $filters.formatDate(item.columns.createdAt) }}</span>

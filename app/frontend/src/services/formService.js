@@ -498,7 +498,7 @@ export default {
    * @function requestReceiptEmail
    * Send a receipt email
    * @param {string} submissionId The submission uuid
-   * @param {Object} requestBody The body for the api call: { to }
+   * @param {Object} requestBody The body for the api call: { priority, to }
    * @returns {Promise} An axios response
    */
   requestReceiptEmail(submissionId, requestBody) {
@@ -529,6 +529,30 @@ export default {
   async getFCProactiveHelpImageUrl(componentId) {
     return appAxios().get(
       `${ApiRoutes.FORMS}/formcomponents/proactivehelp/imageUrl/${componentId}`
+    );
+  },
+
+  /**
+   * @function readFormSubscriptionData
+   * Get the current subscription for the form
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  readFormSubscriptionData(formId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/subscriptions`);
+  },
+
+  /**
+   * @function updateSubscription
+   * Update a subscription settings of a Form
+   * @param {string} formId The form uuid
+   * @param {Object} subscriptionData An object containing the form subscription details
+   * @returns {Promise} An axios response
+   */
+  updateSubscription(formId, subscriptionData) {
+    return appAxios().put(
+      `${ApiRoutes.FORMS}/${formId}/subscriptions`,
+      subscriptionData
     );
   },
 };

@@ -18,7 +18,7 @@ export default {
         { title: 'Italian (Italy)', keyword: 'it' },
         { title: '日本語 (Japanese)', keyword: 'ja' },
         { title: '한국어 (Korean)', keyword: 'ko' },
-        { title: 'ਪੰਜਾਬੀ (Punjabi)', keyword: 'pa' },
+        { title: 'ਪੰਜਾਬੀ (Punjabi - Gurmukhi)', keyword: 'pa' },
         { title: 'Portuguese (Portugal)', keyword: 'pt' },
         { title: 'Русский (Russian)', keyword: 'ru' },
         { title: 'Tagalog (Filipino)', keyword: 'tl' },

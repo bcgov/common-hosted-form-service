@@ -90,7 +90,29 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['multiLanguage']),
+    ...mapState(useFormStore, ['lang', 'isRTL']),
+    computedStyles() {
+      let baseStyles = {
+        display: 'flex',
+        width: '92px',
+        flexDirection: this.fabItemsDirection,
+        gap: this.fabItemsGap,
+        zIndex: this.fabZIndex,
+        position: 'fixed',
+      };
+
+      let conditionalStyles = {};
+      let fabItemsPosition = { ...this.fabItemsPosition };
+
+      switch (this.$i18n.locale) {
+        case 'uk':
+          baseStyles.width = '111px';
+          fabItemsPosition.right = '-.3vw';
+          break;
+      }
+
+      return [baseStyles, fabItemsPosition, conditionalStyles];
+    },
   },
   watch: {
     size() {
@@ -112,7 +134,7 @@ export default {
           break;
       }
     },
-    multiLanguage() {
+    lang() {
       this.scrollName = i18n.t('trans.floatButton.bottom');
 
       if (this.isFABActionsOpen) {
@@ -292,23 +314,9 @@ export default {
 </script>
 
 <template>
-  <div
-    :style="[
-      {
-        display: 'flex',
-        width: '92px',
-        flexDirection: fabItemsDirection,
-        gap: fabItemsGap,
-        zIndex: fabZIndex,
-        position: 'fixed',
-        right: '-0.5vw',
-        bottom: '4vh',
-      },
-      fabItemsPosition,
-    ]"
-  >
-    <div class="fabAction" @click="onOpenFABActionItems">
-      {{ baseFABItemName }}
+  <div :class="{ 'dir-rtl': isRTL }" :style="computedStyles">
+    <div class="fabAction" :lang="lang" @click="onOpenFABActionItems">
+      <div class="text" :lang="lang" v-text="baseFABItemName" />
       <v-btn class="fabItemsInverColor" :size="fabItemsSize">
         <v-icon
           :color="baseIconColor"
@@ -338,7 +346,11 @@ export default {
           data-cy="publishRouterLink"
           :class="{ fabAction: true, 'disabled-router': !formId }"
         >
-          <div v-text="$t('trans.floatButton.publish')" />
+          <div
+            class="text"
+            :lang="lang"
+            v-text="$t('trans.floatButton.publish')"
+          />
           <v-btn
             class="fabItemsInverColor"
             :size="fabItemsSize"
@@ -366,7 +378,11 @@ export default {
           data-cy="settingsRouterLink"
           :class="{ fabAction: true, 'disabled-router': !formId }"
         >
-          <div class="text" v-text="$t('trans.floatButton.manage')" />
+          <div
+            class="text"
+            :lang="lang"
+            v-text="$t('trans.floatButton.manage')"
+          />
           <v-btn
             class="fabItemsInverColor"
             :size="fabItemsSize"
@@ -390,7 +406,7 @@ export default {
         data-cy="redoButton"
         :class="{ 'disabled-router': !redoEnabled }"
       >
-        <div class="text" v-text="$t('trans.floatButton.redo')" />
+        <div class="text" :lang="lang" v-text="$t('trans.floatButton.redo')" />
         <v-btn class="fabItems" :size="fabItemsSize" @click="toParent('redo')">
           <v-icon
             :color="redoEnabled ? fabItemsColor : disabledFabItemsColor"
@@ -406,7 +422,7 @@ export default {
         data-cy="undoButton"
         :class="{ 'disabled-router': !undoEnabled }"
       >
-        <div class="text" v-text="$t('trans.floatButton.undo')" />
+        <div class="text" :lang="lang" v-text="$t('trans.floatButton.undo')" />
         <v-btn class="fabItems" :size="fabItemsSize" @click="toParent('undo')">
           <v-icon
             :color="undoEnabled ? fabItemsColor : disabledFabItemsColor"
@@ -422,7 +438,11 @@ export default {
         :class="{ 'disabled-router': !formId || !draftId }"
         @click="gotoPreview"
       >
-        <div class="text" v-text="$t('trans.floatButton.preview')" />
+        <div
+          class="text"
+          :lang="lang"
+          v-text="$t('trans.floatButton.preview')"
+        />
         <v-btn class="fabItems" :size="fabItemsSize">
           <v-icon
             :color="formId ? fabItemsColor : disabledFabItemsColor"
@@ -438,7 +458,7 @@ export default {
         data-cy="saveButton"
         :class="{ 'disabled-router': isFormSaved }"
       >
-        <div class="text">{{ savedMsg }}</div>
+        <div class="text" :lang="lang">{{ savedMsg }}</div>
         <v-btn class="fabItems" :size="fabItemsSize" @click="toParent('save')">
           <v-icon
             v-if="!saving"
@@ -458,7 +478,7 @@ export default {
         </v-btn>
       </div>
       <div class="fabAction">
-        <div>{{ scrollName }}</div>
+        <div :lang="lang">{{ scrollName }}</div>
 
         <v-btn class="fabItems" :size="fabItemsSize" @click="onHandleScroll">
           <v-icon
@@ -471,7 +491,7 @@ export default {
       </div>
     </div>
     <div v-if="!isFABActionsOpen" class="fabAction">
-      <div>{{ scrollName }}</div>
+      <div :lang="lang">{{ scrollName }}</div>
       <v-btn class="fabItems" :size="fabItemsSize" @click="onHandleScroll">
         <v-icon
           :color="fabItemsColor"
@@ -534,5 +554,8 @@ export default {
 
 .fabItems:hover {
   border: 1px solid #003366;
+}
+.text {
+  text-align: center;
 }
 </style>

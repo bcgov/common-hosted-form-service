@@ -1,8 +1,10 @@
 <script>
+import { mapState } from 'pinia';
 import { i18n } from '~/internationalization';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { rbacService, userService } from '~/services';
+import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import {
   FormPermissions,
@@ -42,6 +44,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
     ID_PROVIDERS() {
       return IdentityProviders;
     },
@@ -233,12 +236,16 @@ export default {
           <v-icon icon="mdi:mdi-account-multiple"></v-icon>
         </v-btn>
       </template>
-      <span>{{ $t('trans.manageSubmissionUsers.manageTeamMembers') }}</span>
+      <span :lang="lang">{{
+        $t('trans.manageSubmissionUsers.manageTeamMembers')
+      }}</span>
     </v-tooltip>
     <v-dialog v-model="dialog" width="600">
-      <v-card>
-        <v-card-title class="text-h5 pb-0">
+      <v-card :class="{ 'dir-rtl': isRTL }">
+        <v-card-title class="text-h5 pb-0" :lang="lang">
           {{ $t('trans.manageSubmissionUsers.manageTeamMembers') }}
+        </v-card-title>
+        <v-card-subtitle>
           <v-radio-group v-if="isDraft" v-model="selectedIdp" inline>
             <v-radio label="IDIR" :value="ID_PROVIDERS.IDIR" />
             <v-radio label="Basic BCeID" :value="ID_PROVIDERS.BCEIDBASIC" />
@@ -247,17 +254,17 @@ export default {
               :value="ID_PROVIDERS.BCEIDBUSINESS"
             />
           </v-radio-group>
-        </v-card-title>
-
+        </v-card-subtitle>
         <v-card-text>
-          <hr />
-
+          <hr class="mt-1" />
           <v-row v-if="isDraft">
             <v-col cols="9">
               <form autocomplete="off">
                 <v-autocomplete
                   v-model="userSearchSelection"
                   v-model:search="findUsers"
+                  :class="{ label: isRTL }"
+                  autocomplete="autocomplete_off"
                   :items="userSearchResults"
                   chips
                   closable-chips
@@ -274,10 +281,11 @@ export default {
                   <template #no-data>
                     <div
                       class="px-2"
+                      :lang="lang"
                       v-html="
                         $t('trans.manageSubmissionUsers.userNotFoundErrMsg')
                       "
-                    ></div>
+                    />
                   </template>
                   <template #chip="{ props, item }">
                     <v-chip v-bind="props" :text="item?.raw?.fullName"></v-chip>
@@ -302,15 +310,17 @@ export default {
                 :loading="isLoadingDropdown"
                 @click="addUser"
               >
-                <span>{{ $t('trans.manageSubmissionUsers.add') }}</span>
+                <span :lang="lang"
+                  >{{ $t('trans.manageSubmissionUsers.add') }}
+                </span>
               </v-btn>
             </v-col>
           </v-row>
-          <div v-else>
+          <div v-else :lang="lang">
             {{ $t('trans.manageSubmissionUsers.draftFormInvite') }}
           </div>
 
-          <p class="mt-5">
+          <p class="mt-5" :lang="lang">
             <strong
               >{{
                 $t('trans.manageSubmissionUsers.submissionTeamMembers')
@@ -326,16 +336,20 @@ export default {
             <v-table dense>
               <thead>
                 <tr>
-                  <th class="text-left">
+                  <th :class="isRTL ? 'text-right' : 'text-left'" :lang="lang">
                     {{ $t('trans.manageSubmissionUsers.name') }}
                   </th>
-                  <th class="text-left">
+                  <th :class="isRTL ? 'text-right' : 'text-left'" :lang="lang">
                     {{ $t('trans.manageSubmissionUsers.username') }}
                   </th>
-                  <th class="text-left">
+                  <th :class="isRTL ? 'text-right' : 'text-left'" :lang="lang">
                     {{ $t('trans.manageSubmissionUsers.email') }}
                   </th>
-                  <th v-if="isDraft" class="text-left">
+                  <th
+                    v-if="isDraft"
+                    :class="isRTL ? 'text-right' : 'text-left'"
+                    :lang="lang"
+                  >
                     {{ $t('trans.manageSubmissionUsers.actions') }}
                   </th>
                 </tr>
@@ -364,13 +378,16 @@ export default {
 
         <v-card-actions class="justify-center">
           <v-btn class="mb-5 close-dlg" color="primary" @click="dialog = false">
-            <span> {{ $t('trans.manageSubmissionUsers.close') }}</span>
+            <span :lang="lang">
+              {{ $t('trans.manageSubmissionUsers.close') }}</span
+            >
           </v-btn>
         </v-card-actions>
       </v-card>
 
       <BaseDialog
         v-model="showDeleteDialog"
+        :class="{ 'dir-rtl': isRTL }"
         type="CONTINUE"
         @close-dialog="showDeleteDialog = false"
         @continue-dialog="
@@ -378,14 +395,20 @@ export default {
           showDeleteDialog = false;
         "
       >
-        <template #title>Remove {{ userToDelete.username }}</template>
+        <template #title
+          ><span>Remove {{ userToDelete.username }}</span></template
+        >
         <template #text>
-          {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg1') }}
-          <strong>{{ userToDelete.username }}</strong
-          >? {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg2') }}
+          <span :lang="lang">
+            {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg1') }}
+            <strong>{{ userToDelete.username }}</strong
+            >? {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg2') }}
+          </span>
         </template>
         <template #button-text-continue>
-          <span>{{ $t('trans.manageSubmissionUsers.remove') }}</span>
+          <span :lang="lang">{{
+            $t('trans.manageSubmissionUsers.remove')
+          }}</span>
         </template>
       </BaseDialog>
     </v-dialog>

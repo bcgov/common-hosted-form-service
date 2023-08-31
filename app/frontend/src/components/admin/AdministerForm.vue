@@ -6,6 +6,7 @@ import AddOwner from '~/components/admin/AddOwner.vue';
 import AdminVersions from '~/components/admin/AdminVersions.vue';
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { useAdminStore } from '~/store/admin';
+import { useFormStore } from '~/store/form';
 
 export default {
   components: {
@@ -31,6 +32,7 @@ export default {
   },
   computed: {
     ...mapState(useAdminStore, ['form', 'roles', 'apiKey']),
+    ...mapState(useFormStore, ['lang']),
   },
   async mounted() {
     await Promise.all([
@@ -73,7 +75,7 @@ export default {
     <h3>{{ form.name }}</h3>
     <p>{{ form.description }}</p>
 
-    <div v-if="form.active === false" class="text-red mb-6">
+    <div v-if="form.active === false" class="text-red mb-6":lang="lang">
       ({{ $t('trans.administerForm.deleted') }})
       <v-btn
         color="primary"
@@ -83,7 +85,7 @@ export default {
         @click="showRestoreDialog = true"
       >
         <v-icon class="mr-1" icon="mdi:mdi-wrench"></v-icon>
-        <span class="d-none d-sm-flex">{{
+        <span class="d-none d-sm-flex" :lang="lang">{{
           $t('trans.administerForm.restoreForm')
         }}</span>
       </v-btn>
@@ -92,11 +94,15 @@ export default {
     <v-container>
       <v-row no-gutters>
         <v-col md="6">
-          <h4>{{ $t('trans.administerForm.formDetails') }}</h4>
+          <h4 :lang="lang">
+            {{ $t('trans.administerForm.formDetails') }}
+          </h4>
           <vue-json-pretty :data="formDetails" />
 
           <div v-if="apiKey" class="mt-6">
-            <h4>{{ $t('trans.administerForm.apiKeyDetails') }}</h4>
+            <h4 :lang="lang">
+              {{ $t('trans.administerForm.apiKeyDetails') }}
+            </h4>
             <vue-json-pretty :data="apiKey" />
             <v-btn
               class="mt-6 mb-6"
@@ -104,24 +110,30 @@ export default {
               :disabled="!apiKey"
               @click="showDeleteDialog = true"
             >
-              <span>{{ $t('trans.administerForm.deleteApiKey') }}</span>
+              <span :lang="lang">{{
+                $t('trans.administerForm.deleteApiKey')
+              }}</span>
             </v-btn>
           </div>
         </v-col>
         <v-col md="6">
-          <h4>{{ $t('trans.administerForm.formUsers') }}</h4>
+          <h4 :lang="lang">
+            {{ $t('trans.administerForm.formUsers') }}
+          </h4>
           <vue-json-pretty :data="roles" />
         </v-col>
       </v-row>
     </v-container>
 
     <div v-if="form.active" class="mt-12">
-      <h4>{{ $t('trans.administerForm.formVersions') }}</h4>
+      <h4 :lang="lang">
+        {{ $t('trans.administerForm.formVersions') }}
+      </h4>
       <AdminVersions />
     </div>
 
     <div v-if="form.active" class="mt-12">
-      <h4>{{ $t('trans.administerForm.assignANewOwner') }}</h4>
+      <h4 :lang="lang">{{ $t('trans.administerForm.assignANewOwner') }}</h4>
       <AddOwner :form-id="form.id" />
     </div>
 
@@ -131,23 +143,30 @@ export default {
       @close-dialog="showRestoreDialog = false"
       @continue-dialog="restore"
     >
-      <template #title>{{
-        $t('trans.administerForm.confirmRestore')
-      }}</template>
+      <template #title
+        ><span :lang="lang">{{
+          $t('trans.administerForm.confirmRestore')
+        }}</span></template
+      >
       <template #text>
         <div v-if="restoreInProgress" class="text-center">
-          <v-progress-circular indeterminate color="primary" :size="100">
+          <v-progress-circular
+            indeterminate
+            color="primary"
+            :size="100"
+            :lang="lang"
+          >
             {{ $t('trans.administerForm.restoring') }}
           </v-progress-circular>
         </div>
-        <div v-else>
+        <div v-else :lang="lang">
           {{ $t('trans.administerForm.restore') }}
           <strong>{{ form.name }}</strong>
           {{ $t('trans.administerForm.toActiveState') }}?
         </div>
       </template>
       <template #button-text-continue>
-        <span>{{ $t('trans.administerForm.restore') }}</span>
+        <span :lang="lang">{{ $t('trans.administerForm.restore') }}</span>
       </template>
     </BaseDialog>
 
@@ -158,14 +177,18 @@ export default {
       @close-dialog="showDeleteDialog = false"
       @continue-dialog="deleteKey"
     >
-      <template #title>{{
-        $t('trans.administerForm.confirmDeletion')
-      }}</template>
-      <template #text>{{
-        $t('trans.administerForm.confirmDeletionMsg')
-      }}</template>
-      <template #button-text-continue>
-        <span>{{ $t('trans.administerForm.delete') }}</span>
+      <template #title
+        ><span :lang="lang">{{
+          $t('trans.administerForm.confirmDeletion')
+        }}</span></template
+      >
+      <template #text
+        ><span :lang="lang">{{
+          $t('trans.administerForm.confirmDeletionMsg')
+        }}</span>
+      </template>
+      <template #button-text-continue
+        ><span :lang="lang">{{ $t('trans.administerForm.delete') }}</span>
       </template>
     </BaseDialog>
   </v-skeleton-loader>

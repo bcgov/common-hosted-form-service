@@ -17,13 +17,13 @@ export default {
   },
   computed: {
     ...mapWritableState(useFormStore, ['form']),
-    ...mapState(useFormStore, ['isFormPublished']),
+    ...mapState(useFormStore, ['isFormPublished', 'isRTL']),
   },
 };
 </script>
 
 <template>
-  <v-container class="px-0">
+  <v-container class="px-0" :class="{ 'dir-rtl': isRTL }">
     <v-row>
       <v-col cols="12" md="6">
         <FormGeneralSettings />

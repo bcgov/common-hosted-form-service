@@ -107,6 +107,9 @@ describe('public methods', () => {
   };
   const assignmentNotificationEmail = 'x@y.com';
   const body = { to: 'a@b.com' };
+  const body_high = { priority: 'high', to: 'a@b.com' };
+  const body_low = { priority: 'low', to: 'a@b.com' };
+  const body_normal = { priority: 'normal', to: 'a@b.com' };
   const emailContent = 'Email Content';
 
   afterEach(() => {
@@ -215,17 +218,97 @@ describe('public methods', () => {
     expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
   });
 
-  it('submissionConfirmation should call send a conf email', async () => {
+  it('submissionConfirmation should call send a low priority conf email', async () => {
     formService.readForm = jest.fn().mockReturnValue(form);
     formService.readSubmission = jest.fn().mockReturnValue(submission);
     emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
 
-    const result = await emailService.submissionConfirmation(form.id, submission.id, body, referer);
+    const result = await emailService.submissionConfirmation(form.id, submission.id, body_low, referer);
+
+    const configData = {
+      bodyTemplate: 'submission-received-confirmation-public.html',
+      subject: `${form.name} Accepted`,
+      priority: 'low',
+      messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
+      title: `${form.name} Accepted`,
+      form,
+    };
+
+    const contexts = [
+      {
+        context: {
+          allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+          confirmationNumber: 'abc',
+          form: form,
+          messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
+          messageLinkUrl: `https://form/success?s=${form.name}`,
+          revisionNotificationEmailContent: undefined,
+          title: `${form.name} Accepted`,
+        },
+        to: ['a@b.com'],
+      },
+    ];
+
+    expect(result).toEqual('ret');
+    expect(formService.readForm).toHaveBeenCalledTimes(1);
+    expect(formService.readForm).toHaveBeenCalledWith(form.id);
+    expect(formService.readSubmission).toHaveBeenCalledTimes(1);
+    expect(formService.readSubmission).toHaveBeenCalledWith(submission.id);
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+  });
+
+  it('submissionConfirmation should call send a normal priority conf email', async () => {
+    formService.readForm = jest.fn().mockReturnValue(form);
+    formService.readSubmission = jest.fn().mockReturnValue(submission);
+    emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
+
+    const result = await emailService.submissionConfirmation(form.id, submission.id, body_normal, referer);
 
     const configData = {
       bodyTemplate: 'submission-received-confirmation-public.html',
       subject: `${form.name} Accepted`,
       priority: 'normal',
+      messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
+      title: `${form.name} Accepted`,
+      form,
+    };
+
+    const contexts = [
+      {
+        context: {
+          allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+          confirmationNumber: 'abc',
+          form: form,
+          messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
+          messageLinkUrl: `https://form/success?s=${form.name}`,
+          revisionNotificationEmailContent: undefined,
+          title: `${form.name} Accepted`,
+        },
+        to: ['a@b.com'],
+      },
+    ];
+
+    expect(result).toEqual('ret');
+    expect(formService.readForm).toHaveBeenCalledTimes(1);
+    expect(formService.readForm).toHaveBeenCalledWith(form.id);
+    expect(formService.readSubmission).toHaveBeenCalledTimes(1);
+    expect(formService.readSubmission).toHaveBeenCalledWith(submission.id);
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
+    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+  });
+
+  it('submissionConfirmation should call send a high priority conf email', async () => {
+    formService.readForm = jest.fn().mockReturnValue(form);
+    formService.readSubmission = jest.fn().mockReturnValue(submission);
+    emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
+
+    const result = await emailService.submissionConfirmation(form.id, submission.id, body_high, referer);
+
+    const configData = {
+      bodyTemplate: 'submission-received-confirmation-public.html',
+      subject: `${form.name} Accepted`,
+      priority: 'high',
       messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
       title: `${form.name} Accepted`,
       form,

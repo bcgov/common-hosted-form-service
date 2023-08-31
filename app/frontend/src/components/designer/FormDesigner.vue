@@ -80,9 +80,10 @@ export default {
     ...mapState(useFormStore, [
       'fcProactiveHelpGroupList',
       'fcProactiveHelpImageUrl',
-      'multiLanguage',
+      'builder',
       'form',
       'isRTL',
+      'lang',
     ]),
     ...mapState(useAuthStore, ['tokenParsed', 'user']),
     ID_MODE() {
@@ -183,7 +184,7 @@ export default {
             },
           },
         },
-        language: this.multiLanguage ? this.multiLanguage : 'en',
+        language: this.lang ? this.lang : 'en',
         i18n: formioIl8next,
         templates: templateExtensions,
         evalContext: {
@@ -199,7 +200,7 @@ export default {
         this.reRenderFormIo += 1;
       }
     },
-    multiLanguage(value) {
+    lang(value) {
       if (value) {
         this.reRenderFormIo += 1;
       }
@@ -660,15 +661,17 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <div
       class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
     >
       <!-- page title -->
-      <div>
+      <div :lang="lang">
         <h1>{{ $t('trans.formDesigner.formDesign') }}</h1>
         <h3 v-if="form.name">{{ form.name }}</h3>
-        <em>{{ $t('trans.formDesigner.version') }} : {{ displayVersion }}</em>
+        <em :lang="lang"
+          >{{ $t('trans.formDesigner.version') }} : {{ displayVersion }}</em
+        >
       </div>
       <!-- buttons -->
       <div>
@@ -685,7 +688,7 @@ export default {
               <v-icon icon="mdi:mdi-download"></v-icon>
             </v-btn>
           </template>
-          <span>{{ $t('trans.formDesigner.exportDesign') }}</span>
+          <span :lang="lang">{{ $t('trans.formDesigner.exportDesign') }}</span>
         </v-tooltip>
         <v-tooltip location="bottom">
           <template #activator="{ props }">
@@ -707,12 +710,12 @@ export default {
               />
             </v-btn>
           </template>
-          <span>{{ $t('trans.formDesigner.importDesign') }}</span>
+          <span :lang="lang">{{ $t('trans.formDesigner.importDesign') }}</span>
         </v-tooltip>
       </div>
     </div>
-    <BaseInfoCard class="my-6">
-      <h4 class="text-primary">
+    <BaseInfoCard class="my-6" :class="{ 'dir-rtl': isRTL }">
+      <h4 class="text-primary" :lang="lang">
         <v-icon
           :class="isRTL ? 'ml-1' : 'mr-1'"
           color="primary"
@@ -720,8 +723,16 @@ export default {
         ></v-icon
         >{{ $t('trans.formDesigner.important') }}!
       </h4>
-      <p class="my-0" v-html="$t('trans.formDesigner.formDesignInfoA')"></p>
-      <p class="my-0" v-html="$t('trans.formDesigner.formDesignInfoB')"></p>
+      <p
+        class="my-0"
+        :lang="lang"
+        v-html="$t('trans.formDesigner.formDesignInfoA')"
+      ></p>
+      <p
+        class="my-0"
+        :lang="lang"
+        v-html="$t('trans.formDesigner.formDesignInfoB')"
+      ></p>
     </BaseInfoCard>
     <FormBuilder
       ref="formioForm"
@@ -794,7 +805,6 @@ export default {
 
   position: -webkit-sticky;
 }
-
 .formSetting {
   position: sticky;
   top: 0;

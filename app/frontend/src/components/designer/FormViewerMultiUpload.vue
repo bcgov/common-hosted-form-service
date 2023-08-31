@@ -66,7 +66,7 @@ export default {
   },
   computed: {
     ...mapState(useAppStore, ['config']),
-    ...mapState(useFormStore, ['isRTL']),
+    ...mapState(useFormStore, ['isRTL', 'lang']),
 
     txt_colour() {
       if (!this.error) return 'success-text';
@@ -382,127 +382,163 @@ export default {
 </script>
 
 <template>
-  <v-container fluid class="file-upload">
-    <BaseInfoCard v-if="jsonCsv.data" class="mb-4">
-      <h4 class="text-primary">
-        <v-icon
-          :class="isRTL ? 'ml-1' : 'mr-1'"
-          color="primary"
-          icon="mdi:mdi-information"
-        ></v-icon
-        >{{ $t('trans.formViewerMultiUpload.important') }}!
-      </h4>
-      <p class="my-2">
-        {{ $t('trans.formViewerMultiUpload.uploadSucessMsg') }}
-        <span class="link">
-          <a @click="download(jsonCsv.file_name, jsonCsv.data)">{{
-            $t('trans.formViewerMultiUpload.download')
-          }}</a>
-          <v-icon class="mr-1" color="#003366" icon="mdi:mdi-download"></v-icon>
-        </span>
-      </p>
-    </BaseInfoCard>
-  </v-container>
-  <v-container fluid>
-    <h3>{{ form.name }}</h3>
-    <div
-      v-if="!file"
-      v-cloak
-      class="drop-zone"
-      @click="handleFile"
-      @drop.prevent="addFile($event, 0)"
-      @dragover.prevent
-    >
-      <v-icon class="mr-1" color="#003366" icon="mdi:mdi-upload" />
-      <h1>{{ $t('trans.formViewerMultiUpload.jsonFileUpload') }}</h1>
-      <p>{{ $t('trans.formViewerMultiUpload.dragNDrop') }}</p>
-
-      <v-file-input
-        ref="fileRef"
-        class="drop-zone__input"
-        accept="application/json"
-        name="file"
-        :label="$t('trans.formViewerMultiUpload.chooseAFile')"
-        show-size
-        @change="addFile($event, 1)"
+  <div class="file-upload" :class="{ 'dir-rtl': isRTL }">
+    <v-container fluid class="file-upload">
+      <BaseInfoCard v-if="jsonCsv.data" class="mb-4">
+        <h4 class="text-primary" :lang="lang">
+          <v-icon
+            :class="isRTL ? 'ml-1' : 'mr-1'"
+            color="primary"
+            icon="mdi:mdi-information"
+          ></v-icon
+          >{{ $t('trans.formViewerMultiUpload.important') }}!
+        </h4>
+        <p class="my-2" :lang="lang">
+          {{ $t('trans.formViewerMultiUpload.uploadSucessMsg') }}
+          <span class="link">
+            <a
+              :hreflang="lang"
+              @click="
+                download(
+                  jsonCsv.file_name,
+                  jsonCsv.data,
+                  $t('trans.formViewerMultiUpload.confirmDownload')
+                )
+              "
+              >{{ $t('trans.formViewerMultiUpload.download') }}</a
+            >
+            <v-icon
+              class="mr-1"
+              color="#003366"
+              icon="mdi:mdi-download"
+            ></v-icon>
+          </span>
+        </p>
+      </BaseInfoCard>
+    </v-container>
+    <v-container fluid>
+      <h3>{{ form.name }}</h3>
+      <div
+        v-if="!file"
+        v-cloak
+        class="drop-zone"
+        @click="handleFile"
+        @drop.prevent="addFile($event, 0)"
+        @dragover.prevent
       >
-      </v-file-input>
-    </div>
-    <div v-if="file" class="worker-zone">
-      <div class="wz-top">
-        <v-progress-linear
-          v-model="percent"
-          class="loading"
-          rounded
-          height="15"
+        <v-icon class="mr-1" color="#003366" icon="mdi:mdi-upload" />
+        <h1 :lang="lang">
+          {{ $t('trans.formViewerMultiUpload.jsonFileUpload') }}
+        </h1>
+        <p :lang="lang">{{ $t('trans.formViewerMultiUpload.dragNDrop') }}</p>
+
+        <v-file-input
+          ref="fileRef"
+          class="drop-zone__input"
+          accept="application/json"
+          name="file"
+          :label="$t('trans.formViewerMultiUpload.chooseAFile')"
+          show-size
+          :lang="lang"
+          @change="addFile($event, 1)"
         >
-          <template #default="{ value }">
-            <strong>{{ value }}%</strong>
-          </template>
-        </v-progress-linear>
-        <v-row class="fileinfo">
+        </v-file-input>
+      </div>
+      <div v-if="file" class="worker-zone">
+        <div class="wz-top">
+          <v-progress-linear
+            v-model="percent"
+            class="loading"
+            rounded
+            height="15"
+          >
+            <template #default="{ value }">
+              <strong>{{ value }}%</strong>
+            </template>
+          </v-progress-linear>
+          <v-row class="fileinfo">
+            <v-col cols="12" md="12">
+              <label class="label-left">{{ file.name }}</label>
+              <label class="label-right">
+                {{ fileSize }}
+                <p v-if="index > 0 && Json.length > 0">
+                  {{ index + '/' + Json.length }}
+                </p>
+              </label>
+            </v-col>
+          </v-row>
+        </div>
+        <v-row class="p-1">
+          <v-col
+            v-if="!progress && response.upload_state == 10"
+            cols="12"
+            md="12"
+            class="message-block"
+          >
+            <hr v-if="response.error" />
+            <span>Report: </span>
+            <p :class="txt_colour">
+              <v-icon v-if="response.error" color="red" icon="mdi:mdi-close" />
+              <v-icon
+                v-if="!response.error"
+                color="green"
+                icon="mdi:mdi-check"
+              />
+              {{ response.message }}
+            </p>
+          </v-col>
           <v-col cols="12" md="12">
-            <label class="label-left">{{ file.name }}</label>
-            <label class="label-right">
-              {{ fileSize }}
-              <p v-if="index > 0 && Json.length > 0">
-                {{ index + '/' + Json.length }}
-              </p>
-            </label>
+            <p
+              v-if="response.error && response.response.length > 0"
+              style="text-align: justify; line-height: 1.2"
+              :lang="lang"
+            >
+              {{ $t('trans.formViewerMultiUpload.downloadDraftSubmns') }}
+              <br />
+              <span class="link">
+                <a
+                  :hreflang="lang"
+                  @click="
+                    download(
+                      response.file_name,
+                      response.response,
+                      $t('trans.formViewerMultiUpload.doYouWantToDownload')
+                    )
+                  "
+                >
+                  {{ $t('trans.formViewerMultiUpload.downloadReport') }}</a
+                >
+                <v-icon
+                  class="mr-1"
+                  color="#003366"
+                  icon="mdi:mdi-download"
+                ></v-icon>
+              </span>
+            </p>
+          </v-col>
+          <v-col
+            v-if="
+              file &&
+              !progress &&
+              response.error &&
+              response.response.length > 0
+            "
+            cols="12"
+            md="12"
+          >
+            <span class="m-1 pull-right">
+              <v-btn color="primary" @click="resetUpload">
+                <span :lang="lang">{{
+                  $t('trans.formViewerMultiUpload.uploadNewFile')
+                }}</span>
+              </v-btn>
+            </span>
           </v-col>
         </v-row>
+        <v-row id="validateForm" class="displayNone"></v-row>
       </div>
-      <v-row class="p-1">
-        <v-col
-          v-if="!progress && response.upload_state == 10"
-          cols="12"
-          md="12"
-          class="message-block"
-        >
-          <hr v-if="response.error" />
-          <span>Report: </span>
-          <p :class="txt_colour">
-            <v-icon v-if="response.error" color="red" icon="mdi:mdi-close" />
-            <v-icon v-if="!response.error" color="green" icon="mdi:mdi-check" />
-            {{ response.message }}
-          </p>
-        </v-col>
-        <v-col cols="12" md="12">
-          <p
-            v-if="response.error && response.response.length > 0"
-            style="text-align: justify; line-height: 1.2"
-          >
-            {{ $t('trans.formViewerMultiUpload.downloadDraftSubmns') }}
-            <br />
-            <span class="link">
-              <a @click="download(response.file_name, response.response)">{{
-                $t('trans.formViewerMultiUpload.downloadReport')
-              }}</a>
-              <v-icon
-                class="mr-1"
-                color="#003366"
-                icon="mdi:mdi-download"
-              ></v-icon>
-            </span>
-          </p>
-        </v-col>
-        <v-col
-          v-if="
-            file && !progress && response.error && response.response.length > 0
-          "
-          cols="12"
-          md="12"
-        >
-          <span class="m-1 pull-right">
-            <v-btn color="primary" @click="resetUpload">
-              <span>{{ $t('trans.formViewerMultiUpload.uploadNewFile') }}</span>
-            </v-btn>
-          </span>
-        </v-col>
-      </v-row>
-      <v-row id="validateForm" class="displayNone"></v-row>
-    </div>
-  </v-container>
+    </v-container>
+  </div>
 </template>
 
 <style lang="scss" scoped>

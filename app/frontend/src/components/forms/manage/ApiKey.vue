@@ -20,7 +20,13 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['apiKey', 'form', 'permissions']),
+    ...mapState(useFormStore, [
+      'apiKey',
+      'form',
+      'permissions',
+      'isRTL',
+      'lang',
+    ]),
     canDeleteKey() {
       return (
         this.permissions.includes(FormPermissions.FORM_API_DELETE) &&
@@ -78,18 +84,20 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <div v-if="!canGenerateKey" class="mt-3 mb-6">
       <v-icon class="mr-1" color="primary" icon="mdi:mdi-information"></v-icon>
-      <span v-html="$t('trans.apiKey.formOwnerKeyAcess')"></span>
+      <span :lang="lang" v-html="$t('trans.apiKey.formOwnerKeyAcess')"></span>
     </div>
-    <h3 class="mt-3">{{ $t('trans.apiKey.disclaimer') }}</h3>
-    <ul>
-      <li>{{ $t('trans.apiKey.infoA') }}</li>
-      <li>
+    <h3 class="mt-3" :lang="lang">
+      {{ $t('trans.apiKey.disclaimer') }}
+    </h3>
+    <ul :class="isRTL ? 'mr-6' : null">
+      <li :lang="lang">{{ $t('trans.apiKey.infoA') }}</li>
+      <li :lang="lang">
         {{ $t('trans.apiKey.infoB') }}
       </li>
-      <li>
+      <li :lang="lang">
         {{ $t('trans.apiKey.infoC') }}
       </li>
     </ul>
@@ -103,7 +111,7 @@ export default {
             :disabled="!canGenerateKey"
             @click="showConfirmationDialog = true"
           >
-            <span
+            <span :lang="lang"
               >{{
                 apiKey
                   ? $t('trans.apiKey.regenerate')
@@ -125,6 +133,7 @@ export default {
               showSecret ? $t('trans.apiKey.text') : $t('trans.apiKey.password')
             "
             :model-value="secret"
+            :lang="lang"
           />
         </v-col>
         <v-col cols="12" sm="3">
@@ -140,16 +149,19 @@ export default {
                 @click="showHideKey"
               />
             </template>
-            <span v-if="showSecret">{{ $t('trans.apiKey.hideSecret') }}</span>
-            <span v-else>{{ $t('trans.apiKey.showSecret') }}</span>
+            <span v-if="showSecret" :lang="lang">{{
+              $t('trans.apiKey.hideSecret')
+            }}</span>
+            <span v-else :lang="lang">{{ $t('trans.apiKey.showSecret') }}</span>
           </v-tooltip>
 
           <BaseCopyToClipboard
             :disabled="!canReadSecret || !showSecret"
-            class="ml-2 mr-2"
+            class="ml-2"
             :text-to-copy="secret"
             :snack-bar-text="$t('trans.apiKey.sCTC')"
             :tooltip-text="$t('trans.apiKey.cSTC')"
+            :lang="lang"
           />
 
           <v-tooltip location="bottom">
@@ -164,7 +176,7 @@ export default {
                 @click="showDeleteDialog = true"
               />
             </template>
-            <span>{{ $t('trans.apiKey.deleteKey') }}</span>
+            <span :lang="lang">{{ $t('trans.apiKey.deleteKey') }}</span>
           </v-tooltip>
         </v-col>
       </v-row>
@@ -177,13 +189,25 @@ export default {
       @close-dialog="showConfirmationDialog = false"
       @continue-dialog="createKey"
     >
-      <template #title>{{ $t('trans.apiKey.confirmKeyGen') }}</template>
+      <template #title
+        ><span :lang="lang">
+          {{ $t('trans.apiKey.confirmKeyGen') }}
+        </span></template
+      >
       <template #text>
-        <span v-if="!apiKey" v-html="$t('trans.apiKey.createAPIKey')"> </span>
-        <span v-else v-html="$t('trans.apiKey.regenerateAPIKey')"> </span>
+        <span
+          v-if="!apiKey"
+          :lang="lang"
+          v-html="$t('trans.apiKey.createAPIKey')"
+        />
+        <span
+          v-else
+          :lang="lang"
+          v-html="$t('trans.apiKey.regenerateAPIKey')"
+        />
       </template>
       <template #button-text-continue>
-        <span
+        <span :lang="lang"
           >{{
             apiKey ? $t('trans.apiKey.regenerate') : $t('trans.apiKey.generate')
           }}
@@ -199,10 +223,16 @@ export default {
       @close-dialog="showDeleteDialog = false"
       @continue-dialog="deleteKey"
     >
-      <template #title>{{ $t('trans.apiKey.confirmDeletion') }}</template>
-      <template #text>{{ $t('trans.apiKey.deleteMsg') }}</template>
+      <template #title
+        ><span :lang="lang"
+          >{{ $t('trans.apiKey.confirmDeletion') }}
+        </span></template
+      >
+      <template #text
+        ><span :lang="lang">{{ $t('trans.apiKey.deleteMsg') }}</span></template
+      >
       <template #button-text-continue>
-        <span>{{ $t('trans.apiKey.delete') }}</span>
+        <span :lang="lang">{{ $t('trans.apiKey.delete') }}</span>
       </template>
     </BaseDialog>
   </div>

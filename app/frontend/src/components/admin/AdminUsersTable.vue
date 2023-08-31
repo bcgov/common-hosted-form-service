@@ -4,6 +4,7 @@ import { mapActions, mapState } from 'pinia';
 import { i18n } from '~/internationalization';
 
 import { useAdminStore } from '~/store/admin';
+import { useFormStore } from '~/store/form';
 
 export default {
   data() {
@@ -14,6 +15,7 @@ export default {
   },
   computed: {
     ...mapState(useAdminStore, ['userList']),
+    ...mapState(useFormStore, ['isRTL', 'lang']),
     headers() {
       return [
         {
@@ -55,9 +57,12 @@ export default {
   <div>
     <v-row no-gutters>
       <v-spacer />
-      <v-col cols="12" sm="4">
+      <v-col cols="12">
         <!-- search input -->
-        <div class="submissions-search">
+        <div
+          class="submissions-search"
+          :class="isRTL ? 'float-left' : 'float-right'"
+        >
           <v-text-field
             v-model="search"
             density="compact"
@@ -67,6 +72,8 @@ export default {
             single-line
             hide-details
             class="pb-5"
+            :class="{ 'dir-rtl': isRTL, label: isRTL }"
+            :lang="lang"
           />
         </div>
       </v-col>
@@ -81,6 +88,7 @@ export default {
       :search="search"
       :loading="loading"
       :loading-text="$t('trans.adminUsersTable.loadingText')"
+      :lang="lang"
     >
       <template #item.created="{ item }">
         {{ $filters.formatDate(item.raw.createdAt) }}
@@ -91,7 +99,7 @@ export default {
         >
           <v-btn color="primary" variant="text" size="small">
             <v-icon class="mr-1" icon="mdi:mdi-wrench"></v-icon>
-            <span class="d-none d-sm-flex">{{
+            <span class="d-none d-sm-flex" :lang="lang">{{
               $t('trans.adminUsersTable.admin')
             }}</span>
           </v-btn>

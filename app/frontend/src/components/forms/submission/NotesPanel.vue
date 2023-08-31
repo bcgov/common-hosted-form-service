@@ -1,8 +1,10 @@
 <script>
-import { mapActions } from 'pinia';
+import { mapState, mapActions } from 'pinia';
 
 import { i18n } from '~/internationalization';
 import { formService, rbacService } from '~/services';
+
+import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
 export default {
@@ -19,6 +21,9 @@ export default {
       notes: [],
       showNoteField: false,
     };
+  },
+  computed: {
+    ...mapState(useFormStore, ['isRTL', 'lang']),
   },
   mounted() {
     this.getNotes();
@@ -79,9 +84,11 @@ export default {
       class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
     >
       <div cols="12" sm="6">
-        <h2 class="note-heading">{{ $t('trans.notesPanel.notes') }}</h2>
+        <h2 class="note-heading" :lang="lang">
+          {{ $t('trans.notesPanel.notes') }}
+        </h2>
       </div>
-      <div>
+      <div :class="{ 'text-left': isRTL }">
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <v-btn
@@ -95,21 +102,25 @@ export default {
               <v-icon icon="mdi:mdi-plus"></v-icon>
             </v-btn>
           </template>
-          <span>{{ $t('trans.notesPanel.addNewNote') }}</span>
+          <span :lang="lang">{{ $t('trans.notesPanel.addNewNote') }}</span>
         </v-tooltip>
       </div>
     </div>
 
     <v-form v-if="showNoteField">
-      <label>{{ $t('trans.notesPanel.note') }}</label>
+      <div class="mb-2" :class="{ 'dir-rtl': isRTL }" :lang="lang">
+        {{ $t('trans.notesPanel.note') }}
+      </div>
       <v-textarea
         v-model="newNote"
+        :class="{ 'dir-rtl': isRTL }"
         :rules="[(v) => v.length <= 4000 || $t('trans.notesPanel.maxChars')]"
         counter
         auto-grow
         density="compact"
         variant="outlined"
         solid
+        :lang="lang"
       />
       <v-row>
         <v-col cols="12" sm="6" xl="4">
@@ -119,7 +130,7 @@ export default {
             variant="outlined"
             @click="showNoteField = false"
           >
-            <span>{{ $t('trans.notesPanel.cancel') }}</span>
+            <span :lang="lang">{{ $t('trans.notesPanel.cancel') }}</span>
           </v-btn>
         </v-col>
         <v-col cols="12" sm="6" xl="4" order="first" order-sm="last">
@@ -130,13 +141,13 @@ export default {
             :disabled="!newNote"
             @click="addNote"
           >
-            <span>{{ $t('trans.notesPanel.addNote') }}</span>
+            <span :lang="lang">{{ $t('trans.notesPanel.addNote') }}</span>
           </v-btn>
         </v-col>
       </v-row>
     </v-form>
 
-    <ul class="mt-5">
+    <ul class="mt-5" :class="{ 'dir-rtl': isRTL, 'mr-2': isRTL }">
       <li v-for="note in notes" :key="note.noteId" class="mb-2">
         <strong>
           {{ $filters.formatDateLong(note.createdAt) }} -
@@ -148,3 +159,9 @@ export default {
     </ul>
   </v-skeleton-loader>
 </template>
+
+<style lang="scss" scoped>
+.note-heading {
+  color: #003366;
+}
+</style>

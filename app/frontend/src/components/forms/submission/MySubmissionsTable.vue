@@ -19,7 +19,13 @@ export default {
   },
   data() {
     return {
+      headers: [],
+      itemsPerPage: 10,
+      page: 0,
       filterData: [],
+      preSelectedData: [],
+      sortBy: undefined,
+      sortDesc: false,
       filterIgnore: [
         {
           key: 'confirmationId',
@@ -28,10 +34,19 @@ export default {
           key: 'actions',
         },
       ],
+      tableFilterIgnore: [
+        { value: 'createdBy' },
+        { value: 'username' },
+        { value: 'status' },
+        { value: 'lateEntry' },
+        { value: 'lastEdited' },
+        { value: 'updatedBy' },
+        { value: 'submittedDate' },
+      ],
+      showColumnsDialog: false,
+      submissionTable: [],
       loading: true,
       search: '',
-      showColumnsDialog: false,
-      submissionsTable: [],
     };
   },
   computed: {
@@ -40,6 +55,8 @@ export default {
       'formFields',
       'submissionList',
       'isRTL',
+      'lang',
+      'totalSubmissions',
     ]),
     DEFAULT_HEADERS() {
       let hdrs = [
@@ -98,47 +115,23 @@ export default {
 
       return hdrs;
     },
-    HEADERS() {
-      // Start with the headers that can exist
-      let headers = this.DEFAULT_HEADERS;
-      // If there is any filter data, then we can remove what isn't in there
-      // but do not remove the values set inside of filter ignore, as those
-      // should always exist (confirmationId, actions, event)
-      if (this.filterData?.length > 0) {
-        headers = headers.filter(
-          (header) =>
-            // It must be in the filter data
-            this.filterData.some((up) => up.key === header.key) ||
-            // Or in the filterIgnore
-            this.filterIgnore.some((fi) => fi.key === header.key)
-        );
-      } else {
-        // Remove the form fields
-        headers = headers.filter(
-          (header) => !this.formFields.includes(header.key)
-        );
-      }
-
-      headers.push({
-        title: i18n.t('trans.mySubmissionsTable.actions'),
-        align: 'end',
-        key: 'actions',
-        filterable: false,
-        sortable: false,
-        width: '140px',
-      });
-
-      return headers;
-    },
     FILTER_HEADERS() {
       return this.DEFAULT_HEADERS.filter(
         (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
       );
     },
-    PRESELECTED_DATA() {
-      return this.HEADERS.filter(
-        (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
-      );
+
+    HEADERS() {
+      let headers = this.DEFAULT_HEADERS;
+
+      if (this.filterData.length > 0) {
+        headers = [...this.DEFAULT_HEADERS].filter(
+          (h) => !this.tableFilterIgnore.some((fd) => fd.value === h.value)
+        );
+
+        headers.splice(headers.length - 1, 0, ...this.filterData);
+      }
+      return headers;
     },
     showDraftLastEdited() {
       return this.form && this.form.enableSubmitterDraft;
@@ -162,6 +155,17 @@ export default {
       'fetchFormFields',
       'fetchSubmissions',
     ]),
+    onShowColumnDialog() {
+      this.preSelectedData =
+        this.filterData.length === 0 ? this.FILTER_HEADERS : this.filterData;
+      this.SELECT_COLUMNS_HEADERS.sort(
+        (a, b) =>
+          this.preSelectedData.findIndex((x) => x.text === b.text) -
+          this.preSelectedData.findIndex((x) => x.text === a.text)
+      );
+      this.showColumnsDialog = true;
+    },
+
     // Status columns in the table
     getCurrentStatus(record) {
       // Current status is most recent status (top in array, query returns in
@@ -187,17 +191,31 @@ export default {
       }
       return '';
     },
-
-    onShowColumnDialog() {
-      this.showColumnsDialog = true;
+    async updateTableOptions({ page, itemsPerPage, sortBy, sortDesc }) {
+      this.page = page - 1;
+      if (sortBy[0] === 'date') {
+        this.sortBy = 'createdAt';
+      } else if (sortBy[0] === 'submitter') {
+        this.sortBy = 'createdBy';
+      } else if (sortBy[0] === 'status')
+        this.sortBy = 'formSubmissionStatusCode';
+      else {
+        this.sortBy = sortBy[0];
+      }
+      this.sortDesc = sortDesc[0];
+      this.itemsPerPage = itemsPerPage;
+      await this.populateSubmissionsTable();
     },
-
     async populateSubmissionsTable() {
       this.loading = true;
       // Get the submissions for this form
       await this.fetchSubmissions({
         formId: this.formId,
         userView: true,
+        itemsPerPage: this.itemsPerPage,
+        page: this.page,
+        sortBy: this.sortBy,
+        sortDesc: this.sortDesc,
       });
       // Build up the list of forms for the table
       if (this.submissionList) {
@@ -241,14 +259,16 @@ export default {
 </script>
 
 <template>
-  <div>
-    <v-skeleton-loader :loading="loading" type="heading" class="bgtrans">
+  <div :class="{ 'dir-rtl': isRTL }">
+    <v-skeleton-loader :loading="loading" type="heading">
       <div
         class="mt-6 d-flex flex-md-row flex-1-1-100 justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
       >
         <!-- page title -->
         <div>
-          <h1>{{ $t('trans.mySubmissionsTable.previousSubmissions') }}</h1>
+          <h1 :lang="lang">
+            {{ $t('trans.mySubmissionsTable.previousSubmissions') }}
+          </h1>
           <h3>{{ formId ? form.name : 'All Forms' }}</h3>
         </div>
         <!-- buttons -->
@@ -265,7 +285,9 @@ export default {
                 @click="onShowColumnDialog"
               />
             </template>
-            <span>{{ $t('trans.mySubmissionsTable.selectColumns') }}</span>
+            <span :lang="lang">{{
+              $t('trans.mySubmissionsTable.selectColumns')
+            }}</span>
           </v-tooltip>
           <v-tooltip location="bottom">
             <template #activator="{ props }">
@@ -285,7 +307,7 @@ export default {
                 />
               </router-link>
             </template>
-            <span>{{
+            <span :lang="lang">{{
               $t('trans.mySubmissionsTable.createNewSubmission')
             }}</span>
           </v-tooltip>
@@ -307,6 +329,8 @@ export default {
         single-line
         hide-details
         class="pb-5"
+        :class="{ label: isRTL }"
+        :lang="lang"
       />
     </div>
 
@@ -320,6 +344,9 @@ export default {
       :loading="loading"
       :loading-text="$t('trans.mySubmissionsTable.loadingText')"
       :no-data-text="$t('trans.mySubmissionsTable.noDataText')"
+      :lang="lang"
+      :server-items-length="totalSubmissions"
+      @update:options="updateTableOptions"
     >
       <template #item.lastEdited="{ item }">
         {{ $filters.formatDateLong(item.columns.lastEdited) }}
@@ -354,9 +381,11 @@ export default {
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >
-        <template #filter-title>{{
-          $t('trans.mySubmissionsTable.filterTitle')
-        }}</template>
+        <template #filter-title
+          ><span :lang="lang">{{
+            $t('trans.mySubmissionsTable.filterTitle')
+          }}</span></template
+        >
       </BaseFilter>
     </v-dialog>
   </div>
@@ -377,7 +406,6 @@ export default {
     padding-right: 16px;
   }
 }
-
 .submissions-table {
   clear: both;
 }
