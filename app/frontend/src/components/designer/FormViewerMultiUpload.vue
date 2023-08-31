@@ -282,7 +282,7 @@ export default {
       try {
         let reader = new FileReader();
         reader.onload = (e) => {
-          this.Json = JSON.parse(e.target.result);
+          this.Json = this.popFormLevelInfo(JSON.parse(e.target.result));
         };
         reader.onloadend = this.preValidateSubmission;
         reader.readAsText(this.file);
