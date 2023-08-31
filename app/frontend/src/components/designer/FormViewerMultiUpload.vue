@@ -309,21 +309,21 @@ export default {
         jsonPayload.forEach(function (submission) {
           delete submission.submit;
           delete submission.lateEntry;
-
-          const propsToRemove = new Set([
-            'confirmationId',
-            'formName',
-            'version',
-            'createdAt',
-            'fullName',
-            'username',
-            'email',
-            'status',
-            'assignee',
-            'assigneeEmail',
-          ]);
-
-          propsToRemove.forEach((key) => delete submission.form[key]);
+          if (Object.prototype.hasOwnProperty.call(submission, 'form')) {
+            const propsToRemove = [
+              'confirmationId',
+              'formName',
+              'version',
+              'createdAt',
+              'fullName',
+              'username',
+              'email',
+              'status',
+              'assignee',
+              'assigneeEmail',
+            ];
+            propsToRemove.forEach((key) => delete submission.form[key]);
+          }
         });
       }
       return jsonPayload;
