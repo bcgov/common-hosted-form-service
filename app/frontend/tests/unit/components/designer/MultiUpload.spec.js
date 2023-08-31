@@ -303,4 +303,43 @@ describe('FormViewerMultiUpload.vue', () => {
       expect(notifactionActions.addNotification).not.toHaveBeenCalled();
     });
   });
+
+  describe('popFormLevelInfo', () => {
+    it('should remove all the form level properties', () => {
+      const wrapper = shallowMount(FormViewerMultiUpload, {
+        localVue,
+        propsData: props,
+        store,
+        i18n,
+      });
+      const givenArrayOfSubmission = [
+        {
+          form: {
+            confirmationId: '3A31A078',
+            formName: 'FormTest',
+            version: 4,
+            createdAt: '2023-08-31T16:50:33.571Z',
+            fullName: 'John DOe',
+            username: 'JOHNDOE',
+            email: 'john.doe@example.ca',
+            status: 'SUBMITTED',
+            assignee: null,
+            assigneeEmail: null,
+          },
+          lateEntry: false,
+          simplenumber: 4444,
+        },
+      ];
+      const expectedArrayOfSubmission = [
+        {
+          form: {},
+          simplenumber: 4444,
+        },
+      ];
+  
+      const response = wrapper.vm.popFormLevelInfo(givenArrayOfSubmission);
+
+      expect(response).toEqual(expectedArrayOfSubmission);
+    });
+  });
 });
