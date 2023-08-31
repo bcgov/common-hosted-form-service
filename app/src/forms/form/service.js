@@ -794,10 +794,11 @@ const service = {
       jsonPayload.forEach(function (submission) {
         delete submission.submit;
         delete submission.lateEntry;
+        if (Object.prototype.hasOwnProperty.call(submission, 'form')) {
+          const propsToRemove = ['confirmationId', 'formName', 'version', 'createdAt', 'fullName', 'username', 'email', 'status', 'assignee', 'assigneeEmail'];
 
-        const propsToRemove = new Set(['confirmationId', 'formName', 'version', 'createdAt', 'fullName', 'username', 'email', 'status', 'assignee', 'assigneeEmail']);
-
-        propsToRemove.forEach((key) => delete submission.form[key]);
+          propsToRemove.forEach((key) => delete submission.form[key]);
+        }
       });
     }
     return jsonPayload;
