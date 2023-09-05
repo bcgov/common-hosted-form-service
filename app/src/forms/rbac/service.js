@@ -5,7 +5,6 @@ const { Roles } = require('../common/constants');
 const { queryUtils, typeUtils } = require('../common/utils');
 const authService = require('../auth/service');
 const moment = require('moment');
-
 const service = {
   list: async () => {
     return FormRoleUser.query().allowGraph('[form, userRole, user]').withGraphFetched('[form, userRole, user]').modify('orderCreatedAtDescending');
@@ -130,7 +129,6 @@ const service = {
           return false;
         });
       });
-
       let start = page * itemsPerPage;
       let end = page * itemsPerPage + (itemsPerPage - 1);
       result.results = searchedData.slice(start, end);
