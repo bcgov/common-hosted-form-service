@@ -379,9 +379,13 @@ const service = {
       const fields = [];
       if (!obj.hidden) {
         // Only add key if it is an input and visible
-        if (obj.input) fields.push(obj.key);
-        // Recursively check all children attributes that are arrays
-        else {
+        if (obj.input) {
+          fields.push(obj.key);
+        } else if (Array.isArray(obj) && obj.length) {
+          // Handle table layouts, where it's an array without keys.
+          fields.push(obj.flatMap((o) => findFields(o)));
+        } else {
+          // Recursively check all children attributes that are arrays
           Object.keys(obj).forEach((key) => {
             if (Array.isArray(obj[key]) && obj[key].length) {
               fields.push(obj[key].flatMap((o) => findFields(o)));
