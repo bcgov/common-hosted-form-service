@@ -130,7 +130,7 @@ const service = {
         });
       });
       let start = page * itemsPerPage;
-      let end = page * itemsPerPage + (itemsPerPage - 1);
+      let end = page * itemsPerPage + itemsPerPage;
       result.results = searchedData.slice(start, end);
       return result;
     } else {

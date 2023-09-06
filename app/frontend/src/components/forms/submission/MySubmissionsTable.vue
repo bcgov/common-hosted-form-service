@@ -86,7 +86,11 @@
       :search="search"
       :loading="loading"
       :loading-text="$t('trans.mySubmissionsTable.loadingText')"
-      :no-data-text="$t('trans.mySubmissionsTable.noDataText')"
+      :no-data-text="
+        searchEnabled
+          ? $t('trans.mySubmissionsTable.noMachingRecordText')
+          : $t('trans.mySubmissionsTable.noDataText')
+      "
       :lang="lang"
       :server-items-length="totalSubmissions"
       @update:options="updateTableOptions"
