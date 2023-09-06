@@ -375,6 +375,7 @@
     "emailRequired": "E-Mail ist erforderlich"
   },
   "submissionsTable": {
+    "noMachingRecordText": "Keine übereinstimmenden Aufzeichnungen gefunden",
     "submissions": "Einsendungen",
     "submissionsTable": "Einreichungstabelle",
     "selectColumns": "Wählen Sie Spalten aus",
@@ -464,6 +465,7 @@
     "editThisDraft": "Bearbeiten Sie diesen Entwurf"
   },
   "mySubmissionsTable": {
+    "noMachingRecordText": "Keine übereinstimmenden Aufzeichnungen gefunden",
     "previousSubmissions": "Frühere Einsendungen",
     "selectColumns": "Wählen Sie Spalten aus",
     "createNewSubmission": "Erstellen Sie eine neue Einreichung",

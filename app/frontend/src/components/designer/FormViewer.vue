@@ -295,7 +295,7 @@ export default {
       return this.$t('trans.formViewer.formScheduleExpireMessage');
     },
     ...mapGetters('auth', ['authenticated', 'token', 'tokenParsed', 'user']),
-    ...mapGetters('form', ['lang', 'isRTL', 'lang']),
+    ...mapGetters('form', ['lang', 'isRTL']),
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
     },

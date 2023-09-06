@@ -128,7 +128,11 @@
       :show-select="!switchSubmissionView"
       v-model="selectedSubmissions"
       :loading-text="$t('trans.submissionsTable.loadingText')"
-      :no-data-text="$t('trans.submissionsTable.noDataText')"
+      :no-data-text="
+        searchEnabled
+          ? $t('trans.submissionsTable.noMachingRecordText')
+          : $t('trans.submissionsTable.noDataText')
+      "
       :lang="lang"
       :server-items-length="totalSubmissions"
       @update:options="updateTableOptions"
