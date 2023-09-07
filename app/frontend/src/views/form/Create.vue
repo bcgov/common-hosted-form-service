@@ -1,5 +1,5 @@
 <template>
-  <BaseSecure :idp="IDP.IDIR">
+  <BaseSecure :idp="IDP.IDIR" :class="{ 'dir-rtl': isRTL }">
     <v-stepper
       v-model="creatorStep"
       class="elevation-0 d-flex flex-column"

@@ -299,7 +299,6 @@ export default {
       });
       window.open(route.href);
     },
-
     setSizes() {
       this.floatButtonSize = {};
 
