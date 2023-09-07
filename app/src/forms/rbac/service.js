@@ -112,22 +112,22 @@ const service = {
         total: 0,
       };
       let searchedData = submissionsData.filter((data) => {
-        return Object.keys(data).some((value) => {
-          if (value !== 'submissionId') {
-            if (!Array.isArray(data[value]) && !typeUtils.isObject(data[value])) {
+        return Object.keys(data).some((key) => {
+          if (key !== 'submissionId') {
+            if (!Array.isArray(data[key]) && !typeUtils.isObject(data[key])) {
               if (
-                !typeUtils.isBoolean(data[value]) &&
-                !typeUtils.isNil(data[value]) &&
-                typeUtils.isDate(data[value]) &&
-                moment(new Date(data[value])).format('YYYY-MM-DD hh:mm:ss a').includes(search)
+                !typeUtils.isBoolean(data[key]) &&
+                !typeUtils.isNil(data[key]) &&
+                typeUtils.isDate(data[key]) &&
+                moment(new Date(data[key])).format('YYYY-MM-DD hh:mm:ss a').includes(search)
               ) {
                 result.total = result.total + 1;
                 return true;
               }
-              if (typeUtils.isString(data[value]) && data[value].includes(search)) {
+              if (typeUtils.isString(data[key]) && data[key].includes(search)) {
                 result.total = result.total + 1;
                 return true;
-              } else if ((typeUtils.isNil(data[value]) || typeUtils.isBoolean(data[value]) || typeUtils.isNumeric(data[value])) && data[value] === search) {
+              } else if ((typeUtils.isNil(data[key]) || typeUtils.isBoolean(data[key]) || typeUtils.isNumeric(data[key])) && data[key] === search) {
                 result.total = result.total + 1;
                 return true;
               }
