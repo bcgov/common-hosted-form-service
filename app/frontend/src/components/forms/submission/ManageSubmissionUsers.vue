@@ -12,19 +12,32 @@
           <v-icon>group</v-icon>
         </v-btn>
       </template>
-      <span>Manage Team Members</span>
+      <span :lang="lang">{{
+        $t('trans.manageSubmissionUsers.manageTeamMembers')
+      }}</span>
     </v-tooltip>
     <v-dialog v-model="dialog" width="600">
-      <v-card>
-        <v-card-title class="text-h5 pb-0"> Manage Team Members </v-card-title>
-
+      <v-card :class="{ 'dir-rtl': isRTL }">
+        <v-card-title class="text-h5 pb-0" :lang="lang">
+          {{ $t('trans.manageSubmissionUsers.manageTeamMembers') }}
+        </v-card-title>
+        <v-card-subtitle class="mt-1">
+          <v-radio-group v-model="selectedIdp" row>
+            <v-radio label="IDIR" :value="ID_PROVIDERS.IDIR" />
+            <v-radio label="Basic BCeID" :value="ID_PROVIDERS.BCEIDBASIC" />
+            <v-radio
+              label="Business BCeID"
+              :value="ID_PROVIDERS.BCEIDBUSINESS"
+            />
+          </v-radio-group>
+        </v-card-subtitle>
         <v-card-text>
-          <hr />
-
+          <hr class="mt-1" />
           <v-row v-if="isDraft">
             <v-col cols="9">
               <form autocomplete="off">
                 <v-autocomplete
+                  :class="{ label: isRTL }"
                   autocomplete="autocomplete_off"
                   v-model="userSearchSelection"
                   clearable
@@ -32,18 +45,20 @@
                   :filter="filterObject"
                   hide-details
                   :items="userSearchResults"
-                  label="Enter a name, e-mail, or username"
+                  :label="autocompleteLabel"
                   :loading="isLoadingDropdown"
                   return-object
                   :search-input.sync="findUsers"
                 >
                   <!-- no data -->
                   <template #no-data>
-                    <div class="px-2">
-                      Can't find someone? They may not have joined the site.<br />
-                      Kindly send them a link to the site and ask them to log
-                      in.
-                    </div>
+                    <div
+                      class="px-2"
+                      v-html="
+                        $t('trans.manageSubmissionUsers.userNotFoundErrMsg')
+                      "
+                      :lang="lang"
+                    />
                   </template>
                   <!-- selected user -->
                   <template #selection="data">
@@ -85,17 +100,22 @@
                 :loading="isLoadingDropdown"
                 @click="addUser"
               >
-                <span>Add</span>
+                <span :lang="lang"
+                  >{{ $t('trans.manageSubmissionUsers.add') }}
+                </span>
               </v-btn>
             </v-col>
           </v-row>
-          <div v-else>
-            You can only invite and manage team members while this form is a
-            draft
+          <div v-else :lang="lang">
+            {{ $t('trans.manageSubmissionUsers.draftFormInvite') }}
           </div>
 
-          <p class="mt-5">
-            <strong>Team members for this submission:</strong>
+          <p class="mt-5" :lang="lang">
+            <strong
+              >{{
+                $t('trans.manageSubmissionUsers.submissionTeamMembers')
+              }}:</strong
+            >
           </p>
 
           <v-skeleton-loader :loading="isLoadingTable" type="table-row">
@@ -103,10 +123,31 @@
               <template>
                 <thead>
                   <tr>
-                    <th class="text-left">Name</th>
-                    <th class="text-left">Username</th>
-                    <th class="text-left">Email</th>
-                    <th class="text-left" v-if="isDraft">Actions</th>
+                    <th
+                      :class="isRTL ? 'text-right' : 'text-left'"
+                      :lang="lang"
+                    >
+                      {{ $t('trans.manageSubmissionUsers.name') }}
+                    </th>
+                    <th
+                      :class="isRTL ? 'text-right' : 'text-left'"
+                      :lang="lang"
+                    >
+                      {{ $t('trans.manageSubmissionUsers.username') }}
+                    </th>
+                    <th
+                      :class="isRTL ? 'text-right' : 'text-left'"
+                      :lang="lang"
+                    >
+                      {{ $t('trans.manageSubmissionUsers.email') }}
+                    </th>
+                    <th
+                      :class="isRTL ? 'text-right' : 'text-left'"
+                      v-if="isDraft"
+                      :lang="lang"
+                    >
+                      {{ $t('trans.manageSubmissionUsers.actions') }}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -133,27 +174,37 @@
 
         <v-card-actions class="justify-center">
           <v-btn class="mb-5 close-dlg" color="primary" @click="dialog = false">
-            <span>Close</span>
+            <span :lang="lang">
+              {{ $t('trans.manageSubmissionUsers.close') }}</span
+            >
           </v-btn>
         </v-card-actions>
       </v-card>
 
       <BaseDialog
+        :class="{ 'dir-rtl': isRTL }"
         v-model="showDeleteDialog"
         type="CONTINUE"
         @close-dialog="showDeleteDialog = false"
         @continue-dialog="
           modifyPermissions(userToDelete.id, []);
-          showDeleteDialog = false;"
+          showDeleteDialog = false;
+        "
       >
-        <template #title>Remove {{ userToDelete.username }}</template>
+        <template #title
+          ><span>Remove {{ userToDelete.username }}</span></template
+        >
         <template #text>
-          Are you sure you wish to remove
-          <strong>{{ userToDelete.username }}</strong
-          >? They will no longer have permissions for this submission.
+          <span :lang="lang">
+            {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg1') }}
+            <strong>{{ userToDelete.username }}</strong
+            >? {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg2') }}
+          </span>
         </template>
         <template #button-text-continue>
-          <span>Remove</span>
+          <span :lang="lang">{{
+            $t('trans.manageSubmissionUsers.remove')
+          }}</span>
         </template>
       </BaseDialog>
     </v-dialog>
@@ -163,7 +214,12 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 
-import { FormPermissions, IdentityProviders, NotificationTypes } from '@/utils/constants';
+import {
+  FormPermissions,
+  IdentityProviders,
+  NotificationTypes,
+  Regex,
+} from '@/utils/constants';
 import { rbacService, userService } from '@/services';
 
 export default {
@@ -189,12 +245,22 @@ export default {
       // search box
       findUsers: null,
       isLoadingDropdown: false,
+      selectedIdp: IdentityProviders.IDIR,
       userSearchResults: [],
       userSearchSelection: null,
     };
   },
+
   computed: {
-    ...mapGetters('form', ['form']),
+    ...mapGetters('form', ['form', 'isRTL', 'lang']),
+    ID_PROVIDERS() {
+      return IdentityProviders;
+    },
+    autocompleteLabel() {
+      return this.selectedIdp == IdentityProviders.IDIR
+        ? this.$t('trans.manageSubmissionUsers.requiredFiled')
+        : this.$t('trans.manageSubmissionUsers.exactEmailOrUsername');
+    },
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
@@ -205,7 +271,9 @@ export default {
         if (this.userTableList.some((u) => u.id === id)) {
           this.addNotification({
             ...NotificationTypes.WARNING,
-            message: `User ${this.userSearchSelection.username} is already in the list of team members.`,
+            message: this.$t('trans.manageSubmissionUsers.remove', {
+              username: this.userSearchSelection.username,
+            }),
           });
         } else {
           this.modifyPermissions(id, [
@@ -235,9 +303,11 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          message:
-            'An error occured while trying to fetch users for this submission.',
-          consoleError: `Error getting users for ${this.submissionId}: ${error}`,
+          message: this.$t('trans.manageSubmissionUsers.getSubmissionUsersErr'),
+          consoleError: this.$t(
+            'trans.manageSubmissionUsers.getSubmissionUsersConsoleErr',
+            { submissionId: this.submissionId, error: error }
+          ),
         });
       } finally {
         this.isLoadingTable = false;
@@ -263,15 +333,19 @@ export default {
           this.addNotification({
             ...NotificationTypes.SUCCESS,
             message: permissions.length
-              ? `Sent invite email to ${selectedEmail}`
-              : `Sent uninvited email to ${selectedEmail}`,
+              ? this.$t('trans.manageSubmissionUsers.sentInviteEmailTo') +
+                `${selectedEmail}`
+              : this.$t('trans.manageSubmissionUsers.sentUninvitedEmailTo') +
+                `${selectedEmail}`,
           });
         }
       } catch (error) {
         this.addNotification({
-          message:
-            'An error occured while trying to update users for this submission.',
-          consoleError: `Error setting user permissions. Sub: ${this.submissionId} User: ${userId} Error: ${error}`,
+          message: this.$t('trans.manageSubmissionUsers.updateUserErrMsg'),
+          consoleError: this.$t(
+            'trans.manageSubmissionUsers.updateUserErrMsg',
+            { submissionId: this.submissionId, userId: userId, error: error }
+          ),
         });
       } finally {
         this.isLoadingTable = false;
@@ -296,23 +370,49 @@ export default {
     },
   },
   watch: {
+    selectedIdp(newIdp, oldIdp) {
+      if (newIdp !== oldIdp) {
+        this.userSearchResults = [];
+      }
+    },
     // Get a list of user objects from database
     async findUsers(input) {
       if (!input) return;
       this.isLoadingDropdown = true;
       try {
         // The form's IDP (only support 1 at a time right now), blank is 'team' and should be IDIR
-        const idp =
-          this.form.identityProviders && this.form.identityProviders.length
-            ? this.form.identityProviders[0].code
-            : IdentityProviders.IDIR;
-        const response = await userService.getUsers({
-          search: input,
-          idpCode: idp,
-        });
+        let params = {};
+        params.idpCode = this.selectedIdp;
+        if (
+          this.selectedIdp == IdentityProviders.BCEIDBASIC ||
+          this.selectedIdp == IdentityProviders.BCEIDBUSINESS
+        ) {
+          if (input.length < 6)
+            throw new Error(
+              this.$t('trans.manageSubmissionUsers.searchInputLength')
+            );
+          if (input.includes('@')) {
+            if (!new RegExp(Regex.EMAIL).test(input))
+              throw new Error(
+                this.$t('trans.manageSubmissionUsers.exactBCEIDSearch')
+              );
+            else params.email = input;
+          } else {
+            params.username = input;
+          }
+        } else {
+          params.search = input;
+        }
+        const response = await userService.getUsers(params);
         this.userSearchResults = response.data;
       } catch (error) {
-        console.error(`Error getting users: ${error}`); // eslint-disable-line no-console
+        // this.userSearchResults = [];
+        /* eslint-disable no-console */
+        console.error(
+          this.$t('trans.manageSubmissionUsers.getUsersErrMsg', {
+            error: error,
+          })
+        ); // eslint-disable-line no-console
       } finally {
         this.isLoadingDropdown = false;
       }

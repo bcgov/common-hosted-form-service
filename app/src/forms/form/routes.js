@@ -1,6 +1,6 @@
 const config = require('config');
 const routes = require('express').Router();
-
+const middleware = require('../common/middleware');
 const apiAccess = require('../auth/middleware/apiAccess');
 const { currentUser, hasFormPermissions } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
@@ -26,6 +26,10 @@ routes.get('/:formId/export', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBM
   await controller.export(req, res, next);
 });
 
+routes.post('/:formId/export/fields', middleware.publicRateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
+  await controller.exportWithFields(req, res, next);
+});
+
 routes.get('/:formId/options', async (req, res, next) => {
   await controller.readFormOptions(req, res, next);
 });
@@ -46,10 +50,6 @@ routes.get('/:formId/submissions', apiAccess, hasFormPermissions([P.FORM_READ, P
   await controller.listFormSubmissions(req, res, next);
 });
 
-routes.get('/:formId/versions', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_READ]), async (req, res, next) => {
-  await controller.listVersions(req, res, next);
-});
-
 // routes.post('/:formId/versions', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
 //   next(new Problem(410, { detail: 'This method is deprecated, use /forms/id/drafts to create form versions.' }));
 // });
@@ -61,11 +61,9 @@ routes.get('/:formId/versions/:formVersionId', apiAccess, hasFormPermissions([P.
 routes.get('/:formId/versions/:formVersionId/fields', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.readVersionFields(req, res, next);
 });
-
 // routes.put('/:formId/versions/:formVersionId', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
 //   next(new Problem(410, { detail: 'This method is deprecated, use /forms/id/drafts to modify form versions.' }));
 // });
-
 routes.post('/:formId/versions/:formVersionId/publish', apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_CREATE]), async (req, res, next) => {
   await controller.publishVersion(req, res, next);
 });
@@ -77,6 +75,16 @@ routes.get('/:formId/versions/:formVersionId/submissions', apiAccess, hasFormPer
 routes.post('/:formId/versions/:formVersionId/submissions', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_CREATE]), async (req, res, next) => {
   await controller.createSubmission(req, res, next);
 });
+
+routes.post(
+  '/:formId/versions/:formVersionId/multiSubmission',
+  middleware.publicRateLimiter,
+  apiAccess,
+  hasFormPermissions([P.FORM_READ, P.SUBMISSION_CREATE]),
+  async (req, res, next) => {
+    await controller.createMultiSubmission(req, res, next);
+  }
+);
 
 routes.get('/:formId/versions/:formVersionId/submissions/discover', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), (req, res, next) => {
   controller.listSubmissionFields(req, res, next);
@@ -128,6 +136,26 @@ routes.put('/:formId/apiKey', hasFormPermissions(P.FORM_API_CREATE), async (req,
 
 routes.delete('/:formId/apiKey', hasFormPermissions(P.FORM_API_DELETE), async (req, res, next) => {
   await controller.deleteApiKey(req, res, next);
+});
+
+routes.get('/formcomponents/proactivehelp/list', async (req, res, next) => {
+  await controller.listFormComponentsProactiveHelp(req, res, next);
+});
+
+routes.get('/:formId/csvexport/fields', middleware.publicRateLimiter, apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+  await controller.readFieldsForCSVExport(req, res, next);
+});
+
+routes.get('/formcomponents/proactivehelp/imageUrl/:componentId', async (req, res, next) => {
+  await controller.getFCProactiveHelpImageUrl(req, res, next);
+});
+
+routes.get('/:formId/subscriptions', hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {
+  await controller.readFormSubscriptionDetails(req, res, next);
+});
+
+routes.put('/:formId/subscriptions', hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {
+  await controller.createOrUpdateSubscriptionDetails(req, res, next);
 });
 
 module.exports = routes;

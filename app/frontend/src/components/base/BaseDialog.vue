@@ -7,10 +7,12 @@
     @keydown.esc="closeDialog"
   >
     <v-card>
-      <div class="dialog-body">
+      <div class="dialog-body" :class="{ 'dir-rtl': isRTL }">
         <div v-if="showCloseButton">
           <v-spacer />
-          <v-icon color="primary" class="float-right m-3" @click="closeDialog">close</v-icon>
+          <v-icon color="primary" class="float-right m-3" @click="closeDialog"
+            >close</v-icon
+          >
         </div>
         <v-card-title class primary-title>
           <slot name="title"></slot>
@@ -21,8 +23,8 @@
               <v-icon medium>default-icon</v-icon>
             </slot>
           </div>
-          <div class="dialog-text">
-            <slot name="text">default text</slot>
+          <div class="dialog-text" :lang="lang">
+            <slot name="text">{{ $t('trans.baseDialog.defaultText') }}</slot>
           </div>
         </v-card-text>
       </div>
@@ -30,7 +32,7 @@
         <div v-if="type === 'OK'">
           <v-btn class="mb-5" color="primary" depressed @click="closeDialog">
             <slot name="button-text">
-              <span>OK</span>
+              <span :lang="lang">{{ $t('trans.baseDialog.ok') }}</span>
             </slot>
           </v-btn>
         </div>
@@ -42,12 +44,63 @@
             @click="continueDialog"
           >
             <slot name="button-text-continue">
-              <span>Continue</span>
+              <span :lang="lang">{{ $t('trans.baseDialog.continue') }}</span>
+            </slot>
+          </v-btn>
+          <v-btn
+            :class="{ 'dir-rtl': isRTL }"
+            class="mb-5"
+            outlined
+            @click="closeDialog"
+          >
+            <slot name="button-text-cancel">
+              <span :lang="lang">{{ $t('trans.baseDialog.cancel') }}</span>
+            </slot>
+          </v-btn>
+        </div>
+        <div v-else-if="type === 'SAVEDDELETE'">
+          <v-btn
+            class="mb-5 mr-5"
+            color="primary"
+            depressed
+            :class="{ 'dir-rtl': isRTL }"
+            @click="continueDialog"
+          >
+            <slot name="button-text-continue">
+              <span :lang="lang">{{ $t('trans.baseDialog.continue') }}</span>
+            </slot>
+          </v-btn>
+          <v-btn class="mb-5" outlined @click="deleteDialog">
+            <slot name="button-text-delete">
+              <span :lang="lang">{{ $t('trans.baseDialog.cancel') }}</span>
+            </slot>
+          </v-btn>
+        </div>
+        <div v-else-if="type === 'CUSTOM'">
+          <v-btn
+            class="mb-5 mr-5"
+            color="primary"
+            depressed
+            @click="continueDialog"
+          >
+            <slot name="button-text-continue">
+              <span :lang="lang">{{ $t('trans.baseDialog.continue') }}</span>
+            </slot>
+          </v-btn>
+          <v-btn
+            class="mb-5 mr-5"
+            color="primary"
+            depressed
+            @click="customDialog"
+            v-if="enableCustomButton"
+          >
+            <slot name="button-text-custom">
+              <span :lang="lang">{{ $t('trans.baseDialog.custom') }}</span>
             </slot>
           </v-btn>
           <v-btn class="mb-5" outlined @click="closeDialog">
             <slot name="button-text-cancel">
-              <span>Cancel</span>
+              <span :lang="lang">{{ $t('trans.baseDialog.cancel') }}</span>
             </slot>
           </v-btn>
         </div>
@@ -57,6 +110,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'BaseDialog',
   methods: {
@@ -66,6 +121,15 @@ export default {
     continueDialog() {
       this.$emit('continue-dialog');
     },
+    deleteDialog() {
+      this.$emit('delete-dialog');
+    },
+    customDialog() {
+      this.$emit('custom-dialog');
+    },
+  },
+  computed: {
+    ...mapGetters('form', ['isRTL', 'lang']),
   },
   props: {
     value: {
@@ -83,6 +147,10 @@ export default {
     width: {
       default: '500',
       type: String,
+    },
+    enableCustomButton: {
+      default: false,
+      type: Boolean,
     },
   },
 };

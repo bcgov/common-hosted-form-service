@@ -1,14 +1,15 @@
 <template>
-  <v-container>
+  <v-container :class="{ 'dir-rtl': isRTL }">
     <v-data-table
       disable-pagination
       :hide-default-footer="true"
       :headers="headers"
       :items="statuses"
       :loading="loading"
-      loading-text="Loading... Please wait"
+      :loading-text="this.$t('trans.statusTable.loadingText')"
       item-key="statusId"
       class="status-table"
+      :lang="lang"
     >
       <template #[`item.createdAt`]="{ item }">
         <span>{{ item.createdAt | formatDate }}</span>
@@ -22,7 +23,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { formService } from '@/services';
 
 export default {
@@ -34,15 +35,25 @@ export default {
     },
   },
   data: () => ({
-    headers: [
-      { text: 'Status', value: 'code' },
-      { text: 'Date Status Changed', align: 'start', value: 'createdAt' },
-      { text: 'Assignee', value: 'user' },
-      { text: 'Updated By', value: 'createdBy' },
-    ],
     statuses: [],
     loading: true,
   }),
+
+  computed: {
+    headers() {
+      return [
+        { text: this.$t('trans.statusTable.status'), value: 'code' },
+        {
+          text: this.$t('trans.statusTable.dateStatusChanged'),
+          align: 'start',
+          value: 'createdAt',
+        },
+        { text: this.$t('trans.statusTable.assignee'), value: 'user' },
+        { text: this.$t('trans.statusTable.updatedBy'), value: 'createdBy' },
+      ];
+    },
+    ...mapGetters('form', ['isRTL', 'lang']),
+  },
   methods: {
     ...mapActions('notifications', ['addNotification']),
     async getData() {
@@ -54,8 +65,10 @@ export default {
         this.statuses = response.data;
       } catch (error) {
         this.addNotification({
-          message: 'An error occured while trying to fetch statuses.',
-          consoleError: `Error adding note: ${error}`,
+          message: this.$t('trans.statusTable.getSubmissionStatusErr'),
+          consoleError:
+            this.$t('trans.statusTable.getSubmissionStatusConsErr') +
+            `${error}`,
         });
       } finally {
         this.loading = false;

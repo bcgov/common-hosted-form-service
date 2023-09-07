@@ -17,9 +17,9 @@ class FileStorage extends Timestamps(Model) {
         modelClass: FormSubmission,
         join: {
           from: 'file_storage.formSubmissionId',
-          to: 'form_submission.id'
-        }
-      }
+          to: 'form_submission.id',
+        },
+      },
     };
   }
 
@@ -35,9 +35,9 @@ class FileStorage extends Timestamps(Model) {
         storage: { type: 'string' },
         path: { type: 'string', minLength: 1, maxLength: 1024 },
         formSubmissionId: { type: ['string', 'null'], pattern: Regex.UUID },
-        ...stamps
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
 }

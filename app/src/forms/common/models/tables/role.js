@@ -18,11 +18,11 @@ class Role extends Timestamps(Model) {
           from: 'role.code',
           through: {
             from: 'role_permission.role',
-            to: 'role_permission.permission'
+            to: 'role_permission.permission',
           },
-          to: 'permission.code'
-        }
-      }
+          to: 'permission.code',
+        },
+      },
     };
   }
 
@@ -47,7 +47,7 @@ class Role extends Timestamps(Model) {
       },
       orderDefault(builder) {
         builder.orderByRaw('lower("display")');
-      }
+      },
     };
   }
 
@@ -59,9 +59,9 @@ class Role extends Timestamps(Model) {
         code: { type: 'string', minLength: 1, maxLength: 255 },
         display: { type: 'string', minLength: 1, maxLength: 255 },
         active: { type: 'boolean' },
-        ...stamps
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
 }

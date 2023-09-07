@@ -4,39 +4,40 @@ module.exports = {
     browser: true,
     commonjs: true,
     es6: true,
+    es2016: true,
+    es2017: true,
+    es2018: true,
+    es2019: true,
+    es2020: true,
+    es2021: true,
     jest: true,
-    node: true
+    node: true,
   },
-  extends: ['eslint:recommended'],
+  extends: ['eslint:recommended', 'plugin:prettier/recommended'],
+  plugins: ['prettier'],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
-    _: false
+    _: false,
   },
   parserOptions: {
-    ecmaVersion: 9,
-    sourceType: 'module'
+    ecmaVersion: 12,
+    sourceType: 'module',
   },
   rules: {
     'eol-last': ['error', 'always'],
-    indent: ['error', 2, {
-      SwitchCase: 1
-    }],
+    'prettier/prettier': 'error',
     'linebreak-style': ['error', 'unix'],
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
-    quotes: ['error', 'single'],
-    semi: ['error', 'always']
+    semi: ['error', 'always'],
   },
   overrides: [
     {
-      files: [
-        '**/__tests__/*.{j,t}s?(x)',
-        '**/tests/unit/**/*.spec.{j,t}s?(x)'
-      ],
+      files: ['**/__tests__/*.{j,t}s?(x)', '**/tests/unit/**/*.spec.{j,t}s?(x)'],
       env: {
-        jest: true
-      }
-    }
-  ]
+        jest: true,
+      },
+    },
+  ],
 };

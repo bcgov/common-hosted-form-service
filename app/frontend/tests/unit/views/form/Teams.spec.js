@@ -1,8 +1,9 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
-
+import i18n from '@/internationalization';
 import Teams from '@/views/form/Teams.vue';
 
 const localVue = createLocalVue();
+
 
 describe('Teams.vue', () => {
   it('renders', () => {
@@ -11,7 +12,9 @@ describe('Teams.vue', () => {
       propsData: { f: 'f' },
       stubs: [
         'BaseSecure',
-        'TeamManagement']
+        'TeamManagement'],
+        i18n,
+      stubs: ['BaseSecure', 'TeamManagement'],
     });
 
     expect(wrapper.html()).toMatch('teammanagement');

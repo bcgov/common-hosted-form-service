@@ -6,8 +6,20 @@ const fileService = require('../file/service');
 module.exports = {
   export: async (req, res, next) => {
     try {
-      const result = await exportService.export(req.params.formId, req.query);
-      ['Content-Disposition', 'Content-Type'].forEach(h => {
+      const result = await exportService.export(req.params.formId, req.query, req.currentUser, req.headers.referer);
+      ['Content-Disposition', 'Content-Type'].forEach((h) => {
+        res.setHeader(h, result.headers[h.toLowerCase()]);
+      });
+      return res.send(result.data);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  exportWithFields: async (req, res, next) => {
+    try {
+      const result = await exportService.export(req.params.formId, req.body, req.currentUser, req.headers.referer);
+      ['Content-Disposition', 'Content-Type'].forEach((h) => {
         res.setHeader(h, result.headers[h.toLowerCase()]);
       });
       return res.send(result.data);
@@ -79,14 +91,6 @@ module.exports = {
       next(error);
     }
   },
-  listVersions: async (req, res, next) => {
-    try {
-      const response = await service.listVersions(req.params.formId, req.query);
-      res.status(200).json(response);
-    } catch (error) {
-      next(error);
-    }
-  },
   readVersion: async (req, res, next) => {
     try {
       const response = await service.readVersion(req.params.formVersionId);
@@ -98,7 +102,7 @@ module.exports = {
   readVersionFields: async (req, res, next) => {
     try {
       const response = await service.readVersionFields(req.params.formVersionId);
-      res.status(200).json(response.filter(f => f !== 'submit'));
+      res.status(200).json(response.filter((f) => f !== 'submit'));
     } catch (error) {
       next(error);
     }
@@ -113,7 +117,7 @@ module.exports = {
   },
   listSubmissions: async (req, res, next) => {
     try {
-      const response = await service.listSubmissions(req.params.formVersionId);
+      const response = await service.listSubmissions(req.params.formVersionId, req.query);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -123,10 +127,18 @@ module.exports = {
     try {
       const response = await service.createSubmission(req.params.formVersionId, req.body, req.currentUser);
       if (!req.body.draft) {
-        emailService.submissionReceived(req.params.formId, response.id, req.body, req.headers.referer).catch(() => { });
+        emailService.submissionReceived(req.params.formId, response.id, req.body, req.headers.referer).catch(() => {});
       }
       // do we want to await this? could take a while, but it could fail... maybe make an explicit api call?
-      fileService.moveSubmissionFiles(response.id, req.currentUser).catch(() => { });
+      fileService.moveSubmissionFiles(response.id, req.currentUser).catch(() => {});
+      res.status(201).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  createMultiSubmission: async (req, res, next) => {
+    try {
+      const response = await service.createMultiSubmission(req.params.formVersionId, req.body, req.currentUser);
       res.status(201).json(response);
     } catch (error) {
       next(error);
@@ -138,14 +150,14 @@ module.exports = {
       if (req.query.fields) {
         let splitFields = [];
         if (Array.isArray(req.query.fields)) {
-          splitFields = req.query.fields.flatMap(f => f.split(',').map(s => s.trim()));
+          splitFields = req.query.fields.flatMap((f) => f.split(',').map((s) => s.trim()));
         } else {
-          splitFields = req.query.fields.split(',').map(s => s.trim());
+          splitFields = req.query.fields.split(',').map((s) => s.trim());
         }
 
         // Drop invalid fields
         const validFields = await service.readVersionFields(req.params.formVersionId);
-        fields = splitFields.filter(f => validFields.includes(f));
+        fields = splitFields.filter((f) => validFields.includes(f));
       }
 
       const response = await service.listSubmissionFields(req.params.formVersionId, fields);
@@ -234,5 +246,44 @@ module.exports = {
       next(error);
     }
   },
-
+  getFCProactiveHelpImageUrl: async (req, res, next) => {
+    try {
+      const response = await service.getFCProactiveHelpImageUrl(req.params.componentId);
+      res.status(200).send(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  readFieldsForCSVExport: async (req, res, next) => {
+    try {
+      const response = await exportService.fieldsForCSVExport(req.params.formId, req.query);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  listFormComponentsProactiveHelp: async (req, res, next) => {
+    try {
+      const response = await service.listFormComponentsProactiveHelp();
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  readFormSubscriptionDetails: async (req, res, next) => {
+    try {
+      const response = await service.readFormSubscriptionDetails(req.params.formId, req.query);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  createOrUpdateSubscriptionDetails: async (req, res, next) => {
+    try {
+      const response = await service.createOrUpdateSubscriptionDetails(req.params.formId, req.body, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
 };

@@ -3,17 +3,26 @@
     class="submissions-table"
     :headers="headers"
     :items="versionList"
+    :lang="lang"
   >
     <!-- Version  -->
     <template #[`item.version`]="{ item }">
-      <span>
-        Version {{ item.version }}
+      <span :lang="lang">
+        {{
+          $t('trans.adminVersions.version', {
+            versionNo: item.version,
+          })
+        }}
       </span>
     </template>
 
     <!-- Status  -->
     <template #[`item.status`]="{ item }">
-      <label>{{ item.published ? 'Published' : 'Unpublished' }}</label>
+      <label :lang="lang">{{
+        item.published
+          ? $t('trans.adminVersions.published')
+          : $t('trans.adminVersions.unpublished')
+      }}</label>
     </template>
 
     <!-- Created date  -->
@@ -43,7 +52,9 @@
               <v-icon>get_app</v-icon>
             </v-btn>
           </template>
-          <span>Export Design</span>
+          <span :lang="lang"
+            >{{ $t('trans.adminVersions.exportDesign') }}
+          </span>
         </v-tooltip>
       </span>
     </template>
@@ -59,12 +70,28 @@ export default {
   data() {
     return {
       headers: [
-        { text: 'Versions', align: 'start', value: 'version' },
-        { text: 'Status', align: 'start', value: 'status' },
-        { text: 'Created', align: 'start', value: 'createdAt' },
-        { text: 'Last Updated', align: 'start', value: 'updatedAt' },
         {
-          text: 'Actions',
+          text: this.$t('trans.adminVersions.versions'),
+          align: 'start',
+          value: 'version',
+        },
+        {
+          text: this.$t('trans.adminVersions.status'),
+          align: 'start',
+          value: 'status',
+        },
+        {
+          text: this.$t('trans.adminVersions.created'),
+          align: 'start',
+          value: 'createdAt',
+        },
+        {
+          text: this.$t('trans.adminVersions.lastUpdated'),
+          align: 'start',
+          value: 'updatedAt',
+        },
+        {
+          text: this.$t('trans.adminVersions.actions'),
           align: 'end',
           value: 'action',
           filterable: false,
@@ -85,6 +112,7 @@ export default {
   },
   computed: {
     ...mapGetters('admin', ['form']),
+    ...mapGetters('form', ['lang']),
     versionList() {
       return this.form ? this.form.versions : [];
     },
@@ -93,7 +121,7 @@ export default {
     ...mapActions('notifications', ['addNotification']),
     ...mapActions('admin', ['restoreForm']),
 
-    // ----------------------------------------------------------------------/ Publish/unpublish actions
+    // ---------------------------------------------/ Publish/unpublish actions
     async onExportClick(id, isDraft) {
       await this.getFormSchema(id, isDraft);
       let snek = this.form.snake;
@@ -122,7 +150,7 @@ export default {
         this.formSchema = { ...this.formSchema, ...res.data.schema };
       } catch (error) {
         this.addNotification({
-          message: 'An error occurred while loading the form design.',
+          message: this.$t('trans.adminVersions.notificationMsg'),
         });
       }
     },

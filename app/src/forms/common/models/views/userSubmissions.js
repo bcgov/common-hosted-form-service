@@ -6,26 +6,35 @@ class UserSubmissions extends Model {
   }
 
   static get relationMappings() {
+    const FormSubmission = require('../tables/formSubmission');
     const FormSubmissionStatus = require('../tables/formSubmissionStatus');
     const User = require('../tables/user');
 
     return {
+      submission: {
+        relation: Model.HasOneRelation,
+        modelClass: FormSubmission,
+        join: {
+          from: 'submissions_submitters_vw.formSubmissionId',
+          to: 'form_submission.id',
+        },
+      },
       submissionStatus: {
         relation: Model.HasManyRelation,
         modelClass: FormSubmissionStatus,
         join: {
           from: 'submissions_submitters_vw.formSubmissionId',
-          to: 'form_submission_status.submissionId'
-        }
+          to: 'form_submission_status.submissionId',
+        },
       },
       user: {
         relation: Model.HasOneRelation,
         modelClass: User,
         join: {
           from: 'submissions_submitters_vw.userId',
-          to: 'user.id'
-        }
-      }
+          to: 'user.id',
+        },
+      },
     };
   }
 
@@ -51,9 +60,19 @@ class UserSubmissions extends Model {
           query.where('deleted', !value);
         }
       },
-      orderDefault(builder) {
-        builder.orderBy('createdAt', 'DESC');
-      }
+      orderDefault(builder, pagination, params) {
+        if (!pagination) {
+          builder.orderBy('createdAt', 'DESC');
+        } else {
+          let orderBy = params?.sortBy;
+          let orderDesc = params?.sortDesc;
+          if (orderDesc === 'true') {
+            builder.orderBy(orderBy, 'desc');
+          } else if (orderDesc === 'false') {
+            builder.orderBy(orderBy, 'asc');
+          }
+        }
+      },
     };
   }
 }

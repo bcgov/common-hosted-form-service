@@ -1,35 +1,40 @@
 <template>
   <div>
-    <h3 class="mb-5">Disclaimer and statement of responsibility for Form Designers:</h3>
-    <ul>
-      <li>
-        It is your responsibility to comply with Privacy laws governing
-        the collection, use and disclosure of personally identifiable
-        information.
+    <h3 class="mb-5" :lang="lang">
+      {{ $t('trans.formDisclaimer.disclaimerAndStatement') }}
+    </h3>
+    <ul :class="isRTL ? 'mr-6' : null">
+      <li :lang="lang">
+        {{ $t('trans.formDisclaimer.privacyLaw') }}
       </li>
-      <li>
-        Access to this form designer tool does not inherently grant
-        permission to collect, use or disclose any personally identifiable
-        information.
+      <li :lang="lang">
+        {{ $t('trans.formDisclaimer.disclosure') }}
       </li>
-      <li>
-        It is your responsibility to obtain consent to collect information
-        as required by law.
+      <li :lang="lang">
+        {{ $t('trans.formDisclaimer.consent') }}
       </li>
-      <li>
-        Before publishing or distributing your form you are required to
-        discuss the intention of the form with your
-        <a href="https://www2.gov.bc.ca/gov/content/governments/services-for-government/information-management-technology/privacy/resources/privacy-officers" target="_blank">
-          Ministry Privacy Officer <v-icon small color="primary">open_in_new</v-icon>
+      <li :lang="lang">
+        {{ $t('trans.formDisclaimer.formIntention') }}
+        <a
+          href="https://www2.gov.bc.ca/gov/content/governments/services-for-government/information-management-technology/privacy/resources/privacy-officers"
+          target="_blank"
+          :hreflang="lang"
+        >
+          {{ $t('trans.formDisclaimer.privacyOfficer') }}
+          <v-icon small color="primary">open_in_new</v-icon>
         </a>
-        and to complete assessments as required.
+        {{ $t('trans.formDisclaimer.assement') }}
       </li>
     </ul>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 export default {
-  name: 'FormDisclaimer'
+  name: 'FormDisclaimer',
+  computed: {
+    ...mapGetters('form', ['isRTL', 'lang']),
+  },
 };
 </script>

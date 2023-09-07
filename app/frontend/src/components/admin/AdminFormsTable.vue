@@ -1,24 +1,36 @@
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <v-row no-gutters>
       <v-col cols="12" sm="8">
         <v-checkbox
           class="pl-3"
+          :class="isRTL ? 'float-right' : 'float-left'"
           v-model="activeOnly"
-          label="Show deleted forms"
           @click="refeshForms"
-        />
+        >
+          <template #label>
+            <span :class="{ 'mr-2': isRTL }" :lang="lang">
+              {{ $t('trans.adminFormsTable.showDeletedForms') }}
+            </span>
+          </template>
+        </v-checkbox>
       </v-col>
+
       <v-col cols="12" sm="4">
         <!-- search input -->
-        <div class="submissions-search">
+        <div
+          class="submissions-search"
+          :class="isRTL ? 'float-left' : 'float-right'"
+        >
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="Search"
+            :lang="lang"
+            :label="$t('trans.adminFormsTable.search')"
             single-line
             hide-details
             class="pb-5"
+            :class="{ 'dir-rtl': isRTL, label: isRTL }"
           />
         </div>
       </v-col>
@@ -32,8 +44,9 @@
       :items="formList"
       :search="search"
       :loading="loading"
-      loading-text="Loading... Please wait"
-      no-data-text="There are no forms in your system"
+      :lang="lang"
+      :loading-text="$t('trans.adminFormsTable.loadingText')"
+      :no-data-text="$t('trans.adminFormsTable.noDataText')"
     >
       <template #[`item.createdAt`]="{ item }">
         {{ item.createdAt | formatDateLong }} - {{ item.createdBy }}
@@ -45,7 +58,9 @@
         <router-link :to="{ name: 'AdministerForm', query: { f: item.id } }">
           <v-btn color="primary" text small>
             <v-icon class="mr-1">build_circle</v-icon>
-            <span class="d-none d-sm-flex">Admin</span>
+            <span class="d-none d-sm-flex" :lang="lang">{{
+              $t('trans.adminFormsTable.admin')
+            }}</span>
           </v-btn>
         </router-link>
 
@@ -58,7 +73,9 @@
         >
           <v-btn color="primary" text small>
             <v-icon class="mr-1">note_add</v-icon>
-            <span class="d-none d-sm-flex">Launch</span>
+            <span class="d-none d-sm-flex" :lang="lang">{{
+              $t('trans.adminFormsTable.launch')
+            }}</span>
           </v-btn>
         </router-link>
       </template>
@@ -74,28 +91,44 @@ export default {
   data() {
     return {
       activeOnly: false,
-      headers: [
-        { text: 'Form Title', align: 'start', value: 'name' },
-        { text: 'Created', align: 'start', value: 'createdAt' },
-        { text: 'Deleted', align: 'start', value: 'updatedAt' },
-        {
-          text: 'Actions',
-          align: 'end',
-          value: 'actions',
-          filterable: false,
-          sortable: false,
-        },
-      ],
+
       loading: true,
       search: '',
     };
   },
   computed: {
     ...mapGetters('admin', ['formList']),
+    ...mapGetters('form', ['isRTL', 'lang']),
     calcHeaders() {
       return this.headers.filter(
         (x) => x.value !== 'updatedAt' || this.activeOnly
       );
+    },
+    headers() {
+      return [
+        {
+          text: this.$t('trans.adminFormsTable.formTitle'),
+          align: 'start',
+          value: 'name',
+        },
+        {
+          text: this.$t('trans.adminFormsTable.created'),
+          align: 'start',
+          value: 'createdAt',
+        },
+        {
+          text: this.$t('trans.adminFormsTable.deleted'),
+          align: 'start',
+          value: 'updatedAt',
+        },
+        {
+          text: this.$t('trans.adminFormsTable.actions'),
+          align: 'end',
+          value: 'actions',
+          filterable: false,
+          sortable: false,
+        },
+      ];
     },
   },
   methods: {

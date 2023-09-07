@@ -1,12 +1,14 @@
 <template>
-  <div class="forms-table">
-    <v-row class="mt-6" no-gutters>
+  <div class="forms-table" :class="{ 'dir-rtl': isRTL }">
+    <div
+      class="mt-6 d-flex flex-md-row justify-space-between flex-sm-row flex-xs-column-reverse"
+    >
       <!-- page title -->
-      <v-col cols="12" sm="6" order="2" order-sm="1">
-        <h1>My Forms</h1>
-      </v-col>
+      <div>
+        <h1 :lang="lang">{{ $t('trans.formsTable.myForms') }}</h1>
+      </div>
       <!-- buttons -->
-      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
+      <div v-if="user.idp === ID_PROVIDERS.IDIR">
         <v-tooltip bottom>
           <template #activator="{ on, attrs }">
             <router-link :to="{ name: 'FormCreate' }">
@@ -15,23 +17,25 @@
               </v-btn>
             </router-link>
           </template>
-          <span>Create a New Form</span>
+          <span :lang="lang">{{ $t('trans.formsTable.createNewForm') }} </span>
         </v-tooltip>
-      </v-col>
-    </v-row>
+      </div>
+    </div>
 
     <v-row no-gutters>
       <v-spacer />
-      <v-col cols="12" sm="4">
+      <v-col cols="12">
         <!-- search input -->
         <div class="submissions-search">
           <v-text-field
             v-model="search"
             append-icon="mdi-magnify"
-            label="Search"
+            :label="$t('trans.formsTable.search')"
             single-line
             hide-details
             class="pb-5"
+            :class="{ label: isRTL }"
+            :lang="lang"
           />
         </div>
       </v-col>
@@ -45,10 +49,12 @@
       :items="filteredFormList"
       :search="search"
       :loading="loading"
-      loading-text="Loading... Please wait"
+      :loading-text="$t('trans.formsTable.loadingText')"
+      :lang="lang"
     >
       <template #[`item.name`]="{ item }">
         <router-link
+          v-if="item.published"
           :to="{
             name: 'FormSubmit',
             query: { f: item.id },
@@ -59,12 +65,13 @@
             <template #activator="{ on, attrs }">
               <span v-bind="attrs" v-on="on">{{ item.name }}</span>
             </template>
-            <span>
-              View Form
+            <span v-if="item.published" :lang="lang">
+              {{ $t('trans.formsTable.viewForm') }}
               <v-icon>open_in_new</v-icon>
             </span>
           </v-tooltip>
         </router-link>
+        <span v-else>{{ item.name }}</span>
         <!-- link to description in dialog -->
         <v-icon
           v-if="item.description.trim()"
@@ -72,6 +79,7 @@
           small
           class="description-icon ml-2 mr-4"
           color="primary"
+          :aria-label="$t('trans.formsTable.description')"
         >
           description
         </v-icon>
@@ -82,17 +90,22 @@
           :to="{ name: 'FormManage', query: { f: item.id } }"
         >
           <v-btn color="primary" text small>
-            <v-icon class="mr-1">settings</v-icon>
-            <span class="d-none d-sm-flex">Manage</span>
+            <v-icon :class="isRTL ? 'ml-1' : 'mr-1'">settings</v-icon>
+            <span class="d-none d-sm-flex" :lang="lang">{{
+              $t('trans.formsTable.manage')
+            }}</span>
           </v-btn>
         </router-link>
         <router-link
+          data-cy="formSubmissionsLink"
           v-if="checkSubmissionView(item)"
           :to="{ name: 'FormSubmissions', query: { f: item.id } }"
         >
           <v-btn color="primary" text small>
-            <v-icon class="mr-1">list_alt</v-icon>
-            <span class="d-none d-sm-flex">Submissions</span>
+            <v-icon :class="isRTL ? 'ml-1' : 'mr-1'">list_alt</v-icon>
+            <span class="d-none d-sm-flex" :lang="lang">{{
+              $t('trans.formsTable.submissions')
+            }}</span>
           </v-btn>
         </router-link>
       </template>
@@ -101,21 +114,23 @@
     <BaseDialog
       v-model="showDescriptionDialog"
       showCloseButton
-      @close-dialog="showDescriptionDialog = false;"
+      @close-dialog="showDescriptionDialog = false"
     >
       <template #title>
-        <span class="pl-5">Description:</span>
+        <span class="pl-5" :lang="lang">{{
+          $t('trans.formsTable.Description')
+        }}</span>
       </template>
       <template #text>
         <slot name="formDescription">{{ formDescription }}</slot>
       </template>
     </BaseDialog>
-
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { IdentityProviders } from '@/utils/constants';
 import {
   checkFormManage,
   checkFormSubmit,
@@ -128,17 +143,6 @@ export default {
     return {
       // Assigning width: '1%' to dynamically assign width to the Table's Columns as described by this post on Stack Overflow:
       // https://stackoverflow.com/a/51569928
-      headers: [
-        { text: 'Form Title', align: 'start', value: 'name', width: '1%', },
-        {
-          text: 'Actions',
-          align: 'end',
-          value: 'actions',
-          filterable: false,
-          sortable: false,
-          width: '1%',
-        },
-      ],
       loading: true,
       showDescriptionDialog: false,
       formId: null,
@@ -147,7 +151,26 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['formList']),
+    ...mapGetters('form', ['formList', 'isRTL', 'lang']),
+    ...mapGetters('auth', ['user']),
+    headers() {
+      return [
+        {
+          text: this.$t('trans.formsTable.formTitle'),
+          align: 'start',
+          value: 'name',
+          width: '1%',
+        },
+        {
+          text: this.$t('trans.formsTable.action'),
+          align: 'end',
+          value: 'actions',
+          filterable: false,
+          sortable: false,
+          width: '1%',
+        },
+      ];
+    },
     filteredFormList() {
       // At this point, we're only showing forms you can manage or view submissions of here
       // This may get reconceptualized in the future to different pages or something
@@ -155,6 +178,7 @@ export default {
         (f) => checkFormManage(f) || checkSubmissionView(f)
       );
     },
+    ID_PROVIDERS: () => IdentityProviders,
   },
   methods: {
     ...mapActions('form', ['getFormsForCurrentUser']),
@@ -166,8 +190,7 @@ export default {
       this.formId = formId;
       this.formDescription = formDescription;
       this.showDescriptionDialog = true;
-    }
-
+    },
   },
   async mounted() {
     await this.getFormsForCurrentUser();

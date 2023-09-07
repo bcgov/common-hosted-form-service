@@ -1,73 +1,199 @@
 <template>
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
-    <div v-if="displayTitle">
-      <div v-if="!isFormPublic(form)">
-        <FormViewerActions
-          :draftEnabled="form.enableSubmitterDraft"
-          :formId="form.id"
-          :isDraft="submissionRecord.draft"
-          :permissions="permissions"
-          :readOnly="readOnly"
-          :submissionId="submissionId"
-          @save-draft="saveDraft"
-        />
-      </div>
-      <h1 class="my-6 text-center">{{ form.name }}</h1>
-    </div>
-    <div class="form-wrapper">
-      <v-alert
-        :value="saved || saving"
-        :class="
-          saving
-            ? NOTIFICATIONS_TYPES.INFO.class
-            : NOTIFICATIONS_TYPES.SUCCESS.class
-        "
-        :color="
-          saving
-            ? NOTIFICATIONS_TYPES.INFO.color
-            : NOTIFICATIONS_TYPES.SUCCESS.color
-        "
-        :icon="
-          saving
-            ? NOTIFICATIONS_TYPES.INFO.icon
-            : NOTIFICATIONS_TYPES.SUCCESS.icon
-        "
-        transition="scale-transition"
-      >
-        <div v-if="saving">
-          <v-progress-linear indeterminate />
-          Saving
+    <div v-if="isFormScheduleExpired">
+      <template>
+        <v-alert
+          text
+          prominent
+          type="error"
+          :class="{ 'dir-rtl': isRTL }"
+          :lang="lang"
+        >
+          {{
+            isLateSubmissionAllowed
+              ? $t('trans.formViewer.lateFormSubmissions')
+              : formScheduleExpireMessage
+          }}
+        </v-alert>
+
+        <div v-if="isLateSubmissionAllowed">
+          <v-col cols="3" md="2">
+            <v-btn
+              color="primary"
+              @click="isFormScheduleExpired = false"
+              :class="{ 'dir-rtl': isRTL }"
+            >
+              <span :lang="lang">{{
+                $t('trans.formViewer.createLateSubmission')
+              }}</span>
+            </v-btn>
+          </v-col>
         </div>
-        <div v-else>Draft Saved</div>
-      </v-alert>
-
-      <slot name="alert" v-bind:form="form" />
-
-      <BaseDialog
-        v-model="showSubmitConfirmDialog"
-        type="CONTINUE"
-        @close-dialog="showSubmitConfirmDialog = false"
-        @continue-dialog="continueSubmit"
-      >
-        <template #title>Please Confirm</template>
-        <template #text>Are you sure you wish to submit your form?</template>
-        <template #button-text-continue>
-          <span>Submit</span>
-        </template>
-      </BaseDialog>
-
-      <Form
-        :form="formSchema"
-        :key="reRenderFormIo"
-        :submission="submission"
-        @submit="onSubmit"
-        @submitDone="onSubmitDone"
-        @submitButton="onSubmitButton"
-        @customEvent="onCustomEvent"
-        :options="viewerOptions"
-      />
-      <p v-if="version" class="text-right">Version: {{ version }}</p>
+      </template>
     </div>
+    <div v-else>
+      <div v-if="displayTitle">
+        <div v-if="!isFormPublic(form)">
+          <FormViewerActions
+            :block="block"
+            :draftEnabled="form.enableSubmitterDraft"
+            :formId="form.id"
+            :isDraft="submissionRecord.draft"
+            :permissions="permissions"
+            :readOnly="readOnly"
+            :submission="submission"
+            :submissionId="submissionId"
+            :allowSubmitterToUploadFile="allowSubmitterToUploadFile"
+            :bulkFile="bulkFile"
+            :copyExistingSubmission="form.enableCopyExistingSubmission"
+            @showdoYouWantToSaveTheDraftModal="showdoYouWantToSaveTheDraftModal"
+            @save-draft="saveDraft"
+            @switchView="switchView"
+          />
+        </div>
+        <h1 v-if="!bulkFile" class="my-6 text-center">{{ form.name }}</h1>
+      </div>
+      <div class="form-wrapper">
+        <v-alert
+          class="mt-2 mb-2"
+          :value="saved || saving"
+          :class="[
+            saving
+              ? NOTIFICATIONS_TYPES.INFO.class
+              : NOTIFICATIONS_TYPES.SUCCESS.class,
+            { 'dir-rtl': isRTL },
+          ]"
+          :color="
+            saving
+              ? NOTIFICATIONS_TYPES.INFO.color
+              : NOTIFICATIONS_TYPES.SUCCESS.color
+          "
+          :icon="
+            saving
+              ? NOTIFICATIONS_TYPES.INFO.icon
+              : NOTIFICATIONS_TYPES.SUCCESS.icon
+          "
+          transition="scale-transition"
+        >
+          <div v-if="saving" :class="{ 'mr-2': isRTL }">
+            <v-progress-linear indeterminate :lang="lang" />
+            {{ $t('trans.formViewer.saving') }}
+          </div>
+          <div v-else :class="{ 'mr-2': isRTL }" :lang="lang">
+            {{ $t('trans.formViewer.draftSaved') }}
+          </div>
+        </v-alert>
+
+        <slot name="alert" v-bind:form="form" :class="{ 'dir-rtl': isRTL }" />
+
+        <BaseDialog
+          :class="{ 'dir-rtl': isRTL }"
+          v-model="showSubmitConfirmDialog"
+          type="CONTINUE"
+          :enableCustomButton="canSaveDraft"
+          @close-dialog="showSubmitConfirmDialog = false"
+          @continue-dialog="continueSubmit"
+        >
+          <template #title
+            ><span :lang="lang">{{
+              $t('trans.formViewer.pleaseConfirm')
+            }}</span></template
+          >
+          <template #text
+            ><span :lang="lang">{{
+              $t('trans.formViewer.submitFormWarningMsg')
+            }}</span></template
+          >
+          <template #button-text-continue>
+            <span :lang="lang">{{ $t('trans.formViewer.submit') }} </span>
+          </template>
+        </BaseDialog>
+        <v-alert
+          v-if="isLoading && !bulkFile && submissionId == undefined"
+          class="mt-2 mb-2"
+          :value="isLoading"
+          :class="[NOTIFICATIONS_TYPES.INFO.class]"
+          :color="NOTIFICATIONS_TYPES.INFO.color"
+          :icon="NOTIFICATIONS_TYPES.INFO.icon"
+          transition="scale-transition"
+        >
+          <div color="info" icon="$info">
+            <v-progress-linear
+              :indeterminate="true"
+              color="blue-grey lighten-4"
+              height="5"
+            ></v-progress-linear>
+            <span :class="{ 'mr-2': isRTL }" :lang="lang">
+              {{ $t('trans.formViewer.formLoading') }}
+            </span>
+          </div>
+        </v-alert>
+
+        <FormViewerMultiUpload
+          v-if="!isLoading && allowSubmitterToUploadFile && bulkFile"
+          :response="sbdMessage"
+          :formElement="formElement"
+          :form="form"
+          :formSchema="formSchema"
+          :json_csv="json_csv"
+          @save-bulk-data="saveBulkData"
+          @reset-message="resetMessage"
+          @set-error="setError"
+          :formFields="formFields"
+          @toggleBlock="toggleBlock"
+        />
+        <Form
+          class="mt-4"
+          v-if="!bulkFile"
+          ref="chefForm"
+          :form="formSchema"
+          :key="reRenderFormIo"
+          :submission="submission"
+          :options="viewerOptions"
+          @submit="onSubmit"
+          @submitDone="onSubmitDone"
+          @submitButton="onSubmitButton"
+          @customEvent="onCustomEvent"
+          @change="formChange"
+          @render="onFormRender"
+          :language="lang"
+        />
+        <p
+          v-if="version"
+          :class="{ 'text-left': isRTL }"
+          class="mt-9"
+          :lang="lang"
+        >
+          {{ $t('trans.formViewer.version', { version: version }) }}
+        </p>
+      </div>
+    </div>
+    <BaseDialog
+      :class="{ 'dir-rtl': isRTL }"
+      v-model="doYouWantToSaveTheDraft"
+      type="SAVEDDELETE"
+      :enableCustomButton="false"
+      @close-dialog="closeBulkYesOrNo"
+      @delete-dialog="no"
+      @continue-dialog="yes"
+    >
+      <template #title
+        ><span :lang="lang">
+          {{ $t('trans.formViewer.pleaseConfirm') }}</span
+        ></template
+      >
+      <template #text
+        ><span :lang="lang">
+          {{ $t('trans.formViewer.wantToSaveDraft') }}</span
+        ></template
+      >
+      <template #button-text-continue>
+        <span :lang="lang"> {{ $t('trans.formViewer.yes') }}</span>
+      </template>
+      <template #button-text-delete>
+        <span :lang="lang"> {{ $t('trans.formViewer.no') }}</span>
+      </template>
+    </BaseDialog>
   </v-skeleton-loader>
 </template>
 
@@ -75,21 +201,24 @@
 import Vue from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 import { Form } from 'vue-formio';
-
 import templateExtensions from '@/plugins/templateExtensions';
 import { formService, rbacService } from '@/services';
 import FormViewerActions from '@/components/designer/FormViewerActions.vue';
+import FormViewerMultiUpload from '@/components/designer/FormViewerMultiUpload.vue';
 import { isFormPublic } from '@/utils/permissionUtils';
 import { attachAttributesToLinks } from '@/utils/transformUtils';
-import { NotificationTypes } from '@/utils/constants';
+import { FormPermissions, NotificationTypes } from '@/utils/constants';
+import _ from 'lodash';
 
 export default {
   name: 'FormViewer',
   components: {
     Form,
     FormViewerActions,
+    FormViewerMultiUpload,
   },
   props: {
+    bulkState: String,
     displayTitle: {
       type: Boolean,
       default: false,
@@ -111,6 +240,10 @@ export default {
     },
     submissionId: String,
     versionId: String,
+    isDuplicate: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -125,15 +258,44 @@ export default {
       saving: false,
       showSubmitConfirmDialog: false,
       submission: {
-        data: {},
+        data: { lateEntry: false },
       },
       submissionRecord: {},
       version: 0,
       versionIdToSubmitTo: this.versionId,
+      allowSubmitterToUploadFile: false,
+      formFields: [],
+      json_csv: {
+        data: [],
+        file_name: String,
+      },
+      bulkFile: false,
+      formElement: undefined,
+      // sbdMessage is submitBulkDraftMessage, it is use share information between this component and FormViewerMultiUpload component
+      sbdMessage: {
+        message: String,
+        error: Boolean,
+        upload_state: Number,
+        response: [],
+        file_name: String,
+        typeError: Number,
+      },
+      block: false,
+      doYouWantToSaveTheDraft: false,
+      isFormScheduleExpired: false,
+      isLateSubmissionAllowed: false,
+      saveDraftState: 0,
+      formDataEntered: false,
+      isLoading: true,
+      showModal: false,
     };
   },
   computed: {
+    formScheduleExpireMessage() {
+      return this.$t('trans.formViewer.formScheduleExpireMessage');
+    },
     ...mapGetters('auth', ['authenticated', 'token', 'tokenParsed', 'user']),
+    ...mapGetters('form', ['lang', 'isRTL', 'lang']),
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
     },
@@ -152,9 +314,7 @@ export default {
         componentOptions: {
           simplefile: {
             config: Vue.prototype.$config,
-            headers: {
-              Authorization: `Bearer ${this.token}`,
-            },
+            chefsToken: this.getCurrentAuthHeader,
           },
         },
         evalContext: {
@@ -163,20 +323,122 @@ export default {
         },
       };
     },
+    canSaveDraft() {
+      return (
+        !this.readOnly &&
+        this.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
+      );
+    },
+  },
+  watch: {
+    lang() {
+      this.reRenderFormIo += 1;
+    },
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
     isFormPublic: isFormPublic,
+    // setBulkFile
+    setBulkFile(state) {
+      this.bulkFile = state;
+    },
     // Get the data for a form submission
+    getCurrentAuthHeader() {
+      return `Bearer ${this.token}`;
+    },
     async getFormData() {
+      function iterate(obj, stack, fields, propNeeded) {
+        //Get property path from nested object
+        for (let property in obj) {
+          const innerObject = obj[property];
+
+          if (propNeeded === property) {
+            fields = fields + stack + '.' + property;
+            return fields.replace(/^\./, '');
+          } else if (Array.isArray(innerObject)) {
+            // When the form contains a Data Grid there will be an array that
+            // needs to be checked, and an array of properties to be unset.
+            const fieldsArray = [];
+            for (let i = 0; i < innerObject.length; i++) {
+              const next = iterate(
+                innerObject[i],
+                stack + '.' + property + '[' + i + ']',
+                fields,
+                propNeeded
+              );
+
+              if (next) {
+                fieldsArray.push(next);
+              }
+            }
+
+            if (fieldsArray.length > 0) {
+              return fieldsArray;
+            }
+          } else if (typeof innerObject === 'object') {
+            return iterate(
+              innerObject,
+              stack + '.' + property,
+              fields,
+              propNeeded
+            );
+          }
+        }
+      }
+
+      function deleteFieldData(fieldcomponent, submission) {
+        if (Object.prototype.hasOwnProperty.call(fieldcomponent, 'columns')) {
+          // It's a layout component that has columns.
+          fieldcomponent.columns.map((subComponent) => {
+            deleteFieldData(subComponent, submission);
+          });
+        } else if (
+          Object.prototype.hasOwnProperty.call(fieldcomponent, 'components')
+        ) {
+          // It's a layout component that has subcomponents, such as a panel.
+          fieldcomponent.components.map((subComponent) => {
+            deleteFieldData(subComponent, submission);
+          });
+        } else if (fieldcomponent?.validate?.isUseForCopy === false) {
+          const fieldPath = iterate(submission, '', '', fieldcomponent.key);
+          if (Array.isArray(fieldPath)) {
+            for (let path of fieldPath) {
+              _.unset(submission, path);
+            }
+          } else if (fieldPath) {
+            _.unset(submission, fieldPath);
+          }
+        }
+      }
+
       try {
         this.loadingSubmission = true;
         const response = await formService.getSubmission(this.submissionId);
         this.submissionRecord = Object.assign({}, response.data.submission);
         this.submission = this.submissionRecord.submission;
+        this.showModal =
+          this.submission.data.submit ||
+          this.submission.data.state == 'submitted' ||
+          !this.submissionRecord.draft ||
+          this.readOnly
+            ? false
+            : true;
         this.form = response.data.form;
-        this.formSchema = response.data.version.schema;
-        this.version = response.data.version.version;
+        if (!this.isDuplicate) {
+          //As we know this is a Submission from existing one so we will wait for the latest version to be set on the getFormSchema
+          this.formSchema = response.data.version.schema;
+          this.version = response.data.version.version;
+        } else {
+          /** Let's remove all the values of such components that are not enabled for Copy existing submission feature */
+          if (
+            response.data?.version?.schema?.components &&
+            response.data?.version?.schema?.components.length
+          ) {
+            response.data.version.schema.components.map((component) => {
+              deleteFieldData(component, this.submission); //Delete all the fields data that are not enabled for duplication
+            });
+          }
+        }
         // Get permissions
         if (!this.staffEditMode && !isFormPublic(this.form)) {
           const permRes = await rbacService.getUserSubmissions({
@@ -186,8 +448,11 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          message: 'An error occurred fetching the submission for this form',
-          consoleError: `Error loading form submission data ${this.submissionId}: ${error}`,
+          message: this.$t('trans.formViewer.getUsersSubmissionsErrMsg'),
+          consoleError: this.$t(
+            'trans.formViewer.getUsersSubmissionsConsoleErrMsg',
+            { submissionId: this.submissionId, error: error }
+          ),
         });
       } finally {
         this.loadingSubmission = false;
@@ -203,7 +468,9 @@ export default {
           response = await formService.readVersion(this.formId, this.versionId);
           if (!response.data || !response.data.schema) {
             throw new Error(
-              `No schema in response. VersionId: ${this.versionId}`
+              this.$t('trans.formViewer.readVersionErrMsg', {
+                versionId: this.versionId,
+              })
             );
           }
           this.form = response.data;
@@ -212,7 +479,11 @@ export default {
           // If getting for a specific draft version of the form for preview
           response = await formService.readDraft(this.formId, this.draftId);
           if (!response.data || !response.data.schema) {
-            throw new Error(`No schema in response. DraftId: ${this.draftId}`);
+            throw new Error(
+              this.$t('trans.formViewer.readDraftErrMsg', {
+                draftId: this.draftId,
+              })
+            );
           }
           this.form = response.data;
           this.formSchema = response.data.schema;
@@ -224,28 +495,421 @@ export default {
             !response.data.versions ||
             !response.data.versions[0]
           ) {
-            throw new Error(
-              `No published version found in response. FormID: ${this.formId}`
-            );
+            this.$router.push({
+              name: 'Alert',
+              params: {
+                message: this.$t('trans.formViewer.alertRouteMsg'),
+                type: 'info',
+              },
+            });
+            return;
           }
+
           this.form = response.data;
           this.version = response.data.versions[0].version;
           this.versionIdToSubmitTo = response.data.versions[0].id;
           this.formSchema = response.data.versions[0].schema;
+          if (response.data.schedule && response.data.schedule.expire) {
+            let formScheduleStatus = response.data.schedule;
+            this.isFormScheduleExpired = formScheduleStatus.expire;
+            this.isLateSubmissionAllowed =
+              formScheduleStatus.allowLateSubmissions;
+            this.formScheduleExpireMessage = formScheduleStatus.message;
+          }
         }
+        this.listenFormChangeEvent(response);
       } catch (error) {
         if (this.authenticated) {
+          this.isFormScheduleExpired = true;
+          this.isLateSubmissionAllowed = false;
+          this.formScheduleExpireMessage = error.message;
           this.addNotification({
-            message: 'An error occurred fetching this form',
-            consoleError: `Error loading form schema ${this.versionId}: ${error}`,
+            message: this.$t('trans.formViewer.fecthingFormErrMsg'),
+            consoleError: this.$t(
+              'trans.formViewer.fecthingFormConsoleErrMsg',
+              { versionId: this.versionId, error: error }
+            ),
           });
         }
       }
     },
+    async listenFormChangeEvent(response) {
+      this.allowSubmitterToUploadFile =
+        response.data.allowSubmitterToUploadFile;
+      if (this.allowSubmitterToUploadFile && !this.draftId) this.jsonManager();
+    },
+    toggleBlock(e) {
+      this.block = e;
+    },
+    formChange(e) {
+      if (e.changed != undefined && !e.changed.flags.fromSubmission) {
+        this.formDataEntered = true;
+      }
+    },
+    jsonManager() {
+      this.formElement = this.$refs.chefForm.formio;
+      this.json_csv.data = [this.formElement.data, this.formElement.data];
+      this.json_csv.file_name = 'template_' + this.form.name + '_' + Date.now();
+    },
+    resetMessage() {
+      this.sbdMessage.message = undefined;
+      this.sbdMessage.error = false;
+      this.sbdMessage.upload_state = 0;
+      this.sbdMessage.response = [];
+      this.sbdMessage.file_name = undefined;
+      this.sbdMessage.typeError = -1;
+      this.block = false;
+    },
+    async saveBulkData(submissions) {
+      const payload = {
+        draft: true,
+        submission: Object.freeze({ data: submissions }),
+      };
+      this.block = true;
+      this.sendMultiSubmissionData(payload);
+    },
+    async sendMultiSubmissionData(body) {
+      try {
+        this.saving = true;
+        let response = await formService.createMultiSubmission(
+          this.formId,
+          this.versionIdToSubmitTo,
+          body
+        );
+        if ([200, 201].includes(response.status)) {
+          // all is good, flag no errors and carry on...
+          // store our submission result...
+          this.sbdMessage.message = this.$t(
+            'trans.formViewer.multiDraftUploadSuccess'
+          );
+          this.sbdMessage.error = false;
+          this.sbdMessage.upload_state = 10;
+          this.sbdMessage.response = [];
+          this.block = false;
+          this.saving = false;
+          this.addNotification({
+            message: this.sbdMessage.message,
+            ...NotificationTypes.SUCCESS,
+          });
+          this.leaveThisPage();
+        } else {
+          this.sbdMessage.message = this.$t(
+            'trans.formViewer.failedResSubmissn',
+            { status: response.status }
+          );
+          this.sbdMessage.error = true;
+          this.sbdMessage.upload_state = 10;
+          this.block = false;
+          this.sbdMessage.response = [
+            { error_message: this.$t('trans.formViewer.errSubmittingForm') },
+          ];
+          this.sbdMessage.file_name =
+            'error_report_' + this.form.name + '_' + Date.now();
+          this.saving = false;
+          this.$t('trans.formViewer.errSubmittingForm');
+          throw new Error(
+            this.$t('trans.formViewer.failedResSubmissn', {
+              status: response.status,
+            })
+          );
+        }
+      } catch (error) {
+        this.saving = false;
+        this.block = false;
+        this.setFinalError(error);
+        this.addNotification({
+          message: this.sbdMessage.message,
+          consoleError: this.$t('trans.formViewer.errorSavingFile', {
+            fileName: this.json_csv.file_name,
+            error: error,
+          }),
+        });
+      }
+    },
+    async setFinalError(error) {
+      try {
+        if (error.response.data != undefined) {
+          this.sbdMessage.message =
+            error.response.data.title == undefined
+              ? this.$t('trans.formViewer.errSubmittingForm')
+              : error.response.data.title;
+          this.sbdMessage.error = true;
+          this.sbdMessage.upload_state = 10;
+          this.sbdMessage.response =
+            error.response.data.reports == undefined
+              ? [
+                  {
+                    error_message: this.$t(
+                      'trans.formViewer.errSubmittingForm'
+                    ),
+                  },
+                ]
+              : await this.formatResponse(error.response.data.reports);
+          this.sbdMessage.file_name =
+            'error_report_' + this.form.name + '_' + Date.now();
+        } else {
+          this.sbdMessage.message = this.$t(
+            'trans.formViewer.errSubmittingForm'
+          );
+          this.sbdMessage.error = true;
+          this.sbdMessage.upload_state = 10;
+          this.sbdMessage.response = [
+            { error_message: this.$t('trans.formViewer.errSubmittingForm') },
+          ];
+          this.sbdMessage.file_name =
+            'error_report_' + this.form.name + '_' + Date.now();
+        }
+      } catch (error_2) {
+        this.sbdMessage.message = this.$t('trans.formViewer.errSubmittingForm');
+        this.sbdMessage.error = true;
+        this.sbdMessage.upload_state = 10;
+        this.sbdMessage.response = [
+          { error_message: this.$t('trans.formViewer.errSubmittingForm') },
+        ];
+        this.sbdMessage.file_name =
+          'error_report_' + this.form.name + '_' + Date.now();
+      }
+    },
+    buildValidationFromComponent(obj) {
+      if (obj?.component?.validate) {
+        let validatorIdentity = '';
+        Object.keys(obj.component.validate).forEach((validity) => {
+          switch (validity) {
+            case 'maxSelectedCount':
+              if (obj.component.validate.maxSelectedCount) {
+                validatorIdentity +=
+                  '|maxSelectedCount:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'minSelectedCount':
+              if (obj.component.validate.minSelectedCount) {
+                validatorIdentity +=
+                  '|minSelectedCount:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'multiple':
+              if (obj.component.validate.multiple) {
+                validatorIdentity +=
+                  '|multiple:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'onlyAvailableItems':
+              if (obj.component.validate.onlyAvailableItems) {
+                validatorIdentity +=
+                  '|onlyAvailableItems:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'required':
+              if (obj.component.validate.required) {
+                validatorIdentity +=
+                  '|required:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'strictDateValidation':
+              if (obj.component.validate.strictDateValidation) {
+                validatorIdentity +=
+                  '|strictDateValidation:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'unique':
+              if (obj.component.validate.unique) {
+                validatorIdentity +=
+                  '|unique:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'custom':
+              if (obj.component.validate.custom.length) {
+                validatorIdentity +=
+                  '|custom:' +
+                  obj.component.validate[validity].trim().replaceAll(',', '‚');
+              }
+              break;
+
+            case 'customMessage':
+              if (obj.component.validate.customMessage) {
+                validatorIdentity +=
+                  '|customMessage:' +
+                  obj.component.validate[validity].trim().replaceAll(',', '‚');
+              }
+              break;
+
+            case 'customPrivate':
+              if (obj.component.validate.customPrivate) {
+                validatorIdentity +=
+                  '|customPrivate:' + obj.component.validate[validity].trim();
+              }
+              break;
+
+            case 'json':
+              if (obj.component.validate.json) {
+                validatorIdentity +=
+                  '|json:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'pattern':
+              if (obj.component.validate.pattern) {
+                validatorIdentity +=
+                  '|pattern:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'maxWords':
+              if (obj.component.validate.maxWords) {
+                validatorIdentity +=
+                  '|maxWords:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'minWords':
+              if (obj.component.validate.minWords) {
+                validatorIdentity +=
+                  '|minWords:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'maxLength':
+              if (obj.component.validate.maxLength) {
+                validatorIdentity +=
+                  '|maxLength:' + obj.component.validate[validity];
+              }
+              break;
+
+            case 'minLength':
+              if (obj.component.validate.minLength) {
+                validatorIdentity +=
+                  '|minLength:' + obj.component.validate[validity];
+              }
+              break;
+
+            default:
+              validatorIdentity +=
+                '|' + validity + ':' + obj.component.validate[validity];
+              break;
+          }
+        });
+        return validatorIdentity.replace(/^\|/, '');
+      } else if (obj?.messages[0]?.context?.validator) {
+        return obj.messages[0].context.validator;
+      } else {
+        return 'Unknown';
+      }
+    },
+
+    async frontendFormatResponse(response) {
+      let newResponse = [];
+
+      for (const item of response) {
+        if (item != null && item != undefined) {
+          for (const obj of item.errors) {
+            let error = {};
+
+            if (obj.component != undefined) {
+              error = {
+                submission: item.submission,
+                key: obj.component.key,
+                label: obj.component.label,
+                validator: this.buildValidationFromComponent(obj),
+                error_message: obj.message,
+              };
+            } else {
+              error = {
+                submission: item.submission,
+                key: null,
+                label: null,
+                validator: null,
+                error_message: obj.message,
+              };
+            }
+
+            newResponse.push(error);
+          }
+        }
+      }
+
+      return newResponse;
+    },
+
+    async formatResponse(response) {
+      let newResponse = [];
+      await response.forEach((item, index) => {
+        if (item != null && item != undefined) {
+          item.details.forEach((obj) => {
+            let error = {};
+            if (obj.context != undefined) {
+              error = Object({
+                ' submission': index,
+                ' key': obj.context.key,
+                ' label': obj.context.label,
+                ' validator': obj.context.validator,
+                error_message: obj.message,
+              });
+            } else {
+              error = Object({
+                ' submission': index,
+                ' key': null,
+                ' label': null,
+                ' validator': null,
+                error_message: obj.message,
+              });
+            }
+            newResponse.push(error);
+          });
+        }
+      });
+      return newResponse;
+    },
+    async setError(error) {
+      this.sbdMessage = error;
+
+      try {
+        if (error.response.data != undefined) {
+          this.sbdMessage.message =
+            error.response.data.title == undefined
+              ? 'An error occurred submitting this form'
+              : error.response.data.title;
+          this.sbdMessage.error = true;
+          this.sbdMessage.upload_state = 10;
+          this.sbdMessage.response =
+            error.response.data.reports == undefined
+              ? [{ error_message: 'An error occurred submitting this form' }]
+              : await this.frontendFormatResponse(error.response.data.reports);
+          this.sbdMessage.file_name =
+            'error_report_' + this.form.name + '_' + Date.now();
+        } else {
+          this.sbdMessage.message = 'An error occurred submitting this form';
+          this.sbdMessage.error = true;
+          this.sbdMessage.upload_state = 10;
+          this.sbdMessage.response = [
+            { error_message: 'An error occurred submitting this form' },
+          ];
+          this.sbdMessage.file_name =
+            'error_report_' + this.form.name + '_' + Date.now();
+        }
+      } catch (error_2) {
+        this.sbdMessage.message = 'An error occurred submitting this form';
+        this.sbdMessage.error = true;
+        this.sbdMessage.upload_state = 10;
+        this.sbdMessage.response = [
+          { error_message: 'An error occurred submitting this form' },
+        ];
+        this.sbdMessage.file_name =
+          'error_report_' + this.form.name + '_' + Date.now();
+      }
+    },
+    // Custom Event triggered from buttons with Action type "Event"
     async saveDraft() {
       try {
         this.saving = true;
         const response = await this.sendSubmission(true, this.submission);
+        this.formDataEntered = false;
         if (this.submissionId) {
           // Editing an existing draft
           // Update this route with saved flag
@@ -267,21 +931,31 @@ export default {
             },
           });
         }
+        this.showSubmitConfirmDialog = false;
       } catch (error) {
         this.addNotification({
-          message: 'An error occurred while saving a draft',
-          consoleError: `Error saving draft. SubmissionId: ${this.submissionId}. Error: ${error}`,
+          message: this.$t('trans.formViewer.savingDraftErrMsg'),
+          consoleError: this.$t('trans.formViewer.fecthingFormConsoleErrMsg', {
+            submissionId: this.submissionId,
+            error: error,
+          }),
         });
       }
     },
     async sendSubmission(isDraft, submission) {
+      submission.data.lateEntry =
+        this.form?.schedule?.expire !== undefined &&
+        this.form.schedule.expire === true
+          ? this.form.schedule.allowLateSubmissions
+          : false;
       const body = {
         draft: isDraft,
         submission: submission,
       };
 
       let response;
-      if (this.submissionId) {
+      //let's check if this is a submission from existing one, If isDuplicate then create new submission if now isDuplicate then update the submission
+      if (this.submissionId && !this.isDuplicate) {
         // Updating an existing submission
         response = await formService.updateSubmission(this.submissionId, body);
       } else {
@@ -293,6 +967,9 @@ export default {
         );
       }
       return response;
+    },
+    onFormRender() {
+      if (this.isLoading) this.isLoading = false;
     },
 
     // -----------------------------------------------------------------------------------------
@@ -306,7 +983,7 @@ export default {
     // else onSubmitError
     onSubmitButton(event) {
       if (this.preview) {
-        alert('Submission disabled during form preview');
+        alert(this.$t('trans.formViewer.submissionsPreviewAlert'));
         return;
       }
       // this is our first event in the submission chain.
@@ -360,7 +1037,7 @@ export default {
     // eslint-disable-next-line no-unused-vars
     async onSubmit(submission) {
       if (this.preview) {
-        alert('Submission disabled during form preview');
+        alert(this.$t('trans.formViewer.submissionsPreviewAlert'));
         return;
       }
 
@@ -373,7 +1050,9 @@ export default {
       if (errors) {
         this.addNotification({
           message: errors,
-          consoleError: `Error submiting the form: ${errors}`,
+          consoleError: this.$t('trans.formViewer.submissionsSubmitErrMsg', {
+            errors: errors,
+          }),
         });
       } else {
         this.currentForm.events.emit('formio.submitDone');
@@ -394,16 +1073,22 @@ export default {
           // store our submission result...
           this.submissionRecord = Object.assign(
             {},
-            this.submissionId ? response.data.submission : response.data
+            this.submissionId && this.isDuplicate //Check if this submission is creating with the existing one
+              ? response.data
+              : this.submissionId && !this.isDuplicate
+              ? response.data.submission
+              : response.data
           );
-          // console.info(`doSubmit:submissionRecord = ${JSON.stringify(this.submissionRecord)}`) ; // eslint-disable-line no-console
         } else {
-          // console.error(response); // eslint-disable-line no-console
-          throw new Error(`Failed response from submission endpoint. Response code: ${response.status}`);
+          throw new Error(
+            this.$t('trans.formViewer.sendSubmissionErrMsg', {
+              status: response.status,
+            })
+          );
         }
       } catch (error) {
         console.error(error); // eslint-disable-line no-console
-        errMsg = 'An error occurred submitting this form';
+        errMsg = this.$t('trans.formViewer.errMsg');
       }
       return errMsg;
     },
@@ -426,29 +1111,119 @@ export default {
         });
       }
     },
-    // Custom Event triggered from buttons with Action type "Event"
+
     onCustomEvent(event) {
       alert(
-        `Custom button events not supported yet. Event Type: ${event.type}`
+        this.$t('trans.formViewer.customEventAlert', { event: event.type })
       );
     },
+    switchView() {
+      if (!this.bulkFile) {
+        this.showdoYouWantToSaveTheDraftModalForSwitch();
+        return;
+      }
+      this.bulkFile = !this.bulkFile;
+    },
+    showdoYouWantToSaveTheDraftModalForSwitch() {
+      this.saveDraftState = 1;
+      if (this.formDataEntered && this.showModal) {
+        this.doYouWantToSaveTheDraft = true;
+      } else {
+        this.leaveThisPage();
+      }
+    },
+    showdoYouWantToSaveTheDraftModal() {
+      if (!this.bulkFile) {
+        this.saveDraftState = 0;
+        if (
+          (this.submissionId == undefined || this.formDataEntered) &&
+          this.showModal
+        )
+          this.doYouWantToSaveTheDraft = true;
+        else this.leaveThisPage();
+      } else {
+        this.leaveThisPage();
+      }
+    },
+    goTo(path, params) {
+      this.$router.push({
+        name: path,
+        query: params,
+      });
+    },
+    leaveThisPage() {
+      if (this.saveDraftState == 0 || this.bulkFile) {
+        this.goTo('UserSubmissions', { f: this.form.id });
+      } else {
+        this.bulkFile = !this.bulkFile;
+      }
+    },
+    yes() {
+      this.saveDraftFromModal(true);
+    },
+    no() {
+      this.saveDraftFromModal(false);
+    },
+    saveDraftFromModal(event) {
+      this.doYouWantToSaveTheDraft = false;
+      if (event) {
+        this.saveDraftFromModalNow();
+      } else {
+        this.leaveThisPage();
+      }
+    },
+    // Custom Event triggered from buttons with Action type "Event"
+    async saveDraftFromModalNow() {
+      try {
+        this.saving = true;
+        await this.sendSubmission(true, this.submission);
+        this.saving = false;
+        // Creating a new submission in draft state
+        // Go to the user form draft page
+        this.leaveThisPage();
+        this.showSubmitConfirmDialog = false;
+      } catch (error) {
+        this.addNotification({
+          message: this.$t('trans.formViewer.submittingDraftErrMsg'),
+          consoleError: this.$t('trans.formViewer.submittingDraftConsErrMsg', {
+            submissionId: this.submissionId,
+            error: error,
+          }),
+        });
+      }
+    },
+    closeBulkYesOrNo() {
+      this.doYouWantToSaveTheDraft = false;
+    },
+    beforeWindowUnload(e) {
+      if (!this.preview && !this.readOnly) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    },
   },
-  created() {
-    if (this.submissionId) {
-      this.getFormData();
+  async created() {
+    if (this.submissionId && this.isDuplicate) {
+      // Run when make new submission from existing one called. Get the
+      // published version of form, and then get the submission data.
+      await this.getFormSchema();
+      await this.getFormData();
+    } else if (this.submissionId && !this.isDuplicate) {
+      await this.getFormData();
     } else {
-      this.getFormSchema();
+      this.showModal = true;
+      await this.getFormSchema();
     }
-    // If they're filling in a form (ie, not loading existing data into the readonly one), enable the typical "leave site" native browser warning
-    if (!this.preview && !this.readOnly) {
-      window.onbeforeunload = () => true;
-    }
+    window.addEventListener('beforeunload', this.beforeWindowUnload);
   },
   beforeUpdate() {
     // This needs to be ran whenever we have a formSchema change
     if (this.forceNewTabLinks) {
       attachAttributesToLinks(this.formSchema.components);
     }
+  },
+  beforeDestroy() {
+    window.removeEventListener('beforeunload', this.beforeWindowUnload);
   },
 };
 </script>

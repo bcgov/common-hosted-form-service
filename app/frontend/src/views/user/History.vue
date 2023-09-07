@@ -1,11 +1,18 @@
 <template>
   <BaseSecure>
-    <h1 class="my-6 text-center">Your Submission History (TBD)</h1>
+    <h1 class="my-6 text-center" :lang="lang">
+      {{ $t('trans.history.submissnHistory') }}
+    </h1>
   </BaseSecure>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
-  name: 'UserHistory'
+  name: 'UserHistory',
+  computed: {
+    ...mapGetters('form', ['lang']),
+  },
 };
 </script>

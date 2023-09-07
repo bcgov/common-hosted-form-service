@@ -26,7 +26,6 @@ userAccess.currentUser = jest.fn((req, res, next) => {
 //
 const service = require('../../../../src/forms/user/service');
 
-
 //
 // mocks are in place, create the router
 //
@@ -41,7 +40,6 @@ afterEach(() => {
 });
 
 describe(`GET ${basePath}`, () => {
-
   it('should return 200', async () => {
     // mock a success return value...
     service.list = jest.fn().mockReturnValue([]);
@@ -54,7 +52,9 @@ describe(`GET ${basePath}`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    service.list = jest.fn(() => { throw new Problem(401); });
+    service.list = jest.fn(() => {
+      throw new Problem(401);
+    });
 
     const response = await request(app).get(`${basePath}`);
 
@@ -64,21 +64,21 @@ describe(`GET ${basePath}`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error...
-    service.list = jest.fn(() => { throw new Error(); });
+    service.list = jest.fn(() => {
+      throw new Error();
+    });
 
     const response = await request(app).get(`${basePath}`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
-
 });
 
 describe(`GET ${basePath}/userId`, () => {
-
   it('should return 200', async () => {
     // mock a success return value...
-    service.read = jest.fn().mockReturnValue([]);
+    service.readSafe = jest.fn().mockReturnValue([]);
 
     const response = await request(app).get(`${basePath}/userId`);
 
@@ -88,7 +88,9 @@ describe(`GET ${basePath}/userId`, () => {
 
   it('should handle 401', async () => {
     // mock an authentication/permission issue...
-    service.read = jest.fn(() => { throw new Problem(401); });
+    service.readSafe = jest.fn(() => {
+      throw new Problem(401);
+    });
 
     const response = await request(app).get(`${basePath}/userId`);
 
@@ -98,12 +100,13 @@ describe(`GET ${basePath}/userId`, () => {
 
   it('should handle 500', async () => {
     // mock an unexpected error...
-    service.read = jest.fn(() => { throw new Error(); });
+    service.readSafe = jest.fn(() => {
+      throw new Error();
+    });
 
     const response = await request(app).get(`${basePath}/userId`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
-
 });

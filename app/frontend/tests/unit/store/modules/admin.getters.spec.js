@@ -15,7 +15,9 @@ describe('admin getters', () => {
     form: {},
     formList: [],
     user: {},
-    userList: []
+    userList: [],
+    fcProactiveHelp: [],
+    fcProactiveHelpGroupList: [],
   };
 
   beforeEach(() => {
@@ -41,5 +43,13 @@ describe('admin getters', () => {
 
   it('userList should return the state userList', () => {
     expect(store.getters.userList).toEqual(sampleState.userList);
+  });
+
+  it('fcProactiveHelp should return the state fcProactiveHelp', () => {
+    expect(store.getters.fcProactiveHelp).toEqual(sampleState.fcProactiveHelp);
+  });
+
+  it('fcProactiveHelpGroupList should return the state fcProactiveHelpGroupList', () => {
+    expect(store.getters.fcProactiveHelpGroupList).toEqual(sampleState.fcProactiveHelpGroupList);
   });
 });

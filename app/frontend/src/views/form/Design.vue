@@ -1,17 +1,35 @@
 <template>
   <BaseSecure :idp="IDP.IDIR">
-    <v-stepper v-model="creatorStep" class="elevation-0 d-flex flex-column" alt-labels>
-      <v-stepper-header style="width:40%;" class="elevation-0 px-0 align-self-center" >
+    <v-stepper
+      v-model="creatorStep"
+      class="elevation-0 d-flex flex-column"
+      alt-labels
+    >
+      <v-stepper-header
+        style="width: 40%"
+        class="elevation-0 px-0 align-self-center"
+      >
         <v-stepper-step :complete="creatorStep > 1" step="1" class="pl-1">
-          Set up Form
+          <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            {{ $t('trans.create.setUpForm') }}
+          </span>
         </v-stepper-step>
         <v-divider />
-        <v-stepper-step :complete="creatorStep > 2" step="2" class="pl-1">
-          Design Form
+        <v-stepper-step
+          :complete="creatorStep > 2"
+          :editable="true"
+          step="2"
+          class="pr-1"
+        >
+          <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            {{ $t('trans.create.designForm') }}
+          </span>
         </v-stepper-step>
         <v-divider />
         <v-stepper-step :complete="creatorStep > 3" step="3" class="pr-1">
-          Publish Form
+          <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            {{ $t('trans.create.publishForm') }}
+          </span>
         </v-stepper-step>
       </v-stepper-header>
       <v-stepper-items>
@@ -31,8 +49,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-
+import { mapGetters, mapActions } from 'vuex';
 import FormDesigner from '@/components/designer/FormDesigner.vue';
 import { IdentityProviders } from '@/utils/constants';
 
@@ -43,7 +60,7 @@ export default {
   },
   data() {
     return {
-      creatorStep: 2
+      creatorStep: 2,
     };
   },
   props: {
@@ -51,19 +68,36 @@ export default {
     f: String,
     sv: Boolean,
     v: String,
+    svs: String,
+    nv: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.$refs.formDesigner.onFormLoad();
+    });
+  },
+
+  methods: {
+    ...mapActions('form', ['listFCProactiveHelp', 'deleteCurrentForm']),
   },
   computed: {
-    ...mapGetters('form', ['form']),
+    ...mapGetters('form', ['form', 'isRTL', 'lang']),
     IDP: () => IdentityProviders,
   },
   beforeRouteLeave(_to, _from, next) {
     this.form.isDirty
       ? next(
-        window.confirm(
-          'Do you really want to leave this page? Changes you made will not be saved.'
+          window.confirm(
+            'Do you really want to leave this page? Changes you made will not be saved.'
+          )
         )
-      )
       : next();
+  },
+  beforeMount() {
+    this.listFCProactiveHelp();
   },
 };
 </script>

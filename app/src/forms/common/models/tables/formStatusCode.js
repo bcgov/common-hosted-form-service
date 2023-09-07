@@ -17,9 +17,9 @@ class FormStatusCode extends Timestamps(Model) {
         modelClass: StatusCode,
         join: {
           from: 'form_status_code.code',
-          to: 'status_code.code'
-        }
-      }
+          to: 'status_code.code',
+        },
+      },
     };
   }
 
@@ -29,7 +29,7 @@ class FormStatusCode extends Timestamps(Model) {
         if (value !== undefined) {
           query.where('formId', value);
         }
-      }
+      },
     };
   }
 
@@ -41,9 +41,9 @@ class FormStatusCode extends Timestamps(Model) {
         id: { type: 'string', pattern: Regex.UUID },
         formId: { type: 'string', pattern: Regex.UUID },
         code: { type: 'string' },
-        ...stamps
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
 }

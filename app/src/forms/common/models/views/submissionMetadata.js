@@ -17,6 +17,12 @@ class SubmissionMetadata extends Model {
           query.where('confirmationId', value);
         }
       },
+      filterformSubmissionStatusCode(query, value) {
+        if (value) {
+          query.whereNot('formSubmissionStatusCode', null);
+        }
+      },
+
       filterDraft(query, value) {
         if (value !== undefined) {
           query.where('draft', value);
@@ -52,9 +58,28 @@ class SubmissionMetadata extends Model {
           query.where('version', value);
         }
       },
-      orderDefault(builder) {
-        builder.orderBy('createdAt', 'DESC');
-      }
+      orderDefault(builder, pagination, params) {
+        if (!pagination) {
+          builder.orderBy('createdAt', 'DESC');
+        } else {
+          let orderBy = params?.sortBy;
+          let orderDesc = params?.sortDesc;
+          if (orderDesc === 'true') {
+            builder.orderBy(orderBy, 'desc');
+          } else if (orderDesc === 'false') {
+            builder.orderBy(orderBy, 'asc');
+          }
+        }
+      },
+      filterCreatedAt(query, minDate, maxDate) {
+        if (minDate && maxDate) {
+          query.whereBetween('createdAt', [minDate, maxDate]);
+        } else if (minDate) {
+          query.where('createdAt', '>=', minDate);
+        } else if (maxDate) {
+          query.where('createdAt', '<=', maxDate);
+        }
+      },
     };
   }
 }

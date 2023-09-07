@@ -1,15 +1,18 @@
 import { cloneDeep } from 'lodash';
 
-import { formService, rbacService, userService } from '@/services';
+import { formService, rbacService, userService, adminService } from '@/services';
 import store from '@/store/modules/form';
+import i18n from '@/internationalization';
+
 
 jest.mock('@/services');
+jest.mock('@/internationalization', () => ({t: jest.fn(() => {}) }));
 
 describe('form actions', () => {
   const mockStore = {
     commit: jest.fn(),
     dispatch: jest.fn(),
-    state: cloneDeep(store.state)
+    state: cloneDeep(store.state),
   };
   const mockConsoleError = jest.spyOn(console, 'error');
 
@@ -44,10 +47,12 @@ describe('form actions', () => {
     it('getFormPermissionsForUser should commit to SET_FORM_PERMISSIONS', async () => {
       rbacService.getCurrentUser.mockResolvedValue({
         data: {
-          forms: [{
-            permissions: []
-          }]
-        }
+          forms: [
+            {
+              permissions: [],
+            },
+          ],
+        },
       });
       await store.actions.getFormPermissionsForUser(mockStore, 'fId');
 
@@ -69,8 +74,8 @@ describe('form actions', () => {
       userService.getUserFormPreferences.mockResolvedValue({
         data: {
           preferences: ['foo', 'bar'],
-          userId: '123'
-        }
+          userId: '123',
+        },
       });
       await store.actions.getFormPreferencesForCurrentUser(mockStore, 'fId');
 
@@ -90,8 +95,8 @@ describe('form actions', () => {
       userService.updateUserFormPreferences.mockResolvedValue({
         data: {
           preferences: ['foo', 'bar'],
-          userId: '123'
-        }
+          userId: '123',
+        },
       });
       await store.actions.updateFormPreferencesForCurrentUser(mockStore, { formId: 'fId', preferences: {} });
 
@@ -176,6 +181,20 @@ describe('form actions', () => {
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
     });
 
+    it('deleteMultiSubmissions should dispatch to notifications/addNotification', async () => {
+      formService.deleteMultipleSubmissions.mockRejectedValue('');
+      await store.actions.deleteMultiSubmissions(mockStore, ['sId']);
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
+
+    it('restoreMultiSubmissions should dispatch to notifications/addNotification', async () => {
+      formService.restoreMutipleSubmissions.mockRejectedValue('');
+      await store.actions.restoreMultiSubmissions(mockStore, ['sId']);
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
+
     it('fetchSubmission should commit to SET_FORMSUBMISSION', async () => {
       formService.getSubmission.mockResolvedValue({ data: { submission: {}, form: {} } });
       await store.actions.fetchSubmission(mockStore, { submissionId: 'sId' });
@@ -195,47 +214,54 @@ describe('form actions', () => {
 
     it('fetchSubmissions should commit to SET_SUBMISSIONLIST', async () => {
       formService.listSubmissions.mockResolvedValue({ data: [] });
-      await store.actions.fetchSubmissions(mockStore, { formId: 'fId' });
+      let data = {fields: undefined, createdBy: '', createdAt: '', page: 0, filterformSubmissionStatusCode: true, itemsPerPage: 10, totalSubmissions: 0};
+      await store.actions.fetchSubmissions(mockStore, { formId: 'fId', ...data });
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(2);
+      expect(mockStore.commit).toHaveBeenCalledTimes(3);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
-      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { 'deleted': false });
+      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { deleted: false, createdBy: '', ...data});
       expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(0);
     });
 
     it('fetchSubmissions should call the formService if not for userView', async () => {
       formService.listSubmissions.mockResolvedValue({ data: [] });
-      await store.actions.fetchSubmissions(mockStore, { formId: 'fId', userView: false });
+      let data = {fields: undefined, createdBy: '', createdAt: '', page: 0, filterformSubmissionStatusCode: true, itemsPerPage: 10, totalSubmissions: 0};
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(2);
+      await store.actions.fetchSubmissions(mockStore, { formId: 'fId', userView: false, ...data });
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(3);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
-      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { 'deleted': false });
+      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { deleted: false, createdBy: '', ...data});
       expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(0);
     });
 
     it('fetchSubmissions should call the rbacService if for userView', async () => {
-      rbacService.getUserSubmissions.mockResolvedValue({ data: [] });
-      await store.actions.fetchSubmissions(mockStore, { formId: 'fId', userView: true });
+      let data = {page: 0,  itemsPerPage: 10, totalSubmissions: 0};
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(2);
+      rbacService.getUserSubmissions.mockResolvedValue({ data: [] });
+      await store.actions.fetchSubmissions(mockStore, { formId: 'fId', userView: true, ...data});
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(3);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(0);
       expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(1);
-      expect(rbacService.getUserSubmissions).toHaveBeenCalledWith({ formId: 'fId' });
+      expect(rbacService.getUserSubmissions).toHaveBeenCalledWith({ formId: 'fId', ...data});
     });
 
     it('fetchSubmissions should dispatch to notifications/addNotification', async () => {
       formService.listSubmissions.mockRejectedValue('');
-      await store.actions.fetchSubmissions(mockStore, { formId: 'fId' });
+      let data = {fields: undefined, createdBy: '', createdAt: '', page: 0, filterformSubmissionStatusCode: true, itemsPerPage: 10, totalSubmissions: 0};
+
+      await store.actions.fetchSubmissions(mockStore, { formId: 'fId', ...data });
 
       expect(mockStore.commit).toHaveBeenCalledTimes(1);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
-      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { 'deleted': false });
+      expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { deleted: false, createdBy: '', ...data });
       expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(0);
     });
 
@@ -257,5 +283,64 @@ describe('form actions', () => {
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
     });
+  });
+  describe('form components proactive help', () => {
+    it('listFCProactiveHelp should commit to SET_FCPROACTIVEHELPGROUPLIST', async () => {
+      adminService.listFCProactiveHelp.mockResolvedValue({ data: [] });
+      await store.actions.listFCProactiveHelp(mockStore);
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(1);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_FCPROACTIVEHELPGROUPLIST', expect.any(Object));
+    });
+
+    it('listFCProactiveHelp should dispatch to notifications/addNotification', async () => {
+      adminService.listFCProactiveHelp.mockRejectedValue('');
+      await store.actions.listFCProactiveHelp(mockStore);
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(1);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_FCPROACTIVEHELPGROUPLIST', expect.any(Object));
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
+
+    it('getFCProactiveHelpImageUrl should commit to SET_FCPROACTIVEHELPIMAGEURL', async () => {
+      adminService.getFCProactiveHelpImageUrl.mockResolvedValue({ data: {} });
+      await store.actions.getFCProactiveHelpImageUrl(mockStore);
+      expect(mockStore.commit).toHaveBeenCalledTimes(1);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_FCPROACTIVEHELPIMAGEURL', expect.any(Object));
+    });
+
+    it('getFCProactiveHelpImageUrl should dispatch to notifications/addNotification', async () => {
+      adminService.getFCProactiveHelpImageUrl.mockRejectedValue('');
+      await store.actions.getFCProactiveHelpImageUrl(mockStore);
+
+      expect(mockStore.commit).toHaveBeenCalledTimes(1);
+      expect(mockStore.commit).toHaveBeenCalledWith('SET_FCPROACTIVEHELPIMAGEURL', expect.any(Object));
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    });
+  });
+  it('fetchFormCSVExportFields should commit to SET_FORM_FIELDS', async () => {
+    formService.readCSVExportFields.mockRejectedValue('');
+    await store.actions.fetchFormCSVExportFields(mockStore, {
+      formId: 'bd4dcf26-65bd-429b-967f-125500bfd8a4',
+      type: false,
+      draft: false,
+      deleted: false,
+      version: 2,
+    });
+
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith('SET_FORM_FIELDS', expect.any(Object));
+    expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+    expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+    expect(mockStore.dispatch).toHaveBeenCalledWith('notifications/addNotification', expect.any(Object), expect.any(Object));
+  });
+  it('readFormSubscriptionData should commit to SET_SUBSCRIPTION_DATA', async () => {
+    formService.readFormSubscriptionData.mockResolvedValue({ data: {} });
+    await store.actions.readFormSubscriptionData(mockStore, { formId: 'fId' });
+
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBSCRIPTION_DATA', expect.any(Object));
   });
 });

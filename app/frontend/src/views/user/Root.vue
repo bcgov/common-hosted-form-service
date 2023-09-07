@@ -2,21 +2,27 @@
   <BaseSecure>
     <router-link :to="{ name: 'UserForms' }">
       <v-btn color="primary" class="mr-2">
-        <span>MY FORMS</span>
+        <span :lang="lang">{{ $t('trans.user.root.myForms') }}</span>
       </v-btn>
     </router-link>
     <router-link :to="{ name: 'UserHistory' }">
       <v-btn color="primary" class="mr-2">
-        <span>HISTORY</span>
+        <span :lang="lang">{{ $t('trans.user.root.history') }}</span>
       </v-btn>
     </router-link>
-    <h1 class="text-center">User</h1>
+    <h1 class="text-center" :lang="lang">
+      {{ $t('trans.user.root.user') }}
+    </h1>
   </BaseSecure>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 
 export default {
-  name: 'User'
+  name: 'User',
+  computed: {
+    ...mapGetters('form', ['lang']),
+  },
 };
 </script>

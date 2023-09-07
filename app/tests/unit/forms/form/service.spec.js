@@ -3,7 +3,7 @@ const service = require('../../../../src/forms/form/service');
 describe('_findFileIds', () => {
   it('should handle a blank everything', () => {
     const schema = {
-      components: []
+      components: [],
     };
     const data = {
       submission: {
@@ -19,9 +19,9 @@ describe('_findFileIds', () => {
       components: [
         {
           type: 'simpletextfield',
-          key: 'aTextBox'
-        }
-      ]
+          key: 'aTextBox',
+        },
+      ],
     };
     const data = {
       submission: {
@@ -39,20 +39,19 @@ describe('_findFileIds', () => {
       components: [
         {
           type: 'simpletextfield',
-          key: 'aTextBox'
+          key: 'aTextBox',
         },
         {
           type: 'simplefile',
-          key: 'theFirstFile'
-        }
-      ]
+          key: 'theFirstFile',
+        },
+      ],
     };
     const data = {
       submission: {
         data: {
           aTextBox: '',
-          theFirstFile: [
-          ],
+          theFirstFile: [],
         },
       },
     };
@@ -65,30 +64,28 @@ describe('_findFileIds', () => {
       components: [
         {
           type: 'simpletextfield',
-          key: 'aTextBox'
+          key: 'aTextBox',
         },
         {
           type: 'simplefile',
-          key: 'theFirstFile'
+          key: 'theFirstFile',
         },
         {
           type: 'simpletextfield',
-          key: 'bTextBox'
+          key: 'bTextBox',
         },
         {
           type: 'simplefile',
-          key: 'theSecondFile'
+          key: 'theSecondFile',
         },
-      ]
+      ],
     };
     const data = {
       submission: {
         data: {
           aTextBox: '',
-          theFirstFile: [
-          ],
-          theSecondFile: [
-          ],
+          theFirstFile: [],
+          theSecondFile: [],
         },
       },
     };
@@ -101,13 +98,13 @@ describe('_findFileIds', () => {
       components: [
         {
           type: 'simplefile',
-          key: 'theFirstFile'
+          key: 'theFirstFile',
         },
         {
           type: 'simpletextfield',
-          key: 'aTextBox'
-        }
-      ]
+          key: 'aTextBox',
+        },
+      ],
     };
     const data = {
       submission: {
@@ -136,21 +133,21 @@ describe('_findFileIds', () => {
       components: [
         {
           type: 'simplefile',
-          key: 'theFirstFile'
+          key: 'theFirstFile',
         },
         {
           type: 'simpletextfield',
-          key: 'aTextBox'
+          key: 'aTextBox',
         },
         {
           type: 'simplefile',
-          key: 'theSecondFile'
+          key: 'theSecondFile',
         },
         {
           type: 'simpletextfield',
-          key: 'bTextBox'
+          key: 'bTextBox',
         },
-      ]
+      ],
     };
     const data = {
       submission: {
@@ -191,42 +188,41 @@ describe('_findFileIds', () => {
       components: [
         {
           type: 'simplefile',
-          key: 'theFirstFile'
+          key: 'theFirstFile',
         },
         {
           type: 'simpletextfield',
-          key: 'aTextBox'
-        }
-      ]
+          key: 'aTextBox',
+        },
+      ],
     };
     const data = {
       submission: {
         data: {
-          aTextBox: ''
-        }
+          aTextBox: '',
+        },
       },
     };
     const fileIds = service._findFileIds(schema, data);
     expect(fileIds).toEqual([]);
   });
 
-
   it('should return a single item array for 1 shown, and 1 hidden file control', () => {
     const schema = {
       components: [
         {
           type: 'simplefile',
-          key: 'theFirstFile'
+          key: 'theFirstFile',
         },
         {
           type: 'simpletextfield',
-          key: 'aTextBox'
+          key: 'aTextBox',
         },
         {
           type: 'simplefile',
-          key: 'theSecondFile'
+          key: 'theSecondFile',
         },
-      ]
+      ],
     };
     const data = {
       submission: {
@@ -249,39 +245,58 @@ describe('_findFileIds', () => {
     const fileIds = service._findFileIds(schema, data);
     expect(fileIds).toEqual(['70daceba-14cf-42c9-8532-9e5717809266']);
   });
-
 });
 
 describe('readVersionFields', () => {
+  it('should not return hidden fields', async () => {
+    const schema = {
+      type: 'form',
+      components: [
+        {
+          input: true,
+          hidden: true,
+          key: 'firstName',
+          type: 'textfield',
+        },
+      ],
+    };
 
-  it('should return right number of fields without columns',  async () => {
+    // mock readVersion function
+    service.readVersion = jest.fn().mockReturnValue({ schema });
+    // get fields
+    const fields = await service.readVersionFields();
+    // test cases
+    expect(fields.length).toEqual(0);
+  });
+
+  it('should return right number of fields without columns', async () => {
     const schema = {
       type: 'form',
       components: [
         {
           type: 'textfield',
           input: true,
-          key: 'firstName'
-        }
-      ]
+          key: 'firstName',
+        },
+      ],
     };
 
     // mock readVersion function
-    service.readVersion = jest.fn().mockReturnValue( { schema } );
+    service.readVersion = jest.fn().mockReturnValue({ schema });
     // get fields
     const fields = await service.readVersionFields();
     // test cases
     expect(fields.length).toEqual(1);
   });
 
-  it('should return right number of fields with columns',  async () => {
+  it('should return right number of fields with columns', async () => {
     const schema = {
       type: 'form',
       components: [
         {
           type: 'textfield',
           input: true,
-          key: 'firstName'
+          key: 'firstName',
         },
         {
           type: 'columns',
@@ -290,7 +305,7 @@ describe('readVersionFields', () => {
           columns: [
             {
               size: 'lg',
-              components: []
+              components: [],
             },
             {
               size: 'lg',
@@ -298,26 +313,54 @@ describe('readVersionFields', () => {
                 {
                   type: 'textfield',
                   input: true,
-                  key: 'lastName'
+                  key: 'lastName',
                 },
-              ]
+              ],
             },
             {
               size: 'lg',
-              components: []
-            }
-          ]
-        }
-      ]
+              components: [],
+            },
+          ],
+        },
+      ],
     };
 
     // mock readVersion function
-    service.readVersion = jest.fn().mockReturnValue( { schema } );
+    service.readVersion = jest.fn().mockReturnValue({ schema });
     // get fields
     const fields = await service.readVersionFields();
     // test cases
     expect(fields.length).toEqual(2);
   });
 
-});
+  it('should return right number of fields in a table', async () => {
+    const schema = {
+      type: 'form',
+      components: [
+        {
+          key: 'table',
+          rows: [
+            [
+              {
+                components: [
+                  {
+                    input: true,
+                    key: 'key',
+                  },
+                ],
+              },
+            ],
+          ],
+        },
+      ],
+    };
 
+    // mock readVersion function
+    service.readVersion = jest.fn().mockReturnValue({ schema });
+    // get fields
+    const fields = await service.readVersionFields();
+    // test cases
+    expect(fields.length).toEqual(1);
+  });
+});

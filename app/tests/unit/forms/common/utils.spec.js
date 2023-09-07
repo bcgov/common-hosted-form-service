@@ -1,53 +1,50 @@
-const { queryUtils, typeUtils } = require('../../../../src/forms/common/utils');
+const { queryUtils, typeUtils, validateScheduleObject } = require('../../../../src/forms/common/utils');
 
 describe('Test Query Utils functions', () => {
-
   it('defaultActiveOnly should return params object', () => {
     const params = queryUtils.defaultActiveOnly(null);
     expect(params).toBeDefined();
-    expect(params).toEqual({active: true});
+    expect(params).toEqual({ active: true });
   });
 
   it('defaultActiveOnly should return active = true', () => {
     let params = queryUtils.defaultActiveOnly(null);
     expect(params).toBeDefined();
-    expect(params).toEqual({active: true});
+    expect(params).toEqual({ active: true });
 
     params = queryUtils.defaultActiveOnly({});
     expect(params).toBeDefined();
-    expect(params).toEqual({active: true});
+    expect(params).toEqual({ active: true });
 
-    params = queryUtils.defaultActiveOnly({other: 'value'});
+    params = queryUtils.defaultActiveOnly({ other: 'value' });
     expect(params).toBeDefined();
-    expect(params).toEqual({active: true, other: 'value'});
+    expect(params).toEqual({ active: true, other: 'value' });
 
-    params = queryUtils.defaultActiveOnly({active: 'not a false value', other: 'value'});
+    params = queryUtils.defaultActiveOnly({ active: 'not a false value', other: 'value' });
     expect(params).toBeDefined();
-    expect(params).toEqual({active: true, other: 'value'});
+    expect(params).toEqual({ active: true, other: 'value' });
 
-    params = queryUtils.defaultActiveOnly({active: true, other: 'value'});
+    params = queryUtils.defaultActiveOnly({ active: true, other: 'value' });
     expect(params).toBeDefined();
-    expect(params).toEqual({active: true, other: 'value'});
+    expect(params).toEqual({ active: true, other: 'value' });
   });
 
   it('defaultActiveOnly should return active = false', () => {
-    let params = queryUtils.defaultActiveOnly({active: false});
+    let params = queryUtils.defaultActiveOnly({ active: false });
     expect(params).toBeDefined();
-    expect(params).toEqual({active: false});
+    expect(params).toEqual({ active: false });
 
-    params = queryUtils.defaultActiveOnly({active: 'false'});
+    params = queryUtils.defaultActiveOnly({ active: 'false' });
     expect(params).toBeDefined();
-    expect(params).toEqual({active: false});
+    expect(params).toEqual({ active: false });
 
-    params = queryUtils.defaultActiveOnly({active: 0});
+    params = queryUtils.defaultActiveOnly({ active: 0 });
     expect(params).toBeDefined();
-    expect(params).toEqual({active: false});
+    expect(params).toEqual({ active: false });
   });
-
 });
 
 describe('Test Type Utils functions', () => {
-
   it('isInt should return true for int and int like strings', () => {
     let result = typeUtils.isInt(1);
     expect(result).toBeDefined();
@@ -67,7 +64,7 @@ describe('Test Type Utils functions', () => {
     expect(result).toBeDefined();
     expect(result).toBeFalsy();
 
-    result = typeUtils.isInt({key: 1});
+    result = typeUtils.isInt({ key: 1 });
     expect(result).toBeDefined();
     expect(result).toBeFalsy();
 
@@ -75,7 +72,9 @@ describe('Test Type Utils functions', () => {
     expect(result).toBeDefined();
     expect(result).toBeFalsy();
 
-    result = typeUtils.isInt(() =>{ return 1; });
+    result = typeUtils.isInt(() => {
+      return 1;
+    });
     expect(result).toBeDefined();
     expect(result).toBeFalsy();
   });
@@ -107,11 +106,13 @@ describe('Test Type Utils functions', () => {
     expect(result).toBeDefined();
     expect(result).toBeFalsy();
 
-    result = typeUtils.isString({key: 'string'});
+    result = typeUtils.isString({ key: 'string' });
     expect(result).toBeDefined();
     expect(result).toBeFalsy();
 
-    result = typeUtils.isString(() =>{ return 'string'; });
+    result = typeUtils.isString(() => {
+      return 'string';
+    });
     expect(result).toBeDefined();
     expect(result).toBeFalsy();
 
@@ -143,11 +144,13 @@ describe('Test Type Utils functions', () => {
     expect(result).toBeDefined();
     expect(result).toBeFalsy();
 
-    result = typeUtils.isBoolean({key: 'string'});
+    result = typeUtils.isBoolean({ key: 'string' });
     expect(result).toBeDefined();
     expect(result).toBeFalsy();
 
-    result = typeUtils.isBoolean(() =>{ return 'string'; });
+    result = typeUtils.isBoolean(() => {
+      return 'string';
+    });
     expect(result).toBeDefined();
     expect(result).toBeFalsy();
 
@@ -162,5 +165,41 @@ describe('Test Type Utils functions', () => {
     result = typeUtils.isBoolean(0);
     expect(result).toBeDefined();
     expect(result).toBeFalsy();
+  });
+});
+
+describe('Test Schedule object validation Utils functions', () => {
+  it('validateScheduleObject should return status = error for empty object passed as parameter.', () => {
+    let result = validateScheduleObject({});
+    expect(result).toBeDefined();
+    expect(result).toHaveProperty('status', 'success');
+  });
+
+  it('validateScheduleObject should return status = success for schedule type manual and with its required data.', () => {
+    let testPayload = { enabled: true, scheduleType: 'manual', openSubmissionDateTime: '2023-03-31' };
+    let result = validateScheduleObject(testPayload);
+    expect(result).toBeDefined();
+    expect(result).toHaveProperty('status', 'success');
+  });
+
+  it('validateScheduleObject should return status = success for schedule type closingDate and with its required data.', () => {
+    let testPayload = { enabled: true, scheduleType: 'closingDate', openSubmissionDateTime: '2023-03-31', closeSubmissionDateTime: '2023-09-31' };
+    let result = validateScheduleObject(testPayload);
+    expect(result).toBeDefined();
+    expect(result).toHaveProperty('status', 'success');
+  });
+
+  it('validateScheduleObject should return status = success for schedule type period and with its required data.', () => {
+    let testPayload = {
+      enabled: true,
+      scheduleType: 'period',
+      openSubmissionDateTime: '2023-03-31',
+      keepOpenForInterval: 'days',
+      keepOpenForTerm: '4',
+      repeatSubmission: { everyTerm: '15', repeatUntil: '2024-04-01', everyIntervalType: 'days' },
+    };
+    let result = validateScheduleObject(testPayload);
+    expect(result).toBeDefined();
+    expect(result).toHaveProperty('status', 'success');
   });
 });

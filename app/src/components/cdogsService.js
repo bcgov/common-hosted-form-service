@@ -29,8 +29,8 @@ class CdogsService {
 
       const { data, status } = await this.axios.get(url, {
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
 
       return { data, status };
@@ -45,7 +45,7 @@ class CdogsService {
       log.debug(`POST to ${url}`, { function: 'templateUploadAndRender' });
 
       const { data, headers, status } = await this.axios.post(url, body, {
-        responseType: 'arraybuffer' // Needed for binaries unless you want pain
+        responseType: 'arraybuffer', // Needed for binaries unless you want pain
       });
 
       return { data, headers, status };
@@ -61,9 +61,9 @@ class CdogsService {
 
       const { data, headers, status } = await this.axios.post(url, body, {
         headers: {
-          'content-type': 'application/json'
+          'content-type': 'application/json',
         },
-        responseType: 'arraybuffer'
+        responseType: 'arraybuffer',
       });
 
       return { data, headers, status };
@@ -79,8 +79,8 @@ class CdogsService {
 
       const { data, status } = await this.axios.get(url, {
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
 
       return { data, status };
@@ -100,16 +100,14 @@ class CdogsService {
       const url = `${this.apiV2}/template`;
       log.debug(`POST to ${url}`, { function: 'uploadTemplate' });
 
-      const { data, headers, status } = await this.axios(
-        {
-          method: 'post',
-          url: url,
-          data: form,
-          headers: {
-            'content-type': `multipart/form-data; boundary=${form._boundary}`,
-          },
-        }
-      );
+      const { data, headers, status } = await this.axios({
+        method: 'post',
+        url: url,
+        data: form,
+        headers: {
+          'content-type': `multipart/form-data; boundary=${form._boundary}`,
+        },
+      });
 
       return { data, headers, status };
     } catch (e) {
@@ -128,17 +126,15 @@ class CdogsService {
         }
       });
       stream.on('end', () => resolve(hash.digest('hex')));
-      stream.on('error', error => reject(error));
+      stream.on('error', (error) => reject(error));
     });
   }
-
-
 }
 
 const endpoint = config.get('serviceClient.commonServices.cdogs.endpoint');
-const tokenEndpoint = config.get('serviceClient.commonServices.tokenEndpoint');
-const username = config.get('serviceClient.commonServices.username');
-const password = config.get('serviceClient.commonServices.password');
+const tokenEndpoint = config.get('serviceClient.commonServices.cdogs.tokenEndpoint');
+const clientId = config.get('serviceClient.commonServices.cdogs.clientId');
+const clientSecret = config.get('serviceClient.commonServices.cdogs.clientSecret');
 
-let cdogsService = new CdogsService({tokenUrl: tokenEndpoint, clientId: username, clientSecret: password, apiUrl: endpoint});
+let cdogsService = new CdogsService({ tokenUrl: tokenEndpoint, clientId: clientId, clientSecret: clientSecret, apiUrl: endpoint });
 module.exports = cdogsService;

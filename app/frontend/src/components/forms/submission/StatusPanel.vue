@@ -1,29 +1,30 @@
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <v-skeleton-loader :loading="loading" type="list-item-two-line">
-      <p>
-        <strong>Current Status:</strong>
+      <p :lang="lang">
+        <strong>{{ $t('trans.statusPanel.currentStatus') }}</strong>
         {{ currentStatus.code }}
         <br />
-        <strong>Assigned To:</strong>
+        <strong>{{ $t('trans.statusPanel.assignedTo') }}</strong>
         {{ currentStatus.user ? currentStatus.user.fullName : 'N/A' }}
-        <span
-          v-if="currentStatus.user"
-        >({{ currentStatus.user.email }})</span>
+        <span v-if="currentStatus.user">({{ currentStatus.user.email }})</span>
       </p>
 
       <v-form ref="form" v-model="valid" lazy-validation>
         <v-row>
           <v-col cols="12">
-            <label>Assign or Update Status</label>
+            <label :lang="lang">{{
+              $t('trans.statusPanel.assignOrUpdateStatus')
+            }}</label>
             <v-select
+              :class="{ 'dir-rtl': isRTL, label: isRTL }"
               dense
               outlined
               :items="items"
               item-text="display"
               item-value="code"
               v-model="statusToSet"
-              :rules="[(v) => !!v || 'Status is required']"
+              :rules="statusRequired"
               @change="onStatusChange(statusToSet)"
             />
 
@@ -33,13 +34,16 @@
                   Assign To
                   <v-tooltip bottom>
                     <template #activator="{ on, attrs }">
-                      <v-icon color="primary" v-bind="attrs" v-on="on">help_outline</v-icon>
+                      <v-icon color="primary" v-bind="attrs" v-on="on"
+                        >help_outline</v-icon
+                      >
                     </template>
-                    <span>
-                      Submissions can be assigned to Form Reviewers.
-                      <br />To add more team members as Form Reviewers, go to the
-                      Manage page for this form.
-                    </span>
+                    <span
+                      v-html="
+                        $t('trans.statusPanel.assignSubmissnToFormReviewer')
+                      "
+                      :lang="lang"
+                    />
                   </v-tooltip>
                 </label>
                 <v-autocomplete
@@ -47,13 +51,15 @@
                   v-model="assignee"
                   clearable
                   dense
+                  :class="{ 'dir-rtl': isRTL }"
                   :filter="autoCompleteFilter"
                   :items="formReviewers"
                   :loading="loading"
-                  no-data-text="No Form Reviewers found with search. Add Form Reviewers on the Manage page."
+                  :no-data-text="$t('trans.statusPanel.noDataText')"
                   outlined
                   return-object
-                  :rules="[(v) => !!v || 'Assignee is required']"
+                  :rules="assigneeRequired"
+                  :lang="lang"
                 >
                   <!-- selected user -->
                   <template #selection="data">
@@ -69,16 +75,16 @@
                   </template>
                   <!-- users found in dropdown -->
                   <template #item="data">
-                    <template v-if="typeof data.item !== 'object'">
+                    <div v-if="typeof data.item !== 'object'">
                       <v-list-item-content v-text="data.item" />
-                    </template>
-                    <template v-else>
+                    </div>
+                    <div v-else>
                       <v-list-item-content>
                         <v-list-item-title v-html="data.item.fullName" />
                         <v-list-item-subtitle v-html="data.item.username" />
                         <v-list-item-subtitle v-html="data.item.email" />
                       </v-list-item-content>
-                    </template>
+                    </div>
                   </template>
                 </v-autocomplete>
                 <span v-if="assignee">Email: {{ assignee.email }}</span>
@@ -92,21 +98,37 @@
                     @click="assignToCurrentUser"
                   >
                     <v-icon class="mr-1">person</v-icon>
-                    <span>ASSIGN TO ME</span>
+                    <span :lang="lang">{{
+                      $t('trans.statusPanel.assignToMe')
+                    }}</span>
                   </v-btn>
                 </div>
               </div>
               <div v-show="statusFields" v-if="showRevising">
-                <v-text-field v-model="submissionUserEmail" label="Recipient Email" outlined dense />
+                <v-text-field
+                  v-model="submissionUserEmail"
+                  :label="$t('trans.statusPanel.recipientEmail')"
+                  outlined
+                  dense
+                  :class="{ 'dir-rtl': isRTL }"
+                  :lang="lang"
+                />
               </div>
 
               <div v-if="showRevising || showAsignee || showCompleted">
-                <v-checkbox v-model="addComment" :label="'Attach Comment to Email'" />
+                <v-checkbox
+                  v-model="addComment"
+                  :label="$t('trans.statusPanel.attachCommentToEmail')"
+                  :lang="lang"
+                />
                 <div v-if="addComment">
-                  <label>Email Comment</label>
+                  <label :lang="lang">{{
+                    $t('trans.statusPanel.emailComment')
+                  }}</label>
                   <v-textarea
+                    :class="{ 'dir-rtl': isRTL }"
                     v-model="emailComment"
-                    :rules="[(v) => v.length <= 4000 || 'Max 4000 characters']"
+                    :rules="maxChars"
                     rows="1"
                     counter
                     auto-grow
@@ -125,13 +147,20 @@
           <v-col cols="12" sm="6" xl="4">
             <v-dialog v-model="historyDialog" width="1200">
               <template #activator="{ on }">
-                <v-btn block outlined color="textLink" v-on="on">
-                  <span>VIEW HISTORY</span>
+                <v-btn block outlined color="textLink" v-on="on" id="btnText">
+                  <span :lang="lang">{{
+                    $t('trans.statusPanel.viewHistory')
+                  }}</span>
                 </v-btn>
               </template>
 
               <v-card v-if="historyDialog">
-                <v-card-title class="text-h5 pb-0">Status History</v-card-title>
+                <v-card-title
+                  class="text-h5 pb-0"
+                  :class="{ 'dir-rtl': isRTL }"
+                  :lang="lang"
+                  >{{ $t('trans.statusPanel.statusHistory') }}</v-card-title
+                >
 
                 <v-card-text>
                   <hr />
@@ -139,8 +168,15 @@
                 </v-card-text>
 
                 <v-card-actions class="justify-center">
-                  <v-btn @click="historyDialog = false" class="mb-5 close-dlg" color="primary">
-                    <span>CLOSE</span>
+                  <v-btn
+                    :class="{ 'dir-rtl': isRTL }"
+                    @click="historyDialog = false"
+                    class="mb-5 close-dlg"
+                    color="primary"
+                  >
+                    <span :lang="lang">{{
+                      $t('trans.statusPanel.close')
+                    }}</span>
                   </v-btn>
                 </v-card-actions>
               </v-card>
@@ -207,8 +243,14 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['keycloakSubject']),
-    ...mapGetters('form', ['form', 'formSubmission', 'submissionUsers']),
+    ...mapGetters('auth', ['identityProviderIdentity']),
+    ...mapGetters('form', [
+      'form',
+      'formSubmission',
+      'submissionUsers',
+      'isRTL',
+      'lang',
+    ]),
     // State Machine
     showActionDate() {
       return ['ASSIGNED', 'COMPLETED'].includes(this.statusToSet);
@@ -222,6 +264,15 @@ export default {
     showRevising() {
       return ['REVISING'].includes(this.statusToSet);
     },
+    statusRequired() {
+      return [(v) => !!v || this.$t('trans.statusPanel.statusIsRequired')];
+    },
+    assigneeRequired() {
+      return [(v) => !!v || this.$t('trans.statusPanel.assigneeIsRequired')];
+    },
+    maxChars() {
+      return [(v) => v.length <= 4000 || this.$t('trans.statusPanel.maxChars')];
+    },
     statusAction() {
       const obj = Object.freeze({
         ASSIGNED: 'ASSIGN',
@@ -229,7 +280,29 @@ export default {
         REVISING: 'REVISE',
         DEFAULT: 'UPDATE',
       });
-      return obj[this.statusToSet] ? obj[this.statusToSet] : obj['DEFAULT'];
+
+      let action = obj[this.statusToSet]
+        ? obj[this.statusToSet]
+        : obj['DEFAULT'];
+
+      let actionStatus = '';
+      switch (action) {
+        case 'ASSIGN':
+          actionStatus = this.$t('trans.statusPanel.assign');
+          break;
+        case 'COMPLETE':
+          actionStatus = this.$t('trans.statusPanel.complete');
+          break;
+        case 'REVISE':
+          actionStatus = this.$t('trans.statusPanel.revise');
+          break;
+        case 'UPDATE':
+          actionStatus = this.$t('trans.statusPanel.update');
+          break;
+        default:
+        // code block
+      }
+      return actionStatus;
     },
   },
   methods: {
@@ -243,25 +316,31 @@ export default {
           await this.fetchSubmissionUsers(this.submissionId);
 
           const submitterData = this.submissionUsers.data.find((data) => {
-            const username = data.user.idpCode ? `${data.user.username}@${data.user.idpCode}` : data.user.username;
+            const username = data.user.idpCode
+              ? `${data.user.username}@${data.user.idpCode}`
+              : data.user.username;
             return username === this.formSubmission.createdBy;
           });
 
           if (submitterData) {
-            this.submissionUserEmail = submitterData.user ? submitterData.user.email : undefined;
+            this.submissionUserEmail = submitterData.user
+              ? submitterData.user.email
+              : undefined;
             this.showSendConfirmEmail = status === 'COMPLETED';
           }
         } catch (error) {
           this.addNotification({
-            message: 'An error occured while trying to fetch recipient emails for this submission.',
-            consoleError: `Error getting recipient emails for ${this.submissionId}: ${error}`,
+            message: this.$t('trans.statusPanel.fetchSubmissionUsersErr'),
+            consoleError:
+              this.$t('trans.statusPanel.fetchSubmissionUsersConsErr') +
+              `${this.submissionId}: ${error}`,
           });
         }
       }
     },
     assignToCurrentUser() {
       this.assignee = this.formReviewers.find(
-        (f) => f.keycloakId === this.keycloakSubject
+        (f) => f.idpUserId === this.identityProviderIdentity
       );
     },
     autoCompleteFilter(item, queryText) {
@@ -295,7 +374,7 @@ export default {
 
         this.statusHistory = statuses.data;
         if (!this.statusHistory.length || !this.statusHistory[0]) {
-          throw new Error('No statuses found');
+          throw new Error(this.$t('trans.statusPanel.noStatusesFound'));
         } else {
           // Statuses are returned in date precedence, the 0th item in the array is the current status
           this.currentStatus = this.statusHistory[0];
@@ -304,7 +383,7 @@ export default {
           const scRes = await formService.getStatusCodes(this.formId);
           const statusCodes = scRes.data;
           if (!statusCodes.length) {
-            throw new Error('error finding status codes');
+            throw new Error(this.$t('trans.statusPanel.statusCodesErr'));
           }
           // For the CURRENT status, add the code details (display name, next codes etc)
           this.currentStatus.statusCodeDetail = statusCodes.find(
@@ -317,8 +396,10 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          message: 'Error occured fetching status for this submission.',
-          consoleError: `Error getting statuses: ${error.message}`,
+          message: this.$t('trans.statusPanel.notifyErrorCode'),
+          consoleError:
+            this.$t('trans.statusPanel.notifyConsoleErrorCode') +
+            `${error.message}`,
         });
       } finally {
         this.loading = false;
@@ -337,7 +418,7 @@ export default {
       try {
         if (this.$refs.form.validate()) {
           if (!this.statusToSet) {
-            throw new Error('No Status');
+            throw new Error(this.$t('trans.statusPanel.status'));
           }
 
           const statusBody = {
@@ -357,7 +438,7 @@ export default {
           );
           if (!statusResponse.data) {
             throw new Error(
-              'No response data from API while submitting status update form'
+              this.$t('trans.statusPanel.updtSubmissionsStatusErr')
             );
           }
 
@@ -365,7 +446,10 @@ export default {
             let formattedComment;
             if (this.statusToSet === 'ASSIGNED') {
               formattedComment = `Email to ${this.assignee.email}: ${this.emailComment}`;
-            } else if (this.statusToSet === 'REVISING' || this.statusToSet === 'COMPLETED') {
+            } else if (
+              this.statusToSet === 'REVISING' ||
+              this.statusToSet === 'COMPLETED'
+            ) {
               formattedComment = `Email to ${this.submissionUserEmail}: ${this.emailComment}`;
             }
 
@@ -384,7 +468,7 @@ export default {
             );
             if (!response.data) {
               throw new Error(
-                'No response data from API while submitting note for status update'
+                this.$t('trans.statusPanel.addNoteNoReponserErr')
               );
             }
             // Update the parent if the note was updated
@@ -394,8 +478,13 @@ export default {
           this.getStatus();
         }
       } catch (error) {
-        console.error(`Error updating status: ${error}`); // eslint-disable-line no-console
-        this.error = 'An error occured while trying to update the status';
+        /* eslint-disable no-console */
+        console.error(
+          `${this.$t('trans.statusPanel.addNoteConsoleErrMsg', {
+            error: error,
+          })}`
+        ); // eslint-disable-line no-console
+        this.error = this.$t('trans.statusPanel.addNoteErrMsg');
       }
     },
   },
@@ -404,3 +493,10 @@ export default {
   },
 };
 </script>
+
+<style>
+.v-btn__content {
+  width: 100%;
+  white-space: normal;
+}
+</style>

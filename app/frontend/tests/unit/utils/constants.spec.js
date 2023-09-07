@@ -5,11 +5,13 @@ describe('Constants', () => {
     expect(constants.ApiRoutes).toEqual({
       ADMIN: '/admin',
       APIKEY: '/apiKey',
+      FILES: '/files',
       FORMS: '/forms',
       RBAC: '/rbac',
       ROLES: '/roles',
       SUBMISSION: '/submissions',
-      USERS: '/users'
+      USERS: '/users',
+      UTILS: '/utils',
     });
   });
 
@@ -41,7 +43,7 @@ describe('Constants', () => {
       DESIGN_UPDATE: 'design_update',
       DESIGN_DELETE: 'design_delete',
       TEAM_READ: 'team_read',
-      TEAM_UPDATE: 'team_update'
+      TEAM_UPDATE: 'team_update',
     });
   });
 
@@ -51,7 +53,7 @@ describe('Constants', () => {
       constants.FormPermissions.FORM_DELETE,
       constants.FormPermissions.DESIGN_UPDATE,
       constants.FormPermissions.DESIGN_DELETE,
-      constants.FormPermissions.TEAM_UPDATE
+      constants.FormPermissions.TEAM_UPDATE,
     ]);
   });
 
@@ -59,7 +61,7 @@ describe('Constants', () => {
     expect(constants.IdentityMode).toEqual({
       LOGIN: 'login',
       PUBLIC: 'public',
-      TEAM: 'team'
+      TEAM: 'team',
     });
   });
 
@@ -69,7 +71,7 @@ describe('Constants', () => {
       BCEIDBUSINESS: 'bceid-business',
       BCSC: 'bcsc',
       GITHUB: 'github',
-      IDIR: 'idir'
+      IDIR: 'idir',
     });
   });
 
@@ -100,7 +102,8 @@ describe('Constants', () => {
 
   it('Regex has the right values defined', () => {
     expect(constants.Regex).toEqual({
-      EMAIL: '^[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$'
+      EMAIL:
+        "^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$",
     });
   });
 });

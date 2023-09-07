@@ -1,0 +1,20 @@
+{
+  "auth": {
+    "clientId": "chefs-load-test",
+    "host": "http://localhost:8082",
+    "realm": "chefs",
+    "password": "",
+    "username": "chefs-load-test"
+  },
+  "api": {
+    "apiPath": "api/v1",
+    "basePath": "/app",
+    "host": "http://localhost:8080"
+  },
+  "submissions": {
+    "count": 1000,
+    "name": "CHEFS Load Test",
+    "schema": "kitchen_sink_advanced"
+  },
+  "logLevel": "info"
+}

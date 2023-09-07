@@ -1,6 +1,6 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
-
+import i18n from '@/internationalization';
 import Design from '@/views/form/Design.vue';
 
 const localVue = createLocalVue();
@@ -17,10 +17,10 @@ describe('Design.vue', () => {
         form: {
           namespaced: true,
           getters: {
-            form: mockFormGetter
-          }
-        }
-      }
+            form: mockFormGetter,
+          },
+        },
+      },
     });
   });
 
@@ -37,7 +37,8 @@ describe('Design.vue', () => {
     const wrapper = shallowMount(Design, {
       localVue,
       store,
-      stubs: ['BaseSecure', 'FormDesigner']
+      stubs: ['BaseSecure', 'FormDesigner'],
+      i18n
     });
 
     expect(wrapper.html()).toMatch('basesecure');
@@ -49,7 +50,8 @@ describe('Design.vue', () => {
     const wrapper = shallowMount(Design, {
       localVue,
       store,
-      stubs: ['BaseSecure', 'FormDesigner']
+      stubs: ['BaseSecure', 'FormDesigner'],
+      i18n
     });
     Design.beforeRouteLeave.call(wrapper.vm, undefined, undefined, next);
 
@@ -63,7 +65,8 @@ describe('Design.vue', () => {
     const wrapper = shallowMount(Design, {
       localVue,
       store,
-      stubs: ['BaseSecure', 'FormDesigner']
+      stubs: ['BaseSecure', 'FormDesigner'],
+      i18n
     });
     Design.beforeRouteLeave.call(wrapper.vm, undefined, undefined, next);
 

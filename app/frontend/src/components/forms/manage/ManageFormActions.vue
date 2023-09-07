@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{ 'dir-rtl': isRTL }">
     <span>
       <ShareForm :formId="form.id" :warning="!isPublished" />
     </span>
@@ -13,7 +13,9 @@
             </v-btn>
           </router-link>
         </template>
-        <span>View Submissions</span>
+        <span :lang="lang">{{
+          $t('trans.manageFormActions.viewSubmissions')
+        }}</span>
       </v-tooltip>
     </span>
 
@@ -26,7 +28,9 @@
             </v-btn>
           </router-link>
         </template>
-        <span>Team Management</span>
+        <span :lang="lang">{{
+          $t('trans.manageFormActions.teamManagement')
+        }}</span>
       </v-tooltip>
     </span>
 
@@ -44,7 +48,11 @@
             <v-icon>delete</v-icon>
           </v-btn>
         </template>
-        <span>Delete Form</span>
+        <span
+          ><span :lang="lang">{{
+            $t('trans.manageFormActions.deleteForm')
+          }}</span></span
+        >
       </v-tooltip>
 
       <BaseDialog
@@ -53,14 +61,22 @@
         @close-dialog="showDeleteDialog = false"
         @continue-dialog="deleteForm"
       >
-        <template #title>Confirm Deletion</template>
+        <template #title
+          ><span :lang="lang">
+            {{ $t('trans.manageFormActions.confirmDeletion') }}
+          </span></template
+        >
         <template #text>
-          Are you sure you wish to delete
-          <strong>{{ form.name }}</strong
-          >? This form will no longer be accessible.
+          <span :lang="lang"
+            >{{ $t('trans.manageFormActions.deleteMessageA') }}
+            <strong>{{ form.name }}</strong
+            >? {{ $t('trans.manageFormActions.deleteMessageB') }}
+          </span>
         </template>
         <template #button-text-continue>
-          <span>Delete</span>
+          <span :lang="lang">{{
+            $t('trans.manageFormActions.deleteForm')
+          }}</span>
         </template>
       </BaseDialog>
     </span>
@@ -82,7 +98,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['form', 'permissions']),
+    ...mapGetters('form', ['form', 'permissions', 'isRTL', 'lang']),
     // Permission checks
     canDeleteForm() {
       return this.permissions.includes(FormPermissions.FORM_DELETE);

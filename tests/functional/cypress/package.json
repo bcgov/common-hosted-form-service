@@ -7,7 +7,7 @@
   "scripts": {
     "clean": "rm -rf **/screenshots **/videos",
     "purge": "rm -rf node_modules",
-    "test": "cypress run --headless",
+    "test": "cypress run",
     "test:allbrowsers": "npm run test:chrome && npm run test:edge && npm run test:firefox",
     "test:chrome": "npm run test -- --browser chrome",
     "test:dev": "cypress open",
@@ -22,7 +22,11 @@
   "license": "Apache-2.0",
   "dependencies": {
     "cypress": "^9.1.0",
+    "cypress-drag-drop": "^1.1.1",
     "date-fns": "^2.26.0",
     "har-validator": "^5.1.5"
+  },
+  "devDependencies": {
+    "cypress-keycloak-commands": "^1.2.0"
   }
 }

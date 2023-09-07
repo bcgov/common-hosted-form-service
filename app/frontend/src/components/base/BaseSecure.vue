@@ -2,32 +2,51 @@
   <div v-if="authenticated">
     <div v-if="isUser">
       <div v-if="admin && !isAdmin" class="text-center">
-        <h1 class="my-8">401: Unauthorized. :(</h1>
-        <p>You do not have permission to access this page.</p>
+        <h1 class="my-8" :lang="lang">
+          {{ $t('trans.baseSecure.401UnAuthorized') }}
+        </h1>
+        <p :lang="lang">
+          {{ $t('trans.baseSecure.401UnAuthorizedErrMsg') }}
+        </p>
       </div>
-      <div v-else-if="idp && identityProvider !== idp" class="text-center">
-        <h1 class="my-8">403: Forbidden. :(</h1>
-        <p>This page requires {{ idp.toUpperCase() }} authentication.</p>
+      <div
+        v-else-if="idp && !idp.includes(identityProvider)"
+        class="text-center"
+      >
+        <h1 class="my-8" :lang="lang">
+          {{ $t('trans.baseSecure.403Forbidden') }}
+        </h1>
+        <p :lang="lang">
+          {{
+            $t('trans.baseSecure.403ErrorMsg', {
+              idp: idp,
+            })
+          }}
+        </p>
       </div>
       <slot v-else />
     </div>
     <!-- TODO: Figure out better way to alert when user lacks chefs user role -->
     <div v-else class="text-center">
-      <h1 class="my-8">401: Unauthorized. :(</h1>
+      <h1 class="my-8" :lang="lang">
+        {{ $t('trans.baseSecure.401UnAuthorized') }}
+      </h1>
       <p>
-        Your account is not set up correctly.<br />Please contact
-        <a :href="mailToLink">NR.CommonServiceShowcase@gov.bc.ca</a>
+        <span v-html="$t('trans.baseSecure.401ErrorMsg')" :lang="lang" />
+        <a :href="mailToLink">{{ contactInfo }}</a>
       </p>
       <router-link :to="{ name: 'About' }">
         <v-btn color="primary" class="about-btn" large>
           <v-icon left>home</v-icon>
-          <span>About</span>
+          <span :lang="lang">{{ $t('trans.baseSecure.about') }}</span>
         </v-btn>
       </router-link>
     </div>
   </div>
   <div v-else class="text-center">
-    <h1 class="my-8">You must be logged in to use this feature.</h1>
+    <h1 class="my-8" :lang="lang">
+      {{ $t('trans.baseSecure.loginInfo') }}
+    </h1>
     <v-btn
       v-if="keycloakReady"
       color="primary"
@@ -35,7 +54,7 @@
       @click="login"
       large
     >
-      <span>Login</span>
+      <span :lang="lang">{{ $t('trans.baseSecure.login') }}</span>
     </v-btn>
   </div>
 </template>
@@ -51,9 +70,9 @@ export default {
       default: false,
     },
     idp: {
-      type: String,
-      default: undefined
-    }
+      type: Array,
+      default: () => [],
+    },
   },
   computed: {
     ...mapGetters('auth', [
@@ -63,10 +82,16 @@ export default {
       'isUser',
       'keycloakReady',
     ]),
+    ...mapGetters('form', ['lang']),
     mailToLink() {
-      return `mailto:NR.CommonServiceShowcase@gov.bc.ca?subject=CHEFS%20Account%20Issue&body=Error%20accessing%20${encodeURIComponent(
+      return `mailto:${
+        process.env.VUE_APP_CONTACT
+      }?subject=CHEFS%20Account%20Issue&body=Error%20accessing%20${encodeURIComponent(
         location
       )}.`;
+    },
+    contactInfo() {
+      return process.env.VUE_APP_CONTACT;
     },
   },
   methods: mapActions('auth', ['login']),

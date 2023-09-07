@@ -5,43 +5,47 @@
       <v-col cols="6">
         <h3>Keycloak</h3>
         <br />
-        <h4>User</h4>
-        <strong>Name:</strong>
+        <h4 :lang="lang">{{ $t('trans.developer.user') }}</h4>
+        <strong :lang="lang">{{ $t('trans.developer.name') }}:</strong>
         {{ fullName }}
         <br />
-        <strong>UserName:</strong>
+        <strong :lang="lang">{{ $t('trans.developer.userName') }}:</strong>
         {{ userName }}
         <br />
         <br />
-        <h4>JWT Contents
+        <h4 :lang="lang">
+          {{ $t('trans.developer.JWTContents') }}
           <BaseCopyToClipboard
             :copyText="JSON.stringify(tokenParsed)"
-            snackBarText="JWT Contents copied to clipboard"
-            tooltipText="Copy JWT Contents to clipboard"
+            :snackBarText="$t('trans.developer.JWTContentsSBTxt')"
+            :tooltipText="$t('trans.developer.JWTContentsTTTxt')"
+            :lang="lang"
           />
         </h4>
         <vue-json-pretty :data="tokenParsed" />
-        <h4>JWT Token
+        <h4 :lang="lang">
+          {{ $t('trans.developer.JWTToken') }}
           <BaseCopyToClipboard
             :copyText="token"
-            snackBarText="JWT Token copied to clipboard"
-            tooltipText="Copy JWT Token to clipboard"
+            :snackBarText="$t('trans.developer.JWTTokenSBTxt')"
+            :tooltipText="$t('trans.developer.JWTTokenTTTxt')"
+            :lang="lang"
           />
         </h4>
         <div style="word-break: break-all">{{ token }}</div>
       </v-col>
       <v-col cols="5" offset="1">
-        <h3>CHEFS API</h3>
+        <h3 :lang="lang">{{ $t('trans.developer.chefsAPI') }}</h3>
         <br />
-        <h4>/rbac/current
+        <h4>
           <BaseCopyToClipboard
             :copyText="JSON.stringify(apiRes)"
-            snackBarText="RBAC Response copied to clipboard"
-            tooltipText="Copy RBAC Response to clipboard"
+            :snackBarText="$t('trans.developer.RBACSBTxt')"
+            :tooltipText="$t('trans.developer.RBACTTTxt')"
+            :lang="lang"
           />
         </h4>
         <vue-json-pretty :data="apiRes" />
-
       </v-col>
     </v-row>
   </div>
@@ -56,7 +60,7 @@ import VueJsonPretty from 'vue-json-pretty';
 export default {
   name: 'Developer',
   components: {
-    VueJsonPretty
+    VueJsonPretty,
   },
   data() {
     return {
@@ -65,6 +69,7 @@ export default {
   },
   computed: {
     ...mapGetters('auth', ['fullName', 'token', 'tokenParsed', 'userName']),
+    ...mapGetters('form', ['lang']),
   },
   created() {
     this.getUser();
@@ -77,8 +82,10 @@ export default {
         this.apiRes = user.data;
       } catch (error) {
         this.addNotification({
-          message: 'Failed to get user from RBAC, see console',
-          consoleError: `Error getting User from RBAC: ${error.message}`,
+          message: this.$t('trans.developer.notificationMsg'),
+          consoleError:
+            this.$t('trans.developer.notificationConsErr') +
+            `: ${error.message}`,
         });
       }
     },

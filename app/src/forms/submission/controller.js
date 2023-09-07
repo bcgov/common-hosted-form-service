@@ -15,7 +15,12 @@ module.exports = {
   update: async (req, res, next) => {
     try {
       const response = await service.update(req.params.formSubmissionId, req.body, req.currentUser, req.headers.referer);
-      res.status(200).json(response);
+      if (!response) {
+        // Return Bad request if we're trying to save draft on already submitted record
+        res.status(400).json({ detail: 'Incorrect Submission status.' });
+      } else {
+        res.status(200).json(response);
+      }
     } catch (error) {
       next(error);
     }
@@ -23,6 +28,32 @@ module.exports = {
   delete: async (req, res, next) => {
     try {
       const response = await service.delete(req.params.formSubmissionId, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  deleteMutipleSubmissions: async (req, res, next) => {
+    try {
+      let submissionIds = req.body && req.body.submissionIds ? req.body.submissionIds : [];
+      const response = await service.deleteMutipleSubmissions(submissionIds, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  restoreMutipleSubmissions: async (req, res, next) => {
+    try {
+      let submissionIds = req.body && req.body.submissionIds ? req.body.submissionIds : [];
+      const response = await service.restoreMutipleSubmissions(submissionIds, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  restore: async (req, res, next) => {
+    try {
+      const response = await service.restore(req.params.formSubmissionId, req.body, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -62,18 +93,17 @@ module.exports = {
   },
   addStatus: async (req, res, next) => {
     try {
-      const tasks = [
-        service.changeStatusState(req.params.formSubmissionId, req.body, req.currentUser),
-        service.read(req.params.formSubmissionId)
-      ];
+      const tasks = [service.changeStatusState(req.params.formSubmissionId, req.body, req.currentUser), service.read(req.params.formSubmissionId)];
       const [response, submission] = await Promise.all(tasks);
       // send an email (async in the background)
       if (req.body.code === Statuses.ASSIGNED && req.body.assignmentNotificationEmail) {
-        emailService.statusAssigned(submission.form.id, response[0], req.body.assignmentNotificationEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => { });
+        emailService
+          .statusAssigned(submission.form.id, response[0], req.body.assignmentNotificationEmail, req.body.revisionNotificationEmailContent, req.headers.referer)
+          .catch(() => {});
       } else if (req.body.code === Statuses.COMPLETED && req.body.submissionUserEmail) {
-        emailService.statusCompleted(submission.form.id, response[0], req.body.submissionUserEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => { });
+        emailService.statusCompleted(submission.form.id, response[0], req.body.submissionUserEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => {});
       } else if (req.body.code === Statuses.REVISING && req.body.submissionUserEmail) {
-        emailService.statusRevising(submission.form.id, response[0], req.body.submissionUserEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => { });
+        emailService.statusRevising(submission.form.id, response[0], req.body.submissionUserEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => {});
       }
       res.status(200).json(response);
     } catch (error) {
@@ -96,10 +126,30 @@ module.exports = {
       const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
       const contentDisposition = headers['content-disposition'];
 
-      res.status(status).set({
-        'Content-Disposition': contentDisposition ? contentDisposition : 'attachment',
-        'Content-Type': headers['content-type']
-      }).send(data);
+      res
+        .status(status)
+        .set({
+          'Content-Disposition': contentDisposition ? contentDisposition : 'attachment',
+          'Content-Type': headers['content-type'],
+        })
+        .send(data);
+    } catch (error) {
+      next(error);
+    }
+  },
+  draftTemplateUploadAndRender: async (req, res, next) => {
+    try {
+      const templateBody = { ...req.body.template, data: req.body.submission.data };
+      const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
+      const contentDisposition = headers['content-disposition'];
+
+      res
+        .status(status)
+        .set({
+          'Content-Disposition': contentDisposition ? contentDisposition : 'attachment',
+          'Content-Type': headers['content-type'],
+        })
+        .send(data);
     } catch (error) {
       next(error);
     }

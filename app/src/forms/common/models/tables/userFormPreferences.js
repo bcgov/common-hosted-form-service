@@ -21,9 +21,9 @@ class UserFormPreferences extends Timestamps(Model) {
         userId: { type: 'string', pattern: Regex.UUID },
         formId: { type: 'string', pattern: Regex.UUID },
         preferences: { type: 'object' },
-        ...stamps
+        ...stamps,
       },
-      additionalProperties: false
+      additionalProperties: false,
     };
   }
 }

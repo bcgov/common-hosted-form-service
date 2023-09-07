@@ -2,19 +2,18 @@
   <div>
     <FormViewer :submissionId="s" :readOnly="true" displayTitle>
       <template #alert="{ form }">
-        <div class="mb-5">
-          <h1 class="mb-5">
+        <div class="mb-5" :class="{ 'dir-rtl': isRTL }">
+          <h1 class="mb-5" :lang="lang">
             <v-icon large color="success">check_circle</v-icon>
-            Your form has been submitted successfully
+            {{ $t('trans.sucess.sucessFormSubmissn') }}
           </h1>
           <div v-if="form.showSubmissionConfirmation">
             <h3>
-              <span class="d-print-none">
-                If you wish to keep a record of this submission, you can keep
-                the following
+              <span class="d-print-none" :lang="lang">
+                {{ $t('trans.sucess.keepRecord') }}
               </span>
-              <span>
-                Confirmation ID:
+              <span :lang="lang">
+                {{ $t('trans.sucess.confirmationId') }}:
                 <mark>{{ s.substring(0, 8).toUpperCase() }}</mark>
               </span>
             </h3>
@@ -47,6 +46,9 @@ export default {
     FormViewer,
     RequestReceipt,
   },
-  computed: mapGetters('auth', ['email'])
+  computed: {
+    ...mapGetters('auth', ['email']),
+    ...mapGetters('form', ['isRTL', 'lang']),
+  },
 };
 </script>

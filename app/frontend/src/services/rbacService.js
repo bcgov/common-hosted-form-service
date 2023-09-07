@@ -12,11 +12,11 @@ export default {
   },
 
   /**
-  * @function getUserSubmissions
-  * Get the submissions for a form that the current user has permissions on
-  * @param {Object} [params={}] The query parameters
-  * @returns {Promise} An axios response
-  */
+   * @function getUserSubmissions
+   * Get the submissions for a form that the current user has permissions on
+   * @param {Object} [params={}] The query parameters
+   * @returns {Promise} An axios response
+   */
   getUserSubmissions(params = {}) {
     return appAxios().get(`${ApiRoutes.RBAC}/current/submissions`, { params });
   },
@@ -71,6 +71,20 @@ export default {
     return appAxios().put(`${ApiRoutes.RBAC}/users`, requestBody, { params });
   },
 
+  /**
+   * @function removeMultiUsers
+   * removes selected users from the from
+   * @param {Object} requestBody The request body for the relationships
+   * @returns {Promise} An axios response
+   */
+  removeMultiUsers(requestBody, params = {}) {
+    return appAxios().delete(
+      `${ApiRoutes.RBAC}/users?formId=${params.formId}`,
+      { data: requestBody },
+      { params }
+    );
+  },
+
   //
   // Submission Management calls
   //
@@ -93,6 +107,8 @@ export default {
    * @returns {Promise} An axios response
    */
   setSubmissionUserPermissions(requestBody, params = {}) {
-    return appAxios().put(`${ApiRoutes.RBAC}/submissions`, requestBody, { params });
+    return appAxios().put(`${ApiRoutes.RBAC}/submissions`, requestBody, {
+      params,
+    });
   },
 };

@@ -9,6 +9,7 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 
 const zeroUuid = '00000000-0000-0000-0000-000000000000';
+const zeroGuid = '00000000000000000000000000000000';
 
 const keycloakHelper = (mockKcObject) => {
   // TODO: Find better way to set up keycloak object mock without deleting first
@@ -19,7 +20,7 @@ const keycloakHelper = (mockKcObject) => {
     configurable: true, // Needed to allow deletions later
     get() {
       return mockKcObject;
-    }
+    },
   });
 };
 
@@ -50,17 +51,18 @@ describe('auth getters', () => {
             name: 'John Doe',
             email: 'e@mail.com',
             identity_provider: 'idir',
+            idp_userid: zeroGuid,
             preferred_username: 'johndoe',
             realm_access: {},
             resource_access: {
               chefs: {
-                roles: roles
-              }
-            }
+                roles: roles,
+              },
+            },
           },
-          userName: 'uName'
+          userName: 'uName',
         };
-      }
+      },
     });
   });
 
@@ -93,7 +95,7 @@ describe('auth getters', () => {
 
   it('email should return an empty string', () => {
     keycloakHelper({
-      tokenParsed: undefined
+      tokenParsed: undefined,
     });
 
     expect(store.getters.email).toBeFalsy();
@@ -136,8 +138,8 @@ describe('auth getters', () => {
       authenticated: authenticated,
       tokenParsed: {
         realm_access: {},
-        resource_access: {}
-      }
+        resource_access: {},
+      },
     });
 
     expect(store.getters.authenticated).toBeTruthy();
@@ -183,6 +185,11 @@ describe('auth getters', () => {
 
   it('keycloakReady should return a boolean', () => {
     expect(store.getters.keycloakReady).toBeTruthy();
+  });
+
+  it('identityProviderIdentity should return a string', () => {
+    expect(store.getters.identityProviderIdentity).toBeTruthy();
+    expect(store.getters.identityProviderIdentity).toMatch(zeroGuid);
   });
 
   it('keycloakSubject should return a string', () => {
@@ -237,14 +244,14 @@ describe('auth getters', () => {
       fullName: 'John Doe',
       email: 'e@mail.com',
       idp: 'idir',
-      public: false
+      public: false,
     });
   });
 
   it('creates a public user when not authenticated', () => {
     keycloakHelper({
       authenticated: false,
-      tokenParsed: undefined
+      tokenParsed: undefined,
     });
 
     expect(store.getters.user).toBeTruthy();
@@ -255,7 +262,7 @@ describe('auth getters', () => {
       fullName: '',
       email: '',
       idp: 'public',
-      public: true
+      public: true,
     });
   });
 });

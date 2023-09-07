@@ -13,24 +13,38 @@ describe('form getters', () => {
   const sampleState = {
     drafts: [],
     form: {
-      name: 'ABC'
+      name: 'ABC',
+      reminder: {
+        enabled: false,
+        allowAdditionalNotifications: true,
+      },
+      schedule: {
+        enabled: true,
+        scheduleType: 'manual',
+      },
     },
     formList: [
       {
-        name: 'ABC'
-      }, {
-        name: 'XYZ'
-      }
+        name: 'ABC',
+      },
+      {
+        name: 'XYZ',
+      },
     ],
     formSubmission: {
       confirmationId: '1234',
       submission: {
-        data: { field: '123' }
-      }
+        data: { field: '123' },
+      },
     },
     permissions: ['SUBMIT', 'READ'],
     submissionList: ['test', 'sub'],
-    version: { type: 'form' }
+    version: { type: 'form' },
+    subscriptionData: { 
+      subscribeEvent: 'test',
+      endpointUrl: 'http://localhost.com',
+      endpointToken: '89abddfb-2cff-4fda-83e6-13221f0c3d4f',
+    }
   };
 
   beforeEach(() => {
@@ -80,5 +94,17 @@ describe('form getters', () => {
 
   it('version should return the state version', () => {
     expect(store.getters.version).toEqual(sampleState.version);
+  });
+
+  it('fcNamesProactiveHelpList should return the state fcNamesProactiveHelpList', () => {
+    expect(store.getters.fcNamesProactiveHelpList).toEqual(sampleState.fcNamesProactiveHelpList);
+  });
+
+  it('fcProactiveHelpImageUrl should return the state fcProactiveHelpImageUrl', () => {
+    expect(store.getters.fcProactiveHelpImageUrl).toEqual(sampleState.fcProactiveHelpImageUrl);
+  });
+
+  it('subscriptionData should return the state subscriptionData', () => {
+    expect(store.getters.subscriptionData).toEqual(sampleState.subscriptionData);
   });
 });

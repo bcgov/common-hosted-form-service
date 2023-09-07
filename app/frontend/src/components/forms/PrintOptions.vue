@@ -1,40 +1,79 @@
 <template>
-  <span>
+  <span :class="{ 'dir-rtl': isRTL }">
     <v-tooltip bottom>
       <template #activator="{ on, attrs }">
-        <v-btn class="mx-1" @click="dialog = true" color="primary" icon v-bind="attrs" v-on="on">
+        <v-btn
+          class="mx-1"
+          @click="dialog = true"
+          color="primary"
+          icon
+          v-bind="attrs"
+          v-on="on"
+        >
           <v-icon>print</v-icon>
         </v-btn>
       </template>
-      <span>Print</span>
+      <span :lang="lang">{{ $t('trans.printOptions.print') }} </span>
     </v-tooltip>
 
-    <v-dialog v-model="dialog" width="900" content-class="export-submissions-dlg">
-      <v-card>
-        <v-card-title class="text-h5 pb-0">Download Options</v-card-title>
+    <v-dialog
+      v-model="dialog"
+      width="900"
+      content-class="export-submissions-dlg"
+    >
+      <v-card :class="{ 'dir-rtl': isRTL }">
+        <v-card-title class="text-h5 pb-0" :lang="lang">{{
+          $t('trans.printOptions.downloadOptions')
+        }}</v-card-title>
         <v-card-text>
           <hr />
-          <p>
-            <strong>1.</strong> <a href="https://github.com/bcgov/common-hosted-form-service/wiki/Printing-from-a-browser" target="blank">Print</a> the page from your browser
+          <p :lang="lang">
+            <strong>1. </strong>
+            <a
+              href="https://github.com/bcgov/common-hosted-form-service/wiki/Printing-from-a-browser"
+              target="blank"
+              :hreflang="lang"
+              >{{ $t('trans.printOptions.print') }}</a
+            >
+            {{ $t('trans.printOptions.pageFromBrowser') }}
           </p>
           <v-btn class="mb-5 mr-5" color="primary" @click="printBrowser">
-            <span>Browser Print</span>
+            <span :lang="lang">{{
+              $t('trans.printOptions.browserPrint')
+            }}</span>
           </v-btn>
 
-          <p>
-            <strong>2.</strong> Upload a <a href="https://github.com/bcgov/common-hosted-form-service/wiki/CDOGS-Template-Upload" target="blank">CDOGS template</a> to have a structured version
+          <p :lang="lang">
+            <strong>2.</strong> {{ $t('trans.printOptions.uploadA') }}
+            <a
+              href="https://github.com/bcgov/common-hosted-form-service/wiki/CDOGS-Template-Upload"
+              target="blank"
+              :hreflang="lang"
+              >{{ $t('trans.printOptions.cDogsTemplate') }}</a
+            >
+            {{ $t('trans.printOptions.uploadB') }}
           </p>
           <v-file-input
+            :class="{ label: isRTL }"
+            :style="isRTL ? { gap: '10px' } : null"
             counter
             :clearable="true"
-            label="Upload template file"
+            :label="$t('trans.printOptions.uploadTemplateFile')"
             persistent-hint
             prepend-icon="attachment"
             required
             mandatory
             show-size
             v-model="templateForm.files"
-          />
+            :lang="lang"
+          >
+            <template v-slot:prepend>
+              <span class="label">
+                <v-icon>attachment</v-icon>
+              </span>
+            </template>
+          </v-file-input>
+
           <v-card-actions>
             <v-tooltip top>
               <template #activator="{ on }">
@@ -48,10 +87,14 @@
                   v-on="on"
                 >
                   <v-icon :left="$vuetify.breakpoint.smAndUp">save</v-icon>
-                  <span>Template Print</span>
+                  <span :lang="lang">{{
+                    $t('trans.printOptions.templatePrint')
+                  }}</span>
                 </v-btn>
               </template>
-              <span>Submit to CDOGS and Download</span>
+              <span :lang="lang">{{
+                $t('trans.printOptions.submitButtonTxt')
+              }}</span>
             </v-tooltip>
           </v-card-actions>
         </v-card-text>
@@ -61,8 +104,8 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-import { formService } from '@/services';
+import { mapActions, mapGetters } from 'vuex';
+import { formService, utilsService } from '@/services';
 import { NotificationTypes } from '@/utils/constants';
 
 export default {
@@ -80,11 +123,17 @@ export default {
   },
   props: {
     submissionId: String,
+    submission: {
+      type: Object,
+      default: undefined,
+    },
   },
+
   computed: {
     files() {
       return this.templateForm.files;
     },
+    ...mapGetters('form', ['isRTL', 'lang']),
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
@@ -116,7 +165,9 @@ export default {
       });
     },
     getDispositionFilename(disposition) {
-      return disposition ? disposition.substring(disposition.indexOf('filename=') + 9) : undefined;
+      return disposition
+        ? disposition.substring(disposition.indexOf('filename=') + 9)
+        : undefined;
     },
     createDownload(blob, filename = undefined) {
       const url = window.URL.createObjectURL(blob);
@@ -147,8 +198,17 @@ export default {
           outputFileType
         );
 
+        let response = null;
         // Submit Template to CDOGS API
-        const response = await formService.docGen(this.submissionId, body);
+        if (this.submissionId?.length > 0) {
+          response = await formService.docGen(this.submissionId, body);
+        } else {
+          const draftData = {
+            template: body,
+            submission: this.submission,
+          };
+          response = await utilsService.draftDocGen(draftData);
+        }
 
         // create file to download
         const filename = this.getDispositionFilename(
@@ -162,13 +222,15 @@ export default {
         // Generate Temporary Download Link
         this.createDownload(blob, filename);
         this.addNotification({
-          message: 'Document generated successfully',
+          message: this.$t('trans.printOptions.docGrnSucess'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (e) {
         this.addNotification({
-          message: 'Failed to generate Document',
-          consoleError: `Error submitting template: ${e.message}`,
+          message: this.$t('trans.printOptions.failedDocGenErrMsg'),
+          consoleError: this.$t('trans.printOptions.failedDocGenErrMsg', {
+            error: e.message,
+          }),
         });
       } finally {
         this.loading = false;

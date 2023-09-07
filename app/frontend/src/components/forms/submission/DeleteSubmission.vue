@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <span :class="{ 'dir-rtl': isRTL }">
     <v-tooltip bottom>
       <template #activator="{ on, attrs }">
         <v-btn
@@ -13,7 +13,14 @@
           <v-icon>delete</v-icon>
         </v-btn>
       </template>
-      <span>Delete This {{ isDraft ? 'Draft' : 'Submission' }}</span>
+      <span :lang="lang"
+        >{{ $t('trans.deleteSubmission.deleteThis') }}
+        {{
+          isDraft
+            ? $t('trans.deleteSubmission.drafts')
+            : $t('trans.deleteSubmission.submission')
+        }}</span
+      >
     </v-tooltip>
 
     <BaseDialog
@@ -22,13 +29,23 @@
       @close-dialog="showDeleteDialog = false"
       @continue-dialog="delSub"
     >
-      <template #title>Confirm Deletion</template>
+      <template #title>
+        <span :lang="lang">{{
+          $t('trans.deleteSubmission.confirmDeletion')
+        }}</span></template
+      >
       <template #text>
-        Are you sure you wish to delete this
-        {{ isDraft ? 'draft' : 'form submission' }}?
+        <span :lang="lang">
+          {{ $t('trans.deleteSubmission.deleteWarning') }}
+          {{
+            isDraft
+              ? $t('trans.deleteSubmission.drafts')
+              : $t('trans.deleteSubmission.formSubmission')
+          }}?</span
+        >
       </template>
       <template #button-text-continue>
-        <span>Delete</span>
+        <span :lang="lang">{{ $t('trans.deleteSubmission.delete') }}</span>
       </template>
     </BaseDialog>
   </span>
@@ -57,7 +74,7 @@ export default {
       showDeleteDialog: false,
     };
   },
-  computed: mapGetters('form', ['form']),
+  computed: mapGetters('form', ['form', 'lang', 'isRTL']),
   methods: {
     ...mapActions('form', ['deleteSubmission']),
     async delSub() {

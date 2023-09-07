@@ -2,12 +2,12 @@
  * BCGov Style
  * This globally extends the base Vuetify style
  */
-@import url("https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900");
-@import url("https://fonts.googleapis.com/css?family=Material+Icons");
-@import "~material-design-icons-iconfont/dist/material-design-icons.css";
-@import "~bootstrap-scss/bootstrap.scss"; // TODO: import this only for form designer/renderer formio components
-@import "~vuetify/src/styles/styles.sass";
-@import "~vue-json-pretty/lib/styles.css";
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900');
+@import url('https://fonts.googleapis.com/css?family=Material+Icons');
+@import '~material-design-icons-iconfont/dist/material-design-icons.css';
+@import '~bootstrap-scss/bootstrap.scss'; // TODO: import this only for form designer/renderer formio components
+@import '~vuetify/src/styles/styles.sass';
+@import '~vue-json-pretty/lib/styles.css';
 
 // Variables
 $bcgov-blue: #003366;
@@ -38,7 +38,8 @@ body {
 
 // Typography
 .v-application {
-  font-family: -apple-system, BlinkMacSystemFont, BCSans, Roboto, Verdana, Arial, sans-serif !important;
+  font-family: -apple-system, BlinkMacSystemFont, BCSans, Roboto, Verdana, Arial,
+    sans-serif !important;
   line-height: 1.4;
   font-size: 0.875rem;
 }
@@ -260,7 +261,7 @@ a,
 
 // BCGov Alert Style Override
 .v-alert {
-  font-family: "BC Sans", "Noto Sans", Arial, "sans serif";
+  font-family: 'BC Sans', 'Noto Sans', Arial, 'sans serif';
   line-height: 1.5em;
   border-radius: 4px;
   font-weight: 700;
@@ -282,7 +283,7 @@ a,
 // override preview panel in form builder component editor modal
 .component-preview {
   // layout
-  div[class^="col-"]:nth-child(n + 1) {
+  div[class^='col-']:nth-child(n + 1) {
     padding-top: 0; // make nested columns line up vertically alongside components in non-nested adjacent columns
   }
 
@@ -297,10 +298,10 @@ a,
       color: black;
     }
     .fa-minus-square-o::before {
-      content: "\f106";
+      content: '\f106';
     }
     .fa-plus-square-o::before {
-      content: "\f107";
+      content: '\f107';
     }
   }
 
@@ -397,8 +398,8 @@ a,
     }
 
     &:disabled,
-    &[disabled="disabled"],
-    &[disabled="disabled"] &:hover {
+    &[disabled='disabled'],
+    &[disabled='disabled'] &:hover {
       @extend .v-btn--disabled;
       cursor: default;
       text-decoration: none;
@@ -441,7 +442,7 @@ a,
   // hide asterisks after input in Data Grid when labels appear as table headers
   .formio-component-datagrid {
     label.field-required.control-label--hidden::after {
-      content: "";
+      content: '';
     }
   }
 
@@ -565,4 +566,58 @@ a,
   opacity: 0.3;
   color: white;
   background: $bcgov-blue;
+}
+
+.info-helper {
+  color: #00000061;
+  margin-top: 2px;
+}
+
+.info-helper:hover {
+  color: #01254a;
+}
+
+.v-tooltip__content {
+  pointer-events: auto !important; //Have to replace Tooltips default behaviour pointer-events: none as we have some tooltips with External Links.
+}
+
+.preview_info_link_field_white {
+  color: white !important;
+  text-decoration: underline;
+}
+.center_vertical_content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.label .v-label {
+  right: 0 !important;
+  left: auto !important;
+}
+
+
+.label span {
+  margin-right:30px;
+}
+
+.flex-xs-column-reverse {
+  flex-direction: column-reverse;
+}
+
+.flex-xs-column {
+  flex-direction: column;
+}
+
+.dir-rtl {
+  direction: rtl !important;
+  text-align: right;
+}
+
+
+.dir-ltl {
+  direction: ltr !important;
+  text-align: left;
 }

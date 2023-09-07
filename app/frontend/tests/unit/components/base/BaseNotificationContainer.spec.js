@@ -1,6 +1,6 @@
 import { createLocalVue, shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
-
+import i18n from '@/internationalization';
 import BaseNotificationContainer from '@/components/base/BaseNotificationContainer.vue';
 
 const localVue = createLocalVue();
@@ -15,10 +15,10 @@ describe('BaseNotificationContainer.vue', () => {
         notifications: {
           namespaced: true,
           state: {
-            notifications: []
-          }
-        }
-      }
+            notifications: [],
+          },
+        },
+      },
     });
   });
 
@@ -26,7 +26,8 @@ describe('BaseNotificationContainer.vue', () => {
     const wrapper = shallowMount(BaseNotificationContainer, {
       localVue,
       store,
-      stubs: ['BaseNotificationBar']
+      stubs: ['BaseNotificationBar'],
+      i18n
     });
 
     expect(wrapper.html()).toMatch('notification-container');

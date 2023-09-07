@@ -1,52 +1,18 @@
-const jsonexport = require('jsonexport');
-const { Model } = require('objection');
 const Problem = require('api-problem');
-
-const { Form, FormVersion } = require('../common/models');
-
-class SubmissionData extends Model {
-  static get tableName() {
-    return 'submissions_data_vw';
-  }
-
-  static get modifiers() {
-    return {
-      filterCreatedAt(query, minDate, maxDate) {
-        if (minDate && maxDate) {
-          query.whereBetween('createdAt', [minDate, maxDate]);
-        } else if (minDate) {
-          query.where('createdAt', '>=', minDate);
-        } else if (maxDate) {
-          query.where('createdAt', '<=', maxDate);
-        }
-      },
-      filterDeleted(query, value) {
-        if (!value) {
-          query.where('deleted', false);
-        }
-      },
-      filterDrafts(query, value) {
-        if (!value) {
-          query.where('draft', false);
-        }
-      },
-      orderDefault(builder) {
-        builder.orderBy('createdAt', 'DESC');
-      }
-    };
-  }
-}
-
-const EXPORT_TYPES = Object.freeze({
-  submissions: 'submissions',
-  default: 'submissions'
-});
-
-const EXPORT_FORMATS = Object.freeze({
-  csv: 'csv',
-  json: 'json',
-  default: 'csv'
-});
+const { flattenComponents, unwindPath, submissionHeaders } = require('../common/utils');
+const { EXPORT_FORMATS, EXPORT_TYPES } = require('../common/constants');
+const { Form, FormVersion, SubmissionData } = require('../common/models');
+const _ = require('lodash');
+const { Readable } = require('stream');
+const { unwind, flatten } = require('@json2csv/transforms');
+const { Transform } = require('@json2csv/node');
+const fs = require('fs-extra');
+const os = require('os');
+const config = require('config');
+const fileService = require('../file/service');
+const emailService = require('../email/emailService');
+const { v4: uuidv4 } = require('uuid');
+const nestedObjectsUtil = require('nested-objects-util');
 
 const service = {
   /**
@@ -55,7 +21,7 @@ const service = {
    * @param {Object} schema A form.io schema
    * @returns {String[]} An array of strings
    */
-  _readSchemaFields: (schema) => {
+  _readSchemaFieldsV2: (schema) => {
     /**
      * @function findFields
      * Recursively traverses the form.io schema to extract all relevant content field names
@@ -68,16 +34,15 @@ const service = {
 
       // if an input component (not hidden or a button)
       if (obj.key && obj.input && !obj.hidden && obj.type !== 'button') {
-
         // if the fieldname we want is defined in component's sub-values
         const componentsWithSubValues = ['simplecheckboxes', 'selectboxes', 'survey', 'address'];
         if (obj.type && componentsWithSubValues.includes(obj.type)) {
           // for survey component, get field name from obj.questions.value
           if (obj.type === 'survey') {
-            obj.questions.forEach(e => fields.push(`${obj.key}.${e.value}`));
+            obj.questions.forEach((e) => fields.push(`${obj.key}.${e.value}`));
           }
           // for checkboxes and selectboxes, get field name from obj.values.value
-          else if (obj.values) obj.values.forEach(e => fields.push(`${obj.key}.${e.value}`));
+          else if (obj.values) obj.values.forEach((e) => fields.push(`${obj.key}.${e.value}`));
           // else push the parent field
           else {
             fields.push(obj.key);
@@ -87,33 +52,28 @@ const service = {
         // get these sub-vales so they appear in ordered columns
         else if (obj.type === 'simplefile') {
           fields.push(`${obj.key}.url`, `${obj.key}.url`, `${obj.key}.data.id`, `${obj.key}.size`, `${obj.key}.storage`, `${obj.key}.originalName`);
-        }
-
-        /**
-         * component's 'tree' property is true for input components with child inputs,
-         * which we get recursively.
-         * also exclude fieldnames defined in submission
-         * eg datagrid, container, tree
-         */
-        else if (!obj.tree && !fieldsDefinedInSubmission.includes(obj.type)) {
+        } else if (!obj.tree && !fieldsDefinedInSubmission.includes(obj.type)) {
+          /**
+           * component's 'tree' property is true for input components with child inputs,
+           * which we get recursively.
+           * also exclude fieldnames defined in submission
+           * eg datagrid, container, tree
+           */
           // Add current field key
           fields.push(obj.key);
         }
-
       }
-
 
       // Recursively traverse children array levels
       Object.entries(obj).forEach(([k, v]) => {
         if (Array.isArray(v) && v.length) {
           // Enumerate children fields
-          const children = obj[k].flatMap(e => {
+          const children = obj[k].flatMap((e) => {
             const cFields = findFields(e);
             // Prepend current key to field name if component's 'tree' property is true
             // eg: datagrid1.textFieldInDataGrid1
             // TODO: find fields in 'table' component
-            return ((obj.tree) && !fieldsDefinedInSubmission.includes(obj.type)) ?
-              cFields.flatMap(c => `${obj.key}.${c}`) : cFields;
+            return obj.tree && !fieldsDefinedInSubmission.includes(obj.type) ? cFields.flatMap((c) => `${obj.key}.${c}`) : cFields;
           });
           if (children.length) {
             Array.prototype.push.apply(fields, children); // concat into first argument
@@ -126,27 +86,101 @@ const service = {
 
     return findFields(schema);
   },
+  _readSchemaFields: async (schema) => {
+    return await flattenComponents(schema.components);
+  },
 
-  _buildCsvHeaders: async (form, data) => {
+  /**
+   * Help function to make header column order same as it goes in form
+   */
+  mapOrder: (array, order) => {
+    let result = [];
+    let helpMap = {};
+    array.map((ar) => {
+      if (ar.search(/\.\d*\./) !== -1 || ar.search(/\.\d*$/) !== -1) {
+        if (helpMap[ar.replace(/\.\d*\./gi, '.')] && Array.isArray(helpMap[ar.replace(/\.\d*\./gi, '.')])) {
+          helpMap[ar.replace(/\.\d*\./gi, '.')].push(ar);
+          Object.assign(helpMap, { [ar.replace(/\.\d*\./gi, '.')]: helpMap[ar.replace(/\.\d*\./gi, '.')] });
+        } else if (helpMap[ar.replace(/\.\d*$/gi, '')] && Array.isArray(helpMap[ar.replace(/\.\d*$/gi, '')])) {
+          helpMap[ar.replace(/\.\d*$/gi, '')].push(ar);
+          Object.assign(helpMap, { [ar.replace(/\.\d*$/gi, '')]: helpMap[ar.replace(/\.\d*$/gi, '')] });
+        } else {
+          if (ar.search(/\.\d*\./) !== -1) {
+            Object.assign(helpMap, { [ar.replace(/\.\d*\./gi, '.')]: [ar] });
+          } else if (ar.search(/\.\d*$/) !== -1) {
+            Object.assign(helpMap, { [ar.replace(/\.\d*$/gi, '')]: [ar] });
+          }
+        }
+      }
+    });
+    array.map((ar) => {
+      if (ar.substring(0, 5) === 'form.') {
+        result.push(ar);
+      }
+    });
+    order.map((ord) => {
+      if (array.includes(ord) && !helpMap[ord]) {
+        result.push(ord);
+      } else if (helpMap[ord]) {
+        helpMap[ord].map((h) => result.push(h));
+      }
+    });
+    return result;
+  },
+
+  _buildCsvHeaders: async (form, data, version, fields, singleRow = false) => {
     /**
      * get column order to match field order in form design
      * object key order is not preserved when submission JSON is saved to jsonb field type in postgres.
      */
 
     // get correctly ordered field names (keys) from latest form version
-    const latestFormDesign = await service._readLatestFormSchema(form.id);
-    const fieldNames = await service._readSchemaFields(latestFormDesign);
+    const latestFormDesign = await service._readLatestFormSchema(form.id, version);
 
+    const fieldNames = await service._readSchemaFields(latestFormDesign, data);
     // get meta properties in 'form.<child.key>' string format
-    const metaKeys = Object.keys(data[0].form);
-    const metaHeaders = metaKeys.map(x => 'form.' + x);
-
+    const metaKeys = Object.keys(data.length > 0 && data[0].form);
+    const metaHeaders = metaKeys.map((x) => 'form.' + x);
     /**
      * make other changes to headers here if required
      * eg: use field labels as headers
      * see: https://github.com/kaue/jsonexport
      */
-    return metaHeaders.concat(fieldNames);
+    let formSchemaheaders = Array.isArray(data) && data.length > 0 && !singleRow ? metaHeaders.concat(fieldNames) : metaHeaders;
+    if (Array.isArray(data) && data.length > 0) {
+      let flattenSubmissionHeaders = [];
+      // if we generate single row headers we need to keep in mind of possible multi children nested data thus do flattening
+      if (singleRow) {
+        flattenSubmissionHeaders = Object.keys(nestedObjectsUtil.flatten(data));
+        // '0**.field_name' removing starting digits from flaten object properies to get unique fields after
+        flattenSubmissionHeaders = flattenSubmissionHeaders.map((header) => header.replace(/^\d*\./gi, ''));
+        // getting unique values
+        flattenSubmissionHeaders = [...new Set(flattenSubmissionHeaders)];
+      } else {
+        flattenSubmissionHeaders = Array.from(submissionHeaders(data[0]));
+      }
+      // apply help function to make header column order same as it goes in form
+      const flattenSubmissionHeadersOrdered = service.mapOrder(flattenSubmissionHeaders, fieldNames);
+      // we have 1 case when if field is DataGridMap type it'd not included into sorted flattened array,
+      // thus we add it manually from original flatten array
+      const dataGridFields = flattenSubmissionHeaders.filter((x) => !flattenSubmissionHeadersOrdered.includes(x));
+      dataGridFields.map((dgf) => flattenSubmissionHeadersOrdered.push(dgf));
+      formSchemaheaders = formSchemaheaders.concat(flattenSubmissionHeadersOrdered.filter((item) => formSchemaheaders.indexOf(item) < 0));
+    }
+
+    if (fields) {
+      return formSchemaheaders.filter((header) => {
+        if (Array.isArray(fields) && fields.includes(header) && !singleRow) {
+          return header;
+        } else if (Array.isArray(fields) && singleRow) {
+          const unFlattenHeader = header.replace(/\.\d\./gi, '.');
+          if (fields.includes(unFlattenHeader)) {
+            return header;
+          }
+        }
+      });
+    }
+    return formSchemaheaders;
   },
 
   _exportType: (params = {}) => {
@@ -163,23 +197,17 @@ const service = {
     return `${form.snake()}_${type}.${format}`.toLowerCase();
   },
 
-  _submissionsColumns: (form, params = {}) => {
-    if (params.columns) {
-      return params.columns;
-    }
+  _submissionsColumns: (form, params) => {
     // Custom columns not defined - return default column selection behavior
-    let columns = [
-      'confirmationId',
-      'formName',
-      'version',
-      'createdAt',
-      'fullName',
-      'username',
-      'email'
-    ];
+    let columns = ['confirmationId', 'formName', 'version', 'createdAt', 'fullName', 'username', 'email'];
     // if form has 'status updates' enabled in the form settings include these in export
     if (form.enableStatusUpdates) {
       columns = columns.concat(['status', 'assignee', 'assigneeEmail']);
+    }
+    // Let's add form level columns like deleted or draft
+    if (params?.columns?.length) {
+      let optionalAcceptedColumns = ['draft', 'deleted', 'updatedAt']; //'draft', 'deleted', 'updatedAt' columns needed for ETL process at this moment
+      columns = columns.concat((Array.isArray(params.columns) ? [...params.columns] : [params.columns]).filter((column) => optionalAcceptedColumns.includes(column)));
     }
     // and join the submission data
     return columns.concat(['submission']);
@@ -189,112 +217,238 @@ const service = {
     return Form.query().findById(formId).throwIfNotFound();
   },
 
-  _getData: (exportType, form, params = {}) => {
+  _getData: async (exportType, formVersion, form, params = {}) => {
     if (EXPORT_TYPES.submissions === exportType) {
-      return service._getSubmissions(form, params);
+      let subs = await service._getSubmissions(form, params, formVersion);
+      return subs;
     }
     return {};
   },
-
-  _formatData: async (exportFormat, exportType, form, data = {}) => {
+  _formatData: async (exportFormat, exportType, exportTemplate, form, data = {}, columns, version, emailExport, currentUser, referer) => {
     // inverting content structure nesting to prioritize submission content clarity
-    const formatted = data.map(obj => {
+    const formatted = data.map((obj) => {
       const { submission, ...form } = obj;
       return Object.assign({ form: form }, submission);
     });
 
     if (EXPORT_TYPES.submissions === exportType) {
       if (EXPORT_FORMATS.csv === exportFormat) {
-        return await service._formatSubmissionsCsv(form, formatted);
+        let formVersion = version ? parseInt(version) : 1;
+        return await service._formatSubmissionsCsv(form, formatted, exportTemplate, columns, formVersion, emailExport, currentUser, referer);
       }
       if (EXPORT_FORMATS.json === exportFormat) {
         return await service._formatSubmissionsJson(form, formatted);
       }
     }
-    throw new Problem(422, { detail: 'Could not create an export for this form. Invalid options provided' });
+    throw new Problem(422, {
+      detail: 'Could not create an export for this form. Invalid options provided',
+    });
   },
 
-  _getSubmissions: (form, params) => {
+  _getSubmissions: async (form, params, version) => {
+    //let preference = params.preference ? JSON.parse(params.preference) : undefined;
+    let preference;
+    if (params.preference && _.isString(params.preference)) {
+      preference = JSON.parse(params.preference);
+    } else {
+      preference = params.preference;
+    }
+    // let submissionData;
     // params for this export include minDate and maxDate (full timestamp dates).
     return SubmissionData.query()
-      .column(service._submissionsColumns(form, params))
+      .select(service._submissionsColumns(form, params))
       .where('formId', form.id)
-      .modify('filterCreatedAt', params.minDate, params.maxDate)
+      .modify('filterVersion', version)
+      .modify('filterCreatedAt', preference && preference.minDate, preference && preference.maxDate)
+      .modify('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate)
+      .modify('filterStatus', params.status)
       .modify('filterDeleted', params.deleted)
       .modify('filterDrafts', params.drafts)
-      .modify('orderDefault');
+      .modify('orderDefault')
+      .then((submissionData) => {
+        if (submissionData == undefined || submissionData == null || submissionData.length == 0) return [];
+        return service._submissionFilterByUnsubmit(submissionData);
+      });
   },
 
+  _submissionFilterByUnsubmit: (submissionData) => {
+    for (let index in submissionData) {
+      let keys = Object.keys(submissionData[index].submission);
+      for (let key of keys) {
+        if (key === 'submit') {
+          delete submissionData[index].submission[key];
+        }
+      }
+    }
+    return submissionData;
+  },
   _formatSubmissionsJson: (form, data) => {
     return {
       data: data,
       headers: {
         'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.json)}"`,
-        'content-type': 'text/json'
-      }
+        'content-type': 'text/json',
+      },
     };
   },
-
-  _formatSubmissionsCsv: async (form, data) => {
+  _formatSubmissionsCsv: async (form, data, exportTemplate, fields, version, emailExport, currentUser, referer) => {
     try {
-      const options = {
-        fillGaps: true,
-        fillTopRow: true,
-        // Leaving this option here if we need it. This is the original csv setup where the submission just prints out in 1 column as JSON
-        //definitions to type cast
-        // typeHandlers: {
-        //   Object: function (value, name) {
-        //     if (value instanceof Object) {
-        //       if (name === 'submission') {
-        //         // not really sure what the best representation for JSON is inside a csv...
-        //         // this will produce a "" string with all the fields and values like ""field"":""value""
-        //         return JSON.stringify(value);
-        //       }
-        //     }
-        //     return value;
-        //   }
-        // }
-
-        // re-organize our headers to change column ordering or header labels, etc
-        headers: await service._buildCsvHeaders(form, data)
-      };
-
-      const csv = await jsonexport(data, options);
-      return {
-        data: csv,
-        headers: {
-          'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv)}"`,
-          'content-type': 'text/csv'
-        }
-      };
+      switch (exportTemplate) {
+        case 'multiRowEmptySpacesCSVExport':
+          return service._multiRowsCSVExport(form, data, version, true, fields, emailExport, currentUser, referer);
+        case 'multiRowBackFilledCSVExport':
+          return service._multiRowsCSVExport(form, data, version, false, fields, emailExport, currentUser, referer);
+        case 'singleRowCSVExport':
+          return service._singleRowCSVExport(form, data, version, fields, currentUser, emailExport, referer);
+        case 'unFormattedCSVExport':
+          return service._unFormattedCSVExport(form, data, emailExport, currentUser, referer);
+        default:
+        // code block
+      }
     } catch (e) {
-      throw new Problem(500, { detail: `Could not make a csv export of submissions for this form. ${e.message}` });
+      throw new Problem(500, {
+        detail: `Could not make a csv export of submissions for this form. ${e.message}`,
+      });
     }
   },
+  _multiRowsCSVExport: async (form, data, version, blankout, fields, emailExport, currentUser, referer) => {
+    const pathToUnwind = await unwindPath(data);
+    let headers = await service._buildCsvHeaders(form, data, version, fields);
 
-  _readLatestFormSchema: (formId) => {
+    const opts = {
+      transforms: [unwind({ paths: pathToUnwind, blankOut: blankout }), flatten({ object: true, array: true, separator: '.' })],
+      fields: headers,
+    };
+
+    return service._submissionCSVExport(opts, form, data, emailExport, currentUser, referer);
+  },
+  _singleRowCSVExport: async (form, data, version, fields, currentUser, emailExport, referer) => {
+    const headers = await service._buildCsvHeaders(form, data, version, fields, true);
+    const opts = {
+      transforms: [flatten({ objects: true, arrays: true, separator: '.' })],
+      fields: headers,
+    };
+
+    return service._submissionCSVExport(opts, form, data, emailExport, currentUser, referer);
+  },
+  _unFormattedCSVExport: async (form, data, emailExport, currentUser, referer) => {
+    return service._submissionCSVExport({}, form, data, emailExport, currentUser, referer);
+  },
+
+  _submissionCSVExport(opts, form, data, emailExport, currentUser, referer) {
+    // to work with object chunk in pipe instead of Buffer
+    const transformOpts = {
+      objectMode: true,
+    };
+
+    const dataStream = Readable.from(data);
+    const json2csvParser = new Transform(opts, transformOpts);
+
+    let csv = [];
+
+    if (emailExport !== 'false' && emailExport !== false) {
+      // If submission count is big we're start streams parsed chunks into the temp file
+      // using Nodejs fs internal library, then upload the outcome CSV file to Filestorage
+      // (/myfiles folder for local machines / to Object cloud storage for other env) gathering the file storage ID
+      // to use it in email for link generation for downloading...
+      const path = config.get('files.localStorage.path') ? config.get('files.localStorage.path') : fs.realpathSync(os.tmpdir());
+      const pathToTmpFile = `${path}/${uuidv4()}.csv`;
+      const outputStream = fs.createWriteStream(pathToTmpFile);
+      dataStream.pipe(json2csvParser).pipe(outputStream);
+
+      // Creating FileStorage instance and uploading it, so we can download it later
+      outputStream.on('finish', () => {
+        // Read file stats to get fie size
+        fs.stat(pathToTmpFile, async (err, stats) => {
+          if (err) {
+            throw new Problem(400, {
+              detail: `Error while trying to fetch file stats: ${err}`,
+            });
+          } else {
+            const fileData = {
+              originalname: service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv),
+              mimetype: 'text/csv',
+              size: stats.size,
+              path: pathToTmpFile,
+            };
+            const fileCurrentUser = {
+              usernameIdp: currentUser.usernameIdp,
+            };
+            // Uploading to Object storage
+            const fileResult = await fileService.create(fileData, fileCurrentUser, 'exports');
+            // Sending the email with link to uploaded export
+            emailService.submissionExportLink(form.id, null, { to: currentUser.email }, referer, fileResult.id);
+          }
+        });
+      });
+      return new Promise((resolve) =>
+        resolve({
+          data: null,
+          headers: {
+            'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv)}"`,
+            'content-type': 'text/csv',
+          },
+        })
+      );
+    }
+    // If we're working with not too many submissions, we can process parsing right away without
+    // any memory constrains
+    return new Promise((resolve, reject) => {
+      dataStream
+        .pipe(json2csvParser)
+        .on('data', (chunk) => {
+          csv.push(chunk.toString());
+        })
+        .on('finish', () => {
+          resolve({
+            data: csv.join(''),
+            headers: {
+              'content-disposition': `attachment; filename="${service._exportFilename(form, EXPORT_TYPES.submissions, EXPORT_FORMATS.csv)}"`,
+              'content-type': 'text/csv',
+            },
+          });
+        })
+        .on('error', (err) => {
+          reject({
+            detail: `Error while parsing json chunk: ${err}`,
+          });
+        });
+    });
+  },
+
+  _readLatestFormSchema: (formId, version) => {
     return FormVersion.query()
       .select('schema')
       .where('formId', formId)
+      .where('version', version)
+      .modify('filterVersion', version)
       .modify('orderVersionDescending')
       .first()
-      .then((row) => row.schema);
+      .then((row) => row?.schema);
+  },
+  fieldsForCSVExport: async (formId, params = {}) => {
+    const form = await service._getForm(formId);
+    const data = await service._getData(params.type, params.version, form, params);
+    const formatted = data.map((obj) => {
+      const { submission, ...form } = obj;
+      return Object.assign({ form: form }, submission);
+    });
+
+    return await service._buildCsvHeaders(form, formatted, params.version, undefined);
   },
 
-  export: async (formId, params = {}) => {
+  export: async (formId, params = {}, currentUser = null, referer) => {
     // ok, let's determine what we are exporting and do it!!!!
     // what operation?
     // what output format?
     const exportType = service._exportType(params);
     const exportFormat = service._exportFormat(params);
-
+    const exportTemplate = params.template ? params.template : 'multiRowEmptySpacesCSVExport';
     const form = await service._getForm(formId);
-    const data = await service._getData(exportType, form, params);
-    const result = await service._formatData(exportFormat, exportType, form, data);
-
+    const data = await service._getData(exportType, params.version, form, params);
+    const result = await service._formatData(exportFormat, exportType, exportTemplate, form, data, params.fields, params.version, params.emailExport, currentUser, referer);
     return { data: result.data, headers: result.headers };
-  }
-
+  },
 };
 
 module.exports = service;

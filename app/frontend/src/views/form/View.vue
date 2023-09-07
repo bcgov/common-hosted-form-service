@@ -1,5 +1,5 @@
 <template>
-  <BaseSecure :idp="IDP.IDIR">
+  <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBUSINESS]">
     <FormSubmission :submissionId="s" />
   </BaseSecure>
 </template>
@@ -18,6 +18,6 @@ export default {
   },
   computed: {
     IDP: () => IdentityProviders,
-  }
+  },
 };
 </script>

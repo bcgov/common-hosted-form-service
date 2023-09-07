@@ -19,7 +19,7 @@ class PublicFormAccess extends Model {
       },
       orderDefault(builder) {
         builder.orderByRaw('lower("formName")');
-      }
+      },
     };
   }
 }

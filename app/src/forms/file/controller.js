@@ -1,6 +1,8 @@
 const service = require('./service');
 const storageService = require('./storage/storageService');
 
+const { encodeURI } = require('../common/utils');
+
 const _trim = (r) => {
   if (r) {
     // don't want storage information going over the wire...
@@ -9,15 +11,14 @@ const _trim = (r) => {
       originalName: r.originalName,
       size: r.size,
       createdBy: r.createdBy,
-      createdAt: r.createdAt
+      createdAt: r.createdAt,
     };
   }
   return r;
 };
 
 module.exports = {
-
-  create:  async (req, res, next) => {
+  create: async (req, res, next) => {
     try {
       const response = await service.create(req.file, req.currentUser);
       res.status(201).json(_trim(response));
@@ -25,7 +26,7 @@ module.exports = {
       next(error);
     }
   },
-  read:  async (req, res, next) => {
+  read: async (req, res, next) => {
     try {
       // Permissions checked on this at the route level with middleware
       // On the request from the middleware
@@ -35,23 +36,22 @@ module.exports = {
       const stream = await storageService.read(fileStorage);
 
       stream.on('error', function error(err) {
-        throw (err);
+        throw err;
       });
 
-      // set the reponse binary headers...
-      res.setHeader('Content-Disposition', `attachment; filename=${fileStorage.originalName}`);
+      res.setHeader('Content-Disposition', `attachment; filename=${encodeURI(fileStorage.originalName)}`);
       res.set('Content-Type', fileStorage.mimeType);
       res.set('Content-Length', fileStorage.size);
       res.set('Last-Modified', fileStorage.updatedAt);
 
       // and stream it out...
       stream.pipe(res);
-
     } catch (error) {
       next(error);
     }
   },
-  delete:  async (req, res, next) => {
+
+  delete: async (req, res, next) => {
     try {
       // Permissions checked on this at the route level with middleware
       // ok, let's remove the file...
@@ -61,5 +61,4 @@ module.exports = {
       next(error);
     }
   },
-
 };

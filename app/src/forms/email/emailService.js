@@ -5,7 +5,7 @@ const chesService = require('../../components/chesService');
 const log = require('../../components/log')(module.filename);
 const { EmailProperties, EmailTypes } = require('../common/constants');
 const formService = require('../form/service');
-
+const moment = require('moment');
 /** Helper function used to build the email template based on email type and contents */
 const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, additionalProperties = 0) => {
   const form = await formService.readForm(formId);
@@ -84,12 +84,15 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
   } else if (emailType === EmailTypes.SUBMISSION_CONFIRMATION) {
     contextToVal = [additionalProperties.body.to];
     userTypePath = 'form/success';
-    const bodyTemplate = form.identityProviders.length > 0 && form.identityProviders[0].idp === 'public' ? 'submission-received-confirmation-public.html' : 'submission-received-confirmation-login.html';
+    const bodyTemplate =
+      form.identityProviders.length > 0 && form.identityProviders[0].idp === 'public'
+        ? 'submission-received-confirmation-public.html'
+        : 'submission-received-confirmation-login.html';
     configData = {
       bodyTemplate: bodyTemplate,
       title: `${form.name} Accepted`,
       subject: `${form.name} Accepted`,
-      priority: 'normal',
+      priority: additionalProperties.body.priority,
       messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
       form,
     };
@@ -97,18 +100,82 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
 
   return {
     configData,
-    contexts: [{
-      context: {
-        allFormSubmissionUrl: `${service._appUrl(referer)}/user/submissions?f=${configData.form.id}`,
-        confirmationNumber: submission.confirmationId,
-        form: configData.form,
-        messageLinkText: configData.messageLinkText,
-        messageLinkUrl: `${service._appUrl(referer)}/${userTypePath}?s=${submission.id}`,
-        emailContent: additionalProperties.emailContent,
-        title: configData.title
+    contexts: [
+      {
+        context: {
+          allFormSubmissionUrl: `${service._appUrl(referer)}/user/submissions?f=${configData.form.id}`,
+          confirmationNumber: submission.confirmationId,
+          form: configData.form,
+          messageLinkText: configData.messageLinkText,
+          messageLinkUrl: `${service._appUrl(referer)}/${userTypePath}?s=${submission.id}`,
+          emailContent: additionalProperties.emailContent,
+          title: configData.title,
+        },
+        to: contextToVal,
       },
-      to: contextToVal
-    }]
+    ],
+  };
+};
+
+/** Helper function used to build the email template based on email type and contents for reminder */
+const buildEmailTemplateFormForReminder = async (form, emailType, users, report, referer) => {
+  let configData = {};
+  const closeDate = report.dates.closeDate ? moment(report.dates.closeDate).format('MMM. D, YYYY') : undefined;
+  const subject = 'CHEFS Submission Reminder';
+
+  const formatEmailTextMessage = (name, closeDate) => {
+    const messageValue = closeDate
+      ? `This email is to inform you that the ${name} form is now open for submission and will stay open until ${closeDate}. Please complete your submission before the submission period is closed.`
+      : `This email is to inform you that the ${name} form is now open for submission.`;
+    return 'Hi,\n' + messageValue + '\nThank you';
+  };
+  const message = formatEmailTextMessage(form.name, closeDate);
+  const contextToVal = users;
+  if (emailType === EmailTypes.REMINDER_FORM_OPEN) {
+    configData = {
+      bodyTemplate: 'reminder-form-open.html',
+      title: `Submission Start for ${form.name} `,
+      subject: subject,
+      messageLinkText: `${message}
+      `,
+      priority: 'normal',
+      form,
+    };
+  } else if (emailType === EmailTypes.REMINDER_FORM_NOT_FILL) {
+    configData = {
+      bodyTemplate: 'reminder-form-not-fill.html',
+      title: `Submission Reminder for ${form.name}`,
+      subject: subject,
+      messageLinkText: `${message}`,
+      priority: 'normal',
+      form,
+    };
+  } else if (emailType === EmailTypes.REMINDER_FORM_WILL_CLOSE) {
+    configData = {
+      bodyTemplate: 'reminder-form-will-close.html',
+      title: `Submission Closing for ${form.name}`,
+      subject: subject,
+      messageLinkText: `${message}`,
+      priority: 'normal',
+      form,
+    };
+  }
+
+  return {
+    configData,
+    contexts: [
+      {
+        context: {
+          allFormSubmissionUrl: '',
+          form: configData.form,
+          report: report,
+          messageLinkText: configData.messageLinkText,
+          messageLinkUrl: `${referer}/form/submit?f=${configData.form.id}`,
+          title: configData.title,
+        },
+        to: contextToVal,
+      },
+    ],
   };
 };
 
@@ -128,7 +195,7 @@ const service = {
     } catch (err) {
       log.error(err.message, {
         function: '_appUrl',
-        referer: referer
+        referer: referer,
       });
       throw err;
     }
@@ -141,24 +208,10 @@ const service = {
    * @returns joined template files
    */
   _mergeEmailTemplate: (bodyTemplate) => {
-    const template = fs.readFileSync(
-      `${path.join(
-        __dirname,
-        'assets'
-      )}/triggered-notification-email-template.html`,
-      'utf8'
-    );
-    const body = fs.readFileSync(
-      `${path.join(__dirname, 'assets', 'bodies')}/${bodyTemplate}`,
-      'utf8'
-    );
+    const template = fs.readFileSync(`${path.join(__dirname, 'assets')}/triggered-notification-email-template.html`, 'utf8');
+    const body = fs.readFileSync(`${path.join(__dirname, 'assets', 'bodies')}/${bodyTemplate}`, 'utf8');
     const bodyInsertIndex = template.search('<!-- BODY END -->');
-    const result = [
-      template.substring(0, bodyInsertIndex),
-      body,
-      template.substring(bodyInsertIndex, template.length),
-    ].join('');
-
+    const result = [template.substring(0, bodyInsertIndex), body, template.substring(bodyInsertIndex, template.length)].join('');
     return result;
   },
 
@@ -207,7 +260,7 @@ const service = {
       log.error(e.message, {
         function: EmailTypes.SUBMISSION_ASSIGNED,
         status: currentStatus,
-        referer: referer
+        referer: referer,
       });
       throw e;
     }
@@ -231,7 +284,7 @@ const service = {
       log.error(e.message, {
         function: EmailTypes.SUBMISSION_UNASSIGNED,
         status: currentStatus,
-        referer: referer
+        referer: referer,
       });
       throw e;
     }
@@ -249,14 +302,17 @@ const service = {
    */
   statusAssigned: async (formId, currentStatus, assignmentNotificationEmail, emailContent, referer) => {
     try {
-      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_ASSIGNED, referer, { assignmentNotificationEmail, emailContent });
+      const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_ASSIGNED, referer, {
+        assignmentNotificationEmail,
+        emailContent,
+      });
 
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
       log.error(e.message, {
         function: EmailTypes.STATUS_ASSIGNED,
         status: currentStatus,
-        referer: referer
+        referer: referer,
       });
       throw e;
     }
@@ -280,7 +336,7 @@ const service = {
       log.error(e.message, {
         function: EmailTypes.STATUS_COMPLETED,
         status: currentStatus,
-        referer: referer
+        referer: referer,
       });
       throw e;
     }
@@ -305,7 +361,7 @@ const service = {
       log.error(e.message, e, {
         function: EmailTypes.STATUS_REVISING,
         status: currentStatus,
-        referer: referer
+        referer: referer,
       });
       throw e;
     }
@@ -334,7 +390,7 @@ const service = {
         formId: formId,
         submissionId: submissionId,
         body: body,
-        referer: referer
+        referer: referer,
       });
       throw e;
     }
@@ -360,7 +416,73 @@ const service = {
         formId: formId,
         submissionId: submissionId,
         body: body,
-        referer: referer
+        referer: referer,
+      });
+      throw e;
+    }
+  },
+  /**
+   * @function formOpen
+   * Manual email confirmation after form has been submitted
+   * @param {object} information about the submitter and the form
+   * @returns The result of the email merge operation
+   */
+  initReminder: async (obj) => {
+    try {
+      const { configData, contexts } = await buildEmailTemplateFormForReminder(obj.form, obj.state, obj.users, obj.report, obj.referer);
+      return service._sendEmailTemplate(configData, contexts);
+    } catch (e) {
+      log.error(e.message, {
+        function: obj.state,
+        formId: obj.form.id,
+      });
+      throw e;
+    }
+  },
+
+  /**
+   * @function submissionExportLink
+   * Email with the link to the Form submissions export file
+   * @param {string} formId
+   * @param {string} submissionId
+   * @param {object} body
+   * @param {string} referer
+   * @param {string} fileId
+   * @returns The result of the email merge operation
+   */
+  submissionExportLink: async (formId, submissionId, body, referer, fileId) => {
+    try {
+      const form = await formService.readForm(formId);
+      const contextToVal = [body.to];
+      const userTypePath = 'file/download';
+      const bodyTemplate = 'file-download-ready.html';
+      const configData = {
+        bodyTemplate: bodyTemplate,
+        title: 'CHEFS Data Export',
+        subject: `CHEFS: ${form.name} submissions export`,
+        priority: 'normal',
+        messageLinkText: `Your data export for ${form.name} is ready`,
+        form,
+      };
+      const contexts = [
+        {
+          context: {
+            form: configData.form,
+            messageLinkText: configData.messageLinkText,
+            messageLinkUrl: `${service._appUrl(referer)}/${userTypePath}?id=${fileId}`,
+            title: configData.title,
+          },
+          to: contextToVal,
+        },
+      ];
+
+      return service._sendEmailTemplate(configData, contexts);
+    } catch (e) {
+      log.error(e.message, {
+        function: EmailTypes.SUBMISSION_EXPORT,
+        formId: formId,
+        body: body,
+        referer: referer,
       });
       throw e;
     }

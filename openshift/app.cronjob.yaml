@@ -1,0 +1,85 @@
+---
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  app.kubernetes.io/component: app
+  app.kubernetes.io/instance: "${APP_NAME}-${JOB_NAME}"
+  app.kubernetes.io/managed-by: github
+  app.kubernetes.io/name: nodejs
+  app.kubernetes.io/part-of: "${APP_NAME}-${JOB_NAME}"
+  app: "${APP_NAME}-${JOB_NAME}"
+  template: "chefs-app-cronjob-template"
+metadata:
+  name: "chefs-app-cronjob"
+objects:
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: "allow-${APP_NAME}-cronjob-${JOB_NAME}-to-${APP_NAME}-app-${JOB_NAME}"
+    spec:
+      # Allow cronjob to talk to chefs add via service
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  type: trigger
+                  workload: mailcronjob
+          ports:
+            - port: 8080
+              protocol: TCP
+      podSelector:
+        matchLabels:
+          app: "${APP_NAME}-${JOB_NAME}"
+          deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
+          role: app
+  - apiVersion: batch/v1
+    kind: CronJob
+    metadata:
+      name: "${APP_NAME}-cronjob-${JOB_NAME}"
+    spec:
+      schedule: "0 8 * * *"
+      concurrencyPolicy: "Replace"
+      startingDeadlineSeconds: 200
+      suspend: false
+      successfulJobsHistoryLimit: 3
+      failedJobsHistoryLimit: 1
+      jobTemplate:
+        spec:
+          template:
+            metadata:
+              labels:
+                parent: "cronjobpi"
+                workload: mailcronjob
+                type: trigger
+            spec:
+              containers:
+                - name: my-container
+                  image: docker.io/curlimages/curl:8.1.0
+                  env:
+                    - name: APITOKEN
+                      valueFrom:
+                        secretKeyRef:
+                          name: "chefs-${JOB_NAME}-secret"
+                          key: mailapitoken
+                  command:
+                    - /bin/sh
+                    - -ec
+                    - 'curl -v -X GET -ks -H "apikey: $APITOKEN" -H "Content-Type: application/json" "http://${APP_NAME}-app-${JOB_NAME}:8080${ROUTE_PATH}/api/v1/public/reminder"||exit 0'
+              restartPolicy: OnFailure
+parameters:
+  - name: APP_NAME
+    description: Application name
+    displayName: Application name
+    required: true
+  - name: ROUTE_PATH
+    description: Configure the route path (ex. /pr-5 or /app), also used for VUE_APP_FRONTEND_BASEPATH
+    displayName: Route path
+    required: true
+  - name: JOB_NAME
+    description: Job identifier (i.e. 'pr-5' OR 'master')
+    displayName: Job Branch Name
+    required: true
+  - name: NAMESPACE
+    description: Target namespace reference (i.e. 'wfezkf-dev')
+    displayName: Target Namespace
+    required: true
