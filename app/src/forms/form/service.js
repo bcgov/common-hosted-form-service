@@ -304,19 +304,27 @@ const service = {
         total: 0,
       };
       let searchedData = submissionsData.filter((data) => {
-        return Object.values(data).some((value) => {
-          if (!Array.isArray(value) && !typeUtils.isObject(value)) {
-            if (!typeUtils.isBoolean(value) && !typeUtils.isNil(value) && typeUtils.isDate(value) && moment(new Date(value)).format('YYYY-MM-DD hh:mm:ss a').includes(search)) {
-              result.total = result.total + 1;
-              return true;
+        return Object.keys(data).some((value) => {
+          if (value !== 'submissionId') {
+            if (!Array.isArray(data[value]) && !typeUtils.isObject(data[value])) {
+              if (
+                !typeUtils.isBoolean(data[value]) &&
+                !typeUtils.isNil(data[value]) &&
+                typeUtils.isDate(data[value]) &&
+                moment(new Date(data[value])).format('YYYY-MM-DD hh:mm:ss a').includes(search)
+              ) {
+                result.total = result.total + 1;
+                return true;
+              }
+              if (typeUtils.isString(data[value]) && data[value].includes(search)) {
+                result.total = result.total + 1;
+                return true;
+              } else if ((typeUtils.isNil(data[value]) || typeUtils.isBoolean(data[value]) || typeUtils.isNumeric(data[value])) && data[value] === search) {
+                result.total = result.total + 1;
+                return true;
+              }
             }
-            if (typeUtils.isString(value) && value.includes(search)) {
-              result.total = result.total + 1;
-              return true;
-            } else if ((typeUtils.isNil(value) || typeUtils.isBoolean(value) || typeUtils.isNumeric(value)) && value === search) {
-              result.total = result.total + 1;
-              return true;
-            }
+            return false;
           }
           return false;
         });
