@@ -250,6 +250,11 @@ export default {
     SELECT_COLUMNS_HEADERS() {
       return [...this.FILTER_HEADERS].concat(
         this.formFields?.map((ff) => {
+          this.FILTER_HEADERS.map((fh) => {
+            if (fh.value === ff) {
+              ff = `${ff}_1`;
+            }
+          });
           return { text: ff, value: ff, align: 'end' };
         })
       );
@@ -367,7 +372,11 @@ export default {
           };
           s?.submission?.submission?.data &&
             Object.keys(s.submission.submission.data).forEach((col) => {
-              fields[col] = s.submission.submission.data[col];
+              if (Object.keys(fields).includes(col)) {
+                fields[`${col}_1`] = s.submission.submission.data[col];
+              } else {
+                fields[col] = s.submission.submission.data[col];
+              }
             });
           return fields;
         });
