@@ -170,16 +170,8 @@ const service = {
 
     if (fields) {
       return formSchemaheaders.filter((header) => {
-        if (Array.isArray(fields) && fields.includes(header) && !singleRow) {
+        if (Array.isArray(fields) && fields.includes(header)) {
           return header;
-        } else if (Array.isArray(fields) && singleRow) {
-          const unFlattenHeader = header.replace(/\.\d\./gi, '.');
-          if (fields.includes(unFlattenHeader)) {
-            if (singleRow) {
-              return unFlattenHeader;
-            }
-            return header;
-          }
         }
       });
     }

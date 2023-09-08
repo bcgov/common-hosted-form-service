@@ -574,6 +574,10 @@ export default {
         }
       }
     },
+    async versionSelected(value) {
+      this.csvFormats = 'multiRowEmptySpacesCSVExport';
+      await this.refreshFormFields(value);
+    },
     exportFormat(value) {
       if (value === 'json') {
         this.selected = [];
