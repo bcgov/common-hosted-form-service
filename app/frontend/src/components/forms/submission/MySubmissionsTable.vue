@@ -392,7 +392,6 @@ export default {
       this.page = 0;
       if (value === '') {
         this.searchEnabled = false;
-        this.itemsPerPage = 10;
         await this.populateSubmissionsTable();
       } else {
         this.debounceInput();
