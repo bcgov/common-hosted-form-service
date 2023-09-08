@@ -119,12 +119,12 @@ const service = {
                 !typeUtils.isBoolean(data[key]) &&
                 !typeUtils.isNil(data[key]) &&
                 typeUtils.isDate(data[key]) &&
-                moment(new Date(data[key])).format('YYYY-MM-DD hh:mm:ss a').includes(search)
+                moment(new Date(data[key])).format('YYYY-MM-DD hh:mm:ss a').toLowerCase().includes(search)
               ) {
                 result.total = result.total + 1;
                 return true;
               }
-              if (typeUtils.isString(data[key]) && data[key].includes(search)) {
+              if (typeUtils.isString(data[key]) && data[key].toLowerCase().includes(search.toLowerCase())) {
                 result.total = result.total + 1;
                 return true;
               } else if ((typeUtils.isNil(data[key]) || typeUtils.isBoolean(data[key]) || typeUtils.isNumeric(data[key])) && data[key] === search) {

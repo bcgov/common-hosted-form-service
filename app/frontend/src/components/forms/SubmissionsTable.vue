@@ -820,7 +820,6 @@ export default {
       this.page = 0;
       if (value === '') {
         this.searchEnabled = false;
-        this.itemsPerPage = 10;
         await this.getSubmissionData();
       } else {
         this.debounceInput();
