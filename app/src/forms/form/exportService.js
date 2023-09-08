@@ -175,6 +175,9 @@ const service = {
         } else if (Array.isArray(fields) && singleRow) {
           const unFlattenHeader = header.replace(/\.\d\./gi, '.');
           if (fields.includes(unFlattenHeader)) {
+            if (singleRow) {
+              return unFlattenHeader;
+            }
             return header;
           }
         }
@@ -434,7 +437,7 @@ const service = {
       return Object.assign({ form: form }, submission);
     });
 
-    return await service._buildCsvHeaders(form, formatted, params.version, undefined);
+    return await service._buildCsvHeaders(form, formatted, params.version, undefined, params.singleRow === 'true');
   },
 
   export: async (formId, params = {}, currentUser = null, referer) => {
