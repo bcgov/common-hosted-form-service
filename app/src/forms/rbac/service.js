@@ -93,9 +93,8 @@ const service = {
     if (params.page) {
       return await service.processPaginationData(
         query,
-        params.page,
-        params.itemsPerPage,
-        params.filterformSubmissionStatusCode,
+        parseInt(params.page),
+        parseInt(params.itemsPerPage),
         params.totalSubmissions,
         params.search,
         params.searchEnabled
@@ -103,9 +102,9 @@ const service = {
     }
     return await query;
   },
-
   async processPaginationData(query, page, itemsPerPage, totalSubmissions, search, searchEnabled) {
-    if (searchEnabled === 'true') {
+    let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : searchEnabled !== undefined ? JSON.parse(searchEnabled) : false;
+    if (isSearchAble) {
       let submissionsData = await query;
       let result = {
         results: [],
@@ -113,13 +112,13 @@ const service = {
       };
       let searchedData = submissionsData.filter((data) => {
         return Object.keys(data).some((key) => {
-          if (key !== 'submissionId') {
+          if (key !== 'submissionId' && key !== 'formVersionId' && key !== 'formId') {
             if (!Array.isArray(data[key]) && !typeUtils.isObject(data[key])) {
               if (
                 !typeUtils.isBoolean(data[key]) &&
                 !typeUtils.isNil(data[key]) &&
                 typeUtils.isDate(data[key]) &&
-                moment(new Date(data[key])).format('YYYY-MM-DD hh:mm:ss a').toLowerCase().includes(search)
+                moment(new Date(data[key])).format('YYYY-MM-DD hh:mm:ss a').toLowerCase().includes(search.toLowerCase())
               ) {
                 result.total = result.total + 1;
                 return true;
@@ -127,7 +126,10 @@ const service = {
               if (typeUtils.isString(data[key]) && data[key].toLowerCase().includes(search.toLowerCase())) {
                 result.total = result.total + 1;
                 return true;
-              } else if ((typeUtils.isNil(data[key]) || typeUtils.isBoolean(data[key]) || typeUtils.isNumeric(data[key])) && data[key] === search) {
+              } else if (
+                (typeUtils.isNil(data[key]) || typeUtils.isBoolean(data[key]) || (typeUtils.isNumeric(data[key]) && typeUtils.isNumeric(search))) &&
+                parseFloat(data[key]) === parseFloat(search)
+              ) {
                 result.total = result.total + 1;
                 return true;
               }

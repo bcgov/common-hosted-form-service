@@ -84,6 +84,7 @@
       item-key="title"
       :items="submissionTable"
       :search="search"
+      :page="PAGE_RESET"
       :loading="loading"
       :loading-text="$t('trans.mySubmissionsTable.loadingText')"
       :no-data-text="
@@ -159,7 +160,8 @@ export default {
     return {
       headers: [],
       itemsPerPage: 10,
-      page: 0,
+      page: 1,
+      pageReset: 0,
       filterData: [],
       preSelectedData: [],
       search: '',
@@ -265,7 +267,9 @@ export default {
         (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
       );
     },
-
+    PAGE_RESET() {
+      return this.pageReset;
+    },
     HEADERS() {
       let headers = this.DEFAULT_HEADERS;
 
@@ -389,11 +393,14 @@ export default {
     async handleSearch(value) {
       this.searchEnabled = true;
       this.search = value;
-      this.page = 0;
       if (value === '') {
+        this.page = 0;
+        this.pageReset = 0;
         this.searchEnabled = false;
         await this.populateSubmissionsTable();
       } else {
+        this.page = 0;
+        this.pageReset = 1;
         this.debounceInput();
       }
     },
@@ -406,9 +413,7 @@ export default {
         formVersionId: this.form.versions[0].id,
       });
     });
-
     await this.populateSubmissionsTable();
-
     this.debounceInput = _.debounce(async () => {
       await this.populateSubmissionsTable();
     }, 300);
