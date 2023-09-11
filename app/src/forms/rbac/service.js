@@ -91,14 +91,7 @@ const service = {
       .modify('filterActive', params.active)
       .modify('orderDefault', params.sortBy && params.page ? true : false, params);
     if (params.page) {
-      return await service.processPaginationData(
-        query,
-        parseInt(params.page),
-        parseInt(params.itemsPerPage),
-        params.totalSubmissions,
-        params.search,
-        params.searchEnabled
-      );
+      return await service.processPaginationData(query, parseInt(params.page), parseInt(params.itemsPerPage), params.totalSubmissions, params.search, params.searchEnabled);
     }
     return await query;
   },
