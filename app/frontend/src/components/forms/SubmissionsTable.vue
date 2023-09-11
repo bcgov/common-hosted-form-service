@@ -124,6 +124,7 @@
       :headers="HEADERS"
       item-key="submissionId"
       :items="submissionTable"
+      :page="PAGE_RESET"
       :loading="loading"
       :show-select="!switchSubmissionView"
       v-model="selectedSubmissions"
@@ -348,7 +349,8 @@ export default {
       currentUserOnly: false,
       deletedOnly: false,
       itemsPerPage: 10,
-      page: 0,
+      page: 1,
+      pageReset: 0,
       filterData: [],
       sortBy: undefined,
       sortDesc: false,
@@ -498,7 +500,9 @@ export default {
         },
       ];
     },
-
+    PAGE_RESET() {
+      return this.pageReset;
+    },
     SELECT_COLUMNS_HEADERS() {
       return [...this.FILTER_HEADERS, ...this.MODIFY_HEADERS].concat(
         this.formFields.map((ff) => {
@@ -817,11 +821,14 @@ export default {
     async handleSearch(value) {
       this.searchEnabled = true;
       this.search = value;
-      this.page = 0;
       if (value === '') {
+        this.page = 0;
+        this.pageReset = 0;
         this.searchEnabled = false;
         await this.getSubmissionData();
       } else {
+        this.page = 0;
+        this.pageReset = 1;
         this.debounceInput();
       }
     },
