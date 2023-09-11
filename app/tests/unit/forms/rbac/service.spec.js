@@ -1,6 +1,6 @@
 const { MockModel, MockTransaction } = require('../../../common/dbHelper');
 const service = require('../../../../src/forms/rbac/service');
-jest.mock('../../../../src/forms/common/models/views/UserSubmissions', () => MockModel);
+jest.mock('../../../../src/forms/common/models/views/userSubmissions', () => MockModel);
 
 describe('processPaginationData', () => {
   const SubmissionData = require('../../../fixtures/submission/kitchen_sink_submission_pagination.json');
