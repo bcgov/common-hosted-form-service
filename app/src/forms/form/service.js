@@ -706,8 +706,6 @@ const service = {
         );
 
         axiosInstance.post(subscribe.endpointUrl, jsonData);
-
-        throw new Problem(401, jsonData);
       }
     } catch (err) {
       log.error(err.message, err, {
