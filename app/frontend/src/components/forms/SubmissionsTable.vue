@@ -497,7 +497,12 @@ export default {
 
     SELECT_COLUMNS_HEADERS() {
       return [...this.FILTER_HEADERS, ...this.MODIFY_HEADERS].concat(
-        this.formFields.map((ff) => {
+        this.formFields?.map((ff) => {
+          this.FILTER_HEADERS.map((fh) => {
+            if (fh.value === ff) {
+              ff = `${ff}_1`;
+            }
+          });
           return { text: ff, value: ff, align: 'end' };
         })
       );
@@ -724,7 +729,11 @@ export default {
           };
           // Add any custom columns
           this.userColumns.forEach((col) => {
-            fields[col] = s[col];
+            if (Object.keys(fields).includes(col)) {
+              fields[`${col}_1`] = s[col];
+            } else {
+              fields[col] = s[col];
+            }
           });
           return fields;
         });
