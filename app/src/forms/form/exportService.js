@@ -161,10 +161,6 @@ const service = {
       }
       // apply help function to make header column order same as it goes in form
       const flattenSubmissionHeadersOrdered = service.mapOrder(flattenSubmissionHeaders, fieldNames);
-      // we have 1 case when if field is DataGridMap type it'd not included into sorted flattened array,
-      // thus we add it manually from original flatten array
-      const dataGridFields = flattenSubmissionHeaders.filter((x) => !flattenSubmissionHeadersOrdered.includes(x));
-      dataGridFields.map((dgf) => flattenSubmissionHeadersOrdered.push(dgf));
       formSchemaheaders = formSchemaheaders.concat(flattenSubmissionHeadersOrdered.filter((item) => formSchemaheaders.indexOf(item) < 0));
     }
 

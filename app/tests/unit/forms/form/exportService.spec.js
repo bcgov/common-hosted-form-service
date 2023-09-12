@@ -277,7 +277,6 @@ describe('_buildCsvHeaders', () => {
         'oneRowPerLake.0.dataGrid.0.fishType',
         'oneRowPerLake.0.dataGrid.1.fishType',
         'oneRowPerLake.0.dataGrid.0.numberKept',
-        'oneRowPerLake.0.dataGrid.1.fishType',
       ])
     );
     expect(result).toEqual(
