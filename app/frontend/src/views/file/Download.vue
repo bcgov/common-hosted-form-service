@@ -1,30 +1,20 @@
-<template>
-  <BaseSecure :idp="[IDP.IDIR]">
-    <v-container fluid class="center_vertical_content">
-      <h1>CHEFS Data Export</h1>
-      <v-progress-circular
-        v-if="!showDownloadLink"
-        :size="50"
-        color="primary"
-        indeterminate
-      ></v-progress-circular>
-      <div v-if="!showDownloadLink">Preparing for download...</div>
-      <div class="mt-5 center_vertical_content" v-if="showDownloadLink">
-        <v-icon class="mb-2" size="90">file_download</v-icon><br />
-        If your file does not automatically download
-        <a href="#" @click="getFile(id)">click here to try again</a>
-      </div>
-    </v-container>
-  </BaseSecure>
-</template>
-
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import { IdentityProviders } from '@/utils/constants';
+import { mapActions, mapState } from 'pinia';
+
+import BaseSecure from '~/components/base/BaseSecure.vue';
+import { useFormStore } from '~/store/form';
+import { useNotificationStore } from '~/store/notification';
+import { IdentityProviders } from '~/utils/constants';
+
 export default {
-  name: 'Download',
+  components: {
+    BaseSecure,
+  },
   props: {
-    id: String,
+    id: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
@@ -32,15 +22,15 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['downloadedFile']),
+    ...mapState(useFormStore, ['downloadedFile', 'lang', 'isRTL']),
     IDP: () => IdentityProviders,
   },
-  mounted() {
-    this.getFile(this.id);
+  async mounted() {
+    await this.getFile(this.id);
   },
   methods: {
-    ...mapActions('form', ['downloadFile']),
-    ...mapActions('notifications', ['addNotification']),
+    ...mapActions(useFormStore, ['downloadFile']),
+    ...mapActions(useNotificationStore, ['addNotification']),
     // disposition retrieval from https://stackoverflow.com/a/40940790
     getDisposition(disposition) {
       if (disposition && disposition.indexOf('attachment') !== -1) {
@@ -85,3 +75,31 @@ export default {
   },
 };
 </script>
+
+<template>
+  <BaseSecure :idp="[IDP.IDIR]">
+    <v-container fluid class="center_vertical_content">
+      <h1 :lang="lang">{{ $t('trans.download.chefsDataExport') }}</h1>
+      <v-progress-circular
+        v-if="!showDownloadLink"
+        :size="50"
+        color="primary"
+        indeterminate
+      ></v-progress-circular>
+      <div v-if="!showDownloadLink" :lang="lang">
+        {{ $t('trans.download.preparingForDownloading') }}
+      </div>
+      <div
+        v-if="showDownloadLink"
+        class="mt-5 center_vertical_content"
+        :lang="lang"
+      >
+        <v-icon class="mb-2" size="90" icon="mdi:mdi-file-download" /><br />
+        If your file does not automatically download
+        <a href="#" @click="getFile(id)" :hreflang="lang">{{
+          $t('trans.download.downloadInfoB')
+        }}</a>
+      </div>
+    </v-container>
+  </BaseSecure>
+</template>

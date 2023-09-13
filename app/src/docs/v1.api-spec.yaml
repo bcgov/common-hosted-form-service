@@ -337,17 +337,39 @@ paths:
           example: 1
           required: true
         - in: query
-          name: minDate
+          name: preference
           schema:
-            type: string
-          example: '2020-12-17T08:00:00Z'
-          description: Start date of period included in the export
+            type: object
+          example: '{ minDate=2020-12-17T08:00:00Z, maxDate=2020-12-17T08:00:00Z, updatedMinDate=2020-12-17T08:00:00Z, updatedMaxDate=2020-12-17T08:00:00Z }'
+          description: form submissions export preferences
         - in: query
-          name: maxDate
+          name: deleted
+          schema:
+            type: Boolean
+          description: (optional) This optional parameter should be set to true if deleted records (submissions) need to be fetched
+          example: false
+        - in: query
+          name: drafts
+          schema:
+            type: Boolean
+          description: (optional) This optional parameter should be set to true if draft records (submissions) need to be fetched
+          example: false
+        - in: query
+          name: columns
+          schema:
+            type: array
+          description: (optional) List of form level columns (Only Allowed draft, deleted, updatedAt columns) to be include. Other then allowed columns will be ignored
+          example:
+            - draft,
+            - deleted,
+            - updatedAt
+        - in: query
+          name: status
           schema:
             type: string
-          example: '2020-12-17T08:00:00Z'
-          description: End date of period included in the export
+          description: Submission status to be filtered based on
+          example: COMPLETED
+          required: false
       responses:
         '200':
           description: Export file created for download
@@ -957,6 +979,10 @@ paths:
     get:
       summary: Get a form submission
       operationId: readSubmission
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
       tags:
         - Submission
       parameters:
@@ -2931,6 +2957,14 @@ components:
                   type: string
                   description: Contains closing date of form schedule system when type of ScheduleType set to closingDate.
                   example: '2022-12-22'
+            subscribe:
+              type: Object
+              description: Contains subscription related data - future storage of subscribed events
+              properties:
+                enabled:
+                  type: boolean
+                  description: Used to indicate if subscribe feature enabled or not 
+                  example: true
             enableCopyExistingSubmission:
               type: boolean
               example: false
@@ -3172,7 +3206,7 @@ components:
               type: String
               description: default value is submissions and should be changed
               example: submissions
-            preferences:
+            preference:
               type: object
               description: form submissions export preferences
               example: { minDate, maxDate }

@@ -1,44 +1,13 @@
-<template>
-  <div class="mt-5">
-    <v-expansion-panels
-      class="nrmc-expand-collapse"
-      flat
-      data-cy="info_link_expansion_panels"
-    >
-      <v-expansion-panel
-        flat
-        v-for="(groupName, index) in groupList"
-        :key="index"
-        @click="onExpansionPanelClick(groupName)"
-      >
-        <v-expansion-panel-header>
-          <div class="header">
-            <strong>{{ groupName }}</strong>
-          </div>
-        </v-expansion-panel-header>
-        <v-expansion-panel-content>
-          <GeneralLayout
-            :groupName="groupName"
-            :layoutList="groupComponentsList"
-            :componentsList="
-              fcProactiveHelpGroupList && fcProactiveHelpGroupList[groupName]
-                ? fcProactiveHelpGroupList[groupName]
-                : []
-            "
-          />
-        </v-expansion-panel-content>
-      </v-expansion-panel>
-    </v-expansion-panels>
-  </div>
-</template>
-
 <script>
-import GeneralLayout from '@/components/infolinks/GeneralLayout.vue';
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapState } from 'pinia';
+
+import GeneralLayout from '~/components/infolinks/GeneralLayout.vue';
+import { useAdminStore } from '~/store/admin';
 
 export default {
-  name: 'FormComponentsProactiveHelp',
-  components: { GeneralLayout },
+  components: {
+    GeneralLayout,
+  },
   data() {
     return {
       layout: {
@@ -106,12 +75,24 @@ export default {
       },
       isPanelOpened: new Map(),
       groupComponentsList: [],
-      panelHeadStyle: new Map(),
     };
   },
+  computed: {
+    ...mapState(useAdminStore, ['fcProactiveHelp', 'fcProactiveHelpGroupList']),
+    groupList() {
+      return this.extractGroups();
+    },
+  },
+  watch: {
+    fcProactiveHelp() {
+      this.listFCProactiveHelp();
+    },
+  },
+  mounted() {
+    this.listFCProactiveHelp();
+  },
   methods: {
-    ...mapActions('admin', ['listFCProactiveHelp']),
-
+    ...mapActions(useAdminStore, ['listFCProactiveHelp']),
     onExpansionPanelClick(groupName) {
       if (
         this.isPanelOpened.get(groupName) === undefined ||
@@ -136,7 +117,6 @@ export default {
       for (let [title] of Object.entries(this.layout)) {
         if (title) {
           allgroups.push(title);
-          this.panelHeadStyle.set(title, this.notActivePanelHead);
         }
       }
       return allgroups;
@@ -155,33 +135,51 @@ export default {
       return groupComponents;
     },
   },
-  computed: {
-    ...mapGetters('admin', ['fcProactiveHelp', 'fcProactiveHelpGroupList']),
-    groupList() {
-      return this.extractGroups();
-    },
-  },
-  watch: {
-    fcProactiveHelp() {
-      this.listFCProactiveHelp();
-    },
-  },
-  mounted() {
-    this.listFCProactiveHelp();
-  },
 };
 </script>
+
+<template>
+  <div class="mt-5">
+    <v-expansion-panels
+      class="nrmc-expand-collapse"
+      data-cy="info_link_expansion_panels"
+    >
+      <v-expansion-panel
+        v-for="(groupName, index) in groupList"
+        :key="index"
+        @click="onExpansionPanelClick(groupName)"
+      >
+        <v-expansion-panel-title>
+          <div class="header">
+            <strong>{{ groupName }}</strong>
+          </div>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
+          <GeneralLayout
+            :group-name="groupName"
+            :layout-list="groupComponentsList"
+            :components-list="
+              fcProactiveHelpGroupList && fcProactiveHelpGroupList[groupName]
+                ? fcProactiveHelpGroupList[groupName]
+                : []
+            "
+          />
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
+  </div>
+</template>
 
 <style lang="scss" scoped>
 // Customized expand/collapse section
 .nrmc-expand-collapse {
   min-height: 50px;
-  .v-expansion-panel--active > .v-expansion-panel-header {
+  .v-expansion-panel--active > .v-expansion-panel-title {
     min-height: 50px;
     background: #f1f8ff;
   }
 
-  .v-expansion-panel-header {
+  .v-expansion-panel-title {
     padding: 10px;
     background: #bfbdbd14;
     border: 1px solid #7070703f;
@@ -203,11 +201,11 @@ export default {
     margin-bottom: 5px;
   }
 
-  .v-expansion-panel-header:hover {
+  .v-expansion-panel-title:hover {
     background: '#F1F8FF';
   }
 
-  .v-expansion-panel-content__wrap {
+  .v-expansion-panel-text__wrap {
     padding-top: 8px;
     padding-bottom: 0px !important;
   }

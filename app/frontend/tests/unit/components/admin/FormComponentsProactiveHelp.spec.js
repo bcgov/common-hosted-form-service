@@ -1,43 +1,33 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import Vuex from 'vuex';
-import i18n from '@/internationalization';
-import FormComponentsProactiveHelp from '@/components/admin/FormComponentsProactiveHelp.vue';
+import { mount } from '@vue/test-utils';
+import { createTestingPinia } from '@pinia/testing';
+import { setActivePinia } from 'pinia';
+import { expect, vi } from 'vitest';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+import FormComponentsProactiveHelp from '~/components/admin/FormComponentsProactiveHelp.vue';
 
-describe('FormComponentsProactiveHelp.vue', () => {
-  const extractGroupComponentsSpy = jest.spyOn(FormComponentsProactiveHelp.methods, 'extractGroupComponents');
-  let store;
-
+describe('Dashboard.vue', () => {
+  const pinia = createTestingPinia();
+  setActivePinia(pinia);
+  const extractGroupComponentsSpy = vi.spyOn(
+    FormComponentsProactiveHelp.methods,
+    'extractGroupComponents'
+  );
   beforeEach(() => {
     extractGroupComponentsSpy.mockReset();
-    store = new Vuex.Store();
-    store.registerModule('form', {
-      namespaced: true,
-      getters: {
-        proactiveHelpInfoGroupObject: () => {},
-        builder: () => {},
-      },
-    });
-    store.registerModule('admin', {
-      namespaced: true,
-      getters: {
-        fcHelpInfo: () => {},
-      },
-    });
   });
 
   afterAll(() => {
     extractGroupComponentsSpy.mockRestore();
   });
 
-  it('renders ', async () => {
-    const wrapper = shallowMount(FormComponentsProactiveHelp, {
-      localVue,
-      store,
-      stubs: ['GeneralLayout'],
-      i18n
+  it('renders', async () => {
+    const wrapper = mount(FormComponentsProactiveHelp, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          GeneralLayout: true,
+        },
+      },
     });
 
     wrapper.vm.onExpansionPanelClick('Basic Layout');

@@ -1,5 +1,22 @@
+<script>
+import { mapState } from 'pinia';
+import BaseNotificationBar from '~/components/base//BaseNotificationBar.vue';
+import { useFormStore } from '~/store/form';
+import { useNotificationStore } from '~/store/notification';
+
+export default {
+  components: {
+    BaseNotificationBar,
+  },
+  computed: {
+    ...mapState(useNotificationStore, ['notifications']),
+    ...mapState(useFormStore, ['isRTL']),
+  },
+};
+</script>
+
 <template>
-  <div class="notification-container">
+  <div class="notification-container" :class="{ 'dir-rtl': isRTL }">
     <BaseNotificationBar
       v-for="notification in notifications"
       :key="notification.id"
@@ -7,14 +24,6 @@
     />
   </div>
 </template>
-
-<script>
-import { mapState } from 'vuex';
-export default {
-  name: 'BaseNotificationContainer',
-  computed: mapState('notifications', ['notifications']),
-};
-</script>
 
 <style scoped>
 .notification-container {

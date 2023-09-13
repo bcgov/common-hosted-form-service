@@ -1,122 +1,62 @@
-<template>
-  <v-data-table
-    class="submissions-table"
-    :headers="headers"
-    :items="versionList"
-  >
-    <!-- Version  -->
-    <template #[`item.version`]="{ item }">
-      <span>
-        {{
-          $t('trans.adminVersions.version', {
-            versionNo: item.version,
-          })
-        }}
-      </span>
-    </template>
-
-    <!-- Status  -->
-    <template #[`item.status`]="{ item }">
-      <label>{{
-        item.published
-          ? $t('trans.adminVersions.published')
-          : $t('trans.adminVersions.unpublished')
-      }}</label>
-    </template>
-
-    <!-- Created date  -->
-    <template #[`item.createdAt`]="{ item }">
-      {{ item.createdAt | formatDateLong }}
-    </template>
-
-    <!-- Updated at  -->
-    <template #[`item.updatedAt`]="{ item }">
-      {{ item.updatedAt | formatDateLong }}
-    </template>
-
-    <!-- Actions -->
-    <template #[`item.action`]="{ item }">
-      <!-- export -->
-      <span>
-        <v-tooltip bottom>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              color="primary"
-              class="mx-1"
-              icon
-              @click="onExportClick(item.id, item.isDraft)"
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-icon>get_app</v-icon>
-            </v-btn>
-          </template>
-          <span>{{ $t('trans.adminVersions.exportDesign') }} </span>
-        </v-tooltip>
-      </span>
-    </template>
-  </v-data-table>
-</template>
-
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import { adminService } from '@/services';
+import { mapActions, mapState } from 'pinia';
+
+import { i18n } from '~/internationalization';
+import adminService from '~/services/adminService';
+import { useAdminStore } from '~/store/admin';
+import { useFormStore } from '~/store/form';
+import { useNotificationStore } from '~/store/notification';
 
 export default {
-  name: 'ManageVersions',
   data() {
     return {
-      headers: [
-        {
-          text: this.$t('trans.adminVersions.versions'),
-          align: 'start',
-          value: 'version',
-        },
-        {
-          text: this.$t('trans.adminVersions.status'),
-          align: 'start',
-          value: 'status',
-        },
-        {
-          text: this.$t('trans.adminVersions.created'),
-          align: 'start',
-          value: 'createdAt',
-        },
-        {
-          text: this.$t('trans.adminVersions.lastUpdated'),
-          align: 'start',
-          value: 'updatedAt',
-        },
-        {
-          text: this.$t('trans.adminVersions.actions'),
-          align: 'end',
-          value: 'action',
-          filterable: false,
-          sortable: false,
-        },
-      ],
       formSchema: {
         display: 'form',
         type: 'form',
         components: [],
       },
-      publishOpts: {
-        publishing: true,
-        version: '',
-        id: '',
-      },
     };
   },
   computed: {
-    ...mapGetters('admin', ['form']),
+    ...mapState(useAdminStore, ['form']),
+    ...mapState(useFormStore, ['lang']),
+    headers() {
+      return [
+        {
+          title: i18n.t('trans.adminVersions.versions'),
+          align: 'start',
+          key: 'version',
+        },
+        {
+          title: i18n.t('trans.adminVersions.status'),
+          align: 'start',
+          key: 'status',
+        },
+        {
+          title: i18n.t('trans.adminVersions.created'),
+          align: 'start',
+          key: 'createdAt',
+        },
+        {
+          title: i18n.t('trans.adminVersions.lastUpdated'),
+          align: 'start',
+          key: 'updatedAt',
+        },
+        {
+          title: i18n.t('trans.adminVersions.actions'),
+          align: 'end',
+          key: 'action',
+          filterable: false,
+          sortable: false,
+        },
+      ];
+    },
     versionList() {
       return this.form ? this.form.versions : [];
     },
   },
   methods: {
-    ...mapActions('notifications', ['addNotification']),
-    ...mapActions('admin', ['restoreForm']),
-
+    ...mapActions(useNotificationStore, ['addNotification']),
     // ---------------------------------------------/ Publish/unpublish actions
     async onExportClick(id, isDraft) {
       await this.getFormSchema(id, isDraft);
@@ -146,7 +86,7 @@ export default {
         this.formSchema = { ...this.formSchema, ...res.data.schema };
       } catch (error) {
         this.addNotification({
-          message: this.$t('trans.adminVersions.notificationMsg'),
+          text: i18n.t('trans.adminVersions.notificationMsg'),
         });
       }
     },
@@ -154,21 +94,83 @@ export default {
 };
 </script>
 
+<template>
+  <v-data-table
+    class="submissions-table"
+    :headers="headers"
+    :items="versionList"
+    :lang="lang"
+  >
+    <!-- Version  -->
+    <template #item.version="{ item }">
+      <span :lang="lang">
+        {{
+          $t('trans.adminVersions.version', {
+            versionNo: item.raw.version,
+          })
+        }}
+      </span>
+    </template>
+
+    <!-- Status  -->
+    <template #item.status="{ item }">
+      <label :lang="lang">{{
+        item.raw.published
+          ? $t('trans.adminVersions.published')
+          : $t('trans.adminVersions.unpublished')
+      }}</label>
+    </template>
+
+    <!-- Created date  -->
+    <template #item.createdAt="{ item }">
+      {{ $filters.formatDateLong(item.raw.createdAt) }}
+    </template>
+
+    <!-- Updated at  -->
+    <template #item.updatedAt="{ item }">
+      {{ $filters.formatDateLong(item.raw.updatedAt) }}
+    </template>
+
+    <!-- Actions -->
+    <template #item.action="{ item }">
+      <!-- export -->
+      <span>
+        <v-tooltip location="bottom">
+          <template #activator="{ props }">
+            <v-btn
+              color="primary"
+              class="mx-1"
+              icon
+              v-bind="props"
+              @click="onExportClick(item.raw.id, item.raw.isDraft)"
+            >
+              <v-icon icon="mdi:mdi-download"></v-icon>
+            </v-btn>
+          </template>
+          <span :lang="lang"
+            >{{ $t('trans.adminVersions.exportDesign') }}
+          </span>
+        </v-tooltip>
+      </span>
+    </template>
+  </v-data-table>
+</template>
+
 <style scoped>
 /* Todo, this is duplicated in a few tables, extract to style */
 .submissions-table {
   clear: both;
 }
 @media (max-width: 1263px) {
-  .submissions-table >>> th {
+  .submissions-table :deep(th) {
     vertical-align: top;
   }
 }
 /* Want to use scss but the world hates me */
-.submissions-table >>> tbody tr:nth-of-type(odd) {
+.submissions-table :deep(tbody tr:nth-of-type(odd)) {
   background-color: #f5f5f5;
 }
-.submissions-table >>> thead tr th {
+.submissions-table :deep(thead tr th) {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em;

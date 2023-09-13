@@ -1,253 +1,52 @@
-<template>
-  <div>
-    <BaseInfoCard class="my-4">
-      <h4 class="primary--text">
-        <v-icon class="mr-1" color="primary">info</v-icon
-        >{{ $t('trans.manageVersions.important') }}
-      </h4>
-      <p>
-        {{ $t('trans.manageVersions.infoA') }}
-      </p>
-    </BaseInfoCard>
-
-    <div class="mt-8 mb-5">
-      <v-icon class="mr-1" color="primary">info</v-icon
-      >{{ $t('trans.manageVersions.infoB') }}
-    </div>
-    <v-data-table
-      :key="rerenderTable"
-      class="submissions-table"
-      :headers="headers"
-      :items="versionList"
-    >
-      <!-- Version  -->
-      <template #[`item.version`]="{ item }">
-        <router-link
-          :to="
-            item.isDraft
-              ? { name: 'FormPreview', query: { f: item.formId, d: item.id } }
-              : { name: 'FormPreview', query: { f: item.formId, v: item.id } }
-          "
-          class="mx-5"
-          target="_blank"
-        >
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <span v-bind="attrs" v-on="on">
-                {{ $t('trans.manageVersions.version') }} {{ item.version }}
-                <v-chip
-                  v-if="item.isDraft"
-                  color="secondary"
-                  class="mb-5 px-1"
-                  x-small
-                  text-color="black"
-                >
-                  {{ $t('trans.manageVersions.draft') }}
-                </v-chip>
-              </span>
-            </template>
-            <span>
-              {{ $t('trans.manageVersions.clickToPreview') }}
-              <v-icon>open_in_new</v-icon>
-            </span>
-          </v-tooltip>
-        </router-link>
-      </template>
-
-      <!-- Status  -->
-      <template #[`item.status`]="{ item }">
-        <v-switch
-          data-cy="formPublishedSwitch"
-          color="success"
-          value
-          :input-value="item.published"
-          :label="
-            item.published
-              ? $t('trans.manageVersions.published')
-              : $t('trans.manageVersions.unpublished')
-          "
-          :disabled="!canPublish"
-          @change="togglePublish($event, item.id, item.version, item.isDraft)"
-        />
-      </template>
-
-      <!-- Created date  -->
-      <template #[`item.createdAt`]="{ item }">
-        {{ item.createdAt | formatDateLong }}
-      </template>
-
-      <!-- Created by  -->
-      <template #[`item.createdBy`]="{ item }">
-        {{ item.createdBy }}
-      </template>
-
-      <!-- Actions -->
-      <template #[`item.action`]="{ item }">
-        <!-- Edit draft version -->
-        <span v-if="item.isDraft">
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <router-link
-                :to="{
-                  name: 'FormDesigner',
-                  query: { d: item.id, f: item.formId, nf: false },
-                }"
-              >
-                <v-btn
-                  color="primary"
-                  class="mx-1"
-                  icon
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  <v-icon>edit</v-icon>
-                </v-btn>
-              </router-link>
-            </template>
-            <span>{{ $t('trans.manageVersions.editVersion') }}</span>
-          </v-tooltip>
-        </span>
-
-        <!-- export -->
-        <span>
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <v-btn
-                color="primary"
-                class="mx-1"
-                icon
-                @click="onExportClick(item.id, item.isDraft)"
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon>get_app</v-icon>
-              </v-btn>
-            </template>
-            <span>{{ $t('trans.manageVersions.exportDesign') }}</span>
-          </v-tooltip>
-        </span>
-
-        <!-- create new version -->
-        <span v-if="!item.isDraft">
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <span v-bind="attrs" v-on="on">
-                <v-btn
-                  color="primary"
-                  class="mx-1"
-                  :disabled="hasDraft"
-                  icon
-                  @click="createVersion(item.formId, item.id)"
-                >
-                  <v-icon>add</v-icon>
-                </v-btn>
-              </span>
-            </template>
-            <span v-if="hasDraft">
-              {{ $t('trans.manageVersions.infoC') }}
-            </span>
-            <span v-else>
-              {{
-                $t('trans.manageVersions.useVersionInfo', {
-                  version: item.version,
-                })
-              }}
-            </span>
-          </v-tooltip>
-        </span>
-
-        <!-- delete draft version -->
-        <span v-else>
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <span v-bind="attrs" v-on="on">
-                <v-btn
-                  color="red"
-                  class="mx-1"
-                  :disabled="!hasVersions"
-                  icon
-                  @click="showDeleteDraftDialog = true"
-                >
-                  <v-icon>delete</v-icon>
-                </v-btn>
-              </span>
-            </template>
-            <span>{{ $t('trans.manageVersions.deleteVersion') }}</span>
-          </v-tooltip>
-        </span>
-      </template>
-    </v-data-table>
-
-    <BaseDialog
-      v-model="showHasDraftsDialog"
-      type="OK"
-      @close-dialog="showHasDraftsDialog = false"
-    >
-      <template #title>{{
-        $t('trans.manageVersions.draftAlreadyExists')
-      }}</template>
-      <template #text>
-        {{ $t('trans.manageVersions.infoD') }}
-      </template>
-    </BaseDialog>
-
-    <BaseDialog
-      v-model="showPublishDialog"
-      type="CONTINUE"
-      @continue-dialog="updatePublish"
-      @close-dialog="cancelPublish"
-    >
-      <template #title>
-        <span v-if="publishOpts.publishing">
-          {{ $t('trans.manageVersions.publishVersion') }}
-          {{ publishOpts.version }}
-        </span>
-        <span v-else>
-          {{ $t('trans.manageVersions.unpublishVersion') }}
-          {{ publishOpts.version }}</span
-        >
-      </template>
-      <template #text>
-        <span v-if="publishOpts.publishing"
-          >{{
-            $t('trans.manageVersions.useVersionInfo', {
-              version: publishOpts.version,
-            })
-          }}
-        </span>
-        <span v-else>
-          {{ $t('trans.manageVersions.infoE') }}
-        </span>
-      </template>
-    </BaseDialog>
-
-    <BaseDialog
-      v-model="showDeleteDraftDialog"
-      type="CONTINUE"
-      @close-dialog="showDeleteDraftDialog = false"
-      @continue-dialog="deleteCurrentDraft"
-    >
-      <template #title
-        >{{ $t('trans.manageVersions.confirmDeletion') }}
-      </template>
-      <template #text>{{ $t('trans.manageVersions.infoF') }}</template>
-      <template #button-text-continue>
-        <span>{{ $t('trans.manageVersions.delete') }}</span>
-      </template>
-    </BaseDialog>
-  </div>
-</template>
-
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import { formService } from '@/services';
-import { FormPermissions } from '@/utils/constants';
+import { mapActions, mapState } from 'pinia';
+
+import BaseDialog from '~/components/base/BaseDialog.vue';
+import BaseInfoCard from '~/components/base/BaseInfoCard.vue';
+import { i18n } from '~/internationalization';
+import { useFormStore } from '~/store/form';
+import { useNotificationStore } from '~/store/notification';
+import { formService } from '~/services';
+import { FormPermissions } from '~/utils/constants';
 
 export default {
-  name: 'ManageVersions',
+  components: {
+    BaseDialog,
+    BaseInfoCard,
+  },
   inject: ['fd', 'draftId', 'formId'],
   data() {
     return {
+      headers: [
+        {
+          title: i18n.t('trans.manageVersions.version'),
+          align: 'start',
+          key: 'version',
+        },
+        {
+          title: i18n.t('trans.manageVersions.status'),
+          align: 'start',
+          key: 'status',
+        },
+        {
+          title: i18n.t('trans.manageVersions.dateCreated'),
+          align: 'start',
+          key: 'createdAt',
+        },
+        {
+          title: i18n.t('trans.manageVersions.createdBy'),
+          align: 'start',
+          key: 'createdBy',
+        },
+        {
+          title: i18n.t('trans.manageVersions.actions'),
+          align: 'end',
+          key: 'action',
+          filterable: false,
+          sortable: false,
+          width: 200,
+        },
+      ],
       formSchema: {
         display: 'form',
         type: 'form',
@@ -265,48 +64,18 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['drafts', 'form', 'permissions']),
-    headers() {
-      return [
-        {
-          text: this.$t('trans.manageVersions.version'),
-          align: 'start',
-          value: 'version',
-        },
-        {
-          text: this.$t('trans.manageVersions.status'),
-          align: 'start',
-          value: 'status',
-        },
-        {
-          text: this.$t('trans.manageVersions.dateCreated'),
-          align: 'start',
-          value: 'createdAt',
-        },
-
-        {
-          text: this.$t('trans.manageVersions.createdBy'),
-          align: 'start',
-          value: 'createdBy',
-        },
-        {
-          text: this.$t('trans.manageVersions.actions'),
-          align: 'end',
-          value: 'action',
-          filterable: false,
-          sortable: false,
-          width: 200,
-        },
-      ];
-    },
-    canCreateDesign() {
-      return this.permissions.includes(FormPermissions.DESIGN_CREATE);
-    },
+    ...mapState(useFormStore, [
+      'drafts',
+      'form',
+      'permissions',
+      'isRTL',
+      'lang',
+    ]),
     hasDraft() {
-      return this.drafts && this.drafts.length > 0;
+      return this.drafts?.length > 0;
     },
     hasVersions() {
-      return this.form && this.form.versions && this.form.versions.length;
+      return this.form?.versions?.length;
     },
     versionList() {
       if (this.hasDraft) {
@@ -330,13 +99,18 @@ export default {
       return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },
   },
+  created() {
+    if (this.fd) {
+      this.turnOnPublish();
+    }
+  },
   methods: {
-    ...mapActions('notifications', ['addNotification']),
-    ...mapActions('form', [
-      'fetchForm',
-      'fetchDrafts',
-      'publishDraft',
+    ...mapActions(useNotificationStore, ['addNotification']),
+    ...mapActions(useFormStore, [
       'deleteDraft',
+      'fetchDrafts',
+      'fetchForm',
+      'publishDraft',
       'toggleVersionPublish',
     ]),
     createVersion(formId, versionId) {
@@ -345,14 +119,11 @@ export default {
       } else {
         this.$router.push({
           name: 'FormDesigner',
-          query: { f: formId, v: versionId, nv: true },
+          query: { f: formId, v: versionId, newVersion: true },
         });
       }
     },
 
-    // -----------------------------------------------------------------------------------------------------
-    // Publish/unpublish actions
-    // -----------------------------------------------------------------------------------------------------
     cancelPublish() {
       this.showPublishDialog = false;
       document.documentElement.style.overflow = 'auto';
@@ -367,9 +138,18 @@ export default {
             },
           })
           .catch(() => {});
-        return;
       }
-      // To get the toggle back to original state
+
+      if (this.hasDraft) {
+        const idx = this.drafts.map((d) => d.id).indexOf(this.publishOpts.id);
+        this.drafts[idx].published = !this.drafts[idx].published;
+      } else {
+        const idx = this.form.versions
+          .map((d) => d.id)
+          .indexOf(this.publishOpts.id);
+        this.form.versions[idx].published = !this.form.versions[idx].published;
+      }
+
       this.rerenderTable += 1;
     },
     togglePublish(value, id, version, isDraft) {
@@ -381,6 +161,7 @@ export default {
       };
       this.showPublishDialog = true;
     },
+
     turnOnPublish() {
       if (this.versionList) {
         for (const item of this.versionList) {
@@ -397,6 +178,7 @@ export default {
         }
       }
     },
+
     async updatePublish() {
       this.showPublishDialog = false;
       document.documentElement.style.overflow = 'auto';
@@ -420,7 +202,6 @@ export default {
       // Refresh form version list
       this.fetchForm(this.form.id);
     },
-    // ----------------------------------------------------------------------/ Publish/unpublish actions
 
     async deleteCurrentDraft() {
       this.showDeleteDraftDialog = false;
@@ -461,36 +242,313 @@ export default {
         this.formSchema = { ...this.formSchema, ...res.data.schema };
       } catch (error) {
         this.addNotification({
-          message: 'An error occurred while loading the form design.',
+          text: 'An error occurred while loading the form design.',
           consoleError: `Error loading form ${this.form.id} schema (version / draft: ${id}): ${error}`,
         });
       }
     },
   },
-  created() {
-    //check if the navigation to this page is from FormDesigner
-    if (this.fd) {
-      this.turnOnPublish();
-    }
-  },
 };
 </script>
+
+<template>
+  <div :class="{ 'dir-rtl': isRTL }">
+    <BaseInfoCard class="my-4">
+      <h4 class="text-primary" :lang="lang">
+        <v-icon
+          :class="isRTL ? 'ml-1' : 'mr-1'"
+          color="primary"
+          icon="mdi:mdi-information"
+        ></v-icon
+        >{{ $t('trans.manageVersions.important') }}!
+      </h4>
+      <p :lang="lang">{{ $t('trans.manageVersions.infoA') }}</p>
+    </BaseInfoCard>
+
+    <div class="mt-8 mb-5" :lang="lang">
+      <v-icon
+        :class="isRTL ? 'ml-1' : 'mr-1'"
+        color="primary"
+        icon="mdi:mdi-information"
+      ></v-icon
+      >{{ $t('trans.manageVersions.infoB') }}
+    </div>
+    <v-data-table
+      :key="rerenderTable"
+      class="submissions-table"
+      :headers="headers"
+      :items="versionList"
+    >
+      <!-- Version  -->
+      <template #item.version="{ item }">
+        <router-link
+          :to="
+            item.raw.isDraft
+              ? {
+                  name: 'FormPreview',
+                  query: { f: item.raw.formId, d: item.raw.id },
+                }
+              : {
+                  name: 'FormPreview',
+                  query: { f: item.raw.formId, v: item.raw.id },
+                }
+          "
+          class="mx-5"
+          target="_blank"
+        >
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <span v-bind="props" :lang="lang">
+                {{ $t('trans.manageVersions.version') }} {{ item.raw.version }}
+                <v-chip
+                  v-if="item.raw.isDraft"
+                  color="secondary"
+                  class="mb-5 px-1"
+                  x-small
+                  :lang="lang"
+                >
+                  {{ $t('trans.manageVersions.draft') }}
+                </v-chip>
+              </span>
+            </template>
+            <span :lang="lang">
+              {{ $t('trans.manageVersions.clickToPreview') }}
+              <v-icon icon="mdi:mdi-open-in-new"></v-icon>
+            </span>
+          </v-tooltip>
+        </router-link>
+      </template>
+
+      <!-- Status  -->
+      <template #item.status="{ item }">
+        <v-switch
+          v-model="item.raw.published"
+          data-cy="formPublishedSwitch"
+          color="success"
+          :disabled="!canPublish"
+          :class="{ 'dir-ltl': isRTL }"
+          @update:modelValue="
+            togglePublish(
+              $event,
+              item.raw.id,
+              item.raw.version,
+              item.raw.isDraft
+            )
+          "
+        >
+          <template #label>
+            <span :class="{ 'mr-2': isRTL }" :lang="lang">
+              {{
+                item.raw.published
+                  ? $t('trans.manageVersions.published')
+                  : $t('trans.manageVersions.unpublished')
+              }}</span
+            >
+          </template>
+        </v-switch>
+      </template>
+
+      <!-- Created date  -->
+      <template #item.createdAt="{ item }">
+        {{ $filters.formatDateLong(item.raw.createdAt) }}
+      </template>
+
+      <!-- Created by  -->
+      <template #item.createdBy="{ item }">
+        {{ item.raw.createdBy }}
+      </template>
+
+      <!-- Actions -->
+      <template #item.action="{ item }">
+        <!-- Edit draft version -->
+        <span v-if="item.raw.isDraft">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <router-link
+                :to="{
+                  name: 'FormDesigner',
+                  query: { d: item.raw.id, f: item.raw.formId, nf: false },
+                }"
+              >
+                <v-btn
+                  color="primary"
+                  class="mx-1"
+                  icon
+                  v-bind="props"
+                  variant="text"
+                >
+                  <v-icon icon="mdi:mdi-pencil"></v-icon>
+                </v-btn>
+              </router-link>
+            </template>
+            <span :lang="lang">{{
+              $t('trans.manageVersions.editVersion')
+            }}</span>
+          </v-tooltip>
+        </span>
+
+        <!-- export -->
+        <span>
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <v-btn
+                color="primary"
+                class="mx-1"
+                icon
+                v-bind="props"
+                variant="text"
+                @click="onExportClick(item.raw.id, item.raw.isDraft)"
+              >
+                <v-icon icon="mdi:mdi-download"></v-icon>
+              </v-btn>
+            </template>
+            <span :lang="lang">{{
+              $t('trans.manageVersions.exportDesign')
+            }}</span>
+          </v-tooltip>
+        </span>
+
+        <!-- create new version -->
+        <span v-if="!item.raw.isDraft">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <span v-bind="props">
+                <v-btn
+                  color="primary"
+                  class="mx-1"
+                  :disabled="hasDraft"
+                  icon
+                  variant="text"
+                  @click="createVersion(item.raw.formId, item.raw.id)"
+                >
+                  <v-icon icon="mdi:mdi-plus"></v-icon>
+                </v-btn>
+              </span>
+            </template>
+            <span v-if="hasDraft" :lang="lang">
+              {{ $t('trans.manageVersions.infoC') }}
+            </span>
+            <span v-else :lang="lang">
+              {{
+                $t('trans.manageVersions.useVersionInfo', {
+                  version: item.raw.version,
+                })
+              }}
+            </span>
+          </v-tooltip>
+        </span>
+
+        <!-- delete draft version -->
+        <span v-else>
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <span v-bind="props">
+                <v-btn
+                  color="red"
+                  class="mx-1"
+                  :disabled="!hasVersions"
+                  icon
+                  variant="text"
+                  @click="showDeleteDraftDialog = true"
+                >
+                  <v-icon icon="mdi:mdi-delete"></v-icon>
+                </v-btn>
+              </span>
+            </template>
+            <span :lang="lang">{{
+              $t('trans.manageVersions.deleteVersion')
+            }}</span>
+          </v-tooltip>
+        </span>
+      </template>
+    </v-data-table>
+
+    <BaseDialog
+      v-model="showHasDraftsDialog"
+      type="OK"
+      @close-dialog="showHasDraftsDialog = false"
+    >
+      <template #title
+        ><span :lang="lang">{{
+          $t('trans.manageVersions.draftAlreadyExists')
+        }}</span></template
+      >
+      <template #text>
+        <span :lang="lang">
+          {{ $t('trans.manageVersions.infoD') }}
+        </span>
+      </template>
+    </BaseDialog>
+
+    <BaseDialog
+      v-model="showPublishDialog"
+      type="CONTINUE"
+      @continue-dialog="updatePublish"
+      @close-dialog="cancelPublish"
+    >
+      <template #title>
+        <span v-if="publishOpts.publishing" :lang="lang">
+          {{ $t('trans.manageVersions.publishVersion') }}
+          {{ publishOpts.version }}
+        </span>
+        <span v-else :lang="lang">
+          {{ $t('trans.manageVersions.unpublishVersion') }}
+          {{ publishOpts.version }}</span
+        >
+      </template>
+      <template #text>
+        <span v-if="publishOpts.publishing" :lang="lang">
+          {{
+            $t('trans.manageVersions.useVersionInfo', {
+              version: publishOpts.version,
+            })
+          }}
+        </span>
+        <span v-else :lang="lang">
+          {{ $t('trans.manageVersions.infoE') }}
+        </span>
+      </template>
+    </BaseDialog>
+
+    <BaseDialog
+      v-model="showDeleteDraftDialog"
+      type="CONTINUE"
+      @close-dialog="showDeleteDraftDialog = false"
+      @continue-dialog="deleteCurrentDraft"
+    >
+      <template #title
+        ><span :lang="lang">{{
+          $t('trans.manageVersions.confirmDeletion')
+        }}</span>
+      </template>
+      <template #text
+        ><span :lang="lang">{{
+          $t('trans.manageVersions.infoF')
+        }}</span></template
+      >
+      <template #button-text-continue>
+        <span :lang="lang">{{ $t('trans.manageVersions.delete') }}</span>
+      </template>
+    </BaseDialog>
+  </div>
+</template>
 
 <style scoped>
 /* Todo, this is duplicated in a few tables, extract to style */
 .submissions-table {
   clear: both;
 }
+
 @media (max-width: 1263px) {
-  .submissions-table >>> th {
+  .submissions-table :deep(th) {
     vertical-align: top;
   }
 }
 /* Want to use scss but the world hates me */
-.submissions-table >>> tbody tr:nth-of-type(odd) {
+.submissions-table :deep(tbody) tr:nth-of-type(odd) {
   background-color: #f5f5f5;
 }
-.submissions-table >>> thead tr th {
+.submissions-table :deep(thead) tr th {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em;

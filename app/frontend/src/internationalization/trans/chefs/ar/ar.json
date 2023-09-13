@@ -18,6 +18,10 @@
   "manageLayout": {
     "manageForm": "إدارة النموذج"
   },
+  "preview": {
+    "preview": "معاينة",
+    "previewToolTip": "يعرض هذا معاينة لتصميم إصدار النموذج وسلوكه كما يراه مقدموه. لا يمكنك تقديم النموذج من هذه الصفحة."
+  },
   "shareForm": {
     "shareForm": "نموذج المشاركة",
     "shareLink": "رابط المشاركة",
@@ -46,9 +50,12 @@
     "totalVersions": "إجمالي الإصدارات",
     "status": "حالة",
     "update": "تحديث",
-    "cancel": "يلغي"
+    "cancel": "يلغي",
+    "eventSubscription": "اشتراك الحدث"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "اضغط على <kbd>مفتاح الإدخال</kbd> أو <kbd>،</kbd> أو <kbd>مسافة</kbd> لإضافة عناوين بريد إلكتروني متعددة",
+    "allowMultiDraft": "السماح بتحميل <strong>مسودة متعددة</strong>",
     "formTitle": "عنوان النموذج",
     "formDescription": "وصف النموذج",
     "formAccess": "الوصول إلى النموذج",
@@ -118,11 +125,32 @@
     "correctDateFormat": "يجب أن يكون التاريخ في الشكل الصحيح. أي. yyyy-mm-dd",
     "dateDiffMsg": "يجب أن يكون تاريخ التقديم إغلاق أكبر من تاريخ التقديم المفتوح.",
     "valueMustBeNumber": "يجب أن تكون القيمة رقمًا. أي. 1،2،3،5،99",
-    "selectAnOptions": "يرجى تحديد خيار واحد على الأقل",
+    "selectAnOptions": "الرجاء تحديد خيار واحد على الأقل",
     "validInterval": "يجب أن يكون هذا الفاصل الزمني صالحًا.",
     "fieldRequiredAndInterval": "هذا الحقل مطلوب ويجب أن يكون فترة.",
-    "dateGrtOpenSubmissnDate": "يجب أن يكون التكرار حتى تاريخ أكبر من تاريخ التقديم المفتوح",
-    "public": "عام (مجهول)"
+    "dateGrtOpenSubmissnDate": "كرر حتى التاريخ يجب أن يكون أكبر من تاريخ التقديم المفتوح",
+    "public": "عام (مجهول)",
+    "allowEventSubscription": "السماح بالاشتراك في الحدث",
+    "eventSubscription": "اشتراك الحدث",
+    "validEndpointRequired": "الرجاء إدخال نقطة نهاية https://",
+    "validBearerTokenRequired": "89abddfb-2cff-4fda-83e6-13221f0c3d4f أدخل مثال رمز حامل صالح"
+  },
+  "subscribeEvent": {
+    "eventType": "نوع الحدث",
+    "endpointUrl": "عنوان URL لنقطة النهاية",
+    "eventSubmission": "استسلام",
+    "eventAssignment": "تكليف",
+    "eventStatusChange": "تغيير الوضع",
+    "endpointToken": "رمز نقطة النهاية",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "يحفظ",
+    "text": "نص",
+    "password": "كلمة المرور",
+    "hideSecret": "إخفاء السر",
+    "showSecret": "إظهار السر",
+    "key": "مفتاح",
+    "saveSettingsErrMsg": "حدث خطأ أثناء محاولة تحديث إعدادات هذا النموذج.",
+    "updateSettingsConsoleErrMsg": "خطأ في تحديث إعدادات النموذج {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "تنصل",
@@ -261,7 +289,6 @@
     "notificationMsg": "فشل الحصول على مستخدم من RBAC ، راجع وحدة التحكم",
     "notificationConsErr": "خطأ في الحصول على مستخدم من RBAC"
   },
-  "fcProactiveHelp": {},
   "baseAuthButton": {
     "logout": "تسجيل خروج",
     "login": "تسجيل الدخول"
@@ -292,18 +319,21 @@
     "formDesignInfoA": "استخدم زر <strong>حفظ التصميم</strong> عند الانتهاء من بناء هذا النموذج.",
     "formDesignInfoB": "يتم توفير زر <strong>إرسال</strong> للمستخدم لإرسال هذا النموذج وسيتم تنشيطه بعد حفظه.",
     "formLoadErrMsg": "حدث خطأ أثناء تحميل تصميم النموذج.",
-    "formLoadConsoleErrMsg": "خطأ في تحميل مخطط النموذج {formId} (الإصدار: {versionId} المسودة: {DraftId}): {error}",
+    "formLoadConsoleErrMsg": "خطأ في تحميل مخطط النموذج {formId} (الإصدار: {versionId} المسودة: {draftId}): {error}",
     "formSchemaImportErrMsg": "حدث خطأ أثناء استيراد مخطط النموذج.",
     "formSchemaImportConsoleErrMsg": "خطأ في استيراد مخطط النموذج: {error}",
     "formDesignSaveErrMsg": "حدث خطأ أثناء محاولة حفظ تصميم النموذج هذا. إذا كنت بحاجة إلى التحديث أو المغادرة للمحاولة مرة أخرى لاحقًا ، فيمكنك تصدير التصميم الحالي على الصفحة لحفظه في وقت لاحق.",
-    "formDesignSaveConsoleErrMsg": "خطأ في تحديث أو إنشاء النموذج (FormID: {formId} ، versionId: {versionId} ، DraftId: {DraftId}) خطأ: {error}",
+    "formDesignSaveConsoleErrMsg": "خطأ في تحديث أو إنشاء النموذج (FormID: {formId} ، versionId: {versionId} ، draftId: {draftId}) خطأ: {error}",
     "collapse": "ينهار",
     "actions": "أجراءات",
-    "version": "إصدار"
+    "version": "إصدار",
+    "save": "يحفظ",
+    "saving": "إنقاذ",
+    "notSaved": "يتم حفظ"
   },
   "formViewerMultiUpload": {
     "important": "مهم",
-    "uploadSucessMsg": "لضمان التحميل الناجح للعديد من المسودات ، يرجى تنزيل النموذج المقدم واستخدامه.",
+    "uploadSucessMsg": "لضمان تحميل مسودات متعددة بنجاح ، يرجى تنزيل النموذج المقدم واستخدامه.",
     "confirmDownload": "هل تريد تحميله؟",
     "jsonFileUpload": "حدد ملف JSON للتحميل",
     "dragNDrop": "أو اسحبه وأفلته هنا",
@@ -324,11 +354,7 @@
     "errWhileCheckValidity": "هناك خطأ في هذا الملف",
     "errAfterValidate": "تم العثور على بعض الأخطاء ، انظر أدناه لمزيد من المعلومات.",
     "fileIsEmpty": "هذا الملف فارغ.",
-    "downlaod": "تحميل"
-  },
-  "bcGovAlertBanner": {
-    "defaultErrMsg": "خطأ: حدث خطأ ما",
-    "error": "خطأ"
+    "download": "تحميل"
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "إخلاء المسؤولية وبيان المسؤولية لمصممي النماذج:",
@@ -340,7 +366,11 @@
     "assement": "واستكمال التقييمات كما هو مطلوب."
   },
   "requestReceipt": {
+    "emailPriority": "أولوية البريد الإلكتروني",
     "emailReceipt": "إرسال إيصال هذا الإرسال بالبريد الإلكتروني",
+    "high": "عالي",
+    "low": "قليل",
+    "normal": "طبيعي",
     "send": "يرسل",
     "sendToEmailAddress": "أرسل إلى عنوان البريد الإلكتروني",
     "emailSent": "تم إرسال بريد إلكتروني إلى {to}.",
@@ -349,6 +379,7 @@
     "emailRequired": "البريد الالكتروني مطلوب"
   },
   "submissionsTable": {
+    "submissions": "التقديمات",
     "submissionsTable": "الجدول",
     "selectColumns": "حدد الأعمدة",
     "manageForm": "إدارة النموذج",
@@ -391,7 +422,7 @@
     "close": "يغلق",
     "userName": "اسم المستخدم",
     "date": "تاريخ",
-    "errorMsg": "حدث خطأ أثناء محاولة جلب التاريخ.",
+    "errorMsg": "حدث خطأ أثناء محاولة جلب المحفوظات.",
     "consoleErrMsg": "خطأ في الحصول على سجل التدقيق لـ"
   },
   "deleteSubmission": {
@@ -504,7 +535,7 @@
     "noStatus": "لا توجد حالة",
     "noStatusesFound": "لم يتم العثور على حالات",
     "statusCodesErr": "خطأ في العثور على رموز الحالة",
-    "notifyErrorCode": "حدث خطأ في جلب الحالة لهذا الإرسال.",
+    "notifyErrorCode": "حدث خطأ أثناء إحضار الحالة لهذا الإرسال.",
     "notifyConsoleErrorCode": "خطأ في الحصول على الحالات:",
     "fetchSubmissionUsersErr": "حدث خطأ أثناء محاولة جلب رسائل البريد الإلكتروني للمستلمين لهذا الإرسال.",
     "fetchSubmissionUsersConsErr": "خطأ في الحصول على رسائل البريد الإلكتروني للمستلم لـ",
@@ -541,7 +572,7 @@
     "from": "من",
     "to": "ل",
     "CSVFormat": "تنسيق CSV",
-    "multiRowPerSubmissionA": "1 - صفوف متعددة لكل إرسال مع مسافات تعريف",
+    "multiRowPerSubmissionA": "1 - صفوف متعددة لكل إرسال مع مسافات بادئة",
     "multiRowPerSubmissionB": "2 - صفوف متعددة لكل إرسال",
     "singleRowPerSubmission": "3 - صف واحد لكل تقديم",
     "unformatted": "4 - غير منسق",
@@ -586,6 +617,10 @@
   "proactiveHelpPreviewDialog": {
     "learnMore": "يتعلم أكثر"
   },
+  "preview": {
+    "preview": "معاينة",
+    "previewToolTip": "يعرض هذا معاينة لتصميم إصدار النموذج وسلوكه كما يراه مقدموه. لا يمكنك تقديم النموذج من هذه الصفحة."
+  },
   "generalLayout": {
     "loadingText": "جاري التحميل الرجاءالانتظار",
     "preview": "معاينة",
@@ -604,7 +639,9 @@
     "confirmationID": "معرف التأكيد:",
     "submittedBy": "مقدم من:",
     "cancel": "يلغي",
-    "status": "حالة"
+    "status": "حالة",
+    "updatedAt": "معدل",
+    "updatedBy": "تم التعديل بواسطة"
   },
   "teamManagement": {
     "teamManagement": "ادارة فريق",
@@ -669,7 +706,7 @@
     "getUsersSubmissionsConsoleErrMsg": "خطأ في تحميل بيانات إرسال النموذج {SubmitId}: {error}",
     "multiDraftUploadSuccess": "لقد نجح تحميل المسودة المتعددة!",
     "readVersionErrMsg": "لا يوجد مخطط في الاستجابة. معرف الإصدار: {versionId}",
-    "readDraftErrMsg": "لا يوجد مخطط في الاستجابة. معرّف المسودة: {DraftId}",
+    "readDraftErrMsg": "لا يوجد مخطط في الاستجابة. معرّف المسودة: {draftId}",
     "alertRouteMsg": "لم يقم مالك النموذج بنشر النموذج ، وهو غير متاح لعمليات الإرسال.",
     "fecthingFormErrMsg": "حدث خطأ أثناء جلب هذا النموذج",
     "fecthingFormConsoleErrMsg": "خطأ في تحميل مخطط النموذج {versionId}: {error}",
@@ -685,9 +722,10 @@
     "no": "لا",
     "failedResSubmissn": "فشل الرد من نقطة نهاية الإرسال. رمز الاستجابة: {status}",
     "errSubmittingForm": "حدث خطأ أثناء إرسال هذا النموذج",
-    "errorSavingFile": "خطأ في حفظ الملفات. اسم الملف: {fileNname}. خطأ: {error}",
+    "errorSavingFile": "خطأ في حفظ الملفات. اسم الملف: {fileName}. خطأ: {error}",
     "submittingDraftErrMsg": "حدث خطأ أثناء حفظ المسودة",
-    "submittingDraftConsErrMsg": "خطأ في حفظ المسودة. معرف التقديم: {submitId}. خطأ: {error}"
+    "submittingDraftConsErrMsg": "خطأ في حفظ المسودة. معرف التقديم: {submitId}. خطأ: {error}",
+    "formDraftAccessErrMsg": "تم إرسال طلب التقديم بالفعل ، مع إعادة التوجيه إلى صفحة العرض"
   },
   "bCGovFooter": {
     "home": "بيت",
@@ -720,7 +758,7 @@
     "createCustomFormTitle": "قم بإنشاء نماذج مخصصة باستخدام أداة إنشاء النماذج CHEFS",
     "createCustomFormSub1": "مع CHEFS ، يمكنك إنشاء نماذج آمنة بواجهة سحب وإفلات سهلة. يمكنك إضافة مكونات النموذج وإعادة ترتيبها وإفلاتها في تكوينات تخطيطات مختلفة.",
     "chefsHowToTitle": "فيديوهات شيفس إرشادية",
-    "chefsHowToSub": "سيقدم لك دليل البدء السريع بعض الوظائف الأساسية لـ CHEFS. البدء!",
+    "chefsHowToSub": "سيقدم لك دليل البدء السريع بعض الوظائف الأساسية لـ CHEFS.",
     "getStartedToChefs": "ابدأ باستخدام CHEFS",
     "createOnlineTitle": "قم بإنشاء نماذج عبر الإنترنت لجمع المعلومات من عملائك وتحسين سير العمل الخاص بك.",
     "getStarted": "البدء"
@@ -740,6 +778,7 @@
   "addTeamMember": {
     "cantFindChefsUsers": "لا يمكنك العثور على شخص ما؟ ربما لم يقوموا بتسجيل الدخول إلى CHEFS.<br /> يرجى إرسال رابط إلى CHEFS واطلب منهم تسجيل الدخول.",
     "cancel": "يلغي",
+    "add": "يضيف",
     "mustSelectAUser": "يجب تحديد دور واحد على الأقل لإضافة هذا المستخدم.",
     "addNewMember": "أضف عضو جديد",
     "enterUsername": "أدخل اسمًا أو بريدًا إلكترونيًا أو اسم مستخدم",
@@ -755,35 +794,59 @@
     "exampleText2": "نص مثال 2",
     "filterPlaceholderTxt": "تصفية نص العنصر النائب",
     "filter": "منقي",
-    "value": "قيمة"
+    "value": "قيمة",
+    "resetColumns": "إعادة تعيين الأعمدة"
   },
   "formViewerActions": {
     "viewAllSubmissions": "عرض جميع عمليات الإرسال",
     "saveAsADraft": "احفظ كمسودة",
     "editThisDraft": "قم بتحرير هذه المسودة",
     "switchSingleSubmssn": "التبديل إلى الإرسال الفردي",
-    "switchMultiSubmssn": "التبديل إلى الإرسال الفردي"
+    "switchMultiSubmssn": "التبديل إلى الإرسال المتعدد"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "تم نسخ الرابط إلى الحافظة",
     "copyToClipboard": "نسخ إلى الحافظة",
     "errCopyToClipboard": "خطأ في محاولة النسخ إلى الحافظة."
   },
-  "root": {
-    "admin": "مسؤل"
-  },
   "sucess": {
     "sucessFormSubmissn": "تم تسليم إستمارتك بنجاح",
     "keepRecord": "إذا كنت ترغب في الاحتفاظ بسجل لهذا الإرسال ، فيمكنك الاحتفاظ بما يلي",
-    "confirmationId": "معرف التأكيد:"
+    "confirmationId": "معرف التأكيد"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "خطأ: حدث خطأ ما",
+    "error": "خطأ"
   },
   "permissionUtils": {
     "formNotAvailable": "النموذج غير متوفر حاليا. قد يكون هذا بسبب ارتباط غير صحيح ، أو ربما تم حذف النموذج من قبل مالكه.",
     "missingFormIdAndSubmssId": "تفتقد الخيارات إلى كل من formId ومعرّف الإرسال",
     "loadingFormErrMsg": "حدث خطأ أثناء تحميل هذا النموذج.",
     "loadingForm": "خطأ أثناء تحميل {options}: {error}",
-    "idpHintMsg": "يتطلب هذا النموذج مصادقة {idpHint}. يرجى إعادة تسجيل الدخول والمحاولة مرة أخرى.",
+    "idpHintMsg": "يتطلب هذا النموذج مصادقة {idpHint}. الرجاء إعادة تسجيل الدخول وحاول مرة أخرى.",
     "formIdpMissMatch": "عدم تطابق IDP للنموذج. يتطلب النموذج {idpHint} لكن المستخدم لديه {userIdp}."
+  },
+  "download": {
+    "chefsDataExport": "تصدير بيانات CHEFS",
+    "preparingForDownloading": "جاري التحضير للتنزيل ...",
+    "downloadInfoA": "إذا لم يتم تنزيل ملفك تلقائيًا",
+    "downloadInfoB": "اضغط هنا للمحاولة مرة أخرى"
+  },
+  "history": {
+    "submissnHistory": "تاريخ التقديم الخاص بك (يتم تحديده لاحقًا)"
+  },
+  "error": {
+    "logout": "تسجيل خروج"
+  },
+  "login": {
+    "authenticateWith": "المصادقة مع:",
+    "alreadyLoggedIn": "قمت بتسجيل الدخول بالفعل",
+    "home": "بيت",
+    "about": "عن"
+  },
+  "notFound": {
+    "about": "عن",
+    "pageNotFound": "404: الصفحة غير موجودة. :("
   },
   "store": {
     "admin": {
@@ -824,14 +887,13 @@
       "getUserFormRolesErrmsg": "حدث خطأ أثناء جلب بيانات المستخدم الخاصة بك لهذا النموذج.",
       "getUserFormRolesConsErrmsg": "خطأ في الحصول على بيانات المستخدم باستخدام formID {formId}: {error}",
       "updCurrUserFormPrefErrMsg": "حدث خطأ أثناء حفظ تفضيلاتك لهذا النموذج.",
-      "updCurrUserFormPrefConsErrMsg": "خطأ في تحديث تفضيلات نموذج المستخدم باستخدام formID {formId} ، ويفضل {التفضيلات}: {error}",
+      "updCurrUserFormPrefConsErrMsg": "خطأ في تحديث تفضيلات نموذج المستخدم باستخدام formID {formId} ، وتفضيلات {preferences}: {error}",
       "getCurrUserFormPrefErrMsg": "حدث خطأ أثناء جلب تفضيلاتك لهذا النموذج.",
       "getCurrUserFormPrefConsErrMsg": "خطأ في الحصول على تفضيلات نموذج المستخدم باستخدام formID {formId}: {error}",
-      "delCurrformNotiMsg": "تم حذف النموذج \"{state.form.name}\" بنجاح.",
-      "delCurrformErrMsg": "حدث خطأ أثناء محاولة حذف \"$ {state.form.name}\".",
+      "delCurrformNotiMsg": "تم حذف النموذج {name} بنجاح.",
       "delCurrFormConsErMsg": "خطأ في حذف النموذج {id}: {error}",
       "delDraftErrMsg": "حدث خطأ أثناء حذف هذه المسودة.",
-      "delDraftConsErrMsg": "خطأ في حذف {DraftId}: {error}",
+      "delDraftConsErrMsg": "خطأ في حذف {draftId}: {error}",
       "fecthDraftErrMsg": "حدث خطأ أثناء البحث عن مسودات لهذا النموذج.",
       "fecthDraftConsErrMsg": "خطأ في الحصول على مسودات للنموذج {formId}: {error}",
       "fecthFormErrMsg": "حدث خطأ أثناء جلب هذا النموذج.",
@@ -839,13 +901,13 @@
       "fetchFormFieldsErrMsg": "حدث خطأ أثناء جلب قائمة الحقول لهذا النموذج.",
       "fetchFormFieldsConsErrMsg": "خطأ في الحصول على النموذج {formId}: {error}",
       "publishDraftErrMsg": "حدث خطأ أثناء النشر.",
-      "publishDraftConsErrMsg": "خطأ في نشر $ {DraftId}: $ {error}",
+      "publishDraftConsErrMsg": "خطأ في نشر $ {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "خطأ في toggleVersionPublish {versionId} {publish}: {error}",
       "updateFormErrMsg": "حدث خطأ أثناء تحديث إعدادات هذا النموذج.",
       "updateFormConsErrMsg": "خطأ في تحديث النموذج {id}: {error}",
       "deleteSubmissionNotifyMsg": "تم حذف الإرسال بنجاح.",
       "deleteSubmissionErrMsg": "حدث خطأ أثناء حذف هذا الإرسال.",
-      "deleteSubmissionConsErrMsg": "خطأ في حذف الإرسال {SubmitId}: {error}",
+      "deleteSubmissionConsErrMsg": "خطأ في حذف الإرسال {submitId}: {error}",
       "deleteSubmissionsNotifyMsg": "تم حذف عمليات الإرسال بنجاح.",
       "deleteSubmissionsErrMsg": "حدث خطأ أثناء حذف عمليات الإرسال المحددة.",
       "deleteSubmissionsConsErrMsg": "خطأ في حذف عمليات الإرسال: {error}",
@@ -858,7 +920,7 @@
       "fecthSubmissnUsersErrMsg": "حدث خطأ أثناء جلب البريد الإلكتروني للمستلم لهذا الإرسال.",
       "fecthSubmissnUsersConsErrMsg": "خطأ في الحصول على البريد الإلكتروني للمستلم للإرسال {formSubmissionId}: {error}",
       "fetchSubmissnErrMsg": "حدث خطأ أثناء جلب هذا الإرسال.",
-      "fetchSubmissnConsErrMsg": "خطأ في الحصول على الإرسال {SubmitId}: $ {error}",
+      "fetchSubmissnConsErrMsg": "خطأ في الحصول على الإرسال {SubmitId}: {error}",
       "fetchFormCSVExptFieldsErrMsg": "حدث خطأ أثناء جلب قائمة الحقول لهذا النموذج.",
       "fetchFormCSVExptFieldsConsErrMsg": "خطأ في الحصول على النموذج {formId}: {error}",
       "fetchSubmissnsErrMsg": "حدث خطأ أثناء جلب عمليات الإرسال لهذا النموذج.",
@@ -878,7 +940,30 @@
       "listFCPHErrMsg": "حدث خطأ أثناء إحضار مكونات أداة إنشاء النماذج",
       "listFCPHConsErrMsg": "خطأ في الحصول على مكونات منشئ النموذج: {error}",
       "downloadFileErrMsg": "حدث خطأ أثناء تنزيل الملف",
-      "downloadFileConsErrMsg": "خطأ في تنزيل الملف: خطأ"
+      "downloadFileConsErrMsg": "خطأ في تنزيل الملف: خطأ",
+      "readSubscriptionSettingsErrMsg": "حدث خطأ أثناء محاولة جلب إعدادات الاشتراك.",
+      "readSubscriptionSettingsConsErrMsg": "خطأ في الحصول على إعدادات الاشتراك للنموذج {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "تم حفظ إعدادات الاشتراك لهذا النموذج.",
+      "saveSubscriptionSettingsErrMsg": "حدث خطأ أثناء محاولة حفظ إعدادات الاشتراك.",
+      "saveSubscriptionSettingsConsErrMsg": "خطأ في حفظ إعدادات الاشتراك للنموذج {formId}: {error}"
+    }
+  },
+  "admin": {
+    "root": {
+      "admin": "مسؤل"
+    },
+    "form": {
+      "administerForm": "إدارة النموذج"
+    },
+    "user": {
+      "administerUser": "إدارة المستخدم"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "نماذجي",
+      "history": "تاريخ",
+      "user": "مستخدم"
     }
   }
 }

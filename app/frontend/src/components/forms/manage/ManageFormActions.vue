@@ -1,93 +1,24 @@
-<template>
-  <div>
-    <span>
-      <ShareForm :formId="form.id" :warning="!isPublished" />
-    </span>
-
-    <span v-if="canViewSubmissions">
-      <v-tooltip bottom>
-        <template #activator="{ on, attrs }">
-          <router-link :to="{ name: 'FormSubmissions', query: { f: form.id } }">
-            <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
-              <v-icon class="mr-1">list_alt</v-icon>
-            </v-btn>
-          </router-link>
-        </template>
-        <span>{{ $t('trans.manageFormActions.viewSubmissions') }}</span>
-      </v-tooltip>
-    </span>
-
-    <span v-if="canManageTeam">
-      <v-tooltip bottom>
-        <template #activator="{ on, attrs }">
-          <router-link :to="{ name: 'FormTeams', query: { f: form.id } }">
-            <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
-              <v-icon>group</v-icon>
-            </v-btn>
-          </router-link>
-        </template>
-        <span>{{ $t('trans.manageFormActions.teamManagement') }}</span>
-      </v-tooltip>
-    </span>
-
-    <span v-if="canDeleteForm">
-      <v-tooltip bottom>
-        <template #activator="{ on, attrs }">
-          <v-btn
-            class="mx-1"
-            color="red"
-            @click="showDeleteDialog = true"
-            icon
-            v-bind="attrs"
-            v-on="on"
-          >
-            <v-icon>delete</v-icon>
-          </v-btn>
-        </template>
-        <span
-          ><span>{{ $t('trans.manageFormActions.deleteForm') }}</span></span
-        >
-      </v-tooltip>
-
-      <BaseDialog
-        v-model="showDeleteDialog"
-        type="CONTINUE"
-        @close-dialog="showDeleteDialog = false"
-        @continue-dialog="deleteForm"
-      >
-        <template #title>{{
-          $t('trans.manageFormActions.confirmDeletion')
-        }}</template>
-        <template #text>
-          {{ $t('trans.manageFormActions.deleteMessageA') }}
-          <strong>{{ form.name }}</strong
-          >? {{ $t('trans.manageFormActions.deleteMessageB') }}
-        </template>
-        <template #button-text-continue>
-          <span>{{ $t('trans.manageFormActions.deleteForm') }}</span>
-        </template>
-      </BaseDialog>
-    </span>
-  </div>
-</template>
-
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapActions, mapState } from 'pinia';
 
-import { FormPermissions } from '@/utils/constants';
-import ShareForm from '@/components/forms/manage/ShareForm.vue';
+import BaseDialog from '~/components/base/BaseDialog.vue';
+import ShareForm from '~/components/forms/manage/ShareForm.vue';
+import { useFormStore } from '~/store/form';
+
+import { FormPermissions } from '~/utils/constants';
 
 export default {
-  name: 'ManageFormActions',
-  components: { ShareForm },
+  components: {
+    BaseDialog,
+    ShareForm,
+  },
   data() {
     return {
       showDeleteDialog: false,
     };
   },
   computed: {
-    ...mapGetters('form', ['form', 'permissions']),
-    // Permission checks
+    ...mapState(useFormStore, ['form', 'permissions', 'isRTL', 'lang']),
     canDeleteForm() {
       return this.permissions.includes(FormPermissions.FORM_DELETE);
     },
@@ -103,21 +34,111 @@ export default {
     },
     isPublished() {
       return (
-        this.form.versions &&
-        this.form.versions.length &&
+        this.form?.versions?.length &&
         this.form.versions.some((v) => v.published)
       );
     },
   },
   methods: {
-    ...mapActions('form', ['deleteCurrentForm']),
-    deleteForm() {
+    ...mapActions(useFormStore, ['deleteCurrentForm']),
+    async deleteForm() {
       this.showDeleteDialog = false;
-      this.deleteCurrentForm();
-      this.$router.push({
-        name: 'UserForms',
-      });
+      await this.deleteCurrentForm();
+      this.$router.push({ name: 'UserForms' });
     },
   },
 };
 </script>
+
+<template>
+  <div :class="{ 'dir-rtl': isRTL }">
+    <span>
+      <ShareForm :form-id="form.id" :warning="!isPublished" />
+    </span>
+
+    <span v-if="canViewSubmissions">
+      <v-tooltip location="bottom">
+        <template #activator="{ props }">
+          <router-link :to="{ name: 'FormSubmissions', query: { f: form.id } }">
+            <v-btn
+              class="mx-1"
+              color="primary"
+              v-bind="props"
+              size="x-small"
+              density="default"
+              icon="mdi:mdi-list-box-outline"
+            />
+          </router-link>
+        </template>
+        <span :lang="lang">{{
+          $t('trans.manageFormActions.viewSubmissions')
+        }}</span>
+      </v-tooltip>
+    </span>
+
+    <span v-if="canManageTeam">
+      <v-tooltip location="bottom">
+        <template #activator="{ props }">
+          <router-link :to="{ name: 'FormTeams', query: { f: form.id } }">
+            <v-btn
+              class="mx-1"
+              color="primary"
+              v-bind="props"
+              size="x-small"
+              density="default"
+              icon="mdi:mdi-account-multiple"
+            />
+          </router-link>
+        </template>
+        <span :lang="lang">{{
+          $t('trans.manageFormActions.teamManagement')
+        }}</span>
+      </v-tooltip>
+    </span>
+
+    <span v-if="canDeleteForm">
+      <v-tooltip location="bottom">
+        <template #activator="{ props }">
+          <v-btn
+            class="mx-1"
+            color="red"
+            v-bind="props"
+            size="x-small"
+            density="default"
+            icon="mdi:mdi-delete"
+          />
+        </template>
+        <span
+          ><span :lang="lang">{{
+            $t('trans.manageFormActions.deleteForm')
+          }}</span></span
+        >
+      </v-tooltip>
+
+      <BaseDialog
+        v-model="showDeleteDialog"
+        type="CONTINUE"
+        @close-dialog="showDeleteDialog = false"
+        @continue-dialog="deleteForm"
+      >
+        <template #title
+          ><span :lang="lang">
+            {{ $t('trans.manageFormActions.confirmDeletion') }}
+          </span></template
+        >
+        <template #text>
+          <span :lang="lang"
+            >{{ $t('trans.manageFormActions.deleteMessageA') }}
+            <strong>{{ form.name }}</strong
+            >? {{ $t('trans.manageFormActions.deleteMessageB') }}
+          </span>
+        </template>
+        <template #button-text-continue>
+          <span :lang="lang">{{
+            $t('trans.manageFormActions.deleteForm')
+          }}</span>
+        </template>
+      </BaseDialog>
+    </span>
+  </div>
+</template>

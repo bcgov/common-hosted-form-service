@@ -14,39 +14,39 @@ Entries in the JSON file are deployed with the application. Entries in the .env 
 
 ### Required .env variables
 
-| Name | Description | Example |
-|---|---|---|
-| VUE_APP_TITLE | The application title | Common Hosted Forms Service |
-| VUE_APP_CONTACT | Contact information such as email | submit.digital@gov.bc.ca |
-| VUE_APP_FRONTEND_BASEPATH | The path to the Vue application | /app |
+| Name                      | Description                       | Example                     |
+| ------------------------- | --------------------------------- | --------------------------- |
+| VUE_APP_TITLE             | The application title             | Common Hosted Forms Service |
+| VUE_APP_CONTACT           | Contact information such as email | submit.digital@gov.bc.ca    |
+| VUE_APP_FRONTEND_BASEPATH | The path to the Vue application   | /app                        |
 
 ### Project setup
 
-``` sh
+```sh
 npm install
 ```
 
 ### Compiles and hot-reloads for development
 
-``` sh
+```sh
 npm run serve
 ```
 
 ### Compiles and minifies for production
 
-``` sh
+```sh
 npm run build
 ```
 
 ### Run your unit tests
 
-``` sh
+```sh
 npm run test:unit
 ```
 
 ### Lints and fixes files
 
-``` sh
+```sh
 npm run lint
 ```
 

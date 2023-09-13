@@ -1,34 +1,74 @@
-<template>
-  <v-tabs>
-    <v-tab>{{ $t('trans.adminPage.forms') }}</v-tab>
-    <v-tab>{{ $t('trans.adminPage.users') }}</v-tab>
-    <v-tab>{{ $t('trans.adminPage.developer') }}</v-tab>
-    <v-tab data-cy="infoLinks">{{ $t('trans.adminPage.infoLinks') }}</v-tab>
-    <v-tab v-if="adminDashboardUrl">{{ $t('trans.adminPage.metrics') }}</v-tab>
-
-    <v-tab-item> <AdminFormsTable /> </v-tab-item>
-    <v-tab-item> <AdminUsersTable /> </v-tab-item>
-    <v-tab-item> <Developer /> </v-tab-item>
-    <v-tab-item> <FormComponentsProactiveHelp /> </v-tab-item>
-    <v-tab-item> <Dashboard :url="adminDashboardUrl" /> </v-tab-item>
-  </v-tabs>
-</template>
-
 <script>
+import { mapState } from 'pinia';
+import AdminFormsTable from '~/components/admin/AdminFormsTable.vue';
+import AdminUsersTable from '~/components/admin/AdminUsersTable.vue';
+import Dashboard from '~/components/admin/Dashboard.vue';
+import Developer from '~/components/admin/Developer.vue';
+import FormComponentsProactiveHelp from '~/components/admin/FormComponentsProactiveHelp.vue';
+
+import { useAppStore } from '~/store/app';
+import { useFormStore } from '~/store/form';
+
 export default {
-  name: 'AdminPage',
   components: {
-    AdminFormsTable: () => import('@/components/admin/AdminFormsTable.vue'),
-    AdminUsersTable: () => import('@/components/admin/AdminUsersTable.vue'),
-    Dashboard: () => import('@/components/admin/Dashboard.vue'),
-    Developer: () => import('@/components/admin/Developer.vue'),
-    FormComponentsProactiveHelp: () =>
-      import('@/components/admin/FormComponentsProactiveHelp.vue'),
+    AdminFormsTable,
+    AdminUsersTable,
+    Dashboard,
+    Developer,
+    FormComponentsProactiveHelp,
   },
   data() {
     return {
-      adminDashboardUrl: this.$config.adminDashboardUrl,
+      tab: null,
     };
+  },
+  computed: {
+    ...mapState(useAppStore, ['config']),
+    ...mapState(useFormStore, ['isRTL', 'lang']),
+    adminDashboardUrl() {
+      return this.config.adminDashboardUrl;
+    },
+  },
+  watch: {
+    isRTL() {
+      this.tab = null;
+    },
   },
 };
 </script>
+
+<template>
+  <v-tabs v-model="tab" :class="{ 'dir-rtl': isRTL }">
+    <v-tab value="forms" :lang="lang">{{ $t('trans.adminPage.forms') }}</v-tab>
+    <v-tab value="users" :lang="lang">{{ $t('trans.adminPage.users') }}</v-tab>
+    <v-tab value="developer" :lang="lang">{{
+      $t('trans.adminPage.developer')
+    }}</v-tab>
+    <v-tab value="infoLinks" :lang="lang">{{
+      $t('trans.adminPage.infoLinks')
+    }}</v-tab>
+    <v-tab v-if="adminDashboardUrl" value="dashboard" :lang="lang">{{
+      $t('trans.adminPage.metrics')
+    }}</v-tab>
+  </v-tabs>
+
+  <v-card-text>
+    <v-window v-model="tab">
+      <v-window-item value="forms">
+        <AdminFormsTable />
+      </v-window-item>
+      <v-window-item value="users">
+        <AdminUsersTable />
+      </v-window-item>
+      <v-window-item value="developer">
+        <Developer />
+      </v-window-item>
+      <v-window-item value="infoLinks">
+        <FormComponentsProactiveHelp />
+      </v-window-item>
+      <v-window-item value="dashboard">
+        <Dashboard :url="adminDashboardUrl" />
+      </v-window-item>
+    </v-window>
+  </v-card-text>
+</template>
