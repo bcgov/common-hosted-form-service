@@ -339,9 +339,13 @@ const service = {
       const fields = [];
       if (!obj.hidden) {
         // Only add key if it is an input and visible
-        if (obj.input) fields.push(obj.key);
-        // Recursively check all children attributes that are arrays
-        else {
+        if (obj.input) {
+          fields.push(obj.key);
+        } else if (Array.isArray(obj) && obj.length) {
+          // Handle table layouts, where it's an array without keys.
+          fields.push(obj.flatMap((o) => findFields(o)));
+        } else {
+          // Recursively check all children attributes that are arrays
           Object.keys(obj).forEach((key) => {
             if (Array.isArray(obj[key]) && obj[key].length) {
               fields.push(obj[key].flatMap((o) => findFields(o)));
@@ -466,7 +470,7 @@ const service = {
         let recordsToInsert = [];
         let submissionId;
         // let's create multiple submissions with same metadata
-        submissionDataArray.map((singleData) => {
+        service.popFormLevelInfo(submissionDataArray).map((singleData) => {
           submissionId = uuidv4();
           recordsToInsert.push({
             ...recordWithoutData,
@@ -693,8 +697,6 @@ const service = {
         );
 
         axiosInstance.post(subscribe.endpointUrl, jsonData);
-
-        throw new Problem(401, jsonData);
       }
     } catch (err) {
       log.error(err.message, err, {
@@ -767,6 +769,30 @@ const service = {
       if (trx) await trx.rollback();
       throw err;
     }
+  },
+  popFormLevelInfo: (jsonPayload = []) => {
+    /** This function is purely made to remove un-necessery information
+     * from the json payload of submissions. It will also help to remove crucial data
+     * to be removed from the payload that should not be going to DB like confirmationId,
+     * formName,version,createdAt,fullName,username,email,status,assignee,assigneeEmail and
+     * lateEntry
+     * Example: Sometime end user use the export json file as a bulk
+     * upload payload that contains formId, confirmationId and User
+     * details as well so we need to remove those details from the payload.
+     *
+     */
+    if (jsonPayload.length) {
+      jsonPayload.forEach(function (submission) {
+        delete submission.submit;
+        delete submission.lateEntry;
+        if (Object.prototype.hasOwnProperty.call(submission, 'form')) {
+          const propsToRemove = ['confirmationId', 'formName', 'version', 'createdAt', 'fullName', 'username', 'email', 'status', 'assignee', 'assigneeEmail'];
+
+          propsToRemove.forEach((key) => delete submission.form[key]);
+        }
+      });
+    }
+    return jsonPayload;
   },
 };
 
