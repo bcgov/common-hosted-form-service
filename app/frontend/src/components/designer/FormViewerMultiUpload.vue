@@ -282,7 +282,7 @@ export default {
       try {
         let reader = new FileReader();
         reader.onload = (e) => {
-          this.Json = JSON.parse(e.target.result);
+          this.Json = this.popFormLevelInfo(JSON.parse(e.target.result));
         };
         reader.onloadend = this.preValidateSubmission;
         reader.readAsText(this.file);
@@ -293,6 +293,40 @@ export default {
           consoleError: e,
         });
       }
+    },
+    popFormLevelInfo(jsonPayload = []) {
+      /** This function is purely made to remove un-necessery information
+       * from the json payload of submissions. It will also help to remove crucial data
+       * to be removed from the payload that should not be going to DB like confirmationId,
+       * formName,version,createdAt,fullName,username,email,status,assignee,assigneeEmail and
+       * lateEntry
+       * Example: Sometime end user use the export json file as a bulk
+       * upload payload that contains formId, confirmationId and User
+       * details as well so we need to remove those details from the payload.
+       *
+       */
+      if (jsonPayload.length) {
+        jsonPayload.forEach(function (submission) {
+          delete submission.submit;
+          delete submission.lateEntry;
+          if (Object.prototype.hasOwnProperty.call(submission, 'form')) {
+            const propsToRemove = [
+              'confirmationId',
+              'formName',
+              'version',
+              'createdAt',
+              'fullName',
+              'username',
+              'email',
+              'status',
+              'assignee',
+              'assigneeEmail',
+            ];
+            propsToRemove.forEach((key) => delete submission.form[key]);
+          }
+        });
+      }
+      return jsonPayload;
     },
     async preValidateSubmission() {
       try {
