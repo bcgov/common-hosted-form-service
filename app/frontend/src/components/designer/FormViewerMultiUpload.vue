@@ -1,6 +1,6 @@
 <script>
 import { mapActions, mapState } from 'pinia';
-import { Formio } from '@formio/vue';
+import { Formio, Utils } from '@formio/vue';
 
 import BaseInfoCard from '~/components/base/BaseInfoCard.vue';
 import { i18n } from '~/internationalization';
