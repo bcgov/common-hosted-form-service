@@ -248,6 +248,27 @@ describe('_findFileIds', () => {
 });
 
 describe('readVersionFields', () => {
+  it('should not return hidden fields', async () => {
+    const schema = {
+      type: 'form',
+      components: [
+        {
+          input: true,
+          hidden: true,
+          key: 'firstName',
+          type: 'textfield',
+        },
+      ],
+    };
+
+    // mock readVersion function
+    service.readVersion = jest.fn().mockReturnValue({ schema });
+    // get fields
+    const fields = await service.readVersionFields();
+    // test cases
+    expect(fields.length).toEqual(0);
+  });
+
   it('should return right number of fields without columns', async () => {
     const schema = {
       type: 'form',
@@ -311,5 +332,67 @@ describe('readVersionFields', () => {
     const fields = await service.readVersionFields();
     // test cases
     expect(fields.length).toEqual(2);
+  });
+
+  it('should return right number of fields in a table', async () => {
+    const schema = {
+      type: 'form',
+      components: [
+        {
+          key: 'table',
+          rows: [
+            [
+              {
+                components: [
+                  {
+                    input: true,
+                    key: 'key',
+                  },
+                ],
+              },
+            ],
+          ],
+        },
+      ],
+    };
+
+    // mock readVersion function
+    service.readVersion = jest.fn().mockReturnValue({ schema });
+    // get fields
+    const fields = await service.readVersionFields();
+    // test cases
+    expect(fields.length).toEqual(1);
+  });
+});
+
+describe('popFormLevelInfo', () => {
+  it('should remove all the form level properties', () => {
+    const givenArrayOfSubmission = [
+      {
+        form: {
+          confirmationId: '3A31A078',
+          formName: 'FormTest',
+          version: 4,
+          createdAt: '2023-08-31T16:50:33.571Z',
+          fullName: 'John DOe',
+          username: 'JOHNDOE',
+          email: 'john.doe@example.ca',
+          status: 'SUBMITTED',
+          assignee: null,
+          assigneeEmail: null,
+        },
+        lateEntry: false,
+        simplenumber: 4444,
+      },
+    ];
+    const expectedArrayOfSubmission = [
+      {
+        form: {},
+        simplenumber: 4444,
+      },
+    ];
+
+    const response = service.popFormLevelInfo(givenArrayOfSubmission);
+    expect(response).toEqual(expectedArrayOfSubmission);
   });
 });

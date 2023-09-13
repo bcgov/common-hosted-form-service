@@ -365,6 +365,5 @@ describe('FormViewerMultiUpload.vue', () => {
       expect(parseFileSpy).toHaveBeenCalled();
     });
   });
-
   // it is not necessary to test if the FileReader functionality or JSON.parse functionality works.
 });
