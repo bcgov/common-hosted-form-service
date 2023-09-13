@@ -105,12 +105,12 @@
         <!-- search input -->
         <div class="submissions-search">
           <v-text-field
-            v-model="search"
             append-icon="mdi-magnify"
             :label="$t('trans.submissionsTable.search')"
             single-line
             hide-details
             class="pb-5"
+            @input="handleSearch"
             :class="{ label: isRTL }"
             :lang="lang"
           />
@@ -124,12 +124,16 @@
       :headers="HEADERS"
       item-key="submissionId"
       :items="submissionTable"
-      :search="search"
+      :page="PAGE_RESET"
       :loading="loading"
       :show-select="!switchSubmissionView"
       v-model="selectedSubmissions"
       :loading-text="$t('trans.submissionsTable.loadingText')"
-      :no-data-text="$t('trans.submissionsTable.noDataText')"
+      :no-data-text="
+        searchEnabled
+          ? $t('trans.submissionsTable.noMachingRecordText')
+          : $t('trans.submissionsTable.noDataText')
+      "
       :lang="lang"
       :server-items-length="totalSubmissions"
       @update:options="updateTableOptions"
@@ -327,7 +331,7 @@
 import { mapGetters, mapActions } from 'vuex';
 import { FormManagePermissions } from '@/utils/constants';
 import moment from 'moment';
-
+import _ from 'lodash';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faTrash);
@@ -345,7 +349,8 @@ export default {
       currentUserOnly: false,
       deletedOnly: false,
       itemsPerPage: 10,
-      page: 0,
+      page: 1,
+      pageReset: 0,
       filterData: [],
       sortBy: undefined,
       sortDesc: false,
@@ -369,6 +374,7 @@ export default {
       loading: true,
       restoreItem: {},
       search: '',
+      searchEnabled: false,
       showColumnsDialog: false,
       showRestoreDialog: false,
       submissionTable: [],
@@ -494,7 +500,9 @@ export default {
         },
       ];
     },
-
+    PAGE_RESET() {
+      return this.pageReset;
+    },
     SELECT_COLUMNS_HEADERS() {
       return [...this.FILTER_HEADERS, ...this.MODIFY_HEADERS].concat(
         this.formFields?.map((ff) => {
@@ -634,7 +642,6 @@ export default {
         ? this.deleteSingleSubs()
         : this.deleteMultiSubs();
     },
-
     async restoreSub() {
       this.singleSubmissionRestore
         ? this.restoreSingleSub()
@@ -679,6 +686,8 @@ export default {
         filterformSubmissionStatusCode: true,
         sortBy: this.sortBy,
         sortDesc: this.sortDesc,
+        search: this.search,
+        searchEnabled: this.searchEnabled,
         createdAt: Object.values({
           minDate:
             this.userFormPreferences &&
@@ -818,9 +827,25 @@ export default {
 
       await this.populateSubmissionsTable();
     },
+    async handleSearch(value) {
+      this.searchEnabled = true;
+      this.search = value;
+      if (value === '') {
+        this.page = 0;
+        this.pageReset = 0;
+        this.searchEnabled = false;
+        await this.getSubmissionData();
+      } else {
+        this.page = 0;
+        this.pageReset = 1;
+        this.debounceInput();
+      }
+    },
   },
-
   mounted() {
+    this.debounceInput = _.debounce(async () => {
+      await this.getSubmissionData();
+    }, 300);
     this.refreshSubmissions();
   },
 };
