@@ -22,14 +22,12 @@ export default {
   },
   data() {
     return {
+      // Show only items for the current logged in user
       currentUserOnly: false,
       deleteItem: {},
+      // Show only deleted items
       deletedOnly: false,
-      itemsPerPage: 10,
-      page: 0,
       filterData: [],
-      sortBy: undefined,
-      sortDesc: false,
       filterIgnore: [
         {
           key: 'confirmationId',
@@ -41,27 +39,29 @@ export default {
           key: 'event',
         },
       ],
-      tableFilterIgnore: [
-        { value: 'date' },
-        { value: 'submitter' },
-        { value: 'status' },
-        { value: 'lateEntry' },
-      ],
+      itemsPerPage: 10,
       loading: true,
       restoreItem: {},
       search: '',
-      showColumnsDialog: false,
-      showRestoreDialog: false,
-      submissionTable: [],
-      showDeleteDialog: false,
       selectedSubmissions: [],
+      serverItems: [],
+      showColumnsDialog: false,
+      showDeleteDialog: false,
+      showRestoreDialog: false,
       singleSubmissionDelete: false,
       singleSubmissionRestore: false,
-      switchSubmissionView: false,
+      sortBy: {},
+      // When filtering, this data will not be preselected when clicking reset
+      tableFilterIgnore: [
+        { key: 'updatedAt' },
+        { key: 'updatedBy' },
+        { key: 'lateEntry' },
+      ],
     };
   },
   computed: {
     ...mapState(useFormStore, [
+      'deletedSubmissions',
       'form',
       'formFields',
       'isRTL',
@@ -88,50 +88,61 @@ export default {
     checkFormManage() {
       return this.permissions.some((p) => FormManagePermissions.includes(p));
     },
-    DEFAULT_HEADERS() {
-      // Confirmation ID should always be in the table
-      // Default headers always include the submissionDate, submitter, and status
-      // The BaseFilter uses this data so it knows it exists
-      // If the table in THIS VIEW doesn't need it, it can filter it out in a computed value
-      // These however are the values that can exist in this table aside from form values
+    showStatus() {
+      return this.form && this.form.enableStatusUpdates;
+    },
+    userColumns() {
+      if (
+        this.userFormPreferences &&
+        this.userFormPreferences.preferences &&
+        this.userFormPreferences.preferences.columns
+      ) {
+        // Compare saved user prefs against the current form versions component names and remove any discrepancies
+        return this.userFormPreferences.preferences.columns.filter(
+          (x) => this.formFields.indexOf(x) !== -1
+        );
+      } else {
+        return [];
+      }
+    },
+    userFilter() {
+      if (
+        this.userFormPreferences &&
+        this.userFormPreferences.preferences &&
+        this.userFormPreferences.preferences.filter &&
+        this.userFormPreferences.preferences.filter.length
+      ) {
+        // Compare saved user prefs against the current form versions component names and remove any discrepancies
+        return this.userFormPreferences.preferences.filter;
+      } else {
+        return [];
+      }
+    },
+
+    //------------------------ TABLE HEADERS
+    // These are headers that will be available by default for the
+    // table in this view
+    BASE_HEADERS() {
       let headers = [
         {
-          title: i18n.t('trans.submissionsTable.confirmationID'),
+          title: this.$t('trans.submissionsTable.confirmationID'),
           align: 'start',
           key: 'confirmationId',
         },
         {
-          title: i18n.t('trans.submissionsTable.submissionDate'),
+          title: this.$t('trans.submissionsTable.submissionDate'),
           align: 'start',
           key: 'date',
         },
         {
-          title: i18n.t('trans.submissionsTable.submitter'),
+          title: this.$t('trans.submissionsTable.submitter'),
           align: 'start',
           key: 'submitter',
         },
         {
-          title: i18n.t('trans.submissionsTable.status'),
+          title: this.$t('trans.submissionsTable.status'),
           align: 'start',
           key: 'status',
-        },
-
-        {
-          text: this.$t('trans.submissionsTable.submissionDate'),
-          align: 'start',
-          value: 'date',
-        },
-
-        {
-          text: this.$t('trans.submissionsTable.submitter'),
-          align: 'start',
-          value: 'submitter',
-        },
-
-        {
-          text: this.$t('trans.submissionsTable.status'),
-          align: 'start',
-          value: 'status',
         },
       ];
 
@@ -140,12 +151,27 @@ export default {
         headers = [
           ...headers,
           {
-            title: i18n.t('trans.submissionsTable.lateSubmission'),
+            title: this.$t('trans.submissionsTable.lateSubmission'),
             align: 'start',
             key: 'lateEntry',
           },
         ];
       }
+
+      // We add the modified columns so a form reviewer can see
+      // which user last modified a submission and when
+      headers = headers.concat([
+        {
+          title: this.$t('trans.formSubmission.updatedAt'),
+          align: 'start',
+          key: 'updatedAt',
+        },
+        {
+          title: this.$t('trans.formSubmission.updatedBy'),
+          align: 'start',
+          key: 'updatedBy',
+        },
+      ]);
 
       // Add the form fields to the headers
       headers = headers.concat(
@@ -160,54 +186,62 @@ export default {
 
       return headers;
     },
-
-    FILTER_HEADERS() {
-      return [...this.DEFAULT_HEADER].filter(
-        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
-      );
-    },
-
-    MODIFY_HEADERS() {
-      return [
-        {
-          text: this.$t('trans.formSubmission.updatedAt'),
-          align: 'start',
-          value: 'updatedAt',
-        },
-        {
-          text: this.$t('trans.formSubmission.updatedBy'),
-          align: 'start',
-          value: 'updatedBy',
-        },
-      ];
-    },
-
-    SELECT_COLUMNS_HEADERS() {
-      return [...this.FILTER_HEADERS, ...this.MODIFY_HEADERS].concat(
-        this.formFields.map((ff) => {
-          return { text: ff, value: ff, align: 'end' };
-        })
-      );
-    },
-
+    // The headers are based on the base headers but are modified
+    // by the following order:
+    // Add CRUD options to headers
+    // Remove columns that aren't saved in the user preferences
     HEADERS() {
-      let headers = this.DEFAULT_HEADER;
+      let headers = this.BASE_HEADERS;
+      // If the user selected columns previously, then we remove
+      // all columns they don't want to see, barring the columns
+      // that are in filterIgnore as they should always be available
       if (this.USER_PREFERENCES.length > 0) {
-        headers = [...this.DEFAULT_HEADER].filter(
-          (h) => !this.tableFilterIgnore.some((fd) => fd.value === h.value)
+        headers = headers.filter(
+          (h) =>
+            // It must be in the user preferences
+            this.USER_PREFERENCES.some((up) => up.key === h.key) ||
+            // except if it's in the filter ignore
+            this.filterIgnore.some((fd) => fd.key === h.key)
         );
-
-        headers.splice(headers.length - 2, 0, ...this.USER_PREFERENCES);
+      } else {
+        // Remove the form fields because this is the default view
+        // we don't need all the form fields
+        headers = headers.filter((header) => {
+          // we want columns that aren't form fields
+          return (
+            !this.formFields.includes(header.key) &&
+            // or that aren't updatedAt
+            header.key !== 'updatedAt' &&
+            // or aren't updatedBy
+            header.key !== 'updatedBy'
+          );
+        });
       }
 
+      // Actions column at the end
+      headers.push({
+        title: this.$t('trans.submissionsTable.view'),
+        align: 'end',
+        key: 'actions',
+        filterable: false,
+        sortable: false,
+        width: '40px',
+      });
+
+      // Actions column at the end
+      headers.push({
+        title: this.$t('trans.submissionsTable.event'),
+        align: 'end',
+        key: 'event',
+        filterable: false,
+        sortable: false,
+        width: '40px',
+      });
       return headers;
     },
-
-    PRESELECTED_DATA() {
-      return this.USER_PREFERENCES.length === 0
-        ? this.FILTER_HEADERS
-        : this.USER_PREFERENCES;
-    },
+    // These are columns that the user has previously selected
+    // through the select columns dialog. These are columns
+    // that they wish to see in the table in this view.
     USER_PREFERENCES() {
       let preselectedData = [];
       if (this.userFormPreferences?.preferences?.columns) {
@@ -231,18 +265,6 @@ export default {
                 align: 'start',
                 key: 'status',
               };
-            } else if (column === 'updatedAt') {
-              return {
-                text: this.$t('trans.formSubmission.updatedAt'),
-                align: 'start',
-                value: 'updatedAt',
-              };
-            } else if (column === 'updatedBy') {
-              return {
-                text: this.$t('trans.formSubmission.updatedBy'),
-                align: 'start',
-                value: 'updatedBy',
-              };
             } else {
               return {
                 align: 'start',
@@ -255,25 +277,44 @@ export default {
       }
       return preselectedData;
     },
-    userColumns() {
-      if (
-        this.userFormPreferences &&
-        this.userFormPreferences.preferences &&
-        this.userFormPreferences.preferences.columns
-      ) {
-        // Compare saved user prefs against the current form versions component names and remove any discrepancies
-        return this.userFormPreferences.preferences.columns.filter(
-          (x) => this.formFields.indexOf(x) !== -1
+    //------------------------ END TABLE HEADERS
+
+    //------------------------ FILTER COLUMNS
+    // The base filter headers that will be available by default for the
+    // base filter. These are all the base headers in the table in this view
+    // with specific fields ignored because we always want specific fields
+    // to be available in the table in this view. For this reason, we don't
+    // add them to the table in the filter.
+    BASE_FILTER_HEADERS() {
+      let headers = this.BASE_HEADERS.filter(
+        (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
+      );
+      return headers;
+    },
+    // When clicking reset on the base filter, these will be the default
+    // preselected values
+    RESET_HEADERS() {
+      let headers = this.BASE_FILTER_HEADERS;
+      // Remove the form fields because this is the default view
+      // we don't need all the form fields
+      headers = headers.filter((header) => {
+        // we want columns that aren't form fields
+        return (
+          !this.formFields.includes(header.key) &&
+          // These values won't be preselected
+          !this.tableFilterIgnore.some((fi) => fi.key === header.key)
         );
-      } else {
-        return [];
-      }
+      });
+      return headers;
     },
-  },
-  watch: {
-    deletedOnly() {
-      this.selectedSubmissions = [];
+    // These are the columns that will be selected by default when the
+    // select columns dialog is opened
+    PRESELECTED_DATA() {
+      return this.HEADERS.filter(
+        (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
+      );
     },
+    //------------------------ END FILTER COLUMNS
   },
   mounted() {
     this.refreshSubmissions();
@@ -294,50 +335,30 @@ export default {
     ]),
     ...mapActions('notifications', ['addNotification']),
     onShowColumnDialog() {
-      this.SELECT_COLUMNS_HEADERS.sort(
+      this.BASE_FILTER_HEADERS.sort(
         (a, b) =>
-          this.PRESELECTED_DATA.findIndex((x) => x.text === b.text) -
-          this.PRESELECTED_DATA.findIndex((x) => x.text === a.text)
+          this.PRESELECTED_DATA.findIndex((x) => x.title === b.title) -
+          this.PRESELECTED_DATA.findIndex((x) => x.title === a.title)
       );
 
       this.showColumnsDialog = true;
     },
-
-    async delSub() {
-      this.singleSubmissionDelete
-        ? this.deleteSingleSubs()
-        : this.deleteMultiSubs();
-    },
-    async restoreSub() {
-      this.singleSubmissionRestore
-        ? this.restoreSingleSub()
-        : this.restoreMultipleSubs();
-    },
-    async deleteSingleSubs() {
-      this.showDeleteDialog = false;
-      await this.deleteSubmission(this.deleteItem.submissionId);
-      this.refreshSubmissions();
-    },
-    async deleteMultiSubs() {
-      this.showDeleteDialog = false;
-      await this.deleteMultiSubmissions({
-        submissionIds: this.selectedSubmissions,
-        formId: this.formId,
-      });
-      this.refreshSubmissions();
-    },
-    async updateTableOptions({ page, itemsPerPage, sortBy, sortDesc }) {
+    async updateTableOptions({ page, itemsPerPage, sortBy }) {
       this.page = page - 1;
-      if (sortBy[0] === 'date') {
-        this.sortBy = 'createdAt';
-      } else if (sortBy[0] === 'submitter') {
-        this.sortBy = 'createdBy';
-      } else if (sortBy[0] === 'status')
-        this.sortBy = 'formSubmissionStatusCode';
-      else {
-        this.sortBy = sortBy[0];
+      if (sortBy?.length > 0) {
+        if (sortBy[0].key === 'date') {
+          this.sortBy.column = 'createdAt';
+        } else if (sortBy[0].key === 'submitter') {
+          this.sortBy.column = 'createdBy';
+        } else if (sortBy[0].key === 'status') {
+          this.sortBy.column = 'formSubmissionStatusCode';
+        } else {
+          this.sortBy.column = sortBy[0].key;
+        }
+        this.sortBy.order = sortBy[0].order;
+      } else {
+        this.sortBy = {};
       }
-      this.sortDesc = sortDesc[0];
       this.itemsPerPage = itemsPerPage;
       await this.getSubmissionData();
     },
@@ -348,7 +369,6 @@ export default {
         page: this.page,
         filterformSubmissionStatusCode: true,
         sortBy: this.sortBy,
-        sortDesc: this.sortDesc,
         createdAt: Object.values({
           minDate:
             this.userFormPreferences &&
@@ -399,14 +419,18 @@ export default {
           };
           // Add any custom columns
           this.userColumns.forEach((col) => {
-            fields[col] = s[col];
+            if (Object.keys(fields).includes(col)) {
+              fields[`${col}_1`] = s[col];
+            } else {
+              fields[col] = s[col];
+            }
           });
           return fields;
         });
-        this.submissionTable = tableRows;
-        this.submissionsCheckboxes = new Array(
-          this.submissionTable.length
-        ).fill(false);
+        this.serverItems = tableRows;
+        this.submissionsCheckboxes = new Array(this.serverItems.length).fill(
+          false
+        );
       }
     },
     async populateSubmissionsTable() {
@@ -427,9 +451,9 @@ export default {
       this.loading = true;
       this.page = 0;
       Promise.all([
-        await this.getFormRolesForUser(this.formId),
-        await this.getFormPermissionsForUser(this.formId),
-        await this.fetchForm(this.formId).then(async () => {
+        this.getFormRolesForUser(this.formId),
+        this.getFormPermissionsForUser(this.formId),
+        this.fetchForm(this.formId).then(async () => {
           if (this.form.versions?.length > 0) {
             await this.fetchFormFields({
               formId: this.formId,
@@ -437,9 +461,39 @@ export default {
             });
           }
         }),
-      ]).finally(async () => {
-        await this.populateSubmissionsTable();
+      ])
+        .then(async () => {
+          await this.populateSubmissionsTable();
+        })
+        .finally(() => {
+          this.selectedSubmissions = [];
+        });
+    },
+    async delSub() {
+      this.singleSubmissionDelete
+        ? this.deleteSingleSubs()
+        : this.deleteMultiSubs();
+    },
+    async restoreSub() {
+      this.singleSubmissionRestore
+        ? this.restoreSingleSub()
+        : this.restoreMultipleSubs();
+    },
+    async deleteSingleSubs() {
+      this.showDeleteDialog = false;
+      await this.deleteSubmission(this.deleteItem.submissionId);
+      this.refreshSubmissions();
+    },
+    async deleteMultiSubs() {
+      let submissionIdsToDelete = this.selectedSubmissions.map(
+        (submission) => submission.submissionId
+      );
+      this.showDeleteDialog = false;
+      await this.deleteMultiSubmissions({
+        submissionIds: submissionIdsToDelete,
+        formId: this.formId,
       });
+      this.refreshSubmissions();
     },
     async restoreSingleSub() {
       await this.restoreSubmission({
@@ -450,9 +504,12 @@ export default {
       this.refreshSubmissions();
     },
     async restoreMultipleSubs() {
+      let submissionIdsToRestore = this.selectedSubmissions.map(
+        (submission) => submission.submissionId
+      );
       this.showRestoreDialog = false;
       await this.restoreMultiSubmissions({
-        submissionIds: this.selectedSubmissions,
+        submissionIds: submissionIdsToRestore,
         formId: this.formId,
       });
       this.refreshSubmissions();
@@ -460,6 +517,7 @@ export default {
     },
     async updateFilter(data) {
       this.showColumnsDialog = false;
+      this.filterData = data;
       let preferences = {
         columns: [],
       };
@@ -598,19 +656,21 @@ export default {
     </div>
 
     <!-- table header -->
-    <v-data-table
+    <v-data-table-server
       v-model="selectedSubmissions"
+      :items-length="totalSubmissions"
       class="submissions-table"
+      :items-per-page="itemsPerPage"
       :headers="HEADERS"
       item-value="submissionId"
-      :items="submissionTable"
+      :items="serverItems"
       :search="search"
+      show-select
       :loading="loading"
-      :show-select="!switchSubmissionView"
       :loading-text="$t('trans.submissionsTable.loadingText')"
       :no-data-text="$t('trans.submissionsTable.noDataText')"
       :lang="lang"
-      :server-items-length="totalSubmissions"
+      return-object
       @update:options="updateTableOptions"
     >
       <template #column.event>
@@ -738,7 +798,7 @@ export default {
           </v-tooltip>
         </span>
       </template>
-    </v-data-table>
+    </v-data-table-server>
 
     <BaseDialog
       v-model="showDeleteDialog"
@@ -783,9 +843,9 @@ export default {
           $t('trans.submissionsTable.searchSubmissionFields')
         "
         :input-save-button-text="$t('trans.submissionsTable.save')"
-        :input-data="SELECT_COLUMNS_HEADERS"
+        :input-data="BASE_FILTER_HEADERS"
         :preselected-data="PRESELECTED_DATA"
-        :reset-data="FILTER_HEADERS"
+        :reset-data="RESET_HEADERS"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >

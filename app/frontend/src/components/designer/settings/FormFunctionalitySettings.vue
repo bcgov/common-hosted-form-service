@@ -1,6 +1,7 @@
 <script>
 import { mapState, mapWritableState } from 'pinia';
 import BasePanel from '~/components/base/BasePanel.vue';
+import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { IdentityMode, IdentityProviders } from '~/utils/constants';
 
@@ -21,8 +22,9 @@ export default {
     };
   },
   computed: {
-    ...mapWritableState(useFormStore, ['form']),
+    ...mapState(useAuthStore, ['identityProvider']),
     ...mapState(useFormStore, ['isFormPublished', 'isRTL', 'lang']),
+    ...mapWritableState(useFormStore, ['form']),
     ID_MODE() {
       return IdentityMode;
     },
@@ -31,6 +33,11 @@ export default {
     },
   },
   methods: {
+    enableSubmitterDraftChanged() {
+      if (!this.form.enableSubmitterChanged) {
+        this.form.allowSubmitterToUploadFile = false;
+      }
+    },
     allowSubmitterToUploadFileChanged() {
       if (
         this.form.allowSubmitterToUploadFile &&
