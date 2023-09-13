@@ -312,7 +312,7 @@ const service = {
                 !typeUtils.isBoolean(data[key]) &&
                 !typeUtils.isNil(data[key]) &&
                 typeUtils.isDate(data[key]) &&
-                moment(new Date(data[key])).format('YYYY-MM-DD hh:mm:ss a').toLowerCase().includes(search.toLowerCase())
+                moment(new Date(data[key])).format('YYYY-MM-DD hh:mm:ss a').toString().includes(search)
               ) {
                 result.total = result.total + 1;
                 return true;
