@@ -60,6 +60,26 @@ describe('Create.vue', () => {
             name: 'VForm',
             template: '<div class="v-form-stub"><slot /></div>',
           },
+          VStepper: {
+            name: 'VStepper',
+            template: '<div class="v-stepper-stub"><slot /></div>',
+          },
+          VStepperWindow: {
+            name: 'VStepperWindow',
+            template: '<div class="v-stepper-window-stub"><slot /></div>',
+          },
+          VStepperHeader: {
+            name: 'VStepperHeader',
+            template: '<div class="v-stepper-header-stub"><slot /></div>',
+          },
+          VStepperWindowItem: {
+            name: 'VStepperWindowItem',
+            template: '<div class="v-stepper-window-item-stub"><slot /></div>',
+          },
+          VStepperItem: {
+            name: 'VStepperItem',
+            template: '<div class="v-stepper-item-stub"><slot /></div>',
+          },
         },
       },
     });
@@ -84,7 +104,7 @@ describe('Create.vue', () => {
     const wrapper = mount(Create, {
       data() {
         return {
-          step: 2,
+          creatorStep: 2,
         };
       },
       global: {
@@ -110,6 +130,26 @@ describe('Create.vue', () => {
             },
             template: '<div class="form-designer-stub"><slot /></div>',
           },
+          VStepper: {
+            name: 'VStepper',
+            template: '<div class="v-stepper-stub"><slot /></div>',
+          },
+          VStepperWindow: {
+            name: 'VStepperWindow',
+            template: '<div class="v-stepper-window-stub"><slot /></div>',
+          },
+          VStepperHeader: {
+            name: 'VStepperHeader',
+            template: '<div class="v-stepper-header-stub"><slot /></div>',
+          },
+          VStepperWindowItem: {
+            name: 'VStepperWindowItem',
+            template: '<div class="v-stepper-window-item-stub"><slot /></div>',
+          },
+          VStepperItem: {
+            name: 'VStepperItem',
+            template: '<div class="v-stepper-item-stub"><slot /></div>',
+          },
         },
       },
     });
@@ -118,14 +158,14 @@ describe('Create.vue', () => {
 
     expect(wrapper.html()).toMatch('trans.create.createNewForm');
     expect(wrapper.html()).toMatch('form-designer');
-    expect(wrapper.find('button').text()).toMatch('trans.create.back');
+    expect(wrapper.find('button').text()).toMatch('trans.create.continue');
   });
 
   it('continue and back button works', async () => {
     const wrapper = mount(Create, {
       data() {
         return {
-          step: 1,
+          creatorStep: 1,
           settingsFormValid: true,
         };
       },
@@ -153,6 +193,26 @@ describe('Create.vue', () => {
             template: '<div class="form-designer-stub"><slot /></div>',
           },
           VForm: true,
+          VStepper: {
+            name: 'VStepper',
+            template: '<div class="v-stepper-stub"><slot /></div>',
+          },
+          VStepperWindow: {
+            name: 'VStepperWindow',
+            template: '<div class="v-stepper-window-stub"><slot /></div>',
+          },
+          VStepperHeader: {
+            name: 'VStepperHeader',
+            template: '<div class="v-stepper-header-stub"><slot /></div>',
+          },
+          VStepperWindowItem: {
+            name: 'VStepperWindowItem',
+            template: '<div class="v-stepper-window-item-stub"><slot /></div>',
+          },
+          VStepperItem: {
+            name: 'VStepperItem',
+            template: '<div class="v-stepper-item-stub"><slot /></div>',
+          },
         },
       },
     });
@@ -177,7 +237,7 @@ describe('Create.vue', () => {
     const wrapper = mount(Create, {
       data() {
         return {
-          step: 2,
+          creatorStep: 2,
         };
       },
       global: {
@@ -202,6 +262,26 @@ describe('Create.vue', () => {
               onFormLoad,
             },
             template: '<div class="form-designer-stub"><slot /></div>',
+          },
+          VStepper: {
+            name: 'VStepper',
+            template: '<div class="v-stepper-stub"><slot /></div>',
+          },
+          VStepperWindow: {
+            name: 'VStepperWindow',
+            template: '<div class="v-stepper-window-stub"><slot /></div>',
+          },
+          VStepperHeader: {
+            name: 'VStepperHeader',
+            template: '<div class="v-stepper-header-stub"><slot /></div>',
+          },
+          VStepperWindowItem: {
+            name: 'VStepperWindowItem',
+            template: '<div class="v-stepper-window-item-stub"><slot /></div>',
+          },
+          VStepperItem: {
+            name: 'VStepperItem',
+            template: '<div class="v-stepper-item-stub"><slot /></div>',
           },
         },
       },

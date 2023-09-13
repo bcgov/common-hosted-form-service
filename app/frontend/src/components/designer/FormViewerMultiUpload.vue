@@ -60,6 +60,7 @@ export default {
       max_file_size: 5,
       percent: 0,
       progress: false,
+      timeout: undefined,
       upload_state: 0,
       vForm: {},
     };
@@ -86,6 +87,9 @@ export default {
         return this.file.name;
       }
     },
+  },
+  beforeUnmount() {
+    if (this.timeout) clearTimeout(this.timeout);
   },
   methods: {
     ...mapActions(useNotificationStore, ['addNotification']),
@@ -327,8 +331,8 @@ export default {
     },
     delay(ms) {
       return new Promise((resolve) => {
-        const c = setTimeout(() => {
-          clearTimeout(c);
+        this.timeout = setTimeout(() => {
+          clearTimeout(this.timeout);
           resolve();
         }, ms);
       });
