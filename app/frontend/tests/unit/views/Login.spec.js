@@ -49,7 +49,7 @@ describe('Login.vue', () => {
 
     await nextTick();
 
-    expect(wrapper.text()).toMatch('Already logged in');
+    expect(wrapper.text()).toMatch('trans.login.alreadyLoggedIn');
   });
 
   it('shows login options', async () => {

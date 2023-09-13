@@ -46,14 +46,17 @@ describe('Download.vue', () => {
           },
           FormSubmission: true,
         },
+        plugins: [pinia],
       },
     });
 
     await flushPromises();
 
     expect(wrapper.html()).toMatch('base-secure');
-    expect(wrapper.html()).toMatch('CHEFS Data Export');
-    expect(wrapper.html()).not.toMatch('Preparing for download...');
+    expect(wrapper.html()).toMatch('trans.download.chefsDataExport');
+    expect(wrapper.html()).not.toMatch(
+      'trans.download.preparingForDownloading'
+    );
     expect(getFileSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -108,14 +111,15 @@ describe('Download.vue', () => {
           },
           FormSubmission: true,
         },
+        plugins: [pinia],
       },
     });
 
     await flushPromises();
 
     expect(wrapper.html()).toMatch('base-secure');
-    expect(wrapper.html()).toMatch('CHEFS Data Export');
-    expect(wrapper.html()).toMatch('Preparing for download...');
+    expect(wrapper.html()).toMatch('trans.download.chefsDataExport');
+    expect(wrapper.html()).toMatch('trans.download.preparingForDownloading');
     expect(getFileSpy).toHaveBeenCalledTimes(1);
   });
 });

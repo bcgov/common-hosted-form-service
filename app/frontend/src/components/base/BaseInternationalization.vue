@@ -40,7 +40,7 @@ export default {
           ? 'zhHant'
           : lang.keyword;
       useFormStore().$patch({
-        multiLanguage: lang.keyword,
+        lang: lang.keyword,
         isRTL: lang.keyword === 'ar' || lang.keyword === 'fa' ? true : false,
       });
     },

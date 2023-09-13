@@ -241,20 +241,31 @@ describe('form actions', () => {
     });
 
     it('fetchSubmissions should commit to SET_SUBMISSIONLIST', async () => {
-      formService.listSubmissions.mockResolvedValue({ data: [] });
+      formService.listSubmissions.mockResolvedValue({
+        data: { results: [], total: 0 },
+      });
       await mockStore.fetchSubmissions({ formId: 'fId' });
 
       expect(mockStore.submissionList).toEqual([]);
       expect(listSubmissionsSpy).toHaveBeenCalledTimes(1);
       expect(listSubmissionsSpy).toHaveBeenCalledWith('fId', {
+        createdAt: undefined,
         deleted: false,
         createdBy: '',
+        fields: undefined,
+        filterformSubmissionStatusCode: undefined,
+        itemsPerPage: undefined,
+        page: undefined,
+        sortBy: undefined,
+        totalSubmissions: 0,
       });
       expect(getUserSubmissionsSpy).toHaveBeenCalledTimes(0);
     });
 
     it('fetchSubmissions should call the formService if not for userView', async () => {
-      formService.listSubmissions.mockResolvedValue({ data: [] });
+      formService.listSubmissions.mockResolvedValue({
+        data: { results: [], total: 0 },
+      });
       await mockStore.fetchSubmissions({
         formId: 'fId',
         userView: false,
@@ -263,14 +274,23 @@ describe('form actions', () => {
       expect(mockStore.submissionList).toEqual([]);
       expect(listSubmissionsSpy).toHaveBeenCalledTimes(1);
       expect(listSubmissionsSpy).toHaveBeenCalledWith('fId', {
+        createdAt: undefined,
         deleted: false,
         createdBy: '',
+        fields: undefined,
+        filterformSubmissionStatusCode: undefined,
+        itemsPerPage: undefined,
+        page: undefined,
+        sortBy: undefined,
+        totalSubmissions: 0,
       });
       expect(getUserSubmissionsSpy).toHaveBeenCalledTimes(0);
     });
 
     it('fetchSubmissions should call the rbacService if for userView', async () => {
-      rbacService.getUserSubmissions.mockResolvedValue({ data: [] });
+      rbacService.getUserSubmissions.mockResolvedValue({
+        data: { results: [], total: 0 },
+      });
       await mockStore.fetchSubmissions({
         formId: 'fId',
         userView: true,
@@ -280,6 +300,10 @@ describe('form actions', () => {
       expect(getUserSubmissionsSpy).toHaveBeenCalledTimes(1);
       expect(getUserSubmissionsSpy).toHaveBeenCalledWith({
         formId: 'fId',
+        itemsPerPage: undefined,
+        page: undefined,
+        sortBy: undefined,
+        totalSubmissions: 0,
       });
     });
 
@@ -293,8 +317,15 @@ describe('form actions', () => {
       expect(addNotificationSpy).toHaveBeenCalledWith(expect.any(Object));
       expect(listSubmissionsSpy).toHaveBeenCalledTimes(1);
       expect(listSubmissionsSpy).toHaveBeenCalledWith('fId', {
+        createdAt: undefined,
         deleted: false,
         createdBy: '',
+        fields: undefined,
+        filterformSubmissionStatusCode: undefined,
+        itemsPerPage: undefined,
+        page: undefined,
+        sortBy: undefined,
+        totalSubmissions: 0,
       });
       expect(getUserSubmissionsSpy).toHaveBeenCalledTimes(0);
     });

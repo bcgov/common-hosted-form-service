@@ -1,24 +1,13 @@
+import { createTestingPinia } from '@pinia/testing';
 import { mount } from '@vue/test-utils';
+import { setActivePinia } from 'pinia';
 import { describe, expect, it } from 'vitest';
 
 import NotFound from '~/views/NotFound.vue';
 
 describe('NotFound.vue', () => {
-
-  const mockLangGetter = jest.fn();
-  let store;
-  beforeEach(() => {
-    store = new Vuex.Store({
-      modules: {
-        form: {
-          namespaced: true,
-          getters: {
-            lang: mockLangGetter,
-          },
-        },
-      },
-    });
-  });
+  const pinia = createTestingPinia();
+  setActivePinia(pinia);
 
   it('renders', () => {
     const wrapper = mount(NotFound, {
@@ -26,9 +15,10 @@ describe('NotFound.vue', () => {
         stubs: {
           RouterLink: true,
         },
+        plugins: [pinia],
       },
     });
 
-    expect(wrapper.text()).toMatch('404: Page not found. :(');
+    expect(wrapper.text()).toMatch('trans.notFound.pageNotFound');
   });
 });

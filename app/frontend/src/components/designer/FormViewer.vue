@@ -180,6 +180,7 @@ export default {
   },
   beforeUnmount() {
     window.removeEventListener('beforeunload', this.beforeWindowUnload);
+    if (this.confirmSubmitTimer) clearTimeout(this.confirmSubmitTimer);
   },
   beforeUpdate() {
     if (this.forceNewTabLinks) {

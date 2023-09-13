@@ -28,6 +28,7 @@ export default {
         outputFileName: '',
         outputFileType: null,
       },
+      timeout: undefined,
     };
   },
   computed: {
@@ -47,12 +48,15 @@ export default {
       }
     },
   },
+  beforeUnmount() {
+    if (this.timeout) clearTimeout(this.timeout);
+  },
   methods: {
     ...mapActions(useNotificationStore, ['addNotification']),
     async printBrowser() {
       this.dialog = false;
       // Setting a timeout to allow the modal to close before opening the windows print
-      setTimeout(() => {
+      this.timeout = setTimeout(() => {
         window.print();
       }, 500);
     },

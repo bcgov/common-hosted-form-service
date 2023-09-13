@@ -75,7 +75,7 @@ export default {
     <h3>{{ form.name }}</h3>
     <p>{{ form.description }}</p>
 
-    <div v-if="form.active === false" class="text-red mb-6":lang="lang">
+    <div v-if="form.active === false" class="text-red mb-6" :lang="lang">
       ({{ $t('trans.administerForm.deleted') }})
       <v-btn
         color="primary"
