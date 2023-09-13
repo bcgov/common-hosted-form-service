@@ -604,6 +604,15 @@ export default {
       }
     },
   },
+  watch: {
+    selectedSubmissions(newValue) {
+      if (newValue && newValue.length > 0) {
+        this.selectSubmissions(
+          newValue.map((val) => val.submissionId).join(',')
+        );
+      }
+    },
+  },
   methods: {
     ...mapActions('form', [
       'fetchForm',
@@ -617,6 +626,7 @@ export default {
       'restoreMultiSubmissions',
       'deleteSubmission',
       'updateFormPreferencesForCurrentUser',
+      'selectSubmissions',
     ]),
     ...mapActions('notifications', ['addNotification']),
     onShowColumnDialog() {
@@ -778,6 +788,7 @@ export default {
         })
         .finally(() => {
           this.selectedSubmissions = [];
+          this.selectSubmissions('');
         });
     },
 

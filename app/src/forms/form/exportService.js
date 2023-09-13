@@ -264,6 +264,7 @@ const service = {
       .modify('filterStatus', params.status)
       .modify('filterDeleted', params.deleted)
       .modify('filterDrafts', params.drafts)
+      .modify('filterSubmissionIds', params.selectedSubmissions)
       .modify('orderDefault')
       .then((submissionData) => {
         if (submissionData == undefined || submissionData == null || submissionData.length == 0) return [];

@@ -101,6 +101,7 @@ export default {
     isRTL: false,
     subscriptionData: genInitialSubscribeDetails(),
     totalSubmissions: 0,
+    selectedSubmissions: '',
   },
   getters: {
     getField, // vuex-map-fields
@@ -125,6 +126,7 @@ export default {
     isRTL: (state) => state.isRTL,
     subscriptionData: (state) => state.subscriptionData,
     totalSubmissions: (state) => state.totalSubmissions,
+    selectedSubmissions: (state) => state.selectedSubmissions,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -197,6 +199,9 @@ export default {
     },
     SET_TOTALSUBMISSIONS(state, totalSubmissions) {
       state.totalSubmissions = totalSubmissions;
+    },
+    SET_SELECTED_SUBMISSIONS(state, selectedSubmissions) {
+      state.selectedSubmissions = selectedSubmissions;
     },
   },
   actions: {
@@ -1026,6 +1031,9 @@ export default {
           { root: true }
         );
       }
+    },
+    selectSubmissions({ commit }, selected) {
+      commit('SET_SELECTED_SUBMISSIONS', selected);
     },
   },
 };

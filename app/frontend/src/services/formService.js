@@ -400,6 +400,7 @@ export default {
     preference,
     fields,
     emailExport = false,
+    selectedSubmissions,
     options = {}
   ) {
     return appAxios().post(
@@ -412,6 +413,7 @@ export default {
         preference: preference,
         fields: fields,
         emailExport,
+        selectedSubmissions,
         ...options,
       },
       {

@@ -45,6 +45,11 @@ class SubmissionData extends Model {
           query.where('draft', false);
         }
       },
+      filterSubmissionIds(query, value) {
+        if (value && value !== '') {
+          query.whereIn('submissionId', value.split(','));
+        }
+      },
       orderDefault(builder) {
         builder.orderBy('createdAt', 'DESC');
       },

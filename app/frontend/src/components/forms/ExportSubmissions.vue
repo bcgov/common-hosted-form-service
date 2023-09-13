@@ -408,6 +408,7 @@ export default {
       'submissionList',
       'isRTL',
       'lang',
+      'selectedSubmissions',
     ]),
 
     ...mapGetters('auth', ['email']),
@@ -426,7 +427,11 @@ export default {
   },
   methods: {
     ...mapActions('notifications', ['addNotification']),
-    ...mapActions('form', ['fetchForm', 'fetchFormCSVExportFields']),
+    ...mapActions('form', [
+      'fetchForm',
+      'fetchFormCSVExportFields',
+      'selectSubmissions',
+    ]),
     async changeVersions(value) {
       this.versionRequired = false;
       value !== ''
@@ -502,7 +507,8 @@ export default {
             // drafts: true
           },
           fieldToExport,
-          emailExport
+          emailExport,
+          this.selectedSubmissions
         );
 
         if (response && response.data && !emailExport) {
@@ -530,6 +536,8 @@ export default {
             `${this.form.id}: ${error}`,
         });
       }
+      // empty selected submissions for export if there are so
+      this.selectSubmissions('');
     },
 
     async updateVersions() {
