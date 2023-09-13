@@ -1,4 +1,5 @@
 <script>
+import _ from 'lodash';
 import { mapActions, mapState } from 'pinia';
 import { Formio, Utils } from '@formio/vue';
 
@@ -70,7 +71,7 @@ export default {
     ...mapState(useFormStore, ['isRTL', 'lang']),
 
     txt_colour() {
-      if (!this.error) return 'success-text';
+      if (!this.response.error) return 'success-text';
       else return 'fail-text';
     },
     fileSize() {
