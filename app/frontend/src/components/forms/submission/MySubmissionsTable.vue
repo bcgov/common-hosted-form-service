@@ -65,7 +65,7 @@
           :class="isRTL ? 'float-left' : 'float-right'"
         >
           <v-text-field
-            v-model="search"
+            @input="handleSearch"
             append-icon="mdi-magnify"
             :label="$t('trans.mySubmissionsTable.search')"
             single-line
@@ -84,9 +84,14 @@
       item-key="title"
       :items="submissionTable"
       :search="search"
+      :page="PAGE_RESET"
       :loading="loading"
       :loading-text="$t('trans.mySubmissionsTable.loadingText')"
-      :no-data-text="$t('trans.mySubmissionsTable.noDataText')"
+      :no-data-text="
+        searchEnabled
+          ? $t('trans.mySubmissionsTable.noMachingRecordText')
+          : $t('trans.mySubmissionsTable.noDataText')
+      "
       :lang="lang"
       :server-items-length="totalSubmissions"
       @update:options="updateTableOptions"
@@ -155,9 +160,12 @@ export default {
     return {
       headers: [],
       itemsPerPage: 10,
-      page: 0,
+      page: 1,
+      pageReset: 0,
       filterData: [],
       preSelectedData: [],
+      search: '',
+      searchEnabled: false,
       sortBy: undefined,
       sortDesc: false,
       filterIgnore: [
@@ -180,7 +188,6 @@ export default {
       showColumnsDialog: false,
       submissionTable: [],
       loading: true,
-      search: '',
     };
   },
   computed: {
@@ -265,7 +272,9 @@ export default {
         (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
       );
     },
-
+    PAGE_RESET() {
+      return this.pageReset;
+    },
     HEADERS() {
       let headers = this.DEFAULT_HEADERS;
 
@@ -350,6 +359,8 @@ export default {
         itemsPerPage: this.itemsPerPage,
         page: this.page,
         sortBy: this.sortBy,
+        search: this.search,
+        searchEnabled: this.searchEnabled,
         sortDesc: this.sortDesc,
       });
       // Build up the list of forms for the table
@@ -388,6 +399,20 @@ export default {
       this.filterData = data;
       this.showColumnsDialog = false;
     },
+    async handleSearch(value) {
+      this.searchEnabled = true;
+      this.search = value;
+      if (value === '') {
+        this.page = 0;
+        this.pageReset = 0;
+        this.searchEnabled = false;
+        await this.populateSubmissionsTable();
+      } else {
+        this.page = 0;
+        this.pageReset = 1;
+        this.debounceInput();
+      }
+    },
   },
 
   async mounted() {
@@ -397,8 +422,10 @@ export default {
         formVersionId: this.form.versions[0].id,
       });
     });
-
     await this.populateSubmissionsTable();
+    this.debounceInput = _.debounce(async () => {
+      await this.populateSubmissionsTable();
+    }, 300);
   },
 };
 </script>
