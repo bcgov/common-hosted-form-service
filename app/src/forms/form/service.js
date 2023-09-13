@@ -282,17 +282,8 @@ const service = {
         ['lateEntry'].map((f) => ref(`submission:data.${f}`).as(f.split('.').slice(-1)))
       );
     }
-
     if (params.page) {
-      return await service.processPaginationData(
-        query,
-        params.page,
-        params.itemsPerPage,
-        params.filterformSubmissionStatusCode,
-        params.totalSubmissions,
-        params.sortBy,
-        params.sortDesc
-      );
+      return await service.processPaginationData(query, params.page, params.itemsPerPage, params.filterformSubmissionStatusCode, params.totalSubmissions);
     }
     return query;
   },

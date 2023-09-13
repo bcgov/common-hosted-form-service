@@ -19,13 +19,7 @@ export default {
   },
   data() {
     return {
-      headers: [],
-      itemsPerPage: 10,
-      page: 0,
       filterData: [],
-      preSelectedData: [],
-      sortBy: undefined,
-      sortDesc: false,
       filterIgnore: [
         {
           key: 'confirmationId',
@@ -34,19 +28,15 @@ export default {
           key: 'actions',
         },
       ],
-      tableFilterIgnore: [
-        { value: 'createdBy' },
-        { value: 'username' },
-        { value: 'status' },
-        { value: 'lateEntry' },
-        { value: 'lastEdited' },
-        { value: 'updatedBy' },
-        { value: 'submittedDate' },
-      ],
-      showColumnsDialog: false,
-      submissionTable: [],
+      headers: [],
+      itemsPerPage: 10,
       loading: true,
+      page: 0,
       search: '',
+      serverItems: [],
+      sortBy: {},
+      showColumnsDialog: false,
+      tableFilterIgnore: [],
     };
   },
   computed: {
@@ -58,8 +48,12 @@ export default {
       'lang',
       'totalSubmissions',
     ]),
-    DEFAULT_HEADERS() {
-      let hdrs = [
+
+    //------------------------ TABLE HEADERS
+    // These are headers that will be available by default for the
+    // table in this view
+    BASE_HEADERS() {
+      let headers = [
         {
           title: i18n.t('trans.mySubmissionsTable.confirmationId'),
           align: 'start',
@@ -88,13 +82,13 @@ export default {
         },
       ];
       if (this.showDraftLastEdited || !this.formId) {
-        hdrs.splice(hdrs.length - 1, 0, {
+        headers.splice(headers.length - 1, 0, {
           title: i18n.t('trans.mySubmissionsTable.draftUpdatedBy'),
           align: 'start',
           key: 'updatedBy',
           sortable: true,
         });
-        hdrs.splice(hdrs.length - 1, 0, {
+        headers.splice(headers.length - 1, 0, {
           title: i18n.t('trans.mySubmissionsTable.draftLastEdited'),
           align: 'start',
           key: 'lastEdited',
@@ -103,7 +97,7 @@ export default {
       }
 
       // Add the form fields to the headers
-      hdrs = hdrs.concat(
+      headers = headers.concat(
         this.formFields.map((ff) => {
           return {
             title: ff,
@@ -112,27 +106,82 @@ export default {
           };
         })
       );
-
-      return hdrs;
+      return headers;
     },
-    FILTER_HEADERS() {
-      return this.DEFAULT_HEADERS.filter(
+    // The headers are based on the base headers but are modified
+    // by the following order:
+    // Remove columns that aren't saved in the filter data
+    HEADERS() {
+      let headers = this.BASE_HEADERS;
+
+      // The user selected some columns
+      if (this.filterData.length > 0) {
+        headers = headers.filter(
+          (header) =>
+            // It must be in the user selected columns
+            this.filterData.some((fd) => fd.key === header.key) ||
+            // except if it's in the filter ignore
+            this.filterIgnore.some((fd) => fd.key === header.key)
+        );
+      } else {
+        // Remove the form fields because this is the default view
+        // we don't need all the form fields
+        headers = headers.filter((header) => {
+          // we want columns that aren't form fields
+          return !this.formFields.includes(header.key);
+        });
+      }
+
+      // Actions column at the end
+      headers.push({
+        title: this.$t('trans.mySubmissionsTable.actions'),
+        align: 'end',
+        key: 'actions',
+        filterable: false,
+        sortable: false,
+        width: '40px',
+      });
+
+      return headers;
+    },
+    //------------------------ END TABLE HEADERS
+
+    //------------------------ FILTER COLUMNS
+    // The base filter headers that will be available by default for the
+    // base filter. These are all the base headers in the table in this view
+    // with specific fields ignored because we always want specific fields
+    // to be available in the table in this view. For this reason, we don't
+    // add them to the table in the filter.
+    BASE_FILTER_HEADERS() {
+      let headers = this.BASE_HEADERS.filter(
+        (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
+      );
+      return headers;
+    },
+    // When clicking reset on the base filter, these will be the default
+    // preselected values
+    RESET_HEADERS() {
+      let headers = this.BASE_FILTER_HEADERS;
+      // Remove the form fields because this is the default view
+      // we don't need all the form fields
+      headers = headers.filter((header) => {
+        // we want columns that aren't form fields
+        return (
+          !this.formFields.includes(header.key) &&
+          // These values won't be preselected
+          !this.tableFilterIgnore.some((fi) => fi.key === header.key)
+        );
+      });
+      return headers;
+    },
+    // These are the columns that will be selected by default when the
+    // select columns dialog is opened
+    PRESELECTED_DATA() {
+      return this.HEADERS.filter(
         (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
       );
     },
-
-    HEADERS() {
-      let headers = this.DEFAULT_HEADERS;
-
-      if (this.filterData.length > 0) {
-        headers = [...this.DEFAULT_HEADERS].filter(
-          (h) => !this.tableFilterIgnore.some((fd) => fd.value === h.value)
-        );
-
-        headers.splice(headers.length - 1, 0, ...this.filterData);
-      }
-      return headers;
-    },
+    //------------------------ END FILTER COLUMNS
     showDraftLastEdited() {
       return this.form && this.form.enableSubmitterDraft;
     },
@@ -156,13 +205,12 @@ export default {
       'fetchSubmissions',
     ]),
     onShowColumnDialog() {
-      this.preSelectedData =
-        this.filterData.length === 0 ? this.FILTER_HEADERS : this.filterData;
-      this.SELECT_COLUMNS_HEADERS.sort(
+      this.BASE_FILTER_HEADERS.sort(
         (a, b) =>
-          this.preSelectedData.findIndex((x) => x.text === b.text) -
-          this.preSelectedData.findIndex((x) => x.text === a.text)
+          this.PRESELECTED_DATA.findIndex((x) => x.title === b.title) -
+          this.PRESELECTED_DATA.findIndex((x) => x.title === a.title)
       );
+
       this.showColumnsDialog = true;
     },
 
@@ -191,18 +239,22 @@ export default {
       }
       return '';
     },
-    async updateTableOptions({ page, itemsPerPage, sortBy, sortDesc }) {
+    async updateTableOptions({ page, itemsPerPage, sortBy }) {
       this.page = page - 1;
-      if (sortBy[0] === 'date') {
-        this.sortBy = 'createdAt';
-      } else if (sortBy[0] === 'submitter') {
-        this.sortBy = 'createdBy';
-      } else if (sortBy[0] === 'status')
-        this.sortBy = 'formSubmissionStatusCode';
-      else {
-        this.sortBy = sortBy[0];
+      if (sortBy?.length > 0) {
+        if (sortBy[0].key === 'date') {
+          this.sortBy.column = 'createdAt';
+        } else if (sortBy[0].key === 'submitter') {
+          this.sortBy.column = 'createdBy';
+        } else if (sortBy[0].key === 'status') {
+          this.sortBy.column = 'formSubmissionStatusCode';
+        } else {
+          this.sortBy.column = sortBy[0].key;
+        }
+        this.sortBy.order = sortBy[0].order;
+      } else {
+        this.sortBy = {};
       }
-      this.sortDesc = sortDesc[0];
       this.itemsPerPage = itemsPerPage;
       await this.populateSubmissionsTable();
     },
@@ -212,10 +264,9 @@ export default {
       await this.fetchSubmissions({
         formId: this.formId,
         userView: true,
-        itemsPerPage: this.itemsPerPage,
         page: this.page,
+        itemsPerPage: this.itemsPerPage,
         sortBy: this.sortBy,
-        sortDesc: this.sortDesc,
       });
       // Build up the list of forms for the table
       if (this.submissionList) {
@@ -235,15 +286,17 @@ export default {
                 ? s.submissionStatus[0].createdBy
                 : '',
           };
-          this.filterData.forEach((fd) => {
-            // If the field isn't already in fields
-            if (!(fd.key in fields)) {
-              fields[fd.key] = s.submission.submission.data[fd.key];
-            }
-          });
+          s?.submission?.submission?.data &&
+            Object.keys(s.submission.submission.data).forEach((col) => {
+              if (Object.keys(fields).includes(col)) {
+                fields[`${col}_1`] = s.submission.submission.data[col];
+              } else {
+                fields[col] = s.submission.submission.data[col];
+              }
+            });
           return fields;
         });
-        this.submissionsTable = tableRows;
+        this.serverItems = tableRows;
       }
       this.loading = false;
     },
@@ -251,8 +304,6 @@ export default {
     async updateFilter(data) {
       this.filterData = data;
       this.showColumnsDialog = false;
-
-      await this.populateSubmissionsTable();
     },
   },
 };
@@ -335,17 +386,18 @@ export default {
     </div>
 
     <!-- table header -->
-    <v-data-table
+    <v-data-table-server
+      :items-length="totalSubmissions"
       class="submissions-table"
+      :items-per-page="itemsPerPage"
       :headers="HEADERS"
-      item-key="title"
-      :items="submissionsTable"
+      item-value="title"
+      :items="serverItems"
       :search="search"
       :loading="loading"
       :loading-text="$t('trans.mySubmissionsTable.loadingText')"
       :no-data-text="$t('trans.mySubmissionsTable.noDataText')"
       :lang="lang"
-      :server-items-length="totalSubmissions"
       @update:options="updateTableOptions"
     >
       <template #item.lastEdited="{ item }">
@@ -367,17 +419,16 @@ export default {
           @draft-deleted="populateSubmissionsTable"
         />
       </template>
-    </v-data-table>
+    </v-data-table-server>
     <v-dialog v-model="showColumnsDialog" width="700">
       <BaseFilter
         :input-filter-placeholder="
           $t('trans.mySubmissionsTable.searchSubmissionFields')
         "
-        input-item-key="key"
         :input-save-button-text="$t('trans.mySubmissionsTable.save')"
-        :input-data="FILTER_HEADERS"
+        :input-data="BASE_FILTER_HEADERS"
         :preselected-data="PRESELECTED_DATA"
-        :reset-data="FILTER_HEADERS"
+        :reset-data="RESET_HEADERS"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >

@@ -90,16 +90,9 @@ const service = {
       .modify('filterUserId', currentUser.id)
       .modify('filterActive', params.active)
       .modify('orderDefault', params.sortBy && params.page ? true : false, params);
+
     if (params.page) {
-      return await service.processPaginationData(
-        query,
-        params.page,
-        params.itemsPerPage,
-        params.filterformSubmissionStatusCode,
-        params.totalSubmissions,
-        params.sortBy,
-        params.sortDesc
-      );
+      return await service.processPaginationData(query, params.page, params.itemsPerPage, params.filterformSubmissionStatusCode, params.totalSubmissions);
     }
     return query;
   },

@@ -4,7 +4,7 @@ import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 import { fa as FONTAWESOME } from 'vuetify/iconsets/fa';
 import { aliases, mdi } from 'vuetify/iconsets/mdi';
-import { VDataTable } from 'vuetify/labs/VDataTable';
+import { VDataTable, VDataTableServer } from 'vuetify/labs/VDataTable';
 import { VSkeletonLoader } from 'vuetify/labs/VSkeletonLoader';
 import {
   VStepper,
@@ -94,6 +94,7 @@ export default createVuetify({
   components: {
     ...components,
     VDataTable,
+    VDataTableServer,
     VSkeletonLoader,
     VStepper,
     VStepperHeader,

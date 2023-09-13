@@ -198,11 +198,6 @@ export default {
                 density="compact"
                 hide-details
                 color="success"
-                :label="
-                  publish[index]
-                    ? $t('trans.generalLayout.published')
-                    : $t('trans.generalLayout.unpublished')
-                "
                 :model-value="isComponentPublish(item.raw.componentName, index)"
                 @update:model-value="
                   onSwitchChange(item.raw.componentName, index)

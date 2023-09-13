@@ -560,7 +560,6 @@ export const useFormStore = defineStore('form', {
       itemsPerPage,
       filterformSubmissionStatusCode,
       sortBy: sortBy,
-      sortDesc: sortDesc,
     }) {
       try {
         this.submissionList = [];
@@ -576,7 +575,6 @@ export const useFormStore = defineStore('form', {
               itemsPerPage: itemsPerPage,
               totalSubmissions: this.totalSubmissions,
               sortBy: sortBy,
-              sortDesc: sortDesc,
             })
           : await formService.listSubmissions(formId, {
               deleted: deletedOnly,
@@ -588,9 +586,8 @@ export const useFormStore = defineStore('form', {
               itemsPerPage: itemsPerPage,
               totalSubmissions: this.totalSubmissions,
               sortBy: sortBy,
-              sortDesc: sortDesc,
             });
-        this.submissionList = response.data;
+        this.submissionList = response.data.results;
         this.totalSubmissions = response.data.total;
       } catch (error) {
         const notificationStore = useNotificationStore();

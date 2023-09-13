@@ -99,6 +99,8 @@ export default {
         gap: this.fabItemsGap,
         zIndex: this.fabZIndex,
         position: 'fixed',
+        right: '0',
+        bottom: '20px',
       };
 
       let conditionalStyles = {};
