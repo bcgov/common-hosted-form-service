@@ -12,6 +12,7 @@ const config = require('config');
 const fileService = require('../file/service');
 const emailService = require('../email/emailService');
 const { v4: uuidv4 } = require('uuid');
+const nestedObjectsUtil = require('nested-objects-util');
 
 const service = {
   /**
@@ -89,7 +90,45 @@ const service = {
     return await flattenComponents(schema.components);
   },
 
-  _buildCsvHeaders: async (form, data, version, fields) => {
+  /**
+   * Help function to make header column order same as it goes in form
+   */
+  mapOrder: (array, order) => {
+    let result = [];
+    let helpMap = {};
+    array.map((ar) => {
+      if (ar.search(/\.\d*\./) !== -1 || ar.search(/\.\d*$/) !== -1) {
+        if (helpMap[ar.replace(/\.\d*\./gi, '.')] && Array.isArray(helpMap[ar.replace(/\.\d*\./gi, '.')])) {
+          helpMap[ar.replace(/\.\d*\./gi, '.')].push(ar);
+          Object.assign(helpMap, { [ar.replace(/\.\d*\./gi, '.')]: helpMap[ar.replace(/\.\d*\./gi, '.')] });
+        } else if (helpMap[ar.replace(/\.\d*$/gi, '')] && Array.isArray(helpMap[ar.replace(/\.\d*$/gi, '')])) {
+          helpMap[ar.replace(/\.\d*$/gi, '')].push(ar);
+          Object.assign(helpMap, { [ar.replace(/\.\d*$/gi, '')]: helpMap[ar.replace(/\.\d*$/gi, '')] });
+        } else {
+          if (ar.search(/\.\d*\./) !== -1) {
+            Object.assign(helpMap, { [ar.replace(/\.\d*\./gi, '.')]: [ar] });
+          } else if (ar.search(/\.\d*$/) !== -1) {
+            Object.assign(helpMap, { [ar.replace(/\.\d*$/gi, '')]: [ar] });
+          }
+        }
+      }
+    });
+    array.map((ar) => {
+      if (ar.substring(0, 5) === 'form.') {
+        result.push(ar);
+      }
+    });
+    order.map((ord) => {
+      if (array.includes(ord) && !helpMap[ord]) {
+        result.push(ord);
+      } else if (helpMap[ord]) {
+        helpMap[ord].map((h) => result.push(h));
+      }
+    });
+    return result;
+  },
+
+  _buildCsvHeaders: async (form, data, version, fields, singleRow = false) => {
     /**
      * get column order to match field order in form design
      * object key order is not preserved when submission JSON is saved to jsonb field type in postgres.
@@ -99,7 +138,6 @@ const service = {
     const latestFormDesign = await service._readLatestFormSchema(form.id, version);
 
     const fieldNames = await service._readSchemaFields(latestFormDesign, data);
-
     // get meta properties in 'form.<child.key>' string format
     const metaKeys = Object.keys(data.length > 0 && data[0].form);
     const metaHeaders = metaKeys.map((x) => 'form.' + x);
@@ -108,16 +146,37 @@ const service = {
      * eg: use field labels as headers
      * see: https://github.com/kaue/jsonexport
      */
-    let formSchemaheaders = metaHeaders.concat(fieldNames);
+    let formSchemaheaders = Array.isArray(data) && data.length > 0 && !singleRow ? metaHeaders.concat(fieldNames) : metaHeaders;
     if (Array.isArray(data) && data.length > 0) {
-      let flattenSubmissionHeaders = Array.from(submissionHeaders(data[0]));
-      formSchemaheaders = formSchemaheaders.concat(flattenSubmissionHeaders.filter((item) => formSchemaheaders.indexOf(item) < 0));
+      let flattenSubmissionHeaders = [];
+      // if we generate single row headers we need to keep in mind of possible multi children nested data thus do flattening
+      if (singleRow) {
+        flattenSubmissionHeaders = Object.keys(nestedObjectsUtil.flatten(data));
+        // '0**.field_name' removing starting digits from flaten object properies to get unique fields after
+        flattenSubmissionHeaders = flattenSubmissionHeaders.map((header) => header.replace(/^\d*\./gi, ''));
+        // getting unique values
+        flattenSubmissionHeaders = [...new Set(flattenSubmissionHeaders)];
+      } else {
+        flattenSubmissionHeaders = Array.from(submissionHeaders(data[0]));
+      }
+      // apply help function to make header column order same as it goes in form
+      const flattenSubmissionHeadersOrdered = service.mapOrder(flattenSubmissionHeaders, fieldNames);
+      // we have 1 case when if field is DataGridMap type it'd not included into sorted flattened array,
+      // thus we add it manually from original flatten array
+      const dataGridFields = flattenSubmissionHeaders.filter((x) => !flattenSubmissionHeadersOrdered.includes(x));
+      dataGridFields.map((dgf) => flattenSubmissionHeadersOrdered.push(dgf));
+      formSchemaheaders = formSchemaheaders.concat(flattenSubmissionHeadersOrdered.filter((item) => formSchemaheaders.indexOf(item) < 0));
     }
 
     if (fields) {
-      return await formSchemaheaders.filter((header) => {
-        if (Array.isArray(fields) && fields.includes(header)) {
+      return formSchemaheaders.filter((header) => {
+        if (Array.isArray(fields) && fields.includes(header) && !singleRow) {
           return header;
+        } else if (Array.isArray(fields) && singleRow) {
+          const unFlattenHeader = header.replace(/\.\d\./gi, '.');
+          if (fields.includes(unFlattenHeader)) {
+            return header;
+          }
         }
       });
     }
@@ -138,12 +197,17 @@ const service = {
     return `${form.snake()}_${type}.${format}`.toLowerCase();
   },
 
-  _submissionsColumns: (form) => {
+  _submissionsColumns: (form, params) => {
     // Custom columns not defined - return default column selection behavior
     let columns = ['confirmationId', 'formName', 'version', 'createdAt', 'fullName', 'username', 'email'];
     // if form has 'status updates' enabled in the form settings include these in export
     if (form.enableStatusUpdates) {
       columns = columns.concat(['status', 'assignee', 'assigneeEmail']);
+    }
+    // Let's add form level columns like deleted or draft
+    if (params?.columns?.length) {
+      let optionalAcceptedColumns = ['draft', 'deleted', 'updatedAt']; //'draft', 'deleted', 'updatedAt' columns needed for ETL process at this moment
+      columns = columns.concat((Array.isArray(params.columns) ? [...params.columns] : [params.columns]).filter((column) => optionalAcceptedColumns.includes(column)));
     }
     // and join the submission data
     return columns.concat(['submission']);
@@ -155,7 +219,8 @@ const service = {
 
   _getData: async (exportType, formVersion, form, params = {}) => {
     if (EXPORT_TYPES.submissions === exportType) {
-      return service._getSubmissions(form, params, formVersion);
+      let subs = await service._getSubmissions(form, params, formVersion);
+      return subs;
     }
     return {};
   },
@@ -188,16 +253,25 @@ const service = {
     } else {
       preference = params.preference;
     }
-
+    // let submissionData;
     // params for this export include minDate and maxDate (full timestamp dates).
-    let submissionData = await SubmissionData.query()
-      .column(service._submissionsColumns(form, params))
+    return SubmissionData.query()
+      .select(service._submissionsColumns(form, params))
       .where('formId', form.id)
       .modify('filterVersion', version)
       .modify('filterCreatedAt', preference && preference.minDate, preference && preference.maxDate)
+      .modify('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate)
+      .modify('filterStatus', params.status)
       .modify('filterDeleted', params.deleted)
       .modify('filterDrafts', params.drafts)
-      .modify('orderDefault');
+      .modify('orderDefault')
+      .then((submissionData) => {
+        if (submissionData == undefined || submissionData == null || submissionData.length == 0) return [];
+        return service._submissionFilterByUnsubmit(submissionData);
+      });
+  },
+
+  _submissionFilterByUnsubmit: (submissionData) => {
     for (let index in submissionData) {
       let keys = Object.keys(submissionData[index].submission);
       for (let key of keys) {
@@ -208,7 +282,6 @@ const service = {
     }
     return submissionData;
   },
-
   _formatSubmissionsJson: (form, data) => {
     return {
       data: data,
@@ -226,7 +299,7 @@ const service = {
         case 'multiRowBackFilledCSVExport':
           return service._multiRowsCSVExport(form, data, version, false, fields, emailExport, currentUser, referer);
         case 'singleRowCSVExport':
-          return service._singleRowCSVExport(form, data, currentUser, emailExport, referer);
+          return service._singleRowCSVExport(form, data, version, fields, currentUser, emailExport, referer);
         case 'unFormattedCSVExport':
           return service._unFormattedCSVExport(form, data, emailExport, currentUser, referer);
         default:
@@ -239,7 +312,7 @@ const service = {
     }
   },
   _multiRowsCSVExport: async (form, data, version, blankout, fields, emailExport, currentUser, referer) => {
-    let pathToUnwind = await unwindPath(data);
+    const pathToUnwind = await unwindPath(data);
     let headers = await service._buildCsvHeaders(form, data, version, fields);
 
     const opts = {
@@ -249,9 +322,11 @@ const service = {
 
     return service._submissionCSVExport(opts, form, data, emailExport, currentUser, referer);
   },
-  _singleRowCSVExport: async (form, data, currentUser, emailExport, referer) => {
+  _singleRowCSVExport: async (form, data, version, fields, currentUser, emailExport, referer) => {
+    const headers = await service._buildCsvHeaders(form, data, version, fields, true);
     const opts = {
       transforms: [flatten({ objects: true, arrays: true, separator: '.' })],
+      fields: headers,
     };
 
     return service._submissionCSVExport(opts, form, data, emailExport, currentUser, referer);

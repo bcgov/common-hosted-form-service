@@ -1,63 +1,18 @@
-<template>
-  <nav v-if="!hideNavBar" class="navigation-main d-print-none px-md-16 px-4">
-    <div class="nav-holder">
-      <ul>
-        <li>
-          <router-link data-cy="aboutLinks" :to="{ name: 'About' }">{{
-            $t('trans.bCGovNavBar.about')
-          }}</router-link>
-        </li>
-        <li v-if="authenticated">
-          <router-link data-cy="userFormsLinks" :to="{ name: 'UserForms' }">{{
-            $t('trans.bCGovNavBar.myForms')
-          }}</router-link>
-        </li>
-        <li v-if="hasPrivileges">
-          <router-link :to="{ name: 'FormCreate' }">{{
-            $t('trans.bCGovNavBar.createNewForm')
-          }}</router-link>
-        </li>
-        <li v-if="hasPrivileges">
-          <a
-            href="https://github.com/bcgov/common-hosted-form-service/wiki"
-            target="_blank"
-            >{{ $t('trans.bCGovNavBar.help') }}</a
-          >
-        </li>
-        <li v-if="hasPrivileges">
-          <a
-            href="https://chefs-fider.apps.silver.devops.gov.bc.ca/"
-            target="_blank"
-            >{{ $t('trans.bCGovNavBar.feedback') }}</a
-          >
-        </li>
-        <!-- <li>
-          <router-link :to="{ name: 'User' }">User (TBD)</router-link>
-        </li> -->
-        <li v-if="isAdmin">
-          <router-link :to="{ name: 'Admin' }">{{
-            $t('trans.bCGovNavBar.admin')
-          }}</router-link>
-        </li>
-      </ul>
-    </div>
-  </nav>
-</template>
-
 <script>
-import { mapGetters } from 'vuex';
-
-import { IdentityProviders } from '../../utils/constants';
+import { mapState } from 'pinia';
+import { useAuthStore } from '~/store/auth';
+import { useFormStore } from '~/store/form';
+import { IdentityProviders } from '~/utils/constants';
 
 export default {
-  name: 'BCGovNavBar',
   data() {
     return {
       items: ['french', 'english'],
     };
   },
   computed: {
-    ...mapGetters('auth', ['authenticated', 'isAdmin', 'identityProvider']),
+    ...mapState(useAuthStore, ['authenticated', 'isAdmin', 'identityProvider']),
+    ...mapState(useFormStore, ['lang']),
     hideNavBar() {
       // hide nav bar if user is on form submitter page
       return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;
@@ -68,6 +23,68 @@ export default {
   },
 };
 </script>
+
+<template>
+  <nav
+    v-if="!hideNavBar"
+    class="elevation-20 navigation-main d-print-none px-md-16 px-4"
+  >
+    <div class="nav-holder">
+      <ul>
+        <li>
+          <router-link
+            data-cy="aboutLinks"
+            :to="{ name: 'About' }"
+            :lang="lang"
+            >{{ $t('trans.bCGovNavBar.about') }}</router-link
+          >
+        </li>
+        <li v-if="authenticated">
+          <router-link
+            data-cy="userFormsLinks"
+            :to="{ name: 'UserForms' }"
+            :lang="lang"
+            >{{ $t('trans.bCGovNavBar.myForms') }}</router-link
+          >
+        </li>
+        <li v-if="hasPrivileges">
+          <router-link
+            data-cy="createNewForm"
+            :to="{ name: 'FormCreate' }"
+            :lang="lang"
+            >{{ $t('trans.bCGovNavBar.createNewForm') }}</router-link
+          >
+        </li>
+        <li v-if="hasPrivileges">
+          <a
+            data-cy="help"
+            href="https://github.com/bcgov/common-hosted-form-service/wiki"
+            target="_blank"
+            :hreflang="lang"
+            >{{ $t('trans.bCGovNavBar.help') }}</a
+          >
+        </li>
+        <li v-if="hasPrivileges">
+          <a
+            data-cy="feedback"
+            href="https://chefs-fider.apps.silver.devops.gov.bc.ca/"
+            target="_blank"
+            :hreflang="lang"
+            >{{ $t('trans.bCGovNavBar.feedback') }}</a
+          >
+        </li>
+        <!-- <li>
+          <router-link :to="{ name: 'User' }">User (TBD)</router-link>
+        </li> -->
+        <li v-if="isAdmin">
+          <router-link data-cy="admin" :to="{ name: 'Admin' }" :lang="lang">{{
+            $t('trans.bCGovNavBar.admin')
+          }}</router-link>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</template>
 
 <style lang="scss" scoped>
 .navigation-main {

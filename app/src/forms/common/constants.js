@@ -52,11 +52,16 @@ module.exports = Object.freeze({
     COMPLETED: 'COMPLETED',
     REVISING: 'REVISING',
   },
+  SubscriptionEvent: {
+    FORM_SUBMITTED: 'eventSubmission',
+    FORM_STATUS_CHANGE: 'eventStatusChange',
+    FORM_ASSIGNMENT: 'eventAssignment',
+  },
   StorageTypes: {
     UPLOADS: 'uploads',
     LOCAL_STORAGE: 'localStorage',
     OBJECT_STORAGE: 'objectStorage',
-    LOCAL_STORES: ['uploads', 'localStorage'],
+    LOCAL_STORES: ['uploads', 'localStorage', 'exports'],
   },
   Restricted: {
     IDP: {
@@ -72,8 +77,6 @@ module.exports = Object.freeze({
   IdentityProviders: {
     BCEIDBASIC: 'bceid-basic', // Basic BCeID
     BCEIDBUSINESS: 'bceid-business', // Business BCeID
-    BCSC: 'bcsc', // Services Card
-    GITHUB: 'github', // Github
     IDIR: 'idir', // IDIR
   },
   EXPORT_TYPES: {

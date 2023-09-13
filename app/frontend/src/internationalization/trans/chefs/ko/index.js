@@ -1,4 +1,4 @@
-import ko from '@/internationalization/trans/chefs/ko/ko.json';
+import ko from '~/internationalization/trans/chefs/ko/ko.json';
 export default {
   trans: ko,
 };

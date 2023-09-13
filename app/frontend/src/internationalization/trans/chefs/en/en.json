@@ -46,16 +46,19 @@
     "totalVersions": "Total Versions",
     "status": "Status",
     "update": "Update",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "eventSubscription": "Event Subscription"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "Press <kbd>enter</kbd> or <kbd>,</kbd> or <kbd>space</kbd> to add multiple email addresses",
+    "allowMultiDraft": "Allow <strong> multiple draft</strong> upload",
     "formTitle": "Form Title",
     "formDescription": "Form Description",
     "formAccess": "Form Access",
     "info": "If you will be using this form to gather information from the general public on topics that are of general interest to the public, you are required to contact the GCPE so that your engagement can be listed on",
     "important": "IMPORTANT",
-    "idimNotifyA": "You must notify the Identity Information Management(IDIM) team by email",
-    "idimNotifyB": "your intent to leverage BCeID to verify theidentities of your form submitters.",
+    "idimNotifyA": "You must notify the Identity Information Management (IDIM) team by email",
+    "idimNotifyB": "your intent to leverage BCeID to verify the identities of your form submitters.",
     "referenceGuideA": "Please reference our",
     "referenceGuideB": "user guide",
     "referenceGuideC": "for more details",
@@ -116,13 +119,34 @@
     "validEmailRequired": "Please enter all valid email addresses",
     "fieldRequired": "This field is required.",
     "correctDateFormat": "Date must be in correct format. ie. yyyy-mm-dd",
-    "dateDiffMsg": "Close Submission date should be greater then open submission date.",
+    "dateDiffMsg": "Close Submission date should be greater than open submission date.",
     "valueMustBeNumber": "Value must be a number. ie. 1,2,3,5,99",
-    "selectAnOptions": "Please select atleast 1 option",
+    "selectAnOptions": "Please select at least 1 option",
     "validInterval": "This should be a valid interval.",
     "fieldRequiredAndInterval": "This field is required & should be an interval.",
     "dateGrtOpenSubmissnDate": "Repeat untill date should be greater then open submission date",
-    "public": "Public (anonymous)"
+    "public": "Public (anonymous)",
+    "allowEventSubscription": "Allow event subscription",
+    "eventSubscription": "Event Subscription",
+    "validEndpointRequired": "Please enter a valid endpoint starting with https://",
+    "validBearerTokenRequired": "Enter a valid bearer token example: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+  },
+  "subscribeEvent": {
+    "eventType": "Event Type",
+    "endpointUrl": "Endpoint URL",
+    "eventSubmission": "Submission",
+    "eventAssignment": "Assignment",
+    "eventStatusChange": "Status Change",
+    "endpointToken": "Endpoint Token",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "Save",
+    "text": "text",
+    "password": "password",
+    "hideSecret": "Hide Secret",
+    "showSecret": "Show Secret",
+    "key": "Key",
+    "saveSettingsErrMsg": "An error occurred while attempting to update the settings for this form.",
+    "updateSettingsConsoleErrMsg": "Error updating settings for form  {formId} : {error}"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",
@@ -261,7 +285,6 @@
     "notificationMsg": "Failed to get user from RBAC, see console",
     "notificationConsErr": "Error getting User from RBAC"
   },
-  "fcProactiveHelp": {},
   "baseAuthButton": {
     "logout": "Logout",
     "login": "Login"
@@ -277,11 +300,11 @@
     "about": "About",
     "loginInfo": "You must be logged in to use this feature.",
     "login": "Login",
-    "401NotAuthorized": "401: not authorized. :",
+    "401NotAuthorized": "401: not authorized. :(",
     "401ErrorMsg": "Your account is not set up correctly.<br />Please contact",
-    "403Forbidden": "403: Forbidden. :",
+    "403Forbidden": "403: Forbidden. :(",
     "403ErrorMsg": "This page requires {idp} authentication.",
-    "401UnAuthorized": "401: Unauthorized. :",
+    "401UnAuthorized": "401: Unauthorized. :(",
     "401UnAuthorizedErrMsg": "You do not have permission to access this page."
   },
   "formDesigner": {
@@ -339,15 +362,20 @@
     "assement": "and to complete assessments as required."
   },
   "requestReceipt": {
+    "emailPriority": "Email Priority",
     "emailReceipt": "Email a receipt of this submission",
+    "high": "High",
+    "low": "Low",
+    "normal": "Normal",
     "send": "SEND",
-    "sendToEmailAddress": "Send to E-mail Address",
+    "sendToEmailAddress": "Send to Email Address",
     "emailSent": "An email has been sent to {to}.",
-    "sendingEmailErrMsg": "An error occured while attempting to send your email.",
+    "sendingEmailErrMsg": "An error occurred while attempting to send your email.",
     "sendingEmailConsErrMsg": "Email confirmation to {to} failed: {error}",
-    "emailRequired": "E-mail is required"
+    "emailRequired": "Email is required"
   },
   "submissionsTable": {
+    "submissions": "Submissions",
     "submissionsTable": "SubmissionsTable",
     "selectColumns": "Select Columns",
     "manageForm": "Manage Form",
@@ -390,7 +418,7 @@
     "close": "Close",
     "userName": "User Name",
     "date": "Date",
-    "errorMsg": "An error occured while trying to fetch history.",
+    "errorMsg": "An error occurred while trying to fetch history.",
     "consoleErrMsg": "Error getting audit history for"
   },
   "deleteSubmission": {
@@ -418,17 +446,17 @@
     "removeUserWarningMsg1": "Are you sure you wish to remove",
     "removeUserWarningMsg2": "They will no longer have permissions for this submission.",
     "userExistInListMsg": "User {username} is already in the list of team members.",
-    "getSubmissionUsersErr": "An error occured while trying to fetch users for this submission.",
+    "getSubmissionUsersErr": "An error occurred while trying to fetch users for this submission.",
     "getSubmissionUsersConsoleErr": "Error getting users for {submissionId} : {error}",
     "sentInviteEmailTo": "Sent invite email to",
     "sentUninvitedEmailTo": "Sent uninvited email to",
-    "updateUserErrMsg": "An error occured while trying to update users for this submission.",
+    "updateUserErrMsg": "An error occurred while trying to update users for this submission.",
     "updateUserConsoleErrMsg": "Error setting user permissions. Sub: {submissionId} User: {userId} Error: {error}",
     "searchInputLength": "Search input for BCeID username/email must be greater than 6 characters.",
     "exactBCEIDSearch": "Email searches for BCeID must be exact.",
     "getUsersErrMsg": "Error getting users: {error}",
-    "exactEmailOrUsername": "Enter an exact e-mail or username.",
-    "requiredFiled": "Enter a name, e-mail, or username"
+    "exactEmailOrUsername": "Enter an exact email or username.",
+    "requiredFiled": "Enter a name, email, or username"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "View This Submission",
@@ -471,9 +499,9 @@
     "cancel": "Cancel",
     "addNote": "ADD NOTE",
     "noResponseErr": "No response data from API while submitting form",
-    "errorMesg": "An error occured while trying to add the note.",
+    "errorMesg": "An error occurred while trying to add the note.",
     "consoleErrMsg": "Error adding note:",
-    "fetchErrMsg": "An error occured while trying to fetch notes for this submission.",
+    "fetchErrMsg": "An error occurred while trying to fetch notes for this submission.",
     "fetchConsoleErrMsg": "Error adding note:",
     "notes": "Notes",
     "note": "Note",
@@ -498,14 +526,14 @@
     "close": "CLOSE",
     "addNoteNoReponserErr": "No response data from API while submitting note for status update",
     "addNoteConsoleErrMsg": "Error updating status: {error}",
-    "addNoteErrMsg": "An error occured while trying to update the status",
+    "addNoteErrMsg": "An error occurred while trying to update the status",
     "updtSubmissionsStatusErr": "No response data from API while submitting status update form",
     "noStatus": "No Status",
     "noStatusesFound": "No statuses found",
     "statusCodesErr": "error finding status codes",
-    "notifyErrorCode": "Error occured fetching status for this submission.",
+    "notifyErrorCode": "Error occurred fetching status for this submission.",
     "notifyConsoleErrorCode": "Error getting statuses:",
-    "fetchSubmissionUsersErr": "An error occured while trying to fetch recipient emails for this submission.",
+    "fetchSubmissionUsersErr": "An error occurred while trying to fetch recipient emails for this submission.",
     "fetchSubmissionUsersConsErr": "Error getting recipient emails for",
     "assignSubmissnToFormReviewer": "Submissions can be assigned to Form Reviewers. <br />To add more team members as Form Reviewers, go to the Manage page for this form.",
     "update": "UPDATE",
@@ -519,7 +547,7 @@
     "dateStatusChanged": "Date Status Changed",
     "assignee": "Assignee",
     "updatedBy": "Updated By",
-    "getSubmissionStatusErr": "An error occured while trying to fetch statuses.",
+    "getSubmissionStatusErr": "An error occurred while trying to fetch statuses.",
     "getSubmissionStatusConsErr": "Error adding note:"
   },
   "exportSubmissions": {
@@ -540,7 +568,7 @@
     "from": "From",
     "to": "To",
     "CSVFormat": "CSV Format",
-    "multiRowPerSubmissionA": "1 - Multiple rows per submission with identation spaces",
+    "multiRowPerSubmissionA": "1 - Multiple rows per submission with indentation spaces",
     "multiRowPerSubmissionB": "2 - Multiple rows per submission",
     "singleRowPerSubmission": "3 - Single row per submission",
     "unformatted": "4 - Unformatted",
@@ -582,8 +610,19 @@
     "save": "Save",
     "description": "Description"
   },
+  "user": {
+    "root": {
+      "myForms": "MY FORMS",
+      "history": "HISTORY",
+      "user": "User"
+    }
+  },
   "proactiveHelpPreviewDialog": {
     "learnMore": "Learn more"
+  },
+  "preview": {
+    "preview": "Preview",
+    "previewToolTip": "This shows a preview of the form version design and behaviour as your submitters will see it. You cannot submit the form from this page."
   },
   "generalLayout": {
     "loadingText": "Loading... Please wait",
@@ -603,7 +642,9 @@
     "confirmationID": "Confirmation ID:",
     "submittedBy": "Submitted By:",
     "cancel": "CANCEL",
-    "status": "Status"
+    "status": "Status",
+    "updatedAt": "Modified",
+    "updatedBy": "Modified By"
   },
   "teamManagement": {
     "teamManagement": "Team Management",
@@ -662,20 +703,20 @@
     "submitFormWarningMsg": "Are you sure you wish to submit your form?",
     "submit": "Submit",
     "wantToSaveDraft": "Do you want to save the draft?",
-    "version": "Version: { version }",
+    "version": "Version: {version}",
     "formScheduleExpireMessage": "Form submission is not available as the scheduled submission period has expired.",
     "getUsersSubmissionsErrMsg": "An error occurred fetching the submission for this form",
     "getUsersSubmissionsConsoleErrMsg": "Error loading form submission data {submissionId}: {error}",
     "multiDraftUploadSuccess": "Your multiple draft upload has been successful!",
     "readVersionErrMsg": "No schema in response. VersionId: {versionId}",
-    "readDraftErrMsg": "No schema in response. DraftId: {draftId}",
+    "readDraftErrMsg": "No schema in response. draftId: {draftId}",
     "alertRouteMsg": "The form owner has not published the form, and it is not available for submissions.",
     "fecthingFormErrMsg": "An error occurred fetching this form",
     "fecthingFormConsoleErrMsg": "Error loading form schema {versionId}: {error}",
     "savingDraftErrMsg": "An error occurred while saving a draft",
     "savingDraftConsoleErrMsg": "Error saving draft. SubmissionId: {submissionId}. Error: {error}",
     "submissionsPreviewAlert": "Submission disabled during form preview",
-    "submissionsSubmitErrMsg": "Error submiting the form: {errors}",
+    "submissionsSubmitErrMsg": "Error submitting the form: {errors}",
     "sendSubmissionErrMsg": "Failed response from submission endpoint. Response code: {status}",
     "errMsg": "An error occurred submitting this form",
     "customEventAlert": "Custom button events not supported yet. Event Type: {event}",
@@ -684,9 +725,10 @@
     "no": "No",
     "failedResSubmissn": "Failed response from submission endpoint. Response code: {status}",
     "errSubmittingForm": "An error occurred submitting this form",
-    "errorSavingFile": "Error saving files. Filename: {fileNname}. Error: {error}",
+    "errorSavingFile": "Error saving files. Filename: {fileName}. Error: {error}",
     "submittingDraftErrMsg": "An error occurred while saving a draft",
-    "submittingDraftConsErrMsg": "Error saving draft. SubmissionId: {submissionId}. Error: {error}"
+    "submittingDraftConsErrMsg": "Error saving draft. SubmissionId: {submissionId}. Error: {error}",
+    "formDraftAccessErrMsg": "Requested submission is already submitted, redirecting to View page"
   },
   "bCGovFooter": {
     "home": "Home",
@@ -719,7 +761,7 @@
     "createCustomFormTitle": "Create custom forms with the CHEFS form builder",
     "createCustomFormSub1": "With CHEFS, you can create secure forms with an intuitive drag-and-drop interface. You can add form components, re-arrange them, and drop them into different layouts configurations.",
     "chefsHowToTitle": "CHEFS How-to Videos",
-    "chefsHowToSub": "Our Quickstart Guide will introduce you to some of the basic functions of CHEFS. Get started!",
+    "chefsHowToSub": "Our Quickstart Guide will introduce you to some of the basic functions of CHEFS.",
     "getStartedToChefs": "Get started using CHEFS",
     "createOnlineTitle": "Create online forms to collect information from your clients and improve your workflows.",
     "getStarted": "Get started"
@@ -739,10 +781,11 @@
   "addTeamMember": {
     "cantFindChefsUsers": "Can't find someone? They may not have logged into CHEFS.<br /> Kindly send them a link to CHEFS and ask them to log in.",
     "cancel": "Cancel",
+    "add": "Add",
     "mustSelectAUser": "You must select at least one role to add this user.",
     "addNewMember": "Add a New Member",
-    "enterUsername": "Enter a name, e-mail, or username",
-    "enterExactUsername": "Enter an exact e-mail or username",
+    "enterUsername": "Enter a name, email, or username",
+    "enterExactUsername": "Enter an exact email or username",
     "BCeIDInputSearchMaxLen": "Search input for BCeID username/email must be greater than 6 characters.",
     "BCeIDMustBeExact": "Email searches for BCeID must be exact.",
     "errorGettingUsers": "Error getting users {error}"
@@ -754,27 +797,25 @@
     "exampleText2": "Example Text 2",
     "filterPlaceholderTxt": "Filter Placeholder Text",
     "filter": "Filter",
-    "value": "value"
+    "value": "value",
+    "resetColumns": "Reset Columns"
   },
   "formViewerActions": {
     "viewAllSubmissions": "View All Submissions",
     "saveAsADraft": "Save as a Draft",
     "editThisDraft": "Edit this Draft",
     "switchSingleSubmssn": "Switch to single submission",
-    "switchMultiSubmssn": "Switch to single submission"
+    "switchMultiSubmssn": "Switch to Multiple submission"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Link copied to clipboard",
     "copyToClipboard": "Copy to Clipboard",
     "errCopyToClipboard": "Error attempting to copy to clipboard."
   },
-  "root": {
-    "admin": "Admin"
-  },
   "sucess": {
     "sucessFormSubmissn": "Your form has been submitted successfully",
     "keepRecord": "If you wish to keep a record of this submission, you can keep the following",
-    "confirmationId": "Confirmation ID:"
+    "confirmationId": "Confirmation ID"
   },
   "bcGovAlertBanner": {
     "defaultErrMsg": "Error: Something went wrong",
@@ -822,8 +863,7 @@
       "updCurrUserFormPrefConsErrMsg": "Error updating user form prefs using formID {formId}, and prefs {preferences}: {error}",
       "getCurrUserFormPrefErrMsg": "An error occurred while fetching your preferences for this form.",
       "getCurrUserFormPrefConsErrMsg": "Error getting user form prefs using formID {formId}: {error}",
-      "delCurrformNotiMsg": "Form \"{state.form.name}\" has been deleted successfully.",
-      "delCurrformErrMsg": "An error occurred while attempting to delete \"${state.form.name}\".",
+      "delCurrformNotiMsg": "Form {name} has been deleted successfully.",
       "delCurrFormConsErMsg": "Error deleting form {id}: {error}",
       "delDraftErrMsg": "An error occurred while deleting this draft.",
       "delDraftConsErrMsg": "Error deleting {draftId}: {error}",
@@ -834,7 +874,7 @@
       "fetchFormFieldsErrMsg": "An error occurred while fetching the list of fields for this form.",
       "fetchFormFieldsConsErrMsg": "Error getting form {formId}: {error}",
       "publishDraftErrMsg": "An error occurred while publishing.",
-      "publishDraftConsErrMsg": "Error publishing ${draftId}: ${error}",
+      "publishDraftConsErrMsg": "Error publishing {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "Error in toggleVersionPublish {versionId} {publish}: {error}",
       "updateFormErrMsg": "An error occurred while updating the settings for this form.",
       "updateFormConsErrMsg": "Error updating form {id}: {error}",
@@ -843,7 +883,7 @@
       "deleteSubmissionConsErrMsg": "Error deleting submission {submissionId}: {error}",
       "deleteSubmissionsNotifyMsg": "Submissions deleted successfully.",
       "deleteSubmissionsErrMsg": "An error occurred while deleting the selected submissions.",
-      "deleteSubmissionsConsErrMsg": "Error deleteing submissions: {error}",
+      "deleteSubmissionsConsErrMsg": "Error deleting submissions: {error}",
       "restoreSubmissionsNotiMsg": "Submissions restored successfully.",
       "restoreSubmissionsErrMsg": "An error occurred while restoring this submission.",
       "restoreSubmissionsConsErrMsg": "Error restoring submissions: {error}",
@@ -853,7 +893,7 @@
       "fecthSubmissnUsersErrMsg": "An error occurred while fetching the recipient email for this submission.",
       "fecthSubmissnUsersConsErrMsg": "Error getting recipient email for submission {formSubmissionId}: {error}",
       "fetchSubmissnErrMsg": "An error occurred while fetching this submission.",
-      "fetchSubmissnConsErrMsg": "Error getting submission {submissionId}: ${error}",
+      "fetchSubmissnConsErrMsg": "Error getting submission {submissionId}: {error}",
       "fetchFormCSVExptFieldsErrMsg": "An error occurred while fetching the list of fields for this form.",
       "fetchFormCSVExptFieldsConsErrMsg": "Error getting form {formId}: {error}",
       "fetchSubmissnsErrMsg": "An error occurred while fetching submissions for this form.",
@@ -873,7 +913,12 @@
       "listFCPHErrMsg": "An error occurred while fetching form builder components",
       "listFCPHConsErrMsg": "Error getting form builder components: {error}",
       "downloadFileErrMsg": "An error occurred while downloading file",
-      "downloadFileConsErrMsg": "Error downloading file: error"
+      "downloadFileConsErrMsg": "Error downloading file: error",
+      "readSubscriptionSettingsErrMsg": "An error occurred while trying to fetch the subscription settings.",
+      "readSubscriptionSettingsConsErrMsg": "Error getting subscription settings for form {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "Subscription settings for this form has been saved.",
+      "saveSubscriptionSettingsErrMsg": "An error occurred while trying to save subscription settings.",
+      "saveSubscriptionSettingsConsErrMsg": "Error saving subscription settings for form {formId}: {error}"
     }
   },
   "permissionUtils": {
@@ -883,5 +928,46 @@
     "loadingForm": "Error while loading {options}: {error}",
     "idpHintMsg": "This form requires {idpHint} authentication. Please re-login and try again.",
     "formIdpMissMatch": "Form IDP mismatch. Form requires {idpHint} but user has {userIdp}."
+  },
+  "download": {
+    "chefsDataExport": "CHEFS Data Export",
+    "preparingForDownloading": "Preparing for download...",
+    "downloadInfoA": "If your file does not automatically download",
+    "downloadInfoB": "click here to try again"
+  },
+  "history": {
+    "submissnHistory": "Your Submission History (TBD)"
+  },
+  "error": {
+    "logout": "Logout",
+    "somethingWentWrong": "Error: Something went wrong... :("
+  },
+  "login": {
+    "authenticateWith": "Authenticate with:",
+    "alreadyLoggedIn": "Already logged in",
+    "home": "Home",
+    "about": "About"
+  },
+  "notFound": {
+    "about": "About",
+    "pageNotFound": "404: Page not found. :("
+  },
+  "admin": {
+    "root": {
+      "admin": "Admin"
+    },
+    "form": {
+      "administerForm": "Administer Form"
+    },
+    "user": {
+      "administerUser": "Administer User"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "MY FORMS",
+      "history": "HISTORY",
+      "user": "User"
+    }
   }
 }

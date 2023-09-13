@@ -1,36 +1,40 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import Vuex from 'vuex';
-import i18n from '@/internationalization';
-import Admin from '@/views/Admin.vue';
+import { createTestingPinia } from '@pinia/testing';
+import { mount } from '@vue/test-utils';
+import { setActivePinia } from 'pinia';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { nextTick } from 'vue';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
-
+import { useAuthStore } from '~/store/auth';
+import Admin from '~/views/Admin.vue';
 
 describe('Admin.vue', () => {
-  let store;
+  const pinia = createTestingPinia();
+  setActivePinia(pinia);
+
+  const authStore = useAuthStore(pinia);
 
   beforeEach(() => {
-    store = new Vuex.Store();
-    store.registerModule('auth', {
-      namespaced: true,
-      getters: {
-        isAdmin: () => false,
-      },
-    });
+    authStore.$reset();
   });
 
-  it('renders without error', async () => {
-    store.registerModule('admin', { namespaced: true });
-
-    const wrapper = shallowMount(Admin, {
-      localVue,
-      store,
-      stubs: ['BaseSecure', 'router-view'],
-      i18n
+  it('renders', async () => {
+    authStore.isAdmin = true;
+    const wrapper = mount(Admin, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterView: true,
+          BaseSecure: {
+            name: 'BaseSecure',
+            template: '<div class="base-secure-stub"><slot /></div>',
+          },
+        },
+      },
     });
-    await localVue.nextTick();
 
+    await nextTick();
+
+    expect(wrapper.html()).toMatch('v-container');
     expect(wrapper.html()).toMatch('router-view');
   });
 });

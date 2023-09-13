@@ -70,32 +70,30 @@ export const IdentityMode = Object.freeze({
 export const IdentityProviders = Object.freeze({
   BCEIDBASIC: 'bceid-basic', // Basic BCeID
   BCEIDBUSINESS: 'bceid-business', // Business BCeID
-  BCSC: 'bcsc', // Services Card
-  GITHUB: 'github', // Github
   IDIR: 'idir', // IDIR
 });
 
 /** Corresponds to vuetify alert classes for notification types */
 export const NotificationTypes = Object.freeze({
   ERROR: {
+    color: 'error',
     type: 'error',
-    class: 'alert-error',
-    icon: 'error',
+    icon: '$error',
   },
   SUCCESS: {
+    color: 'success',
     type: 'success',
-    class: 'alert-success',
-    icon: 'check_circle',
+    icon: 'mdi:mdi-check-circle',
   },
   INFO: {
+    color: 'info',
     type: 'info',
-    class: 'alert-info',
-    icon: 'info',
+    icon: '$info',
   },
   WARNING: {
+    color: 'warning',
     type: 'warning',
-    class: 'alert-warning',
-    icon: 'warning',
+    icon: '$warning',
   },
 });
 

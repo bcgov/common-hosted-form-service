@@ -1,19 +1,62 @@
+<script>
+import { mapActions, mapState } from 'pinia';
+import BaseDialog from '~/components/base/BaseDialog.vue';
+import { useFormStore } from '~/store/form';
+
+export default {
+  components: {
+    BaseDialog,
+  },
+  props: {
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+    isDraft: {
+      type: Boolean,
+      default: false,
+    },
+    submissionId: {
+      type: String,
+      required: true,
+    },
+  },
+  emits: ['deleted'],
+  data() {
+    return {
+      showDeleteDialog: false,
+    };
+  },
+  computed: {
+    ...mapState(useFormStore, ['form', 'lang', 'isRTL']),
+  },
+  methods: {
+    ...mapActions(useFormStore, ['deleteSubmission']),
+    async delSub() {
+      await this.deleteSubmission(this.submissionId);
+      this.showDeleteDialog = false;
+      this.$emit('deleted');
+    },
+  },
+};
+</script>
+
 <template>
-  <span>
-    <v-tooltip bottom>
-      <template #activator="{ on, attrs }">
+  <span :class="{ 'dir-rtl': isRTL }">
+    <v-tooltip location="bottom">
+      <template #activator="{ props }">
         <v-btn
-          @click="showDeleteDialog = true"
+          class="mx-1"
           color="red"
           :disabled="disabled"
-          icon
-          v-bind="attrs"
-          v-on="on"
-        >
-          <v-icon>delete</v-icon>
-        </v-btn>
+          v-bind="props"
+          size="x-small"
+          density="default"
+          icon="mdi:mdi-delete"
+          @click="showDeleteDialog = true"
+        />
       </template>
-      <span
+      <span :lang="lang"
         >{{ $t('trans.deleteSubmission.deleteThis') }}
         {{
           isDraft
@@ -29,55 +72,24 @@
       @close-dialog="showDeleteDialog = false"
       @continue-dialog="delSub"
     >
-      <template #title>{{
-        $t('trans.deleteSubmission.confirmDeletion')
-      }}</template>
+      <template #title>
+        <span :lang="lang">{{
+          $t('trans.deleteSubmission.confirmDeletion')
+        }}</span></template
+      >
       <template #text>
-        {{ $t('trans.deleteSubmission.deleteWarning') }}
-        {{
-          isDraft
-            ? "$t('trans.deleteSubmission.drafts')"
-            : "$t('trans.deleteSubmission.formSubmission')"
-        }}?
+        <span :lang="lang">
+          {{ $t('trans.deleteSubmission.deleteWarning') }}
+          {{
+            isDraft
+              ? $t('trans.deleteSubmission.drafts')
+              : $t('trans.deleteSubmission.formSubmission')
+          }}?</span
+        >
       </template>
       <template #button-text-continue>
-        <span>{{ $t('trans.deleteSubmission.delete') }}</span>
+        <span :lang="lang">{{ $t('trans.deleteSubmission.delete') }}</span>
       </template>
     </BaseDialog>
   </span>
 </template>
-
-<script>
-import { mapActions, mapGetters } from 'vuex';
-
-export default {
-  props: {
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    isDraft: {
-      type: Boolean,
-      default: false,
-    },
-    submissionId: {
-      type: String,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      showDeleteDialog: false,
-    };
-  },
-  computed: mapGetters('form', ['form']),
-  methods: {
-    ...mapActions('form', ['deleteSubmission']),
-    async delSub() {
-      await this.deleteSubmission(this.submissionId);
-      this.showDeleteDialog = false;
-      this.$emit('deleted');
-    },
-  },
-};
-</script>

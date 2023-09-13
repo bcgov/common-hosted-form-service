@@ -1,37 +1,16 @@
-<template>
-  <div>
-    <v-row class="mt-6" no-gutters>
-      <!-- page title -->
-      <v-col cols="12" sm="6" order="2" order-sm="1">
-        <h1>{{ $t('trans.manageLayout.manageForm') }}</h1>
-      </v-col>
-      <!-- buttons -->
-      <v-col class="text-right" cols="12" sm="6" order="1" order-sm="2">
-        <v-skeleton-loader :loading="loading" type="actions">
-          <ManageFormActions />
-        </v-skeleton-loader>
-      </v-col>
-      <!-- form name -->
-      <v-col cols="12" order="3">
-        <h3>{{ this.form.name }}</h3>
-      </v-col>
-    </v-row>
-    <v-skeleton-loader :loading="loading" type="list-item-two-line">
-      <ManageForm />
-    </v-skeleton-loader>
-  </div>
-</template>
-
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapState } from 'pinia';
 
-import ManageForm from '@/components/forms/manage/ManageForm.vue';
-import ManageFormActions from '@/components/forms/manage/ManageFormActions.vue';
-import { FormPermissions, IdentityProviders } from '@/utils/constants';
+import ManageForm from '~/components/forms/manage/ManageForm.vue';
+import ManageFormActions from '~/components/forms/manage/ManageFormActions.vue';
+import { useFormStore } from '~/store/form';
+import { FormPermissions } from '~/utils/constants';
 
 export default {
-  name: 'ManageLayout',
-  components: { ManageForm, ManageFormActions },
+  components: {
+    ManageForm,
+    ManageFormActions,
+  },
   props: {
     f: {
       type: String,
@@ -44,27 +23,59 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['form', 'permissions']),
-    IDP: () => IdentityProviders,
-  },
-  methods: {
-    ...mapActions('form', [
-      'fetchDrafts',
-      'fetchForm',
-      'getFormPermissionsForUser',
-    ]),
+    ...mapState(useFormStore, ['form', 'permissions', 'isRTL', 'lang']),
   },
   async mounted() {
     this.loading = true;
+
+    const formStore = useFormStore();
+
     await Promise.all([
-      // Get the form for this management page
-      this.fetchForm(this.f),
-      // Get the permissions for this form
-      this.getFormPermissionsForUser(this.f),
+      formStore.fetchForm(this.f),
+      formStore.getFormPermissionsForUser(this.f),
     ]);
+
     if (this.permissions.includes(FormPermissions.DESIGN_READ))
-      await this.fetchDrafts(this.f);
+      await formStore.fetchDrafts(this.f);
+
     this.loading = false;
   },
 };
 </script>
+
+<template>
+  <div :class="{ 'dir-rtl': isRTL }">
+    <div
+      class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
+    >
+      <!-- page title -->
+      <div>
+        <h1 :lang="lang">{{ $t('trans.manageLayout.manageForm') }}</h1>
+        <h3>{{ form.name }}</h3>
+      </div>
+      <!-- buttons -->
+      <div>
+        <v-skeleton-loader :loading="loading" type="actions" class="bgtrans">
+          <ManageFormActions />
+        </v-skeleton-loader>
+      </div>
+    </div>
+    <v-row no-gutters>
+      <v-col cols="12" order="2">
+        <v-skeleton-loader
+          :loading="loading"
+          type="list-item-two-line"
+          class="bgtrans"
+        >
+          <ManageForm />
+        </v-skeleton-loader>
+      </v-col>
+    </v-row>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.v-skeleton-loader {
+  display: inline;
+}
+</style>

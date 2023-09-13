@@ -64,14 +64,18 @@ const service = {
       if (data['deleted'] !== undefined && typeof data.deleted == 'boolean') {
         await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { deleted: data.deleted, updatedBy: currentUser.usernameIdp });
       } else {
+        const statuses = await FormSubmissionStatus.query().modify('filterSubmissionId', formSubmissionId).modify('orderDescending');
         if (!data.draft) {
           // Write a SUBMITTED status only if this is in REVISING state OR is a brand new submission
-          const statuses = await FormSubmissionStatus.query().modify('filterSubmissionId', formSubmissionId).modify('orderDescending');
           if (!statuses || !statuses.length || statuses[0].code === Statuses.REVISING) {
             await service.changeStatusState(formSubmissionId, { code: Statuses.SUBMITTED }, currentUser, trx);
             // If finalizing submission, send the submission email (quiet fail if anything goes wrong)
             const submissionMetaData = await SubmissionMetadata.query().where('submissionId', formSubmissionId).first();
             emailService.submissionReceived(submissionMetaData.formId, formSubmissionId, data, referrer).catch(() => {});
+          }
+        } else {
+          if (statuses && statuses.length > 0 && (statuses[0].code === Statuses.SUBMITTED || statuses[0].code === Statuses.COMPLETED)) {
+            return false;
           }
         }
 

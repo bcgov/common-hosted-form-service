@@ -1,9 +1,24 @@
-import { shallowMount } from '@vue/test-utils';
-import i18n from '@/internationalization';
-import ProactiveHelpDialog from '@/components/infolinks/ProactiveHelpDialog.vue';
+// @vitest-environment happy-dom
+// happy-dom is required to access window.location
 
-const $t = () => {};
+import { mount } from '@vue/test-utils';
+import { createTestingPinia } from '@pinia/testing';
+import { setActivePinia } from 'pinia';
+import { createRouter, createWebHistory } from 'vue-router';
+import { expect, vi } from 'vitest';
+import { nextTick } from 'vue';
+
+import getRouter from '~/router';
+import ProactiveHelpDialog from '~/components/infolinks/ProactiveHelpDialog.vue';
+
 describe('ProactiveHelpDialog.vue', () => {
+  const pinia = createTestingPinia();
+  const router = createRouter({
+    history: createWebHistory(),
+    routes: getRouter().getRoutes(),
+  });
+
+  setActivePinia(pinia);
 
   it('selectImage()', async () => {
     const event = {
@@ -17,30 +32,53 @@ describe('ProactiveHelpDialog.vue', () => {
         ],
       },
     };
+    const wrapper = mount(ProactiveHelpDialog, {
+      props: {
+        component: {
+          componentName: 'content',
+          description: 'dump description',
+          imageUrl: 'https://dumpurl.com',
+          moreHelpInfoLink: 'https://dumpurl.com',
+        },
+        groupName: 'test',
+        showDialog: true,
+      },
+      global: {
+        plugins: [router, pinia],
+      },
+    });
 
-    const wrapper = shallowMount(ProactiveHelpDialog, {i18n});
-
-    const fileReaderSpy = jest.spyOn(FileReader.prototype, 'readAsDataURL').mockImplementation(() => null);
-    const persistSpy = jest.spyOn(ProactiveHelpDialog.methods, 'uploadFCProactiveHelpImage');
+    const fileReaderSpy = vi
+      .spyOn(FileReader.prototype, 'readAsDataURL')
+      .mockImplementation(() => null);
+    const persistSpy = vi.spyOn(
+      ProactiveHelpDialog.methods,
+      'addFCProactiveHelp'
+    );
     wrapper.vm.selectImage(event);
     expect(fileReaderSpy).toHaveBeenCalledWith(event);
     expect(persistSpy).toHaveBeenCalledTimes(0);
   });
 
   it('resetDialog', async () => {
-
-    const wrapper = shallowMount(ProactiveHelpDialog, {
-      data() {
-        return {
+    const wrapper = mount(ProactiveHelpDialog, {
+      props: {
+        component: {
+          componentName: 'content',
           description: 'dump text',
-          link: 'url',
-        };
+          imageUrl: 'https://dumpurl.com',
+          moreHelpInfoLink: 'https://dumpurl.com',
+        },
+        groupName: 'test',
+        showDialog: true,
       },
-      i18n
+      global: {
+        plugins: [router, pinia],
+      },
     });
 
     wrapper.vm.resetDialog();
+    await nextTick();
     expect(wrapper.vm.description).toBe('');
-    expect(wrapper.vm.link).toBe('');
   });
 });

@@ -1,4 +1,4 @@
-import { Templates } from 'vue-formio';
+import { Templates } from '@formio/vue';
 
 /**
  * Extend an existing template by first getting the current template function and then call that function in addition to your own

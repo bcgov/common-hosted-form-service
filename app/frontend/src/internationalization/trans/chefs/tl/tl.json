@@ -18,6 +18,10 @@
   "manageLayout": {
     "manageForm": "Pamahalaan ang Form"
   },
+  "preview": {
+    "preview": "Silipin",
+    "previewToolTip": "Nagpapakita ito ng preview ng disenyo at gawi ng bersyon ng form habang makikita ito ng iyong mga nagsumite. Hindi mo maaaring isumite ang form mula sa pahinang ito."
+  },
   "shareForm": {
     "shareForm": "Ibahagi ang Form",
     "shareLink": "Ibahagi ang Link",
@@ -46,9 +50,12 @@
     "totalVersions": "Kabuuang Mga Bersyon",
     "status": "Katayuan",
     "update": "Update",
-    "cancel": "Kanselahin"
+    "cancel": "Kanselahin",
+    "eventSubscription": "Subscription sa Kaganapan"
   },
   "formSettings": {
+    "pressToAddMultiEmail": "Pindutin <kbd>ang enter</kbd> o <kbd>,</kbd> o <kbd>space</kbd> para magdagdag ng maraming email address",
+    "allowMultiDraft": "Payagan <strong>ang maramihang pag-upload ng draft</strong>",
     "formTitle": "Pamagat ng Form",
     "formDescription": "Paglalarawan ng Form",
     "formAccess": "Pag-access sa Form",
@@ -73,7 +80,7 @@
     "canSaveAndEditDraftLabel": "Maaaring <strong>Mag-save at Mag-edit ng mga Draft</strong> ang mga nagsumite",
     "canUpdateStatusAsReviewer": "Maaaring <strong>I-update ng mga tagasuri ang Katayuan</strong> ng form na ito (ibig sabihin, Naisumite, Nakatalaga, Nakumpleto)",
     "submitterCanCopyExistingSubmissn": "Maaaring <strong>Kopyahin ng mga nagsumite ang isang umiiral nang pagsusumite</strong>",
-    "submissionConfirmationToolTip": "Ang pagpili sa opsyong ito ay kumokontrol sa kung ano ang makikita ng nagsusumite ng user ng form na ito sa matagumpay na pagsusumite.<br /> Kung naka-check, ito ay ipapakita",
+    "submissionConfirmationToolTip": "Kinokontrol ng pagpili sa opsyong ito kung ano ang makikita ng nagsusumite ng user ng form na ito sa matagumpay na pagsusumite.<br /> Kung naka-check, ito ay ipapakita",
     "emailNotificatnToTeam": "Padalhan ang aking koponan ng email ng notification",
     "emailNotificatnToTeamToolTip": "Magpadala ng notification sa iyong tinukoy na email address kapag isinumite ng sinumang user ang form na ito",
     "notificationEmailAddrs": "Mga Email Address ng Notification",
@@ -121,8 +128,29 @@
     "selectAnOptions": "Mangyaring pumili ng hindi bababa sa 1 opsyon",
     "validInterval": "Ito ay dapat na isang wastong agwat.",
     "fieldRequiredAndInterval": "Kinakailangan ang field na ito at dapat na isang pagitan.",
-    "dateGrtOpenSubmissnDate": "Ulitin hanggang sa petsa ay dapat na mas malaki kaysa bukas na petsa ng pagsusumite",
-    "public": "Pampubliko (anonymous)"
+    "dateGrtOpenSubmissnDate": "Ulitin hanggang sa petsa ay dapat na mas malaki kaysa sa bukas na petsa ng pagsusumite",
+    "public": "Pampubliko (anonymous)",
+    "allowEventSubscription": "Payagan ang subscription sa kaganapan",
+    "eventSubscription": "Subscription sa Kaganapan",
+    "validEndpointRequired": "Mangyaring magpasok ng wastong endpoint na nagsisimula sa https://",
+    "validBearerTokenRequired": "Maglagay ng wastong halimbawa ng token ng maydala: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+  },
+  "subscribeEvent": {
+    "eventType": "Uri ng kaganapan",
+    "endpointUrl": "URL ng Endpoint",
+    "eventSubmission": "Pagsusumite",
+    "eventAssignment": "Assignment",
+    "eventStatusChange": "Pagbabago ng Katayuan",
+    "endpointToken": "Endpoint Token",
+    "urlPlaceholder": "https://endpoint.gov.bc.ca/api/v1/",
+    "save": "I-save",
+    "text": "text",
+    "password": "password",
+    "hideSecret": "Itago ang Lihim",
+    "showSecret": "Ipakita ang Lihim",
+    "key": "Susi",
+    "saveSettingsErrMsg": "May naganap na error habang sinusubukang i-update ang mga setting para sa form na ito.",
+    "updateSettingsConsoleErrMsg": "Error sa pag-update ng mga setting para sa form {formId} : {error}"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",
@@ -174,11 +202,11 @@
     "actions": "Mga aksyon",
     "published": "Nai-publish",
     "unpublished": "Hindi na-publish",
-    "useVersionInfo": "Gamitin ang bersyon {bersyon} bilang batayan para sa isang bagong bersyon",
-    "publishingVersionInfo": "Gagawin nitong live ang Bersyon {bersyon} ng iyong form."
+    "useVersionInfo": "Gamitin ang bersyon {version} bilang batayan para sa isang bagong bersyon",
+    "publishingVersionInfo": "Gagawin nitong live ang Bersyon {version} ng iyong form."
   },
   "addOwner": {
-    "infoA": "Dapat lang itong gawin kung sakaling ang kasalukuyang may-ari ng form ay hindi na aktibo o wala nang contact sa isang priority event. Kung hindi, ipagawa ito sa kasalukuyang May-ari o isang Administrator ng Koponan para sa form.",
+    "infoA": "Dapat lang itong gawin kung sakaling ang kasalukuyang may-ari ng form ay hindi na aktibo o wala nang contact sa isang priority event. Kung hindi, ipagawa ito sa kasalukuyang May-ari o isang Administrator ng Team para sa form.",
     "hint": "Upang mahanap ang User ID na kailangan, maaari kang pumunta sa tab na 'USERS' sa Admin portal at hanapin sila.",
     "addowner": "Magdagdag ng may-ari",
     "label": "User ID (gabay)"
@@ -261,7 +289,6 @@
     "notificationMsg": "Nabigong makuha ang user mula sa RBAC, tingnan ang console",
     "notificationConsErr": "Error sa pagkuha ng User mula sa RBAC"
   },
-  "fcProactiveHelp": {},
   "baseAuthButton": {
     "logout": "Mag-logout",
     "login": "Mag log in"
@@ -290,7 +317,7 @@
     "importDesign": "Import na Disenyo",
     "important": "MAHALAGA",
     "formDesignInfoA": "Gamitin ang <strong>SAVE DESIGN</strong> button kapag tapos ka nang buuin ang form na ito.",
-    "formDesignInfoB": "Ang <strong>SUBMIT</strong> button ay ibinibigay para sa iyong user na isumite ang form na ito at isasaaktibo pagkatapos itong ma-save.",
+    "formDesignInfoB": "Ang <strong>SUBMIT</strong> button ay ibinibigay para sa iyong user na isumite ang form na ito at isaaktibo pagkatapos itong ma-save.",
     "formLoadErrMsg": "May naganap na error habang nilo-load ang disenyo ng form.",
     "formLoadConsoleErrMsg": "Error sa paglo-load ng form {formId} schema (bersyon: {versionId} draft: {draftId}): {error}",
     "formSchemaImportErrMsg": "May naganap na error habang ini-import ang form schema.",
@@ -299,7 +326,10 @@
     "formDesignSaveConsoleErrMsg": "Error sa pag-update o paggawa ng form (FormID: {formId}, versionId: {versionId}, draftId: {draftId}) Error: {error}",
     "collapse": "Pagbagsak",
     "actions": "Mga aksyon",
-    "version": "Bersyon"
+    "version": "Bersyon",
+    "save": "I-save",
+    "saving": "Nagtitipid",
+    "notSaved": "Hindi Na-save"
   },
   "formViewerMultiUpload": {
     "important": "MAHALAGA",
@@ -326,10 +356,6 @@
     "fileIsEmpty": "walang laman ang file na ito.",
     "download": "I-download"
   },
-  "bcGovAlertBanner": {
-    "defaultErrMsg": "Error: Nagkaproblema",
-    "error": "pagkakamali"
-  },
   "formDisclaimer": {
     "disclaimerAndStatement": "Disclaimer at pahayag ng responsibilidad para sa mga Form Designer:",
     "privacyLaw": "Responsibilidad mong sumunod sa mga batas sa Privacy na namamahala sa pagkolekta, paggamit at pagsisiwalat ng impormasyong nagbibigay ng personal na pagkakakilanlan.",
@@ -340,15 +366,20 @@
     "assement": "at upang kumpletuhin ang mga pagtatasa kung kinakailangan."
   },
   "requestReceipt": {
+    "emailPriority": "Priyoridad sa Email",
     "emailReceipt": "Mag-email ng resibo ng pagsusumiteng ito",
+    "high": "Mataas",
+    "low": "Mababa",
+    "normal": "Normal",
     "send": "IPADALA",
-    "sendToEmailAddress": "Ipadala sa E-mail Address",
+    "sendToEmailAddress": "Ipadala sa Email Address",
     "emailSent": "Isang email ang ipinadala kay {to}.",
     "sendingEmailErrMsg": "May naganap na error habang sinusubukang ipadala ang iyong email.",
     "sendingEmailConsErrMsg": "Nabigo ang pagkumpirma sa email kay {to}: {error}",
-    "emailRequired": "Kinakailangan ang e-mail"
+    "emailRequired": "Kinakailangan ang email"
   },
   "submissionsTable": {
+    "submissions": "Mga pagsusumite",
     "submissionsTable": "Talahanayan ng mga Pagsusumite",
     "selectColumns": "Piliin ang Mga Column",
     "manageForm": "Pamahalaan ang Form",
@@ -499,7 +530,7 @@
     "close": "Isara",
     "addNoteNoReponserErr": "Walang data ng tugon mula sa API habang nagsusumite ng tala para sa pag-update ng status",
     "addNoteConsoleErrMsg": "Error sa pag-update ng status: {error}",
-    "addNoteErrMsg": "May naganap na error habang sinusubukang i-update ang status",
+    "addNoteErrMsg": "Nagkaroon ng error habang sinusubukang i-update ang status",
     "updtSubmissionsStatusErr": "Walang data ng tugon mula sa API habang nagsusumite ng form sa pag-update ng status",
     "noStatus": "Walang estado",
     "noStatusesFound": "Walang nakitang status",
@@ -541,7 +572,7 @@
     "from": "Mula sa",
     "to": "Upang",
     "CSVFormat": "CSV Format",
-    "multiRowPerSubmissionA": "1 - Maramihang mga hilera sa bawat pagsusumite na may mga puwang ng pagkakakilanlan",
+    "multiRowPerSubmissionA": "1 - Maramihang mga hilera bawat pagsusumite na may mga puwang ng indentation",
     "multiRowPerSubmissionB": "2 - Maramihang mga hilera sa bawat pagsusumite",
     "singleRowPerSubmission": "3 - Isang hilera bawat pagsusumite",
     "unformatted": "4 - Hindi naka-format",
@@ -572,7 +603,7 @@
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Link ng Impormasyon ng Bahagi",
-    "learnMoreLinkTxt": "Matuto nang Higit Pa Link field ay hindi maaaring walang laman.",
+    "learnMoreLinkTxt": "Matuto Nang Higit Pa Link field ay hindi maaaring walang laman.",
     "largeImgTxt": "Malaking imahe. Ang laki ng larawan ay hindi maaaring lumampas sa .5mb",
     "componentName": "Pangalan ng Component:",
     "learnMoreLink": "Matuto Pa Link:",
@@ -585,6 +616,10 @@
   },
   "proactiveHelpPreviewDialog": {
     "learnMore": "Matuto pa"
+  },
+  "preview": {
+    "preview": "Silipin",
+    "previewToolTip": "Nagpapakita ito ng preview ng disenyo at gawi ng bersyon ng form habang makikita ito ng iyong mga nagsumite. Hindi mo maaaring isumite ang form mula sa pahinang ito."
   },
   "generalLayout": {
     "loadingText": "Naglo-load... Mangyaring maghintay",
@@ -604,7 +639,9 @@
     "confirmationID": "ID ng Pagkumpirma:",
     "submittedBy": "Ipinasa ni:",
     "cancel": "KANSELAHIN",
-    "status": "Katayuan"
+    "status": "Katayuan",
+    "updatedAt": "Binago",
+    "updatedBy": "Binago ni"
   },
   "teamManagement": {
     "teamManagement": "Pamamahala ng Koponan",
@@ -663,13 +700,13 @@
     "submitFormWarningMsg": "Sigurado ka bang gusto mong isumite ang iyong form?",
     "submit": "Ipasa",
     "wantToSaveDraft": "Gusto mo bang i-save ang draft?",
-    "version": "Bersyon: { bersyon }",
+    "version": "Bersyon: {version}",
     "formScheduleExpireMessage": "Ang pagsusumite ng form ay hindi magagamit dahil ang nakatakdang panahon ng pagsusumite ay nag-expire na.",
     "getUsersSubmissionsErrMsg": "Nagkaroon ng error sa pagkuha ng pagsusumite para sa form na ito",
     "getUsersSubmissionsConsoleErrMsg": "Error sa paglo-load ng data ng pagsusumite ng form {submissionId}: {error}",
     "multiDraftUploadSuccess": "Ang iyong maramihang draft na pag-upload ay naging matagumpay!",
     "readVersionErrMsg": "Walang schema bilang tugon. VersionId: {versionId}",
-    "readDraftErrMsg": "Walang schema bilang tugon. DraftId: {draftId}",
+    "readDraftErrMsg": "Walang schema bilang tugon. draftId: {draftId}",
     "alertRouteMsg": "Hindi nai-publish ng may-ari ng form ang form, at hindi ito available para sa mga pagsusumite.",
     "fecthingFormErrMsg": "Nagkaroon ng error sa pagkuha ng form na ito",
     "fecthingFormConsoleErrMsg": "Error sa paglo-load ng form schema {versionId}: {error}",
@@ -685,9 +722,10 @@
     "no": "Hindi",
     "failedResSubmissn": "Nabigong tugon mula sa endpoint ng pagsusumite. Code ng tugon: {status}",
     "errSubmittingForm": "Nagkaroon ng error sa pagsusumite ng form na ito",
-    "errorSavingFile": "Error sa pag-save ng mga file. Filename: {fileNname}. Error: {error}",
+    "errorSavingFile": "Error sa pag-save ng mga file. Filename: {fileName}. Error: {error}",
     "submittingDraftErrMsg": "Nagkaroon ng error habang nagse-save ng draft",
-    "submittingDraftConsErrMsg": "Error sa pag-save ng draft. SubmissionId: {submissionId}. Error: {error}"
+    "submittingDraftConsErrMsg": "Error sa pag-save ng draft. SubmissionId: {submissionId}. Error: {error}",
+    "formDraftAccessErrMsg": "Ang hiniling na pagsusumite ay naisumite na, nagre-redirect sa View page"
   },
   "bCGovFooter": {
     "home": "Bahay",
@@ -720,7 +758,7 @@
     "createCustomFormTitle": "Gumawa ng mga custom na form gamit ang CHEFS form builder",
     "createCustomFormSub1": "Sa CHEFS, makakagawa ka ng mga secure na form na may intuitive na drag-and-drop na interface. Maaari kang magdagdag ng mga bahagi ng form, muling ayusin ang mga ito, at i-drop ang mga ito sa iba't ibang mga configuration ng layout.",
     "chefsHowToTitle": "Mga Video na How-to ng CHEFS",
-    "chefsHowToSub": "Ang aming Quickstart Guide ay magpapakilala sa ilan sa mga pangunahing function ng CHEFS. Magsimula!",
+    "chefsHowToSub": "Ang aming Quickstart Guide ay magpapakilala sa ilan sa mga pangunahing function ng CHEFS.",
     "getStartedToChefs": "Magsimula sa paggamit ng CHEFS",
     "createOnlineTitle": "Lumikha ng mga online na form upang mangolekta ng impormasyon mula sa iyong mga kliyente at pagbutihin ang iyong mga daloy ng trabaho.",
     "getStarted": "Magsimula"
@@ -740,6 +778,7 @@
   "addTeamMember": {
     "cantFindChefsUsers": "Hindi mahanap ang isang tao? Maaaring hindi sila naka-log in sa CHEFS.<br /> Mangyaring magpadala sa kanila ng link sa CHEFS at hilingin sa kanila na mag-log in.",
     "cancel": "Kanselahin",
+    "add": "Idagdag",
     "mustSelectAUser": "Dapat kang pumili ng hindi bababa sa isang tungkulin upang idagdag ang user na ito.",
     "addNewMember": "Magdagdag ng Bagong Miyembro",
     "enterUsername": "Maglagay ng pangalan, e-mail, o username",
@@ -755,27 +794,29 @@
     "exampleText2": "Halimbawang Teksto 2",
     "filterPlaceholderTxt": "I-filter ang Teksto ng Placeholder",
     "filter": "Salain",
-    "value": "halaga"
+    "value": "halaga",
+    "resetColumns": "I-reset ang Mga Column"
   },
   "formViewerActions": {
     "viewAllSubmissions": "Tingnan ang Lahat ng Pagsusumite",
     "saveAsADraft": "I-save bilang Draft",
     "editThisDraft": "I-edit ang Draft na ito",
     "switchSingleSubmssn": "Lumipat sa iisang pagsusumite",
-    "switchMultiSubmssn": "Lumipat sa iisang pagsusumite"
+    "switchMultiSubmssn": "Lumipat sa Maramihang pagsusumite"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Nakopya ang link sa clipboard",
     "copyToClipboard": "Kopyahin sa clipboard",
     "errCopyToClipboard": "Error sa pagtatangkang kopyahin sa clipboard."
   },
-  "root": {
-    "admin": "Admin"
-  },
   "sucess": {
     "sucessFormSubmissn": "Ang iyong form ay matagumpay na naisumite",
     "keepRecord": "Kung nais mong panatilihin ang isang talaan ng pagsusumiteng ito, maaari mong panatilihin ang mga sumusunod",
-    "confirmationId": "ID ng Pagkumpirma:"
+    "confirmationId": "ID ng Pagkumpirma"
+  },
+  "bcGovAlertBanner": {
+    "defaultErrMsg": "Error: Nagkaproblema",
+    "error": "pagkakamali"
   },
   "permissionUtils": {
     "formNotAvailable": "Kasalukuyang hindi available ang form. Ito ay maaaring dahil sa isang maling link, o ang form ay maaaring tinanggal ng may-ari nito.",
@@ -783,12 +824,33 @@
     "loadingFormErrMsg": "Nagkaroon ng error habang nilo-load ang form na ito.",
     "loadingForm": "Error habang naglo-load ng {options}: {error}",
     "idpHintMsg": "Ang form na ito ay nangangailangan ng {idpHint} authentication. Mangyaring muling mag-login at subukang muli.",
-    "formIdpMissMatch": "Hindi tugma sa form ng IDP. Ang form ay nangangailangan ng {idpHint} ngunit ang user ay may {userIdp}."
+    "formIdpMissMatch": "Hindi tugma sa form ng IDP. Ang form ay nangangailangan ng {idpHint} ngunit ang user ay may {userIdp}.",
+    "chefsDataExport": "Pag-export ng Data ng CHEFS",
+    "preparingForDownloading": "Naghahanda para sa pag-download...",
+    "downloadInfoA": "Kung hindi awtomatikong nagda-download ang iyong file",
+    "downloadInfoB": "mag-click dito upang subukang muli"
+  },
+  "history": {
+    "submissnHistory": "Iyong Kasaysayan ng Pagsusumite (TBD)"
+  },
+  "error": {
+    "logout": "Mag-logout",
+    "somethingWentWrong": "Error: Nagkaproblema... :("
+  },
+  "login": {
+    "authenticateWith": "Patotohanan gamit ang:",
+    "alreadyLoggedIn": "Naka-log in na",
+    "home": "Bahay",
+    "about": "Tungkol sa"
+  },
+  "notFound": {
+    "about": "Tungkol sa",
+    "pageNotFound": "Hindi Natagpuan ang 404 Page. :("
   },
   "store": {
     "admin": {
       "addFormOwnerRole": "Idinagdag ang tungkulin ng May-ari para sa form na ito sa {fullName}",
-      "addRowError": "May naganap na error habang idinaragdag ang tungkulin.",
+      "addRowError": "Nagkaroon ng error habang idinaragdag ang tungkulin.",
       "addRowConsoleErr": "Error sa pagdaragdag ng user na {userId} sa form na {formId}: {error}",
       "apiKeyDelMsg": "Ang API Key para sa form na ito ay tinanggal.",
       "errDeletingApiKey": "May naganap na error habang sinusubukang tanggalin ang API Key.",
@@ -827,8 +889,7 @@
       "updCurrUserFormPrefConsErrMsg": "Error sa pag-update ng user form prefs gamit ang formID {formId}, at prefs {preferences}: {error}",
       "getCurrUserFormPrefErrMsg": "May naganap na error habang kinukuha ang iyong mga kagustuhan para sa form na ito.",
       "getCurrUserFormPrefConsErrMsg": "Error sa pagkuha ng user form prefs gamit ang formID {formId}: {error}",
-      "delCurrformNotiMsg": "Ang form na \"{state.form.name}\" ay matagumpay na natanggal.",
-      "delCurrformErrMsg": "May naganap na error habang sinusubukang tanggalin ang \"${state.form.name}\".",
+      "delCurrformNotiMsg": "Matagumpay na natanggal ang form na {name}.",
       "delCurrFormConsErMsg": "Error sa pagtanggal ng form {id}: {error}",
       "delDraftErrMsg": "Nagkaroon ng error habang tinatanggal ang draft na ito.",
       "delDraftConsErrMsg": "Error sa pagtanggal ng {draftId}: {error}",
@@ -839,7 +900,7 @@
       "fetchFormFieldsErrMsg": "May naganap na error habang kinukuha ang listahan ng mga field para sa form na ito.",
       "fetchFormFieldsConsErrMsg": "Error sa pagkuha ng form {formId}: {error}",
       "publishDraftErrMsg": "Nagkaroon ng error habang nagpa-publish.",
-      "publishDraftConsErrMsg": "Error sa pag-publish ng ${draftId}: ${error}",
+      "publishDraftConsErrMsg": "Error sa pag-publish ng {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "Error sa toggleVersionPublish {versionId} {publish}: {error}",
       "updateFormErrMsg": "May naganap na error habang ina-update ang mga setting para sa form na ito.",
       "updateFormConsErrMsg": "Error sa pag-update ng form {id}: {error}",
@@ -858,7 +919,7 @@
       "fecthSubmissnUsersErrMsg": "May naganap na error habang kinukuha ang email ng tatanggap para sa pagsusumiteng ito.",
       "fecthSubmissnUsersConsErrMsg": "Error sa pagkuha ng email ng tatanggap para sa pagsusumite {formSubmissionId}: {error}",
       "fetchSubmissnErrMsg": "May naganap na error habang kinukuha ang pagsusumiteng ito.",
-      "fetchSubmissnConsErrMsg": "Error sa pagkuha ng pagsusumite {submissionId}: ${error}",
+      "fetchSubmissnConsErrMsg": "Error sa pagkuha ng pagsusumite {submissionId}: {error}",
       "fetchFormCSVExptFieldsErrMsg": "May naganap na error habang kinukuha ang listahan ng mga field para sa form na ito.",
       "fetchFormCSVExptFieldsConsErrMsg": "Error sa pagkuha ng form {formId}: {error}",
       "fetchSubmissnsErrMsg": "May naganap na error habang kinukuha ang mga pagsusumite para sa form na ito.",
@@ -878,7 +939,30 @@
       "listFCPHErrMsg": "May naganap na error habang kinukuha ang mga bahagi ng tagabuo ng form",
       "listFCPHConsErrMsg": "Error sa pagkuha ng mga bahagi ng tagabuo ng form: {error}",
       "downloadFileErrMsg": "Nagkaroon ng error habang nagda-download ng file",
-      "downloadFileConsErrMsg": "Error sa pag-download ng file: error"
+      "downloadFileConsErrMsg": "Error sa pag-download ng file: error",
+      "readSubscriptionSettingsErrMsg": "Nagkaroon ng error habang sinusubukang kunin ang mga setting ng subscription.",
+      "readSubscriptionSettingsConsErrMsg": "Error sa pagkuha ng mga setting ng subscription para sa form {formId}: {error}.",
+      "saveSubscriptionSettingsNotifyMsg": "Nai-save na ang mga setting ng subscription para sa form na ito.",
+      "saveSubscriptionSettingsErrMsg": "May naganap na error habang sinusubukang i-save ang mga setting ng subscription.",
+      "saveSubscriptionSettingsConsErrMsg": "Error sa pag-save ng mga setting ng subscription para sa form {formId}: {error}"
+    }
+  },
+  "admin": {
+    "root": {
+      "admin": "Admin"
+    },
+    "form": {
+      "administerForm": "Pangasiwaan ang Form"
+    },
+    "user": {
+      "administerUser": "Pangasiwaan ang User"
+    }
+  },
+  "user": {
+    "root": {
+      "myForms": "ANG AKING MGA FORM",
+      "history": "KASAYSAYAN",
+      "user": "Gumagamit"
     }
   }
 }
