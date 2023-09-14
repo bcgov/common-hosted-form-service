@@ -846,6 +846,7 @@ export default {
     this.debounceInput = _.debounce(async () => {
       await this.getSubmissionData();
     }, 300);
+    this.page = 0;
     this.refreshSubmissions();
   },
 };

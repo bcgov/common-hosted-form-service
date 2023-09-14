@@ -422,6 +422,7 @@ export default {
         formVersionId: this.form.versions[0].id,
       });
     });
+    this.page = 0;
     await this.populateSubmissionsTable();
     this.debounceInput = _.debounce(async () => {
       await this.populateSubmissionsTable();
