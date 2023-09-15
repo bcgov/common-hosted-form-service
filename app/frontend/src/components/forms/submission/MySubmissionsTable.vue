@@ -84,8 +84,8 @@
       item-key="title"
       :items="submissionTable"
       :search="search"
-      :page="PAGE_RESET"
       :loading="loading"
+      :key="dataTableKey"
       :loading-text="$t('trans.mySubmissionsTable.loadingText')"
       :no-data-text="
         searchEnabled
@@ -142,7 +142,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-
+import { ref } from 'vue';
 import MySubmissionsActions from '@/components/forms/submission/MySubmissionsActions.vue';
 
 export default {
@@ -161,13 +161,13 @@ export default {
       headers: [],
       itemsPerPage: 10,
       page: 1,
-      pageReset: 0,
       filterData: [],
       preSelectedData: [],
       search: '',
       searchEnabled: false,
       sortBy: undefined,
       sortDesc: false,
+      dataTableKey: ref(0),
       filterIgnore: [
         {
           value: 'confirmationId',
@@ -272,9 +272,6 @@ export default {
         (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
       );
     },
-    PAGE_RESET() {
-      return this.pageReset;
-    },
     HEADERS() {
       let headers = this.DEFAULT_HEADERS;
 
@@ -336,7 +333,7 @@ export default {
       return '';
     },
     async updateTableOptions({ page, itemsPerPage, sortBy, sortDesc }) {
-      this.page = page - 1;
+      this.page = page;
       if (sortBy[0] === 'date') {
         this.sortBy = 'createdAt';
       } else if (sortBy[0] === 'submitter') {
@@ -357,7 +354,7 @@ export default {
         formId: this.formId,
         userView: true,
         itemsPerPage: this.itemsPerPage,
-        page: this.page,
+        page: this.page - 1,
         sortBy: this.sortBy,
         search: this.search,
         searchEnabled: this.searchEnabled,
@@ -403,29 +400,24 @@ export default {
       this.searchEnabled = true;
       this.search = value;
       if (value === '') {
-        this.page = 0;
-        this.pageReset = 0;
         this.searchEnabled = false;
         await this.populateSubmissionsTable();
       } else {
-        this.page = 0;
-        this.pageReset = 1;
         this.debounceInput();
       }
     },
   },
-
-  async mounted() {
+  async created() {
     await this.fetchForm(this.formId).then(async () => {
       await this.fetchFormFields({
         formId: this.formId,
         formVersionId: this.form.versions[0].id,
       });
     });
-    this.page = 0;
-    await this.populateSubmissionsTable();
+  },
+  async mounted() {
     this.debounceInput = _.debounce(async () => {
-      await this.populateSubmissionsTable();
+      this.dataTableKey += 1;
     }, 300);
   },
 };

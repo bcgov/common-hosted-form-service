@@ -124,7 +124,7 @@
       :headers="HEADERS"
       item-key="submissionId"
       :items="submissionTable"
-      :page="PAGE_RESET"
+      :key="dataTableKey"
       :loading="loading"
       :show-select="!switchSubmissionView"
       v-model="selectedSubmissions"
@@ -332,6 +332,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { FormManagePermissions } from '@/utils/constants';
 import moment from 'moment';
 import _ from 'lodash';
+import { ref } from 'vue';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faTrash);
@@ -350,10 +351,10 @@ export default {
       deletedOnly: false,
       itemsPerPage: 10,
       page: 1,
-      pageReset: 0,
       filterData: [],
       sortBy: undefined,
       sortDesc: false,
+      dataTableKey: ref(0),
       filterIgnore: [
         {
           value: 'confirmationId',
@@ -499,9 +500,6 @@ export default {
           value: 'updatedBy',
         },
       ];
-    },
-    PAGE_RESET() {
-      return this.pageReset;
     },
     SELECT_COLUMNS_HEADERS() {
       return [...this.FILTER_HEADERS, ...this.MODIFY_HEADERS].concat(
@@ -664,7 +662,7 @@ export default {
       this.refreshSubmissions();
     },
     async updateTableOptions({ page, itemsPerPage, sortBy, sortDesc }) {
-      this.page = page - 1;
+      this.page = page;
       if (sortBy[0] === 'date') {
         this.sortBy = 'createdAt';
       } else if (sortBy[0] === 'submitter') {
@@ -682,7 +680,7 @@ export default {
       let criteria = {
         formId: this.formId,
         itemsPerPage: this.itemsPerPage,
-        page: this.page,
+        page: this.page - 1,
         filterformSubmissionStatusCode: true,
         sortBy: this.sortBy,
         sortDesc: this.sortDesc,
@@ -831,22 +829,17 @@ export default {
       this.searchEnabled = true;
       this.search = value;
       if (value === '') {
-        this.page = 0;
-        this.pageReset = 0;
         this.searchEnabled = false;
         await this.getSubmissionData();
       } else {
-        this.page = 0;
-        this.pageReset = 1;
         this.debounceInput();
       }
     },
   },
-  mounted() {
+  async mounted() {
     this.debounceInput = _.debounce(async () => {
-      await this.getSubmissionData();
+      this.dataTableKey += 1;
     }, 300);
-    this.page = 0;
     this.refreshSubmissions();
   },
 };
