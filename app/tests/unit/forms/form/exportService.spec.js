@@ -322,10 +322,10 @@ describe('_buildCsvHeaders', () => {
     expect(result[0]).toEqual('form.confirmationId');
     expect(result[7]).toEqual('fishermansName');
     expect(result[10]).toEqual('didYouFishAnyBcLakesThisYear');
-    expect(result[11]).toEqual('oneRowPerLake.0.lakeName');
-    expect(result[13]).toEqual('oneRowPerLake.0.closestTown');
-    expect(result[18]).toEqual('oneRowPerLake.0.dataGrid.1.fishType');
-    expect(result[28]).toEqual('oneRowPerLake.1.dataGrid.1.numberKept');
+    expect(result[11]).toEqual('oneRowPerLake.0.dataGrid.0.fishType');
+    expect(result[13]).toEqual('oneRowPerLake.0.dataGrid.0.numberCaught');
+    expect(result[18]).toEqual('oneRowPerLake.0.closestTown');
+    expect(result[28]).toEqual('oneRowPerLake.1.numberOfDays');
     expect(exportService._readLatestFormSchema).toHaveBeenCalledTimes(1);
     expect(exportService._readLatestFormSchema).toHaveBeenCalledWith(123, 1);
 
@@ -356,7 +356,7 @@ describe('_buildCsvHeaders', () => {
     // gets a a list of form meta fieldfs followed by submission fields
     const result = await exportService._buildCsvHeaders(form, submissionsExport, 1, null, true);
 
-    expect(result).toHaveLength(40);
+    expect(result).toHaveLength(41);
     expect(result).toEqual(expect.arrayContaining(['number1', 'selectBoxes1.a', 'number']));
     expect(exportService._readLatestFormSchema).toHaveBeenCalledTimes(1);
     expect(exportService._readLatestFormSchema).toHaveBeenCalledWith(123, 1);

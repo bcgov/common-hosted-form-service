@@ -123,8 +123,18 @@ const service = {
         result.push(ord);
       } else if (helpMap[ord]) {
         helpMap[ord].map((h) => result.push(h));
+      } else {
+        // if non of those single fields or datagrids with multi children
+        // then work with possible fields with external sources as an object/json
+        array.map((ar) => {
+          if (ar.includes(ord)) {
+            result.push(ar);
+          }
+        });
       }
     });
+    // removing all possible duplicates
+    result = [...new Set(result)];
     return result;
   },
 
