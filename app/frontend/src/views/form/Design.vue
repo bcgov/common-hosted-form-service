@@ -42,6 +42,9 @@
             :versionId="v"
             @create-stepper="creatorStep = 1"
           />
+          <v-btn class="my-4" outlined @click="creatorStep = 1">
+            <span :lang="lang">{{ $t('trans.create.back') }}</span>
+          </v-btn>
         </v-stepper-content>
       </v-stepper-items>
     </v-stepper>

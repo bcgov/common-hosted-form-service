@@ -9,7 +9,11 @@
         style="width: 40%"
         class="elevation-0 px-0 align-self-center"
       >
-        <v-stepper-step :complete="creatorStep > 1" step="1" class="pl-1">
+        <v-stepper-step
+          :complete="creatorStep > 1"
+          :step="creatorStep"
+          class="pl-1"
+        >
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.create.setUpForm') }}
           </span>
@@ -18,7 +22,7 @@
         <v-stepper-step
           :complete="creatorStep > 2"
           :editable="true"
-          step="2"
+          :step="creatorStep"
           class="pr-1"
         >
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
@@ -26,7 +30,11 @@
           </span>
         </v-stepper-step>
         <v-divider />
-        <v-stepper-step :complete="creatorStep > 3" step="3" class="pr-1">
+        <v-stepper-step
+          :complete="creatorStep > 3"
+          :step="creatorStep"
+          class="pr-1"
+        >
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.create.publishForm') }}
           </span>
@@ -34,7 +42,7 @@
       </v-stepper-header>
 
       <v-stepper-items>
-        <v-stepper-content step="1" class="pa-1">
+        <v-stepper-content :step="creatorStep" class="pa-1">
           <v-form ref="settingsForm" v-model="settingsFormValid">
             <h1 :lang="lang">
               {{ $t('trans.create.formSettings') }}
@@ -67,13 +75,17 @@
             <span :lang="lang">{{ $t('trans.create.continue') }}s</span>
           </v-btn>
         </v-stepper-content>
-        <v-stepper-content step="2" class="pa-1">
+        <v-stepper-content :step="creatorStep" class="pa-1">
           <FormDesigner ref="formDesigner" />
           <v-btn class="my-4" outlined @click="() => setCreatorStep(1)">
             <span :lang="lang">{{ $t('trans.create.back') }}</span>
           </v-btn>
         </v-stepper-content>
+<<<<<<< Updated upstream
         <v-stepper-content step="3" class="pa-1">
+=======
+        <v-stepper-content :step="creatorStep" class="pa-1">
+>>>>>>> Stashed changes
           <PublishForm />
           <v-btn class="my-4" outlined @click="() => setCreatorStep(2)">
             <span :lang="lang">{{ $t('trans.create.back') }}</span>
@@ -140,7 +152,11 @@ export default {
   },
   watch: {
     creatorStep() {
+<<<<<<< Updated upstream
       console.log('------------->>> ', this.creatorStep);
+=======
+      console.log('-AAAAAA------------>>> ', this.creatorStep);
+>>>>>>> Stashed changes
     },
     idps() {
       if (this.userType === IdentityMode.LOGIN && this.$refs.settingsForm)
