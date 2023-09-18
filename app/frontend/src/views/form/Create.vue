@@ -1,9 +1,9 @@
 <template>
   <BaseSecure :idp="IDP.IDIR" :class="{ 'dir-rtl': isRTL }">
     <v-stepper
-      v-model="creatorStep"
       class="elevation-0 d-flex flex-column"
       alt-labels
+      @change="handleStepperChange"
     >
       <v-stepper-header
         style="width: 40%"
@@ -64,12 +64,18 @@
             :disabled="!settingsFormValid"
             @click="reRenderFormDesigner"
           >
-            <span :lang="lang">{{ $t('trans.create.continue') }}</span>
+            <span :lang="lang">{{ $t('trans.create.continue') }}s</span>
           </v-btn>
         </v-stepper-content>
         <v-stepper-content step="2" class="pa-1">
           <FormDesigner ref="formDesigner" />
-          <v-btn class="my-4" outlined @click="creatorStep = 1">
+          <v-btn class="my-4" outlined @click="() => setCreatorStep(1)">
+            <span :lang="lang">{{ $t('trans.create.back') }}</span>
+          </v-btn>
+        </v-stepper-content>
+        <v-stepper-content step="3" class="pa-1">
+          <PublishForm />
+          <v-btn class="my-4" outlined @click="() => setCreatorStep(2)">
             <span :lang="lang">{{ $t('trans.create.back') }}</span>
           </v-btn>
         </v-stepper-content>
@@ -84,6 +90,7 @@ import { mapFields } from 'vuex-map-fields';
 import FormDesigner from '@/components/designer/FormDesigner.vue';
 import FormSettings from '@/components/designer/FormSettings.vue';
 import FormDisclaimer from '@/components/designer/FormDisclaimer.vue';
+import PublishForm from '@/components/forms/manage/PublishForm.vue';
 import { IdentityMode, IdentityProviders } from '@/utils/constants';
 
 export default {
@@ -95,24 +102,31 @@ export default {
     FormDesigner,
     FormSettings,
     FormDisclaimer,
+    PublishForm,
   },
   computed: {
     ...mapFields('form', ['form.idps', 'form.isDirty', 'form.userType']),
-    ...mapGetters('form', ['isRTL', 'lang']),
+    ...mapGetters('form', ['isRTL', 'lang', 'creatorStep']),
     IDP: () => IdentityProviders,
   },
   data() {
     return {
-      creatorStep: 1,
       settingsFormValid: false,
       disclaimerRules: [(v) => !!v || this.$t('trans.create.agreementErrMsg')],
     };
   },
   methods: {
-    ...mapActions('form', ['listFCProactiveHelp', 'resetForm']),
+    ...mapActions('form', [
+      'listFCProactiveHelp',
+      'resetForm',
+      'setCreatorStep',
+    ]),
     reRenderFormDesigner() {
-      this.creatorStep = 2;
+      this.setCreatorStep(2);
       this.$refs.formDesigner.onFormLoad();
+    },
+    handleStepperChange(value) {
+      this.setCreatorStep(value);
     },
   },
   created() {
@@ -125,6 +139,9 @@ export default {
     });
   },
   watch: {
+    creatorStep() {
+      console.log('------------->>> ', this.creatorStep);
+    },
     idps() {
       if (this.userType === IdentityMode.LOGIN && this.$refs.settingsForm)
         this.$refs.settingsForm.validate();
