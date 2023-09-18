@@ -1,19 +1,34 @@
 <template>
-  <BaseSecure :idp="[IDP.IDIR]" :class="{ 'dir-rtl': isRTL }">
-    <h1 class="my-6 text-center" :lang="lang">
-      {{ $t('trans.create.createNewForm') }}
-    </h1>
-    <v-stepper v-model="creatorStep" class="elevation-0">
-      <v-stepper-header class="elevation-0 px-0">
+  <BaseSecure :idp="IDP.IDIR" :class="{ 'dir-rtl': isRTL }">
+    <v-stepper
+      v-model="creatorStep"
+      class="elevation-0 d-flex flex-column"
+      alt-labels
+    >
+      <v-stepper-header
+        style="width: 40%"
+        class="elevation-0 px-0 align-self-center"
+      >
         <v-stepper-step :complete="creatorStep > 1" step="1" class="pl-1">
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.create.setUpForm') }}
           </span>
         </v-stepper-step>
         <v-divider />
-        <v-stepper-step :complete="creatorStep > 2" step="2" class="pr-1">
+        <v-stepper-step
+          :complete="creatorStep > 2"
+          :editable="true"
+          step="2"
+          class="pr-1"
+        >
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.create.designForm') }}
+          </span>
+        </v-stepper-step>
+        <v-divider />
+        <v-stepper-step :complete="creatorStep > 3" step="3" class="pr-1">
+          <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            {{ $t('trans.create.publishForm') }}
           </span>
         </v-stepper-step>
       </v-stepper-header>
@@ -73,6 +88,9 @@ import { IdentityMode, IdentityProviders } from '@/utils/constants';
 
 export default {
   name: 'FormCreate',
+  props: {
+    isDesignView: Boolean,
+  },
   components: {
     FormDesigner,
     FormSettings,

@@ -761,10 +761,16 @@
     "createOnlineTitle": "オンライン フォームを作成してクライアントから情報を収集し、ワークフローを改善します。",
     "getStarted": "始めましょう"
   },
+  "design": {
+    "setUpForm": "フォームの設定",
+    "designForm": "デザインフォーム",
+    "publishForm": "フォームの発行"
+    },
   "create": {
     "createNewForm": "新しいフォームの作成",
     "setUpForm": "フォームの設定",
     "designForm": "デザインフォーム",
+    "publishForm": "フォームの発行",
     "formSettings": "フォーム設定",
     "disclaimer": "免責事項",
     "disclaimerStmt": "フォームデザイナーの免責事項と責任声明に同意します",

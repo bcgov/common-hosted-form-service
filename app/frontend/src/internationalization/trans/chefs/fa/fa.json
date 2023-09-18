@@ -761,10 +761,17 @@
     "createOnlineTitle": "فرم های آنلاین برای جمع آوری اطلاعات از مشتریان خود و بهبود گردش کار خود ایجاد کنید.",
     "getStarted": "شروع کنید"
   },
+  
+"design": {
+  "setUpForm": "فرم را تنظیم کنید",
+  "designForm": "فرم طراحی",
+  "publishForm": "فرم انتشار"
+},
   "create": {
     "createNewForm": "ایجاد فرم جدید",
     "setUpForm": "فرم را تنظیم کنید",
     "designForm": "فرم طراحی",
+    "publishForm": "فرم انتشار",
     "formSettings": "تنظیمات فرم",
     "disclaimer": "سلب مسئولیت",
     "disclaimerStmt": "من با سلب مسئولیت و بیانیه مسئولیت طراحان فرم موافقم",

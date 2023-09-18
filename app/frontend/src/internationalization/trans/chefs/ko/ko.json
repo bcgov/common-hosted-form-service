@@ -761,10 +761,16 @@
     "createOnlineTitle": "클라이언트로부터 정보를 수집하고 작업 흐름을 개선하기 위한 온라인 양식을 만드십시오.",
     "getStarted": "시작하다"
   },
+  "design": {
+    "setUpForm": "양식 설정",
+    "designForm": "디자인 양식",
+    "publishForm": "양식 게시"
+    },
   "create": {
     "createNewForm": "새 양식 만들기",
     "setUpForm": "양식 설정",
     "designForm": "디자인 양식",
+    "publishForm": "양식 게시",
     "formSettings": "양식 설정",
     "disclaimer": "부인 성명",
     "disclaimerStmt": "양식 디자이너에 대한 면책 조항 및 책임 진술에 동의합니다.",
