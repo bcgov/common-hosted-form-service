@@ -375,6 +375,7 @@
     "emailRequired": "ایمیل الزامی است"
   },
   "submissionsTable": {
+    "noMachingRecordText": "هیچ رکورد منطبقی یافت نشد",
     "submissions": "موارد ارسالی",
     "submissionsTable": "جدول ارسالی",
     "selectColumns": "ستون ها را انتخاب کنید",
@@ -464,6 +465,7 @@
     "editThisDraft": "این پیش نویس را ویرایش کنید"
   },
   "mySubmissionsTable": {
+    "noMachingRecordText": "هیچ رکورد منطبقی یافت نشد",
     "previousSubmissions": "ارسالی های قبلی",
     "selectColumns": "ستون ها را انتخاب کنید",
     "createNewSubmission": "یک ارسال جدید ایجاد کنید",

@@ -375,6 +375,7 @@
     "emailRequired": "E-mail é obrigatório"
   },
   "submissionsTable": {
+    "noMachingRecordText": "Nenhum registro correspondente encontrado",
     "submissions": "Envios",
     "submissionsTable": "Tabela de Envios",
     "selectColumns": "Selecionar colunas",
@@ -464,6 +465,7 @@
     "editThisDraft": "Editar este rascunho"
   },
   "mySubmissionsTable": {
+    "noMachingRecordText": "Nenhum registro correspondente encontrado",
     "previousSubmissions": "Envios anteriores",
     "selectColumns": "Selecionar colunas",
     "createNewSubmission": "Criar um novo envio",

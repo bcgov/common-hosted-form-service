@@ -1,11 +1,10 @@
 const Problem = require('api-problem');
 const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
-const { validateScheduleObject } = require('../common/utils');
 const { SubscriptionEvent } = require('../common/constants');
 const axios = require('axios');
 const log = require('../../components/log')(module.filename);
-
+const moment = require('moment');
 const {
   FileStorage,
   Form,
@@ -23,7 +22,7 @@ const {
   FormComponentsProactiveHelp,
   FormSubscription,
 } = require('../common/models');
-const { falsey, queryUtils, checkIsFormExpired } = require('../common/utils');
+const { falsey, queryUtils, checkIsFormExpired, validateScheduleObject, typeUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
@@ -286,23 +285,65 @@ const service = {
     if (params.page) {
       return await service.processPaginationData(
         query,
-        params.page,
-        params.itemsPerPage,
+        parseInt(params.page),
+        parseInt(params.itemsPerPage),
         params.filterformSubmissionStatusCode,
         params.totalSubmissions,
-        params.sortBy,
-        params.sortDesc
+        params.search,
+        params.searchEnabled
       );
     }
     return query;
   },
 
-  async processPaginationData(query, page, itemsPerPage, filterformSubmissionStatusCode, totalSubmissions) {
-    await query.modify('filterformSubmissionStatusCode', filterformSubmissionStatusCode);
-    if (itemsPerPage && parseInt(itemsPerPage) === -1) {
-      return await query.page(parseInt(page), parseInt(totalSubmissions || 0));
-    } else if (itemsPerPage && parseInt(page) >= 0) {
-      return await query.page(parseInt(page), parseInt(itemsPerPage));
+  async processPaginationData(query, page, itemsPerPage, filterformSubmissionStatusCode, totalSubmissions, search, searchEnabled) {
+    let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : searchEnabled !== 'undefined' ? JSON.parse(searchEnabled) : false;
+    if (isSearchAble) {
+      let submissionsData = await query;
+      let result = {
+        results: [],
+        total: 0,
+      };
+      let searchedData = submissionsData.filter((data) => {
+        return Object.keys(data).some((key) => {
+          if (key !== 'submissionId' && key !== 'formVersionId' && key !== 'formId') {
+            if (!Array.isArray(data[key]) && !typeUtils.isObject(data[key])) {
+              if (
+                !typeUtils.isBoolean(data[key]) &&
+                !typeUtils.isNil(data[key]) &&
+                typeUtils.isDate(data[key]) &&
+                moment(new Date(data[key])).format('YYYY-MM-DD hh:mm:ss a').toString().includes(search)
+              ) {
+                result.total = result.total + 1;
+                return true;
+              }
+              if (typeUtils.isString(data[key]) && data[key].toLowerCase().includes(search.toLowerCase())) {
+                result.total = result.total + 1;
+                return true;
+              } else if (
+                (typeUtils.isNil(data[key]) || typeUtils.isBoolean(data[key]) || (typeUtils.isNumeric(data[key]) && typeUtils.isNumeric(search))) &&
+                parseFloat(data[key]) === parseFloat(search)
+              ) {
+                result.total = result.total + 1;
+                return true;
+              }
+            }
+            return false;
+          }
+          return false;
+        });
+      });
+      let start = page * itemsPerPage;
+      let end = page * itemsPerPage + itemsPerPage;
+      result.results = searchedData.slice(start, end);
+      return result;
+    } else {
+      await query.modify('filterformSubmissionStatusCode', filterformSubmissionStatusCode);
+      if (itemsPerPage && parseInt(itemsPerPage) === -1) {
+        return await query.page(parseInt(page), parseInt(totalSubmissions || 0));
+      } else if (itemsPerPage && parseInt(page) >= 0) {
+        return await query.page(parseInt(page), parseInt(itemsPerPage));
+      }
     }
   },
 
@@ -479,7 +520,7 @@ const service = {
         let recordsToInsert = [];
         let submissionId;
         // let's create multiple submissions with same metadata
-        submissionDataArray.map((singleData) => {
+        service.popFormLevelInfo(submissionDataArray).map((singleData) => {
           submissionId = uuidv4();
           recordsToInsert.push({
             ...recordWithoutData,
@@ -706,8 +747,6 @@ const service = {
         );
 
         axiosInstance.post(subscribe.endpointUrl, jsonData);
-
-        throw new Problem(401, jsonData);
       }
     } catch (err) {
       log.error(err.message, err, {
@@ -780,6 +819,30 @@ const service = {
       if (trx) await trx.rollback();
       throw err;
     }
+  },
+  popFormLevelInfo: (jsonPayload = []) => {
+    /** This function is purely made to remove un-necessery information
+     * from the json payload of submissions. It will also help to remove crucial data
+     * to be removed from the payload that should not be going to DB like confirmationId,
+     * formName,version,createdAt,fullName,username,email,status,assignee,assigneeEmail and
+     * lateEntry
+     * Example: Sometime end user use the export json file as a bulk
+     * upload payload that contains formId, confirmationId and User
+     * details as well so we need to remove those details from the payload.
+     *
+     */
+    if (jsonPayload.length) {
+      jsonPayload.forEach(function (submission) {
+        delete submission.submit;
+        delete submission.lateEntry;
+        if (Object.prototype.hasOwnProperty.call(submission, 'form')) {
+          const propsToRemove = ['confirmationId', 'formName', 'version', 'createdAt', 'fullName', 'username', 'email', 'status', 'assignee', 'assigneeEmail'];
+
+          propsToRemove.forEach((key) => delete submission.form[key]);
+        }
+      });
+    }
+    return jsonPayload;
   },
 };
 

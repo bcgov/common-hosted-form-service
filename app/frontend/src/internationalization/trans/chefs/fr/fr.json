@@ -375,6 +375,7 @@
     "emailRequired": "L'e-mail est requis"
   },
   "submissionsTable": {
+    "noMachingRecordText": "Aucun enregistrements correspondants trouvés",
     "submissions": "Soumissions",
     "submissionsTable": "Tableau des soumissions",
     "selectColumns": "Sélectionnez les colonnes",
@@ -464,6 +465,7 @@
     "editThisDraft": "Modifier ce brouillon"
   },
   "mySubmissionsTable": {
+    "noMachingRecordText": "Aucun enregistrements correspondants trouvés",
     "previousSubmissions": "Soumissions précédentes",
     "selectColumns": "Sélectionnez les colonnes",
     "createNewSubmission": "Créer une nouvelle soumission",

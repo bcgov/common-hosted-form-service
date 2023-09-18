@@ -375,6 +375,7 @@
     "emailRequired": "Correo electrónico es requerido"
   },
   "submissionsTable": {
+    "noMachingRecordText": "No se encontraron registros coincidentes",
     "submissions": "Presentaciones",
     "submissionsTable": "Tabla de envíos",
     "selectColumns": "Seleccionar columnas",
@@ -464,6 +465,7 @@
     "editThisDraft": "Editar este borrador"
   },
   "mySubmissionsTable": {
+    "noMachingRecordText": "No se encontraron registros coincidentes",
     "previousSubmissions": "Envíos anteriores",
     "selectColumns": "Seleccionar columnas",
     "createNewSubmission": "Crear una nueva presentación",

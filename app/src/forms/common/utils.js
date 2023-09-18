@@ -18,14 +18,24 @@ const typeUtils = {
     // use modulus to determine if it is an int
     return num % 1 === 0;
   },
+  isNumeric: (x) => {
+    return Object.prototype.toString.call(x) === '[object Number]';
+  },
   isString: (x) => {
     return Object.prototype.toString.call(x) === '[object String]';
   },
   isBoolean: (x) => {
     return Object.prototype.toString.call(x) === '[object Boolean]';
   },
+  isObject: (x) => {
+    return Object.prototype.toString.call(x) === '[object Object]';
+  },
   isNil: (x) => {
     return x == null;
+  },
+  isDate: (x) => {
+    var d = new Date(x);
+    return !isNaN(d.valueOf());
   },
 };
 
