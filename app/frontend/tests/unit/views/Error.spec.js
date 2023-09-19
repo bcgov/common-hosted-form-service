@@ -29,13 +29,13 @@ describe('Error.vue', () => {
 
     await nextTick();
 
-    expect(wrapper.text()).toMatch('Error: Something went wrong... :(');
+    expect(wrapper.text()).toMatch('trans.error.somethingWentWrong');
   });
 
   it('renders with a custom error message', async () => {
     const wrapper = mount(Error, {
       props: {
-        msg: 'Custom Error Message',
+        text: 'Custom Error Message',
       },
       global: {
         plugins: [pinia],

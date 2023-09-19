@@ -11,11 +11,14 @@ export default {
       default: 'trans.error.somethingWentWrong',
       type: String,
     },
+    translate: {
+      default: false,
+      type: Boolean,
+    },
   },
   computed: {
     ...mapState(useAuthStore, ['authenticated', 'ready']),
     ...mapState(useFormStore, ['lang']),
-    ...mapActions(useNotificationStore, ['addNotification']),
     TEXT() {
       let text = this.text;
       try {
@@ -23,12 +26,15 @@ export default {
         text = i18n.t(text.text, text.options);
       } catch {
         // Can't parse JSON so it's probably already a locale
-        text = i18n.t(text);
+        if (this.translate) text = i18n.t(text);
       }
       return text;
     },
   },
-  methods: mapActions(useAuthStore, ['logout']),
+  methods: {
+    ...mapActions(useAuthStore, ['logout']),
+    ...mapActions(useNotificationStore, ['addNotification']),
+  },
 };
 </script>
 
