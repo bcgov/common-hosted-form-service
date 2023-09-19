@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { useRouter } from 'vue-router';
+import getRouter from '~/router';
 
 import { NotificationTypes } from '~/utils/constants';
 
@@ -10,15 +10,23 @@ export const useNotificationStore = defineStore('notification', {
   }),
   getters: {},
   actions: {
+    /*
+     * Navigates to the error view
+     * @param msg The locale message
+     */
     errorNavigate(msg) {
-      const router = useRouter();
+      const router = getRouter();
       router.replace({
         name: 'Error',
-        params: { msg },
+        query: { text: typeof msg === 'object' ? JSON.stringify(msg) : msg },
       });
     },
+    /*
+     * Navigates to the alert banner view
+     * @param msg The locale message
+     */
     alertNavigate(type, msg) {
-      const router = useRouter();
+      const router = getRouter();
       router.replace({
         name: 'Alert',
         params: {
@@ -27,12 +35,15 @@ export const useNotificationStore = defineStore('notification', {
         },
       });
     },
+    /*
+     * We add notifications here that aren't translated. When calling
+     * this function, you need to send in the locale message. We translate
+     * it in the final component.
+     */
     addNotification(notification) {
-      if (notification.consoleError) {
-        console.error(notification.consoleError); // eslint-disable-line no-console
-      }
       if (!notification.type)
         notification = { ...notification, ...NotificationTypes.ERROR };
+
       this.notifications.push({
         ...notification,
         id: this.notificationId++,
