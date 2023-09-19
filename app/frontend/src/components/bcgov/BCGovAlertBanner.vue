@@ -1,4 +1,5 @@
 <script>
+import { mapActions } from 'pinia';
 import { i18n } from '~/internationalization';
 
 import { useNotificationStore } from '~/store/notification';
@@ -16,14 +17,15 @@ export default {
     },
     text: {
       type: String,
-      default: i18n.t('trans.bcGovAlertBanner.defaultErrMsg'),
+      default: 'trans.bcGovAlertBanner.defaultErrMsg',
     },
     type: {
       type: String,
-      default: i18n.t('trans.bcGovAlertBanner.error'),
+      default: NotificationTypes.ERROR.type,
     },
   },
   computed: {
+    ...mapActions(useNotificationStore, ['deleteNotification']),
     notificationType() {
       switch (this.type) {
         case NotificationTypes.ERROR.type:
@@ -39,13 +41,12 @@ export default {
       }
     },
     TEXT() {
-      return this.text.replace(/(<([^>]+)>)/gi, '');
+      return i18n.t(this.text).replace(/(<([^>]+)>)/gi, '');
     },
   },
   methods: {
     onClose() {
-      const notificationStore = useNotificationStore();
-      notificationStore.deleteNotification({ id: this.id });
+      this.deleteNotification({ id: this.id });
     },
   },
 };
