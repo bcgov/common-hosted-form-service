@@ -486,7 +486,7 @@ describe('_getSubmissions', () => {
     }
     exportService._getSubmissions(form, params, params.version);
     expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.modify).toHaveBeenCalledTimes(7);
+    expect(MockModel.modify).toHaveBeenCalledTimes(8);
     expect(MockModel.modify).toHaveBeenCalledWith('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate);
   });
 
@@ -502,7 +502,7 @@ describe('_getSubmissions', () => {
     exportService._submissionsColumns = jest.fn().mockReturnThis();
     exportService._getSubmissions(form, params, params.version);
     expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.modify).toHaveBeenCalledTimes(7);
+    expect(MockModel.modify).toHaveBeenCalledTimes(8);
   });
 
   it('Should pass this test with preference passed to _getSubmissions', async () => {
@@ -528,7 +528,7 @@ describe('_getSubmissions', () => {
     }
     exportService._getSubmissions(form, params, params.version);
     expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.modify).toHaveBeenCalledTimes(7);
+    expect(MockModel.modify).toHaveBeenCalledTimes(8);
     expect(MockModel.modify).toHaveBeenCalledWith('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate);
   });
 });
