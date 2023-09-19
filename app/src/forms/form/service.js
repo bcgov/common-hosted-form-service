@@ -281,8 +281,7 @@ const service = {
         ['lateEntry'].map((f) => ref(`submission:data.${f}`).as(f.split('.').slice(-1)))
       );
     }
-
-    if (params.page) {
+    if (params.paginationEnabled) {
       return await service.processPaginationData(
         query,
         parseInt(params.page),

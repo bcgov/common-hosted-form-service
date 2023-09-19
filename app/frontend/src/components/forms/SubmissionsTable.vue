@@ -354,6 +354,7 @@ export default {
       filterData: [],
       sortBy: undefined,
       sortDesc: false,
+      showDataTable: false,
       dataTableKey: ref(0),
       filterIgnore: [
         {
@@ -386,6 +387,7 @@ export default {
       singleSubmissionRestore: false,
       deleteItem: {},
       switchSubmissionView: false,
+      firstDataLoad: true,
     };
   },
   computed: {
@@ -682,6 +684,7 @@ export default {
         itemsPerPage: this.itemsPerPage,
         page: this.page - 1,
         filterformSubmissionStatusCode: true,
+        paginationEnabled: true,
         sortBy: this.sortBy,
         sortDesc: this.sortDesc,
         search: this.search,
@@ -781,7 +784,11 @@ export default {
         }),
       ])
         .then(async () => {
-          await this.populateSubmissionsTable();
+          if (!this.firstDataLoad) {
+            await this.populateSubmissionsTable();
+          }
+          this.firstDataLoad = false;
+          this.loading = false;
         })
         .finally(() => {
           this.selectedSubmissions = [];
