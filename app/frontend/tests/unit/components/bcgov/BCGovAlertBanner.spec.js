@@ -36,7 +36,7 @@ describe('BCGovAlertBanner.vue', () => {
     await flushPromises();
 
     expect(wrapper.html()).toContain(NotificationTypes.ERROR.type);
-    expect(wrapper.html()).toContain('Error');
+    expect(wrapper.html()).toContain('defaultErrMsg');
   });
 
   it('renders with a custom error message', async () => {
@@ -50,7 +50,7 @@ describe('BCGovAlertBanner.vue', () => {
         text: message,
       },
       global: {
-        plugins: [router],
+        plugins: [pinia, router],
       },
     });
 

@@ -1,5 +1,5 @@
 <script>
-import { mapActions } from 'pinia';
+import { mapActions, mapState } from 'pinia';
 import { version as uuidVersion, validate as uuidValidate } from 'uuid';
 
 import { useAdminStore } from '~/store/admin';
@@ -27,7 +27,7 @@ export default {
   },
   methods: {
     ...mapActions(useAdminStore, ['addFormUser', 'readRoles']),
-    ...mapActions(useFormStore, ['lang']),
+    ...mapState(useFormStore, ['lang']),
     async addOwner() {
       if (this.$refs.addUserForm.validate()) {
         await this.addFormUser({

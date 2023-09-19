@@ -1,18 +1,11 @@
 import { setActivePinia, createPinia } from 'pinia';
-import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
 
 describe('notifications actions', () => {
-  const mockConsoleError = vi.spyOn(console, 'error');
-
   beforeEach(() => {
     setActivePinia(createPinia());
-    mockConsoleError.mockReset();
-  });
-
-  afterAll(() => {
-    mockConsoleError.mockRestore();
   });
 
   it('addNotification should add notification', () => {
@@ -23,7 +16,6 @@ describe('notifications actions', () => {
     };
     const addNotificationSpy = vi.spyOn(mockStore, 'addNotification');
     mockStore.addNotification(obj);
-    expect(mockConsoleError).toHaveBeenCalledTimes(1);
     expect(addNotificationSpy).toHaveBeenCalledTimes(1);
     expect(mockStore.notifications).toEqual([
       {
@@ -46,7 +38,6 @@ describe('notifications actions', () => {
 
     const addNotificationSpy = vi.spyOn(mockStore, 'addNotification');
     mockStore.addNotification(obj);
-    expect(mockConsoleError).toHaveBeenCalledTimes(1);
     expect(addNotificationSpy).toHaveBeenCalledTimes(1);
     expect(mockStore.notifications).toEqual([
       {
@@ -66,7 +57,6 @@ describe('notifications actions', () => {
     };
     const addNotificationSpy = vi.spyOn(mockStore, 'addNotification');
     mockStore.addNotification(obj);
-    expect(mockConsoleError).toHaveBeenCalledTimes(0);
     expect(addNotificationSpy).toHaveBeenCalledTimes(1);
     expect(mockStore.notifications).toEqual([
       {

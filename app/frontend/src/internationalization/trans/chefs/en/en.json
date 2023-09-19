@@ -969,5 +969,8 @@
       "history": "HISTORY",
       "user": "User"
     }
+  },
+  "test": {
+    "customError": "This is a custom error message for testing."
   }
 }

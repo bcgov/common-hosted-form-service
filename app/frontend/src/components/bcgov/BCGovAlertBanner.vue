@@ -23,9 +23,12 @@ export default {
       type: String,
       default: NotificationTypes.ERROR.type,
     },
+    translate: {
+      default: false,
+      type: Boolean,
+    },
   },
   computed: {
-    ...mapActions(useNotificationStore, ['deleteNotification']),
     notificationType() {
       switch (this.type) {
         case NotificationTypes.ERROR.type:
@@ -41,10 +44,12 @@ export default {
       }
     },
     TEXT() {
-      return i18n.t(this.text).replace(/(<([^>]+)>)/gi, '');
+      const msg = this.translate ? i18n.t(this.text) : this.text;
+      return msg.replace(/(<([^>]+)>)/gi, '');
     },
   },
   methods: {
+    ...mapActions(useNotificationStore, ['deleteNotification']),
     onClose() {
       this.deleteNotification({ id: this.id });
     },
