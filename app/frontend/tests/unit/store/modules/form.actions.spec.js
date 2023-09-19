@@ -217,7 +217,7 @@ describe('form actions', () => {
       let data = {fields: undefined, createdBy: '', createdAt: '', page: 0, filterformSubmissionStatusCode: true, itemsPerPage: 10, totalSubmissions: 0};
       await store.actions.fetchSubmissions(mockStore, { formId: 'fId', ...data });
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(3);
+      expect(mockStore.commit).toHaveBeenCalledTimes(2);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
       expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { deleted: false, createdBy: '', ...data});
@@ -230,7 +230,7 @@ describe('form actions', () => {
 
       await store.actions.fetchSubmissions(mockStore, { formId: 'fId', userView: false, ...data });
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(3);
+      expect(mockStore.commit).toHaveBeenCalledTimes(2);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(1);
       expect(formService.listSubmissions).toHaveBeenCalledWith('fId', { deleted: false, createdBy: '', ...data});
@@ -243,11 +243,11 @@ describe('form actions', () => {
       rbacService.getUserSubmissions.mockResolvedValue({ data: [] });
       await store.actions.fetchSubmissions(mockStore, { formId: 'fId', userView: true, ...data});
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(3);
+      expect(mockStore.commit).toHaveBeenCalledTimes(2);
       expect(mockStore.commit).toHaveBeenCalledWith('SET_SUBMISSIONLIST', expect.any(Array));
       expect(formService.listSubmissions).toHaveBeenCalledTimes(0);
       expect(rbacService.getUserSubmissions).toHaveBeenCalledTimes(1);
-      expect(rbacService.getUserSubmissions).toHaveBeenCalledWith({ formId: 'fId', ...data});
+      expect(rbacService.getUserSubmissions).toHaveBeenCalledWith({ formId: 'fId'});
     });
 
     it('fetchSubmissions should dispatch to notifications/addNotification', async () => {

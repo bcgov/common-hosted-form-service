@@ -731,6 +731,7 @@ export default {
         createdBy = '',
         createdAt,
         page,
+        paginationEnabled,
         itemsPerPage,
         filterformSubmissionStatusCode,
         sortBy: sortBy,
@@ -749,13 +750,6 @@ export default {
         const response = userView
           ? await rbacService.getUserSubmissions({
               formId: formId,
-              page: page,
-              itemsPerPage: itemsPerPage,
-              totalSubmissions: state.totalSubmissions,
-              sortBy: sortBy,
-              sortDesc: sortDesc,
-              search: search,
-              searchEnabled: searchEnabled,
             })
           : await formService.listSubmissions(formId, {
               deleted: deletedOnly,
@@ -764,6 +758,7 @@ export default {
               createdAt: createdAt,
               page: page,
               search: search,
+              paginationEnabled: paginationEnabled,
               searchEnabled: searchEnabled,
               filterformSubmissionStatusCode: filterformSubmissionStatusCode,
               itemsPerPage: itemsPerPage,
@@ -771,8 +766,12 @@ export default {
               sortBy: sortBy,
               sortDesc: sortDesc,
             });
-        commit('SET_SUBMISSIONLIST', response.data.results);
-        commit('SET_TOTALSUBMISSIONS', response.data.total);
+        if (paginationEnabled) {
+          commit('SET_SUBMISSIONLIST', response.data.results);
+          commit('SET_TOTALSUBMISSIONS', response.data.total);
+        } else {
+          commit('SET_SUBMISSIONLIST', response.data);
+        }
       } catch (error) {
         dispatch(
           'notifications/addNotification',
