@@ -90,12 +90,23 @@ export default {
     startDate() {
       this.endDate = moment(Date()).format('YYYY-MM-DD');
     },
+    async versionSelected(value) {
+      this.csvFormats = 'multiRowEmptySpacesCSVExport';
+      await this.refreshFormFields(value);
+    },
     async exportFormat(value) {
       if (value === 'json') {
         this.selected = [];
         this.versionRequired = false;
       }
       await this.updateVersions();
+    },
+    async csvFormats(value) {
+      if (value === 'singleRowCSVExport') {
+        await this.refreshFormFields(this.versionSelected, true);
+      } else {
+        await this.refreshFormFields(this.versionSelected);
+      }
     },
     dateRange(value) {
       if (!value) {
@@ -118,7 +129,7 @@ export default {
       await this.refreshFormFields(value);
     },
 
-    async refreshFormFields(version) {
+    async refreshFormFields(version, singleRow = false) {
       this.selected = [];
       if (version !== '') {
         await this.fetchFormCSVExportFields({
@@ -127,11 +138,11 @@ export default {
           draft: false,
           deleted: false,
           version: version,
+          singleRow: singleRow,
         });
         this.selected = this.FILTER_HEADERS;
       }
     },
-
     async callExport() {
       if (this.exportFormat === 'csv' && this.versionSelected === '') {
         this.versionRequired = true;

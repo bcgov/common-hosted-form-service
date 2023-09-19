@@ -33,6 +33,7 @@ export default {
       loading: true,
       page: 0,
       search: '',
+      searchEnabled: false,
       serverItems: [],
       sortBy: {},
       showColumnsDialog: false,
@@ -189,6 +190,21 @@ export default {
       return this.form && this.form.enableCopyExistingSubmission;
     },
   },
+  watch: {
+    async search(newSearch, oldSearch) {
+      this.searchEnabled = true;
+      if (newSearch !== oldSearch) {
+        if (newSearch === '') {
+          this.searchEnabled = false;
+          await this.populateSubmissionsTable();
+        } else {
+          _.debounce(async () => {
+            await this.populateSubmissionsTable();
+          }, 300);
+        }
+      }
+    },
+  },
   async mounted() {
     await this.fetchForm(this.formId).then(async () => {
       await this.fetchFormFields({
@@ -267,6 +283,8 @@ export default {
         page: this.page,
         itemsPerPage: this.itemsPerPage,
         sortBy: this.sortBy,
+        search: this.search,
+        searchEnabled: this.searchEnabled,
       });
       // Build up the list of forms for the table
       if (this.submissionList) {

@@ -1,4 +1,5 @@
 <script>
+import _ from 'lodash';
 import moment from 'moment';
 import { mapActions, mapState } from 'pinia';
 
@@ -43,6 +44,7 @@ export default {
       loading: true,
       restoreItem: {},
       search: '',
+      searchEnabled: false,
       selectedSubmissions: [],
       serverItems: [],
       showColumnsDialog: false,
@@ -316,6 +318,22 @@ export default {
     },
     //------------------------ END FILTER COLUMNS
   },
+  watch: {
+    async search(newSearch, oldSearch) {
+      this.searchEnabled = true;
+      if (newSearch !== oldSearch) {
+        if (newSearch === '') {
+          this.searchEnabled = false;
+          await this.getSubmissionData();
+        } else {
+          _.debounce(async () => {
+            await this.getSubmissionData();
+          }, 300);
+          this.refreshSubmissions();
+        }
+      }
+    },
+  },
   mounted() {
     this.refreshSubmissions();
   },
@@ -369,6 +387,8 @@ export default {
         page: this.page,
         filterformSubmissionStatusCode: true,
         sortBy: this.sortBy,
+        search: this.search,
+        searchEnabled: this.searchEnabled,
         createdAt: Object.values({
           minDate:
             this.userFormPreferences &&
@@ -668,7 +688,11 @@ export default {
       show-select
       :loading="loading"
       :loading-text="$t('trans.submissionsTable.loadingText')"
-      :no-data-text="$t('trans.submissionsTable.noDataText')"
+      :no-data-text="
+        searchEnabled
+          ? $t('trans.submissionsTable.noMachingRecordText')
+          : $t('trans.submissionsTable.noDataText')
+      "
       :lang="lang"
       return-object
       @update:options="updateTableOptions"
