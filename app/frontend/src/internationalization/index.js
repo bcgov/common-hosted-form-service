@@ -46,6 +46,7 @@ const instance = createI18n({
   locale: 'en', // set locale
   fallbackLocale: 'en',
   messages, // set locale messages
+  globalInjection: true,
 });
 
 export default instance;

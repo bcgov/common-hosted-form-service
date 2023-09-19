@@ -1,6 +1,7 @@
 <script>
 import { mapState } from 'pinia';
 
+import { i18n } from '~/internationalization';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
@@ -18,6 +19,17 @@ export default {
   },
   computed: {
     ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
+  },
+  created() {
+    if (this.notification.consoleError) {
+      // eslint-disable-next-line no-console
+      console.error(
+        i18n.t(
+          this.notification.consoleError.text,
+          this.notification.consoleError.options
+        )
+      );
+    }
   },
   mounted() {
     const notificationStore = useNotificationStore();
@@ -52,7 +64,7 @@ export default {
     prominent
     closable
     :title="notification.title"
-    :text="notification.text"
+    :text="$t(notification.text)"
     @update:model-value="alertClosed"
   ></v-alert>
 </template>
