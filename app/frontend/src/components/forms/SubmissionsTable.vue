@@ -1,4 +1,5 @@
 <script>
+import _ from 'lodash';
 import moment from 'moment';
 import { mapActions, mapState } from 'pinia';
 
@@ -24,6 +25,7 @@ export default {
     return {
       // Show only items for the current logged in user
       currentUserOnly: false,
+      debounceInput: null,
       deleteItem: {},
       // Show only deleted items
       deletedOnly: false,
@@ -317,6 +319,9 @@ export default {
     //------------------------ END FILTER COLUMNS
   },
   mounted() {
+    this.debounceInput = _.debounce(async () => {
+      this.refreshSubmissions();
+    }, 300);
     this.refreshSubmissions();
   },
   methods: {
@@ -360,7 +365,11 @@ export default {
         this.sortBy = {};
       }
       this.itemsPerPage = itemsPerPage;
-      await this.getSubmissionData();
+      if (this.search === '') {
+        await this.getSubmissionData();
+      } else {
+        this.debounceInput();
+      }
     },
     async getSubmissionData() {
       let criteria = {
@@ -369,6 +378,8 @@ export default {
         page: this.page,
         filterformSubmissionStatusCode: true,
         sortBy: this.sortBy,
+        search: this.search,
+        searchEnabled: this.search.length > 0,
         createdAt: Object.values({
           minDate:
             this.userFormPreferences &&
@@ -449,7 +460,6 @@ export default {
     },
     async refreshSubmissions() {
       this.loading = true;
-      this.page = 0;
       Promise.all([
         this.getFormRolesForUser(this.formId),
         this.getFormPermissionsForUser(this.formId),
@@ -531,6 +541,9 @@ export default {
       });
 
       await this.populateSubmissionsTable();
+    },
+    handleSearch(value) {
+      this.search = value;
     },
   },
 };
@@ -640,7 +653,6 @@ export default {
         <!-- search input -->
         <div class="submissions-search">
           <v-text-field
-            v-model="search"
             density="compact"
             variant="underlined"
             :label="$t('trans.submissionsTable.search')"
@@ -650,6 +662,7 @@ export default {
             class="pb-5"
             :class="{ label: isRTL }"
             :lang="lang"
+            @update:modelValue="handleSearch"
           ></v-text-field>
         </div>
       </div>
@@ -668,7 +681,11 @@ export default {
       show-select
       :loading="loading"
       :loading-text="$t('trans.submissionsTable.loadingText')"
-      :no-data-text="$t('trans.submissionsTable.noDataText')"
+      :no-data-text="
+        search.length > 0
+          ? $t('trans.submissionsTable.noMachingRecordText')
+          : $t('trans.submissionsTable.noDataText')
+      "
       :lang="lang"
       return-object
       @update:options="updateTableOptions"

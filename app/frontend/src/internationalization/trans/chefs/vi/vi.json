@@ -379,6 +379,7 @@
     "emailRequired": "Email thì cần thiết"
   },
   "submissionsTable": {
+    "noMachingRecordText": "Không tìm thấy kết quả",
     "submissions": "đệ trình",
     "submissionsTable": "Đệ trìnhBảng",
     "selectColumns": "Chọn cột",
@@ -468,6 +469,7 @@
     "editThisDraft": "Chỉnh sửa bản nháp này"
   },
   "mySubmissionsTable": {
+    "noMachingRecordText": "Không tìm thấy kết quả",
     "previousSubmissions": "Đệ trình trước",
     "selectColumns": "Chọn cột",
     "createNewSubmission": "Tạo bài nộp mới",
