@@ -20,18 +20,19 @@ export default {
   computed: {
     ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
   },
-  created() {
+  mounted() {
     if (this.notification.consoleError) {
       // eslint-disable-next-line no-console
       console.error(
-        i18n.t(
-          this.notification.consoleError.text,
-          this.notification.consoleError.options
-        )
+        typeof this.notification.consoleError === 'string' ||
+          this.notification.consoleError instanceof String
+          ? this.notification.consoleError
+          : i18n.t(
+              this.notification.consoleError.text,
+              this.notification.consoleError.options
+            )
       );
     }
-  },
-  mounted() {
     const notificationStore = useNotificationStore();
     this.timeout = setTimeout(
       () => notificationStore.deleteNotification(this.notification),

@@ -525,7 +525,14 @@ export const useFormStore = defineStore('form', {
         });
       }
     },
-    async fetchFormCSVExportFields({ formId, type, draft, deleted, version }) {
+    async fetchFormCSVExportFields({
+      formId,
+      type,
+      draft,
+      deleted,
+      version,
+      singleRow,
+    }) {
       try {
         this.formFields = [];
         const { data } = await formService.readCSVExportFields(
@@ -533,7 +540,8 @@ export const useFormStore = defineStore('form', {
           type,
           draft,
           deleted,
-          version
+          version,
+          singleRow
         );
         this.formFields = data;
       } catch (error) {
@@ -560,6 +568,8 @@ export const useFormStore = defineStore('form', {
       itemsPerPage,
       filterformSubmissionStatusCode,
       sortBy: sortBy,
+      search: search,
+      searchEnabled: searchEnabled,
     }) {
       try {
         this.submissionList = [];
@@ -575,6 +585,8 @@ export const useFormStore = defineStore('form', {
               itemsPerPage: itemsPerPage,
               totalSubmissions: this.totalSubmissions,
               sortBy: sortBy,
+              search: search,
+              searchEnabled: searchEnabled,
             })
           : await formService.listSubmissions(formId, {
               deleted: deletedOnly,
@@ -586,6 +598,8 @@ export const useFormStore = defineStore('form', {
               itemsPerPage: itemsPerPage,
               totalSubmissions: this.totalSubmissions,
               sortBy: sortBy,
+              search: search,
+              searchEnabled: searchEnabled,
             });
         this.submissionList = response.data.results;
         this.totalSubmissions = response.data.total;

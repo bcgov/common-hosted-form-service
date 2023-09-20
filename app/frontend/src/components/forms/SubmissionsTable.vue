@@ -25,6 +25,7 @@ export default {
     return {
       // Show only items for the current logged in user
       currentUserOnly: false,
+      debounceInput: null,
       deleteItem: {},
       // Show only deleted items
       deletedOnly: false,
@@ -44,7 +45,6 @@ export default {
       loading: true,
       restoreItem: {},
       search: '',
-      searchEnabled: false,
       selectedSubmissions: [],
       serverItems: [],
       showColumnsDialog: false,
@@ -318,23 +318,10 @@ export default {
     },
     //------------------------ END FILTER COLUMNS
   },
-  watch: {
-    async search(newSearch, oldSearch) {
-      this.searchEnabled = true;
-      if (newSearch !== oldSearch) {
-        if (newSearch === '') {
-          this.searchEnabled = false;
-          await this.getSubmissionData();
-        } else {
-          _.debounce(async () => {
-            await this.getSubmissionData();
-          }, 300);
-          this.refreshSubmissions();
-        }
-      }
-    },
-  },
   mounted() {
+    this.debounceInput = _.debounce(async () => {
+      this.refreshSubmissions();
+    }, 300);
     this.refreshSubmissions();
   },
   methods: {
@@ -378,7 +365,11 @@ export default {
         this.sortBy = {};
       }
       this.itemsPerPage = itemsPerPage;
-      await this.getSubmissionData();
+      if (this.search === '') {
+        await this.getSubmissionData();
+      } else {
+        this.debounceInput();
+      }
     },
     async getSubmissionData() {
       let criteria = {
@@ -388,7 +379,7 @@ export default {
         filterformSubmissionStatusCode: true,
         sortBy: this.sortBy,
         search: this.search,
-        searchEnabled: this.searchEnabled,
+        searchEnabled: this.search.length > 0,
         createdAt: Object.values({
           minDate:
             this.userFormPreferences &&
@@ -469,7 +460,6 @@ export default {
     },
     async refreshSubmissions() {
       this.loading = true;
-      this.page = 0;
       Promise.all([
         this.getFormRolesForUser(this.formId),
         this.getFormPermissionsForUser(this.formId),
@@ -551,6 +541,9 @@ export default {
       });
 
       await this.populateSubmissionsTable();
+    },
+    handleSearch(value) {
+      this.search = value;
     },
   },
 };
@@ -660,7 +653,6 @@ export default {
         <!-- search input -->
         <div class="submissions-search">
           <v-text-field
-            v-model="search"
             density="compact"
             variant="underlined"
             :label="$t('trans.submissionsTable.search')"
@@ -670,6 +662,7 @@ export default {
             class="pb-5"
             :class="{ label: isRTL }"
             :lang="lang"
+            @update:modelValue="handleSearch"
           ></v-text-field>
         </div>
       </div>
@@ -689,7 +682,7 @@ export default {
       :loading="loading"
       :loading-text="$t('trans.submissionsTable.loadingText')"
       :no-data-text="
-        searchEnabled
+        search.length > 0
           ? $t('trans.submissionsTable.noMachingRecordText')
           : $t('trans.submissionsTable.noDataText')
       "
