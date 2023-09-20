@@ -20,6 +20,17 @@ export default {
   computed: {
     ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
   },
+  created() {
+    if (this.notification.consoleError) {
+      // eslint-disable-next-line no-console
+      console.error(
+        i18n.t(
+          this.notification.consoleError.text,
+          this.notification.consoleError.options
+        )
+      );
+    }
+  },
   mounted() {
     if (this.notification.consoleError) {
       // eslint-disable-next-line no-console
