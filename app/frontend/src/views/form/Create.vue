@@ -1,5 +1,5 @@
 <template>
-  <BaseSecure :idp="IDP.IDIR" :class="{ 'dir-rtl': isRTL }">
+  <BaseSecure :idp="[IDP.IDIR]" :class="{ 'dir-rtl': isRTL }">
     <v-stepper
       v-model="creatorStep"
       class="elevation-0 d-flex flex-column"
@@ -17,8 +17,8 @@
         <v-divider />
         <v-stepper-step
           :complete="creatorStep > 2"
-          :editable="true"
           step="2"
+          :editable="true"
           class="pr-1"
         >
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
@@ -88,9 +88,6 @@ import { IdentityMode, IdentityProviders } from '@/utils/constants';
 
 export default {
   name: 'FormCreate',
-  props: {
-    isDesignView: Boolean,
-  },
   components: {
     FormDesigner,
     FormSettings,

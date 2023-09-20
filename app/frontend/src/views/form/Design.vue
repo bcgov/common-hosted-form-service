@@ -1,5 +1,5 @@
 <template>
-  <BaseSecure :idp="IDP.IDIR" :class="{ 'dir-rtl': isRTL }">
+  <BaseSecure :idp="[IDP.IDIR]" :class="{ 'dir-rtl': isRTL }">
     <v-stepper
       v-model="creatorStep"
       class="elevation-0 d-flex flex-column"
@@ -15,12 +15,7 @@
           </span>
         </v-stepper-step>
         <v-divider />
-        <v-stepper-step
-          :complete="creatorStep > 2"
-          :editable="true"
-          step="2"
-          class="pr-1"
-        >
+        <v-stepper-step :complete="creatorStep > 2" step="2" class="pr-1">
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.create.designForm') }}
           </span>
@@ -40,7 +35,7 @@
             :formId="f"
             :saved="sv"
             :versionId="v"
-            @create-stepper="creatorStep = 1"
+            ref="formDesigner"
           />
         </v-stepper-content>
       </v-stepper-items>

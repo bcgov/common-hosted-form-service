@@ -19,7 +19,7 @@
         data-cy="publishRouterLink"
         class="fabAction"
         :to="{
-          name: 'FormManage',
+          name: 'PublishForm',
           query: { f: formId, fd: 'formDesigner', d: draftId },
         }"
         :class="{ 'disabled-router': !formId }"

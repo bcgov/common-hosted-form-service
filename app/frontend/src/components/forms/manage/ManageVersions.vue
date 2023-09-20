@@ -268,7 +268,6 @@ import { FormPermissions } from '@/utils/constants';
 
 export default {
   name: 'ManageVersions',
-  inject: ['fd', 'draftId', 'formId'],
   data() {
     return {
       formSchema: {
@@ -490,12 +489,6 @@ export default {
         });
       }
     },
-  },
-  created() {
-    //check if the navigation to this page is from FormDesigner
-    if (this.fd) {
-      this.turnOnPublish();
-    }
   },
 };
 </script>
