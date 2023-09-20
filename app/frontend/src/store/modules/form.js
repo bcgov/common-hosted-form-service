@@ -101,7 +101,6 @@ export default {
     isRTL: false,
     subscriptionData: genInitialSubscribeDetails(),
     totalSubmissions: 0,
-    creatorStep: 1,
   },
   getters: {
     getField, // vuex-map-fields
@@ -199,9 +198,6 @@ export default {
     },
     SET_TOTALSUBMISSIONS(state, totalSubmissions) {
       state.totalSubmissions = totalSubmissions;
-    },
-    SET_CREATORSTEP(state, creatorStep) {
-      state.creatorStep = creatorStep;
     },
   },
   actions: {
@@ -1037,9 +1033,6 @@ export default {
           { root: true }
         );
       }
-    },
-    async setCreatorStep({ commit }, creatorStep) {
-      commit('SET_CREATORSTEP', creatorStep);
     },
   },
 };

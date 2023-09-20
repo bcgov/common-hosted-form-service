@@ -1,19 +1,15 @@
 <template>
-  <BaseSecure :idp="IDP.IDIR" :class="{ 'dir-rtl': isRTL }">
+  <BaseSecure :idp="[IDP.IDIR]" :class="{ 'dir-rtl': isRTL }">
     <v-stepper
+      v-model="creatorStep"
       class="elevation-0 d-flex flex-column"
       alt-labels
-      @change="handleStepperChange"
     >
       <v-stepper-header
         style="width: 40%"
         class="elevation-0 px-0 align-self-center"
       >
-        <v-stepper-step
-          :complete="creatorStep > 1"
-          :step="creatorStep"
-          class="pl-1"
-        >
+        <v-stepper-step :complete="creatorStep > 1" step="1" class="pl-1">
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.create.setUpForm') }}
           </span>
@@ -21,8 +17,8 @@
         <v-divider />
         <v-stepper-step
           :complete="creatorStep > 2"
+          step="2"
           :editable="true"
-          :step="creatorStep"
           class="pr-1"
         >
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
@@ -30,11 +26,7 @@
           </span>
         </v-stepper-step>
         <v-divider />
-        <v-stepper-step
-          :complete="creatorStep > 3"
-          :step="creatorStep"
-          class="pr-1"
-        >
+        <v-stepper-step :complete="creatorStep > 3" step="3" class="pr-1">
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.create.publishForm') }}
           </span>
@@ -42,7 +34,7 @@
       </v-stepper-header>
 
       <v-stepper-items>
-        <v-stepper-content :step="creatorStep" class="pa-1">
+        <v-stepper-content step="1" class="pa-1">
           <v-form ref="settingsForm" v-model="settingsFormValid">
             <h1 :lang="lang">
               {{ $t('trans.create.formSettings') }}
@@ -72,22 +64,12 @@
             :disabled="!settingsFormValid"
             @click="reRenderFormDesigner"
           >
-            <span :lang="lang">{{ $t('trans.create.continue') }}s</span>
+            <span :lang="lang">{{ $t('trans.create.continue') }}</span>
           </v-btn>
         </v-stepper-content>
-        <v-stepper-content :step="creatorStep" class="pa-1">
+        <v-stepper-content step="2" class="pa-1">
           <FormDesigner ref="formDesigner" />
-          <v-btn class="my-4" outlined @click="() => setCreatorStep(1)">
-            <span :lang="lang">{{ $t('trans.create.back') }}</span>
-          </v-btn>
-        </v-stepper-content>
-<<<<<<< Updated upstream
-        <v-stepper-content step="3" class="pa-1">
-=======
-        <v-stepper-content :step="creatorStep" class="pa-1">
->>>>>>> Stashed changes
-          <PublishForm />
-          <v-btn class="my-4" outlined @click="() => setCreatorStep(2)">
+          <v-btn class="my-4" outlined @click="creatorStep = 1">
             <span :lang="lang">{{ $t('trans.create.back') }}</span>
           </v-btn>
         </v-stepper-content>
@@ -102,43 +84,32 @@ import { mapFields } from 'vuex-map-fields';
 import FormDesigner from '@/components/designer/FormDesigner.vue';
 import FormSettings from '@/components/designer/FormSettings.vue';
 import FormDisclaimer from '@/components/designer/FormDisclaimer.vue';
-import PublishForm from '@/components/forms/manage/PublishForm.vue';
 import { IdentityMode, IdentityProviders } from '@/utils/constants';
 
 export default {
   name: 'FormCreate',
-  props: {
-    isDesignView: Boolean,
-  },
   components: {
     FormDesigner,
     FormSettings,
     FormDisclaimer,
-    PublishForm,
   },
   computed: {
     ...mapFields('form', ['form.idps', 'form.isDirty', 'form.userType']),
-    ...mapGetters('form', ['isRTL', 'lang', 'creatorStep']),
+    ...mapGetters('form', ['isRTL', 'lang']),
     IDP: () => IdentityProviders,
   },
   data() {
     return {
+      creatorStep: 1,
       settingsFormValid: false,
       disclaimerRules: [(v) => !!v || this.$t('trans.create.agreementErrMsg')],
     };
   },
   methods: {
-    ...mapActions('form', [
-      'listFCProactiveHelp',
-      'resetForm',
-      'setCreatorStep',
-    ]),
+    ...mapActions('form', ['listFCProactiveHelp', 'resetForm']),
     reRenderFormDesigner() {
-      this.setCreatorStep(2);
+      this.creatorStep = 2;
       this.$refs.formDesigner.onFormLoad();
-    },
-    handleStepperChange(value) {
-      this.setCreatorStep(value);
     },
   },
   created() {
@@ -151,13 +122,6 @@ export default {
     });
   },
   watch: {
-    creatorStep() {
-<<<<<<< Updated upstream
-      console.log('------------->>> ', this.creatorStep);
-=======
-      console.log('-AAAAAA------------>>> ', this.creatorStep);
->>>>>>> Stashed changes
-    },
     idps() {
       if (this.userType === IdentityMode.LOGIN && this.$refs.settingsForm)
         this.$refs.settingsForm.validate();
