@@ -1,0 +1,22 @@
+[
+  "form.confirmationId",
+  "form.formName",
+  "form.version",
+  "form.createdAt",
+  "form.fullName",
+  "form.username",
+  "form.email",
+  "fishermansName",
+  "email",
+  "forWhichBcLakeRegionAreYouCompletingTheseQuestions",
+  "didYouFishAnyBcLakesThisYear",
+  "oneRowPerLake.0.lakeName",
+  "oneRowPerLake.0.closestTown",
+  "oneRowPerLake.0.numberOfDays",
+  "oneRowPerLake.0.dataGrid.0.fishType",
+  "oneRowPerLake.0.dataGrid.1.fishType",
+  "oneRowPerLake.0.dataGrid.0.numberCaught",
+  "oneRowPerLake.0.dataGrid.1.numberCaught",
+  "oneRowPerLake.0.dataGrid.0.numberKept",
+  "oneRowPerLake.0.dataGrid.1.numberKept"
+]
