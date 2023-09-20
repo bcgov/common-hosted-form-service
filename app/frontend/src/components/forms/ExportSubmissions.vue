@@ -434,7 +434,7 @@ export default {
         : (this.showFieldsOptions = false);
       await this.refreshFormFields(value);
     },
-    async refreshFormFields(version) {
+    async refreshFormFields(version, singleRow = false) {
       this.selected = [];
       if (version !== '') {
         await this.fetchFormCSVExportFields({
@@ -443,6 +443,7 @@ export default {
           draft: false,
           deleted: false,
           version: version,
+          singleRow: singleRow,
         });
         (this.allDataFields = true), this.selected.push(...this.FILTER_HEADERS);
       }
@@ -573,12 +574,23 @@ export default {
         }
       }
     },
+    async versionSelected(value) {
+      this.csvFormats = 'multiRowEmptySpacesCSVExport';
+      await this.refreshFormFields(value);
+    },
     exportFormat(value) {
       if (value === 'json') {
         this.selected = [];
         this.versionRequired = false;
       }
       this.updateVersions();
+    },
+    async csvFormats(value) {
+      if (value === 'singleRowCSVExport') {
+        await this.refreshFormFields(this.versionSelected, true);
+      } else {
+        await this.refreshFormFields(this.versionSelected);
+      }
     },
     dateRange(value) {
       if (!value) {

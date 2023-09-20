@@ -697,7 +697,7 @@ export default {
     },
     async fetchFormCSVExportFields(
       { commit, dispatch },
-      { formId, type, draft, deleted, version }
+      { formId, type, draft, deleted, version, singleRow }
     ) {
       try {
         commit('SET_FORM_FIELDS', []);
@@ -706,7 +706,8 @@ export default {
           type,
           draft,
           deleted,
-          version
+          version,
+          singleRow
         );
         commit('SET_FORM_FIELDS', data);
       } catch (error) {
