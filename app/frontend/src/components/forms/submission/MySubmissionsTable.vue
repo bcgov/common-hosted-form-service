@@ -1,4 +1,5 @@
 <script>
+import _ from 'lodash';
 import { mapActions, mapState } from 'pinia';
 
 import { i18n } from '~/internationalization';
@@ -19,6 +20,7 @@ export default {
   },
   data() {
     return {
+      debounceInput: null,
       filterData: [],
       filterIgnore: [
         {
@@ -31,7 +33,7 @@ export default {
       headers: [],
       itemsPerPage: 10,
       loading: true,
-      page: 0,
+      page: 1,
       search: '',
       serverItems: [],
       sortBy: {},
@@ -197,6 +199,9 @@ export default {
       });
     });
     await this.populateSubmissionsTable();
+    this.debounceInput = _.debounce(async () => {
+      await this.populateSubmissionsTable();
+    }, 300);
   },
   methods: {
     ...mapActions(useFormStore, [
@@ -256,7 +261,11 @@ export default {
         this.sortBy = {};
       }
       this.itemsPerPage = itemsPerPage;
-      await this.populateSubmissionsTable();
+      if (this.search === '') {
+        await this.populateSubmissionsTable();
+      } else {
+        this.debounceInput();
+      }
     },
     async populateSubmissionsTable() {
       this.loading = true;
@@ -267,6 +276,8 @@ export default {
         page: this.page,
         itemsPerPage: this.itemsPerPage,
         sortBy: this.sortBy,
+        search: this.search,
+        searchEnabled: this.search.length > 0,
       });
       // Build up the list of forms for the table
       if (this.submissionList) {
@@ -304,6 +315,10 @@ export default {
     async updateFilter(data) {
       this.filterData = data;
       this.showColumnsDialog = false;
+    },
+
+    handleSearch(value) {
+      this.search = value;
     },
   },
 };
@@ -372,7 +387,6 @@ export default {
       :class="isRTL ? 'float-left' : 'float-right'"
     >
       <v-text-field
-        v-model="search"
         density="compact"
         variant="underlined"
         :label="$t('trans.mySubmissionsTable.search')"
@@ -382,6 +396,7 @@ export default {
         class="pb-5"
         :class="{ label: isRTL }"
         :lang="lang"
+        @update:model-value="handleSearch"
       />
     </div>
 
@@ -396,7 +411,11 @@ export default {
       :search="search"
       :loading="loading"
       :loading-text="$t('trans.mySubmissionsTable.loadingText')"
-      :no-data-text="$t('trans.mySubmissionsTable.noDataText')"
+      :no-data-text="
+        search.length > 0
+          ? $t('trans.mySubmissionsTable.noMatchingRecordText')
+          : $t('trans.mySubmissionsTable.noDataText')
+      "
       :lang="lang"
       @update:options="updateTableOptions"
     >

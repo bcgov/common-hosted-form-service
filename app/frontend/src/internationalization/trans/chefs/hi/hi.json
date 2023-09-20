@@ -379,6 +379,7 @@
     "emailRequired": "ईमेल की जरूरत है"
   },
   "submissionsTable": {
+    "noMachingRecordText": "कोई मिलान रिकॉर्ड पाया",
     "submissions": "प्रविष्टियों",
     "submissionsTable": "सबमिशनटेबल",
     "selectColumns": "कॉलम चुनें",
@@ -468,6 +469,7 @@
     "editThisDraft": "इस ड्राफ्ट को संपादित करें"
   },
   "mySubmissionsTable": {
+    "noMachingRecordText": "कोई मिलान रिकॉर्ड पाया",
     "previousSubmissions": "पिछली प्रस्तुतियाँ",
     "selectColumns": "कॉलम चुनें",
     "createNewSubmission": "एक नया सबमिशन बनाएं",

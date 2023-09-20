@@ -32,6 +32,18 @@ export default {
     }
   },
   mounted() {
+    if (this.notification.consoleError) {
+      // eslint-disable-next-line no-console
+      console.error(
+        typeof this.notification.consoleError === 'string' ||
+          this.notification.consoleError instanceof String
+          ? this.notification.consoleError
+          : i18n.t(
+              this.notification.consoleError.text,
+              this.notification.consoleError.options
+            )
+      );
+    }
     const notificationStore = useNotificationStore();
     this.timeout = setTimeout(
       () => notificationStore.deleteNotification(this.notification),
