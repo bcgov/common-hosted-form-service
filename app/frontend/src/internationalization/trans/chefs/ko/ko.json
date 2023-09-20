@@ -800,7 +800,7 @@
     "saveAsADraft": "초안으로 저장",
     "editThisDraft": "이 초안 편집",
     "switchSingleSubmssn": "단일 제출로 전환",
-    "switchMultiSubmssn": "다중 제출로 전환"
+    "switchMultiSubmssn": "대량 제출로 전환"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "클립보드에 복사된 링크",
