@@ -830,6 +830,7 @@ export default {
         preferences: preferences,
       });
 
+      this.page = 1;
       await this.populateSubmissionsTable();
     },
     async handleSearch(value) {
