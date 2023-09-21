@@ -354,7 +354,6 @@ export default {
       filterData: [],
       sortBy: undefined,
       sortDesc: false,
-      showDataTable: false,
       dataTableKey: ref(0),
       filterIgnore: [
         {
@@ -676,7 +675,10 @@ export default {
       }
       this.sortDesc = sortDesc[0];
       this.itemsPerPage = itemsPerPage;
-      await this.getSubmissionData();
+      if (!this.firstDataLoad) {
+        await this.refreshSubmissions();
+      }
+      this.firstDataLoad = false;
     },
     async getSubmissionData() {
       let criteria = {
@@ -770,7 +772,6 @@ export default {
 
     async refreshSubmissions() {
       this.loading = true;
-      this.page = 0;
       Promise.all([
         this.getFormRolesForUser(this.formId),
         this.getFormPermissionsForUser(this.formId),
@@ -784,10 +785,7 @@ export default {
         }),
       ])
         .then(async () => {
-          if (!this.firstDataLoad) {
-            await this.populateSubmissionsTable();
-          }
-          this.firstDataLoad = false;
+          await this.populateSubmissionsTable();
           this.loading = false;
         })
         .finally(() => {
@@ -829,8 +827,6 @@ export default {
         formId: this.form.id,
         preferences: preferences,
       });
-
-      this.page = 1;
       await this.populateSubmissionsTable();
     },
     async handleSearch(value) {
