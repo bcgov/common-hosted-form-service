@@ -796,7 +796,7 @@
     "resetColumns": "重置列"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "查看所有提交内容",
+    "viewMyDraftOrSubmissions": "查看我的草稿/提交内容",
     "saveAsADraft": "另存为草稿",
     "editThisDraft": "编辑本草稿",
     "switchSingleSubmssn": "切换到单一提交",

@@ -796,7 +796,7 @@
     "resetColumns": "Redefinir colunas"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "Ver todos os envios",
+    "viewMyDraftOrSubmissions": "Ver meus rascunhos/envios",
     "saveAsADraft": "Salve como um rascunho",
     "editThisDraft": "Editar este rascunho",
     "switchSingleSubmssn": "Alternar para envio único",
