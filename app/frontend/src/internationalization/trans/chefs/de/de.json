@@ -325,7 +325,8 @@
     "version": "Ausführung",
     "save": "Speichern",
     "saving": "Sparen",
-    "notSaved": "Nicht gespeichert"
+    "notSaved": "Nicht gespeichert",
+    "fieldname_error": "Sie können das Schlüsselwort 'form' NICHT als {label}-Feldnamen verwenden"
   },
   "formViewerMultiUpload": {
     "important": "WICHTIG",

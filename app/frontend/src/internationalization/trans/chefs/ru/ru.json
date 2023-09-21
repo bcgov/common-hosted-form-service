@@ -325,7 +325,8 @@
     "version": "Версия",
     "save": "Сохранять",
     "saving": "Сохранение",
-    "notSaved": "Не сохранено"
+    "notSaved": "Не сохранено",
+    "fieldname_error": "Вы НЕ МОЖЕТЕ использовать ключевое слово `form` в качестве имени поля {label}."
   },
   "formViewerMultiUpload": {
     "important": "ВАЖНЫЙ",

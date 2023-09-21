@@ -325,7 +325,8 @@
     "version": "Version",
     "save": "Save",
     "saving": "Saving",
-    "notSaved": "Not Saved"
+    "notSaved": "Not Saved",
+    "fieldname_error": "You CAN NOT use 'form' keyword as {label} fieldname"
   },
   "formViewerMultiUpload": {
     "important": "IMPORTANT",
