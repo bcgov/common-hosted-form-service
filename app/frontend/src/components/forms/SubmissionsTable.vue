@@ -11,8 +11,8 @@
       </div>
       <!-- buttons -->
       <div>
-        <span v-if="checkFormManage">
-          <v-tooltip bottom>
+        <span>
+          <v-tooltip bottom v-if="showSelectColumns">
             <template #activator="{ on, attrs }">
               <v-btn
                 @click="onShowColumnDialog"
@@ -29,7 +29,7 @@
               $t('trans.submissionsTable.selectColumns')
             }}</span>
           </v-tooltip>
-          <v-tooltip bottom>
+          <v-tooltip bottom v-if="showFormManage">
             <template #activator="{ on, attrs }">
               <router-link :to="{ name: 'FormManage', query: { f: formId } }">
                 <v-btn
@@ -48,7 +48,7 @@
               $t('trans.submissionsTable.manageForm')
             }}</span>
           </v-tooltip>
-          <v-tooltip bottom>
+          <v-tooltip bottom v-if="showSubmissionsExport">
             <template #activator="{ on, attrs }">
               <router-link
                 :to="{ name: 'SubmissionsExport', query: { f: formId } }"
@@ -329,7 +329,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { FormManagePermissions } from '@/utils/constants';
+import { checkFormManage, checkSubmissionView } from '@/utils/permissionUtils';
 import moment from 'moment';
 import _ from 'lodash';
 import { ref } from 'vue';
@@ -418,8 +418,19 @@ export default {
       'totalSubmissions',
     ]),
     ...mapGetters('auth', ['user']),
-    checkFormManage() {
-      return this.permissions.some((p) => FormManagePermissions.includes(p));
+    showFormManage() {
+      return this.checkFormManage(this.permissions);
+    },
+    showSelectColumns() {
+      return (
+        this.checkFormManage(this.permissions) ||
+        this.checkSubmissionView(this.permissions)
+      );
+    },
+    showSubmissionsExport() {
+      // For now use form management to indicate that the user can export
+      // submissions. In the future it should be its own set of permissions.
+      return this.checkFormManage(this.permissions);
     },
     DEFAULT_HEADER() {
       let headers = [
@@ -626,6 +637,10 @@ export default {
       'updateFormPreferencesForCurrentUser',
     ]),
     ...mapActions('notifications', ['addNotification']),
+
+    checkFormManage: checkFormManage,
+    checkSubmissionView: checkSubmissionView,
+
     onShowColumnDialog() {
       this.SELECT_COLUMNS_HEADERS.sort(
         (a, b) =>

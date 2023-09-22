@@ -86,7 +86,7 @@
       </template>
       <template #[`item.actions`]="{ item }">
         <router-link
-          v-if="checkFormManage(item)"
+          v-if="checkFormManage(item.permissions)"
           :to="{ name: 'FormManage', query: { f: item.id } }"
         >
           <v-btn color="primary" text small>
@@ -98,7 +98,7 @@
         </router-link>
         <router-link
           data-cy="formSubmissionsLink"
-          v-if="checkSubmissionView(item)"
+          v-if="checkSubmissionView(item.permissions)"
           :to="{ name: 'FormSubmissions', query: { f: item.id } }"
         >
           <v-btn color="primary" text small>
@@ -131,11 +131,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { IdentityProviders } from '@/utils/constants';
-import {
-  checkFormManage,
-  checkFormSubmit,
-  checkSubmissionView,
-} from '@/utils/permissionUtils';
+import { checkFormManage, checkSubmissionView } from '@/utils/permissionUtils';
 
 export default {
   name: 'FormsTable',
@@ -172,10 +168,12 @@ export default {
       ];
     },
     filteredFormList() {
-      // At this point, we're only showing forms you can manage or view submissions of here
-      // This may get reconceptualized in the future to different pages or something
+      // At this point, we're only showing forms you can manage or view
+      // submissions of here. This may get reconceptualized in the future to
+      // different pages or something
       return this.formList.filter(
-        (f) => checkFormManage(f) || checkSubmissionView(f)
+        (f) =>
+          checkFormManage(f.permissions) || checkSubmissionView(f.permissions)
       );
     },
     ID_PROVIDERS: () => IdentityProviders,
@@ -183,7 +181,6 @@ export default {
   methods: {
     ...mapActions('form', ['getFormsForCurrentUser']),
     checkFormManage: checkFormManage,
-    checkFormSubmit: checkFormSubmit,
     checkSubmissionView: checkSubmissionView,
     // show a description if is set in db
     onDescriptionClick(formId, formDescription) {
