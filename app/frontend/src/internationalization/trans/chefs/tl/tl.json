@@ -800,11 +800,11 @@
     "resetColumns": "I-reset ang Mga Column"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "Tingnan ang Lahat ng Pagsusumite",
+    "viewMyDraftOrSubmissions": "Tingnan ang Aking draft/mga isinumite",
     "saveAsADraft": "I-save bilang Draft",
     "editThisDraft": "I-edit ang Draft na ito",
     "switchSingleSubmssn": "Lumipat sa iisang pagsusumite",
-    "switchMultiSubmssn": "Lumipat sa Maramihang pagsusumite"
+    "switchMultiSubmssn": "Lumipat sa maramihang pagsusumite"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Nakopya ang link sa clipboard",

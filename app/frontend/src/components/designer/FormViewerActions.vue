@@ -80,7 +80,7 @@ export default {
         @click="$emit('showdoYouWantToSaveTheDraftModal')"
       >
         <span :lang="lang">{{
-          $t('trans.formViewerActions.viewAllSubmissions')
+          $t('trans.formViewerActions.viewMyDraftOrSubmissions')
         }}</span>
       </v-btn>
     </div>
