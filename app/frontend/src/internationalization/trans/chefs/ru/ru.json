@@ -795,11 +795,11 @@
     "resetColumns": "Сбросить столбцы"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "Просмотреть все материалы",
+    "viewMyDraftOrSubmissions": "Просмотреть мои черновики/представленные материалы",
     "saveAsADraft": "Сохранить как черновик",
     "editThisDraft": "Изменить этот черновик",
     "switchSingleSubmssn": "Переключиться на одиночную отправку",
-    "switchMultiSubmssn": "Переключиться на множественную отправку"
+    "switchMultiSubmssn": "Переключиться на несколько отправок"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Ссылка скопирована в буфер обмена",

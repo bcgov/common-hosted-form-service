@@ -796,11 +796,11 @@
     "resetColumns": "Restablecer columnas"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "Ver todas las presentaciones",
+    "viewMyDraftOrSubmissions": "Ver mis borradores/presentaciones",
     "saveAsADraft": "Guardar como borrador",
     "editThisDraft": "Editar este borrador",
     "switchSingleSubmssn": "Cambiar a envío único",
-    "switchMultiSubmssn": "Cambiar a envío múltiple"
+    "switchMultiSubmssn": "Cambiar a envíos múltiples"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Enlace copiado al portapapeles",

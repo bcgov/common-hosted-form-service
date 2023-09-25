@@ -796,11 +796,11 @@
     "resetColumns": "ਕਾਲਮ ਰੀਸੈਟ ਕਰੋ"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "ਸਾਰੀਆਂ ਬੇਨਤੀਆਂ ਦੇਖੋ",
+    "viewMyDraftOrSubmissions": "ਮੇਰਾ ਡਰਾਫਟ/ਸਬਮਿਸ਼ਨ ਦੇਖੋ",
     "saveAsADraft": "ਇੱਕ ਡਰਾਫਟ ਦੇ ਰੂਪ ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਕਰੋ",
     "editThisDraft": "ਇਸ ਡਰਾਫਟ ਨੂੰ ਸੰਪਾਦਿਤ ਕਰੋ",
     "switchSingleSubmssn": "ਸਿੰਗਲ ਸਬਮਿਸ਼ਨ 'ਤੇ ਸਵਿਚ ਕਰੋ",
-    "switchMultiSubmssn": "ਮਲਟੀਪਲ ਸਬਮਿਸ਼ਨ 'ਤੇ ਸਵਿਚ ਕਰੋ"
+    "switchMultiSubmssn": "ਕਈ ਸਬਮਿਸ਼ਨਾਂ 'ਤੇ ਸਵਿਚ ਕਰੋ"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "ਲਿੰਕ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ",

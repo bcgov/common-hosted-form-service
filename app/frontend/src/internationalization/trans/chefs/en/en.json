@@ -796,11 +796,11 @@
     "resetColumns": "Reset Columns"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "View All Submissions",
+    "viewMyDraftOrSubmissions": "View My Drafts/Submissions",
     "saveAsADraft": "Save as a Draft",
     "editThisDraft": "Edit this Draft",
     "switchSingleSubmssn": "Switch to single submission",
-    "switchMultiSubmssn": "Switch to Multiple submission"
+    "switchMultiSubmssn": "Switch to multiple submissions"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Link copied to clipboard",
