@@ -796,7 +796,7 @@
     "resetColumns": "Скинути стовпці"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "Переглянути всі подання",
+    "viewMyDraftOrSubmissions": "Переглянути мої чернетки/подання",
     "saveAsADraft": "Зберегти як чернетку",
     "editThisDraft": "Відредагуйте цю чернетку",
     "switchSingleSubmssn": "Перейти до одноразової подачі",

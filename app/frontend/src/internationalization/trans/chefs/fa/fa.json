@@ -796,7 +796,7 @@
     "resetColumns": "بازنشانی ستون ها"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "مشاهده همه موارد ارسالی",
+    "viewMyDraftOrSubmissions": "مشاهده پیش نویس/موارد ارسالی من",
     "saveAsADraft": "ذخیره به عنوان پیش نویس",
     "editThisDraft": "این پیش نویس را ویرایش کنید",
     "switchSingleSubmssn": "به ارسال تکی بروید",

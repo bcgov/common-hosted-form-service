@@ -795,7 +795,7 @@
     "resetColumns": "Сбросить столбцы"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "Просмотреть все материалы",
+    "viewMyDraftOrSubmissions": "Просмотреть мои черновики/представленные материалы",
     "saveAsADraft": "Сохранить как черновик",
     "editThisDraft": "Изменить этот черновик",
     "switchSingleSubmssn": "Переключиться на одиночную отправку",
