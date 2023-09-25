@@ -1,12 +1,15 @@
+import { setActivePinia, createPinia } from 'pinia';
 import { describe, expect, it, vi } from 'vitest';
+
+import { formService } from '~/services';
+import { useAuthStore } from '~/store/auth';
+import { useNotificationStore } from '~/store/notification';
 import {
   FormPermissions,
   IdentityProviders,
   IdentityMode,
 } from '~/utils/constants';
 import * as permissionUtils from '~/utils/permissionUtils';
-
-vi.mock('vue-router');
 
 describe('checkFormSubmit', () => {
   it('should be false when userForm is undefined', () => {
@@ -37,73 +40,75 @@ describe('checkFormSubmit', () => {
 });
 
 describe('checkFormManage', () => {
-  it('should be false when userForm is undefined', () => {
+  it('should be false when permissions is undefined', () => {
     expect(permissionUtils.checkFormManage(undefined)).toBeFalsy();
   });
 
-  it('should be false when permissions is undefined', () => {
-    expect(permissionUtils.checkFormManage({})).toBeFalsy();
+  it('should be false when permissions is empty', () => {
+    expect(permissionUtils.checkFormManage([])).toBeFalsy();
+  });
+
+  it('should be false when no appropriate permission exists', () => {
+    let permissions = new Array(FormPermissions)
+      .filter((p) => p !== FormPermissions.FORM_UPDATE)
+      .filter((p) => p !== FormPermissions.FORM_DELETE)
+      .filter((p) => p !== FormPermissions.DESIGN_UPDATE)
+      .filter((p) => p !== FormPermissions.DESIGN_DELETE)
+      .filter((p) => p !== FormPermissions.TEAM_UPDATE);
+
+    expect(permissionUtils.checkFormManage(permissions)).not.toBeTruthy();
   });
 
   it('should be true when at least one appropriate permission exists', () => {
     expect(
-      permissionUtils.checkFormManage({
-        permissions: [FormPermissions.FORM_UPDATE],
-      })
+      permissionUtils.checkFormManage([FormPermissions.FORM_UPDATE])
     ).toBeTruthy();
     expect(
-      permissionUtils.checkFormManage({
-        permissions: [FormPermissions.FORM_DELETE],
-      })
+      permissionUtils.checkFormManage([FormPermissions.FORM_DELETE])
     ).toBeTruthy();
     expect(
-      permissionUtils.checkFormManage({
-        permissions: [FormPermissions.DESIGN_UPDATE],
-      })
+      permissionUtils.checkFormManage([FormPermissions.DESIGN_UPDATE])
     ).toBeTruthy();
     expect(
-      permissionUtils.checkFormManage({
-        permissions: [FormPermissions.DESIGN_DELETE],
-      })
+      permissionUtils.checkFormManage([FormPermissions.DESIGN_DELETE])
     ).toBeTruthy();
     expect(
-      permissionUtils.checkFormManage({
-        permissions: [FormPermissions.TEAM_UPDATE],
-      })
+      permissionUtils.checkFormManage([FormPermissions.TEAM_UPDATE])
     ).toBeTruthy();
   });
 });
 
 describe('checkSubmissionView', () => {
-  it('should be false when userForm is undefined', () => {
+  it('should be false when permissions is undefined', () => {
     expect(permissionUtils.checkSubmissionView(undefined)).toBeFalsy();
   });
 
-  it('should be false when permissions is undefined', () => {
-    expect(permissionUtils.checkSubmissionView({})).toBeFalsy();
+  it('should be false when permissions is empty', () => {
+    expect(permissionUtils.checkSubmissionView([])).toBeFalsy();
+  });
+
+  it('should be false when no appropriate permission exists', () => {
+    let permissions = new Array(FormPermissions)
+      .filter((p) => p !== FormPermissions.SUBMISSION_READ)
+      .filter((p) => p !== FormPermissions.SUBMISSION_UPDATE);
+
+    expect(permissionUtils.checkSubmissionView(permissions)).not.toBeTruthy();
   });
 
   it('should be true when at least one appropriate permission exists', () => {
     expect(
-      permissionUtils.checkSubmissionView({
-        permissions: [FormPermissions.SUBMISSION_READ],
-      })
+      permissionUtils.checkSubmissionView([FormPermissions.SUBMISSION_READ])
     ).toBeTruthy();
     expect(
-      permissionUtils.checkSubmissionView({
-        permissions: [FormPermissions.SUBMISSION_UPDATE],
-      })
+      permissionUtils.checkSubmissionView([FormPermissions.SUBMISSION_UPDATE])
     ).toBeTruthy();
   });
-}); /* 
+});
 
 describe('preFlightAuth', () => {
   setActivePinia(createPinia());
   const authStore = useAuthStore();
   const notificationStore = useNotificationStore();
-  useRouter.mockReturnValue({
-    replace: vi.fn(),
-  });
   const mockNext = vi.fn();
   const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
   const alertNavigateSpy = vi.spyOn(notificationStore, 'alertNavigate');
@@ -120,7 +125,6 @@ describe('preFlightAuth', () => {
     errorNavigateSpy.mockReset();
     getSubmissionOptionsSpy.mockReset();
     readFormOptionsSpy.mockReset();
-    useRouter().replace.mockReset();
   });
 
   afterAll(() => {
@@ -347,7 +351,7 @@ describe('preFlightAuth', () => {
     expect(getSubmissionOptionsSpy).toHaveBeenCalledWith('s');
     expect(readFormOptionsSpy).toHaveBeenCalledTimes(0);
   });
-}); */
+});
 
 describe('isFormPublic', () => {
   it('should be false when form is undefined', () => {

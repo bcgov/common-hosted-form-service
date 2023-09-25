@@ -1,5 +1,7 @@
 <script>
 import { mapState, mapWritableState } from 'pinia';
+import { nextTick } from 'vue';
+
 import BasePanel from '~/components/base/BasePanel.vue';
 import BaseInfoCard from '~/components/base/BaseInfoCard.vue';
 import { IdentityMode, IdentityProviders } from '~/utils/constants';
@@ -16,11 +18,12 @@ export default {
         (v) => {
           return (
             v !== 'login' ||
-            this.form.idps.length === 1 ||
+            this.form.idps.length > 0 ||
             this.$t('trans.formSettings.selectLoginType')
           );
         },
       ],
+      idpType: null,
     };
   },
   computed: {
@@ -49,6 +52,18 @@ export default {
           reminder_enabled: false,
         };
       }
+    },
+
+    updateLoginType() {
+      // Unable to detect nested radio group in the form.idps for validation and there's no way
+      // to manually enforce a validation rules check. So when we detect a change in the
+      // idpType, we set the form idps ourselves and then change the userType twice
+      // to re-validate the radio group that is the parent.
+      this.form.idps = [this.idpType];
+      this.form.userType = 'team';
+      nextTick(() => {
+        this.form.userType = 'login';
+      });
     },
   },
 };
@@ -108,7 +123,11 @@ export default {
       </v-radio>
       <v-expand-transition>
         <v-row v-if="form.userType === ID_MODE.LOGIN" class="pl-6">
-          <v-radio-group v-model="form.idps[0]" class="my-0">
+          <v-radio-group
+            v-model="idpType"
+            class="my-0"
+            @update:model-value="updateLoginType"
+          >
             <v-radio class="mx-2" :value="ID_PROVIDERS.IDIR">
               <template #label>
                 <span :class="{ 'mr-2': isRTL }"> IDIR </span>
@@ -128,11 +147,11 @@ export default {
             <v-expand-transition>
               <BaseInfoCard
                 v-if="
-                  form.idps[0] &&
+                  idpType &&
                   [
                     ID_PROVIDERS.BCEIDBASIC,
                     ID_PROVIDERS.BCEIDBUSINESS,
-                  ].includes(form.idps[0])
+                  ].includes(idpType)
                 "
                 class="mr-4"
                 :class="{ 'dir-rtl': isRTL }"
