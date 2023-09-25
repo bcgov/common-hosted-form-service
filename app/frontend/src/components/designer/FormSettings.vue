@@ -15,6 +15,12 @@ export default {
     FormScheduleSettings,
     FormSubmissionSettings,
   },
+  props: {
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+  },
   computed: {
     ...mapWritableState(useFormStore, ['form']),
     ...mapState(useFormStore, ['isFormPublished', 'isRTL']),
@@ -32,7 +38,7 @@ export default {
         <FormAccessSettings />
       </v-col>
       <v-col cols="12" md="6">
-        <FormFunctionalitySettings />
+        <FormFunctionalitySettings :disabled="disabled" />
       </v-col>
       <v-col cols="12" md="6">
         <FormSubmissionSettings />
