@@ -44,6 +44,7 @@ export default {
       forceTableRefresh: 0,
       itemsPerPage: 10,
       loading: true,
+      page: 1,
       restoreItem: {},
       search: '',
       selectedSubmissions: [],
@@ -366,7 +367,7 @@ export default {
       this.showColumnsDialog = true;
     },
     async updateTableOptions({ page, itemsPerPage, sortBy }) {
-      this.page = page - 1;
+      this.page = page;
       if (sortBy?.length > 0) {
         if (sortBy[0].key === 'date') {
           this.sortBy.column = 'createdAt';

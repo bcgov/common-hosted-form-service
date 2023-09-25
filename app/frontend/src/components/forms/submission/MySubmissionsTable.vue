@@ -1,5 +1,4 @@
 <script>
-import _ from 'lodash';
 import { mapActions, mapState } from 'pinia';
 
 import { i18n } from '~/internationalization';

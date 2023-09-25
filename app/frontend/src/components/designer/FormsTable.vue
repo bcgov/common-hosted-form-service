@@ -45,7 +45,8 @@ export default {
     },
     filteredFormList() {
       return this.formList.filter(
-        (f) => checkFormManage(f.permissions) || checkSubmissionView(f.permissions)
+        (f) =>
+          checkFormManage(f.permissions) || checkSubmissionView(f.permissions)
       );
     },
   },

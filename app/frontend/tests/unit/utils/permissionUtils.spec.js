@@ -1,12 +1,15 @@
+import { setActivePinia, createPinia } from 'pinia';
 import { describe, expect, it, vi } from 'vitest';
+
+import { formService } from '~/services';
+import { useAuthStore } from '~/store/auth';
+import { useNotificationStore } from '~/store/notification';
 import {
   FormPermissions,
   IdentityProviders,
   IdentityMode,
 } from '~/utils/constants';
 import * as permissionUtils from '~/utils/permissionUtils';
-
-vi.mock('vue-router');
 
 describe('checkFormSubmit', () => {
   it('should be false when userForm is undefined', () => {
@@ -106,9 +109,6 @@ describe('preFlightAuth', () => {
   setActivePinia(createPinia());
   const authStore = useAuthStore();
   const notificationStore = useNotificationStore();
-  useRouter.mockReturnValue({
-    replace: vi.fn(),
-  });
   const mockNext = vi.fn();
   const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
   const alertNavigateSpy = vi.spyOn(notificationStore, 'alertNavigate');
@@ -125,7 +125,6 @@ describe('preFlightAuth', () => {
     errorNavigateSpy.mockReset();
     getSubmissionOptionsSpy.mockReset();
     readFormOptionsSpy.mockReset();
-    useRouter().replace.mockReset();
   });
 
   afterAll(() => {
