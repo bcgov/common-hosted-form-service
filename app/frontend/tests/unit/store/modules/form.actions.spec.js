@@ -242,7 +242,7 @@ describe('form actions', () => {
 
     it('fetchSubmissions should commit to SET_SUBMISSIONLIST', async () => {
       formService.listSubmissions.mockResolvedValue({
-        data: { results: [], total: 0 },
+        data: [],
       });
       await mockStore.fetchSubmissions({ formId: 'fId' });
 
@@ -264,7 +264,7 @@ describe('form actions', () => {
 
     it('fetchSubmissions should call the formService if not for userView', async () => {
       formService.listSubmissions.mockResolvedValue({
-        data: { results: [], total: 0 },
+        data: [],
       });
       await mockStore.fetchSubmissions({
         formId: 'fId',
@@ -289,7 +289,7 @@ describe('form actions', () => {
 
     it('fetchSubmissions should call the rbacService if for userView', async () => {
       rbacService.getUserSubmissions.mockResolvedValue({
-        data: { results: [], total: 0 },
+        data: [],
       });
       await mockStore.fetchSubmissions({
         formId: 'fId',
@@ -300,10 +300,6 @@ describe('form actions', () => {
       expect(getUserSubmissionsSpy).toHaveBeenCalledTimes(1);
       expect(getUserSubmissionsSpy).toHaveBeenCalledWith({
         formId: 'fId',
-        itemsPerPage: undefined,
-        page: undefined,
-        sortBy: undefined,
-        totalSubmissions: 0,
       });
     });
 

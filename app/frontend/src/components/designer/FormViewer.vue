@@ -1242,9 +1242,6 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-@import '~font-awesome/css/font-awesome.min.css';
-@import '~formiojs/dist/formio.builder.min.css';
-
 .form-wrapper :deep(.formio-form) {
   &.formio-read-only {
     // in submission review mode, make readonly formio fields consistently greyed-out

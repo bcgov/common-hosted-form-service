@@ -8,7 +8,7 @@ import BaseFilter from '~/components/base/BaseFilter.vue';
 import { i18n } from '~/internationalization';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
-import { FormManagePermissions } from '~/utils/constants';
+import { checkFormManage, checkSubmissionView } from '~/utils/permissionUtils';
 
 export default {
   components: {
@@ -41,8 +41,10 @@ export default {
           key: 'event',
         },
       ],
+      forceTableRefresh: 0,
       itemsPerPage: 10,
       loading: true,
+      page: 1,
       restoreItem: {},
       search: '',
       selectedSubmissions: [],
@@ -87,11 +89,22 @@ export default {
     singleRestoreMessage() {
       return i18n.t('trans.submissionsTable.singleRestoreWarning');
     },
-    checkFormManage() {
-      return this.permissions.some((p) => FormManagePermissions.includes(p));
-    },
     showStatus() {
       return this.form && this.form.enableStatusUpdates;
+    },
+    showFormManage() {
+      return this.checkFormManage(this.permissions);
+    },
+    showSelectColumns() {
+      return (
+        this.checkFormManage(this.permissions) ||
+        this.checkSubmissionView(this.permissions)
+      );
+    },
+    showSubmissionsExport() {
+      // For now use form management to indicate that the user can export
+      // submissions. In the future it should be its own set of permissions.
+      return this.checkFormManage(this.permissions);
     },
     userColumns() {
       if (
@@ -318,9 +331,10 @@ export default {
     },
     //------------------------ END FILTER COLUMNS
   },
-  mounted() {
+  async mounted() {
     this.debounceInput = _.debounce(async () => {
       this.refreshSubmissions();
+      this.forceTableRefresh += 1;
     }, 300);
     this.refreshSubmissions();
   },
@@ -339,6 +353,10 @@ export default {
       'updateFormPreferencesForCurrentUser',
     ]),
     ...mapActions('notifications', ['addNotification']),
+
+    checkFormManage: checkFormManage,
+    checkSubmissionView: checkSubmissionView,
+
     onShowColumnDialog() {
       this.BASE_FILTER_HEADERS.sort(
         (a, b) =>
@@ -349,7 +367,7 @@ export default {
       this.showColumnsDialog = true;
     },
     async updateTableOptions({ page, itemsPerPage, sortBy }) {
-      this.page = page - 1;
+      this.page = page;
       if (sortBy?.length > 0) {
         if (sortBy[0].key === 'date') {
           this.sortBy.column = 'createdAt';
@@ -375,8 +393,9 @@ export default {
       let criteria = {
         formId: this.formId,
         itemsPerPage: this.itemsPerPage,
-        page: this.page,
+        page: this.page - 1,
         filterformSubmissionStatusCode: true,
+        paginationEnabled: true,
         sortBy: this.sortBy,
         search: this.search,
         searchEnabled: this.search.length > 0,
@@ -474,6 +493,7 @@ export default {
       ])
         .then(async () => {
           await this.populateSubmissionsTable();
+          this.loading = false;
         })
         .finally(() => {
           this.selectedSubmissions = [];
@@ -539,7 +559,6 @@ export default {
         formId: this.form.id,
         preferences: preferences,
       });
-
       await this.populateSubmissionsTable();
     },
     handleSearch(value) {
@@ -560,8 +579,8 @@ export default {
       </div>
       <!-- buttons -->
       <div>
-        <span v-if="checkFormManage">
-          <v-tooltip location="bottom">
+        <span>
+          <v-tooltip v-if="showSelectColumns" location="bottom">
             <template #activator="{ props }">
               <v-btn
                 class="mx-1"
@@ -577,7 +596,7 @@ export default {
               $t('trans.submissionsTable.selectColumns')
             }}</span>
           </v-tooltip>
-          <v-tooltip location="bottom">
+          <v-tooltip v-if="showFormManage" location="bottom">
             <template #activator="{ props }">
               <router-link :to="{ name: 'FormManage', query: { f: formId } }">
                 <v-btn
@@ -595,7 +614,7 @@ export default {
               $t('trans.submissionsTable.manageForm')
             }}</span>
           </v-tooltip>
-          <v-tooltip location="bottom">
+          <v-tooltip v-if="showSubmissionsExport" location="bottom">
             <template #activator="{ props }">
               <router-link
                 :to="{ name: 'SubmissionsExport', query: { f: formId } }"
@@ -670,6 +689,7 @@ export default {
 
     <!-- table header -->
     <v-data-table-server
+      :key="forceTableRefresh"
       v-model="selectedSubmissions"
       :items-length="totalSubmissions"
       class="submissions-table"
