@@ -20,7 +20,6 @@ export default {
   },
   data() {
     return {
-      debounceInput: null,
       filterData: [],
       filterIgnore: [
         {
@@ -31,12 +30,9 @@ export default {
         },
       ],
       headers: [],
-      itemsPerPage: 10,
       loading: true,
-      page: 1,
       search: '',
       serverItems: [],
-      sortBy: {},
       showColumnsDialog: false,
       tableFilterIgnore: [],
     };
@@ -199,9 +195,6 @@ export default {
       });
     });
     await this.populateSubmissionsTable();
-    this.debounceInput = _.debounce(async () => {
-      await this.populateSubmissionsTable();
-    }, 300);
   },
   methods: {
     ...mapActions(useFormStore, [
@@ -244,40 +237,12 @@ export default {
       }
       return '';
     },
-    async updateTableOptions({ page, itemsPerPage, sortBy }) {
-      this.page = page - 1;
-      if (sortBy?.length > 0) {
-        if (sortBy[0].key === 'date') {
-          this.sortBy.column = 'createdAt';
-        } else if (sortBy[0].key === 'submitter') {
-          this.sortBy.column = 'createdBy';
-        } else if (sortBy[0].key === 'status') {
-          this.sortBy.column = 'formSubmissionStatusCode';
-        } else {
-          this.sortBy.column = sortBy[0].key;
-        }
-        this.sortBy.order = sortBy[0].order;
-      } else {
-        this.sortBy = {};
-      }
-      this.itemsPerPage = itemsPerPage;
-      if (this.search === '') {
-        await this.populateSubmissionsTable();
-      } else {
-        this.debounceInput();
-      }
-    },
     async populateSubmissionsTable() {
       this.loading = true;
       // Get the submissions for this form
       await this.fetchSubmissions({
         formId: this.formId,
         userView: true,
-        page: this.page,
-        itemsPerPage: this.itemsPerPage,
-        sortBy: this.sortBy,
-        search: this.search,
-        searchEnabled: this.search.length > 0,
       });
       // Build up the list of forms for the table
       if (this.submissionList) {
@@ -315,10 +280,6 @@ export default {
     async updateFilter(data) {
       this.filterData = data;
       this.showColumnsDialog = false;
-    },
-
-    handleSearch(value) {
-      this.search = value;
     },
   },
 };
@@ -387,6 +348,7 @@ export default {
       :class="isRTL ? 'float-left' : 'float-right'"
     >
       <v-text-field
+        v-model="search"
         density="compact"
         variant="underlined"
         :label="$t('trans.mySubmissionsTable.search')"
@@ -396,28 +358,20 @@ export default {
         class="pb-5"
         :class="{ label: isRTL }"
         :lang="lang"
-        @update:model-value="handleSearch"
       />
     </div>
 
     <!-- table header -->
-    <v-data-table-server
-      :items-length="totalSubmissions"
+    <v-data-table
       class="submissions-table"
-      :items-per-page="itemsPerPage"
       :headers="HEADERS"
       item-value="title"
       :items="serverItems"
       :search="search"
       :loading="loading"
       :loading-text="$t('trans.mySubmissionsTable.loadingText')"
-      :no-data-text="
-        search.length > 0
-          ? $t('trans.mySubmissionsTable.noMatchingRecordText')
-          : $t('trans.mySubmissionsTable.noDataText')
-      "
+      :no-data-text="$t('trans.mySubmissionsTable.noDataText')"
       :lang="lang"
-      @update:options="updateTableOptions"
     >
       <template #item.lastEdited="{ item }">
         {{ $filters.formatDateLong(item.columns.lastEdited) }}
@@ -438,7 +392,7 @@ export default {
           @draft-deleted="populateSubmissionsTable"
         />
       </template>
-    </v-data-table-server>
+    </v-data-table>
     <v-dialog v-model="showColumnsDialog" width="700">
       <BaseFilter
         :input-filter-placeholder="

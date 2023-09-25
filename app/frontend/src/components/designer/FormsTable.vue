@@ -45,7 +45,7 @@ export default {
     },
     filteredFormList() {
       return this.formList.filter(
-        (f) => checkFormManage(f) || checkSubmissionView(f)
+        (f) => checkFormManage(f.permissions) || checkSubmissionView(f.permissions)
       );
     },
   },
@@ -165,7 +165,7 @@ export default {
     </template>
     <template #item.actions="{ item }">
       <router-link
-        v-if="checkFormManage(item.raw)"
+        v-if="checkFormManage(item.raw.permissions)"
         :to="{ name: 'FormManage', query: { f: item.raw.id } }"
       >
         <v-btn color="primary" variant="text" size="small">
@@ -176,7 +176,7 @@ export default {
         </v-btn>
       </router-link>
       <router-link
-        v-if="checkSubmissionView(item.raw)"
+        v-if="checkSubmissionView(item.raw.permissions)"
         data-cy="formSubmissionsLink"
         :to="{ name: 'FormSubmissions', query: { f: item.raw.id } }"
       >
@@ -224,29 +224,5 @@ export default {
     padding-left: 16px;
     padding-right: 16px;
   }
-}
-
-.submissions-table {
-  clear: both;
-}
-@media (max-width: 1263px) {
-  .submissions-table :deep(th) {
-    vertical-align: top;
-  }
-}
-/* Want to use scss but the world hates me */
-.submissions-table :deep(tbody) tr:nth-of-type(odd) {
-  background-color: #f5f5f5;
-}
-.submissions-table :deep(thead) tr th {
-  font-weight: normal;
-  color: #003366 !important;
-  font-size: 1.1em;
-}
-.submissions-table a {
-  color: #003366;
-}
-.description-icon:focus::after {
-  opacity: 0;
 }
 </style>

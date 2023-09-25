@@ -30,34 +30,29 @@ export function checkFormSubmit(userForm) {
 
 /**
  * @function checkFormManage
- * Returns true or false if the user can manage the form
- * @param {Object} userForm The form object for the rbac user
+ * Returns true if the user can manage a form, false otherwise
+ * @param {Array} userForm A form's permissions array for the rbac user
  * @returns {boolean} TRUE if they can
  */
-export function checkFormManage(userForm) {
+export function checkFormManage(permissions) {
   return (
-    userForm &&
-    userForm.permissions &&
-    userForm.permissions.some((p) => FormManagePermissions.includes(p))
+    permissions && permissions.some((p) => FormManagePermissions.includes(p))
   );
 }
 
 /**
  * @function checkSubmissionView
- * Returns true or false if the user view submissions of this form
- * @param {Object} userForm The form object for the rbac user
+ * Returns true if the user can view submissions of a form, false otherwise
+ * @param {Array} permissions A form's permissions array for the rbac user
  * @returns {boolean} TRUE if they can
  */
-export function checkSubmissionView(userForm) {
+export function checkSubmissionView(permissions) {
   const perms = [
     FormPermissions.SUBMISSION_READ,
     FormPermissions.SUBMISSION_UPDATE,
   ];
-  return (
-    userForm &&
-    userForm.permissions &&
-    userForm.permissions.some((p) => perms.includes(p))
-  );
+
+  return permissions && permissions.some((p) => perms.includes(p));
 }
 
 /**
