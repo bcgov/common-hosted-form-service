@@ -796,7 +796,7 @@
     "resetColumns": "Restablecer columnas"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "Ver todas las presentaciones",
+    "viewMyDraftOrSubmissions": "Ver mis borradores/presentaciones",
     "saveAsADraft": "Guardar como borrador",
     "editThisDraft": "Editar este borrador",
     "switchSingleSubmssn": "Cambiar a envío único",
