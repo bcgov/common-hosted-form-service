@@ -565,6 +565,7 @@ export const useFormStore = defineStore('form', {
       createdBy = '',
       createdAt,
       page,
+      paginationEnabled,
       itemsPerPage,
       filterformSubmissionStatusCode,
       sortBy: sortBy,
@@ -581,12 +582,6 @@ export const useFormStore = defineStore('form', {
         const response = userView
           ? await rbacService.getUserSubmissions({
               formId: formId,
-              page: page,
-              itemsPerPage: itemsPerPage,
-              totalSubmissions: this.totalSubmissions,
-              sortBy: sortBy,
-              search: search,
-              searchEnabled: searchEnabled,
             })
           : await formService.listSubmissions(formId, {
               deleted: deletedOnly,
@@ -594,6 +589,7 @@ export const useFormStore = defineStore('form', {
               createdBy: createdBy,
               createdAt: createdAt,
               page: page,
+              paginationEnabled: paginationEnabled,
               filterformSubmissionStatusCode: filterformSubmissionStatusCode,
               itemsPerPage: itemsPerPage,
               totalSubmissions: this.totalSubmissions,
@@ -601,8 +597,12 @@ export const useFormStore = defineStore('form', {
               search: search,
               searchEnabled: searchEnabled,
             });
-        this.submissionList = response.data.results;
-        this.totalSubmissions = response.data.total;
+        if (paginationEnabled) {
+          this.submissionList = response.data.results;
+          this.totalSubmissions = response.data.total;
+        } else {
+          this.submissionList = response.data;
+        }
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
