@@ -800,7 +800,7 @@
     "saveAsADraft": "另存为草稿",
     "editThisDraft": "编辑本草稿",
     "switchSingleSubmssn": "切换到单一提交",
-    "switchMultiSubmssn": "切换到批量提交"
+    "switchMultiSubmssn": "切换到多次提交"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "链接已复制到剪贴板",

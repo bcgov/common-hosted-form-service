@@ -799,7 +799,7 @@
     "saveAsADraft": "Сохранить как черновик",
     "editThisDraft": "Изменить этот черновик",
     "switchSingleSubmssn": "Переключиться на одиночную отправку",
-    "switchMultiSubmssn": "Переключиться на массовую отправку"
+    "switchMultiSubmssn": "Переключиться на несколько отправок"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Ссылка скопирована в буфер обмена",
