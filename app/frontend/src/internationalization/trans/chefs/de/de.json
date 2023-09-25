@@ -796,7 +796,7 @@
     "resetColumns": "Spalten zurücksetzen"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "Alle Einsendungen anzeigen",
+    "viewMyDraftOrSubmissions": "Meine Entwürfe/Einreichungen ansehen",
     "saveAsADraft": "Als einen Entwurf sichern",
     "editThisDraft": "Bearbeiten Sie diesen Entwurf",
     "switchSingleSubmssn": "Wechseln Sie zur Einzeleinreichung",
