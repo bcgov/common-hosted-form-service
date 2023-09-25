@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900');
 @import url('https://fonts.googleapis.com/css?family=Material+Icons');
 @import '@mdi/font/css/materialdesignicons.css';
+@import '~font-awesome/css/font-awesome.min.css';
+@import '~formiojs/dist/formio.builder.min.css';
 @import 'bootstrap-scss/bootstrap.scss'; // TODO: import this only for form designer/renderer formio components
 @import 'vue-json-pretty/lib/styles.css';
 
