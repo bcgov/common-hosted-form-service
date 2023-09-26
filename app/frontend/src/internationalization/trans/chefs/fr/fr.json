@@ -761,16 +761,13 @@
     "createOnlineTitle": "Créez des formulaires en ligne pour collecter des informations auprès de vos clients et améliorer vos flux de travail.",
     "getStarted": "Commencer"
   },
-"design": {
+"baseStepper": {
   "setUpForm": "Configurer le formulaire",
     "designForm": "Formulaire de conception",
-    "publishForm": "Publier le formulaire"
+    "manageForm": "Gérer le formulaire"
 },
   "create": {
     "createNewForm": "Créer un nouveau formulaire",
-    "setUpForm": "Configurer le formulaire",
-    "designForm": "Formulaire de conception",
-    "publishForm": "Publier le formulaire",
     "formSettings": "Paramètres du formulaire",
     "disclaimer": "Clause de non-responsabilité",
     "disclaimerStmt": "J'accepte la clause de non-responsabilité et la déclaration de responsabilité des concepteurs de formulaires",

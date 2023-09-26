@@ -762,16 +762,13 @@
     "getStarted": "iniciar"
   },
   
-"design": {
+"baseStepper": {
   "setUpForm": "Configurar formulário",
     "designForm": "Forma de desenho",
-    "publishForm": "Publicar formulário"
+    "manageForm": "Gerenciar formulário"
 },
   "create": {
     "createNewForm": "Criar novo formulário",
-    "setUpForm": "Configurar formulário",
-    "designForm": "Forma de desenho",
-    "publishForm": "Publicar formulário",
     "formSettings": "Configurações do formulário",
     "disclaimer": "Isenção de responsabilidade",
     "disclaimerStmt": "Eu concordo com a isenção de responsabilidade e declaração de responsabilidade para Form Designers",

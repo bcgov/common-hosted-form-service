@@ -761,16 +761,13 @@
     "createOnlineTitle": "Tạo biểu mẫu trực tuyến để thu thập thông tin từ khách hàng của bạn và cải thiện quy trình làm việc của bạn.",
     "getStarted": "Bắt đầu"
   },
-  "design": {
+  "baseStepper": {
     "setUpForm": "Thiết lập biểu mẫu",
     "designForm": "mẫu thiết kế",
-    "publishForm": "Xuất bản biểu mẫu"
+    "manageForm": "Quản lý biểu mẫu"
     },
   "create": {
     "createNewForm": "Tạo biểu mẫu mới",
-    "setUpForm": "Thiết lập biểu mẫu",
-    "designForm": "mẫu thiết kế",
-    "publishForm": "Xuất bản biểu mẫu",
     "formSettings": "Cài đặt biểu mẫu",
     "disclaimer": "từ chối trách nhiệm",
     "disclaimerStmt": "Tôi đồng ý với tuyên bố từ chối trách nhiệm và tuyên bố trách nhiệm đối với Nhà thiết kế biểu mẫu",

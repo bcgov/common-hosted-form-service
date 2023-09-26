@@ -761,17 +761,15 @@
     "createOnlineTitle": "قم بإنشاء نماذج عبر الإنترنت لجمع المعلومات من عملائك وتحسين سير العمل الخاص بك.",
     "getStarted": "البدء"
   },
-  "design": {
+  "baseStepper": {
     "designForm": "نموذج التصميم",
     "setUpForm": "قم بإعداد النموذج",
-    "publishForm": "نشر النموذج"
+    "publishForm": "نشر النموذج",
+    "manageForm": "إدارة النموذج"
   },
 
   "create": {
     "createNewForm": "إنشاء نموذج جديد",
-    "setUpForm": "قم بإعداد النموذج",
-    "designForm": "نموذج التصميم",
-    "publishForm": "نشر النموذج",
     "formSettings": "إعدادات النموذج",
     "disclaimer": "تنصل",
     "disclaimerStmt": "أوافق على إخلاء المسؤولية وبيان المسؤولية لمصممي النماذج",

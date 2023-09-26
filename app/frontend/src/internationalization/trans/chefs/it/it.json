@@ -761,16 +761,13 @@
     "createOnlineTitle": "Crea moduli online per raccogliere informazioni dai tuoi clienti e migliorare i tuoi flussi di lavoro.",
     "getStarted": "Iniziare"
   },
-"design": {
+"baseStepper": {
   "setUpForm": "Imposta modulo",
     "designForm": "Modulo di progettazione",
-    "publishForm": "Pubblica modulo"
+    "manageForm": "Gestisci modulo"
 },
   "create": {
     "createNewForm": "Crea nuovo modulo",
-    "setUpForm": "Imposta modulo",
-    "designForm": "Modulo di progettazione",
-    "publishForm": "Pubblica modulo",
     "formSettings": "Impostazioni modulo",
     "disclaimer": "Disclaimer",
     "disclaimerStmt": "Accetto il disclaimer e la dichiarazione di responsabilità per Form Designers",

@@ -761,16 +761,13 @@
     "createOnlineTitle": "创建在线表单以收集客户的信息并改进您的工作流程。",
     "getStarted": "开始使用"
   },
-  "design": {
+  "baseStepper": {
     "setUpForm": "设置表格",
     "designForm": "设计形式",
-    "publishForm": "发布表格"
+    "manageForm": "管理表格"
     },
   "create": {
     "createNewForm": "创建新表格",
-    "setUpForm": "设置表格",
-    "designForm": "设计形式",
-    "publishForm": "发布表格",
     "formSettings": "表单设置",
     "disclaimer": "免责声明",
     "disclaimerStmt": "我同意表单设计师的免责声明和责任声明",
