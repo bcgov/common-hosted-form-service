@@ -9,19 +9,23 @@
         style="width: 40%"
         class="elevation-0 px-0 align-self-center"
       >
-        <v-stepper-step :complete="creatorStep > 1" step="1" class="pl-1">
+        <v-stepper-step :complete="creatorStep > 1" step="1" class="pl-1 pr-1">
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.create.setUpForm') }}
           </span>
         </v-stepper-step>
         <v-divider />
-        <v-stepper-step :complete="creatorStep > 2" step="2" class="pr-1">
+        <v-stepper-step :complete="creatorStep > 2" step="2" class="pl-1 pr-1">
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.create.designForm') }}
           </span>
         </v-stepper-step>
         <v-divider />
-        <v-stepper-step :complete="creatorStep === 3" step="3" class="pr-1">
+        <v-stepper-step
+          :complete="creatorStep === 3"
+          step="3"
+          class="pl-1 pr-1"
+        >
           <span :class="{ 'mr-2': isRTL }" :lang="lang"> Manage Form </span>
         </v-stepper-step>
       </v-stepper-header>
