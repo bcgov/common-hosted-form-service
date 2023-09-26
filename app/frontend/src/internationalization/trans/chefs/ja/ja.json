@@ -326,7 +326,7 @@
     "save": "保存",
     "saving": "保存",
     "notSaved": "保存されていません",
-    "fieldname_error": "`form` キーワードを {label} フィールド名として使用することはできません"
+    "fieldnameError": "`form` キーワードを {label} フィールド名として使用することはできません"
   },
   "formViewerMultiUpload": {
     "important": "重要",

@@ -326,7 +326,7 @@
     "save": "Cứu",
     "saving": "Tiết kiệm",
     "notSaved": "Chưa được lưu",
-    "fieldname_error": "Bạn KHÔNG THỂ sử dụng từ khóa `form` làm tên trường {label}"
+    "fieldnameError": "Bạn KHÔNG THỂ sử dụng từ khóa `form` làm tên trường {label}"
   },
   "formViewerMultiUpload": {
     "important": "QUAN TRỌNG",

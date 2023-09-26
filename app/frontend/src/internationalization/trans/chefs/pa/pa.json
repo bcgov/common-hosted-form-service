@@ -326,7 +326,7 @@
     "save": "ਸੇਵ ਕਰੋ",
     "saving": "ਸੰਭਾਲ ਰਿਹਾ ਹੈ",
     "notSaved": "ਸੰਭਾਲਿਆ ਨਹੀਂ ਗਿਆ",
-    "fieldname_error": "ਤੁਸੀਂ `form` ਕੀਵਰਡ ਨੂੰ {label} ਫੀਲਡਨਾਮ ਵਜੋਂ ਨਹੀਂ ਵਰਤ ਸਕਦੇ ਹੋ"
+    "fieldnameError": "ਤੁਸੀਂ `form` ਕੀਵਰਡ ਨੂੰ {label} ਫੀਲਡਨਾਮ ਵਜੋਂ ਨਹੀਂ ਵਰਤ ਸਕਦੇ ਹੋ"
   },
   "formViewerMultiUpload": {
     "important": "ਮਹੱਤਵਪੂਰਨ",

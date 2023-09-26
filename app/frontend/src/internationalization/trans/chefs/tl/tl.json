@@ -326,7 +326,7 @@
     "save": "I-save",
     "saving": "Nagtitipid",
     "notSaved": "Hindi Na-save",
-    "fieldname_error": "HINDI mo MAAARI gumamit ng `form` na keyword bilang {label} fieldname"
+    "fieldnameError": "HINDI mo MAAARI gumamit ng `form` na keyword bilang {label} fieldname"
   },
   "formViewerMultiUpload": {
     "important": "MAHALAGA",

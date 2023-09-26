@@ -326,7 +326,7 @@
     "save": "صرفه جویی",
     "saving": "صرفه جویی در",
     "notSaved": "ذخیره نشد",
-    "fieldname_error": "شما نمی توانید از کلمه کلیدی «form» به عنوان نام فیلد {label} استفاده کنید"
+    "fieldnameError": "شما نمی توانید از کلمه کلیدی «form» به عنوان نام فیلد {label} استفاده کنید"
   },
   "formViewerMultiUpload": {
     "important": "مهم",

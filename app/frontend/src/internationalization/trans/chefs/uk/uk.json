@@ -326,7 +326,7 @@
     "save": "зберегти",
     "saving": "Збереження",
     "notSaved": "Не збережено",
-    "fieldname_error": "Ви НЕ МОЖЕТЕ використовувати ключове слово `form` як назву поля {label}"
+    "fieldnameError": "Ви НЕ МОЖЕТЕ використовувати ключове слово `form` як назву поля {label}"
   },
   "formViewerMultiUpload": {
     "important": "ВАЖЛИВО",

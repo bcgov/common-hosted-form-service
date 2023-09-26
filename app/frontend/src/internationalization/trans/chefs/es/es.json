@@ -326,7 +326,7 @@
     "save": "Ahorrar",
     "saving": "Ahorro",
     "notSaved": "No guardado",
-    "fieldname_error": "NO PUEDES usar la palabra clave `form` como nombre de campo {label}"
+    "fieldnameError": "NO PUEDES usar la palabra clave `form` como nombre de campo {label}"
   },
   "formViewerMultiUpload": {
     "important": "IMPORTANTE",

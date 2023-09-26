@@ -537,7 +537,7 @@ export default {
             if (comp.key === 'form') {
               this.addNotification({
                 ...NotificationTypes.ERROR,
-                message: this.$t('trans.formDesigner.fieldname_error', {
+                message: this.$t('trans.formDesigner.fieldnameError', {
                   label: comp.label,
                 }),
               });

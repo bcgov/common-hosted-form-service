@@ -326,7 +326,7 @@
     "save": "Sauvegarder",
     "saving": "Économie",
     "notSaved": "Non enregistré",
-    "fieldname_error": "Vous NE POUVEZ PAS utiliser le mot-clé `form` comme nom de champ {label}"
+    "fieldnameError": "Vous NE POUVEZ PAS utiliser le mot-clé `form` comme nom de champ {label}"
   },
   "formViewerMultiUpload": {
     "important": "IMPORTANT",
