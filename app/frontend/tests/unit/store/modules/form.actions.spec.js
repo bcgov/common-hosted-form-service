@@ -377,7 +377,7 @@ describe('form actions', () => {
         ...data,
       });
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(3);
+      expect(mockStore.commit).toHaveBeenCalledTimes(2);
       expect(mockStore.commit).toHaveBeenCalledWith(
         'SET_SUBMISSIONLIST',
         expect.any(Array)
@@ -409,7 +409,7 @@ describe('form actions', () => {
         ...data,
       });
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(3);
+      expect(mockStore.commit).toHaveBeenCalledTimes(2);
       expect(mockStore.commit).toHaveBeenCalledWith(
         'SET_SUBMISSIONLIST',
         expect.any(Array)
@@ -433,7 +433,7 @@ describe('form actions', () => {
         ...data,
       });
 
-      expect(mockStore.commit).toHaveBeenCalledTimes(3);
+      expect(mockStore.commit).toHaveBeenCalledTimes(2);
       expect(mockStore.commit).toHaveBeenCalledWith(
         'SET_SUBMISSIONLIST',
         expect.any(Array)

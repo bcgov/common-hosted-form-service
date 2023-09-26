@@ -342,7 +342,8 @@
     "version": "Versão",
     "save": "Salvar",
     "saving": "salvando",
-    "notSaved": "Não salvo"
+    "notSaved": "Não salvo",
+    "fieldnameError": "Você NÃO PODE usar a palavra-chave `form` como nome de campo {label}"
   },
   "formViewerMultiUpload": {
     "important": "IMPORTANTE",
@@ -813,11 +814,11 @@
     "resetColumns": "Redefinir colunas"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "Ver todos os envios",
+    "viewMyDraftOrSubmissions": "Ver meus rascunhos/envios",
     "saveAsADraft": "Salve como um rascunho",
     "editThisDraft": "Editar este rascunho",
     "switchSingleSubmssn": "Alternar para envio único",
-    "switchMultiSubmssn": "Alternar para envio múltiplo"
+    "switchMultiSubmssn": "Mudar para vários envios"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Link copiado para a área de transferência",

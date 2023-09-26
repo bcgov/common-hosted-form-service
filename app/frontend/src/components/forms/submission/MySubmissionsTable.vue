@@ -65,7 +65,7 @@
           :class="isRTL ? 'float-left' : 'float-right'"
         >
           <v-text-field
-            @input="handleSearch"
+            v-model="search"
             append-icon="mdi-magnify"
             :label="$t('trans.mySubmissionsTable.search')"
             single-line
@@ -84,17 +84,10 @@
       item-key="title"
       :items="submissionTable"
       :search="search"
-      :page="PAGE_RESET"
       :loading="loading"
       :loading-text="$t('trans.mySubmissionsTable.loadingText')"
-      :no-data-text="
-        searchEnabled
-          ? $t('trans.mySubmissionsTable.noMachingRecordText')
-          : $t('trans.mySubmissionsTable.noDataText')
-      "
+      :no-data-text="$t('trans.mySubmissionsTable.noDataText')"
       :lang="lang"
-      :server-items-length="totalSubmissions"
-      @update:options="updateTableOptions"
     >
       <template #[`item.lastEdited`]="{ item }">
         {{ item.lastEdited | formatDateLong }}
@@ -142,7 +135,6 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-
 import MySubmissionsActions from '@/components/forms/submission/MySubmissionsActions.vue';
 
 export default {
@@ -159,15 +151,8 @@ export default {
   data() {
     return {
       headers: [],
-      itemsPerPage: 10,
-      page: 1,
-      pageReset: 0,
       filterData: [],
       preSelectedData: [],
-      search: '',
-      searchEnabled: false,
-      sortBy: undefined,
-      sortDesc: false,
       filterIgnore: [
         {
           value: 'confirmationId',
@@ -188,6 +173,7 @@ export default {
       showColumnsDialog: false,
       submissionTable: [],
       loading: true,
+      search: null,
     };
   },
   computed: {
@@ -272,9 +258,7 @@ export default {
         (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
       );
     },
-    PAGE_RESET() {
-      return this.pageReset;
-    },
+
     HEADERS() {
       let headers = this.DEFAULT_HEADERS;
 
@@ -335,33 +319,12 @@ export default {
       }
       return '';
     },
-    async updateTableOptions({ page, itemsPerPage, sortBy, sortDesc }) {
-      this.page = page - 1;
-      if (sortBy[0] === 'date') {
-        this.sortBy = 'createdAt';
-      } else if (sortBy[0] === 'submitter') {
-        this.sortBy = 'createdBy';
-      } else if (sortBy[0] === 'status')
-        this.sortBy = 'formSubmissionStatusCode';
-      else {
-        this.sortBy = sortBy[0];
-      }
-      this.sortDesc = sortDesc[0];
-      this.itemsPerPage = itemsPerPage;
-      await this.populateSubmissionsTable();
-    },
     async populateSubmissionsTable() {
       this.loading = true;
       // Get the submissions for this form
       await this.fetchSubmissions({
         formId: this.formId,
         userView: true,
-        itemsPerPage: this.itemsPerPage,
-        page: this.page,
-        sortBy: this.sortBy,
-        search: this.search,
-        searchEnabled: this.searchEnabled,
-        sortDesc: this.sortDesc,
       });
       // Build up the list of forms for the table
       if (this.submissionList) {
@@ -399,20 +362,6 @@ export default {
       this.filterData = data;
       this.showColumnsDialog = false;
     },
-    async handleSearch(value) {
-      this.searchEnabled = true;
-      this.search = value;
-      if (value === '') {
-        this.page = 0;
-        this.pageReset = 0;
-        this.searchEnabled = false;
-        await this.populateSubmissionsTable();
-      } else {
-        this.page = 0;
-        this.pageReset = 1;
-        this.debounceInput();
-      }
-    },
   },
 
   async mounted() {
@@ -422,11 +371,8 @@ export default {
         formVersionId: this.form.versions[0].id,
       });
     });
-    this.page = 0;
+
     await this.populateSubmissionsTable();
-    this.debounceInput = _.debounce(async () => {
-      await this.populateSubmissionsTable();
-    }, 300);
   },
 };
 </script>

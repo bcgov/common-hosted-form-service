@@ -342,7 +342,8 @@
     "version": "Versión",
     "save": "Ahorrar",
     "saving": "Ahorro",
-    "notSaved": "No guardado"
+    "notSaved": "No guardado",
+    "fieldnameError": "NO PUEDES usar la palabra clave `form` como nombre de campo {label}"
   },
   "formViewerMultiUpload": {
     "important": "IMPORTANTE",
@@ -813,11 +814,11 @@
     "resetColumns": "Restablecer columnas"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "Ver todas las presentaciones",
+    "viewMyDraftOrSubmissions": "Ver mis borradores/presentaciones",
     "saveAsADraft": "Guardar como borrador",
     "editThisDraft": "Editar este borrador",
     "switchSingleSubmssn": "Cambiar a envío único",
-    "switchMultiSubmssn": "Cambiar a envío múltiple"
+    "switchMultiSubmssn": "Cambiar a envíos múltiples"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Enlace copiado al portapapeles",

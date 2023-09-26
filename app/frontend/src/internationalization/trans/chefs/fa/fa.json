@@ -342,7 +342,8 @@
     "version": "نسخه",
     "save": "صرفه جویی",
     "saving": "صرفه جویی در",
-    "notSaved": "ذخیره نشد"
+    "notSaved": "ذخیره نشد",
+    "fieldnameError": "شما نمی توانید از کلمه کلیدی «form» به عنوان نام فیلد {label} استفاده کنید"
   },
   "formViewerMultiUpload": {
     "important": "مهم",
@@ -813,11 +814,11 @@
     "resetColumns": "بازنشانی ستون ها"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "مشاهده همه موارد ارسالی",
+    "viewMyDraftOrSubmissions": "مشاهده پیش نویس/موارد ارسالی من",
     "saveAsADraft": "ذخیره به عنوان پیش نویس",
     "editThisDraft": "این پیش نویس را ویرایش کنید",
     "switchSingleSubmssn": "به ارسال تکی بروید",
-    "switchMultiSubmssn": "به ارسال چندگانه تغییر دهید"
+    "switchMultiSubmssn": "تغییر به ارسال های متعدد"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "پیوند در کلیپ بورد کپی شد",

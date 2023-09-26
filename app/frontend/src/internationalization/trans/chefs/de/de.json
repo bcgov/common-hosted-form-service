@@ -342,7 +342,8 @@
     "version": "Ausführung",
     "save": "Speichern",
     "saving": "Sparen",
-    "notSaved": "Nicht gespeichert"
+    "notSaved": "Nicht gespeichert",
+    "fieldnameError": "Sie können das Schlüsselwort 'form' NICHT als {label}-Feldnamen verwenden"
   },
   "formViewerMultiUpload": {
     "important": "WICHTIG",
@@ -813,11 +814,11 @@
     "resetColumns": "Spalten zurücksetzen"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "Alle Einsendungen anzeigen",
+    "viewMyDraftOrSubmissions": "Meine Entwürfe/Einreichungen ansehen",
     "saveAsADraft": "Als einen Entwurf sichern",
     "editThisDraft": "Bearbeiten Sie diesen Entwurf",
     "switchSingleSubmssn": "Wechseln Sie zur Einzeleinreichung",
-    "switchMultiSubmssn": "Wechseln Sie zu Mehrfacheinreichung"
+    "switchMultiSubmssn": "Wechseln Sie zu mehreren Einreichungen"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Link in die Zwischenablage kopiert",

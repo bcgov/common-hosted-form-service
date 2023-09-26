@@ -342,7 +342,8 @@
     "version": "संस्करण",
     "save": "बचाना",
     "saving": "सहेजा जा रहा है",
-    "notSaved": "सहेजा नहीं गया"
+    "notSaved": "सहेजा नहीं गया",
+    "fieldnameError": "आप `फ़ॉर्म` कीवर्ड का उपयोग {लेबल} फ़ील्डनाम के रूप में नहीं कर सकते"
   },
   "formViewerMultiUpload": {
     "important": "महत्वपूर्ण",
@@ -813,7 +814,7 @@
     "resetColumns": "कॉलम रीसेट करें"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "सभी प्रस्तुतियाँ देखें",
+    "viewMyDraftOrSubmissions": "मेरा ड्राफ्ट/प्रस्तुतियाँ देखें",
     "saveAsADraft": "एक मसौदे के रूप में सहेजो",
     "editThisDraft": "इस ड्राफ्ट को संपादित करें",
     "switchSingleSubmssn": "एकल सबमिशन पर स्विच करें",

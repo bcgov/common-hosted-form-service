@@ -282,8 +282,7 @@ const service = {
         ['lateEntry'].map((f) => ref(`submission:data.${f}`).as(f.split('.').slice(-1)))
       );
     }
-
-    if (params.page) {
+    if (params.paginationEnabled) {
       return await service.processPaginationData(
         query,
         parseInt(params.page),
@@ -298,7 +297,7 @@ const service = {
   },
 
   async processPaginationData(query, page, itemsPerPage, filterformSubmissionStatusCode, totalSubmissions, search, searchEnabled) {
-    let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : searchEnabled !== 'undefined' ? JSON.parse(searchEnabled) : false;
+    let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : searchEnabled !== undefined ? JSON.parse(searchEnabled) : false;
     if (isSearchAble) {
       let submissionsData = await query;
       let result = {

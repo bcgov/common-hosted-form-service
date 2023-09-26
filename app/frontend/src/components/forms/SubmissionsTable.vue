@@ -124,7 +124,7 @@
       :headers="HEADERS"
       item-key="submissionId"
       :items="submissionTable"
-      :page="PAGE_RESET"
+      :key="dataTableKey"
       :loading="loading"
       :show-select="!switchSubmissionView"
       v-model="selectedSubmissions"
@@ -332,6 +332,7 @@ import { mapGetters, mapActions } from 'vuex';
 import { checkFormManage, checkSubmissionView } from '@/utils/permissionUtils';
 import moment from 'moment';
 import _ from 'lodash';
+import { ref } from 'vue';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faTrash);
@@ -350,10 +351,10 @@ export default {
       deletedOnly: false,
       itemsPerPage: 10,
       page: 1,
-      pageReset: 0,
       filterData: [],
       sortBy: undefined,
       sortDesc: false,
+      dataTableKey: ref(0),
       filterIgnore: [
         {
           value: 'confirmationId',
@@ -385,6 +386,7 @@ export default {
       singleSubmissionRestore: false,
       deleteItem: {},
       switchSubmissionView: false,
+      firstDataLoad: true,
     };
   },
   computed: {
@@ -510,9 +512,6 @@ export default {
           value: 'updatedBy',
         },
       ];
-    },
-    PAGE_RESET() {
-      return this.pageReset;
     },
     SELECT_COLUMNS_HEADERS() {
       return [...this.FILTER_HEADERS, ...this.MODIFY_HEADERS].concat(
@@ -679,7 +678,7 @@ export default {
       this.refreshSubmissions();
     },
     async updateTableOptions({ page, itemsPerPage, sortBy, sortDesc }) {
-      this.page = page - 1;
+      this.page = page;
       if (sortBy[0] === 'date') {
         this.sortBy = 'createdAt';
       } else if (sortBy[0] === 'submitter') {
@@ -691,14 +690,18 @@ export default {
       }
       this.sortDesc = sortDesc[0];
       this.itemsPerPage = itemsPerPage;
-      await this.getSubmissionData();
+      if (!this.firstDataLoad) {
+        await this.refreshSubmissions();
+      }
+      this.firstDataLoad = false;
     },
     async getSubmissionData() {
       let criteria = {
         formId: this.formId,
         itemsPerPage: this.itemsPerPage,
-        page: this.page,
+        page: this.page - 1,
         filterformSubmissionStatusCode: true,
+        paginationEnabled: true,
         sortBy: this.sortBy,
         sortDesc: this.sortDesc,
         search: this.search,
@@ -784,7 +787,6 @@ export default {
 
     async refreshSubmissions() {
       this.loading = true;
-      this.page = 0;
       Promise.all([
         this.getFormRolesForUser(this.formId),
         this.getFormPermissionsForUser(this.formId),
@@ -799,6 +801,7 @@ export default {
       ])
         .then(async () => {
           await this.populateSubmissionsTable();
+          this.loading = false;
         })
         .finally(() => {
           this.selectedSubmissions = [];
@@ -839,29 +842,23 @@ export default {
         formId: this.form.id,
         preferences: preferences,
       });
-
       await this.populateSubmissionsTable();
     },
     async handleSearch(value) {
       this.searchEnabled = true;
       this.search = value;
       if (value === '') {
-        this.page = 0;
-        this.pageReset = 0;
         this.searchEnabled = false;
         await this.getSubmissionData();
       } else {
-        this.page = 0;
-        this.pageReset = 1;
         this.debounceInput();
       }
     },
   },
-  mounted() {
+  async mounted() {
     this.debounceInput = _.debounce(async () => {
-      await this.getSubmissionData();
+      this.dataTableKey += 1;
     }, 300);
-    this.page = 0;
     this.refreshSubmissions();
   },
 };

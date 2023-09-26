@@ -342,7 +342,8 @@
     "version": "バージョン",
     "save": "保存",
     "saving": "保存",
-    "notSaved": "保存されていません"
+    "notSaved": "保存されていません",
+    "fieldnameError": "`form` キーワードを {label} フィールド名として使用することはできません"
   },
   "formViewerMultiUpload": {
     "important": "重要",
@@ -813,11 +814,11 @@
     "resetColumns": "列をリセット"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "すべての提出物を表示",
+    "viewMyDraftOrSubmissions": "私のドラフト/提出物を表示する",
     "saveAsADraft": "下書きとして保存",
     "editThisDraft": "この下書きを編集する",
     "switchSingleSubmssn": "単一の提出に切り替える",
-    "switchMultiSubmssn": "複数提出に切り替える"
+    "switchMultiSubmssn": "複数の提出に切り替える"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "リンクがクリップボードにコピーされました",
