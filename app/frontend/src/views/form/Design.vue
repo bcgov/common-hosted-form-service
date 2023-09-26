@@ -5,9 +5,11 @@
         class="mt-6"
         :draftId="d"
         :formId="f"
-        :saved="sv"
+        :saved="JSON.parse(sv)"
         :versionId="v"
         ref="formDesigner"
+        :isSavedStatus="svs"
+        :newVersion="JSON.parse(nv)"
       />
     </template>
   </BaseStepper>

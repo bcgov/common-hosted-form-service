@@ -25,7 +25,7 @@ export default {
   },
   provide() {
     return {
-      fd: this.fd,
+      formDesigner: false,
       draftId: this.d,
       formId: this.f,
     };
