@@ -130,17 +130,19 @@
         class="fabAction"
         data-cy="saveButton"
         ref="saveButton"
-        :class="{ 'disabled-router': isFormSaved }"
+        :class="{ 'disabled-router': isFormSaved && !canSave }"
       >
         <div class="text" :lang="lang">{{ this.savedMsg }}</div>
         <v-avatar
           class="fabItems"
           :size="fabItemsSize"
-          @click="toParent('save')"
+          @click="canSave ? toParent('save') : null"
         >
           <v-icon
             v-if="!this.saving"
-            :color="!isFormSaved ? fabItemsColor : disabledFabItemsColor"
+            :color="
+              !isFormSaved && canSave ? fabItemsColor : disabledFabItemsColor
+            "
             :size="fabItemsIconsSize"
             dark
           >
@@ -250,6 +252,7 @@ export default {
       default: false,
     },
     isFormSaved: Boolean,
+    canSave: Boolean,
     savedStatus: String,
     placement: {
       type: String,

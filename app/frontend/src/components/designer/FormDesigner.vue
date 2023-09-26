@@ -113,6 +113,7 @@
       :savedStatus="savedStatus"
       :saved="saved"
       :isFormSaved="isFormSaved"
+      :canSave="canSave"
       :formId="formId"
       :draftId="draftId"
       :undoEnabled="undoEnabled() === 0 ? false : undoEnabled()"
@@ -134,6 +135,7 @@ import ProactiveHelpPreviewDialog from '@/components/infolinks/ProactiveHelpPrev
 import { generateIdps } from '@/utils/transformUtils';
 import FloatButton from '@/components/designer/FloatButton.vue';
 import formioIl8next from '@/internationalization/trans/formio/formio.json';
+import { NotificationTypes } from '@/utils/constants';
 
 export default {
   name: 'FormDesigner',
@@ -188,6 +190,7 @@ export default {
       showHelpLinkDialog: false,
       component: {},
       isComponentRemoved: false,
+      canSave: false,
     };
   },
 
@@ -529,6 +532,18 @@ export default {
               this.addPatchToHistory();
             }
           }
+          this.canSave = true;
+          modified?.components?.map((comp) => {
+            if (comp.key === 'form') {
+              this.addNotification({
+                ...NotificationTypes.ERROR,
+                message: this.$t('trans.formDesigner.fieldnameError', {
+                  label: comp.label,
+                }),
+              });
+              this.canSave = false;
+            }
+          });
         } else {
           // If we removed a component but not during an add action
           if (
