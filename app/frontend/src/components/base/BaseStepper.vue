@@ -27,25 +27,19 @@
       </v-stepper-header>
       <v-stepper-items>
         <v-stepper-content step="1" class="pa-1">
-          <v-container>
             <div class="mt-4">
               <slot name="setUpForm"></slot>
             </div>
-          </v-container>
         </v-stepper-content>
         <v-stepper-content step="2" class="pa-1">
-          <v-container>
             <div class="mt-4">
               <slot name="designForm"></slot>
             </div>
-          </v-container>
         </v-stepper-content>
         <v-stepper-content step="3" class="pa-1">
-          <v-container>
             <div class="mt-4">
               <slot name="manageForm"></slot>
             </div>
-          </v-container>
         </v-stepper-content>
       </v-stepper-items>
     </v-stepper>
