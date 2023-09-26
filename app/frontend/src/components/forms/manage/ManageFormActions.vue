@@ -106,6 +106,7 @@ export default {
             size="x-small"
             density="default"
             icon="mdi:mdi-delete"
+            @click="showDeleteDialog = true"
           />
         </template>
         <span
