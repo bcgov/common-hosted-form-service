@@ -802,11 +802,11 @@
     "resetColumns": "Réinitialiser les colonnes"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "Voir toutes les soumissions",
+    "viewMyDraftOrSubmissions": "Afficher mes brouillons/soumissions",
     "saveAsADraft": "Enregistrer en tant que projet",
     "editThisDraft": "Modifier ce brouillon",
     "switchSingleSubmssn": "Passer à la soumission unique",
-    "switchMultiSubmssn": "Passer à la soumission multiple"
+    "switchMultiSubmssn": "Passer à plusieurs soumissions"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Lien copié dans le presse-papiers",

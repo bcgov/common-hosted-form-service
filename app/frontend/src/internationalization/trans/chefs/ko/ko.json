@@ -802,7 +802,7 @@
     "resetColumns": "열 재설정"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "모든 제출물 보기",
+    "viewMyDraftOrSubmissions": "내 초안/제출물 보기",
     "saveAsADraft": "초안으로 저장",
     "editThisDraft": "이 초안 편집",
     "switchSingleSubmssn": "단일 제출로 전환",

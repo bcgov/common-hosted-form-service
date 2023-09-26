@@ -6,7 +6,7 @@
     <div v-if="formId">
       <v-btn outlined @click="goToAllSubmissionOrDraft">
         <span :lang="lang"
-          >{{ $t('trans.formViewerActions.viewAllSubmissions') }}
+          >{{ $t('trans.formViewerActions.viewMyDraftOrSubmissions') }}
         </span>
       </v-btn>
     </div>
