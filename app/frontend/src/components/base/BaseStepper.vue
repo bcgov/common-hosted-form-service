@@ -11,13 +11,13 @@
       >
         <v-stepper-step :complete="creatorStep > 1" step="1" class="pl-1 pr-1">
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
-            {{ $t('trans.create.setUpForm') }}
+            {{ $t('trans.baseStepper.setUpForm') }}
           </span>
         </v-stepper-step>
         <v-divider />
         <v-stepper-step :complete="creatorStep > 2" step="2" class="pl-1 pr-1">
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
-            {{ $t('trans.create.designForm') }}
+            {{ $t('trans.baseStepper.designForm') }}
           </span>
         </v-stepper-step>
         <v-divider />
@@ -26,7 +26,9 @@
           step="3"
           class="pl-1 pr-1"
         >
-          <span :class="{ 'mr-2': isRTL }" :lang="lang"> Manage Form </span>
+          <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            {{ $t('trans.baseStepper.manageForm') }}
+          </span>
         </v-stepper-step>
       </v-stepper-header>
       <v-stepper-items>

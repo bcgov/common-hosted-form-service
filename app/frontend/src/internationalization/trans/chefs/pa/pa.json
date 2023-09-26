@@ -762,16 +762,13 @@
     "createOnlineTitle": "ਆਪਣੇ ਗਾਹਕਾਂ ਤੋਂ ਜਾਣਕਾਰੀ ਇਕੱਠੀ ਕਰਨ ਅਤੇ ਆਪਣੇ ਵਰਕਫਲੋ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਔਨਲਾਈਨ ਫਾਰਮ ਬਣਾਓ।",
     "getStarted": "ਸ਼ੁਰੂ ਕਰੋ"
   },
-  "design": {
+  "baseStepper": {
     "setUpForm": "ਫਾਰਮ ਸੈਟ ਅਪ ਕਰੋ",
     "designForm": "ਡਿਜ਼ਾਈਨ ਫਾਰਮ",
-    "publishForm": "ਫਾਰਮ ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ"
+    "manageForm": "ਫਾਰਮ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ"
     },
   "create": {
     "createNewForm": "ਨਵਾਂ ਫਾਰਮ ਬਣਾਓ",
-    "setUpForm": "ਫਾਰਮ ਸੈਟ ਅਪ ਕਰੋ",
-    "designForm": "ਡਿਜ਼ਾਈਨ ਫਾਰਮ",
-    "publishForm": "ਫਾਰਮ ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ",
     "formSettings": "ਫਾਰਮ ਸੈਟਿੰਗਾਂ",
     "disclaimer": "ਬੇਦਾਅਵਾ",
     "disclaimerStmt": "ਮੈਂ ਫਾਰਮ ਡਿਜ਼ਾਈਨਰਾਂ ਲਈ ਬੇਦਾਅਵਾ ਅਤੇ ਜ਼ਿੰਮੇਵਾਰੀ ਦੇ ਬਿਆਨ ਨਾਲ ਸਹਿਮਤ ਹਾਂ",

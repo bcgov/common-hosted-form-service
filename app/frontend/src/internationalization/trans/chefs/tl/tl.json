@@ -762,16 +762,13 @@
     "createOnlineTitle": "Lumikha ng mga online na form upang mangolekta ng impormasyon mula sa iyong mga kliyente at pagbutihin ang iyong mga daloy ng trabaho.",
     "getStarted": "Magsimula"
   },
-  "design": {
+  "baseStepper": {
     "setUpForm": "I-set up ang Form",
     "designForm": "Form ng Disenyo",
-    "publishForm": "I-publish ang Form"
+    "manageForm": "Pamahalaan ang Form"
     },
   "create": {
     "createNewForm": "Lumikha ng Bagong Form",
-    "setUpForm": "I-set up ang Form",
-    "designForm": "Form ng Disenyo",
-    "publishForm": "I-publish ang Form",
     "formSettings": "Mga Setting ng Form",
     "disclaimer": "Disclaimer",
     "disclaimerStmt": "Sumasang-ayon ako sa disclaimer at pahayag ng responsibilidad para sa mga Form Designer",

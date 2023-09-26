@@ -1,6 +1,6 @@
 <template>
   <BaseStepper :step="3">
-    <template v-slot:manageForm>
+    <template #manageForm>
       <ManageForm v-if="showManageForm" />
     </template>
   </BaseStepper>

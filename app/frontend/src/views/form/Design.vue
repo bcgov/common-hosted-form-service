@@ -1,6 +1,6 @@
 <template>
   <BaseStepper :step="2">
-    <template v-slot:designForm>
+    <template #designForm>
       <FormDesigner
         class="mt-6"
         :draftId="d"
