@@ -325,7 +325,8 @@
     "version": "Версія",
     "save": "зберегти",
     "saving": "Збереження",
-    "notSaved": "Не збережено"
+    "notSaved": "Не збережено",
+    "fieldnameError": "Ви НЕ МОЖЕТЕ використовувати ключове слово `form` як назву поля {label}"
   },
   "formViewerMultiUpload": {
     "important": "ВАЖЛИВО",
