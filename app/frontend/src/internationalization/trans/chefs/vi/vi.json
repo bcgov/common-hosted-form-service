@@ -802,11 +802,11 @@
     "resetColumns": "Đặt lại cột"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "Xem tất cả bài dự thi",
+    "viewMyDraftOrSubmissions": "Xem bản nháp/bài nộp của tôi",
     "saveAsADraft": "Lưu dưới dạng Bản nháp",
     "editThisDraft": "Chỉnh sửa Bản nháp này",
     "switchSingleSubmssn": "Chuyển sang gửi một lần",
-    "switchMultiSubmssn": "Chuyển sang Gửi nhiều lần"
+    "switchMultiSubmssn": "Chuyển sang nhiều bài nộp"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Liên kết được sao chép vào khay nhớ tạm",

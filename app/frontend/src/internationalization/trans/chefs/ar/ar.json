@@ -803,11 +803,11 @@
     "resetColumns": "إعادة تعيين الأعمدة"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "عرض جميع عمليات الإرسال",
+    "viewMyDraftOrSubmissions": "عرض المسودة / التقديمات الخاصة بي",
     "saveAsADraft": "احفظ كمسودة",
     "editThisDraft": "قم بتحرير هذه المسودة",
     "switchSingleSubmssn": "التبديل إلى الإرسال الفردي",
-    "switchMultiSubmssn": "التبديل إلى الإرسال المتعدد"
+    "switchMultiSubmssn": "التبديل إلى تقديمات متعددة"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "تم نسخ الرابط إلى الحافظة",
