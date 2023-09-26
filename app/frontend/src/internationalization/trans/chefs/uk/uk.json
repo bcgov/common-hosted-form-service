@@ -797,11 +797,11 @@
     "resetColumns": "Скинути стовпці"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "Переглянути всі подання",
+    "viewMyDraftOrSubmissions": "Переглянути мої чернетки/подання",
     "saveAsADraft": "Зберегти як чернетку",
     "editThisDraft": "Відредагуйте цю чернетку",
     "switchSingleSubmssn": "Перейти до одноразової подачі",
-    "switchMultiSubmssn": "Переключитися на багаторазове подання"
+    "switchMultiSubmssn": "Переключитися на кілька повідомлень"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Посилання скопійовано в буфер обміну",
