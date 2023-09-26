@@ -325,7 +325,8 @@
     "version": "버전",
     "save": "구하다",
     "saving": "절약",
-    "notSaved": "저장되지 않음"
+    "notSaved": "저장되지 않음",
+    "fieldnameError": "{label} 필드 이름으로 `form` 키워드를 사용할 수 없습니다."
   },
   "formViewerMultiUpload": {
     "important": "중요한",

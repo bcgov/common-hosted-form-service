@@ -325,7 +325,8 @@
     "version": "ਸੰਸਕਰਣ",
     "save": "ਸੇਵ ਕਰੋ",
     "saving": "ਸੰਭਾਲ ਰਿਹਾ ਹੈ",
-    "notSaved": "ਸੰਭਾਲਿਆ ਨਹੀਂ ਗਿਆ"
+    "notSaved": "ਸੰਭਾਲਿਆ ਨਹੀਂ ਗਿਆ",
+    "fieldnameError": "ਤੁਸੀਂ `form` ਕੀਵਰਡ ਨੂੰ {label} ਫੀਲਡਨਾਮ ਵਜੋਂ ਨਹੀਂ ਵਰਤ ਸਕਦੇ ਹੋ"
   },
   "formViewerMultiUpload": {
     "important": "ਮਹੱਤਵਪੂਰਨ",

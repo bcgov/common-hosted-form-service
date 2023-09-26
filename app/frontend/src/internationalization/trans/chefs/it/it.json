@@ -325,7 +325,8 @@
     "version": "Versione",
     "save": "Salva",
     "saving": "Salvataggio",
-    "notSaved": "Non salvato"
+    "notSaved": "Non salvato",
+    "fieldnameError": "NON PUOI utilizzare la parola chiave 'form' come nome campo {label}"
   },
   "formViewerMultiUpload": {
     "important": "IMPORTANTE",

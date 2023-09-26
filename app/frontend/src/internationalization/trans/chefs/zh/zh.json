@@ -325,7 +325,8 @@
     "version": "版本",
     "save": "节省",
     "saving": "保存",
-    "notSaved": "未保存"
+    "notSaved": "未保存",
+    "fieldnameError": "您不能使用“form”关键字作为 {label} 字段名"
   },
   "formViewerMultiUpload": {
     "important": "重要的",

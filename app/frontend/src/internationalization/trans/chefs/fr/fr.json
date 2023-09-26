@@ -325,7 +325,8 @@
     "version": "Version",
     "save": "Sauvegarder",
     "saving": "Économie",
-    "notSaved": "Non enregistré"
+    "notSaved": "Non enregistré",
+    "fieldnameError": "Vous NE POUVEZ PAS utiliser le mot-clé `form` comme nom de champ {label}"
   },
   "formViewerMultiUpload": {
     "important": "IMPORTANT",
