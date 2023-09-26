@@ -408,7 +408,6 @@ export default {
       }
     },
     async updatePublish() {
-      document.documentElement.style.overflow = 'auto';
       this.showPublishDialog = false;
       document.documentElement.style.overflow = 'auto';
       // if publishing a draft version
