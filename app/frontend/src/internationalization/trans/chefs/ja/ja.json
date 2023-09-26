@@ -325,7 +325,8 @@
     "version": "バージョン",
     "save": "保存",
     "saving": "保存",
-    "notSaved": "保存されていません"
+    "notSaved": "保存されていません",
+    "fieldnameError": "`form` キーワードを {label} フィールド名として使用することはできません"
   },
   "formViewerMultiUpload": {
     "important": "重要",

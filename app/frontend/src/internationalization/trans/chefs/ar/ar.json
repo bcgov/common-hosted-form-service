@@ -325,7 +325,8 @@
     "version": "إصدار",
     "save": "يحفظ",
     "saving": "إنقاذ",
-    "notSaved": "يتم حفظ"
+    "notSaved": "يتم حفظ",
+    "fieldnameError": "لا يمكنك استخدام الكلمة الأساسية `form` كاسم حقل {label}."
   },
   "formViewerMultiUpload": {
     "important": "مهم",
