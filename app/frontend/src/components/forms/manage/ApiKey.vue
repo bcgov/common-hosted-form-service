@@ -190,7 +190,7 @@ export default {
       );
     },
     secret() {
-      return this.apiKey && this.apiKey.secret ? this.apiKey.secret : undefined;
+      return this.apiKey && this.apiKey.secret ? this.apiKey.secret : '';
     },
   },
   methods: {

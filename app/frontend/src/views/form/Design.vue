@@ -1,22 +1,23 @@
 <template>
-  <BaseSecure :idp="[IDP.IDIR]">
-    <FormDesigner
-      class="mt-6"
-      :draftId="d"
-      :formId="f"
-      :saved="JSON.parse(sv)"
-      :versionId="v"
-      ref="formDesigner"
-      :isSavedStatus="svs"
-      :newVersion="nv"
-    />
-  </BaseSecure>
+  <BaseStepper :step="2">
+    <template #designForm>
+      <FormDesigner
+        class="mt-6"
+        :draftId="d"
+        :formId="f"
+        :saved="JSON.parse(sv)"
+        :versionId="v"
+        ref="formDesigner"
+        :isSavedStatus="svs"
+        :newVersion="JSON.parse(nv)"
+      />
+    </template>
+  </BaseStepper>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import FormDesigner from '@/components/designer/FormDesigner.vue';
-import { IdentityProviders } from '@/utils/constants';
 
 export default {
   name: 'FormDesign',
@@ -39,13 +40,11 @@ export default {
       this.$refs.formDesigner.onFormLoad();
     });
   },
-
-  methods: {
-    ...mapActions('form', ['listFCProactiveHelp', 'deleteCurrentForm']),
-  },
   computed: {
     ...mapGetters('form', ['form']),
-    IDP: () => IdentityProviders,
+  },
+  methods: {
+    ...mapActions('form', ['listFCProactiveHelp', 'deleteCurrentForm']),
   },
   beforeRouteLeave(_to, _from, next) {
     this.form.isDirty

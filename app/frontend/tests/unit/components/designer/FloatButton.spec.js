@@ -85,8 +85,8 @@ describe('FloatButton.vue', () => {
 
   it('test that publish button was click', async () => {
     const mockRoute = {
-      name: 'FormManage',
-      query: { d: '0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6', f: '01fa4a32-ff4a-4304-8277-e69e0bb2d229', fd: 'formDesigner' },
+      name: 'PublishForm',
+      query: { d: '0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6', f: '01fa4a32-ff4a-4304-8277-e69e0bb2d229', fd: true },
     };
 
     const wrapper = shallowMount(FloatButton, {
@@ -109,14 +109,14 @@ describe('FloatButton.vue', () => {
 
   it('test that manage button was click', async () => {
     const mockRoute = {
-      name: 'FormManage',
-      query: { f: '01fa4a32-ff4a-4304-8277-e69e0bb2d229' },
+      name: 'PublishForm',
+      query: { f: '01fa4a32-ff4a-4304-8277-e69e0bb2d229', d: '01fa4a32-ff4a-4304-8277-e69e0bb2d228' },
     };
 
     const wrapper = shallowMount(FloatButton, {
       localVue,
       RouterLink: RouterLinkStub,
-      propsData: { formId:'01fa4a32-ff4a-4304-8277-e69e0bb2d229' },
+      propsData: { formId:'01fa4a32-ff4a-4304-8277-e69e0bb2d229', draftId: '01fa4a32-ff4a-4304-8277-e69e0bb2d228' },
       store,
       i18n,
       mocks: {

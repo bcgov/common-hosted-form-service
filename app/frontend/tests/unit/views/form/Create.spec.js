@@ -32,6 +32,7 @@ describe('Create.vue', () => {
     });
   });
 
+
   afterEach(() => {
     mockWindowConfirm.mockReset();
     formActions.resetForm.mockReset();
@@ -45,11 +46,11 @@ describe('Create.vue', () => {
     const wrapper = shallowMount(Create, {
       localVue,
       store,
-      stubs: ['BaseSecure', 'BasePanel', 'FormDesigner', 'FormSettings', 'FormDisclaimer'],
+      stubs: ['BasePanel', 'FormDesigner', 'FormSettings', 'FormDisclaimer', 'BaseStepper'],
       i18n
     });
 
-    expect(wrapper.html()).toMatch('basesecure');
+    expect(wrapper.html()).toMatch('basestepper');
     expect(formActions.resetForm).toHaveBeenCalledTimes(1);
   });
 
@@ -58,7 +59,7 @@ describe('Create.vue', () => {
     const wrapper = shallowMount(Create, {
       localVue,
       store,
-      stubs: ['BaseSecure', 'BasePanel', 'FormDesigner', 'FormSettings', 'FormDisclaimer'],
+      stubs: ['BasePanel', 'FormDesigner', 'FormSettings', 'FormDisclaimer', 'BaseStepper'],
       i18n
     });
     Create.beforeRouteLeave.call(wrapper.vm, undefined, undefined, next);
