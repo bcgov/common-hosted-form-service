@@ -25,6 +25,9 @@ export default {
       type: String,
       required: true,
     },
+    fd: {
+      type: Boolean,
+    },
   },
   data() {
     return {
@@ -33,7 +36,7 @@ export default {
   },
   provide() {
     return {
-      formDesigner: true,
+      formDesigner: JSON.parse(this.fd),
       draftId: this.d,
       formId: this.f,
     };

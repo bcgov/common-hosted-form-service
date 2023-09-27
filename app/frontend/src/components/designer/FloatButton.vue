@@ -20,7 +20,7 @@
         class="fabAction"
         :to="{
           name: 'PublishForm',
-          query: { f: formId, fd: 'formDesigner', d: draftId },
+          query: { f: formId, fd: true, d: draftId },
         }"
         :class="{ 'disabled-router': !formId }"
         tag="div"
@@ -45,7 +45,10 @@
         class="fabAction"
         data-cy="settingsRouterLink"
         ref="settingsRouterLink"
-        :to="{ name: 'FormManage', query: { f: formId } }"
+        :to="{
+          name: 'PublishForm',
+          query: { f: formId, d: draftId },
+        }"
         :class="{ 'disabled-router': !formId }"
         tag="div"
       >
@@ -439,7 +442,6 @@ export default {
     size() {
       this.setSizes();
     },
-
     savedStatus(value) {
       if (value === 'Saved') {
         this.savedMsg = this.$t('trans.floatButton.saved');

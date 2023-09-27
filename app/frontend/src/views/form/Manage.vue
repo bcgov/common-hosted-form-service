@@ -20,12 +20,13 @@ export default {
       type: String,
     },
     fd: {
-      type: String,
+      type: Boolean,
+      default: false,
     },
   },
   provide() {
     return {
-      formDesigner: false,
+      formDesigner: JSON.parse(this.fd),
       draftId: this.d,
       formId: this.f,
     };
