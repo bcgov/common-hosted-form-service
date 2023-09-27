@@ -372,13 +372,14 @@ export default {
    * @param {string} version The form version
    * @returns {Promise} An axios response
    */
-  readCSVExportFields(formId, type, draft, deleted, version) {
+  readCSVExportFields(formId, type, draft, deleted, version, singleRow) {
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/csvexport/fields`, {
       params: {
         type: type,
         draft: draft,
         deleted: deleted,
         version: version,
+        singleRow: singleRow,
       },
     });
   },

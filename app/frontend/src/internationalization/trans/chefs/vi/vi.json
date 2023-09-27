@@ -325,7 +325,8 @@
     "version": "Phiên bản",
     "save": "Cứu",
     "saving": "Tiết kiệm",
-    "notSaved": "Chưa được lưu"
+    "notSaved": "Chưa được lưu",
+    "fieldnameError": "Bạn KHÔNG THỂ sử dụng từ khóa `form` làm tên trường {label}"
   },
   "formViewerMultiUpload": {
     "important": "QUAN TRỌNG",
@@ -375,6 +376,7 @@
     "emailRequired": "Email thì cần thiết"
   },
   "submissionsTable": {
+    "noMachingRecordText": "Không tìm thấy kết quả",
     "submissions": "đệ trình",
     "submissionsTable": "Đệ trìnhBảng",
     "selectColumns": "Chọn cột",
@@ -464,6 +466,7 @@
     "editThisDraft": "Chỉnh sửa bản nháp này"
   },
   "mySubmissionsTable": {
+    "noMachingRecordText": "Không tìm thấy kết quả",
     "previousSubmissions": "Đệ trình trước",
     "selectColumns": "Chọn cột",
     "createNewSubmission": "Tạo bài nộp mới",
@@ -794,11 +797,11 @@
     "resetColumns": "Đặt lại cột"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "Xem tất cả bài dự thi",
+    "viewMyDraftOrSubmissions": "Xem bản nháp/bài nộp của tôi",
     "saveAsADraft": "Lưu dưới dạng Bản nháp",
     "editThisDraft": "Chỉnh sửa Bản nháp này",
     "switchSingleSubmssn": "Chuyển sang gửi một lần",
-    "switchMultiSubmssn": "Chuyển sang Gửi nhiều lần"
+    "switchMultiSubmssn": "Chuyển sang nhiều bài nộp"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Liên kết được sao chép vào khay nhớ tạm",

@@ -325,7 +325,8 @@
     "version": "संस्करण",
     "save": "बचाना",
     "saving": "सहेजा जा रहा है",
-    "notSaved": "सहेजा नहीं गया"
+    "notSaved": "सहेजा नहीं गया",
+    "fieldnameError": "आप `फ़ॉर्म` कीवर्ड का उपयोग {लेबल} फ़ील्डनाम के रूप में नहीं कर सकते"
   },
   "formViewerMultiUpload": {
     "important": "महत्वपूर्ण",
@@ -375,6 +376,7 @@
     "emailRequired": "ईमेल की जरूरत है"
   },
   "submissionsTable": {
+    "noMachingRecordText": "कोई मिलान रिकॉर्ड पाया",
     "submissions": "प्रविष्टियों",
     "submissionsTable": "सबमिशनटेबल",
     "selectColumns": "कॉलम चुनें",
@@ -464,6 +466,7 @@
     "editThisDraft": "इस ड्राफ्ट को संपादित करें"
   },
   "mySubmissionsTable": {
+    "noMachingRecordText": "कोई मिलान रिकॉर्ड पाया",
     "previousSubmissions": "पिछली प्रस्तुतियाँ",
     "selectColumns": "कॉलम चुनें",
     "createNewSubmission": "एक नया सबमिशन बनाएं",
@@ -794,7 +797,7 @@
     "resetColumns": "कॉलम रीसेट करें"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "सभी प्रस्तुतियाँ देखें",
+    "viewMyDraftOrSubmissions": "मेरा ड्राफ्ट/प्रस्तुतियाँ देखें",
     "saveAsADraft": "एक मसौदे के रूप में सहेजो",
     "editThisDraft": "इस ड्राफ्ट को संपादित करें",
     "switchSingleSubmssn": "एकल सबमिशन पर स्विच करें",

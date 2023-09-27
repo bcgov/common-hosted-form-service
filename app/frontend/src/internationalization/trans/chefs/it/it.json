@@ -325,7 +325,8 @@
     "version": "Versione",
     "save": "Salva",
     "saving": "Salvataggio",
-    "notSaved": "Non salvato"
+    "notSaved": "Non salvato",
+    "fieldnameError": "NON PUOI utilizzare la parola chiave 'form' come nome campo {label}"
   },
   "formViewerMultiUpload": {
     "important": "IMPORTANTE",
@@ -375,6 +376,7 @@
     "emailRequired": "L'e-mail è obbligatoria"
   },
   "submissionsTable": {
+    "noMachingRecordText": "nessuna corrispondenza trovata",
     "submissions": "Contributi",
     "submissionsTable": "Tabella degli invii",
     "selectColumns": "Seleziona Colonne",
@@ -464,6 +466,7 @@
     "editThisDraft": "Modifica questa bozza"
   },
   "mySubmissionsTable": {
+    "noMachingRecordText": "nessuna corrispondenza trovata",
     "previousSubmissions": "Invii precedenti",
     "selectColumns": "Seleziona Colonne",
     "createNewSubmission": "Crea un nuovo invio",
@@ -794,11 +797,11 @@
     "resetColumns": "Reimposta colonne"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "Visualizza tutti gli invii",
+    "viewMyDraftOrSubmissions": "Visualizza le mie bozze/presentazioni",
     "saveAsADraft": "Salva come bozza",
     "editThisDraft": "Modifica questa bozza",
     "switchSingleSubmssn": "Passa all'invio singolo",
-    "switchMultiSubmssn": "Passa a Invio multiplo"
+    "switchMultiSubmssn": "Passa a più invii"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Link copiato negli appunti",

@@ -1,11 +1,10 @@
 const Problem = require('api-problem');
 const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
-const { validateScheduleObject } = require('../common/utils');
 const { SubscriptionEvent } = require('../common/constants');
 const axios = require('axios');
 const log = require('../../components/log')(module.filename);
-
+const moment = require('moment');
 const {
   FileStorage,
   Form,
@@ -23,7 +22,7 @@ const {
   FormComponentsProactiveHelp,
   FormSubscription,
 } = require('../common/models');
-const { falsey, queryUtils, checkIsFormExpired } = require('../common/utils');
+const { falsey, queryUtils, checkIsFormExpired, validateScheduleObject, typeUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
@@ -282,27 +281,68 @@ const service = {
         ['lateEntry'].map((f) => ref(`submission:data.${f}`).as(f.split('.').slice(-1)))
       );
     }
-
-    if (params.page) {
+    if (params.paginationEnabled) {
       return await service.processPaginationData(
         query,
-        params.page,
-        params.itemsPerPage,
+        parseInt(params.page),
+        parseInt(params.itemsPerPage),
         params.filterformSubmissionStatusCode,
         params.totalSubmissions,
-        params.sortBy,
-        params.sortDesc
+        params.search,
+        params.searchEnabled
       );
     }
     return query;
   },
 
-  async processPaginationData(query, page, itemsPerPage, filterformSubmissionStatusCode, totalSubmissions) {
-    await query.modify('filterformSubmissionStatusCode', filterformSubmissionStatusCode);
-    if (itemsPerPage && parseInt(itemsPerPage) === -1) {
-      return await query.page(parseInt(page), parseInt(totalSubmissions || 0));
-    } else if (itemsPerPage && parseInt(page) >= 0) {
-      return await query.page(parseInt(page), parseInt(itemsPerPage));
+  async processPaginationData(query, page, itemsPerPage, filterformSubmissionStatusCode, totalSubmissions, search, searchEnabled) {
+    let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : searchEnabled !== undefined ? JSON.parse(searchEnabled) : false;
+    if (isSearchAble) {
+      let submissionsData = await query;
+      let result = {
+        results: [],
+        total: 0,
+      };
+      let searchedData = submissionsData.filter((data) => {
+        return Object.keys(data).some((key) => {
+          if (key !== 'submissionId' && key !== 'formVersionId' && key !== 'formId') {
+            if (!Array.isArray(data[key]) && !typeUtils.isObject(data[key])) {
+              if (
+                !typeUtils.isBoolean(data[key]) &&
+                !typeUtils.isNil(data[key]) &&
+                typeUtils.isDate(data[key]) &&
+                moment(new Date(data[key])).format('YYYY-MM-DD hh:mm:ss a').toString().includes(search)
+              ) {
+                result.total = result.total + 1;
+                return true;
+              }
+              if (typeUtils.isString(data[key]) && data[key].toLowerCase().includes(search.toLowerCase())) {
+                result.total = result.total + 1;
+                return true;
+              } else if (
+                (typeUtils.isNil(data[key]) || typeUtils.isBoolean(data[key]) || (typeUtils.isNumeric(data[key]) && typeUtils.isNumeric(search))) &&
+                parseFloat(data[key]) === parseFloat(search)
+              ) {
+                result.total = result.total + 1;
+                return true;
+              }
+            }
+            return false;
+          }
+          return false;
+        });
+      });
+      let start = page * itemsPerPage;
+      let end = page * itemsPerPage + itemsPerPage;
+      result.results = searchedData.slice(start, end);
+      return result;
+    } else {
+      await query.modify('filterformSubmissionStatusCode', filterformSubmissionStatusCode);
+      if (itemsPerPage && parseInt(itemsPerPage) === -1) {
+        return await query.page(parseInt(page), parseInt(totalSubmissions || 0));
+      } else if (itemsPerPage && parseInt(page) >= 0) {
+        return await query.page(parseInt(page), parseInt(itemsPerPage));
+      }
     }
   },
 

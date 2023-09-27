@@ -325,7 +325,8 @@
     "version": "버전",
     "save": "구하다",
     "saving": "절약",
-    "notSaved": "저장되지 않음"
+    "notSaved": "저장되지 않음",
+    "fieldnameError": "{label} 필드 이름으로 `form` 키워드를 사용할 수 없습니다."
   },
   "formViewerMultiUpload": {
     "important": "중요한",
@@ -375,6 +376,7 @@
     "emailRequired": "이메일이 필요합니다"
   },
   "submissionsTable": {
+    "noMachingRecordText": "일치하는 기록이 없습니다",
     "submissions": "제출물",
     "submissionsTable": "제출물표",
     "selectColumns": "열 선택",
@@ -464,6 +466,7 @@
     "editThisDraft": "이 초안 편집"
   },
   "mySubmissionsTable": {
+    "noMachingRecordText": "일치하는 기록이 없습니다",
     "previousSubmissions": "이전 제출물",
     "selectColumns": "열 선택",
     "createNewSubmission": "새 제출물 만들기",
@@ -794,7 +797,7 @@
     "resetColumns": "열 재설정"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "모든 제출물 보기",
+    "viewMyDraftOrSubmissions": "내 초안/제출물 보기",
     "saveAsADraft": "초안으로 저장",
     "editThisDraft": "이 초안 편집",
     "switchSingleSubmssn": "단일 제출로 전환",

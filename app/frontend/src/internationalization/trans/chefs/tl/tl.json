@@ -325,7 +325,8 @@
     "version": "Bersyon",
     "save": "I-save",
     "saving": "Nagtitipid",
-    "notSaved": "Hindi Na-save"
+    "notSaved": "Hindi Na-save",
+    "fieldnameError": "HINDI mo MAAARI gumamit ng `form` na keyword bilang {label} fieldname"
   },
   "formViewerMultiUpload": {
     "important": "MAHALAGA",
@@ -375,6 +376,7 @@
     "emailRequired": "Kinakailangan ang email"
   },
   "submissionsTable": {
+    "noMachingRecordText": "Walang nakitang katugmang mga tala",
     "submissions": "Mga pagsusumite",
     "submissionsTable": "Talahanayan ng mga Pagsusumite",
     "selectColumns": "Piliin ang Mga Column",
@@ -464,6 +466,7 @@
     "editThisDraft": "I-edit ang Draft na ito"
   },
   "mySubmissionsTable": {
+    "noMachingRecordText": "Walang nakitang katugmang mga tala",
     "previousSubmissions": "Nakaraang Mga Pagsusumite",
     "selectColumns": "Piliin ang Mga Column",
     "createNewSubmission": "Gumawa ng Bagong Pagsusumite",
@@ -794,11 +797,11 @@
     "resetColumns": "I-reset ang Mga Column"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "Tingnan ang Lahat ng Pagsusumite",
+    "viewMyDraftOrSubmissions": "Tingnan ang Aking draft/mga isinumite",
     "saveAsADraft": "I-save bilang Draft",
     "editThisDraft": "I-edit ang Draft na ito",
     "switchSingleSubmssn": "Lumipat sa iisang pagsusumite",
-    "switchMultiSubmssn": "Lumipat sa Maramihang pagsusumite"
+    "switchMultiSubmssn": "Lumipat sa maramihang pagsusumite"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Nakopya ang link sa clipboard",

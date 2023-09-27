@@ -4,7 +4,6 @@ const { FormRoleUser, FormSubmissionUser, IdentityProvider, User, UserFormAccess
 const { Roles } = require('../common/constants');
 const { queryUtils } = require('../common/utils');
 const authService = require('../auth/service');
-
 const service = {
   list: async () => {
     return FormRoleUser.query().allowGraph('[form, userRole, user]').withGraphFetched('[form, userRole, user]').modify('orderCreatedAtDescending');
@@ -82,34 +81,14 @@ const service = {
 
   getCurrentUserSubmissions: async (currentUser, params) => {
     params = queryUtils.defaultActiveOnly(params);
-    const query = UserSubmissions.query()
+    return UserSubmissions.query()
       .withGraphFetched('submissionStatus(orderDescending)')
       .withGraphFetched('submission')
       .modify('filterFormId', params.formId)
       .modify('filterFormSubmissionId', params.formSubmissionId)
       .modify('filterUserId', currentUser.id)
       .modify('filterActive', params.active)
-      .modify('orderDefault', params.sortBy && params.page ? true : false, params);
-    if (params.page) {
-      return await service.processPaginationData(
-        query,
-        params.page,
-        params.itemsPerPage,
-        params.filterformSubmissionStatusCode,
-        params.totalSubmissions,
-        params.sortBy,
-        params.sortDesc
-      );
-    }
-    return query;
-  },
-
-  async processPaginationData(query, page, itemsPerPage, filterformSubmissionStatusCode, totalSubmissions) {
-    if (itemsPerPage && parseInt(itemsPerPage) === -1) {
-      return await query.page(parseInt(page), parseInt(totalSubmissions || 0));
-    } else if (itemsPerPage && parseInt(page) >= 0) {
-      return await query.page(parseInt(page), parseInt(itemsPerPage));
-    }
+      .modify('orderDefault');
   },
 
   getFormUsers: async (params) => {

@@ -325,7 +325,8 @@
     "version": "إصدار",
     "save": "يحفظ",
     "saving": "إنقاذ",
-    "notSaved": "يتم حفظ"
+    "notSaved": "يتم حفظ",
+    "fieldnameError": "لا يمكنك استخدام الكلمة الأساسية `form` كاسم حقل {label}."
   },
   "formViewerMultiUpload": {
     "important": "مهم",
@@ -375,6 +376,7 @@
     "emailRequired": "البريد الالكتروني مطلوب"
   },
   "submissionsTable": {
+    "noMachingRecordText": "لم يتم العثور على سجلات مطابقة",
     "submissions": "التقديمات",
     "submissionsTable": "الجدول",
     "selectColumns": "حدد الأعمدة",
@@ -464,6 +466,7 @@
     "editThisDraft": "تحرير هذه المسودة"
   },
   "mySubmissionsTable": {
+    "noMachingRecordText": "لم يتم العثور على سجلات مطابقة",
     "previousSubmissions": "عمليات الإرسال السابقة",
     "selectColumns": "حدد الأعمدة",
     "createNewSubmission": "إنشاء إرسال جديد",
@@ -794,11 +797,11 @@
     "resetColumns": "إعادة تعيين الأعمدة"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "عرض جميع عمليات الإرسال",
+    "viewMyDraftOrSubmissions": "عرض المسودة / التقديمات الخاصة بي",
     "saveAsADraft": "احفظ كمسودة",
     "editThisDraft": "قم بتحرير هذه المسودة",
     "switchSingleSubmssn": "التبديل إلى الإرسال الفردي",
-    "switchMultiSubmssn": "التبديل إلى الإرسال المتعدد"
+    "switchMultiSubmssn": "التبديل إلى تقديمات متعددة"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "تم نسخ الرابط إلى الحافظة",

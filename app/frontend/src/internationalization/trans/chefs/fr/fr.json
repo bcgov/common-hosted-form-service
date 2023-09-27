@@ -325,7 +325,8 @@
     "version": "Version",
     "save": "Sauvegarder",
     "saving": "Économie",
-    "notSaved": "Non enregistré"
+    "notSaved": "Non enregistré",
+    "fieldnameError": "Vous NE POUVEZ PAS utiliser le mot-clé `form` comme nom de champ {label}"
   },
   "formViewerMultiUpload": {
     "important": "IMPORTANT",
@@ -375,6 +376,7 @@
     "emailRequired": "L'e-mail est requis"
   },
   "submissionsTable": {
+    "noMachingRecordText": "Aucun enregistrements correspondants trouvés",
     "submissions": "Soumissions",
     "submissionsTable": "Tableau des soumissions",
     "selectColumns": "Sélectionnez les colonnes",
@@ -464,6 +466,7 @@
     "editThisDraft": "Modifier ce brouillon"
   },
   "mySubmissionsTable": {
+    "noMachingRecordText": "Aucun enregistrements correspondants trouvés",
     "previousSubmissions": "Soumissions précédentes",
     "selectColumns": "Sélectionnez les colonnes",
     "createNewSubmission": "Créer une nouvelle soumission",
@@ -794,11 +797,11 @@
     "resetColumns": "Réinitialiser les colonnes"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "Voir toutes les soumissions",
+    "viewMyDraftOrSubmissions": "Afficher mes brouillons/soumissions",
     "saveAsADraft": "Enregistrer en tant que projet",
     "editThisDraft": "Modifier ce brouillon",
     "switchSingleSubmssn": "Passer à la soumission unique",
-    "switchMultiSubmssn": "Passer à la soumission multiple"
+    "switchMultiSubmssn": "Passer à plusieurs soumissions"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Lien copié dans le presse-papiers",

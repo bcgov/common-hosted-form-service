@@ -325,7 +325,8 @@
     "version": "版本",
     "save": "节省",
     "saving": "保存",
-    "notSaved": "未保存"
+    "notSaved": "未保存",
+    "fieldnameError": "您不能使用“form”关键字作为 {label} 字段名"
   },
   "formViewerMultiUpload": {
     "important": "重要的",
@@ -375,6 +376,7 @@
     "emailRequired": "电子邮件为必填项"
   },
   "submissionsTable": {
+    "noMachingRecordText": "未找到匹配的记录",
     "submissions": "意见书",
     "submissionsTable": "提交表",
     "selectColumns": "选择列",
@@ -464,6 +466,7 @@
     "editThisDraft": "编辑本草稿"
   },
   "mySubmissionsTable": {
+    "noMachingRecordText": "未找到匹配的记录",
     "previousSubmissions": "以前提交的内容",
     "selectColumns": "选择列",
     "createNewSubmission": "创建新提交",
@@ -794,7 +797,7 @@
     "resetColumns": "重置列"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "查看所有提交内容",
+    "viewMyDraftOrSubmissions": "查看我的草稿/提交内容",
     "saveAsADraft": "另存为草稿",
     "editThisDraft": "编辑本草稿",
     "switchSingleSubmssn": "切换到单一提交",

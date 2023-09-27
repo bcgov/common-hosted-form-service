@@ -123,8 +123,18 @@ const service = {
         result.push(ord);
       } else if (helpMap[ord]) {
         helpMap[ord].map((h) => result.push(h));
+      } else {
+        // if non of those single fields or datagrids with multi children
+        // then work with possible fields with external sources as an object/json
+        array.map((ar) => {
+          if (ar.includes(ord)) {
+            result.push(ar);
+          }
+        });
       }
     });
+    // removing all possible duplicates
+    result = [...new Set(result)];
     return result;
   },
 
@@ -161,22 +171,13 @@ const service = {
       }
       // apply help function to make header column order same as it goes in form
       const flattenSubmissionHeadersOrdered = service.mapOrder(flattenSubmissionHeaders, fieldNames);
-      // we have 1 case when if field is DataGridMap type it'd not included into sorted flattened array,
-      // thus we add it manually from original flatten array
-      const dataGridFields = flattenSubmissionHeaders.filter((x) => !flattenSubmissionHeadersOrdered.includes(x));
-      dataGridFields.map((dgf) => flattenSubmissionHeadersOrdered.push(dgf));
       formSchemaheaders = formSchemaheaders.concat(flattenSubmissionHeadersOrdered.filter((item) => formSchemaheaders.indexOf(item) < 0));
     }
 
     if (fields) {
       return formSchemaheaders.filter((header) => {
-        if (Array.isArray(fields) && fields.includes(header) && !singleRow) {
+        if (Array.isArray(fields) && fields.includes(header)) {
           return header;
-        } else if (Array.isArray(fields) && singleRow) {
-          const unFlattenHeader = header.replace(/\.\d\./gi, '.');
-          if (fields.includes(unFlattenHeader)) {
-            return header;
-          }
         }
       });
     }
@@ -435,7 +436,7 @@ const service = {
       return Object.assign({ form: form }, submission);
     });
 
-    return await service._buildCsvHeaders(form, formatted, params.version, undefined);
+    return await service._buildCsvHeaders(form, formatted, params.version, undefined, params.singleRow === 'true');
   },
 
   export: async (formId, params = {}, currentUser = null, referer) => {
