@@ -762,10 +762,14 @@
     "createOnlineTitle": "Crie formulários online para coletar informações de seus clientes e melhorar seus fluxos de trabalho.",
     "getStarted": "iniciar"
   },
+  
+"baseStepper": {
+  "setUpForm": "Configurar formulário",
+    "designForm": "Forma de desenho",
+    "manageForm": "Gerenciar formulário"
+},
   "create": {
     "createNewForm": "Criar novo formulário",
-    "setUpForm": "Configurar formulário",
-    "designForm": "Forma de desenho",
     "formSettings": "Configurações do formulário",
     "disclaimer": "Isenção de responsabilidade",
     "disclaimerStmt": "Eu concordo com a isenção de responsabilidade e declaração de responsabilidade para Form Designers",

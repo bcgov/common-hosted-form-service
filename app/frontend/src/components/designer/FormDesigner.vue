@@ -569,6 +569,7 @@ export default {
       const patch = compare(form, this.formSchema);
 
       if (patch.length > 0) {
+        this.canSave = true;
         this.savedStatus = 'Save';
         this.isFormSaved = false;
         // Remove any actions past the action we were on
@@ -610,6 +611,7 @@ export default {
       if (this.canUndoPatch()) {
         this.savedStatus = 'Save';
         this.isFormSaved = false;
+        this.canSave = true;
         // Flag for formio to know we are setting the form
         this.patch.undoClicked = true;
         this.formSchema = this.getPatch(--this.patch.index);
@@ -620,6 +622,7 @@ export default {
       if (this.canRedoPatch()) {
         this.savedStatus = 'Save';
         this.isFormSaved = false;
+        this.canSave = true;
         // Flag for formio to know we are setting the form
         this.patch.redoClicked = true;
         this.formSchema = this.getPatch(++this.patch.index);
@@ -680,6 +683,7 @@ export default {
 
         this.savedStatus = 'Saved';
         this.isFormSaved = true;
+        this.canSave = false;
       } catch (error) {
         await this.setDirtyFlag(true);
         this.savedStatus = 'Not Saved';

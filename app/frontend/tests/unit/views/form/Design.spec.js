@@ -37,11 +37,11 @@ describe('Design.vue', () => {
     const wrapper = shallowMount(Design, {
       localVue,
       store,
-      stubs: ['BaseSecure', 'FormDesigner'],
+      stubs: ['FormDesigner', 'BaseStepper'],
       i18n
     });
 
-    expect(wrapper.html()).toMatch('basesecure');
+    expect(wrapper.html()).toMatch('basestepper');
   });
 
   it('beforeRouteLeave guard works when not dirty', () => {
@@ -50,7 +50,7 @@ describe('Design.vue', () => {
     const wrapper = shallowMount(Design, {
       localVue,
       store,
-      stubs: ['BaseSecure', 'FormDesigner'],
+      stubs: ['BaseSecure', 'FormDesigner', 'BaseStepper'],
       i18n
     });
     Design.beforeRouteLeave.call(wrapper.vm, undefined, undefined, next);
@@ -65,7 +65,7 @@ describe('Design.vue', () => {
     const wrapper = shallowMount(Design, {
       localVue,
       store,
-      stubs: ['BaseSecure', 'FormDesigner'],
+      stubs: ['FormDesigner', 'BaseStepper'],
       i18n
     });
     Design.beforeRouteLeave.call(wrapper.vm, undefined, undefined, next);
