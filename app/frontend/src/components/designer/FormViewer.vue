@@ -37,6 +37,7 @@
           <FormViewerActions
             :block="block"
             :draftEnabled="form.enableSubmitterDraft"
+            :formIsValid="formIsValid"
             :formId="form.id"
             :isDraft="submissionRecord.draft"
             :permissions="permissions"
@@ -288,6 +289,7 @@ export default {
       formDataEntered: false,
       isLoading: true,
       showModal: false,
+      formIsValid: false,
     };
   },
   computed: {
@@ -545,6 +547,7 @@ export default {
       if (e.changed != undefined && !e.changed.flags.fromSubmission) {
         this.formDataEntered = true;
       }
+      this.formIsValid = e.isValid;
     },
     jsonManager() {
       this.formElement = this.$refs.chefForm.formio;
