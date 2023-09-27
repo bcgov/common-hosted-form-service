@@ -7,9 +7,10 @@ class SubmissionData extends Model {
 
   static get modifiers() {
     return {
-      filterVersion(query, value) {
-        if (value) {
-          query.where('version', value);
+      filterVersion(query, version, selectedSubmissions) {
+        // DO NOT need to filter by version if we filter by particular selected ids
+        if (version && (!selectedSubmissions || selectedSubmissions === '')) {
+          query.where('version', version);
         }
       },
       filterCreatedAt(query, minDate, maxDate) {

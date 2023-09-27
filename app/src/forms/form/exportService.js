@@ -258,7 +258,7 @@ const service = {
     return SubmissionData.query()
       .select(service._submissionsColumns(form, params))
       .where('formId', form.id)
-      .modify('filterVersion', version)
+      .modify('filterVersion', version, params.selectedSubmissions)
       .modify('filterCreatedAt', preference && preference.minDate, preference && preference.maxDate)
       .modify('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate)
       .modify('filterStatus', params.status)
