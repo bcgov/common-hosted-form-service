@@ -125,7 +125,6 @@ export default {
     isRTL: (state) => state.isRTL,
     subscriptionData: (state) => state.subscriptionData,
     totalSubmissions: (state) => state.totalSubmissions,
-    creatorStep: (state) => state.creatorStep,
   },
   mutations: {
     updateField, // vuex-map-fields
