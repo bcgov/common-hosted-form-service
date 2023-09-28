@@ -329,7 +329,8 @@
     "version": "نسخه",
     "save": "صرفه جویی",
     "saving": "صرفه جویی در",
-    "notSaved": "ذخیره نشد"
+    "notSaved": "ذخیره نشد",
+    "fieldnameError": "شما نمی توانید از کلمه کلیدی «form» به عنوان نام فیلد {label} استفاده کنید"
   },
   "formViewerMultiUpload": {
     "important": "مهم",
@@ -765,10 +766,13 @@
     "createOnlineTitle": "فرم های آنلاین برای جمع آوری اطلاعات از مشتریان خود و بهبود گردش کار خود ایجاد کنید.",
     "getStarted": "شروع کنید"
   },
+"baseStepper": {
+  "setUpForm": "فرم را تنظیم کنید",
+  "designForm": "فرم طراحی",
+  "manageForm": "مدیریت فرم"
+},
   "create": {
     "createNewForm": "ایجاد فرم جدید",
-    "setUpForm": "فرم را تنظیم کنید",
-    "designForm": "فرم طراحی",
     "formSettings": "تنظیمات فرم",
     "disclaimer": "سلب مسئولیت",
     "disclaimerStmt": "من با سلب مسئولیت و بیانیه مسئولیت طراحان فرم موافقم",

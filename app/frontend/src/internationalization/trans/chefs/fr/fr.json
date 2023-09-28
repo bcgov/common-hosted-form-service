@@ -329,7 +329,8 @@
     "version": "Version",
     "save": "Sauvegarder",
     "saving": "Économie",
-    "notSaved": "Non enregistré"
+    "notSaved": "Non enregistré",
+    "fieldnameError": "Vous NE POUVEZ PAS utiliser le mot-clé `form` comme nom de champ {label}"
   },
   "formViewerMultiUpload": {
     "important": "IMPORTANT",
@@ -765,10 +766,13 @@
     "createOnlineTitle": "Créez des formulaires en ligne pour collecter des informations auprès de vos clients et améliorer vos flux de travail.",
     "getStarted": "Commencer"
   },
+"baseStepper": {
+  "setUpForm": "Configurer le formulaire",
+    "designForm": "Formulaire de conception",
+    "manageForm": "Gérer le formulaire"
+},
   "create": {
     "createNewForm": "Créer un nouveau formulaire",
-    "setUpForm": "Configurer le formulaire",
-    "designForm": "Formulaire de conception",
     "formSettings": "Paramètres du formulaire",
     "disclaimer": "Clause de non-responsabilité",
     "disclaimerStmt": "J'accepte la clause de non-responsabilité et la déclaration de responsabilité des concepteurs de formulaires",

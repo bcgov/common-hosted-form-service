@@ -329,7 +329,8 @@
     "version": "버전",
     "save": "구하다",
     "saving": "절약",
-    "notSaved": "저장되지 않음"
+    "notSaved": "저장되지 않음",
+    "fieldnameError": "{label} 필드 이름으로 `form` 키워드를 사용할 수 없습니다."
   },
   "formViewerMultiUpload": {
     "important": "중요한",
@@ -765,10 +766,13 @@
     "createOnlineTitle": "클라이언트로부터 정보를 수집하고 작업 흐름을 개선하기 위한 온라인 양식을 만드십시오.",
     "getStarted": "시작하다"
   },
-  "create": {
-    "createNewForm": "새 양식 만들기",
+  "baseStepper": {
     "setUpForm": "양식 설정",
     "designForm": "디자인 양식",
+    "manageForm": "양식 관리"
+    },
+  "create": {
+    "createNewForm": "새 양식 만들기",
     "formSettings": "양식 설정",
     "disclaimer": "부인 성명",
     "disclaimerStmt": "양식 디자이너에 대한 면책 조항 및 책임 진술에 동의합니다.",

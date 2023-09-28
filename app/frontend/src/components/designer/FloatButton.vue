@@ -31,6 +31,7 @@ export default {
       default: false,
     },
     isFormSaved: Boolean,
+    canSave: Boolean,
     savedStatus: {
       type: String,
       default: null,
@@ -337,8 +338,8 @@ export default {
       <router-link
         v-slot="{ navigate }"
         :to="{
-          name: 'FormManage',
-          query: { f: formId, fd: 'formDesigner', d: draftId },
+          name: 'PublishForm',
+          query: { f: formId, fd: true, d: draftId },
         }"
         custom
       >
@@ -371,7 +372,7 @@ export default {
       </router-link>
       <router-link
         v-slot="{ navigate }"
-        :to="{ name: 'FormManage', query: { f: formId } }"
+        :to="{ name: 'PublishForm', query: { f: formId, d: draftId } }"
         custom
       >
         <div
@@ -458,13 +459,19 @@ export default {
         ref="saveButton"
         class="fabAction"
         data-cy="saveButton"
-        :class="{ 'disabled-router': isFormSaved }"
+        :class="{ 'disabled-router': isFormSaved && !canSave }"
       >
         <div class="text" :lang="lang">{{ savedMsg }}</div>
-        <v-btn class="fabItems" :size="fabItemsSize" @click="toParent('save')">
+        <v-btn
+          class="fabItems"
+          :size="fabItemsSize"
+          @click="canSave ? toParent('save') : null"
+        >
           <v-icon
             v-if="!saving"
-            :color="!isFormSaved ? fabItemsColor : disabledFabItemsColor"
+            :color="
+              !isFormSaved && canSave ? fabItemsColor : disabledFabItemsColor
+            "
             :size="fabItemsIconsSize"
             dark
             icon="mdi:mdi-content-save"

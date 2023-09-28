@@ -329,7 +329,8 @@
     "version": "Versione",
     "save": "Salva",
     "saving": "Salvataggio",
-    "notSaved": "Non salvato"
+    "notSaved": "Non salvato",
+    "fieldnameError": "NON PUOI utilizzare la parola chiave 'form' come nome campo {label}"
   },
   "formViewerMultiUpload": {
     "important": "IMPORTANTE",
@@ -765,10 +766,13 @@
     "createOnlineTitle": "Crea moduli online per raccogliere informazioni dai tuoi clienti e migliorare i tuoi flussi di lavoro.",
     "getStarted": "Iniziare"
   },
+"baseStepper": {
+  "setUpForm": "Imposta modulo",
+    "designForm": "Modulo di progettazione",
+    "manageForm": "Gestisci modulo"
+},
   "create": {
     "createNewForm": "Crea nuovo modulo",
-    "setUpForm": "Imposta modulo",
-    "designForm": "Modulo di progettazione",
     "formSettings": "Impostazioni modulo",
     "disclaimer": "Disclaimer",
     "disclaimerStmt": "Accetto il disclaimer e la dichiarazione di responsabilità per Form Designers",

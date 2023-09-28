@@ -1,7 +1,7 @@
 <script>
 import { mapActions, mapState } from 'pinia';
 
-import BaseSecure from '~/components/base/BaseSecure.vue';
+import BaseStepper from '~/components/base/BaseStepper.vue';
 import BasePanel from '~/components/base/BasePanel.vue';
 import FormDesigner from '~/components/designer/FormDesigner.vue';
 import FormDisclaimer from '~/components/designer/FormDisclaimer.vue';
@@ -12,7 +12,7 @@ import { IdentityMode, IdentityProviders } from '~/utils/constants';
 
 export default {
   components: {
-    BaseSecure,
+    BaseStepper,
     BasePanel,
     FormDesigner,
     FormSettings,
@@ -25,7 +25,7 @@ export default {
   },
   data() {
     return {
-      creatorStep: 0,
+      step: 1,
       settingsFormValid: false,
       disclaimerCheckbox: false,
       disclaimerRules: [(v) => !!v || i18n.t('trans.create.agreementErrMsg')],
@@ -34,6 +34,7 @@ export default {
   computed: {
     ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
     IDP: () => IdentityProviders,
+    stepper: () => this.step,
   },
   watch: {
     form() {
@@ -53,7 +54,7 @@ export default {
   methods: {
     ...mapActions(useFormStore, ['listFCProactiveHelp', 'resetForm']),
     reRenderFormDesigner() {
-      this.creatorStep = 1;
+      this.step = 2;
       this.onFormLoad();
     },
     onFormLoad() {
@@ -64,88 +65,49 @@ export default {
 </script>
 
 <template>
-  <BaseSecure :idp="[IDP.IDIR]" :class="{ 'dir-rtl': isRTL }">
-    <h1 class="my-6 text-center" :lang="lang">
-      {{ $t('trans.create.createNewForm') }}
-    </h1>
-    <v-stepper v-model="creatorStep">
-      <v-stepper-header>
-        <v-stepper-item
-          :complete="creatorStep > 0"
-          :title="$t('trans.create.createNewForm')"
-          value="1"
-          :lang="lang"
-        ></v-stepper-item>
+  <BaseStepper :step="stepper">
+    <template #setUpForm>
+      <v-form ref="settingsForm" v-model="settingsFormValid">
+        <h1 :lang="lang">
+          {{ $t('trans.create.formSettings') }}
+        </h1>
+        <FormSettings />
 
-        <v-divider></v-divider>
-
-        <v-stepper-item
-          :complete="creatorStep > 1"
-          :title="$t('trans.create.designForm')"
-          value="2"
-          :lang="lang"
-        ></v-stepper-item>
-      </v-stepper-header>
-      <v-stepper-window>
-        <v-stepper-window-item value="1">
-          <v-form ref="settingsForm" v-model="settingsFormValid">
-            <h1 :lang="lang">
-              {{ $t('trans.create.formSettings') }}
-            </h1>
-            <FormSettings />
-
-            <BasePanel class="my-6">
-              <template #title
-                ><span :lang="lang">{{
-                  $t('trans.create.disclaimer')
-                }}</span></template
-              >
-              <FormDisclaimer />
-
-              <v-checkbox
-                v-model="disclaimerCheckbox"
-                :rules="disclaimerRules"
-                required="true"
-              >
-                <template #label>
-                  <span :class="{ 'mr-2': isRTL }" :lang="lang">{{
-                    $t('trans.create.disclaimerStmt')
-                  }}</span>
-                </template>
-              </v-checkbox>
-            </BasePanel>
-          </v-form>
-          <v-btn
-            :disabled="!settingsFormValid"
-            color="primary"
-            data-test="continue-btn"
-            @click="reRenderFormDesigner()"
+        <BasePanel class="my-6">
+          <template #title
+            ><span :lang="lang">{{
+              $t('trans.create.disclaimer')
+            }}</span></template
           >
-            {{ $t('trans.create.continue') }}
-          </v-btn>
-        </v-stepper-window-item>
-        <v-stepper-window-item value="2">
-          <FormDesigner ref="formDesigner" />
-          <v-btn
-            variant="outlined"
-            data-test="back-btn"
-            @click="creatorStep = 0"
+          <FormDisclaimer />
+
+          <v-checkbox
+            v-model="disclaimerCheckbox"
+            :rules="disclaimerRules"
+            required="true"
           >
-            <span :lang="lang">{{ $t('trans.create.back') }}</span>
-          </v-btn>
-        </v-stepper-window-item>
-      </v-stepper-window>
-    </v-stepper>
-  </BaseSecure>
+            <template #label>
+              <span :class="{ 'mr-2': isRTL }" :lang="lang">{{
+                $t('trans.create.disclaimerStmt')
+              }}</span>
+            </template>
+          </v-checkbox>
+        </BasePanel>
+      </v-form>
+      <v-btn
+        :disabled="!settingsFormValid"
+        color="primary"
+        data-test="continue-btn"
+        @click="reRenderFormDesigner()"
+      >
+        {{ $t('trans.create.continue') }}
+      </v-btn>
+    </template>
+    <template #designForm>
+      <FormDesigner ref="formDesigner" />
+      <v-btn variant="outlined" data-test="back-btn" @click="creatorStep = 0">
+        <span :lang="lang">{{ $t('trans.create.back') }}</span>
+      </v-btn>
+    </template>
+  </BaseStepper>
 </template>
-
-<style lang="scss" scoped>
-.v-stepper.v-sheet {
-  box-shadow: none !important;
-  border-radius: 0 !important;
-}
-
-.v-stepper-header {
-  box-shadow: none !important;
-}
-</style>
