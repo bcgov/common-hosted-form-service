@@ -71,7 +71,6 @@ export default {
       block: false,
       bulkFile: false,
       confirmSubmit: false,
-      confirmSubmitTimer: null,
       currentForm: {},
       doYouWantToSaveTheDraft: false,
       forceNewTabLinks: true,
@@ -180,7 +179,6 @@ export default {
   },
   beforeUnmount() {
     window.removeEventListener('beforeunload', this.beforeWindowUnload);
-    if (this.confirmSubmitTimer) clearTimeout(this.confirmSubmitTimer);
   },
   beforeUpdate() {
     if (this.forceNewTabLinks) {
@@ -865,19 +863,20 @@ export default {
         // while 'confirm submit?' dialog is open..
         while (this.showSubmitConfirmDialog) {
           // await a promise that never resolves to block this thread
-          await new Promise(
-            (resolve) => (this.confirmSubmitTimer = setTimeout(resolve, 500))
-          );
+          await new Promise((resolve) => setTimeout(resolve, 500));
         }
         if (this.confirmSubmit) {
-          clearTimeout(this.confirmSubmitTimer);
-          next();
+          // Weird form.io issue where it's calling this multiple times
+          // with an empty submission.
+          if (_.isEqual(this.submission.data, submission.data)) {
+            // Only execute the next step if the submission is the same
+            next();
+          }
         } else {
           // Force re-render form.io to reset submit button state
           this.reRenderFormIo += 1;
         }
       } else {
-        clearTimeout(this.confirmSubmitTimer);
         next();
       }
     },
