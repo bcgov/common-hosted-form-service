@@ -329,7 +329,8 @@
     "version": "版本",
     "save": "节省",
     "saving": "保存",
-    "notSaved": "未保存"
+    "notSaved": "未保存",
+    "fieldnameError": "您不能使用“form”关键字作为 {label} 字段名"
   },
   "formViewerMultiUpload": {
     "important": "重要的",
@@ -765,10 +766,13 @@
     "createOnlineTitle": "创建在线表单以收集客户的信息并改进您的工作流程。",
     "getStarted": "开始使用"
   },
-  "create": {
-    "createNewForm": "创建新表格",
+  "baseStepper": {
     "setUpForm": "设置表格",
     "designForm": "设计形式",
+    "manageForm": "管理表格"
+    },
+  "create": {
+    "createNewForm": "创建新表格",
     "formSettings": "表单设置",
     "disclaimer": "免责声明",
     "disclaimerStmt": "我同意表单设计师的免责声明和责任声明",

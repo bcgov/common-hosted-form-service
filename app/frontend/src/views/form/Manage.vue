@@ -7,7 +7,7 @@ export default {
   components: { BaseSecure, ManageLayout },
   provide() {
     return {
-      fd: this.fd,
+      formDesigner: JSON.parse(this.fd),
       draftId: this.d,
       formId: this.f,
     };
@@ -22,8 +22,8 @@ export default {
       default: null,
     },
     fd: {
-      type: String,
-      default: null,
+      type: Boolean,
+      default: false,
     },
   },
   computed: {

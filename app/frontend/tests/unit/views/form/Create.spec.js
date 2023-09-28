@@ -36,13 +36,13 @@ describe('Create.vue', () => {
       global: {
         plugins: [pinia],
         stubs: {
-          BaseSecure: {
-            name: 'BaseSecure',
-            template: '<div class="base-secure-stub"><slot /></div>',
-          },
           FormSettings: {
             name: 'FormSettings',
             template: '<div class="form-settings-stub"><slot /></div>',
+          },
+          BaseStepper: {
+            name: 'BaseStepper',
+            template: '<div class="base-stepper-stub"><slot name="setUpForm" /><slot name="designForm" /></div>',
           },
           BasePanel: {
             name: 'BasePanel',
@@ -86,7 +86,6 @@ describe('Create.vue', () => {
 
     await flushPromises();
 
-    expect(wrapper.html()).toMatch('trans.create.createNewForm');
     expect(wrapper.html()).toMatch('form-settings');
     expect(wrapper.html()).toMatch('form-disclaimer');
     expect(wrapper.find('button').text()).toMatch('trans.create.continue');
@@ -110,9 +109,9 @@ describe('Create.vue', () => {
       global: {
         plugins: [pinia],
         stubs: {
-          BaseSecure: {
-            name: 'BaseSecure',
-            template: '<div class="base-secure-stub"><slot /></div>',
+          BaseStepper: {
+            name: 'BaseStepper',
+            template: '<div class="base-stepper-stub"><slot name="setUpForm" /><slot name="designForm" /></div>',
           },
           FormSettings: {
             name: 'FormSettings',
@@ -156,7 +155,6 @@ describe('Create.vue', () => {
 
     await flushPromises();
 
-    expect(wrapper.html()).toMatch('trans.create.createNewForm');
     expect(wrapper.html()).toMatch('form-designer');
     expect(wrapper.find('button').text()).toMatch('trans.create.continue');
   });
@@ -172,9 +170,9 @@ describe('Create.vue', () => {
       global: {
         plugins: [pinia],
         stubs: {
-          BaseSecure: {
-            name: 'BaseSecure',
-            template: '<div class="base-secure-stub"><slot /></div>',
+          BaseStepper: {
+            name: 'BaseStepper',
+            template: '<div class="base-stepper-stub"><slot name="setUpForm" /><slot name="designForm" /></div>',
           },
           FormSettings: {
             name: 'FormSettings',
@@ -243,9 +241,9 @@ describe('Create.vue', () => {
       global: {
         plugins: [pinia],
         stubs: {
-          BaseSecure: {
-            name: 'BaseSecure',
-            template: '<div class="base-secure-stub"><slot /></div>',
+          BaseStepper: {
+            name: 'BaseStepper',
+            template: '<div class="base-stepper-stub"><slot name="setUpForm" /><slot name="designForm" /></div>',
           },
           FormSettings: {
             name: 'FormSettings',

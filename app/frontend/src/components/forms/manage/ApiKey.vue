@@ -42,7 +42,7 @@ export default {
       );
     },
     secret() {
-      return this.apiKey?.secret ? this.apiKey.secret : undefined;
+      return this.apiKey?.secret ? this.apiKey.secret : '';
     },
   },
   created() {

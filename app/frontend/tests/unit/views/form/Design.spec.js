@@ -5,7 +5,6 @@ import { createTestingPinia } from '@pinia/testing';
 import { mount } from '@vue/test-utils';
 import { setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { nextTick } from 'vue';
 
 import { useFormStore } from '~/store/form';
 import Design from '~/views/form/Design.vue';
@@ -32,9 +31,9 @@ describe('Design.vue', () => {
       global: {
         plugins: [pinia],
         stubs: {
-          BaseSecure: {
-            name: 'BaseSecure',
-            template: '<div class="base-secure-stub"><slot /></div>',
+          BaseStepper: {
+            name: 'BaseStepper',
+            template: '<div class="base-stepper-stub"><slot name="designForm" /></div>',
           },
           FormDesigner: {
             name: 'FormDesigner',
@@ -47,7 +46,7 @@ describe('Design.vue', () => {
       },
     });
 
-    expect(wrapper.html()).toMatch('base-secure');
+    expect(wrapper.html()).toMatch('base-stepper');
   });
 
   it('beforeRouteLeave guard works when not dirty', () => {
@@ -64,9 +63,9 @@ describe('Design.vue', () => {
       global: {
         plugins: [pinia],
         stubs: {
-          BaseSecure: {
-            name: 'BaseSecure',
-            template: '<div class="base-secure-stub"><slot /></div>',
+          BaseStepper: {
+            name: 'BaseStepper',
+            template: '<div class="base-stepper-stub"><slot name="designForm" /></div>',
           },
           FormDesigner: {
             name: 'FormDesigner',
@@ -94,9 +93,9 @@ describe('Design.vue', () => {
       global: {
         plugins: [pinia],
         stubs: {
-          BaseSecure: {
-            name: 'BaseSecure',
-            template: '<div class="base-secure-stub"><slot /></div>',
+          BaseStepper: {
+            name: 'BaseStepper',
+            template: '<div class="base-stepper-stub"><slot name="designForm" /></div>',
           },
           FormDesigner: {
             name: 'FormDesigner',
