@@ -1,15 +1,8 @@
-<template>
-  <BaseStepper :step="3">
-    <template #manageForm>
-      <ManageForm v-if="showManageForm" />
-    </template>
-  </BaseStepper>
-</template>
-
 <script>
-import ManageForm from '@/components/forms/manage/ManageForm.vue';
-import { mapActions, mapGetters } from 'vuex';
-import { FormPermissions } from '@/utils/constants';
+import ManageForm from '~/components/forms/manage/ManageForm.vue';
+import { mapActions, mapState } from 'pinia';
+import { FormPermissions } from '~/utils/constants';
+import { useFormStore } from '~/store/form';
 
 export default {
   name: 'PublishForm',
@@ -42,10 +35,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['permissions', 'form']),
+    ...mapState(useFormStore, ['permissions', 'form']),
   },
   methods: {
-    ...mapActions('form', [
+    ...mapActions(useFormStore, [
       'fetchDrafts',
       'fetchForm',
       'getFormPermissionsForUser',
@@ -60,3 +53,11 @@ export default {
   },
 };
 </script>
+
+<template>
+  <BaseStepper :step="3">
+    <template #manageForm>
+      <ManageForm v-if="showManageForm" />
+    </template>
+  </BaseStepper>
+</template>
