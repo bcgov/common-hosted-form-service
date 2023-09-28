@@ -13,7 +13,7 @@ import { formService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
-import { IdentityMode } from '~/utils/constants';
+import { IdentityMode, NotificationTypes } from '~/utils/constants';
 import { generateIdps } from '~/utils/transformUtils';
 
 export default {
@@ -51,16 +51,15 @@ export default {
   },
   data() {
     return {
-      savedStatus: this.isSavedStatus,
-      isFormSaved: !this.newVersion,
+      canSave: false,
+      component: {},
+      displayVersion: 1,
       formSchema: {
         display: 'form',
         type: 'form',
         components: [],
       },
-      displayVersion: 1,
-      reRenderFormIo: 0,
-      saving: false,
+      isFormSaved: !this.newVersion,
       patch: {
         componentAddedStart: false,
         componentRemovedStart: false,
@@ -72,8 +71,10 @@ export default {
         redoClicked: false,
         undoClicked: false,
       },
+      reRenderFormIo: 0,
+      savedStatus: this.isSavedStatus,
+      saving: false,
       showHelpLinkDialog: false,
-      component: {},
     };
   },
   computed: {
@@ -425,6 +426,18 @@ export default {
               this.addPatchToHistory();
             }
           }
+          this.canSave = true;
+          modified?.components?.map((comp) => {
+            if (comp.key === 'form') {
+              this.addNotification({
+                ...NotificationTypes.ERROR,
+                message: this.$t('trans.formDesigner.fieldnameError', {
+                  label: comp.label,
+                }),
+              });
+              this.canSave = false;
+            }
+          });
         } else {
           // If we removed a component but not during an add action
           if (
@@ -450,6 +463,7 @@ export default {
       const ptch = compare(frm, this.formSchema);
 
       if (ptch.length > 0) {
+        this.canSave = true;
         this.savedStatus = 'Save';
         this.isFormSaved = false;
         // Remove any actions past the action we were on
@@ -491,6 +505,7 @@ export default {
       if (this.canUndoPatch()) {
         this.savedStatus = 'Save';
         this.isFormSaved = false;
+        this.canSave = true;
         // Flag for formio to know we are setting the form
         this.patch.undoClicked = true;
         this.formSchema = this.getPatch(--this.patch.index);
@@ -502,6 +517,7 @@ export default {
       if (this.canRedoPatch()) {
         this.savedStatus = 'Save';
         this.isFormSaved = false;
+        this.canSave = true;
         // Flag for formio to know we are setting the form
         this.patch.redoClicked = true;
         this.formSchema = this.getPatch(++this.patch.index);
@@ -561,6 +577,7 @@ export default {
 
         this.savedStatus = 'Saved';
         this.isFormSaved = true;
+        this.canSave = false;
       } catch (error) {
         await this.setDirtyFlag(true);
         const notificationStore = useNotificationStore();
@@ -766,6 +783,7 @@ export default {
       :saved-status="savedStatus"
       :saved="saved"
       :is-form-saved="isFormSaved"
+      :can-save="canSave"
       :form-id="formId"
       :draft-id="draftId"
       :undo-enabled="undoEnabled() === 0 ? false : undoEnabled()"

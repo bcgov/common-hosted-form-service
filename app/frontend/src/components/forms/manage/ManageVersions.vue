@@ -14,7 +14,7 @@ export default {
     BaseDialog,
     BaseInfoCard,
   },
-  inject: ['fd', 'draftId', 'formId'],
+  inject: ['formDesigner', 'draftId', 'formId'],
   data() {
     return {
       headers: [
@@ -99,9 +99,9 @@ export default {
       return this.permissions.includes(FormPermissions.FORM_UPDATE);
     },
   },
-  created() {
-    if (this.fd) {
-      this.turnOnPublish();
+  async created() {
+    if (this.formDesigner) {
+      await this.turnOnPublish();
     }
   },
   methods: {

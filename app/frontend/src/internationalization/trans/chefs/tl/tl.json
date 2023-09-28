@@ -329,7 +329,8 @@
     "version": "Bersyon",
     "save": "I-save",
     "saving": "Nagtitipid",
-    "notSaved": "Hindi Na-save"
+    "notSaved": "Hindi Na-save",
+    "fieldnameError": "HINDI mo MAAARI gumamit ng `form` na keyword bilang {label} fieldname"
   },
   "formViewerMultiUpload": {
     "important": "MAHALAGA",
@@ -765,10 +766,13 @@
     "createOnlineTitle": "Lumikha ng mga online na form upang mangolekta ng impormasyon mula sa iyong mga kliyente at pagbutihin ang iyong mga daloy ng trabaho.",
     "getStarted": "Magsimula"
   },
-  "create": {
-    "createNewForm": "Lumikha ng Bagong Form",
+  "baseStepper": {
     "setUpForm": "I-set up ang Form",
     "designForm": "Form ng Disenyo",
+    "manageForm": "Pamahalaan ang Form"
+    },
+  "create": {
+    "createNewForm": "Lumikha ng Bagong Form",
     "formSettings": "Mga Setting ng Form",
     "disclaimer": "Disclaimer",
     "disclaimerStmt": "Sumasang-ayon ako sa disclaimer at pahayag ng responsibilidad para sa mga Form Designer",

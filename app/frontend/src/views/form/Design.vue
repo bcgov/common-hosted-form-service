@@ -1,14 +1,13 @@
 <script>
 import { mapActions, mapState } from 'pinia';
 import { nextTick } from 'vue';
-import BaseSecure from '~/components/base/BaseSecure.vue';
+import BaseStepper from '~/components/base/BaseStepper.vue';
 import FormDesigner from '~/components/designer/FormDesigner.vue';
 import { useFormStore } from '~/store/form';
-import { IdentityProviders } from '~/utils/constants';
 
 export default {
   components: {
-    BaseSecure,
+    BaseStepper,
     FormDesigner,
   },
   beforeRouteLeave(_to, _from, next) {
@@ -45,7 +44,6 @@ export default {
   },
   computed: {
     ...mapState(useFormStore, ['form']),
-    IDP: () => IdentityProviders,
   },
   mounted() {
     nextTick(() => {
@@ -65,16 +63,18 @@ export default {
 </script>
 
 <template>
-  <BaseSecure :idp="[IDP.IDIR]">
-    <FormDesigner
-      ref="formDesigner"
-      class="mt-6"
-      :draft-id="d"
-      :form-id="f"
-      :saved="JSON.parse(sv)"
-      :version-id="v"
-      :is-saved-status="svs"
-      :new-version="nv"
-    />
-  </BaseSecure>
+  <BaseStepper :step="2">
+    <template #designForm>
+      <FormDesigner
+        ref="formDesigner"
+        class="mt-6"
+        :draft-id="d"
+        :form-id="f"
+        :saved="JSON.parse(sv)"
+        :version-id="v"
+        :is-saved-status="svs"
+        :new-version="nv"
+      />
+    </template>
+  </BaseStepper>
 </template>

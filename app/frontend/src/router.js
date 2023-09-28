@@ -86,6 +86,20 @@ export default function getRouter(basePath = '/') {
             },
           },
           {
+            path: 'publish',
+            name: 'PublishForm',
+            component: () =>
+              import(
+                /* webpackChunkName: "publish" */ '@/views/form/PublishForm.vue'
+              ),
+            meta: {
+              breadcrumbTitle: 'Form Designer',
+              requiresAuth: IdentityProviders.IDIR,
+              hasLogin: true,
+            },
+            props: createProps,
+          },
+          {
             path: 'design',
             name: 'FormDesigner',
             component: () => import('~/views/form/Design.vue'),

@@ -329,7 +329,8 @@
     "version": "Ausführung",
     "save": "Speichern",
     "saving": "Sparen",
-    "notSaved": "Nicht gespeichert"
+    "notSaved": "Nicht gespeichert",
+    "fieldnameError": "Sie können das Schlüsselwort 'form' NICHT als {label}-Feldnamen verwenden"
   },
   "formViewerMultiUpload": {
     "important": "WICHTIG",
@@ -765,10 +766,13 @@
     "createOnlineTitle": "Erstellen Sie Online-Formulare, um Informationen von Ihren Kunden zu sammeln und Ihre Arbeitsabläufe zu verbessern.",
     "getStarted": "Loslegen"
   },
+  "baseStepper": {
+    "designForm": "Designform",
+    "setUpForm": "Formular einrichten",
+    "manageForm": "Formular verwalten"
+  },
   "create": {
     "createNewForm": "Neues Formular erstellen",
-    "setUpForm": "Formular einrichten",
-    "designForm": "Designform",
     "formSettings": "Formulareinstellungen",
     "disclaimer": "Haftungsausschluss",
     "disclaimerStmt": "Ich stimme dem Haftungsausschluss und der Haftungserklärung von Form Designers zu",
