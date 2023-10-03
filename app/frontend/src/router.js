@@ -94,7 +94,15 @@ export default function getRouter(basePath = '/') {
               requiresAuth: IdentityProviders.IDIR,
               hasLogin: true,
             },
-            props: createProps,
+            props: (route) => {
+              return {
+                ...route.query,
+                ...route.params,
+                fd:
+                  String(route.query.fd).toLowerCase() === 'true' ||
+                  route.query.fd === true,
+              };
+            },
           },
           {
             path: 'design',
