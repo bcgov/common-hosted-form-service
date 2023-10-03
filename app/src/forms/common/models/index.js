@@ -3,6 +3,7 @@ module.exports = {
   FileStorage: require('./tables/fileStorage'),
   Form: require('./tables/form'),
   FormApiKey: require('./tables/formApiKey'),
+  FormEmailTemplate: require('./tables/formEmailTemplate'),
   FormIdentityProvider: require('./tables/formIdentityProvider'),
   FormSubmission: require('./tables/formSubmission'),
   FormStatusCode: require('./tables/formStatusCode'),

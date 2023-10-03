@@ -2,6 +2,22 @@
   "date": {
     "date": "aaaa-mm-dd"
   },
+  "emailManagement": {
+    "emailManagement": "Gestión de correo electrónico",
+    "manageForm": "Administrar formulario",
+    "submissionConfirmation": "Confirmación de Envío"
+  },
+  "emailTemplate": {
+    "body": "Cuerpo",
+    "save": "Ahorrar",
+    "saveEmailTemplateConsoleErrMsg": "Error al actualizar la plantilla de correo electrónico para el formulario {formId}: {error}",
+    "saveEmailTemplateErrMsg": "Se produjo un error al intentar actualizar la plantilla de correo electrónico.",
+    "subject": "Sujeto",
+    "title": "Título",
+    "validBodyRequired": "Por favor ingrese un cuerpo para el correo electrónico",
+    "validSubjectRequired": "Por favor ingrese una línea de Asunto para el correo electrónico",
+    "validTitleRequired": "Por favor ingrese un Título para el correo electrónico"
+  },
   "formsTable": {
     "myForms": "Mis formularios",
     "createNewForm": "Crear un nuevo formulario",
@@ -29,6 +45,7 @@
     "copyURLToClipboard": "Copiar URL al portapapeles"
   },
   "manageFormActions": {
+    "emailManagement": "Gestión de correo electrónico",
     "viewSubmissions": "Ver envíos",
     "teamManagement": "Gestión de equipos",
     "deleteForm": "Eliminar formulario",
@@ -883,6 +900,8 @@
       "fecthingFormBuilderCompsConsErrMsg": "Error al obtener los componentes del generador de formularios: {error}"
     },
     "form": {
+      "fetchEmailTemplatesConsErrMsg": "Error al cargar plantillas de correo electrónico para {formId}: {error}",
+      "fetchEmailTemplatesErrMsg": "Se produjo un error al obtener las plantillas de correo electrónico para este formulario.",
       "getCurrUserFormsErrMsg": "Se produjo un error al obtener sus formularios.",
       "getCurrUserFormsConsErrMsg": "Error al obtener los datos del usuario: {error}",
       "getUserFormPermErrMsg": "Se produjo un error al obtener sus datos de usuario para este formulario.",
@@ -906,6 +925,8 @@
       "publishDraftErrMsg": "Ocurrió un error durante la publicación.",
       "publishDraftConsErrMsg": "Error al publicar {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "Error en toggleVersionPublish {versionId} {publish}: {error}",
+      "updateEmailTemplateConsErrMsg": "Error al actualizar las plantillas de correo electrónico para el formulario {formId}: {error}",
+      "updateEmailTemplateErrMsg": "Se produjo un error al actualizar las plantillas de correo electrónico para este formulario.",
       "updateFormErrMsg": "Se produjo un error al actualizar la configuración de este formulario.",
       "updateFormConsErrMsg": "Error al actualizar el formulario {id}: {error}",
       "deleteSubmissionNotifyMsg": "Envío eliminado con éxito.",

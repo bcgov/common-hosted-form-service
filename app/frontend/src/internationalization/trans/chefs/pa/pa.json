@@ -2,6 +2,22 @@
   "date": {
     "date": "yyyy-mm-dd"
   },
+  "emailManagement": {
+    "emailManagement": "ਈਮੇਲ ਪ੍ਰਬੰਧਨ",
+    "manageForm": "ਫਾਰਮ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ",
+    "submissionConfirmation": "ਸਪੁਰਦਗੀ ਦੀ ਪੁਸ਼ਟੀ"
+  },
+  "emailTemplate": {
+    "body": "ਸਰੀਰ",
+    "save": "ਬਚਾਓ",
+    "saveEmailTemplateConsoleErrMsg": "ਫਾਰਮ {formId} ਲਈ ਈਮੇਲ ਟੈਮਪਲੇਟ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+    "saveEmailTemplateErrMsg": "ਈਮੇਲ ਟੈਮਪਲੇਟ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
+    "subject": "ਵਿਸ਼ਾ",
+    "title": "ਸਿਰਲੇਖ",
+    "validBodyRequired": "ਕਿਰਪਾ ਕਰਕੇ ਈਮੇਲ ਲਈ ਇੱਕ ਮੁੱਖ ਭਾਗ ਦਾਖਲ ਕਰੋ",
+    "validSubjectRequired": "ਕਿਰਪਾ ਕਰਕੇ ਈਮੇਲ ਲਈ ਵਿਸ਼ਾ ਲਾਈਨ ਦਾਖਲ ਕਰੋ",
+    "validTitleRequired": "ਕਿਰਪਾ ਕਰਕੇ ਈਮੇਲ ਲਈ ਇੱਕ ਸਿਰਲੇਖ ਦਾਖਲ ਕਰੋ"
+  },
   "formsTable": {
     "myForms": "ਮੇਰੇ ਫਾਰਮ",
     "createNewForm": "ਇੱਕ ਨਵਾਂ ਫਾਰਮ ਬਣਾਓ",
@@ -29,6 +45,7 @@
     "copyURLToClipboard": "URL ਨੂੰ ਕਲਿੱਪਬੋਰਡ ਵਿੱਚ ਕਾਪੀ ਕਰੋ"
   },
   "manageFormActions": {
+    "emailManagement": "ਈਮੇਲ ਪ੍ਰਬੰਧਨ",
     "viewSubmissions": "ਬੇਨਤੀਆਂ ਦੇਖੋ",
     "teamManagement": "ਟੀਮ ਪ੍ਰਬੰਧਨ",
     "deleteForm": "ਫਾਰਮ ਮਿਟਾਓ",
@@ -883,6 +900,8 @@
       "fecthingFormBuilderCompsConsErrMsg": "ਫਾਰਮ ਬਿਲਡਰ ਕੰਪੋਨੈਂਟਸ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
     },
     "form": {
+      "fetchEmailTemplatesConsErrMsg": "{formId} ਲਈ ਈਮੇਲ ਟੈਮਪਲੇਟ ਲੋਡ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "fetchEmailTemplatesErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਈਮੇਲ ਟੈਮਪਲੇਟਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
       "getCurrUserFormsErrMsg": "ਤੁਹਾਡੇ ਫਾਰਮ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
       "getCurrUserFormsConsErrMsg": "ਉਪਭੋਗਤਾ ਡੇਟਾ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "getUserFormPermErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਤੁਹਾਡੇ ਉਪਭੋਗਤਾ ਡੇਟਾ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਆਈ ਹੈ।",
@@ -906,6 +925,8 @@
       "publishDraftErrMsg": "ਪ੍ਰਕਾਸ਼ਿਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
       "publishDraftConsErrMsg": "{draftId} ਪ੍ਰਕਾਸ਼ਿਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "toggleVersnPublConsErrMsg": "toggleVersionPublish {versionId} {publish} ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "updateEmailTemplateConsErrMsg": "ਫਾਰਮ {formId} ਲਈ ਈਮੇਲ ਟੈਮਪਲੇਟ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "updateEmailTemplateErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਈਮੇਲ ਟੈਮਪਲੇਟਸ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
       "updateFormErrMsg": "ਇਸ ਫਾਰਮ ਲਈ ਸੈਟਿੰਗਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ।",
       "updateFormConsErrMsg": "ਫਾਰਮ {id} ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "deleteSubmissionNotifyMsg": "ਸਪੁਰਦਗੀ ਸਫਲਤਾਪੂਰਵਕ ਮਿਟਾਈ ਗਈ।",
