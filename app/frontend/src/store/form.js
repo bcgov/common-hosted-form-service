@@ -74,6 +74,7 @@ export const useFormStore = defineStore('form', {
       headers: null,
     },
     drafts: [],
+    emailTemplates: [],
     fcProactiveHelpGroupList: {},
     fcProactiveHelpImageUrl: '',
     form: genInitialForm(),
@@ -270,6 +271,26 @@ export const useFormStore = defineStore('form', {
         });
       }
     },
+    async fetchEmailTemplates(formId) {
+      try {
+        // Get the email templates for this form from the api
+        const { data } = await formService.listEmailTemplates(formId);
+        this.emailTemplates = data;
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        const consoleError = i18n.t(
+          'trans.store.form.fetchEmailTemplatesConsErrMsg',
+          {
+            formId,
+            error,
+          }
+        );
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.fetchEmailTemplatesErrMsg'),
+          consoleError: consoleError,
+        });
+      }
+    },
     async fetchForm(formId) {
       try {
         this.apiKey = null;
@@ -353,6 +374,23 @@ export const useFormStore = defineStore('form', {
     },
     resetForm() {
       this.form = genInitialForm();
+    },
+    async updateEmailTemplate(emailTemplate) {
+      try {
+        await formService.updateEmailTemplate(emailTemplate);
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.form.updateEmailTemplateErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.form.updateEmailTemplateConsErrMsg',
+            {
+              formId: emailTemplate.formId,
+              error: error,
+            }
+          ),
+        });
+      }
     },
     async updateForm() {
       try {

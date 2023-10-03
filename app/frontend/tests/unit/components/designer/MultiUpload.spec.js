@@ -9,10 +9,11 @@ import { useAppStore } from '~/store/app';
 import { useNotificationStore } from '~/store/notification';
 
 const ERROR = {
-  UPLOAD_MULTIPLE_FILE_ERROR: 'Sorry, you can upload only one file',
-  DRAG_MULPLE_FILE_ERROR: 'Sorry, you can drag only one file',
-  FILE_FORMAT_ERROR: 'Sorry, we only accept json files',
-  FILE_SIZE_ERROR: 'Max file size allowed is 5MB',
+  UPLOAD_MULTIPLE_FILE_ERROR:
+    'trans.formViewerMultiUpload.uploadMultipleFileErr',
+  DRAG_MULPLE_FILE_ERROR: 'trans.formViewerMultiUpload.dragMultipleFileErr',
+  FILE_FORMAT_ERROR: 'trans.formViewerMultiUpload.fileFormatErr',
+  FILE_SIZE_ERROR: 'trans.formViewerMultiUpload.fileSizeErr',
   PARSE_JSON_ERROR: 'We can not parse json data from the file',
   JSON_OBJECT_NOT_ARRAY: 'Wrong json file format',
   JSON_ARRAY_EMPTY: 'This json file is empty.',
