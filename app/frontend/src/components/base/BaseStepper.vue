@@ -25,26 +25,23 @@ export default {
   <BaseSecure :idp="[IDP.IDIR]" :class="{ 'dir-rtl': isRTL }">
     <v-stepper v-model="creatorStep">
       <v-stepper-header>
-        <v-stepper-item
-          :complete="creatorStep > 1"
-          :title="$t('trans.baseStepper.setUpForm')"
-          value="1"
-          :lang="lang"
-        ></v-stepper-item>
+        <v-stepper-item :complete="creatorStep > 1" value="1" :lang="lang">
+          <slot name="setUpFormTitle">
+            {{ $t('trans.baseStepper.setUpForm') }}
+          </slot>
+        </v-stepper-item>
         <v-divider />
-        <v-stepper-item
-          :complete="creatorStep > 2"
-          :title="$t('trans.baseStepper.designForm')"
-          value="1"
-          :lang="lang"
-        ></v-stepper-item>
+        <v-stepper-item :complete="creatorStep > 2" value="1" :lang="lang">
+          <slot name="setUpFormTitle">
+            {{ $t('trans.baseStepper.designForm') }}
+          </slot>
+        </v-stepper-item>
         <v-divider />
-        <v-stepper-item
-          :complete="creatorStep > 3"
-          :title="$t('trans.baseStepper.manageForm')"
-          value="1"
-          :lang="lang"
-        ></v-stepper-item>
+        <v-stepper-item :complete="creatorStep > 3" value="1" :lang="lang">
+          <slot name="setUpFormTitle">
+            {{ $t('trans.baseStepper.manageForm') }}
+          </slot>
+        </v-stepper-item>
       </v-stepper-header>
 
       <v-stepper-window>
