@@ -28,6 +28,8 @@ describe('Constants', () => {
 
   it('FormPermissions has the right values defined', () => {
     expect(constants.FormPermissions).toEqual({
+      EMAIL_TEMPLATE_READ: 'email_template_read',
+      EMAIL_TEMPLATE_UPDATE: 'email_template_update',
       FORM_API_CREATE: 'form_api_create',
       FORM_API_READ: 'form_api_read',
       FORM_API_UPDATE: 'form_api_update',

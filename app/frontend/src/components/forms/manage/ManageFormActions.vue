@@ -22,6 +22,9 @@ export default {
     canDeleteForm() {
       return this.permissions.includes(FormPermissions.FORM_DELETE);
     },
+    canManageEmail() {
+      return this.permissions.includes(FormPermissions.EMAIL_TEMPLATE_UPDATE);
+    },
     canManageTeam() {
       return this.permissions.includes(FormPermissions.TEAM_UPDATE);
     },
@@ -93,6 +96,33 @@ export default {
         <span :lang="lang">{{
           $t('trans.manageFormActions.teamManagement')
         }}</span>
+      </v-tooltip>
+    </span>
+
+    <span v-if="canManageEmail">
+      <v-tooltip location="bottom">
+        <template #activator="{ props }">
+          <router-link :to="{ name: 'FormEmails', query: { f: form.id } }">
+            <v-btn
+              class="mx-1"
+              color="primary"
+              v-bind="props"
+              size="x-small"
+              density="default"
+              icon="mdi:mdi-email"
+            />
+          </router-link>
+        </template>
+        <span :lang="lang">
+          {{ $t('trans.manageFormActions.emailManagement') }}
+          <v-icon
+            color="primary"
+            class="ml-3"
+            :class="{ 'mr-2': isRTL }"
+            v-bind="props"
+            icon="mdi:mdi-flask"
+          />
+        </span>
       </v-tooltip>
     </span>
 

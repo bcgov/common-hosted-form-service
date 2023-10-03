@@ -10,6 +10,7 @@ import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
 vi.mock('~/services');
+vi.mock('~/internationalization', () => ({ t: vi.fn(() => {}) }));
 
 describe('form actions', () => {
   setActivePinia(createPinia());
@@ -179,6 +180,49 @@ describe('form actions', () => {
     it('fetchDrafts should dispatch to notifications/addNotification', async () => {
       formService.listDrafts.mockRejectedValue('');
       await mockStore.fetchDrafts('dId');
+
+      expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+      expect(addNotificationSpy).toHaveBeenCalledWith(expect.any(Object));
+    });
+  });
+
+  describe('emailTemplates', () => {
+    it('fetchEmailTemplates should commit to SET_EMAIL_TEMPLATES', async () => {
+      mockStore.emailTemplates = undefined;
+      formService.listEmailTemplates.mockResolvedValue({ data: [] });
+      await mockStore.fetchEmailTemplates(mockStore, 'dId');
+
+      expect(mockStore.emailTemplates).toBe(expect.Array(0));
+    });
+
+    it('fetchEmailTemplates should dispatch to notifications/addNotification', async () => {
+      mockStore.emailTemplates = undefined;
+      formService.listEmailTemplates.mockRejectedValue('');
+      await mockStore.fetchEmailTemplates(mockStore, 'dId');
+
+      expect(mockStore.emailTemplates).toBe(expect.undefined);
+      expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+      expect(addNotificationSpy).toHaveBeenCalledWith(expect.any(Object));
+    });
+
+    it('updateEmailTemplate should call the form service update', async () => {
+      formService.updateEmailTemplate.mockResolvedValue({ data: [] });
+      const data = {
+        body: 'sample email body',
+        subject: 'sample email subject',
+        title: 'sample email title',
+        type: 'submissionConfirmation',
+      };
+
+      await mockStore.updateEmailTemplate(mockStore, data);
+
+      expect(formService.updateEmailTemplate).toHaveBeenCalledTimes(1);
+      expect(formService.updateEmailTemplate).toHaveBeenCalledWith(data);
+    });
+
+    it('updateEmailTemplate should dispatch to notifications/addNotification', async () => {
+      formService.updateEmailTemplate.mockRejectedValue('');
+      await mockStore.updateEmailTemplate(mockStore, 'dId');
 
       expect(addNotificationSpy).toHaveBeenCalledTimes(1);
       expect(addNotificationSpy).toHaveBeenCalledWith(expect.any(Object));
