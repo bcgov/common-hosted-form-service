@@ -1,5 +1,6 @@
 <script>
 import ManageForm from '~/components/forms/manage/ManageForm.vue';
+import ManageFormActions from '~/components/forms/manage/ManageFormActions.vue';
 import { mapActions, mapState } from 'pinia';
 import { FormPermissions } from '~/utils/constants';
 import { useFormStore } from '~/store/form';
@@ -8,6 +9,14 @@ export default {
   name: 'PublishForm',
   components: {
     ManageForm,
+    ManageFormActions,
+  },
+  provide() {
+    return {
+      formDesigner: JSON.parse(this.fd),
+      draftId: this.d,
+      formId: this.f,
+    };
   },
   props: {
     f: {
@@ -27,22 +36,8 @@ export default {
       showManageForm: false,
     };
   },
-  provide() {
-    return {
-      formDesigner: JSON.parse(this.fd),
-      draftId: this.d,
-      formId: this.f,
-    };
-  },
   computed: {
-    ...mapState(useFormStore, ['permissions', 'form']),
-  },
-  methods: {
-    ...mapActions(useFormStore, [
-      'fetchDrafts',
-      'fetchForm',
-      'getFormPermissionsForUser',
-    ]),
+    ...mapState(useFormStore, ['permissions', 'form', 'lang']),
   },
   async beforeMount() {
     await this.fetchForm(this.f);
@@ -51,12 +46,24 @@ export default {
       await this.fetchDrafts(this.f).then(() => (this.showManageForm = true));
     }
   },
+  methods: {
+    ...mapActions(useFormStore, [
+      'fetchDrafts',
+      'fetchForm',
+      'getFormPermissionsForUser',
+    ]),
+  },
 };
 </script>
 
 <template>
   <BaseStepper :step="3">
     <template #manageForm>
+      <div
+        class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
+      >
+        <ManageFormActions />
+      </div>
       <ManageForm v-if="showManageForm" />
     </template>
   </BaseStepper>
