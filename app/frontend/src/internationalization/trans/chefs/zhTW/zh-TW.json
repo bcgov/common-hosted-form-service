@@ -2,6 +2,22 @@
   "date": {
     "date": "年-月-日"
   },
+  "emailManagement": {
+    "emailManagement": "電子郵件管理",
+    "manageForm": "管理表格",
+    "submissionConfirmation": "提交確認"
+  },
+  "emailTemplate": {
+    "body": "身體",
+    "save": "節省",
+    "saveEmailTemplateConsoleErrMsg": "更新表單 {formId} 的電子郵件模板時出錯：{error}",
+    "saveEmailTemplateErrMsg": "嘗試更新電子郵件模板時發生錯誤。",
+    "subject": "主題",
+    "title": "標題",
+    "validBodyRequired": "請輸入電子郵件正文",
+    "validSubjectRequired": "請輸入電子郵件的主題行",
+    "validTitleRequired": "請輸入電子郵件的標題"
+  },
   "formsTable": {
     "myForms": "我的表格",
     "createNewForm": "創建新表單",
@@ -29,6 +45,7 @@
     "copyURLToClipboard": "將 URL 複製到剪貼板"
   },
   "manageFormActions": {
+    "emailManagement": "電子郵件管理",
     "viewSubmissions": "查看提交內容",
     "teamManagement": "團隊管理",
     "deleteForm": "刪除表格",
@@ -882,6 +899,8 @@
       "fecthingFormBuilderCompsConsErrMsg": "獲取表單生成器組件時出錯：{error}"
     },
     "form": {
+      "fetchEmailTemplatesConsErrMsg": "加載 {formId} 的電子郵件模板時出錯：{error}",
+      "fetchEmailTemplatesErrMsg": "獲取此表單的電子郵件模板時發生錯誤",
       "getCurrUserFormsErrMsg": "獲取您的表單時發生錯誤。",
       "getCurrUserFormsConsErrMsg": "獲取用戶數據時出錯：{error}",
       "getUserFormPermErrMsg": "獲取此表單的用戶數據時發生錯誤。",
@@ -892,7 +911,7 @@
       "updCurrUserFormPrefConsErrMsg": "使用 formID {formId} 和首選項 {preferences} 更新用戶表單首選項時出錯：{error}",
       "getCurrUserFormPrefErrMsg": "獲取您對此表單的首選項時發生錯誤。",
       "getCurrUserFormPrefConsErrMsg": "使用 formID {formId} 獲取用戶表單首選項時出錯：{error}",
-      "delCurrformNotiMsg": "表單{name}已成功刪除。",
+      "delCurrformNotiMsg": "表單 {name} 已成功刪除。",
       "delCurrFormConsErMsg": "刪除表單 {id} 時出錯：{error}",
       "delDraftErrMsg": "刪除此草稿時發生錯誤。",
       "delDraftConsErrMsg": "刪除 {draftId} 時出錯：{error}",
@@ -905,6 +924,8 @@
       "publishDraftErrMsg": "發佈時發生錯誤。",
       "publishDraftConsErrMsg": "發布 {draftId} 時出錯：{error}",
       "toggleVersnPublConsErrMsg": "切換版本發布 {versionId} {publish} 時出錯：{error}",
+      "updateEmailTemplateConsErrMsg": "更新表單 {formId} 的電子郵件模板時出錯：{error}",
+      "updateEmailTemplateErrMsg": "更新此表單的電子郵件模板時出錯。",
       "updateFormErrMsg": "更新此表單的設置時出錯。",
       "updateFormConsErrMsg": "更新表單 {id} 時出錯：{error}",
       "deleteSubmissionNotifyMsg": "提交刪除成功。",

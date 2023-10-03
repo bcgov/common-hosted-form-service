@@ -34,6 +34,27 @@
       </v-tooltip>
     </span>
 
+    <span v-if="canManageEmail">
+      <v-tooltip bottom>
+        <template #activator="{ on, attrs }">
+          <router-link :to="{ name: 'FormEmails', query: { f: form.id } }">
+            <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
+              <v-icon>email</v-icon>
+            </v-btn>
+          </router-link>
+        </template>
+        <span :lang="lang">
+          {{ $t('trans.manageFormActions.emailManagement')
+          }}<font-awesome-icon
+            icon="fa-solid fa-flask"
+            color="primary"
+            class="ml-3"
+            :class="{ 'mr-2': isRTL }"
+          />
+        </span>
+      </v-tooltip>
+    </span>
+
     <span v-if="canDeleteForm">
       <v-tooltip bottom>
         <template #activator="{ on, attrs }">
@@ -102,6 +123,9 @@ export default {
     // Permission checks
     canDeleteForm() {
       return this.permissions.includes(FormPermissions.FORM_DELETE);
+    },
+    canManageEmail() {
+      return this.permissions.includes(FormPermissions.EMAIL_TEMPLATE_UPDATE);
     },
     canManageTeam() {
       return this.permissions.includes(FormPermissions.TEAM_UPDATE);

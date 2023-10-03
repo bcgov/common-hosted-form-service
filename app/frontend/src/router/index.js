@@ -265,6 +265,20 @@ export default function getRouter(basePath = '/') {
             },
           },
           {
+            path: 'emails',
+            name: 'FormEmails',
+            component: () =>
+              import(
+                /* webpackChunkName: "emails" */ '@/views/form/Emails.vue'
+              ),
+            meta: {
+              breadcrumbTitle: 'Email Management',
+              requiresAuth: IdentityProviders.IDIR,
+              hasLogin: true,
+            },
+            props: createProps,
+          },
+          {
             path: 'teams',
             name: 'FormTeams',
             component: () =>
