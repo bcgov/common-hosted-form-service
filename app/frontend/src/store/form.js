@@ -278,16 +278,15 @@ export const useFormStore = defineStore('form', {
         this.emailTemplates = data;
       } catch (error) {
         const notificationStore = useNotificationStore();
-        const consoleError = i18n.t(
-          'trans.store.form.fetchEmailTemplatesConsErrMsg',
-          {
-            formId,
-            error,
-          }
-        );
         notificationStore.addNotification({
           text: i18n.t('trans.store.form.fetchEmailTemplatesErrMsg'),
-          consoleError: consoleError,
+          consoleError: i18n.t(
+            'trans.store.form.fetchEmailTemplatesConsErrMsg',
+            {
+              formId,
+              error,
+            }
+          ),
         });
       }
     },

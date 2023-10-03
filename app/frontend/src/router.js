@@ -94,7 +94,15 @@ export default function getRouter(basePath = '/') {
               requiresAuth: IdentityProviders.IDIR,
               hasLogin: true,
             },
-            props: createProps,
+            props: (route) => {
+              return {
+                ...route.query,
+                ...route.params,
+                fd:
+                  String(route.query.fd).toLowerCase() === 'true' ||
+                  route.query.fd === true,
+              };
+            },
           },
           {
             path: 'design',
@@ -192,10 +200,7 @@ export default function getRouter(basePath = '/') {
           {
             path: 'emails',
             name: 'FormEmails',
-            component: () =>
-              import(
-                /* webpackChunkName: "emails" */ '@/views/form/Emails.vue'
-              ),
+            component: () => import('~/views/form/Emails.vue'),
             meta: {
               breadcrumbTitle: 'Email Management',
               requiresAuth: IdentityProviders.IDIR,

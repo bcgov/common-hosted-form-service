@@ -372,7 +372,10 @@ export default {
       </router-link>
       <router-link
         v-slot="{ navigate }"
-        :to="{ name: 'PublishForm', query: { f: formId, d: draftId } }"
+        :to="{
+          name: 'PublishForm',
+          query: { f: formId, fd: false, d: draftId },
+        }"
         custom
       >
         <div

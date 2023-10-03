@@ -56,7 +56,7 @@ export default {
   methods: {
     ...mapActions(useFormStore, ['listFCProactiveHelp', 'deleteCurrentForm']),
     onFormLoad() {
-      this.$refs.formDesigner.onFormLoad();
+      if (this.$refs?.formDesigner) this.$refs.formDesigner.onFormLoad();
     },
   },
 };

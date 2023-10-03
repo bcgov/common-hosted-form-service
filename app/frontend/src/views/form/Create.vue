@@ -34,7 +34,9 @@ export default {
   computed: {
     ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
     IDP: () => IdentityProviders,
-    stepper: () => this.step,
+    stepper() {
+      return this.step;
+    },
   },
   watch: {
     form() {
@@ -105,7 +107,7 @@ export default {
     </template>
     <template #designForm>
       <FormDesigner ref="formDesigner" />
-      <v-btn variant="outlined" data-test="back-btn" @click="creatorStep = 0">
+      <v-btn variant="outlined" data-test="back-btn" @click="step = 1">
         <span :lang="lang">{{ $t('trans.create.back') }}</span>
       </v-btn>
     </template>
