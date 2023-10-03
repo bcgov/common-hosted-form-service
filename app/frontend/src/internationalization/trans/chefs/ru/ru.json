@@ -2,6 +2,22 @@
   "date": {
     "date": "гггг-мм-дд"
   },
+  "emailManagement": {
+    "emailManagement": "Управление электронной почтой",
+    "manageForm": "Управление формой",
+    "submissionConfirmation": "Подтверждение отправки"
+  },
+  "emailTemplate": {
+    "body": "Тело",
+    "save": "сохранять",
+    "saveEmailTemplateConsoleErrMsg": "Ошибка обновления шаблона электронной почты для формы {formId}: {error}",
+    "saveEmailTemplateErrMsg": "Произошла ошибка при попытке обновить шаблон электронной почты.",
+    "subject": "Предмет",
+    "title": "Заголовок",
+    "validBodyRequired": "Пожалуйста, введите текст электронного письма",
+    "validSubjectRequired": "Пожалуйста, введите тему письма",
+    "validTitleRequired": "Пожалуйста, введите заголовок для электронного письма"
+  },
   "formsTable": {
     "myForms": "Мои формы",
     "createNewForm": "Создать новую форму",
@@ -33,6 +49,7 @@
     "copyURLToClipboard": "Скопировать URL в буфер обмена"
   },
   "manageFormActions": {
+    "emailManagement": "Управление электронной почтой",
     "viewSubmissions": "Просмотр записей",
     "teamManagement": "Управление командой",
     "deleteForm": "Удалить форму",
@@ -150,7 +167,7 @@
     "showSecret": "Показать секрет",
     "key": "Ключ",
     "saveSettingsErrMsg": "Произошла ошибка при попытке обновить настройки этой формы.",
-    "updateSettingsConsoleErrMsg": "Ошибка при обновлении настроек для формы {formId} : {error}"
+    "updateSettingsConsoleErrMsg": "Ошибка при обновлении настроек для формы {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "Отказ от ответственности",
@@ -771,7 +788,6 @@
     "manageForm": "Управление формой"
     },
   "create": {
-    "createNewForm": "Создать новую форму",
     "formSettings": "Настройки формы",
     "disclaimer": "Отказ от ответственности",
     "disclaimerStmt": "Я согласен с заявлением об отказе от ответственности и заявлением об ответственности дизайнеров форм",
@@ -886,6 +902,8 @@
       "fecthingFormBuilderCompsConsErrMsg": "Ошибка при получении компонентов конструктора форм: {error}"
     },
     "form": {
+      "fetchEmailTemplatesConsErrMsg": "Ошибка загрузки шаблонов электронной почты для {formId}: {error}.",
+      "fetchEmailTemplatesErrMsg": "Произошла ошибка при получении шаблонов электронных писем для этой формы.",
       "getCurrUserFormsErrMsg": "При загрузке форм произошла ошибка",
       "getCurrUserFormsConsErrMsg": "Ошибка при получении пользовательских данных: {error}",
       "getUserFormPermErrMsg": "Произошла ошибка при получении ваших пользовательских данных для этой формы",
@@ -909,6 +927,8 @@
       "publishDraftErrMsg": "При публикации произошла ошибка",
       "publishDraftConsErrMsg": "Ошибка публикации {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "Ошибка в toggleVersionPublish {versionId} {publish}: {ошибка}",
+      "updateEmailTemplateConsErrMsg": "Ошибка обновления шаблонов электронной почты для формы {formId}: {error}",
+      "updateEmailTemplateErrMsg": "Произошла ошибка при обновлении шаблонов электронных писем для этой формы.",
       "updateFormErrMsg": "Произошла ошибка при обновлении настроек этой формы.",
       "updateFormConsErrMsg": "Ошибка при обновлении формы {id}: {error}",
       "deleteSubmissionNotifyMsg": "Запись успешно удалена",

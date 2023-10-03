@@ -31,9 +31,9 @@ describe('BaseFilter.vue', () => {
     expect(checkboxes.length).toBe(2);
 
     // Default column name and input data
-    expect(wrapper.html()).toContain('Column Name');
-    expect(wrapper.html()).toContain('Example Text');
-    expect(wrapper.html()).toContain('Example Text 2');
+    expect(wrapper.html()).toContain('columnName');
+    expect(wrapper.html()).toContain('exampleText');
+    expect(wrapper.html()).toContain('exampleText2');
   });
 
   it('renders with preset data', async () => {

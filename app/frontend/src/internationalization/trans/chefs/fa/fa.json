@@ -2,6 +2,22 @@
   "date": {
     "date": "yyyy-mm-dd"
   },
+  "emailManagement": {
+    "emailManagement": "مدیریت ایمیل",
+    "manageForm": "مدیریت فرم",
+    "submissionConfirmation": "تایید ارسال"
+  },
+  "emailTemplate": {
+    "body": "بدن",
+    "save": "صرفه جویی",
+    "saveEmailTemplateConsoleErrMsg": "خطا در به‌روزرسانی الگوی ایمیل برای فرم {formId}: {error}",
+    "saveEmailTemplateErrMsg": "هنگام تلاش برای به‌روزرسانی الگوی ایمیل، خطایی روی داد.",
+    "subject": "موضوع",
+    "title": "عنوان",
+    "validBodyRequired": "لطفاً یک متن برای ایمیل وارد کنید",
+    "validSubjectRequired": "لطفاً یک خط موضوع برای ایمیل وارد کنید",
+    "validTitleRequired": "لطفا یک عنوان برای ایمیل وارد کنید"
+  },
   "formsTable": {
     "myForms": "فرم های من",
     "createNewForm": "یک فرم جدید ایجاد کنید",
@@ -33,6 +49,7 @@
     "copyURLToClipboard": "URL را در کلیپ بورد کپی کنید"
   },
   "manageFormActions": {
+    "emailManagement": "مدیریت ایمیل",
     "viewSubmissions": "مشاهده موارد ارسالی",
     "teamManagement": "مدیریت تیم",
     "deleteForm": "حذف فرم",
@@ -772,7 +789,6 @@
   "manageForm": "مدیریت فرم"
 },
   "create": {
-    "createNewForm": "ایجاد فرم جدید",
     "formSettings": "تنظیمات فرم",
     "disclaimer": "سلب مسئولیت",
     "disclaimerStmt": "من با سلب مسئولیت و بیانیه مسئولیت طراحان فرم موافقم",
@@ -887,6 +903,8 @@
       "fecthingFormBuilderCompsConsErrMsg": "خطا در دریافت اجزای فرم ساز: {error}"
     },
     "form": {
+      "fetchEmailTemplatesConsErrMsg": "خطا در بارگیری الگوهای ایمیل برای {formId}: {error}",
+      "fetchEmailTemplatesErrMsg": "هنگام واکشی الگوهای ایمیل برای این فرم خطایی روی داد",
       "getCurrUserFormsErrMsg": "هنگام واکشی فرم های شما خطایی روی داد.",
       "getCurrUserFormsConsErrMsg": "خطا در دریافت اطلاعات کاربر: {error}",
       "getUserFormPermErrMsg": "هنگام واکشی اطلاعات کاربر شما برای این فرم خطایی روی داد.",
@@ -910,6 +928,8 @@
       "publishDraftErrMsg": "هنگام انتشار خطایی روی داد.",
       "publishDraftConsErrMsg": "خطا در انتشار {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "خطا در toggleVersionPublish {versionId} {publish}: {error}",
+      "updateEmailTemplateConsErrMsg": "خطا در به‌روزرسانی الگوهای ایمیل برای فرم {formId}: {error}",
+      "updateEmailTemplateErrMsg": "هنگام به‌روزرسانی الگوهای ایمیل برای این فرم خطایی روی داد.",
       "updateFormErrMsg": "هنگام به روز رسانی تنظیمات این فرم خطایی روی داد.",
       "updateFormConsErrMsg": "خطا در به‌روزرسانی فرم {id}: {error}",
       "deleteSubmissionNotifyMsg": "ارسال با موفقیت حذف شد.",

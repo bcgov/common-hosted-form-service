@@ -2,6 +2,22 @@
   "date": {
     "date": "年-月-日"
   },
+  "emailManagement": {
+    "emailManagement": "电子邮件管理",
+    "manageForm": "管理表格",
+    "submissionConfirmation": "提交确认"
+  },
+  "emailTemplate": {
+    "body": "身体",
+    "save": "节省",
+    "saveEmailTemplateConsoleErrMsg": "更新表单 {formId} 的电子邮件模板时出错：{error}",
+    "saveEmailTemplateErrMsg": "尝试更新电子邮件模板时发生错误。",
+    "subject": "主题",
+    "title": "标题",
+    "validBodyRequired": "请输入电子邮件正文",
+    "validSubjectRequired": "请输入电子邮件的主题行",
+    "validTitleRequired": "请输入电子邮件的标题"
+  },
   "formsTable": {
     "myForms": "我的表格",
     "createNewForm": "创建新表单",
@@ -33,6 +49,7 @@
     "copyURLToClipboard": "将 URL 复制到剪贴板"
   },
   "manageFormActions": {
+    "emailManagement": "电子邮件管理",
     "viewSubmissions": "查看提交内容",
     "teamManagement": "团队管理",
     "deleteForm": "删除表格",
@@ -772,7 +789,6 @@
     "manageForm": "管理表格"
     },
   "create": {
-    "createNewForm": "创建新表格",
     "formSettings": "表单设置",
     "disclaimer": "免责声明",
     "disclaimerStmt": "我同意表单设计师的免责声明和责任声明",
@@ -887,6 +903,8 @@
       "fecthingFormBuilderCompsConsErrMsg": "获取表单生成器组件时出错：{error}"
     },
     "form": {
+      "fetchEmailTemplatesConsErrMsg": "加载 {formId} 的电子邮件模板时出错：{error}",
+      "fetchEmailTemplatesErrMsg": "获取此表单的电子邮件模板时发生错误",
       "getCurrUserFormsErrMsg": "获取您的表单时发生错误。",
       "getCurrUserFormsConsErrMsg": "获取用户数据时出错：{error}",
       "getUserFormPermErrMsg": "获取此表单的用户数据时发生错误。",
@@ -897,7 +915,7 @@
       "updCurrUserFormPrefConsErrMsg": "使用 formID {formId} 和首选项 {preferences} 更新用户表单首选项时出错：{error}",
       "getCurrUserFormPrefErrMsg": "获取您对此表单的首选项时发生错误。",
       "getCurrUserFormPrefConsErrMsg": "使用 formID {formId} 获取用户表单首选项时出错：{error}",
-      "delCurrformNotiMsg": "表单{name}已成功删除。",
+      "delCurrformNotiMsg": "表单 {name} 已成功删除。",
       "delCurrFormConsErMsg": "删除表单 {id} 时出错：{error}",
       "delDraftErrMsg": "删除此草稿时发生错误。",
       "delDraftConsErrMsg": "删除 {draftId} 时出错：{error}",
@@ -910,6 +928,8 @@
       "publishDraftErrMsg": "发布时发生错误。",
       "publishDraftConsErrMsg": "发布 {draftId} 时出错：{error}",
       "toggleVersnPublConsErrMsg": "切换版本发布 {versionId} {publish} 时出错：{error}",
+      "updateEmailTemplateConsErrMsg": "更新表单 {formId} 的电子邮件模板时出错：{error}",
+      "updateEmailTemplateErrMsg": "更新此表单的电子邮件模板时出错。",
       "updateFormErrMsg": "更新此表单的设置时出错。",
       "updateFormConsErrMsg": "更新表单 {id} 时出错：{error}",
       "deleteSubmissionNotifyMsg": "提交删除成功。",

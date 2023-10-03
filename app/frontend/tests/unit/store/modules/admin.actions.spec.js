@@ -43,8 +43,8 @@ describe('admin actions', () => {
       });
       expect(addNotificationSpy).toHaveBeenCalledTimes(1);
       expect(addNotificationSpy).toHaveBeenCalledWith({
-        consoleError: 'An error occurred while adding the role.',
-        text: 'An error occurred while adding the role.',
+        consoleError: 'trans.store.admin.addRowError',
+        text: 'trans.store.admin.addRowError',
       });
     });
 
@@ -64,7 +64,7 @@ describe('admin actions', () => {
       expect(readRolesSpy).toHaveBeenCalledTimes(1);
       expect(addNotificationSpy).toHaveBeenCalledTimes(1);
       expect(addNotificationSpy).toHaveBeenCalledWith({
-        text: 'Added the Owner role for this form to User',
+        text: 'trans.store.admin.addFormOwnerRole',
         ...NotificationTypes.SUCCESS,
       });
     });
@@ -83,8 +83,8 @@ describe('admin actions', () => {
 
       expect(addNotificationSpy).toHaveBeenCalledTimes(1);
       expect(addNotificationSpy).toHaveBeenCalledWith({
-        consoleError: 'The API Key for this form has been deleted.',
-        text: 'An error occurred while trying to delete the API Key.',
+        consoleError: 'trans.store.admin.apiKeyDelMsg',
+        text: 'trans.store.admin.errDeletingApiKey',
       });
     });
 
@@ -102,8 +102,8 @@ describe('admin actions', () => {
 
       expect(addNotificationSpy).toHaveBeenCalledTimes(1);
       expect(addNotificationSpy).toHaveBeenCalledWith({
-        consoleError: 'An error occurred while fetching forms.',
-        text: 'An error occurred while fetching this form.',
+        consoleError: 'trans.store.admin.fecthingFormsErrMsg',
+        text: 'trans.store.admin.fecthingFormErrMsg',
       });
     });
 
@@ -120,8 +120,8 @@ describe('admin actions', () => {
 
       expect(addNotificationSpy).toHaveBeenCalledTimes(1);
       expect(addNotificationSpy).toHaveBeenCalledWith({
-        consoleError: 'Error getting admin roles data: ',
-        text: 'An error occurred while fetching form user roles.',
+        consoleError: 'trans.store.admin.fecthFormUserRolesConsErrMsg',
+        text: 'trans.store.admin.fecthFormUserRolesErrMsg',
       });
     });
 
@@ -139,8 +139,8 @@ describe('admin actions', () => {
 
       expect(addNotificationSpy).toHaveBeenCalledTimes(1);
       expect(addNotificationSpy).toHaveBeenCalledWith({
-        consoleError: 'Error getting admin API details from form fId data: ',
-        text: "An error occurred while fetching this form's API details.",
+        consoleError: 'trans.store.admin.fecthApiDetailsConsErrMsg',
+        text: 'trans.store.admin.fecthApiDetailsErrMsg',
       });
     });
 
@@ -158,8 +158,8 @@ describe('admin actions', () => {
 
       expect(addNotificationSpy).toHaveBeenCalledTimes(1);
       expect(addNotificationSpy).toHaveBeenCalledWith({
-        consoleError: 'An error occurred while fetching forms.',
-        text: 'An error occurred while fetching forms.',
+        consoleError: 'trans.store.admin.fecthingFormsErrMsg',
+        text: 'trans.store.admin.fecthingFormsErrMsg',
       });
     });
 
@@ -177,8 +177,8 @@ describe('admin actions', () => {
 
       expect(addNotificationSpy).toHaveBeenCalledTimes(1);
       expect(addNotificationSpy).toHaveBeenCalledWith({
-        consoleError: 'Error restoring form fId data: ',
-        text: 'An error occurred while restoring this form.',
+        consoleError: 'trans.store.admin.restoreFormConsErrMsg',
+        text: 'trans.store.admin.restoreFormErrMsg',
       });
     });
 
@@ -196,8 +196,8 @@ describe('admin actions', () => {
 
       expect(addNotificationSpy).toHaveBeenCalledTimes(1);
       expect(addNotificationSpy).toHaveBeenCalledWith({
-        consoleError: 'Error getting admin users data: ',
-        text: 'An error occurred while fetching users.',
+        consoleError: 'trans.store.admin.getUsersConsErrMsg',
+        text: 'trans.store.admin.getUsersErrMsg',
       });
     });
 
@@ -215,8 +215,8 @@ describe('admin actions', () => {
 
       expect(addNotificationSpy).toHaveBeenCalledTimes(1);
       expect(addNotificationSpy).toHaveBeenCalledWith({
-        consoleError: 'Error getting admin user userId data: ',
-        text: 'An error occurred while fetching this user.',
+        consoleError: 'trans.store.admin.getUserConsErrMsg',
+        text: 'trans.store.admin.getUserErrMsg',
       });
     });
 
@@ -245,8 +245,8 @@ describe('admin actions', () => {
 
       expect(addNotificationSpy).toHaveBeenCalledTimes(1);
       expect(addNotificationSpy).toHaveBeenCalledWith({
-        consoleError: 'Error updating publish status: ',
-        text: 'An error occurred while updating publish status',
+        consoleError: 'trans.store.admin.updatingFCStatusConsErrMsg',
+        text: 'trans.store.admin.updatingFCStatusErrMsg',
       });
     });
   });

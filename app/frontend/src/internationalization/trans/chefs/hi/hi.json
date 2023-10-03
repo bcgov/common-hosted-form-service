@@ -2,6 +2,22 @@
   "date": {
     "date": "yyyy-mm-dd"
   },
+  "emailManagement": {
+    "emailManagement": "ईमेल प्रबंधन",
+    "manageForm": "प्रपत्र प्रबंधित करें",
+    "submissionConfirmation": "प्रस्तुत करने की पुष्टि"
+  },
+  "emailTemplate": {
+    "body": "शरीर",
+    "save": "बचाना",
+    "saveEmailTemplateConsoleErrMsg": "फ़ॉर्म {formId} के लिए ईमेल टेम्पलेट अपडेट करने में त्रुटि: {error}",
+    "saveEmailTemplateErrMsg": "ईमेल टेम्पलेट को अद्यतन करने का प्रयास करते समय एक त्रुटि उत्पन्न हुई।",
+    "subject": "विषय",
+    "title": "शीर्षक",
+    "validBodyRequired": "कृपया ईमेल के लिए एक मुख्य भाग दर्ज करें",
+    "validSubjectRequired": "कृपया ईमेल के लिए विषय पंक्ति दर्ज करें",
+    "validTitleRequired": "कृपया ईमेल के लिए एक शीर्षक दर्ज करें"
+  },
   "formsTable": {
     "myForms": "मेरे प्रपत्र",
     "createNewForm": "एक नया फॉर्म बनाएं",
@@ -33,6 +49,7 @@
     "copyURLToClipboard": "यूआरएल को क्लिपबोर्ड पर कॉपी करें"
   },
   "manageFormActions": {
+    "emailManagement": "ईमेल प्रबंधन",
     "viewSubmissions": "सबमिशन देखें",
     "teamManagement": "टीम प्रबंधन",
     "deleteForm": "फ़ॉर्म हटाएँ",
@@ -772,7 +789,6 @@
     "manageForm": "प्रपत्र प्रबंधित करें"
 },
   "create": {
-    "createNewForm": "नया फॉर्म बनाएं",
     "formSettings": "फॉर्म सेटिंग्स",
     "disclaimer": "अस्वीकरण",
     "disclaimerStmt": "मैं फॉर्म डिजाइनरों के अस्वीकरण और जिम्मेदारी के बयान से सहमत हूं",
@@ -887,6 +903,8 @@
       "fecthingFormBuilderCompsConsErrMsg": "प्रपत्र बिल्डर घटक प्राप्त करने में त्रुटि: {error}"
     },
     "form": {
+      "fetchEmailTemplatesConsErrMsg": "{formId} के लिए ईमेल टेम्पलेट लोड करने में त्रुटि: {error}",
+      "fetchEmailTemplatesErrMsg": "इस फ़ॉर्म के लिए ईमेल टेम्प्लेट लाने में त्रुटि हुई",
       "getCurrUserFormsErrMsg": "आपके प्रपत्र लाते समय एक त्रुटि उत्पन्न हुई.",
       "getCurrUserFormsConsErrMsg": "उपयोगकर्ता डेटा प्राप्त करने में त्रुटि: {error}",
       "getUserFormPermErrMsg": "इस फ़ॉर्म के लिए आपका उपयोगकर्ता डेटा लाते समय एक त्रुटि उत्पन्न हुई.",
@@ -910,6 +928,8 @@
       "publishDraftErrMsg": "प्रकाशन करते समय एक त्रुटि उत्पन्न हुई.",
       "publishDraftConsErrMsg": "{draftId} प्रकाशित करने में त्रुटि: {error}",
       "toggleVersnPublConsErrMsg": "toggleVersionPublish {versionId} {publish} में त्रुटि: {error}",
+      "updateEmailTemplateConsErrMsg": "फ़ॉर्म {formId} के लिए ईमेल टेम्पलेट अपडेट करने में त्रुटि: {error}",
+      "updateEmailTemplateErrMsg": "इस फ़ॉर्म के लिए ईमेल टेम्प्लेट अपडेट करते समय एक त्रुटि उत्पन्न हुई.",
       "updateFormErrMsg": "इस फ़ॉर्म की सेटिंग अपडेट करते समय एक त्रुटि उत्पन्न हुई.",
       "updateFormConsErrMsg": "फॉर्म {id} अपडेट करने में त्रुटि: {error}",
       "deleteSubmissionNotifyMsg": "सबमिशन सफलतापूर्वक हटा दिया गया.",

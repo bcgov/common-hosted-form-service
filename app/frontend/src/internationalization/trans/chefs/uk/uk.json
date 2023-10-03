@@ -2,6 +2,22 @@
   "date": {
     "date": "рррр-мм-дд"
   },
+  "emailManagement": {
+    "emailManagement": "Управління електронною поштою",
+    "manageForm": "Керувати формою",
+    "submissionConfirmation": "Підтвердження подання"
+  },
+  "emailTemplate": {
+    "body": "Тіло",
+    "save": "зберегти",
+    "saveEmailTemplateConsoleErrMsg": "Помилка оновлення шаблону електронної пошти для форми {formId}: {error}",
+    "saveEmailTemplateErrMsg": "Під час спроби оновити шаблон електронної пошти сталася помилка.",
+    "subject": "Тема",
+    "title": "Назва",
+    "validBodyRequired": "Будь ласка, введіть текст електронної пошти",
+    "validSubjectRequired": "Будь ласка, введіть тему електронного листа",
+    "validTitleRequired": "Будь ласка, введіть назву електронного листа"
+  },
   "formsTable": {
     "myForms": "Мої форми",
     "createNewForm": "Створіть нову форму",
@@ -33,6 +49,7 @@
     "copyURLToClipboard": "Копіювати URL-адресу в буфер обміну"
   },
   "manageFormActions": {
+    "emailManagement": "Управління електронною поштою",
     "viewSubmissions": "Переглянути подання",
     "teamManagement": "Керування командою",
     "deleteForm": "Видалити форму",
@@ -772,7 +789,6 @@
     "manageForm": "Керувати формою"
     },
   "create": {
-    "createNewForm": "Створити нову форму",
     "formSettings": "Налаштування форми",
     "disclaimer": "Відмова від відповідальності",
     "disclaimerStmt": "Я погоджуюся із застереженням і заявою про відповідальність для дизайнерів форм",
@@ -887,6 +903,8 @@
       "fecthingFormBuilderCompsConsErrMsg": "Помилка отримання компонентів конструктора форм: {error}"
     },
     "form": {
+      "fetchEmailTemplatesConsErrMsg": "Помилка завантаження шаблонів електронних листів для {formId}: {error}",
+      "fetchEmailTemplatesErrMsg": "Під час отримання шаблонів електронної пошти для цієї форми сталася помилка",
       "getCurrUserFormsErrMsg": "Під час отримання ваших форм сталася помилка.",
       "getCurrUserFormsConsErrMsg": "Помилка отримання даних користувача: {error}",
       "getUserFormPermErrMsg": "Під час отримання даних користувача для цієї форми сталася помилка.",
@@ -910,6 +928,8 @@
       "publishDraftErrMsg": "Під час публікації сталася помилка.",
       "publishDraftConsErrMsg": "Помилка публікації {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "Помилка в toggleVersionPublish {versionId} {publish}: {error}",
+      "updateEmailTemplateConsErrMsg": "Помилка оновлення шаблонів електронних листів для форми {formId}: {error}",
+      "updateEmailTemplateErrMsg": "Під час оновлення шаблонів електронної пошти для цієї форми сталася помилка.",
       "updateFormErrMsg": "Під час оновлення налаштувань цієї форми сталася помилка.",
       "updateFormConsErrMsg": "Помилка оновлення форми {id}: {error}",
       "deleteSubmissionNotifyMsg": "Подання успішно видалено.",
