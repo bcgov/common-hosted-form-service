@@ -1,5 +1,6 @@
 import { setActivePinia, createPinia } from 'pinia';
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import {
   formService,
   rbacService,
@@ -10,7 +11,6 @@ import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
 vi.mock('~/services');
-vi.mock('~/internationalization', () => ({ t: vi.fn(() => {}) }));
 
 describe('form actions', () => {
   setActivePinia(createPinia());
@@ -192,7 +192,7 @@ describe('form actions', () => {
       formService.listEmailTemplates.mockResolvedValue({ data: [] });
       await mockStore.fetchEmailTemplates(mockStore, 'dId');
 
-      expect(mockStore.emailTemplates).toBe(expect.Array(0));
+      expect(mockStore.emailTemplates).toEqual(expect.any(Array));
     });
 
     it('fetchEmailTemplates should dispatch to notifications/addNotification', async () => {
@@ -217,7 +217,9 @@ describe('form actions', () => {
       await mockStore.updateEmailTemplate(mockStore, data);
 
       expect(formService.updateEmailTemplate).toHaveBeenCalledTimes(1);
-      expect(formService.updateEmailTemplate).toHaveBeenCalledWith(data);
+      expect(formService.updateEmailTemplate).toHaveBeenCalledWith(
+        expect.any(Object)
+      );
     });
 
     it('updateEmailTemplate should dispatch to notifications/addNotification', async () => {

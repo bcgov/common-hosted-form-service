@@ -19,20 +19,20 @@ describe('FloatButton.vue', () => {
             name: 'RouterLink',
             template: '<div class="router-link-stub"><slot /></div>',
           },
-        }
+        },
       },
     });
 
-    expect(wrapper.html()).toContain('Collapse');
+    expect(wrapper.html()).toContain('collapse');
     expect(wrapper.html()).toContain('publish');
     expect(wrapper.html()).toContain('manage');
     expect(wrapper.html()).toContain('redo');
     expect(wrapper.html()).toContain('undo');
     expect(wrapper.html()).toContain('preview');
-    expect(wrapper.html()).toContain('Bottom');
+    expect(wrapper.html()).toContain('bottom');
   });
 
-  it('test that undo event was triggered', async() => {
+  it('test that undo event was triggered', async () => {
     const wrapper = mount(FloatButton, {
       global: {
         plugins: [pinia],
@@ -41,7 +41,7 @@ describe('FloatButton.vue', () => {
             name: 'RouterLink',
             template: '<div class="router-link-stub"><slot /></div>',
           },
-        }
+        },
       },
     });
 
@@ -57,7 +57,7 @@ describe('FloatButton.vue', () => {
     expect(wrapper.emitted().undo.length).toBe(1);
   });
 
-  it('test that redo event was triggered', async() => {
+  it('test that redo event was triggered', async () => {
     const wrapper = mount(FloatButton, {
       global: {
         plugins: [pinia],
@@ -66,7 +66,7 @@ describe('FloatButton.vue', () => {
             name: 'RouterLink',
             template: '<div class="router-link-stub"><slot /></div>',
           },
-        }
+        },
       },
     });
 
@@ -91,7 +91,7 @@ describe('FloatButton.vue', () => {
             name: 'RouterLink',
             template: '<div class="router-link-stub"><slot /></div>',
           },
-        }
+        },
       },
     });
 
@@ -111,7 +111,8 @@ describe('FloatButton.vue', () => {
     const wrapper = mount(FloatButton, {
       RouterLink: RouterLinkStub,
       props: {
-        formId:'01fa4a32-ff4a-4304-8277-e69e0bb2d229', draftId:'0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6'
+        formId: '01fa4a32-ff4a-4304-8277-e69e0bb2d229',
+        draftId: '0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6',
       },
       global: {
         plugins: [pinia],
@@ -120,7 +121,7 @@ describe('FloatButton.vue', () => {
             name: 'RouterLink',
             template: '<div class="router-link-stub"><slot /></div>',
           },
-        }
+        },
       },
     });
 
@@ -136,7 +137,8 @@ describe('FloatButton.vue', () => {
     const wrapper = mount(FloatButton, {
       RouterLink: RouterLinkStub,
       props: {
-        formId:'01fa4a32-ff4a-4304-8277-e69e0bb2d229', draftId:'0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6'
+        formId: '01fa4a32-ff4a-4304-8277-e69e0bb2d229',
+        draftId: '0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6',
       },
       global: {
         plugins: [pinia],
@@ -145,7 +147,7 @@ describe('FloatButton.vue', () => {
             name: 'RouterLink',
             template: '<div class="router-link-stub"><slot /></div>',
           },
-        }
+        },
       },
     });
 
@@ -166,14 +168,15 @@ describe('FloatButton.vue', () => {
 
     mockRouter.resolve.mockImplementationOnce(() => {
       return {
-        href: ''
+        href: '',
       };
     });
 
     const wrapper = mount(FloatButton, {
       RouterLink: RouterLinkStub,
       props: {
-        formId:'01fa4a32-ff4a-4304-8277-e69e0bb2d229', draftId:'0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6'
+        formId: '01fa4a32-ff4a-4304-8277-e69e0bb2d229',
+        draftId: '0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6',
       },
       global: {
         plugins: [pinia],
