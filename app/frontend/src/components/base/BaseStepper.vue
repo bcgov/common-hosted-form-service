@@ -1,10 +1,14 @@
 <script>
 import { mapState } from 'pinia';
+import BaseSecure from '~/components/base/BaseSecure.vue';
 import { useFormStore } from '~/store/form';
 import { IdentityProviders } from '~/utils/constants';
 
 export default {
   name: 'BaseStepper',
+  components: {
+    BaseSecure,
+  },
   props: {
     step: {
       type: Number,
@@ -25,19 +29,19 @@ export default {
   <BaseSecure :idp="[IDP.IDIR]" :class="{ 'dir-rtl': isRTL }">
     <v-stepper v-model="creatorStep">
       <v-stepper-header>
-        <v-stepper-item :complete="creatorStep > 1" value="1" :lang="lang">
+        <v-stepper-item :complete="creatorStep > 0" value="1" :lang="lang">
           <slot name="setUpFormTitle">
             {{ $t('trans.baseStepper.setUpForm') }}
           </slot>
         </v-stepper-item>
         <v-divider />
-        <v-stepper-item :complete="creatorStep > 2" value="1" :lang="lang">
+        <v-stepper-item :complete="creatorStep > 1" value="2" :lang="lang">
           <slot name="setUpFormTitle">
             {{ $t('trans.baseStepper.designForm') }}
           </slot>
         </v-stepper-item>
         <v-divider />
-        <v-stepper-item :complete="creatorStep > 3" value="1" :lang="lang">
+        <v-stepper-item :complete="creatorStep > 2" value="3" :lang="lang">
           <slot name="setUpFormTitle">
             {{ $t('trans.baseStepper.manageForm') }}
           </slot>
@@ -69,7 +73,7 @@ export default {
 /* unset 'overflow: hidden' from all parents of FormDesigner, so FormDesigner's 'sticky' components menu sticks. */
 .v-stepper,
 .v-stepper__items,
-.v-stepper ::v-deep .v-stepper__wrapper {
+.v-stepper :deep(.v-stepper__wrapper) {
   overflow: initial !important;
 }
 </style>
