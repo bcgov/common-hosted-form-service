@@ -2,6 +2,22 @@
   "date": {
     "date": "aaaa-mm-dd"
   },
+  "emailManagement": {
+    "emailManagement": "Gerenciamento de e-mail",
+    "manageForm": "Gerenciar formulário",
+    "submissionConfirmation": "Confirmação de envio"
+  },
+  "emailTemplate": {
+    "body": "Corpo",
+    "save": "Salvar",
+    "saveEmailTemplateConsoleErrMsg": "Erro ao atualizar o modelo de e-mail do formulário {formId}: {error}",
+    "saveEmailTemplateErrMsg": "Ocorreu um erro ao tentar atualizar o modelo de e-mail.",
+    "subject": "Assunto",
+    "title": "Título",
+    "validBodyRequired": "Por favor insira um corpo para o e-mail",
+    "validSubjectRequired": "Insira uma linha de assunto para o e-mail",
+    "validTitleRequired": "Insira um título para o e-mail"
+  },
   "formsTable": {
     "myForms": "Meus formulários",
     "createNewForm": "Criar um novo formulário",
@@ -33,6 +49,7 @@
     "copyURLToClipboard": "Copiar URL para a área de transferência"
   },
   "manageFormActions": {
+    "emailManagement": "Gerenciamento de e-mail",
     "viewSubmissions": "Ver envios",
     "teamManagement": "Gerenciamento de equipe",
     "deleteForm": "Excluir formulário",
@@ -888,6 +905,8 @@
       "fecthingFormBuilderCompsConsErrMsg": "Erro ao obter os componentes do construtor de formulário: {error}"
     },
     "form": {
+      "fetchEmailTemplatesConsErrMsg": "Erro ao carregar modelos de e-mail para {formId}: {error}",
+      "fetchEmailTemplatesErrMsg": "Ocorreu um erro ao buscar os modelos de e-mail para este formulário",
       "getCurrUserFormsErrMsg": "Ocorreu um erro ao buscar seus formulários.",
       "getCurrUserFormsConsErrMsg": "Erro ao obter dados do usuário: {error}",
       "getUserFormPermErrMsg": "Ocorreu um erro ao buscar seus dados de usuário para este formulário.",
@@ -911,6 +930,8 @@
       "publishDraftErrMsg": "Ocorreu um erro durante a publicação.",
       "publishDraftConsErrMsg": "Erro ao publicar {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "Erro em toggleVersionPublish {versionId} {publish}: {error}",
+      "updateEmailTemplateConsErrMsg": "Erro ao atualizar modelos de e-mail para o formulário {formId}: {error}",
+      "updateEmailTemplateErrMsg": "Ocorreu um erro ao atualizar os modelos de e-mail deste formulário.",
       "updateFormErrMsg": "Ocorreu um erro ao atualizar as configurações deste formulário.",
       "updateFormConsErrMsg": "Erro ao atualizar o formulário {id}: {error}",
       "deleteSubmissionNotifyMsg": "Submissão excluída com sucesso.",

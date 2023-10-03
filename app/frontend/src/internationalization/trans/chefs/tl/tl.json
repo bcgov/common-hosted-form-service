@@ -2,6 +2,22 @@
   "date": {
     "date": "yyyy-mm-dd"
   },
+  "emailManagement": {
+    "emailManagement": "Pamamahala ng Email",
+    "manageForm": "Pamahalaan ang Form",
+    "submissionConfirmation": "Pagkumpirma ng Pagsusumite"
+  },
+  "emailTemplate": {
+    "body": "Katawan",
+    "save": "Iligtas",
+    "saveEmailTemplateConsoleErrMsg": "Error sa pag-update ng template ng email para sa form {formId}: {error}",
+    "saveEmailTemplateErrMsg": "May naganap na error habang sinusubukang i-update ang template ng email.",
+    "subject": "Paksa",
+    "title": "Pamagat",
+    "validBodyRequired": "Mangyaring maglagay ng Body para sa email",
+    "validSubjectRequired": "Mangyaring magpasok ng linya ng Paksa para sa email",
+    "validTitleRequired": "Mangyaring maglagay ng Pamagat para sa email"
+  },
   "formsTable": {
     "myForms": "Aking Mga Form",
     "createNewForm": "Gumawa ng Bagong Form",
@@ -33,6 +49,7 @@
     "copyURLToClipboard": "Kopyahin ang URL sa clipboard"
   },
   "manageFormActions": {
+    "emailManagement": "Pamamahala ng Email",
     "viewSubmissions": "Tingnan ang Mga Pagsusumite",
     "teamManagement": "Pamamahala ng Koponan",
     "deleteForm": "Tanggalin ang Form",
@@ -150,7 +167,7 @@
     "showSecret": "Ipakita ang Lihim",
     "key": "Susi",
     "saveSettingsErrMsg": "May naganap na error habang sinusubukang i-update ang mga setting para sa form na ito.",
-    "updateSettingsConsoleErrMsg": "Error sa pag-update ng mga setting para sa form {formId} : {error}"
+    "updateSettingsConsoleErrMsg": "Error sa pag-update ng mga setting para sa form {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",
@@ -885,6 +902,8 @@
       "fecthingFormBuilderCompsConsErrMsg": "Error sa pagkuha ng mga bahagi ng tagabuo ng form: {error}"
     },
     "form": {
+      "fetchEmailTemplatesConsErrMsg": "Error sa paglo-load ng mga template ng email para sa {formId}: {error}",
+      "fetchEmailTemplatesErrMsg": "Nagkaroon ng error sa pagkuha ng mga template ng email para sa form na ito",
       "getCurrUserFormsErrMsg": "May naganap na error habang kinukuha ang iyong mga form.",
       "getCurrUserFormsConsErrMsg": "Error sa pagkuha ng data ng user: {error}",
       "getUserFormPermErrMsg": "May naganap na error habang kinukuha ang iyong data ng user para sa form na ito.",
@@ -908,6 +927,8 @@
       "publishDraftErrMsg": "Nagkaroon ng error habang nagpa-publish.",
       "publishDraftConsErrMsg": "Error sa pag-publish ng {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "Error sa toggleVersionPublish {versionId} {publish}: {error}",
+      "updateEmailTemplateConsErrMsg": "Error sa pag-update ng mga template ng email para sa form {formId}: {error}",
+      "updateEmailTemplateErrMsg": "May naganap na error habang ina-update ang mga template ng email para sa form na ito.",
       "updateFormErrMsg": "May naganap na error habang ina-update ang mga setting para sa form na ito.",
       "updateFormConsErrMsg": "Error sa pag-update ng form {id}: {error}",
       "deleteSubmissionNotifyMsg": "Matagumpay na natanggal ang pagsusumite.",

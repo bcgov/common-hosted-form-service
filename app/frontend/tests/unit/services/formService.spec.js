@@ -160,7 +160,7 @@ describe('Form Service', () => {
     });
   });
 
-  describe('Forms/{formId}/versions/{versioId}/publish', () => {
+  describe('Forms/{formId}/versions/{versionId}/publish', () => {
     const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/versions/${oneUuid}/publish`;
 
     it('calls publish endpoint', async () => {
@@ -181,6 +181,35 @@ describe('Form Service', () => {
       const result = await formService.publishDraft(zeroUuid, oneUuid);
       expect(result).toBeTruthy();
       expect(mockAxios.history.post).toHaveLength(1);
+    });
+  });
+
+  //
+  // Email Templates
+  //
+  describe('Forms/{formId}/emailTemplates', () => {
+    const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/emailTemplates`;
+
+    it('calls list endpoint', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+
+      const result = await formService.listEmailTemplates(zeroUuid);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+    });
+  });
+
+  describe('Forms/{formId}/emailTemplate', () => {
+    const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/emailTemplate`;
+
+    it('calls update on endpoint', async () => {
+      const data = { formId: zeroUuid, test: 'testdata' };
+      mockAxios.onPut(endpoint).reply(200, data);
+
+      const result = await formService.updateEmailTemplate(data);
+      expect(result).toBeTruthy();
+      expect(result.data).toEqual(data);
+      expect(mockAxios.history.put).toHaveLength(1);
     });
   });
 

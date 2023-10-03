@@ -2,6 +2,22 @@
   "date": {
     "date": "yyyy-mm-dd"
   },
+  "emailManagement": {
+    "emailManagement": "إدارة البريد الإلكتروني",
+    "manageForm": "إدارة النموذج",
+    "submissionConfirmation": "تأكيد تقديم"
+  },
+  "emailTemplate": {
+    "body": "جسم",
+    "save": "يحفظ",
+    "saveEmailTemplateConsoleErrMsg": "خطأ في تحديث قالب البريد الإلكتروني للنموذج {formId}: {error}",
+    "saveEmailTemplateErrMsg": "حدث خطأ أثناء محاولة تحديث قالب البريد الإلكتروني.",
+    "subject": "موضوع",
+    "title": "عنوان",
+    "validBodyRequired": "الرجاء إدخال نص للبريد الإلكتروني",
+    "validSubjectRequired": "الرجاء إدخال سطر الموضوع للبريد الإلكتروني",
+    "validTitleRequired": "الرجاء إدخال عنوان للبريد الإلكتروني"
+  },
   "formsTable": {
     "myForms": "نماذجي",
     "createNewForm": "قم بإنشاء نموذج جديد",
@@ -33,6 +49,7 @@
     "copyURLToClipboard": "انسخ URL إلى الحافظة"
   },
   "manageFormActions": {
+    "emailManagement": "إدارة البريد الإلكتروني",
     "viewSubmissions": "مشاهدة عمليات الإرسال",
     "teamManagement": "ادارة فريق",
     "deleteForm": "حذف النموذج",
@@ -887,6 +904,8 @@
       "fecthingFormBuilderCompsConsErrMsg": "خطأ في الحصول على مكونات منشئ النموذج: {error}"
     },
     "form": {
+      "fetchEmailTemplatesConsErrMsg": "خطأ في تحميل قوالب البريد الإلكتروني لـ {formId}: {error}",
+      "fetchEmailTemplatesErrMsg": "حدث خطأ أثناء جلب نماذج البريد الإلكتروني لهذا النموذج",
       "getCurrUserFormsErrMsg": "حدث خطأ أثناء إحضار النماذج الخاصة بك.",
       "getCurrUserFormsConsErrMsg": "خطأ في الحصول على بيانات المستخدم: {error}",
       "getUserFormPermErrMsg": "حدث خطأ أثناء جلب بيانات المستخدم الخاصة بك لهذا النموذج.",
@@ -910,6 +929,8 @@
       "publishDraftErrMsg": "حدث خطأ أثناء النشر.",
       "publishDraftConsErrMsg": "خطأ في نشر $ {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "خطأ في toggleVersionPublish {versionId} {publish}: {error}",
+      "updateEmailTemplateConsErrMsg": "خطأ في تحديث قوالب البريد الإلكتروني للنموذج {formId}: {error}",
+      "updateEmailTemplateErrMsg": "حدث خطأ أثناء تحديث قوالب البريد الإلكتروني لهذا النموذج.",
       "updateFormErrMsg": "حدث خطأ أثناء تحديث إعدادات هذا النموذج.",
       "updateFormConsErrMsg": "خطأ في تحديث النموذج {id}: {error}",
       "deleteSubmissionNotifyMsg": "تم حذف الإرسال بنجاح.",
