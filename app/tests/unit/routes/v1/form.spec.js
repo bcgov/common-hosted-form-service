@@ -1034,6 +1034,7 @@ describe(`DELETE ${basePath}/formId/apiKey`, () => {
     expect(response.body).toBeTruthy();
   });
 });
+
 describe(`GET ${basePath}/formId/csvexport/fields`, () => {
   it('should return 200', async () => {
     const formFields = [
@@ -1128,6 +1129,78 @@ describe(`GET ${basePath}/formId/export/fields`, () => {
     });
 
     const response = await request(app).post(`${basePath}/formId/export/fields`);
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+});
+
+describe(`GET ${basePath}/formId/emailTemplates`, () => {
+  it('should return 200', async () => {
+    // mock a success return value...
+    service.readEmailTemplates = jest.fn().mockReturnValue([{}]);
+
+    const response = await request(app).get(`${basePath}/formId/emailTemplates`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    service.readEmailTemplates = jest.fn(() => {
+      throw new Problem(401);
+    });
+
+    const response = await request(app).get(`${basePath}/formId/emailTemplates`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error...
+    service.readEmailTemplates = jest.fn(() => {
+      throw new Error();
+    });
+
+    const response = await request(app).get(`${basePath}/formId/emailTemplates`);
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toBeTruthy();
+  });
+});
+
+describe(`PUT ${basePath}/formId/emailTemplate`, () => {
+  it('should return 200', async () => {
+    // mock a success return value...
+    service.createOrUpdateEmailTemplate = jest.fn().mockReturnValue([{}]);
+
+    const response = await request(app).put(`${basePath}/formId/emailTemplate`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 401', async () => {
+    // mock an authentication/permission issue...
+    service.createOrUpdateEmailTemplate = jest.fn(() => {
+      throw new Problem(401);
+    });
+
+    const response = await request(app).put(`${basePath}/formId/emailTemplate`);
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toBeTruthy();
+  });
+
+  it('should handle 500', async () => {
+    // mock an unexpected error...
+    service.createOrUpdateEmailTemplate = jest.fn(() => {
+      throw new Error();
+    });
+
+    const response = await request(app).put(`${basePath}/formId/emailTemplate`);
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
