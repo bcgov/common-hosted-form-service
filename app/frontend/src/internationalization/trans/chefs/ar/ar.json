@@ -190,9 +190,7 @@
     "formOwnerKeyAcess": "يجب أن تكون <strong>مالك النموذج</strong> لإدارة مفاتيح API.",
     "regenerate": "تجديد",
     "generate": "يولد",
-    "secret": "سر",
-    "text": "نص",
-    "password": "كلمة المرور"
+    "secret": "سر"
   },
   "manageVersions": {
     "important": "مهم!",

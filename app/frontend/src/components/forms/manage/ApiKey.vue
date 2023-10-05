@@ -129,9 +129,7 @@ export default {
             variant="outlined"
             solid
             readonly
-            :type="
-              showSecret ? $t('trans.apiKey.text') : $t('trans.apiKey.password')
-            "
+            :type="showSecret ? 'text' : 'password'"
             :model-value="secret"
             :lang="lang"
           />

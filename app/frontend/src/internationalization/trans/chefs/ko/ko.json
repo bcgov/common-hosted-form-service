@@ -190,9 +190,7 @@
     "formOwnerKeyAcess": "API 키를 관리하려면 <strong>양식 소유자</strong> 여야 합니다.",
     "regenerate": "재생하다",
     "generate": "생성하다",
-    "secret": "비밀",
-    "text": "텍스트",
-    "password": "비밀번호"
+    "secret": "비밀"
   },
   "manageVersions": {
     "important": "중요한!",
@@ -787,7 +785,7 @@
     "setUpForm": "양식 설정",
     "designForm": "디자인 양식",
     "manageForm": "양식 관리"
-    },
+  },
   "create": {
     "formSettings": "양식 설정",
     "disclaimer": "부인 성명",

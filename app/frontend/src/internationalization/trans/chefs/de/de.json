@@ -190,9 +190,7 @@
     "formOwnerKeyAcess": "Sie müssen der <strong>Formulareigentümer</strong> sein, um API-Schlüssel verwalten zu können.",
     "regenerate": "Regenerieren",
     "generate": "Generieren",
-    "secret": "Geheimnis",
-    "text": "Text",
-    "password": "Passwort"
+    "secret": "Geheimnis"
   },
   "manageVersions": {
     "important": "WICHTIG!",

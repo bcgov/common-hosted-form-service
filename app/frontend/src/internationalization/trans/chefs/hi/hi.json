@@ -190,9 +190,7 @@
     "formOwnerKeyAcess": "एपीआई कुंजी प्रबंधित करने के लिए आपको <strong>फॉर्म स्वामी</strong> होना चाहिए।",
     "regenerate": "पुनः जेनरेट",
     "generate": "बनाना",
-    "secret": "गुप्त",
-    "text": "मूलपाठ",
-    "password": "पासवर्ड"
+    "secret": "गुप्त"
   },
   "manageVersions": {
     "important": "महत्वपूर्ण!",
@@ -783,11 +781,11 @@
     "createOnlineTitle": "अपने ग्राहकों से जानकारी एकत्र करने और अपने कार्यप्रवाह में सुधार करने के लिए ऑनलाइन फॉर्म बनाएं।",
     "getStarted": "शुरू हो जाओ"
   },
-"baseStepper": {
-  "setUpForm": "फॉर्म सेट करें",
+  "baseStepper": {
+    "setUpForm": "फॉर्म सेट करें",
     "designForm": "डिज़ाइन फॉर्म",
     "manageForm": "प्रपत्र प्रबंधित करें"
-},
+  },
   "create": {
     "formSettings": "फॉर्म सेटिंग्स",
     "disclaimer": "अस्वीकरण",

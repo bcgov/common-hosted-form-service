@@ -190,9 +190,7 @@
     "formOwnerKeyAcess": "Bạn phải là <strong>Chủ sở hữu biểu mẫu</strong> để quản lý Khóa API.",
     "regenerate": "tái tạo",
     "generate": "Phát ra",
-    "secret": "Bí mật",
-    "text": "chữ",
-    "password": "mật khẩu"
+    "secret": "Bí mật"
   },
   "manageVersions": {
     "important": "QUAN TRỌNG!",
@@ -787,7 +785,7 @@
     "setUpForm": "Thiết lập biểu mẫu",
     "designForm": "mẫu thiết kế",
     "manageForm": "Quản lý biểu mẫu"
-    },
+  },
   "create": {
     "formSettings": "Cài đặt biểu mẫu",
     "disclaimer": "từ chối trách nhiệm",
