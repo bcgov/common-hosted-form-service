@@ -124,9 +124,9 @@ export default {
             density="compact"
             variant="outlined"
             :items="[
-              { text: $t('trans.requestReceipt.low'), value: 'low' },
-              { text: $t('trans.requestReceipt.normal'), value: 'normal' },
-              { text: $t('trans.requestReceipt.high'), value: 'high' },
+              { title: $t('trans.requestReceipt.low'), value: 'low' },
+              { title: $t('trans.requestReceipt.normal'), value: 'normal' },
+              { title: $t('trans.requestReceipt.high'), value: 'high' },
             ]"
             :label="$t('trans.requestReceipt.emailPriority')"
             :lang="lang"
