@@ -155,7 +155,7 @@ export default {
 
           <BaseCopyToClipboard
             :disabled="!canReadSecret || !showSecret"
-            class="ml-2"
+            class="mx-2"
             :text-to-copy="secret"
             :snack-bar-text="$t('trans.apiKey.sCTC')"
             :tooltip-text="$t('trans.apiKey.cSTC')"
