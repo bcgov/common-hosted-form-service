@@ -662,6 +662,7 @@
     "updatedBy": "द्वारा संशोधित"
   },
   "teamManagement": {
+    "noMatchingRecordText": "कोई मिलान रिकॉर्ड पाया",
     "teamManagement": "टीम प्रबंधन",
     "selectColumns": "कॉलम चुनें",
     "manageForm": "प्रपत्र प्रबंधित करें",

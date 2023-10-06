@@ -662,6 +662,7 @@
     "updatedBy": "Modificado por"
   },
   "teamManagement": {
+    "noMatchingRecordText": "No se encontraron registros coincidentes",
     "teamManagement": "Gestión de equipos",
     "selectColumns": "Seleccionar columnas",
     "manageForm": "Administrar formulario",

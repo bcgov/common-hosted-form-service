@@ -662,6 +662,7 @@
     "updatedBy": "Кем изменено"
   },
   "teamManagement": {
+    "noMatchingRecordText": "Совпадающих записей не найдено",
     "teamManagement": "Управление командой",
     "selectColumns": "Выберите столбцы",
     "manageForm": "Управление формой",

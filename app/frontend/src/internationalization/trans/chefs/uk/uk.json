@@ -662,6 +662,7 @@
     "updatedBy": "Змінено"
   },
   "teamManagement": {
+    "noMatchingRecordText": "Відповідних записів не знайдено",
     "teamManagement": "Керування командою",
     "selectColumns": "Виберіть Стовпці",
     "manageForm": "Керувати формою",

@@ -662,6 +662,7 @@
     "updatedBy": "ਦੁਆਰਾ ਸੋਧਿਆ ਗਿਆ"
   },
   "teamManagement": {
+    "noMatchingRecordText": "ਕੋਈ ਮੇਲ ਖਾਂਦਾ ਰਿਕਾਰਡ ਨਹੀਂ ਮਿਲਿਆ",
     "teamManagement": "ਟੀਮ ਪ੍ਰਬੰਧਨ",
     "selectColumns": "ਕਾਲਮ ਚੁਣੋ",
     "manageForm": "ਫਾਰਮ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ",

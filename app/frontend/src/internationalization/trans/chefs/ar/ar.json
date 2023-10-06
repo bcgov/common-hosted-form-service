@@ -662,6 +662,7 @@
     "updatedBy": "تم التعديل بواسطة"
   },
   "teamManagement": {
+    "noMatchingRecordText": "لم يتم العثور على سجلات مطابقة",
     "teamManagement": "ادارة فريق",
     "selectColumns": "حدد الأعمدة",
     "manageForm": "إدارة النموذج",

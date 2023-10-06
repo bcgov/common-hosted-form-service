@@ -662,6 +662,7 @@
     "updatedBy": "修改者"
   },
   "teamManagement": {
+    "noMatchingRecordText": "未找到匹配的記錄",
     "teamManagement": "團隊管理",
     "selectColumns": "選擇列",
     "manageForm": "管理表格",

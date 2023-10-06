@@ -662,6 +662,7 @@
     "updatedBy": "수정자"
   },
   "teamManagement": {
+    "noMatchingRecordText": "일치하는 기록이 없습니다",
     "teamManagement": "팀 관리",
     "selectColumns": "열 선택",
     "manageForm": "양식 관리",

@@ -662,6 +662,7 @@
     "updatedBy": "によって変更"
   },
   "teamManagement": {
+    "noMatchingRecordText": "該当する記録が見つかりません",
     "teamManagement": "チーム管理",
     "selectColumns": "列の選択",
     "manageForm": "フォームの管理",

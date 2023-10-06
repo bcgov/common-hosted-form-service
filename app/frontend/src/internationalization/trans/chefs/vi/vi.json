@@ -662,6 +662,7 @@
     "updatedBy": "sửa đổi bởi"
   },
   "teamManagement": {
+    "noMatchingRecordText": "Không tìm thấy kết quả",
     "teamManagement": "quản lý nhóm",
     "selectColumns": "Chọn cột",
     "manageForm": "Quản lý biểu mẫu",

@@ -662,6 +662,7 @@
     "updatedBy": "Angepasst von"
   },
   "teamManagement": {
+    "noMatchingRecordText": "Keine übereinstimmenden Aufzeichnungen gefunden",
     "teamManagement": "Team Management",
     "selectColumns": "Wählen Sie Spalten aus",
     "manageForm": "Formular verwalten",

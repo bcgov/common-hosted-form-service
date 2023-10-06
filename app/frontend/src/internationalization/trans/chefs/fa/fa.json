@@ -662,6 +662,7 @@
     "updatedBy": "تغییر داده شده توسط"
   },
   "teamManagement": {
+    "noMatchingRecordText": "هیچ رکورد منطبقی یافت نشد",
     "teamManagement": "مدیریت تیم",
     "selectColumns": "ستون ها را انتخاب کنید",
     "manageForm": "مدیریت فرم",

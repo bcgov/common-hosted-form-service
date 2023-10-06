@@ -665,6 +665,7 @@
     "updatedBy": "Modified By"
   },
   "teamManagement": {
+    "noMatchingRecordText": "No matching records found",
     "teamManagement": "Team Management",
     "selectColumns": "Select Columns",
     "manageForm": "Manage Form",

@@ -662,6 +662,7 @@
     "updatedBy": "Binago ni"
   },
   "teamManagement": {
+    "noMatchingRecordText": "Walang nakitang katugmang mga tala",
     "teamManagement": "Pamamahala ng Koponan",
     "selectColumns": "Piliin ang Mga Column",
     "manageForm": "Pamahalaan ang Form",
