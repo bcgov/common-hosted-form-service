@@ -190,9 +190,7 @@
     "formOwnerKeyAcess": "برای مدیریت کلیدهای API باید <strong>مالک فرم</strong> باشید.",
     "regenerate": "بازسازی کنید",
     "generate": "تولید می کنند",
-    "secret": "راز",
-    "text": "متن",
-    "password": "کلمه عبور"
+    "secret": "راز"
   },
   "manageVersions": {
     "important": "مهم!",
@@ -783,11 +781,11 @@
     "createOnlineTitle": "فرم های آنلاین برای جمع آوری اطلاعات از مشتریان خود و بهبود گردش کار خود ایجاد کنید.",
     "getStarted": "شروع کنید"
   },
-"baseStepper": {
-  "setUpForm": "فرم را تنظیم کنید",
-  "designForm": "فرم طراحی",
-  "manageForm": "مدیریت فرم"
-},
+  "baseStepper": {
+    "setUpForm": "فرم را تنظیم کنید",
+    "designForm": "فرم طراحی",
+    "manageForm": "مدیریت فرم"
+  },
   "create": {
     "formSettings": "تنظیمات فرم",
     "disclaimer": "سلب مسئولیت",

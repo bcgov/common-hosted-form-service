@@ -190,9 +190,7 @@
     "formOwnerKeyAcess": "Devi essere il <strong>proprietario del modulo</strong> per gestire le chiavi API.",
     "regenerate": "Rigenerare",
     "generate": "creare",
-    "secret": "Segreto",
-    "text": "testo",
-    "password": "parola d'ordine"
+    "secret": "Segreto"
   },
   "manageVersions": {
     "important": "IMPORTANTE!",
@@ -783,11 +781,11 @@
     "createOnlineTitle": "Crea moduli online per raccogliere informazioni dai tuoi clienti e migliorare i tuoi flussi di lavoro.",
     "getStarted": "Iniziare"
   },
-"baseStepper": {
-  "setUpForm": "Imposta modulo",
+  "baseStepper": {
+    "setUpForm": "Imposta modulo",
     "designForm": "Modulo di progettazione",
     "manageForm": "Gestisci modulo"
-},
+  },
   "create": {
     "formSettings": "Impostazioni modulo",
     "disclaimer": "Disclaimer",

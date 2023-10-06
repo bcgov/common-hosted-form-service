@@ -190,9 +190,7 @@
     "formOwnerKeyAcess": "您必须是<strong>表单所有者</strong>才能管理 API 密钥。",
     "regenerate": "再生",
     "generate": "产生",
-    "secret": "秘密",
-    "text": "文本",
-    "password": "密码"
+    "secret": "秘密"
   },
   "manageVersions": {
     "important": "重要的！",
@@ -787,7 +785,7 @@
     "setUpForm": "设置表格",
     "designForm": "设计形式",
     "manageForm": "管理表格"
-    },
+  },
   "create": {
     "formSettings": "表单设置",
     "disclaimer": "免责声明",

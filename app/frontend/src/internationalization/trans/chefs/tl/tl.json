@@ -190,9 +190,7 @@
     "formOwnerKeyAcess": "Ikaw dapat ang <strong>May-ari ng Form</strong> para pamahalaan ang Mga API Key.",
     "regenerate": "Magbagong-buhay",
     "generate": "Bumuo",
-    "secret": "Lihim",
-    "text": "text",
-    "password": "password"
+    "secret": "Lihim"
   },
   "manageVersions": {
     "important": "MAHALAGA!",
@@ -787,7 +785,7 @@
     "setUpForm": "I-set up ang Form",
     "designForm": "Form ng Disenyo",
     "manageForm": "Pamahalaan ang Form"
-    },
+  },
   "create": {
     "formSettings": "Mga Setting ng Form",
     "disclaimer": "Disclaimer",
