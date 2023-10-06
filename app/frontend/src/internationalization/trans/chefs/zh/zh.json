@@ -395,7 +395,7 @@
     "emailRequired": "电子邮件为必填项"
   },
   "submissionsTable": {
-    "noMachingRecordText": "未找到匹配的记录",
+    "noMatchingRecordText": "未找到匹配的记录",
     "submissions": "意见书",
     "submissionsTable": "提交表",
     "selectColumns": "选择列",
@@ -485,7 +485,7 @@
     "editThisDraft": "编辑本草稿"
   },
   "mySubmissionsTable": {
-    "noMachingRecordText": "未找到匹配的记录",
+    "noMatchingRecordText": "未找到匹配的记录",
     "previousSubmissions": "以前提交的内容",
     "selectColumns": "选择列",
     "createNewSubmission": "创建新提交",

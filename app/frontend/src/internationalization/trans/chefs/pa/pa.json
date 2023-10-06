@@ -395,7 +395,7 @@
     "emailRequired": "ਈਮੇਲ ਦੀ ਲੋੜ ਹੈ"
   },
   "submissionsTable": {
-    "noMachingRecordText": "ਕੋਈ ਮੇਲ ਖਾਂਦਾ ਰਿਕਾਰਡ ਨਹੀਂ ਮਿਲਿਆ",
+    "noMatchingRecordText": "ਕੋਈ ਮੇਲ ਖਾਂਦਾ ਰਿਕਾਰਡ ਨਹੀਂ ਮਿਲਿਆ",
     "submissions": "ਬੇਨਤੀਆਂ",
     "submissionsTable": "ਸਬਮਿਸ਼ਨ ਟੇਬਲ",
     "selectColumns": "ਕਾਲਮ ਚੁਣੋ",
@@ -485,7 +485,7 @@
     "editThisDraft": "ਇਸ ਡਰਾਫਟ ਨੂੰ ਸੰਪਾਦਿਤ ਕਰੋ"
   },
   "mySubmissionsTable": {
-    "noMachingRecordText": "ਕੋਈ ਮੇਲ ਖਾਂਦਾ ਰਿਕਾਰਡ ਨਹੀਂ ਮਿਲਿਆ",
+    "noMatchingRecordText": "ਕੋਈ ਮੇਲ ਖਾਂਦਾ ਰਿਕਾਰਡ ਨਹੀਂ ਮਿਲਿਆ",
     "previousSubmissions": "ਪਿਛਲੀਆਂ ਬੇਨਤੀਆਂ",
     "selectColumns": "ਕਾਲਮ ਚੁਣੋ",
     "createNewSubmission": "ਇੱਕ ਨਵੀਂ ਸਬਮਿਸ਼ਨ ਬਣਾਓ",

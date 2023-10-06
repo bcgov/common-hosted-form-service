@@ -395,7 +395,7 @@
     "emailRequired": "Электронная почта обязательна"
   },
   "submissionsTable": {
-    "noMachingRecordText": "Совпадающих записей не найдено",
+    "noMatchingRecordText": "Совпадающих записей не найдено",
     "submissions": "Записи",
     "submissionsTable": "Таблица записей",
     "selectColumns": "Выберите столбцы",
