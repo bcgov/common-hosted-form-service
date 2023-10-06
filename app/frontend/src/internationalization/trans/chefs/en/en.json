@@ -186,9 +186,7 @@
     "formOwnerKeyAcess": "You must be the <strong>Form Owner</strong> to manage API Keys.",
     "regenerate": "Regenerate",
     "generate": "Generate",
-    "secret": "Secret",
-    "text": "text",
-    "password": "password"
+    "secret": "Secret"
   },
   "manageVersions": {
     "important": "IMPORTANT!",

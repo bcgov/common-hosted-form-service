@@ -190,9 +190,7 @@
     "formOwnerKeyAcess": "Vous devez être le <strong>propriétaire du formulaire</strong> pour gérer les clés API.",
     "regenerate": "Régénérer",
     "generate": "Générer",
-    "secret": "Secret",
-    "text": "texte",
-    "password": "mot de passe"
+    "secret": "Secret"
   },
   "manageVersions": {
     "important": "IMPORTANT!",
@@ -783,11 +781,11 @@
     "createOnlineTitle": "Créez des formulaires en ligne pour collecter des informations auprès de vos clients et améliorer vos flux de travail.",
     "getStarted": "Commencer"
   },
-"baseStepper": {
-  "setUpForm": "Configurer le formulaire",
+  "baseStepper": {
+    "setUpForm": "Configurer le formulaire",
     "designForm": "Formulaire de conception",
     "manageForm": "Gérer le formulaire"
-},
+  },
   "create": {
     "formSettings": "Paramètres du formulaire",
     "disclaimer": "Clause de non-responsabilité",

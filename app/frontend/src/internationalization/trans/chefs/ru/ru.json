@@ -190,9 +190,7 @@
     "formOwnerKeyAcess": "Вы должны быть <strong>владельцем формы</strong> для управления ключами API.",
     "regenerate": "Регенерировать",
     "generate": "Создать",
-    "secret": "Секрет",
-    "text": "текст",
-    "password": "пароль"
+    "secret": "Секрет"
   },
   "manageVersions": {
     "important": "ВАЖНО!",
@@ -786,7 +784,7 @@
     "setUpForm": "Настройка формы",
     "designForm": "Форма дизайна",
     "manageForm": "Управление формой"
-    },
+  },
   "create": {
     "formSettings": "Настройки формы",
     "disclaimer": "Отказ от ответственности",

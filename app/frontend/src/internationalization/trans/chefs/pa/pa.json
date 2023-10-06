@@ -190,9 +190,7 @@
     "formOwnerKeyAcess": "API ਕੁੰਜੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ ਤੁਹਾਨੂੰ <strong>ਫਾਰਮ ਦਾ ਮਾਲਕ</strong> ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।",
     "regenerate": "ਪੁਨਰਜਨਮ",
     "generate": "ਪੈਦਾ ਕਰੋ",
-    "secret": "ਗੁਪਤ",
-    "text": "ਟੈਕਸਟ",
-    "password": "ਪਾਸਵਰਡ"
+    "secret": "ਗੁਪਤ"
   },
   "manageVersions": {
     "important": "ਮਹੱਤਵਪੂਰਨ!",
@@ -787,7 +785,7 @@
     "setUpForm": "ਫਾਰਮ ਸੈਟ ਅਪ ਕਰੋ",
     "designForm": "ਡਿਜ਼ਾਈਨ ਫਾਰਮ",
     "manageForm": "ਫਾਰਮ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ"
-    },
+  },
   "create": {
     "formSettings": "ਫਾਰਮ ਸੈਟਿੰਗਾਂ",
     "disclaimer": "ਬੇਦਾਅਵਾ",

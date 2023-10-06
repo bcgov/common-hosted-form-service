@@ -129,9 +129,7 @@ export default {
             variant="outlined"
             solid
             readonly
-            :type="
-              showSecret ? $t('trans.apiKey.text') : $t('trans.apiKey.password')
-            "
+            :type="showSecret ? 'text' : 'password'"
             :model-value="secret"
             :lang="lang"
           />
@@ -157,7 +155,7 @@ export default {
 
           <BaseCopyToClipboard
             :disabled="!canReadSecret || !showSecret"
-            class="ml-2"
+            class="mx-2"
             :text-to-copy="secret"
             :snack-bar-text="$t('trans.apiKey.sCTC')"
             :tooltip-text="$t('trans.apiKey.cSTC')"
