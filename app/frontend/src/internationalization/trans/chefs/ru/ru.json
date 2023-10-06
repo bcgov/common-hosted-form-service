@@ -485,6 +485,7 @@
     "editThisDraft": "Изменить этот черновик"
   },
   "mySubmissionsTable": {
+    "noMatchingRecordText": "Совпадающих записей не найдено",
     "previousSubmissions": "Предыдущие записи",
     "selectColumns": "Выберите столбцы",
     "createNewSubmission": "Создать новую запись",
