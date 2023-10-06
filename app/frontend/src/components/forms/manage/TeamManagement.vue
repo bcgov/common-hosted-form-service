@@ -104,7 +104,7 @@ export default {
       if (this.filterData.length > 0) {
         headers = headers.filter(
           (h) =>
-            this.filterData.some((fd) => fd === h.key) ||
+            this.filterData.some((fd) => fd.key === h.key) ||
             this.filterIgnore.some((ign) => ign.key === h.key)
         );
       }

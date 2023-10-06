@@ -98,7 +98,7 @@ export default {
             </template>
             <template #append>
               <BaseCopyToClipboard
-                class="mt-n1"
+                class="mt-n1 mx-2"
                 :text-to-copy="formLink"
                 :tooltip-text="$t('trans.shareForm.copyURLToClipboard')"
                 :lang="lang"
