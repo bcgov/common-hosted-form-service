@@ -37,7 +37,6 @@
           <FormViewerActions
             :block="block"
             :draftEnabled="form.enableSubmitterDraft"
-            :formIsValid="formIsValid"
             :formId="form.id"
             :isDraft="submissionRecord.draft"
             :permissions="permissions"
@@ -289,7 +288,6 @@ export default {
       formDataEntered: false,
       isLoading: true,
       showModal: false,
-      formIsValid: false,
     };
   },
   computed: {
@@ -544,10 +542,13 @@ export default {
       this.block = e;
     },
     formChange(e) {
+      // if draft check validation on render
+      if (this.submissionRecord.draft) {
+        this.$refs.chefForm.formio.checkValidity(null, true, null, false);
+      }
       if (e.changed != undefined && !e.changed.flags.fromSubmission) {
         this.formDataEntered = true;
       }
-      this.formIsValid = e.isValid;
     },
     jsonManager() {
       this.formElement = this.$refs.chefForm.formio;

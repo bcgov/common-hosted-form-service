@@ -45,7 +45,6 @@
               @click="$emit('save-draft')"
               color="primary"
               icon
-              :disabled="!formIsValid"
               v-bind="attrs"
               v-on="on"
             >
@@ -116,10 +115,6 @@ export default {
       default: false,
     },
     draftEnabled: {
-      type: Boolean,
-      default: false,
-    },
-    formIsValid: {
       type: Boolean,
       default: false,
     },
