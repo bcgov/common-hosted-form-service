@@ -2,6 +2,22 @@
   "date": {
     "date": "yyyy-mm-dd"
   },
+  "emailManagement": {
+    "emailManagement": "Quản lý email",
+    "manageForm": "Quản lý biểu mẫu",
+    "submissionConfirmation": "Chứng nhận thông tin"
+  },
+  "emailTemplate": {
+    "body": "Thân hình",
+    "save": "Cứu",
+    "saveEmailTemplateConsoleErrMsg": "Lỗi cập nhật mẫu email cho biểu mẫu {formId}: {error}",
+    "saveEmailTemplateErrMsg": "Đã xảy ra lỗi khi cố gắng cập nhật mẫu email.",
+    "subject": "Chủ thể",
+    "title": "Tiêu đề",
+    "validBodyRequired": "Vui lòng nhập Nội dung cho email",
+    "validSubjectRequired": "Vui lòng nhập dòng Chủ đề cho email",
+    "validTitleRequired": "Vui lòng nhập Tiêu đề cho email"
+  },
   "formsTable": {
     "myForms": "biểu mẫu của tôi",
     "createNewForm": "Tạo một biểu mẫu mới",
@@ -29,6 +45,7 @@
     "copyURLToClipboard": "Sao chép URL vào khay nhớ tạm"
   },
   "manageFormActions": {
+    "emailManagement": "Quản lý email",
     "viewSubmissions": "Xem bài nộp",
     "teamManagement": "quản lý nhóm",
     "deleteForm": "Xóa biểu mẫu",
@@ -146,7 +163,7 @@
     "showSecret": "Hiển thị bí mật",
     "key": "Chìa khóa",
     "saveSettingsErrMsg": "Đã xảy ra lỗi khi cố cập nhật cài đặt cho biểu mẫu này.",
-    "updateSettingsConsoleErrMsg": "Lỗi khi cập nhật cài đặt cho biểu mẫu {formId} : {error}"
+    "updateSettingsConsoleErrMsg": "Lỗi khi cập nhật cài đặt cho biểu mẫu {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "từ chối trách nhiệm",
@@ -762,10 +779,12 @@
     "createOnlineTitle": "Tạo biểu mẫu trực tuyến để thu thập thông tin từ khách hàng của bạn và cải thiện quy trình làm việc của bạn.",
     "getStarted": "Bắt đầu"
   },
-  "create": {
-    "createNewForm": "Tạo biểu mẫu mới",
+  "baseStepper": {
     "setUpForm": "Thiết lập biểu mẫu",
     "designForm": "mẫu thiết kế",
+    "manageForm": "Quản lý biểu mẫu"
+    },
+  "create": {
     "formSettings": "Cài đặt biểu mẫu",
     "disclaimer": "từ chối trách nhiệm",
     "disclaimerStmt": "Tôi đồng ý với tuyên bố từ chối trách nhiệm và tuyên bố trách nhiệm đối với Nhà thiết kế biểu mẫu",
@@ -880,6 +899,8 @@
       "fecthingFormBuilderCompsConsErrMsg": "Lỗi khi nhận các thành phần của trình tạo biểu mẫu: {error}"
     },
     "form": {
+      "fetchEmailTemplatesConsErrMsg": "Lỗi tải mẫu email cho {formId}: {error}",
+      "fetchEmailTemplatesErrMsg": "Đã xảy ra lỗi khi tìm nạp mẫu email cho biểu mẫu này",
       "getCurrUserFormsErrMsg": "Đã xảy ra lỗi khi tìm nạp biểu mẫu của bạn.",
       "getCurrUserFormsConsErrMsg": "Lỗi khi lấy dữ liệu người dùng: {error}",
       "getUserFormPermErrMsg": "Đã xảy ra lỗi khi tìm nạp dữ liệu người dùng của bạn cho biểu mẫu này.",
@@ -903,6 +924,8 @@
       "publishDraftErrMsg": "Đã xảy ra lỗi khi xuất bản.",
       "publishDraftConsErrMsg": "Lỗi xuất bản {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "Lỗi trong toggleVersionPublish {versionId} {publish}: {error}",
+      "updateEmailTemplateConsErrMsg": "Lỗi cập nhật mẫu email cho biểu mẫu {formId}: {error}",
+      "updateEmailTemplateErrMsg": "Đã xảy ra lỗi khi cập nhật mẫu email cho biểu mẫu này.",
       "updateFormErrMsg": "Đã xảy ra lỗi khi cập nhật cài đặt cho biểu mẫu này.",
       "updateFormConsErrMsg": "Lỗi khi cập nhật biểu mẫu {id}: {error}",
       "deleteSubmissionNotifyMsg": "Đã xóa bài đăng thành công.",

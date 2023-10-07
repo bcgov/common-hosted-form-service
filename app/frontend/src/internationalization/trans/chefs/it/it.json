@@ -2,6 +2,22 @@
   "date": {
     "date": "aaaa-mm-gg"
   },
+  "emailManagement": {
+    "emailManagement": "Gestione della posta elettronica",
+    "manageForm": "Gestisci modulo",
+    "submissionConfirmation": "Conferma di invio"
+  },
+  "emailTemplate": {
+    "body": "Corpo",
+    "save": "Salva",
+    "saveEmailTemplateConsoleErrMsg": "Errore durante l'aggiornamento del modello di email per il modulo {formId}: {error}",
+    "saveEmailTemplateErrMsg": "Si è verificato un errore durante il tentativo di aggiornare il modello di email.",
+    "subject": "Soggetto",
+    "title": "Titolo",
+    "validBodyRequired": "Inserisci un corpo per l'e-mail",
+    "validSubjectRequired": "Inserisci una riga dell'oggetto per l'e-mail",
+    "validTitleRequired": "Inserisci un titolo per l'e-mail"
+  },
   "formsTable": {
     "myForms": "Le mie Forme",
     "createNewForm": "Crea un nuovo modulo",
@@ -29,6 +45,7 @@
     "copyURLToClipboard": "Copia l'URL negli appunti"
   },
   "manageFormActions": {
+    "emailManagement": "Gestione della posta elettronica",
     "viewSubmissions": "Visualizza invii",
     "teamManagement": "Gestione della squadra",
     "deleteForm": "Elimina modulo",
@@ -762,10 +779,12 @@
     "createOnlineTitle": "Crea moduli online per raccogliere informazioni dai tuoi clienti e migliorare i tuoi flussi di lavoro.",
     "getStarted": "Iniziare"
   },
-  "create": {
-    "createNewForm": "Crea nuovo modulo",
-    "setUpForm": "Imposta modulo",
+"baseStepper": {
+  "setUpForm": "Imposta modulo",
     "designForm": "Modulo di progettazione",
+    "manageForm": "Gestisci modulo"
+},
+  "create": {
     "formSettings": "Impostazioni modulo",
     "disclaimer": "Disclaimer",
     "disclaimerStmt": "Accetto il disclaimer e la dichiarazione di responsabilità per Form Designers",
@@ -880,6 +899,8 @@
       "fecthingFormBuilderCompsConsErrMsg": "Errore durante il recupero dei componenti del generatore di moduli: {error}"
     },
     "form": {
+      "fetchEmailTemplatesConsErrMsg": "Errore durante il caricamento dei modelli di email per {formId}: {error}",
+      "fetchEmailTemplatesErrMsg": "Si è verificato un errore durante il recupero dei modelli di email per questo modulo",
       "getCurrUserFormsErrMsg": "Si è verificato un errore durante il recupero dei moduli.",
       "getCurrUserFormsConsErrMsg": "Errore durante il recupero dei dati utente: {error}",
       "getUserFormPermErrMsg": "Si è verificato un errore durante il recupero dei dati utente per questo modulo.",
@@ -903,6 +924,8 @@
       "publishDraftErrMsg": "Si è verificato un errore durante la pubblicazione.",
       "publishDraftConsErrMsg": "Errore durante la pubblicazione di {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "Errore in toggleVersionPublish {versionId} {publish}: {error}",
+      "updateEmailTemplateConsErrMsg": "Errore durante l'aggiornamento dei modelli di email per il modulo {formId}: {error}",
+      "updateEmailTemplateErrMsg": "Si è verificato un errore durante l'aggiornamento dei modelli di posta elettronica per questo modulo.",
       "updateFormErrMsg": "Si è verificato un errore durante l'aggiornamento delle impostazioni per questo modulo.",
       "updateFormConsErrMsg": "Errore durante l'aggiornamento del modulo {id}: {error}",
       "deleteSubmissionNotifyMsg": "Invio eliminato con successo.",
