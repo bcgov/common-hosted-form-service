@@ -497,6 +497,7 @@ export default {
         })
         .finally(() => {
           this.selectedSubmissions = [];
+          this.debounceInput.cancel();
         });
     },
     async delSub() {
