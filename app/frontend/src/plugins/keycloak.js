@@ -29,6 +29,8 @@ export default {
           loginFn: null,
           login: null,
           createLoginUrl: null,
+          updateToken: null,
+          clearToken: null,
           createLogoutUrl: null,
           createRegisterUrl: null,
           register: null,
@@ -81,17 +83,7 @@ function init(config, watch, options) {
       watch.$emit('ready', options.onReady.bind(this, keycloak));
   };
   keycloak.onAuthSuccess = function () {
-    // Check token validity every 10 seconds (10 000 ms) and, if necessary, update the token.
-    // Refresh token if it's valid for less then 60 seconds
-    const updateTokenInterval = setInterval(
-      () =>
-        keycloak.updateToken(60).catch(() => {
-          keycloak.clearToken();
-        }),
-      10000
-    );
     watch.logoutFn = () => {
-      clearInterval(updateTokenInterval);
       keycloak.logout(
         options.logout || { redirectUri: config['logoutRedirectUri'] }
       );
@@ -129,6 +121,8 @@ function init(config, watch, options) {
       watch.realmAccess = keycloak.realmAccess;
       watch.resourceAccess = keycloak.resourceAccess;
       watch.refreshToken = keycloak.refreshToken;
+      watch.updateToken = keycloak.updateToken;
+      watch.clearToken = keycloak.clearToken;
       watch.refreshTokenParsed = keycloak.refreshTokenParsed;
       watch.timeSkew = keycloak.timeSkew;
       watch.responseMode = keycloak.responseMode;
