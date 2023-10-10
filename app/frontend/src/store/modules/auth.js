@@ -1,5 +1,8 @@
 import Vue from 'vue';
 import getRouter from '@/router';
+import { useIdle, useTimestamp, watchPausable } from '@vueuse/core';
+import { ref } from 'vue';
+import moment from 'moment';
 
 /**
  * @function hasRoles
@@ -20,6 +23,10 @@ export default {
     // In most cases, when this becomes populated, we end up doing a redirect flow,
     // so when we return to the app, it is fresh again and undefined
     redirectUri: undefined,
+    showTokenExpiredWarningMSg: false,
+    inActiveCheckInterval: null,
+    updateTokenInterval: null,
+    watchPausable: null,
   },
   getters: {
     authenticated: () => Vue.prototype.$keycloak.authenticated,
@@ -27,6 +34,9 @@ export default {
       Vue.prototype.$keycloak.createLoginUrl(options),
     createLogoutUrl: () => (options) =>
       Vue.prototype.$keycloak.createLogoutUrl(options),
+    updateToken: () => (minValidity) =>
+      Vue.prototype.$keycloak.updateToken(minValidity),
+    clearToken: () => () => Vue.prototype.$keycloak.clearToken(),
     email: () =>
       Vue.prototype.$keycloak.tokenParsed
         ? Vue.prototype.$keycloak.tokenParsed.email
@@ -83,10 +93,16 @@ export default {
 
       return user;
     },
+    showTokenExpiredWarningMSg: (state) => state.showTokenExpiredWarningMSg,
+    inActiveCheckInterval: (state) => state.inActiveCheckInterval,
+    updateTokenInterval: (state) => state.updateTokenInterval,
   },
   mutations: {
     SET_REDIRECTURI(state, redirectUri) {
       state.redirectUri = redirectUri;
+    },
+    SET_SHOW_TOKEN_EXPIRED_WARNING_MSG(state, showTokenExpiredWarningMSg) {
+      state.showTokenExpiredWarningMSg = showTokenExpiredWarningMSg;
     },
   },
   actions: {
@@ -139,6 +155,60 @@ export default {
             redirectUri: `${location.origin}/${Vue.prototype.$config.basePath}`,
           })
         );
+      }
+    },
+    async setTokenExpirationWarningDialog(
+      { getters, commit, dispatch, state },
+      { showTokenExpiredWarningMSg, resetToken }
+    ) {
+      if (!showTokenExpiredWarningMSg && resetToken) {
+        state.watchPausable.resume();
+        getters.updateToken(-1).catch(() => {
+          getters.clearToken();
+          dispatch('logout');
+        });
+      } else if (!resetToken) {
+        clearInterval(getters.updateTokenInterval);
+        clearInterval(getters.inActiveCheckInterval);
+        dispatch('logout');
+      }
+      commit('SET_SHOW_TOKEN_EXPIRED_WARNING_MSG', showTokenExpiredWarningMSg);
+      if (showTokenExpiredWarningMSg) {
+        setTimeout(() => {
+          dispatch('logout');
+        }, 180000);
+      }
+    },
+    async checkTokenExpiration({ getters, dispatch, state }) {
+      if (getters.authenticated) {
+        const { idle, lastActive } = useIdle(1000, { initialState: true });
+        const source = ref(idle);
+        const now = useTimestamp({ interval: 1000 });
+        state.watchPausable = watchPausable(source, (value) => {
+          if (value) {
+            clearInterval(getters.updateTokenInterval);
+            state.inActiveCheckInterval = setInterval(() => {
+              let end = moment(now.value);
+              let active = moment(lastActive.value);
+              let duration = moment.duration(end.diff(active)).as('minutes');
+              if (duration > 1) {
+                state.watchPausable.pause();
+                dispatch('setTokenExpirationWarningDialog', {
+                  showTokenExpiredWarningMSg: true,
+                  resetToken: true,
+                });
+              }
+            }, 60000);
+          } else {
+            clearInterval(getters.inActiveCheckInterval);
+            state.updateTokenInterval = setInterval(() => {
+              getters.updateToken(-1).catch(() => {
+                getters.clearToken();
+              });
+            }, 120000);
+          }
+        });
+        state.watchPausable.resume();
       }
     },
   },

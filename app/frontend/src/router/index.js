@@ -466,6 +466,7 @@ export default function getRouter(basePath = '/') {
         router.app.$keycloak.authenticated
       ) {
         store.dispatch('form/getFormsForCurrentUser');
+        store.dispatch('auth/checkTokenExpiration');
       }
 
       // Handle proper redirections on first page load
