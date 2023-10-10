@@ -391,6 +391,7 @@
     "emailRequired": "Email is required"
   },
   "submissionsTable": {
+    "noMatchingRecordText": "No matching records found",
     "submissions": "Submissions",
     "submissionsTable": "SubmissionsTable",
     "selectColumns": "Select Columns",
@@ -401,7 +402,6 @@
     "search": "Search",
     "loadingText": "Loading... Please wait",
     "noDataText": "There are no submissions for this form",
-    "noMachingRecordText": "No matching records found",
     "delSelectedSubmissions": "Delete selected submissions",
     "resSelectedSubmissions": "Restore selected submissions",
     "yes": "YES",
@@ -481,6 +481,7 @@
     "editThisDraft": "Edit This Draft"
   },
   "mySubmissionsTable": {
+    "noMatchingRecordText": "No matching records found",
     "previousSubmissions": "Previous Submissions",
     "selectColumns": "Select Columns",
     "createNewSubmission": "Create a New Submission",
@@ -509,8 +510,7 @@
     "errSubmittingForm": "An error occurred submitting this form",
     "errorSavingFile": "Error saving files. Filename: {fileName}. Error: {error}",
     "submittingDraftErrMsg": "An error occurred while saving a draft",
-    "submittingDraftConsErrMsg": "Error saving draft. SubmissionId: {submissionId}. Error: {error}",
-    "noMachingRecordText": "No matching records found"
+    "submittingDraftConsErrMsg": "Error saving draft. SubmissionId: {submissionId}. Error: {error}"
   },
   "notesPanel": {
     "addNewNote": "Add New Note",
@@ -665,6 +665,7 @@
     "updatedBy": "Modified By"
   },
   "teamManagement": {
+    "noMatchingRecordText": "No matching records found",
     "teamManagement": "Team Management",
     "selectColumns": "Select Columns",
     "manageForm": "Manage Form",

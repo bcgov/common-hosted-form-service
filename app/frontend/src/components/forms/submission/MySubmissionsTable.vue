@@ -369,7 +369,11 @@ export default {
       :search="search"
       :loading="loading"
       :loading-text="$t('trans.mySubmissionsTable.loadingText')"
-      :no-data-text="$t('trans.mySubmissionsTable.noDataText')"
+      :no-data-text="
+        search.length > 0
+          ? $t('trans.mySubmissionsTable.noMatchingRecordText')
+          : $t('trans.mySubmissionsTable.noDataText')
+      "
       :lang="lang"
     >
       <template #item.lastEdited="{ item }">

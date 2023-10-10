@@ -395,7 +395,7 @@
     "emailRequired": "電子郵件為必填項"
   },
   "submissionsTable": {
-    "noMachingRecordText": "未找到匹配的記錄",
+    "noMatchingRecordText": "未找到匹配的記錄",
     "submissions": "意見書",
     "submissionsTable": "提交表",
     "selectColumns": "選擇列",
@@ -485,7 +485,7 @@
     "editThisDraft": "編輯本草稿"
   },
   "mySubmissionsTable": {
-    "noMachingRecordText": "未找到匹配的記錄",
+    "noMatchingRecordText": "未找到匹配的記錄",
     "previousSubmissions": "以前提交的內容",
     "selectColumns": "選擇列",
     "createNewSubmission": "創建新提交",
@@ -662,6 +662,7 @@
     "updatedBy": "修改者"
   },
   "teamManagement": {
+    "noMatchingRecordText": "未找到匹配的記錄",
     "teamManagement": "團隊管理",
     "selectColumns": "選擇列",
     "manageForm": "管理表格",
