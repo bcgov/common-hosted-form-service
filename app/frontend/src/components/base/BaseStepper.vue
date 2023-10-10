@@ -65,12 +65,12 @@ export default {
 
       <v-stepper-window>
         <v-stepper-window-item :value="1">
-          <div>
+          <div class="mb-4">
             <slot name="setUpForm"></slot>
           </div>
         </v-stepper-window-item>
         <v-stepper-window-item :value="2">
-          <div>
+          <div class="mb-4">
             <slot name="designForm"></slot>
           </div>
         </v-stepper-window-item>
