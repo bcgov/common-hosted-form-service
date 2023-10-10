@@ -395,7 +395,7 @@
     "emailRequired": "電子メールは必須です"
   },
   "submissionsTable": {
-    "noMachingRecordText": "該当する記録が見つかりません",
+    "noMatchingRecordText": "該当する記録が見つかりません",
     "submissions": "提出物",
     "submissionsTable": "提出物テーブル",
     "selectColumns": "列の選択",
@@ -485,7 +485,7 @@
     "editThisDraft": "この下書きを編集する"
   },
   "mySubmissionsTable": {
-    "noMachingRecordText": "該当する記録が見つかりません",
+    "noMatchingRecordText": "該当する記録が見つかりません",
     "previousSubmissions": "以前の投稿",
     "selectColumns": "列の選択",
     "createNewSubmission": "新しい提出物を作成する",
@@ -662,6 +662,7 @@
     "updatedBy": "によって変更"
   },
   "teamManagement": {
+    "noMatchingRecordText": "該当する記録が見つかりません",
     "teamManagement": "チーム管理",
     "selectColumns": "列の選択",
     "manageForm": "フォームの管理",

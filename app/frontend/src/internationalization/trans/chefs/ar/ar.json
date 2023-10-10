@@ -395,7 +395,7 @@
     "emailRequired": "البريد الالكتروني مطلوب"
   },
   "submissionsTable": {
-    "noMachingRecordText": "لم يتم العثور على سجلات مطابقة",
+    "noMatchingRecordText": "لم يتم العثور على سجلات مطابقة",
     "submissions": "التقديمات",
     "submissionsTable": "الجدول",
     "selectColumns": "حدد الأعمدة",
@@ -485,7 +485,7 @@
     "editThisDraft": "تحرير هذه المسودة"
   },
   "mySubmissionsTable": {
-    "noMachingRecordText": "لم يتم العثور على سجلات مطابقة",
+    "noMatchingRecordText": "لم يتم العثور على سجلات مطابقة",
     "previousSubmissions": "عمليات الإرسال السابقة",
     "selectColumns": "حدد الأعمدة",
     "createNewSubmission": "إنشاء إرسال جديد",
@@ -662,6 +662,7 @@
     "updatedBy": "تم التعديل بواسطة"
   },
   "teamManagement": {
+    "noMatchingRecordText": "لم يتم العثور على سجلات مطابقة",
     "teamManagement": "ادارة فريق",
     "selectColumns": "حدد الأعمدة",
     "manageForm": "إدارة النموذج",

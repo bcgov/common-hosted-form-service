@@ -395,7 +395,7 @@
     "emailRequired": "Kinakailangan ang email"
   },
   "submissionsTable": {
-    "noMachingRecordText": "Walang nakitang katugmang mga tala",
+    "noMatchingRecordText": "Walang nakitang katugmang mga tala",
     "submissions": "Mga pagsusumite",
     "submissionsTable": "Talahanayan ng mga Pagsusumite",
     "selectColumns": "Piliin ang Mga Column",
@@ -485,7 +485,7 @@
     "editThisDraft": "I-edit ang Draft na ito"
   },
   "mySubmissionsTable": {
-    "noMachingRecordText": "Walang nakitang katugmang mga tala",
+    "noMatchingRecordText": "Walang nakitang katugmang mga tala",
     "previousSubmissions": "Nakaraang Mga Pagsusumite",
     "selectColumns": "Piliin ang Mga Column",
     "createNewSubmission": "Gumawa ng Bagong Pagsusumite",
@@ -662,6 +662,7 @@
     "updatedBy": "Binago ni"
   },
   "teamManagement": {
+    "noMatchingRecordText": "Walang nakitang katugmang mga tala",
     "teamManagement": "Pamamahala ng Koponan",
     "selectColumns": "Piliin ang Mga Column",
     "manageForm": "Pamahalaan ang Form",

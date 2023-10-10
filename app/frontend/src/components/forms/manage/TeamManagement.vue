@@ -477,7 +477,11 @@ export default {
       :single-select="false"
       :loading="loading || updating"
       :loading-text="$t('trans.teamManagement.loadingText')"
-      :no-data-text="$t('trans.teamManagement.noDataText')"
+      :no-data-text="
+        search.length > 0
+          ? $t('trans.teamManagement.noMatchingRecordText')
+          : $t('trans.teamManagement.noDataText')
+      "
       :search="search"
       dense
       :lang="lang"

@@ -703,7 +703,7 @@ export default {
       :loading-text="$t('trans.submissionsTable.loadingText')"
       :no-data-text="
         search.length > 0
-          ? $t('trans.submissionsTable.noMachingRecordText')
+          ? $t('trans.submissionsTable.noMatchingRecordText')
           : $t('trans.submissionsTable.noDataText')
       "
       :lang="lang"

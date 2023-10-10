@@ -395,7 +395,7 @@
     "emailRequired": "L'e-mail è obbligatoria"
   },
   "submissionsTable": {
-    "noMachingRecordText": "nessuna corrispondenza trovata",
+    "noMatchingRecordText": "Nessuna corrispondenza trovata",
     "submissions": "Contributi",
     "submissionsTable": "Tabella degli invii",
     "selectColumns": "Seleziona Colonne",
@@ -485,7 +485,7 @@
     "editThisDraft": "Modifica questa bozza"
   },
   "mySubmissionsTable": {
-    "noMachingRecordText": "nessuna corrispondenza trovata",
+    "noMatchingRecordText": "Nessuna corrispondenza trovata",
     "previousSubmissions": "Invii precedenti",
     "selectColumns": "Seleziona Colonne",
     "createNewSubmission": "Crea un nuovo invio",
@@ -662,6 +662,7 @@
     "updatedBy": "Modificato da"
   },
   "teamManagement": {
+    "noMatchingRecordText": "Nessuna corrispondenza trovata",
     "teamManagement": "Gestione della squadra",
     "selectColumns": "Seleziona Colonne",
     "manageForm": "Gestisci modulo",
