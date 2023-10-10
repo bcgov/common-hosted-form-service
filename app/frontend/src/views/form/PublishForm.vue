@@ -1,6 +1,19 @@
 <template>
   <BaseStepper :step="3">
     <template #manageForm>
+      <div
+        class="mt-6 mb-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse"
+      >
+        <div cols="12" sm="8">
+          <!-- page title -->
+          <h1 :lang="lang">{{ $t('trans.manageLayout.manageForm') }}</h1>
+          <!-- form name -->
+          <h3>{{ form.name }}</h3>
+        </div>
+        <div cols="12" sm="4">
+          <ManageFormActions />
+        </div>
+      </div>
       <ManageForm v-if="showManageForm" />
     </template>
   </BaseStepper>
@@ -10,11 +23,13 @@
 import ManageForm from '@/components/forms/manage/ManageForm.vue';
 import { mapActions, mapGetters } from 'vuex';
 import { FormPermissions } from '@/utils/constants';
+import ManageFormActions from '@/components/forms/manage/ManageFormActions.vue';
 
 export default {
   name: 'PublishForm',
   components: {
     ManageForm,
+    ManageFormActions,
   },
   props: {
     f: {
@@ -42,7 +57,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('form', ['permissions', 'form']),
+    ...mapGetters('form', ['permissions', 'form', 'lang']),
   },
   methods: {
     ...mapActions('form', [
