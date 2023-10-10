@@ -333,10 +333,9 @@ export default {
   },
   async mounted() {
     this.debounceInput = _.debounce(async () => {
-      this.forceTableRefresh += 1;
       this.refreshSubmissions();
+      this.forceTableRefresh += 1;
     }, 300);
-
     this.refreshSubmissions();
   },
   methods: {
@@ -498,7 +497,6 @@ export default {
         })
         .finally(() => {
           this.selectedSubmissions = [];
-          this.debounceInput.cancel();
         });
     },
     async delSub() {
