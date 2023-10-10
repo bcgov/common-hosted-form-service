@@ -249,7 +249,7 @@ const service = {
       .modify('filterCreatedBy', params.createdBy)
       .modify('filterFormVersionId', params.formVersionId)
       .modify('filterVersion', params.version)
-      .modify('filterformSubmissionStatusCode', params.filterformSubmissionStatusCode)
+      .modify('filterformSubmissionStatusCode', JSON.parse(params.filterformSubmissionStatusCode))
       .modify('orderDefault', params.sortBy && params.page ? true : false, params);
     if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length == 2) {
       query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
