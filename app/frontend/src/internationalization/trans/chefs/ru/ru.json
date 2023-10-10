@@ -395,7 +395,7 @@
     "emailRequired": "Электронная почта обязательна"
   },
   "submissionsTable": {
-    "noMachingRecordText": "Совпадающих записей не найдено",
+    "noMatchingRecordText": "Совпадающих записей не найдено",
     "submissions": "Записи",
     "submissionsTable": "Таблица записей",
     "selectColumns": "Выберите столбцы",
@@ -485,6 +485,7 @@
     "editThisDraft": "Изменить этот черновик"
   },
   "mySubmissionsTable": {
+    "noMatchingRecordText": "Совпадающих записей не найдено",
     "previousSubmissions": "Предыдущие записи",
     "selectColumns": "Выберите столбцы",
     "createNewSubmission": "Создать новую запись",
@@ -661,6 +662,7 @@
     "updatedBy": "Кем изменено"
   },
   "teamManagement": {
+    "noMatchingRecordText": "Совпадающих записей не найдено",
     "teamManagement": "Управление командой",
     "selectColumns": "Выберите столбцы",
     "manageForm": "Управление формой",

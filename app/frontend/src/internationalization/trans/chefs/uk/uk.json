@@ -395,7 +395,7 @@
     "emailRequired": "Електронна пошта обов'язкова"
   },
   "submissionsTable": {
-    "noMachingRecordText": "Відповідних записів не знайдено",
+    "noMatchingRecordText": "Відповідних записів не знайдено",
     "submissions": "Подання",
     "submissionsTable": "SubmissionsTable",
     "selectColumns": "Виберіть Стовпці",
@@ -485,7 +485,7 @@
     "editThisDraft": "Редагувати цю чернетку"
   },
   "mySubmissionsTable": {
-    "noMachingRecordText": "Відповідних записів не знайдено",
+    "noMatchingRecordText": "Відповідних записів не знайдено",
     "previousSubmissions": "Попередні подання",
     "selectColumns": "Виберіть Стовпці",
     "createNewSubmission": "Створити нове подання",
@@ -662,6 +662,7 @@
     "updatedBy": "Змінено"
   },
   "teamManagement": {
+    "noMatchingRecordText": "Відповідних записів не знайдено",
     "teamManagement": "Керування командою",
     "selectColumns": "Виберіть Стовпці",
     "manageForm": "Керувати формою",
