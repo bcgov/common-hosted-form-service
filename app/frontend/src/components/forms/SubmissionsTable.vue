@@ -41,11 +41,11 @@ export default {
           key: 'event',
         },
       ],
+      forceTableRefresh: ref(0),
       itemsPerPage: 10,
       loading: true,
       page: 1,
       restoreItem: {},
-      search: '',
       selectedSubmissions: [],
       serverItems: [],
       showColumnsDialog: false,
@@ -53,7 +53,6 @@ export default {
       showRestoreDialog: false,
       singleSubmissionDelete: false,
       singleSubmissionRestore: false,
-      forceTableRefresh: ref(0),
       sortBy: {},
       firstDataLoad: true,
       // When filtering, this data will not be preselected when clicking reset
@@ -397,7 +396,7 @@ export default {
         paginationEnabled: true,
         sortBy: this.sortBy,
         search: this.search,
-        searchEnabled: this.searchEnabled,
+        searchEnabled: this.search.length > 0 ? true : false,
         createdAt: Object.values({
           minDate:
             this.userFormPreferences &&
@@ -562,10 +561,8 @@ export default {
       await this.populateSubmissionsTable();
     },
     async handleSearch(value) {
-      this.searchEnabled = true;
       this.search = value;
       if (value === '') {
-        this.searchEnabled = false;
         await this.refreshSubmissions();
       } else {
         this.debounceInput();
@@ -704,7 +701,6 @@ export default {
       :headers="HEADERS"
       item-value="submissionId"
       :items="serverItems"
-      :search="search"
       show-select
       :loading="loading"
       :loading-text="$t('trans.submissionsTable.loadingText')"
