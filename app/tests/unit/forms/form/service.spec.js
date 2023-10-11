@@ -417,7 +417,7 @@ describe('processPaginationData', () => {
         modify: () => jest.fn().mockReturnThis(),
       };
     });
-    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 10, false, 0, null, false);
+    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 10, 0, null, false);
     expect(result.results).toHaveLength(10);
     expect(result.total).toEqual(SubmissionData.length);
   });
@@ -432,7 +432,7 @@ describe('processPaginationData', () => {
         modify: () => jest.fn().mockReturnThis(),
       };
     });
-    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 5, false, 0, null, false);
+    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 5, 0, null, false);
     expect(result.results).toHaveLength(5);
     expect(result.total).toEqual(SubmissionData.length);
   });
@@ -447,29 +447,29 @@ describe('processPaginationData', () => {
         modify: () => jest.fn().mockReturnThis(),
       };
     });
-    let result = await service.processPaginationData(MockModel.query(SubmissionData), 1, 5, false, 0, null, false);
+    let result = await service.processPaginationData(MockModel.query(SubmissionData), 1, 5, 0, null, false);
     expect(result.results).toHaveLength(5);
     expect(result.total).toEqual(SubmissionData.length);
   });
   it('search submission data with pagination base on datetime', async () => {
     MockModel.query.mockImplementation((data) => data);
-    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 5, false, 0, '2023-08-19T19:11', true);
+    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 5, 0, '2023-08-19T19:11', true);
     expect(result.results).toHaveLength(3);
     expect(result.total).toEqual(3);
   });
   it('search submission data with pagination base on any value (first page)', async () => {
     MockModel.query.mockImplementation((data) => data);
-    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 5, false, 0, 'a', true);
+    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 5, 0, 'a', true);
     expect(result.results).toHaveLength(5);
   });
   it('search submission data with pagination base on any value (second page)', async () => {
     MockModel.query.mockImplementation((data) => data);
-    let result = await service.processPaginationData(MockModel.query(SubmissionData), 1, 5, false, 0, 'a', true);
+    let result = await service.processPaginationData(MockModel.query(SubmissionData), 1, 5, 0, 'a', true);
     expect(result.results).toHaveLength(5);
   });
   it('search submission data with pagination base on any value (test for case)', async () => {
     MockModel.query.mockImplementation((data) => data);
-    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 10, false, 0, 'A', true);
+    let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 10, 0, 'A', true);
     expect(result.results).toHaveLength(10);
   });
 });
