@@ -249,6 +249,7 @@ const service = {
       .modify('filterCreatedBy', params.createdBy)
       .modify('filterFormVersionId', params.formVersionId)
       .modify('filterVersion', params.version)
+      .modify('filterformSubmissionStatusCode', JSON.parse(params.filterformSubmissionStatusCode))
       .modify('orderDefault', params.sortBy && params.page ? true : false, params);
     if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length == 2) {
       query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
@@ -338,7 +339,6 @@ const service = {
       result.results = searchedData.slice(start, end);
       return result;
     } else {
-      await query.modify('filterformSubmissionStatusCode', filterformSubmissionStatusCode);
       if (itemsPerPage && parseInt(itemsPerPage) === -1) {
         return await query.page(parseInt(page), parseInt(totalSubmissions || 0));
       } else if (itemsPerPage && parseInt(page) >= 0) {
