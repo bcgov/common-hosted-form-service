@@ -2,7 +2,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 import { mapActions, mapState } from 'pinia';
-
+import { ref } from 'vue';
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import BaseFilter from '~/components/base/BaseFilter.vue';
 import { i18n } from '~/internationalization';
@@ -41,7 +41,7 @@ export default {
           key: 'event',
         },
       ],
-      forceTableRefresh: 0,
+      dataTableKey: ref(0),
       itemsPerPage: 10,
       loading: true,
       page: 1,
@@ -54,7 +54,9 @@ export default {
       showRestoreDialog: false,
       singleSubmissionDelete: false,
       singleSubmissionRestore: false,
+      forceTableRefresh: ref(0),
       sortBy: {},
+      firstDataLoad: true,
       // When filtering, this data will not be preselected when clicking reset
       tableFilterIgnore: [
         { key: 'updatedAt' },
@@ -333,7 +335,6 @@ export default {
   },
   async mounted() {
     this.debounceInput = _.debounce(async () => {
-      this.refreshSubmissions();
       this.forceTableRefresh += 1;
     }, 300);
     this.refreshSubmissions();
@@ -383,11 +384,10 @@ export default {
         this.sortBy = {};
       }
       this.itemsPerPage = itemsPerPage;
-      if (this.search === '') {
-        await this.getSubmissionData();
-      } else {
-        this.debounceInput();
+      if (!this.firstDataLoad) {
+        await this.refreshSubmissions();
       }
+      this.firstDataLoad = false;
     },
     async getSubmissionData() {
       let criteria = {
@@ -398,7 +398,7 @@ export default {
         paginationEnabled: true,
         sortBy: this.sortBy,
         search: this.search,
-        searchEnabled: this.search.length > 0,
+        searchEnabled: this.searchEnabled,
         createdAt: Object.values({
           minDate:
             this.userFormPreferences &&
@@ -562,8 +562,15 @@ export default {
       });
       await this.populateSubmissionsTable();
     },
-    handleSearch(value) {
+    async handleSearch(value) {
+      this.searchEnabled = true;
       this.search = value;
+      if (value === '') {
+        this.searchEnabled = false;
+        await this.refreshSubmissions();
+      } else {
+        this.debounceInput();
+      }
     },
   },
 };
