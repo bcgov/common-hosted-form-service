@@ -284,20 +284,12 @@ const service = {
       );
     }
     if (params.paginationEnabled) {
-      return await service.processPaginationData(
-        query,
-        parseInt(params.page),
-        parseInt(params.itemsPerPage),
-        params.filterformSubmissionStatusCode,
-        params.totalSubmissions,
-        params.search,
-        params.searchEnabled
-      );
+      return await service.processPaginationData(query, parseInt(params.page), parseInt(params.itemsPerPage), params.totalSubmissions, params.search, params.searchEnabled);
     }
     return query;
   },
 
-  async processPaginationData(query, page, itemsPerPage, filterformSubmissionStatusCode, totalSubmissions, search, searchEnabled) {
+  async processPaginationData(query, page, itemsPerPage, totalSubmissions, search, searchEnabled) {
     let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : searchEnabled !== undefined ? JSON.parse(searchEnabled) : false;
     if (isSearchAble) {
       let submissionsData = await query;
