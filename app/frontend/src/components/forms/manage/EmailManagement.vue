@@ -46,6 +46,8 @@ export default {
           }}<v-icon
             color="primary"
             class="ml-3"
+            size="small"
+            density="default"
             :class="{ 'mr-2': isRTL }"
             icon="mdi:mdi-flask"
           />
@@ -59,6 +61,8 @@ export default {
               <v-btn
                 class="mx-1"
                 color="primary"
+                size="x-small"
+                density="default"
                 icon
                 :disabled="!formId"
                 v-bind="props"

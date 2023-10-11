@@ -115,11 +115,7 @@ export default {
         </template>
         <span :lang="lang">
           {{ $t('trans.manageFormActions.emailManagement') }}
-          <v-icon
-            class="ml-3"
-            :class="{ 'mr-2': isRTL }"
-            icon="mdi:mdi-flask"
-          />
+          <v-icon icon="mdi:mdi-flask" size="small" />
         </span>
       </v-tooltip>
     </span>

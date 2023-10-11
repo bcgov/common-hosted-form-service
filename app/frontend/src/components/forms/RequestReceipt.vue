@@ -130,7 +130,11 @@ export default {
             ]"
             :label="$t('trans.requestReceipt.emailPriority')"
             :lang="lang"
-          />
+          >
+            <template #prepend>
+              <v-icon />
+            </template>
+          </v-select>
         </v-form>
       </template>
       <template #button-text-continue>

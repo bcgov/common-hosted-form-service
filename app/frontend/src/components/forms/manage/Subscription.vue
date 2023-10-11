@@ -32,6 +32,7 @@ export default {
       'form',
       'lang',
       'permissions',
+      'subscriptionData',
       'version',
     ]),
   },
@@ -43,7 +44,9 @@ export default {
     ...mapActions(useNotificationStore, ['addNotification']),
     async updateSettings() {
       try {
-        if (this.$refs.subscriptionForm.validate()) {
+        const { valid } = await this.$refs.subscriptionForm.validate();
+
+        if (valid) {
           let subscriptionData = {
             ...this.subscriptionData,
             formId: this.form.id,
@@ -131,18 +134,15 @@ export default {
         </v-col>
         <v-col cols="12" sm="3">
           <v-tooltip location="bottom">
-            <template #activator="{ on, attrs }">
+            <template #activator="{ props }">
               <v-btn
                 color="primary"
-                icon
-                size="small"
-                v-bind="attrs"
-                v-on="on"
+                :icon="showSecret ? 'mdi:mdi-eye-off' : 'mdi:mdi-eye'"
+                size="x-small"
+                v-bind="props"
+                density="default"
                 @click="showHideKey"
-              >
-                <v-icon v-if="showSecret">visibility_off</v-icon>
-                <v-icon v-else>visibility</v-icon>
-              </v-btn>
+              />
             </template>
             <span v-if="showSecret" :lang="lang">
               {{ $t('trans.subscribeEvent.hideSecret') }}

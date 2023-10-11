@@ -38,6 +38,7 @@ export default {
     >
     <v-checkbox
       v-model="form.showSubmissionConfirmation"
+      hide-details="auto"
       class="my-0"
       :class="{ 'dir-rtl': isRTL }"
     >
@@ -75,7 +76,11 @@ export default {
       </template>
     </v-checkbox>
 
-    <v-checkbox v-model="form.sendSubReceivedEmail" class="my-0">
+    <v-checkbox
+      v-model="form.sendSubReceivedEmail"
+      hide-details="auto"
+      class="my-0"
+    >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
           <span :lang="lang">
