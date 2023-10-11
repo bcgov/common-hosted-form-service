@@ -41,7 +41,6 @@ export default {
           key: 'event',
         },
       ],
-      dataTableKey: ref(0),
       itemsPerPage: 10,
       loading: true,
       page: 1,
