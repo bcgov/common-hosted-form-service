@@ -1,10 +1,10 @@
 <template>
   <v-card class="elevation-0">
-    <v-card-title v-if="this.$slots.title">
-      <v-icon>info</v-icon>
+    <v-card-title v-if="$slots.title">
+      <v-icon icon="mdi:mdi-information" />
       <slot name="title" />
     </v-card-title>
-    <v-card-text :class="this.$slots.title ? 'under-title' : ''">
+    <v-card-text :class="$slots.title ? 'under-title' : ''">
       <slot />
     </v-card-text>
   </v-card>

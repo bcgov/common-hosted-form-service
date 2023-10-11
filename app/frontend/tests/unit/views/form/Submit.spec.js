@@ -1,17 +1,21 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import i18n from '@/internationalization';
-import Submit from '@/views/form/Submit.vue';
+import { mount } from '@vue/test-utils';
+import { describe, expect, it } from 'vitest';
 
-const localVue = createLocalVue();
+import Submit from '~/views/form/Submit.vue';
 
 describe('Submit.vue', () => {
   it('renders', () => {
-    const wrapper = shallowMount(Submit, {
-      localVue,
-      stubs: ['FormViewer'],
-      i18n
+    const wrapper = mount(Submit, {
+      props: {
+        f: 'f',
+      },
+      global: {
+        stubs: {
+          FormViewer: true,
+        },
+      },
     });
 
-    expect(wrapper.html()).toMatch('formviewer');
+    expect(wrapper.html()).toMatch('form-viewer');
   });
 });

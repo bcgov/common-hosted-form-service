@@ -1,3 +1,264 @@
+<script>
+import moment from 'moment';
+import { mapActions, mapState } from 'pinia';
+
+import { i18n } from '~/internationalization';
+import formService from '~/services/formService.js';
+import { useAuthStore } from '~/store/auth';
+import { useFormStore } from '~/store/form';
+import { useNotificationStore } from '~/store/notification';
+import { NotificationTypes, ExportLargeData } from '~/utils/constants';
+
+export default {
+  props: {
+    formId: {
+      type: String,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      csvFormats: 'multiRowEmptySpacesCSVExport',
+      dateRange: false,
+      dialog: false,
+      endDate: moment(Date()).format('YYYY-MM-DD'),
+      endDateRules: [
+        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
+        (v) =>
+          (v &&
+            new RegExp(
+              /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
+            ).test(v)) ||
+          'Date must be in correct format. ie. yyyy-mm-dd',
+        (v) =>
+          moment(v).isAfter(this.startDate, 'day') ||
+          'End date should be greater than start date.',
+      ],
+      exportFormat: 'json',
+      inputFilter: '',
+      selected: [],
+      showFieldsOptions: false,
+      startDate: moment(Date()).format('YYYY-MM-DD'),
+      startDateRules: [
+        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
+        (v) =>
+          (v &&
+            new RegExp(
+              /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
+            ).test(v)) ||
+          'Date must be in correct format. ie. yyyy-mm-dd',
+        (v) =>
+          moment(v).isBefore(moment(Date()).format('YYYY-MM-DD'), 'day') ||
+          'Start date should be less than today.',
+      ],
+      versions: [],
+      versionRequired: false,
+      versionSelected: 0,
+    };
+  },
+  computed: {
+    ...mapState(useFormStore, [
+      'form',
+      'formFields',
+      'isRTL',
+      'lang',
+      'permissions',
+      'submissionList',
+      'userFormPreferences',
+    ]),
+    ...mapState(useAuthStore, ['email']),
+    headers() {
+      return [
+        {
+          title: i18n.t('trans.exportSubmissions.selectAllFields'),
+          align: this.isRTL ? 'end' : ' start',
+          sortable: true,
+          key: 'name',
+        },
+      ];
+    },
+    fileName() {
+      return `${this.form.snake}_submissions.${this.exportFormat}`;
+    },
+    FILTER_HEADERS() {
+      return this.versionSelected !== ''
+        ? this.formFields.map((f) => ({ name: f, value: f }))
+        : [];
+    },
+  },
+  watch: {
+    startDate() {
+      this.endDate = moment(Date()).format('YYYY-MM-DD');
+    },
+    async versionSelected(value) {
+      this.csvFormats = 'multiRowEmptySpacesCSVExport';
+      await this.refreshFormFields(value);
+    },
+    async exportFormat(value) {
+      if (value === 'json') {
+        this.selected = [];
+        this.versionRequired = false;
+      }
+      await this.updateVersions();
+    },
+    async csvFormats(value) {
+      if (value === 'singleRowCSVExport') {
+        await this.refreshFormFields(this.versionSelected, true);
+      } else {
+        await this.refreshFormFields(this.versionSelected);
+      }
+    },
+    dateRange(value) {
+      if (!value) {
+        this.endDate = moment(Date()).format('YYYY-MM-DD');
+        this.startDate = moment(Date()).format('YYYY-MM-DD');
+      }
+    },
+  },
+  mounted() {
+    this.fetchForm(this.formId);
+  },
+  methods: {
+    ...mapActions(useFormStore, ['fetchForm', 'fetchFormCSVExportFields']),
+    ...mapActions(useNotificationStore, ['addNotification']),
+    async changeVersions(value) {
+      this.versionRequired = false;
+      value !== ''
+        ? (this.showFieldsOptions = true)
+        : (this.showFieldsOptions = false);
+      await this.refreshFormFields(value);
+    },
+
+    async refreshFormFields(version, singleRow = false) {
+      this.selected = [];
+      if (version !== '') {
+        await this.fetchFormCSVExportFields({
+          formId: this.formId,
+          type: 'submissions',
+          draft: false,
+          deleted: false,
+          version: version,
+          singleRow: singleRow,
+        });
+        this.selected = this.FILTER_HEADERS;
+      }
+    },
+    async callExport() {
+      if (this.exportFormat === 'csv' && this.versionSelected === '') {
+        this.versionRequired = true;
+      } else {
+        this.exportData();
+      }
+    },
+
+    async exportData() {
+      let fieldToExport =
+        this.selected.length > 0
+          ? this.selected.map((field) => {
+              return field.value;
+            })
+          : [''];
+      // Something is changing the selected values to include undefined fields
+      fieldToExport = fieldToExport.filter((el) => el !== undefined);
+      try {
+        // UTC start of selected start date...
+        const from =
+          this.dateRange && this.startDate
+            ? moment(this.startDate, 'YYYY-MM-DD hh:mm:ss').utc().format()
+            : undefined;
+        // UTC end of selected end date...
+        const to =
+          this.dateRange && this.endDate
+            ? moment(`${this.endDate} 23:59:59`, 'YYYY-MM-DD hh:mm:ss')
+                .utc()
+                .format()
+            : undefined;
+
+        let emailExport = false;
+        if (
+          (this.submissionList.length > ExportLargeData.MAX_RECORDS ||
+            this.formFields.length > ExportLargeData.MAX_FIELDS) &&
+          this.exportFormat !== 'json'
+        ) {
+          this.dialog = false;
+          emailExport = true;
+          this.addNotification({
+            ...NotificationTypes.SUCCESS,
+            title: i18n.t('trans.exportSubmissions.exportInProgress'),
+            text: i18n.t('trans.exportSubmissions.emailSentMsg', {
+              email: this.email,
+            }),
+            timeout: 20,
+          });
+        }
+        const response = await formService.exportSubmissions(
+          this.form.id,
+          this.exportFormat,
+          this.csvFormats,
+          this.exportFormat === 'csv' ? this.versionSelected : undefined,
+          {
+            minDate: from,
+            maxDate: to,
+            // deleted: true,
+            // drafts: true
+          },
+          fieldToExport,
+          emailExport
+        );
+
+        if (response && response.data && !emailExport) {
+          const blob = new Blob([response.data], {
+            type: response.headers['content-type'],
+          });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = this.fileName;
+          a.style.display = 'none';
+          a.classList.add('hiddenDownloadTextElement');
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          this.dialog = false;
+        } else if (response && !response.data && !emailExport) {
+          throw new Error(i18n.t('trans.exportSubmissions.noResponseDataErr'));
+        }
+      } catch (error) {
+        this.addNotification({
+          text: i18n.t('trans.exportSubmissions.apiCallErrorMsg'),
+          consoleError:
+            i18n.t('trans.exportSubmissions.apiCallConsErrorMsg') +
+            `${this.form.id}: ${error}`,
+        });
+      }
+    },
+
+    async updateVersions() {
+      this.versions = [];
+      if (this.form && Array.isArray(this.form.versions)) {
+        let vers = this.form.versions;
+        const isFormNotPublished = vers.every((version) => !version.published);
+        if (isFormNotPublished) {
+          vers.sort((a, b) =>
+            a.version < b.version ? -1 : a.version > b.version ? 1 : 0
+          );
+          this.showFieldsOptions = false;
+          this.versions.push('');
+        } else {
+          this.showFieldsOptions = true;
+          vers.sort((a, b) => b.published - a.published);
+        }
+        this.versions.push(
+          ...this.form.versions.map((version) => version.version)
+        );
+        this.versionSelected = this.versions[0];
+        await this.refreshFormFields(this.versionSelected);
+      }
+    },
+  },
+};
+</script>
+
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
     <v-row class="mt-6" no-gutters>
@@ -10,19 +271,13 @@
           </v-col>
           <v-col :class="isRTL ? 'text-left' : 'text-right'" cols="1">
             <span>
-              <v-tooltip bottom>
-                <template #activator="{ on, attrs }">
+              <v-tooltip location="bottom">
+                <template #activator="{ props }">
                   <router-link
                     :to="{ name: 'FormSubmissions', query: { f: form.id } }"
                   >
-                    <v-btn
-                      class="mx-1"
-                      color="primary"
-                      icon
-                      v-bind="attrs"
-                      v-on="on"
-                    >
-                      <v-icon class="mr-1">list_alt</v-icon>
+                    <v-btn class="mx-1" color="primary" icon v-bind="props">
+                      <v-icon icon="mdi:mdi-list-box-outline"></v-icon>
                     </v-btn>
                   </router-link>
                 </template>
@@ -40,7 +295,7 @@
             </span>
             <v-radio-group v-model="exportFormat" hide-details="auto">
               <v-radio value="json">
-                <template v-slot:label>
+                <template #label>
                   <span
                     :class="{ 'mr-1': isRTL }"
                     class="radioboxLabelStyle"
@@ -50,7 +305,7 @@
                 </template>
               </v-radio>
               <v-radio value="csv">
-                <template v-slot:label>
+                <template #label>
                   <span
                     :class="{ 'mr-1': isRTL }"
                     class="radioboxLabelStyle"
@@ -64,28 +319,28 @@
         </v-row>
         <v-row v-if="exportFormat === 'csv'" class="mt-5">
           <v-col>
-            <span class="subTitleObjectStyle" :lang="lang">
+            <div class="subTitleObjectStyle" :lang="lang">
               {{ $t('trans.exportSubmissions.formVersion') }}
-            </span>
-            <span class="red--text mt-3" v-if="versionRequired" :lang="lang">
+            </div>
+            <div v-if="versionRequired" class="text-red mt-3" :lang="lang">
               {{ $t('trans.exportSubmissions.versionIsRequired') }}
-            </span>
+            </div>
             <v-select
-              item-text="id"
-              item-value="version"
               v-model="versionSelected"
+              item-title="id"
+              item-value="version"
               :items="versions"
-              @change="changeVersions"
               class="mt-0"
               style="width: 25%; margin-top: 0px"
+              @update:model-value="changeVersions"
             ></v-select>
           </v-col>
         </v-row>
         <v-row v-if="exportFormat === 'csv' && showFieldsOptions" class="mt-0">
           <v-col>
-            <span class="subTitleObjectStyle" :lang="lang">
+            <p class="subTitleObjectStyle" :lang="lang">
               {{ $t('trans.exportSubmissions.dataFields') }}
-            </span>
+            </p>
             <v-row v-if="exportFormat === 'csv'">
               <v-col>
                 <v-row>
@@ -96,14 +351,13 @@
                       clearable
                       color="primary"
                       prepend-inner-icon="search"
-                      filled
-                      dense
+                      variant="filled"
+                      density="compact"
                       class="mt-3 submissions-table"
                       single-line
                       :class="{ 'dir-rtl': isRTL, label: isRTL }"
                       :lang="lang"
-                    >
-                    </v-text-field>
+                    />
                     <span
                       class="subTitleObjectStyle"
                       style="font-size: 14px !important"
@@ -116,19 +370,19 @@
                     </span>
 
                     <v-data-table
+                      v-model="selected"
                       :headers="headers"
                       :search="inputFilter"
                       show-select
                       hide-default-footer
-                      v-model="selected"
                       disable-sort
                       :items="FILTER_HEADERS"
-                      item-key="name"
+                      item-value="name"
                       height="300px"
                       mobile
                       disable-pagination
                       fixed-header
-                      class="grey lighten-5 mt-3 submissions-table"
+                      class="bg-grey-lighten-5 mt-3 submissions-table"
                       :class="{ 'dir-rtl': isRTL }"
                     />
                   </v-col>
@@ -144,7 +398,7 @@
             </span>
             <v-radio-group v-model="dateRange" hide-details="auto">
               <v-radio :value="false">
-                <template v-slot:label>
+                <template #label>
                   <span
                     :class="{ 'mr-1': isRTL }"
                     class="radioboxLabelStyle"
@@ -154,7 +408,7 @@
                 </template>
               </v-radio>
               <v-radio :value="true">
-                <template v-slot:label>
+                <template #label>
                   <span
                     :class="{ 'mr-1': isRTL }"
                     class="radioboxLabelStyle"
@@ -171,74 +425,42 @@
             <div v-if="dateRange">
               <v-row>
                 <v-col cols="12" sm="6" offset-sm="0" offset-md="1" md="4">
-                  <v-menu
-                    v-model="startDateMenu"
-                    data-test="menu-form-startDate"
-                    :close-on-content-click="true"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="290px"
+                  <v-text-field
+                    v-model="startDate"
+                    type="date"
+                    :placeholder="$t('trans.date.date')"
+                    append-icon="event"
+                    density="compact"
+                    variant="outlined"
+                    :rules="startDateRules"
+                    :class="{ 'dir-rtl': isRTL }"
+                    :lang="lang"
                   >
-                    <template v-slot:activator="{ on }">
-                      <label :lang="lang">{{
+                    <template #label>
+                      <span :lang="lang">{{
                         $t('trans.exportSubmissions.from')
-                      }}</label>
-                      <v-text-field
-                        v-model="startDate"
-                        :placeholder="$t('trans.date.date')"
-                        append-icon="event"
-                        v-on:click:append="startDateMenu = true"
-                        readonly
-                        v-on="on"
-                        dense
-                        outlined
-                        :class="{ 'dir-rtl': isRTL }"
-                        :lang="lang"
-                      ></v-text-field>
+                      }}</span>
                     </template>
-                    <v-date-picker
-                      v-model="startDate"
-                      data-test="picker-form-startDate"
-                      @input="startDateMenu = false"
-                      :max="maxDate"
-                    ></v-date-picker>
-                  </v-menu>
+                  </v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6" offset-sm="0" offset-md="1" md="4">
-                  <v-menu
-                    v-model="endDateMenu"
-                    data-test="menu-form-endDate"
-                    :close-on-content-click="true"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="290px"
+                  <v-text-field
+                    v-model="endDate"
+                    type="date"
+                    :placeholder="$t('trans.date.date')"
+                    append-icon="event"
+                    density="compact"
+                    variant="outlined"
+                    :rules="endDateRules"
+                    :class="{ 'dir-rtl': isRTL }"
+                    :lang="lang"
                   >
-                    <template v-slot:activator="{ on }">
-                      <label :lang="lang">{{
+                    <template #label>
+                      <span :lang="lang">{{
                         $t('trans.exportSubmissions.to')
-                      }}</label>
-                      <v-text-field
-                        v-model="endDate"
-                        :placeholder="$t('trans.date.date')"
-                        append-icon="event"
-                        v-on:click:append="endDateMenu = true"
-                        readonly
-                        v-on="on"
-                        dense
-                        outlined
-                        :class="{ 'dir-rtl': isRTL }"
-                        :lang="lang"
-                      ></v-text-field>
+                      }}</span>
                     </template>
-                    <v-date-picker
-                      v-model="endDate"
-                      data-test="picker-form-endDate"
-                      @input="endDateMenu = false"
-                      :min="startDate"
-                    ></v-date-picker>
-                  </v-menu>
+                  </v-text-field>
                 </v-col>
               </v-row>
             </div>
@@ -255,10 +477,11 @@
 
             <v-radio-group v-model="csvFormats" hide-details="auto">
               <v-radio
+                label="A"
                 value="multiRowEmptySpacesCSVExport"
                 style="display: flex; align-content: flex-start"
               >
-                <template v-slot:label>
+                <template #label>
                   <span
                     :class="{ 'mr-1': isRTL }"
                     class="radioboxLabelStyle"
@@ -274,7 +497,7 @@
                 class="mt-2"
                 style="display: flex; align-content: flex-start"
               >
-                <template v-slot:label>
+                <template #label>
                   <span
                     :class="{ 'mr-1': isRTL }"
                     class="radioboxLabelStyle"
@@ -289,7 +512,7 @@
                 value="singleRowCSVExport"
                 style="display: flex; align-content: flex-start"
               >
-                <template v-slot:label>
+                <template #label>
                   <span
                     :class="{ 'mr-1': isRTL }"
                     class="radioboxLabelStyle"
@@ -298,8 +521,8 @@
                   </span>
                 </template>
               </v-radio>
-              <v-radio value="unFormattedCSVExport" class="mt-2">
-                <template v-slot:label>
+              <v-radio label="D" value="unFormattedCSVExport" class="mt-2">
+                <template #label>
                   <span
                     :class="{ 'mr-1': isRTL }"
                     class="radioboxLabelStyle"
@@ -338,284 +561,20 @@
   </div>
 </template>
 
-<script>
-import moment from 'moment';
-import { mapActions, mapGetters } from 'vuex';
-import formService from '@/services/formService.js';
-import { NotificationTypes, ExportLargeData } from '@/utils/constants';
-
-import {
-  faXmark,
-  faSquareArrowUpRight,
-} from '@fortawesome/free-solid-svg-icons';
-import { library } from '@fortawesome/fontawesome-svg-core';
-library.add(faXmark, faSquareArrowUpRight);
-
-export default {
-  name: 'ExportSubmissions',
-  props: {
-    formId: {
-      type: String,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      githubLink:
-        'https://github.com/bcgov/common-hosted-form-service/wiki/Submission-to-CSV-Export',
-      dateRange: false,
-      dialog: false,
-      endDate: moment(Date()).format('YYYY-MM-DD'),
-      endDateMenu: false,
-      dataFields: false,
-      exportFormat: 'json',
-      startDate: moment(Date()).format('YYYY-MM-DD'),
-      startDateMenu: false,
-      versionSelected: 0,
-      versionSelectedId: '',
-      csvFormats: 'multiRowEmptySpacesCSVExport',
-      versions: [],
-      allDataFields: true,
-      inputFilter: '',
-      singleSelect: false,
-      showFieldsOptions: false,
-      selected: [],
-      versionRequired: false,
-    };
-  },
-  computed: {
-    maxDate() {
-      let momentObj = moment(Date());
-      let momentString = momentObj.format('YYYY-MM-DD');
-      return momentString;
-    },
-
-    headers() {
-      return [
-        {
-          text: this.$t('trans.exportSubmissions.selectAllFields'),
-          align: this.isRTL ? 'end' : ' start',
-          sortable: true,
-          value: 'name',
-        },
-      ];
-    },
-    ...mapGetters('form', [
-      'form',
-      'userFormPreferences',
-      'permissions',
-      'formFields',
-      'submissionList',
-      'isRTL',
-      'lang',
-    ]),
-
-    ...mapGetters('auth', ['email']),
-    fileName() {
-      return `${this.form.snake}_submissions.${this.exportFormat}`;
-    },
-    FILTER_HEADERS() {
-      if (this.versionSelected !== '') {
-        return this.formFields.map((field) => ({
-          name: field,
-          value: field,
-        }));
-      }
-      return [];
-    },
-  },
-  methods: {
-    ...mapActions('notifications', ['addNotification']),
-    ...mapActions('form', ['fetchForm', 'fetchFormCSVExportFields']),
-    async changeVersions(value) {
-      this.versionRequired = false;
-      value !== ''
-        ? (this.showFieldsOptions = true)
-        : (this.showFieldsOptions = false);
-      await this.refreshFormFields(value);
-    },
-    async refreshFormFields(version, singleRow = false) {
-      this.selected = [];
-      if (version !== '') {
-        await this.fetchFormCSVExportFields({
-          formId: this.formId,
-          type: 'submissions',
-          draft: false,
-          deleted: false,
-          version: version,
-          singleRow: singleRow,
-        });
-        (this.allDataFields = true), this.selected.push(...this.FILTER_HEADERS);
-      }
-    },
-    async callExport() {
-      if (this.exportFormat === 'csv' && this.versionSelected === '') {
-        this.versionRequired = true;
-      } else {
-        this.export();
-      }
-    },
-    async export() {
-      let fieldToExport =
-        this.selected.length > 0
-          ? this.selected.map((field) => field.value)
-          : [''];
-      try {
-        // UTC start of selected start date...
-        const from =
-          this.dateRange && this.startDate
-            ? moment(this.startDate, 'YYYY-MM-DD hh:mm:ss').utc().format()
-            : undefined;
-        // UTC end of selected end date...
-        const to =
-          this.dateRange && this.endDate
-            ? moment(`${this.endDate} 23:59:59`, 'YYYY-MM-DD hh:mm:ss')
-                .utc()
-                .format()
-            : undefined;
-
-        let emailExport = false;
-        if (
-          (this.submissionList.length > ExportLargeData.MAX_RECORDS ||
-            this.formFields.length > ExportLargeData.MAX_FIELDS) &&
-          this.exportFormat !== 'json'
-        ) {
-          this.dialog = false;
-          emailExport = true;
-          this.addNotification({
-            ...NotificationTypes.SUCCESS,
-            title: this.$t('trans.exportSubmissions.exportInProgress'),
-            message: this.$t('trans.exportSubmissions.emailSentMsg', {
-              email: this.email,
-            }),
-            timeout: 20,
-          });
-        }
-        const response = await formService.exportSubmissions(
-          this.form.id,
-          this.exportFormat,
-          this.csvFormats,
-          this.exportFormat === 'csv' ? this.versionSelected : undefined,
-          {
-            minDate: from,
-            maxDate: to,
-            // deleted: true,
-            // drafts: true
-          },
-          fieldToExport,
-          emailExport
-        );
-
-        if (response && response.data && !emailExport) {
-          const blob = new Blob([response.data], {
-            type: response.headers['content-type'],
-          });
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = this.fileName;
-          a.style.display = 'none';
-          a.classList.add('hiddenDownloadTextElement');
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          this.dialog = false;
-        } else if (response && !response.data && !emailExport) {
-          throw new Error(this.$t('trans.exportSubmissions.noResponseDataErr'));
-        }
-      } catch (error) {
-        this.addNotification({
-          message: this.$t('trans.exportSubmissions.apiCallErrorMsg'),
-          consoleError:
-            this.$t('trans.exportSubmissions.apiCallConsErrorMsg') +
-            `${this.form.id}: ${error}`,
-        });
-      }
-    },
-
-    async updateVersions() {
-      this.versions = [];
-      if (this.form && Array.isArray(this.form.versions)) {
-        let versions = this.form.versions;
-        const isFormNotPublished = versions.every(
-          (version) => !version.published
-        );
-        if (isFormNotPublished) {
-          versions.sort((a, b) =>
-            a.version < b.version ? -1 : a.version > b.version ? 1 : 0
-          );
-          this.showFieldsOptions = false;
-          this.versions.push('');
-        } else {
-          this.showFieldsOptions = true;
-          versions.sort((a, b) => b.published - a.published);
-        }
-        this.versions.push(
-          ...this.form.versions.map((version) => version.version)
-        );
-        this.versionSelected = this.versions[0];
-        await this.refreshFormFields(this.versionSelected);
-      }
-    },
-  },
-  async mounted() {
-    this.fetchForm(this.formId);
-  },
-  watch: {
-    startDate() {
-      this.endDate = moment(Date()).format('YYYY-MM-DD');
-    },
-    selected(oldValue, newValue) {
-      if (oldValue !== newValue) {
-        if (this.selected.length === this.FILTER_HEADERS.length) {
-          this.allDataFields = true;
-        } else {
-          this.allDataFields = false;
-        }
-      }
-    },
-    async versionSelected(value) {
-      this.csvFormats = 'multiRowEmptySpacesCSVExport';
-      await this.refreshFormFields(value);
-    },
-    exportFormat(value) {
-      if (value === 'json') {
-        this.selected = [];
-        this.versionRequired = false;
-      }
-      this.updateVersions();
-    },
-    async csvFormats(value) {
-      if (value === 'singleRowCSVExport') {
-        await this.refreshFormFields(this.versionSelected, true);
-      } else {
-        await this.refreshFormFields(this.versionSelected);
-      }
-    },
-    dateRange(value) {
-      if (!value) {
-        this.endDate = moment(Date()).format('YYYY-MM-DD');
-        this.startDate = moment(Date()).format('YYYY-MM-DD');
-      }
-    },
-  },
-};
-</script>
-
 <style scoped>
 .submissions-table {
   clear: both;
 }
 @media (max-width: 1263px) {
-  .submissions-table >>> th {
+  .submissions-table :deep(th) {
     vertical-align: top;
   }
 }
 /* Want to use scss but the world hates me */
-.submissions-table >>> tbody tr:nth-of-type(odd) {
+.submissions-table :deep(tbody tr:nth-of-type(odd)) {
   background-color: #f5f5f5;
 }
-.submissions-table >>> thead tr th {
+.submissions-table :deep(thead tr th) {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em !important;
@@ -632,7 +591,6 @@ export default {
 }
 
 .subTitleObjectStyle {
-  text-align: left !important;
   font-style: normal !important;
   font-size: 18px !important;
   font-variant: normal !important;
@@ -653,7 +611,6 @@ export default {
   color: #000000 !important;
 }
 .fileLabelStyle {
-  text-align: left !important;
   font-style: normal !important;
   font-size: 14px !important;
   font-variant: normal !important;

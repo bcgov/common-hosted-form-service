@@ -1,39 +1,37 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import Vuex from 'vuex';
-import i18n from '@/internationalization';
-import Root from '@/views/user/Root.vue';
+import { createTestingPinia } from '@pinia/testing';
+import { mount } from '@vue/test-utils';
+import { setActivePinia } from 'pinia';
+import { describe, expect, it } from 'vitest';
 
-
-const localVue = createLocalVue();
-localVue.use(Vuex);
-
+import Root from '~/views/user/Root.vue';
 
 describe('Root.vue', () => {
+  const pinia = createTestingPinia();
+  setActivePinia(pinia);
 
-  const mockLangGetter = jest.fn();
-  let store;
-  beforeEach(() => {
-    store = new Vuex.Store({
-      modules: {
-        form: {
-          namespaced: true,
-          getters: {
-            lang: mockLangGetter,
+  it('renders', () => {
+    const wrapper = mount(Root, {
+      global: {
+        stubs: {
+          BaseSecure: {
+            name: 'BaseSecure',
+            template: '<div class="base-secure-stub"><slot /></div>',
+          },
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
           },
         },
+        plugins: [pinia],
       },
     });
-  });
 
-  it('renders without error', async () => {
-    const wrapper = shallowMount(Root, {
-      localVue,
-      stubs: ['BaseSecure', 'router-link'],
-      i18n,
-      store
-    });
-    await localVue.nextTick();
-
-    expect(wrapper.text()).toMatch('User');
+    expect(wrapper.find('h1').text()).toMatch('trans.user.root.user');
+    expect(wrapper.find('[data-test="my-forms-btn"]').text()).toMatch(
+      'trans.user.root.myForms'
+    );
+    expect(wrapper.find('[data-test="history-btn"]').text()).toMatch(
+      'trans.user.root.history'
+    );
   });
 });

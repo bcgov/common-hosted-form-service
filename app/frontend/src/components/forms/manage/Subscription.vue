@@ -1,3 +1,80 @@
+<script>
+import { mapActions, mapState } from 'pinia';
+import { useFormStore } from '~/store/form';
+import { useNotificationStore } from '~/store/notification';
+
+export default {
+  data() {
+    return {
+      loading: false,
+      showConfirmationDialog: false,
+      showDeleteDialog: false,
+      showSecret: false,
+      valid: false,
+      subscriptionFormValid: false,
+      endpointUrlRules: [
+        (v) => !!v || this.$t('trans.formSettings.validEndpointRequired'),
+        (v) =>
+          (v &&
+            new RegExp(
+              /^(ht|f)tp(s?):\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g
+            ).test(v)) ||
+          this.$t('trans.formSettings.validEndpointRequired'),
+      ],
+      endpointTokenRules: [
+        (v) => !!v || this.$t('trans.formSettings.validBearerTokenRequired'),
+      ],
+    };
+  },
+  computed: {
+    ...mapState(useFormStore, [
+      'apiKey',
+      'form',
+      'lang',
+      'permissions',
+      'version',
+    ]),
+  },
+  methods: {
+    ...mapActions(useFormStore, [
+      'updateSubscription',
+      'readFormSubscriptionData',
+    ]),
+    ...mapActions(useNotificationStore, ['addNotification']),
+    async updateSettings() {
+      try {
+        if (this.$refs.subscriptionForm.validate()) {
+          let subscriptionData = {
+            ...this.subscriptionData,
+            formId: this.form.id,
+          };
+          await this.updateSubscription({
+            formId: this.form.id,
+            subscriptionData: subscriptionData,
+          });
+
+          this.readFormSubscriptionData(this.form.id);
+        }
+      } catch (error) {
+        this.addNotification({
+          text: this.$t('trans.subscribeEvent.saveSettingsErrMsg'),
+          consoleError: this.$t(
+            'trans.subscribeEvent.updateSettingsConsoleErrMsg',
+            {
+              formId: this.form.id,
+              error: error,
+            }
+          ),
+        });
+      }
+    },
+    showHideKey() {
+      this.showSecret = !this.showSecret;
+    },
+  },
+};
+</script>
+
 <template>
   <v-container class="px-0">
     <template #title>
@@ -13,37 +90,37 @@
       <v-row class="mt-5">
         <v-col cols="12" md="8" sm="12" lg="8" xl="8">
           <v-text-field
+            v-model="subscriptionData.endpointUrl"
             :label="$t('trans.subscribeEvent.endpointUrl')"
             :lang="lang"
             :placeholder="$t('trans.subscribeEvent.urlPlaceholder')"
-            dense
+            density="compact"
             flat
             solid
-            outlined
+            variant="outlined"
             :rules="endpointUrlRules"
-            v-model="subscriptionData.endpointUrl"
           ></v-text-field>
         </v-col>
         <v-col cols="12" md="8" sm="12" lg="8" xl="8">
           <v-text-field
+            v-model="subscriptionData.key"
             :label="$t('trans.subscribeEvent.key')"
             :lang="lang"
-            dense
+            density="compact"
             flat
             solid
-            outlined
-            v-model="subscriptionData.key"
+            variant="outlined"
           ></v-text-field>
         </v-col>
         <v-col cols="12" md="8" sm="12" xl="8" lg="8">
           <v-text-field
+            v-model="subscriptionData.endpointToken"
             :label="$t('trans.subscribeEvent.endpointToken')"
             :lang="lang"
-            dense
+            density="compact"
             flat
             solid
-            outlined
-            v-model="subscriptionData.endpointToken"
+            variant="outlined"
             :rules="endpointTokenRules"
             :type="
               showSecret
@@ -53,12 +130,12 @@
           ></v-text-field>
         </v-col>
         <v-col cols="12" sm="3">
-          <v-tooltip bottom>
+          <v-tooltip location="bottom">
             <template #activator="{ on, attrs }">
               <v-btn
                 color="primary"
                 icon
-                small
+                size="small"
                 v-bind="attrs"
                 v-on="on"
                 @click="showHideKey"
@@ -86,72 +163,3 @@
     </v-form>
   </v-container>
 </template>
-
-<script>
-import { mapActions, mapGetters } from 'vuex';
-import { mapFields } from 'vuex-map-fields';
-
-export default {
-  name: 'Subscription',
-  data() {
-    return {
-      loading: false,
-      showConfirmationDialog: false,
-      showDeleteDialog: false,
-      showSecret: false,
-      valid: false,
-      subscriptionFormValid: false,
-      endpointUrlRules: [
-        (v) => !!v || this.$t('trans.formSettings.validEndpointRequired'),
-        (v) =>
-          (v &&
-            new RegExp(
-              /^(ht|f)tp(s?):\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g
-            ).test(v)) ||
-          this.$t('trans.formSettings.validEndpointRequired'),
-      ],
-      endpointTokenRules: [
-        (v) => !!v || this.$t('trans.formSettings.validBearerTokenRequired'),
-      ],
-    };
-  },
-  computed: {
-    ...mapGetters('form', ['apiKey', 'form', 'lang', 'permissions', 'version']),
-    ...mapFields('form', ['subscriptionData']),
-  },
-  methods: {
-    ...mapActions('form', ['updateSubscription', 'readFormSubscriptionData']),
-    ...mapActions('notifications', ['addNotification']),
-    async updateSettings() {
-      try {
-        if (this.$refs.subscriptionForm.validate()) {
-          let subscriptionData = {
-            ...this.subscriptionData,
-            formId: this.form.id,
-          };
-          await this.updateSubscription({
-            formId: this.form.id,
-            subscriptionData: subscriptionData,
-          });
-
-          this.readFormSubscriptionData(this.form.id);
-        }
-      } catch (error) {
-        this.addNotification({
-          message: this.$t('trans.subscribeEvent.saveSettingsErrMsg'),
-          consoleError: this.$t(
-            'trans.subscribeEvent.updateSettingsConsoleErrMsg',
-            {
-              formId: this.form.id,
-              error: error,
-            }
-          ),
-        });
-      }
-    },
-    showHideKey() {
-      this.showSecret = !this.showSecret;
-    },
-  },
-};
-</script>

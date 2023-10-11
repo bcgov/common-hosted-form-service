@@ -1,72 +1,22 @@
-<template>
-  <BaseSecure :idp="[IDP.IDIR]" :class="{ 'dir-rtl': isRTL }">
-    <v-stepper
-      v-model="creatorStep"
-      class="elevation-0 d-flex flex-column"
-      alt-labels
-    >
-      <v-stepper-header
-        style="width: 40%"
-        class="elevation-0 px-0 align-self-center"
-      >
-        <v-stepper-step :complete="creatorStep > 1" step="1" class="pl-1 pr-1">
-          <span :class="{ 'mr-2': isRTL }" :lang="lang">
-            <slot name="setUpFormTitle">
-              {{ $t('trans.baseStepper.setUpForm') }}
-            </slot>
-          </span>
-        </v-stepper-step>
-        <v-divider />
-        <v-stepper-step :complete="creatorStep > 2" step="2" class="pl-1 pr-1">
-          <span :class="{ 'mr-2': isRTL }" :lang="lang">
-            <slot name="designFormTitle">
-              {{ $t('trans.baseStepper.designForm') }}
-            </slot>
-          </span>
-        </v-stepper-step>
-        <v-divider />
-        <v-stepper-step
-          :complete="creatorStep === 3"
-          step="3"
-          class="pl-1 pr-1"
-        >
-          <span :class="{ 'mr-2': isRTL }" :lang="lang">
-            <slot name="manageFormTitle">
-              {{ $t('trans.baseStepper.manageForm') }}
-            </slot>
-          </span>
-        </v-stepper-step>
-      </v-stepper-header>
-      <v-stepper-items>
-        <v-stepper-content step="1" class="pa-1">
-          <div class="mt-4">
-            <slot name="setUpForm"></slot>
-          </div>
-        </v-stepper-content>
-        <v-stepper-content step="2" class="pa-1">
-          <div class="mt-4">
-            <slot name="designForm"></slot>
-          </div>
-        </v-stepper-content>
-        <v-stepper-content step="3" class="pa-1">
-          <div class="mt-4">
-            <slot name="manageForm"></slot>
-          </div>
-        </v-stepper-content>
-      </v-stepper-items>
-    </v-stepper>
-  </BaseSecure>
-</template>
 <script>
-import { mapGetters } from 'vuex';
-import { IdentityProviders } from '@/utils/constants';
+import { mapState } from 'pinia';
+import BaseSecure from '~/components/base/BaseSecure.vue';
+import { useFormStore } from '~/store/form';
+import { IdentityProviders } from '~/utils/constants';
+
 export default {
   name: 'BaseStepper',
+  components: {
+    BaseSecure,
+  },
   props: {
-    step: Number,
+    step: {
+      type: Number,
+      required: true,
+    },
   },
   computed: {
-    ...mapGetters('form', ['lang', 'isRTL']),
+    ...mapState(useFormStore, ['lang', 'isRTL']),
     IDP: () => IdentityProviders,
     creatorStep() {
       return this.step;
@@ -74,11 +24,71 @@ export default {
   },
 };
 </script>
+
+<template>
+  <BaseSecure :idp="[IDP.IDIR]" :class="{ 'dir-rtl': isRTL }">
+    <v-stepper v-model="creatorStep">
+      <v-stepper-header>
+        <v-stepper-item
+          :complete="creatorStep > 1"
+          :step="creatorStep"
+          :value="1"
+          :lang="lang"
+        >
+          <slot name="setUpFormTitle">
+            {{ $t('trans.baseStepper.setUpForm') }}
+          </slot>
+        </v-stepper-item>
+        <v-divider />
+        <v-stepper-item
+          :complete="creatorStep > 2"
+          :step="creatorStep"
+          :value="2"
+          :lang="lang"
+        >
+          <slot name="setUpFormTitle">
+            {{ $t('trans.baseStepper.designForm') }}
+          </slot>
+        </v-stepper-item>
+        <v-divider />
+        <v-stepper-item
+          :complete="creatorStep === 3"
+          :step="creatorStep"
+          :value="3"
+          :lang="lang"
+        >
+          <slot name="setUpFormTitle">
+            {{ $t('trans.baseStepper.manageForm') }}
+          </slot>
+        </v-stepper-item>
+      </v-stepper-header>
+
+      <v-stepper-window>
+        <v-stepper-window-item :value="1">
+          <div>
+            <slot name="setUpForm"></slot>
+          </div>
+        </v-stepper-window-item>
+        <v-stepper-window-item :value="2">
+          <div>
+            <slot name="designForm"></slot>
+          </div>
+        </v-stepper-window-item>
+        <v-stepper-window-item :value="3">
+          <div>
+            <slot name="manageForm"></slot>
+          </div>
+        </v-stepper-window-item>
+      </v-stepper-window>
+    </v-stepper>
+  </BaseSecure>
+</template>
+
 <style lang="scss" scoped>
 /* unset 'overflow: hidden' from all parents of FormDesigner, so FormDesigner's 'sticky' components menu sticks. */
 .v-stepper,
 .v-stepper__items,
-.v-stepper ::v-deep .v-stepper__wrapper {
+.v-stepper :deep(.v-stepper__wrapper) {
   overflow: initial !important;
 }
 </style>

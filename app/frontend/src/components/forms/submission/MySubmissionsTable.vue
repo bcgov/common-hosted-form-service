@@ -1,145 +1,14 @@
-<template>
-  <div :class="{ 'dir-rtl': isRTL }">
-    <v-skeleton-loader :loading="loading" type="heading">
-      <div
-        class="mt-6 d-flex flex-md-row justify-space-between flex-sm-row flex-xs-column-reverse"
-      >
-        <!-- page title -->
-        <div>
-          <h1 :lang="lang">
-            {{ $t('trans.mySubmissionsTable.previousSubmissions') }}
-          </h1>
-          <h3>{{ formId ? form.name : 'All Forms' }}</h3>
-        </div>
-        <!-- buttons -->
-        <div>
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <v-btn
-                @click="onShowColumnDialog"
-                class="mx-1"
-                color="primary"
-                icon
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon>view_column</v-icon>
-              </v-btn>
-            </template>
-            <span :lang="lang">{{
-              $t('trans.mySubmissionsTable.selectColumns')
-            }}</span>
-          </v-tooltip>
-          <v-tooltip bottom>
-            <template #activator="{ on, attrs }">
-              <router-link
-                :to="{
-                  name: 'FormSubmit',
-                  query: { f: form.id },
-                }"
-              >
-                <v-btn
-                  class="mx-1"
-                  color="primary"
-                  icon
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  <v-icon>add_circle</v-icon>
-                </v-btn>
-              </router-link>
-            </template>
-            <span :lang="lang">{{
-              $t('trans.mySubmissionsTable.createNewSubmission')
-            }}</span>
-          </v-tooltip>
-        </div>
-      </div>
-    </v-skeleton-loader>
-
-    <v-row no-gutters>
-      <v-col cols="12">
-        <!-- search input -->
-        <div
-          class="submissions-search"
-          :class="isRTL ? 'float-left' : 'float-right'"
-        >
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            :label="$t('trans.mySubmissionsTable.search')"
-            single-line
-            hide-details
-            class="pb-5"
-            :class="{ label: isRTL }"
-            :lang="lang"
-          />
-        </div>
-      </v-col>
-    </v-row>
-    <!-- table header -->
-    <v-data-table
-      class="submissions-table"
-      :headers="HEADERS"
-      item-key="title"
-      :items="submissionTable"
-      :search="search"
-      :loading="loading"
-      :loading-text="$t('trans.mySubmissionsTable.loadingText')"
-      :no-data-text="$t('trans.mySubmissionsTable.noDataText')"
-      :lang="lang"
-    >
-      <template #[`item.lastEdited`]="{ item }">
-        {{ item.lastEdited | formatDateLong }}
-      </template>
-      <template #[`item.submittedDate`]="{ item }">
-        {{ item.submittedDate | formatDateLong }}
-      </template>
-
-      <template #[`item.completedDate`]="{ item }">
-        {{ item.completedDate | formatDateLong }}
-      </template>
-      <template #[`item.actions`]="{ item }">
-        <MySubmissionsActions
-          @draft-deleted="populateSubmissionsTable"
-          :submission="item"
-          :formId="formId"
-          :isCopyFromExistingSubmissionEnabled="
-            isCopyFromExistingSubmissionEnabled
-          "
-        />
-      </template>
-    </v-data-table>
-    <v-dialog v-model="showColumnsDialog" width="700">
-      <BaseFilter
-        :inputFilterPlaceholder="
-          $t('trans.mySubmissionsTable.searchSubmissionFields')
-        "
-        inputItemKey="value"
-        :inputSaveButtonText="$t('trans.mySubmissionsTable.save')"
-        :inputData="SELECT_COLUMNS_HEADERS"
-        :preselectedData="preSelectedData"
-        :resetData="FILTER_HEADERS"
-        @saving-filter-data="updateFilter"
-        @cancel-filter-data="showColumnsDialog = false"
-      >
-        <template #filter-title
-          ><span :lang="lang">{{
-            $t('trans.mySubmissionsTable.filterTitle')
-          }}</span></template
-        >
-      </BaseFilter>
-    </v-dialog>
-  </div>
-</template>
-
 <script>
-import { mapGetters, mapActions } from 'vuex';
-import MySubmissionsActions from '@/components/forms/submission/MySubmissionsActions.vue';
+import { mapActions, mapState } from 'pinia';
+
+import { i18n } from '~/internationalization';
+import BaseFilter from '~/components/base/BaseFilter.vue';
+import MySubmissionsActions from '~/components/forms/submission/MySubmissionsActions.vue';
+import { useFormStore } from '~/store/form';
 
 export default {
-  name: 'MySubmissionsTable',
   components: {
+    BaseFilter,
     MySubmissionsActions,
   },
   props: {
@@ -150,131 +19,166 @@ export default {
   },
   data() {
     return {
-      headers: [],
       filterData: [],
-      preSelectedData: [],
       filterIgnore: [
         {
-          value: 'confirmationId',
+          key: 'confirmationId',
         },
         {
-          value: 'actions',
+          key: 'actions',
         },
       ],
-      tableFilterIgnore: [
-        { value: 'createdBy' },
-        { value: 'username' },
-        { value: 'status' },
-        { value: 'lateEntry' },
-        { value: 'lastEdited' },
-        { value: 'updatedBy' },
-        { value: 'submittedDate' },
-      ],
-      showColumnsDialog: false,
-      submissionTable: [],
+      headers: [],
       loading: true,
-      search: null,
+      search: '',
+      serverItems: [],
+      showColumnsDialog: false,
+      tableFilterIgnore: [],
     };
   },
   computed: {
-    ...mapGetters('form', [
+    ...mapState(useFormStore, [
       'form',
-      'submissionList',
-      'permissions',
       'formFields',
+      'submissionList',
       'isRTL',
       'lang',
       'totalSubmissions',
     ]),
-    ...mapGetters('auth', ['user']),
-    DEFAULT_HEADERS() {
+
+    //------------------------ TABLE HEADERS
+    // These are headers that will be available by default for the
+    // table in this view
+    BASE_HEADERS() {
       let headers = [
         {
-          text: this.$t('trans.mySubmissionsTable.confirmationId'),
+          title: i18n.t('trans.mySubmissionsTable.confirmationId'),
           align: 'start',
-          value: 'confirmationId',
+          key: 'confirmationId',
           sortable: true,
         },
         {
-          text: this.$t('trans.mySubmissionsTable.createdBy'),
-          value: 'createdBy',
+          title: i18n.t('trans.mySubmissionsTable.createdBy'),
+          key: 'createdBy',
           sortable: true,
         },
         {
-          text: this.$t('trans.mySubmissionsTable.statusUpdatedBy'),
-          value: 'username',
+          title: i18n.t('trans.mySubmissionsTable.statusUpdatedBy'),
+          key: 'username',
           sortable: true,
         },
         {
-          text: this.$t('trans.mySubmissionsTable.status'),
-          value: 'status',
+          title: i18n.t('trans.mySubmissionsTable.status'),
+          key: 'status',
           sortable: true,
         },
         {
-          text: this.$t('trans.mySubmissionsTable.submissionDate'),
-          value: 'submittedDate',
+          title: i18n.t('trans.mySubmissionsTable.submissionDate'),
+          key: 'submittedDate',
           sortable: true,
-        },
-        {
-          text: this.$t('trans.mySubmissionsTable.actions'),
-          align: 'end',
-          value: 'actions',
-          filterable: false,
-          sortable: false,
-          width: '140px',
         },
       ];
       if (this.showDraftLastEdited || !this.formId) {
         headers.splice(headers.length - 1, 0, {
-          text: this.$t('trans.mySubmissionsTable.draftUpdatedBy'),
+          title: i18n.t('trans.mySubmissionsTable.draftUpdatedBy'),
           align: 'start',
-          value: 'updatedBy',
+          key: 'updatedBy',
           sortable: true,
         });
         headers.splice(headers.length - 1, 0, {
-          text: this.$t('trans.mySubmissionsTable.draftLastEdited'),
+          title: i18n.t('trans.mySubmissionsTable.draftLastEdited'),
           align: 'start',
-          value: 'lastEdited',
+          key: 'lastEdited',
           sortable: true,
         });
       }
-      return headers;
-    },
-    SELECT_COLUMNS_HEADERS() {
-      return [...this.FILTER_HEADERS].concat(
-        this.formFields?.map((ff) => {
-          this.FILTER_HEADERS.map((fh) => {
-            if (fh.value === ff) {
-              ff = `${ff}_1`;
-            }
-          });
-          return { text: ff, value: ff, align: 'end' };
+
+      // Add the form fields to the headers
+      headers = headers.concat(
+        this.formFields.map((ff) => {
+          return {
+            title: ff,
+            align: 'start',
+            key: ff,
+          };
         })
       );
-    },
-
-    FILTER_HEADERS() {
-      return this.DEFAULT_HEADERS.filter(
-        (h) => !this.filterIgnore.some((fd) => fd.value === h.value)
-      );
-    },
-
-    HEADERS() {
-      let headers = this.DEFAULT_HEADERS;
-
-      if (this.filterData.length > 0) {
-        headers = [...this.DEFAULT_HEADERS].filter(
-          (h) => !this.tableFilterIgnore.some((fd) => fd.value === h.value)
-        );
-
-        headers.splice(headers.length - 1, 0, ...this.filterData);
-      }
       return headers;
     },
+    // The headers are based on the base headers but are modified
+    // by the following order:
+    // Remove columns that aren't saved in the filter data
+    HEADERS() {
+      let headers = this.BASE_HEADERS;
 
-    showStatus() {
-      return this.form && this.form.enableStatusUpdates;
+      // The user selected some columns
+      if (this.filterData.length > 0) {
+        headers = headers.filter(
+          (header) =>
+            // It must be in the user selected columns
+            this.filterData.some((fd) => fd.key === header.key) ||
+            // except if it's in the filter ignore
+            this.filterIgnore.some((fd) => fd.key === header.key)
+        );
+      } else {
+        // Remove the form fields because this is the default view
+        // we don't need all the form fields
+        headers = headers.filter((header) => {
+          // we want columns that aren't form fields
+          return !this.formFields.includes(header.key);
+        });
+      }
+
+      // Actions column at the end
+      headers.push({
+        title: this.$t('trans.mySubmissionsTable.actions'),
+        align: 'end',
+        key: 'actions',
+        filterable: false,
+        sortable: false,
+        width: '40px',
+      });
+
+      return headers;
     },
+    //------------------------ END TABLE HEADERS
+
+    //------------------------ FILTER COLUMNS
+    // The base filter headers that will be available by default for the
+    // base filter. These are all the base headers in the table in this view
+    // with specific fields ignored because we always want specific fields
+    // to be available in the table in this view. For this reason, we don't
+    // add them to the table in the filter.
+    BASE_FILTER_HEADERS() {
+      let headers = this.BASE_HEADERS.filter(
+        (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
+      );
+      return headers;
+    },
+    // When clicking reset on the base filter, these will be the default
+    // preselected values
+    RESET_HEADERS() {
+      let headers = this.BASE_FILTER_HEADERS;
+      // Remove the form fields because this is the default view
+      // we don't need all the form fields
+      headers = headers.filter((header) => {
+        // we want columns that aren't form fields
+        return (
+          !this.formFields.includes(header.key) &&
+          // These values won't be preselected
+          !this.tableFilterIgnore.some((fi) => fi.key === header.key)
+        );
+      });
+      return headers;
+    },
+    // These are the columns that will be selected by default when the
+    // select columns dialog is opened
+    PRESELECTED_DATA() {
+      return this.HEADERS.filter(
+        (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
+      );
+    },
+    //------------------------ END FILTER COLUMNS
     showDraftLastEdited() {
       return this.form && this.form.enableSubmitterDraft;
     },
@@ -282,16 +186,28 @@ export default {
       return this.form && this.form.enableCopyExistingSubmission;
     },
   },
+  async mounted() {
+    await this.fetchForm(this.formId).then(async () => {
+      await this.fetchFormFields({
+        formId: this.formId,
+        formVersionId: this.form.versions[0].id,
+      });
+    });
+    await this.populateSubmissionsTable();
+  },
   methods: {
-    ...mapActions('form', ['fetchForm', 'fetchSubmissions', 'fetchFormFields']),
+    ...mapActions(useFormStore, [
+      'fetchForm',
+      'fetchFormFields',
+      'fetchSubmissions',
+    ]),
     onShowColumnDialog() {
-      this.preSelectedData =
-        this.filterData.length === 0 ? this.FILTER_HEADERS : this.filterData;
-      this.SELECT_COLUMNS_HEADERS.sort(
+      this.BASE_FILTER_HEADERS.sort(
         (a, b) =>
-          this.preSelectedData.findIndex((x) => x.text === b.text) -
-          this.preSelectedData.findIndex((x) => x.text === a.text)
+          this.PRESELECTED_DATA.findIndex((x) => x.title === b.title) -
+          this.PRESELECTED_DATA.findIndex((x) => x.title === a.title)
       );
+
       this.showColumnsDialog = true;
     },
 
@@ -309,6 +225,7 @@ export default {
         return status;
       }
     },
+
     getStatusDate(record, statusCode) {
       // Get the created date of the most recent occurence of a specified status
       if (record.submissionStatus) {
@@ -354,40 +271,163 @@ export default {
             });
           return fields;
         });
-        this.submissionTable = tableRows;
+        this.serverItems = tableRows;
       }
       this.loading = false;
     },
+
     async updateFilter(data) {
       this.filterData = data;
       this.showColumnsDialog = false;
     },
   },
-
-  async mounted() {
-    await this.fetchForm(this.formId).then(async () => {
-      await this.fetchFormFields({
-        formId: this.formId,
-        formVersionId: this.form.versions[0].id,
-      });
-    });
-
-    await this.populateSubmissionsTable();
-  },
 };
 </script>
+
+<template>
+  <div :class="{ 'dir-rtl': isRTL }">
+    <v-skeleton-loader :loading="loading" type="heading">
+      <div
+        class="mt-6 d-flex flex-md-row flex-1-1-100 justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
+      >
+        <!-- page title -->
+        <div>
+          <h1 :lang="lang">
+            {{ $t('trans.mySubmissionsTable.previousSubmissions') }}
+          </h1>
+          <h3>{{ formId ? form.name : 'All Forms' }}</h3>
+        </div>
+        <!-- buttons -->
+        <div>
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <v-btn
+                class="mx-1"
+                color="primary"
+                v-bind="props"
+                size="x-small"
+                density="default"
+                icon="mdi:mdi-view-column"
+                @click="onShowColumnDialog"
+              />
+            </template>
+            <span :lang="lang">{{
+              $t('trans.mySubmissionsTable.selectColumns')
+            }}</span>
+          </v-tooltip>
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <router-link
+                :to="{
+                  name: 'FormSubmit',
+                  query: { f: form.id },
+                }"
+              >
+                <v-btn
+                  class="mx-1"
+                  color="primary"
+                  v-bind="props"
+                  size="x-small"
+                  density="default"
+                  icon="mdi:mdi-plus"
+                />
+              </router-link>
+            </template>
+            <span :lang="lang">{{
+              $t('trans.mySubmissionsTable.createNewSubmission')
+            }}</span>
+          </v-tooltip>
+        </div>
+      </div>
+    </v-skeleton-loader>
+
+    <!-- search input -->
+    <div
+      class="submissions-search"
+      :class="isRTL ? 'float-left' : 'float-right'"
+    >
+      <v-text-field
+        v-model="search"
+        density="compact"
+        variant="underlined"
+        :label="$t('trans.mySubmissionsTable.search')"
+        append-inner-icon="mdi-magnify"
+        single-line
+        hide-details
+        class="pb-5"
+        :class="{ label: isRTL }"
+        :lang="lang"
+      />
+    </div>
+
+    <!-- table header -->
+    <v-data-table
+      class="submissions-table"
+      :headers="HEADERS"
+      item-value="title"
+      :items="serverItems"
+      :search="search"
+      :loading="loading"
+      :loading-text="$t('trans.mySubmissionsTable.loadingText')"
+      :no-data-text="
+        search.length > 0
+          ? $t('trans.mySubmissionsTable.noMatchingRecordText')
+          : $t('trans.mySubmissionsTable.noDataText')
+      "
+      :lang="lang"
+    >
+      <template #item.lastEdited="{ item }">
+        {{ $filters.formatDateLong(item.columns.lastEdited) }}
+      </template>
+      <template #item.submittedDate="{ item }">
+        {{ $filters.formatDateLong(item.columns.submittedDate) }}
+      </template>
+      <template #item.completedDate="{ item }">
+        {{ $filters.formatDateLong(item.columns.completedDate) }}
+      </template>
+      <template #item.actions="{ item }">
+        <MySubmissionsActions
+          :submission="item.raw"
+          :form-id="formId"
+          :is-copy-from-existing-submission-enabled="
+            isCopyFromExistingSubmissionEnabled
+          "
+          @draft-deleted="populateSubmissionsTable"
+        />
+      </template>
+    </v-data-table>
+    <v-dialog v-model="showColumnsDialog" width="700">
+      <BaseFilter
+        :input-filter-placeholder="
+          $t('trans.mySubmissionsTable.searchSubmissionFields')
+        "
+        :input-save-button-text="$t('trans.mySubmissionsTable.save')"
+        :input-data="BASE_FILTER_HEADERS"
+        :preselected-data="PRESELECTED_DATA"
+        :reset-data="RESET_HEADERS"
+        @saving-filter-data="updateFilter"
+        @cancel-filter-data="showColumnsDialog = false"
+      >
+        <template #filter-title
+          ><span :lang="lang">{{
+            $t('trans.mySubmissionsTable.filterTitle')
+          }}</span></template
+        >
+      </BaseFilter>
+    </v-dialog>
+  </div>
+</template>
 
 <style scoped>
 .submissions-search {
   width: 100%;
 }
-@media (min-width: 600px) {
+@media (min-width: 960px) {
   .submissions-search {
     max-width: 20em;
-    float: right;
   }
 }
-@media (max-width: 599px) {
+@media (max-width: 959px) {
   .submissions-search {
     padding-left: 16px;
     padding-right: 16px;
@@ -397,15 +437,15 @@ export default {
   clear: both;
 }
 @media (max-width: 1263px) {
-  .submissions-table >>> th {
+  .submissions-table :deep(th) {
     vertical-align: top;
   }
 }
 /* Want to use scss but the world hates me */
-.submissions-table >>> tbody tr:nth-of-type(odd) {
+.submissions-table :deep(tbody tr:nth-of-type(odd)) {
   background-color: #f5f5f5;
 }
-.submissions-table >>> thead tr th {
+.submissions-table :deep(thead tr th) {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em;

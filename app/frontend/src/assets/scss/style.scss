@@ -1,13 +1,10 @@
-/*
- * BCGov Style
- * This globally extends the base Vuetify style
- */
 @import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900');
 @import url('https://fonts.googleapis.com/css?family=Material+Icons');
-@import '~material-design-icons-iconfont/dist/material-design-icons.css';
-@import '~bootstrap-scss/bootstrap.scss'; // TODO: import this only for form designer/renderer formio components
-@import '~vuetify/src/styles/styles.sass';
-@import '~vue-json-pretty/lib/styles.css';
+@import '@mdi/font/css/materialdesignicons.css';
+@import '~font-awesome/css/font-awesome.min.css';
+@import '~formiojs/dist/formio.builder.min.css';
+@import 'bootstrap-scss/bootstrap.scss'; // TODO: import this only for form designer/renderer formio components
+@import 'vue-json-pretty/lib/styles.css';
 
 // Variables
 $bcgov-blue: #003366;
@@ -82,7 +79,6 @@ a {
 
 // Horizontal Rule
 hr {
-  border-top: 1px solid lightgrey;
   margin-bottom: 1em;
   .orange {
     border-top: 2px solid $bcgov-orange;
@@ -107,13 +103,11 @@ a,
     text-decoration: underline;
     button,
     .v-icon {
-      display: inline-block;
       text-decoration: none;
     }
   }
 }
 
-// General Button Style Extensions
 .v-btn {
   span > span {
     font-weight: bold;
@@ -125,73 +119,32 @@ a,
       text-decoration: underline;
     }
   }
-
   &.v-btn--disabled {
     color: #777;
   }
 
   &.v-btn--outlined {
-    &.theme--light {
-      border: 2px solid #003366;
-    }
-
-    &.theme--dark {
-      border: 2px solid #fff;
-    }
+    border: 2px solid #fff;
     &.v-btn--disabled {
       border-color: rgba(0, 0, 0, 0.26);
-    }
-  }
-  // align links with icons (shown in My Forms in table)
-  // causes underline issues in firefox
-  // a > i ~ span {
-  //   vertical-align: middle;
-  // }
-}
-
-// buttons in v-card
-.v-card__actions > .v-btn {
-  padding: 0 16px !important;
-}
-
-// vuetify radio button and checkbox labels need alignment help
-.v-input--selection-controls__input {
-  ~ .v-label {
-    margin-bottom: 0 !important;
-  }
-}
-
-// Stepper
-.nrmc-stepper {
-  .header-row {
-    background-color: $bcgov-grey !important;
-  }
-  &.v-stepper--alt-labels {
-    .v-stepper__step {
-      padding-left: 0;
-      padding-right: 0;
-      .v-stepper__label {
-        color: $bcgov-font;
-        font-size: 0.75em;
-      }
-      &.v-stepper__step--active {
-        .v-stepper__label {
-          color: $bcgov-font;
-          font-weight: bold;
-        }
-      }
     }
   }
 }
 
 // Customized expand/collapse section
 .nrmc-expand-collapse {
+  width: 100%;
   min-height: 50px;
-  .v-expansion-panel--active > .v-expansion-panel-header {
+
+  .v-expansion-panel--active {
+    margin-bottom: 20px;
+  }
+
+  .v-expansion-panel--active > .v-expansion-panel-title {
     min-height: 50px;
   }
 
-  .v-expansion-panel-header {
+  .v-expansion-panel-title {
     padding: 10px;
     background-color: $bcgov-grey;
     .icon {
@@ -203,72 +156,8 @@ a,
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex: 1 auto;
     }
-  }
-
-  .v-expansion-panel-content__wrap {
-    padding-top: 8px;
-  }
-}
-
-/////////////////////////////////////////
-// Override Vuetify v-alert Components
-/////////////////////////////////////////
-
-// BCGov Styled Error Notification Override
-.v-alert.v-sheet.theme--light.v-alert.alert-error {
-  background-color: $bcgov-alert-error;
-  .v-alert__wrapper {
-    i,
-    div {
-      color: $bcgov-font-error;
-    }
-  }
-}
-
-// BCGov Styled Warning Alerts Override
-.v-alert.v-sheet.theme--light.v-alert.alert-warning {
-  background-color: $bcgov-alert-warning;
-  .v-alert__wrapper {
-    i,
-    div {
-      color: $bcgov-font-warning;
-    }
-  }
-}
-
-// BCGov Styled Info Notification Override
-.v-alert.v-sheet.theme--light.v-alert.alert-info {
-  background-color: $bcgov-alert-info;
-  .v-alert__wrapper {
-    i,
-    div {
-      color: $bcgov-font;
-    }
-  }
-}
-
-// BCGov Styled Success Notification Override
-.v-alert.v-sheet.theme--light.v-alert.alert-success {
-  background-color: $bcgov-alert-success;
-  .v-alert__wrapper {
-    i,
-    div {
-      color: $bcgov-font-success;
-    }
-  }
-}
-
-// BCGov Alert Style Override
-.v-alert {
-  font-family: 'BC Sans', 'Noto Sans', Arial, 'sans serif';
-  line-height: 1.5em;
-  border-radius: 4px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  padding: 15px;
-  div {
-    font-size: 18px;
   }
 }
 
@@ -383,6 +272,7 @@ a,
   }
 
   // buttons
+
   .btn {
     @extend .v-btn;
   }
@@ -524,6 +414,16 @@ a,
   }
 }
 
+.formcomponents {
+  .builder-sidebar {
+    .form-builder-panel {
+      .formcomponent.btn-block {
+        width: 100%;
+      }
+    }
+  }
+}
+
 .form-wrapper {
   // the drag/drop area needs to line up with vuetify v-application ul styles...
   .formio-component-file {
@@ -577,7 +477,7 @@ a,
   color: #01254a;
 }
 
-.v-tooltip__content {
+.v-tooltip > .v-overlay__content {
   pointer-events: auto !important; //Have to replace Tooltips default behaviour pointer-events: none as we have some tooltips with External Links.
 }
 

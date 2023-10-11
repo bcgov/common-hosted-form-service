@@ -1,8 +1,21 @@
-import Vue from 'vue';
-import Vuetify from 'vuetify/lib';
-import hi from '@/internationalization/trans/vuetify/locale/hi';
-import pa from '@/internationalization/trans/vuetify/locale/pa';
-import tl from '@/internationalization/trans/vuetify/locale/tl';
+import 'vuetify/styles';
+import { createVuetify } from 'vuetify';
+import * as components from 'vuetify/components';
+import * as directives from 'vuetify/directives';
+import { fa as FONTAWESOME } from 'vuetify/iconsets/fa';
+import { aliases, mdi } from 'vuetify/iconsets/mdi';
+import { VDataTable, VDataTableServer } from 'vuetify/labs/VDataTable';
+import { VSkeletonLoader } from 'vuetify/labs/VSkeletonLoader';
+import {
+  VStepper,
+  VStepperHeader,
+  VStepperItem,
+  VStepperWindow,
+  VStepperWindowItem,
+} from 'vuetify/labs/VStepper';
+import hi from '~/internationalization/trans/vuetify/locale/hi';
+import pa from '~/internationalization/trans/vuetify/locale/pa';
+import tl from '~/internationalization/trans/vuetify/locale/tl';
 import zhHans from 'vuetify/lib/locale/zh-Hans';
 import zhHant from 'vuetify/lib/locale/zh-Hant';
 import vi from 'vuetify/lib/locale/vi';
@@ -19,15 +32,28 @@ import en from 'vuetify/lib/locale/en';
 import es from 'vuetify/lib/locale/es';
 import ar from 'vuetify/lib/locale/ar';
 
-Vue.use(Vuetify);
+const chefsTheme = {
+  dark: false,
+  colors: {
+    primary: '#003366',
+    secondary: '#FCBA19',
+    anchor: '#1A5A96',
+    accent: '#82B1FF',
+    error: '#D8292F',
+    info: '#2196F3',
+    success: '#2E8540',
+    warning: '#FFC107',
+  },
+};
 
-export default new Vuetify({
+export default createVuetify({
   defaultAssets: {
     font: true,
-    icons: 'md',
+    icons: 'mdi',
   },
-  lang: {
-    locales: {
+  locale: {
+    locale: 'en',
+    messages: {
       zhHans,
       zhHant,
       pt,
@@ -47,26 +73,34 @@ export default new Vuetify({
       pa,
       tl,
     },
-    current: 'en',
   },
   icons: {
-    iconfont: 'md',
+    defaultSet: 'mdi',
+    aliases,
+    sets: {
+      mdi,
+      FONTAWESOME,
+    },
   },
   theme: {
+    defaultTheme: 'chefsTheme',
     options: {
       customProperties: true,
     },
     themes: {
-      light: {
-        primary: '#003366',
-        secondary: '#FCBA19',
-        anchor: '#1A5A96',
-        accent: '#82B1FF',
-        error: '#D8292F',
-        info: '#2196F3',
-        success: '#2E8540',
-        warning: '#FFC107',
-      },
+      chefsTheme,
     },
   },
+  components: {
+    ...components,
+    VDataTable,
+    VDataTableServer,
+    VSkeletonLoader,
+    VStepper,
+    VStepperHeader,
+    VStepperItem,
+    VStepperWindow,
+    VStepperWindowItem,
+  },
+  directives,
 });

@@ -1,34 +1,23 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
-import Vuetify from 'vuetify';
-import Vuex from 'vuex';
-import i18n from '@/internationalization';
-import FormDisclaimer from '@/components/designer/FormDisclaimer.vue';
+import { createTestingPinia } from '@pinia/testing';
+import { mount } from '@vue/test-utils';
+import { describe, expect, it } from 'vitest';
 
-const localVue = createLocalVue();
-localVue.use(Vuetify);
-localVue.use(Vuex);
+import FormDisclaimer from '~/components/designer/FormDisclaimer.vue';
 
 describe('FormDisclaimer.vue', () => {
-  const mockisRTLGetter = jest.fn();
-  let store;
-  beforeEach(() => {
-    store = new Vuex.Store({
-      modules: {
-        form: {
-          namespaced: true,
-          getters: {
-            isRTL: mockisRTLGetter,
-          },
-        },
+  it('renders', () => {
+    const wrapper = mount(FormDisclaimer, {
+      global: {
+        plugins: [createTestingPinia()],
       },
     });
-  });
-  it('renders', () => {
-    const wrapper = shallowMount(FormDisclaimer, {
-      localVue,
-      i18n,
-      store
-    });
-    expect(wrapper.text()).toMatch('Disclaimer and statement of responsibility for Form Designers:');
+    expect(wrapper.text())
+      .toContain('trans.formDisclaimer.disclaimerAndStatement')
+      .toContain('trans.formDisclaimer.privacyLaw')
+      .toContain('trans.formDisclaimer.disclosure')
+      .toContain('trans.formDisclaimer.consent')
+      .toContain('trans.formDisclaimer.formIntention')
+      .toContain('trans.formDisclaimer.privacyOfficer')
+      .toContain('trans.formDisclaimer.assement');
   });
 });

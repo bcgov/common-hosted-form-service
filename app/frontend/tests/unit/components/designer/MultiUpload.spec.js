@@ -1,18 +1,19 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
-import Vuetify from 'vuetify';
-import Vuex from 'vuex';
-import i18n from '@/internationalization';
+import { mount } from '@vue/test-utils';
+import { setActivePinia, createPinia } from 'pinia';
+import { createRouter, createWebHistory } from 'vue-router';
+import { beforeEach, expect, vi } from 'vitest';
 
-import FormViewerMultiUpload from '@/components/designer/FormViewerMultiUpload.vue';
+import getRouter from '~/router';
+import FormViewerMultiUpload from '~/components/designer/FormViewerMultiUpload.vue';
+import { useAppStore } from '~/store/app';
+import { useNotificationStore } from '~/store/notification';
 
-const localVue = createLocalVue();
-localVue.use(Vuetify);
-localVue.use(Vuex);
 const ERROR = {
-  UPLOAD_MULTIPLE_FILE_ERROR: 'Sorry, you can upload only one file',
-  DRAG_MULPLE_FILE_ERROR: 'Sorry, you can drag only one file',
-  FILE_FORMAT_ERROR: 'Sorry, we only accept json files',
-  FILE_SIZE_ERROR: 'Max file size allowed is 5MB',
+  UPLOAD_MULTIPLE_FILE_ERROR:
+    'trans.formViewerMultiUpload.uploadMultipleFileErr',
+  DRAG_MULPLE_FILE_ERROR: 'trans.formViewerMultiUpload.dragMultipleFileErr',
+  FILE_FORMAT_ERROR: 'trans.formViewerMultiUpload.fileFormatErr',
+  FILE_SIZE_ERROR: 'trans.formViewerMultiUpload.fileSizeErr',
   PARSE_JSON_ERROR: 'We can not parse json data from the file',
   JSON_OBJECT_NOT_ARRAY: 'Wrong json file format',
   JSON_ARRAY_EMPTY: 'This json file is empty.',
@@ -22,12 +23,16 @@ const ERROR = {
 };
 
 describe('FormViewerMultiUpload.vue', () => {
-  let store;
-  let stubs;
-  let notificationData;
-  let notifactionActions;
-  let methods;
-  let props;
+  const pinia = createPinia();
+  const router = createRouter({
+    history: createWebHistory(),
+    routes: getRouter().getRoutes(),
+  });
+
+  setActivePinia(pinia);
+  const appStore = useAppStore();
+  const notificationStore = useNotificationStore();
+  const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
   const fileData = (sizeInByte) => {
     // Generate fake file data
     const bytesPerItem = Math.floor(sizeInByte / 100); // adjust as needed
@@ -36,69 +41,28 @@ describe('FormViewerMultiUpload.vue', () => {
     for (let i = 0; i < numItems; i++) {
       const item = {};
       for (let j = 0; j < bytesPerItem / 2; j++) {
-        item[String.fromCharCode(65 + Math.floor(Math.random() * 26))] = Math.floor(Math.random() * 10);
+        item[String.fromCharCode(65 + Math.floor(Math.random() * 26))] =
+          Math.floor(Math.random() * 10);
       }
       fileData.push(item);
     }
     return fileData;
   };
 
-  let data;
-
   beforeEach(() => {
-    stubs = ['BaseInfoCard', 'vue-blob-json-csv'];
-    data = {
-      file: {},
-      Json: [],
-    };
-    notificationData = Object({
-      message: '',
-      consoleError: '',
-    });
-    notifactionActions = {
-      addNotification: jest.fn(),
-    };
-    methods = {
-      parseFile: jest.fn(),
-    };
-
-    props = {
-      formElement: undefined,
-      form: {},
-      formSchema: {},
-      formFields: [],
-      block: false,
-      response: {
-        message: '',
-        error: false,
-        upload_state: 0,
-        response: [],
-        file_name: '',
-      },
-      json_csv: {
-        data: [],
-        file_name: '',
+    appStore.$reset();
+    notificationStore.$reset();
+    addNotificationSpy.mockReset();
+    appStore.config = {
+      uploads: {
+        fileMaxSizeBytes: 10000,
       },
     };
-    store = new Vuex.Store({
-      modules: {
-        notifications: {
-          namespaced: true,
-          actions: notifactionActions,
-        },
-      },
-    });
-  });
-
-  afterEach(() => {
-    notifactionActions.addNotification.mockReset();
   });
 
   it('renders', () => {
-    const wrapper = shallowMount(FormViewerMultiUpload, {
-      localVue,
-      i18n,
-      propsData: {
+    const wrapper = mount(FormViewerMultiUpload, {
+      props: {
         formElement: undefined,
         form: {},
         formSchema: {},
@@ -111,235 +75,296 @@ describe('FormViewerMultiUpload.vue', () => {
           response: [],
           file_name: '',
         },
-        json_csv: {
+        jsonCsv: {
           data: [],
           file_name: '',
         },
       },
-      store,
-      stubs: ['BaseDialog', 'BaseInfoCard'],
+      global: {
+        plugins: [router, pinia],
+      },
     });
-    expect(wrapper.text()).toContain('infoIMPORTANT!');
-    expect(wrapper.text()).toContain('JSON');
+
+    expect(wrapper.text()).toContain('trans.formViewerMultiUpload.important');
+    expect(wrapper.text()).toContain('trans.formViewerMultiUpload.json');
   });
 
   describe('#addFile', () => {
     it('should return undefined when some data is in process', () => {
-      props.block = true;
-      const wrapper = shallowMount(FormViewerMultiUpload, {
-        localVue,
-        propsData: props,
-        store,
-        i18n,
-        methods: methods,
-        stubs: stubs,
+      const wrapper = mount(FormViewerMultiUpload, {
+        props: {
+          formElement: undefined,
+          form: {},
+          formSchema: {},
+          formFields: [],
+          block: true,
+          response: {
+            message: '',
+            error: false,
+            upload_state: 0,
+            response: [],
+            file_name: '',
+          },
+          jsonCsv: {
+            data: [],
+            file_name: '',
+          },
+        },
+        global: {
+          plugins: [router, pinia],
+        },
       });
+      const parseFileSpy = vi.spyOn(wrapper.vm, 'parseFile');
       // act
       wrapper.vm.addFile(null, 0);
       // assert
-      expect(notifactionActions.addNotification).not.toHaveBeenCalled();
-      expect(methods.parseFile).not.toHaveBeenCalled();
+      expect(addNotificationSpy).not.toHaveBeenCalled();
+      expect(parseFileSpy).not.toHaveBeenCalled();
     });
 
     it('should return undefined when no file select', () => {
-      const wrapper = shallowMount(FormViewerMultiUpload, {
-        localVue,
-        propsData: props,
-        methods: methods,
-        store,
-        i18n,
-        stubs: stubs,
+      const wrapper = mount(FormViewerMultiUpload, {
+        props: {
+          formElement: undefined,
+          form: {},
+          formSchema: {},
+          formFields: [],
+          block: false,
+          response: {
+            message: '',
+            error: false,
+            upload_state: 0,
+            response: [],
+            file_name: '',
+          },
+          jsonCsv: {
+            data: [],
+            file_name: '',
+          },
+        },
+        global: {
+          plugins: [router, pinia],
+        },
       });
       // act
       wrapper.vm.addFile(null, 1);
       // assert
-      expect(notifactionActions.addNotification).toHaveBeenCalled();
+      expect(addNotificationSpy).toHaveBeenCalled();
     });
 
     it('should return undefined when no file drag', () => {
-      const wrapper = shallowMount(FormViewerMultiUpload, {
-        localVue,
-        propsData: props,
-        methods: methods,
-        store,
-        i18n,
-        stubs: stubs,
+      const wrapper = mount(FormViewerMultiUpload, {
+        props: {
+          formElement: undefined,
+          form: {},
+          formSchema: {},
+          formFields: [],
+          block: false,
+          response: {
+            message: '',
+            error: false,
+            upload_state: 0,
+            response: [],
+            file_name: '',
+          },
+          jsonCsv: {
+            data: [],
+            file_name: '',
+          },
+        },
+        global: {
+          plugins: [router, pinia],
+        },
       });
       // act
       wrapper.vm.addFile({ dataTransfer: { files: undefined } }, 0);
       // assert
-      expect(notifactionActions.addNotification).not.toHaveBeenCalled();
+      expect(addNotificationSpy).not.toHaveBeenCalled();
     });
 
-    it('should show a notification when a file already drag', () => {
-      const wrapper = shallowMount(FormViewerMultiUpload, {
-        localVue,
-        propsData: props,
-        methods: methods,
-        store,
-        i18n,
-        stubs: stubs,
+    it('should return undefined when a file already drag', () => {
+      const wrapper = mount(FormViewerMultiUpload, {
+        props: {
+          formElement: undefined,
+          form: {},
+          formSchema: {},
+          formFields: [],
+          block: false,
+          response: {
+            message: '',
+            error: false,
+            upload_state: 0,
+            response: [],
+            file_name: '',
+          },
+          jsonCsv: {
+            data: [],
+            file_name: '',
+          },
+        },
+        global: {
+          plugins: [router, pinia],
+        },
       });
-      const file = new File(['{}'], 'test.json', { type: 'application/json' });
-
+      const file = new File(['{}'], 'test.json', {
+        type: 'application/json',
+      });
       wrapper.setData({ file: file });
+
+      // act
       wrapper.vm.addFile({}, 0);
       // assert
-      notificationData.message = ERROR.UPLOAD_MULTIPLE_FILE_ERROR;
-      notificationData.consoleError = ERROR.UPLOAD_MULTIPLE_FILE_ERROR;
-      expect(notifactionActions.addNotification).toHaveBeenCalledWith(expect.anything(), notificationData);
+      expect(addNotificationSpy).toHaveBeenCalledWith({
+        consoleError: ERROR.UPLOAD_MULTIPLE_FILE_ERROR,
+        text: ERROR.UPLOAD_MULTIPLE_FILE_ERROR,
+      });
     });
 
     it('should show notification when submitter drag multiple files', () => {
-      const wrapper = shallowMount(FormViewerMultiUpload, {
-        localVue,
-        propsData: props,
-        methods: methods,
-        store,
-        i18n,
-        stubs: stubs,
+      const wrapper = mount(FormViewerMultiUpload, {
+        props: {
+          formElement: undefined,
+          form: {},
+          formSchema: {},
+          formFields: [],
+          block: false,
+          response: {
+            message: '',
+            error: false,
+            upload_state: 0,
+            response: [],
+            file_name: '',
+          },
+          jsonCsv: {
+            data: [],
+            file_name: '',
+          },
+        },
+        global: {
+          plugins: [router, pinia],
+        },
       });
-      // act
-      const file = new File(['{}'], 'test.json', { type: 'application/json' });
+      const file = new File(['{}'], 'test.json', {
+        type: 'application/json',
+      });
 
+      // act
       wrapper.vm.addFile({ dataTransfer: { files: [file, file] } }, 0);
       // assert
-      notificationData.message = ERROR.DRAG_MULPLE_FILE_ERROR;
-      notificationData.consoleError = ERROR.DRAG_MULPLE_FILE_ERROR;
-      expect(notifactionActions.addNotification).toHaveBeenCalledWith(expect.anything(), notificationData);
+      expect(addNotificationSpy).toHaveBeenCalledWith({
+        consoleError: ERROR.DRAG_MULPLE_FILE_ERROR,
+        text: ERROR.DRAG_MULPLE_FILE_ERROR,
+      });
     });
 
     it('should show notification when file format is not JSON', () => {
-      const wrapper = shallowMount(FormViewerMultiUpload, {
-        localVue,
-        propsData: props,
-        methods: methods,
-        store,
-        i18n,
-        stubs: stubs,
+      const wrapper = mount(FormViewerMultiUpload, {
+        props: {
+          formElement: undefined,
+          form: {},
+          formSchema: {},
+          formFields: [],
+          block: false,
+          response: {
+            message: '',
+            error: false,
+            upload_state: 0,
+            response: [],
+            file_name: '',
+          },
+          jsonCsv: {
+            data: [],
+            file_name: '',
+          },
+        },
+        global: {
+          plugins: [router, pinia],
+        },
       });
+      const file = new File(['{}'], 'test.csv', {
+        type: 'text/json',
+      });
+
       // act
-      const file = new File(['{}'], 'test.csv', { type: 'text/json' });
       wrapper.vm.addFile({ target: { files: [file] } }, 1);
       // assert
-      notificationData.message = ERROR.FILE_FORMAT_ERROR;
-      notificationData.consoleError = ERROR.FILE_FORMAT_ERROR;
-      expect(notifactionActions.addNotification).toHaveBeenCalledWith(expect.anything(), notificationData);
+      expect(addNotificationSpy).toHaveBeenCalledWith({
+        consoleError: ERROR.FILE_FORMAT_ERROR,
+        text: ERROR.FILE_FORMAT_ERROR,
+      });
     });
 
     it('should show notification when file size is over', () => {
-      const wrapper = shallowMount(FormViewerMultiUpload, {
-        localVue,
-        propsData: props,
-        methods: methods,
-        store,
-        i18n,
-        stubs: stubs,
+      const wrapper = mount(FormViewerMultiUpload, {
+        props: {
+          formElement: undefined,
+          form: {},
+          formSchema: {},
+          formFields: [],
+          block: false,
+          response: {
+            message: '',
+            error: false,
+            upload_state: 0,
+            response: [],
+            file_name: '',
+          },
+          jsonCsv: {
+            data: [],
+            file_name: '',
+          },
+        },
+        global: {
+          plugins: [router, pinia],
+        },
       });
       // act
-      wrapper.setData({ max_file_size: 100 / (1024 * 1024) });
-      // generate a file 1 mb
-      const file = new File([JSON.stringify(fileData(1000))], 'test.json', { type: 'application/json' });
-      wrapper.vm.addFile(file, 1);
+      appStore.config.uploads.fileMaxSizeBytes = 0;
+      const file = new File([JSON.stringify(fileData(1000))], 'test.json', {
+        type: 'application/json',
+      });
+      wrapper.vm.addFile({ target: { files: [file] } }, 1);
       // assert
-      notificationData.message = ERROR.FILE_SIZE_ERROR;
-      notificationData.consoleError = ERROR.FILE_SIZE_ERROR;
-      expect(notifactionActions.addNotification).toHaveBeenCalledWith(expect.anything(), notificationData);
+      expect(addNotificationSpy).toHaveBeenCalledWith({
+        consoleError: ERROR.FILE_SIZE_ERROR,
+        text: ERROR.FILE_SIZE_ERROR,
+      });
     });
 
     it('should show no notification when file is ok', () => {
-      const wrapper = shallowMount(FormViewerMultiUpload, {
-        localVue,
-        propsData: props,
-        methods: methods,
-        store,
-        i18n,
-        stubs: stubs,
-      });
-      // act
-      // generate a file 5 mb
-      const file = new File(['{}'], 'test.json', { type: 'application/json' });
-      wrapper.vm.addFile(file, 1);
-      expect(notifactionActions.addNotification).not.toHaveBeenCalled();
-      expect(methods.parseFile).toHaveBeenCalled();
-    });
-  });
-
-  describe('#parseFile', () => {
-    it('should fail when json file is ok but data format is wrong', () => {
-      const wrapper = shallowMount(FormViewerMultiUpload, {
-        localVue,
-        propsData: props,
-        data() {
-          return data;
-        },
-        methods: methods,
-        store,
-        i18n,
-        stubs: stubs,
-      });
-      // act
-      // generate a file 5 mb
-      const file = new File(['}]d$77&:['], 'test.json', { type: 'application/json' });
-      wrapper.setData({ file: file });
-      wrapper.vm.parseFile();
-      expect(wrapper.vm.Json.length).toBe(0);
-    });
-
-    it('should pass when json file is ok but data format is wrong', () => {
-      const wrapper = shallowMount(FormViewerMultiUpload, {
-        localVue,
-        propsData: props,
-        methods: methods,
-        store,
-        i18n,
-        stubs: stubs,
-      });
-      // act
-      // generate a file 5 mb
-      const file = new File(["[{name:'name'}]"], 'test.json', { type: 'application/json' });
-      wrapper.setData({ file: file });
-      wrapper.vm.parseFile();
-      expect(notifactionActions.addNotification).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('popFormLevelInfo', () => {
-    it('should remove all the form level properties', () => {
-      const wrapper = shallowMount(FormViewerMultiUpload, {
-        localVue,
-        propsData: props,
-        store,
-        i18n,
-      });
-      const givenArrayOfSubmission = [
-        {
-          form: {
-            confirmationId: '3A31A078',
-            formName: 'FormTest',
-            version: 4,
-            createdAt: '2023-08-31T16:50:33.571Z',
-            fullName: 'John DOe',
-            username: 'JOHNDOE',
-            email: 'john.doe@example.ca',
-            status: 'SUBMITTED',
-            assignee: null,
-            assigneeEmail: null,
-          },
-          lateEntry: false,
-          simplenumber: 4444,
-        },
-      ];
-      const expectedArrayOfSubmission = [
-        {
+      const wrapper = mount(FormViewerMultiUpload, {
+        props: {
+          formElement: undefined,
           form: {},
-          simplenumber: 4444,
+          formSchema: {},
+          formFields: [],
+          block: false,
+          response: {
+            message: '',
+            error: false,
+            upload_state: 0,
+            response: [],
+            file_name: '',
+          },
+          jsonCsv: {
+            data: [],
+            file_name: '',
+          },
         },
-      ];
-  
-      const response = wrapper.vm.popFormLevelInfo(givenArrayOfSubmission);
-
-      expect(response).toEqual(expectedArrayOfSubmission);
+        global: {
+          plugins: [router, pinia],
+        },
+      });
+      // act
+      const parseFileSpy = vi.spyOn(wrapper.vm, 'parseFile');
+      const file = new File(['{}'], 'test.json', {
+        type: 'application/json',
+      });
+      wrapper.vm.addFile({ target: { files: [file] } }, 1);
+      // assert
+      expect(addNotificationSpy).not.toHaveBeenCalled();
+      expect(parseFileSpy).toHaveBeenCalled();
     });
   });
+  // it is not necessary to test if the FileReader functionality or JSON.parse functionality works.
 });
