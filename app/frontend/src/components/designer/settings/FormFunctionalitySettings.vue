@@ -59,6 +59,7 @@ export default {
     >
     <v-checkbox
       v-model="form.enableSubmitterDraft"
+      hide-details="auto"
       class="my-0"
       :disabled="form.userType === ID_MODE.PUBLIC"
       @update:model-value="enableSubmitterDraftChanged"
@@ -72,7 +73,11 @@ export default {
       </template>
     </v-checkbox>
 
-    <v-checkbox v-model="form.enableStatusUpdates" class="my-0">
+    <v-checkbox
+      v-model="form.enableStatusUpdates"
+      hide-details="auto"
+      class="my-0"
+    >
       <template #label>
         <span
           :class="{ 'mr-2': isRTL }"
@@ -84,6 +89,7 @@ export default {
 
     <v-checkbox
       v-model="form.allowSubmitterToUploadFile"
+      hide-details="auto"
       class="my-0"
       :disabled="form.userType === ID_MODE.PUBLIC"
       @update:model-value="allowSubmitterToUploadFileChanged"
@@ -126,6 +132,7 @@ export default {
       v-if="!isFormPublished"
       v-model="form.schedule.enabled"
       disabled
+      hide-details="auto"
       class="my-0"
     >
       <template #label>
@@ -138,6 +145,7 @@ export default {
     <v-checkbox
       v-if="isFormPublished"
       v-model="form.schedule.enabled"
+      hide-details="auto"
       class="my-0"
     >
       <template #label>
@@ -175,6 +183,7 @@ export default {
 
     <v-checkbox
       v-model="form.enableCopyExistingSubmission"
+      hide-details="auto"
       class="my-0"
       :disabled="form.userType === ID_MODE.PUBLIC"
     >
@@ -214,6 +223,7 @@ export default {
     </v-checkbox>
     <v-checkbox
       v-model="form.subscribe.enabled"
+      hide-details="auto"
       class="my-0"
       :disabled="idirUser === false || !isFormPublished"
     >

@@ -180,7 +180,7 @@ export default {
 </template>
 
 <style scoped>
-.v-card__text {
+.v-card-text {
   display: flex !important;
   padding: 1.5rem;
 }

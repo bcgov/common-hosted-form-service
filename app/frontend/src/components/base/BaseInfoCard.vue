@@ -20,7 +20,7 @@
     color: #38598a;
     margin-right: 0.5em;
   }
-  .v-card__text:not(.under-title) {
+  .v-card-text:not(.under-title) {
     color: #494949 !important;
     font-size: 16px;
     padding: 0;
