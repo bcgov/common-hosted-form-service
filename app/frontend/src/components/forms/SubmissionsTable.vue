@@ -30,6 +30,7 @@ export default {
       // Show only deleted items
       deletedOnly: false,
       filterData: [],
+      search: '',
       filterIgnore: [
         {
           key: 'confirmationId',
