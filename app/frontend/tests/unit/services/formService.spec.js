@@ -159,7 +159,7 @@ describe('Form Service', () => {
     });
   });
 
-  describe('Forms/{formId}/versions/{versioId}/publish', () => {
+  describe('Forms/{formId}/versions/{versionId}/publish', () => {
     const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/versions/${oneUuid}/publish`;
 
     it('calls publish endpoint', async () => {
@@ -180,6 +180,35 @@ describe('Form Service', () => {
       const result = await formService.publishDraft(zeroUuid, oneUuid);
       expect(result).toBeTruthy();
       expect(mockAxios.history.post).toHaveLength(1);
+    });
+  });
+
+  //
+  // Email Templates
+  //
+  describe('Forms/{formId}/emailTemplates', () => {
+    const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/emailTemplates`;
+
+    it('calls list endpoint', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+
+      const result = await formService.listEmailTemplates(zeroUuid);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+    });
+  });
+
+  describe('Forms/{formId}/emailTemplate', () => {
+    const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}/emailTemplate`;
+
+    it('calls update on endpoint', async () => {
+      const data = { formId: zeroUuid, test: 'testdata' };
+      mockAxios.onPut(endpoint).reply(200, data);
+
+      const result = await formService.updateEmailTemplate(data);
+      expect(result).toBeTruthy();
+      expect(result.data).toEqual(data);
+      expect(mockAxios.history.put).toHaveLength(1);
     });
   });
 
@@ -230,7 +259,11 @@ describe('Form Service', () => {
       const data = { test: 'testdata' };
       mockAxios.onPost(endpoint).reply(200, data);
 
-      const result = await formService.createSubmission(zeroUuid, oneUuid, data);
+      const result = await formService.createSubmission(
+        zeroUuid,
+        oneUuid,
+        data
+      );
       expect(result).toBeTruthy();
       expect(result.data).toEqual(data);
       expect(mockAxios.history.post).toHaveLength(1);
@@ -430,9 +463,16 @@ describe('Form Service', () => {
     it('calls delete endpoint', async () => {
       mockAxios.onDelete(endpoint).reply(200);
 
-      let submissionIds = ['ac4ef441-43b1-414a-a0d4-1e2f67c2a745', '0715b1ac-4069-4778-a868-b4f71fdea18d'];
+      let submissionIds = [
+        'ac4ef441-43b1-414a-a0d4-1e2f67c2a745',
+        '0715b1ac-4069-4778-a868-b4f71fdea18d',
+      ];
 
-      const result = await formService.deleteMultipleSubmissions(submissionId, formId, { data: { submissionIds } });
+      const result = await formService.deleteMultipleSubmissions(
+        submissionId,
+        formId,
+        { data: { submissionIds } }
+      );
       expect(result).toBeTruthy();
       expect(mockAxios.history.delete).toHaveLength(1);
     });
@@ -445,9 +485,16 @@ describe('Form Service', () => {
 
     it('calls restore multiple submission endpoint', async () => {
       mockAxios.onPut(endpoint).reply(200);
-      let submissionIds = ['ac4ef441-43b1-414a-a0d4-1e2f67c2a745', '0715b1ac-4069-4778-a868-b4f71fdea18d'];
+      let submissionIds = [
+        'ac4ef441-43b1-414a-a0d4-1e2f67c2a745',
+        '0715b1ac-4069-4778-a868-b4f71fdea18d',
+      ];
 
-      const result = await formService.restoreMutipleSubmissions(submissionId, formId, { submissionIds });
+      const result = await formService.restoreMutipleSubmissions(
+        submissionId,
+        formId,
+        { submissionIds }
+      );
       expect(result).toBeTruthy();
       expect(mockAxios.history.put).toHaveLength(1);
     });
@@ -459,7 +506,13 @@ describe('Form Service', () => {
 
     it('calls to get submissions fields for csv export', async () => {
       mockAxios.onGet(endpoint).reply(200);
-      const result = await formService.readCSVExportFields(formId, 'submissions', false, false, 1);
+      const result = await formService.readCSVExportFields(
+        formId,
+        'submissions',
+        false,
+        false,
+        1
+      );
       expect(result).toBeTruthy();
       expect(mockAxios.history.get).toHaveLength(1);
     });

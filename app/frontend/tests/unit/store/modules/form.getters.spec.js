@@ -12,6 +12,14 @@ describe('form getters', () => {
 
   const sampleState = {
     drafts: [],
+    emailTemplates: [
+      {
+        body: 'sample email body',
+        subject: 'sample email subject',
+        title: 'sample email title',
+        type: 'submissionConfirmation',
+      },
+    ],
     form: {
       name: 'ABC',
       reminder: {
@@ -40,11 +48,11 @@ describe('form getters', () => {
     permissions: ['SUBMIT', 'READ'],
     submissionList: ['test', 'sub'],
     version: { type: 'form' },
-    subscriptionData: { 
+    subscriptionData: {
       subscribeEvent: 'test',
       endpointUrl: 'http://localhost.com',
       endpointToken: '89abddfb-2cff-4fda-83e6-13221f0c3d4f',
-    }
+    },
   };
 
   beforeEach(() => {
@@ -58,6 +66,10 @@ describe('form getters', () => {
 
   it('drafts should return the state drafts', () => {
     expect(store.getters.drafts).toEqual(sampleState.drafts);
+  });
+
+  it('emailTemplates should return the state emailTemplates', () => {
+    expect(store.getters.emailTemplates).toEqual(sampleState.emailTemplates);
   });
 
   it('form should return the state form', () => {
@@ -89,7 +101,9 @@ describe('form getters', () => {
   });
 
   it('userFormPreferences should return the state userFormPreferences', () => {
-    expect(store.getters.userFormPreferences).toEqual(sampleState.userFormPreferences);
+    expect(store.getters.userFormPreferences).toEqual(
+      sampleState.userFormPreferences
+    );
   });
 
   it('version should return the state version', () => {
@@ -97,14 +111,20 @@ describe('form getters', () => {
   });
 
   it('fcNamesProactiveHelpList should return the state fcNamesProactiveHelpList', () => {
-    expect(store.getters.fcNamesProactiveHelpList).toEqual(sampleState.fcNamesProactiveHelpList);
+    expect(store.getters.fcNamesProactiveHelpList).toEqual(
+      sampleState.fcNamesProactiveHelpList
+    );
   });
 
   it('fcProactiveHelpImageUrl should return the state fcProactiveHelpImageUrl', () => {
-    expect(store.getters.fcProactiveHelpImageUrl).toEqual(sampleState.fcProactiveHelpImageUrl);
+    expect(store.getters.fcProactiveHelpImageUrl).toEqual(
+      sampleState.fcProactiveHelpImageUrl
+    );
   });
 
   it('subscriptionData should return the state subscriptionData', () => {
-    expect(store.getters.subscriptionData).toEqual(sampleState.subscriptionData);
+    expect(store.getters.subscriptionData).toEqual(
+      sampleState.subscriptionData
+    );
   });
 });

@@ -73,6 +73,7 @@ export default {
   state: {
     apiKey: undefined,
     drafts: [],
+    emailTemplates: [],
     form: genInitialForm(),
     formFields: [],
     formList: [],
@@ -106,6 +107,7 @@ export default {
     getField, // vuex-map-fields
     apiKey: (state) => state.apiKey,
     drafts: (state) => state.drafts,
+    emailTemplates: (state) => state.emailTemplates,
     form: (state) => state.form,
     formFields: (state) => state.formFields,
     formList: (state) => state.formList,
@@ -139,6 +141,9 @@ export default {
     },
     SET_DRAFTS(state, drafts) {
       state.drafts = drafts;
+    },
+    SET_EMAIL_TEMPLATES(state, emailTemplates) {
+      state.emailTemplates = emailTemplates;
     },
     SET_FORM(state, form) {
       state.form = form;
@@ -394,6 +399,28 @@ export default {
         );
       }
     },
+    async fetchEmailTemplates({ commit, dispatch }, formId) {
+      try {
+        // Get the email templates for this form from the api
+        const { data } = await formService.listEmailTemplates(formId);
+        commit('SET_EMAIL_TEMPLATES', data);
+      } catch (error) {
+        dispatch(
+          'notifications/addNotification',
+          {
+            message: i18n.t('trans.store.form.fetchEmailTemplatesErrMsg'),
+            consoleError: i18n.t(
+              'trans.store.form.fetchEmailTemplatesConsErrMsg',
+              {
+                formId: formId,
+                error: error,
+              }
+            ),
+          },
+          { root: true }
+        );
+      }
+    },
     async fetchForm({ commit, dispatch }, formId) {
       try {
         commit('SET_API_KEY', null);
@@ -489,6 +516,26 @@ export default {
     },
     resetForm({ commit }) {
       commit('SET_FORM', genInitialForm());
+    },
+    async updateEmailTemplate({ dispatch }, emailTemplate) {
+      try {
+        await formService.updateEmailTemplate(emailTemplate);
+      } catch (error) {
+        dispatch(
+          'notifications/addNotification',
+          {
+            message: i18n.t('trans.store.form.updateEmailTemplateErrMsg'),
+            consoleError: i18n.t(
+              'trans.store.form.updateEmailTemplateConsErrMsg',
+              {
+                formId: emailTemplate.formId,
+                error: error,
+              }
+            ),
+          },
+          { root: true }
+        );
+      }
     },
     async updateForm({ state, dispatch }) {
       try {
@@ -732,6 +779,7 @@ export default {
         createdBy = '',
         createdAt,
         page,
+        paginationEnabled,
         itemsPerPage,
         filterformSubmissionStatusCode,
         sortBy: sortBy,
@@ -750,13 +798,6 @@ export default {
         const response = userView
           ? await rbacService.getUserSubmissions({
               formId: formId,
-              page: page,
-              itemsPerPage: itemsPerPage,
-              totalSubmissions: state.totalSubmissions,
-              sortBy: sortBy,
-              sortDesc: sortDesc,
-              search: search,
-              searchEnabled: searchEnabled,
             })
           : await formService.listSubmissions(formId, {
               deleted: deletedOnly,
@@ -765,6 +806,7 @@ export default {
               createdAt: createdAt,
               page: page,
               search: search,
+              paginationEnabled: paginationEnabled,
               searchEnabled: searchEnabled,
               filterformSubmissionStatusCode: filterformSubmissionStatusCode,
               itemsPerPage: itemsPerPage,
@@ -772,8 +814,12 @@ export default {
               sortBy: sortBy,
               sortDesc: sortDesc,
             });
-        commit('SET_SUBMISSIONLIST', response.data.results);
-        commit('SET_TOTALSUBMISSIONS', response.data.total);
+        if (paginationEnabled) {
+          commit('SET_SUBMISSIONLIST', response.data.results);
+          commit('SET_TOTALSUBMISSIONS', response.data.total);
+        } else {
+          commit('SET_SUBMISSIONLIST', response.data);
+        }
       } catch (error) {
         dispatch(
           'notifications/addNotification',
