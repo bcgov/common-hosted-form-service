@@ -36,7 +36,7 @@ export default {
       this.$vuetify.locale.current =
         lang.keyword == 'zh'
           ? 'zhHans'
-          : lang.keyword == 'zh-TW'
+          : lang.keyword == 'zhTW'
           ? 'zhHant'
           : lang.keyword;
       useFormStore().$patch({
