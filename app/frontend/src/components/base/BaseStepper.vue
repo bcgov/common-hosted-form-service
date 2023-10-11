@@ -85,10 +85,12 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-/* unset 'overflow: hidden' from all parents of FormDesigner, so FormDesigner's 'sticky' components menu sticks. */
+/*
+ * unset 'overflow: hidden' from parents of FormDesigner, so FormDesigner's
+ * 'sticky' components menu sticks.
+ */
 .v-stepper,
-.v-stepper__items,
-.v-stepper :deep(.v-stepper__wrapper) {
+.v-stepper-window {
   overflow: initial !important;
 }
 </style>
