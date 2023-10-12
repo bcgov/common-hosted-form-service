@@ -96,7 +96,7 @@ export default {
       >
         <v-icon class="mb-2" size="90" icon="mdi:mdi-file-download" /><br />
         If your file does not automatically download
-        <a href="#" @click="getFile(id)" :hreflang="lang">{{
+        <a href="#" :hreflang="lang" @click="getFile(id)">{{
           $t('trans.download.downloadInfoB')
         }}</a>
       </div>
