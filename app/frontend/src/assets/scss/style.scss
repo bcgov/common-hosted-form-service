@@ -309,6 +309,11 @@ a,
     font-size: 0.875rem;
   }
 
+  // add margin to create space between the button and form.io inputs
+  .formio-component-button {
+      margin-top: 1rem;
+  }
+
   // tooltips
   .tooltip-inner {
     background-color: #606060;
