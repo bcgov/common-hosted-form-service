@@ -370,6 +370,9 @@ export default function getRouter(basePath = '/') {
         },
       },
     ],
+    scrollBehavior(_to, _from, savedPosition) {
+      return savedPosition ? savedPosition : { top: 0 };
+    },
   });
 
   router.beforeEach((to, from, next) => {
