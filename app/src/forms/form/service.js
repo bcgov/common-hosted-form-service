@@ -249,6 +249,7 @@ const service = {
       .modify('filterCreatedBy', params.createdBy)
       .modify('filterFormVersionId', params.formVersionId)
       .modify('filterVersion', params.version)
+      .modify('filterformSubmissionStatusCode', params.filterformSubmissionStatusCode)
       .modify('orderDefault', params.sortBy && params.page ? true : false, params);
     if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length == 2) {
       query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
@@ -283,20 +284,12 @@ const service = {
       );
     }
     if (params.paginationEnabled) {
-      return await service.processPaginationData(
-        query,
-        parseInt(params.page),
-        parseInt(params.itemsPerPage),
-        params.filterformSubmissionStatusCode,
-        params.totalSubmissions,
-        params.search,
-        params.searchEnabled
-      );
+      return await service.processPaginationData(query, parseInt(params.page), parseInt(params.itemsPerPage), params.totalSubmissions, params.search, params.searchEnabled);
     }
     return query;
   },
 
-  async processPaginationData(query, page, itemsPerPage, filterformSubmissionStatusCode, totalSubmissions, search, searchEnabled) {
+  async processPaginationData(query, page, itemsPerPage, totalSubmissions, search, searchEnabled) {
     let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : searchEnabled !== undefined ? JSON.parse(searchEnabled) : false;
     if (isSearchAble) {
       let submissionsData = await query;
@@ -338,7 +331,6 @@ const service = {
       result.results = searchedData.slice(start, end);
       return result;
     } else {
-      await query.modify('filterformSubmissionStatusCode', filterformSubmissionStatusCode);
       if (itemsPerPage && parseInt(itemsPerPage) === -1) {
         return await query.page(parseInt(page), parseInt(totalSubmissions || 0));
       } else if (itemsPerPage && parseInt(page) >= 0) {

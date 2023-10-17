@@ -74,7 +74,7 @@ export default {
       this.$vuetify.lang.current =
         lang.keyword == 'zh'
           ? 'zhHans'
-          : lang.keyword == 'zh-TW'
+          : lang.keyword == 'zhTW'
           ? 'zhHant'
           : lang.keyword;
       this.setMultiLanguage(lang.keyword);
