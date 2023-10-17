@@ -1,9 +1,9 @@
-// Having performance problems and these views seem to be a cause of it. The
-// EXPLAIN for user_form_access_vw says that the role table in
-// user_form_permissions_vw is the bottleneck. Since it isn't needed, just get
-// rid of it rather than try to optimize it.
-//
-// Note that we have to remove and recreate the dependent user_form_access_vw.
+// Having performance problems and these views seem to be a cause of it.
+// 1. Remove the join of "role" in user_form_permissions_vw.
+// 2. Remove the join of "role" in user_form_roles_vw.
+// 3. Simplify the EXISTS SELECT in user_form_permissions_vw.
+// 4. Simplify the EXISTS SELECT in user_form_roles_vw.
+// 5. Remove the sorting in the user_form_access_vw.
 
 /**
  * @param { import("knex").Knex } knex
@@ -77,8 +77,7 @@ exports.up = function (knex) {
          FROM "user" u
            JOIN user_form_roles_vw r ON u.id = r."userId"
            JOIN user_form_permissions_vw p ON r."userId" = p."userId" AND r."formId" = p."formId"
-           JOIN form_vw f ON f.id = p."formId"
-        ORDER BY (lower(u."lastName"::text)), (lower(u."firstName"::text)), (lower(f.name::text));`)
+           JOIN form_vw f ON f.id = p."formId";`)
     );
 };
 
