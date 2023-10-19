@@ -50,7 +50,7 @@ export default {
 </script>
 
 <template>
-  <span>
+  <span class="d-flex">
     <router-link
       :to="{
         name: 'UserFormView',
@@ -111,6 +111,7 @@ export default {
 
     <span
       v-if="submission.status === 'DRAFT' || submission.status === 'REVISING'"
+      class="d-flex"
     >
       <router-link
         :to="{

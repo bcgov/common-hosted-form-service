@@ -153,16 +153,18 @@ export default {
         :md="form.enableStatusUpdates ? 8 : 12"
         class="pl-0 pt-0"
       >
-        <v-alert
-          :value="!submissionReadOnly"
-          :class="[
-            'd-print-none ' + NOTIFICATIONS_TYPES.INFO.class,
-            { 'dir-rtl': isRTL },
-          ]"
-          :icon="NOTIFICATIONS_TYPES.INFO.icon"
-          :lang="lang"
-          >{{ $t('trans.formSubmission.alertInfo') }}</v-alert
-        >
+        <transition name="scale-transition">
+          <v-alert
+            v-if="!submissionReadOnly"
+            :class="[
+              'd-print-none mb-4 ' + NOTIFICATIONS_TYPES.INFO.class,
+              { 'dir-rtl': isRTL },
+            ]"
+            :icon="NOTIFICATIONS_TYPES.INFO.icon"
+            :lang="lang"
+            >{{ $t('trans.formSubmission.alertInfo') }}</v-alert
+          >
+        </transition>
         <v-card variant="outlined" class="review-form">
           <div :class="{ 'dir-rtl': isRTL }">
             <v-row no-gutters>

@@ -40,7 +40,7 @@ export default {
       </template>
     </v-hover>
 
-    <v-dialog v-model="dialog" data-test="v-dialog" width="100vh">
+    <v-dialog v-model="dialog" data-test="v-dialog" width="150vh">
       <v-card><v-img data-test="v-dialog-img" :alt="alt" :src="src" /></v-card>
     </v-dialog>
   </div>
