@@ -380,6 +380,7 @@ export default {
                       item-value="name"
                       height="300px"
                       mobile
+                      return-object
                       disable-pagination
                       fixed-header
                       class="bg-grey-lighten-5 mt-3 submissions-table"
