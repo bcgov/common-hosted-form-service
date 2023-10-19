@@ -80,9 +80,7 @@ export default {
     type="list-item-two-line"
     class="bgtrans"
   >
-    <div
-      class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
-    >
+    <div class="mt-6 d-flex flex-md-row justify-space-between">
       <div cols="12" sm="6">
         <h2 class="note-heading" :lang="lang">
           {{ $t('trans.notesPanel.notes') }}
