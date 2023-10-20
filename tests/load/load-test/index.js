@@ -73,7 +73,9 @@ const getToken = async () => {
 
   return new Promise((resolve, reject) => {
     const start = performance.now();
-    const endpoint = `${auth.host}/realms/${auth.realm}/protocol/openid-connect/token`;
+    const endpoint = config.get('auth.host').startsWith('https://')
+      ? `${auth.host}/auth/realms/${auth.realm}/protocol/openid-connect/token`
+      : `${auth.host}/realms/${auth.realm}/protocol/openid-connect/token`;
     const postData = `grant_type=password&client_id=${auth.clientId}&username=${auth.username}&password=${auth.password}`;
 
     const options = {
@@ -142,6 +144,7 @@ const createForm = async (token, schema) => {
       },
     };
 
+    log.debug(`${apiPath()}/forms`);
     const req = http.request(`${apiPath()}/forms`, options, (res) => {
       let data = '';
 
