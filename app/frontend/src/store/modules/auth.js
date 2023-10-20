@@ -175,10 +175,6 @@ export default {
       commit('SET_SHOW_TOKEN_EXPIRED_WARNING_MSG', showTokenExpiredWarningMSg);
     },
     async checkTokenExpiration({ getters, dispatch, state }) {
-      dispatch('setTokenExpirationWarningDialog', {
-        showTokenExpiredWarningMSg: true,
-        resetToken: true,
-      });
       if (getters.authenticated) {
         const { idle, lastActive } = useIdle(300000, { initialState: true });
         const source = ref(idle);
