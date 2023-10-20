@@ -7,8 +7,7 @@ import Vue from 'vue';
  * @param {integer} [timeout=10000] Number of milliseconds before timing out the request
  * @returns {object} An axios instance
  */
-export function appAxios(timeout = 60000) {
-  // 2023-10-13 urgent increase to fix outage
+export function appAxios(timeout = 10000) {
   const axiosOptions = { timeout: timeout };
   if (Vue.prototype.$config) {
     const config = Vue.prototype.$config;
