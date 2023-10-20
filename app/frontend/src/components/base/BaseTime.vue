@@ -54,8 +54,6 @@ export default {
           }, 1000);
         } else if (this.action === 'stop') {
           clearInterval(this.timerInterval);
-          this.timerDate = '';
-          this.now = '';
           this.timerInterval = null;
         }
       },
