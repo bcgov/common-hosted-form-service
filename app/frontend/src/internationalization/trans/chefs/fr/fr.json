@@ -971,6 +971,18 @@
       "saveSubscriptionSettingsConsErrMsg": "Erreur lors de l'enregistrement des paramètres d'abonnement pour le formulaire {formId} : {error}"
     }
   },
+  "baseTime":{
+    "minutes": "Minutes",
+    "seconds": "Seconds"
+  },
+  "baseWarningDialog": {
+    "sessionExpiring": "Session expirant",
+    "sessionExpireIn": "Votre session expirera dans",
+    "signedOutAutomatically": "Vous serez déconnecté automatiquement.",
+    "wantStaySignedIn": "Voulez-vous rester connecté ?",
+    "staySignedIn": "Rester connecté",
+    "logout": "Se déconnecter"
+  },
   "admin": {
     "root": {
       "admin": "Administrateur"

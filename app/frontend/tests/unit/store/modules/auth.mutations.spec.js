@@ -16,4 +16,13 @@ describe('auth mutations', () => {
     expect(state.redirectUri).toBeTruthy();
     expect(state.redirectUri).toEqual(uri);
   });
+
+  it('SET_SHOW_TOKEN_EXPIRED_WARNING_MSG should update showTokenExpiredWarningMSg', () => {
+    const showTokenExpiredWarningMSg = true;
+    store.mutations.SET_SHOW_TOKEN_EXPIRED_WARNING_MSG(state, showTokenExpiredWarningMSg);
+
+    expect(state.showTokenExpiredWarningMSg).toBeTruthy();
+    expect(state.showTokenExpiredWarningMSg).toEqual(showTokenExpiredWarningMSg);
+  });
 });
+

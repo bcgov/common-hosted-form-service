@@ -867,6 +867,18 @@
     "about": "Tungkol sa",
     "pageNotFound": "Hindi Natagpuan ang 404 Page. :("
   },
+  "baseTime":{
+    "minutes": "Mga minuto",
+    "seconds": "Mga segundo"
+  },
+  "baseWarningDialog": {
+    "sessionExpiring": "Mag-e-expire ang session",
+    "sessionExpireIn": "Mag-e-expire ang iyong session sa",
+    "signedOutAutomatically": "Awtomatiko kang masa-sign out.",
+    "wantStaySignedIn": "Gusto mo bang manatiling naka-sign in?",
+    "staySignedIn": "Manatiling naka-sign in",
+    "logout": "Mag-logout"
+  },
   "store": {
     "admin": {
       "addFormOwnerRole": "Idinagdag ang tungkulin ng May-ari para sa form na ito sa {fullName}",

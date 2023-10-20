@@ -971,6 +971,18 @@
       "saveSubscriptionSettingsConsErrMsg": "保存表单 {formId} 的订阅设置时出错：{error}"
     }
   },
+  "baseTime":{
+    "minutes": "分分鐘",
+    "seconds": "秒數"
+  },
+  "baseWarningDialog": {
+    "sessionExpiring": "會話即將過期",
+    "sessionExpireIn": "您的會話將於",
+    "signedOutAutomatically": "您將自動退出。",
+    "wantStaySignedIn": "您想保持登入狀態嗎？",
+    "staySignedIn": "保持登入",
+    "logout": "登出"
+  },
   "admin": {
     "root": {
       "admin": "行政"

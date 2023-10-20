@@ -988,5 +988,17 @@
       "history": "HISTORY",
       "user": "User"
     }
+  },
+  "baseTime":{
+    "minutes": "Minutes",
+    "seconds": "Seconds"
+  },
+  "baseWarningDialog": {
+    "sessionExpiring": "Session expiring",
+    "sessionExpireIn": "Your session will expire in",
+    "signedOutAutomatically": "You will be signed out automatically.",
+    "wantStaySignedIn": "Do you want to stay signed in?",
+    "staySignedIn": "Stay Signed In",
+    "logout": "Logout"
   }
 }

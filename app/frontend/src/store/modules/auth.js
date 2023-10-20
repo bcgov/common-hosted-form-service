@@ -173,15 +173,14 @@ export default {
         dispatch('logout');
       }
       commit('SET_SHOW_TOKEN_EXPIRED_WARNING_MSG', showTokenExpiredWarningMSg);
-      if (showTokenExpiredWarningMSg) {
-        setTimeout(() => {
-          dispatch('logout');
-        }, 180000);
-      }
     },
     async checkTokenExpiration({ getters, dispatch, state }) {
+      dispatch('setTokenExpirationWarningDialog', {
+        showTokenExpiredWarningMSg: true,
+        resetToken: true,
+      });
       if (getters.authenticated) {
-        const { idle, lastActive } = useIdle(1000, { initialState: true });
+        const { idle, lastActive } = useIdle(300000, { initialState: true });
         const source = ref(idle);
         const now = useTimestamp({ interval: 1000 });
         state.watchPausable = watchPausable(source, (value) => {
@@ -191,21 +190,22 @@ export default {
               let end = moment(now.value);
               let active = moment(lastActive.value);
               let duration = moment.duration(end.diff(active)).as('minutes');
-              if (duration > 1) {
+              if (duration > 10) {
+                clearInterval(getters.inActiveCheckInterval);
                 state.watchPausable.pause();
                 dispatch('setTokenExpirationWarningDialog', {
                   showTokenExpiredWarningMSg: true,
                   resetToken: true,
                 });
               }
-            }, 60000);
+            }, 1000);
           } else {
             clearInterval(getters.inActiveCheckInterval);
             state.updateTokenInterval = setInterval(() => {
               getters.updateToken(-1).catch(() => {
                 getters.clearToken();
               });
-            }, 120000);
+            }, 180000);
           }
         });
         state.watchPausable.resume();

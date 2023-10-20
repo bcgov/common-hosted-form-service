@@ -971,6 +971,18 @@
       "saveSubscriptionSettingsConsErrMsg": "خطأ في حفظ إعدادات الاشتراك للنموذج {formId}: {error}"
     }
   },
+  "baseTime":{
+    "minutes": "دقائق",
+    "seconds": "ثواني"
+  },
+  "baseWarningDialog": {
+    "sessionExpiring": "انتهاء الجلسة",
+    "sessionExpireIn": "ستنتهي جلستك في",
+    "signedOutAutomatically": "سيتم تسجيل خروجك تلقائيًا.",
+    "wantStaySignedIn": "هل تريد البقاء مسجل الدخول؟",
+    "staySignedIn": "البقاء مسجل الدخول",
+    "logout": "تسجيل خروج"
+  },
   "admin": {
     "root": {
       "admin": "مسؤل"

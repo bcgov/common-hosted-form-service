@@ -970,6 +970,18 @@
       "saveSubscriptionSettingsConsErrMsg": "Ошибка сохранения настроек подписки для формы {formId}: {error}"
     }
   },
+  "baseTime":{
+    "minutes": "Минуты",
+    "seconds": "Секунды"
+  },
+  "baseWarningDialog": {
+    "sessionExpiring": "Срок действия сессии истекает",
+    "sessionExpireIn": "Срок действия вашей сессии истечет через",
+    "signedOutAutomatically": "Вы выйдете из системы автоматически.",
+    "wantStaySignedIn": "Хотите остаться в системе?",
+    "staySignedIn": "Остаться в системе",
+    "logout": "Выйти"
+  },
   "admin": {
     "root": {
       "admin": "Админ"

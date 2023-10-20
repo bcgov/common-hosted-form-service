@@ -867,6 +867,18 @@
     "about": "에 대한",
     "pageNotFound": "404 페이지를 찾을 수 없습니다. :("
   },
+  "baseTime":{
+    "minutes": "분",
+    "seconds": "초"
+  },
+  "baseWarningDialog": {
+    "sessionExpiring": "세션 만료",
+    "sessionExpireIn": "세션이 만료됩니다.",
+    "signedOutAutomatically": "자동으로 로그아웃됩니다.",
+    "wantStaySignedIn": "로그인 상태를 유지하시겠습니까?",
+    "staySignedIn": "로그인 상태 유지",
+    "logout": "로그 아웃"
+  },
   "store": {
     "admin": {
       "addFormOwnerRole": "이 양식의 소유자 역할을 {fullName}에 추가했습니다.",

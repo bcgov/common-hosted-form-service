@@ -971,6 +971,18 @@
       "saveSubscriptionSettingsConsErrMsg": "फ़ॉर्म {formId} के लिए सदस्यता सेटिंग सहेजने में त्रुटि: {त्रुटि}"
     }
   },
+  "baseTime":{
+    "minutes": "मिनट",
+    "seconds": "सेकंड"
+  },
+  "baseWarningDialog": {
+    "sessionExpiring": "सत्र समाप्त हो रहा है",
+    "sessionExpireIn": "आपका सत्र समाप्त हो जाएगा",
+    "signedOutAutomatically": "आप स्वचालित रूप से साइन आउट हो जाएंगे.",
+    "wantStaySignedIn": "क्या आप साइन इन रहना चाहते हैं?",
+    "staySignedIn": "साइन इन रहें",
+    "logout": "लॉग आउट"
+  },
   "admin": {
     "root": {
       "admin": "व्यवस्थापक"

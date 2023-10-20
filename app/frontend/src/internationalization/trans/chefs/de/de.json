@@ -867,6 +867,18 @@
     "about": "Um",
     "pageNotFound": "404 Seite nicht gefunden. :("
   },
+  "baseTime":{
+    "minutes": "Protokoll",
+    "seconds": "Sekunden"
+  },
+  "baseWarningDialog": {
+    "sessionExpiring": "Sitzung läuft ab",
+    "sessionExpireIn": "Ihre Sitzung läuft in ab",
+    "signedOutAutomatically": "Sie werden automatisch abgemeldet.",
+    "wantStaySignedIn": "Möchten Sie angemeldet bleiben?",
+    "staySignedIn": "Bleiben Sie angemeldet",
+    "logout": "Ausloggen"
+  },
   "store": {
     "admin": {
       "addFormOwnerRole": "Die Besitzerrolle für dieses Formular wurde zu {fullName} hinzugefügt.",
