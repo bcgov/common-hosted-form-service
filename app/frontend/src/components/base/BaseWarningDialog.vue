@@ -1,17 +1,10 @@
 <template>
   <BaseDialog
     type="CONTINUE"
-    :showCloseButton="true"
+    :isClickOutsideDisabled="true"
     :width="'50%'"
     :value="showTokenExpiredWarningMSg"
-    @close-dialog="
-      () => {
-        setTokenExpirationWarningDialog({
-          showTokenExpiredWarningMSg: false,
-          resetToken: false,
-        });
-      }
-    "
+    @close-dialog="onClose"
     @continue-dialog="
       () => {
         setTokenExpirationWarningDialog({
@@ -21,28 +14,71 @@
       }
     "
   >
-    <template #title><span>Session expiring</span></template>
+    <template #title
+      ><span :lang="lang">{{
+        $t('trans.baseWarningDialog.sessionExpiring')
+      }}</span></template
+    >
     <template #text>
-      <div class="text-display-4">
-        Your session will expire soon and you will be signed out automatically.
+      <div class="text-display-4 d-flex flex-row" :class="{ 'dir-rtl': isRTL }">
+        <span :lang="lang">{{
+          $t('trans.baseWarningDialog.sessionExpireIn')
+        }}</span>
+        <span class="ml-2">
+          <BaseTime
+            @timer-stopped="onClose"
+            :action="showTokenExpiredWarningMSg ? 'start' : 'stop'"
+          /> </span
+        ><span class="mr-2">.</span>
+        <span :lang="lang">{{
+          $t('trans.baseWarningDialog.signedOutAutomatically')
+        }}</span>
       </div>
-      <div class="text-display-3 mt-3">Do you want to stay signed in?</div>
+
+      <div class="text-display-3 mt-3" :class="{ 'dir-rtl': isRTL }">
+        {{ $t('trans.baseWarningDialog.wantStaySignedIn') }}
+      </div>
     </template>
     <template #button-text-continue>
-      <span>Confirm</span>
+      <span :lang="lang" :class="{ 'dir-rtl': isRTL }">{{
+        $t('trans.baseWarningDialog.staySignedIn')
+      }}</span>
+    </template>
+    <template #button-text-cancel>
+      <span :lang="lang" :class="{ 'dir-rtl': isRTL }">
+        {{ $t('trans.baseWarningDialog.logout') }}</span
+      >
     </template>
   </BaseDialog>
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import { ref } from 'vue';
 
 export default {
   name: 'BaseWarningDialog',
+  data() {
+    return {
+      action: ref('start'),
+      now: Math.trunc(new Date().getTime() / 1000),
+    };
+  },
   computed: {
     ...mapGetters('auth', ['showTokenExpiredWarningMSg']),
+    ...mapGetters('form', ['isRTL', 'lang']),
   },
   methods: {
     ...mapActions('auth', ['setTokenExpirationWarningDialog']),
+    onClose() {
+      this.setTokenExpirationWarningDialog({
+        showTokenExpiredWarningMSg: false,
+        resetToken: false,
+      });
+    },
+  },
+  beforeRouteLeave(to, from, next) {
+    clearInterval(this.showTokenExpiredWarningMSg);
+    next();
   },
 };
 </script>

@@ -867,6 +867,18 @@
     "about": "про",
     "pageNotFound": "404: Сторінка не знайдена. :("
   },
+  "baseTime":{
+    "minutes": "хвилин",
+    "seconds": "секунд"
+  },
+  "baseWarningDialog": {
+    "sessionExpiring": "Сесія закінчується",
+    "sessionExpireIn": "Ваш сеанс закінчиться через",
+    "signedOutAutomatically": "Ви вийдете автоматично.",
+    "wantStaySignedIn": "Ви хочете залишитися в системі?",
+    "staySignedIn": "Запам'ятати мене",
+    "logout": "Вийти"
+  },
   "store": {
     "admin": {
       "addFormOwnerRole": "Додано роль власника для цієї форми для {fullName}",

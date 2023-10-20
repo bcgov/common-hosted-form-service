@@ -971,6 +971,18 @@
       "saveSubscriptionSettingsConsErrMsg": "Error al guardar la configuración de suscripción para el formulario {formId}: {error}"
     }
   },
+  "baseTime":{
+    "minutes": "Minutos",
+    "seconds": "Segundos"
+  },
+  "baseWarningDialog": {
+    "sessionExpiring": "La sesión expira",
+    "sessionExpireIn": "Su sesión caducará en",
+    "signedOutAutomatically": "Se cerrará tu sesión automáticamente.",
+    "wantStaySignedIn": "¿Quieres permanecer registrado?",
+    "staySignedIn": "Stay Signed In",
+    "logout": "Logout"
+  },
   "admin": {
     "root": {
       "admin": "Administración"

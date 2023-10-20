@@ -971,6 +971,18 @@
       "saveSubscriptionSettingsConsErrMsg": "ਫਾਰਮ {formId} ਲਈ ਗਾਹਕੀ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
     }
   },
+  "baseTime":{
+    "minutes": "ਮਿੰਟ",
+    "seconds": "ਸਕਿੰਟ"
+  },
+  "baseWarningDialog": {
+    "sessionExpiring": "ਸੈਸ਼ਨ ਦੀ ਮਿਆਦ ਸਮਾਪਤ ਹੋ ਰਹੀ ਹੈ",
+    "sessionExpireIn": "ਤੁਹਾਡੇ ਸੈਸ਼ਨ ਦੀ ਮਿਆਦ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ",
+    "signedOutAutomatically": "ਤੁਸੀਂ ਆਪਣੇ ਆਪ ਸਾਈਨ ਆਉਟ ਹੋ ਜਾਵੋਗੇ।",
+    "wantStaySignedIn": "ਕੀ ਤੁਸੀਂ ਸਾਈਨ ਇਨ ਰਹਿਣਾ ਚਾਹੁੰਦੇ ਹੋ?",
+    "staySignedIn": "ਸਾਈਨ ਇਨ ਰਹੋ",
+    "logout": "ਲਾੱਗ ਆਊਟ, ਬਾਹਰ ਆਉਣਾ"
+  },
   "admin": {
     "root": {
       "admin": "ਐਡਮਿਨ"

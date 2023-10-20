@@ -3,8 +3,8 @@
     :max-width="width"
     persistent
     v-bind:value="value"
-    @click:outside="closeDialog"
-    @keydown.esc="closeDialog"
+    @click:outside="isClickOutsideDisabled ? null : closeDialog"
+    @keydown.esc="isClickOutsideDisabled ? null : closeDialog"
   >
     <v-card>
       <div class="dialog-body" :class="{ 'dir-rtl': isRTL }">
@@ -133,6 +133,10 @@ export default {
   },
   props: {
     value: {
+      default: false,
+      type: Boolean,
+    },
+    isClickOutsideDisabled: {
       default: false,
       type: Boolean,
     },

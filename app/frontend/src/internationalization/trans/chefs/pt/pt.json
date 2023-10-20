@@ -972,6 +972,18 @@
       "saveSubscriptionSettingsConsErrMsg": "Erro ao salvar as configurações de assinatura para o formulário {formId}: {error}"
     }
   },
+  "baseTime":{
+    "minutes": "ਮਿੰਟ",
+    "seconds": "ਸਕਿੰਟ"
+  },
+  "baseWarningDialog": {
+    "sessionExpiring": "ਸੈਸ਼ਨ ਦੀ ਮਿਆਦ ਸਮਾਪਤ ਹੋ ਰਹੀ ਹੈ",
+    "sessionExpireIn": "ਤੁਹਾਡੇ ਸੈਸ਼ਨ ਦੀ ਮਿਆਦ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ",
+    "signedOutAutomatically": "ਤੁਸੀਂ ਆਪਣੇ ਆਪ ਸਾਈਨ ਆਉਟ ਹੋ ਜਾਵੋਗੇ।",
+    "wantStaySignedIn": "ਕੀ ਤੁਸੀਂ ਸਾਈਨ ਇਨ ਰਹਿਣਾ ਚਾਹੁੰਦੇ ਹੋ?",
+    "staySignedIn": "Stay Signed In",
+    "logout": "ਲਾੱਗ ਆਊਟ, ਬਾਹਰ ਆਉਣਾ"
+  },
   "admin": {
     "root": {
       "admin": "Administrador"

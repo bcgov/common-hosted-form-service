@@ -265,4 +265,8 @@ describe('auth getters', () => {
       public: true,
     });
   });
+
+  it('showTokenExpiredWarningMSg should return false', () => {
+    expect(store.getters.showTokenExpiredWarningMSg).toBeFalsy();
+  });
 });

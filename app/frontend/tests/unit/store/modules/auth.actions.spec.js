@@ -1,7 +1,19 @@
 import { cloneDeep } from 'lodash';
 import Vue from 'vue';
-
+import { useIdle, useTimestamp, watchPausable } from '@vueuse/core';
 import store from '@/store/modules/auth';
+jest.mock('@vueuse/core', () => ({ t: jest.fn(() => {}), 
+  watchPausable: jest.fn(() => ({
+    resume: jest.fn(),
+    pause: jest.fn()
+  })),
+  useIdle: jest.fn(()=> ({
+    idle:  Object.create({value: false}),     
+    modify:  Object.create({value: 1697743678216}),
+  })),
+ 
+  useTimestamp: jest.fn(() => Object.create({value: 1697744110333}))
+}));
 
 describe('auth actions', () => {
   const { location } = window;
@@ -13,8 +25,17 @@ describe('auth actions', () => {
     getters: {
       createLoginUrl: jest.fn(),
       createLogoutUrl: jest.fn(),
+      showTokenExpiredWarningMSg: jest.fn(),
+      inActiveCheckInterval: jest.fn(),
+      updateToken: jest.fn().mockImplementation(() => {
+        return {
+          catch: () => {}
+        };
+      }),
+      updateTokenInterval: jest.fn(),
     },
     rootGetters: {},
+    dispatch: jest.fn(),
     state: cloneDeep(store.state),
   };
 
@@ -137,6 +158,54 @@ describe('auth actions', () => {
 
       expect(window.location.replace).toHaveBeenCalledTimes(1);
       expect(mockStore.getters.createLogoutUrl).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('setTokenExpirationWarningDialog', () => {
+    beforeEach(() => {
+      mockStore.getters.showTokenExpiredWarningMSg.mockReset();
+      mockReplace.mockReset();  
+    });
+
+    it('setting reset token to true should call updateToken', () => {
+      let watchPausable = ()=> {
+        return {
+        resume: ()=> jest.fn()}
+      };
+      mockStore.state.watchPausable = watchPausable();
+      store.actions.setTokenExpirationWarningDialog(mockStore, { showTokenExpiredWarningMSg: false, resetToken: true });
+      jest.spyOn(mockStore.state.watchPausable, "resume");
+      expect(mockStore.getters.updateToken).toHaveBeenCalledTimes(1);
+    });
+
+    it('setting showTokenExpiredWarningMSg to false and reset token to false should call logout', () => {
+
+      store.actions.setTokenExpirationWarningDialog(mockStore, { showTokenExpiredWarningMSg: false, resetToken: false });
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledWith('logout');
+    });
+
+    it('setting showTokenExpiredWarningMSg and reset to true should commit to SET_SHOW_TOKEN_EXPIRED_WARNING_MSG', () => {
+
+      store.actions.setTokenExpirationWarningDialog(mockStore, { showTokenExpiredWarningMSg: true, resetToken: true });
+      expect(mockStore.commit).toHaveBeenCalledTimes(1);
+      expect(mockStore.commit).toHaveBeenCalledWith(
+        'SET_SHOW_TOKEN_EXPIRED_WARNING_MSG',
+        true
+      );
+    });    
+  });
+
+  describe('checkTokenExpiration', () => {
+    beforeEach(() => {
+      mockStore.getters.showTokenExpiredWarningMSg.mockReset();
+      mockReplace.mockReset(); 
+    });
+
+    it('should test for user idleness', () => {
+      mockStore.getters.authenticated = true 
+      store.actions.checkTokenExpiration(mockStore);
+      jest.spyOn(mockStore.state.watchPausable, "pause");
     });
   });
 });

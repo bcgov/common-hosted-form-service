@@ -971,6 +971,18 @@
       "saveSubscriptionSettingsConsErrMsg": "Errore durante il salvataggio delle impostazioni di sottoscrizione per il modulo {formId}: {error}"
     }
   },
+  "baseTime":{
+    "minutes": "Minuti",
+    "seconds": "Secondi"
+  },
+  "baseWarningDialog": {
+    "sessionExpiring": "Sessione in scadenza",
+    "sessionExpireIn": "La tua sessione scadrà tra",
+    "signedOutAutomatically": "Verrai disconnesso automaticamente.",
+    "wantStaySignedIn": "Vuoi rimanere connesso?",
+    "staySignedIn": "Stay Signed In",
+    "logout": "Logout"
+  },
   "admin": {
     "root": {
       "admin": "Amministratore"

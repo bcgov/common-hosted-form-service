@@ -867,6 +867,18 @@
     "about": "Về",
     "pageNotFound": "Lôi 404 Không Tim Được Trang. :("
   },
+  "baseTime":{
+    "minutes": "Phút",
+    "seconds": "Giây"
+  },
+  "baseWarningDialog": {
+    "sessionExpiring": "Phiên hết hạn",
+    "sessionExpireIn": "Phiên của bạn sẽ hết hạn sau",
+    "signedOutAutomatically": "Bạn sẽ được đăng xuất tự động.",
+    "wantStaySignedIn": "Bạn có muốn tiếp tục đăng nhập không?",
+    "staySignedIn": "Vẫn đang đăng nhập",
+    "logout": "Đăng xuất"
+  },
   "store": {
     "admin": {
       "addFormOwnerRole": "Đã thêm vai trò Chủ sở hữu cho biểu mẫu này vào {fullName}",

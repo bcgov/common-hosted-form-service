@@ -971,6 +971,18 @@
       "saveSubscriptionSettingsConsErrMsg": "フォーム {formId} のサブスクリプション設定を保存中にエラーが発生しました: {error}"
     }
   },
+  "baseTime":{
+    "minutes": "分",
+    "seconds": "秒"
+  },
+  "baseWarningDialog": {
+    "sessionExpiring": "セッションが期限切れになります",
+    "sessionExpireIn": "セッションの有効期限は次のとおりです",
+    "signedOutAutomatically": "自動的にサインアウトされます。",
+    "wantStaySignedIn": "サインインしたままにしますか?",
+    "staySignedIn": "Stay Signed In",
+    "logout": "Logout"
+  },
   "admin": {
     "root": {
       "admin": "管理者"

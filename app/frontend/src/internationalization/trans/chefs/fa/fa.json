@@ -971,6 +971,18 @@
       "saveSubscriptionSettingsConsErrMsg": "خطا در ذخیره تنظیمات اشتراک برای فرم {formId}: {error}"
     }
   },
+  "baseTime":{
+    "minutes": "دقایق",
+    "seconds": "ثانیه ها"
+  },
+  "baseWarningDialog": {
+    "sessionExpiring": "جلسه در حال انقضا است",
+    "sessionExpireIn": "جلسه شما به پایان می رسد",
+    "signedOutAutomatically": "شما به طور خودکار از سیستم خارج خواهید شد.",
+    "wantStaySignedIn": "آیا می خواهید وارد سیستم شوید؟",
+    "staySignedIn": "وارد سیستم بمانید",
+    "logout": "خروج"
+  },
   "admin": {
     "root": {
       "admin": "مدیر"
