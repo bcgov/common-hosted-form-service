@@ -3,8 +3,11 @@
 @import '@mdi/font/css/materialdesignicons.css';
 @import '~font-awesome/css/font-awesome.min.css';
 @import '~formiojs/dist/formio.builder.min.css';
-@import 'bootstrap-scss/bootstrap.scss'; // TODO: import this only for form designer/renderer formio components
 @import 'vue-json-pretty/lib/styles.css';
+
+// Override bootstrap default value
+$enable-smooth-scroll: false; 
+@import 'bootstrap-scss/bootstrap.scss'; // TODO: import this only for form designer/renderer formio components
 
 // Variables
 $bcgov-blue: #003366;
