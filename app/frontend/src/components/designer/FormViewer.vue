@@ -125,6 +125,9 @@ export default {
       return NotificationTypes;
     },
     viewerOptions() {
+      // Force recomputation of viewerOptions after rerendered formio to prevent duplicate submission update calls
+      this.reRenderFormIo;
+
       return {
         sanitizeConfig: {
           addTags: ['iframe'],
