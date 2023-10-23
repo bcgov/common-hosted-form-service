@@ -972,6 +972,14 @@
       "saveSubscriptionSettingsConsErrMsg": "Erro ao salvar as configurações de assinatura para o formulário {formId}: {error}"
     }
   },
+  "firstTimeUserInfoBanner": {
+    "welcome": "Bem-vindo",
+    "createCHFS": "Crie, publique formulários e receba envios com o Common Hosted Forms Service",
+    "takeATourOfChefs": "Faça um tour pelo CHEFS para vê-lo em ação.",
+    "introductionToCHEFS": "Faça um tour pelo CHEFS para vê-lo em ação.",
+    "skipWalkThrough": "PULAR PASSO A PASSO",
+    "createYourFirstForm": "CRIE SEU PRIMEIRO FORMULÁRIO"
+  },
   "admin": {
     "root": {
       "admin": "Administrador"

@@ -971,6 +971,14 @@
       "saveSubscriptionSettingsConsErrMsg": "Помилка збереження налаштувань підписки для форми {formId}: {error}"
     }
   },
+  "firstTimeUserInfoBanner": {
+    "welcome": "Ласкаво просимо",
+    "createCHFS": "Створюйте, публікуйте форми та отримуйте подання за допомогою Common Hosted Forms Service",
+    "takeATourOfChefs": "Здійсніть екскурсію по CHEFS, щоб побачити це в дії.",
+    "introductionToCHEFS": "Знайомство зі службою Common Hosted Forms Service (CHEFS)",
+    "skipWalkThrough": "ПРОПУСТИТИ ПРОХОДЖЕННЯ",
+    "createYourFirstForm": "СТВОРИТИ СВОЮ ПЕРШУ ФОРМУ"
+  },
   "admin": {
     "root": {
       "admin": "адмін"

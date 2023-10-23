@@ -971,6 +971,14 @@
       "saveSubscriptionSettingsConsErrMsg": "Errore durante il salvataggio delle impostazioni di sottoscrizione per il modulo {formId}: {error}"
     }
   },
+  "firstTimeUserInfoBanner": {
+    "welcome": "Benvenuto",
+    "createCHFS": "Crea, pubblica moduli e ricevi invii con il servizio moduli ospitati comuni",
+    "takeATourOfChefs": "Fai un tour di CHEFS per vederlo in azione.",
+    "introductionToCHEFS": "Introduzione al servizio Common Hosted Forms (CHEFS)",
+    "skipWalkThrough": "SALTA LA PROCEDURA",
+    "createYourFirstForm": "CREA IL TUO PRIMO MODULO"
+  },
   "admin": {
     "root": {
       "admin": "Amministratore"

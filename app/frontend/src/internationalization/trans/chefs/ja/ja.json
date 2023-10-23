@@ -971,6 +971,14 @@
       "saveSubscriptionSettingsConsErrMsg": "フォーム {formId} のサブスクリプション設定を保存中にエラーが発生しました: {error}"
     }
   },
+  "firstTimeUserInfoBanner": {
+    "welcome": "いらっしゃいませ",
+    "createCHFS": "Common Hosted Forms Service を使用してフォームを作成、公開し、送信を受信します",
+    "takeATourOfChefs": "CHEFS のツアーに参加して、実際の動作を確認してください。",
+    "introductionToCHEFS": "Common Hosted Forms Service (CHEFS) の概要",
+    "skipWalkThrough": "ウォークスルーをスキップ",
+    "createYourFirstForm": "最初のフォームを作成する"
+  },
   "admin": {
     "root": {
       "admin": "管理者"

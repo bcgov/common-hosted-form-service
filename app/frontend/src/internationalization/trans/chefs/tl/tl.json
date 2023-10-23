@@ -971,6 +971,14 @@
       "saveSubscriptionSettingsConsErrMsg": "Error sa pag-save ng mga setting ng subscription para sa form {formId}: {error}"
     }
   },
+  "firstTimeUserInfoBanner": {
+    "welcome": "Maligayang pagdating",
+    "createCHFS": "Gumawa, mag-publish ng mga form, at tumanggap ng mga pagsusumite gamit ang Common Hosted Forms Service",
+    "takeATourOfChefs": "Maglibot sa CHEFS para makita ito sa aksyon.",
+    "introductionToCHEFS": "Panimula sa Common Hosted Forms Service (CHEFS)",
+    "skipWalkThrough": "Laktawan ang Walkthrough",
+    "createYourFirstForm": "GUMAWA NG IYONG UNANG FORM"
+  },
   "admin": {
     "root": {
       "admin": "Admin"

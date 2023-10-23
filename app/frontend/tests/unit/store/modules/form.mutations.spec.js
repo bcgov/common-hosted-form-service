@@ -170,4 +170,9 @@ describe('form mutations', () => {
     expect(state.subscriptionData).toBeTruthy();
     expect(state.subscriptionData).toEqual(expect.objectContaining(obj));
   });
+
+  it('SET_FIRST_TIME_USER_LOGIN should update firstTimeUserLogin state', () => {
+    store.mutations.SET_FIRST_TIME_USER_LOGIN(state, true);
+    expect(state.firstTimeUserLogin).toBeTruthy;
+  });
 });

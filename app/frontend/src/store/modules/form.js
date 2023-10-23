@@ -98,10 +98,11 @@ export default {
       data: null,
       headers: null,
     },
-    lang: 'en',
+    lang: sessionStorage.getItem('lang') !== null ? sessionStorage.lang : 'en',
     isRTL: false,
     subscriptionData: genInitialSubscribeDetails(),
     totalSubmissions: 0,
+    firstTimeUserLogin: false,
   },
   getters: {
     getField, // vuex-map-fields
@@ -127,6 +128,7 @@ export default {
     isRTL: (state) => state.isRTL,
     subscriptionData: (state) => state.subscriptionData,
     totalSubmissions: (state) => state.totalSubmissions,
+    firstTimeUserLogin: (state) => state.firstTimeUserLogin,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -203,6 +205,9 @@ export default {
     SET_TOTALSUBMISSIONS(state, totalSubmissions) {
       state.totalSubmissions = totalSubmissions;
     },
+    SET_FIRST_TIME_USER_LOGIN(state, firstTimeUserLogin) {
+      state.firstTimeUserLogin = firstTimeUserLogin;
+    },
   },
   actions: {
     //
@@ -214,6 +219,9 @@ export default {
         // Get the forms based on the user's permissions
         const response = await rbacService.getCurrentUser();
         const data = response.data;
+        if (data?.firstTimeUserLogin) {
+          dispatch('setFirstTimeUserLogin', true);
+        }
         // Build up the list of forms for the table
         const forms = data.forms.map((f) => ({
           currentVersionId: f.formVersionId,
@@ -237,6 +245,10 @@ export default {
           { root: true }
         );
       }
+    },
+
+    async setFirstTimeUserLogin({ commit }, firstTimeUserLogin) {
+      commit('SET_FIRST_TIME_USER_LOGIN', firstTimeUserLogin);
     },
     async getFormPermissionsForUser({ commit, dispatch }, formId) {
       try {

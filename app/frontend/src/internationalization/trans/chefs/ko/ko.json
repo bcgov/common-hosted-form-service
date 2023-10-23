@@ -971,6 +971,14 @@
       "saveSubscriptionSettingsConsErrMsg": "양식 {formId}에 대한 구독 설정 저장 오류: {error}"
     }
   },
+  "firstTimeUserInfoBanner": {
+    "welcome": "환영",
+    "createCHFS": "Common Hosted Forms Service를 사용하여 양식 작성, 게시 및 제출물 수신",
+    "takeATourOfChefs": "CHEFS를 둘러보고 실제로 작동하는 모습을 확인하세요.",
+    "introductionToCHEFS": "CHEFS(Common Hosted Forms Service) 소개",
+    "skipWalkThrough": "둘러보기 건너뛰기",
+    "createYourFirstForm": "첫 번째 양식 만들기"
+  },
   "admin": {
     "root": {
       "admin": "관리자"

@@ -971,6 +971,14 @@
       "saveSubscriptionSettingsConsErrMsg": "Lỗi khi lưu cài đặt đăng ký cho biểu mẫu {formId}: {error}"
     }
   },
+  "firstTimeUserInfoBanner": {
+    "welcome": "Chào mừng",
+    "createCHFS": "Tạo, xuất bản biểu mẫu và nhận nội dung gửi bằng Dịch vụ biểu mẫu được lưu trữ chung",
+    "takeATourOfChefs": "Hãy tham quan CHEFS để xem nó hoạt động như thế nào.",
+    "introductionToCHEFS": "Giới thiệu về Dịch vụ biểu mẫu được lưu trữ chung (CHEFS)",
+    "skipWalkThrough": "BỎ QUA HƯỚNG DẪN",
+    "createYourFirstForm": "TẠO BIỂU MẪU ĐẦU TIÊN CỦA BẠN"
+  },
   "admin": {
     "root": {
       "admin": "Quản trị viên"

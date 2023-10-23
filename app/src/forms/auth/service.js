@@ -111,12 +111,13 @@ const service = {
       return { id: 'public', ...userInfo };
     }
 
+    let firstTimeLogin = false;
     const obj = { ...userInfo };
-
     // if this user does not exists, add...
     let user = await User.query().first().where('idpUserId', obj.idpUserId);
 
     if (!user) {
+      firstTimeLogin = true;
       // add to the system.
       user = await service.createUser(obj);
     } else {
@@ -125,7 +126,7 @@ const service = {
     }
 
     // return with the db id...
-    return { id: user.id, usernameIdp: user.idpCode ? `${user.username}@${user.idpCode}` : user.username, ...userInfo };
+    return { id: user.id, firstTimeLogin: firstTimeLogin, usernameIdp: user.idpCode ? `${user.username}@${user.idpCode}` : user.username, ...userInfo };
   },
 
   getUserForms: async (userInfo, params = {}) => {

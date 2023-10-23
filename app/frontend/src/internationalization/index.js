@@ -45,7 +45,7 @@ const messages = {
 
 // Create VueI18n instance with options
 export default new VueI18n({
-  locale: 'en', // set locale
+  locale: sessionStorage.getItem('lang') !== null ? sessionStorage.lang : 'en', // set locale
   fallbackLocale: 'en',
   messages, // set locale messages
 });

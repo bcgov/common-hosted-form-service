@@ -41,7 +41,6 @@ export default {
   data: () => {
     return {
       language: 'English',
-      lang: 'en',
       languageIndex: 0,
       items: [
         { title: 'English', keyword: 'en' },
@@ -78,6 +77,7 @@ export default {
           ? 'zhHant'
           : lang.keyword;
       this.setMultiLanguage(lang.keyword);
+      sessionStorage.setItem('lang', lang.keyword);
     },
   },
 };

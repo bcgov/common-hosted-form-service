@@ -971,6 +971,14 @@
       "saveSubscriptionSettingsConsErrMsg": "ਫਾਰਮ {formId} ਲਈ ਗਾਹਕੀ ਸੈਟਿੰਗਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
     }
   },
+  "firstTimeUserInfoBanner": {
+    "welcome": "ਸੁਆਗਤ ਹੈ",
+    "createCHFS": "ਕਾਮਨ ਹੋਸਟਡ ਫਾਰਮ ਸੇਵਾ ਨਾਲ ਫਾਰਮ ਬਣਾਓ, ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ ਅਤੇ ਸਬਮਿਸ਼ਨਾਂ ਪ੍ਰਾਪਤ ਕਰੋ",
+    "takeATourOfChefs": "ਇਸ ਨੂੰ ਕਾਰਵਾਈ ਵਿੱਚ ਦੇਖਣ ਲਈ CHEFS ਦਾ ਦੌਰਾ ਕਰੋ।",
+    "introductionToCHEFS": "ਕਾਮਨ ਹੋਸਟਡ ਫਾਰਮ ਸਰਵਿਸ (CHEFS) ਨਾਲ ਜਾਣ-ਪਛਾਣ",
+    "skipWalkThrough": "ਵਾਕਥਰੂ ਛੱਡੋ",
+    "createYourFirstForm": "ਆਪਣਾ ਪਹਿਲਾ ਫਾਰਮ ਬਣਾਓ"
+  },
   "admin": {
     "root": {
       "admin": "ਐਡਮਿਨ"

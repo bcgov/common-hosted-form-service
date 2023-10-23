@@ -971,6 +971,14 @@
       "saveSubscriptionSettingsConsErrMsg": "फ़ॉर्म {formId} के लिए सदस्यता सेटिंग सहेजने में त्रुटि: {त्रुटि}"
     }
   },
+  "firstTimeUserInfoBanner": {
+    "welcome": "स्वागत",
+    "createCHFS": "कॉमन होस्टेड फॉर्म सर्विस के साथ फॉर्म बनाएं, प्रकाशित करें और सबमिशन प्राप्त करें",
+    "takeATourOfChefs": "इसे कार्यान्वित होते देखने के लिए शेफ्स का भ्रमण करें।",
+    "introductionToCHEFS": "कॉमन होस्टेड फॉर्म सर्विस (CHEFS) का परिचय",
+    "skipWalkThrough": "वॉकथ्रू छोड़ें",
+    "createYourFirstForm": "अपना पहला फॉर्म बनाएं"
+  },
   "admin": {
     "root": {
       "admin": "व्यवस्थापक"

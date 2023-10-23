@@ -971,6 +971,14 @@
       "saveSubscriptionSettingsConsErrMsg": "Fehler beim Speichern der Abonnementeinstellungen für das Formular {formId}: {error}"
     }
   },
+  "firstTimeUserInfoBanner": {
+    "welcome": "Willkommen",
+    "createCHFS": "Erstellen, veröffentlichen Sie Formulare und empfangen Sie Übermittlungen mit dem Common Hosted Forms Service",
+    "takeATourOfChefs": "Machen Sie einen Rundgang durch CHEFS, um es in Aktion zu sehen.",
+    "introductionToCHEFS": "Einführung in den Common Hosted Forms Service (CHEFS)",
+    "skipWalkThrough": "ÜBERSPRINGEN SIE DIE KOMPLETTE DURCHFÜHRUNG",
+    "createYourFirstForm": "ERSTELLEN SIE IHR ERSTES FORMULAR"
+  },
   "admin": {
     "root": {
       "admin": "Administrator"

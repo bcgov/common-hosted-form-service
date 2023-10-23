@@ -970,6 +970,14 @@
       "saveSubscriptionSettingsConsErrMsg": "Ошибка сохранения настроек подписки для формы {formId}: {error}"
     }
   },
+  "firstTimeUserInfoBanner": {
+    "welcome": "Добро пожаловать",
+    "createCHFS": "Создавайте, публикуйте формы и получайте материалы с помощью Common Hosted Forms Service.",
+    "takeATourOfChefs": "Совершите экскурсию по CHEFS, чтобы увидеть его в действии.",
+    "introductionToCHEFS": "Введение в службу Common Hosted Forms (CHEFS)",
+    "skipWalkThrough": "ПРОПУСТИТЬ ПРОХОЖДЕНИЕ",
+    "createYourFirstForm": "СОЗДАЙТЕ СВОЮ ПЕРВУЮ ФОРМУ"
+  },
   "admin": {
     "root": {
       "admin": "Админ"

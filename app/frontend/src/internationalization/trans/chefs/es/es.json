@@ -971,6 +971,14 @@
       "saveSubscriptionSettingsConsErrMsg": "Error al guardar la configuración de suscripción para el formulario {formId}: {error}"
     }
   },
+  "firstTimeUserInfoBanner": {
+    "welcome": "Bienvenido",
+    "createCHFS": "Cree, publique formularios y reciba envíos con Common Hosted Forms Service",
+    "takeATourOfChefs": "Haga un recorrido por CHEFS para verlo en acción.",
+    "introductionToCHEFS": "Introducción al servicio de formularios alojados comunes (CHEFS)",
+    "skipWalkThrough": "SALTAR EL RECORRIDO",
+    "createYourFirstForm": "CREA TU PRIMER FORMULARIO"
+  },
   "admin": {
     "root": {
       "admin": "Administración"
