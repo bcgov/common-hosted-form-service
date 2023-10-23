@@ -971,6 +971,14 @@
       "saveSubscriptionSettingsConsErrMsg": "خطا در ذخیره تنظیمات اشتراک برای فرم {formId}: {error}"
     }
   },
+  "firstTimeUserInfoBanner": {
+    "welcome": "خوش آمدی",
+    "createCHFS": "با سرویس فرم‌های میزبانی مشترک، فرم‌ها را ایجاد، منتشر کنید و موارد ارسالی را دریافت کنید",
+    "takeATourOfChefs": "برای مشاهده عملکرد آن، یک تور از CHEFS داشته باشید.",
+    "introductionToCHEFS": "مقدمه ای بر سرویس فرم های میزبانی مشترک (CHEFS)",
+    "skipWalkThrough": "رد شدن از راه رفتن",
+    "createYourFirstForm": "اولین فرم خود را ایجاد کنید"
+  },
   "admin": {
     "root": {
       "admin": "مدیر"

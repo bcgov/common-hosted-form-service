@@ -940,6 +940,14 @@
       "saveSubscriptionSettingsConsErrMsg": "Error saving subscription settings for form {formId}: {error}"
     }
   },
+  "firstTimeUserInfoBanner": {
+    "welcome": "Welcome",
+    "createCHFS": "Create, publish forms, and receive submissions with the Common Hosted Forms Service",
+    "takeATourOfChefs": "Take a tour of CHEFS to see it in action.",
+    "introductionToCHEFS": "Introduction to the Common Hosted Forms Service (CHEFS)",
+    "skipWalkThrough": "SKIP WALKTHROUGH",
+    "createYourFirstForm": "CREATE YOUR FIRST FORM"
+  },
   "permissionUtils": {
     "formNotAvailable": "The form is currently unavailable. This may be due to an incorrect link, or the form may have been deleted by its owner.",
     "missingFormIdAndSubmssId": "Options missing both formId and submissionId",

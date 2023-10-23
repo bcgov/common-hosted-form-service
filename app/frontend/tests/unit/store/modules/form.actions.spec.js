@@ -9,6 +9,7 @@ import {
 import store from '@/store/modules/form';
 import i18n from '@/internationalization';
 
+
 jest.mock('@/services');
 jest.mock('@/internationalization', () => ({ t: jest.fn(() => {}) }));
 
@@ -614,5 +615,25 @@ describe('form actions', () => {
       'SET_SUBSCRIPTION_DATA',
       expect.any(Object)
     );
+  });
+  it('readFormSubscriptionData should commit to SET_SUBSCRIPTION_DATA', async () => {
+    formService.readFormSubscriptionData.mockResolvedValue({ data: {} });
+    await store.actions.readFormSubscriptionData(mockStore, { formId: 'fId' });
+
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith(
+      'SET_SUBSCRIPTION_DATA',
+      expect.any(Object)
+    );
+  });
+  describe('first time user login', () => {
+    it('getFormsForCurrentUser should dispatch setFirstTimeUserLogin action', async () => {
+      rbacService.getCurrentUser.mockResolvedValue({data:{'firstTimeUserLogin': true}})
+      await store.actions.getFormsForCurrentUser(mockStore);
+      expect(mockStore.dispatch).toHaveBeenCalledWith(
+        'setFirstTimeUserLogin',
+        true
+      );
+    });
   });
 });

@@ -971,6 +971,14 @@
       "saveSubscriptionSettingsConsErrMsg": "خطأ في حفظ إعدادات الاشتراك للنموذج {formId}: {error}"
     }
   },
+  "firstTimeUserInfoBanner": {
+    "welcome": "مرحباً",
+    "createCHFS": "قم بإنشاء النماذج ونشرها وتلقي الطلبات المقدمة باستخدام Common Hosted Forms Service",
+    "takeATourOfChefs": "قم بجولة في CHEFS لمشاهدتها أثناء العمل.",
+    "introductionToCHEFS": "مقدمة إلى خدمة النماذج المستضافة المشتركة (CHEFS)",
+    "skipWalkThrough": "تخطي الإرشادات التفصيلية",
+    "createYourFirstForm": "قم بإنشاء النموذج الأول الخاص بك"
+  },
   "admin": {
     "root": {
       "admin": "مسؤل"

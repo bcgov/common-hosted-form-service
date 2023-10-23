@@ -971,6 +971,14 @@
       "saveSubscriptionSettingsConsErrMsg": "保存表单 {formId} 的订阅设置时出错：{error}"
     }
   },
+  "firstTimeUserInfoBanner": {
+    "welcome": "欢迎",
+    "createCHFS": "使用通用托管表单服务创建、发布表单并接收提交内容e",
+    "takeATourOfChefs": "参观 CHEFS 以了解其实际情况。",
+    "introductionToCHEFS": "通用托管表单服务 (CHEFS) 简介",
+    "skipWalkThrough": "跳过演练",
+    "createYourFirstForm": "创建您的第一个表格"
+  },
   "admin": {
     "root": {
       "admin": "行政"

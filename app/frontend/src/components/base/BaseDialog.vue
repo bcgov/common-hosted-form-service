@@ -3,8 +3,8 @@
     :max-width="width"
     persistent
     v-bind:value="value"
-    @click:outside="closeDialog"
-    @keydown.esc="closeDialog"
+    @click:outside="isClickOutsideEnabled ? null : closeDialog"
+    @keydown.esc="isClickOutsideEnabled ? null : closeDialog"
   >
     <v-card>
       <div class="dialog-body" :class="{ 'dir-rtl': isRTL }">
@@ -28,7 +28,7 @@
           </div>
         </v-card-text>
       </div>
-      <v-card-actions class="justify-center">
+      <v-card-actions :class="buttonAlignment">
         <div v-if="type === 'OK'">
           <v-btn class="mb-5" color="primary" depressed @click="closeDialog">
             <slot name="button-text">
@@ -73,6 +73,29 @@
           <v-btn class="mb-5" outlined @click="deleteDialog">
             <slot name="button-text-delete">
               <span :lang="lang">{{ $t('trans.baseDialog.cancel') }}</span>
+            </slot>
+          </v-btn>
+        </div>
+        <div v-else-if="type === 'INFO'">
+          <v-btn
+            class="mb-5"
+            :class="isRTL ? 'ml-2' : 'mr-2'"
+            outlined
+            @click="closeDialog"
+          >
+            <slot name="button-text-delete">
+              <span :lang="lang">{{ $t('trans.baseDialog.cancel') }}</span>
+            </slot>
+          </v-btn>
+          <v-btn
+            class="mb-5 mr-5"
+            color="primary"
+            depressed
+            :class="{ 'dir-rtl': isRTL }"
+            @click="continueDialog"
+          >
+            <slot name="button-text-continue">
+              <span :lang="lang">{{ $t('trans.baseDialog.continue') }}</span>
             </slot>
           </v-btn>
         </div>
@@ -136,6 +159,10 @@ export default {
       default: false,
       type: Boolean,
     },
+    isClickOutsideEnabled: {
+      default: false,
+      type: Boolean,
+    },
     type: {
       default: null,
       type: String,
@@ -151,6 +178,10 @@ export default {
     enableCustomButton: {
       default: false,
       type: Boolean,
+    },
+    buttonAlignment: {
+      default: 'justify-center',
+      type: String,
     },
   },
 };

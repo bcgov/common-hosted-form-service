@@ -127,4 +127,10 @@ describe('form getters', () => {
       sampleState.subscriptionData
     );
   });
+
+  it('firstTimeUserLogin should return the state firstTimeUserLogin', () => {
+    expect(store.getters.firstTimeUserLogin).toEqual(
+      sampleState.firstTimeUserLogin
+    );
+  });
 });

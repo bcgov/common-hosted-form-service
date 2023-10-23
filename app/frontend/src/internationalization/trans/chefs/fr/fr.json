@@ -971,6 +971,14 @@
       "saveSubscriptionSettingsConsErrMsg": "Erreur lors de l'enregistrement des paramètres d'abonnement pour le formulaire {formId} : {error}"
     }
   },
+  "firstTimeUserInfoBanner": {
+    "welcome": "Bienvenu",
+    "createCHFS": "Créez, publiez des formulaires et recevez des soumissions avec le service de formulaires hébergés communs",
+    "takeATourOfChefs": "Faites une visite guidée de CHEFS pour le voir en action.",
+    "introductionToCHEFS": "Introduction au service de formulaires hébergés communs (CHEFS)",
+    "skipWalkThrough": "PASSER LA PROCÉDURE PAS À PAS",
+    "createYourFirstForm": "CRÉEZ VOTRE PREMIER FORMULAIRE"
+  },
   "admin": {
     "root": {
       "admin": "Administrateur"
