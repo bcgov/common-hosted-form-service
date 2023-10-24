@@ -98,7 +98,10 @@ export default {
       data: null,
       headers: null,
     },
-    lang: sessionStorage.getItem('lang') !== null ? sessionStorage.lang : 'en',
+    lang:
+      sessionStorage.getItem('langKeyword') !== null
+        ? sessionStorage.langKeyword
+        : 'en',
     isRTL: false,
     subscriptionData: genInitialSubscribeDetails(),
     totalSubmissions: 0,
