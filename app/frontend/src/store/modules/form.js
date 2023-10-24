@@ -220,7 +220,7 @@ export default {
         const response = await rbacService.getCurrentUser();
         const data = response.data;
         console.log('++++++++++++', response.data);
-        if (data&&datafirstTimeUserLogin){
+        if (data&&data.firstTimeUserLogin){
           console.log('aaa++++++++++++', data);
           dispatch('setFirstTimeUserLogin', true);
         }
