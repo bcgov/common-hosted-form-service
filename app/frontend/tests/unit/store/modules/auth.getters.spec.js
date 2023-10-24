@@ -266,7 +266,7 @@ describe('auth getters', () => {
     });
   });
 
-  it('showTokenExpiredWarningMSg should return false', () => {
-    expect(store.getters.showTokenExpiredWarningMSg).toBeFalsy();
+  it('showTokenExpiredWarningMsg should return false', () => {
+    expect(store.getters.showTokenExpiredWarningMsg).toBeFalsy();
   });
 });

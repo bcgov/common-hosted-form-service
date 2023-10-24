@@ -25,7 +25,7 @@ describe('auth actions', () => {
     getters: {
       createLoginUrl: jest.fn(),
       createLogoutUrl: jest.fn(),
-      showTokenExpiredWarningMSg: jest.fn(),
+      showTokenExpiredWarningMsg: jest.fn(),
       inActiveCheckInterval: jest.fn(),
       updateToken: jest.fn().mockImplementation(() => {
         return {
@@ -163,7 +163,7 @@ describe('auth actions', () => {
 
   describe('setTokenExpirationWarningDialog', () => {
     beforeEach(() => {
-      mockStore.getters.showTokenExpiredWarningMSg.mockReset();
+      mockStore.getters.showTokenExpiredWarningMsg.mockReset();
       mockReplace.mockReset();  
     });
 
@@ -173,21 +173,21 @@ describe('auth actions', () => {
         resume: ()=> jest.fn()}
       };
       mockStore.state.watchPausable = watchPausable();
-      store.actions.setTokenExpirationWarningDialog(mockStore, { showTokenExpiredWarningMSg: false, resetToken: true });
+      store.actions.setTokenExpirationWarningDialog(mockStore, { showTokenExpiredWarningMsg: false, resetToken: true });
       jest.spyOn(mockStore.state.watchPausable, "resume");
       expect(mockStore.getters.updateToken).toHaveBeenCalledTimes(1);
     });
 
-    it('setting showTokenExpiredWarningMSg to false and reset token to false should call logout', () => {
+    it('setting showTokenExpiredWarningMsg to false and reset token to false should call logout', () => {
 
-      store.actions.setTokenExpirationWarningDialog(mockStore, { showTokenExpiredWarningMSg: false, resetToken: false });
+      store.actions.setTokenExpirationWarningDialog(mockStore, { showTokenExpiredWarningMsg: false, resetToken: false });
       expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
       expect(mockStore.dispatch).toHaveBeenCalledWith('logout');
     });
 
-    it('setting showTokenExpiredWarningMSg and reset to true should commit to SET_SHOW_TOKEN_EXPIRED_WARNING_MSG', () => {
+    it('setting showTokenExpiredWarningMsg and reset to true should commit to SET_SHOW_TOKEN_EXPIRED_WARNING_MSG', () => {
 
-      store.actions.setTokenExpirationWarningDialog(mockStore, { showTokenExpiredWarningMSg: true, resetToken: true });
+      store.actions.setTokenExpirationWarningDialog(mockStore, { showTokenExpiredWarningMsg: true, resetToken: true });
       expect(mockStore.commit).toHaveBeenCalledTimes(1);
       expect(mockStore.commit).toHaveBeenCalledWith(
         'SET_SHOW_TOKEN_EXPIRED_WARNING_MSG',
@@ -198,7 +198,7 @@ describe('auth actions', () => {
 
   describe('checkTokenExpiration', () => {
     beforeEach(() => {
-      mockStore.getters.showTokenExpiredWarningMSg.mockReset();
+      mockStore.getters.showTokenExpiredWarningMsg.mockReset();
       mockReplace.mockReset(); 
     });
 
