@@ -53,16 +53,9 @@
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { ref } from 'vue';
 
 export default {
   name: 'BaseWarningDialog',
-  data() {
-    return {
-      action: ref('start'),
-      now: Math.trunc(new Date().getTime() / 1000),
-    };
-  },
   computed: {
     ...mapGetters('auth', ['showTokenExpiredWarningMSg']),
     ...mapGetters('form', ['isRTL', 'lang']),
@@ -75,10 +68,6 @@ export default {
         resetToken: false,
       });
     },
-  },
-  beforeRouteLeave(to, from, next) {
-    clearInterval(this.showTokenExpiredWarningMSg);
-    next();
   },
 };
 </script>

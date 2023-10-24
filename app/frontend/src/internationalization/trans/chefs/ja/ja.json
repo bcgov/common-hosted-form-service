@@ -980,8 +980,8 @@
     "sessionExpireIn": "セッションの有効期限は次のとおりです",
     "signedOutAutomatically": "自動的にサインアウトされます。",
     "wantStaySignedIn": "サインインしたままにしますか?",
-    "staySignedIn": "Stay Signed In",
-    "logout": "Logout"
+    "staySignedIn": "サインイン状態",
+    "logout": "ログアウト"
   },
   "admin": {
     "root": {
