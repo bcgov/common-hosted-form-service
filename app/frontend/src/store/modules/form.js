@@ -219,9 +219,9 @@ export default {
         // Get the forms based on the user's permissions
         const response = await rbacService.getCurrentUser();
         const data = response.data;
-        console.log('++++++++++++', data);
-        if (data&&datafirstTimeUserLogin) {
-          console.log('++++++++++++', data.firstTimeUserLogin);
+        console.log('++++++++++++', response.data);
+        if (data&&datafirstTimeUserLogin){
+          console.log('aaa++++++++++++', data);
           dispatch('setFirstTimeUserLogin', true);
         }
         // Build up the list of forms for the table
