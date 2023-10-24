@@ -983,6 +983,7 @@
     "wantStaySignedIn": "Quer continuar conectado?",
     "staySignedIn": "Permaneça conectado",
     "logout": "Sair"
+    
   },
   "admin": {
     "root": {
