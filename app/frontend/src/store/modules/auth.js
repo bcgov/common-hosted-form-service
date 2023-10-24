@@ -23,7 +23,7 @@ export default {
     // In most cases, when this becomes populated, we end up doing a redirect flow,
     // so when we return to the app, it is fresh again and undefined
     redirectUri: undefined,
-    showTokenExpiredWarningMSg: false,
+    showTokenExpiredWarningMsg: false,
     inActiveCheckInterval: null,
     updateTokenInterval: null,
     watchPausable: null,
@@ -93,7 +93,7 @@ export default {
 
       return user;
     },
-    showTokenExpiredWarningMSg: (state) => state.showTokenExpiredWarningMSg,
+    showTokenExpiredWarningMsg: (state) => state.showTokenExpiredWarningMsg,
     inActiveCheckInterval: (state) => state.inActiveCheckInterval,
     updateTokenInterval: (state) => state.updateTokenInterval,
   },
@@ -101,8 +101,8 @@ export default {
     SET_REDIRECTURI(state, redirectUri) {
       state.redirectUri = redirectUri;
     },
-    SET_SHOW_TOKEN_EXPIRED_WARNING_MSG(state, showTokenExpiredWarningMSg) {
-      state.showTokenExpiredWarningMSg = showTokenExpiredWarningMSg;
+    SET_SHOW_TOKEN_EXPIRED_WARNING_MSG(state, showTokenExpiredWarningMsg) {
+      state.showTokenExpiredWarningMsg = showTokenExpiredWarningMsg;
     },
   },
   actions: {
@@ -159,9 +159,9 @@ export default {
     },
     async setTokenExpirationWarningDialog(
       { getters, commit, dispatch, state },
-      { showTokenExpiredWarningMSg, resetToken }
+      { showTokenExpiredWarningMsg, resetToken }
     ) {
-      if (!showTokenExpiredWarningMSg && resetToken) {
+      if (!showTokenExpiredWarningMsg && resetToken) {
         state.watchPausable.resume();
         getters.updateToken(-1).catch(() => {
           getters.clearToken();
@@ -172,7 +172,7 @@ export default {
         clearInterval(getters.inActiveCheckInterval);
         dispatch('logout');
       }
-      commit('SET_SHOW_TOKEN_EXPIRED_WARNING_MSG', showTokenExpiredWarningMSg);
+      commit('SET_SHOW_TOKEN_EXPIRED_WARNING_MSG', showTokenExpiredWarningMsg);
     },
     async checkTokenExpiration({ getters, dispatch, state }) {
       if (getters.authenticated) {
@@ -190,7 +190,7 @@ export default {
                 clearInterval(getters.inActiveCheckInterval);
                 state.watchPausable.pause();
                 dispatch('setTokenExpirationWarningDialog', {
-                  showTokenExpiredWarningMSg: true,
+                  showTokenExpiredWarningMsg: true,
                   resetToken: true,
                 });
               }

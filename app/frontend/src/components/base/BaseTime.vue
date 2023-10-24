@@ -34,7 +34,7 @@ export default {
     ...mapGetters('form', ['isRTL', 'lang']),
     seconds() {
       let sec = Math.trunc(this.timerDate.diff(this.now, 'seconds') % 60);
-      if (this.minutes === 0 && sec === 28) {
+      if (this.minutes <= 0 && sec <= 28) {
         this.$emit('timer-stopped');
       }
       return sec;
