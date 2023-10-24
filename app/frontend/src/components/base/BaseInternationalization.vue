@@ -40,7 +40,10 @@ export default {
   },
   data: () => {
     return {
-      language: 'English',
+      language:
+        sessionStorage.getItem('langTitle') !== null
+          ? sessionStorage.langTitle
+          : 'English',
       languageIndex: 0,
       items: [
         { title: 'English', keyword: 'en' },
@@ -77,7 +80,8 @@ export default {
           ? 'zhHant'
           : lang.keyword;
       this.setMultiLanguage(lang.keyword);
-      sessionStorage.setItem('lang', lang.keyword);
+      sessionStorage.setItem('langKeyword', lang.keyword);
+      sessionStorage.setItem('langTitle', lang.title);
     },
   },
 };
