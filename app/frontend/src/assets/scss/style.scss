@@ -444,6 +444,18 @@ a,
     label.field-required.control-label--hidden::after {
       content: '';
     }
+
+    // We can't use HTML 5 selects due to:
+    // https://github.com/formio/formio.js/issues/5390
+    //
+    // So use the fix described in:
+    // https://github.com/formio/formio.js/issues/5216#issuecomment-1591282850
+    //
+    // Both of these bugs above are in formio.js v4.17.2, so when updating past
+    // that version check to see if the two lines below are still needed and if
+    // possible then remove them.
+    height: auto !important;
+    overflow: visible !important;
   }
 
   // dropdowns
@@ -598,9 +610,8 @@ a,
   left: auto !important;
 }
 
-
 .label span {
-  margin-right:30px;
+  margin-right: 30px;
 }
 
 .flex-xs-column-reverse {
@@ -615,7 +626,6 @@ a,
   direction: rtl !important;
   text-align: right;
 }
-
 
 .dir-ltl {
   direction: ltr !important;
