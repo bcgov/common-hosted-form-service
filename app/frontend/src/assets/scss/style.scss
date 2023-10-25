@@ -134,6 +134,10 @@ a,
   }
 }
 
+.v-tooltip > .v-overlay__content {
+  background: rgba(97, 97, 97, .9) !important;
+}
+
 // Customized expand/collapse section
 .nrmc-expand-collapse {
   width: 100%;

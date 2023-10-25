@@ -27,7 +27,7 @@ export default {
 <template>
   <nav
     v-if="!hideNavBar"
-    class="elevation-20 navigation-main d-print-none px-md-16 px-4"
+    class="elevation-4 navigation-main d-print-none px-md-16 px-4"
   >
     <div class="nav-holder">
       <ul>

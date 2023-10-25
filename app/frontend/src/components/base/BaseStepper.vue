@@ -27,17 +27,24 @@ export default {
 
 <template>
   <BaseSecure :idp="[IDP.IDIR]" :class="{ 'dir-rtl': isRTL }">
-    <v-stepper v-model="creatorStep">
-      <v-stepper-header>
+    <v-stepper
+      v-model="creatorStep"
+      alt-labels
+      class="elevation-0 d-flex flex-column"
+    >
+      <v-stepper-header class="elevation-0 px-0 align-self-center">
         <v-stepper-item
           :complete="creatorStep > 1"
           :step="creatorStep"
           :value="1"
           :lang="lang"
+          class="pl-1 pr-1"
         >
-          <slot name="setUpFormTitle">
-            {{ $t('trans.baseStepper.setUpForm') }}
-          </slot>
+          <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            <slot name="setUpFormTitle">
+              {{ $t('trans.baseStepper.setUpForm') }}
+            </slot>
+          </span>
         </v-stepper-item>
         <v-divider />
         <v-stepper-item
@@ -45,10 +52,13 @@ export default {
           :step="creatorStep"
           :value="2"
           :lang="lang"
+          class="pl-1 pr-1"
         >
-          <slot name="setUpFormTitle">
-            {{ $t('trans.baseStepper.designForm') }}
-          </slot>
+          <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            <slot name="designFormTitle">
+              {{ $t('trans.baseStepper.designForm') }}
+            </slot>
+          </span>
         </v-stepper-item>
         <v-divider />
         <v-stepper-item
@@ -56,26 +66,29 @@ export default {
           :step="creatorStep"
           :value="3"
           :lang="lang"
+          class="pl-1 pr-1"
         >
-          <slot name="setUpFormTitle">
-            {{ $t('trans.baseStepper.manageForm') }}
-          </slot>
+          <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            <slot name="manageFormTitle">
+              {{ $t('trans.baseStepper.manageForm') }}
+            </slot>
+          </span>
         </v-stepper-item>
       </v-stepper-header>
 
       <v-stepper-window>
-        <v-stepper-window-item :value="1">
-          <div class="mb-4">
+        <v-stepper-window-item :value="1" class="pa-1">
+          <div class="mt-4">
             <slot name="setUpForm"></slot>
           </div>
         </v-stepper-window-item>
-        <v-stepper-window-item :value="2">
-          <div class="mb-4">
+        <v-stepper-window-item :value="2" class="pa-1">
+          <div class="mt-4">
             <slot name="designForm"></slot>
           </div>
         </v-stepper-window-item>
-        <v-stepper-window-item :value="3">
-          <div>
+        <v-stepper-window-item :value="3" class="pa-1">
+          <div class="mt-4">
             <slot name="manageForm"></slot>
           </div>
         </v-stepper-window-item>
@@ -85,13 +98,25 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-/*
- * unset 'overflow: hidden' from parents of FormDesigner, so FormDesigner's
- * 'sticky' components menu sticks.
- */
+/* unset 'overflow: hidden' from all parents of FormDesigner, so FormDesigner's 'sticky' components menu sticks. */
+.v-stepper,
+.v-stepper__items,
+.v-stepper ::v-deep .v-stepper__wrapper {
+  overflow: initial !important;
+}
+
 .v-stepper,
 .v-stepper-window {
   overflow: initial !important;
+}
+
+.v-stepper.v-sheet {
+  box-shadow: none !important;
+}
+
+.v-stepper-header {
+  box-shadow: none !important;
+  width: 60%;
 }
 </style>
 
