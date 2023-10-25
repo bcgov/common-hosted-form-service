@@ -163,10 +163,7 @@ export default {
     ) {
       if (!showTokenExpiredWarningMsg && resetToken) {
         state.watchPausable.resume();
-        getters.updateToken(-1).catch(() => {
-          getters.clearToken();
-          dispatch('logout');
-        });
+        dispatch('updateToken');
       } else if (!resetToken) {
         clearInterval(getters.updateTokenInterval);
         clearInterval(getters.inActiveCheckInterval);
@@ -198,14 +195,18 @@ export default {
           } else {
             clearInterval(getters.inActiveCheckInterval);
             state.updateTokenInterval = setInterval(() => {
-              getters.updateToken(-1).catch(() => {
-                getters.clearToken();
-              });
+              dispatch('updateToken');
             }, 180000);
           }
         });
         state.watchPausable.resume();
       }
+    },
+    async updateToken({ getters, dispatch }) {
+      getters.updateToken(-1).catch(() => {
+        getters.clearToken();
+        dispatch('logout');
+      });
     },
   },
 };
