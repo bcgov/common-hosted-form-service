@@ -36,6 +36,7 @@ const chefsTheme = {
   dark: false,
   colors: {
     primary: '#003366',
+    'surface-variant': '#003366',
     secondary: '#FCBA19',
     anchor: '#1A5A96',
     accent: '#82B1FF',
