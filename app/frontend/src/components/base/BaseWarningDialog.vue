@@ -3,12 +3,12 @@
     type="CONTINUE"
     :isClickOutsideDisabled="true"
     :width="'50%'"
-    :value="showTokenExpiredWarningMSg"
+    :value="showTokenExpiredWarningMsg"
     @close-dialog="onClose"
     @continue-dialog="
       () => {
         setTokenExpirationWarningDialog({
-          showTokenExpiredWarningMSg: false,
+          showTokenExpiredWarningMsg: false,
           resetToken: true,
         });
       }
@@ -27,7 +27,7 @@
         <span class="ml-2">
           <BaseTime
             @timer-stopped="onClose"
-            :action="showTokenExpiredWarningMSg ? 'start' : 'stop'"
+            :action="showTokenExpiredWarningMsg ? 'start' : 'stop'"
           /> </span
         ><span class="mr-2">.</span>
         <span :lang="lang">{{
@@ -57,14 +57,14 @@ import { mapActions, mapGetters } from 'vuex';
 export default {
   name: 'BaseWarningDialog',
   computed: {
-    ...mapGetters('auth', ['showTokenExpiredWarningMSg']),
+    ...mapGetters('auth', ['showTokenExpiredWarningMsg']),
     ...mapGetters('form', ['isRTL', 'lang']),
   },
   methods: {
     ...mapActions('auth', ['setTokenExpirationWarningDialog']),
     onClose() {
       this.setTokenExpirationWarningDialog({
-        showTokenExpiredWarningMSg: false,
+        showTokenExpiredWarningMsg: false,
         resetToken: false,
       });
     },

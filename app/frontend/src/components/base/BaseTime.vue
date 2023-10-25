@@ -25,42 +25,61 @@ export default {
   },
   data() {
     return {
-      timerDate: moment().add(15, 'minutes'),
-      now: moment(),
+      timerDate: null,
+      now: null,
       timerInterval: null,
+      second: 0,
+      minute: 0,
     };
   },
   computed: {
     ...mapGetters('form', ['isRTL', 'lang']),
     seconds() {
-      let sec = Math.trunc(this.timerDate.diff(this.now, 'seconds') % 60);
-      if (this.minutes <= 0 && sec <= 28) {
-        this.$emit('timer-stopped');
-      }
-      return sec;
+      return this.second;
     },
     minutes() {
-      return this.timerDate.diff(this.now, 'minutes');
+      return this.minute;
+    },
+  },
+  methods: {
+    async timerStopped() {
+      this.reset();
+      this.$emit('timer-stopped');
+    },
+    async reset() {
+      await clearInterval(this.timerInterval);
+      this.timerInterval = null;
+      this.timerDate = null;
+      this.now = null;
+      this.minute = 0;
+      this.second = 0;
     },
   },
   watch: {
     action: {
       immediate: true,
       handler() {
+        this.timerDate = moment().add(15, 'minutes');
         if (this.action === 'start') {
           clearInterval(this.timerInterval);
           this.timerInterval = window.setInterval(() => {
             this.now = moment();
+            this.second = Math.trunc(
+              this.timerDate.diff(this.now, 'seconds') % 60
+            );
+            this.minute = this.timerDate.diff(this.now, 'minutes');
+            if (this.minute <= 0 && this.second <= 28) {
+              this.timerStopped();
+            }
           }, 1000);
         } else if (this.action === 'stop') {
-          clearInterval(this.timerInterval);
-          this.timerInterval = null;
+          this.reset();
         }
       },
     },
   },
   beforeUnmount() {
-    clearInterval(this.timerInterval);
+    this.reset();
   },
 };
 </script>

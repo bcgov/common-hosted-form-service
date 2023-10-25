@@ -175,7 +175,7 @@ describe('auth actions', () => {
       mockStore.state.watchPausable = watchPausable();
       store.actions.setTokenExpirationWarningDialog(mockStore, { showTokenExpiredWarningMsg: false, resetToken: true });
       jest.spyOn(mockStore.state.watchPausable, "resume");
-      expect(mockStore.getters.updateToken).toHaveBeenCalledTimes(1);
+      expect(mockStore.dispatch).toHaveBeenCalledTimes(1);
     });
 
     it('setting showTokenExpiredWarningMsg to false and reset token to false should call logout', () => {
