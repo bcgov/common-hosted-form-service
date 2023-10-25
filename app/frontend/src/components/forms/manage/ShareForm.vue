@@ -160,6 +160,7 @@ export default {
             :class="{ 'dir-rtl': isRTL }"
             class="mb-5 close-dlg"
             color="primary"
+            variant="flat"
             @click="dialog = false"
           >
             <span :lang="lang">{{ $t('trans.shareForm.close') }}</span>
