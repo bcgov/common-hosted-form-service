@@ -538,3 +538,11 @@ a,
   background: none !important;
   display: block !important;
 }
+
+.submissions-table tbody tr:nth-child(odd) td {
+  background-color: #f5f5f5 !important;
+}
+
+.v-table.v-table--hover > .v-table__wrapper > table > tbody > tr:hover td {
+  background-color: #eee !important;
+}
