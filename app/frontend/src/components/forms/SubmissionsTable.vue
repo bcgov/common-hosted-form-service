@@ -695,6 +695,7 @@ export default {
     <v-data-table-server
       :key="forceTableRefresh"
       v-model="selectedSubmissions"
+      hover
       :items-length="totalSubmissions"
       class="submissions-table"
       :items-per-page="itemsPerPage"
@@ -924,10 +925,6 @@ export default {
   }
 }
 
-/* Want to use scss but the world hates me */
-.submissions-table :deep(tbody tr:nth-of-type(odd)) {
-  background-color: #f5f5f5;
-}
 .submissions-table :deep(thead tr th) {
   font-weight: normal;
   color: #003366 !important;

@@ -371,6 +371,7 @@ export default {
 
                     <v-data-table
                       v-model="selected"
+                      hover
                       :headers="headers"
                       :search="inputFilter"
                       show-select
@@ -570,10 +571,6 @@ export default {
   .submissions-table :deep(th) {
     vertical-align: top;
   }
-}
-/* Want to use scss but the world hates me */
-.submissions-table :deep(tbody tr:nth-of-type(odd)) {
-  background-color: #f5f5f5;
 }
 .submissions-table :deep(thead tr th) {
   font-weight: normal;

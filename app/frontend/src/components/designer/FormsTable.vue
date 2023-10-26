@@ -126,6 +126,7 @@ export default {
   <!-- table header -->
   <v-data-table
     class="submissions-table"
+    hover
     :headers="headers"
     :items="filteredFormList"
     item-value="name"
