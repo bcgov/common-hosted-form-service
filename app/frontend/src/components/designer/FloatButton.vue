@@ -19,8 +19,8 @@
         data-cy="publishRouterLink"
         class="fabAction"
         :to="{
-          name: 'FormManage',
-          query: { f: formId, fd: 'formDesigner', d: draftId },
+          name: 'PublishForm',
+          query: { f: formId, fd: true, d: draftId },
         }"
         :class="{ 'disabled-router': !formId }"
         tag="div"
@@ -45,7 +45,10 @@
         class="fabAction"
         data-cy="settingsRouterLink"
         ref="settingsRouterLink"
-        :to="{ name: 'FormManage', query: { f: formId } }"
+        :to="{
+          name: 'PublishForm',
+          query: { f: formId, d: draftId },
+        }"
         :class="{ 'disabled-router': !formId }"
         tag="div"
       >
@@ -130,17 +133,19 @@
         class="fabAction"
         data-cy="saveButton"
         ref="saveButton"
-        :class="{ 'disabled-router': isFormSaved }"
+        :class="{ 'disabled-router': isFormSaved && !canSave }"
       >
         <div class="text" :lang="lang">{{ this.savedMsg }}</div>
         <v-avatar
           class="fabItems"
           :size="fabItemsSize"
-          @click="toParent('save')"
+          @click="canSave ? toParent('save') : null"
         >
           <v-icon
             v-if="!this.saving"
-            :color="!isFormSaved ? fabItemsColor : disabledFabItemsColor"
+            :color="
+              !isFormSaved && canSave ? fabItemsColor : disabledFabItemsColor
+            "
             :size="fabItemsIconsSize"
             dark
           >
@@ -250,6 +255,7 @@ export default {
       default: false,
     },
     isFormSaved: Boolean,
+    canSave: Boolean,
     savedStatus: String,
     placement: {
       type: String,
@@ -299,7 +305,6 @@ export default {
       });
       window.open(route.href);
     },
-
     setSizes() {
       this.floatButtonSize = {};
 
@@ -437,7 +442,6 @@ export default {
     size() {
       this.setSizes();
     },
-
     savedStatus(value) {
       if (value === 'Saved') {
         this.savedMsg = this.$t('trans.floatButton.saved');

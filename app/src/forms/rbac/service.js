@@ -2,9 +2,8 @@ const Problem = require('api-problem');
 const { v4: uuidv4 } = require('uuid');
 const { FormRoleUser, FormSubmissionUser, IdentityProvider, User, UserFormAccess, UserSubmissions } = require('../common/models');
 const { Roles } = require('../common/constants');
-const { queryUtils, typeUtils } = require('../common/utils');
+const { queryUtils } = require('../common/utils');
 const authService = require('../auth/service');
-const moment = require('moment');
 const service = {
   list: async () => {
     return FormRoleUser.query().allowGraph('[form, userRole, user]').withGraphFetched('[form, userRole, user]').modify('orderCreatedAtDescending');
@@ -82,67 +81,14 @@ const service = {
 
   getCurrentUserSubmissions: async (currentUser, params) => {
     params = queryUtils.defaultActiveOnly(params);
-    const query = UserSubmissions.query()
+    return UserSubmissions.query()
       .withGraphFetched('submissionStatus(orderDescending)')
       .withGraphFetched('submission')
       .modify('filterFormId', params.formId)
       .modify('filterFormSubmissionId', params.formSubmissionId)
       .modify('filterUserId', currentUser.id)
       .modify('filterActive', params.active)
-      .modify('orderDefault', params.sortBy && params.page ? true : false, params);
-    if (params.page) {
-      return await service.processPaginationData(query, parseInt(params.page), parseInt(params.itemsPerPage), params.totalSubmissions, params.search, params.searchEnabled);
-    }
-    return await query;
-  },
-  async processPaginationData(query, page, itemsPerPage, totalSubmissions, search, searchEnabled) {
-    let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : searchEnabled !== undefined ? JSON.parse(searchEnabled) : false;
-    if (isSearchAble) {
-      let submissionsData = await query;
-      let result = {
-        results: [],
-        total: 0,
-      };
-      let searchedData = submissionsData.filter((data) => {
-        return Object.keys(data).some((key) => {
-          if (key !== 'submissionId' && key !== 'formVersionId' && key !== 'formId') {
-            if (!Array.isArray(data[key]) && !typeUtils.isObject(data[key])) {
-              if (
-                !typeUtils.isBoolean(data[key]) &&
-                !typeUtils.isNil(data[key]) &&
-                typeUtils.isDate(data[key]) &&
-                moment(new Date(data[key])).format('YYYY-MM-DD hh:mm:ss a').toString().includes(search)
-              ) {
-                result.total = result.total + 1;
-                return true;
-              }
-              if (typeUtils.isString(data[key]) && data[key].toLowerCase().includes(search.toLowerCase())) {
-                result.total = result.total + 1;
-                return true;
-              } else if (
-                (typeUtils.isNil(data[key]) || typeUtils.isBoolean(data[key]) || (typeUtils.isNumeric(data[key]) && typeUtils.isNumeric(search))) &&
-                parseFloat(data[key]) === parseFloat(search)
-              ) {
-                result.total = result.total + 1;
-                return true;
-              }
-            }
-            return false;
-          }
-          return false;
-        });
-      });
-      let start = page * itemsPerPage;
-      let end = page * itemsPerPage + itemsPerPage;
-      result.results = searchedData.slice(start, end);
-      return result;
-    } else {
-      if (itemsPerPage && parseInt(itemsPerPage) === -1) {
-        return await query.page(parseInt(page), parseInt(totalSubmissions || 0));
-      } else if (itemsPerPage && parseInt(page) >= 0) {
-        return await query.page(parseInt(page), parseInt(itemsPerPage));
-      }
-    }
+      .modify('orderDefault');
   },
 
   getFormUsers: async (params) => {
