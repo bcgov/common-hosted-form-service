@@ -470,6 +470,7 @@ export default {
 
     <v-data-table
       v-model="selectedUsers"
+      hover
       :headers="HEADERS"
       :items="tableData"
       class="team-table"

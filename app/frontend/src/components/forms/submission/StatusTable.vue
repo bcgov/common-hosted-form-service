@@ -64,6 +64,7 @@ export default {
   <v-container :class="{ 'dir-rtl': isRTL }">
     <v-data-table
       disable-pagination
+      hover
       :hide-default-footer="true"
       :headers="headers"
       :items="statuses"
@@ -85,9 +86,6 @@ export default {
 </template>
 
 <style scoped>
-.status-table :deep(tbody tr:nth-of-type(odd)) {
-  background-color: #f5f5f5;
-}
 .status-table :deep(thead tr th) {
   font-weight: normal;
   color: #003366 !important;
