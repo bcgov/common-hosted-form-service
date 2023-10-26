@@ -217,12 +217,12 @@ export default {
     // Current User
     //
     //
-    async getFormsForCurrentUser({ commit, dispatch }) {
+    async getFormsForCurrentUser({ commit, dispatch }, routeName) {
       try {
         // Get the forms based on the user's permissions
         const response = await rbacService.getCurrentUser();
         const data = response.data;
-        if (data && data.firstTimeLogin) {
+        if (routeName !== 'FormSubmit' && data && data.firstTimeLogin) {
           dispatch('setFirstTimeUserLogin', true);
         }
         // Build up the list of forms for the table

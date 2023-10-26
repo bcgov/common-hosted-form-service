@@ -628,7 +628,7 @@ describe('form actions', () => {
   });
   describe('first time user login', () => {
     it('getFormsForCurrentUser should dispatch setFirstTimeUserLogin action', async () => {
-      rbacService.getCurrentUser.mockResolvedValue({data:{'firstTimeUserLogin': true}})
+      rbacService.getCurrentUser.mockResolvedValue({data:{'firstTimeLogin': true}})
       await store.actions.getFormsForCurrentUser(mockStore);
       expect(mockStore.dispatch).toHaveBeenCalledWith(
         'setFirstTimeUserLogin',
