@@ -22,4 +22,8 @@
     padding: 1.5em;
   }
 }
+
+.v-card--variant-outlined {
+  border: thin solid rgba(0, 0, 0, 0.12) !important;
+}
 </style>
