@@ -478,6 +478,7 @@ export default {
                       class="mb-5 close-dlg"
                       :class="{ 'dir-rtl': isRTL }"
                       color="primary"
+                      variant="flat"
                       @click="historyDialog = false"
                     >
                       <span :lang="lang">{{
