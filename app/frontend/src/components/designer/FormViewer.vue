@@ -542,6 +542,10 @@ export default {
       this.block = e;
     },
     formChange(e) {
+      // if draft check validation on render
+      if (this.submissionRecord.draft) {
+        this.$refs.chefForm.formio.checkValidity(null, true, null, false);
+      }
       if (e.changed != undefined && !e.changed.flags.fromSubmission) {
         this.formDataEntered = true;
       }
