@@ -465,7 +465,7 @@ export default function getRouter(basePath = '/') {
         router.app.$keycloak.ready &&
         router.app.$keycloak.authenticated
       ) {
-        store.dispatch('form/getFormsForCurrentUser');
+        store.dispatch('form/getFormsForCurrentUser', to.name);
       }
 
       // Handle proper redirections on first page load
