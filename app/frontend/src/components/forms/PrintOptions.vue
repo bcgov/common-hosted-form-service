@@ -248,9 +248,10 @@ export default {
               <template #activator="{ props }">
                 <v-btn
                   id="file-input-submit"
-                  color="primary"
-                  class="btn-file-input-submit"
+                  variant="flat"
+                  class="btn-file-input-submit px-4"
                   :disabled="!templateForm.files"
+                  color="primary"
                   :loading="loading"
                   v-bind="props"
                   @click="generate"

@@ -377,7 +377,12 @@ export default {
         </v-card-text>
 
         <v-card-actions class="justify-center">
-          <v-btn class="mb-5 close-dlg" color="primary" @click="dialog = false">
+          <v-btn
+            class="mb-5 close-dlg"
+            color="primary"
+            variant="flat"
+            @click="dialog = false"
+          >
             <span :lang="lang">
               {{ $t('trans.manageSubmissionUsers.close') }}</span
             >
