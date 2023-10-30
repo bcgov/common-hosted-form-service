@@ -117,6 +117,7 @@ export default {
 .v-stepper-header {
   box-shadow: none !important;
   width: 60%;
+  min-width: 24.5rem;
 }
 </style>
 
