@@ -574,9 +574,7 @@ export default {
 
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
-    <div
-      class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
-    >
+    <div class="mt-6 d-flex flex-md-row justify-space-between gapRow">
       <!-- page title -->
       <div>
         <h1 :lang="lang">{{ $t('trans.formsTable.submissions') }}</h1>
@@ -644,32 +642,35 @@ export default {
     <div
       class="mt-5 mb-5 d-flex flex-md-row justify-space-between flex-sm-column flex-xs-column"
     >
-      <div>
-        <v-checkbox
-          v-model="deletedOnly"
-          class="pl-3"
-          @click="refreshSubmissions"
-        >
-          <template #label>
-            <span :class="{ 'mr-2': isRTL }" :lang="lang">
-              {{ $t('trans.submissionsTable.showDeletedSubmissions') }}
-            </span>
-          </template>
-        </v-checkbox>
-      </div>
-
-      <div>
-        <v-checkbox
-          v-model="currentUserOnly"
-          class="pl-3"
-          @click="refreshSubmissions"
-        >
-          <template #label>
-            <span :class="{ 'mr-2': isRTL }" :lang="lang">
-              {{ $t('trans.submissionsTable.showMySubmissions') }}
-            </span>
-          </template>
-        </v-checkbox>
+      <div class="container">
+        <div class="row">
+          <div class="col-6">
+            <v-checkbox
+              v-model="deletedOnly"
+              class="pl-3"
+              @click="refreshSubmissions"
+            >
+              <template #label>
+                <span :class="{ 'mr-2': isRTL }" :lang="lang">
+                  {{ $t('trans.submissionsTable.showDeletedSubmissions') }}
+                </span>
+              </template>
+            </v-checkbox>
+          </div>
+          <div class="col-6">
+            <v-checkbox
+              v-model="currentUserOnly"
+              class="pl-3"
+              @click="refreshSubmissions"
+            >
+              <template #label>
+                <span :class="{ 'mr-2': isRTL }" :lang="lang">
+                  {{ $t('trans.submissionsTable.showMySubmissions') }}
+                </span>
+              </template>
+            </v-checkbox>
+          </div>
+        </div>
       </div>
 
       <div>
@@ -903,10 +904,12 @@ export default {
 <style scoped>
 .submissions-search {
   width: 20em !important;
+  margin: 0 0.5rem;
 }
 @media only screen and (max-width: 960px) {
   .submissions-search {
-    max-width: 20em;
+    min-width: 20em;
+    width: 95% !important;
   }
 }
 @media (max-width: 599px) {
@@ -928,6 +931,5 @@ export default {
 .submissions-table :deep(thead tr th) {
   font-weight: normal;
   color: #003366 !important;
-  font-size: 1.1em;
 }
 </style>

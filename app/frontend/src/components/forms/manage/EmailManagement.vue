@@ -37,9 +37,7 @@ export default {
 
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
-    <div
-      class="d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse"
-    >
+    <div class="mt-6 d-flex flex-md-row justify-space-between">
       <div>
         <h1 class="mr-auto" :lang="lang">
           {{ $t('trans.emailManagement.emailManagement')

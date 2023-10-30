@@ -69,9 +69,7 @@ export default {
 
 <template>
   <div class="forms-table" :class="{ 'dir-rtl': isRTL }">
-    <div
-      class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
-    >
+    <div class="mt-6 d-flex flex-md-row justify-space-between gapRow">
       <!-- page title -->
       <div>
         <h1 :lang="lang">{{ $t('trans.formsTable.myForms') }}</h1>
