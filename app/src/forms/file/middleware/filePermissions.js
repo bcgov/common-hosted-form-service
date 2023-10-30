@@ -13,9 +13,8 @@ const currentFileRecord = async (req, res, next) => {
   let fileRecord = undefined;
   try {
     // Check if authed, can expand for API key access if needed
-    // expand for api user
-
-    if (req.params.id && req.currentUser && req.apiUser) {
+    if (req.params.id && (req.currentUser || req.apiUser)) {
+      // expanded for api user
       fileRecord = await service.read(req.params.id);
     }
   } catch (error) {
