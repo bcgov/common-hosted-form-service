@@ -459,7 +459,7 @@ describe('_submissionsColumns', () => {
     enableCopyExistingSubmission: false,
   };
 
-  it('should return right number of columns, when no prefered columns passed as params.', async () => {
+  it('should return right columns, when no prefered columns passed as params.', async () => {
     const params = {
       type: 'submissions',
       format: 'json',
@@ -469,7 +469,8 @@ describe('_submissionsColumns', () => {
     };
 
     const submissions = exportService._submissionsColumns(form, params);
-    expect(submissions.length).toEqual(8);
+    expect(submissions.length).toEqual(9);
+    expect(submissions).toEqual(expect.arrayContaining(['submissionId', 'confirmationId', 'formName', 'version', 'createdAt', 'fullName', 'username', 'email', 'submission']));
   });
 
   it('should return right number of columns, when 1 prefered column (deleted) passed as params.', async () => {
@@ -483,7 +484,7 @@ describe('_submissionsColumns', () => {
     };
 
     const submissions = exportService._submissionsColumns(form, params);
-    expect(submissions.length).toEqual(9);
+    expect(submissions.length).toEqual(10);
   });
 
   it('should return right number of columns, when 1 prefered column (draft) passed as params.', async () => {
@@ -497,7 +498,7 @@ describe('_submissionsColumns', () => {
     };
 
     const submissions = exportService._submissionsColumns(form, params);
-    expect(submissions.length).toEqual(9);
+    expect(submissions.length).toEqual(10);
   });
 
   it('should return right number of columns, when 2 prefered column (draft & deleted) passed as params.', async () => {
@@ -511,7 +512,8 @@ describe('_submissionsColumns', () => {
     };
 
     const submissions = exportService._submissionsColumns(form, params);
-    expect(submissions.length).toEqual(10);
+
+    expect(submissions.length).toEqual(11);
   });
 
   it('should return right number of columns, when a garbage or NON-allowed column (testCol1 & testCol2) passed as params.', async () => {
@@ -525,7 +527,7 @@ describe('_submissionsColumns', () => {
     };
 
     const submissions = exportService._submissionsColumns(form, params);
-    expect(submissions.length).toEqual(8);
+    expect(submissions.length).toEqual(9);
   });
 });
 

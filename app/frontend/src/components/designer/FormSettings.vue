@@ -201,7 +201,16 @@
                   v-html="$t('trans.formSettings.allowMultiDraft')"
                   :lang="lang"
                 />
-                <v-tooltip close-delay="3000" bottom>
+                <v-tooltip
+                  close-delay="2500"
+                  v-model="allowSubmitterToUploadFileToolTip"
+                  v-click-outside="
+                    () => {
+                      allowSubmitterToUploadFileToolTip = false;
+                    }
+                  "
+                  bottom
+                >
                   <template v-slot:activator="{ on, attrs }">
                     <font-awesome-icon
                       icon="fa-solid fa-flask"
@@ -248,7 +257,16 @@
                 <span :lang="lang">{{
                   $t('trans.formSettings.formSubmissionsSchedule')
                 }}</span>
-                <v-tooltip bottom close-delay="2500">
+                <v-tooltip
+                  close-delay="2500"
+                  v-model="formSubmissionsScheduleToolTip"
+                  v-click-outside="
+                    () => {
+                      formSubmissionsScheduleToolTip = false;
+                    }
+                  "
+                  bottom
+                >
                   <template v-slot:activator="{ on, attrs }">
                     <font-awesome-icon
                       icon="fa-solid fa-flask"
@@ -290,7 +308,16 @@
                   "
                   :lang="lang"
                 />
-                <v-tooltip bottom close-delay="2500">
+                <v-tooltip
+                  close-delay="2500"
+                  v-model="enableCopyExistingSubmissionToolTip"
+                  v-click-outside="
+                    () => {
+                      enableCopyExistingSubmissionToolTip = false;
+                    }
+                  "
+                  bottom
+                >
                   <template v-slot:activator="{ on, attrs }">
                     <font-awesome-icon
                       icon="fa-solid fa-flask"
@@ -329,7 +356,16 @@
                   v-html="$t('trans.formSettings.allowEventSubscription')"
                   :lang="lang"
                 />
-                <v-tooltip bottom close-delay="2500">
+                <v-tooltip
+                  close-delay="2500"
+                  v-model="showSubmissionConfirmationToolTip"
+                  v-click-outside="
+                    () => {
+                      showSubmissionConfirmationToolTip = false;
+                    }
+                  "
+                  bottom
+                >
                   <template v-slot:activator="{ on, attrs }">
                     <font-awesome-icon
                       icon="fa-solid fa-flask"
@@ -1065,7 +1101,7 @@
                             <span :lang="lang">
                               {{ $t('trans.formSettings.sendReminderEmail') }}
                             </span>
-                            <v-tooltip close-delay="2500" bottom>
+                            <v-tooltip bottom>
                               <template v-slot:activator="{ on, attrs }">
                                 <v-icon
                                   color="primary"
@@ -1153,6 +1189,10 @@ export default {
       closeSubmissionDateDraw: false,
       openSubmissionDateDraw: false,
       enableReminderDraw: true,
+      allowSubmitterToUploadFileToolTip: false,
+      formSubmissionsScheduleToolTip: false,
+      enableCopyExistingSubmissionToolTip: false,
+      showSubmissionConfirmationToolTip: false,
       valid: false,
       // Validation
     };
