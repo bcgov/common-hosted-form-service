@@ -13,7 +13,9 @@ const currentFileRecord = async (req, res, next) => {
   let fileRecord = undefined;
   try {
     // Check if authed, can expand for API key access if needed
-    if (req.params.id && req.currentUser) {
+    // expand for api user
+
+    if (req.params.id && req.currentUser && req.apiUser) {
       fileRecord = await service.read(req.params.id);
     }
   } catch (error) {
@@ -53,9 +55,13 @@ const hasFileCreate = (req, res, next) => {
  */
 const hasFilePermissions = (permissions) => {
   return (req, res, next) => {
+    // skip for API users
+    if (req.apiUser) {
+      return next();
+    }
     // Guard against unauthed (or public) users
     if (!req.currentUser || !req.currentUser.idpUserId) {
-      return next(new Problem(403, { detail: 'Unauthorized to read file' }));
+      return next(new Problem(403, { detail: 'Unauthorized to read file.' }));
     }
 
     // Check to see if this has been associated with a submission...
