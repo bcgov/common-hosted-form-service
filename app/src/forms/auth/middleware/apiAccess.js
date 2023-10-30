@@ -21,7 +21,7 @@ module.exports = async (req, res, next) => {
       } else if (params.formSubmissionId && uuidValidate(params.formSubmissionId)) {
         const result = await submissionService.read(params.formSubmissionId);
         formId = result?.form?.id;
-      } else if (params.id){
+      } else if (params.id) {
         // get formId from request body
         formId = params.formId;
       }
@@ -33,7 +33,7 @@ module.exports = async (req, res, next) => {
         secret = result && result.secret ? result.secret : '';
       }
 
-      const checkCredentials = basicAuth({  
+      const checkCredentials = basicAuth({
         // Must be a synchronous function
         authorizer: (username, password) => {
           const userMatch = formId && basicAuth.safeCompare(username, formId);
