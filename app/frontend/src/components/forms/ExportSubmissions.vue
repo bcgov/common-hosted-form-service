@@ -62,7 +62,7 @@
             </v-radio-group>
           </v-col>
         </v-row>
-        <v-row v-if="exportFormat === 'csv'" class="mt-5">
+        <v-row v-if="exportFormat === 'csv' && !selectedVersion" class="mt-5">
           <v-col>
             <span class="subTitleObjectStyle" :lang="lang">
               {{ $t('trans.exportSubmissions.formVersion') }}
@@ -409,6 +409,7 @@ export default {
       'isRTL',
       'lang',
       'selectedSubmissions',
+      'selectedVersion',
     ]),
 
     ...mapGetters('auth', ['email']),
@@ -431,6 +432,7 @@ export default {
       'fetchForm',
       'fetchFormCSVExportFields',
       'selectSubmissions',
+      'selectVersion',
     ]),
     async changeVersions(value) {
       this.versionRequired = false;
@@ -539,6 +541,7 @@ export default {
       }
       // empty selected submissions for export if there are so
       this.selectSubmissions('');
+      this.selectVersion(null);
     },
 
     async updateVersions() {
@@ -561,7 +564,11 @@ export default {
         this.versions.push(
           ...this.form.versions.map((version) => version.version)
         );
-        this.versionSelected = this.versions[0];
+        if (this.selectedVersion) {
+          this.versionSelected = this.selectedVersion;
+        } else {
+          this.versionSelected = this.versions[0];
+        }
         await this.refreshFormFields(this.versionSelected);
       }
     },

@@ -103,6 +103,7 @@ export default {
     subscriptionData: genInitialSubscribeDetails(),
     totalSubmissions: 0,
     selectedSubmissions: '',
+    selectedVersion: null,
   },
   getters: {
     getField, // vuex-map-fields
@@ -129,6 +130,7 @@ export default {
     subscriptionData: (state) => state.subscriptionData,
     totalSubmissions: (state) => state.totalSubmissions,
     selectedSubmissions: (state) => state.selectedSubmissions,
+    selectedVersion: (state) => state.selectedVersion,
   },
   mutations: {
     updateField, // vuex-map-fields
@@ -207,6 +209,9 @@ export default {
     },
     SET_SELECTED_SUBMISSIONS(state, selectedSubmissions) {
       state.selectedSubmissions = selectedSubmissions;
+    },
+    SET_SELECTED_VERSION(state, selectedVersion) {
+      state.selectedVersion = selectedVersion;
     },
   },
   actions: {
@@ -791,6 +796,7 @@ export default {
         sortDesc: sortDesc,
         search: search,
         searchEnabled: searchEnabled,
+        version,
       }
     ) {
       try {
@@ -816,6 +822,7 @@ export default {
               filterformSubmissionStatusCode: filterformSubmissionStatusCode,
               itemsPerPage: itemsPerPage,
               totalSubmissions: state.totalSubmissions,
+              version,
               sortBy: sortBy,
               sortDesc: sortDesc,
             });
@@ -1087,6 +1094,9 @@ export default {
     },
     selectSubmissions({ commit }, selected) {
       commit('SET_SELECTED_SUBMISSIONS', selected);
+    },
+    selectVersion({ commit }, selected) {
+      commit('SET_SELECTED_VERSION', selected);
     },
   },
 };

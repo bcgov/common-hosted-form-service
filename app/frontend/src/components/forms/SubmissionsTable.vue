@@ -102,6 +102,17 @@
         </v-checkbox>
       </div>
       <div>
+        <span class="subTitleObjectStyle" :lang="lang">
+          {{ $t('trans.exportSubmissions.formVersion') }}
+        </span>
+        <v-select
+          v-model="versionSelected"
+          :items="versions"
+          @change="changeVersions"
+          class="mt-0"
+        ></v-select>
+      </div>
+      <div>
         <!-- search input -->
         <div class="submissions-search">
           <v-text-field
@@ -387,11 +398,23 @@ export default {
       deleteItem: {},
       switchSubmissionView: false,
       firstDataLoad: true,
+      versionSelected: null,
     };
   },
   computed: {
     multiDeleteMessage() {
       return this.$t('trans.submissionsTable.multiDelWarning');
+    },
+    versions() {
+      const formVersions = [
+        { text: this.$t('trans.exportSubmissions.all'), value: null },
+      ];
+      if (this.form?.versions) {
+        this.form.versions.map((v) => {
+          formVersions.push(v.version);
+        });
+      }
+      return formVersions;
     },
     singleDeleteMessage() {
       return this.$t('trans.submissionsTable.singleDelWarning');
@@ -412,7 +435,6 @@ export default {
       'submissionList',
       'userFormPreferences',
       'roles',
-      'deletedSubmissions',
       'isRTL',
       'lang',
       'totalSubmissions',
@@ -624,10 +646,11 @@ export default {
   },
   watch: {
     selectedSubmissions(newValue) {
-      if (newValue && newValue.length > 0) {
+      if (newValue && newValue.length > 0 && this.versionSelected) {
         this.selectSubmissions(
           newValue.map((val) => val.submissionId).join(',')
         );
+        this.selectVersion(this.versionSelected);
       }
     },
   },
@@ -645,6 +668,7 @@ export default {
       'deleteSubmission',
       'updateFormPreferencesForCurrentUser',
       'selectSubmissions',
+      'selectVersion',
     ]),
     ...mapActions('notifications', ['addNotification']),
 
@@ -744,6 +768,7 @@ export default {
               : moment().add(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Max Date)
         }),
         deletedOnly: this.deletedOnly,
+        version: this.versionSelected,
         createdBy: this.currentUserOnly
           ? `${this.user.username}@${this.user.idp}`
           : '',
@@ -816,6 +841,7 @@ export default {
         .finally(() => {
           this.selectedSubmissions = [];
           this.selectSubmissions('');
+          this.selectVersion(null);
         });
     },
 
@@ -864,6 +890,9 @@ export default {
       } else {
         this.debounceInput();
       }
+    },
+    async changeVersions() {
+      this.refreshSubmissions();
     },
   },
   async mounted() {
