@@ -179,7 +179,7 @@ export default {
       };
 
       //delaying window.print() so that the 'Download Options' popup isn't rendered
-      setTimeout(() => window.print(), 100);
+      setTimeout(() => window.print(), 500);
     },
 
     splitFileName(filename = undefined) {
