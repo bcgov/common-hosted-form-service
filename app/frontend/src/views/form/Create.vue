@@ -47,8 +47,8 @@ export default {
   created() {
     this.resetForm();
   },
-  mounted() {
-    this.listFCProactiveHelp();
+  async mounted() {
+    await this.listFCProactiveHelp();
     this.$nextTick(() => {
       this.onFormLoad();
     });

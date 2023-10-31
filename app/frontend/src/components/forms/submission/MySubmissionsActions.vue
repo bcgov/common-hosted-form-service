@@ -98,6 +98,7 @@ export default {
               v-bind="props"
               :disabled="!hasViewPermission"
               size="x-small"
+              :class="isRTL ? 'mr-1' : 'ml-1'"
               density="default"
               icon="mdi:mdi-pencil-box-multiple"
             />

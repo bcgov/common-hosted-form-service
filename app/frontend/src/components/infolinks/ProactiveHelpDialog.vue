@@ -13,27 +13,28 @@ export default {
   emits: ['close-dialog'],
   data() {
     return {
+      componentId: this?.component?.id ? this.component.id : undefined,
       componentName_: this?.component?.componentName
         ? this.component.componentName
         : this.componentName,
       description: this?.component?.description
         ? this.component.description
         : '',
-      moreHelpInfoLink: this?.component?.externalLink
-        ? this.component.externalLink
-        : '',
+      dialog: this.showDialog,
+      files: [],
       isLinkEnabled: this?.component?.isLinkEnabled
         ? this.component.isLinkEnabled
         : '',
-      dialog: this.showDialog,
       image: '',
       imageSizeError: false,
-      componentId: this?.component?.id ? this.component.id : undefined,
       imageName: this?.component?.imageName ? this.component.imageName : '',
       imagePlaceholder: this?.component?.imageName
         ? this.component.imageName
         : undefined,
       linkError: false,
+      moreHelpInfoLink: this?.component?.externalLink
+        ? this.component.externalLink
+        : '',
     };
   },
   computed: {
@@ -62,7 +63,8 @@ export default {
       }
       return error;
     },
-    async selectImage(img) {
+    async selectImage() {
+      const img = this.files[0];
       this.imageSizeError = false;
       if (img.size > 500000) {
         this.imageSizeError = true;
@@ -235,6 +237,7 @@ export default {
                 ></v-icon>
                 <v-col>
                   <v-file-input
+                    v-model="files"
                     style="width: 50%"
                     :prepend-icon="null"
                     show-size
@@ -247,7 +250,7 @@ export default {
                     "
                     class="file_upload_data-cy"
                     :lang="lang"
-                    @change="selectImage"
+                    @update:model-value="selectImage"
                   ></v-file-input>
                 </v-col>
               </div>
