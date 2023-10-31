@@ -60,18 +60,8 @@ class UserSubmissions extends Model {
           query.where('deleted', !value);
         }
       },
-      orderDefault(builder, pagination, params) {
-        if (!pagination) {
-          builder.orderBy('createdAt', 'DESC');
-        } else {
-          let orderBy = params?.sortBy;
-          let orderDesc = params?.sortDesc;
-          if (orderDesc === 'true') {
-            builder.orderBy(orderBy, 'desc');
-          } else if (orderDesc === 'false') {
-            builder.orderBy(orderBy, 'asc');
-          }
-        }
+      orderDefault(builder) {
+        builder.orderBy('createdAt', 'DESC');
       },
     };
   }

@@ -148,6 +148,20 @@ export default function getRouter(basePath = '/') {
             },
           },
           {
+            path: 'publish',
+            name: 'PublishForm',
+            component: () =>
+              import(
+                /* webpackChunkName: "publish" */ '@/views/form/PublishForm.vue'
+              ),
+            meta: {
+              breadcrumbTitle: 'Form Designer',
+              requiresAuth: IdentityProviders.IDIR,
+              hasLogin: true,
+            },
+            props: createProps,
+          },
+          {
             path: 'design',
             name: 'FormDesigner',
             component: () =>
@@ -249,6 +263,20 @@ export default function getRouter(basePath = '/') {
             beforeEnter(to, _from, next) {
               preFlightAuth({ submissionId: to.query.s }, next);
             },
+          },
+          {
+            path: 'emails',
+            name: 'FormEmails',
+            component: () =>
+              import(
+                /* webpackChunkName: "emails" */ '@/views/form/Emails.vue'
+              ),
+            meta: {
+              breadcrumbTitle: 'Email Management',
+              requiresAuth: IdentityProviders.IDIR,
+              hasLogin: true,
+            },
+            props: createProps,
           },
           {
             path: 'teams',

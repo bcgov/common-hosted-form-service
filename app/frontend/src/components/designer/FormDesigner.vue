@@ -113,6 +113,7 @@
       :savedStatus="savedStatus"
       :saved="saved"
       :isFormSaved="isFormSaved"
+      :canSave="canSave"
       :formId="formId"
       :draftId="draftId"
       :undoEnabled="undoEnabled() === 0 ? false : undoEnabled()"
@@ -134,6 +135,7 @@ import ProactiveHelpPreviewDialog from '@/components/infolinks/ProactiveHelpPrev
 import { generateIdps } from '@/utils/transformUtils';
 import FloatButton from '@/components/designer/FloatButton.vue';
 import formioIl8next from '@/internationalization/trans/formio/formio.json';
+import { NotificationTypes } from '@/utils/constants';
 
 export default {
   name: 'FormDesigner',
@@ -188,6 +190,7 @@ export default {
       showHelpLinkDialog: false,
       component: {},
       isComponentRemoved: false,
+      canSave: false,
     };
   },
 
@@ -529,6 +532,18 @@ export default {
               this.addPatchToHistory();
             }
           }
+          this.canSave = true;
+          modified?.components?.map((comp) => {
+            if (comp.key === 'form') {
+              this.addNotification({
+                ...NotificationTypes.ERROR,
+                message: this.$t('trans.formDesigner.fieldnameError', {
+                  label: comp.label,
+                }),
+              });
+              this.canSave = false;
+            }
+          });
         } else {
           // If we removed a component but not during an add action
           if (
@@ -554,6 +569,7 @@ export default {
       const patch = compare(form, this.formSchema);
 
       if (patch.length > 0) {
+        this.canSave = true;
         this.savedStatus = 'Save';
         this.isFormSaved = false;
         // Remove any actions past the action we were on
@@ -595,6 +611,7 @@ export default {
       if (this.canUndoPatch()) {
         this.savedStatus = 'Save';
         this.isFormSaved = false;
+        this.canSave = true;
         // Flag for formio to know we are setting the form
         this.patch.undoClicked = true;
         this.formSchema = this.getPatch(--this.patch.index);
@@ -605,6 +622,7 @@ export default {
       if (this.canRedoPatch()) {
         this.savedStatus = 'Save';
         this.isFormSaved = false;
+        this.canSave = true;
         // Flag for formio to know we are setting the form
         this.patch.redoClicked = true;
         this.formSchema = this.getPatch(++this.patch.index);
@@ -665,6 +683,7 @@ export default {
 
         this.savedStatus = 'Saved';
         this.isFormSaved = true;
+        this.canSave = false;
       } catch (error) {
         await this.setDirtyFlag(true);
         this.savedStatus = 'Not Saved';

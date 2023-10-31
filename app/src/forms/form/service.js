@@ -1,15 +1,15 @@
 const Problem = require('api-problem');
 const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
-const { validateScheduleObject } = require('../common/utils');
-const { SubscriptionEvent } = require('../common/constants');
+const { EmailTypes, SubscriptionEvent } = require('../common/constants');
 const axios = require('axios');
 const log = require('../../components/log')(module.filename);
-
+const moment = require('moment');
 const {
   FileStorage,
   Form,
   FormApiKey,
+  FormEmailTemplate,
   FormIdentityProvider,
   FormRoleUser,
   FormVersion,
@@ -23,7 +23,7 @@ const {
   FormComponentsProactiveHelp,
   FormSubscription,
 } = require('../common/models');
-const { falsey, queryUtils, checkIsFormExpired } = require('../common/utils');
+const { falsey, queryUtils, checkIsFormExpired, validateScheduleObject, typeUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
@@ -249,6 +249,7 @@ const service = {
       .modify('filterCreatedBy', params.createdBy)
       .modify('filterFormVersionId', params.formVersionId)
       .modify('filterVersion', params.version)
+      .modify('filterformSubmissionStatusCode', params.filterformSubmissionStatusCode)
       .modify('orderDefault', params.sortBy && params.page ? true : false, params);
     if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length == 2) {
       query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
@@ -282,27 +283,59 @@ const service = {
         ['lateEntry'].map((f) => ref(`submission:data.${f}`).as(f.split('.').slice(-1)))
       );
     }
-
-    if (params.page) {
-      return await service.processPaginationData(
-        query,
-        params.page,
-        params.itemsPerPage,
-        params.filterformSubmissionStatusCode,
-        params.totalSubmissions,
-        params.sortBy,
-        params.sortDesc
-      );
+    if (params.paginationEnabled) {
+      return await service.processPaginationData(query, parseInt(params.page), parseInt(params.itemsPerPage), params.totalSubmissions, params.search, params.searchEnabled);
     }
     return query;
   },
 
-  async processPaginationData(query, page, itemsPerPage, filterformSubmissionStatusCode, totalSubmissions) {
-    await query.modify('filterformSubmissionStatusCode', filterformSubmissionStatusCode);
-    if (itemsPerPage && parseInt(itemsPerPage) === -1) {
-      return await query.page(parseInt(page), parseInt(totalSubmissions || 0));
-    } else if (itemsPerPage && parseInt(page) >= 0) {
-      return await query.page(parseInt(page), parseInt(itemsPerPage));
+  async processPaginationData(query, page, itemsPerPage, totalSubmissions, search, searchEnabled) {
+    let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : searchEnabled !== undefined ? JSON.parse(searchEnabled) : false;
+    if (isSearchAble) {
+      let submissionsData = await query;
+      let result = {
+        results: [],
+        total: 0,
+      };
+      let searchedData = submissionsData.filter((data) => {
+        return Object.keys(data).some((key) => {
+          if (key !== 'submissionId' && key !== 'formVersionId' && key !== 'formId') {
+            if (!Array.isArray(data[key]) && !typeUtils.isObject(data[key])) {
+              if (
+                !typeUtils.isBoolean(data[key]) &&
+                !typeUtils.isNil(data[key]) &&
+                typeUtils.isDate(data[key]) &&
+                moment(new Date(data[key])).format('YYYY-MM-DD hh:mm:ss a').toString().includes(search)
+              ) {
+                result.total = result.total + 1;
+                return true;
+              }
+              if (typeUtils.isString(data[key]) && data[key].toLowerCase().includes(search.toLowerCase())) {
+                result.total = result.total + 1;
+                return true;
+              } else if (
+                (typeUtils.isNil(data[key]) || typeUtils.isBoolean(data[key]) || (typeUtils.isNumeric(data[key]) && typeUtils.isNumeric(search))) &&
+                parseFloat(data[key]) === parseFloat(search)
+              ) {
+                result.total = result.total + 1;
+                return true;
+              }
+            }
+            return false;
+          }
+          return false;
+        });
+      });
+      let start = page * itemsPerPage;
+      let end = page * itemsPerPage + itemsPerPage;
+      result.results = searchedData.slice(start, end);
+      return result;
+    } else {
+      if (itemsPerPage && parseInt(itemsPerPage) === -1) {
+        return await query.page(parseInt(page), parseInt(totalSubmissions || 0));
+      } else if (itemsPerPage && parseInt(page) >= 0) {
+        return await query.page(parseInt(page), parseInt(itemsPerPage));
+      }
     }
   },
 
@@ -779,6 +812,7 @@ const service = {
       throw err;
     }
   },
+
   popFormLevelInfo: (jsonPayload = []) => {
     /** This function is purely made to remove un-necessery information
      * from the json payload of submissions. It will also help to remove crucial data
@@ -802,6 +836,91 @@ const service = {
       });
     }
     return jsonPayload;
+  },
+
+  // -----------------------------------------------------------------------------
+  // Email Templates
+  // -----------------------------------------------------------------------------
+
+  _getDefaultEmailTemplate: (formId, type) => {
+    let template;
+
+    switch (type) {
+      case EmailTypes.SUBMISSION_CONFIRMATION:
+        template = {
+          body: 'Thank you for your {{ form.name }} submission. You can view your submission details by visiting the following links:',
+          formId: formId,
+          subject: '{{ form.name }} Accepted',
+          title: '{{ form.name }} Accepted',
+          type: type,
+        };
+        break;
+    }
+
+    return template;
+  },
+
+  // Get a specific email template for a form.
+  readEmailTemplate: async (formId, type) => {
+    let result = await FormEmailTemplate.query().modify('filterFormId', formId).modify('filterType', type).first();
+
+    if (result === undefined) {
+      result = service._getDefaultEmailTemplate(formId, type);
+    }
+
+    return result;
+  },
+
+  // Get all the email templates for a form
+  readEmailTemplates: async (formId) => {
+    const hasEmailTemplate = (emailTemplates, type) => {
+      return emailTemplates.find((t) => t.type === type) !== undefined;
+    };
+
+    let result = await FormEmailTemplate.query().modify('filterFormId', formId);
+
+    // In the case that there is no email template in the database, use the
+    // default values.
+    if (!hasEmailTemplate(result, EmailTypes.SUBMISSION_CONFIRMATION)) {
+      result.push(service._getDefaultEmailTemplate(formId, EmailTypes.SUBMISSION_CONFIRMATION));
+    }
+
+    return result;
+  },
+
+  createOrUpdateEmailTemplate: async (formId, data, currentUser) => {
+    let transaction;
+    try {
+      const emailTemplate = await service.readEmailTemplate(formId, data.type);
+      transaction = await FormEmailTemplate.startTransaction();
+
+      if (emailTemplate.id) {
+        // Update new email template settings for a form
+        await FormEmailTemplate.query(transaction)
+          .modify('filterId', emailTemplate.id)
+          .update({
+            ...data,
+            updatedBy: currentUser.usernameIdp,
+          });
+      } else {
+        // Add new email template settings for the form
+        await FormEmailTemplate.query(transaction).insert({
+          id: uuidv4(),
+          ...data,
+          createdBy: currentUser.usernameIdp,
+        });
+      }
+
+      await transaction.commit();
+
+      return service.readEmailTemplates(formId);
+    } catch (error) {
+      if (transaction) {
+        await transaction.rollback();
+      }
+
+      throw error;
+    }
   },
 };
 

@@ -248,6 +248,93 @@ describe('_buildCsvHeaders', () => {
 });
 
 describe('_buildCsvHeaders', () => {
+  it('should build correct csv headers for single row export option when selected fields provided', async () => {
+    // form schema from db
+    const formSchema = require('../../../fixtures/form/Kitchen_sink_form_schema_datagrid.json');
+
+    // form object from db
+    const form = { id: 123 };
+
+    // mock latestFormSchema
+    exportService._readLatestFormSchema = jest.fn(() => {
+      return formSchema;
+    });
+
+    // submissions export (matchces the format that is downloaded in UI)
+    const submissionsExport = require('../../../fixtures/submission/kitchen_sink_submission_data_export_datagrid.json');
+
+    // build csv headers
+    // get fields which we gonna filtered column needed from
+    const fields = require('../../../fixtures/submission/kitchen_sink_submission_data_export_datagrid_fields_selection.json');
+    // get result columns if we need to filter out the columns
+    const result = await exportService._buildCsvHeaders(form, submissionsExport, 1, fields, true);
+
+    expect(result).toHaveLength(20);
+    expect(result).toEqual(
+      expect.arrayContaining([
+        'form.confirmationId',
+        'oneRowPerLake.0.closestTown',
+        'oneRowPerLake.0.dataGrid.0.fishType',
+        'oneRowPerLake.0.dataGrid.1.fishType',
+        'oneRowPerLake.0.dataGrid.0.numberKept',
+      ])
+    );
+    expect(result).toEqual(
+      expect.not.arrayContaining([
+        'oneRowPerLake.1.dataGrid.0.numberKept',
+        'oneRowPerLake.1.lakeName',
+        'oneRowPerLake.1.dataGrid.0.numberCaught',
+        'oneRowPerLake.1.numberOfDays',
+        'lateEntry',
+      ])
+    );
+    expect(exportService._readLatestFormSchema).toHaveBeenCalledTimes(1);
+    expect(exportService._readLatestFormSchema).toHaveBeenCalledWith(123, 1);
+
+    // restore mocked function to it's original implementation
+    exportService._readLatestFormSchema.mockRestore();
+  });
+});
+
+describe('_buildCsvHeaders', () => {
+  it('should build correct csv headers with correct order (as it goes in form design) for single row export option', async () => {
+    // form schema from db
+    const formSchema = require('../../../fixtures/form/Kitchen_sink_form_schema_datagrid.json');
+
+    // form object from db
+    const form = { id: 123 };
+
+    // mock latestFormSchema
+    exportService._readLatestFormSchema = jest.fn(() => {
+      return formSchema;
+    });
+
+    // submissions export (matchces the format that is downloaded in UI)
+    const submissionsExport = require('../../../fixtures/submission/kitchen_sink_submission_data_export_datagrid.json');
+
+    // build csv headers
+    // get result columns if we need to filter out the columns
+    const result = await exportService._buildCsvHeaders(form, submissionsExport, 1, null, true);
+
+    expect(result).toHaveLength(29);
+
+    // making sure that order of the result columns are same as it goes in a form designer
+    expect(result[0]).toEqual('form.confirmationId');
+    expect(result[7]).toEqual('fishermansName');
+    expect(result[10]).toEqual('didYouFishAnyBcLakesThisYear');
+    expect(result[11]).toEqual('oneRowPerLake.0.dataGrid.0.fishType');
+    expect(result[13]).toEqual('oneRowPerLake.0.dataGrid.0.numberCaught');
+    expect(result[18]).toEqual('oneRowPerLake.0.closestTown');
+    expect(result[28]).toEqual('oneRowPerLake.1.numberOfDays');
+    expect(exportService._readLatestFormSchema).toHaveBeenCalledTimes(1);
+    expect(exportService._readLatestFormSchema).toHaveBeenCalledWith(123, 1);
+
+    // restore mocked function to it's original implementation
+    exportService._readLatestFormSchema.mockRestore();
+  });
+});
+
+describe('_buildCsvHeaders', () => {
   it('should build correct csv headers multiple components', async () => {
     //
 
@@ -372,7 +459,7 @@ describe('_submissionsColumns', () => {
     enableCopyExistingSubmission: false,
   };
 
-  it('should return right number of columns, when no prefered columns passed as params.', async () => {
+  it('should return right columns, when no prefered columns passed as params.', async () => {
     const params = {
       type: 'submissions',
       format: 'json',
@@ -382,7 +469,8 @@ describe('_submissionsColumns', () => {
     };
 
     const submissions = exportService._submissionsColumns(form, params);
-    expect(submissions.length).toEqual(8);
+    expect(submissions.length).toEqual(9);
+    expect(submissions).toEqual(expect.arrayContaining(['submissionId', 'confirmationId', 'formName', 'version', 'createdAt', 'fullName', 'username', 'email', 'submission']));
   });
 
   it('should return right number of columns, when 1 prefered column (deleted) passed as params.', async () => {
@@ -396,7 +484,7 @@ describe('_submissionsColumns', () => {
     };
 
     const submissions = exportService._submissionsColumns(form, params);
-    expect(submissions.length).toEqual(9);
+    expect(submissions.length).toEqual(10);
   });
 
   it('should return right number of columns, when 1 prefered column (draft) passed as params.', async () => {
@@ -410,7 +498,7 @@ describe('_submissionsColumns', () => {
     };
 
     const submissions = exportService._submissionsColumns(form, params);
-    expect(submissions.length).toEqual(9);
+    expect(submissions.length).toEqual(10);
   });
 
   it('should return right number of columns, when 2 prefered column (draft & deleted) passed as params.', async () => {
@@ -424,7 +512,8 @@ describe('_submissionsColumns', () => {
     };
 
     const submissions = exportService._submissionsColumns(form, params);
-    expect(submissions.length).toEqual(10);
+
+    expect(submissions.length).toEqual(11);
   });
 
   it('should return right number of columns, when a garbage or NON-allowed column (testCol1 & testCol2) passed as params.', async () => {
@@ -438,7 +527,7 @@ describe('_submissionsColumns', () => {
     };
 
     const submissions = exportService._submissionsColumns(form, params);
-    expect(submissions.length).toEqual(8);
+    expect(submissions.length).toEqual(9);
   });
 });
 

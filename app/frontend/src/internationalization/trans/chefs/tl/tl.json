@@ -2,6 +2,22 @@
   "date": {
     "date": "yyyy-mm-dd"
   },
+  "emailManagement": {
+    "emailManagement": "Pamamahala ng Email",
+    "manageForm": "Pamahalaan ang Form",
+    "submissionConfirmation": "Pagkumpirma ng Pagsusumite"
+  },
+  "emailTemplate": {
+    "body": "Katawan",
+    "save": "Iligtas",
+    "saveEmailTemplateConsoleErrMsg": "Error sa pag-update ng template ng email para sa form {formId}: {error}",
+    "saveEmailTemplateErrMsg": "May naganap na error habang sinusubukang i-update ang template ng email.",
+    "subject": "Paksa",
+    "title": "Pamagat",
+    "validBodyRequired": "Mangyaring maglagay ng Body para sa email",
+    "validSubjectRequired": "Mangyaring magpasok ng linya ng Paksa para sa email",
+    "validTitleRequired": "Mangyaring maglagay ng Pamagat para sa email"
+  },
   "formsTable": {
     "myForms": "Aking Mga Form",
     "createNewForm": "Gumawa ng Bagong Form",
@@ -29,6 +45,7 @@
     "copyURLToClipboard": "Kopyahin ang URL sa clipboard"
   },
   "manageFormActions": {
+    "emailManagement": "Pamamahala ng Email",
     "viewSubmissions": "Tingnan ang Mga Pagsusumite",
     "teamManagement": "Pamamahala ng Koponan",
     "deleteForm": "Tanggalin ang Form",
@@ -146,7 +163,7 @@
     "showSecret": "Ipakita ang Lihim",
     "key": "Susi",
     "saveSettingsErrMsg": "May naganap na error habang sinusubukang i-update ang mga setting para sa form na ito.",
-    "updateSettingsConsoleErrMsg": "Error sa pag-update ng mga setting para sa form {formId} : {error}"
+    "updateSettingsConsoleErrMsg": "Error sa pag-update ng mga setting para sa form {formId}: {error}"
   },
   "apiKey": {
     "disclaimer": "Disclaimer",
@@ -325,7 +342,8 @@
     "version": "Bersyon",
     "save": "I-save",
     "saving": "Nagtitipid",
-    "notSaved": "Hindi Na-save"
+    "notSaved": "Hindi Na-save",
+    "fieldnameError": "HINDI mo MAAARI gumamit ng `form` na keyword bilang {label} fieldname"
   },
   "formViewerMultiUpload": {
     "important": "MAHALAGA",
@@ -375,6 +393,7 @@
     "emailRequired": "Kinakailangan ang email"
   },
   "submissionsTable": {
+    "noMachingRecordText": "Walang nakitang katugmang mga tala",
     "submissions": "Mga pagsusumite",
     "submissionsTable": "Talahanayan ng mga Pagsusumite",
     "selectColumns": "Piliin ang Mga Column",
@@ -464,6 +483,7 @@
     "editThisDraft": "I-edit ang Draft na ito"
   },
   "mySubmissionsTable": {
+    "noMachingRecordText": "Walang nakitang katugmang mga tala",
     "previousSubmissions": "Nakaraang Mga Pagsusumite",
     "selectColumns": "Piliin ang Mga Column",
     "createNewSubmission": "Gumawa ng Bagong Pagsusumite",
@@ -759,10 +779,12 @@
     "createOnlineTitle": "Lumikha ng mga online na form upang mangolekta ng impormasyon mula sa iyong mga kliyente at pagbutihin ang iyong mga daloy ng trabaho.",
     "getStarted": "Magsimula"
   },
-  "create": {
-    "createNewForm": "Lumikha ng Bagong Form",
+  "baseStepper": {
     "setUpForm": "I-set up ang Form",
     "designForm": "Form ng Disenyo",
+    "manageForm": "Pamahalaan ang Form"
+    },
+  "create": {
     "formSettings": "Mga Setting ng Form",
     "disclaimer": "Disclaimer",
     "disclaimerStmt": "Sumasang-ayon ako sa disclaimer at pahayag ng responsibilidad para sa mga Form Designer",
@@ -794,11 +816,11 @@
     "resetColumns": "I-reset ang Mga Column"
   },
   "formViewerActions": {
-    "viewAllSubmissions": "Tingnan ang Lahat ng Pagsusumite",
+    "viewMyDraftOrSubmissions": "Tingnan ang Aking draft/mga isinumite",
     "saveAsADraft": "I-save bilang Draft",
     "editThisDraft": "I-edit ang Draft na ito",
     "switchSingleSubmssn": "Lumipat sa iisang pagsusumite",
-    "switchMultiSubmssn": "Lumipat sa Maramihang pagsusumite"
+    "switchMultiSubmssn": "Lumipat sa maramihang pagsusumite"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Nakopya ang link sa clipboard",
@@ -877,6 +899,8 @@
       "fecthingFormBuilderCompsConsErrMsg": "Error sa pagkuha ng mga bahagi ng tagabuo ng form: {error}"
     },
     "form": {
+      "fetchEmailTemplatesConsErrMsg": "Error sa paglo-load ng mga template ng email para sa {formId}: {error}",
+      "fetchEmailTemplatesErrMsg": "Nagkaroon ng error sa pagkuha ng mga template ng email para sa form na ito",
       "getCurrUserFormsErrMsg": "May naganap na error habang kinukuha ang iyong mga form.",
       "getCurrUserFormsConsErrMsg": "Error sa pagkuha ng data ng user: {error}",
       "getUserFormPermErrMsg": "May naganap na error habang kinukuha ang iyong data ng user para sa form na ito.",
@@ -900,6 +924,8 @@
       "publishDraftErrMsg": "Nagkaroon ng error habang nagpa-publish.",
       "publishDraftConsErrMsg": "Error sa pag-publish ng {draftId}: {error}",
       "toggleVersnPublConsErrMsg": "Error sa toggleVersionPublish {versionId} {publish}: {error}",
+      "updateEmailTemplateConsErrMsg": "Error sa pag-update ng mga template ng email para sa form {formId}: {error}",
+      "updateEmailTemplateErrMsg": "May naganap na error habang ina-update ang mga template ng email para sa form na ito.",
       "updateFormErrMsg": "May naganap na error habang ina-update ang mga setting para sa form na ito.",
       "updateFormConsErrMsg": "Error sa pag-update ng form {id}: {error}",
       "deleteSubmissionNotifyMsg": "Matagumpay na natanggal ang pagsusumite.",

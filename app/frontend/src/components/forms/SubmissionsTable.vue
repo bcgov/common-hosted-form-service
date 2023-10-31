@@ -11,8 +11,8 @@
       </div>
       <!-- buttons -->
       <div>
-        <span v-if="checkFormManage">
-          <v-tooltip bottom>
+        <span>
+          <v-tooltip bottom v-if="showSelectColumns">
             <template #activator="{ on, attrs }">
               <v-btn
                 @click="onShowColumnDialog"
@@ -29,7 +29,7 @@
               $t('trans.submissionsTable.selectColumns')
             }}</span>
           </v-tooltip>
-          <v-tooltip bottom>
+          <v-tooltip bottom v-if="showFormManage">
             <template #activator="{ on, attrs }">
               <router-link :to="{ name: 'FormManage', query: { f: formId } }">
                 <v-btn
@@ -48,7 +48,7 @@
               $t('trans.submissionsTable.manageForm')
             }}</span>
           </v-tooltip>
-          <v-tooltip bottom>
+          <v-tooltip bottom v-if="showSubmissionsExport">
             <template #activator="{ on, attrs }">
               <router-link
                 :to="{ name: 'SubmissionsExport', query: { f: formId } }"
@@ -105,12 +105,12 @@
         <!-- search input -->
         <div class="submissions-search">
           <v-text-field
-            v-model="search"
             append-icon="mdi-magnify"
             :label="$t('trans.submissionsTable.search')"
             single-line
             hide-details
             class="pb-5"
+            @input="handleSearch"
             :class="{ label: isRTL }"
             :lang="lang"
           />
@@ -124,12 +124,16 @@
       :headers="HEADERS"
       item-key="submissionId"
       :items="submissionTable"
-      :search="search"
+      :key="dataTableKey"
       :loading="loading"
       :show-select="!switchSubmissionView"
       v-model="selectedSubmissions"
       :loading-text="$t('trans.submissionsTable.loadingText')"
-      :no-data-text="$t('trans.submissionsTable.noDataText')"
+      :no-data-text="
+        searchEnabled
+          ? $t('trans.submissionsTable.noMachingRecordText')
+          : $t('trans.submissionsTable.noDataText')
+      "
       :lang="lang"
       :server-items-length="totalSubmissions"
       @update:options="updateTableOptions"
@@ -325,9 +329,10 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { FormManagePermissions } from '@/utils/constants';
+import { checkFormManage, checkSubmissionView } from '@/utils/permissionUtils';
 import moment from 'moment';
-
+import _ from 'lodash';
+import { ref } from 'vue';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 library.add(faTrash);
@@ -345,10 +350,11 @@ export default {
       currentUserOnly: false,
       deletedOnly: false,
       itemsPerPage: 10,
-      page: 0,
+      page: 1,
       filterData: [],
       sortBy: undefined,
       sortDesc: false,
+      dataTableKey: ref(0),
       filterIgnore: [
         {
           value: 'confirmationId',
@@ -369,6 +375,7 @@ export default {
       loading: true,
       restoreItem: {},
       search: '',
+      searchEnabled: false,
       showColumnsDialog: false,
       showRestoreDialog: false,
       submissionTable: [],
@@ -379,6 +386,7 @@ export default {
       singleSubmissionRestore: false,
       deleteItem: {},
       switchSubmissionView: false,
+      firstDataLoad: true,
     };
   },
   computed: {
@@ -410,8 +418,19 @@ export default {
       'totalSubmissions',
     ]),
     ...mapGetters('auth', ['user']),
-    checkFormManage() {
-      return this.permissions.some((p) => FormManagePermissions.includes(p));
+    showFormManage() {
+      return this.checkFormManage(this.permissions);
+    },
+    showSelectColumns() {
+      return (
+        this.checkFormManage(this.permissions) ||
+        this.checkSubmissionView(this.permissions)
+      );
+    },
+    showSubmissionsExport() {
+      // For now use form management to indicate that the user can export
+      // submissions. In the future it should be its own set of permissions.
+      return this.checkFormManage(this.permissions);
     },
     DEFAULT_HEADER() {
       let headers = [
@@ -494,7 +513,6 @@ export default {
         },
       ];
     },
-
     SELECT_COLUMNS_HEADERS() {
       return [...this.FILTER_HEADERS, ...this.MODIFY_HEADERS].concat(
         this.formFields?.map((ff) => {
@@ -629,6 +647,10 @@ export default {
       'selectSubmissions',
     ]),
     ...mapActions('notifications', ['addNotification']),
+
+    checkFormManage: checkFormManage,
+    checkSubmissionView: checkSubmissionView,
+
     onShowColumnDialog() {
       this.SELECT_COLUMNS_HEADERS.sort(
         (a, b) =>
@@ -644,7 +666,6 @@ export default {
         ? this.deleteSingleSubs()
         : this.deleteMultiSubs();
     },
-
     async restoreSub() {
       this.singleSubmissionRestore
         ? this.restoreSingleSub()
@@ -667,7 +688,7 @@ export default {
       this.refreshSubmissions();
     },
     async updateTableOptions({ page, itemsPerPage, sortBy, sortDesc }) {
-      this.page = page - 1;
+      this.page = page;
       if (sortBy[0] === 'date') {
         this.sortBy = 'createdAt';
       } else if (sortBy[0] === 'submitter') {
@@ -679,16 +700,22 @@ export default {
       }
       this.sortDesc = sortDesc[0];
       this.itemsPerPage = itemsPerPage;
-      await this.getSubmissionData();
+      if (!this.firstDataLoad) {
+        await this.refreshSubmissions();
+      }
+      this.firstDataLoad = false;
     },
     async getSubmissionData() {
       let criteria = {
         formId: this.formId,
         itemsPerPage: this.itemsPerPage,
-        page: this.page,
+        page: this.page - 1,
         filterformSubmissionStatusCode: true,
+        paginationEnabled: true,
         sortBy: this.sortBy,
         sortDesc: this.sortDesc,
+        search: this.search,
+        searchEnabled: this.searchEnabled,
         createdAt: Object.values({
           minDate:
             this.userFormPreferences &&
@@ -770,7 +797,6 @@ export default {
 
     async refreshSubmissions() {
       this.loading = true;
-      this.page = 0;
       Promise.all([
         this.getFormRolesForUser(this.formId),
         this.getFormPermissionsForUser(this.formId),
@@ -785,6 +811,7 @@ export default {
       ])
         .then(async () => {
           await this.populateSubmissionsTable();
+          this.loading = false;
         })
         .finally(() => {
           this.selectedSubmissions = [];
@@ -826,12 +853,23 @@ export default {
         formId: this.form.id,
         preferences: preferences,
       });
-
       await this.populateSubmissionsTable();
     },
+    async handleSearch(value) {
+      this.searchEnabled = true;
+      this.search = value;
+      if (value === '') {
+        this.searchEnabled = false;
+        await this.getSubmissionData();
+      } else {
+        this.debounceInput();
+      }
+    },
   },
-
-  mounted() {
+  async mounted() {
+    this.debounceInput = _.debounce(async () => {
+      this.dataTableKey += 1;
+    }, 300);
     this.refreshSubmissions();
   },
 };
