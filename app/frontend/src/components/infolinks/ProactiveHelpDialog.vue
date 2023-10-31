@@ -1,5 +1,6 @@
 <script>
 import { mapState, mapActions } from 'pinia';
+import { i18n } from '~/internationalization';
 import { useAdminStore } from '~/store/admin';
 import { useFormStore } from '~/store/form';
 
@@ -35,6 +36,16 @@ export default {
       moreHelpInfoLink: this?.component?.externalLink
         ? this.component.externalLink
         : '',
+      rules: [
+        (value) => {
+          return (
+            !value ||
+            !value.length ||
+            value[0].size < 500000 ||
+            i18n.t('trans.proactiveHelpDialog.largeImgTxt')
+          );
+        },
+      ],
     };
   },
   computed: {
@@ -65,18 +76,13 @@ export default {
     },
     async selectImage() {
       const img = this.files[0];
-      this.imageSizeError = false;
-      if (img.size > 500000) {
-        this.imageSizeError = true;
-      } else {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          this.image = e.target.result;
-          this.imageName = img.name;
-        };
-        if (img) {
-          await reader.readAsDataURL(img);
-        }
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        this.image = e.target.result;
+        this.imageName = img.name;
+      };
+      if (img) {
+        await reader.readAsDataURL(img);
       }
     },
     submit() {
@@ -238,6 +244,7 @@ export default {
                 <v-col>
                   <v-file-input
                     v-model="files"
+                    :rules="rules"
                     style="width: 50%"
                     :prepend-icon="null"
                     show-size

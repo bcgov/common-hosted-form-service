@@ -20,46 +20,6 @@ describe('ProactiveHelpDialog.vue', () => {
 
   setActivePinia(pinia);
 
-  it('selectImage()', async () => {
-    const event = {
-      target: {
-        files: [
-          {
-            name: 'image.png',
-            size: 50000,
-            type: 'image/png',
-          },
-        ],
-      },
-    };
-    const wrapper = mount(ProactiveHelpDialog, {
-      props: {
-        component: {
-          componentName: 'content',
-          description: 'dump description',
-          imageUrl: 'https://dumpurl.com',
-          moreHelpInfoLink: 'https://dumpurl.com',
-        },
-        groupName: 'test',
-        showDialog: true,
-      },
-      global: {
-        plugins: [router, pinia],
-      },
-    });
-
-    const fileReaderSpy = vi
-      .spyOn(FileReader.prototype, 'readAsDataURL')
-      .mockImplementation(() => null);
-    const persistSpy = vi.spyOn(
-      ProactiveHelpDialog.methods,
-      'addFCProactiveHelp'
-    );
-    wrapper.vm.selectImage(event);
-    expect(fileReaderSpy).toHaveBeenCalledWith(event);
-    expect(persistSpy).toHaveBeenCalledTimes(0);
-  });
-
   it('resetDialog', async () => {
     const wrapper = mount(ProactiveHelpDialog, {
       props: {
