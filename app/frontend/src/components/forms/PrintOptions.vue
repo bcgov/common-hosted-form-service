@@ -138,12 +138,50 @@ export default {
   methods: {
     ...mapActions('notifications', ['addNotification']),
     async printBrowser() {
+      //handle the 'Download Options' popup (v-dialog)
       this.dialog = false;
-      // Setting a timeout to allow the modal to close before opening the windows print
-      setTimeout(() => {
-        window.print();
-      }, 500);
+
+      // Get all text input elements
+      let inputs = document.querySelectorAll('input[type="text"]');
+
+      // Create arrays to store original input fields and new divs
+      let originalInputs = [];
+      let divs = [];
+
+      inputs.forEach((input) => {
+        let div = document.createElement('div');
+        div.textContent = input.value;
+        // apply styling
+        div.style.width = '100%';
+        div.style.height = 'auto';
+        div.style.padding = '6px 12px';
+        div.style.lineHeight = '1.5';
+        div.style.color = '#495057';
+        div.style.border = '1px solid #606060';
+        div.style.borderRadius = '4px';
+        div.style.boxSizing = 'border-box';
+
+        // Store the original input and new div
+        originalInputs.push(input);
+        divs.push(div);
+
+        // Replace the input with the div
+        input.parentNode.replaceChild(div, input);
+      });
+
+      window.onafterprint = () => {
+        // Restore the original input fields after printing
+        originalInputs.forEach((input, index) => {
+          divs[index].parentNode.replaceChild(input, divs[index]);
+        });
+        //show the dialog again
+        this.dialog = true;
+      };
+
+      //delaying window.print() so that the 'Download Options' popup isn't rendered
+      setTimeout(() => window.print(), 500);
     },
+
     splitFileName(filename = undefined) {
       let name = undefined;
       let extension = undefined;
