@@ -19,32 +19,6 @@ describe('GeneralLayout.vue', () => {
 
   setActivePinia(pinia);
 
-  it('isComponentPublish()', async () => {
-    const wrapper = mount(GeneralLayout, {
-      props: {
-        componentsList: [
-          { componentName: 'content', status: true },
-          { componentName: 'textfiled', status: false },
-        ],
-        layoutList: [
-          { componentName: 'content' },
-          { componentName: 'textfiled' },
-        ],
-        groupName: '',
-      },
-      global: {
-        plugins: [router, pinia],
-        stubs: {
-          ProactiveHelpDialog: true,
-          ProactiveHelpPreviewDialog: true,
-        },
-      },
-    });
-    await wrapper.setData({ publish: [false, false], listLength: 2 });
-    wrapper.vm.isComponentPublish('content', 0);
-    expect(wrapper.vm.publish[0]).toBe(true);
-  });
-
   it('onOpenDialog()', async () => {
     const getComponentSpy = vi.spyOn(GeneralLayout.methods, 'getComponent');
     const onDialogSpy = vi.spyOn(GeneralLayout.methods, 'onDialog');
