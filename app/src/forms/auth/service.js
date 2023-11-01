@@ -6,7 +6,7 @@ const { queryUtils } = require('../common/utils');
 const FORM_SUBMITTER = require('../common/constants').Permissions.FORM_SUBMITTER;
 
 const service = {
-  _createUser: async (data) => {
+  createUser: async (data) => {
     let trx;
     try {
       trx = await User.startTransaction();
@@ -25,7 +25,7 @@ const service = {
 
       await User.query(trx).insert(obj).onConflict('keycloakId').ignore();
       await trx.commit();
-      const result = await service._readUser(obj.keycloakId);
+      const result = await service.readUser(obj.keycloakId);
       return result;
     } catch (err) {
       if (trx) await trx.rollback();
@@ -33,11 +33,11 @@ const service = {
     }
   },
 
-  _readUser: async (keycloakId) => {
-    return User.query().modify('filterKeycloakId', keycloakId).throwIfNotFound();
+  readUser: async (keycloakId) => {
+    return User.query().modify('filterKeycloakId', keycloakId).first().throwIfNotFound();
   },
 
-  _updateUser: async (id, data) => {
+  updateUser: async (id, data) => {
     let trx;
     try {
       trx = await User.startTransaction();
@@ -55,7 +55,7 @@ const service = {
 
       await User.query(trx).patchAndFetchById(id, update);
       await trx.commit();
-      const result = await service._readUser(update.keycloakId);
+      const result = await service.readUser(update.keycloakId);
       return result;
     } catch (err) {
       if (trx) await trx.rollback();
@@ -117,10 +117,10 @@ const service = {
 
     if (!user) {
       // add to the system.
-      user = await service._createUser(obj);
+      user = await service.createUser(obj);
     } else {
       // what if name or email changed?
-      user = await service._updateUser(user.id, obj);
+      user = await service.updateUser(user.id, obj);
     }
 
     // return with the db id...
