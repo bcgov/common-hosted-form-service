@@ -59,6 +59,17 @@ export default {
       ];
     },
   },
+  mounted() {
+    let idx = 0;
+    for (let layoutItem of this.layoutList) {
+      for (let component of this.componentsList) {
+        if (component.componentName === layoutItem.componentName) {
+          this.publish[idx] = component.status;
+        }
+      }
+      idx++;
+    }
+  },
   methods: {
     ...mapActions(useAdminStore, [
       'getFCProactiveHelpImageUrl',
@@ -80,14 +91,6 @@ export default {
           (component) => component.componentName === compName
         ).length == 0
       );
-    },
-
-    isComponentPublish(compName, index) {
-      for (let component of this.componentsList) {
-        if (component.componentName === compName) {
-          this.publish[index] = component.status;
-        }
-      }
     },
 
     onOpenDialog(compName) {
@@ -198,7 +201,6 @@ export default {
                 density="compact"
                 hide-details
                 color="success"
-                :model-value="isComponentPublish(item.raw.componentName, index)"
                 @update:model-value="
                   onSwitchChange(item.raw.componentName, index)
                 "

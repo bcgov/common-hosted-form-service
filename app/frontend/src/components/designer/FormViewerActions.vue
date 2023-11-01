@@ -143,9 +143,13 @@ export default {
         >
           <v-tooltip location="bottom">
             <template #activator="{ props }">
-              <v-btn color="primary" icon size="small" v-bind="props">
-                <v-icon icon="mdi:mdi-pencil"></v-icon>
-              </v-btn>
+              <v-btn
+                color="primary"
+                icon="mdi:mdi-pencil"
+                size="x-small"
+                density="default"
+                v-bind="props"
+              />
             </template>
             <span :lang="lang">{{
               $t('trans.formViewerActions.editThisDraft')

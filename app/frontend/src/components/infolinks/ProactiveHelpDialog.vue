@@ -1,5 +1,6 @@
 <script>
 import { mapState, mapActions } from 'pinia';
+import { i18n } from '~/internationalization';
 import { useAdminStore } from '~/store/admin';
 import { useFormStore } from '~/store/form';
 
@@ -13,27 +14,38 @@ export default {
   emits: ['close-dialog'],
   data() {
     return {
+      componentId: this?.component?.id ? this.component.id : undefined,
       componentName_: this?.component?.componentName
         ? this.component.componentName
         : this.componentName,
       description: this?.component?.description
         ? this.component.description
         : '',
-      moreHelpInfoLink: this?.component?.externalLink
-        ? this.component.externalLink
-        : '',
+      dialog: this.showDialog,
+      files: [],
       isLinkEnabled: this?.component?.isLinkEnabled
         ? this.component.isLinkEnabled
         : '',
-      dialog: this.showDialog,
       image: '',
       imageSizeError: false,
-      componentId: this?.component?.id ? this.component.id : undefined,
       imageName: this?.component?.imageName ? this.component.imageName : '',
       imagePlaceholder: this?.component?.imageName
         ? this.component.imageName
         : undefined,
       linkError: false,
+      moreHelpInfoLink: this?.component?.externalLink
+        ? this.component.externalLink
+        : '',
+      rules: [
+        (value) => {
+          return (
+            !value ||
+            !value.length ||
+            value[0].size < 500000 ||
+            i18n.t('trans.proactiveHelpDialog.largeImgTxt')
+          );
+        },
+      ],
     };
   },
   computed: {
@@ -62,19 +74,15 @@ export default {
       }
       return error;
     },
-    async selectImage(img) {
-      this.imageSizeError = false;
-      if (img.size > 500000) {
-        this.imageSizeError = true;
-      } else {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          this.image = e.target.result;
-          this.imageName = img.name;
-        };
-        if (img) {
-          await reader.readAsDataURL(img);
-        }
+    async selectImage() {
+      const img = this.files[0];
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        this.image = e.target.result;
+        this.imageName = img.name;
+      };
+      if (img) {
+        await reader.readAsDataURL(img);
       }
     },
     submit() {
@@ -235,6 +243,8 @@ export default {
                 ></v-icon>
                 <v-col>
                   <v-file-input
+                    v-model="files"
+                    :rules="rules"
                     style="width: 50%"
                     :prepend-icon="null"
                     show-size
@@ -247,7 +257,7 @@ export default {
                     "
                     class="file_upload_data-cy"
                     :lang="lang"
-                    @change="selectImage"
+                    @update:model-value="selectImage"
                   ></v-file-input>
                 </v-col>
               </div>

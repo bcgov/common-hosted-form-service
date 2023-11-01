@@ -1102,6 +1102,7 @@ export default {
               :read-only="readOnly"
               :submission="submission"
               :submission-id="submissionId"
+              class="d-print-none"
               @showdoYouWantToSaveTheDraftModal="
                 showdoYouWantToSaveTheDraftModal
               "
