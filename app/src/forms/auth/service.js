@@ -23,9 +23,9 @@ const service = {
         idpCode: data.idp,
       };
 
-      await User.query(trx).insert(obj);
+      await User.query(trx).insert(obj).onConflict('keycloakId').ignore();
       await trx.commit();
-      const result = await service.readUser(obj.id);
+      const result = await service.readUser(obj.keycloakId);
       return result;
     } catch (err) {
       if (trx) await trx.rollback();
@@ -33,14 +33,13 @@ const service = {
     }
   },
 
-  readUser: async (id) => {
-    return User.query().findById(id).throwIfNotFound();
+  readUser: async (keycloakId) => {
+    return User.query().modify('filterKeycloakId', keycloakId).first().throwIfNotFound();
   },
 
   updateUser: async (id, data) => {
     let trx;
     try {
-      const obj = await service.readUser(id);
       trx = await User.startTransaction();
 
       const update = {
@@ -54,9 +53,9 @@ const service = {
         idpCode: data.idp,
       };
 
-      await User.query(trx).patchAndFetchById(obj.id, update);
+      await User.query(trx).patchAndFetchById(id, update);
       await trx.commit();
-      const result = await service.readUser(id);
+      const result = await service.readUser(update.keycloakId);
       return result;
     } catch (err) {
       if (trx) await trx.rollback();
