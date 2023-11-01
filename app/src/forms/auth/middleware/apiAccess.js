@@ -4,6 +4,7 @@ const { validate: uuidValidate } = require('uuid');
 
 const formService = require('../../form/service');
 const submissionService = require('../../submission/service');
+const fileService = require('../../file/service');
 
 module.exports = async (req, res, next) => {
   try {
@@ -21,9 +22,15 @@ module.exports = async (req, res, next) => {
       } else if (params.formSubmissionId && uuidValidate(params.formSubmissionId)) {
         const result = await submissionService.read(params.formSubmissionId);
         formId = result?.form?.id;
-      } else if (params.id) {
-        // get formId from request body
-        formId = params.formId;
+      } else if (params.id && uuidValidate(params.id)) {
+        // get submissionID from request body
+        const sid = await fileService.read(params.id);
+        //check to see that an associated submissionId exists
+        if (!sid || !sid.formSubmissionId) {
+          throw new Error('Submission ID not found in file storage.');
+        }
+        const result = await submissionService.read(sid.formSubmissionId);
+        formId = result?.form?.id;
       }
 
       let secret = ''; // Must be initialized as a string
