@@ -23,7 +23,7 @@ const state = {
 };
 let probeId;
 const app = express();
-app.use(rateLimiter.apiKeyRateLimiter);
+app.use(config.get('server.basePath') + config.get('server.apiPath'), rateLimiter.apiKeyRateLimiter);
 app.use(compression());
 app.use(express.json({ limit: config.get('server.bodyLimit') }));
 app.use(express.urlencoded({ extended: true }));
