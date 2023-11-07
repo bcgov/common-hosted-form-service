@@ -33,11 +33,13 @@ const service = {
     const findFiles = (components) => {
       // Reduce the array of components to a flat array of file IDs
       return components.reduce((fileIds, x) => {
-        if (x.type === 'simplefile' && data.submission.data[x.key]) { // Add the file ID if it's a 'simplefile' and it exists in the data
+        if (x.type === 'simplefile' && data.submission.data[x.key]) {
+          // Add the file ID if it's a 'simplefile' and it exists in the data
           const files = data.submission.data[x.key];
-          const ids = Array.isArray(files) ? files.map(file => file.data.id) : [files.data.id];
+          const ids = Array.isArray(files) ? files.map((file) => file.data.id) : [files.data.id];
           return fileIds.concat(ids);
-        } else if (x.components) { // If the component has nested components, recurse into them
+        } else if (x.components) {
+          // If the component has nested components, recurse into them
           return fileIds.concat(findFiles(x.components));
         }
         return fileIds;
