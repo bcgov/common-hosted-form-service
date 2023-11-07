@@ -1,6 +1,5 @@
 const config = require('config');
 const routes = require('express').Router();
-const middleware = require('../common/middleware');
 const apiAccess = require('../auth/middleware/apiAccess');
 const { currentUser, hasFormPermissions } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
@@ -26,7 +25,7 @@ routes.get('/:formId/export', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBM
   await controller.export(req, res, next);
 });
 
-routes.post('/:formId/export/fields', middleware.publicRateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
+routes.post('/:formId/export/fields', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.exportWithFields(req, res, next);
 });
 
@@ -54,7 +53,7 @@ routes.delete('/:formId', apiAccess, hasFormPermissions([P.FORM_READ, P.FORM_DEL
   await controller.deleteForm(req, res, next);
 });
 
-routes.get('/:formId/submissions', middleware.publicRateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
+routes.get('/:formId/submissions', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.listFormSubmissions(req, res, next);
 });
 
@@ -84,15 +83,9 @@ routes.post('/:formId/versions/:formVersionId/submissions', apiAccess, hasFormPe
   await controller.createSubmission(req, res, next);
 });
 
-routes.post(
-  '/:formId/versions/:formVersionId/multiSubmission',
-  middleware.publicRateLimiter,
-  apiAccess,
-  hasFormPermissions([P.FORM_READ, P.SUBMISSION_CREATE]),
-  async (req, res, next) => {
-    await controller.createMultiSubmission(req, res, next);
-  }
-);
+routes.post('/:formId/versions/:formVersionId/multiSubmission', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_CREATE]), async (req, res, next) => {
+  await controller.createMultiSubmission(req, res, next);
+});
 
 routes.get('/:formId/versions/:formVersionId/submissions/discover', apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), (req, res, next) => {
   controller.listSubmissionFields(req, res, next);
@@ -150,7 +143,7 @@ routes.get('/formcomponents/proactivehelp/list', async (req, res, next) => {
   await controller.listFormComponentsProactiveHelp(req, res, next);
 });
 
-routes.get('/:formId/csvexport/fields', middleware.publicRateLimiter, apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+routes.get('/:formId/csvexport/fields', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.readFieldsForCSVExport(req, res, next);
 });
 
