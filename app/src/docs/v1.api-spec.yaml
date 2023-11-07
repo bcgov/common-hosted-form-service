@@ -169,6 +169,8 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -203,6 +205,8 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -231,6 +235,8 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -392,6 +398,8 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -438,6 +446,8 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -489,6 +499,8 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -519,6 +531,8 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -548,6 +562,8 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -585,6 +601,8 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -616,6 +634,8 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -658,6 +678,8 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -688,6 +710,8 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -726,6 +750,8 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -751,6 +777,8 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -781,6 +809,8 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -821,6 +851,8 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -853,6 +885,8 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -888,6 +922,8 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -924,6 +960,8 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -969,6 +1007,8 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -994,8 +1034,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubmissionFormVersion'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -1187,8 +1231,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SubmissionStatusHistory'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '427':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -1960,7 +2008,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     put:
-      summary: Set premissions for a user on a submission
+      summary: Set permissions for a user on a submission
       operationId: setSubmissionUser
       tags:
         - RBAC
@@ -2963,7 +3011,7 @@ components:
               properties:
                 enabled:
                   type: boolean
-                  description: Used to indicate if subscribe feature enabled or not 
+                  description: Used to indicate if subscribe feature enabled or not
                   example: true
             enableCopyExistingSubmission:
               type: boolean
@@ -4010,6 +4058,8 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/NotFound'
+    TooManyRequests:
+      description: BasicAuth request exceeds rate limiting
     UnauthorizedError:
       description: Invalid authorization credentials
     UnprocessableEntity:
