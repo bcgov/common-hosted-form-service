@@ -30,16 +30,21 @@ const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.S
 const service = {
   // Get the list of file IDs from the submission
   _findFileIds: (schema, data) => {
-    return (
-      schema.components
-        // Get the file controls
-        .filter((x) => x.type === 'simplefile')
-        // for the file controls, get their respective data element (skip if it's not in data)
-        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap#for_adding_and_removing_items_during_a_map
-        .flatMap((x) => (data.submission.data[x.key] ? data.submission.data[x.key] : []))
-        // get the id from the data
-        .map((x) => x.data.id)
-    );
+    const findFiles = (components) => {
+      // Reduce the array of components to a flat array of file IDs
+      return components.reduce((fileIds, x) => {
+        if (x.type === 'simplefile' && data.submission.data[x.key]) { // Add the file ID if it's a 'simplefile' and it exists in the data
+          const files = data.submission.data[x.key];
+          const ids = Array.isArray(files) ? files.map(file => file.data.id) : [files.data.id];
+          return fileIds.concat(ids);
+        } else if (x.components) { // If the component has nested components, recurse into them
+          return fileIds.concat(findFiles(x.components));
+        }
+        return fileIds;
+      }, []);
+    };
+    // Start the recursive search from the top-level components
+    return findFiles(schema.components);
   },
 
   listForms: async (params) => {
