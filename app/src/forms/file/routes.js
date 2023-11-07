@@ -13,7 +13,7 @@ routes.post('/', hasFileCreate, fileUpload.upload, async (req, res, next) => {
   await controller.create(req, res, next);
 });
 
-routes.get('/:id', apiAccess, currentFileRecord, hasFilePermissions(P.SUBMISSION_READ), async (req, res, next) => {
+routes.get('/:id', middleware.publicRateLimiter, apiAccess, currentFileRecord, hasFilePermissions(P.SUBMISSION_READ), async (req, res, next) => {
   await controller.read(req, res, next);
 });
 
