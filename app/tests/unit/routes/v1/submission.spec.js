@@ -45,7 +45,7 @@ describe(`GET ${basePath}/ID`, () => {
     // mock a success return value...
     service.read = jest.fn().mockReturnValue({});
 
-    const response = await request(app).get(`${basePath}/ID`);
+    const response = await request(app).get(`${basePath}/ID`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -57,7 +57,7 @@ describe(`GET ${basePath}/ID`, () => {
       throw new Problem(401);
     });
 
-    const response = await request(app).get(`${basePath}/ID`);
+    const response = await request(app).get(`${basePath}/ID`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -69,7 +69,7 @@ describe(`GET ${basePath}/ID`, () => {
       throw new Error();
     });
 
-    const response = await request(app).get(`${basePath}/ID`);
+    const response = await request(app).get(`${basePath}/ID`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
@@ -279,7 +279,7 @@ describe(`GET ${basePath}/ID/status`, () => {
     // mock a success return value...
     service.getStatus = jest.fn().mockReturnValue({});
 
-    const response = await request(app).get(`${basePath}/ID/status`);
+    const response = await request(app).get(`${basePath}/ID/status`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -291,7 +291,7 @@ describe(`GET ${basePath}/ID/status`, () => {
       throw new Problem(401);
     });
 
-    const response = await request(app).get(`${basePath}/ID/status`);
+    const response = await request(app).get(`${basePath}/ID/status`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -303,7 +303,7 @@ describe(`GET ${basePath}/ID/status`, () => {
       throw new Error();
     });
 
-    const response = await request(app).get(`${basePath}/ID/status`);
+    const response = await request(app).get(`${basePath}/ID/status`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
