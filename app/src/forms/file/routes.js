@@ -6,6 +6,7 @@ const P = require('../common/constants').Permissions;
 const { currentFileRecord, hasFileCreate, hasFilePermissions } = require('./middleware/filePermissions');
 const fileUpload = require('./middleware/upload').fileUpload;
 const { currentUser } = require('../auth/middleware/userAccess');
+const rateLimiter = require('../common/middleware').apiKeyRateLimiter;
 
 routes.use(currentUser);
 
@@ -13,7 +14,7 @@ routes.post('/', hasFileCreate, fileUpload.upload, async (req, res, next) => {
   await controller.create(req, res, next);
 });
 
-routes.get('/:id', middleware.publicRateLimiter, apiAccess, currentFileRecord, hasFilePermissions(P.SUBMISSION_READ), async (req, res, next) => {
+routes.get('/:id', rateLimiter, apiAccess, currentFileRecord, hasFilePermissions(P.SUBMISSION_READ), async (req, res, next) => {
   await controller.read(req, res, next);
 });
 
