@@ -8,7 +8,6 @@ const querystring = require('querystring');
 const keycloak = require('./src/components/keycloak');
 const log = require('./src/components/log')(module.filename);
 const httpLogger = require('./src/components/log').httpLogger;
-const rateLimiter = require('./src/forms/common/middleware');
 const v1Router = require('./src/routes/v1');
 
 const DataConnection = require('./src/db/dataConnection');
@@ -23,7 +22,6 @@ const state = {
 };
 let probeId;
 const app = express();
-app.use(config.get('server.basePath') + config.get('server.apiPath'), rateLimiter.apiKeyRateLimiter);
 app.use(compression());
 app.use(express.json({ limit: config.get('server.bodyLimit') }));
 app.use(express.urlencoded({ extended: true }));
