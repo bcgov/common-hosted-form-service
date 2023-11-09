@@ -4,10 +4,11 @@ const routes = require('express').Router();
 const controller = require('./controller');
 const P = require('../common/constants').Permissions;
 const { currentUser, hasSubmissionPermissions, filterMultipleSubmissions } = require('../auth/middleware/userAccess');
+const rateLimiter = require('../common/middleware').apiKeyRateLimiter;
 
 routes.use(currentUser);
 
-routes.get('/:formSubmissionId', apiAccess, hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
+routes.get('/:formSubmissionId', rateLimiter, apiAccess, hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
   await controller.read(req, res, next);
 });
 
@@ -39,7 +40,7 @@ routes.post('/:formSubmissionId/notes', hasSubmissionPermissions(P.SUBMISSION_UP
   await controller.addNote(req, res, next);
 });
 
-routes.get('/:formSubmissionId/status', apiAccess, hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
+routes.get('/:formSubmissionId/status', rateLimiter, apiAccess, hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
   await controller.getStatus(req, res, next);
 });
 
