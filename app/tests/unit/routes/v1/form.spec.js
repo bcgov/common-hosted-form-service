@@ -125,7 +125,7 @@ describe(`GET ${basePath}/formId`, () => {
     // mock a success return value...
     service.readForm = jest.fn().mockReturnValue([]);
 
-    const response = await request(app).get(`${basePath}/formId`);
+    const response = await request(app).get(`${basePath}/formId`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -137,7 +137,7 @@ describe(`GET ${basePath}/formId`, () => {
       throw new Problem(401);
     });
 
-    const response = await request(app).get(`${basePath}/formId`);
+    const response = await request(app).get(`${basePath}/formId`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -149,7 +149,7 @@ describe(`GET ${basePath}/formId`, () => {
       throw new Error();
     });
 
-    const response = await request(app).get(`${basePath}/formId`);
+    const response = await request(app).get(`${basePath}/formId`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
@@ -161,7 +161,7 @@ describe(`PUT ${basePath}/formId`, () => {
     // mock a success return value...
     service.updateForm = jest.fn().mockReturnValue([]);
 
-    const response = await request(app).put(`${basePath}/formId`);
+    const response = await request(app).put(`${basePath}/formId`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -173,7 +173,7 @@ describe(`PUT ${basePath}/formId`, () => {
       throw new Problem(401);
     });
 
-    const response = await request(app).put(`${basePath}/formId`);
+    const response = await request(app).put(`${basePath}/formId`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -185,7 +185,7 @@ describe(`PUT ${basePath}/formId`, () => {
       throw new Error();
     });
 
-    const response = await request(app).put(`${basePath}/formId`);
+    const response = await request(app).put(`${basePath}/formId`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
@@ -197,7 +197,7 @@ describe(`DELETE ${basePath}/formId`, () => {
     // mock a success return value...
     service.deleteForm = jest.fn().mockReturnValue([]);
 
-    const response = await request(app).delete(`${basePath}/formId`);
+    const response = await request(app).delete(`${basePath}/formId`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(204);
     expect(response.body).toBeTruthy();
@@ -209,7 +209,7 @@ describe(`DELETE ${basePath}/formId`, () => {
       throw new Problem(401);
     });
 
-    const response = await request(app).delete(`${basePath}/formId`);
+    const response = await request(app).delete(`${basePath}/formId`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -221,7 +221,7 @@ describe(`DELETE ${basePath}/formId`, () => {
       throw new Error();
     });
 
-    const response = await request(app).delete(`${basePath}/formId`);
+    const response = await request(app).delete(`${basePath}/formId`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
@@ -239,7 +239,7 @@ describe(`GET ${basePath}/formId/export`, () => {
       },
     });
 
-    const response = await request(app).get(`${basePath}/formId/export`);
+    const response = await request(app).get(`${basePath}/formId/export`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -251,7 +251,7 @@ describe(`GET ${basePath}/formId/export`, () => {
       throw new Problem(401);
     });
 
-    const response = await request(app).get(`${basePath}/formId/export`);
+    const response = await request(app).get(`${basePath}/formId/export`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -263,7 +263,7 @@ describe(`GET ${basePath}/formId/export`, () => {
       throw new Error();
     });
 
-    const response = await request(app).get(`${basePath}/formId/export`);
+    const response = await request(app).get(`${basePath}/formId/export`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
@@ -275,7 +275,7 @@ describe(`GET ${basePath}/formId/version`, () => {
     // mock a success return value...
     service.readPublishedForm = jest.fn().mockReturnValue([]);
 
-    const response = await request(app).get(`${basePath}/formId/version`);
+    const response = await request(app).get(`${basePath}/formId/version`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -287,7 +287,7 @@ describe(`GET ${basePath}/formId/version`, () => {
       throw new Problem(401);
     });
 
-    const response = await request(app).get(`${basePath}/formId/version`);
+    const response = await request(app).get(`${basePath}/formId/version`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -299,7 +299,7 @@ describe(`GET ${basePath}/formId/version`, () => {
       throw new Error();
     });
 
-    const response = await request(app).get(`${basePath}/formId/version`);
+    const response = await request(app).get(`${basePath}/formId/version`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
@@ -311,7 +311,7 @@ describe(`GET ${basePath}/formId/submissions`, () => {
     // mock a success return value...
     service.listFormSubmissions = jest.fn().mockReturnValue([]);
 
-    const response = await request(app).get(`${basePath}/formId/submissions`);
+    const response = await request(app).get(`${basePath}/formId/submissions`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -323,7 +323,7 @@ describe(`GET ${basePath}/formId/submissions`, () => {
       throw new Problem(401);
     });
 
-    const response = await request(app).get(`${basePath}/formId/submissions`);
+    const response = await request(app).get(`${basePath}/formId/submissions`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -335,30 +335,19 @@ describe(`GET ${basePath}/formId/submissions`, () => {
       throw new Error();
     });
 
-    const response = await request(app).get(`${basePath}/formId/submissions`);
+    const response = await request(app).get(`${basePath}/formId/submissions`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
 });
 
-// describe(`POST ${basePath}/formId/versions`, () => {
-
-//   it('should return 410', async () => {
-//     const response = await request(app).post(`${basePath}/formId/versions`);
-
-//     expect(response.statusCode).toBe(410);
-//     expect(response.body).toBeTruthy();
-//   });
-
-// });
-
 describe(`GET ${basePath}/formId/versions/formVersionId`, () => {
   it('should return 200', async () => {
     // mock a success return value...
     service.readVersion = jest.fn().mockReturnValue([]);
 
-    const response = await request(app).get(`${basePath}/formId/versions/formVersionId`);
+    const response = await request(app).get(`${basePath}/formId/versions/formVersionId`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -370,7 +359,7 @@ describe(`GET ${basePath}/formId/versions/formVersionId`, () => {
       throw new Problem(401);
     });
 
-    const response = await request(app).get(`${basePath}/formId/versions/formVersionId`);
+    const response = await request(app).get(`${basePath}/formId/versions/formVersionId`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -382,7 +371,7 @@ describe(`GET ${basePath}/formId/versions/formVersionId`, () => {
       throw new Error();
     });
 
-    const response = await request(app).get(`${basePath}/formId/versions/formVersionId`);
+    const response = await request(app).get(`${basePath}/formId/versions/formVersionId`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
@@ -394,7 +383,7 @@ describe(`GET ${basePath}/formId/versions/formVersionId/fields`, () => {
     // mock a success return value...
     service.readVersionFields = jest.fn().mockReturnValue([]);
 
-    const response = await request(app).get(`${basePath}/formId/versions/formVersionId/fields`);
+    const response = await request(app).get(`${basePath}/formId/versions/formVersionId/fields`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -406,7 +395,7 @@ describe(`GET ${basePath}/formId/versions/formVersionId/fields`, () => {
       throw new Problem(401);
     });
 
-    const response = await request(app).get(`${basePath}/formId/versions/formVersionId/fields`);
+    const response = await request(app).get(`${basePath}/formId/versions/formVersionId/fields`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -418,30 +407,19 @@ describe(`GET ${basePath}/formId/versions/formVersionId/fields`, () => {
       throw new Error();
     });
 
-    const response = await request(app).get(`${basePath}/formId/versions/formVersionId/fields`);
+    const response = await request(app).get(`${basePath}/formId/versions/formVersionId/fields`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
 });
 
-// describe(`PUT ${basePath}/formId/versions/formVersionId`, () => {
-
-//   it('should return 410', async () => {
-//     const response = await request(app).put(`${basePath}/formId/versions/formVersionId`);
-
-//     expect(response.statusCode).toBe(410);
-//     expect(response.body).toBeTruthy();
-//   });
-
-// });
-
 describe(`POST ${basePath}/formId/versions/formVersionId/publish`, () => {
   it('should return 200', async () => {
     // mock a success return value...
     service.publishVersion = jest.fn().mockReturnValue({});
 
-    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/publish`);
+    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/publish`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -453,7 +431,7 @@ describe(`POST ${basePath}/formId/versions/formVersionId/publish`, () => {
       throw new Problem(401);
     });
 
-    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/publish`);
+    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/publish`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -465,7 +443,7 @@ describe(`POST ${basePath}/formId/versions/formVersionId/publish`, () => {
       throw new Error();
     });
 
-    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/publish`);
+    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/publish`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
@@ -477,7 +455,7 @@ describe(`GET ${basePath}/formId/versions/formVersionId/submissions`, () => {
     // mock a success return value...
     service.listSubmissions = jest.fn().mockReturnValue([]);
 
-    const response = await request(app).get(`${basePath}/formId/versions/formVersionId/submissions`);
+    const response = await request(app).get(`${basePath}/formId/versions/formVersionId/submissions`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -489,7 +467,7 @@ describe(`GET ${basePath}/formId/versions/formVersionId/submissions`, () => {
       throw new Problem(401);
     });
 
-    const response = await request(app).get(`${basePath}/formId/versions/formVersionId/submissions`);
+    const response = await request(app).get(`${basePath}/formId/versions/formVersionId/submissions`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -501,7 +479,7 @@ describe(`GET ${basePath}/formId/versions/formVersionId/submissions`, () => {
       throw new Error();
     });
 
-    const response = await request(app).get(`${basePath}/formId/versions/formVersionId/submissions`);
+    const response = await request(app).get(`${basePath}/formId/versions/formVersionId/submissions`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
@@ -516,7 +494,7 @@ describe(`POST ${basePath}/formId/versions/formVersionId/submissions`, () => {
     emailService.submissionReceived = jest.fn(() => Promise.resolve({}));
     fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
 
-    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`);
+    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`).set('Authorization', 'Bearer: abc123');
 
     expect(emailService.submissionReceived).toHaveBeenCalledTimes(1);
     expect(fileService.moveSubmissionFiles).toHaveBeenCalledTimes(1);
@@ -530,7 +508,7 @@ describe(`POST ${basePath}/formId/versions/formVersionId/submissions`, () => {
     emailService.submissionReceived = jest.fn(() => Promise.resolve({}));
     fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
 
-    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`).send({ draft: true });
+    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`).send({ draft: true }).set('Authorization', 'Bearer: abc123');
 
     expect(emailService.submissionReceived).toHaveBeenCalledTimes(0);
     expect(fileService.moveSubmissionFiles).toHaveBeenCalledTimes(1);
@@ -544,7 +522,7 @@ describe(`POST ${basePath}/formId/versions/formVersionId/submissions`, () => {
     emailService.submissionReceived = jest.fn(() => Promise.resolve({}));
     fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
 
-    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`).send({ draft: false });
+    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`).send({ draft: false }).set('Authorization', 'Bearer: abc123');
 
     expect(emailService.submissionReceived).toHaveBeenCalledTimes(1);
     expect(fileService.moveSubmissionFiles).toHaveBeenCalledTimes(1);
@@ -560,7 +538,7 @@ describe(`POST ${basePath}/formId/versions/formVersionId/submissions`, () => {
     emailService.submissionReceived = jest.fn().mockReturnValue(true);
     fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
 
-    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`);
+    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -574,7 +552,7 @@ describe(`POST ${basePath}/formId/versions/formVersionId/submissions`, () => {
     emailService.submissionReceived = jest.fn().mockReturnValue(true);
     fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
 
-    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`);
+    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
@@ -585,7 +563,7 @@ describe(`POST ${basePath}/formId/versions/formVersionId/submissions`, () => {
     emailService.submissionReceived = jest.fn(() => Promise.reject({}));
     fileService.moveSubmissionFiles = jest.fn(() => Promise.resolve({}));
 
-    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`);
+    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(201);
     expect(response.body).toBeTruthy();
@@ -596,7 +574,7 @@ describe(`POST ${basePath}/formId/versions/formVersionId/submissions`, () => {
     emailService.submissionReceived = jest.fn(() => Promise.resolve({}));
     fileService.moveSubmissionFiles = jest.fn(() => Promise.reject({}));
 
-    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`);
+    const response = await request(app).post(`${basePath}/formId/versions/formVersionId/submissions`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(201);
     expect(response.body).toBeTruthy();
@@ -609,7 +587,7 @@ describe(`GET ${basePath}/formId/versions/formVersionId/submissions/discover`, (
     service.listSubmissionFields = jest.fn().mockReturnValue([]);
     service.readVersionFields = jest.fn().mockReturnValue([]);
 
-    const response = await request(app).get(`${basePath}/formId/versions/formVersionId/submissions/discover`).query({ fields: 'foo,bar' });
+    const response = await request(app).get(`${basePath}/formId/versions/formVersionId/submissions/discover`).query({ fields: 'foo,bar' }).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -622,7 +600,8 @@ describe(`GET ${basePath}/formId/versions/formVersionId/submissions/discover`, (
 
     const response = await request(app)
       .get(`${basePath}/formId/versions/formVersionId/submissions/discover`)
-      .query({ fields: ['foo', 'bar'] });
+      .query({ fields: ['foo', 'bar'] })
+      .set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -634,7 +613,7 @@ describe(`GET ${basePath}/formId/versions/formVersionId/submissions/discover`, (
       throw new Problem(401);
     });
 
-    const response = await request(app).get(`${basePath}/formId/versions/formVersionId/submissions/discover`);
+    const response = await request(app).get(`${basePath}/formId/versions/formVersionId/submissions/discover`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -646,41 +625,19 @@ describe(`GET ${basePath}/formId/versions/formVersionId/submissions/discover`, (
       throw new Error();
     });
 
-    const response = await request(app).get(`${basePath}/formId/versions/formVersionId/submissions/discover`);
+    const response = await request(app).get(`${basePath}/formId/versions/formVersionId/submissions/discover`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
 });
 
-// describe(`GET ${basePath}/formId/versions/formVersionId/submissions/formSubmissionId`, () => {
-
-//   it('should return 410', async () => {
-//     const response = await request(app).get(`${basePath}/formId/versions/formVersionId/submissions/formSubmissionId`);
-
-//     expect(response.statusCode).toBe(410);
-//     expect(response.body).toBeTruthy();
-//   });
-
-// });
-
-// describe(`PUT ${basePath}/formId/versions/formVersionId/submissions/formSubmissionId`, () => {
-
-//   it('should return 410', async () => {
-//     const response = await request(app).put(`${basePath}/formId/versions/formVersionId/submissions/formSubmissionId`);
-
-//     expect(response.statusCode).toBe(410);
-//     expect(response.body).toBeTruthy();
-//   });
-
-// });
-
 describe(`GET ${basePath}/formId/drafts`, () => {
   it('should return 200', async () => {
     // mock a success return value...
     service.listDrafts = jest.fn().mockReturnValue([]);
 
-    const response = await request(app).get(`${basePath}/formId/drafts`);
+    const response = await request(app).get(`${basePath}/formId/drafts`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -692,7 +649,7 @@ describe(`GET ${basePath}/formId/drafts`, () => {
       throw new Problem(401);
     });
 
-    const response = await request(app).get(`${basePath}/formId/drafts`);
+    const response = await request(app).get(`${basePath}/formId/drafts`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -704,7 +661,7 @@ describe(`GET ${basePath}/formId/drafts`, () => {
       throw new Error();
     });
 
-    const response = await request(app).get(`${basePath}/formId/drafts`);
+    const response = await request(app).get(`${basePath}/formId/drafts`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
@@ -716,7 +673,7 @@ describe(`POST ${basePath}/formId/drafts`, () => {
     // mock a success return value...
     service.createDraft = jest.fn().mockReturnValue({});
 
-    const response = await request(app).post(`${basePath}/formId/drafts`);
+    const response = await request(app).post(`${basePath}/formId/drafts`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(201);
     expect(response.body).toBeTruthy();
@@ -728,7 +685,7 @@ describe(`POST ${basePath}/formId/drafts`, () => {
       throw new Problem(401);
     });
 
-    const response = await request(app).post(`${basePath}/formId/drafts`);
+    const response = await request(app).post(`${basePath}/formId/drafts`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -740,7 +697,7 @@ describe(`POST ${basePath}/formId/drafts`, () => {
       throw new Error();
     });
 
-    const response = await request(app).post(`${basePath}/formId/drafts`);
+    const response = await request(app).post(`${basePath}/formId/drafts`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
@@ -752,7 +709,7 @@ describe(`GET ${basePath}/formId/drafts/formVersionDraftId`, () => {
     // mock a success return value...
     service.readDraft = jest.fn().mockReturnValue([]);
 
-    const response = await request(app).get(`${basePath}/formId/drafts/formVersionDraftId`);
+    const response = await request(app).get(`${basePath}/formId/drafts/formVersionDraftId`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -764,7 +721,7 @@ describe(`GET ${basePath}/formId/drafts/formVersionDraftId`, () => {
       throw new Problem(401);
     });
 
-    const response = await request(app).get(`${basePath}/formId/drafts/formVersionDraftId`);
+    const response = await request(app).get(`${basePath}/formId/drafts/formVersionDraftId`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -776,7 +733,7 @@ describe(`GET ${basePath}/formId/drafts/formVersionDraftId`, () => {
       throw new Error();
     });
 
-    const response = await request(app).get(`${basePath}/formId/drafts/formVersionDraftId`);
+    const response = await request(app).get(`${basePath}/formId/drafts/formVersionDraftId`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
@@ -788,7 +745,7 @@ describe(`PUT ${basePath}/formId/drafts/formVersionDraftId`, () => {
     // mock a success return value...
     service.updateDraft = jest.fn().mockReturnValue([]);
 
-    const response = await request(app).put(`${basePath}/formId/drafts/formVersionDraftId`);
+    const response = await request(app).put(`${basePath}/formId/drafts/formVersionDraftId`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -800,7 +757,7 @@ describe(`PUT ${basePath}/formId/drafts/formVersionDraftId`, () => {
       throw new Problem(401);
     });
 
-    const response = await request(app).put(`${basePath}/formId/drafts/formVersionDraftId`);
+    const response = await request(app).put(`${basePath}/formId/drafts/formVersionDraftId`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -812,7 +769,7 @@ describe(`PUT ${basePath}/formId/drafts/formVersionDraftId`, () => {
       throw new Error();
     });
 
-    const response = await request(app).put(`${basePath}/formId/drafts/formVersionDraftId`);
+    const response = await request(app).put(`${basePath}/formId/drafts/formVersionDraftId`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
@@ -824,7 +781,7 @@ describe(`DELETE ${basePath}/formId/drafts/formVersionDraftId`, () => {
     // mock a success return value...
     service.deleteDraft = jest.fn().mockReturnValue([]);
 
-    const response = await request(app).delete(`${basePath}/formId/drafts/formVersionDraftId`);
+    const response = await request(app).delete(`${basePath}/formId/drafts/formVersionDraftId`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(204);
     expect(response.body).toBeTruthy();
@@ -836,7 +793,7 @@ describe(`DELETE ${basePath}/formId/drafts/formVersionDraftId`, () => {
       throw new Problem(401);
     });
 
-    const response = await request(app).delete(`${basePath}/formId/drafts/formVersionDraftId`);
+    const response = await request(app).delete(`${basePath}/formId/drafts/formVersionDraftId`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -848,7 +805,7 @@ describe(`DELETE ${basePath}/formId/drafts/formVersionDraftId`, () => {
       throw new Error();
     });
 
-    const response = await request(app).delete(`${basePath}/formId/drafts/formVersionDraftId`);
+    const response = await request(app).delete(`${basePath}/formId/drafts/formVersionDraftId`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
@@ -860,7 +817,7 @@ describe(`POST ${basePath}/formId/drafts/formVersionDraftId/publish`, () => {
     // mock a success return value...
     service.publishDraft = jest.fn().mockReturnValue({});
 
-    const response = await request(app).post(`${basePath}/formId/drafts/formVersionDraftId/publish`);
+    const response = await request(app).post(`${basePath}/formId/drafts/formVersionDraftId/publish`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -872,7 +829,7 @@ describe(`POST ${basePath}/formId/drafts/formVersionDraftId/publish`, () => {
       throw new Problem(401);
     });
 
-    const response = await request(app).post(`${basePath}/formId/drafts/formVersionDraftId/publish`);
+    const response = await request(app).post(`${basePath}/formId/drafts/formVersionDraftId/publish`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -884,7 +841,7 @@ describe(`POST ${basePath}/formId/drafts/formVersionDraftId/publish`, () => {
       throw new Error();
     });
 
-    const response = await request(app).post(`${basePath}/formId/drafts/formVersionDraftId/publish`);
+    const response = await request(app).post(`${basePath}/formId/drafts/formVersionDraftId/publish`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
@@ -896,7 +853,7 @@ describe(`GET ${basePath}/formId/statusCodes`, () => {
     // mock a success return value...
     service.getStatusCodes = jest.fn().mockReturnValue([]);
 
-    const response = await request(app).get(`${basePath}/formId/statusCodes`);
+    const response = await request(app).get(`${basePath}/formId/statusCodes`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -908,7 +865,7 @@ describe(`GET ${basePath}/formId/statusCodes`, () => {
       throw new Problem(401);
     });
 
-    const response = await request(app).get(`${basePath}/formId/statusCodes`);
+    const response = await request(app).get(`${basePath}/formId/statusCodes`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -920,7 +877,7 @@ describe(`GET ${basePath}/formId/statusCodes`, () => {
       throw new Error();
     });
 
-    const response = await request(app).get(`${basePath}/formId/statusCodes`);
+    const response = await request(app).get(`${basePath}/formId/statusCodes`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
@@ -1062,7 +1019,7 @@ describe(`GET ${basePath}/formId/csvexport/fields`, () => {
     // mock a success return value...
     exportService.fieldsForCSVExport = jest.fn().mockReturnValue(formFields);
 
-    const response = await request(app).get(`${basePath}/formId/csvexport/fields`);
+    const response = await request(app).get(`${basePath}/formId/csvexport/fields`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -1074,7 +1031,7 @@ describe(`GET ${basePath}/formId/csvexport/fields`, () => {
       throw new Problem(401);
     });
 
-    const response = await request(app).get(`${basePath}/formId/csvexport/fields`);
+    const response = await request(app).get(`${basePath}/formId/csvexport/fields`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -1086,14 +1043,14 @@ describe(`GET ${basePath}/formId/csvexport/fields`, () => {
       throw new Error();
     });
 
-    const response = await request(app).get(`${basePath}/formId/csvexport/fields`);
+    const response = await request(app).get(`${basePath}/formId/csvexport/fields`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
   });
 });
 
-describe(`GET ${basePath}/formId/export/fields`, () => {
+describe(`POST ${basePath}/formId/export/fields`, () => {
   it('should return 200', async () => {
     // mock a success return value...
     exportService.export = jest.fn().mockReturnValue({
@@ -1104,7 +1061,7 @@ describe(`GET ${basePath}/formId/export/fields`, () => {
       },
     });
 
-    const response = await request(app).post(`${basePath}/formId/export/fields`);
+    const response = await request(app).post(`${basePath}/formId/export/fields`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeTruthy();
@@ -1116,7 +1073,7 @@ describe(`GET ${basePath}/formId/export/fields`, () => {
       throw new Problem(401);
     });
 
-    const response = await request(app).post(`${basePath}/formId/export/fields`);
+    const response = await request(app).post(`${basePath}/formId/export/fields`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toBeTruthy();
@@ -1128,7 +1085,7 @@ describe(`GET ${basePath}/formId/export/fields`, () => {
       throw new Error();
     });
 
-    const response = await request(app).post(`${basePath}/formId/export/fields`);
+    const response = await request(app).post(`${basePath}/formId/export/fields`).set('Authorization', 'Bearer: abc123');
 
     expect(response.statusCode).toBe(500);
     expect(response.body).toBeTruthy();
