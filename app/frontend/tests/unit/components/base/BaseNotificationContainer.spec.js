@@ -1,33 +1,16 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import Vuex from 'vuex';
-import i18n from '@/internationalization';
-import BaseNotificationContainer from '@/components/base/BaseNotificationContainer.vue';
+import { createTestingPinia } from '@pinia/testing';
+import { mount } from '@vue/test-utils';
+import { describe, expect, it } from 'vitest';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+import BaseNotificationContainer from '~/components/base/BaseNotificationContainer.vue';
 
 describe('BaseNotificationContainer.vue', () => {
-  let store;
-
-  beforeEach(() => {
-    store = new Vuex.Store({
-      modules: {
-        notifications: {
-          namespaced: true,
-          state: {
-            notifications: [],
-          },
-        },
+  it('renders', async () => {
+    const wrapper = mount(BaseNotificationContainer, {
+      global: {
+        stubs: ['BaseNotificationBar'],
+        plugins: [createTestingPinia()],
       },
-    });
-  });
-
-  it('renders', () => {
-    const wrapper = shallowMount(BaseNotificationContainer, {
-      localVue,
-      store,
-      stubs: ['BaseNotificationBar'],
-      i18n
     });
 
     expect(wrapper.html()).toMatch('notification-container');
