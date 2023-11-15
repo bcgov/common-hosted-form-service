@@ -29,7 +29,7 @@
     }
   },
   "frontend": {
-    "adminDashboardUrl": "VUE_APP_ADMIN_DASHBOARD_URL",
+    "adminDashboardUrl": "VITE_ADMIN_DASHBOARD_URL",
     "apiPath": "FRONTEND_APIPATH",
     "basePath": "VITE_FRONTEND_BASEPATH",
     "keycloak": {
