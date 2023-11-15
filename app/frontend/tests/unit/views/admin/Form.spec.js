@@ -1,30 +1,28 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import Vuex from 'vuex';
-import i18n from '@/internationalization';
-import Form from '@/views/admin/Form.vue';
+import { createTestingPinia } from '@pinia/testing';
+import { mount } from '@vue/test-utils';
+import { setActivePinia } from 'pinia';
+import { describe, expect, it } from 'vitest';
 
-const localVue = createLocalVue();
-localVue.use(Vuex);
+import Form from '~/views/admin/Form.vue';
 
 describe('Form.vue', () => {
-  let store;
+  const pinia = createTestingPinia();
+  setActivePinia(pinia);
 
-  beforeEach(() => {
-    store = new Vuex.Store();
-  });
-
-  it('renders without error', async () => {
-    store.registerModule('admin', { namespaced: true });
-
-    const wrapper = shallowMount(Form, {
-      localVue,
-      propsData: { f: 'f' },
-      store,
-      stubs: ['BaseSecure'],
-      i18n
+  it('renders', () => {
+    const wrapper = mount(Form, {
+      props: {
+        f: 'f',
+      },
+      global: {
+        stubs: {
+          AdministerForm: true,
+        },
+        plugins: [pinia],
+      },
     });
-    await localVue.nextTick();
 
-    expect(wrapper.text()).toMatch('Administer Form');
+    expect(wrapper.text()).toMatch('trans.admin.form.administerForm');
+    expect(wrapper.html()).toMatch('administer-form');
   });
 });

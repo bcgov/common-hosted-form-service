@@ -1,22 +1,26 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import i18n from '@/internationalization';
-import Teams from '@/views/form/Teams.vue';
+import { mount } from '@vue/test-utils';
+import { describe, expect, it } from 'vitest';
 
-const localVue = createLocalVue();
-
+import Teams from '~/views/form/Teams.vue';
 
 describe('Teams.vue', () => {
   it('renders', () => {
-    const wrapper = shallowMount(Teams, {
-      localVue,
-      propsData: { f: 'f' },
-      stubs: [
-        'BaseSecure',
-        'TeamManagement'],
-        i18n,
-      stubs: ['BaseSecure', 'TeamManagement'],
+    const wrapper = mount(Teams, {
+      props: {
+        f: 'f',
+      },
+      global: {
+        stubs: {
+          BaseSecure: {
+            name: 'BaseSecure',
+            template: '<div class="base-secure-stub"><slot /></div>',
+          },
+          TeamManagement: true,
+        },
+      },
     });
 
-    expect(wrapper.html()).toMatch('teammanagement');
+    expect(wrapper.html()).toMatch('base-secure');
+    expect(wrapper.html()).toMatch('team-management');
   });
 });

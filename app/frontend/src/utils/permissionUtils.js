@@ -1,12 +1,13 @@
-import { formService } from '@/services';
-import store from '@/store';
+import { formService } from '~/services';
+import { useAuthStore } from '~/store/auth';
+import { useNotificationStore } from '~/store/notification';
 import {
   FormPermissions,
   FormManagePermissions,
   IdentityMode,
   IdentityProviders,
-} from '@/utils/constants';
-import i18n from '@/internationalization';
+  NotificationTypes,
+} from '~/utils/constants';
 
 //
 // Utility Functions for determining permissions
@@ -68,7 +69,7 @@ function getErrorMessage(options, error) {
   if (options.formId) {
     const status = error?.response?.status;
     if (status === 404 || status === 422) {
-      errorMessage = i18n.t('trans.permissionUtils.formNotAvailable');
+      errorMessage = 'trans.permissionUtils.formNotAvailable';
     }
   }
   return errorMessage;
@@ -81,6 +82,7 @@ function getErrorMessage(options, error) {
  * @param {Object} next The callback function
  */
 export async function preFlightAuth(options = {}, next) {
+  const notificationStore = useNotificationStore();
   // Support lambda functions (Consider making them util functions?)
   const getIdpHint = (values) => {
     return Array.isArray(values) && values.length ? values[0] : undefined;
@@ -100,56 +102,63 @@ export async function preFlightAuth(options = {}, next) {
       );
       idpHint = getIdpHint(data.form.idpHints);
     } else {
-      throw new Error(i18n.t('trans.permissionUtils.missingFormIdAndSubmssId'));
+      throw new Error('trans.permissionUtils.missingFormIdAndSubmssId');
     }
   } catch (error) {
     // Halt user with error page, use alertNavigate for "friendly" messages.
     const message = getErrorMessage(options, error);
     if (message) {
       // Don't display the 'An error has occurred...' popup notification.
-      store.dispatch('auth/alertNavigate', {
-        message: message,
-        type: 'error',
-      });
+      notificationStore.alertNavigate(
+        NotificationTypes.ERROR.type,
+        'trans.permissionUtils.formNotAvailable'
+      );
     } else {
-      store.dispatch('notifications/addNotification', {
-        message: i18n.t('trans.permissionUtils.loadingFormErrMsg'),
-        consoleError: i18n.t('trans.permissionUtils.loadingForm', {
-          options: options,
-          error: error,
-        }),
+      notificationStore.addNotification({
+        text: 'trans.permissionUtils.loadingFormErrMsg',
+        consoleError: {
+          text: 'trans.permissionUtils.loadingForm',
+          options: {
+            options,
+            error,
+          },
+        },
       });
-
-      store.dispatch('auth/errorNavigate');
+      notificationStore.errorNavigate();
     }
 
     return; // Short circuit this function - no point executing further logic
   }
 
-  if (store.getters['auth/authenticated']) {
-    const userIdp = store.getters['auth/identityProvider'];
+  const authStore = useAuthStore();
+
+  if (authStore.authenticated) {
+    const userIdp = authStore.identityProvider;
 
     if (idpHint === IdentityMode.PUBLIC || !idpHint) {
       next(); // Permit navigation if public or team form
     } else if (isValidIdp(idpHint) && userIdp === idpHint) {
       next(); // Permit navigation if idps match
     } else {
-      const msg = i18n.t('trans.permissionUtils.idpHintMsg', {
-        idpHint: idpHint.toUpperCase(),
+      const msg = {
+        text: 'trans.permissionUtils.idpHintMsg',
+        options: {
+          idpHint: idpHint.toUpperCase(),
+        },
+      };
+      notificationStore.addNotification({
+        ...msg,
+        consoleError: msg,
       });
-      store.dispatch('notifications/addNotification', {
-        message: msg,
-        consoleError: '-----',
-      });
-      store.dispatch('auth/errorNavigate', msg); // Halt user with idp mismatch error page
+      notificationStore.errorNavigate(msg);
     }
   } else {
     if (idpHint === IdentityMode.PUBLIC) {
       next(); // Permit navigation if public form
     } else if (isValidIdp(idpHint)) {
-      store.dispatch('auth/login', idpHint); // Force login flow with specified idpHint
+      authStore.login(idpHint); // Force login flow with specified idpHint
     } else {
-      store.dispatch('auth/login'); // Force login flow with user choice
+      authStore.login(); // Force login flow with user choice
     }
   }
 }

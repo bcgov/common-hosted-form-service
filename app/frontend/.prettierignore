@@ -1,3 +1,1 @@
-.eslintignore
-.gitignore
-src/formio/*
+tests
