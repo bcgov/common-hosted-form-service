@@ -1,9 +1,11 @@
 {
-  "name": "vite-frontend",
-  "private": true,
+  "name": "common-hosted-form-service-frontend",
   "version": "1.5.0",
+  "private": true,
+  "license": "Apache-2.0",
   "scripts": {
     "serve": "vite",
+    "preserve": "node ./component-update.js",
     "build": "vite build",
     "build:watch": "vite build --watch",
     "preview": "vite preview",
@@ -18,6 +20,7 @@
     "lint:fix": "eslint --fix \"src/**/*.{js,vue}\"",
     "prettier": "prettier --check \"src/**/*.{js,vue,css,scss}\"",
     "prettier:fix": "prettier --write \"src/**/*.{js,vue,css,scss}\"",
+    "pretest": "npm run lint",
     "clean": "rm -rf coverage dist **/e2e/videos",
     "clean:formio": "node ./component-update.js clean",
     "purge": "rm -rf src/formio node_modules",
