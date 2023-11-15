@@ -1,11 +1,15 @@
-<script>
-import BaseSecure from '~/components/base/BaseSecure.vue';
-import ExportSubmissions from '~/components/forms/ExportSubmissions.vue';
-import { IdentityProviders } from '~/utils/constants';
+<template>
+  <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBUSINESS]">
+    <ExportSubmissions :formId="f" />
+  </BaseSecure>
+</template>
 
+<script>
+import ExportSubmissions from '@/components/forms/ExportSubmissions.vue';
+import { IdentityProviders } from '@/utils/constants';
 export default {
+  name: 'Export',
   components: {
-    BaseSecure,
     ExportSubmissions,
   },
   props: {
@@ -19,9 +23,3 @@ export default {
   },
 };
 </script>
-
-<template>
-  <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBUSINESS]">
-    <ExportSubmissions :form-id="f" />
-  </BaseSecure>
-</template>

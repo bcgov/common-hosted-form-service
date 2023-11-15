@@ -31,10 +31,6 @@
     "action": "행위",
     "loadingText": "로딩 중 기다려주세요"
   },
-  "preview": {
-    "preview": "시사",
-    "previewToolTip": "이는 제출자가 볼 수 있는 양식 버전 디자인 및 동작의 미리보기를 보여줍니다. 이 페이지에서는 양식을 제출할 수 없습니다."
-  },
   "manageLayout": {
     "manageForm": "양식 관리"
   },
@@ -190,7 +186,9 @@
     "formOwnerKeyAcess": "API 키를 관리하려면 <strong>양식 소유자</strong> 여야 합니다.",
     "regenerate": "재생하다",
     "generate": "생성하다",
-    "secret": "비밀"
+    "secret": "비밀",
+    "text": "텍스트",
+    "password": "비밀번호"
   },
   "manageVersions": {
     "important": "중요한!",
@@ -395,7 +393,7 @@
     "emailRequired": "이메일이 필요합니다"
   },
   "submissionsTable": {
-    "noMatchingRecordText": "일치하는 기록이 없습니다",
+    "noMachingRecordText": "일치하는 기록이 없습니다",
     "submissions": "제출물",
     "submissionsTable": "제출물표",
     "selectColumns": "열 선택",
@@ -485,7 +483,7 @@
     "editThisDraft": "이 초안 편집"
   },
   "mySubmissionsTable": {
-    "noMatchingRecordText": "일치하는 기록이 없습니다",
+    "noMachingRecordText": "일치하는 기록이 없습니다",
     "previousSubmissions": "이전 제출물",
     "selectColumns": "열 선택",
     "createNewSubmission": "새 제출물 만들기",
@@ -662,7 +660,6 @@
     "updatedBy": "수정자"
   },
   "teamManagement": {
-    "noMatchingRecordText": "일치하는 기록이 없습니다",
     "teamManagement": "팀 관리",
     "selectColumns": "열 선택",
     "manageForm": "양식 관리",
@@ -786,7 +783,7 @@
     "setUpForm": "양식 설정",
     "designForm": "디자인 양식",
     "manageForm": "양식 관리"
-  },
+    },
   "create": {
     "formSettings": "양식 설정",
     "disclaimer": "부인 성명",

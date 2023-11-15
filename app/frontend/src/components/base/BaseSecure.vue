@@ -1,43 +1,3 @@
-<script>
-import { mapActions, mapState } from 'pinia';
-import { useAuthStore } from '~/store/auth';
-import { useFormStore } from '~/store/form';
-
-export default {
-  props: {
-    admin: {
-      type: Boolean,
-      default: false,
-    },
-    idp: {
-      type: Array,
-      default: undefined,
-    },
-  },
-  computed: {
-    ...mapState(useAuthStore, [
-      'authenticated',
-      'identityProvider',
-      'isAdmin',
-      'isUser',
-      'ready',
-    ]),
-    ...mapState(useFormStore, ['lang']),
-    mailToLink() {
-      return `mailto:${
-        import.meta.env.VITE_CONTACT
-      }?subject=CHEFS%20Account%20Issue&body=Error%20accessing%20${encodeURIComponent(
-        location
-      )}.`;
-    },
-    contactInfo() {
-      return import.meta.env.VITE_CONTACT;
-    },
-  },
-  methods: mapActions(useAuthStore, ['login']),
-};
-</script>
-
 <template>
   <div v-if="authenticated">
     <div v-if="isUser">
@@ -50,7 +10,7 @@ export default {
         </p>
       </div>
       <div
-        v-else-if="idp && idp.length > 0 && !idp.includes(identityProvider)"
+        v-else-if="idp && !idp.includes(identityProvider)"
         class="text-center"
       >
         <h1 class="my-8" :lang="lang">
@@ -72,12 +32,12 @@ export default {
         {{ $t('trans.baseSecure.401UnAuthorized') }}
       </h1>
       <p>
-        <span :lang="lang" v-html="$t('trans.baseSecure.401ErrorMsg')"> </span>
+        <span v-html="$t('trans.baseSecure.401ErrorMsg')" :lang="lang" />
         <a :href="mailToLink">{{ contactInfo }}</a>
       </p>
       <router-link :to="{ name: 'About' }">
-        <v-btn color="primary" class="about-btn" size="large">
-          <v-icon start icon="mdi:mdi-home"></v-icon>
+        <v-btn color="primary" class="about-btn" large>
+          <v-icon left>home</v-icon>
           <span :lang="lang">{{ $t('trans.baseSecure.about') }}</span>
         </v-btn>
       </router-link>
@@ -88,14 +48,52 @@ export default {
       {{ $t('trans.baseSecure.loginInfo') }}
     </h1>
     <v-btn
-      v-if="ready"
-      data-test="login-btn"
+      v-if="keycloakReady"
       color="primary"
       class="login-btn"
-      size="large"
       @click="login"
+      large
     >
       <span :lang="lang">{{ $t('trans.baseSecure.login') }}</span>
     </v-btn>
   </div>
 </template>
+
+<script>
+import { mapActions, mapGetters } from 'vuex';
+
+export default {
+  name: 'BaseSecure',
+  props: {
+    admin: {
+      type: Boolean,
+      default: false,
+    },
+    idp: {
+      type: Array,
+      default: () => [],
+    },
+  },
+  computed: {
+    ...mapGetters('auth', [
+      'authenticated',
+      'identityProvider',
+      'isAdmin',
+      'isUser',
+      'keycloakReady',
+    ]),
+    ...mapGetters('form', ['lang']),
+    mailToLink() {
+      return `mailto:${
+        process.env.VUE_APP_CONTACT
+      }?subject=CHEFS%20Account%20Issue&body=Error%20accessing%20${encodeURIComponent(
+        location
+      )}.`;
+    },
+    contactInfo() {
+      return process.env.VUE_APP_CONTACT;
+    },
+  },
+  methods: mapActions('auth', ['login']),
+};
+</script>

@@ -1,18 +1,3 @@
-<script>
-import { mapState } from 'pinia';
-import BaseSecure from '~/components/base/BaseSecure.vue';
-import { useFormStore } from '~/store/form';
-
-export default {
-  components: {
-    BaseSecure,
-  },
-  computed: {
-    ...mapState(useFormStore, ['lang']),
-  },
-};
-</script>
-
 <template>
   <BaseSecure>
     <h1 class="my-6 text-center" :lang="lang">
@@ -20,3 +5,14 @@ export default {
     </h1>
   </BaseSecure>
 </template>
+
+<script>
+import { mapGetters } from 'vuex';
+
+export default {
+  name: 'UserHistory',
+  computed: {
+    ...mapGetters('form', ['lang']),
+  },
+};
+</script>

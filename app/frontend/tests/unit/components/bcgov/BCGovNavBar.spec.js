@@ -1,105 +1,75 @@
-// @vitest-environment happy-dom
-import { createPinia, setActivePinia } from 'pinia';
-import { mount } from '@vue/test-utils';
-import { describe, expect, it } from 'vitest';
-import { h } from 'vue';
-import { createRouter, createWebHistory } from 'vue-router';
+import { createLocalVue, shallowMount } from '@vue/test-utils';
+import Vuetify from 'vuetify';
+import Vuex from 'vuex';
+import i18n from '@/internationalization';
+import BCGovNavBar from '@/components/bcgov/BCGovNavBar.vue';
 
-import { VApp } from 'vuetify/components';
-import BCGovNavBar from '~/components/bcgov/BCGovNavBar.vue';
-import getRouter from '~/router';
-import { useAuthStore } from '~/store/auth';
+const localVue = createLocalVue();
+localVue.use(Vuex);
 
 describe('BCGovNavBar.vue', () => {
-  const pinia = createPinia();
-  setActivePinia(pinia);
-  const router = createRouter({
-    history: createWebHistory(),
-    routes: getRouter().getRoutes(),
+  let store;
+  const vuetify = new Vuetify();
+
+  beforeEach(() => {
+    store = new Vuex.Store();
   });
 
-  it('renders as non-admin', async () => {
-    const authStore = useAuthStore();
-    authStore.keycloak = {
-      tokenParsed: {
-        identity_provider: 'idir',
-        resource_access: {
-          chefs: {
-            roles: [],
-          },
-        },
-      },
-    };
-    authStore.authenticated = true;
-    authStore.ready = true;
-
-    const wrapper = mount(VApp, {
-      global: {
-        plugins: [router, pinia],
-      },
-      slots: {
-        default: h(BCGovNavBar),
+  it('renders as non-admin', () => {
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        identityProvider: () => 'idir',
+        authenticated: () => true,
+        isAdmin: () => false,
+        keycloakReady: () => true,
       },
     });
-    const aboutLinks = wrapper.find('[data-cy="aboutLinks"]');
-    expect(aboutLinks.exists()).toBeTruthy();
-    expect(aboutLinks.text()).toEqual('trans.bCGovNavBar.about');
-    const userFormsLinks = wrapper.find('[data-cy="userFormsLinks"]');
-    expect(userFormsLinks.exists()).toBeTruthy();
-    expect(userFormsLinks.text()).toEqual('trans.bCGovNavBar.myForms');
-    const createNewForm = wrapper.find('[data-cy="createNewForm"]');
-    expect(createNewForm.exists()).toBeTruthy();
-    expect(createNewForm.text()).toEqual('trans.bCGovNavBar.createNewForm');
-    const help = wrapper.find('[data-cy="help"]');
-    expect(help.exists()).toBeTruthy();
-    expect(help.text()).toEqual('trans.bCGovNavBar.help');
-    const feedback = wrapper.find('[data-cy="feedback"]');
-    expect(feedback.exists()).toBeTruthy();
-    expect(feedback.text()).toEqual('trans.bCGovNavBar.feedback');
-    const admin = wrapper.find('[data-cy="admin"]');
-    expect(admin.exists()).toBeFalsy();
+
+    const wrapper = shallowMount(BCGovNavBar, {
+      localVue,
+      mocks: {
+        $route: {
+          meta: {},
+        },
+      },
+      store,
+      stubs: ['router-link'],
+      vuetify,
+      i18n
+    });
+
+    expect(wrapper.text()).toContain('About');
+    expect(wrapper.text()).toContain('My Forms');
   });
 
   it('renders as admin', () => {
-    const authStore = useAuthStore();
-    authStore.keycloak = {
-      tokenParsed: {
-        identity_provider: 'idir',
-        resource_access: {
-          chefs: {
-            roles: ['admin'],
-          },
-        },
-      },
-    };
-    authStore.authenticated = true;
-    authStore.ready = true;
-
-    const wrapper = mount(VApp, {
-      global: {
-        plugins: [router, pinia],
-      },
-      slots: {
-        default: h(BCGovNavBar),
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        identityProvider: () => 'idir',
+        authenticated: () => true,
+        isAdmin: () => true,
+        keycloakReady: () => true,
       },
     });
-    const aboutLinks = wrapper.find('[data-cy="aboutLinks"]');
-    expect(aboutLinks.exists()).toBeTruthy();
-    expect(aboutLinks.text()).toEqual('trans.bCGovNavBar.about');
-    const userFormsLinks = wrapper.find('[data-cy="userFormsLinks"]');
-    expect(userFormsLinks.exists()).toBeTruthy();
-    expect(userFormsLinks.text()).toEqual('trans.bCGovNavBar.myForms');
-    const createNewForm = wrapper.find('[data-cy="createNewForm"]');
-    expect(createNewForm.exists()).toBeTruthy();
-    expect(createNewForm.text()).toEqual('trans.bCGovNavBar.createNewForm');
-    const help = wrapper.find('[data-cy="help"]');
-    expect(help.exists()).toBeTruthy();
-    expect(help.text()).toEqual('trans.bCGovNavBar.help');
-    const feedback = wrapper.find('[data-cy="feedback"]');
-    expect(feedback.exists()).toBeTruthy();
-    expect(feedback.text()).toEqual('trans.bCGovNavBar.feedback');
-    const admin = wrapper.find('[data-cy="admin"]');
-    expect(admin.exists()).toBeTruthy();
-    expect(admin.text()).toEqual('trans.bCGovNavBar.admin');
+
+    const wrapper = shallowMount(BCGovNavBar, {
+      localVue,
+      i18n,
+      mocks: {
+        $route: {
+          meta: {},
+        },
+      },
+      store,
+      stubs: ['router-link'],
+      vuetify,
+    });
+
+    expect(wrapper.text()).toContain('About');
+    expect(wrapper.text()).toContain('My Forms');
+    expect(wrapper.text()).toContain('Create a New Form');
+    expect(wrapper.text()).toContain('Admin');
   });
 });

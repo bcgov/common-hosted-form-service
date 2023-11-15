@@ -1,25 +1,18 @@
-import { mount } from '@vue/test-utils';
-import { describe, expect, it } from 'vitest';
-import { nextTick } from 'vue';
+import { createLocalVue, shallowMount } from '@vue/test-utils';
+import i18n from '@/internationalization';
+import Success from '@/views/form/Success.vue';
 
-import Success from '~/views/form/Success.vue';
+const localVue = createLocalVue();
+
 
 describe('Success.vue', () => {
-  it('renders', async () => {
-    const wrapper = mount(Success, {
-      props: {
-        s: 's',
-      },
-      global: {
-        stubs: {
-          FormViewer: true,
-          RequestReceipt: true,
-        },
-      },
+  it('renders', () => {
+    const wrapper = shallowMount(Success, {
+      localVue,
+      stubs: ['FormViewer'],
+      i18n
     });
 
-    await nextTick();
-
-    expect(wrapper.html()).toMatch('form-viewer');
+    expect(wrapper.html()).toMatch('formviewer');
   });
 });

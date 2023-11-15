@@ -1,24 +1,49 @@
-import { mount } from '@vue/test-utils';
-import { expect } from 'vitest';
-import { nextTick } from 'vue';
+import { createLocalVue, shallowMount } from '@vue/test-utils';
+import AddOwner from '@/components/admin/AddOwner.vue';
+import Vuex from 'vuex';
+import i18n from '@/internationalization';
 
-import AddOwner from '~/components/admin/AddOwner.vue';
+const localVue = createLocalVue();
+localVue.use(Vuex);
 
 describe('AddOwner.vue', () => {
-  it('renders', async () => {
-    const wrapper = mount(AddOwner, {
-      props: {
-        formId: 'f',
-      },
-      global: {
-        plugins: [],
+  const mockAdminGetter = jest.fn();
+  let store;
+  const actions = {
+    readUser: jest.fn(),
+  };
+
+  beforeEach(() => {
+    store = new Vuex.Store({
+      modules: {
+        admin: {
+          namespaced: true,
+          getters: {
+            user: mockAdminGetter,
+          },
+          actions: actions,
+        },
       },
     });
+  });
 
-    await nextTick();
+  it('renders ', async () => {
+    const wrapper = shallowMount(AddOwner, {
+      localVue,
+      store,
+      i18n,
+      propsData: { formId: 'f' },
+      mocks: {
+        $config: {
+          keycloak: {
+            serverUrl: 'servU',
+            realm: 'theRealm',
+          },
+        },
+      },
+    });
+    await localVue.nextTick();
 
-    expect(wrapper.text())
-      .toContain('trans.addOwner.infoA')
-      .toContain('trans.addOwner.label');
+    expect(wrapper.text()).toMatch('Add owner');
   });
 });

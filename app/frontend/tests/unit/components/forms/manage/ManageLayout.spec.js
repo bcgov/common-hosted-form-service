@@ -1,90 +1,82 @@
-import { flushPromises, mount } from '@vue/test-utils';
-import { createTestingPinia } from '@pinia/testing';
-import { setActivePinia } from 'pinia';
-import { createRouter, createWebHistory } from 'vue-router';
-import { beforeEach, expect, vi } from 'vitest';
+import { createLocalVue, shallowMount } from '@vue/test-utils';
+import Vuex from 'vuex';
+import i18n from '@/internationalization';
+import ManageLayout from '@/components/forms/manage/ManageLayout.vue';
 
-import getRouter from '~/router';
-import ManageLayout from '~/components/forms/manage/ManageLayout.vue';
-import { useFormStore } from '~/store/form';
+const localVue = createLocalVue();
+localVue.use(Vuex);
 
 describe('ManageLayout.vue', () => {
-  const pinia = createTestingPinia();
-  const router = createRouter({
-    history: createWebHistory(),
-    routes: getRouter().getRoutes(),
-  });
-
-  setActivePinia(pinia);
-  const formStore = useFormStore(pinia);
+  const mockFormGetter = jest.fn();
+  const mockPermissionsGetter = jest.fn();
+  let store;
+  const formActions = {
+    fetchDrafts: jest.fn(),
+    fetchForm: jest.fn(),
+    getFormPermissionsForUser: jest.fn(),
+  };
 
   beforeEach(() => {
-    formStore.$reset();
+    store = new Vuex.Store({
+      modules: {
+        form: {
+          namespaced: true,
+          getters: {
+            form: mockFormGetter,
+            permissions: mockPermissionsGetter,
+          },
+          actions: formActions,
+        },
+      },
+    });
+  });
+
+  afterEach(() => {
+    mockFormGetter.mockReset();
+    mockPermissionsGetter.mockReset();
   });
 
   it('renders', () => {
-    const wrapper = mount(ManageLayout, {
-      props: {
-        f: 'f',
-      },
-      global: {
-        plugins: [router, pinia],
-        stubs: {
-          ManageFormActions: true,
-          ManageForm: true,
-        },
-      },
+    mockFormGetter.mockReturnValue({ name: 'myForm' });
+    mockPermissionsGetter.mockReturnValue(['design_read']);
+    const wrapper = shallowMount(ManageLayout, {
+      localVue,
+      propsData: { f: 'f' },
+      store,
+      stubs: ['ManageFormActions', 'ManageForm'],
+      i18n
     });
 
-    expect(wrapper.text()).toMatch('trans.manageLayout.manageForm');
+    expect(wrapper.html()).toMatch('Manage Form');
   });
 
-  it('calls the store actions', () => {
+  it('calls the store actions', async () => {
+    mockFormGetter.mockReturnValue({ name: 'myForm' });
+    mockPermissionsGetter.mockReturnValue(['design_read']);
     const formId = '123-456';
-    const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
-    const getFormPermissionsForUserSpy = vi.spyOn(
-      formStore,
-      'getFormPermissionsForUser'
-    );
-    mount(ManageLayout, {
-      props: {
-        f: formId,
-      },
-      global: {
-        plugins: [router, pinia],
-        stubs: {
-          ManageFormActions: true,
-          ManageForm: true,
-        },
-      },
+    await shallowMount(ManageLayout, {
+      localVue,
+      propsData: { f: formId },
+      store,
+      stubs: ['ManageFormActions', 'ManageForm'],
+      i18n
     });
 
-    expect(fetchFormSpy).toHaveBeenCalledTimes(1);
-    expect(getFormPermissionsForUserSpy).toHaveBeenCalledTimes(1);
+    expect(formActions.fetchForm).toHaveBeenCalledTimes(1);
+    expect(formActions.getFormPermissionsForUser).toHaveBeenCalledTimes(1);
   });
 
-  it('shows the form name', async () => {
-    formStore.fetchForm.mockImplementation(() => {
-      formStore.form.name = 'myForm';
-    });
-    formStore.getFormPermissionsForUser.mockImplementation(() => [
-      'design_read',
-    ]);
-    const wrapper = mount(ManageLayout, {
-      props: {
-        f: 'f',
-      },
-      global: {
-        plugins: [router, pinia],
-        stubs: {
-          ManageFormActions: true,
-          ManageForm: true,
-        },
-      },
+  it('shows the form name', () => {
+    mockFormGetter.mockReturnValue({ name: 'myForm' });
+    mockPermissionsGetter.mockReturnValue(['design_read']);
+    const wrapper = shallowMount(ManageLayout, {
+      localVue,
+      propsData: { f: 'f' },
+      store,
+      stubs: ['ManageFormActions', 'ManageForm'],
+      i18n
     });
 
-    await flushPromises();
-
-    expect(wrapper.html()).toContain('myForm');
+    expect(wrapper.html()).toMatch('myForm');
   });
 });

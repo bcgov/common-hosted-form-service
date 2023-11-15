@@ -1,19 +1,18 @@
+<template>
+  <FormViewer :formId="f" :bulkState="b" displayTitle />
+</template>
+
 <script>
-import FormViewer from '~/components/designer/FormViewer.vue';
+import FormViewer from '@/components/designer/FormViewer.vue';
 
 export default {
+  name: 'FormSubmit',
   components: {
     FormViewer,
   },
   props: {
-    f: {
-      type: String,
-      required: true,
-    },
+    f: String,
+    b: String,
   },
 };
 </script>
-
-<template>
-  <FormViewer :form-id="f" display-title />
-</template>

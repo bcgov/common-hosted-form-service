@@ -1,17 +1,20 @@
 import moment from 'moment';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-
-import * as filters from '~/filters';
+import * as filters from '@/filters';
 
 describe('formatDate', () => {
   const now = new Date();
 
   beforeEach(() => {
-    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    jest.restoreAllMocks();
+  });
+
+  it('returns undefined when value is falsy', () => {
+    const result = filters.formatDate(undefined);
+    expect(result).toBeFalsy();
   });
 
   it('returns a properly formatted date string when value is a date', () => {
@@ -26,11 +29,11 @@ describe('formatDateLong', () => {
   const now = new Date();
 
   beforeEach(() => {
-    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    jest.restoreAllMocks();
   });
 
   it('returns undefined when value is falsy', () => {

@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import moment from 'moment';
 
 //
@@ -27,3 +28,7 @@ export function formatDateLong(value) {
     return moment(String(value)).format('YYYY-MM-DD hh:mm:ss a');
   }
 }
+
+// Define Global Vue Filters
+Vue.filter('formatDate', formatDate);
+Vue.filter('formatDateLong', formatDateLong);

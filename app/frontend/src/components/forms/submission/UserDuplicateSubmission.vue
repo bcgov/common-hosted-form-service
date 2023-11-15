@@ -1,21 +1,29 @@
+<template>
+  <v-skeleton-loader :loading="loading" type="article">
+    <FormViewer
+      displayTitle
+      :readOnly="readOnly"
+      :saved="saved"
+      :submissionId="submissionId"
+      :formId="formId"
+      :isDuplicate="true"
+    />
+  </v-skeleton-loader>
+</template>
+
 <script>
-import { mapActions } from 'pinia';
-import FormViewer from '~/components/designer/FormViewer.vue';
-import { useFormStore } from '~/store/form';
+import { mapActions, mapGetters } from 'vuex';
+
+import FormViewer from '@/components/designer/FormViewer.vue';
 
 export default {
+  name: 'UserDuplicateSubmission',
   components: {
     FormViewer,
   },
   props: {
-    submissionId: {
-      type: String,
-      required: true,
-    },
-    formId: {
-      type: String,
-      required: true,
-    },
+    submissionId: String,
+    formId: String,
     readOnly: { type: Boolean, default: true },
     saved: {
       type: Boolean,
@@ -27,25 +35,11 @@ export default {
       loading: true,
     };
   },
+  computed: mapGetters('form', ['formSubmission']),
+  methods: mapActions('form', ['fetchSubmission']),
   async mounted() {
     await this.fetchSubmission({ submissionId: this.submissionId });
     this.loading = false;
   },
-  methods: {
-    ...mapActions(useFormStore, ['fetchSubmission']),
-  },
 };
 </script>
-
-<template>
-  <v-skeleton-loader :loading="loading" type="article" class="bgtrans">
-    <FormViewer
-      display-title
-      :read-only="readOnly"
-      :saved="saved"
-      :submission-id="submissionId"
-      :form-id="formId"
-      :is-duplicate="true"
-    />
-  </v-skeleton-loader>
-</template>

@@ -1,19 +1,243 @@
-<script>
-import { mapState } from 'pinia';
-import { i18n } from '~/internationalization';
+<template>
+  <div :class="{ 'dir-rtl': isRTL }" :style="computedStyles">
+    <div class="fabAction" @click="onOpenFABActionItems" :lang="lang">
+      <div class="text" v-text="baseFABItemName" :lang="lang" />
+      <v-avatar class="fabItemsInverColor" :size="fabItemsSize">
+        <v-icon :color="baseIconColor" :size="fabItemsIconsSize">
+          {{ baseIconName }}
+        </v-icon>
+      </v-avatar>
+    </div>
+    <div
+      :style="[
+        { display: 'flex', flexDirection: fabItemsDirection, gap: fabItemsGap },
+      ]"
+      v-if="isFABActionsOpen"
+    >
+      <router-link
+        ref="publishRouterLink"
+        data-cy="publishRouterLink"
+        class="fabAction"
+        :to="{
+          name: 'PublishForm',
+          query: { f: formId, fd: true, d: draftId },
+        }"
+        :class="{ 'disabled-router': !formId }"
+        tag="div"
+      >
+        <div
+          class="text"
+          v-text="$t('trans.floatButton.publish')"
+          :lang="lang"
+        />
+        <v-avatar class="fabItemsInverColor" :size="fabItemsSize">
+          <v-icon
+            :color="
+              saved ? fabItemsInvertedColor : disabledInvertedFabItemsColor
+            "
+            :size="fabItemsIconsSize"
+          >
+            upload_file
+          </v-icon>
+        </v-avatar>
+      </router-link>
+      <router-link
+        class="fabAction"
+        data-cy="settingsRouterLink"
+        ref="settingsRouterLink"
+        :to="{
+          name: 'PublishForm',
+          query: { f: formId, d: draftId },
+        }"
+        :class="{ 'disabled-router': !formId }"
+        tag="div"
+      >
+        <div
+          class="text"
+          v-text="$t('trans.floatButton.manage')"
+          :lang="lang"
+        />
+        <v-avatar class="fabItemsInverColor" :size="fabItemsSize">
+          <v-icon
+            :color="
+              saved ? fabItemsInvertedColor : disabledInvertedFabItemsColor
+            "
+            :size="fabItemsIconsSize"
+          >
+            settings
+          </v-icon>
+        </v-avatar>
+      </router-link>
 
-import { useFormStore } from '~/store/form';
+      <div
+        ref="redoButton"
+        class="fabAction"
+        data-cy="redoButton"
+        :class="{ 'disabled-router': !redoEnabled }"
+      >
+        <div class="text" v-text="$t('trans.floatButton.redo')" :lang="lang" />
+        <v-avatar
+          class="fabItems"
+          :size="fabItemsSize"
+          @click="toParent('redo')"
+        >
+          <v-icon
+            :color="redoEnabled ? fabItemsColor : disabledFabItemsColor"
+            :size="fabItemsIconsSize"
+          >
+            redo
+          </v-icon>
+        </v-avatar>
+      </div>
+      <div
+        ref="undoButton"
+        class="fabAction"
+        data-cy="undoButton"
+        :class="{ 'disabled-router': !undoEnabled }"
+      >
+        <div class="text" v-text="$t('trans.floatButton.undo')" :lang="lang" />
+        <v-avatar
+          class="fabItems"
+          :size="fabItemsSize"
+          @click="toParent('undo')"
+        >
+          <v-icon
+            :color="undoEnabled ? fabItemsColor : disabledFabItemsColor"
+            :size="fabItemsIconsSize"
+          >
+            undo
+          </v-icon>
+        </v-avatar>
+      </div>
+      <div
+        class="fabAction"
+        ref="previewRouterLink"
+        @click="gotoPreview"
+        :class="{ 'disabled-router': !formId || !draftId }"
+      >
+        <div
+          class="text"
+          v-text="$t('trans.floatButton.preview')"
+          :lang="lang"
+        />
+        <v-avatar class="fabItems" :size="fabItemsSize">
+          <v-icon
+            :color="formId ? fabItemsColor : disabledFabItemsColor"
+            :size="fabItemsIconsSize"
+          >
+            remove_red_eye
+          </v-icon>
+        </v-avatar>
+      </div>
+      <div
+        class="fabAction"
+        data-cy="saveButton"
+        ref="saveButton"
+        :class="{ 'disabled-router': isFormSaved && !canSave }"
+      >
+        <div class="text" :lang="lang">{{ this.savedMsg }}</div>
+        <v-avatar
+          class="fabItems"
+          :size="fabItemsSize"
+          @click="canSave ? toParent('save') : null"
+        >
+          <v-icon
+            v-if="!this.saving"
+            :color="
+              !isFormSaved && canSave ? fabItemsColor : disabledFabItemsColor
+            "
+            :size="fabItemsIconsSize"
+            dark
+          >
+            save
+          </v-icon>
+
+          <v-progress-circular
+            v-if="this.saving"
+            indeterminate
+            color="#1A5A96"
+            size="25"
+          ></v-progress-circular>
+        </v-avatar>
+      </div>
+      <div class="fabAction">
+        <div class="text" v-text="scrollName" :lang="lang" />
+
+        <v-avatar class="fabItems" :size="fabItemsSize" @click="onHandleScroll">
+          <v-icon :color="fabItemsColor" :size="fabItemsIconsSize">
+            {{ scrollIconName }}
+          </v-icon>
+        </v-avatar>
+      </div>
+    </div>
+    <div class="fabAction" v-if="!isFABActionsOpen">
+      <div :lang="lang">{{ scrollName }}</div>
+      <v-avatar class="fabItems" :size="fabItemsSize" @click="onHandleScroll">
+        <v-icon :color="fabItemsColor" :size="fabItemsIconsSize">
+          {{ scrollIconName }}
+        </v-icon>
+      </v-avatar>
+    </div>
+  </div>
+</template>
+
+<script>
+import { mapGetters } from 'vuex';
 
 export default {
+  name: 'FloatButton',
+  data() {
+    return {
+      fabItemsDirection: 'column-reverse',
+      isFABActionsOpen: true,
+      fabItemsPosition: {},
+      fabItemsSize: 36,
+      fabItemsIconsSize: 31,
+
+      //base fab item variable start
+
+      baseIconName: 'close',
+      baseIconColor: '#ffffff', //end
+
+      // fab items icons variables start
+      fabItemsColor: '#1A5A96',
+      fabItemsInvertedColor: '#ffffff',
+      disabledInvertedFabItemsColor: '#ffffff',
+      disabledFabItemsColor: '#707070C1', // end
+      scrollName: this.$t('trans.floatButton.bottom'),
+      baseFABItemName: this.$t('trans.floatButton.collapse'),
+      scrollIconName: 'south',
+      savedMsg: this.$t('trans.floatButton.save'),
+    };
+  },
+  computed: {
+    ...mapGetters('form', ['lang', 'isRTL']),
+    computedStyles() {
+      let baseStyles = {
+        display: 'flex',
+        width: '92px',
+        flexDirection: this.fabItemsDirection,
+        gap: this.fabItemsGap,
+        zIndex: this.fabZIndex,
+        position: 'fixed',
+      };
+
+      let conditionalStyles = {};
+      let fabItemsPosition = { ...this.fabItemsPosition };
+
+      switch (this.$i18n.locale) {
+        case 'uk':
+          baseStyles.width = '111px';
+          fabItemsPosition.right = '-.3vw';
+          break;
+      }
+
+      return [baseStyles, fabItemsPosition, conditionalStyles];
+    },
+  },
   props: {
-    formId: {
-      type: String,
-      default: null,
-    },
-    draftId: {
-      type: String,
-      default: null,
-    },
+    formId: String,
+    draftId: String,
     saving: {
       type: Boolean,
       default: false,
@@ -32,10 +256,7 @@ export default {
     },
     isFormSaved: Boolean,
     canSave: Boolean,
-    savedStatus: {
-      type: String,
-      default: null,
-    },
+    savedStatus: String,
     placement: {
       type: String,
       default: 'bottom-right',
@@ -60,113 +281,7 @@ export default {
           ...Object.keys(value)
         );
       },
-      default: () => {
-        return { bottom: true, right: true };
-      },
     },
-  },
-  emits: ['undo', 'redo', 'save'],
-  data() {
-    return {
-      fabItemsDirection: 'column-reverse',
-      isFABActionsOpen: true,
-      fabItemsPosition: {},
-      fabItemsSize: 36,
-      fabItemsIconsSize: 31,
-
-      //base fab item variable start
-      baseFABItemName: i18n.t('trans.floatButton.collapse'),
-      baseIconName: 'mdi:mdi-close',
-      baseIconColor: '#ffffff', //end
-
-      // fab items icons variables start
-      fabItemsColor: '#1A5A96',
-      fabItemsInvertedColor: '#ffffff',
-      disabledInvertedFabItemsColor: '#ffffff',
-      disabledFabItemsColor: '#707070C1', // end
-
-      savedMsg: i18n.t('trans.floatButton.save'),
-      scrollIconName: 'mdi:mdi-arrow-down',
-      scrollName: i18n.t('trans.floatButton.bottom'),
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['lang', 'isRTL']),
-    computedStyles() {
-      let baseStyles = {
-        display: 'flex',
-        width: '92px',
-        flexDirection: this.fabItemsDirection,
-        gap: this.fabItemsGap,
-        zIndex: this.fabZIndex,
-        position: 'fixed',
-        right: '0',
-        bottom: '20px',
-      };
-
-      let conditionalStyles = {};
-      let fabItemsPosition = { ...this.fabItemsPosition };
-
-      switch (this.$i18n.locale) {
-        case 'uk':
-          baseStyles.width = '111px';
-          fabItemsPosition.right = '-.3vw';
-          break;
-      }
-
-      return [baseStyles, fabItemsPosition, conditionalStyles];
-    },
-  },
-  watch: {
-    size() {
-      this.setSizes();
-    },
-    savedStatus(value) {
-      switch (value) {
-        case 'Saved':
-          this.savedMsg = i18n.t('trans.floatButton.saved');
-          break;
-        case 'Save':
-          this.savedMsg = i18n.t('trans.floatButton.save');
-          break;
-        case 'Saving':
-          this.savedMsg = i18n.t('trans.floatButton.saving');
-          break;
-        case 'Not Saved':
-          this.savedMsg = i18n.t('trans.floatButton.notSaved');
-          break;
-      }
-    },
-    lang() {
-      this.scrollName = i18n.t('trans.floatButton.bottom');
-
-      if (this.isFABActionsOpen) {
-        this.baseFABItemName = i18n.t('trans.floatButton.actions');
-      } else {
-        this.baseFABItemName = i18n.t('trans.floatButton.collapse');
-      }
-
-      if (this.savedStatus === 'Saved') {
-        this.savedMsg = i18n.t('trans.floatButton.saved');
-      } else if (this.savedStatus === 'Save') {
-        this.savedMsg = i18n.t('trans.floatButton.save');
-      } else if (this.savedStatus === 'Saving') {
-        this.savedMsg = i18n.t('trans.floatButton.saving');
-      } else if (this.savedStatus === 'Not Saved') {
-        this.savedMsg = i18n.t('trans.floatButton.notSaved');
-      }
-    },
-  },
-  created() {
-    window.addEventListener('scroll', this.handleScroll);
-  },
-  mounted() {
-    window.scrollTo(0, 0);
-    this.setPosition();
-    this.setSizes();
-  },
-  unmounted() {
-    window.removeEventListener('scroll', this.handleScroll);
   },
   methods: {
     toParent(name) {
@@ -174,16 +289,15 @@ export default {
     },
     onOpenFABActionItems() {
       if (this.isFABActionsOpen) {
-        this.baseIconName = 'mdi:mdi-menu';
+        this.baseIconName = 'menu';
         this.isFABActionsOpen = false;
-        this.baseFABItemName = i18n.t('trans.floatButton.actions');
+        this.baseFABItemName = this.$t('trans.floatButton.actions');
       } else {
-        this.baseIconName = 'mdi:mdi-close';
+        this.baseIconName = 'close';
         this.isFABActionsOpen = true;
-        this.baseFABItemName = i18n.t('trans.floatButton.collapse');
+        this.baseFABItemName = this.$t('trans.floatButton.collapse');
       }
     },
-
     gotoPreview() {
       let route = this.$router.resolve({
         name: 'FormPreview',
@@ -192,18 +306,29 @@ export default {
       window.open(route.href);
     },
     setSizes() {
+      this.floatButtonSize = {};
+
       switch (this.size) {
         case 'x-large':
           this.fabItemsSize = 52;
           this.fabItemsIconsSize = 47;
+          this.smallIcon = false;
+          this.largeIcon = true;
+          this.xSmallIcon = false;
           break;
         case 'large':
           this.fabItemsSize = 44;
           this.fabItemsIconsSize = 39;
+          this.smallIcon = false;
+          this.largeIcon = false;
+          this.xSmallIcon = false;
           break;
         case 'medium':
           this.fabItemsSize = 36;
           this.fabItemsIconsSize = 31;
+          this.smallIcon = false;
+          this.largeIcon = false;
+          this.xSmallIcon = false;
           break;
         case 'small':
           this.fabItemsSize = 28;
@@ -246,7 +371,7 @@ export default {
       switch (this.placement) {
         case 'bottom-right':
           this.fabItemsPosition.right = '-.5vw';
-          this.fabItemsPosition.bottom = '7vh';
+          this.fabItemsPosition.bottom = '4vh';
           break;
         case 'bottom-left':
           this.fabItemsPosition.left = '5vw';
@@ -269,14 +394,14 @@ export default {
     // callback function for window scroll event
     handleScroll() {
       if (window.scrollY === 0) {
-        this.scrollIconName = 'mdi:mdi-arrow-down';
-        this.scrollName = i18n.t('trans.floatButton.bottom');
+        this.scrollIconName = 'south';
+        this.scrollName = this.$t('trans.floatButton.bottom');
       } else if (
         window.pageYOffset + window.innerHeight >=
         document.documentElement.scrollHeight - 50
       ) {
-        this.scrollIconName = 'mdi:mdi-arrow-up';
-        this.scrollName = i18n.t('trans.floatButton.top');
+        this.scrollIconName = 'north';
+        this.scrollName = this.$t('trans.floatButton.top');
       }
     },
 
@@ -285,12 +410,12 @@ export default {
       if (window.scrollY === 0) {
         this.bottomScroll();
       } else if (
-        this.scrollName === i18n.t('trans.floatButton.bottom') &&
+        this.scrollName === this.$t('trans.floatButton.bottom') &&
         window.scrollY > 0
       ) {
         this.bottomScroll();
       } else if (
-        this.scrollName === i18n.t('trans.floatButton.top') &&
+        this.scrollName === this.$t('trans.floatButton.top') &&
         window.scrollY > 0
       ) {
         this.topScroll();
@@ -300,8 +425,8 @@ export default {
     },
     topScroll() {
       window.scrollTo(0, 0);
-      this.scrollIconName = 'mdi:mdi-arrow-down';
-      this.scrollName = i18n.t('trans.floatButton.bottom');
+      this.scrollIconName = 'south';
+      this.scrollName = this.$t('trans.floatButton.bottom');
     },
     bottomScroll() {
       window.scrollTo({
@@ -309,214 +434,60 @@ export default {
         top: document.body.scrollHeight,
         behavior: 'smooth',
       });
-      this.scrollIconName = 'mdi:mdi-arrow-up';
-      this.scrollName = i18n.t('trans.floatButton.top');
+      this.scrollIconName = 'north';
+      this.scrollName = this.$t('trans.floatButton.top');
     },
+  },
+  watch: {
+    size() {
+      this.setSizes();
+    },
+    savedStatus(value) {
+      if (value === 'Saved') {
+        this.savedMsg = this.$t('trans.floatButton.saved');
+      } else if (value === 'Save') {
+        this.savedMsg = this.$t('trans.floatButton.save');
+      } else if (value === 'Saving') {
+        this.savedMsg = this.$t('trans.floatButton.saving');
+      } else if (value === 'Not Saved') {
+        this.savedMsg = this.$t('trans.floatButton.notSaved');
+      }
+    },
+    lang() {
+      this.scrollName = this.$t('trans.floatButton.bottom');
+
+      if (this.isFABActionsOpen) {
+        this.baseFABItemName = this.$t('trans.floatButton.actions');
+      } else {
+        this.baseFABItemName = this.$t('trans.floatButton.collapse');
+      }
+
+      if (this.savedStatus === 'Saved') {
+        this.savedMsg = this.$t('trans.floatButton.saved');
+      } else if (this.savedStatus === 'Save') {
+        this.savedMsg = this.$t('trans.floatButton.save');
+      } else if (this.savedStatus === 'Saving') {
+        this.savedMsg = this.$t('trans.floatButton.saving');
+      } else if (this.savedStatus === 'Not Saved') {
+        this.savedMsg = this.$t('trans.floatButton.notSaved');
+      }
+    },
+  },
+  mounted() {
+    window.scrollTo(0, 0);
+    this.setPosition();
+    this.setSizes();
+  },
+  created() {
+    window.addEventListener('scroll', this.handleScroll);
+  },
+  destroyed() {
+    window.removeEventListener('scroll', this.handleScroll);
   },
 };
 </script>
 
-<template>
-  <div :class="{ 'dir-rtl': isRTL }" :style="computedStyles">
-    <div class="fabAction" :lang="lang" @click="onOpenFABActionItems">
-      <div class="text" :lang="lang" v-text="baseFABItemName" />
-      <v-btn class="fabItemsInverColor" :size="fabItemsSize">
-        <v-icon
-          :color="baseIconColor"
-          :size="fabItemsIconsSize"
-          :icon="baseIconName"
-        >
-        </v-icon>
-      </v-btn>
-    </div>
-    <div
-      v-if="isFABActionsOpen"
-      :style="[
-        { display: 'flex', flexDirection: fabItemsDirection, gap: fabItemsGap },
-      ]"
-    >
-      <router-link
-        v-slot="{ navigate }"
-        :to="{
-          name: 'PublishForm',
-          query: { f: formId, fd: true, d: draftId },
-        }"
-        custom
-      >
-        <div
-          ref="publishRouterLink"
-          role="link"
-          data-cy="publishRouterLink"
-          :class="{ fabAction: true, 'disabled-router': !formId }"
-        >
-          <div
-            class="text"
-            :lang="lang"
-            v-text="$t('trans.floatButton.publish')"
-          />
-          <v-btn
-            class="fabItemsInverColor"
-            :size="fabItemsSize"
-            @click="navigate"
-          >
-            <v-icon
-              :color="
-                saved ? fabItemsInvertedColor : disabledInvertedFabItemsColor
-              "
-              :size="fabItemsIconsSize"
-              icon="mdi:mdi-file-upload"
-            >
-            </v-icon>
-          </v-btn>
-        </div>
-      </router-link>
-      <router-link
-        v-slot="{ navigate }"
-        :to="{
-          name: 'PublishForm',
-          query: { f: formId, fd: false, d: draftId },
-        }"
-        custom
-      >
-        <div
-          ref="settingsRouterLink"
-          role="link"
-          data-cy="settingsRouterLink"
-          :class="{ fabAction: true, 'disabled-router': !formId }"
-        >
-          <div
-            class="text"
-            :lang="lang"
-            v-text="$t('trans.floatButton.manage')"
-          />
-          <v-btn
-            class="fabItemsInverColor"
-            :size="fabItemsSize"
-            @click="navigate"
-          >
-            <v-icon
-              :color="
-                saved ? fabItemsInvertedColor : disabledInvertedFabItemsColor
-              "
-              :size="fabItemsIconsSize"
-              icon="mdi:mdi-cog"
-            >
-            </v-icon>
-          </v-btn>
-        </div>
-      </router-link>
-
-      <div
-        ref="redoButton"
-        class="fabAction"
-        data-cy="redoButton"
-        :class="{ 'disabled-router': !redoEnabled }"
-      >
-        <div class="text" :lang="lang" v-text="$t('trans.floatButton.redo')" />
-        <v-btn class="fabItems" :size="fabItemsSize" @click="toParent('redo')">
-          <v-icon
-            :color="redoEnabled ? fabItemsColor : disabledFabItemsColor"
-            :size="fabItemsIconsSize"
-            icon="mdi:mdi-redo"
-          >
-          </v-icon>
-        </v-btn>
-      </div>
-      <div
-        ref="undoButton"
-        class="fabAction"
-        data-cy="undoButton"
-        :class="{ 'disabled-router': !undoEnabled }"
-      >
-        <div class="text" :lang="lang" v-text="$t('trans.floatButton.undo')" />
-        <v-btn class="fabItems" :size="fabItemsSize" @click="toParent('undo')">
-          <v-icon
-            :color="undoEnabled ? fabItemsColor : disabledFabItemsColor"
-            :size="fabItemsIconsSize"
-            icon="mdi:mdi-undo"
-          >
-          </v-icon>
-        </v-btn>
-      </div>
-      <div
-        ref="previewRouterLink"
-        class="fabAction"
-        :class="{ 'disabled-router': !formId || !draftId }"
-        @click="gotoPreview"
-      >
-        <div
-          class="text"
-          :lang="lang"
-          v-text="$t('trans.floatButton.preview')"
-        />
-        <v-btn class="fabItems" :size="fabItemsSize">
-          <v-icon
-            :color="formId ? fabItemsColor : disabledFabItemsColor"
-            :size="fabItemsIconsSize"
-            icon="mdi:mdi-eye"
-          >
-          </v-icon>
-        </v-btn>
-      </div>
-      <div
-        ref="saveButton"
-        class="fabAction"
-        data-cy="saveButton"
-        :class="{ 'disabled-router': isFormSaved && !canSave }"
-      >
-        <div class="text" :lang="lang">{{ savedMsg }}</div>
-        <v-btn
-          class="fabItems"
-          :size="fabItemsSize"
-          @click="canSave ? toParent('save') : null"
-        >
-          <v-icon
-            v-if="!saving"
-            :color="
-              !isFormSaved && canSave ? fabItemsColor : disabledFabItemsColor
-            "
-            :size="fabItemsIconsSize"
-            dark
-            icon="mdi:mdi-content-save"
-          >
-          </v-icon>
-
-          <v-progress-circular
-            v-if="saving"
-            indeterminate
-            color="#1A5A96"
-            size="25"
-          ></v-progress-circular>
-        </v-btn>
-      </div>
-      <div class="fabAction">
-        <div :lang="lang">{{ scrollName }}</div>
-
-        <v-btn class="fabItems" :size="fabItemsSize" @click="onHandleScroll">
-          <v-icon
-            :color="fabItemsColor"
-            :size="fabItemsIconsSize"
-            :icon="scrollIconName"
-          >
-          </v-icon>
-        </v-btn>
-      </div>
-    </div>
-    <div v-if="!isFABActionsOpen" class="fabAction">
-      <div :lang="lang">{{ scrollName }}</div>
-      <v-btn class="fabItems" :size="fabItemsSize" @click="onHandleScroll">
-        <v-icon
-          :color="fabItemsColor"
-          :size="fabItemsIconsSize"
-          :icon="scrollIconName"
-        >
-        </v-icon>
-      </v-btn>
-    </div>
-  </div>
-</template>
-
-<style>
+<style scoped>
 /* disable router-link */
 .disabled-router {
   pointer-events: none;
@@ -526,11 +497,13 @@ export default {
   display: flex;
   justify-content: center;
   flex-direction: column;
+  flex-wrap: wrap;
   align-items: center;
   align-content: center;
   overflow: hidden;
   width: auto;
   height: auto;
+  list-style: none;
   pointer-events: cursor;
   color: #313132;
   font-size: 12px;
@@ -539,6 +512,7 @@ export default {
   font-family: BCSans !important;
   cursor: pointer;
   border-radius: 100%;
+  padding: 3px !important;
 }
 
 .fabItemsInverColor {

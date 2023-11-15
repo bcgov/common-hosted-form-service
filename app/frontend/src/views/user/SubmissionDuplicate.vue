@@ -1,29 +1,23 @@
-<script>
-import UserDuplicateSubmission from '~/components/forms/submission/UserDuplicateSubmission.vue';
+<template>
+  <UserDuplicateSubmission
+    :saved="sv"
+    :submissionId="s"
+    :formId="f"
+    :readOnly="false"
+  />
+</template>
 
+<script>
+import UserDuplicateSubmission from '@/components/forms/submission/UserDuplicateSubmission.vue';
 export default {
+  name: 'SubmissionDuplicate',
   components: {
     UserDuplicateSubmission,
   },
   props: {
-    s: {
-      type: String,
-      required: true,
-    },
-    f: {
-      type: String,
-      required: true,
-    },
+    s: String,
+    f: String,
     sv: Boolean,
   },
 };
 </script>
-
-<template>
-  <UserDuplicateSubmission
-    :saved="sv"
-    :submission-id="s"
-    :form-id="f"
-    :read-only="false"
-  />
-</template>

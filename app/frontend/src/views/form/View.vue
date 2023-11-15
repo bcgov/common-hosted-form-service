@@ -1,27 +1,23 @@
+<template>
+  <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBUSINESS]">
+    <FormSubmission :submissionId="s" />
+  </BaseSecure>
+</template>
+
 <script>
-import BaseSecure from '~/components/base/BaseSecure.vue';
-import FormSubmission from '~/components/forms/FormSubmission.vue';
-import { IdentityProviders } from '~/utils/constants';
+import FormSubmission from '@/components/forms/FormSubmission.vue';
+import { IdentityProviders } from '@/utils/constants';
 
 export default {
-  components: {
-    BaseSecure,
-    FormSubmission,
-  },
+  name: 'FormView',
   props: {
-    s: {
-      type: String,
-      required: true,
-    },
+    s: String,
+  },
+  components: {
+    FormSubmission,
   },
   computed: {
     IDP: () => IdentityProviders,
   },
 };
 </script>
-
-<template>
-  <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBUSINESS]">
-    <FormSubmission :submission-id="s" />
-  </BaseSecure>
-</template>

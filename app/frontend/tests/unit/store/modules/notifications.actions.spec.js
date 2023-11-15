@@ -1,98 +1,74 @@
-import { setActivePinia, createPinia } from 'pinia';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { useNotificationStore } from '~/store/notification';
-import { NotificationTypes } from '~/utils/constants';
+import store from '@/store/modules/notifications';
+import { NotificationTypes } from '@/utils/constants';
 
 describe('notifications actions', () => {
+  const mockStore = {
+    commit: jest.fn(),
+  };
+  const mockConsoleError = jest.spyOn(console, 'error');
+
   beforeEach(() => {
-    setActivePinia(createPinia());
+    mockStore.commit.mockReset();
+    mockConsoleError.mockReset();
   });
 
-  it('addNotification should add notification', () => {
-    const mockStore = useNotificationStore();
+  afterAll(() => {
+    mockConsoleError.mockRestore();
+  });
+
+  it('addNotification should commit to PUSH', () => {
     const obj = {
       message: 'foo',
       consoleError: 'bar',
     };
-    const addNotificationSpy = vi.spyOn(mockStore, 'addNotification');
-    mockStore.addNotification(obj);
-    expect(addNotificationSpy).toHaveBeenCalledTimes(1);
-    expect(mockStore.notifications).toEqual([
-      {
-        color: 'error',
-        type: 'error',
-        icon: '$error',
-        ...obj,
-        id: 1,
-      },
-    ]);
+    store.actions.addNotification(mockStore, obj);
+    expect(mockConsoleError).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith('PUSH', {
+      type: 'error',
+      class: 'alert-error',
+      icon: 'error',
+      ...obj,
+    });
   });
 
-  it('addNotification as warning should add notification', () => {
-    const mockStore = useNotificationStore();
+  it('addNotification as warning should commit to PUSH', () => {
     const obj = {
       message: 'foo',
       consoleError: 'bar',
       ...NotificationTypes.WARNING,
     };
-
-    const addNotificationSpy = vi.spyOn(mockStore, 'addNotification');
-    mockStore.addNotification(obj);
-    expect(addNotificationSpy).toHaveBeenCalledTimes(1);
-    expect(mockStore.notifications).toEqual([
-      {
-        color: 'warning',
-        type: 'warning',
-        icon: '$warning',
-        ...obj,
-        id: 1,
-      },
-    ]);
+    store.actions.addNotification(mockStore, obj);
+    expect(mockConsoleError).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith('PUSH', {
+      type: 'warning',
+      class: 'warning-error',
+      icon: 'warning',
+      ...obj,
+    });
   });
 
-  it('addNotification without consoleError should add notification', () => {
-    const mockStore = useNotificationStore();
+  it('addNotification without consoleError should commit to PUSH', () => {
     const obj = {
       message: 'foo',
     };
-    const addNotificationSpy = vi.spyOn(mockStore, 'addNotification');
-    mockStore.addNotification(obj);
-    expect(addNotificationSpy).toHaveBeenCalledTimes(1);
-    expect(mockStore.notifications).toEqual([
-      {
-        color: 'error',
-        type: 'error',
-        icon: '$error',
-        ...obj,
-        id: 1,
-      },
-    ]);
+    store.actions.addNotification(mockStore, obj);
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith('PUSH', {
+      type: 'error',
+      class: 'alert-error',
+      icon: 'error',
+      ...obj,
+    });
   });
 
   it('deleteNotification should commit to DELETE', () => {
-    const mockStore = useNotificationStore();
     const obj = {
       id: 1,
     };
-    mockStore.notifications = [
-      {
-        color: 'error',
-        type: 'error',
-        icon: '$error',
-        ...obj,
-        id: 1,
-      },
-    ];
-    expect(mockStore.notifications).toEqual([
-      {
-        color: 'error',
-        type: 'error',
-        icon: '$error',
-        ...obj,
-        id: 1,
-      },
-    ]);
-    mockStore.deleteNotification(obj);
-    expect(mockStore.notifications).toEqual([]);
+    store.actions.deleteNotification(mockStore, obj);
+    expect(mockStore.commit).toHaveBeenCalledTimes(1);
+    expect(mockStore.commit).toHaveBeenCalledWith('DELETE', obj);
   });
 });

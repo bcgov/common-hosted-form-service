@@ -34,10 +34,6 @@
   "manageLayout": {
     "manageForm": "إدارة النموذج"
   },
-  "preview": {
-    "preview": "معاينة",
-    "previewToolTip": "يعرض هذا معاينة لتصميم إصدار النموذج وسلوكه كما يراه مقدموه. لا يمكنك تقديم النموذج من هذه الصفحة."
-  },
   "shareForm": {
     "shareForm": "نموذج المشاركة",
     "shareLink": "رابط المشاركة",
@@ -190,7 +186,9 @@
     "formOwnerKeyAcess": "يجب أن تكون <strong>مالك النموذج</strong> لإدارة مفاتيح API.",
     "regenerate": "تجديد",
     "generate": "يولد",
-    "secret": "سر"
+    "secret": "سر",
+    "text": "نص",
+    "password": "كلمة المرور"
   },
   "manageVersions": {
     "important": "مهم!",
@@ -395,7 +393,7 @@
     "emailRequired": "البريد الالكتروني مطلوب"
   },
   "submissionsTable": {
-    "noMatchingRecordText": "لم يتم العثور على سجلات مطابقة",
+    "noMachingRecordText": "لم يتم العثور على سجلات مطابقة",
     "submissions": "التقديمات",
     "submissionsTable": "الجدول",
     "selectColumns": "حدد الأعمدة",
@@ -485,7 +483,7 @@
     "editThisDraft": "تحرير هذه المسودة"
   },
   "mySubmissionsTable": {
-    "noMatchingRecordText": "لم يتم العثور على سجلات مطابقة",
+    "noMachingRecordText": "لم يتم العثور على سجلات مطابقة",
     "previousSubmissions": "عمليات الإرسال السابقة",
     "selectColumns": "حدد الأعمدة",
     "createNewSubmission": "إنشاء إرسال جديد",
@@ -662,7 +660,6 @@
     "updatedBy": "تم التعديل بواسطة"
   },
   "teamManagement": {
-    "noMatchingRecordText": "لم يتم العثور على سجلات مطابقة",
     "teamManagement": "ادارة فريق",
     "selectColumns": "حدد الأعمدة",
     "manageForm": "إدارة النموذج",

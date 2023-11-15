@@ -1,11 +1,20 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<template>
+  <div>
+    <h3>{{ user.fullName }}</h3>
+    <h4 :lang="lang">{{ $t('trans.administerUser.userDetails') }}</h4>
+    <pre>{{ user }}</pre>
 
-import { useAppStore } from '~/store/app';
-import { useAdminStore } from '~/store/admin';
-import { useFormStore } from '~/store/form';
+    <v-btn color="primary" text small :href="userUrl" target="_blank">
+      <span :lang="lang">{{ $t('trans.administerUser.openSSOConsole') }}</span>
+    </v-btn>
+  </div>
+</template>
+
+<script>
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
+  name: 'AdministerUser',
   props: {
     userId: {
       type: String,
@@ -13,36 +22,17 @@ export default {
     },
   },
   computed: {
-    ...mapState(useAppStore, ['config']),
-    ...mapState(useAdminStore, ['user']),
-    ...mapState(useFormStore, ['lang']),
+    ...mapGetters('admin', ['user']),
+    ...mapGetters('form', ['lang']),
     userUrl() {
-      return `${this.config.keycloak.serverUrl}/admin/${this.config.keycloak.realm}/console/#/realms/${this.config.keycloak.realm}/users/${this.user.keycloakId}`;
+      return `${this.$config.keycloak.serverUrl}/admin/${this.$config.keycloak.realm}/console/#/realms/${this.$config.keycloak.realm}/users/${this.user.keycloakId}`;
     },
+  },
+  methods: {
+    ...mapActions('admin', ['readUser']),
   },
   async mounted() {
     await this.readUser(this.userId);
   },
-  methods: {
-    ...mapActions(useAdminStore, ['readUser']),
-  },
 };
 </script>
-
-<template>
-  <div>
-    <h3>{{ user.fullName }}</h3>
-    <h4 :lang="lang">{{ $t('trans.administerUser.userDetails') }}</h4>
-    <pre>{{ user }}</pre>
-
-    <v-btn
-      color="primary"
-      variant="text"
-      size="small"
-      :href="userUrl"
-      target="_blank"
-    >
-      <span :lang="lang">{{ $t('trans.administerUser.openSSOConsole') }}</span>
-    </v-btn>
-  </div>
-</template>
