@@ -1,6 +1,6 @@
 {
   "name": "common-hosted-form-service-app",
-  "version": "1.5.0",
+  "version": "1.4.0",
   "private": true,
   "license": "Apache-2.0",
   "scripts": {
@@ -69,6 +69,7 @@
     "fs-extra": "^10.1.0",
     "handlebars": "^4.7.8",
     "js-yaml": "^4.1.0",
+    "json2csv": "^6.0.0-alpha.2",
     "jsonwebtoken": "^9.0.0",
     "keycloak-connect": "^21.1.1",
     "knex": "^2.4.2",

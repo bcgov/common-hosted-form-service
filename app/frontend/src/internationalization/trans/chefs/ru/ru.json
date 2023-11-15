@@ -34,10 +34,6 @@
   "manageLayout": {
     "manageForm": "Управление формой"
   },
-  "preview": {
-    "preview": "Предварительный просмотр",
-    "previewToolTip": "Это показывает предварительный просмотр дизайна и поведения версии формы, как ее увидят отправители. Вы не можете отправить форму с этой страницы."
-  },
   "shareForm": {
     "shareForm": "Поделиться формой",
     "shareLink": "Поделиться ссылкой",
@@ -190,7 +186,9 @@
     "formOwnerKeyAcess": "Вы должны быть <strong>владельцем формы</strong> для управления ключами API.",
     "regenerate": "Регенерировать",
     "generate": "Создать",
-    "secret": "Секрет"
+    "secret": "Секрет",
+    "text": "текст",
+    "password": "пароль"
   },
   "manageVersions": {
     "important": "ВАЖНО!",
@@ -395,7 +393,7 @@
     "emailRequired": "Электронная почта обязательна"
   },
   "submissionsTable": {
-    "noMatchingRecordText": "Совпадающих записей не найдено",
+    "noMachingRecordText": "Совпадающих записей не найдено",
     "submissions": "Записи",
     "submissionsTable": "Таблица записей",
     "selectColumns": "Выберите столбцы",
@@ -485,7 +483,6 @@
     "editThisDraft": "Изменить этот черновик"
   },
   "mySubmissionsTable": {
-    "noMatchingRecordText": "Совпадающих записей не найдено",
     "previousSubmissions": "Предыдущие записи",
     "selectColumns": "Выберите столбцы",
     "createNewSubmission": "Создать новую запись",
@@ -662,7 +659,6 @@
     "updatedBy": "Кем изменено"
   },
   "teamManagement": {
-    "noMatchingRecordText": "Совпадающих записей не найдено",
     "teamManagement": "Управление командой",
     "selectColumns": "Выберите столбцы",
     "manageForm": "Управление формой",
@@ -786,7 +782,7 @@
     "setUpForm": "Настройка формы",
     "designForm": "Форма дизайна",
     "manageForm": "Управление формой"
-  },
+    },
   "create": {
     "formSettings": "Настройки формы",
     "disclaimer": "Отказ от ответственности",

@@ -1,25 +1,33 @@
-import { mount } from '@vue/test-utils';
-import { createTestingPinia } from '@pinia/testing';
-import { setActivePinia } from 'pinia';
-import { expect, vi } from 'vitest';
-import { nextTick } from 'vue';
+import { createLocalVue, shallowMount } from '@vue/test-utils';
+import Vuex from 'vuex';
+import i18n from '@/internationalization';
 
-import { rbacService } from '~/services';
-import { useAuthStore } from '~/store/auth';
-import Developer from '~/components/admin/Developer.vue';
+import { rbacService } from '@/services';
+import Developer from '@/components/admin/Developer.vue';
+
+const localVue = createLocalVue();
+
+localVue.use(Vuex);
 
 describe('Developer.vue', () => {
-  const mockConsoleError = vi.spyOn(console, 'error');
-  const getCurrentUserSpy = vi.spyOn(rbacService, 'getCurrentUser');
-
-  const pinia = createTestingPinia();
-  setActivePinia(pinia);
-
-  const authStore = useAuthStore(pinia);
+  const mockConsoleError = jest.spyOn(console, 'error');
+  const getCurrentUserSpy = jest.spyOn(rbacService, 'getCurrentUser');
+  let store;
 
   beforeEach(() => {
     mockConsoleError.mockReset();
     getCurrentUserSpy.mockReset();
+
+    store = new Vuex.Store();
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        fullName: () => 'fullName',
+        token: () => 'token',
+        tokenParsed: () => ({}),
+        userName: () => 'userName',
+      },
+    });
   });
 
   afterAll(() => {
@@ -29,30 +37,14 @@ describe('Developer.vue', () => {
 
   it('renders without error', async () => {
     const data = {};
-    authStore.keycloak = {
-      tokenParsed: {
-        email: 'email@email.com',
-        name: 'lucy',
-      },
-      userName: 'userName',
-      token: 'token',
-      fullName: 'fullName',
-    };
     getCurrentUserSpy.mockImplementation(() => ({ data: data }));
-    const wrapper = mount(Developer, {
-      global: {
-        props: {
-          textToCopy: 'textToCopy',
-        },
-        plugins: [pinia],
-        stubs: {
-          BaseSecure: true,
-          BaseCopyToClipboard: true,
-        },
-      },
+    const wrapper = shallowMount(Developer, {
+      localVue,
+      store,
+      stubs: ['BaseSecure'],
+      i18n
     });
-
-    await nextTick();
+    await localVue.nextTick();
 
     expect(wrapper.text()).toMatch('Developer Resources');
     expect(getCurrentUserSpy).toHaveBeenCalledTimes(1);
@@ -60,32 +52,16 @@ describe('Developer.vue', () => {
   });
 
   it('renders with error', async () => {
-    authStore.keycloak = {
-      tokenParsed: {
-        email: 'email@email.com',
-        name: 'lucy',
-      },
-      userName: 'userName',
-      token: 'token',
-      fullName: 'fullName',
-    };
     getCurrentUserSpy.mockImplementation(() => {
       throw new Error('error');
     });
-    const wrapper = mount(Developer, {
-      global: {
-        props: {
-          textToCopy: 'textToCopy',
-        },
-        plugins: [pinia],
-        stubs: {
-          BaseSecure: true,
-          BaseCopyToClipboard: true,
-        },
-      },
+    const wrapper = shallowMount(Developer, {
+      localVue,
+      store,
+      stubs: ['BaseSecure'],
+      i18n
     });
-
-    await nextTick();
+    await localVue.nextTick();
 
     expect(wrapper.text()).toMatch('Developer Resources');
     expect(getCurrentUserSpy).toHaveBeenCalledTimes(1);

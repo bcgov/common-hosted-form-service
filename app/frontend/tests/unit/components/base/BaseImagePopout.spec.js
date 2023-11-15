@@ -1,18 +1,19 @@
-import { mount } from '@vue/test-utils';
-import { describe, expect, it } from 'vitest';
+import { createLocalVue, shallowMount } from '@vue/test-utils';
+import Vuetify from 'vuetify';
+import i18n from '@/internationalization';
+import BaseImagePopout from '@/components/base/BaseImagePopout.vue';
 
-import BaseImagePopout from '~/components/base/BaseImagePopout.vue';
+const localVue = createLocalVue();
+localVue.use(Vuetify);
 
 describe('BaseImagePopout.vue', () => {
-  it('renders', async () => {
-    const wrapper = mount(BaseImagePopout, {
-      props: {
-        src: 'test',
-      },
-      global: {
-        stubs: ['v-dialog', 'v-hover'],
-      },
+  it('renders', () => {
+    const wrapper = shallowMount(BaseImagePopout, {
+      localVue,
+      propsData: { src: 'test' },
+      i18n
     });
+
     expect(wrapper.html()).toMatch('v-hover');
     expect(wrapper.html()).toMatch('v-dialog');
   });

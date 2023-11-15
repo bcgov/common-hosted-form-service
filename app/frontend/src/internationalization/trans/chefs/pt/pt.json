@@ -31,10 +31,6 @@
     "action": "Ações",
     "loadingText": "Carregando, por favor espere"
   },
-  "preview": {
-    "preview": "Visualização",
-    "previewToolTip": "Isso mostra uma visualização do design e do comportamento da versão do formulário, conforme seus remetentes o verão. Você não pode enviar o formulário desta página."
-  },
   "manageLayout": {
     "manageForm": "Gerenciar formulário"
   },
@@ -190,7 +186,9 @@
     "formOwnerKeyAcess": "Você deve ser o <strong>proprietário do formulário</strong> para gerenciar chaves de API.",
     "regenerate": "Regenerado",
     "generate": "Gerar",
-    "secret": "Segredo"
+    "secret": "Segredo",
+    "text": "texto",
+    "password": "senha"
   },
   "manageVersions": {
     "important": "IMPORTANTE!",
@@ -395,7 +393,7 @@
     "emailRequired": "E-mail é obrigatório"
   },
   "submissionsTable": {
-    "noMatchingRecordText": "Nenhum registro correspondente encontrado",
+    "noMachingRecordText": "Nenhum registro correspondente encontrado",
     "submissions": "Envios",
     "submissionsTable": "Tabela de Envios",
     "selectColumns": "Selecionar colunas",
@@ -485,7 +483,7 @@
     "editThisDraft": "Editar este rascunho"
   },
   "mySubmissionsTable": {
-    "noMatchingRecordText": "Nenhum registro correspondente encontrado",
+    "noMachingRecordText": "Nenhum registro correspondente encontrado",
     "previousSubmissions": "Envios anteriores",
     "selectColumns": "Selecionar colunas",
     "createNewSubmission": "Criar um novo envio",
@@ -662,7 +660,6 @@
     "updatedBy": "Modificado por"
   },
   "teamManagement": {
-    "noMatchingRecordText": "Nenhum registro correspondente encontrado",
     "teamManagement": "Gerenciamento de equipe",
     "selectColumns": "Selecionar colunas",
     "manageForm": "Gerenciar formulário",
@@ -782,12 +779,12 @@
     "createOnlineTitle": "Crie formulários online para coletar informações de seus clientes e melhorar seus fluxos de trabalho.",
     "getStarted": "iniciar"
   },
-
-  "baseStepper": {
-    "setUpForm": "Configurar formulário",
+  
+"baseStepper": {
+  "setUpForm": "Configurar formulário",
     "designForm": "Forma de desenho",
     "manageForm": "Gerenciar formulário"
-  },
+},
   "create": {
     "formSettings": "Configurações do formulário",
     "disclaimer": "Isenção de responsabilidade",

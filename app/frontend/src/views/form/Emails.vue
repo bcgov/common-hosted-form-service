@@ -1,13 +1,17 @@
+<template>
+  <BaseSecure :idp="[IDP.IDIR]">
+    <EmailManagement :formId="f" />
+  </BaseSecure>
+</template>
+
 <script>
-import BaseSecure from '~/components/base/BaseSecure.vue';
-import EmailManagement from '~/components/forms/manage/EmailManagement.vue';
-import { IdentityProviders } from '~/utils/constants';
+import EmailManagement from '@/components/forms/manage/EmailManagement.vue';
+import { IdentityProviders } from '@/utils/constants';
 
 export default {
   name: 'FormEmails',
 
   components: {
-    BaseSecure,
     EmailManagement,
   },
 
@@ -23,9 +27,3 @@ export default {
   },
 };
 </script>
-
-<template>
-  <BaseSecure :idp="[IDP.IDIR]">
-    <EmailManagement :form-id="f" />
-  </BaseSecure>
-</template>

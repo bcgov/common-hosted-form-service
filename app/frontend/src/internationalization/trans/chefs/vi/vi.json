@@ -34,10 +34,6 @@
   "manageLayout": {
     "manageForm": "Quản lý biểu mẫu"
   },
-  "preview": {
-    "preview": "Xem trước",
-    "previewToolTip": "Điều này hiển thị bản xem trước của thiết kế và hành vi của phiên bản biểu mẫu khi người gửi của bạn sẽ nhìn thấy nó. Bạn không thể gửi biểu mẫu từ trang này."
-  },
   "shareForm": {
     "shareForm": "chia sẻ biểu mẫu",
     "shareLink": "Chia sẻ đường link",
@@ -190,7 +186,9 @@
     "formOwnerKeyAcess": "Bạn phải là <strong>Chủ sở hữu biểu mẫu</strong> để quản lý Khóa API.",
     "regenerate": "tái tạo",
     "generate": "Phát ra",
-    "secret": "Bí mật"
+    "secret": "Bí mật",
+    "text": "chữ",
+    "password": "mật khẩu"
   },
   "manageVersions": {
     "important": "QUAN TRỌNG!",
@@ -395,7 +393,7 @@
     "emailRequired": "Email thì cần thiết"
   },
   "submissionsTable": {
-    "noMatchingRecordText": "Không tìm thấy kết quả",
+    "noMachingRecordText": "Không tìm thấy kết quả",
     "submissions": "đệ trình",
     "submissionsTable": "Đệ trìnhBảng",
     "selectColumns": "Chọn cột",
@@ -485,7 +483,7 @@
     "editThisDraft": "Chỉnh sửa bản nháp này"
   },
   "mySubmissionsTable": {
-    "noMatchingRecordText": "Không tìm thấy kết quả",
+    "noMachingRecordText": "Không tìm thấy kết quả",
     "previousSubmissions": "Đệ trình trước",
     "selectColumns": "Chọn cột",
     "createNewSubmission": "Tạo bài nộp mới",
@@ -662,7 +660,6 @@
     "updatedBy": "sửa đổi bởi"
   },
   "teamManagement": {
-    "noMatchingRecordText": "Không tìm thấy kết quả",
     "teamManagement": "quản lý nhóm",
     "selectColumns": "Chọn cột",
     "manageForm": "Quản lý biểu mẫu",
@@ -786,7 +783,7 @@
     "setUpForm": "Thiết lập biểu mẫu",
     "designForm": "mẫu thiết kế",
     "manageForm": "Quản lý biểu mẫu"
-  },
+    },
   "create": {
     "formSettings": "Cài đặt biểu mẫu",
     "disclaimer": "từ chối trách nhiệm",
@@ -845,7 +842,9 @@
     "loadingFormErrMsg": "Đã xảy ra lỗi khi tải biểu mẫu này.",
     "loadingForm": "Lỗi khi tải {options}: {error}",
     "idpHintMsg": "Biểu mẫu này yêu cầu xác thực {idpHint}. Vui lòng đăng nhập lại và thử lại.",
-    "formIdpMissMatch": "Mẫu IDP không khớp. Biểu mẫu yêu cầu {idpHint} nhưng người dùng có {userIdp}.",
+    "formIdpMissMatch": "Mẫu IDP không khớp. Biểu mẫu yêu cầu {idpHint} nhưng người dùng có {userIdp}."
+  },
+  "download": {
     "chefsDataExport": "Xuất dữ liệu CHEFS",
     "preparingForDownloading": "Đang chuẩn bị tải xuống...",
     "downloadInfoA": "Nếu tệp của bạn không tự động tải xuống",

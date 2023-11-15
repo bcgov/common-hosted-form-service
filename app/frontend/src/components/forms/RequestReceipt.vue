@@ -1,15 +1,119 @@
+<template>
+  <div :class="{ 'dir-rtl': isRTL }">
+    <v-btn
+      color="primary"
+      text
+      small
+      @click="displayDialog"
+      :class="{ 'dir-rtl': isRTL }"
+    >
+      <v-icon class="mr-1">email</v-icon>
+      <span :lang="lang">{{ $t('trans.requestReceipt.emailReceipt') }}</span>
+    </v-btn>
+
+    <BaseDialog
+      v-model="showDialog"
+      type="CONTINUE"
+      @close-dialog="showDialog = false"
+      :class="{ 'dir-rtl': isRTL }"
+      @continue-dialog="requestReceipt()"
+    >
+      <template #icon>
+        <v-icon large color="primary" class="d-none d-sm-flex"> email </v-icon>
+      </template>
+      <template #text>
+        <v-form
+          ref="form"
+          v-model="valid"
+          @submit="requestReceipt()"
+          @submit.prevent
+        >
+          <v-text-field
+            dense
+            flat
+            solid
+            outlined
+            :label="$t('trans.requestReceipt.sendToEmailAddress')"
+            :rules="emailRules"
+            v-model="to"
+            data-test="text-form-to"
+            :lang="lang"
+          />
+          <v-select
+            dense
+            outlined
+            :items="[
+              { text: $t('trans.requestReceipt.low'), value: 'low' },
+              { text: $t('trans.requestReceipt.normal'), value: 'normal' },
+              { text: $t('trans.requestReceipt.high'), value: 'high' },
+            ]"
+            :label="$t('trans.requestReceipt.emailPriority')"
+            :lang="lang"
+            v-model="priority"
+          />
+        </v-form>
+      </template>
+      <template v-slot:button-text-continue>
+        <span :lang="lang">{{ $t('trans.requestReceipt.send') }}</span>
+      </template>
+    </BaseDialog>
+  </div>
+</template>
+
 <script>
-import { mapState } from 'pinia';
-import BaseDialog from '~/components/base/BaseDialog.vue';
-import { i18n } from '~/internationalization';
-import { formService } from '~/services';
-import { useFormStore } from '~/store/form';
-import { useNotificationStore } from '~/store/notification';
-import { NotificationTypes } from '~/utils/constants';
+import { mapActions, mapGetters } from 'vuex';
+
+import { NotificationTypes } from '@/utils/constants';
+import { formService } from '@/services';
 
 export default {
-  components: {
-    BaseDialog,
+  name: 'RequestReceipt',
+  data: () => ({
+    emailRules: [(v) => !!v || this.$t('trans.requestReceipt.emailRequired')],
+    priority: 'normal',
+    showDialog: false,
+    to: '',
+    valid: false,
+  }),
+  methods: {
+    ...mapActions('notifications', ['addNotification']),
+    displayDialog() {
+      this.showDialog = true;
+    },
+    async requestReceipt() {
+      if (this.valid) {
+        try {
+          await formService.requestReceiptEmail(this.submissionId, {
+            priority: this.priority,
+            to: this.to,
+          });
+          this.addNotification({
+            message: this.$t('trans.requestReceipt.emailSent', { to: this.to }),
+            ...NotificationTypes.SUCCESS,
+          });
+        } catch (error) {
+          this.addNotification({
+            message: this.$t('trans.requestReceipt.sendingEmailErrMsg'),
+            consoleError: this.$t(
+              'trans.requestReceipt.sendingEmailConsErrMsg',
+              { to: this.to, error: error }
+            ),
+          });
+        } finally {
+          this.showDialog = false;
+        }
+      }
+    },
+    resetDialog() {
+      this.to = this.email;
+      this.valid = false;
+    },
+  },
+  computed: {
+    ...mapGetters('form', ['isRTL', 'lang']),
+  },
+  mounted() {
+    this.resetDialog();
   },
   props: {
     email: {
@@ -25,121 +129,5 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      emailRules: [(v) => !!v || 'E-mail is required'],
-      priority: 'normal',
-      showDialog: false,
-      to: '',
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
-  },
-  mounted() {
-    this.resetDialog();
-  },
-  methods: {
-    displayDialog() {
-      this.showDialog = true;
-    },
-    async requestReceipt() {
-      const { valid } = await this.$refs.form.validate();
-      if (valid) {
-        const notificationStore = useNotificationStore();
-        try {
-          await formService.requestReceiptEmail(this.submissionId, {
-            priority: this.priority,
-            to: this.to,
-          });
-          notificationStore.addNotification({
-            text: i18n.t('trans.requestReceipt.emailSent', { to: this.to }),
-            ...NotificationTypes.SUCCESS,
-          });
-        } catch (error) {
-          notificationStore.addNotification({
-            text: i18n.t('trans.requestReceipt.sendingEmailErrMsg'),
-            consoleError: i18n.t(
-              'trans.requestReceipt.sendingEmailConsErrMsg',
-              {
-                to: this.to,
-                error: error,
-              }
-            ),
-          });
-        } finally {
-          this.showDialog = false;
-        }
-      }
-    },
-    resetDialog() {
-      this.to = this.email;
-    },
-  },
 };
 </script>
-
-<template>
-  <div :class="{ 'dir-rtl': isRTL }">
-    <v-btn
-      color="primary"
-      variant="text"
-      size="small"
-      :class="{ 'dir-rtl': isRTL }"
-      @click="displayDialog"
-    >
-      <v-icon icon="mdi:mdi-email"></v-icon>
-      <span :lang="lang">{{ $t('trans.requestReceipt.emailReceipt') }}</span>
-    </v-btn>
-
-    <BaseDialog
-      v-model="showDialog"
-      type="CONTINUE"
-      :class="{ 'dir-rtl': isRTL }"
-      @close-dialog="showDialog = false"
-      @continue-dialog="requestReceipt()"
-    >
-      <template #text>
-        <v-form ref="form" @submit="requestReceipt()" @submit.prevent>
-          <v-text-field
-            v-model="to"
-            density="compact"
-            solid
-            variant="outlined"
-            :label="$t('trans.requestReceipt.sendToEmailAddress')"
-            :rules="emailRules"
-            data-test="text-form-to"
-            :lang="lang"
-          >
-            <template #prepend>
-              <v-icon
-                color="primary"
-                class="d-none d-sm-flex"
-                icon="mdi:mdi-email"
-              ></v-icon>
-            </template>
-          </v-text-field>
-          <v-select
-            v-model="priority"
-            density="compact"
-            variant="outlined"
-            :items="[
-              { title: $t('trans.requestReceipt.low'), value: 'low' },
-              { title: $t('trans.requestReceipt.normal'), value: 'normal' },
-              { title: $t('trans.requestReceipt.high'), value: 'high' },
-            ]"
-            :label="$t('trans.requestReceipt.emailPriority')"
-            :lang="lang"
-          >
-            <template #prepend>
-              <v-icon />
-            </template>
-          </v-select>
-        </v-form>
-      </template>
-      <template #button-text-continue>
-        <span :lang="lang">{{ $t('trans.requestReceipt.send') }}</span>
-      </template>
-    </BaseDialog>
-  </div>
-</template>

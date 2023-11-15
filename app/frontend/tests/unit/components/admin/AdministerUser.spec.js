@@ -1,50 +1,58 @@
-import { flushPromises, mount } from '@vue/test-utils';
-import { createTestingPinia } from '@pinia/testing';
-import { setActivePinia } from 'pinia';
-import { beforeEach, expect } from 'vitest';
+import { createLocalVue, shallowMount } from '@vue/test-utils';
+import AdministerUser from '@/components/admin/AdministerUser.vue';
+import Vuex from 'vuex';
+import i18n from '@/internationalization';
 
-import AdministerUser from '~/components/admin/AdministerUser.vue';
-import { useAppStore } from '~/store/app';
-import { useAdminStore } from '~/store/admin';
+const localVue = createLocalVue();
+localVue.use(Vuex);
+
 
 describe('AdministerUser.vue', () => {
-  const pinia = createTestingPinia();
-
-  setActivePinia(pinia);
-  const appStore = useAppStore(pinia);
-  const adminStore = useAdminStore(pinia);
+  const mockAdminGetter = jest.fn();
+  let store;
+  const actions = {
+    readUser: jest.fn(),
+  };
 
   beforeEach(() => {
-    appStore.$reset();
-    adminStore.$reset();
-  });
-
-  it('renders', async () => {
-    appStore.config = {
-      keycloak: {
-        serverUrl: 'servU',
-        realm: 'theRealm',
-      },
-    };
-    adminStore.readUser.mockImplementation(() => {});
-    adminStore.user = {
-      fullName: 'alice',
-      keycloakId: '1',
-    };
-    const wrapper = mount(AdministerUser, {
-      props: {
-        userId: 'me',
-      },
-      global: {
-        plugins: [pinia],
-        stubs: {},
+    store = new Vuex.Store({
+      modules: {
+        admin: {
+          namespaced: true,
+          getters: {
+            user: mockAdminGetter,
+          },
+          actions: actions,
+        },
       },
     });
+  });
 
-    await flushPromises();
-    expect(wrapper.text()).toContain('alice');
-    expect(wrapper.html()).toContain(
-      'servU/admin/theRealm/console/#/realms/theRealm/users/1'
-    );
+  afterEach(() => {
+    mockAdminGetter.mockReset();
+    actions.readUser.mockReset();
+  });
+
+  it('renders ', async () => {
+    mockAdminGetter.mockReturnValue({ fullName: 'alice', keycloakId: '1' });
+    const wrapper = shallowMount(AdministerUser, {
+      localVue,
+      store,
+      i18n,
+      mocks: {
+        $config: {
+          keycloak: {
+            serverUrl: 'servU',
+            realm: 'theRealm',
+          },
+        },
+      },
+      propsData: { userId: 'me' },
+    });
+    await localVue.nextTick();
+
+    expect(wrapper.text()).toMatch('alice');
+    expect(wrapper.html()).toMatch('servU/admin/theRealm/console/#/realms/theRealm/users/1');
+    expect(actions.readUser).toHaveBeenCalledTimes(1);
   });
 });

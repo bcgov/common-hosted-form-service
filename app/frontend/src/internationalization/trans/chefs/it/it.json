@@ -34,10 +34,6 @@
   "manageLayout": {
     "manageForm": "Gestisci modulo"
   },
-  "preview": {
-    "preview": "Anteprima",
-    "previewToolTip": "Questo mostra un'anteprima del design e del comportamento della versione del modulo come lo vedranno i tuoi mittenti. Non puoi inviare il modulo da questa pagina."
-  },
   "shareForm": {
     "shareForm": "Modulo di condivisione",
     "shareLink": "Condividi il link",
@@ -190,7 +186,9 @@
     "formOwnerKeyAcess": "Devi essere il <strong>proprietario del modulo</strong> per gestire le chiavi API.",
     "regenerate": "Rigenerare",
     "generate": "creare",
-    "secret": "Segreto"
+    "secret": "Segreto",
+    "text": "testo",
+    "password": "parola d'ordine"
   },
   "manageVersions": {
     "important": "IMPORTANTE!",
@@ -395,7 +393,7 @@
     "emailRequired": "L'e-mail è obbligatoria"
   },
   "submissionsTable": {
-    "noMatchingRecordText": "Nessuna corrispondenza trovata",
+    "noMachingRecordText": "nessuna corrispondenza trovata",
     "submissions": "Contributi",
     "submissionsTable": "Tabella degli invii",
     "selectColumns": "Seleziona Colonne",
@@ -485,7 +483,7 @@
     "editThisDraft": "Modifica questa bozza"
   },
   "mySubmissionsTable": {
-    "noMatchingRecordText": "Nessuna corrispondenza trovata",
+    "noMachingRecordText": "nessuna corrispondenza trovata",
     "previousSubmissions": "Invii precedenti",
     "selectColumns": "Seleziona Colonne",
     "createNewSubmission": "Crea un nuovo invio",
@@ -662,7 +660,6 @@
     "updatedBy": "Modificato da"
   },
   "teamManagement": {
-    "noMatchingRecordText": "Nessuna corrispondenza trovata",
     "teamManagement": "Gestione della squadra",
     "selectColumns": "Seleziona Colonne",
     "manageForm": "Gestisci modulo",
@@ -782,11 +779,11 @@
     "createOnlineTitle": "Crea moduli online per raccogliere informazioni dai tuoi clienti e migliorare i tuoi flussi di lavoro.",
     "getStarted": "Iniziare"
   },
-  "baseStepper": {
-    "setUpForm": "Imposta modulo",
+"baseStepper": {
+  "setUpForm": "Imposta modulo",
     "designForm": "Modulo di progettazione",
     "manageForm": "Gestisci modulo"
-  },
+},
   "create": {
     "formSettings": "Impostazioni modulo",
     "disclaimer": "Disclaimer",

@@ -1,44 +1,61 @@
-<script>
-import { mapState, mapActions } from 'pinia';
-import { i18n } from '~/internationalization';
+<template>
+  <v-container :class="{ 'dir-rtl': isRTL }">
+    <v-data-table
+      disable-pagination
+      :hide-default-footer="true"
+      :headers="headers"
+      :items="statuses"
+      :loading="loading"
+      :loading-text="this.$t('trans.statusTable.loadingText')"
+      item-key="statusId"
+      class="status-table"
+      :lang="lang"
+    >
+      <template #[`item.createdAt`]="{ item }">
+        <span>{{ item.createdAt | formatDate }}</span>
+      </template>
 
-import { formService } from '~/services';
-import { useFormStore } from '~/store/form';
-import { useNotificationStore } from '~/store/notification';
+      <template #[`item.user`]="{ item }">{{
+        item.user ? item.user.fullName : ''
+      }}</template>
+    </v-data-table>
+  </v-container>
+</template>
+
+<script>
+import { mapActions, mapGetters } from 'vuex';
+import { formService } from '@/services';
 
 export default {
+  name: 'StatusTable',
   props: {
     submissionId: {
       required: true,
       type: String,
     },
   },
-  data() {
-    return {
-      loading: true,
-      statuses: [],
-    };
-  },
+  data: () => ({
+    statuses: [],
+    loading: true,
+  }),
+
   computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
     headers() {
       return [
-        { title: i18n.t('trans.statusTable.status'), key: 'code' },
+        { text: this.$t('trans.statusTable.status'), value: 'code' },
         {
-          title: i18n.t('trans.statusTable.dateStatusChanged'),
+          text: this.$t('trans.statusTable.dateStatusChanged'),
           align: 'start',
-          key: 'createdAt',
+          value: 'createdAt',
         },
-        { title: i18n.t('trans.statusTable.assignee'), key: 'user' },
-        { title: i18n.t('trans.statusTable.updatedBy'), key: 'createdBy' },
+        { text: this.$t('trans.statusTable.assignee'), value: 'user' },
+        { text: this.$t('trans.statusTable.updatedBy'), value: 'createdBy' },
       ];
     },
-  },
-  async mounted() {
-    await this.getData();
+    ...mapGetters('form', ['isRTL', 'lang']),
   },
   methods: {
-    ...mapActions(useNotificationStore, ['addNotification']),
+    ...mapActions('notifications', ['addNotification']),
     async getData() {
       this.loading = true;
       try {
@@ -48,45 +65,27 @@ export default {
         this.statuses = response.data;
       } catch (error) {
         this.addNotification({
-          text: i18n.t('trans.statusTable.getSubmissionStatusErr'),
+          message: this.$t('trans.statusTable.getSubmissionStatusErr'),
           consoleError:
-            i18n.t('trans.statusTable.getSubmissionStatusConsErr') + `${error}`,
+            this.$t('trans.statusTable.getSubmissionStatusConsErr') +
+            `${error}`,
         });
       } finally {
         this.loading = false;
       }
     },
   },
+  mounted() {
+    this.getData();
+  },
 };
 </script>
 
-<template>
-  <v-container :class="{ 'dir-rtl': isRTL }">
-    <v-data-table
-      disable-pagination
-      hover
-      :hide-default-footer="true"
-      :headers="headers"
-      :items="statuses"
-      :loading="loading"
-      :loading-text="$t('trans.statusTable.loadingText')"
-      item-key="statusId"
-      class="status-table"
-      :lang="lang"
-    >
-      <template #item.createdAt="{ item }">
-        <span>{{ $filters.formatDate(item.columns.createdAt) }}</span>
-      </template>
-
-      <template #item.user="{ item }">{{
-        item.columns.user ? item.columns.user.fullName : ''
-      }}</template>
-    </v-data-table>
-  </v-container>
-</template>
-
 <style scoped>
-.status-table :deep(thead tr th) {
+.status-table >>> tbody tr:nth-of-type(odd) {
+  background-color: #f5f5f5;
+}
+.status-table >>> thead tr th {
   font-weight: normal;
   color: #003366 !important;
   font-size: 1.1em;

@@ -34,10 +34,6 @@
   "manageLayout": {
     "manageForm": "フォームの管理"
   },
-  "preview": {
-    "preview": "プレビュー",
-    "previewToolTip": "これは、送信者に表示されるフォーム バージョンのデザインと動作のプレビューを示します。このページからフォームを送信することはできません。"
-  },
   "shareForm": {
     "shareForm": "共有フォーム",
     "shareLink": "共有リンク",
@@ -190,7 +186,9 @@
     "formOwnerKeyAcess": "API キーを管理するには、<strong>フォーム所有者</strong>である必要があります。",
     "regenerate": "再生する",
     "generate": "生成",
-    "secret": "ひみつ"
+    "secret": "ひみつ",
+    "text": "文章",
+    "password": "パスワード"
   },
   "manageVersions": {
     "important": "重要！",
@@ -395,7 +393,7 @@
     "emailRequired": "電子メールは必須です"
   },
   "submissionsTable": {
-    "noMatchingRecordText": "該当する記録が見つかりません",
+    "noMachingRecordText": "該当する記録が見つかりません",
     "submissions": "提出物",
     "submissionsTable": "提出物テーブル",
     "selectColumns": "列の選択",
@@ -485,7 +483,7 @@
     "editThisDraft": "この下書きを編集する"
   },
   "mySubmissionsTable": {
-    "noMatchingRecordText": "該当する記録が見つかりません",
+    "noMachingRecordText": "該当する記録が見つかりません",
     "previousSubmissions": "以前の投稿",
     "selectColumns": "列の選択",
     "createNewSubmission": "新しい提出物を作成する",
@@ -662,7 +660,6 @@
     "updatedBy": "によって変更"
   },
   "teamManagement": {
-    "noMatchingRecordText": "該当する記録が見つかりません",
     "teamManagement": "チーム管理",
     "selectColumns": "列の選択",
     "manageForm": "フォームの管理",
@@ -786,7 +783,7 @@
     "setUpForm": "フォームの設定",
     "designForm": "デザインフォーム",
     "manageForm": "フォームの管理"
-  },
+    },
   "create": {
     "formSettings": "フォーム設定",
     "disclaimer": "免責事項",

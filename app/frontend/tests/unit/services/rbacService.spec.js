@@ -1,14 +1,13 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import rbacService from '~/services/rbacService';
-import { ApiRoutes } from '~/utils/constants';
+import rbacService from '@/services/rbacService';
+import { ApiRoutes } from '@/utils/constants';
 
 const mockInstance = axios.create();
 const mockAxios = new MockAdapter(mockInstance);
 
-vi.mock('~/services/interceptors', () => {
+jest.mock('@/services/interceptors', () => {
   return {
     appAxios: () => mockInstance,
   };

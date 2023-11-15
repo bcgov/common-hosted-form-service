@@ -1,52 +1,11 @@
-<script>
-import BCLogo from '~/assets/images/bc_logo.svg';
-import PrintLogo from '~/assets/images/bc_logo_print.svg';
-import BaseAuthButton from '~/components/base/BaseAuthButton.vue';
-import BaseInternationalization from '~/components/base/BaseInternationalization.vue';
-import { mapState } from 'pinia';
-import { useFormStore } from '~/store/form';
-
-export default {
-  components: {
-    BaseAuthButton,
-    BaseInternationalization,
-  },
-  data() {
-    return {
-      BCLogo: BCLogo,
-      PrintLogo: PrintLogo,
-    };
-  },
-
-  computed: {
-    ...mapState(useFormStore, ['isRTL']),
-    appTitle() {
-      return this.$route && this.$route.meta && this.$route.meta.title
-        ? this.$route.meta.title
-        : import.meta.env.VITE_TITLE;
-    },
-    formSubmitMode() {
-      // hide header content on form submitter pages
-      return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;
-    },
-  },
-};
-</script>
-
 <template>
-  <header
-    :class="{
-      'elevation-20': true,
-      'gov-header': true,
-    }"
-    class="v-locale--is-ltr"
-  >
+  <header :class="{ 'gov-header': true }">
     <!-- header for browser print only -->
     <div class="printHeader d-none d-print-block">
       <img
         alt="B.C. Government Logo"
         class="mr-1 d-inline"
-        cover
+        contain
         :src="PrintLogo"
       />
       <h1
@@ -58,19 +17,15 @@ export default {
       </h1>
     </div>
 
-    <v-toolbar
-      color="#003366"
-      flat
-      class="px-md-12 d-print-none"
-      :class="{ 'v-locale--is-ltr': isRTL }"
-    >
+    <v-toolbar color="#003366" flat class="px-md-12 d-print-none">
       <!-- Navbar content -->
       <a href="https://www2.gov.bc.ca" data-test="btn-header-logo">
         <v-img
           alt="B.C. Government Logo"
           class="d-flex"
+          contain
           height="3.5rem"
-          :src="BCLogo"
+          src="@/assets/images/bc_logo.svg"
           width="10rem"
         />
       </a>
@@ -82,20 +37,38 @@ export default {
         {{ appTitle }}
       </h1>
       <v-spacer />
-      <BaseAuthButton data-test="base-auth-btn" />
-      <BaseInternationalization data-test="base-internationalization" />
+      <BaseAuthButton />
+      <BaseInternationalization />
     </v-toolbar>
   </header>
 </template>
 
-<style lang="scss" scoped>
-@import 'vuetify/settings';
+<script>
+import PrintLogo from '@/assets/images/bc_logo_print.svg';
 
-@media print {
-  .elevation-20 {
-    box-shadow: 0 0 0 0 !important;
-  }
-}
+export default {
+  name: 'BCGovHeader',
+  data() {
+    return {
+      PrintLogo: PrintLogo,
+    };
+  },
+  computed: {
+    appTitle() {
+      return this.$route && this.$route.meta && this.$route.meta.title
+        ? this.$route.meta.title
+        : process.env.VUE_APP_TITLE;
+    },
+    formSubmitMode() {
+      // hide header content on form submitter pages
+      return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+@import '@/assets/scss/style.scss';
 
 .gov-header {
   .printHeader {

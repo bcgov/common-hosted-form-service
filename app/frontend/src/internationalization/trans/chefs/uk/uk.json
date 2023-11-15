@@ -34,10 +34,6 @@
   "manageLayout": {
     "manageForm": "Керувати формою"
   },
-  "preview": {
-    "preview": "Попередній перегляд",
-    "previewToolTip": "Це показує попередній перегляд дизайну та поведінки версії форми, як це побачать ваші субмітенти. Ви не можете надіслати форму з цієї сторінки."
-  },
   "shareForm": {
     "shareForm": "Поділитися формою",
     "shareLink": "Розповсюдити посилання",
@@ -190,7 +186,9 @@
     "formOwnerKeyAcess": "Ви повинні бути <strong>власником форми</strong> , щоб керувати ключами API.",
     "regenerate": "Регенерувати",
     "generate": "Генерувати",
-    "secret": "Секрет"
+    "secret": "Секрет",
+    "text": "текст",
+    "password": "пароль"
   },
   "manageVersions": {
     "important": "ВАЖЛИВО!",
@@ -395,7 +393,7 @@
     "emailRequired": "Електронна пошта обов'язкова"
   },
   "submissionsTable": {
-    "noMatchingRecordText": "Відповідних записів не знайдено",
+    "noMachingRecordText": "Відповідних записів не знайдено",
     "submissions": "Подання",
     "submissionsTable": "SubmissionsTable",
     "selectColumns": "Виберіть Стовпці",
@@ -485,7 +483,7 @@
     "editThisDraft": "Редагувати цю чернетку"
   },
   "mySubmissionsTable": {
-    "noMatchingRecordText": "Відповідних записів не знайдено",
+    "noMachingRecordText": "Відповідних записів не знайдено",
     "previousSubmissions": "Попередні подання",
     "selectColumns": "Виберіть Стовпці",
     "createNewSubmission": "Створити нове подання",
@@ -662,7 +660,6 @@
     "updatedBy": "Змінено"
   },
   "teamManagement": {
-    "noMatchingRecordText": "Відповідних записів не знайдено",
     "teamManagement": "Керування командою",
     "selectColumns": "Виберіть Стовпці",
     "manageForm": "Керувати формою",
@@ -786,7 +783,7 @@
     "setUpForm": "Налаштувати форму",
     "designForm": "Форма оформлення",
     "manageForm": "Керувати формою"
-  },
+    },
   "create": {
     "formSettings": "Налаштування форми",
     "disclaimer": "Відмова від відповідальності",
