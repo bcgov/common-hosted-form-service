@@ -1,229 +1,243 @@
-import { setActivePinia, createPinia } from 'pinia';
-import { beforeEach, describe, expect, it } from 'vitest';
-import { createApp } from 'vue';
+import { cloneDeep } from 'lodash';
+import { createLocalVue } from '@vue/test-utils';
+import Vue from 'vue';
+import Vuex from 'vuex';
 
-import { useAuthStore } from '~/store/auth';
+import authStore from '@/store/modules/auth';
+
+const localVue = createLocalVue();
+localVue.use(Vuex);
 
 const zeroUuid = '00000000-0000-0000-0000-000000000000';
 const zeroGuid = '00000000000000000000000000000000';
 
+const keycloakHelper = (mockKcObject) => {
+  // TODO: Find better way to set up keycloak object mock without deleting first
+  if (Vue.prototype.$keycloak) {
+    delete Vue.prototype.$keycloak;
+  }
+  Object.defineProperty(Vue.prototype, '$keycloak', {
+    configurable: true, // Needed to allow deletions later
+    get() {
+      return mockKcObject;
+    },
+  });
+};
+
 describe('auth getters', () => {
+  let authenticated;
   let roles;
-  const app = createApp({});
-  const pinia = createPinia();
-  app.use(pinia);
-  setActivePinia(pinia);
-  const store = useAuthStore();
+  let store;
 
   beforeEach(() => {
-    store.$reset();
-    store.authenticated = true;
-    store.ready = true;
-    store.keycloak = {
-      createLoginUrl: () => 'loginUrl',
-      createLogoutUrl: () => 'logoutUrl',
-      fullName: 'fName',
-      subject: zeroUuid,
-      token: 'token',
-      tokenParsed: {
-        given_name: 'John',
-        family_name: 'Doe',
-        name: 'John Doe',
-        email: 'e@mail.com',
-        identity_provider: 'idir',
-        idp_userid: zeroGuid,
-        preferred_username: 'johndoe',
-        realm_access: {},
-        resource_access: {
-          chefs: {
-            roles: roles,
+    authenticated = true;
+    roles = [];
+    store = new Vuex.Store(cloneDeep(authStore));
+
+    Object.defineProperty(Vue.prototype, '$keycloak', {
+      configurable: true, // Needed to allow deletions later
+      get() {
+        return {
+          authenticated: authenticated,
+          createLoginUrl: () => 'loginUrl',
+          createLogoutUrl: () => 'logoutUrl',
+          fullName: 'fName',
+          ready: true,
+          subject: zeroUuid,
+          token: 'token',
+          tokenParsed: {
+            given_name: 'John',
+            family_name: 'Doe',
+            name: 'John Doe',
+            email: 'e@mail.com',
+            identity_provider: 'idir',
+            idp_userid: zeroGuid,
+            preferred_username: 'johndoe',
+            realm_access: {},
+            resource_access: {
+              chefs: {
+                roles: roles,
+              },
+            },
           },
-        },
+          userName: 'uName',
+        };
       },
-      userName: 'uName',
-    };
+    });
+  });
+
+  afterEach(() => {
+    if (Vue.prototype.$keycloak) {
+      delete Vue.prototype.$keycloak;
+    }
   });
 
   it('authenticated should return a boolean', () => {
-    expect(store.authenticated).toBeTruthy();
+    expect(store.getters.authenticated).toBeTruthy();
   });
 
   it('createLoginUrl should return a string', () => {
-    expect(store.createLoginUrl).toBeTruthy();
-    expect(typeof store.createLoginUrl).toBe('function');
-    expect(store.createLoginUrl()).toMatch('loginUrl');
+    expect(store.getters.createLoginUrl).toBeTruthy();
+    expect(typeof store.getters.createLoginUrl).toBe('function');
+    expect(store.getters.createLoginUrl()).toMatch('loginUrl');
   });
 
   it('createLogoutUrl should return a string', () => {
-    expect(store.createLogoutUrl).toBeTruthy();
-    expect(typeof store.createLogoutUrl).toBe('function');
-    expect(store.createLogoutUrl()).toMatch('logoutUrl');
+    expect(store.getters.createLogoutUrl).toBeTruthy();
+    expect(typeof store.getters.createLogoutUrl).toBe('function');
+    expect(store.getters.createLogoutUrl()).toMatch('logoutUrl');
   });
 
   it('email should return a string', () => {
-    expect(store.email).toBeTruthy();
-    expect(store.email).toMatch('e@mail.com');
+    expect(store.getters.email).toBeTruthy();
+    expect(store.getters.email).toMatch('e@mail.com');
   });
 
   it('email should return an empty string', () => {
-    store.keycloak.tokenParsed = undefined;
-    expect(store.email).toBeFalsy();
-    expect(store.email).toEqual('');
+    keycloakHelper({
+      tokenParsed: undefined,
+    });
+
+    expect(store.getters.email).toBeFalsy();
+    expect(store.getters.email).toEqual('');
   });
 
   it('fullName should return a string', () => {
-    expect(store.fullName).toBeTruthy();
-    expect(store.fullName).toMatch('John Doe');
+    expect(store.getters.fullName).toBeTruthy();
+    expect(store.getters.fullName).toMatch('fName');
   });
 
   it('hasResourceRoles should return false if unauthenticated', () => {
-    store.authenticated = false;
+    authenticated = false;
 
-    expect(store.authenticated).toBeFalsy();
-    expect(store.hasResourceRoles('app', roles)).toBeFalsy();
+    expect(store.getters.authenticated).toBeFalsy();
+    expect(store.getters.hasResourceRoles('app', roles)).toBeFalsy();
   });
 
   it('hasResourceRoles should return true when checking no roles', () => {
-    store.authenticated = true;
+    authenticated = true;
     roles = [];
 
-    expect(store.authenticated).toBeTruthy();
-    expect(store.hasResourceRoles('app', roles)).toBeTruthy();
+    expect(store.getters.authenticated).toBeTruthy();
+    expect(store.getters.hasResourceRoles('app', roles)).toBeTruthy();
   });
 
   it('hasResourceRoles should return true when role exists', () => {
-    store.authenticated = true;
+    authenticated = true;
     roles = [];
 
-    expect(store.authenticated).toBeTruthy();
-    expect(store.hasResourceRoles('app', roles)).toBeTruthy();
+    expect(store.getters.authenticated).toBeTruthy();
+    expect(store.getters.hasResourceRoles('app', roles)).toBeTruthy();
   });
 
   it('hasResourceRoles should return false when resource does not exist', () => {
-    store.authenticated = true;
-    store.keycloak.tokenParsed = {
-      realm_access: {},
-      resource_access: {},
-    };
+    authenticated = true;
     roles = ['non-existent-role'];
 
-    expect(store.authenticated).toBeTruthy();
-    expect(store.hasResourceRoles('app', roles)).toBeFalsy();
+    keycloakHelper({
+      authenticated: authenticated,
+      tokenParsed: {
+        realm_access: {},
+        resource_access: {},
+      },
+    });
+
+    expect(store.getters.authenticated).toBeTruthy();
+    expect(store.getters.hasResourceRoles('app', roles)).toBeFalsy();
   });
 
   it('identityProvider should return a string', () => {
-    expect(store.identityProvider).toBeTruthy();
-    expect(typeof store.identityProvider).toBe('string');
+    expect(store.getters.identityProvider).toBeTruthy();
+    expect(typeof store.getters.identityProvider).toBe('string');
   });
 
   it('isAdmin should return false if no admin role', () => {
-    store.authenticated = true;
+    authenticated = true;
     roles = [];
-    store.keycloak.tokenParsed = {
-      resource_access: {
-        chefs: {
-          roles: roles,
-        },
-      },
-    };
 
-    expect(store.authenticated).toBeTruthy();
-    expect(store.isAdmin).toBeFalsy();
+    expect(store.getters.authenticated).toBeTruthy();
+    expect(store.getters.isAdmin).toBeFalsy();
   });
 
   it('isAdmin should return true if admin role', () => {
-    store.authenticated = true;
+    authenticated = true;
     roles = ['admin'];
-    store.keycloak.tokenParsed = {
-      resource_access: {
-        chefs: {
-          roles: roles,
-        },
-      },
-    };
 
-    expect(store.authenticated).toBeTruthy();
-    expect(store.isAdmin).toBeTruthy();
+    expect(store.getters.authenticated).toBeTruthy();
+    expect(store.getters.isAdmin).toBeTruthy();
   });
 
   it('isUser should return false if no user role', () => {
-    store.authenticated = true;
+    authenticated = true;
     roles = [];
 
-    expect(store.authenticated).toBeTruthy();
-    expect(store.isUser).toBeFalsy();
+    expect(store.getters.authenticated).toBeTruthy();
+    expect(store.getters.isUser).toBeFalsy();
   });
 
   it('isUser should return true if user role', () => {
-    store.authenticated = true;
+    authenticated = true;
     roles = ['user'];
-    store.keycloak.tokenParsed = {
-      resource_access: {
-        chefs: {
-          roles: roles,
-        },
-      },
-    };
 
-    expect(store.authenticated).toBeTruthy();
-    expect(store.isUser).toBeTruthy();
+    expect(store.getters.authenticated).toBeTruthy();
+    expect(store.getters.isUser).toBeTruthy();
   });
 
-  it('ready should return a boolean', () => {
-    expect(store.ready).toBeTruthy();
+  it('keycloakReady should return a boolean', () => {
+    expect(store.getters.keycloakReady).toBeTruthy();
   });
 
   it('identityProviderIdentity should return a string', () => {
-    expect(store.identityProviderIdentity).toBeTruthy();
-    expect(store.identityProviderIdentity).toMatch(zeroGuid);
+    expect(store.getters.identityProviderIdentity).toBeTruthy();
+    expect(store.getters.identityProviderIdentity).toMatch(zeroGuid);
   });
 
   it('keycloakSubject should return a string', () => {
-    expect(store.keycloakSubject).toBeTruthy();
-    expect(store.keycloakSubject).toMatch(zeroUuid);
+    expect(store.getters.keycloakSubject).toBeTruthy();
+    expect(store.getters.keycloakSubject).toMatch(zeroUuid);
   });
 
   it('moduleLoaded should return a boolean', () => {
-    expect(store.moduleLoaded).toBeTruthy();
+    expect(store.getters.moduleLoaded).toBeTruthy();
   });
 
   it('realmAccess should return an object', () => {
-    expect(store.realmAccess).toBeTruthy();
-    expect(typeof store.realmAccess).toBe('object');
+    expect(store.getters.realmAccess).toBeTruthy();
+    expect(typeof store.getters.realmAccess).toBe('object');
   });
 
   it('realmAccess should return a string', () => {
     const uri = 'http://foo.bar';
-    store.redirectUri = uri;
+    store.replaceState({ redirectUri: uri });
 
-    expect(store.redirectUri).toBeTruthy();
-    expect(typeof store.redirectUri).toBe('string');
-    expect(store.redirectUri).toEqual(uri);
+    expect(store.getters.redirectUri).toBeTruthy();
+    expect(typeof store.getters.redirectUri).toBe('string');
+    expect(store.getters.redirectUri).toEqual(uri);
   });
 
   it('resourceAccess should return an object', () => {
-    expect(store.resourceAccess).toBeTruthy();
-    expect(typeof store.resourceAccess).toBe('object');
+    expect(store.getters.resourceAccess).toBeTruthy();
+    expect(typeof store.getters.resourceAccess).toBe('object');
   });
 
   it('token should return a string', () => {
-    expect(store.token).toBeTruthy();
-    expect(store.token).toMatch('token');
+    expect(store.getters.token).toBeTruthy();
+    expect(store.getters.token).toMatch('token');
   });
 
   it('tokenParsed should return an object', () => {
-    expect(store.tokenParsed).toBeTruthy();
-    expect(typeof store.tokenParsed).toBe('object');
+    expect(store.getters.tokenParsed).toBeTruthy();
+    expect(typeof store.getters.tokenParsed).toBe('object');
   });
 
   it('userName should return a string', () => {
-    expect(store.userName).toBeTruthy();
-    expect(store.userName).toMatch('johndoe');
+    expect(store.getters.userName).toBeTruthy();
+    expect(store.getters.userName).toMatch('uName');
   });
 
   it('creates an auth user when authenticated', () => {
-    expect(store.user).toBeTruthy();
-    expect(store.user).toEqual({
+    expect(store.getters.user).toBeTruthy();
+    expect(store.getters.user).toEqual({
       username: 'johndoe',
       firstName: 'John',
       lastName: 'Doe',
@@ -235,11 +249,13 @@ describe('auth getters', () => {
   });
 
   it('creates a public user when not authenticated', () => {
-    store.authenticated = false;
-    store.keycloak.tokenParsed = undefined;
+    keycloakHelper({
+      authenticated: false,
+      tokenParsed: undefined,
+    });
 
-    expect(store.user).toBeTruthy();
-    expect(store.user).toEqual({
+    expect(store.getters.user).toBeTruthy();
+    expect(store.getters.user).toEqual({
       username: '',
       firstName: '',
       lastName: '',

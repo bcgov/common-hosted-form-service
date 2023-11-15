@@ -1,16 +1,15 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import adminService from '~/services/adminService';
-import { ApiRoutes } from '~/utils/constants';
+import adminService from '@/services/adminService';
+import { ApiRoutes } from '@/utils/constants';
 
 const mockInstance = axios.create();
 const mockAxios = new MockAdapter(mockInstance);
 
 const zeroUuid = '00000000-0000-0000-0000-000000000000';
 
-vi.mock('~/services/interceptors', () => {
+jest.mock('@/services/interceptors', () => {
   return {
     appAxios: () => mockInstance,
   };
@@ -30,9 +29,7 @@ describe('Admin Service', () => {
     it('calls update on endpoint', async () => {
       mockAxios.onPut(endpoint).reply(200);
 
-      const result = await adminService.addFormUser('usrid', zeroUuid, [
-        'OWNER',
-      ]);
+      const result = await adminService.addFormUser('usrid', zeroUuid, ['OWNER']);
       expect(result).toBeTruthy();
       expect(mockAxios.history.put).toHaveLength(1);
     });

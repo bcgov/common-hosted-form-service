@@ -1,35 +1,3 @@
-<script>
-import { mapState } from 'pinia';
-import { useFormStore } from '~/store/form';
-
-export default {
-  props: {
-    showDialog: { type: Boolean, required: true },
-    component: { type: Object, default: () => {} },
-    fcProactiveHelpImageUrl: undefined,
-  },
-  emits: ['close-dialog'],
-  data() {
-    return {
-      dialog: this.showDialog,
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
-  },
-  watch: {
-    showDialog(value) {
-      this.dialog = value;
-    },
-  },
-  methods: {
-    onCloseDialog() {
-      this.$emit('close-dialog');
-    },
-  },
-};
-</script>
-
 <template>
   <v-row justify="center" class="mb-5">
     <v-dialog
@@ -45,16 +13,21 @@ export default {
                 {{ component && component.componentName }}
               </div>
               <div class="align-self-center cursor">
-                <v-icon icon="mdi:mdi-close" @click="onCloseDialog" />
+                <font-awesome-icon
+                  icon="fa-solid fa-xmark"
+                  :size="'1x'"
+                  inverse
+                  @click="onCloseDialog"
+                />
               </div>
             </v-col>
           </v-row>
-          <v-row v-if="fcProactiveHelpImageUrl" class="mt-6">
+          <v-row class="mt-6" v-if="fcProactiveHelpImageUrl">
             <v-col md="6">
               <div
-                ref="preview_text_field"
                 class="text"
                 data-cy="preview_text_field"
+                ref="preview_text_field"
               >
                 {{ component && component.description }}
               </div>
@@ -66,12 +39,12 @@ export default {
               ></v-img>
             </v-col>
           </v-row>
-          <v-row v-else class="mt-6">
+          <v-row class="mt-6" v-else>
             <v-col cols="12">
               <div
-                ref="preview_text_field"
                 class="text"
                 data-cy="preview_text_field"
+                ref="preview_text_field"
               >
                 {{ component && component.description }}
               </div>
@@ -91,7 +64,9 @@ export default {
               >
                 <div class="mr-1 cursor" :lang="lang">
                   {{ $t('trans.proactiveHelpPreviewDialog.learnMore') }}
-                  <v-icon icon="mdi:mdi-arrow-top-right-bold-box" /></div
+                  <font-awesome-icon
+                    icon="fa-solid fa-square-arrow-up-right"
+                  /></div
               ></a>
             </v-col>
           </v-row>
@@ -100,6 +75,43 @@ export default {
     </v-dialog>
   </v-row>
 </template>
+<script>
+import {
+  faXmark,
+  faSquareArrowUpRight,
+} from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
+library.add(faXmark, faSquareArrowUpRight);
+import { mapGetters } from 'vuex';
+
+export default {
+  name: 'ProactiveHelpPreviewDialog',
+
+  data() {
+    return {
+      dialog: this.showDialog,
+    };
+  },
+  props: {
+    showDialog: { type: Boolean, required: true },
+    component: { type: Object },
+    fcProactiveHelpImageUrl: undefined,
+  },
+  methods: {
+    onCloseDialog() {
+      this.$emit('close-dialog');
+    },
+  },
+  computed: {
+    ...mapGetters('form', ['isRTL', 'lang']),
+  },
+  watch: {
+    showDialog() {
+      this.dialog = this.showDialog;
+    },
+  },
+};
+</script>
 <style lang="scss" scoped>
 .cursor {
   cursor: pointer !important;

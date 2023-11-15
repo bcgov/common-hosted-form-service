@@ -1,61 +1,56 @@
-import { mount } from '@vue/test-utils';
-import { createTestingPinia } from '@pinia/testing';
-import { setActivePinia } from 'pinia';
-import { createRouter, createWebHistory } from 'vue-router';
-import { beforeEach, expect, vi } from 'vitest';
+import { createLocalVue, shallowMount } from '@vue/test-utils';
+import Vuex from 'vuex';
+import i18n from '@/internationalization';
+import ManageSubmissionUsers from '@/components/forms/submission/ManageSubmissionUsers.vue';
 
-import { rbacService } from '~/services';
-import getRouter from '~/router';
-import ManageSubmissionUsers from '~/components/forms/submission/ManageSubmissionUsers.vue';
-import { useFormStore } from '~/store/form';
+const localVue = createLocalVue();
+localVue.use(Vuex);
 
 describe('ManageSubmissionUsers.vue', () => {
   const SUBMISSION_ID = '1111111111-1111-1111-111111111111';
-  const getSubmissionUsersSpy = vi.spyOn(rbacService, 'getSubmissionUsers');
-  const pinia = createTestingPinia();
-  const router = createRouter({
-    history: createWebHistory(),
-    routes: getRouter().getRoutes(),
-  });
-
-  setActivePinia(pinia);
-  const formStore = useFormStore(pinia);
+  const mockFormGetter = jest.fn();
+  let store;
+  const formActions = {
+    fetchDrafts: jest.fn(),
+    fetchForm: jest.fn(),
+    getFormPermissionsForUser: jest.fn(),
+  };
+  const notifactionActions = {
+    addNotification: jest.fn(),
+  };
 
   beforeEach(() => {
-    getSubmissionUsersSpy.mockReset();
-    formStore.$reset();
-  });
-
-  afterAll(() => {
-    getSubmissionUsersSpy.mockRestore();
-  });
-
-  it('renders', () => {
-    formStore.form.name = 'myForm';
-    getSubmissionUsersSpy.mockImplementation(() => ({ data: [] }));
-    const wrapper = mount(ManageSubmissionUsers, {
-      props: {
-        isDraft: false,
-        submissionId: SUBMISSION_ID,
-      },
-      global: {
-        plugins: [router, pinia],
-        stubs: {
-          BaseDialog: true,
-          VDialog: {
-            name: 'VDialog',
-            template: '<div class="v-dialog-stub"><slot /></div>',
+    store = new Vuex.Store({
+      modules: {
+        form: {
+          namespaced: true,
+          getters: {
+            form: mockFormGetter,
           },
-          VTooltip: {
-            name: 'VTooltip',
-            template: '<div class="v-tooltip-stub"><slot /></div>',
-          },
+          actions: formActions,
+        },
+        notifications: {
+          namespaced: true,
+          actions: notifactionActions,
         },
       },
     });
+  });
 
-    expect(wrapper.text()).toContain(
-      'trans.manageSubmissionUsers.manageTeamMembers'
-    );
+  afterEach(() => {
+    mockFormGetter.mockReset();
+  });
+
+  it('renders', () => {
+    mockFormGetter.mockReturnValue({ name: 'myForm' });
+    const wrapper = shallowMount(ManageSubmissionUsers, {
+      localVue,
+      propsData: { isDraft: false, submissionId: SUBMISSION_ID },
+      store,
+      stubs: ['BaseDialog'],
+      i18n
+    });
+
+    expect(wrapper.html()).toMatch('Manage Team Members');
   });
 });

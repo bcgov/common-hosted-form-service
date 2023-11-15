@@ -1,56 +1,5 @@
-<script>
-import { mapState } from 'pinia';
-
-import DeleteSubmission from '~/components/forms/submission/DeleteSubmission.vue';
-import { useFormStore } from '~/store/form';
-import { FormPermissions } from '~/utils/constants';
-
-export default {
-  components: {
-    DeleteSubmission,
-  },
-  props: {
-    submission: {
-      type: Object,
-      required: true,
-    },
-    formId: {
-      type: String,
-      required: true,
-    },
-  },
-  emits: ['draft-deleted'],
-  computed: {
-    ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
-    isCopyFromExistingSubmissionEnabled() {
-      return this.form && this.form.enableCopyExistingSubmission;
-    },
-    hasDeletePermission() {
-      return this.submission?.permissions?.includes(
-        FormPermissions.SUBMISSION_CREATE
-      );
-    },
-    hasEditPermission() {
-      return this.submission?.permissions?.includes(
-        FormPermissions.SUBMISSION_UPDATE
-      );
-    },
-    hasViewPermission() {
-      return this.submission?.permissions?.includes(
-        FormPermissions.SUBMISSION_READ
-      );
-    },
-  },
-  methods: {
-    draftDeleted() {
-      this.$emit('draft-deleted');
-    },
-  },
-};
-</script>
-
 <template>
-  <span class="d-flex">
+  <span>
     <router-link
       :to="{
         name: 'UserFormView',
@@ -59,16 +8,17 @@ export default {
         },
       }"
     >
-      <v-tooltip location="bottom">
-        <template #activator="{ props }">
+      <v-tooltip bottom>
+        <template #activator="{ on, attrs }">
           <v-btn
             color="primary"
-            v-bind="props"
-            :disabled="!hasViewPermission"
-            size="x-small"
-            density="default"
-            icon="mdi:mdi-eye"
-          />
+            :disabled="!hasViewPerm()"
+            icon
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>remove_red_eye</v-icon>
+          </v-btn>
         </template>
         <span :lang="lang">{{
           $t('trans.mySubmissionsActions.viewThisSubmission')
@@ -91,17 +41,17 @@ export default {
           },
         }"
       >
-        <v-tooltip location="bottom">
-          <template #activator="{ props }">
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
             <v-btn
               color="primary"
-              v-bind="props"
-              :disabled="!hasViewPermission"
-              size="x-small"
-              :class="isRTL ? 'mr-1' : 'ml-1'"
-              density="default"
-              icon="mdi:mdi-pencil-box-multiple"
-            />
+              :disabled="!hasViewPerm()"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>app_registration</v-icon>
+            </v-btn>
           </template>
           <span :lang="lang">{{
             $t('trans.mySubmissionsActions.copyThisSubmission')
@@ -112,7 +62,6 @@ export default {
 
     <span
       v-if="submission.status === 'DRAFT' || submission.status === 'REVISING'"
-      class="d-flex"
     >
       <router-link
         :to="{
@@ -122,17 +71,17 @@ export default {
           },
         }"
       >
-        <v-tooltip location="bottom">
-          <template #activator="{ props }">
+        <v-tooltip bottom>
+          <template #activator="{ on, attrs }">
             <v-btn
               color="primary"
-              v-bind="props"
-              :disabled="!hasEditPermission"
-              size="x-small"
-              :class="isRTL ? 'mr-1' : 'ml-1'"
-              density="default"
-              icon="mdi:mdi-pencil"
-            />
+              :disabled="!hasEditPerm()"
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>mode_edit</v-icon>
+            </v-btn>
           </template>
           <span :lang="lang">{{
             $t('trans.mySubmissionsActions.editThisDraft')
@@ -141,12 +90,61 @@ export default {
       </router-link>
       <DeleteSubmission
         v-if="submission.status !== 'REVISING'"
-        :disabled="!hasDeletePermission"
-        is-draft
-        :submission-id="submission.submissionId"
-        icon-size="x-small"
         @deleted="draftDeleted"
+        :disabled="!hasDeletePerm()"
+        isDraft
+        :submissionId="submission.submissionId"
       />
     </span>
   </span>
 </template>
+
+<script>
+import { mapGetters } from 'vuex';
+import DeleteSubmission from '@/components/forms/submission/DeleteSubmission.vue';
+import { FormPermissions } from '@/utils/constants';
+
+export default {
+  name: 'MySubmissionsActions',
+  components: {
+    DeleteSubmission,
+  },
+  props: {
+    submission: {
+      type: Object,
+      required: true,
+    },
+    formId: {
+      type: String,
+      required: true,
+    },
+  },
+  computed: {
+    ...mapGetters('form', ['form', 'lang']),
+    isCopyFromExistingSubmissionEnabled() {
+      return this.form && this.form.enableCopyExistingSubmission;
+    },
+  },
+  methods: {
+    draftDeleted() {
+      this.$emit('draft-deleted');
+    },
+    hasDeletePerm() {
+      // Only the creator of the draft can delete it
+      return this.submission.permissions.includes(
+        FormPermissions.SUBMISSION_CREATE
+      );
+    },
+    hasEditPerm() {
+      return this.submission.permissions.includes(
+        FormPermissions.SUBMISSION_UPDATE
+      );
+    },
+    hasViewPerm() {
+      return this.submission.permissions.includes(
+        FormPermissions.SUBMISSION_READ
+      );
+    },
+  },
+};
+</script>

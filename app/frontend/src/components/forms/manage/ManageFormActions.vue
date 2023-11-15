@@ -1,76 +1,16 @@
-<script>
-import { mapActions, mapState } from 'pinia';
-
-import BaseDialog from '~/components/base/BaseDialog.vue';
-import ShareForm from '~/components/forms/manage/ShareForm.vue';
-import { useFormStore } from '~/store/form';
-
-import { FormPermissions } from '~/utils/constants';
-
-export default {
-  components: {
-    BaseDialog,
-    ShareForm,
-  },
-  data() {
-    return {
-      showDeleteDialog: false,
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['form', 'permissions', 'isRTL', 'lang']),
-    canDeleteForm() {
-      return this.permissions.includes(FormPermissions.FORM_DELETE);
-    },
-    canManageEmail() {
-      return this.permissions.includes(FormPermissions.EMAIL_TEMPLATE_UPDATE);
-    },
-    canManageTeam() {
-      return this.permissions.includes(FormPermissions.TEAM_UPDATE);
-    },
-    canViewSubmissions() {
-      const perms = [
-        FormPermissions.SUBMISSION_READ,
-        FormPermissions.SUBMISSION_UPDATE,
-      ];
-      return this.permissions.some((p) => perms.includes(p));
-    },
-    isPublished() {
-      return (
-        this.form?.versions?.length &&
-        this.form.versions.some((v) => v.published)
-      );
-    },
-  },
-  methods: {
-    ...mapActions(useFormStore, ['deleteCurrentForm']),
-    async deleteForm() {
-      this.showDeleteDialog = false;
-      await this.deleteCurrentForm();
-      this.$router.push({ name: 'UserForms' });
-    },
-  },
-};
-</script>
-
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
     <span>
-      <ShareForm :form-id="form.id" :warning="!isPublished" />
+      <ShareForm :formId="form.id" :warning="!isPublished" />
     </span>
 
     <span v-if="canViewSubmissions">
-      <v-tooltip location="bottom">
-        <template #activator="{ props }">
+      <v-tooltip bottom>
+        <template #activator="{ on, attrs }">
           <router-link :to="{ name: 'FormSubmissions', query: { f: form.id } }">
-            <v-btn
-              class="mx-1"
-              color="primary"
-              v-bind="props"
-              size="x-small"
-              density="default"
-              icon="mdi:mdi-list-box-outline"
-            />
+            <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
+              <v-icon class="mr-1">list_alt</v-icon>
+            </v-btn>
           </router-link>
         </template>
         <span :lang="lang">{{
@@ -80,17 +20,12 @@ export default {
     </span>
 
     <span v-if="canManageTeam">
-      <v-tooltip location="bottom">
-        <template #activator="{ props }">
+      <v-tooltip bottom>
+        <template #activator="{ on, attrs }">
           <router-link :to="{ name: 'FormTeams', query: { f: form.id } }">
-            <v-btn
-              class="mx-1"
-              color="primary"
-              v-bind="props"
-              size="x-small"
-              density="default"
-              icon="mdi:mdi-account-multiple"
-            />
+            <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
+              <v-icon>group</v-icon>
+            </v-btn>
           </router-link>
         </template>
         <span :lang="lang">{{
@@ -100,38 +35,39 @@ export default {
     </span>
 
     <span v-if="canManageEmail">
-      <v-tooltip location="bottom">
-        <template #activator="{ props }">
+      <v-tooltip bottom>
+        <template #activator="{ on, attrs }">
           <router-link :to="{ name: 'FormEmails', query: { f: form.id } }">
-            <v-btn
-              class="mx-1"
-              color="primary"
-              v-bind="props"
-              size="x-small"
-              density="default"
-              icon="mdi:mdi-email"
-            />
+            <v-btn class="mx-1" color="primary" icon v-bind="attrs" v-on="on">
+              <v-icon>email</v-icon>
+            </v-btn>
           </router-link>
         </template>
         <span :lang="lang">
-          {{ $t('trans.manageFormActions.emailManagement') }}
-          <v-icon icon="mdi:mdi-flask" size="small" />
+          {{ $t('trans.manageFormActions.emailManagement')
+          }}<font-awesome-icon
+            icon="fa-solid fa-flask"
+            color="primary"
+            class="ml-3"
+            :class="{ 'mr-2': isRTL }"
+          />
         </span>
       </v-tooltip>
     </span>
 
     <span v-if="canDeleteForm">
-      <v-tooltip location="bottom">
-        <template #activator="{ props }">
+      <v-tooltip bottom>
+        <template #activator="{ on, attrs }">
           <v-btn
             class="mx-1"
             color="red"
-            v-bind="props"
-            size="x-small"
-            density="default"
-            icon="mdi:mdi-delete"
             @click="showDeleteDialog = true"
-          />
+            icon
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>delete</v-icon>
+          </v-btn>
         </template>
         <span
           ><span :lang="lang">{{
@@ -167,3 +103,57 @@ export default {
     </span>
   </div>
 </template>
+
+<script>
+import { mapGetters, mapActions } from 'vuex';
+
+import { FormPermissions } from '@/utils/constants';
+import ShareForm from '@/components/forms/manage/ShareForm.vue';
+
+export default {
+  name: 'ManageFormActions',
+  components: { ShareForm },
+  data() {
+    return {
+      showDeleteDialog: false,
+    };
+  },
+  computed: {
+    ...mapGetters('form', ['form', 'permissions', 'isRTL', 'lang']),
+    // Permission checks
+    canDeleteForm() {
+      return this.permissions.includes(FormPermissions.FORM_DELETE);
+    },
+    canManageEmail() {
+      return this.permissions.includes(FormPermissions.EMAIL_TEMPLATE_UPDATE);
+    },
+    canManageTeam() {
+      return this.permissions.includes(FormPermissions.TEAM_UPDATE);
+    },
+    canViewSubmissions() {
+      const perms = [
+        FormPermissions.SUBMISSION_READ,
+        FormPermissions.SUBMISSION_UPDATE,
+      ];
+      return this.permissions.some((p) => perms.includes(p));
+    },
+    isPublished() {
+      return (
+        this.form.versions &&
+        this.form.versions.length &&
+        this.form.versions.some((v) => v.published)
+      );
+    },
+  },
+  methods: {
+    ...mapActions('form', ['deleteCurrentForm']),
+    deleteForm() {
+      this.showDeleteDialog = false;
+      this.deleteCurrentForm();
+      this.$router.push({
+        name: 'UserForms',
+      });
+    },
+  },
+};
+</script>

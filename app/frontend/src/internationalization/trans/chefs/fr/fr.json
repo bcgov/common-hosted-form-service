@@ -34,10 +34,6 @@
   "manageLayout": {
     "manageForm": "Gérer le formulaire"
   },
-  "preview": {
-    "preview": "Aperçu",
-    "previewToolTip": "Cela montre un aperçu de la conception et du comportement de la version du formulaire tels que vos expéditeurs le verront. Vous ne pouvez pas soumettre le formulaire à partir de cette page."
-  },
   "shareForm": {
     "shareForm": "Formulaire de partage",
     "shareLink": "Lien de partage",
@@ -190,7 +186,9 @@
     "formOwnerKeyAcess": "Vous devez être le <strong>propriétaire du formulaire</strong> pour gérer les clés API.",
     "regenerate": "Régénérer",
     "generate": "Générer",
-    "secret": "Secret"
+    "secret": "Secret",
+    "text": "texte",
+    "password": "mot de passe"
   },
   "manageVersions": {
     "important": "IMPORTANT!",
@@ -395,7 +393,7 @@
     "emailRequired": "L'e-mail est requis"
   },
   "submissionsTable": {
-    "noMatchingRecordText": "Aucun enregistrements correspondants trouvés",
+    "noMachingRecordText": "Aucun enregistrements correspondants trouvés",
     "submissions": "Soumissions",
     "submissionsTable": "Tableau des soumissions",
     "selectColumns": "Sélectionnez les colonnes",
@@ -485,7 +483,7 @@
     "editThisDraft": "Modifier ce brouillon"
   },
   "mySubmissionsTable": {
-    "noMatchingRecordText": "Aucun enregistrements correspondants trouvés",
+    "noMachingRecordText": "Aucun enregistrements correspondants trouvés",
     "previousSubmissions": "Soumissions précédentes",
     "selectColumns": "Sélectionnez les colonnes",
     "createNewSubmission": "Créer une nouvelle soumission",
@@ -662,7 +660,6 @@
     "updatedBy": "Modifié par"
   },
   "teamManagement": {
-    "noMatchingRecordText": "Aucun enregistrements correspondants trouvés",
     "teamManagement": "Gestion d'équipe",
     "selectColumns": "Sélectionnez les colonnes",
     "manageForm": "Gérer le formulaire",
@@ -782,11 +779,11 @@
     "createOnlineTitle": "Créez des formulaires en ligne pour collecter des informations auprès de vos clients et améliorer vos flux de travail.",
     "getStarted": "Commencer"
   },
-  "baseStepper": {
-    "setUpForm": "Configurer le formulaire",
+"baseStepper": {
+  "setUpForm": "Configurer le formulaire",
     "designForm": "Formulaire de conception",
     "manageForm": "Gérer le formulaire"
-  },
+},
   "create": {
     "formSettings": "Paramètres du formulaire",
     "disclaimer": "Clause de non-responsabilité",

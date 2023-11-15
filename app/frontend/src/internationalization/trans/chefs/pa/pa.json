@@ -31,10 +31,6 @@
     "action": "ਕਾਰਵਾਈਆਂ",
     "loadingText": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ... ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ"
   },
-  "preview": {
-    "preview": "ਝਲਕ",
-    "previewToolTip": "ਇਹ ਫਾਰਮ ਸੰਸਕਰਣ ਡਿਜ਼ਾਈਨ ਅਤੇ ਵਿਵਹਾਰ ਦਾ ਪੂਰਵਦਰਸ਼ਨ ਦਿਖਾਉਂਦਾ ਹੈ ਕਿਉਂਕਿ ਤੁਹਾਡੇ ਸਬਮਿਟਰ ਇਸਨੂੰ ਦੇਖਣਗੇ। ਤੁਸੀਂ ਇਸ ਪੰਨੇ ਤੋਂ ਫਾਰਮ ਜਮ੍ਹਾਂ ਨਹੀਂ ਕਰ ਸਕਦੇ।"
-  },
   "manageLayout": {
     "manageForm": "ਫਾਰਮ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ"
   },
@@ -190,7 +186,9 @@
     "formOwnerKeyAcess": "API ਕੁੰਜੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ ਤੁਹਾਨੂੰ <strong>ਫਾਰਮ ਦਾ ਮਾਲਕ</strong> ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।",
     "regenerate": "ਪੁਨਰਜਨਮ",
     "generate": "ਪੈਦਾ ਕਰੋ",
-    "secret": "ਗੁਪਤ"
+    "secret": "ਗੁਪਤ",
+    "text": "ਟੈਕਸਟ",
+    "password": "ਪਾਸਵਰਡ"
   },
   "manageVersions": {
     "important": "ਮਹੱਤਵਪੂਰਨ!",
@@ -395,7 +393,7 @@
     "emailRequired": "ਈਮੇਲ ਦੀ ਲੋੜ ਹੈ"
   },
   "submissionsTable": {
-    "noMatchingRecordText": "ਕੋਈ ਮੇਲ ਖਾਂਦਾ ਰਿਕਾਰਡ ਨਹੀਂ ਮਿਲਿਆ",
+    "noMachingRecordText": "ਕੋਈ ਮੇਲ ਖਾਂਦਾ ਰਿਕਾਰਡ ਨਹੀਂ ਮਿਲਿਆ",
     "submissions": "ਬੇਨਤੀਆਂ",
     "submissionsTable": "ਸਬਮਿਸ਼ਨ ਟੇਬਲ",
     "selectColumns": "ਕਾਲਮ ਚੁਣੋ",
@@ -485,7 +483,7 @@
     "editThisDraft": "ਇਸ ਡਰਾਫਟ ਨੂੰ ਸੰਪਾਦਿਤ ਕਰੋ"
   },
   "mySubmissionsTable": {
-    "noMatchingRecordText": "ਕੋਈ ਮੇਲ ਖਾਂਦਾ ਰਿਕਾਰਡ ਨਹੀਂ ਮਿਲਿਆ",
+    "noMachingRecordText": "ਕੋਈ ਮੇਲ ਖਾਂਦਾ ਰਿਕਾਰਡ ਨਹੀਂ ਮਿਲਿਆ",
     "previousSubmissions": "ਪਿਛਲੀਆਂ ਬੇਨਤੀਆਂ",
     "selectColumns": "ਕਾਲਮ ਚੁਣੋ",
     "createNewSubmission": "ਇੱਕ ਨਵੀਂ ਸਬਮਿਸ਼ਨ ਬਣਾਓ",
@@ -662,7 +660,6 @@
     "updatedBy": "ਦੁਆਰਾ ਸੋਧਿਆ ਗਿਆ"
   },
   "teamManagement": {
-    "noMatchingRecordText": "ਕੋਈ ਮੇਲ ਖਾਂਦਾ ਰਿਕਾਰਡ ਨਹੀਂ ਮਿਲਿਆ",
     "teamManagement": "ਟੀਮ ਪ੍ਰਬੰਧਨ",
     "selectColumns": "ਕਾਲਮ ਚੁਣੋ",
     "manageForm": "ਫਾਰਮ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ",
@@ -786,7 +783,7 @@
     "setUpForm": "ਫਾਰਮ ਸੈਟ ਅਪ ਕਰੋ",
     "designForm": "ਡਿਜ਼ਾਈਨ ਫਾਰਮ",
     "manageForm": "ਫਾਰਮ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ"
-  },
+    },
   "create": {
     "formSettings": "ਫਾਰਮ ਸੈਟਿੰਗਾਂ",
     "disclaimer": "ਬੇਦਾਅਵਾ",

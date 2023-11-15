@@ -79,6 +79,8 @@ module.exports = Object.freeze({
   IdentityProviders: {
     BCEIDBASIC: 'bceid-basic', // Basic BCeID
     BCEIDBUSINESS: 'bceid-business', // Business BCeID
+    BCSC: 'bcsc', // Services Card
+    GITHUB: 'github', // Github
     IDIR: 'idir', // IDIR
   },
   EXPORT_TYPES: {

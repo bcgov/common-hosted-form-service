@@ -1,14 +1,3 @@
-<script>
-import { mapState } from 'pinia';
-import { useFormStore } from '~/store/form';
-
-export default {
-  computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
-  },
-};
-</script>
-
 <template>
   <div>
     <h3 class="mb-5" :lang="lang">
@@ -32,14 +21,20 @@ export default {
           :hreflang="lang"
         >
           {{ $t('trans.formDisclaimer.privacyOfficer') }}
-          <v-icon
-            size="small"
-            color="primary"
-            icon="mdi:mdi-open-in-new"
-          ></v-icon>
+          <v-icon small color="primary">open_in_new</v-icon>
         </a>
         {{ $t('trans.formDisclaimer.assement') }}
       </li>
     </ul>
   </div>
 </template>
+
+<script>
+import { mapGetters } from 'vuex';
+export default {
+  name: 'FormDisclaimer',
+  computed: {
+    ...mapGetters('form', ['isRTL', 'lang']),
+  },
+};
+</script>

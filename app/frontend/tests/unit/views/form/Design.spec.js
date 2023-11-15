@@ -1,83 +1,58 @@
-// @vitest-environment happy-dom
-// happy-dom is required to access window.confirm
+import { createLocalVue, shallowMount } from '@vue/test-utils';
+import Vuex from 'vuex';
+import i18n from '@/internationalization';
+import Design from '@/views/form/Design.vue';
 
-import { createTestingPinia } from '@pinia/testing';
-import { mount } from '@vue/test-utils';
-import { setActivePinia } from 'pinia';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-
-import { useFormStore } from '~/store/form';
-import Design from '~/views/form/Design.vue';
+const localVue = createLocalVue();
+localVue.use(Vuex);
 
 describe('Design.vue', () => {
-  const onFormLoad = vi.fn();
-  const mockWindowConfirm = vi.spyOn(window, 'confirm');
-  const pinia = createTestingPinia();
-  setActivePinia(pinia);
-
-  const formStore = useFormStore(pinia);
+  const mockWindowConfirm = jest.spyOn(window, 'confirm');
+  const mockFormGetter = jest.fn();
+  let store;
 
   beforeEach(() => {
-    formStore.$reset();
+    store = new Vuex.Store({
+      modules: {
+        form: {
+          namespaced: true,
+          getters: {
+            form: mockFormGetter,
+          },
+        },
+      },
+    });
+  });
+
+  afterEach(() => {
     mockWindowConfirm.mockReset();
+    mockFormGetter.mockReset();
   });
 
   afterAll(() => {
     mockWindowConfirm.mockRestore();
   });
 
-  it('renders', async () => {
-    const wrapper = mount(Design, {
-      global: {
-        plugins: [pinia],
-        stubs: {
-          BaseStepper: {
-            name: 'BaseStepper',
-            template: '<div class="base-stepper-stub"><slot name="designForm" /></div>',
-          },
-          FormDesigner: {
-            name: 'FormDesigner',
-            methods: {
-              onFormLoad,
-            },
-            template: '<div class="form-designer-stub"><slot /></div>',
-          },
-        },
-      },
+  it('renders', () => {
+    const wrapper = shallowMount(Design, {
+      localVue,
+      store,
+      stubs: ['FormDesigner', 'BaseStepper'],
+      i18n
     });
 
-    expect(wrapper.html()).toMatch('base-stepper');
+    expect(wrapper.html()).toMatch('basestepper');
   });
 
   it('beforeRouteLeave guard works when not dirty', () => {
-    const next = vi.fn();
-    formStore.form = {
-      isDirty: false,
-    };
-    const wrapper = mount(Design, {
-      data() {
-        return {
-          step: 2,
-        };
-      },
-      global: {
-        plugins: [pinia],
-        stubs: {
-          BaseStepper: {
-            name: 'BaseStepper',
-            template: '<div class="base-stepper-stub"><slot name="designForm" /></div>',
-          },
-          FormDesigner: {
-            name: 'FormDesigner',
-            methods: {
-              onFormLoad,
-            },
-            template: '<div class="form-designer-stub"><slot /></div>',
-          },
-        },
-      },
+    mockFormGetter.mockReturnValue({ isDirty: false });
+    const next = jest.fn();
+    const wrapper = shallowMount(Design, {
+      localVue,
+      store,
+      stubs: ['BaseSecure', 'FormDesigner', 'BaseStepper'],
+      i18n
     });
-
     Design.beforeRouteLeave.call(wrapper.vm, undefined, undefined, next);
 
     expect(next).toHaveBeenCalledTimes(1);
@@ -85,29 +60,14 @@ describe('Design.vue', () => {
   });
 
   it('beforeRouteLeave guard works when not dirty', () => {
-    const next = vi.fn();
-    formStore.form = {
-      isDirty: true,
-    };
-    const wrapper = mount(Design, {
-      global: {
-        plugins: [pinia],
-        stubs: {
-          BaseStepper: {
-            name: 'BaseStepper',
-            template: '<div class="base-stepper-stub"><slot name="designForm" /></div>',
-          },
-          FormDesigner: {
-            name: 'FormDesigner',
-            methods: {
-              onFormLoad,
-            },
-            template: '<div class="form-designer-stub"><slot /></div>',
-          },
-        },
-      },
+    mockFormGetter.mockReturnValue({ isDirty: true });
+    const next = jest.fn();
+    const wrapper = shallowMount(Design, {
+      localVue,
+      store,
+      stubs: ['FormDesigner', 'BaseStepper'],
+      i18n
     });
-
     Design.beforeRouteLeave.call(wrapper.vm, undefined, undefined, next);
 
     expect(next).toHaveBeenCalledTimes(1);

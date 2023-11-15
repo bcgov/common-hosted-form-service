@@ -29,9 +29,9 @@
     }
   },
   "frontend": {
-    "adminDashboardUrl": "VITE_ADMIN_DASHBOARD_URL",
+    "adminDashboardUrl": "VUE_APP_ADMIN_DASHBOARD_URL",
     "apiPath": "FRONTEND_APIPATH",
-    "basePath": "VITE_FRONTEND_BASEPATH",
+    "basePath": "VUE_APP_FRONTEND_BASEPATH",
     "keycloak": {
       "clientId": "FRONTEND_KC_CLIENTID",
       "realm": "FRONTEND_KC_REALM",

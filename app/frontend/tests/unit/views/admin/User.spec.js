@@ -1,28 +1,31 @@
-import { createTestingPinia } from '@pinia/testing';
-import { mount } from '@vue/test-utils';
-import { setActivePinia } from 'pinia';
-import { describe, expect, it } from 'vitest';
+import { createLocalVue, shallowMount } from '@vue/test-utils';
+import Vuex from 'vuex';
+import i18n from '@/internationalization';
+import User from '@/views/admin/User.vue';
 
-import User from '~/views/admin/User.vue';
+const localVue = createLocalVue();
+
+localVue.use(Vuex);
 
 describe('User.vue', () => {
-  const pinia = createTestingPinia();
-  setActivePinia(pinia);
+  let store;
 
-  it('renders', () => {
-    const wrapper = mount(User, {
-      props: {
-        u: 'u',
-      },
-      global: {
-        stubs: {
-          AdministerUser: true,
-        },
-        plugins: [pinia],
-      },
+  beforeEach(() => {
+    store = new Vuex.Store();
+  });
+
+  it('renders without error', async () => {
+    store.registerModule('admin', { namespaced: true });
+
+    const wrapper = shallowMount(User, {
+      localVue,
+      propsData: { u: 'u' },
+      store,
+      stubs: ['BaseSecure'],
+      i18n
     });
+    await localVue.nextTick();
 
-    expect(wrapper.text()).toMatch('trans.admin.user.administerUser');
-    expect(wrapper.html()).toMatch('administer-user');
+    expect(wrapper.text()).toMatch('Administer User');
   });
 });

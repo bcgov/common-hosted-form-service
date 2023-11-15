@@ -1,51 +1,25 @@
-<script>
-import { mapState } from 'pinia';
-import BaseImagePopout from '../components/base/BaseImagePopout.vue';
-import { useAuthStore } from '~/store/auth';
-import { useFormStore } from '~/store/form';
-
-export default {
-  components: {
-    BaseImagePopout,
-  },
-  computed: {
-    ...mapState(useAuthStore, ['authenticated']),
-    ...mapState(useFormStore, ['isRTL', 'lang']),
-    howToVideoUrl() {
-      return import.meta.env.VITE_HOWTOURL;
-    },
-    chefsTourVideoUrl() {
-      return import.meta.env.VITE_CHEFSTOURURL;
-    },
-  },
-};
-</script>
-
 <template>
   <div class="about-layout" :class="{ 'dir-rtl': isRTL }">
     <v-sheet class="help-highlight pa-5 text-center">
       <v-row justify="center">
         <v-col lg="8">
-          <h1 class="my-5 d-block" locale="lang">
+          <h1 class="my-5 d-block" :lang="lang">
             {{ $t('trans.homePage.title') }}
           </h1>
-          <p locale="lang">{{ $t('trans.homePage.subTitle') }}<br /></p>
+          <p dir="rtl" :lang="lang">
+            {{ $t('trans.homePage.subTitle') }}<br />
+          </p>
 
-          <v-btn
-            :to="{ name: 'FormCreate' }"
-            class="mb-5"
-            color="primary"
-            data-test="create-or-login-btn"
-          >
-            <span v-if="!authenticated" locale="lang">{{
+          <v-btn :to="{ name: 'FormCreate' }" class="mb-5" color="primary">
+            <span v-if="!authenticated" :lang="lang">{{
               $t('trans.homePage.loginToStart')
             }}</span>
-            <span v-else locale="lang">{{
+            <span v-else :lang="lang">{{
               $t('trans.homePage.createFormLabel')
             }}</span>
           </v-btn>
 
-          <h2 id="video" class="pt-5" locale="lang">
+          <h2 id="video" class="pt-5" :lang="lang">
             {{ $t('trans.homePage.takeATourOfChefs') }}
           </h2>
           <div class="video-wrapper">
@@ -55,6 +29,7 @@ export default {
               :src="chefsTourVideoUrl"
               title="Introduction to the Common Hosted Forms Service (CHEFS)"
               frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowfullscreen
             >
             </iframe>
@@ -148,6 +123,25 @@ export default {
     </v-sheet>
   </div>
 </template>
+
+<script>
+import { mapGetters } from 'vuex';
+
+export default {
+  name: 'About',
+  computed: {
+    ...mapGetters('auth', ['authenticated']),
+    ...mapGetters('form', ['isRTL', 'lang']),
+    howToVideoUrl() {
+      return process.env.VUE_APP_HOWTOURL;
+    },
+    chefsTourVideoUrl() {
+      return process.env.VUE_APP_CHEFSTOURURL;
+    },
+  },
+};
+//
+</script>
 
 <style lang="scss" scoped>
 .about-layout {

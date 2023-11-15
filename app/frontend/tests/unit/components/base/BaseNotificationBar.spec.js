@@ -1,68 +1,84 @@
-import { createTestingPinia } from '@pinia/testing';
-import { mount } from '@vue/test-utils';
-import { describe, expect, it, vi } from 'vitest';
+import { createLocalVue, shallowMount } from '@vue/test-utils';
+import Vuex from 'vuex';
+import i18n from '@/internationalization';
+import BaseNotificationBar from '@/components/base/BaseNotificationBar.vue';
 
-import BaseNotificationBar from '~/components/base/BaseNotificationBar.vue';
-import { useNotificationStore } from '~/store/notification';
-import { NotificationTypes } from '~/utils/constants';
+const localVue = createLocalVue();
+localVue.use(Vuex);
+
 
 describe('BaseNotificationBar.vue', () => {
+  let mockDeleteNotification = jest.fn();
+  let store;
   const notificationProperties = {
-    text: 'Test Notification',
-    ...NotificationTypes.ERROR,
+    type: 'error',
+    class: 'alert-error',
+    color: '#f2dede',
+    icon: 'error',
+    message: 'test',
   };
 
-  it('renders', async () => {
-    const wrapper = mount(BaseNotificationBar, {
-      props: {
+  beforeEach(() => {
+    store = new Vuex.Store({
+      modules: {
+        notifications: {
+          namespaced: true,
+          actions: {
+            deleteNotification: mockDeleteNotification,
+          },
+        },
+      },
+    });
+  });
+
+  afterEach(() => {
+    mockDeleteNotification.mockClear();
+  });
+
+  it('renders', () => {
+    const wrapper = shallowMount(BaseNotificationBar, {
+      localVue,
+      propsData: {
         notification: {
-          id: 1,
           ...notificationProperties,
         },
       },
-      global: {
-        plugins: [createTestingPinia()],
-      },
+      store,
+      i18n
     });
 
     expect(wrapper.html()).toMatch('v-alert');
-    expect(wrapper.text()).toMatch(notificationProperties.text);
+    expect(wrapper.text()).toMatch(notificationProperties.message);
   });
 
-  it('alertClosed behaves correctly', async () => {
-    const wrapper = mount(BaseNotificationBar, {
-      props: {
+  it('alertClosed behaves correctly', () => {
+    const wrapper = shallowMount(BaseNotificationBar, {
+      localVue,
+      propsData: {
         notification: {
-          id: 1,
           ...notificationProperties,
         },
       },
-      global: {
-        plugins: [createTestingPinia()],
-      },
+      store,
+      i18n
     });
-    const store = useNotificationStore();
-    const deleteNotificationSpy = vi.spyOn(store, 'deleteNotification');
-
     wrapper.vm.alertClosed();
-    expect(deleteNotificationSpy).toHaveBeenCalledTimes(1);
+
+    expect(mockDeleteNotification).toHaveBeenCalledTimes(1);
   });
 
-  it('clears timeout before destroy', async () => {
-    const wrapper = mount(BaseNotificationBar, {
-      props: {
+  it('clears timeout before destroy', () => {
+    const wrapper = shallowMount(BaseNotificationBar, {
+      localVue,
+      propsData: {
         notification: {
-          id: 1,
-          timeout: 1,
           ...notificationProperties,
         },
       },
-      global: {
-        plugins: [createTestingPinia()],
-      },
+      store,
+      i18n
     });
-
-    wrapper.unmount();
+    wrapper.destroy();
 
     expect(wrapper.vm.timeout).not.toBeNull();
   });

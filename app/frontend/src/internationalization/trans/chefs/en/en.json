@@ -186,7 +186,9 @@
     "formOwnerKeyAcess": "You must be the <strong>Form Owner</strong> to manage API Keys.",
     "regenerate": "Regenerate",
     "generate": "Generate",
-    "secret": "Secret"
+    "secret": "Secret",
+    "text": "text",
+    "password": "password"
   },
   "manageVersions": {
     "important": "IMPORTANT!",
@@ -391,7 +393,6 @@
     "emailRequired": "Email is required"
   },
   "submissionsTable": {
-    "noMatchingRecordText": "No matching records found",
     "submissions": "Submissions",
     "submissionsTable": "SubmissionsTable",
     "selectColumns": "Select Columns",
@@ -402,6 +403,7 @@
     "search": "Search",
     "loadingText": "Loading... Please wait",
     "noDataText": "There are no submissions for this form",
+    "noMachingRecordText": "No matching records found",
     "delSelectedSubmissions": "Delete selected submissions",
     "resSelectedSubmissions": "Restore selected submissions",
     "yes": "YES",
@@ -481,7 +483,6 @@
     "editThisDraft": "Edit This Draft"
   },
   "mySubmissionsTable": {
-    "noMatchingRecordText": "No matching records found",
     "previousSubmissions": "Previous Submissions",
     "selectColumns": "Select Columns",
     "createNewSubmission": "Create a New Submission",
@@ -510,7 +511,8 @@
     "errSubmittingForm": "An error occurred submitting this form",
     "errorSavingFile": "Error saving files. Filename: {fileName}. Error: {error}",
     "submittingDraftErrMsg": "An error occurred while saving a draft",
-    "submittingDraftConsErrMsg": "Error saving draft. SubmissionId: {submissionId}. Error: {error}"
+    "submittingDraftConsErrMsg": "Error saving draft. SubmissionId: {submissionId}. Error: {error}",
+    "noMachingRecordText": "No matching records found"
   },
   "notesPanel": {
     "addNewNote": "Add New Note",
@@ -628,13 +630,6 @@
     "save": "Save",
     "description": "Description"
   },
-  "user": {
-    "root": {
-      "myForms": "MY FORMS",
-      "history": "HISTORY",
-      "user": "User"
-    }
-  },
   "proactiveHelpPreviewDialog": {
     "learnMore": "Learn more"
   },
@@ -665,7 +660,6 @@
     "updatedBy": "Modified By"
   },
   "teamManagement": {
-    "noMatchingRecordText": "No matching records found",
     "teamManagement": "Team Management",
     "selectColumns": "Select Columns",
     "manageForm": "Manage Form",
@@ -994,8 +988,5 @@
       "history": "HISTORY",
       "user": "User"
     }
-  },
-  "test": {
-    "customError": "This is a custom error message for testing."
   }
 }
