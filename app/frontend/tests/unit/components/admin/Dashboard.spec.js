@@ -1,13 +1,18 @@
-import { shallowMount } from '@vue/test-utils';
-import Dashboard from '@/components/admin/Dashboard.vue';
+import { mount } from '@vue/test-utils';
+import { expect } from 'vitest';
+
+import Dashboard from '~/components/admin/Dashboard.vue';
 
 describe('Dashboard.vue', () => {
-  it('renders', () => {
-    const URL = 'http://somewhere.com';
+  const URL = 'http://somewhere.com';
 
-    const wrapper = shallowMount(Dashboard, {
-      propsData: {
+  it('renders', async () => {
+    const wrapper = mount(Dashboard, {
+      props: {
         url: URL,
+      },
+      global: {
+        plugins: [],
       },
     });
 

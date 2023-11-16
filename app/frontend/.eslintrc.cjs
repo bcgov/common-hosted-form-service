@@ -8,9 +8,11 @@ module.exports = {
     node: true,
   },
   extends: [
-    'plugin:vue/essential',
     'eslint:recommended',
+    'plugin:vue/vue3-recommended',
+    'eslint-config-prettier',
     'plugin:prettier/recommended',
+    'plugin:vuetify/base',
   ],
   plugins: ['vuetify', 'prettier'],
   globals: {
@@ -20,8 +22,7 @@ module.exports = {
   },
   parserOptions: {
     sourceType: 'module',
-    ecmaVersion: 2018,
-    parser: 'babel-eslint',
+    ecmaVersion: 2020,
   },
   rules: {
     'prettier/prettier': 'error',
@@ -58,7 +59,11 @@ module.exports = {
     'vue/no-spaces-around-equal-signs-in-attribute': ['error'],
     'vuetify/no-deprecated-classes': 'error',
     'vuetify/grid-unknown-attributes': 'error',
-    'vuetify/no-legacy-grid': 'error',
+    /* This needs to be removed during testing, we need it in production to ignore the v-data-table
+      but there may be more Vuetify components that are deprecated or in labs */
+    'vuetify/no-deprecated-components': 'off',
+    'vue/v-on-event-hyphenation': 'off',
+    'vue/no-v-html': 'off',
   },
   overrides: [
     {

@@ -44,6 +44,10 @@
     "close": "關閉",
     "copyURLToClipboard": "將 URL 複製到剪貼板"
   },
+  "preview": {
+    "preview": "預覽",
+    "previewToolTip": "這顯示了提交者將看到的表單版本設計和行為的預覽。您無法從此頁面提交表格。"
+  },
   "manageFormActions": {
     "emailManagement": "電子郵件管理",
     "viewSubmissions": "查看提交內容",
@@ -186,9 +190,7 @@
     "formOwnerKeyAcess": "您必須是<strong>表單所有者</strong>才能管理 API 密鑰。",
     "regenerate": "再生",
     "generate": "產生",
-    "secret": "秘密",
-    "text": "文本",
-    "password": "密碼"
+    "secret": "秘密"
   },
   "manageVersions": {
     "important": "重要的！",
@@ -393,7 +395,7 @@
     "emailRequired": "電子郵件為必填項"
   },
   "submissionsTable": {
-    "noMachingRecordText": "未找到匹配的記錄",
+    "noMatchingRecordText": "未找到匹配的記錄",
     "submissions": "意見書",
     "submissionsTable": "提交表",
     "selectColumns": "選擇列",
@@ -483,7 +485,7 @@
     "editThisDraft": "編輯本草稿"
   },
   "mySubmissionsTable": {
-    "noMachingRecordText": "未找到匹配的記錄",
+    "noMatchingRecordText": "未找到匹配的記錄",
     "previousSubmissions": "以前提交的內容",
     "selectColumns": "選擇列",
     "createNewSubmission": "創建新提交",
@@ -660,6 +662,7 @@
     "updatedBy": "修改者"
   },
   "teamManagement": {
+    "noMatchingRecordText": "未找到匹配的記錄",
     "teamManagement": "團隊管理",
     "selectColumns": "選擇列",
     "manageForm": "管理表格",
@@ -783,7 +786,7 @@
     "setUpForm": "設置表格",
     "designForm": "設計形式",
     "manageForm": "管理表格"
-    },
+  },
   "create": {
     "formSettings": "表單設置",
     "disclaimer": "免責聲明",
