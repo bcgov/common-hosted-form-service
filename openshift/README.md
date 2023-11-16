@@ -48,7 +48,7 @@ export STORAGE_BUCKET=<yourstoragebucket>
 
 oc create -n $NAMESPACE configmap $APP_NAME-frontend-config \
   --from-literal=FRONTEND_APIPATH=api/v1 \
-  --from-literal=VITE_FRONTEND_BASEPATH=/app \
+  --from-literal=VUE_APP_FRONTEND_BASEPATH=/app \
   --from-literal=FRONTEND_ENV=dev \
   --from-literal=FRONTEND_KC_REALM=$SSO_REALM \
   --from-literal=FRONTEND_KC_SERVERURL=https://dev.loginproxy.gov.bc.ca/auth

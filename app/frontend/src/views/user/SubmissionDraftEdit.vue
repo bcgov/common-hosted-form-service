@@ -1,20 +1,23 @@
+<template>
+  <UserSubmission
+    :saved="sv"
+    :submissionId="s"
+    :readOnly="false"
+    :draft="true"
+  />
+</template>
+
 <script>
-import UserSubmission from '~/components/forms/submission/UserSubmission.vue';
+import UserSubmission from '@/components/forms/submission/UserSubmission.vue';
 
 export default {
+  name: 'SubmissionDraftEdit',
   components: {
     UserSubmission,
   },
   props: {
-    s: {
-      type: String,
-      required: true,
-    },
+    s: String,
     sv: Boolean,
   },
 };
 </script>
-
-<template>
-  <UserSubmission :saved="sv" :submission-id="s" :read-only="false" />
-</template>

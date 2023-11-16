@@ -31,10 +31,6 @@
     "action": "Aktionen",
     "loadingText": "Laden, bitte warten"
   },
-  "preview": {
-    "preview": "Vorschau",
-    "previewToolTip": "Dies zeigt eine Vorschau des Designs und Verhaltens der Formularversion, wie es Ihren Einsendern angezeigt wird. Sie können das Formular nicht von dieser Seite aus senden."
-  },
   "manageLayout": {
     "manageForm": "Formular verwalten"
   },
@@ -190,7 +186,9 @@
     "formOwnerKeyAcess": "Sie müssen der <strong>Formulareigentümer</strong> sein, um API-Schlüssel verwalten zu können.",
     "regenerate": "Regenerieren",
     "generate": "Generieren",
-    "secret": "Geheimnis"
+    "secret": "Geheimnis",
+    "text": "Text",
+    "password": "Passwort"
   },
   "manageVersions": {
     "important": "WICHTIG!",
@@ -395,7 +393,7 @@
     "emailRequired": "E-Mail ist erforderlich"
   },
   "submissionsTable": {
-    "noMatchingRecordText": "Keine übereinstimmenden Aufzeichnungen gefunden",
+    "noMachingRecordText": "Keine übereinstimmenden Aufzeichnungen gefunden",
     "submissions": "Einsendungen",
     "submissionsTable": "Einreichungstabelle",
     "selectColumns": "Wählen Sie Spalten aus",
@@ -485,7 +483,7 @@
     "editThisDraft": "Bearbeiten Sie diesen Entwurf"
   },
   "mySubmissionsTable": {
-    "noMatchingRecordText": "Keine übereinstimmenden Aufzeichnungen gefunden",
+    "noMachingRecordText": "Keine übereinstimmenden Aufzeichnungen gefunden",
     "previousSubmissions": "Frühere Einsendungen",
     "selectColumns": "Wählen Sie Spalten aus",
     "createNewSubmission": "Erstellen Sie eine neue Einreichung",
@@ -662,7 +660,6 @@
     "updatedBy": "Angepasst von"
   },
   "teamManagement": {
-    "noMatchingRecordText": "Keine übereinstimmenden Aufzeichnungen gefunden",
     "teamManagement": "Team Management",
     "selectColumns": "Wählen Sie Spalten aus",
     "manageForm": "Formular verwalten",

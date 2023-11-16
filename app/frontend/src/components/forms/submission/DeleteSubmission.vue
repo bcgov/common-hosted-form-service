@@ -1,60 +1,17 @@
-<script>
-import { mapActions, mapState } from 'pinia';
-import BaseDialog from '~/components/base/BaseDialog.vue';
-import { useFormStore } from '~/store/form';
-
-export default {
-  components: {
-    BaseDialog,
-  },
-  props: {
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    isDraft: {
-      type: Boolean,
-      default: false,
-    },
-    submissionId: {
-      type: String,
-      required: true,
-    },
-  },
-  emits: ['deleted'],
-  data() {
-    return {
-      showDeleteDialog: false,
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['form', 'lang', 'isRTL']),
-  },
-  methods: {
-    ...mapActions(useFormStore, ['deleteSubmission']),
-    async delSub() {
-      await this.deleteSubmission(this.submissionId);
-      this.showDeleteDialog = false;
-      this.$emit('deleted');
-    },
-  },
-};
-</script>
-
 <template>
   <span :class="{ 'dir-rtl': isRTL }">
-    <v-tooltip location="bottom">
-      <template #activator="{ props }">
+    <v-tooltip bottom>
+      <template #activator="{ on, attrs }">
         <v-btn
-          class="mx-1"
+          @click="showDeleteDialog = true"
           color="red"
           :disabled="disabled"
-          v-bind="props"
-          size="x-small"
-          density="default"
-          icon="mdi:mdi-delete"
-          @click="showDeleteDialog = true"
-        />
+          icon
+          v-bind="attrs"
+          v-on="on"
+        >
+          <v-icon>delete</v-icon>
+        </v-btn>
       </template>
       <span :lang="lang"
         >{{ $t('trans.deleteSubmission.deleteThis') }}
@@ -93,3 +50,38 @@ export default {
     </BaseDialog>
   </span>
 </template>
+
+<script>
+import { mapActions, mapGetters } from 'vuex';
+
+export default {
+  props: {
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+    isDraft: {
+      type: Boolean,
+      default: false,
+    },
+    submissionId: {
+      type: String,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      showDeleteDialog: false,
+    };
+  },
+  computed: mapGetters('form', ['form', 'lang', 'isRTL']),
+  methods: {
+    ...mapActions('form', ['deleteSubmission']),
+    async delSub() {
+      await this.deleteSubmission(this.submissionId);
+      this.showDeleteDialog = false;
+      this.$emit('deleted');
+    },
+  },
+};
+</script>

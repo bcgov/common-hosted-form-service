@@ -1,40 +1,10 @@
-<script>
-import { mapState } from 'pinia';
-
-import FormViewer from '~/components/designer/FormViewer.vue';
-import RequestReceipt from '~/components/forms/RequestReceipt.vue';
-import { useAuthStore } from '~/store/auth';
-import { useFormStore } from '~/store/form';
-
-export default {
-  components: {
-    FormViewer,
-    RequestReceipt,
-  },
-  props: {
-    s: {
-      type: String,
-      required: true,
-    },
-  },
-  computed: {
-    ...mapState(useAuthStore, ['email']),
-    ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
-  },
-};
-</script>
-
 <template>
   <div>
-    <FormViewer :submission-id="s" :read-only="true" display-title>
+    <FormViewer :submissionId="s" :readOnly="true" displayTitle>
       <template #alert="{ form }">
         <div class="mb-5" :class="{ 'dir-rtl': isRTL }">
           <h1 class="mb-5" :lang="lang">
-            <v-icon
-              size="large"
-              color="success"
-              icon="mdi:mdi-check-circle"
-            ></v-icon>
+            <v-icon large color="success">check_circle</v-icon>
             {{ $t('trans.sucess.sucessFormSubmissn') }}
           </h1>
           <div v-if="form.showSubmissionConfirmation">
@@ -50,8 +20,8 @@ export default {
             <RequestReceipt
               class="d-print-none"
               :email="email"
-              :form-name="form.name"
-              :submission-id="s"
+              :formName="form.name"
+              :submissionId="s"
             />
           </div>
           <hr />
@@ -60,3 +30,25 @@ export default {
     </FormViewer>
   </div>
 </template>
+
+<script>
+import { mapGetters } from 'vuex';
+
+import FormViewer from '@/components/designer/FormViewer.vue';
+import RequestReceipt from '@/components/forms/RequestReceipt.vue';
+
+export default {
+  name: 'FormView',
+  props: {
+    s: String,
+  },
+  components: {
+    FormViewer,
+    RequestReceipt,
+  },
+  computed: {
+    ...mapGetters('auth', ['email']),
+    ...mapGetters('form', ['isRTL', 'lang']),
+  },
+};
+</script>

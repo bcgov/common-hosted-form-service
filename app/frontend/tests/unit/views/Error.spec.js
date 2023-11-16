@@ -1,52 +1,39 @@
-import { createTestingPinia } from '@pinia/testing';
-import { mount } from '@vue/test-utils';
-import { setActivePinia } from 'pinia';
-import { beforeEach, describe, expect, it } from 'vitest';
-import { nextTick } from 'vue';
+import { createLocalVue, shallowMount } from '@vue/test-utils';
+import Vuex from 'vuex';
+import i18n from '@/internationalization';
+import Error from '@/views/Error.vue';
 
-import { useAuthStore } from '~/store/auth';
-import Error from '~/views/Error.vue';
+const localVue = createLocalVue();
+
+localVue.use(Vuex);
 
 describe('Error.vue', () => {
-  const pinia = createTestingPinia();
-  setActivePinia(pinia);
-
-  const authStore = useAuthStore(pinia);
+  let store;
 
   beforeEach(() => {
-    authStore.$reset();
+    store = new Vuex.Store();
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => true,
+        keycloakReady: () => true
+      },
+      actions: {
+        logout: () => jest.fn()
+      }
+    });
   });
 
-  it('renders', async () => {
-    const wrapper = mount(Error, {
-      global: {
-        plugins: [pinia],
-        stubs: {
-          RouterLink: true,
-        },
-      },
+  it('renders without error', async () => {
+    const wrapper = shallowMount(Error, {
+      localVue,
+      store,
+      i18n
     });
+    await localVue.nextTick();
 
-    await nextTick();
-
-    expect(wrapper.text()).toMatch('trans.error.somethingWentWrong');
-  });
-
-  it('renders with a custom error message', async () => {
-    const wrapper = mount(Error, {
-      props: {
-        text: 'Custom Error Message',
-      },
-      global: {
-        plugins: [pinia],
-        stubs: {
-          RouterLink: true,
-        },
-      },
-    });
-
-    await nextTick();
-
-    expect(wrapper.text()).toMatch('Custom Error Message');
+    const h1 = wrapper.find('h1');
+    expect(h1.exists()).toBe(true);
+    expect(h1.text()).toMatch('Error: Something went wrong... :(');
   });
 });

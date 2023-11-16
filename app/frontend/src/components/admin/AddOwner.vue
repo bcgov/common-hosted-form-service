@@ -1,12 +1,36 @@
+<template>
+  <v-form ref="addUserForm" v-model="valid">
+    <p :lang="lang">
+      {{ $t('trans.addOwner.infoA') }}
+    </p>
+    <v-row class="mt-4">
+      <v-col cols="9" sm="6" md="6" lg="4">
+        <v-text-field
+          :label="$t('trans.addOwner.label')"
+          v-model="userGuid"
+          :rules="userGuidRules"
+          :hint="$t('trans.addOwner.hint')"
+          persistent-hint
+          :lang="lang"
+        />
+      </v-col>
+      <v-col cols="3" md="2">
+        <v-btn color="primary" @click="addOwner" :disabled="!valid">
+          <span :lang="lang">{{ $t('trans.addOwner.addowner') }}</span>
+        </v-btn>
+      </v-col>
+    </v-row>
+  </v-form>
+</template>
+
 <script>
-import { mapActions, mapState } from 'pinia';
+import { mapActions } from 'vuex';
+
+import { FormRoleCodes } from '@/utils/constants';
 import { version as uuidVersion, validate as uuidValidate } from 'uuid';
 
-import { useAdminStore } from '~/store/admin';
-import { useFormStore } from '~/store/form';
-import { FormRoleCodes } from '~/utils/constants';
-
 export default {
+  name: 'AddOwner',
   props: {
     formId: {
       type: String,
@@ -26,8 +50,8 @@ export default {
     };
   },
   methods: {
-    ...mapActions(useAdminStore, ['addFormUser', 'readRoles']),
-    ...mapState(useFormStore, ['lang']),
+    ...mapActions('admin', ['addFormUser', 'readRoles']),
+    ...mapActions('form', ['lang']),
     async addOwner() {
       if (this.$refs.addUserForm.validate()) {
         await this.addFormUser({
@@ -40,28 +64,3 @@ export default {
   },
 };
 </script>
-
-<template>
-  <v-form ref="addUserForm" v-model="valid">
-    <p :lang="lang">
-      {{ $t('trans.addOwner.infoA') }}
-    </p>
-    <v-row class="mt-4">
-      <v-col cols="9" sm="6" md="6" lg="4">
-        <v-text-field
-          v-model="userGuid"
-          :label="$t('trans.addOwner.label')"
-          :rules="userGuidRules"
-          :hint="$t('trans.addOwner.hint')"
-          persistent-hint
-          :lang="lang"
-        />
-      </v-col>
-      <v-col cols="3" md="2">
-        <v-btn color="primary" :disabled="!valid" @click="addOwner">
-          <span :lang="lang">{{ $t('trans.addOwner.addowner') }}</span>
-        </v-btn>
-      </v-col>
-    </v-row>
-  </v-form>
-</template>

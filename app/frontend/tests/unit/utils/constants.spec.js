@@ -1,5 +1,4 @@
-import { describe, expect, it } from 'vitest';
-import * as constants from '~/utils/constants';
+import * as constants from '@/utils/constants';
 
 describe('Constants', () => {
   it('ApiRoutes has the right values defined', () => {
@@ -72,6 +71,8 @@ describe('Constants', () => {
     expect(constants.IdentityProviders).toEqual({
       BCEIDBASIC: 'bceid-basic',
       BCEIDBUSINESS: 'bceid-business',
+      BCSC: 'bcsc',
+      GITHUB: 'github',
       IDIR: 'idir',
     });
   });
@@ -79,24 +80,24 @@ describe('Constants', () => {
   it('NotificationTypes has the right values defined', () => {
     expect(constants.NotificationTypes).toEqual({
       ERROR: {
-        color: 'error',
         type: 'error',
-        icon: '$error',
+        class: 'alert-error',
+        icon: 'error',
       },
       SUCCESS: {
-        color: 'success',
         type: 'success',
-        icon: 'mdi:mdi-check-circle',
+        class: 'alert-success',
+        icon: 'check_circle',
       },
       INFO: {
-        color: 'info',
         type: 'info',
-        icon: '$info',
+        class: 'alert-info',
+        icon: 'info',
       },
       WARNING: {
-        color: 'warning',
         type: 'warning',
-        icon: '$warning',
+        class: 'alert-warning',
+        icon: 'warning',
       },
     });
   });

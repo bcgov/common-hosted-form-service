@@ -1,21 +1,49 @@
+<template>
+  <span>
+    <v-tooltip bottom>
+      <template #activator="{ on, attrs }">
+        <v-btn
+          color="primary"
+          :disabled="disabled"
+          icon
+          v-clipboard:copy="copyText"
+          v-clipboard:success="clipboardSuccessHandler"
+          v-clipboard:error="clipboardErrorHandler"
+          v-bind="attrs"
+          v-on="on"
+        >
+          <v-icon class="mr-1">file_copy</v-icon>
+          <span v-if="buttonText">{{ buttonText }}</span>
+        </v-btn>
+      </template>
+      <span>{{ tooltipText }}</span>
+    </v-tooltip>
+  </span>
+</template>
+
 <script>
-import { i18n } from '~/internationalization';
-import { useNotificationStore } from '~/store/notification';
-import { NotificationTypes } from '~/utils/constants';
+import { mapActions } from 'vuex';
+import Vue from 'vue';
+import VueClipboard from 'vue-clipboard2';
+import { NotificationTypes } from '@/utils/constants';
+import i18n from '@/internationalization';
+
+VueClipboard.config.autoSetContainer = true;
+Vue.use(VueClipboard);
 
 export default {
+  name: 'BaseCopyToClipboard',
   props: {
     buttonText: {
       type: String,
-      default: '',
     },
     disabled: {
       type: Boolean,
       default: false,
     },
-    textToCopy: {
+    copyText: {
+      required: true,
       type: String,
-      default: undefined,
     },
     snackBarText: {
       type: String,
@@ -26,46 +54,28 @@ export default {
       default: i18n.t('trans.baseCopyToClipboard.copyToClipboard'),
     },
   },
-  emits: ['copied'],
+  data() {
+    return {
+      clipSnackbar: {
+        on: false,
+        color: 'info',
+      },
+    };
+  },
   methods: {
-    onCopy() {
+    ...mapActions('notifications', ['addNotification']),
+    clipboardSuccessHandler() {
       this.$emit('copied');
-      const notificationStore = useNotificationStore();
-      notificationStore.addNotification({
-        text: this.snackBarText,
+      this.addNotification({
+        message: this.snackBarText,
         ...NotificationTypes.INFO,
       });
     },
-    onError(e) {
-      const notificationStore = useNotificationStore();
-      notificationStore.addNotification({
-        text: i18n.t('trans.baseCopyToClipboard.errCopyToClipboard'),
-        consoleError: e,
+    clipboardErrorHandler() {
+      this.addNotification({
+        message: this.$t('trans.baseCopyToClipboard.errCopyToClipboard'),
       });
     },
   },
 };
 </script>
-
-<template>
-  <span>
-    <v-tooltip location="bottom">
-      <template #activator="{ props }">
-        <v-btn
-          v-clipboard:copy="textToCopy"
-          v-clipboard:success="onCopy"
-          v-clipboard:error="onError"
-          color="primary"
-          :disabled="disabled"
-          icon
-          v-bind="props"
-          size="x-small"
-        >
-          <v-icon icon="mdi:mdi-content-copy"></v-icon>
-          <span v-if="buttonText">{{ buttonText }}</span>
-        </v-btn>
-      </template>
-      <span>{{ tooltipText }}</span>
-    </v-tooltip>
-  </span>
-</template>

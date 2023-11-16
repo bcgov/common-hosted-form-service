@@ -1,26 +1,19 @@
-import { mount } from '@vue/test-utils';
-import { describe, expect, it } from 'vitest';
+import { createLocalVue, shallowMount } from '@vue/test-utils';
+import i18n from '@/internationalization';
+import View from '@/views/form/View.vue';
 
-import View from '~/views/form/View.vue';
+const localVue = createLocalVue();
+
+const $t = () => {}
 
 describe('View.vue', () => {
   it('renders', () => {
-    const wrapper = mount(View, {
-      props: {
-        s: 's',
-      },
-      global: {
-        stubs: {
-          BaseSecure: {
-            name: 'BaseSecure',
-            template: '<div class="base-secure-stub"><slot /></div>',
-          },
-          FormSubmission: true,
-        },
-      },
+    const wrapper = shallowMount(View, {
+      localVue,
+      stubs: ['BaseSecure', 'FormViewer'],
+      i18n
     });
 
-    expect(wrapper.html()).toMatch('base-secure');
-    expect(wrapper.html()).toMatch('form-submission');
+    expect(wrapper.html()).toMatch('formsubmission-stub');
   });
 });

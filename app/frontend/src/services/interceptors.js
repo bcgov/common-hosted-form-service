@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { useAuthStore } from '~/store/auth';
-import { useAppStore } from '~/store/app';
+import Vue from 'vue';
 
 /**
  * @function appAxios
@@ -9,20 +8,22 @@ import { useAppStore } from '~/store/app';
  * @returns {object} An axios instance
  */
 export function appAxios(timeout = 10000) {
-  const appStore = useAppStore();
   const axiosOptions = { timeout: timeout };
-  if (appStore.config) {
-    axiosOptions.baseURL = `${appStore.config.basePath}/${appStore.config.apiPath}`;
+  if (Vue.prototype.$config) {
+    const config = Vue.prototype.$config;
+    axiosOptions.baseURL = `${config.basePath}/${config.apiPath}`;
   }
 
   const instance = axios.create(axiosOptions);
 
-  const authStore = useAuthStore();
-
   instance.interceptors.request.use(
     (cfg) => {
-      if (authStore?.ready && authStore?.authenticated) {
-        cfg.headers.Authorization = `Bearer ${authStore.token}`;
+      if (
+        Vue.prototype.$keycloak &&
+        Vue.prototype.$keycloak.ready &&
+        Vue.prototype.$keycloak.authenticated
+      ) {
+        cfg.headers.Authorization = `Bearer ${Vue.prototype.$keycloak.token}`;
       }
       return Promise.resolve(cfg);
     },

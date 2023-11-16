@@ -1,14 +1,50 @@
+<template>
+  <BaseStepper :step="2">
+    <template #designForm>
+      <FormDesigner
+        class="mt-6"
+        :draftId="d"
+        :formId="f"
+        :saved="JSON.parse(sv)"
+        :versionId="v"
+        ref="formDesigner"
+        :isSavedStatus="svs"
+        :newVersion="JSON.parse(nv)"
+      />
+    </template>
+  </BaseStepper>
+</template>
+
 <script>
-import { mapActions, mapState } from 'pinia';
-import { nextTick } from 'vue';
-import BaseStepper from '~/components/base/BaseStepper.vue';
-import FormDesigner from '~/components/designer/FormDesigner.vue';
-import { useFormStore } from '~/store/form';
+import { mapActions, mapGetters } from 'vuex';
+import FormDesigner from '@/components/designer/FormDesigner.vue';
 
 export default {
+  name: 'FormDesign',
   components: {
-    BaseStepper,
     FormDesigner,
+  },
+  props: {
+    d: String,
+    f: String,
+    sv: Boolean,
+    v: String,
+    svs: String,
+    nv: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.$refs.formDesigner.onFormLoad();
+    });
+  },
+  computed: {
+    ...mapGetters('form', ['form']),
+  },
+  methods: {
+    ...mapActions('form', ['listFCProactiveHelp', 'deleteCurrentForm']),
   },
   beforeRouteLeave(_to, _from, next) {
     this.form.isDirty
@@ -19,61 +55,8 @@ export default {
         )
       : next();
   },
-  props: {
-    d: {
-      type: String,
-      default: null,
-    },
-    f: {
-      type: String,
-      default: null,
-    },
-    sv: Boolean,
-    v: {
-      type: String,
-      default: null,
-    },
-    svs: {
-      type: String,
-      default: null,
-    },
-    nv: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  computed: {
-    ...mapState(useFormStore, ['form']),
-  },
-  async mounted() {
-    await this.listFCProactiveHelp();
-    nextTick(() => {
-      this.onFormLoad();
-    });
-  },
-  methods: {
-    ...mapActions(useFormStore, ['listFCProactiveHelp', 'deleteCurrentForm']),
-    onFormLoad() {
-      if (this.$refs?.formDesigner) this.$refs.formDesigner.onFormLoad();
-    },
+  beforeMount() {
+    this.listFCProactiveHelp();
   },
 };
 </script>
-
-<template>
-  <BaseStepper :step="2">
-    <template #designForm>
-      <v-btn color="primary" size="x-small" icon="mdi:mdi-help" />
-      <FormDesigner
-        ref="formDesigner"
-        class="mt-6"
-        :draft-id="d"
-        :form-id="f"
-        :saved="JSON.parse(sv)"
-        :version-id="v"
-        :is-saved-status="svs"
-        :new-version="nv"
-      />
-    </template>
-  </BaseStepper>
-</template>

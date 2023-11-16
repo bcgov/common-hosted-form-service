@@ -1,188 +1,147 @@
-// @vitest-environment happy-dom
-// happy-dom is required to access window.location
+import { createLocalVue, shallowMount } from '@vue/test-utils';
+import Vuex from 'vuex';
+import i18n from '@/internationalization';
+import BaseSecure from '@/components/base/BaseSecure.vue';
 
-import { mount } from '@vue/test-utils';
-import { setActivePinia, createPinia } from 'pinia';
-import { createRouter, createWebHistory } from 'vue-router';
-import { expect, vi } from 'vitest';
-
-import getRouter from '~/router';
-import BaseSecure from '~/components/base/BaseSecure.vue';
-import { useAuthStore } from '~/store/auth';
+const localVue = createLocalVue();
+localVue.use(Vuex);
 
 describe('BaseSecure.vue', () => {
-  const pinia = createPinia();
-  const router = createRouter({
-    history: createWebHistory(),
-    routes: getRouter().getRoutes(),
+  let store;
+
+  beforeEach(() => {
+    store = new Vuex.Store();
   });
 
-  setActivePinia(pinia);
-  const authStore = useAuthStore();
-
   it('renders nothing if authenticated, user', () => {
-    authStore.authenticated = true;
-    authStore.ready = true;
-    authStore.keycloak = {
-      tokenParsed: {
-        resource_access: {
-          chefs: {
-            roles: ['user'],
-          },
-        },
-      },
-    };
-    const wrapper = mount(BaseSecure, {
-      global: {
-        plugins: [router, pinia],
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => true,
+        isUser: () => true,
+        keycloakReady: () => true,
       },
     });
 
-    expect(wrapper.text()).toEqual('');
+    const wrapper = shallowMount(BaseSecure, { localVue, store, i18n });
+
+    expect(wrapper.text()).toMatch('');
   });
 
   it('renders a message if authenticated, not user', () => {
-    authStore.authenticated = true;
-    authStore.ready = true;
-    authStore.keycloak = {
-      tokenParsed: {
-        resource_access: {
-          chefs: {
-            roles: [],
-          },
-        },
-      },
-    };
-    const wrapper = mount(BaseSecure, {
-      global: {
-        plugins: [router, pinia],
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => true,
+        isUser: () => false,
+        keycloakReady: () => true
       },
     });
 
-    expect(wrapper.text()).toContain('trans.baseSecure.401UnAuthorized');
+    const wrapper = shallowMount(BaseSecure, {
+      localVue,
+      store,
+      stubs: ['router-link'],
+      i18n
+    });
+
+    expect(wrapper.text()).toMatch('Unauthorized');
   });
 
   it('renders a message if admin required, not admin', () => {
-    authStore.authenticated = true;
-    authStore.ready = true;
-    authStore.keycloak = {
-      tokenParsed: {
-        resource_access: {
-          chefs: {
-            roles: ['user'],
-          },
-        },
-      },
-    };
-    const wrapper = mount(BaseSecure, {
-      props: {
-        admin: true,
-      },
-      global: {
-        plugins: [router, pinia],
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => true,
+        isAdmin: () => false,
+        isUser: () => true,
+        keycloakReady: () => true
       },
     });
 
-    expect(wrapper.text()).toContain('trans.baseSecure.401UnAuthorizedErrMsg');
+    const wrapper = shallowMount(BaseSecure, {
+      localVue,
+      store,
+      stubs: ['router-link'],
+      propsData: {
+        admin: true
+      },
+      i18n
+    });
+
+    expect(wrapper.text()).toMatch('You do not have permission');
   });
 
   it('renders nothing if admin required, user is admin', () => {
-    authStore.authenticated = true;
-    authStore.ready = true;
-    authStore.keycloak = {
-      tokenParsed: {
-        resource_access: {
-          chefs: {
-            roles: ['user'],
-          },
-        },
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => true,
+        isAdmin: () => false,
+        isUser: () => true,
+        keycloakReady: () => true
       },
-    };
-    const wrapper = mount(BaseSecure, {
-      props: {
-        admin: true,
+    });
+
+    const wrapper = shallowMount(BaseSecure, {
+      localVue,
+      store,
+      stubs: ['router-link'],
+      propsData: {
+        admin: true
       },
-      global: {
-        plugins: [router, pinia],
-      },
+      i18n
     });
 
     expect(wrapper.text()).toMatch('');
   });
 
   it('renders a message with login button if unauthenticated', () => {
-    authStore.authenticated = false;
-    authStore.ready = true;
-    authStore.keycloak = {};
-    const wrapper = mount(BaseSecure, {
-      props: {
-        admin: true,
-      },
-      global: {
-        plugins: [router, pinia],
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => false,
+        keycloakReady: () => true,
       },
     });
 
-    expect(wrapper.text()).toMatch('trans.baseSecure.loginInfo');
+    const wrapper = shallowMount(BaseSecure, { localVue, store, i18n });
+
+    expect(wrapper.text()).toMatch('You must be logged in to use this feature.');
   });
 
   it('renders a message without login button if unauthenticated', () => {
-    authStore.authenticated = false;
-    authStore.ready = false;
-    authStore.keycloak = {};
-    const wrapper = mount(BaseSecure, {
-      props: {
-        admin: true,
-      },
-      global: {
-        plugins: [router, pinia],
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => false,
+        keycloakReady: () => false,
       },
     });
 
-    expect(wrapper.text()).toMatch('trans.baseSecure.loginInfo');
+    const wrapper = shallowMount(BaseSecure, { localVue, store, i18n});
+
+    expect(wrapper.text()).toMatch('You must be logged in to use this feature.');
   });
 
-  it('login button redirects to login url', async () => {
-    authStore.authenticated = false;
-    authStore.ready = true;
-    authStore.keycloak = {};
-    const loginSpy = vi.spyOn(authStore, 'login');
-    const wrapper = mount(BaseSecure, {
-      props: {
-        admin: true,
+  it('login button redirects to login url', () => {
+    const mockLogin = jest.fn();
+    store.registerModule('auth', {
+      namespaced: true,
+      getters: {
+        authenticated: () => false,
+        keycloakReady: () => true,
       },
-      global: {
-        plugins: [router, pinia],
-      },
-    });
-
-    const loginBtn = wrapper.find('[data-test="login-btn"]');
-    await loginBtn.trigger('click');
-    expect(loginSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it('renders a message with 403 if identity provider does not exist', () => {
-    authStore.authenticated = true;
-    authStore.ready = true;
-    authStore.keycloak = {
-      tokenParsed: {
-        resource_access: {
-          chefs: {
-            roles: ['user'],
-          },
-        },
-      },
-    };
-    const wrapper = mount(BaseSecure, {
-      props: {
-        admin: false,
-        idp: ['IDIR'],
-      },
-      global: {
-        plugins: [router, pinia],
+      actions: {
+        login: mockLogin,
       },
     });
 
-    expect(wrapper.text()).toMatch('trans.baseSecure.403Forbidden');
+    const wrapper = shallowMount(BaseSecure, { localVue, store, i18n });
+    wrapper.vm.login();
+
+    expect(wrapper.text()).toMatch('Login');
+    expect(mockLogin).toHaveBeenCalledTimes(1);
+    expect(mockLogin).toHaveBeenCalledWith(expect.any(Object), undefined);
   });
 });

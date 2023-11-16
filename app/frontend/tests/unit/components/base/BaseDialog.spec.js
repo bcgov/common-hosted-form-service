@@ -1,148 +1,80 @@
-import { mount } from '@vue/test-utils';
-import { describe, it } from 'vitest';
-import { nextTick } from 'vue';
-import { createTestingPinia } from '@pinia/testing';
+import { shallowMount, createLocalVue } from '@vue/test-utils';
+import Vuetify from 'vuetify';
+import i18n from '@/internationalization';
+import BaseDialog from '@/components/base/BaseDialog.vue';
+import Vuex from 'vuex';
 
-import BaseDialog from '~/components/base/BaseDialog.vue';
+const localVue = createLocalVue();
+localVue.use(Vuetify);
+localVue.use(Vuex);
 
 describe('BaseDialog.vue', () => {
-  it('renders with ok button', async () => {
-    const wrapper = mount(BaseDialog, {
-      props: {
-        modelValue: true,
-        type: 'OK',
-      },
-      global: {
-        plugins: [createTestingPinia()],
-        stubs: {
-          VDialog: {
-            name: 'VDialog',
-            template: '<div class="v-dialog-stub"><slot /></div>',
-            props: ['modelValue'],
+
+  const mockisRTLGetter = jest.fn();
+  let store;
+  beforeEach(() => {
+
+    store = new Vuex.Store({
+      modules: {
+        form: {
+          namespaced: true,
+          getters: {
+            isRTL: mockisRTLGetter,
           },
         },
       },
     });
-    await wrapper.vm.closeDialog();
-    await nextTick();
+  });
 
-    expect(wrapper.text()).toContain('trans.baseDialog.ok');
+  it('renders with ok button', async () => {
+    const wrapper = shallowMount(BaseDialog, {
+      localVue,
+      propsData: { show: true, type: 'OK' },
+      i18n,
+      store
+    });
+    await wrapper.vm.closeDialog();
+    await localVue.nextTick();
+
+    expect(wrapper.text()).toMatch('OK');
   });
 
   it('renders with continue button', async () => {
-    const wrapper = mount(BaseDialog, {
-      props: {
-        modelValue: true,
-        type: 'CONTINUE',
-      },
-      global: {
-        plugins: [createTestingPinia()],
-        stubs: {
-          VDialog: {
-            name: 'VDialog',
-            template: '<div class="v-dialog-stub"><slot /></div>',
-            props: ['modelValue'],
-          },
-        },
-      },
+    const wrapper = shallowMount(BaseDialog, {
+      localVue,
+      propsData: { show: true, type: 'CONTINUE' },
+      i18n,
+      store
     });
+    await wrapper.vm.continueDialog();
+    await localVue.nextTick();
 
-    expect(wrapper.text()).toContain('trans.baseDialog.continue');
-    const continueBtn = wrapper.find('[data-test="continue-btn-continue"]');
-    expect(continueBtn.exists()).toBeTruthy();
-    await continueBtn.trigger('click');
-    expect(wrapper.emitted()).toHaveProperty('continue-dialog');
+    expect(wrapper.text()).toMatch('Continue');
   });
 
   it('renders with the close button', async () => {
-    const wrapper = mount(BaseDialog, {
-      props: {
-        modelValue: true,
-        showCloseButton: true,
-      },
-      global: {
-        plugins: [createTestingPinia()],
-        stubs: {
-          VDialog: {
-            name: 'VDialog',
-            template: '<div class="v-dialog-stub"><slot /></div>',
-            props: ['modelValue'],
-          },
-        },
-      },
+    const wrapper = shallowMount(BaseDialog, {
+      localVue,
+      propsData: { show: true, showCloseButton: true },
+      i18n,
+      store
     });
+    await wrapper.vm.closeDialog();
+    await localVue.nextTick();
 
-    expect(wrapper.find('i.mdi-close.v-icon').exists()).toBeTruthy();
+    expect(wrapper.text()).toMatch('close');
   });
 
   it('renders without the close button', async () => {
-    const wrapper = mount(BaseDialog, {
-      props: {
-        modelValue: true,
-      },
-      global: {
-        plugins: [createTestingPinia()],
-        stubs: {
-          VDialog: {
-            name: 'VDialog',
-            template: '<div class="v-dialog-stub"><slot /></div>',
-            props: ['modelValue'],
-          },
-        },
-      },
+    const wrapper = shallowMount(BaseDialog, {
+      localVue,
+      propsData: { show: true },
+      i18n,
+      store
     });
+    await wrapper.vm.closeDialog();
+    await localVue.nextTick();
 
-    expect(wrapper.find('i.mdi-close.v-icon').exists()).toBeFalsy();
-  });
-
-  it('renders SAVEDDELETE with delete button', async () => {
-    const wrapper = mount(BaseDialog, {
-      props: {
-        modelValue: true,
-        type: 'SAVEDDELETE',
-      },
-      global: {
-        plugins: [createTestingPinia()],
-        stubs: {
-          VDialog: {
-            name: 'VDialog',
-            template: '<div class="v-dialog-stub"><slot /></div>',
-            props: ['modelValue'],
-          },
-        },
-      },
-    });
-
-    expect(wrapper.text()).toContain('trans.baseDialog.continue');
-    const deleteBtn = wrapper.find('[data-test="saveddelete-btn-cancel"]');
-    expect(deleteBtn.exists()).toBeTruthy();
-    await deleteBtn.trigger('click');
-    expect(wrapper.emitted()).toHaveProperty('delete-dialog');
-  });
-
-  it('renders CUSTOM with custom button', async () => {
-    const wrapper = mount(BaseDialog, {
-      props: {
-        modelValue: true,
-        type: 'CUSTOM',
-        enableCustomButton: true,
-      },
-      global: {
-        plugins: [createTestingPinia()],
-        stubs: {
-          VDialog: {
-            name: 'VDialog',
-            template: '<div class="v-dialog-stub"><slot /></div>',
-            props: ['modelValue'],
-          },
-        },
-      },
-    });
-
-    expect(wrapper.text()).toContain('trans.baseDialog.continue');
-    const customBtn = wrapper.find('[data-test="custom-btn-custom"]');
-    expect(customBtn.exists()).toBeTruthy();
-    await customBtn.trigger('click');
-    expect(wrapper.emitted()).toHaveProperty('custom-dialog');
+    expect(wrapper.text()).not.toMatch('close');
   });
 });

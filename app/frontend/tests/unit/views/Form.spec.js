@@ -1,16 +1,16 @@
-import { mount } from '@vue/test-utils';
-import { describe, expect, it } from 'vitest';
+import { createLocalVue, shallowMount } from '@vue/test-utils';
+import i18n from '@/internationalization';
+import Form from '@/views/Form.vue';
 
-import Form from '~/views/Form.vue';
+const localVue = createLocalVue();
+
 
 describe('Form.vue', () => {
   it('renders', () => {
-    const wrapper = mount(Form, {
-      global: {
-        stubs: {
-          RouterView: true,
-        },
-      },
+    const wrapper = shallowMount(Form, {
+      localVue,
+      stubs: ['router-view'],
+      i18n
     });
 
     expect(wrapper.html()).toMatch('router-view');
