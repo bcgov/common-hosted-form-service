@@ -873,12 +873,7 @@ export default {
           await new Promise((resolve) => setTimeout(resolve, 500));
         }
         if (this.confirmSubmit) {
-          // Weird form.io issue where it's calling this multiple times
-          // with an empty submission.
-          if (_.isEqual(this.submission.data, submission.data)) {
-            // Only execute the next step if the submission is the same
-            next();
-          }
+          next();
         } else {
           // Force re-render form.io to reset submit button state
           this.reRenderFormIo += 1;
@@ -901,7 +896,6 @@ export default {
       // if we are here, the submission has been saved to our db
       // the passed in submission is the formio submission, not our db persisted submission record...
       // fire off the submitDone event.
-      // console.info(`onSubmit(${JSON.stringify(submission)})`) ; // eslint-disable-line no-console
       if (errors) {
         this.addNotification({
           text: errors,
@@ -915,7 +909,6 @@ export default {
     },
     // Not a formIO event, our saving routine to POST the submission to our API
     async doSubmit(sub) {
-      // console.info(`doSubmit(${JSON.stringify(submission)})`) ; // eslint-disable-line no-console
       // since we are not using formio api
       // we should do the actual submit here, and return any error that occurrs to handle in the submit event
       let errMsg = undefined;

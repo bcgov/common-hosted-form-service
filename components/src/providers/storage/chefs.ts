@@ -1,7 +1,7 @@
 /* tslint:disable */
 import NativePromise from 'native-promise-only';
 
-const chefs = (formio) => {
+const chefs = function Provider(formio) {
   const addHeaders = (xhr, options) => {
     if (options) {
       if (options.headers) {
