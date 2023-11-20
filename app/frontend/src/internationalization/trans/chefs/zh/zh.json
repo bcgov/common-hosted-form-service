@@ -34,6 +34,10 @@
   "manageLayout": {
     "manageForm": "管理表格"
   },
+  "preview": {
+    "preview": "预览",
+    "previewToolTip": "这显示了提交者将看到的表单版本设计和行为的预览。您无法从此页面提交表格。"
+  },
   "shareForm": {
     "shareForm": "分享表格",
     "shareLink": "分享链接",
@@ -186,9 +190,7 @@
     "formOwnerKeyAcess": "您必须是<strong>表单所有者</strong>才能管理 API 密钥。",
     "regenerate": "再生",
     "generate": "产生",
-    "secret": "秘密",
-    "text": "文本",
-    "password": "密码"
+    "secret": "秘密"
   },
   "manageVersions": {
     "important": "重要的！",
@@ -393,7 +395,7 @@
     "emailRequired": "电子邮件为必填项"
   },
   "submissionsTable": {
-    "noMachingRecordText": "未找到匹配的记录",
+    "noMatchingRecordText": "未找到匹配的记录",
     "submissions": "意见书",
     "submissionsTable": "提交表",
     "selectColumns": "选择列",
@@ -483,7 +485,7 @@
     "editThisDraft": "编辑本草稿"
   },
   "mySubmissionsTable": {
-    "noMachingRecordText": "未找到匹配的记录",
+    "noMatchingRecordText": "未找到匹配的记录",
     "previousSubmissions": "以前提交的内容",
     "selectColumns": "选择列",
     "createNewSubmission": "创建新提交",
@@ -660,6 +662,7 @@
     "updatedBy": "修改者"
   },
   "teamManagement": {
+    "noMatchingRecordText": "未找到匹配的记录",
     "teamManagement": "团队管理",
     "selectColumns": "选择列",
     "manageForm": "管理表格",
@@ -783,7 +786,7 @@
     "setUpForm": "设置表格",
     "designForm": "设计形式",
     "manageForm": "管理表格"
-    },
+  },
   "create": {
     "formSettings": "表单设置",
     "disclaimer": "免责声明",

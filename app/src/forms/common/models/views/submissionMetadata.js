@@ -62,12 +62,10 @@ class SubmissionMetadata extends Model {
         if (!pagination) {
           builder.orderBy('createdAt', 'DESC');
         } else {
-          let orderBy = params?.sortBy;
-          let orderDesc = params?.sortDesc;
-          if (orderDesc === 'true') {
-            builder.orderBy(orderBy, 'desc');
-          } else if (orderDesc === 'false') {
-            builder.orderBy(orderBy, 'asc');
+          let orderBy = params?.sortBy.column;
+          let orderDirection = params?.sortBy.order;
+          if (orderBy && orderDirection) {
+            builder.orderBy(orderBy, orderDirection);
           }
         }
       },
