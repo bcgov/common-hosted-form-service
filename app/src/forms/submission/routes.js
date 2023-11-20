@@ -16,7 +16,7 @@ routes.put('/:formSubmissionId', hasSubmissionPermissions(P.SUBMISSION_UPDATE), 
   await controller.update(req, res, next);
 });
 
-routes.delete('/:formSubmissionId', hasSubmissionPermissions(P.SUBMISSION_DELETE), async (req, res, next) => {
+routes.delete('/:formSubmissionId', rateLimiter, apiAccess, hasSubmissionPermissions(P.SUBMISSION_DELETE), async (req, res, next) => {
   await controller.delete(req, res, next);
 });
 
