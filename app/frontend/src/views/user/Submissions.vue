@@ -1,22 +1,27 @@
-<template>
-  <div>
-    <MySubmissionsTable :formId="f" />
-  </div>
-</template>
-
 <script>
-import MySubmissionsTable from '@/components/forms/submission/MySubmissionsTable.vue';
+import BaseSecure from '~/components/base/BaseSecure.vue';
+import MySubmissionsTable from '~/components/forms/submission/MySubmissionsTable.vue';
+import { IdentityProviders } from '~/utils/constants';
 
 export default {
-  name: 'Submissions',
+  components: {
+    BaseSecure,
+    MySubmissionsTable,
+  },
   props: {
     f: {
       type: String,
       required: true,
     },
   },
-  components: {
-    MySubmissionsTable,
+  computed: {
+    IDP: () => IdentityProviders,
   },
 };
 </script>
+
+<template>
+  <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBUSINESS]">
+    <MySubmissionsTable :form-id="f" />
+  </BaseSecure>
+</template>

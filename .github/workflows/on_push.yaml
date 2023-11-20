@@ -29,7 +29,7 @@ jobs:
           image_name: ${{ vars.APP_NAME }}
           github_username: ${{ github.repository_owner }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          app_contact: ${{ secrets.VUE_APP_CONTACT }}
+          app_contact: ${{ secrets.VITE_CONTACT }}
 
   deploy-dev:
     name: Deploy to Dev

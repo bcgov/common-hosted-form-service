@@ -1,13 +1,9 @@
 <template>
   <v-container>
-    <transition name="component-fade" mode="out-in">
-      <router-view />
-    </transition>
+    <router-view v-slot="{ Component }">
+      <transition name="component-fade" mode="out-in">
+        <component :is="Component"></component>
+      </transition>
+    </router-view>
   </v-container>
 </template>
-
-<script>
-export default {
-  name: 'Form',
-};
-</script>

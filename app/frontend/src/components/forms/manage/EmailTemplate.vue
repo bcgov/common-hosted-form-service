@@ -1,54 +1,8 @@
-<template>
-  <v-container>
-    <h1 :lang="lang">{{ this.title }}</h1>
-    <v-form ref="emailTemplateForm" lazy-validation>
-      <v-text-field
-        dense
-        flat
-        outlined
-        solid
-        :label="$t('trans.emailTemplate.subject')"
-        :lang="lang"
-        :rules="subjectRules"
-        @input="formChanged = true"
-        v-model="emailTemplate.subject"
-      />
-      <v-text-field
-        dense
-        flat
-        outlined
-        solid
-        :label="$t('trans.emailTemplate.title')"
-        :lang="lang"
-        :rules="titleRules"
-        @input="formChanged = true"
-        v-model="emailTemplate.title"
-      />
-      <v-textarea
-        dense
-        flat
-        outlined
-        solid
-        :label="$t('trans.emailTemplate.body')"
-        :lang="lang"
-        :rules="bodyRules"
-        @input="formChanged = true"
-        v-model="emailTemplate.body"
-      />
-      <v-btn
-        class="mr-5"
-        color="primary"
-        :disabled="!formChanged"
-        @click="saveEmailTemplate"
-      >
-        <span :lang="lang">{{ $t('trans.emailTemplate.save') }}</span>
-      </v-btn>
-    </v-form>
-  </v-container>
-</template>
-
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapState } from 'pinia';
+import { i18n } from '~/internationalization';
+import { useFormStore } from '~/store/form';
+import { useNotificationStore } from '~/store/notification';
 
 export default {
   name: 'EmailTemplate',
@@ -72,19 +26,19 @@ export default {
 
       // Validation rules.
       bodyRules: [
-        (v) => !!v || this.$t('trans.emailTemplate.validBodyRequired'),
+        (v) => !!v || i18n.t('trans.emailTemplate.validBodyRequired'),
       ],
       subjectRules: [
-        (v) => !!v || this.$t('trans.emailTemplate.validSubjectRequired'),
+        (v) => !!v || i18n.t('trans.emailTemplate.validSubjectRequired'),
       ],
       titleRules: [
-        (v) => !!v || this.$t('trans.emailTemplate.validTitleRequired'),
+        (v) => !!v || i18n.t('trans.emailTemplate.validTitleRequired'),
       ],
     };
   },
 
   computed: {
-    ...mapGetters('form', ['emailTemplates', 'lang']),
+    ...mapState(useFormStore, ['emailTemplates', 'lang']),
 
     emailTemplate() {
       return this.emailTemplates.find((t) => t.type === this.type);
@@ -92,8 +46,8 @@ export default {
   },
 
   methods: {
-    ...mapActions('form', ['updateEmailTemplate']),
-    ...mapActions('notifications', ['addNotification']),
+    ...mapActions(useFormStore, ['updateEmailTemplate']),
+    ...mapActions(useNotificationStore, ['addNotification']),
 
     async saveEmailTemplate() {
       try {
@@ -104,8 +58,8 @@ export default {
         this.formChanged = false;
       } catch (error) {
         this.addNotification({
-          message: this.$t('trans.emailTemplate.saveEmailTemplateErrMsg'),
-          consoleError: this.$t(
+          message: i18n.t('trans.emailTemplate.saveEmailTemplateErrMsg'),
+          consoleError: i18n.t(
             'trans.emailTemplate.saveEmailTemplateConsoleErrMsg',
             {
               formId: this.emailTemplate.formId,
@@ -118,3 +72,55 @@ export default {
   },
 };
 </script>
+
+<template>
+  <v-container>
+    <h1 :lang="lang">{{ title }}</h1>
+    <v-form ref="emailTemplateForm" lazy-validation>
+      <v-text-field
+        v-if="emailTemplates.length > 0"
+        v-model="emailTemplate.subject"
+        density="compact"
+        flat
+        variant="outlined"
+        solid
+        :label="$t('trans.emailTemplate.subject')"
+        :lang="lang"
+        :rules="subjectRules"
+        @update:model-value="formChanged = true"
+      />
+      <v-text-field
+        v-if="emailTemplates.length > 0"
+        v-model="emailTemplate.title"
+        density="compact"
+        flat
+        variant="outlined"
+        solid
+        :label="$t('trans.emailTemplate.title')"
+        :lang="lang"
+        :rules="titleRules"
+        @update:model-value="formChanged = true"
+      />
+      <v-textarea
+        v-if="emailTemplates.length > 0"
+        v-model="emailTemplate.body"
+        density="compact"
+        flat
+        variant="outlined"
+        solid
+        :label="$t('trans.emailTemplate.body')"
+        :lang="lang"
+        :rules="bodyRules"
+        @update:model-value="formChanged = true"
+      />
+      <v-btn
+        class="mr-5"
+        color="primary"
+        :disabled="!formChanged"
+        @click="saveEmailTemplate"
+      >
+        <span :lang="lang">{{ $t('trans.emailTemplate.save') }}</span>
+      </v-btn>
+    </v-form>
+  </v-container>
+</template>

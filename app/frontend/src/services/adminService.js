@@ -1,6 +1,5 @@
-import { appAxios } from '@/services/interceptors';
-import { ApiRoutes } from '@/utils/constants';
-//import axios from 'axios';
+import { appAxios } from '~/services/interceptors';
+import { ApiRoutes } from '~/utils/constants';
 
 export default {
   //

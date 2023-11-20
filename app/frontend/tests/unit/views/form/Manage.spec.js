@@ -1,18 +1,26 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import i18n from '@/internationalization';
-import Manage from '@/views/form/Manage.vue';
+import { mount } from '@vue/test-utils';
+import { describe, expect, it } from 'vitest';
 
-const localVue = createLocalVue();
+import Manage from '~/views/form/Manage.vue';
 
 describe('Manage.vue', () => {
   it('renders', () => {
-    const wrapper = shallowMount(Manage, {
-      localVue,
-      propsData: { f: 'f' },
-      stubs: ['BaseSecure', 'ManageLayout'],
-      i18n
+    const wrapper = mount(Manage, {
+      props: {
+        f: 'f',
+      },
+      global: {
+        stubs: {
+          BaseSecure: {
+            name: 'BaseSecure',
+            template: '<div class="base-secure-stub"><slot /></div>',
+          },
+          ManageLayout: true,
+        },
+      },
     });
 
-    expect(wrapper.html()).toMatch('basesecure');
+    expect(wrapper.html()).toMatch('base-secure');
+    expect(wrapper.html()).toMatch('manage-layout');
   });
 });
