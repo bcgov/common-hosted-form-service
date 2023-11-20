@@ -17,7 +17,7 @@ export default {
   <BasePanel class="fill-height">
     <template #title
       ><span :lang="lang">{{
-        $t('trans.fileProfile.productionLevel')
+        $t('trans.fileProfile.deploymentLevel')
       }}</span></template
     >
 

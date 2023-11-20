@@ -1,6 +1,6 @@
 <script>
 import { mapState } from 'pinia';
-import FormProductionLevel from '~/components/designer/profile/FormProductionLevel.vue';
+import FormDeploymentProfile from '~/components/designer/profile/FormDeploymentProfile.vue';
 import FormMinistryProfile from '~/components/designer/profile/FormMinistryProfile.vue';
 import FormTagProfile from '~/components/designer/profile/FormTagProfile.vue';
 import FormAPIProfile from '~/components/designer/profile/FormAPIProfile.vue';
@@ -12,7 +12,7 @@ import { useFormStore } from '~/store/form';
 export default {
   components: {
     BasePanel,
-    FormProductionLevel,
+    FormDeploymentProfile,
     FormMinistryProfile,
     FormTagProfile,
     FormAPIProfile,
@@ -34,7 +34,7 @@ export default {
     <v-container class="px-0" :class="{ 'dir-rtl': isRTL }">
       <v-row>
         <v-col cols="12" md="6">
-          <FormProductionLevel />
+          <FormDeploymentProfile />
         </v-col>
         <v-col cols="12" md="6">
           <FormMinistryProfile />
