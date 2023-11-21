@@ -64,6 +64,12 @@ const genInitialForm = () => ({
   userType: IdentityMode.TEAM,
   versions: [],
   enableCopyExistingSubmission: false,
+  deploymentLevel: '',
+  ministry: '',
+  tags: [],
+  API: '',
+  funding: '',
+  useCase: '',
 });
 
 export const useFormStore = defineStore('form', {

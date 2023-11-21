@@ -1,5 +1,5 @@
 <script>
-import { mapState } from 'pinia';
+import { mapState, mapWritableState } from 'pinia';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
 
@@ -9,12 +9,12 @@ export default {
   },
   data() {
     return {
-      chips: [],
       items: ['Unity', 'myForms'],
     };
   },
   computed: {
     ...mapState(useFormStore, ['lang']),
+    ...mapWritableState(useFormStore, ['form']),
   },
   methods: {
     remove(item) {
@@ -30,7 +30,7 @@ export default {
       ><span :lang="lang">{{ $t('trans.fileProfile.tags') }}</span></template
     >
     <v-combobox
-      v-model="chips"
+      v-model="form.tags"
       :items="items"
       chips
       clearable

@@ -1,5 +1,5 @@
 <script>
-import { mapState } from 'pinia';
+import { mapState, mapWritableState } from 'pinia';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
 
@@ -9,6 +9,7 @@ export default {
   },
   computed: {
     ...mapState(useFormStore, ['lang']),
+    ...mapWritableState(useFormStore, ['form']),
   },
 };
 </script>
@@ -22,6 +23,7 @@ export default {
     >
 
     <v-autocomplete
+      v-model="form.ministry"
       label="Ministry"
       :items="[
         'CITZ',

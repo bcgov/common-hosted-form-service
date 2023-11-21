@@ -154,7 +154,10 @@
     "tags": "Tags",
     "APIIntegration": "API Integration",
     "fundingProfile": "Funding Profile",
-    "useCaseType": "Use Case"
+    "useCaseType": "Use Case",
+    "development": "Development",
+    "test": "Test",
+    "production": "Production"
   },
   "subscribeEvent": {
     "eventType": "Event Type",

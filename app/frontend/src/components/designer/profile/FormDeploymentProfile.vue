@@ -1,5 +1,5 @@
 <script>
-import { mapState } from 'pinia';
+import { mapState, mapWritableState } from 'pinia';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
 
@@ -8,7 +8,8 @@ export default {
     BasePanel,
   },
   computed: {
-    ...mapState(useFormStore, ['lang']),
+    ...mapState(useFormStore, ['isRTL', 'lang']),
+    ...mapWritableState(useFormStore, ['form']),
   },
 };
 </script>
@@ -21,10 +22,30 @@ export default {
       }}</span></template
     >
 
-    <v-radio-group>
-      <v-radio label="Development" value="Development"></v-radio>
-      <v-radio label="Test" value="Test"></v-radio>
-      <v-radio label="Production" value="Production"></v-radio>
+    <v-radio-group v-model="form.deploymentLevel" :mandatory="true">
+      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" value="Development">
+        <template #label>
+          <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            {{ $t('trans.fileProfile.development') }}
+          </span>
+        </template>
+      </v-radio>
+
+      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" value="Test">
+        <template #label>
+          <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            {{ $t('trans.fileProfile.test') }}
+          </span>
+        </template>
+      </v-radio>
+
+      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" value="Production">
+        <template #label>
+          <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            {{ $t('trans.fileProfile.production') }}
+          </span>
+        </template>
+      </v-radio>
     </v-radio-group>
   </BasePanel>
 </template>
