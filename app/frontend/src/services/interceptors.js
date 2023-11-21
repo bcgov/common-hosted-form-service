@@ -22,7 +22,7 @@ export function appAxios(timeout = 10000) {
   instance.interceptors.request.use(
     (cfg) => {
       if (authStore?.ready && authStore?.authenticated) {
-        cfg.headers.Authorization = `Bearer ${authStore.token}`;
+        cfg.headers.Authorization = `Bearer ${authStore.keycloak.token}`;
       }
       return Promise.resolve(cfg);
     },
