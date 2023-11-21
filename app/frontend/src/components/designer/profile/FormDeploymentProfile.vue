@@ -7,6 +7,16 @@ export default {
   components: {
     BasePanel,
   },
+  data() {
+    return {
+      deploymentRequiredRules: [
+        (v) => {
+          console.log(v);
+          return !!v || this.$t('trans.fileProfile.selectDeployment');
+        },
+      ],
+    };
+  },
   computed: {
     ...mapState(useFormStore, ['isRTL', 'lang']),
     ...mapWritableState(useFormStore, ['form']),
@@ -22,7 +32,11 @@ export default {
       }}</span></template
     >
 
-    <v-radio-group v-model="form.deploymentLevel" :mandatory="true">
+    <v-radio-group
+      v-model="form.deploymentLevel"
+      :mandatory="true"
+      :rules="deploymentRequiredRules"
+    >
       <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" value="Development">
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
