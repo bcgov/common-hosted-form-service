@@ -1,5 +1,5 @@
 <script>
-import { mapState } from 'pinia';
+import { mapState, mapWritableState } from 'pinia';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
 
@@ -7,8 +7,18 @@ export default {
   components: {
     BasePanel,
   },
+  data() {
+    return {
+      useCaseRules: [
+        (v) => {
+          return !!v || this.$t('trans.fileProfile.selectUseCase');
+        },
+      ],
+    };
+  },
   computed: {
-    ...mapState(useFormStore, ['lang']),
+    ...mapState(useFormStore, ['lang', 'isRTL']),
+    ...mapWritableState(useFormStore, ['form']),
   },
 };
 </script>
@@ -21,27 +31,46 @@ export default {
       }}</span></template
     >
 
-    <v-radio-group>
-      <v-radio
-        label="Feedback Form to determine satisfaction, agreement, likelihood, or other qualitative questions"
-        value="a"
-      ></v-radio>
-      <v-radio
-        label="Applications that will be evaluated followed by a decision"
-        value="b"
-      ></v-radio>
-      <v-radio
-        label="Collection of Datasets, data submission"
-        value="c"
-      ></v-radio>
-      <v-radio
-        label="Reporting usually on a repeating schedule or event driven like follow-ups"
-        value="d"
-      ></v-radio>
-      <v-radio
-        label="Registrations or Sign up - no evaluation"
-        value="e"
-      ></v-radio>
+    <v-radio-group v-model="form.useCaseType" :rules="useCaseRules">
+      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" value="feedback">
+        <template #label>
+          <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            {{ $t('trans.fileProfile.feedback') }}
+          </span>
+        </template>
+      </v-radio>
+
+      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" value="application">
+        <template #label>
+          <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            {{ $t('trans.fileProfile.application') }}
+          </span>
+        </template>
+      </v-radio>
+
+      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" value="collection">
+        <template #label>
+          <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            {{ $t('trans.fileProfile.collection') }}
+          </span>
+        </template>
+      </v-radio>
+
+      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" value="report">
+        <template #label>
+          <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            {{ $t('trans.fileProfile.report') }}
+          </span>
+        </template>
+      </v-radio>
+
+      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" value="registration">
+        <template #label>
+          <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            {{ $t('trans.fileProfile.registration') }}
+          </span>
+        </template>
+      </v-radio>
     </v-radio-group>
   </BasePanel>
 </template>

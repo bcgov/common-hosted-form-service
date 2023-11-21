@@ -7,6 +7,15 @@ export default {
   components: {
     BasePanel,
   },
+  data() {
+    return {
+      ministryRules: [
+        (v) => {
+          return !!v || this.$t('trans.fileProfile.selectMinistry');
+        },
+      ],
+    };
+  },
   computed: {
     ...mapState(useFormStore, ['lang']),
     ...mapWritableState(useFormStore, ['form']),
@@ -24,6 +33,7 @@ export default {
 
     <v-autocomplete
       v-model="form.ministry"
+      :rules="ministryRules"
       label="Ministry"
       :items="[
         'CITZ',

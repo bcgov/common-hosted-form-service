@@ -11,7 +11,6 @@ export default {
     return {
       deploymentRequiredRules: [
         (v) => {
-          console.log(v);
           return !!v || this.$t('trans.fileProfile.selectDeployment');
         },
       ],

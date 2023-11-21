@@ -1,5 +1,5 @@
 <script>
-import { mapState } from 'pinia';
+import { mapState, mapWritableState } from 'pinia';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
 
@@ -7,8 +7,20 @@ export default {
   components: {
     BasePanel,
   },
+  data() {
+    return {
+      fundRules: [
+        (v) => {
+          return (
+            v !== false || v !== true || this.$t('trans.fileProfile.selectFund')
+          );
+        },
+      ],
+    };
+  },
   computed: {
-    ...mapState(useFormStore, ['lang']),
+    ...mapState(useFormStore, ['lang', 'isRTL']),
+    ...mapWritableState(useFormStore, ['form']),
   },
 };
 </script>
@@ -21,9 +33,27 @@ export default {
       }}</span></template
     >
 
-    <v-radio-group>
-      <v-radio label="Yes" value="Yes"></v-radio>
-      <v-radio label="No" value="No"></v-radio>
+    <v-radio-group v-model="form.funding" :rules="fundRules">
+      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" :value="true">
+        <template #label>
+          <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            {{ $t('trans.fileProfile.Y') }}
+          </span>
+        </template>
+      </v-radio>
+      <v-text-field
+        v-if="form.funding"
+        label="Projected funding request without CHEFS"
+        prefix="$"
+        type="number"
+      ></v-text-field>
+      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" :value="false">
+        <template #label>
+          <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            {{ $t('trans.fileProfile.N') }}
+          </span>
+        </template>
+      </v-radio>
     </v-radio-group>
   </BasePanel>
 </template>
