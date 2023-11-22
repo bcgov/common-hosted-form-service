@@ -628,6 +628,12 @@ export default {
         showSubmissionConfirmation: this.form.showSubmissionConfirmation,
         submissionReceivedEmails: emailList,
         reminder_enabled: false,
+        deploymentLevel: this.form.deploymentLevel,
+        ministry: this.form.ministry,
+        apiIntegration: this.form.API,
+        funding: this.form.funding,
+        fundingCost: this.form.fundingCost,
+        useCase: this.form.useCase,
       });
 
       // Navigate back to this page with ID updated

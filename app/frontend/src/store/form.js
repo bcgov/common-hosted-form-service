@@ -69,6 +69,7 @@ const genInitialForm = () => ({
   tags: [],
   API: false,
   funding: false,
+  fundingCost: 0,
   useCase: '',
 });
 

@@ -31,7 +31,7 @@ export default {
       }}</span></template
     >
 
-    <v-radio-group v-model="form.useCaseType" :rules="useCaseRules">
+    <v-radio-group v-model="form.useCase" :rules="useCaseRules">
       <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" value="feedback">
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">

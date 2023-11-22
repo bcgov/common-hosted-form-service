@@ -77,8 +77,15 @@ const service = {
       obj.subscribe = data.subscribe;
       obj.reminder_enabled = data.reminder_enabled;
       obj.enableCopyExistingSubmission = data.enableCopyExistingSubmission;
+      obj.deploymentLevel = data.deploymentLevel,
+      obj.ministry = data.ministry,
+      obj.apiIntegration = data.apiIntegration,
+      obj.funding = data.funding,
+      obj.fundingCost = data.fundingCost,
+      obj.useCase = data.useCase
 
       await Form.query(trx).insert(obj);
+      console.log("\n\n\n\n");
       if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
         const fips = [];
         for (const p of data.identityProviders) {
