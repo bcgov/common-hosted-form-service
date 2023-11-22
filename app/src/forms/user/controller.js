@@ -31,6 +31,26 @@ module.exports = {
     }
   },
 
+  readUserLabels: async (req, res, next) => {
+    
+    try {
+      const response = await service.readUserLabels(req.currentUser.id);
+      const labelDescriptions = response.map(label => label.labelDescription);
+      res.status(200).json(labelDescriptions);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  updateUserLabels: async (req, res, next) => {
+    try {
+      await service.updateUserLabels(req.currentUser.id, req.body);
+      res.status(200).send();
+    } catch (error) {
+      next(error);
+    }
+  },
+
   //
   // User Preferences
   //

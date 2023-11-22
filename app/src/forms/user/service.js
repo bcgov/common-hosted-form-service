@@ -1,6 +1,6 @@
 const Problem = require('api-problem');
-
-const { User, UserFormPreferences } = require('../common/models');
+const { v4: uuidv4 } = require('uuid');
+const { User, UserFormPreferences, Label } = require('../common/models');
 const { IdentityProviders } = require('../common/constants');
 
 const service = {
@@ -37,6 +37,28 @@ const service = {
   readSafe: (userId) => {
     return User.query().modify('safeSelect').findById(userId).throwIfNotFound();
   },
+
+  readUserLabels: (userId) => {
+    return Label.query().where({ userId }).select('labelDescription');
+  },
+
+  updateUserLabels: async (userId, body) => {
+    for (const labelDescription of body) {
+      const existingLabel = await Label.query().where({
+        userId: userId,
+        labelDescription: labelDescription
+      }).first();
+  
+      if (!existingLabel) {
+        await Label.query().insert({
+          id: uuidv4(),
+          userId: userId,
+          labelDescription: labelDescription
+        });
+      }
+    }
+  },
+  
 
   //
   // User Preferences

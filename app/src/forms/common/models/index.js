@@ -20,6 +20,7 @@ module.exports = {
   SubmissionAudit: require('./tables/submissionAudit'),
   User: require('./tables/user'),
   UserFormPreferences: require('./tables/userFormPreferences'),
+  Label: require('./tables/label'),
   FormComponentsProactiveHelp: require('./tables/formComponentsProactiveHelp'),
   FormSubscription: require('./tables/formSubscription'),
 

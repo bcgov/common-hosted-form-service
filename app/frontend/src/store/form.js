@@ -105,6 +105,7 @@ export const useFormStore = defineStore('form', {
     totalSubmissions: 0,
     userFormPreferences: {},
     version: {},
+    userLabels: [],
   }),
   getters: {
     isFormPublished: (state) =>

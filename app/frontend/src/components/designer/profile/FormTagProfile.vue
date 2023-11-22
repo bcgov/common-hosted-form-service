@@ -2,6 +2,7 @@
 import { mapState, mapWritableState } from 'pinia';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
+import { userService } from '../../../services';
 
 export default {
   components: {
@@ -9,12 +10,21 @@ export default {
   },
   data() {
     return {
-      items: ['Unity', 'myForms'],
+      items: [],
+      loading: true,
     };
   },
   computed: {
     ...mapState(useFormStore, ['lang']),
     ...mapWritableState(useFormStore, ['form']),
+  },
+  async mounted() {
+    this.loading = true;
+
+    const result = await userService.getUserLabels();
+    this.items = result.data;
+
+    this.loading = false;
   },
   methods: {
     remove(item) {
@@ -30,11 +40,12 @@ export default {
       ><span :lang="lang">{{ $t('trans.fileProfile.tags') }}</span></template
     >
     <v-combobox
-      v-model="form.tags"
+      v-model="form.userLabels"
       :items="items"
       chips
       clearable
       label="Tags"
+      :loading="loading"
       multiple
       variant="solo"
     >

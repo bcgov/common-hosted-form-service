@@ -15,6 +15,7 @@ import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { IdentityMode, NotificationTypes } from '~/utils/constants';
 import { generateIdps } from '~/utils/transformUtils';
+import { userService } from '../../services';
 
 export default {
   components: {
@@ -634,7 +635,10 @@ export default {
         funding: this.form.funding,
         fundingCost: this.form.fundingCost,
         useCase: this.form.useCase,
+        labels: this.form.userLabels,
       });
+      if (this.form.userLabels.length > 0)
+        await userService.updateUserLabels(this.form.userLabels);
 
       // Navigate back to this page with ID updated
       this.$router
