@@ -21,7 +21,7 @@ export default {
 </script>
 
 <template>
-  <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBUSINESS]">
+  <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBASIC, IDP.BCEIDBUSINESS]">
     <MySubmissionsTable :form-id="f" />
   </BaseSecure>
 </template>
