@@ -33,7 +33,7 @@ export default {
       }}</span></template
     >
 
-    <v-radio-group v-model="form.API" :rules="apiRules">
+    <v-radio-group v-model="form.apiIntegration" :rules="apiRules">
       <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" :value="true">
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">

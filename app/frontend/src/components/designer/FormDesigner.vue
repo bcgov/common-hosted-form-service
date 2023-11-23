@@ -631,14 +631,14 @@ export default {
         reminder_enabled: false,
         deploymentLevel: this.form.deploymentLevel,
         ministry: this.form.ministry,
-        apiIntegration: this.form.API,
+        apiIntegration: this.form.apiIntegration,
         funding: this.form.funding,
         fundingCost: this.form.fundingCost,
         useCase: this.form.useCase,
-        labels: this.form.userLabels,
+        labels: this.form.labels,
       });
-      if (this.form.userLabels.length > 0)
-        await userService.updateUserLabels(this.form.userLabels);
+      if (this.form.labels.length > 0)
+        await userService.updateUserLabels(this.form.labels);
 
       // Navigate back to this page with ID updated
       this.$router

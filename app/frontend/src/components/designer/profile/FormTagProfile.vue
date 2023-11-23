@@ -23,7 +23,6 @@ export default {
 
     const result = await userService.getUserLabels();
     this.items = result.data;
-
     this.loading = false;
   },
   methods: {
@@ -40,7 +39,7 @@ export default {
       ><span :lang="lang">{{ $t('trans.fileProfile.tags') }}</span></template
     >
     <v-combobox
-      v-model="form.userLabels"
+      v-model="form.labels"
       :items="items"
       chips
       clearable

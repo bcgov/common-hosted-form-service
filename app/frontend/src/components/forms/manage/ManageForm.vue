@@ -8,6 +8,7 @@ import Subscription from '~/components/forms/manage/Subscription.vue';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { FormPermissions, NotificationTypes } from '~/utils/constants';
+import FormProfile from '~/components/designer/FormProfile.vue';
 
 export default {
   components: {
@@ -15,6 +16,7 @@ export default {
     FormSettings,
     ManageVersions,
     Subscription,
+    FormProfile,
   },
   data() {
     return {
@@ -166,6 +168,52 @@ export default {
               :disabled="formSettingsDisabled"
               @onSubscription="onSubscription"
             />
+          </v-form>
+
+          <div v-if="canEditForm && !formSettingsDisabled" class="mb-5">
+            <v-btn
+              :class="isRTL ? 'ml-5' : 'mr-5'"
+              color="primary"
+              @click="updateSettings"
+            >
+              <span :lang="lang">{{ $t('trans.manageForm.update') }}</span>
+            </v-btn>
+            <v-btn variant="outlined" @click="cancelSettingsEdit">
+              <span :lang="lang">{{ $t('trans.manageForm.cancel') }}</span>
+            </v-btn>
+          </div>
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
+
+    <v-expansion-panels v-model="settingsPanel" class="nrmc-expand-collapse">
+      <v-expansion-panel v-if="canEditForm" flat>
+        <!-- Form Profile -->
+        <v-expansion-panel-title>
+          <div class="header" :lang="lang">
+            <strong>{{ $t('trans.manageForm.formSettings') }}</strong>
+            <span :lang="lang">
+              <v-btn
+                v-if="canEditForm"
+                size="x-small"
+                variant="text"
+                icon
+                color="primary"
+                style="font-size: 14px"
+                @click.stop="enableSettingsEdit"
+              >
+                <v-icon icon="mdi:mdi-pencil"></v-icon>
+              </v-btn>
+            </span>
+          </div>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
+          <v-form
+            v-model="settingsFormValid"
+            :disabled="formSettingsDisabled"
+            lazy-validation
+          >
+            <FormProfile />
           </v-form>
 
           <div v-if="canEditForm && !formSettingsDisabled" class="mb-5">
