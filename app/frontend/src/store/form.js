@@ -427,6 +427,13 @@ export const useFormStore = defineStore('form', {
           schedule: schedule,
           subscribe: subscribe,
           allowSubmitterToUploadFile: this.form.allowSubmitterToUploadFile,
+          deploymentLevel: this.form.deploymentLevel,
+          ministry: this.form.ministry,
+          labels: this.form.labels,
+          apiIntegration: this.form.apiIntegration,
+          funding: this.form.funding,
+          fundingCost: this.form.fundingCost,
+          useCase: this.form.useCase,
           reminder_enabled: this.form.reminder_enabled
             ? this.form.reminder_enabled
             : false,
@@ -434,6 +441,9 @@ export const useFormStore = defineStore('form', {
             ? this.form.enableCopyExistingSubmission
             : false,
         });
+
+        if (this.form.labels.length > 0)
+          await userService.updateUserLabels(this.form.labels);
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({

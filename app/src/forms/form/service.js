@@ -156,6 +156,12 @@ const service = {
         subscribe: data.subscribe,
         reminder_enabled: data.reminder_enabled,
         enableCopyExistingSubmission: data.enableCopyExistingSubmission,
+        deploymentLevel: data.deploymentLevel,
+        ministry: data.ministry,
+        apiIntegration: data.apiIntegration,
+        funding: data.funding,
+        fundingCost: data.fundingCost,
+        useCase: data.useCase,
       };
 
       await Form.query(trx).patchAndFetchById(formId, upd);
