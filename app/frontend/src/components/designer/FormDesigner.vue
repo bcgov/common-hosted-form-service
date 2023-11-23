@@ -622,6 +622,7 @@ export default {
           idps: this.form.idps,
           userType: this.form.userType,
         }),
+        sendSubReceivedEmail: this.form.sendSubReceivedEmail,
         enableSubmitterDraft: this.form.enableSubmitterDraft,
         enableCopyExistingSubmission: this.form.enableCopyExistingSubmission,
         enableStatusUpdates: this.form.enableStatusUpdates,

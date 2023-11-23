@@ -394,12 +394,11 @@ export const useFormStore = defineStore('form', {
     async updateForm() {
       try {
         const emailList =
-          this.form.sendSubRecieviedEmail &&
+          this.form.sendSubReceivedEmail &&
           this.form.submissionReceivedEmails &&
           Array.isArray(this.form.submissionReceivedEmails)
             ? this.form.submissionReceivedEmails
             : [];
-
         const schedule = this.form.schedule.enabled ? this.form.schedule : {};
         const subscribe = this.form.subscribe.enabled
           ? this.form.subscribe
@@ -415,6 +414,7 @@ export const useFormStore = defineStore('form', {
             userType: this.form.userType,
           }),
           showSubmissionConfirmation: this.form.showSubmissionConfirmation,
+          sendSubReceivedEmail: this.form.sendSubReceivedEmail,
           submissionReceivedEmails: emailList,
           schedule: schedule,
           subscribe: subscribe,
