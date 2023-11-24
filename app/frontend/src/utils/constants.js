@@ -76,6 +76,33 @@ export const IdentityProviders = Object.freeze({
   IDIR: 'idir', // IDIR
 });
 
+/** List of Ministries within BC Public Service */
+export const Ministries = Object.freeze([
+  { id: 'AF', text: 'Agriculture and Food (AF)' },
+  { id: 'AG', text: 'Attorney General (AG)' },
+  { id: 'MCF', text: 'Children and Family Development (MCF)' },
+  { id: 'CITZ', text: `Citizens' Services (CITZ)` },
+  { id: 'ECC', text: 'Education and Child Care (ECC)' },
+  { id: 'EMCR', text: 'Emergency Management and Climate Readiness (EMCR)' },
+  { id: 'EMLI', text: 'Energy, Mines and Low Carbon Innovation (EMLI)' },
+  { id: 'ENV', text: 'Environment and Climate Change Strategy (ENV)' },
+  { id: 'FIN', text: 'Finance (FIN)' },
+  { id: 'FOR', text: 'Forests (FOR)' },
+  { id: 'HLTH', text: 'Health (HLTH)' },
+  { id: 'HOUS', text: 'Housing (HOUS)' },
+  { id: 'IRR', text: 'Indigenous Relations & Reconciliation (IRR)' },
+  { id: 'JEDI', text: 'Jobs, Economic Development and Innovation (JEDI)' },
+  { id: 'LBR', text: 'Labour (LBR)' },
+  { id: 'MMHA', text: 'Mental Health and Addictions (MMHA)' },
+  { id: 'MUNI', text: 'Municipal Affairs (MUNI)' },
+  { id: 'PSFS', text: 'Post-Secondary Education and Future Skills (PSFS)' },
+  { id: 'PSSG', text: 'Public Safety and Solicitor General (PSSG)' },
+  { id: 'SDPR', text: 'Social Development and Poverty Reduction (SDPR)' },
+  { id: 'TACS', text: 'Tourism, Arts, Culture and Sport (TACS)' },
+  { id: 'MOTI', text: 'Transportation and Infrastructure (MOTI)' },
+  { id: 'WLRS', text: 'Water, Land and Resource Stewardship (WLRS)' },
+]);
+
 /** Corresponds to vuetify alert classes for notification types */
 export const NotificationTypes = Object.freeze({
   ERROR: {

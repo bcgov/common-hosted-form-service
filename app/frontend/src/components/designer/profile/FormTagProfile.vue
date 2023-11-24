@@ -43,7 +43,7 @@ export default {
       :items="items"
       chips
       clearable
-      label="Tags"
+      :label="$t('trans.fileProfile.tags')"
       :loading="loading"
       multiple
       variant="solo"

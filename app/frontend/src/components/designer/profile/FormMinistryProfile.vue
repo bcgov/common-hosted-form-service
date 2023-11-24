@@ -2,6 +2,7 @@
 import { mapState, mapWritableState } from 'pinia';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
+import { Ministries } from '~/utils/constants';
 
 export default {
   components: {
@@ -19,6 +20,9 @@ export default {
   computed: {
     ...mapState(useFormStore, ['lang']),
     ...mapWritableState(useFormStore, ['form']),
+    MinistryList() {
+      return Ministries;
+    },
   },
 };
 </script>
@@ -34,21 +38,10 @@ export default {
     <v-autocomplete
       v-model="form.ministry"
       :rules="ministryRules"
-      label="Ministry"
-      :items="[
-        'CITZ',
-        'HLTH',
-        'EPRO',
-        'FIN',
-        'CITdZ',
-        'HLdTH',
-        'EPdRO',
-        'FdIN',
-        'CITdZ',
-        'HLTsH',
-        'EPRsO',
-        'FIsN',
-      ]"
+      :label="$t('trans.fileProfile.ministryName')"
+      :items="MinistryList"
+      item-title="text"
+      item-value="id"
     ></v-autocomplete>
   </BasePanel>
 </template>
