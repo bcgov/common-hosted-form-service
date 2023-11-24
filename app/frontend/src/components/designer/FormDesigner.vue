@@ -633,7 +633,10 @@ export default {
         ministry: this.form.ministry,
         apiIntegration: this.form.apiIntegration,
         funding: this.form.funding,
-        fundingCost: this.form.fundingCost,
+        fundingCost:
+          this.form.funding && this.form.fundingCost
+            ? Number(this.form.fundingCost)
+            : null,
         useCase: this.form.useCase,
         labels: this.form.labels,
       });

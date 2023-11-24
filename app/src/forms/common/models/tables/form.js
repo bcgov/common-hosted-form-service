@@ -159,7 +159,7 @@ class Form extends Timestamps(Model) {
         ministry: { type: 'string', minLength: 1, maxLength: 255 },
         apiIntegration: { type: 'boolean' },
         funding: { type: 'boolean' },
-        fundingCost: { type: 'number' },
+        fundingCost: { type: ['number', 'null'] },
         useCase: { type: 'string', minLength: 1, maxLength: 255 },
         ...stamps,
       },

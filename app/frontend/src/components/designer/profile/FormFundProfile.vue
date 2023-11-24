@@ -43,6 +43,7 @@ export default {
       </v-radio>
       <v-text-field
         v-if="form.funding"
+        v-model="form.fundingCost"
         label="Projected funding request without CHEFS"
         prefix="$"
         type="number"

@@ -10,12 +10,12 @@ exports.up = function (knex) {
             stamps(knex, table);
         }))
         .then(() => knex.schema.alterTable('form', table => {
-            table.string('deploymentLevel').notNullable().defaultTo('default_value');
-            table.string('ministry').notNullable().defaultTo('default_value');
+            table.string('deploymentLevel').notNullable().defaultTo('');
+            table.string('ministry').notNullable().defaultTo('');
             table.boolean('apiIntegration').notNullable().defaultTo(false).comment('Use of API integrations');
             table.boolean('funding').notNullable().defaultTo(false).comment('Inquires if the use of CHEFS enabled creator to avoid requesting funding');
             table.decimal('fundingCost').comment('Optional projected cost of funds');
-            table.string('useCase').notNullable().defaultTo('default_value').comment('Explains the use case for this particualar form');
+            table.string('useCase').notNullable().defaultTo('').comment('Explains the use case for this particualar form');
 
         }));
 };

@@ -69,7 +69,7 @@ const genInitialForm = () => ({
   labels: [],
   apiIntegration: false,
   funding: false,
-  fundingCost: 0,
+  fundingCost: null,
   useCase: '',
 });
 
@@ -432,7 +432,10 @@ export const useFormStore = defineStore('form', {
           labels: this.form.labels,
           apiIntegration: this.form.apiIntegration,
           funding: this.form.funding,
-          fundingCost: this.form.fundingCost,
+          fundingCost:
+            this.form.funding && this.form.fundingCost
+              ? Number(this.form.fundingCost)
+              : null,
           useCase: this.form.useCase,
           reminder_enabled: this.form.reminder_enabled
             ? this.form.reminder_enabled
