@@ -2,6 +2,7 @@
 import { mapState, mapWritableState } from 'pinia';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
+import { FormProfileValues } from '~/utils/constants';
 
 export default {
   components: {
@@ -19,6 +20,9 @@ export default {
   computed: {
     ...mapState(useFormStore, ['lang', 'isRTL']),
     ...mapWritableState(useFormStore, ['form']),
+    FORM_PROFILE() {
+      return FormProfileValues;
+    },
   },
 };
 </script>
@@ -32,7 +36,11 @@ export default {
     >
 
     <v-radio-group v-model="form.useCase" :rules="useCaseRules">
-      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" value="feedback">
+      <v-radio
+        class="mb-4"
+        :class="{ 'dir-rtl': isRTL }"
+        :value="FORM_PROFILE.FEEDBACK"
+      >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.fileProfile.feedback') }}
@@ -40,7 +48,11 @@ export default {
         </template>
       </v-radio>
 
-      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" value="application">
+      <v-radio
+        class="mb-4"
+        :class="{ 'dir-rtl': isRTL }"
+        :value="FORM_PROFILE.APPLICATION"
+      >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.fileProfile.application') }}
@@ -48,7 +60,11 @@ export default {
         </template>
       </v-radio>
 
-      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" value="collection">
+      <v-radio
+        class="mb-4"
+        :class="{ 'dir-rtl': isRTL }"
+        :value="FORM_PROFILE.COLLECTION"
+      >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.fileProfile.collection') }}
@@ -56,7 +72,11 @@ export default {
         </template>
       </v-radio>
 
-      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" value="report">
+      <v-radio
+        class="mb-4"
+        :class="{ 'dir-rtl': isRTL }"
+        :value="FORM_PROFILE.REPORT"
+      >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.fileProfile.report') }}
@@ -64,7 +84,11 @@ export default {
         </template>
       </v-radio>
 
-      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" value="registration">
+      <v-radio
+        class="mb-4"
+        :class="{ 'dir-rtl': isRTL }"
+        :value="FORM_PROFILE.REGISTRATION"
+      >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.fileProfile.registration') }}

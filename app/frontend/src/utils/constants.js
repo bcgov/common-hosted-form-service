@@ -103,6 +103,17 @@ export const Ministries = Object.freeze([
   { id: 'WLRS', text: 'Water, Land and Resource Stewardship (WLRS)' },
 ]);
 
+export const FormProfileValues = Object.freeze({
+  APPLICATION: 'application',
+  COLLECTION: 'collection',
+  FEEDBACK: 'feedback',
+  REGISTRATION: 'registration',
+  REPORT: 'report',
+  DEVELOPMENT: 'development',
+  PRODUCTION: 'production',
+  TEST: 'test',
+});
+
 /** Corresponds to vuetify alert classes for notification types */
 export const NotificationTypes = Object.freeze({
   ERROR: {

@@ -2,6 +2,7 @@
 import { mapState, mapWritableState } from 'pinia';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
+import { FormProfileValues } from '~/utils/constants';
 
 export default {
   components: {
@@ -19,6 +20,9 @@ export default {
   computed: {
     ...mapState(useFormStore, ['isRTL', 'lang']),
     ...mapWritableState(useFormStore, ['form']),
+    FORM_PROFILE() {
+      return FormProfileValues;
+    },
   },
 };
 </script>
@@ -36,7 +40,11 @@ export default {
       :mandatory="true"
       :rules="deploymentRequiredRules"
     >
-      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" value="Development">
+      <v-radio
+        class="mb-4"
+        :class="{ 'dir-rtl': isRTL }"
+        :value="FORM_PROFILE.DEVELOPMENT"
+      >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.fileProfile.development') }}
@@ -44,7 +52,11 @@ export default {
         </template>
       </v-radio>
 
-      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" value="Test">
+      <v-radio
+        class="mb-4"
+        :class="{ 'dir-rtl': isRTL }"
+        :value="FORM_PROFILE.TEST"
+      >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.fileProfile.test') }}
@@ -52,7 +64,11 @@ export default {
         </template>
       </v-radio>
 
-      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" value="Production">
+      <v-radio
+        class="mb-4"
+        :class="{ 'dir-rtl': isRTL }"
+        :value="FORM_PROFILE.PRODUCTION"
+      >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.fileProfile.production') }}
