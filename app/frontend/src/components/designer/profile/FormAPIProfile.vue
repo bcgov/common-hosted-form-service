@@ -11,9 +11,7 @@ export default {
     return {
       apiRules: [
         (v) => {
-          return (
-            v !== false || v !== true || this.$t('trans.fileProfile.selectAPI')
-          );
+          return v != null || this.$t('trans.fileProfile.selectAPI');
         },
       ],
     };

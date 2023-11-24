@@ -67,8 +67,8 @@ const genInitialForm = () => ({
   deploymentLevel: '',
   ministry: '',
   labels: [],
-  apiIntegration: false,
-  funding: false,
+  apiIntegration: null,
+  funding: null,
   fundingCost: null,
   useCase: '',
 });

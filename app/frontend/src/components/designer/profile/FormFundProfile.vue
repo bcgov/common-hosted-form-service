@@ -11,9 +11,7 @@ export default {
     return {
       fundRules: [
         (v) => {
-          return (
-            v !== false || v !== true || this.$t('trans.fileProfile.selectFund')
-          );
+          return v !== null || this.$t('trans.fileProfile.selectFund');
         },
       ],
     };
