@@ -152,7 +152,7 @@
     "validEndpointRequired": "Veuillez saisir un point de terminaison valide commençant par https://",
     "validBearerTokenRequired": "Saisissez un exemple de jeton de support valide : 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
   },
-  "fileProfile": {
+  "formProfile": {
     "deploymentLevel": "Niveau de déploiement",
     "selectDeployment": "Veuillez sélectionner un niveau de déploiement",
     "ministryName": "Ministère",
@@ -162,6 +162,8 @@
     "selectAPI": "Veuillez nous informer de votre choix concernant l'utilisation de l'intégration API",
     "fundingProfile": "Profil de financement",
     "selectFund": "Veuillez sélectionner si CHEFS vous a permis d'éviter de demander un financement",
+    "nonNegativeFund": "La valeur doit être non négative",
+    "projectedFund": "Demande de financement projetée sans CHEFS",
     "useCaseType": "Type d'utilisation",
     "selectUseCase": "Veuillez indiquer le cas d'utilisation de votre formulaire",
     "development": "Développement",

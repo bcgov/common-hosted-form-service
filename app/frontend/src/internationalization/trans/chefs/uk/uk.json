@@ -152,7 +152,7 @@
     "validEndpointRequired": "Введіть дійсну кінцеву точку, починаючи з https://",
     "validBearerTokenRequired": "Введіть дійсний приклад маркера носія: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
   },
-  "fileProfile": {
+  "formProfile": {
     "deploymentLevel": "Рівень розгортання",
     "selectDeployment": "Будь ласка, виберіть рівень розгортання",
     "ministryName": "Міністерство",
@@ -162,6 +162,8 @@
     "selectAPI": "Будь ласка, повідомте нам ваш вибір щодо використання інтеграції API",
     "fundingProfile": "Профіль фінансування",
     "selectFund": "Будь ласка, виберіть, чи дозволило CHEFS уникнути запиту на фінансування",
+    "nonNegativeFund": "Значення повинно бути не від'ємним",
+    "projectedFund": "Прогнозований запит фінансування без CHEFS",
     "useCaseType": "Тип використання",
     "selectUseCase": "Будь ласка, вкажіть використання вашої форми",
     "development": "Розробка",

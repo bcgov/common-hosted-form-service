@@ -12,7 +12,7 @@ export default {
     return {
       ministryRules: [
         (v) => {
-          return !!v || this.$t('trans.fileProfile.selectMinistry');
+          return !!v || this.$t('trans.formProfile.selectMinistry');
         },
       ],
     };
@@ -31,14 +31,14 @@ export default {
   <BasePanel class="fill-height">
     <template #title
       ><span :lang="lang">{{
-        $t('trans.fileProfile.ministryName')
+        $t('trans.formProfile.ministryName')
       }}</span></template
     >
 
     <v-autocomplete
       v-model="form.ministry"
       :rules="ministryRules"
-      :label="$t('trans.fileProfile.ministryName')"
+      :label="$t('trans.formProfile.ministryName')"
       :items="MinistryList"
       item-title="text"
       item-value="id"

@@ -152,7 +152,7 @@
     "validEndpointRequired": "Введите допустимый URL, начинающуюся с https://",
     "validBearerTokenRequired": "Введите допустимый пример токена: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
   },
-  "fileProfile": {
+  "formProfile": {
     "deploymentLevel": "Уровень внедрения",
     "selectDeployment": "Пожалуйста, выберите уровень внедрения",
     "ministryName": "Министерство",
@@ -162,6 +162,8 @@
     "selectAPI": "Пожалуйста, укажите ваш выбор относительно использования интеграции API",
     "fundingProfile": "Профиль финансирования",
     "selectFund": "Пожалуйста, выберите, позволил ли CHEFS избежать запроса финансирования",
+    "nonNegativeFund": "Значение должно быть неотрицательным",
+    "projectedFund": "Прогнозируемый запрос финансирования без CHEFS",
     "useCaseType": "Тип использования",
     "selectUseCase": "Пожалуйста, укажите сферу применения вашей формы",
     "development": "Разработка",

@@ -152,7 +152,7 @@
     "validEndpointRequired": "مهرباني وکړئ یو معتبر پای ټکی دننه کړئ چې پیل کیږي https://",
     "validBearerTokenRequired": "89abddfb-2cff-4fda-83e6-13221f0c3d4f د اعتبار وړ وړونکي نښه مثال داخل کړئ"
   },
-  "fileProfile": {
+  "formProfile": {
     "deploymentLevel": "ਨਿਵਾਸ ਸਤਾਰ",
     "selectDeployment": "ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਨਿਵਾਸ ਸਤਾਰ ਚੁਣੋ",
     "ministryName": "ਮੰਤਰਾਲਯ",
@@ -162,6 +162,8 @@
     "selectAPI": "API ਇੰਟੀਗਰੇਸ਼ਨ ਦੀ ਵਰਤੋਂ ਬਾਰੇ ਆਪਣੇ ਚੋਣ ਦੀ ਸੂਚਨਾ ਦਿਓ",
     "fundingProfile": "ਅਨੁਦਾਨ ਪ੍ਰੋਫਾਈਲ",
     "selectFund": "ਕਿਰਪਾ ਕਰਕੇ ਦੱਸੋ ਕਿ ਕੀ CHEFS ਨੇ ਤੁਹਾਨੂੰ ਅਨੁਦਾਨ ਬੇਨਤੀ ਕਰਨ ਤੋਂ ਬਚਾਇਆ ਹੈ",
+    "nonNegativeFund": "ਮੁੱਲ ਨਕਾਰਾਤਮਕ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ",
+    "projectedFund": "ਚੇਫ਼ਸ ਬਿਨਾ ਯੋਜਿਤ ਵਨਜਾਤ ਬੇਨਤੀ",
     "useCaseType": "ਉਪਯੋਗ ਮਾਮਲਾ",
     "selectUseCase": "ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਫਾਰਮ ਦਾ ਉਪਯੋਗ ਮਾਮਲਾ ਦਰਜ ਕਰੋ",
     "development": "ਵਿਕਾਸ",

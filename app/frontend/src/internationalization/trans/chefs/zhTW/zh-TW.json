@@ -152,7 +152,7 @@
     "validEndpointRequired": "請輸入以以下開頭的有效端點 https://",
     "validBearerTokenRequired": "輸入有效的不記名令牌示例: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
   },
-  "fileProfile": {
+  "formProfile": {
     "deploymentLevel": "部署層級",
     "selectDeployment": "請選擇部署層級",
     "ministryName": "部門",
@@ -162,6 +162,8 @@
     "selectAPI": "請告訴我們您對API整合使用的選擇",
     "fundingProfile": "資金配置檔案",
     "selectFund": "請選擇CHEFS是否使您免於請求資金",
+    "nonNegativeFund": "值必须为非负数",
+    "projectedFund": "没有 CHEFS 的预计资金请求",
     "useCaseType": "用例",
     "selectUseCase": "請輸入您的表單用例",
     "development": "開發",

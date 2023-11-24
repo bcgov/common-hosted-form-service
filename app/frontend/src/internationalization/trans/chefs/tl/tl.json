@@ -152,7 +152,7 @@
     "validEndpointRequired": "Mangyaring magpasok ng wastong endpoint na nagsisimula sa https://",
     "validBearerTokenRequired": "Maglagay ng wastong halimbawa ng token ng maydala: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
   },
-  "fileProfile": {
+  "formProfile": {
     "deploymentLevel": "Antas ng Pagpapatupad",
     "selectDeployment": "Mangyaring pumili ng antas ng pagpapatupad",
     "ministryName": "Ministri",
@@ -162,6 +162,8 @@
     "selectAPI": "Mangyaring ipaalam sa amin ang iyong pagsusuri tungkol sa paggamit ng API Integration",
     "fundingProfile": "Profil ng Pondo",
     "selectFund": "Mangyaring pumili kung pinapayagan ka ng CHEFS na iwasan ang paghingi ng pondo",
+    "nonNegativeFund": "Ang halaga ay dapat hindi negatibo",
+    "projectedFund": "Inaasahang kahilingan ng pondo na walang CHEFS",
     "useCaseType": "Uri ng Paggamit",
     "selectUseCase": "Mangyaring ipasok ang paggamit ng iyong form",
     "development": "Pagbuo",

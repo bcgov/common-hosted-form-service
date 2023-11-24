@@ -152,7 +152,7 @@
     "validEndpointRequired": "لطفاً یک نقطه پایان معتبر که با شروع آن شروع می شود وارد کنید https://",
     "validBearerTokenRequired": "89abddfb-2cff-4fda-83e6-13221f0c3d4f یک نمونه توکن حامل معتبر وارد کنید"
   },
-  "fileProfile": {
+  "formProfile": {
     "deploymentLevel": "سطح نصب",
     "selectDeployment": "لطفاً یک سطح نصب را انتخاب کنید",
     "ministryName": "وزارت",
@@ -162,6 +162,8 @@
     "selectAPI": "لطفاً گزینه خود را در مورد استفاده از ادغام API اطلاع دهید",
     "fundingProfile": "پروفایل تامین مالی",
     "selectFund": "لطفاً انتخاب کنید که CHEFS به شما امکان داده است از تقاضای تامین مالی خودداری کنید یا خیر",
+    "nonNegativeFund": "مقدار باید غیر منفی باشد",
+    "projectedFund": "درخواست تأمین مالی پروژه بدون CHEFS",
     "useCaseType": "نوع مورد کاربرد",
     "selectUseCase": "لطفاً مورد کاربرد فرم خود را وارد کنید",
     "development": "توسعه",

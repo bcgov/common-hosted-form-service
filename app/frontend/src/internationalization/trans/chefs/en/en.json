@@ -148,7 +148,7 @@
     "validEndpointRequired": "Please enter a valid endpoint starting with https://",
     "validBearerTokenRequired": "Enter a valid bearer token example: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
   },
-  "fileProfile": {
+  "formProfile": {
     "deploymentLevel": "Deployment Level",
     "selectDeployment": "Please select a deployment level",
     "ministryName": "Ministry",
@@ -158,6 +158,8 @@
     "selectAPI": "Please inform us your choice regarding the use of API Integration",
     "fundingProfile": "Funding Profile",
     "selectFund": "Please select whether CHEFS enabled you to avoid requesting funding",
+    "nonNegativeFund": "Value must be non-negative",
+    "projectedFund": "Projected funding request without CHEFS",
     "useCaseType": "Use Case",
     "selectUseCase": "Please enter the use case of your form",
     "development": "Development",

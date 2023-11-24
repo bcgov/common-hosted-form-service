@@ -152,7 +152,7 @@
     "validEndpointRequired": "कृपया प्रारंभ करने वाला एक वैध समापन बिंदु दर्ज करें https://",
     "validBearerTokenRequired": "एक वैध वाहक टोकन उदाहरण दर्ज करें: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
   },
-  "fileProfile": {
+  "formProfile": {
     "deploymentLevel": "निगमन स्तर",
     "selectDeployment": "कृपया एक निगमन स्तर का चयन करें",
     "ministryName": "मंत्रालय",
@@ -162,6 +162,8 @@
     "selectAPI": "कृपया हमें एपीआई एकीकरण का उपयोग करने के संबंध में अपनी राय बताएं",
     "fundingProfile": "वित्त प्रोफाइल",
     "selectFund": "कृपया बताएं कि CHEFS ने आपको वित्त मांगने से बचाने की अनुमति दी है या नहीं",
+    "nonNegativeFund": "मान अननेगेटिव होनी चाहिए",
+    "projectedFund": "चेफ्स के बिना परियोजित",
     "useCaseType": "उपयोग का प्रकार",
     "selectUseCase": "कृपया अपने फॉर्म के उपयोग का केस दर्ज करें",
     "development": "विकास",

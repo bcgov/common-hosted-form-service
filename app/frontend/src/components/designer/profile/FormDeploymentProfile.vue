@@ -12,7 +12,7 @@ export default {
     return {
       deploymentRequiredRules: [
         (v) => {
-          return !!v || this.$t('trans.fileProfile.selectDeployment');
+          return !!v || this.$t('trans.formProfile.selectDeployment');
         },
       ],
     };
@@ -31,7 +31,7 @@ export default {
   <BasePanel class="fill-height">
     <template #title
       ><span :lang="lang">{{
-        $t('trans.fileProfile.deploymentLevel')
+        $t('trans.formProfile.deploymentLevel')
       }}</span></template
     >
 
@@ -47,7 +47,7 @@ export default {
       >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
-            {{ $t('trans.fileProfile.development') }}
+            {{ $t('trans.formProfile.development') }}
           </span>
         </template>
       </v-radio>
@@ -59,7 +59,7 @@ export default {
       >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
-            {{ $t('trans.fileProfile.test') }}
+            {{ $t('trans.formProfile.test') }}
           </span>
         </template>
       </v-radio>
@@ -71,7 +71,7 @@ export default {
       >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
-            {{ $t('trans.fileProfile.production') }}
+            {{ $t('trans.formProfile.production') }}
           </span>
         </template>
       </v-radio>

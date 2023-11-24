@@ -11,8 +11,11 @@ export default {
     return {
       fundRules: [
         (v) => {
-          return v !== null || this.$t('trans.fileProfile.selectFund');
+          return v !== null || this.$t('trans.formProfile.selectFund');
         },
+      ],
+      fundingCostRule: [
+        (v) => v >= 0 || this.$t('trans.formProfile.nonNegativeFund'),
       ],
     };
   },
@@ -27,7 +30,7 @@ export default {
   <BasePanel class="fill-height">
     <template #title
       ><span :lang="lang">{{
-        $t('trans.fileProfile.fundingProfile')
+        $t('trans.formProfile.fundingProfile')
       }}</span></template
     >
 
@@ -35,21 +38,23 @@ export default {
       <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" :value="true">
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
-            {{ $t('trans.fileProfile.Y') }}
+            {{ $t('trans.formProfile.Y') }}
           </span>
         </template>
       </v-radio>
       <v-text-field
         v-if="form.funding"
         v-model="form.fundingCost"
-        label="Projected funding request without CHEFS"
+        :label="$t('trans.formProfile.projectedFund')"
+        :rules="fundingCostRule"
         prefix="$"
         type="number"
+        min="0"
       ></v-text-field>
       <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" :value="false">
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
-            {{ $t('trans.fileProfile.N') }}
+            {{ $t('trans.formProfile.N') }}
           </span>
         </template>
       </v-radio>

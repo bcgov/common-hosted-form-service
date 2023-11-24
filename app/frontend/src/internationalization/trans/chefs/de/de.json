@@ -152,7 +152,7 @@
     "validEndpointRequired": "Bitte geben Sie einen gültigen Endpunkt ein, beginnend mit https://",
     "validBearerTokenRequired": "Bitte geben Sie ein gültiges Token ein. Beispiel: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
   },
-  "fileProfile": {
+  "formProfile": {
     "deploymentLevel": "Bereitstellungsstufe",
     "selectDeployment": "Bitte wählen Sie eine Bereitstellungsstufe aus",
     "ministryName": "Ministerium",
@@ -162,6 +162,8 @@
     "selectAPI": "Bitte teilen Sie uns Ihre Entscheidung bezüglich der Verwendung der API-Integration mit",
     "fundingProfile": "Finanzierungsprofil",
     "selectFund": "Bitte wählen Sie aus, ob CHEFS es Ihnen ermöglicht hat, auf die Beantragung von Mitteln zu verzichten",
+    "nonNegativeFund": "Wert muss nicht negativ sein",
+    "projectedFund": "Prognostizierter Finanzierungsantrag ohne CHEFS",
     "useCaseType": "Anwendungsfall",
     "selectUseCase": "Bitte geben Sie den Anwendungsfall Ihres Formulars ein",
     "development": "Entwicklung",

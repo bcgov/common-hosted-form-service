@@ -152,7 +152,7 @@
     "validEndpointRequired": "で始まる有効なエンドポイントを入力してください https://",
     "validBearerTokenRequired": "有効なベアラー トークンの例を入力してください: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
   },
-  "fileProfile": {
+  "formProfile": {
     "deploymentLevel": "展開レベル",
     "selectDeployment": "展開レベルを選択してください",
     "ministryName": "省庁",
@@ -162,6 +162,8 @@
     "selectAPI": "API 統合の使用に関する選択をお知らせください",
     "fundingProfile": "資金プロファイル",
     "selectFund": "CHEFS が資金調達のリクエストを回避できるかどうかを選択してください",
+    "nonNegativeFund": "値は非負である必要があります",
+    "projectedFund": "CHEFSなしの予測資金リクエスト",
     "useCaseType": "ユースケース",
     "selectUseCase": "フォームのユースケースを入力してください",
     "development": "開発",

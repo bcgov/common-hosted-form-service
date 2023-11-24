@@ -12,7 +12,7 @@ export default {
     return {
       useCaseRules: [
         (v) => {
-          return !!v || this.$t('trans.fileProfile.selectUseCase');
+          return !!v || this.$t('trans.formProfile.selectUseCase');
         },
       ],
     };
@@ -31,7 +31,7 @@ export default {
   <BasePanel class="fill-height">
     <template #title
       ><span :lang="lang">{{
-        $t('trans.fileProfile.useCaseType')
+        $t('trans.formProfile.useCaseType')
       }}</span></template
     >
 
@@ -43,7 +43,7 @@ export default {
       >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
-            {{ $t('trans.fileProfile.feedback') }}
+            {{ $t('trans.formProfile.feedback') }}
           </span>
         </template>
       </v-radio>
@@ -55,7 +55,7 @@ export default {
       >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
-            {{ $t('trans.fileProfile.application') }}
+            {{ $t('trans.formProfile.application') }}
           </span>
         </template>
       </v-radio>
@@ -67,7 +67,7 @@ export default {
       >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
-            {{ $t('trans.fileProfile.collection') }}
+            {{ $t('trans.formProfile.collection') }}
           </span>
         </template>
       </v-radio>
@@ -79,7 +79,7 @@ export default {
       >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
-            {{ $t('trans.fileProfile.report') }}
+            {{ $t('trans.formProfile.report') }}
           </span>
         </template>
       </v-radio>
@@ -91,7 +91,7 @@ export default {
       >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
-            {{ $t('trans.fileProfile.registration') }}
+            {{ $t('trans.formProfile.registration') }}
           </span>
         </template>
       </v-radio>

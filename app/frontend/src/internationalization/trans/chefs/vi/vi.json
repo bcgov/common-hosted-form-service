@@ -152,7 +152,7 @@
     "validEndpointRequired": "Vui lòng nhập một điểm cuối hợp lệ bắt đầu bằng https://",
     "validBearerTokenRequired": "Nhập ví dụ về mã thông báo mang hợp lệ: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
   },
-  "fileProfile": {
+  "formProfile": {
     "deploymentLevel": "Cấp Triển khai",
     "selectDeployment": "Vui lòng chọn cấp triển khai",
     "ministryName": "Bộ",
@@ -162,6 +162,8 @@
     "selectAPI": "Vui lòng thông báo cho chúng tôi về sự lựa chọn về việc tích hợp API",
     "fundingProfile": "Hồ sơ Quỹ",
     "selectFund": "Vui lòng chọn liệu CHEFS có giúp bạn tránh việc yêu cầu quỹ hay không",
+    "nonNegativeFund": "Giá trị phải là số không âm",
+    "projectedFund": "Yêu cầu dự kiến về quỹ không có CHEFS",
     "useCaseType": "Loại Ứng dụng",
     "selectUseCase": "Vui lòng nhập mô tả ứng dụng của biểu mẫu",
     "development": "Phát triển",

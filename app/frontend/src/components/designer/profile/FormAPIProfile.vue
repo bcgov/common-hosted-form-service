@@ -11,7 +11,7 @@ export default {
     return {
       apiRules: [
         (v) => {
-          return v != null || this.$t('trans.fileProfile.selectAPI');
+          return v != null || this.$t('trans.formProfile.selectAPI');
         },
       ],
     };
@@ -27,7 +27,7 @@ export default {
   <BasePanel class="fill-height">
     <template #title
       ><span :lang="lang">{{
-        $t('trans.fileProfile.APIIntegration')
+        $t('trans.formProfile.APIIntegration')
       }}</span></template
     >
 
@@ -35,7 +35,7 @@ export default {
       <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" :value="true">
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
-            {{ $t('trans.fileProfile.Y') }}
+            {{ $t('trans.formProfile.Y') }}
           </span>
         </template>
       </v-radio>
@@ -43,7 +43,7 @@ export default {
       <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" :value="false">
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
-            {{ $t('trans.fileProfile.N') }}
+            {{ $t('trans.formProfile.N') }}
           </span>
         </template>
       </v-radio>

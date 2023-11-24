@@ -36,14 +36,14 @@ export default {
 <template>
   <BasePanel class="fill-height">
     <template #title
-      ><span :lang="lang">{{ $t('trans.fileProfile.tags') }}</span></template
+      ><span :lang="lang">{{ $t('trans.formProfile.tags') }}</span></template
     >
     <v-combobox
       v-model="form.labels"
       :items="items"
       chips
       clearable
-      :label="$t('trans.fileProfile.tags')"
+      :label="$t('trans.formProfile.tags')"
       :loading="loading"
       multiple
       variant="solo"

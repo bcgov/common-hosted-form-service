@@ -152,7 +152,7 @@
     "validEndpointRequired": "الرجاء إدخال نقطة نهاية https://",
     "validBearerTokenRequired": "89abddfb-2cff-4fda-83e6-13221f0c3d4f أدخل مثال رمز حامل صالح"
   },
-  "fileProfile": {
+  "formProfile": {
     "deploymentLevel": "مستوى النشر",
     "selectDeployment": "يرجى اختيار مستوى النشر",
     "ministryName": "وزارة",
@@ -162,6 +162,8 @@
     "selectAPI": "يرجى إبلاغنا بخيارك بخصوص استخدام تكامل واجهة برمجة التطبيقات (API)",
     "fundingProfile": "ملف التمويل",
     "selectFund": "يرجى تحديد ما إذا كانت CHEFS قد مكنتك من تجنب طلب التمويل",
+    "nonNegativeFund": "يجب أن يكون القيمة غير سالبة",
+    "projectedFund": "طلب تمويل متوقع بدون CHEFS",
     "useCaseType": "حالة الاستخدام",
     "selectUseCase": "يرجى إدخال حالة استخدام النموذج الخاص بك",
     "development": "تطوير",
@@ -810,7 +812,6 @@
     "setUpForm": "قم بإعداد النموذج",
     "manageForm": "إدارة النموذج"
   },
-
   "create": {
     "formSettings": "إعدادات النموذج",
     "disclaimer": "تنصل",
