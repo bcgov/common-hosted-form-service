@@ -1,29 +1,22 @@
-<script>
-import { mapState, mapWritableState } from 'pinia';
+<script setup>
+import { ref, computed } from 'vue';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
+import { i18n } from '~/internationalization';
 
-export default {
-  components: {
-    BasePanel,
-  },
-  data() {
-    return {
-      fundRules: [
-        (v) => {
-          return v !== null || this.$t('trans.formProfile.selectFund');
-        },
-      ],
-      fundingCostRule: [
-        (v) => v >= 0 || this.$t('trans.formProfile.nonNegativeFund'),
-      ],
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['lang', 'isRTL']),
-    ...mapWritableState(useFormStore, ['form']),
-  },
-};
+const formStore = useFormStore();
+
+const fundRules = ref([
+  (v) => v !== null || i18n.t('trans.formProfile.selectFund'),
+]);
+
+const fundingCostRule = ref([
+  (v) => v >= 0 || i18n.t('trans.formProfile.nonNegativeFund'),
+]);
+
+const form = computed(() => formStore.form);
+const lang = computed(() => formStore.lang);
+const isRTL = computed(() => formStore.isRTL);
 </script>
 
 <template>

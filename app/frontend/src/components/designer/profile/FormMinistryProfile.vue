@@ -1,30 +1,21 @@
-<script>
-import { mapState, mapWritableState } from 'pinia';
+<script setup>
+import { ref, computed } from 'vue';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
 import { Ministries } from '~/utils/constants';
+import { i18n } from '~/internationalization';
 
-export default {
-  components: {
-    BasePanel,
+const formStore = useFormStore();
+
+const ministryRules = ref([
+  (v) => {
+    return !!v || i18n.t('trans.formProfile.selectMinistry');
   },
-  data() {
-    return {
-      ministryRules: [
-        (v) => {
-          return !!v || this.$t('trans.formProfile.selectMinistry');
-        },
-      ],
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['lang']),
-    ...mapWritableState(useFormStore, ['form']),
-    MinistryList() {
-      return Ministries;
-    },
-  },
-};
+]);
+
+const form = computed(() => formStore.form);
+const lang = computed(() => formStore.lang);
+const MinistryList = computed(() => Ministries);
 </script>
 
 <template>

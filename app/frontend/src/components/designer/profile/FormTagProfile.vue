@@ -1,35 +1,39 @@
-<script>
-import { mapState, mapWritableState } from 'pinia';
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import { i18n } from '~/internationalization';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
-import { userService } from '../../../services';
+import userService from '~/services/userService';
+import { useNotificationStore } from '~/store/notification';
 
-export default {
-  components: {
-    BasePanel,
-  },
-  data() {
-    return {
-      items: [],
-      loading: true,
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['lang']),
-    ...mapWritableState(useFormStore, ['form']),
-  },
-  async mounted() {
-    this.loading = true;
+const formStore = useFormStore();
+const notificationStore = useNotificationStore();
+const items = ref([]);
+const loading = ref(true);
 
+const form = computed(() => formStore.form);
+const lang = computed(() => formStore.lang);
+
+onMounted(async () => {
+  try {
+    loading.value = true;
     const result = await userService.getUserLabels();
-    this.items = result.data;
-    this.loading = false;
-  },
-  methods: {
-    remove(item) {
-      this.chips.splice(this.chips.indexOf(item), 1);
-    },
-  },
+    items.value = result.data;
+  } catch (error) {
+    notificationStore.addNotification({
+      text: i18n.t('trans.formProfile.getLabelErr'),
+      consoleError: i18n.t('trans.formProfile.getLabelConsErr') + `${error}`,
+    });
+  } finally {
+    loading.value = false;
+  }
+});
+
+const remove = (item) => {
+  formStore.form.labels.value.splice(
+    formStore.form.labels.value.indexOf(item),
+    1
+  );
 };
 </script>
 

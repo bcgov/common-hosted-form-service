@@ -154,6 +154,8 @@
     "ministryName": "Ministry",
     "selectMinistry": "Please select your ministry",
     "tags": "Tags",
+    "getLabelErr": "An error has occured while trying to fetch user labels.",
+    "getLabelConsErr": "Error fetching labels: ",
     "APIIntegration": "API Integration",
     "selectAPI": "Please inform us your choice regarding the use of API Integration",
     "fundingProfile": "Funding Profile",

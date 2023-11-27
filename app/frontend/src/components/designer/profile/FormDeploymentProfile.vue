@@ -1,30 +1,21 @@
-<script>
-import { mapState, mapWritableState } from 'pinia';
+<script setup>
+import { ref, computed } from 'vue';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
 import { FormProfileValues } from '~/utils/constants';
+import { i18n } from '~/internationalization';
 
-export default {
-  components: {
-    BasePanel,
+const formStore = useFormStore();
+
+const deploymentRequiredRules = ref([
+  (v) => {
+    return !!v || i18n.t('trans.formProfile.selectDeployment');
   },
-  data() {
-    return {
-      deploymentRequiredRules: [
-        (v) => {
-          return !!v || this.$t('trans.formProfile.selectDeployment');
-        },
-      ],
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
-    ...mapWritableState(useFormStore, ['form']),
-    FORM_PROFILE() {
-      return FormProfileValues;
-    },
-  },
-};
+]);
+const form = computed(() => formStore.form);
+const lang = computed(() => formStore.lang);
+const isRTL = computed(() => formStore.isRTL);
+const FORM_PROFILE = computed(() => FormProfileValues);
 </script>
 
 <template>
