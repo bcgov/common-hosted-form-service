@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { i18n } from '~/internationalization';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
@@ -11,8 +11,8 @@ const notificationStore = useNotificationStore();
 const items = ref([]);
 const loading = ref(true);
 
-const form = computed(() => formStore.form);
-const lang = computed(() => formStore.lang);
+const form = formStore.form;
+const lang = formStore.lang;
 
 onMounted(async () => {
   try {
@@ -30,10 +30,7 @@ onMounted(async () => {
 });
 
 const remove = (item) => {
-  formStore.form.labels.value.splice(
-    formStore.form.labels.value.indexOf(item),
-    1
-  );
+  form.labels.value.splice(form.labels.value.indexOf(item), 1);
 };
 </script>
 

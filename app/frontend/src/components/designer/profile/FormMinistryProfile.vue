@@ -13,8 +13,8 @@ const ministryRules = ref([
   },
 ]);
 
-const form = computed(() => formStore.form);
-const lang = computed(() => formStore.lang);
+const form = formStore.form;
+const lang = formStore.lang;
 const MinistryList = computed(() => Ministries);
 </script>
 

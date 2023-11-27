@@ -12,9 +12,9 @@ const deploymentRequiredRules = ref([
     return !!v || i18n.t('trans.formProfile.selectDeployment');
   },
 ]);
-const form = computed(() => formStore.form);
-const lang = computed(() => formStore.lang);
-const isRTL = computed(() => formStore.isRTL);
+const form = formStore.form;
+const lang = formStore.lang;
+const isRTL = formStore.isRTL;
 const FORM_PROFILE = computed(() => FormProfileValues);
 </script>
 

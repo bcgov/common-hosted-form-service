@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useFormStore } from '~/store/form';
 import { i18n } from '~/internationalization';
@@ -14,9 +14,9 @@ const fundingCostRule = ref([
   (v) => v >= 0 || i18n.t('trans.formProfile.nonNegativeFund'),
 ]);
 
-const form = computed(() => formStore.form);
-const lang = computed(() => formStore.lang);
-const isRTL = computed(() => formStore.isRTL);
+const form = formStore.form;
+const lang = formStore.lang;
+const isRTL = formStore.isRTL;
 </script>
 
 <template>
