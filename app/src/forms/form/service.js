@@ -85,7 +85,6 @@ const service = {
       obj.useCase = data.useCase
 
       await Form.query(trx).insert(obj);
-      console.log("\n\n\n\n");
       if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
         const fips = [];
         for (const p of data.identityProviders) {
