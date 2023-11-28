@@ -22,7 +22,12 @@ const isRTL = formStore.isRTL;
     >
 
     <v-radio-group v-model="form.apiIntegration" :rules="apiRules">
-      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" :value="true">
+      <v-radio
+        class="mb-4"
+        :class="{ 'dir-rtl': isRTL }"
+        :value="true"
+        data-test="api-true"
+      >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.formProfile.Y') }}
@@ -30,7 +35,12 @@ const isRTL = formStore.isRTL;
         </template>
       </v-radio>
 
-      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" :value="false">
+      <v-radio
+        class="mb-4"
+        :class="{ 'dir-rtl': isRTL }"
+        :value="false"
+        data-test="api-false"
+      >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.formProfile.N') }}

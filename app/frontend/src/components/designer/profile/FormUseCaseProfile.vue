@@ -32,6 +32,7 @@ const FORM_PROFILE = computed(() => FormProfileValues);
         class="mb-4"
         :class="{ 'dir-rtl': isRTL }"
         :value="FORM_PROFILE.FEEDBACK"
+        data-test="case-feedback"
       >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
@@ -44,6 +45,7 @@ const FORM_PROFILE = computed(() => FormProfileValues);
         class="mb-4"
         :class="{ 'dir-rtl': isRTL }"
         :value="FORM_PROFILE.APPLICATION"
+        data-test="case-application"
       >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
@@ -56,6 +58,7 @@ const FORM_PROFILE = computed(() => FormProfileValues);
         class="mb-4"
         :class="{ 'dir-rtl': isRTL }"
         :value="FORM_PROFILE.COLLECTION"
+        data-test="case-collection"
       >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
@@ -68,6 +71,7 @@ const FORM_PROFILE = computed(() => FormProfileValues);
         class="mb-4"
         :class="{ 'dir-rtl': isRTL }"
         :value="FORM_PROFILE.REPORT"
+        data-test="case-report"
       >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
@@ -80,6 +84,7 @@ const FORM_PROFILE = computed(() => FormProfileValues);
         class="mb-4"
         :class="{ 'dir-rtl': isRTL }"
         :value="FORM_PROFILE.REGISTRATION"
+        data-test="case-registration"
       >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">

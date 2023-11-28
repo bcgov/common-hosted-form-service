@@ -42,7 +42,6 @@ routes.get('/:userId', async (req, res, next) => {
   await controller.read(req, res, next);
 });
 
-
 //
 // User Form Preferences
 //

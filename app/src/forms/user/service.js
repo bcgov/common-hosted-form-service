@@ -44,21 +44,22 @@ const service = {
 
   updateUserLabels: async (userId, body) => {
     for (const labelDescription of body) {
-      const existingLabel = await Label.query().where({
-        userId: userId,
-        labelDescription: labelDescription
-      }).first();
-  
+      const existingLabel = await Label.query()
+        .where({
+          userId: userId,
+          labelDescription: labelDescription,
+        })
+        .first();
+
       if (!existingLabel) {
         await Label.query().insert({
           id: uuidv4(),
           userId: userId,
-          labelDescription: labelDescription
+          labelDescription: labelDescription,
         });
       }
     }
   },
-  
 
   //
   // User Preferences

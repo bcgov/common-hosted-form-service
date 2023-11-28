@@ -35,6 +35,7 @@ const FORM_PROFILE = computed(() => FormProfileValues);
         class="mb-4"
         :class="{ 'dir-rtl': isRTL }"
         :value="FORM_PROFILE.DEVELOPMENT"
+        data-test="deployment-development"
       >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
@@ -47,6 +48,7 @@ const FORM_PROFILE = computed(() => FormProfileValues);
         class="mb-4"
         :class="{ 'dir-rtl': isRTL }"
         :value="FORM_PROFILE.TEST"
+        data-test="deployment-test"
       >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
@@ -59,6 +61,7 @@ const FORM_PROFILE = computed(() => FormProfileValues);
         class="mb-4"
         :class="{ 'dir-rtl': isRTL }"
         :value="FORM_PROFILE.PRODUCTION"
+        data-test="deployment-prod"
       >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">

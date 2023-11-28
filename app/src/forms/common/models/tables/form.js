@@ -132,7 +132,7 @@ class Form extends Timestamps(Model) {
       'apiIntegration',
       'funding',
       'fundingCost',
-      'useCase'
+      'useCase',
     ];
   }
 

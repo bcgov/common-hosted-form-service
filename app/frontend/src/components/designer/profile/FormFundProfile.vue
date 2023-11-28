@@ -28,7 +28,12 @@ const isRTL = formStore.isRTL;
     >
 
     <v-radio-group v-model="form.funding" :rules="fundRules">
-      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" :value="true">
+      <v-radio
+        class="mb-4"
+        :class="{ 'dir-rtl': isRTL }"
+        :value="true"
+        data-test="fund-true"
+      >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.formProfile.Y') }}
@@ -43,8 +48,14 @@ const isRTL = formStore.isRTL;
         prefix="$"
         type="number"
         min="0"
+        data-test="fund-cost"
       ></v-text-field>
-      <v-radio class="mb-4" :class="{ 'dir-rtl': isRTL }" :value="false">
+      <v-radio
+        class="mb-4"
+        :class="{ 'dir-rtl': isRTL }"
+        :value="false"
+        data-test="fund-false"
+      >
         <template #label>
           <span :class="{ 'mr-2': isRTL }" :lang="lang">
             {{ $t('trans.formProfile.N') }}
