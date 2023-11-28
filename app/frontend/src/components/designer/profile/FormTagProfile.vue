@@ -28,40 +28,24 @@ onMounted(async () => {
     loading.value = false;
   }
 });
-
-const remove = (item) => {
-  form.labels.value.splice(form.labels.value.indexOf(item), 1);
-};
 </script>
 
 <template>
   <BasePanel class="fill-height">
     <template #title
-      ><span :lang="lang">{{ $t('trans.formProfile.tags') }}</span></template
+      ><span :lang="lang">{{ $t('trans.formProfile.label') }}</span></template
     >
     <v-combobox
       v-model="form.labels"
       :items="items"
       chips
       clearable
-      :label="$t('trans.formProfile.tags')"
+      :label="$t('trans.formProfile.label')"
       :loading="loading"
       multiple
       variant="solo"
+      closable-chips
     >
-      <template #selection="{ attrs, item, select, selected }">
-        <v-chip
-          v-bind="attrs"
-          :model-value="selected"
-          closable
-          @click="select"
-          @click:close="remove(item)"
-        >
-          <strong>{{ item }}</strong
-          >&nbsp;
-          <span>(interest)</span>
-        </v-chip>
-      </template>
     </v-combobox>
   </BasePanel>
 </template>
