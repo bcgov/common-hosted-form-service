@@ -64,11 +64,11 @@ const genInitialForm = () => ({
   userType: IdentityMode.TEAM,
   versions: [],
   enableCopyExistingSubmission: false,
-  deploymentLevel: '',
-  ministry: '',
+  deploymentLevel: null,
+  ministry: null,
   labels: [],
   apiIntegration: null,
-  useCase: '',
+  useCase: null,
 });
 
 export const useFormStore = defineStore('form', {

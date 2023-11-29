@@ -168,7 +168,7 @@ export default {
               :disabled="formSettingsDisabled"
               @onSubscription="onSubscription"
             />
-            <FormProfile />
+            <FormProfile :disabled="formSettingsDisabled" />
           </v-form>
 
           <div v-if="canEditForm && !formSettingsDisabled" class="mb-5">

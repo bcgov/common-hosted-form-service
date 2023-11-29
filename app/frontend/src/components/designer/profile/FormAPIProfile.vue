@@ -17,6 +17,10 @@ const apiIntegration = computed(() => [
 </script>
 
 <template>
+  <div class="ml-1 mb-4">
+    Specify if you intend to utilize the provided API for integration into a
+    third-party application.
+  </div>
   <v-autocomplete
     v-model="form.apiIntegration"
     :rules="apiRules"

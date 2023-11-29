@@ -20,12 +20,14 @@ const useCase = computed(() => [
   { id: 'report', text: i18n.t('trans.formProfile.report') },
   { id: 'feedback', text: i18n.t('trans.formProfile.feedback') },
 ]);
-// const lang = computed(() => formStore.lang);
-// const isRTL = computed(() => formStore.isRTL);
-// const FORM_PROFILE = computed(() => FormProfileValues);
 </script>
 
 <template>
+  <div class="ml-1 mb-4">
+    Choose the purpose of your form below. If you do not see your specific use
+    case listed, contact <a href="">matthew.hall@gov.bc.ca</a> to discuss
+    further options.
+  </div>
   <v-autocomplete
     v-model="form.useCase"
     label="Use Case"
