@@ -76,12 +76,8 @@ export default {
           {{ $t('trans.create.formSettings') }}
         </h1>
         <FormSettings />
-        <BasePanel class="my-6">
-          <template #title>
-            <span :lang="lang">{{ $t('trans.create.formProfile') }}</span>
-          </template>
-          <FormProfile />
-        </BasePanel>
+
+        <FormProfile />
 
         <BasePanel class="my-6">
           <template #title

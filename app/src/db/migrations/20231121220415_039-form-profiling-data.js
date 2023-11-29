@@ -13,8 +13,6 @@ exports.up = function (knex) {
             table.string('deploymentLevel').notNullable().defaultTo('');
             table.string('ministry').notNullable().defaultTo('');
             table.boolean('apiIntegration').nullable().comment('Use of API integrations');
-            table.boolean('funding').nullable().comment('Inquires if the use of CHEFS enabled creator to avoid requesting funding');
-            table.decimal('fundingCost').comment('Optional projected cost of funds');
             table.string('useCase').notNullable().defaultTo('').comment('Explains the use case for this particualar form');
 
         }));
@@ -26,8 +24,6 @@ exports.down = function (knex) {
             table.dropColumn('deploymentLevel');
             table.dropColumn('ministry');
             table.dropColumn('apiIntegration');
-            table.dropColumn('funding');
-            table.dropColumn('fundingCost');
             table.dropColumn('useCase');
         }).then(() => knex.schema.dropTableIfExists('label'))
         );

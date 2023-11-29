@@ -80,8 +80,6 @@ const service = {
       obj.deploymentLevel = data.deploymentLevel;
       obj.ministry = data.ministry;
       obj.apiIntegration = data.apiIntegration;
-      obj.funding = data.funding;
-      obj.fundingCost = data.fundingCost;
       obj.useCase = data.useCase;
 
       await Form.query(trx).insert(obj);
@@ -158,8 +156,6 @@ const service = {
         deploymentLevel: data.deploymentLevel,
         ministry: data.ministry,
         apiIntegration: data.apiIntegration,
-        funding: data.funding,
-        fundingCost: data.fundingCost,
         useCase: data.useCase,
       };
 
