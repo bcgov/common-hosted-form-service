@@ -39,7 +39,10 @@ export default {
   },
   watch: {
     files() {
-      if (this.templateForm?.files) {
+      if (
+        this.templateForm?.files &&
+        this.templateForm.files[0] instanceof File
+      ) {
         const { name, extension } = this.splitFileName(
           this.templateForm.files[0].name
         );
