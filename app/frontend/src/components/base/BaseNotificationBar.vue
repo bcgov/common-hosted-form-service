@@ -23,7 +23,12 @@ export default {
   created() {
     if (this.notification.consoleError) {
       // eslint-disable-next-line no-console
-      console.error(i18n.t(this.notification.consoleError));
+      console.error(
+        i18n.t(
+          this.notification.consoleError.text,
+          this.notification.consoleError.options
+        )
+      );
     }
   },
   mounted() {
@@ -33,7 +38,10 @@ export default {
         typeof this.notification.consoleError === 'string' ||
           this.notification.consoleError instanceof String
           ? this.notification.consoleError
-          : i18n.t(this.notification.consoleError)
+          : i18n.t(
+              this.notification.consoleError.text,
+              this.notification.consoleError.options
+            )
       );
     }
     const notificationStore = useNotificationStore();
