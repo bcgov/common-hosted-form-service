@@ -72,7 +72,7 @@ export default {
           class="pl-3"
           :class="isRTL ? 'float-right' : 'float-left'"
           :label="$t('trans.adminFormsTable.showDeletedForms')"
-          @click="refreshForms"
+          @update:model-value="refreshForms"
         >
           <template #label>
             <span :class="{ 'mr-2': isRTL }" :lang="lang">
