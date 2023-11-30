@@ -34,6 +34,10 @@
   "manageLayout": {
     "manageForm": "مدیریت فرم"
   },
+  "preview": {
+    "preview": "پیش نمایش",
+    "previewToolTip": "این یک پیش نمایش از طراحی و رفتار نسخه فرم را نشان می دهد که ارسال کنندگان شما آن را مشاهده می کنند. شما نمی توانید فرم را از این صفحه ارسال کنید."
+  },
   "shareForm": {
     "shareForm": "اشتراک گذاری فرم",
     "shareLink": "لینک را به اشتراک بگذارید",
@@ -186,9 +190,7 @@
     "formOwnerKeyAcess": "برای مدیریت کلیدهای API باید <strong>مالک فرم</strong> باشید.",
     "regenerate": "بازسازی کنید",
     "generate": "تولید می کنند",
-    "secret": "راز",
-    "text": "متن",
-    "password": "کلمه عبور"
+    "secret": "راز"
   },
   "manageVersions": {
     "important": "مهم!",
@@ -393,7 +395,7 @@
     "emailRequired": "ایمیل الزامی است"
   },
   "submissionsTable": {
-    "noMachingRecordText": "هیچ رکورد منطبقی یافت نشد",
+    "noMatchingRecordText": "هیچ رکورد منطبقی یافت نشد",
     "submissions": "موارد ارسالی",
     "submissionsTable": "جدول ارسالی",
     "selectColumns": "ستون ها را انتخاب کنید",
@@ -483,7 +485,7 @@
     "editThisDraft": "این پیش نویس را ویرایش کنید"
   },
   "mySubmissionsTable": {
-    "noMachingRecordText": "هیچ رکورد منطبقی یافت نشد",
+    "noMatchingRecordText": "هیچ رکورد منطبقی یافت نشد",
     "previousSubmissions": "ارسالی های قبلی",
     "selectColumns": "ستون ها را انتخاب کنید",
     "createNewSubmission": "یک ارسال جدید ایجاد کنید",
@@ -660,6 +662,7 @@
     "updatedBy": "تغییر داده شده توسط"
   },
   "teamManagement": {
+    "noMatchingRecordText": "هیچ رکورد منطبقی یافت نشد",
     "teamManagement": "مدیریت تیم",
     "selectColumns": "ستون ها را انتخاب کنید",
     "manageForm": "مدیریت فرم",
@@ -779,11 +782,11 @@
     "createOnlineTitle": "فرم های آنلاین برای جمع آوری اطلاعات از مشتریان خود و بهبود گردش کار خود ایجاد کنید.",
     "getStarted": "شروع کنید"
   },
-"baseStepper": {
-  "setUpForm": "فرم را تنظیم کنید",
-  "designForm": "فرم طراحی",
-  "manageForm": "مدیریت فرم"
-},
+  "baseStepper": {
+    "setUpForm": "فرم را تنظیم کنید",
+    "designForm": "فرم طراحی",
+    "manageForm": "مدیریت فرم"
+  },
   "create": {
     "formSettings": "تنظیمات فرم",
     "disclaimer": "سلب مسئولیت",

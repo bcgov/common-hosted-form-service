@@ -1,118 +1,118 @@
-import { shallowMount, createLocalVue } from '@vue/test-utils';
-import Vuex from 'vuex';
-import i18n from '@/internationalization';
-import getRouter from '@/router';
-import BaseAuthButton from '@/components/base/BaseAuthButton.vue';
+// @vitest-environment happy-dom
+// happy-dom is required to access window.location
 
-const router = getRouter();
-const localVue = createLocalVue();
-localVue.use(router);
-localVue.use(Vuex);
+import { mount } from '@vue/test-utils';
+import { setActivePinia, createPinia } from 'pinia';
+import { vi } from 'vitest';
+
+import getRouter from '~/router';
+import BaseAuthButton from '~/components/base/BaseAuthButton.vue';
+import { useAuthStore } from '~/store/auth';
 
 describe('BaseAuthButton.vue', () => {
-  let store;
+  const pinia = createPinia();
+  setActivePinia(pinia);
+  const authStore = useAuthStore();
+  const router = getRouter();
+  const windowReplaceSpy = vi.spyOn(window.location, 'replace');
 
-  beforeEach(() => {
-    store = new Vuex.Store();
+  beforeEach(async () => {
+    windowReplaceSpy.mockReset();
+    authStore.$reset();
+    authStore.keycloak = {
+      createLoginUrl: vi.fn((opts) => opts),
+      createLogoutUrl: vi.fn((opts) => opts),
+    };
+    router.currentRoute.value.meta.hasLogin = true;
+    router.push('/');
+    await router.isReady();
   });
 
   it('renders nothing when not authenticated and does not hasLogin', () => {
-    store.registerModule('auth', {
-      namespaced: true,
-      getters: {
-        authenticated: () => false,
-        keycloakReady: () => true
+    authStore.authenticated = false;
+    authStore.ready = true;
+    router.currentRoute.value.meta.hasLogin = false;
+    const wrapper = mount(BaseAuthButton, {
+      global: {
+        plugins: [router, pinia],
       },
-
     });
-
-    const wrapper = shallowMount(BaseAuthButton, { localVue, router, store, i18n });
 
     expect(wrapper.text()).toEqual('');
   });
 
   it('renders login when not authenticated and hasLogin', () => {
-    store.registerModule('auth', {
-      namespaced: true,
-      getters: {
-        authenticated: () => false,
-        keycloakReady: () => true,
+    authStore.authenticated = false;
+    authStore.ready = true;
+    const wrapper = mount(BaseAuthButton, {
+      global: {
+        plugins: [router, pinia],
       },
     });
 
-    const wrapper = shallowMount(BaseAuthButton, { localVue, router, store, i18n });
     wrapper.vm.$route.meta.hasLogin = true;
 
-    expect(wrapper.text()).toMatch('Login');
+    expect(wrapper.text()).toEqual('trans.baseAuthButton.login');
   });
 
   it('renders logout when authenticated', () => {
-    store.registerModule('auth', {
-      namespaced: true,
-      getters: {
-        authenticated: () => true,
-        keycloakReady: () => true,
+    authStore.authenticated = true;
+    authStore.ready = true;
+    const wrapper = mount(BaseAuthButton, {
+      global: {
+        plugins: [router, pinia],
       },
     });
 
-    const wrapper = shallowMount(BaseAuthButton, { localVue, router, store, i18n });
-
-    expect(wrapper.text()).toMatch('Logout');
+    expect(wrapper.text()).toEqual('trans.baseAuthButton.logout');
   });
 
-  it('renders nothing if keycloak is not keycloakReady', () => {
-    store.registerModule('auth', {
-      namespaced: true,
-      getters: {
-        authenticated: () => false,
-        keycloakReady: () => false,
+  it('renders nothing if keycloak is not ready', () => {
+    authStore.authenticated = false;
+    authStore.ready = false;
+    const wrapper = mount(BaseAuthButton, {
+      global: {
+        plugins: [router, pinia],
       },
     });
-
-    const wrapper = shallowMount(BaseAuthButton, { localVue, router, store, i18n });
 
     expect(wrapper.text()).toBeFalsy();
   });
 
-  it('login button redirects to login url', () => {
-    const mockLogin = jest.fn();
-    store.registerModule('auth', {
-      namespaced: true,
-      getters: {
-        authenticated: () => false,
-        keycloakReady: () => true,
-      },
-      actions: {
-        login: mockLogin,
+  it('login button redirects to login url', async () => {
+    authStore.authenticated = false;
+    authStore.ready = true;
+    const wrapper = mount(BaseAuthButton, {
+      global: {
+        plugins: [router, pinia],
       },
     });
 
-    const wrapper = shallowMount(BaseAuthButton, { localVue, router, store, i18n });
-    wrapper.vm.login();
+    const replace = vi.spyOn(router, 'replace');
 
-    expect(wrapper.text()).toMatch('Login');
-    expect(mockLogin).toHaveBeenCalledTimes(1);
-    expect(mockLogin).toHaveBeenCalledWith(expect.any(Object), undefined);
+    wrapper.vm.login();
+    expect(wrapper.text()).toMatch('trans.baseAuthButton.login');
+    expect(replace).toHaveBeenCalledTimes(1);
+    expect(replace).toHaveBeenCalledWith({
+      name: 'Login',
+      query: { idpHint: ['idir', 'bceid-business', 'bceid-basic'] },
+    });
   });
 
-  it('logout button redirects to logout url', () => {
-    const mockLogout = jest.fn();
-    store.registerModule('auth', {
-      namespaced: true,
-      getters: {
-        authenticated: () => true,
-        keycloakReady: () => true,
-      },
-      actions: {
-        logout: mockLogout,
+  it('logout button redirects to logout url', async () => {
+    authStore.authenticated = true;
+    authStore.ready = true;
+    const wrapper = mount(BaseAuthButton, {
+      global: {
+        plugins: [router, pinia],
       },
     });
 
-    const wrapper = shallowMount(BaseAuthButton, { localVue, router, store, i18n });
     wrapper.vm.logout();
-
-    expect(wrapper.text()).toMatch('Logout');
-    expect(mockLogout).toHaveBeenCalledTimes(1);
-    expect(mockLogout).toHaveBeenCalledWith(expect.any(Object), undefined);
+    expect(wrapper.text()).toMatch('trans.baseAuthButton.logout');
+    expect(windowReplaceSpy).toHaveBeenCalledTimes(1);
+    expect(windowReplaceSpy).toHaveBeenCalledWith({
+      redirectUri: location.origin,
+    });
   });
 });

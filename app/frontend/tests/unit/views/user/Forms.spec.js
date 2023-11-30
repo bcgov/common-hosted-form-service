@@ -1,17 +1,18 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import Forms from '@/views/user/Forms.vue';
-import i18n from '@/internationalization';
+import { mount } from '@vue/test-utils';
+import { describe, expect, it } from 'vitest';
 
-const localVue = createLocalVue();
+import Forms from '~/views/user/Forms.vue';
 
 describe('Forms.vue', () => {
   it('renders', () => {
-    const wrapper = shallowMount(Forms, {
-      localVue,
-      stubs: ['FormsTable'],
-      i18n
+    const wrapper = mount(Forms, {
+      global: {
+        stubs: {
+          FormsTable: true,
+        },
+      },
     });
 
-    expect(wrapper.html()).toMatch('formstable');
+    expect(wrapper.html()).toMatch('forms-table');
   });
 });
