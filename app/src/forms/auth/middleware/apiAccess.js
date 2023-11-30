@@ -23,7 +23,7 @@ module.exports = async (req, res, next) => {
         const result = await submissionService.read(params.formSubmissionId);
         formId = result?.form?.id;
       } else if (params.id && uuidValidate(params.id)) {
-        // get submissionID from request body
+        // check for file id (saved as id), get submissionID from request body
         const sid = await fileService.read(params.id);
         //check to see that an associated submissionId exists
         if (!sid || !sid.formSubmissionId) {
