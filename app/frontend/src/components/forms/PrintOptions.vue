@@ -258,11 +258,9 @@ export default {
             </a>
             {{ $t('trans.printOptions.pageFromBrowser') }}
           </p>
-          <v-switch v-model="expandedText">
+          <v-switch v-model="expandedText" color="primary">
             <template #label>
-              <span style="font-size: 14px">
-                Expand text fields while printing
-              </span>
+              <span style="font-size: 16px">Expand text fields</span>
             </template>
           </v-switch>
           <v-btn class="mb-5 mr-5" color="primary" @click="printBrowser">
