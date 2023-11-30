@@ -1,4 +1,4 @@
-FROM docker.io/node:16.15.0-alpine
+FROM docker.io/node:18.18.2-alpine
 
 ENV NO_UPDATE_NOTIFIER=true
 WORKDIR /opt/app-root/src/app
@@ -9,4 +9,9 @@ RUN npm run all:ci \
   && npm run components:clean \
   && npm run components:purge
 EXPOSE 8000
+# Create the /.npm directory and grant access to group 0 to allow npm v9 to work
+# See: https://docs.openshift.com/container-platform/4.11/openshift_images/create-images.html#use-uid_create-images
+RUN mkdir /.npm
+RUN chgrp -R 0 /.npm && \
+    chmod -R g=u /.npm
 CMD ["npm", "run", "start"]

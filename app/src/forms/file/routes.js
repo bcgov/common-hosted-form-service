@@ -3,13 +3,12 @@ const controller = require('./controller');
 
 const P = require('../common/constants').Permissions;
 const { currentFileRecord, hasFileCreate, hasFilePermissions } = require('./middleware/filePermissions');
-const middleware = require('../common/middleware');
 const fileUpload = require('./middleware/upload').fileUpload;
 const { currentUser } = require('../auth/middleware/userAccess');
 
 routes.use(currentUser);
 
-routes.post('/', middleware.publicRateLimiter, hasFileCreate, fileUpload.upload, async (req, res, next) => {
+routes.post('/', hasFileCreate, fileUpload.upload, async (req, res, next) => {
   await controller.create(req, res, next);
 });
 

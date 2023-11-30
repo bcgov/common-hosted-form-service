@@ -185,7 +185,7 @@ const service = {
       await FormSubmissionUser.query(trx).delete().where('formSubmissionId', formSubmissionId).where('userId', userId);
 
       // create the batch and insert. So if permissions is empty it removes the user from the submission
-      if (body.permissions !== []) {
+      if (Array.isArray(body.permissions) && body.permissions.length !== 0) {
         // add ids and save them
         const items = body.permissions.map((perm) => ({
           id: uuidv4(),

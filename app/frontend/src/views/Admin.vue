@@ -1,32 +1,28 @@
-<template>
-  <BaseSecure admin :idp="[IDP.IDIR]">
-    <v-container>
-      <transition name="component-fade" mode="out-in">
-        <router-view />
-      </transition>
-    </v-container>
-  </BaseSecure>
-</template>
-
 <script>
-import { mapGetters } from 'vuex';
-
-import admin from '@/store/modules/admin.js';
-import { IdentityProviders } from '@/utils/constants';
+import { mapState } from 'pinia';
+import BaseSecure from '~/components/base/BaseSecure.vue';
+import { useAuthStore } from '~/store/auth';
+import { IdentityProviders } from '~/utils/constants';
 
 export default {
-  name: 'Admin',
-  computed: {
-    ...mapGetters('auth', ['isAdmin']),
-    IDP: () => IdentityProviders,
+  components: {
+    BaseSecure,
   },
-  created() {
-    if (this.$store.hasModule('admin')) {
-      this.$store.unregisterModule('admin');
-    }
-    if (this.isAdmin) {
-      this.$store.registerModule('admin', admin);
-    }
+  computed: {
+    ...mapState(useAuthStore, ['isAdmin']),
+    IDP: () => IdentityProviders,
   },
 };
 </script>
+
+<template>
+  <BaseSecure :admin="isAdmin" :idp="[IDP.IDIR]">
+    <v-container>
+      <router-view v-slot="{ Component }">
+        <transition name="component-fade" mode="out-in">
+          <component :is="Component"></component>
+        </transition>
+      </router-view>
+    </v-container>
+  </BaseSecure>
+</template>

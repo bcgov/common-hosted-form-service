@@ -1,4 +1,4 @@
-import zh from '@/internationalization/trans/chefs/zh/zh.json';
+import zh from '~/internationalization/trans/chefs/zh/zh.json';
 export default {
   trans: zh,
 };

@@ -34,6 +34,10 @@
   "manageLayout": {
     "manageForm": "Administrar formulario"
   },
+  "preview": {
+    "preview": "Avance",
+    "previewToolTip": "Esto muestra una vista previa del diseño y el comportamiento de la versión del formulario tal como lo verán los remitentes. No puede enviar el formulario desde esta página."
+  },
   "shareForm": {
     "shareForm": "Compartir formulario",
     "shareLink": "Compartir enlace",
@@ -186,9 +190,7 @@
     "formOwnerKeyAcess": "Debe ser el <strong>propietario del formulario</strong> para administrar las claves API.",
     "regenerate": "Regenerado",
     "generate": "Generar",
-    "secret": "Secreto",
-    "text": "texto",
-    "password": "contraseña"
+    "secret": "Secreto"
   },
   "manageVersions": {
     "important": "¡IMPORTANTE!",
@@ -393,7 +395,7 @@
     "emailRequired": "Correo electrónico es requerido"
   },
   "submissionsTable": {
-    "noMachingRecordText": "No se encontraron registros coincidentes",
+    "noMatchingRecordText": "No se encontraron registros coincidentes",
     "submissions": "Presentaciones",
     "submissionsTable": "Tabla de envíos",
     "selectColumns": "Seleccionar columnas",
@@ -483,7 +485,7 @@
     "editThisDraft": "Editar este borrador"
   },
   "mySubmissionsTable": {
-    "noMachingRecordText": "No se encontraron registros coincidentes",
+    "noMatchingRecordText": "No se encontraron registros coincidentes",
     "previousSubmissions": "Envíos anteriores",
     "selectColumns": "Seleccionar columnas",
     "createNewSubmission": "Crear una nueva presentación",
@@ -660,6 +662,7 @@
     "updatedBy": "Modificado por"
   },
   "teamManagement": {
+    "noMatchingRecordText": "No se encontraron registros coincidentes",
     "teamManagement": "Gestión de equipos",
     "selectColumns": "Seleccionar columnas",
     "manageForm": "Administrar formulario",
@@ -779,11 +782,11 @@
     "createOnlineTitle": "Cree formularios en línea para recopilar información de sus clientes y mejorar sus flujos de trabajo.",
     "getStarted": "Empezar"
   },
-"baseStepper": {
-  "setUpForm": "Configurar formulario",
-  "designForm": "Formulario de diseño",
-  "manageForm": "Administrar formulario"
-},
+  "baseStepper": {
+    "setUpForm": "Configurar formulario",
+    "designForm": "Formulario de diseño",
+    "manageForm": "Administrar formulario"
+  },
   "create": {
     "formSettings": "Configuración de formulario",
     "disclaimer": "Descargo de responsabilidad",

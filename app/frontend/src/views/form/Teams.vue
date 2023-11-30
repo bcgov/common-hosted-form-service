@@ -1,16 +1,11 @@
-<template>
-  <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBUSINESS]">
-    <TeamManagement :formId="f" />
-  </BaseSecure>
-</template>
-
 <script>
-import TeamManagement from '@/components/forms/manage/TeamManagement.vue';
-import { IdentityProviders } from '@/utils/constants';
+import BaseSecure from '~/components/base/BaseSecure.vue';
+import TeamManagement from '~/components/forms/manage/TeamManagement.vue';
+import { IdentityProviders } from '~/utils/constants';
 
 export default {
-  name: 'FormTeams',
   components: {
+    BaseSecure,
     TeamManagement,
   },
   props: {
@@ -24,3 +19,9 @@ export default {
   },
 };
 </script>
+
+<template>
+  <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBUSINESS]">
+    <TeamManagement :form-id="f" />
+  </BaseSecure>
+</template>

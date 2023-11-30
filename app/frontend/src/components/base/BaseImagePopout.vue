@@ -1,25 +1,3 @@
-<template>
-  <div>
-    <v-hover>
-      <template v-slot:default="{ hover }">
-        <v-img
-          :class="`elevation-${hover ? 24 : 6}`"
-          class="thumbnail"
-          :alt="alt"
-          contain
-          :src="src"
-          :width="width"
-          @click="dialog = true"
-        />
-      </template>
-    </v-hover>
-
-    <v-dialog v-model="dialog" width="unset">
-      <v-card><v-img :alt="alt" :src="src" /></v-card>
-    </v-dialog>
-  </div>
-</template>
-
 <script>
 export default {
   props: {
@@ -33,6 +11,7 @@ export default {
     },
     width: {
       type: String,
+      default: '600px',
     },
   },
   data() {
@@ -42,6 +21,30 @@ export default {
   },
 };
 </script>
+
+<template>
+  <div>
+    <v-hover>
+      <template #default="{ isHovering, props }">
+        <v-img
+          data-test="v-hover-img"
+          v-bind="props"
+          :class="`elevation-${isHovering ? 24 : 6}`"
+          class="thumbnail"
+          :alt="alt"
+          cover
+          :src="src"
+          :width="width"
+          @click="dialog = true"
+        />
+      </template>
+    </v-hover>
+
+    <v-dialog v-model="dialog" data-test="v-dialog" width="150vh">
+      <v-card><v-img data-test="v-dialog-img" :alt="alt" :src="src" /></v-card>
+    </v-dialog>
+  </div>
+</template>
 
 <style lang="scss" scoped>
 .thumbnail:hover {

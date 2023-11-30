@@ -11,6 +11,7 @@
       "fileCount": "1",
       "fileKey": "files",
       "fileMaxSize": "25MB",
+      "fileMaxSizeBytes": "25000000",
       "fileMinSize": "0KB",
       "path": "files"
     },
@@ -48,8 +49,8 @@
     "port": "8080",
     "rateLimit": {
       "public": {
-        "windowMs": "900000",
-        "max": "100"
+        "windowMs": "60000",
+        "max": "60"
       }
     }
   },
