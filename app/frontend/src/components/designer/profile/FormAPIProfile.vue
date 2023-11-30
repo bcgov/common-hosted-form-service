@@ -1,32 +1,45 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useFormStore } from '~/store/form';
 import { i18n } from '~/internationalization';
 
 const formStore = useFormStore();
 const apiRules = ref([
-  (v) => v != null || i18n.t('trans.formProfile.selectAPI'),
+  (v) => v != null || i18n.t('trans.formProfile.selectAPIErr'),
 ]);
 const form = formStore.form;
-
-// Change this to constants somehow
-const apiIntegration = computed(() => [
-  { id: true, text: i18n.t('trans.formProfile.Y') },
-  { id: false, text: i18n.t('trans.formProfile.N') },
-]);
+const isRTL = formStore.isRTL;
+const lang = formStore.lang;
 </script>
 
 <template>
   <div class="ml-1 mb-4">
-    Specify if you intend to utilize the provided API for integration into a
-    third-party application.
+    {{ $t('trans.formProfile.APIPrompt') }}
   </div>
-  <v-autocomplete
-    v-model="form.apiIntegration"
-    :rules="apiRules"
-    :label="$t('trans.formProfile.APIIntegration')"
-    :items="apiIntegration"
-    item-title="text"
-    item-value="id"
-  ></v-autocomplete>
+  <v-radio-group v-model="form.apiIntegration" :rules="apiRules">
+    <v-radio
+      class="mb-4"
+      :class="{ 'dir-rtl': isRTL }"
+      :value="true"
+      data-test="api-true"
+    >
+      <template #label>
+        <span :class="{ 'mr-2': isRTL }" :lang="lang">
+          {{ $t('trans.formProfile.Y') }}
+        </span>
+      </template></v-radio
+    >
+    <v-radio
+      class="mb-4"
+      :class="{ 'dir-rtl': isRTL }"
+      :value="false"
+      data-test="api-false"
+    >
+      <template #label>
+        <span :class="{ 'mr-2': isRTL }" :lang="lang">
+          {{ $t('trans.formProfile.N') }}
+        </span>
+      </template></v-radio
+    >
+  </v-radio-group>
 </template>

@@ -8,7 +8,7 @@ const formStore = useFormStore();
 
 const ministryRules = ref([
   (v) => {
-    return !!v || i18n.t('trans.formProfile.selectMinistry');
+    return !!v || i18n.t('trans.formProfile.selectMinistryErr');
   },
 ]);
 
@@ -17,8 +17,12 @@ const MinistryList = computed(() => Ministries);
 </script>
 
 <template>
+  <div class="ml-1 mt-lg-2 mb-9">
+    {{ $t('trans.formProfile.ministryPrompt') }}
+  </div>
   <v-autocomplete
     v-model="form.ministry"
+    class="mt-lg-n3"
     :rules="ministryRules"
     :label="$t('trans.formProfile.ministryName')"
     :items="MinistryList"

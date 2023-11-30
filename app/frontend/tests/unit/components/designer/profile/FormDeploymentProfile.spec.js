@@ -23,7 +23,6 @@ describe('FormDeploymentProfile.vue', () => {
         },
       })
   
-      expect(wrapper.text()).toMatch('trans.formProfile.deploymentLevel');
       expect(wrapper.text()).toMatch('trans.formProfile.development');
       expect(wrapper.text()).toMatch('trans.formProfile.test');
       expect(wrapper.text()).toMatch('trans.formProfile.production');

@@ -8,7 +8,7 @@ const formStore = useFormStore();
 
 const useCaseRules = ref([
   (v) => {
-    return !!v || i18n.t('trans.formProfile.selectUseCase');
+    return !!v || i18n.t('trans.formProfile.selectUseCaseErr');
   },
 ]);
 
@@ -24,13 +24,11 @@ const useCase = computed(() => [
 
 <template>
   <div class="ml-1 mb-4">
-    Choose the purpose of your form below. If you do not see your specific use
-    case listed, contact <a href="">matthew.hall@gov.bc.ca</a> to discuss
-    further options.
+    {{ $t('trans.formProfile.useCasePrompt') }}
   </div>
   <v-autocomplete
     v-model="form.useCase"
-    label="Use Case"
+    :label="$t('trans.formProfile.useCase')"
     :rules="useCaseRules"
     :items="useCase"
     item-title="text"

@@ -3,7 +3,6 @@ import FormDeploymentProfile from '~/components/designer/profile/FormDeploymentP
 import FormMinistryProfile from '~/components/designer/profile/FormMinistryProfile.vue';
 import FormTagProfile from '~/components/designer/profile/FormTagProfile.vue';
 import FormAPIProfile from '~/components/designer/profile/FormAPIProfile.vue';
-// import FormFundProfile from '~/components/designer/profile/FormFundProfile.vue';
 import FormUseCaseProfile from '~/components/designer/profile/FormUseCaseProfile.vue';
 import { useFormStore } from '~/store/form';
 import BasePanel from '~/components/base/BasePanel.vue';
@@ -19,27 +18,21 @@ const lang = formStore.lang;
       <span :lang="lang">{{ $t('trans.create.formProfile') }}</span>
     </template>
     <v-container class="px-0" :class="{ 'dir-rtl': isRTL }">
-      <div class="mb-6 ml-1 font-weight-medium">
-        The CHEFS team is collecting and organizing information to serve as
-        crucial input for crafting comprehensive business cases. These cases
-        will play a pivotal role in guiding the strategic operation and ongoing
-        improvement of CHEFS in the coming years. This initiative to gather data
-        is essential for informing critical decisions and molding the trajectory
-        of CHEFS, ensuring its adaptability and effectiveness in addressing
-        evolving needs and challenges.
+      <div class="mb-6 ml-1 font-weight-bold">
+        {{ $t('trans.formProfile.message') }}
       </div>
       <v-row>
-        <v-col cols="12" md="6">
-          <FormDeploymentProfile />
-        </v-col>
         <v-col cols="12" md="6">
           <FormMinistryProfile />
         </v-col>
         <v-col cols="12" md="6">
-          <FormAPIProfile />
+          <FormUseCaseProfile />
         </v-col>
         <v-col cols="12" md="6">
-          <FormUseCaseProfile />
+          <FormDeploymentProfile />
+        </v-col>
+        <v-col cols="12" md="6">
+          <FormAPIProfile />
         </v-col>
         <v-col>
           <FormTagProfile />

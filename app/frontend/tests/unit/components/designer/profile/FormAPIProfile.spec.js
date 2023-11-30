@@ -21,7 +21,6 @@ describe('FormAPIProfile.vue', () => {
         plugins: [pinia],
     },
     })
-    expect(wrapper.text()).toMatch('trans.formProfile.APIIntegration');
     expect(wrapper.text()).toMatch('trans.formProfile.Y');
     expect(wrapper.text()).toMatch('trans.formProfile.N');
 
