@@ -1,60 +1,64 @@
 import 'nprogress/nprogress.css';
 import '@bcgov/bc-sans/css/BCSans.css';
-import '@/assets/scss/style.scss';
-import i18n from '@/internationalization';
+import '~/assets/scss/style.scss';
+
 import axios from 'axios';
+import Keycloak from 'keycloak-js';
 import NProgress from 'nprogress';
-import Vue from 'vue';
-import App from '@/App.vue';
-import '@/filters';
-import auth from '@/store/modules/auth.js';
-import getRouter from '@/router';
-import store from '@/store';
+import { createPinia } from 'pinia';
+import { createApp, h } from 'vue';
+
+import App from '~/App.vue';
+
+import { formatDate, formatDateLong } from '~/filters';
+import i18n from '~/internationalization';
+import vuetify from '~/plugins/vuetify';
+import getRouter from '~/router';
+import { useAuthStore } from '~/store/auth';
+import { useAppStore } from '~/store/app';
+import { assertOptions, getConfig, sanitizeConfig } from '~/utils/keycloak';
+
+let keycloak = null;
+const pinia = createPinia();
+
+const app = createApp({
+  render: () => h(App),
+});
+
+app.config.globalProperties.$filters = {
+  formatDate,
+  formatDateLong,
+};
 
 // Add our custom components to the formio instance
 // importing the main formio dependency (whether through vue-formio or directly)
 // has to be done BEFORE the keycloak adapter for some reason or it breaks the keycloak library on non-Chromium MS Edge (or IE11).
 // No idea why, probably a polyfill clash
-import BcGovFormioComponents from '@/formio/lib';
-import { Formio } from 'vue-formio';
+import BcGovFormioComponents from '~/formio/lib';
+import { Formio } from '@formio/vue';
 Formio.use(BcGovFormioComponents);
 
-/* import font awesome icon component */
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-/* add font awesome icon component */
-Vue.component('font-awesome-icon', FontAwesomeIcon);
-import VueBlobJsonCsv from 'vue-blob-json-csv';
-Vue.use(VueBlobJsonCsv);
+/* import clipboard */
+import Clipboard from 'vue3-clipboard';
+app.use(Clipboard, {
+  autoSetContainer: true,
+  appendToBody: true,
+});
 
-import VueKeycloakJs from '@/plugins/keycloak';
-import vuetify from '@/plugins/vuetify';
-
-Vue.config.productionTip = false;
+app.use(pinia);
+app.use(vuetify);
 
 NProgress.configure({ showSpinner: false });
 NProgress.start();
 
-// Globally register all components with base in the name
-const requireComponent = require.context(
-  '@/components',
-  true,
-  /Base[A-Z]\w+\.(vue|js)$/
-);
-requireComponent.keys().forEach((fileName) => {
-  const componentConfig = requireComponent(fileName);
-  const componentName = fileName
-    .split('/')
-    .pop()
-    .replace(/\.\w+$/, '');
-  Vue.component(componentName, componentConfig.default || componentConfig);
-});
-
 // IE11 Detection (https://stackoverflow.com/a/21825207)
 if (!!window.MSInputMethodContext && !!document.documentMode) {
   document.write(`<div style="padding-top: 5em; text-align: center;">
-    <h1>We're sorry but ${process.env.VUE_APP_TITLE} is not supported in Internet Explorer.</h1>
-    <h1>Please use a modern browser instead (<a href="https://www.google.com/intl/en_ca/chrome/">Chrome</a>, <a href="https://www.mozilla.org/en-CA/firefox/">Firefox</a>, etc).</h1>
-  </div>`);
+      <h1>We're sorry but ${
+        import.meta.env.VITE_TITLE
+      } is not supported in Internet Explorer.</h1>
+      <h1>Please use a modern browser instead (<a href="https://www.google.com/intl/en_ca/chrome/">Chrome</a>, <a href="https://www.mozilla.org/en-CA/firefox/">Firefox</a>, etc).</h1>
+    </div>`);
   NProgress.done();
 } else {
   loadConfig();
@@ -67,15 +71,17 @@ if (!!window.MSInputMethodContext && !!document.documentMode) {
  * @param {string} [basepath='/'] base server path
  */
 function initializeApp(kcSuccess = false, basePath = '/') {
-  if (kcSuccess && !store.hasModule('auth')) store.registerModule('auth', auth);
+  if (!kcSuccess) return;
 
-  new Vue({
-    router: getRouter(basePath),
-    i18n,
-    store,
-    vuetify,
-    render: (h) => h(App),
-  }).$mount('#app');
+  app.use(i18n);
+
+  const router = getRouter(basePath);
+  app.use(router);
+  router.app = app;
+
+  app.mount('#app');
+
+  axios.defaults.baseURL = import.meta.env.BASE_URL;
 
   NProgress.done();
 }
@@ -87,9 +93,9 @@ function initializeApp(kcSuccess = false, basePath = '/') {
 async function loadConfig() {
   // App publicPath is ./ - so use relative path here, will hit the backend server using relative path to root.
   const configUrl =
-    process.env.NODE_ENV === 'production'
+    import.meta.env.MODE === 'production'
       ? 'config'
-      : `${process.env.BASE_URL}/config`;
+      : `${import.meta.env.BASE_URL}/config`;
   const storageKey = 'config';
   try {
     // Get configuration if it isn't already in session storage
@@ -100,7 +106,8 @@ async function loadConfig() {
 
     // Mount the configuration as a prototype for easier access from Vue
     const config = JSON.parse(sessionStorage.getItem(storageKey));
-    Vue.prototype.$config = Object.freeze(config);
+    const appStore = useAppStore();
+    appStore.config = Object.freeze(config);
 
     if (
       !config ||
@@ -126,7 +133,12 @@ async function loadConfig() {
  * @param {object} config A config object
  */
 function loadKeycloak(config) {
-  Vue.use(VueKeycloakJs, {
+  const defaultParams = {
+    config: window.__BASEURL__ ? `${window.__BASEURL__}/config` : '/config',
+    init: { onLoad: 'login-required' },
+  };
+
+  const options = Object.assign({}, defaultParams, {
     init: { onLoad: 'check-sso' },
     config: {
       clientId: config.keycloak.clientId,
@@ -141,4 +153,50 @@ function loadKeycloak(config) {
       console.error(error); // eslint-disable-line no-console
     },
   });
+
+  if (assertOptions(options).hasError)
+    throw new Error(`Invalid options given: ${assertOptions(options).error}`);
+
+  getConfig(options.config)
+    .then((cfg) => {
+      const ctor = sanitizeConfig(cfg);
+
+      const authStore = useAuthStore();
+
+      keycloak = new Keycloak(ctor);
+      keycloak.onReady = (authenticated) => {
+        authStore.updateKeycloak(keycloak, authenticated);
+        authStore.ready = true;
+        typeof options.onReady === 'function' && options.onReady();
+      };
+      keycloak.onAuthSuccess = () => {
+        // Check token validity every 10 seconds (10 000 ms) and, if necessary, update the token.
+        // Refresh token if it's valid for less then 60 seconds
+        const updateTokenInterval = setInterval(
+          () =>
+            keycloak.updateToken(60).catch(() => {
+              keycloak.clearToken();
+            }),
+          10000
+        );
+        authStore.logoutFn = () => {
+          clearInterval(updateTokenInterval);
+          keycloak.logout(
+            options.logout || { redirectUri: config['logoutRedirectUri'] }
+          );
+        };
+      };
+      keycloak.onAuthRefreshSuccess = () => {
+        authStore.updateKeycloak(keycloak, true);
+      };
+      keycloak.onAuthLogout = () => {
+        authStore.updateKeycloak(keycloak, false);
+      };
+      keycloak.init(options.init).catch((err) => {
+        typeof options.onInitError === 'function' && options.onInitError(err);
+      });
+    })
+    .catch((err) => {
+      console.log(err); // eslint-disable-line no-console
+    });
 }

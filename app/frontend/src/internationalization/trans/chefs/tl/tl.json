@@ -34,6 +34,10 @@
   "manageLayout": {
     "manageForm": "Pamahalaan ang Form"
   },
+  "preview": {
+    "preview": "Silipin",
+    "previewToolTip": "Nagpapakita ito ng preview ng disenyo at gawi ng bersyon ng form habang makikita ito ng iyong mga nagsumite. Hindi mo maaaring isumite ang form mula sa pahinang ito."
+  },
   "shareForm": {
     "shareForm": "Ibahagi ang Form",
     "shareLink": "Ibahagi ang Link",
@@ -186,9 +190,7 @@
     "formOwnerKeyAcess": "Ikaw dapat ang <strong>May-ari ng Form</strong> para pamahalaan ang Mga API Key.",
     "regenerate": "Magbagong-buhay",
     "generate": "Bumuo",
-    "secret": "Lihim",
-    "text": "text",
-    "password": "password"
+    "secret": "Lihim"
   },
   "manageVersions": {
     "important": "MAHALAGA!",
@@ -393,7 +395,7 @@
     "emailRequired": "Kinakailangan ang email"
   },
   "submissionsTable": {
-    "noMachingRecordText": "Walang nakitang katugmang mga tala",
+    "noMatchingRecordText": "Walang nakitang katugmang mga tala",
     "submissions": "Mga pagsusumite",
     "submissionsTable": "Talahanayan ng mga Pagsusumite",
     "selectColumns": "Piliin ang Mga Column",
@@ -483,7 +485,7 @@
     "editThisDraft": "I-edit ang Draft na ito"
   },
   "mySubmissionsTable": {
-    "noMachingRecordText": "Walang nakitang katugmang mga tala",
+    "noMatchingRecordText": "Walang nakitang katugmang mga tala",
     "previousSubmissions": "Nakaraang Mga Pagsusumite",
     "selectColumns": "Piliin ang Mga Column",
     "createNewSubmission": "Gumawa ng Bagong Pagsusumite",
@@ -660,6 +662,7 @@
     "updatedBy": "Binago ni"
   },
   "teamManagement": {
+    "noMatchingRecordText": "Walang nakitang katugmang mga tala",
     "teamManagement": "Pamamahala ng Koponan",
     "selectColumns": "Piliin ang Mga Column",
     "manageForm": "Pamahalaan ang Form",
@@ -783,7 +786,7 @@
     "setUpForm": "I-set up ang Form",
     "designForm": "Form ng Disenyo",
     "manageForm": "Pamahalaan ang Form"
-    },
+  },
   "create": {
     "formSettings": "Mga Setting ng Form",
     "disclaimer": "Disclaimer",
@@ -842,9 +845,7 @@
     "loadingFormErrMsg": "Nagkaroon ng error habang nilo-load ang form na ito.",
     "loadingForm": "Error habang naglo-load ng {options}: {error}",
     "idpHintMsg": "Ang form na ito ay nangangailangan ng {idpHint} authentication. Mangyaring muling mag-login at subukang muli.",
-    "formIdpMissMatch": "Hindi tugma sa form ng IDP. Ang form ay nangangailangan ng {idpHint} ngunit ang user ay may {userIdp}."
-  },
-  "download": {
+    "formIdpMissMatch": "Hindi tugma sa form ng IDP. Ang form ay nangangailangan ng {idpHint} ngunit ang user ay may {userIdp}.",
     "chefsDataExport": "Pag-export ng Data ng CHEFS",
     "preparingForDownloading": "Naghahanda para sa pag-download...",
     "downloadInfoA": "Kung hindi awtomatikong nagda-download ang iyong file",

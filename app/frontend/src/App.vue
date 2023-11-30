@@ -1,30 +1,44 @@
-<template>
-  <v-app>
-    <BaseNotificationContainer />
-    <BCGovHeader />
-    <BCGovNavBar />
-
-    <v-main>
-      <transition name="component-fade" mode="out-in">
-        <router-view />
-      </transition>
-    </v-main>
-
-    <BCGovFooter />
-  </v-app>
-</template>
-
 <script>
-import BCGovHeader from '@/components/bcgov/BCGovHeader.vue';
-import BCGovFooter from '@/components/bcgov/BCGovFooter.vue';
-import BCGovNavBar from '@/components/bcgov/BCGovNavBar.vue';
+import BaseNotificationContainer from '~/components/base/BaseNotificationContainer.vue';
+import BCGovHeader from '~/components/bcgov/BCGovHeader.vue';
+import BCGovNavBar from './components/bcgov/BCGovNavBar.vue';
+import BCGovFooter from '~/components/bcgov/BCGovFooter.vue';
 
 export default {
-  name: 'App',
   components: {
+    BaseNotificationContainer,
     BCGovHeader,
-    BCGovFooter,
     BCGovNavBar,
+    BCGovFooter,
   },
 };
 </script>
+
+<template>
+  <v-layout ref="app" class="app">
+    <v-main class="app">
+      <BaseNotificationContainer />
+      <BCGovHeader />
+      <BCGovNavBar />
+      <RouterView v-slot="{ Component }">
+        <transition name="component-fade" mode="out-in">
+          <component :is="Component" class="main" />
+        </transition>
+      </RouterView>
+      <BCGovFooter />
+    </v-main>
+  </v-layout>
+</template>
+
+<style lang="scss" scoped>
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  -webkit-box-flex: 1;
+}
+
+.main {
+  flex: 1 0 auto;
+}
+</style>

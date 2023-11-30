@@ -1,3 +1,50 @@
+<script>
+import { mapActions, mapState } from 'pinia';
+import VueJsonPretty from 'vue-json-pretty';
+
+import BaseCopyToClipboard from '~/components/base/BaseCopyToClipboard.vue';
+import { i18n } from '~/internationalization';
+import { rbacService } from '~/services';
+import { useAuthStore } from '~/store/auth';
+import { useFormStore } from '~/store/form';
+import { useNotificationStore } from '~/store/notification';
+
+export default {
+  components: {
+    BaseCopyToClipboard,
+    VueJsonPretty,
+  },
+  data() {
+    return {
+      apiRes: '',
+    };
+  },
+  computed: {
+    ...mapState(useAuthStore, ['fullName', 'token', 'tokenParsed', 'userName']),
+    ...mapState(useFormStore, ['lang']),
+  },
+  created() {
+    this.getUser();
+  },
+  methods: {
+    ...mapActions(useNotificationStore, ['addNotification']),
+    async getUser() {
+      try {
+        const user = await rbacService.getCurrentUser();
+        this.apiRes = user.data;
+      } catch (error) {
+        this.addNotification({
+          text: i18n.t('trans.developer.notificationMsg'),
+          consoleError:
+            i18n.t('trans.developer.notificationConsErr') +
+            `: ${error.message}`,
+        });
+      }
+    },
+  },
+};
+</script>
+
 <template>
   <div>
     <h2 class="mt-4">Developer Resources</h2>
@@ -16,19 +63,18 @@
         <h4 :lang="lang">
           {{ $t('trans.developer.JWTContents') }}
           <BaseCopyToClipboard
-            :copyText="JSON.stringify(tokenParsed)"
-            :snackBarText="$t('trans.developer.JWTContentsSBTxt')"
-            :tooltipText="$t('trans.developer.JWTContentsTTTxt')"
-            :lang="lang"
+            :text-to-copy="JSON.stringify(tokenParsed)"
+            :snack-bar-text="$t('trans.developer.JWTContentsSBTxt')"
+            :tooltip-text="$t('trans.developer.JWTContentsTTTxt')"
           />
         </h4>
         <vue-json-pretty :data="tokenParsed" />
         <h4 :lang="lang">
           {{ $t('trans.developer.JWTToken') }}
           <BaseCopyToClipboard
-            :copyText="token"
-            :snackBarText="$t('trans.developer.JWTTokenSBTxt')"
-            :tooltipText="$t('trans.developer.JWTTokenTTTxt')"
+            :text-to-copy="token"
+            :snack-bar-text="$t('trans.developer.JWTTokenSBTxt')"
+            :tooltip-text="$t('trans.developer.JWTTokenTTTxt')"
             :lang="lang"
           />
         </h4>
@@ -39,9 +85,9 @@
         <br />
         <h4>
           <BaseCopyToClipboard
-            :copyText="JSON.stringify(apiRes)"
-            :snackBarText="$t('trans.developer.RBACSBTxt')"
-            :tooltipText="$t('trans.developer.RBACTTTxt')"
+            :text-to-copy="JSON.stringify(apiRes)"
+            :snack-bar-text="$t('trans.developer.RBACSBTxt')"
+            :tooltip-text="$t('trans.developer.RBACTTTxt')"
             :lang="lang"
           />
         </h4>
@@ -50,45 +96,3 @@
     </v-row>
   </div>
 </template>
-
-<script>
-import { mapActions, mapGetters } from 'vuex';
-import { rbacService } from '@/services';
-
-import VueJsonPretty from 'vue-json-pretty';
-
-export default {
-  name: 'Developer',
-  components: {
-    VueJsonPretty,
-  },
-  data() {
-    return {
-      apiRes: '',
-    };
-  },
-  computed: {
-    ...mapGetters('auth', ['fullName', 'token', 'tokenParsed', 'userName']),
-    ...mapGetters('form', ['lang']),
-  },
-  created() {
-    this.getUser();
-  },
-  methods: {
-    ...mapActions('notifications', ['addNotification']),
-    async getUser() {
-      try {
-        const user = await rbacService.getCurrentUser();
-        this.apiRes = user.data;
-      } catch (error) {
-        this.addNotification({
-          message: this.$t('trans.developer.notificationMsg'),
-          consoleError:
-            this.$t('trans.developer.notificationConsErr') +
-            `: ${error.message}`,
-        });
-      }
-    },
-  },
-};
-</script>

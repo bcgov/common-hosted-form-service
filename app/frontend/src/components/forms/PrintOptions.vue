@@ -1,114 +1,23 @@
-<template>
-  <span :class="{ 'dir-rtl': isRTL }">
-    <v-tooltip bottom>
-      <template #activator="{ on, attrs }">
-        <v-btn
-          class="mx-1"
-          @click="dialog = true"
-          color="primary"
-          icon
-          v-bind="attrs"
-          v-on="on"
-        >
-          <v-icon>print</v-icon>
-        </v-btn>
-      </template>
-      <span :lang="lang">{{ $t('trans.printOptions.print') }} </span>
-    </v-tooltip>
-
-    <v-dialog
-      v-model="dialog"
-      width="900"
-      content-class="export-submissions-dlg"
-    >
-      <v-card :class="{ 'dir-rtl': isRTL }">
-        <v-card-title class="text-h5 pb-0" :lang="lang">{{
-          $t('trans.printOptions.downloadOptions')
-        }}</v-card-title>
-        <v-card-text>
-          <hr />
-          <p :lang="lang">
-            <strong>1. </strong>
-            <a
-              href="https://github.com/bcgov/common-hosted-form-service/wiki/Printing-from-a-browser"
-              target="blank"
-              :hreflang="lang"
-              >{{ $t('trans.printOptions.print') }}</a
-            >
-            {{ $t('trans.printOptions.pageFromBrowser') }}
-          </p>
-          <v-btn class="mb-5 mr-5" color="primary" @click="printBrowser">
-            <span :lang="lang">{{
-              $t('trans.printOptions.browserPrint')
-            }}</span>
-          </v-btn>
-
-          <p :lang="lang">
-            <strong>2.</strong> {{ $t('trans.printOptions.uploadA') }}
-            <a
-              href="https://github.com/bcgov/common-hosted-form-service/wiki/CDOGS-Template-Upload"
-              target="blank"
-              :hreflang="lang"
-              >{{ $t('trans.printOptions.cDogsTemplate') }}</a
-            >
-            {{ $t('trans.printOptions.uploadB') }}
-          </p>
-          <v-file-input
-            :class="{ label: isRTL }"
-            :style="isRTL ? { gap: '10px' } : null"
-            counter
-            :clearable="true"
-            :label="$t('trans.printOptions.uploadTemplateFile')"
-            persistent-hint
-            prepend-icon="attachment"
-            required
-            mandatory
-            show-size
-            v-model="templateForm.files"
-            :lang="lang"
-          >
-            <template v-slot:prepend>
-              <span class="label">
-                <v-icon>attachment</v-icon>
-              </span>
-            </template>
-          </v-file-input>
-
-          <v-card-actions>
-            <v-tooltip top>
-              <template #activator="{ on }">
-                <v-btn
-                  color="primary"
-                  class="btn-file-input-submit"
-                  :disabled="!templateForm.files"
-                  id="file-input-submit"
-                  :loading="loading"
-                  @click="generate"
-                  v-on="on"
-                >
-                  <v-icon :left="$vuetify.breakpoint.smAndUp">save</v-icon>
-                  <span :lang="lang">{{
-                    $t('trans.printOptions.templatePrint')
-                  }}</span>
-                </v-btn>
-              </template>
-              <span :lang="lang">{{
-                $t('trans.printOptions.submitButtonTxt')
-              }}</span>
-            </v-tooltip>
-          </v-card-actions>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-  </span>
-</template>
-
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import { formService, utilsService } from '@/services';
-import { NotificationTypes } from '@/utils/constants';
+import { mapState, mapActions } from 'pinia';
+import { i18n } from '~/internationalization';
+import { formService, utilsService } from '~/services';
+import { NotificationTypes } from '~/utils/constants';
+
+import { useFormStore } from '~/store/form';
+import { useNotificationStore } from '~/store/notification';
 
 export default {
+  props: {
+    submissionId: {
+      type: String,
+      default: '',
+    },
+    submission: {
+      type: Object,
+      default: undefined,
+    },
+  },
   data() {
     return {
       dialog: false,
@@ -119,28 +28,40 @@ export default {
         outputFileName: '',
         outputFileType: null,
       },
+      timeout: undefined,
     };
   },
-  props: {
-    submissionId: String,
-    submission: {
-      type: Object,
-      default: undefined,
-    },
-  },
-
   computed: {
+    ...mapState(useFormStore, ['isRTL', 'lang']),
     files() {
       return this.templateForm.files;
     },
-    ...mapGetters('form', ['isRTL', 'lang']),
+  },
+  watch: {
+    files() {
+      if (
+        this.templateForm?.files &&
+        this.templateForm.files[0] instanceof File
+      ) {
+        const { name, extension } = this.splitFileName(
+          this.templateForm.files[0].name
+        );
+        if (!this.templateForm.outputFileName) {
+          this.templateForm.outputFileName = name;
+        }
+        this.templateForm.contentFileType = extension;
+      }
+    },
+  },
+  beforeUnmount() {
+    if (this.timeout) clearTimeout(this.timeout);
   },
   methods: {
-    ...mapActions('notifications', ['addNotification']),
+    ...mapActions(useNotificationStore, ['addNotification']),
     async printBrowser() {
       this.dialog = false;
       // Setting a timeout to allow the modal to close before opening the windows print
-      setTimeout(() => {
+      this.timeout = setTimeout(() => {
         window.print();
       }, 500);
     },
@@ -156,6 +77,7 @@ export default {
 
       return { name, extension };
     },
+
     fileToBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -164,6 +86,7 @@ export default {
         reader.onerror = (error) => reject(error);
       });
     },
+
     getDispositionFilename(disposition) {
       return disposition
         ? disposition.substring(disposition.indexOf('filename=') + 9)
@@ -179,6 +102,7 @@ export default {
       window.URL.revokeObjectURL(url);
       a.remove();
     },
+
     async generate() {
       try {
         this.loading = true;
@@ -187,7 +111,7 @@ export default {
         let contentFileType = '';
         let outputFileName = '';
 
-        content = await this.fileToBase64(this.templateForm.files);
+        content = await this.fileToBase64(this.templateForm.files[0]);
         contentFileType = this.templateForm.contentFileType;
         outputFileName = this.templateForm.outputFileName;
 
@@ -222,13 +146,13 @@ export default {
         // Generate Temporary Download Link
         this.createDownload(blob, filename);
         this.addNotification({
-          message: this.$t('trans.printOptions.docGrnSucess'),
+          text: i18n.t('trans.printOptions.docGrnSucess'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (e) {
         this.addNotification({
-          message: this.$t('trans.printOptions.failedDocGenErrMsg'),
-          consoleError: this.$t('trans.printOptions.failedDocGenErrMsg', {
+          text: i18n.t('trans.printOptions.failedDocGenErrMsg'),
+          consoleError: i18n.t('trans.printOptions.failedDocGenErrMsg', {
             error: e.message,
           }),
         });
@@ -251,16 +175,108 @@ export default {
       };
     },
   },
-  watch: {
-    files() {
-      if (this.templateForm.files && this.templateForm.files instanceof File) {
-        const { name, extension } = this.splitFileName(this.files.name);
-        if (!this.templateForm.outputFileName) {
-          this.templateForm.outputFileName = name;
-        }
-        this.templateForm.contentFileType = extension;
-      }
-    },
-  },
 };
 </script>
+
+<template>
+  <span :class="{ 'dir-rtl': isRTL }">
+    <v-tooltip location="bottom">
+      <template #activator="{ props }">
+        <v-btn
+          class="mx-1"
+          color="primary"
+          v-bind="props"
+          size="x-small"
+          density="default"
+          icon="mdi:mdi-printer"
+          @click="dialog = true"
+        />
+      </template>
+      <span :lang="lang">{{ $t('trans.printOptions.print') }}</span>
+    </v-tooltip>
+
+    <v-dialog
+      v-model="dialog"
+      width="900"
+      content-class="export-submissions-dlg"
+    >
+      <v-card :class="{ 'dir-rtl': isRTL }">
+        <v-card-title class="text-h5 pb-0" :lang="lang">{{
+          $t('trans.printOptions.downloadOptions')
+        }}</v-card-title>
+        <v-card-text>
+          <hr />
+          <p :lang="lang">
+            <strong>1. </strong>
+            <a
+              href="https://github.com/bcgov/common-hosted-form-service/wiki/Printing-from-a-browser"
+              target="blank"
+              :hreflang="lang"
+            >
+              {{ $t('trans.printOptions.print') }}
+            </a>
+            {{ $t('trans.printOptions.pageFromBrowser') }}
+          </p>
+          <v-btn class="mb-5 mr-5" color="primary" @click="printBrowser">
+            <span :lang="lang">{{
+              $t('trans.printOptions.browserPrint')
+            }}</span>
+          </v-btn>
+
+          <p :lang="lang">
+            <strong>2.</strong> {{ $t('trans.printOptions.uploadA') }}
+            <a
+              href="https://github.com/bcgov/common-hosted-form-service/wiki/CDOGS-Template-Upload"
+              target="blank"
+              :hreflang="lang"
+            >
+              {{ $t('trans.printOptions.cDogsTemplate') }}
+            </a>
+            {{ $t('trans.printOptions.uploadB') }}
+          </p>
+          <v-file-input
+            v-model="templateForm.files"
+            :class="{ label: isRTL }"
+            :style="isRTL ? { gap: '10px' } : null"
+            counter
+            :clearable="true"
+            :label="$t('trans.printOptions.uploadTemplateFile')"
+            persistent-hint
+            prepend-icon="attachment"
+            required
+            mandatory
+            show-size
+            :lang="lang"
+          />
+          <v-card-actions>
+            <v-tooltip location="top">
+              <template #activator="{ props }">
+                <v-btn
+                  id="file-input-submit"
+                  variant="flat"
+                  class="btn-file-input-submit px-4"
+                  :disabled="!templateForm.files"
+                  color="primary"
+                  :loading="loading"
+                  v-bind="props"
+                  @click="generate"
+                >
+                  <v-icon
+                    :start="$vuetify.display.smAndUp"
+                    icon="mdi:mdi-content-save"
+                  />
+                  <span :lang="lang">{{
+                    $t('trans.printOptions.templatePrint')
+                  }}</span>
+                </v-btn>
+              </template>
+              <span :lang="lang">{{
+                $t('trans.printOptions.submitButtonTxt')
+              }}</span>
+            </v-tooltip>
+          </v-card-actions>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+  </span>
+</template>
