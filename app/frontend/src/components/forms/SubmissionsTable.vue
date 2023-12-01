@@ -448,18 +448,24 @@ export default {
           };
           // Add any custom columns
           this.userColumns.forEach((col) => {
+            let colData = s[col];
+            if (!(typeof colData === 'string' || typeof colData === 'number')) {
+              // The data isn't a string or number, so we should turn it into a string
+              colData = JSON.stringify(colData);
+            }
             if (Object.keys(fields).includes(col)) {
-              fields[`${col}_1`] = s[col];
+              let suffixNum = 1;
+              while (Object.keys(fields).includes(col + '_' + suffixNum)) {
+                suffixNum++;
+              }
+              fields[`${col}_${suffixNum}`] = colData;
             } else {
-              fields[col] = s[col];
+              fields[col] = colData;
             }
           });
           return fields;
         });
         this.serverItems = tableRows;
-        this.submissionsCheckboxes = new Array(this.serverItems.length).fill(
-          false
-        );
       }
     },
     async populateSubmissionsTable() {

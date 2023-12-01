@@ -263,10 +263,21 @@ export default {
           };
           s?.submission?.submission?.data &&
             Object.keys(s.submission.submission.data).forEach((col) => {
+              let colData = s.submission.submission.data[col];
+              if (
+                !(typeof colData === 'string' || typeof colData === 'number')
+              ) {
+                // The data isn't a string or number, so we should turn it into a string
+                colData = JSON.stringify(colData);
+              }
               if (Object.keys(fields).includes(col)) {
-                fields[`${col}_1`] = s.submission.submission.data[col];
+                let suffixNum = 1;
+                while (Object.keys(fields).includes(col + '_' + suffixNum)) {
+                  suffixNum++;
+                }
+                fields[`${col}_${suffixNum}`] = colData;
               } else {
-                fields[col] = s.submission.submission.data[col];
+                fields[col] = colData;
               }
             });
           return fields;
