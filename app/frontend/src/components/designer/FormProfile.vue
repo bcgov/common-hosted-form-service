@@ -1,7 +1,7 @@
 <script setup>
 import FormDeploymentProfile from '~/components/designer/profile/FormDeploymentProfile.vue';
 import FormMinistryProfile from '~/components/designer/profile/FormMinistryProfile.vue';
-import FormTagProfile from '~/components/designer/profile/FormTagProfile.vue';
+import FormLabelProfile from '~/components/designer/profile/FormLabelProfile.vue';
 import FormAPIProfile from '~/components/designer/profile/FormAPIProfile.vue';
 import FormUseCaseProfile from '~/components/designer/profile/FormUseCaseProfile.vue';
 import { useFormStore } from '~/store/form';
@@ -35,7 +35,7 @@ const lang = formStore.lang;
           <FormAPIProfile />
         </v-col>
         <v-col>
-          <FormTagProfile />
+          <FormLabelProfile />
         </v-col>
       </v-row>
     </v-container>

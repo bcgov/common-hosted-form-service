@@ -17,12 +17,12 @@ const MinistryList = computed(() => Ministries);
 </script>
 
 <template>
-  <div class="ml-1 mt-lg-2 mb-9">
+  <div class="ml-1 mt-lg-3 mb-10 mt-md-4">
     {{ $t('trans.formProfile.ministryPrompt') }}
   </div>
   <v-autocomplete
     v-model="form.ministry"
-    class="mt-lg-n3"
+    class="mt-lg-n4"
     :rules="ministryRules"
     :label="$t('trans.formProfile.ministryName')"
     :items="MinistryList"
