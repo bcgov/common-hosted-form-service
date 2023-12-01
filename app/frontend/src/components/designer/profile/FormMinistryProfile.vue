@@ -13,7 +13,12 @@ const ministryRules = ref([
 ]);
 
 const form = formStore.form;
-const MinistryList = computed(() => Ministries);
+const MinistryList = computed(() => {
+  return Ministries.map((ministry) => ({
+    id: ministry.id,
+    text: i18n.t(`trans.ministries.${ministry.id}`),
+  }));
+});
 </script>
 
 <template>

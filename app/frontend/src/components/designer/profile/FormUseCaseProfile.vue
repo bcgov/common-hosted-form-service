@@ -13,25 +13,13 @@ const useCaseRules = ref([
 ]);
 
 const form = computed(() => formStore.form);
-const useCase = computed(() => [
-  {
-    id: FormProfileValues.APPLICATION,
-    text: i18n.t('trans.formProfile.application'),
-  },
-  {
-    id: FormProfileValues.COLLECTION,
-    text: i18n.t('trans.formProfile.collection'),
-  },
-  {
-    id: FormProfileValues.REGISTRATION,
-    text: i18n.t('trans.formProfile.registration'),
-  },
-  { id: FormProfileValues.REPORT, text: i18n.t('trans.formProfile.report') },
-  {
-    id: FormProfileValues.FEEDBACK,
-    text: i18n.t('trans.formProfile.feedback'),
-  },
-]);
+
+const useCase = computed(() => {
+  return FormProfileValues.USE_CASE.map((useCase) => ({
+    id: useCase.id,
+    text: i18n.t(`trans.formProfile.${useCase.id}`),
+  }));
+});
 </script>
 
 <template>
