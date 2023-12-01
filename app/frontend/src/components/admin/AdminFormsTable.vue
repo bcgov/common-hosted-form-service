@@ -9,7 +9,7 @@ export default {
   data() {
     return {
       showDeleted: false,
-      loading: true,
+      loading: false,
       search: '',
     };
   },
@@ -48,15 +48,19 @@ export default {
       ];
     },
   },
+  watch: {
+    showDeleted() {
+      this.refreshForms();
+    },
+  },
   async mounted() {
-    await this.getForms();
-    this.loading = false;
+    this.refreshForms();
   },
   methods: {
     ...mapActions(useAdminStore, ['getForms']),
     async refreshForms() {
       this.loading = true;
-      await this.getForms(this.showDeleted);
+      await this.getForms(!this.showDeleted);
       this.loading = false;
     },
   },
@@ -70,9 +74,9 @@ export default {
         <v-checkbox
           v-model="showDeleted"
           class="pl-3"
+          data-test="checkbox-show-deleted"
           :class="isRTL ? 'float-right' : 'float-left'"
           :label="$t('trans.adminFormsTable.showDeletedForms')"
-          @update:model-value="refreshForms"
         >
           <template #label>
             <span :class="{ 'mr-2': isRTL }" :lang="lang">
