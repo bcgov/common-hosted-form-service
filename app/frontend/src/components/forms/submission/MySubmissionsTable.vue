@@ -264,7 +264,9 @@ export default {
           s?.submission?.submission?.data &&
             Object.keys(s.submission.submission.data).forEach((col) => {
               let colData = s.submission.submission.data[col];
-              if (!(typeof s[col] === 'string' || typeof s[col] === 'number')) {
+              if (
+                !(typeof colData === 'string' || typeof colData === 'number')
+              ) {
                 // The data isn't a string or number, so we should turn it into a string
                 colData = JSON.stringify(colData);
               }
