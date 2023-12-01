@@ -39,8 +39,13 @@ export default {
   },
   watch: {
     files() {
-      if (this.templateForm?.files && this.templateForm.files instanceof File) {
-        const { name, extension } = this.splitFileName(this.files.name);
+      if (
+        this.templateForm?.files &&
+        this.templateForm.files[0] instanceof File
+      ) {
+        const { name, extension } = this.splitFileName(
+          this.templateForm.files[0].name
+        );
         if (!this.templateForm.outputFileName) {
           this.templateForm.outputFileName = name;
         }
@@ -106,7 +111,7 @@ export default {
         let contentFileType = '';
         let outputFileName = '';
 
-        content = await this.fileToBase64(this.templateForm.files);
+        content = await this.fileToBase64(this.templateForm.files[0]);
         contentFileType = this.templateForm.contentFileType;
         outputFileName = this.templateForm.outputFileName;
 
