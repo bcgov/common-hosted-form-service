@@ -449,7 +449,7 @@ export default {
           // Add any custom columns
           this.userColumns.forEach((col) => {
             let colData = s[col];
-            if (isNaN(colData)) {
+            if (!(typeof s[col] === 'string' || typeof s[col] === 'number')) {
               // The data isn't a string or number, so we should turn it into a string
               colData = JSON.stringify(colData);
             }
