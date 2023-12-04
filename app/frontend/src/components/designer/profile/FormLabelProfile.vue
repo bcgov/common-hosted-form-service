@@ -11,6 +11,8 @@ const items = ref([]);
 const loading = ref(true);
 
 const form = formStore.form;
+const isRTL = formStore.isRTL;
+const lang = formStore.lang;
 
 onMounted(async () => {
   try {
@@ -54,10 +56,7 @@ onMounted(async () => {
           />
         </template>
         <span>
-          <span :lang="lang"
-            >Labels serve as a means to categorize similar forms that may belong
-            to a common organization or share a related context.</span
-          >
+          <span :lang="lang">{{ $t('trans.formProfile.labelPrompt') }}</span>
         </span>
       </v-tooltip>
     </div>
