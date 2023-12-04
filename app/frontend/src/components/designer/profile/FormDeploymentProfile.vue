@@ -18,11 +18,17 @@ const deploymentRules = ref([
 </script>
 
 <template>
-  <div class="ml-1 mb-2">{{ $t('trans.formProfile.deploymentPrompt') }}</div>
+  <div class="ml-1 mb-2" :lang="lang">
+    <span v-if="!form.deploymentLevel" class="text-danger"
+      ><strong>*</strong></span
+    >
+    {{ $t('trans.formProfile.deploymentPrompt') }}
+  </div>
   <v-radio-group
     v-model="form.deploymentLevel"
     :mandatory="true"
     :rules="deploymentRules"
+    data-test="deployment-radio"
   >
     <v-radio
       class="mb-4"

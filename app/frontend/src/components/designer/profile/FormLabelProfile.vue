@@ -29,16 +29,37 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-combobox
-    v-model="form.labels"
-    :items="items"
-    chips
-    clearable
-    :label="$t('trans.formProfile.label')"
-    :loading="loading"
-    multiple
-    variant="solo-filled"
-    closable-chips
-  >
-  </v-combobox>
+  <div class="d-flex">
+    <v-combobox
+      v-model="form.labels"
+      :items="items"
+      chips
+      clearable
+      :label="$t('trans.formProfile.label')"
+      :loading="loading"
+      multiple
+      variant="solo-filled"
+      closable-chips
+    >
+    </v-combobox>
+    <div class="mt-3 text-h6">
+      <v-tooltip location="bottom">
+        <template #activator="{ props }">
+          <v-icon
+            color="primary"
+            class="ml-4"
+            :class="{ 'mr-2': isRTL }"
+            v-bind="props"
+            icon="mdi:mdi-help-circle-outline"
+          />
+        </template>
+        <span>
+          <span :lang="lang"
+            >Labels serve as a means to categorize similar forms that may belong
+            to a common organization or share a related context.</span
+          >
+        </span>
+      </v-tooltip>
+    </div>
+  </div>
 </template>

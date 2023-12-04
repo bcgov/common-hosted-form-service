@@ -13,6 +13,9 @@ const ministryRules = ref([
 ]);
 
 const form = formStore.form;
+const lang = formStore.lang;
+const isRTL = formStore.isRTL;
+
 const MinistryList = computed(() => {
   return Ministries.map((ministry) => ({
     id: ministry.id,
@@ -22,12 +25,14 @@ const MinistryList = computed(() => {
 </script>
 
 <template>
-  <div class="ml-1 mt-lg-3 mb-10 mt-md-4">
+  <div class="ml-1 mt-lg-3 mb-10 mt-md-4" :lang="lang">
+    <span v-if="!form.ministry" class="text-danger"><strong>*</strong></span>
     {{ $t('trans.formProfile.ministryPrompt') }}
   </div>
   <v-autocomplete
     v-model="form.ministry"
     class="mt-lg-n4"
+    :class="{ label: isRTL }"
     :rules="ministryRules"
     :label="$t('trans.formProfile.ministryName')"
     :items="MinistryList"

@@ -18,7 +18,7 @@ const lang = formStore.lang;
       <span :lang="lang">{{ $t('trans.create.formProfile') }}</span>
     </template>
     <v-container class="px-0" :class="{ 'dir-rtl': isRTL }">
-      <div class="mb-6 ml-1 font-weight-bold">
+      <div class="mb-6 ml-1 font-weight-bold" :lang="lang">
         {{ $t('trans.formProfile.message') }}
       </div>
       <v-row>

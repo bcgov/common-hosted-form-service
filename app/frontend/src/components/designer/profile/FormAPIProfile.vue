@@ -13,10 +13,17 @@ const lang = formStore.lang;
 </script>
 
 <template>
-  <div class="ml-1 mb-4">
+  <div class="ml-1 mb-4" :lang="lang">
+    <span v-if="form.apiIntegration == null" class="text-danger"
+      ><strong>*</strong></span
+    >
     {{ $t('trans.formProfile.APIPrompt') }}
   </div>
-  <v-radio-group v-model="form.apiIntegration" :rules="apiRules">
+  <v-radio-group
+    v-model="form.apiIntegration"
+    :rules="apiRules"
+    data-test="api-radio"
+  >
     <v-radio
       class="mb-4"
       :class="{ 'dir-rtl': isRTL }"

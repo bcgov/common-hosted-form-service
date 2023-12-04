@@ -3,6 +3,7 @@ import { useFormStore } from '~/store/form';
 import { createTestingPinia } from '@pinia/testing';
 import { setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 
 describe('FormAPIProfile.vue', () => {
 
@@ -17,20 +18,21 @@ describe('FormAPIProfile.vue', () => {
   it('renders properly', () => {
 
     const wrapper = mount(FormAPIProfile, {
-    global: {
+      global: {
         plugins: [pinia],
-    },
+      },
     })
+    expect(wrapper.text()).toMatch('trans.formProfile.APIPrompt');
     expect(wrapper.text()).toMatch('trans.formProfile.Y');
     expect(wrapper.text()).toMatch('trans.formProfile.N');
 
-})
+  })
 
   it('check if radio buttons have proper value', async () => {
     const wrapper = mount(FormAPIProfile, {
-    global: {
+      global: {
         plugins: [pinia],
-    },
+      },
     });
 
     const radioFalse = wrapper.find('[data-test="api-false"]');
@@ -42,5 +44,23 @@ describe('FormAPIProfile.vue', () => {
     expect(inputTrue).toBe(true);
 
   });
-    
+
+  it('test click of radio buttons', async () => {
+    const wrapper = mount(FormAPIProfile, {
+      global: {
+        plugins: [pinia],
+      },
+    });
+
+    const radioGroup = wrapper.findComponent('[data-test="api-radio"]');
+
+    expect(formStore.form.apiIntegration).toBe(null);
+    radioGroup.setValue(true);
+    await nextTick;
+    expect(formStore.form.apiIntegration).toBe(true);
+    radioGroup.setValue(false);
+    await nextTick;
+    expect(formStore.form.apiIntegration).toBe(false);
+  });
+
 })
