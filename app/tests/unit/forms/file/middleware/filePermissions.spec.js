@@ -120,6 +120,27 @@ describe('currentFileRecord', () => {
     expect(nxt).toHaveBeenCalledWith();
     expect(testReq.currentFileRecord).toEqual(testRecord);
   });
+
+  it('retrieves file record successfully for an API user', async () => {
+    const testReq = {
+      params: { id: zeroUuid },
+      apiUser: true,
+    };
+
+    const testRecord = {
+      name: 'test',
+    };
+
+    const nxt = jest.fn();
+    readFileSpy.mockImplementation(() => {
+      return testRecord;
+    });
+
+    await currentFileRecord(testReq, testRes, nxt);
+    expect(readFileSpy).toHaveBeenCalledWith(zeroUuid);
+    expect(testReq.currentFileRecord).toEqual(testRecord);
+    expect(nxt).toHaveBeenCalledWith();
+  });
 });
 
 describe('hasFileCreate', () => {
@@ -253,5 +274,20 @@ describe('hasFilePermissions', () => {
     expect(subPermSpy).toHaveBeenCalledTimes(1);
     expect(subPermSpy).toHaveBeenCalledWith(perm);
     expect(nxt).toHaveBeenCalledTimes(0);
+  });
+
+  it('bypasses permission check for an API user', async () => {
+    const testReq = {
+      apiUser: true,
+      currentFileRecord: { formSubmissionId: oneUuid },
+    };
+
+    const nxt = jest.fn();
+    const mw = hasFilePermissions(perm);
+
+    mw(testReq, testRes, nxt);
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith();
+    expect(subPermSpy).not.toHaveBeenCalled();
   });
 });
