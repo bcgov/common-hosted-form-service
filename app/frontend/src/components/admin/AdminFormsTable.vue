@@ -8,8 +8,8 @@ import { useFormStore } from '~/store/form';
 export default {
   data() {
     return {
-      activeOnly: false,
-      loading: true,
+      showDeleted: false,
+      loading: false,
       search: '',
     };
   },
@@ -18,7 +18,7 @@ export default {
     ...mapState(useFormStore, ['isRTL', 'lang']),
     calcHeaders() {
       return this.headers.filter(
-        (x) => x.key !== 'updatedAt' || this.activeOnly
+        (x) => x.key !== 'updatedAt' || !this.showDeleted
       );
     },
     headers() {
@@ -48,15 +48,19 @@ export default {
       ];
     },
   },
+  watch: {
+    showDeleted() {
+      this.refreshForms();
+    },
+  },
   async mounted() {
-    await this.getForms();
-    this.loading = false;
+    this.refreshForms();
   },
   methods: {
     ...mapActions(useAdminStore, ['getForms']),
     async refreshForms() {
       this.loading = true;
-      await this.getForms(!this.activeOnly);
+      await this.getForms(!this.showDeleted);
       this.loading = false;
     },
   },
@@ -68,11 +72,11 @@ export default {
     <v-row no-gutters>
       <v-col cols="12" sm="8">
         <v-checkbox
-          v-model="activeOnly"
+          v-model="showDeleted"
           class="pl-3"
+          data-test="checkbox-show-deleted"
           :class="isRTL ? 'float-right' : 'float-left'"
           :label="$t('trans.adminFormsTable.showDeletedForms')"
-          @click="refreshForms"
         >
           <template #label>
             <span :class="{ 'mr-2': isRTL }" :lang="lang">
