@@ -2,6 +2,7 @@ const apiAccess = require('../../../../../src/forms/auth/middleware/apiAccess');
 
 const formService = require('../../../../../src/forms/form/service');
 const submissionService = require('../../../../../src/forms/submission/service');
+const fileService = require('../../../../../src/forms/file/service');
 
 describe('apiAccess', () => {
   const formId = 'c6455376-382c-439d-a811-0381a012d696';
@@ -208,5 +209,40 @@ describe('apiAccess', () => {
     expect(req.apiUser).toBeTruthy();
     expect(next).toHaveBeenCalledTimes(1);
     expect(mockReadApiKey).toHaveBeenCalledTimes(1);
+  });
+
+  it('should process correctly with a valid file id and associated submissionId', async () => {
+    fileService.read = jest.fn().mockResolvedValue({ formSubmissionId: formSubmissionId });
+    submissionService.read = jest.fn().mockResolvedValue({ form: { id: formId } });
+    mockReadApiKey.mockResolvedValue({ secret: secret });
+    const req = {
+      headers: { authorization: authHeader },
+      params: { id: 'c6455376-382c-439d-a811-0381a012d696' },
+    };
+    const res = { ...baseRes };
+    await apiAccess(req, res, next);
+
+    expect(fileService.read).toHaveBeenCalledWith('c6455376-382c-439d-a811-0381a012d696');
+    expect(submissionService.read).toHaveBeenCalledWith(formSubmissionId);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(req.apiUser).toBeTruthy();
+  });
+
+  it('should throw an error if the file id does not have an associated submission id', async () => {
+    fileService.read = jest.fn().mockResolvedValue({ formSubmissionId: null });
+    mockReadApiKey.mockResolvedValue({ secret: secret });
+
+    const req = {
+      headers: { authorization: authHeader },
+      params: { id: 'c6455376-382c-439d-a811-0381a012d696' },
+    };
+    const res = { ...baseRes };
+    await apiAccess(req, res, next);
+
+    expect(fileService.read).toHaveBeenCalledWith('c6455376-382c-439d-a811-0381a012d696');
+    expect(submissionService.read).toHaveBeenCalledTimes(0);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith(new Error('Submission ID not found in file storage.'));
+    expect(req.apiUser).toBeUndefined();
   });
 });
