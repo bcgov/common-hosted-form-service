@@ -1,3 +1,5 @@
+const { validate } = require('uuid');
+
 const { Statuses } = require('../common/constants');
 const cdogsService = require('../../components/cdogsService');
 const emailService = require('../email/emailService');
@@ -6,8 +8,13 @@ const service = require('./service');
 module.exports = {
   read: async (req, res, next) => {
     try {
-      const response = await service.read(req.params.formSubmissionId);
-      res.status(200).json(response);
+      const formSubmissionId = req.params.formSubmissionId;
+      if (!validate(formSubmissionId)) {
+        res.status(400).json({ detail: `Invalid formSubmissionId "${formSubmissionId}".` });
+      } else {
+        const response = await service.read(formSubmissionId);
+        res.status(200).json(response);
+      }
     } catch (error) {
       next(error);
     }

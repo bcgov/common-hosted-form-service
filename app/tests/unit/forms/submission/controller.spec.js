@@ -1,3 +1,6 @@
+const { getMockReq, getMockRes } = require('@jest-mock/express');
+const { v4: uuidv4 } = require('uuid');
+
 const { Statuses } = require('../../../../src/forms/common/constants');
 const controller = require('../../../../src/forms/submission/controller');
 const emailService = require('../../../../src/forms/email/emailService');
@@ -65,6 +68,88 @@ describe('addStatus', () => {
   });
 });
 
+describe('read', () => {
+  const uuid = uuidv4();
+  const mockReadResponse = {
+    form: {
+      id: uuid,
+    },
+    submission: {
+      submission: {
+        submission: {
+          data: {
+            simpletextfield: 'firstName lastName',
+            submit: true,
+          },
+        },
+      },
+    },
+  };
+
+  // Test for 400 responses for various invalid UUIDs.
+  const testCases400 = [[''], ['undefined'], ['{{sumissionId}}'], [uuidv4() + '.']];
+
+  it('should 200 if the formSubmissionId is valid', async () => {
+    // Arrange
+    service.read = jest.fn().mockReturnValue(mockReadResponse);
+    const req = getMockReq({ params: { formSubmissionId: uuid } });
+    const { res, next } = getMockRes();
+
+    // Act
+    await controller.read(req, res, next);
+
+    // Assert
+    expect(service.read).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(mockReadResponse);
+  });
+
+  it('should 400 if the formSubmissionId is missing', async () => {
+    // Arrange
+    const req = getMockReq({ params: {} });
+    const { res, next } = getMockRes();
+
+    // Act
+    await controller.read(req, res, next);
+
+    // Assert
+    expect(service.read).toHaveBeenCalledTimes(0);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ detail: 'Invalid formSubmissionId "undefined".' });
+  });
+
+  test.each(testCases400)('should 400 if the formSubmissionId is "%s"', async (formSubmissionId) => {
+    // Arrange
+    const req = getMockReq({ params: { formSubmissionId: formSubmissionId } });
+    const { res, next } = getMockRes();
+
+    // Act
+    await controller.read(req, res, next);
+
+    // Assert
+    expect(service.read).toHaveBeenCalledTimes(0);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ detail: `Invalid formSubmissionId "${formSubmissionId}".` });
+  });
+
+  it('should forward database errors for handling elsewhere', async () => {
+    // Arrange
+    const error = new Error();
+    service.read = jest.fn(() => {
+      throw error;
+    });
+    const req = getMockReq({ params: { formSubmissionId: uuid } });
+    const { res, next } = getMockRes();
+
+    // Act
+    await controller.read(req, res, next);
+
+    // Assert
+    expect(service.read).toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(error);
+  });
+});
+
 describe('templateUploadAndRender', () => {
   const content = 'SGVsbG8ge2Quc2ltcGxldGV4dGZpZWxkfSEK';
   const contentFileType = 'txt';
@@ -102,7 +187,7 @@ describe('templateUploadAndRender', () => {
       submission: {
         submission: {
           data: {
-            simpletextfield: 'fistName lastName',
+            simpletextfield: 'firstName lastName',
             submit: true,
           },
         },

@@ -1,5 +1,6 @@
 const request = require('supertest');
 const Problem = require('api-problem');
+const { v4: uuidv4 } = require('uuid');
 
 const { expressHelper } = require('../../../common/helper');
 
@@ -51,7 +52,7 @@ afterEach(() => {
 });
 
 describe(`${basePath}/:formSubmissionId`, () => {
-  const path = `${basePath}/:formSubmissionId`;
+  const path = `${basePath}/` + uuidv4();
 
   describe('DELETE', () => {
     it('should return 200', async () => {
