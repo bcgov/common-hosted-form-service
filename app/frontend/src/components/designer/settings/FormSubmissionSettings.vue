@@ -12,11 +12,11 @@ export default {
     return {
       emailArrayRules: [
         (v) =>
-          !this.form.sendSubReceivedEmail ||
+          !this.form.sendSubmissionReceivedEmail ||
           v.length > 0 ||
           this.$t('trans.formSettings.atLeastOneEmailReq'),
         (v) =>
-          !this.form.sendSubReceivedEmail ||
+          !this.form.sendSubmissionReceivedEmail ||
           v.every((item) => new RegExp(Regex.EMAIL).test(item)) ||
           this.$t('trans.formSettings.validEmailRequired'),
       ],
@@ -77,9 +77,10 @@ export default {
     </v-checkbox>
 
     <v-checkbox
-      v-model="form.sendSubReceivedEmail"
+      v-model="form.sendSubmissionReceivedEmail"
       hide-details="auto"
       class="my-0"
+      data-test="email-test"
     >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
@@ -105,7 +106,7 @@ export default {
     </v-checkbox>
 
     <v-combobox
-      v-if="form.sendSubReceivedEmail"
+      v-if="form.sendSubmissionReceivedEmail"
       v-model="form.submissionReceivedEmails"
       :hide-no-data="false"
       :rules="emailArrayRules"

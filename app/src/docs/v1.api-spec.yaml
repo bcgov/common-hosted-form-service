@@ -3075,6 +3075,10 @@ components:
             showSubmissionConfirmation:
               type: boolean
               example: true
+            sendSubmissionReceivedEmail: 
+              type: boolean
+              example: true
+              description: Used to indicate if team should be notified upon submission
             submissionReceivedEmails:
               type: array
               items:
