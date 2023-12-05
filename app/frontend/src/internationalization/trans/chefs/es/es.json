@@ -179,7 +179,8 @@
     "selectAPIErr": "Por favor, infórmenos su elección con respecto al uso de la Integración de API",
     "selectDeploymentErr": "Por favor, seleccione un nivel de implementación",
     "selectMinistryErr": "Por favor, seleccione su ministerio",
-    "selectUseCaseErr": "Por favor, ingrese el caso de uso de su formulario"
+    "selectUseCaseErr": "Por favor, ingrese el caso de uso de su formulario",
+    "labelSizeErr": "Las etiquetas no pueden exceder los 25 caracteres"
   },
   "ministries": {
     "AF": "Agricultura y Alimentación (AF)",

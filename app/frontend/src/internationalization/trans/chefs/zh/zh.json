@@ -179,7 +179,8 @@
     "selectAPIErr": "请告诉我们您对API集成的选择",
     "selectDeploymentErr": "请选择部署级别",
     "selectMinistryErr": "请选择您的部门",
-    "selectUseCaseErr": "请输入您的表单用例"
+    "selectUseCaseErr": "请输入您的表单用例",
+    "labelSizeErr": "标签不能超过 25 个字符"
   },
   "ministries": {
     "AF": "农业与食品 (AF)",

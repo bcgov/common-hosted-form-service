@@ -15,7 +15,7 @@ class Label extends Timestamps(Model) {
       properties: {
         id: { type: 'string', pattern: Regex.UUID },
         userId: { type: 'string', pattern: Regex.UUID },
-        labelText: { type: 'string', minLength: 1, maxLength: 255 },
+        labelText: { type: 'string', minLength: 1, maxLength: 25 },
         ...stamps,
       },
       additionalProperties: false,

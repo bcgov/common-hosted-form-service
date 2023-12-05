@@ -179,7 +179,8 @@
     "selectAPIErr": "Bitte teilen Sie uns Ihre Entscheidung bezüglich der Verwendung der API-Integration mit",
     "selectDeploymentErr": "Bitte wählen Sie eine Bereitstellungsstufe aus",
     "selectMinistryErr": "Bitte wählen Sie Ihr Ministerium aus",
-    "selectUseCaseErr": "Bitte geben Sie den Anwendungsfall Ihres Formulars ein"
+    "selectUseCaseErr": "Bitte geben Sie den Anwendungsfall Ihres Formulars ein",
+    "labelSizeErr": "Beschriftungen dürfen nicht länger als 25 Zeichen sein"
   },
   "ministries": {
     "AF": "Landwirtschaft und Lebensmittel (AF)",

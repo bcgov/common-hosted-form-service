@@ -179,7 +179,8 @@
     "registration": "Inscriptions ou inscription - sans évaluation",
     "selectDeploymentErr": "Veuillez sélectionner un niveau de déploiement",
     "selectMinistryErr": "Veuillez sélectionner votre ministère",
-    "selectUseCaseErr": "Veuillez indiquer le cas d'utilisation de votre formulaire"
+    "selectUseCaseErr": "Veuillez indiquer le cas d'utilisation de votre formulaire",
+    "labelSizeErr": "Les étiquettes ne peuvent pas dépasser 25 caractères"
   },
   "ministries": {
     "AF": "Agriculture et Alimentation (AF)",

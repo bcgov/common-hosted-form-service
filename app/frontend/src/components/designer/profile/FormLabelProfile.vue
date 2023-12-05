@@ -13,6 +13,13 @@ const form = computed(() => formStore.form);
 const lang = computed(() => formStore.lang);
 const isRTL = computed(() => formStore.isRTL);
 
+const labelRules = ref([
+  (v) =>
+    !v ||
+    !v.some((str) => str.length > 25) ||
+    i18n.t('trans.formProfile.labelSizeErr'),
+]);
+
 onMounted(async () => {
   try {
     loading.value = true;
@@ -34,6 +41,7 @@ onMounted(async () => {
     <v-combobox
       v-model="form.labels"
       :items="formStore.userLabels"
+      :rules="labelRules"
       chips
       clearable
       :label="$t('trans.formProfile.label')"

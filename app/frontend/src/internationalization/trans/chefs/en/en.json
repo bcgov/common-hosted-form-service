@@ -175,7 +175,8 @@
     "selectAPIErr": "Please inform us your choice regarding the use of API Integration",
     "selectDeploymentErr": "Please select a deployment level",
     "selectMinistryErr": "Please select your ministry",
-    "selectUseCaseErr": "Please enter the use case of your form"
+    "selectUseCaseErr": "Please enter the use case of your form",
+    "labelSizeErr": "Labels can not exceed 25 characters"
   },
   "ministries": {
     "AF": "Agriculture and Food (AF)",

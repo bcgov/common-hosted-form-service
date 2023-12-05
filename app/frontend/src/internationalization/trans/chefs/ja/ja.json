@@ -179,7 +179,8 @@
     "selectAPIErr": "API 統合の使用に関する選択をお知らせください",
     "selectDeploymentErr": "展開レベルを選択してください",
     "selectMinistryErr": "省庁を選択してください",
-    "selectUseCaseErr": "フォームのユースケースを入力してください"
+    "selectUseCaseErr": "フォームのユースケースを入力してください",
+    "labelSizeErr": "ラベルは 25 文字を超えることはできません"
   },
   "ministries": {
     "AF": "農業と食品 (AF)",

@@ -179,7 +179,8 @@
     "selectAPIErr": "API 통합 사용 여부를 알려주세요",
     "selectDeploymentErr": "배포 수준을 선택해 주세요",
     "selectMinistryErr": "부처를 선택해 주세요",
-    "selectUseCaseErr": "폼의 사용 사례를 입력해 주세요"
+    "selectUseCaseErr": "폼의 사용 사례를 입력해 주세요",
+    "labelSizeErr": "라벨은 25자를 초과할 수 없습니다"
   },
   "ministries": {
     "AF": "농업 및 식품 (AF)",

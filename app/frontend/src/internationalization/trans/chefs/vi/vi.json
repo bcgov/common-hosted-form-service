@@ -179,7 +179,8 @@
     "getLabelErr": "Đã xảy ra lỗi khi cố gắng lấy nhãn người dùng.",
     "getLabelConsErr": "Lỗi khi lấy nhãn: ",
     "selectAPIErr": "Vui lòng thông báo cho chúng tôi về sự lựa chọn về việc tích hợp API",
-    "selectUseCaseErr": "Vui lòng nhập mô tả ứng dụng của biểu mẫu"
+    "selectUseCaseErr": "Vui lòng nhập mô tả ứng dụng của biểu mẫu",
+    "labelSizeErr": "Nhãn không được vượt quá 25 ký tự"
   },
   "ministries": {
     "AF": "Nông nghiệp và Thực phẩm (AF)",

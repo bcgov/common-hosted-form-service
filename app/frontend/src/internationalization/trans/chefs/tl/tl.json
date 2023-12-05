@@ -179,7 +179,8 @@
     "selectAPIErr": "Mangyaring ipaalam sa amin ang iyong pagsusuri tungkol sa paggamit ng API Integration",
     "selectDeploymentErr": "Mangyaring pumili ng antas ng pagpapatupad",
     "selectMinistryErr": "Mangyaring pumili ng iyong ministri",
-    "selectUseCaseErr": "Mangyaring ipasok ang paggamit ng iyong form"
+    "selectUseCaseErr": "Mangyaring ipasok ang paggamit ng iyong form",
+    "labelSizeErr": "Ang mga label ay hindi maaaring lumampas sa 25 character"
   },
   "ministries": {
     "AF": "Pagsasaka at Pagkain (AF)",

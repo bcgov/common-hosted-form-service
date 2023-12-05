@@ -179,7 +179,8 @@
   "selectAPIErr": "Informe-nos sobre sua escolha em relação ao uso da Integração de API",
   "selectDeploymentErr": "Por favor, selecione um nível de implementação",
   "selectMinistryErr": "Por favor, selecione o seu ministério",
-  "selectUseCaseErr": "Por favor, informe o caso de uso do seu formulário"
+  "selectUseCaseErr": "Por favor, informe o caso de uso do seu formulário",
+  "labelSizeErr": "Os rótulos não podem exceder 25 caracteres"
   },
   "ministries": {
     "AF": "Agricultura e Alimentação (AF)",
