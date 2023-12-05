@@ -155,10 +155,11 @@
   "formProfile": {
     "message": "CHEFS团队正在收集和组织信息，作为制定全面业务案例的关键输入。这些案例将在指导CHEFS未来几年的战略运作和持续改进中发挥关键作用。这一收集数据的倡议对于提供关键决策的信息和塑造CHEFS轨迹至关重要，确保其在应对不断变化的需求和挑战中的适应性和有效性。",
     "ministryPrompt": "选择您所关联的部门",
-    "useCasePrompt": "在下面选择您表单的目的。如果您找不到您的特定用例，请与CHEFS团队联系以进一步讨论选项",
+    "useCasePrompt": "选择表单的用例",
     "deploymentPrompt": "请指定您的部署级别",
     "APIPrompt": "指定您是否打算利用提供的API进行与第三方应用程序的集成",
     "labelPrompt": "标签用作对可能属于共同组织或共享相关上下文的相似表单进行分类的手段。",
+    "useCaseToolTip": "如果您没有看到您的特定用例，请联系CHEFS团队进一步讨论其他选项",
     "deploymentLevel": "部署级别",
     "ministryName": "部门",
     "label": "标签",

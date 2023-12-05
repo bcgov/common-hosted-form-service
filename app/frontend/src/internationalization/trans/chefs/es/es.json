@@ -155,10 +155,11 @@
   "formProfile": {
     "message": "El equipo de CHEFS está recopilando y organizando información para servir como entrada crucial para la elaboración de casos de negocio integrales. Estos casos jugarán un papel fundamental en la guía de la operación estratégica y la mejora continua de CHEFS en los próximos años. Esta iniciativa de recopilación de datos es esencial para informar decisiones críticas y dar forma a la trayectoria de CHEFS, asegurando su adaptabilidad y efectividad para abordar necesidades y desafíos en constante evolución.",
     "ministryPrompt": "Elija el ministerio con el que está asociado",
-    "useCasePrompt": "Elija el propósito de su formulario a continuación. Si no ve su caso de uso específico, póngase en contacto con el equipo de CHEFS para discutir otras opciones",
+    "useCasePrompt": "Seleccione el propósito de su formulario",
     "deploymentPrompt": "Por favor, especifique su nivel de implementación",
     "APIPrompt": "Especifique si tiene la intención de utilizar la API proporcionada para integrarla en una aplicación de terceros",
     "labelPrompt": "Las etiquetas sirven como un medio para categorizar formularios similares que pueden pertenecer a una organización común o compartir un contexto relacionado.",
+    "useCaseToolTip": "Si no ves tu caso de uso específico, contacta al equipo de CHEFS para discutir opciones adicionales",
     "deploymentLevel": "Nivel de Implementación",
     "ministryName": "Ministerio",
     "label": "Etiquetas",

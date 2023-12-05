@@ -155,10 +155,11 @@
   "formProfile": {
     "message": "Ang CHEFS team ay nagkokolekta at nag-oorganisa ng impormasyon upang magsilbing mahalagang input para sa pagbuo ng kapsulang kaso ng negosyo. Ang mga kaso na ito ay magiging pangunahing bahagi sa paggabay sa pangangasiwa at patuloy na pagpapabuti ng CHEFS sa mga darating na taon. Ang inisyatibang ito sa pagsasama ng datos ay mahalaga para sa pagbibigay impormasyon sa mga kritikal na desisyon at pagsanay sa takbo ng CHEFS, tiyak na nagiging adaptable at epektibo sa pagsasaad sa mga nagbabagong pangangailangan at hamon.",
     "ministryPrompt": "Pumili ng ministeryo na iyong kaugnay",
-    "useCasePrompt": "Pumili ng layunin ng iyong porma sa ibaba. Kung hindi mo makita ang iyong partikular na layunin, makipag-ugnay sa CHEFS team para pag-usapan ang iba pang mga opsyon",
+    "useCasePrompt": "Piliin ang use case ng iyong form",
     "deploymentPrompt": "Paki-tukoy ang antas ng iyong deployment",
     "APIPrompt": "Tukuyin kung nais mong gamitin ang ibinigay na API para sa integrasyon sa isang third-party application",
     "labelPrompt": "Ang mga label ay naglilingkod bilang paraan upang kategoryahin ang mga katulad na porma na maaaring maging bahagi ng isang pangkalahatang organisasyon o may kaugnay na konteksto.",
+    "useCaseToolTip": "Kung hindi mo nakikita ang iyong espesipikong paggamit, makipag-ugnay sa CHEFS team upang talakayin ang karagdagang mga opsyon",
     "deploymentLevel": "Antas ng Pagpapatupad",
     "ministryName": "Ministri",
     "label": "Mga Label",

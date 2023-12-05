@@ -151,10 +151,11 @@
   "formProfile": {
     "message": "The CHEFS team is collecting and organizing information to serve as crucial input for crafting comprehensive business cases. These cases will play a pivotal role in guiding the strategic operation and ongoing improvement of CHEFS in the coming years. This initiative to gather data is essential for informing critical decisions and molding the trajectory of CHEFS, ensuring its adaptability and effectiveness in addressing evolving needs and challenges.",
     "ministryPrompt": "Choose the ministry with which you are associated",
-    "useCasePrompt": "Choose the purpose of your form below. If you do not see your specific use case, contact the CHEFS team to discuss further options",
+    "useCasePrompt": "Choose the purpose of your form below",
     "deploymentPrompt": "Please specify your deployment level",
     "APIPrompt": "Specify if you intend to utilize the provided API for integration into a third-party application",
     "labelPrompt": "Labels serve as a means to categorize similar forms that may belong to a common organization or share a related context.",
+    "useCaseToolTip": "If you do not see your specific use case, contact the CHEFS team to discuss further options",
     "deploymentLevel": "Deployment Level",
     "ministryName": "Ministry",
     "label": "Labels",

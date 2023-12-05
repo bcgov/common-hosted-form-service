@@ -24,18 +24,21 @@ routes.delete('/preferences', async (req, res, next) => {
 });
 
 //
-// User
+// User Labels
 //
-routes.get('/', async (req, res, next) => {
-  await controller.list(req, res, next);
-});
-
 routes.get('/labels', async (req, res, next) => {
   await controller.readUserLabels(req, res, next);
 });
 
 routes.put('/labels', async (req, res, next) => {
   await controller.updateUserLabels(req, res, next);
+});
+
+//
+// User
+//
+routes.get('/', async (req, res, next) => {
+  await controller.list(req, res, next);
 });
 
 routes.get('/:userId', async (req, res, next) => {

@@ -25,13 +25,13 @@ const MinistryList = computed(() => {
 </script>
 
 <template>
-  <div class="ml-1 mt-lg-3 mb-10 mt-md-4" :lang="lang">
+  <div class="ml-1 mb-4" :lang="lang">
     <span v-if="!form.ministry" class="text-danger"><strong>*</strong></span>
     {{ $t('trans.formProfile.ministryPrompt') }}
   </div>
   <v-autocomplete
     v-model="form.ministry"
-    class="mt-lg-n4"
+    class=""
     :class="{ label: isRTL }"
     :rules="ministryRules"
     :label="$t('trans.formProfile.ministryName')"
