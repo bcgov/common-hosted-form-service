@@ -438,8 +438,15 @@ export const useFormStore = defineStore('form', {
             : false,
         });
 
-        if (this.form.labels.length > 0)
-          await userService.updateUserLabels(this.form.labels);
+        // update user labels with any new added labels
+        if (
+          this.form.labels.some(
+            (label) => this.userLabels.indexOf(label) === -1
+          )
+        ) {
+          const response = await userService.updateUserLabels(this.form.labels);
+          this.userLabels = response.data;
+        }
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({

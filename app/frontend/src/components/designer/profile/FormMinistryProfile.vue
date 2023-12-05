@@ -12,9 +12,9 @@ const ministryRules = ref([
   },
 ]);
 
-const form = formStore.form;
-const lang = formStore.lang;
-const isRTL = formStore.isRTL;
+const form = computed(() => formStore.form);
+const lang = computed(() => formStore.lang);
+const isRTL = computed(() => formStore.isRTL);
 
 const MinistryList = computed(() => {
   return Ministries.map((ministry) => ({

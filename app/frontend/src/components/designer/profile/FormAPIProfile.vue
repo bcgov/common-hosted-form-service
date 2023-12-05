@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useFormStore } from '~/store/form';
 import { i18n } from '~/internationalization';
 
@@ -7,9 +7,9 @@ const formStore = useFormStore();
 const apiRules = ref([
   (v) => v != null || i18n.t('trans.formProfile.selectAPIErr'),
 ]);
-const form = formStore.form;
-const isRTL = formStore.isRTL;
-const lang = formStore.lang;
+const form = computed(() => formStore.form);
+const lang = computed(() => formStore.lang);
+const isRTL = computed(() => formStore.isRTL);
 </script>
 
 <template>

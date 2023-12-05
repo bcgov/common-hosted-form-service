@@ -38,26 +38,38 @@ const service = {
     return User.query().modify('safeSelect').findById(userId).throwIfNotFound();
   },
 
+  //
+  // User Labels
+  //
   readUserLabels: (userId) => {
-    return Label.query().where({ userId }).select('labelDescription');
+    return Label.query().where({ userId }).select('labelText');
   },
 
   updateUserLabels: async (userId, body) => {
-    for (const labelDescription of body) {
-      const existingLabel = await Label.query()
-        .where({
-          userId: userId,
-          labelDescription: labelDescription,
-        })
-        .first();
+    let trx;
+    try {
+      trx = await Label.startTransaction();
+      for (const labelText of body) {
+        const existingLabel = await Label.query()
+          .where({
+            userId: userId,
+            labelText: labelText,
+          })
+          .first();
 
-      if (!existingLabel) {
-        await Label.query().insert({
-          id: uuidv4(),
-          userId: userId,
-          labelDescription: labelDescription,
-        });
+        if (!existingLabel) {
+          await Label.query(trx).insert({
+            id: uuidv4(),
+            userId: userId,
+            labelText: labelText,
+          });
+        }
       }
+      await trx.commit();
+      return service.readUserLabels(userId);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
     }
   },
 

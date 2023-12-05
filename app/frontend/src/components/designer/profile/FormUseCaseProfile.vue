@@ -12,9 +12,9 @@ const useCaseRules = ref([
   },
 ]);
 
-const form = formStore.form;
-const isRTL = formStore.isRTL;
-const lang = formStore.lang;
+const form = computed(() => formStore.form);
+const lang = computed(() => formStore.lang);
+const isRTL = computed(() => formStore.isRTL);
 
 const useCase = computed(() => {
   return FormProfileValues.USE_CASE.map((useCase) => ({

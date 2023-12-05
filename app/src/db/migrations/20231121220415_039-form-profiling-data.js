@@ -6,7 +6,7 @@ exports.up = function (knex) {
         .then(() => knex.schema.createTable('label', table => {
             table.uuid('id').primary();
             table.uuid('userId').references('id').inTable('user').notNullable().index();
-            table.string('labelDescription');
+            table.string('labelText');
             stamps(knex, table);
         }))
         .then(() => knex.schema.alterTable('form', table => {

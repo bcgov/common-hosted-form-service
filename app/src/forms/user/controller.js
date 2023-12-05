@@ -34,8 +34,8 @@ module.exports = {
   readUserLabels: async (req, res, next) => {
     try {
       const response = await service.readUserLabels(req.currentUser.id);
-      const labelDescriptions = response.map((label) => label.labelDescription);
-      res.status(200).json(labelDescriptions);
+      const labelText = response.map((label) => label.labelText);
+      res.status(200).json(labelText);
     } catch (error) {
       next(error);
     }
@@ -43,8 +43,9 @@ module.exports = {
 
   updateUserLabels: async (req, res, next) => {
     try {
-      await service.updateUserLabels(req.currentUser.id, req.body);
-      res.status(200).send();
+      const response = await service.updateUserLabels(req.currentUser.id, req.body);
+      const labelText = response.map((label) => label.labelText);
+      res.status(200).json(labelText);
     } catch (error) {
       next(error);
     }

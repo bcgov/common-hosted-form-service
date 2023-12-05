@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { i18n } from '~/internationalization';
 import { useFormStore } from '~/store/form';
 import userService from '~/services/userService';
@@ -7,18 +7,17 @@ import { useNotificationStore } from '~/store/notification';
 
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
-const items = ref([]);
 const loading = ref(true);
 
-const form = formStore.form;
-const isRTL = formStore.isRTL;
-const lang = formStore.lang;
+const form = computed(() => formStore.form);
+const lang = computed(() => formStore.lang);
+const isRTL = computed(() => formStore.isRTL);
 
 onMounted(async () => {
   try {
     loading.value = true;
     const result = await userService.getUserLabels();
-    items.value = result.data;
+    formStore.userLabels = result.data;
   } catch (error) {
     notificationStore.addNotification({
       text: i18n.t('trans.formProfile.getLabelErr'),
@@ -34,7 +33,7 @@ onMounted(async () => {
   <div class="d-flex">
     <v-combobox
       v-model="form.labels"
-      :items="items"
+      :items="formStore.userLabels"
       chips
       clearable
       :label="$t('trans.formProfile.label')"
