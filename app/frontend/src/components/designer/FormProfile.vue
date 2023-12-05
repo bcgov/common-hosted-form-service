@@ -6,10 +6,11 @@ import FormAPIProfile from '~/components/designer/profile/FormAPIProfile.vue';
 import FormUseCaseProfile from '~/components/designer/profile/FormUseCaseProfile.vue';
 import { useFormStore } from '~/store/form';
 import BasePanel from '~/components/base/BasePanel.vue';
+import { computed } from 'vue';
 
 const formStore = useFormStore();
-const isRTL = formStore.isRTL;
-const lang = formStore.lang;
+const isRTL = computed(() => formStore.isRTL);
+const lang = computed(() => formStore.lang);
 </script>
 
 <template>
