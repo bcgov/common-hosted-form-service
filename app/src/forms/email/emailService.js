@@ -85,7 +85,7 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
       form,
     };
   } else if (emailType === EmailTypes.SUBMISSION_RECEIVED) {
-    contextToVal = form.submissionReceivedEmails;
+    contextToVal = form.sendSubmissionReceivedEmail ? form.submissionReceivedEmails : [];
     userTypePath = 'form/view';
     configData = {
       body: additionalProperties.body,

@@ -80,6 +80,7 @@ const service = {
       obj.active = true;
       obj.labels = data.labels;
       obj.showSubmissionConfirmation = data.showSubmissionConfirmation;
+      obj.sendSubmissionReceivedEmail = data.sendSubmissionReceivedEmail;
       obj.submissionReceivedEmails = data.submissionReceivedEmails;
       obj.enableStatusUpdates = data.enableStatusUpdates;
       obj.enableSubmitterDraft = data.enableSubmitterDraft;
@@ -152,6 +153,7 @@ const service = {
         description: data.description,
         labels: data.labels ? data.labels : [],
         showSubmissionConfirmation: data.showSubmissionConfirmation,
+        sendSubmissionReceivedEmail: data.sendSubmissionReceivedEmail,
         submissionReceivedEmails: data.submissionReceivedEmails ? data.submissionReceivedEmails : [],
         enableStatusUpdates: data.enableStatusUpdates,
         enableSubmitterDraft: data.enableSubmitterDraft,
