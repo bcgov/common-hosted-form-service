@@ -11,7 +11,9 @@ const req = {
   },
   body: {},
   currentUser: {},
-  headers: {},
+  headers: {
+    referer: '',
+  },
 };
 
 describe('form controller', () => {
@@ -42,5 +44,20 @@ describe('form controller', () => {
 
     await controller.readFieldsForCSVExport(req, {}, jest.fn());
     expect(exportService.fieldsForCSVExport).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not continue with export if there are no submissions', async () => {
+    const exportServiceSpy = jest.spyOn(exportService, 'export');
+    const formatDataSpy = jest.spyOn(exportService, '_formatData');
+    exportService._exportType = jest.fn().mockReturnValue('submissions');
+    exportService._exportFormat = jest.fn().mockReturnValue('json');
+    exportService._getForm = jest.fn().mockReturnValue({ id: '1111' });
+    exportService._getSubmissions = jest.fn().mockReturnValue([]);
+
+    await controller.export(req, {}, jest.fn());
+    expect(exportServiceSpy).toHaveBeenCalledTimes(1);
+    expect(exportService._getForm).toHaveBeenCalledTimes(1);
+    expect(exportService._getSubmissions).toHaveBeenCalledTimes(1);
+    expect(formatDataSpy).toHaveBeenCalledTimes(0);
   });
 });
