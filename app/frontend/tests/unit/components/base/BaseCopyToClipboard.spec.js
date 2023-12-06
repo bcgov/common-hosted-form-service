@@ -1,67 +1,72 @@
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import Vuetify from 'vuetify';
-import Vuex from 'vuex';
-import i18n from '@/internationalization';
-import BaseCopyToClipboard from '@/components/base/BaseCopyToClipboard.vue';
+import { mount } from '@vue/test-utils';
+import { setActivePinia, createPinia } from 'pinia';
+import { vi } from 'vitest';
 
-const localVue = createLocalVue();
-localVue.use(Vuetify);
-localVue.use(Vuex);
+import Clipboard from 'vue3-clipboard';
+
+import BaseCopyToClipboard from '~/components/base/BaseCopyToClipboard.vue';
+import { useNotificationStore } from '~/store/notification';
 
 describe('BaseCopyToClipboard.vue', () => {
-  let mockAddNotification = jest.fn();
-  let store;
+  setActivePinia(createPinia());
+  const store = useNotificationStore();
+  const addNotificationSpy = vi.spyOn(store, 'addNotification');
 
-  beforeEach(() => {
-    store = new Vuex.Store({
-      modules: {
-        notifications: {
-          namespaced: true,
-          actions: {
-            addNotification: mockAddNotification,
-          },
-        },
-      },
-    });
-  });
-
-  afterEach(() => {
-    mockAddNotification.mockClear();
+  beforeEach(async () => {
+    store.$reset();
+    addNotificationSpy.mockReset();
   });
 
   it('renders', () => {
-    const wrapper = shallowMount(BaseCopyToClipboard, {
-      localVue,
-      propsData: { copyText: 'test' },
+    const wrapper = mount(BaseCopyToClipboard, {
+      props: {
+        tooltipText: 'test',
+        textToCopy: 'test',
+        buttonText: 'test',
+      },
+      global: {
+        plugins: [[Clipboard, { autoSetContainer: true, appendToBody: true }]],
+      },
       store,
-      i18n
     });
 
-    expect(wrapper.text()).toMatch('Copy to Clipboard');
+    expect(wrapper.text()).toEqual('test');
   });
 
-  it('clipboardSuccessHandler behaves correctly', () => {
-    const wrapper = shallowMount(BaseCopyToClipboard, {
-      localVue,
-      propsData: { copyText: 'test' },
+  it('clipboardSuccessHandler behaves correctly', async () => {
+    const wrapper = mount(BaseCopyToClipboard, {
+      props: {
+        snackBarText: 'test',
+        tooltipText: 'test',
+        textToCopy: 'test',
+        buttonText: 'test',
+      },
+      global: {
+        plugins: [[Clipboard, { autoSetContainer: true, appendToBody: true }]],
+      },
       store,
-      i18n
     });
-    wrapper.vm.clipboardSuccessHandler();
 
+    wrapper.vm.onCopy();
     expect(wrapper.emitted().copied).toBeTruthy();
-    expect(mockAddNotification).toHaveBeenCalledTimes(1);
+    expect(addNotificationSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('clipboardErrorHandler behaves correctly', () => {
-    const wrapper = shallowMount(BaseCopyToClipboard, {
-      localVue,
-      propsData: { copyText: 'test' },
+  it('clipboardErrorHandler behaves correctly', async () => {
+    const wrapper = mount(BaseCopyToClipboard, {
+      props: {
+        snackBarText: 'test',
+        tooltipText: 'test',
+        textToCopy: 'test',
+        buttonText: 'test',
+      },
+      global: {
+        plugins: [[Clipboard, { autoSetContainer: true, appendToBody: true }]],
+      },
       store,
-      i18n
     });
-    wrapper.vm.clipboardErrorHandler();
 
-    expect(mockAddNotification).toHaveBeenCalledTimes(1);
+    wrapper.vm.onError();
+    expect(addNotificationSpy).toHaveBeenCalledTimes(1);
   });
 });

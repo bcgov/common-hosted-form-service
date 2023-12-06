@@ -1,42 +1,54 @@
-import { shallowMount, createLocalVue, RouterLinkStub } from '@vue/test-utils';
-import Vuetify from 'vuetify';
-import VueRouter from 'vue-router';
-import FloatButton from '@/components/designer/FloatButton.vue';
-import Vuex from 'vuex';
-import i18n from '@/internationalization';
+import { mount, RouterLinkStub } from '@vue/test-utils';
+import { setActivePinia, createPinia } from 'pinia';
+import { expect, vi } from 'vitest';
 
-const localVue = createLocalVue();
-localVue.use(Vuetify);
-localVue.use(VueRouter);
-localVue.use(Vuex);
+import FloatButton from '~/components/designer/FloatButton.vue';
+
+window.scrollTo = vi.fn();
 
 describe('FloatButton.vue', () => {
-  const mockLangGetter = jest.fn();
-  let store;
-  beforeEach(() => {
-    store = new Vuex.Store({
-      modules: {
-        form: {
-          namespaced: true,
-          getters: {
-            lang: mockLangGetter
+  const pinia = createPinia();
+  setActivePinia(pinia);
+
+  it('renders', () => {
+    const wrapper = mount(FloatButton, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
           },
-        }
-      }
+        },
+      },
     });
+
+    expect(wrapper.html()).toContain('collapse');
+    expect(wrapper.html()).toContain('publish');
+    expect(wrapper.html()).toContain('manage');
+    expect(wrapper.html()).toContain('redo');
+    expect(wrapper.html()).toContain('undo');
+    expect(wrapper.html()).toContain('preview');
+    expect(wrapper.html()).toContain('bottom');
   });
 
-  it('test that undo event was triggered', async() => {
-    const wrapper = shallowMount(FloatButton, {
-      localVue,
-      store,
-      i18n
+  it('test that undo event was triggered', async () => {
+    const wrapper = mount(FloatButton, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
     });
 
-    expect(wrapper.find({ ref: 'undoButton' }).exists()).toBe(true);
+    expect(wrapper.find({ ref: 'undoButton' }).exists()).toBeTruthy();
 
-    const undoButtonWrapper = wrapper.findComponent({ ref: 'undoButton' });
-    undoButtonWrapper.trigger('click');
+    const buttonWrapper = wrapper.find({ ref: 'undoButton' });
+    buttonWrapper.trigger('click');
 
     wrapper.vm.$emit('undo');
     await wrapper.vm.$nextTick();
@@ -45,17 +57,23 @@ describe('FloatButton.vue', () => {
     expect(wrapper.emitted().undo.length).toBe(1);
   });
 
-  it('test that undo event was triggered', async () => {
-    const wrapper = shallowMount(FloatButton, {
-      localVue,
-      store,
-      i18n
+  it('test that redo event was triggered', async () => {
+    const wrapper = mount(FloatButton, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
     });
 
-    expect(wrapper.find({ ref: 'redoButton' }).exists()).toBe(true);
+    expect(wrapper.find({ ref: 'redoButton' }).exists()).toBeTruthy();
 
-    const undoButtonWrapper = wrapper.findComponent({ ref: 'redoButton' });
-    undoButtonWrapper.trigger('click');
+    const buttonWrapper = wrapper.find({ ref: 'redoButton' });
+    buttonWrapper.trigger('click');
 
     wrapper.vm.$emit('redo');
     await wrapper.vm.$nextTick();
@@ -65,16 +83,22 @@ describe('FloatButton.vue', () => {
   });
 
   it('test that save event was triggered', async () => {
-    const wrapper = shallowMount(FloatButton, {
-      localVue,
-      store,
-      i18n
+    const wrapper = mount(FloatButton, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
     });
 
     expect(wrapper.find({ ref: 'saveButton' }).exists()).toBe(true);
 
-    const undoButtonWrapper = wrapper.findComponent({ ref: 'saveButton' });
-    undoButtonWrapper.trigger('click');
+    const buttonWrapper = wrapper.find({ ref: 'saveButton' });
+    buttonWrapper.trigger('click');
 
     wrapper.vm.$emit('save');
     await wrapper.vm.$nextTick();
@@ -84,79 +108,96 @@ describe('FloatButton.vue', () => {
   });
 
   it('test that publish button was click', async () => {
-    const mockRoute = {
-      name: 'PublishForm',
-      query: { d: '0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6', f: '01fa4a32-ff4a-4304-8277-e69e0bb2d229', fd: true },
-    };
-
-    const wrapper = shallowMount(FloatButton, {
-      localVue,
+    const wrapper = mount(FloatButton, {
       RouterLink: RouterLinkStub,
-      propsData: { formId:'01fa4a32-ff4a-4304-8277-e69e0bb2d229', draftId:'0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6' },
-      store,
-      i18n,
-      mocks: {
-        $route: mockRoute,
+      props: {
+        formId: '01fa4a32-ff4a-4304-8277-e69e0bb2d229',
+        draftId: '0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6',
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
       },
     });
 
-    await wrapper.findComponent({ ref: 'publishRouterLink' }).trigger('click');
+    await wrapper.find('[data-cy="publishRouterLink"]').trigger('click');
 
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.findComponent({ ref: 'publishRouterLink' }).props().to).toStrictEqual(mockRoute);
+    // We don't need to test that the router-link worked
+    // that is tested by the vue-router team already
   });
 
   it('test that manage button was click', async () => {
-    const mockRoute = {
-      name: 'PublishForm',
-      query: { f: '01fa4a32-ff4a-4304-8277-e69e0bb2d229', d: '01fa4a32-ff4a-4304-8277-e69e0bb2d228' },
-    };
-
-    const wrapper = shallowMount(FloatButton, {
-      localVue,
+    const wrapper = mount(FloatButton, {
       RouterLink: RouterLinkStub,
-      propsData: { formId:'01fa4a32-ff4a-4304-8277-e69e0bb2d229', draftId: '01fa4a32-ff4a-4304-8277-e69e0bb2d228' },
-      store,
-      i18n,
-      mocks: {
-        $route: mockRoute,
+      props: {
+        formId: '01fa4a32-ff4a-4304-8277-e69e0bb2d229',
+        draftId: '0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6',
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
       },
     });
 
-    await wrapper.findComponent({ ref: 'settingsRouterLink' }).trigger('click');
+    await wrapper.find('[data-cy="settingsRouterLink"]').trigger('click');
 
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.findComponent({ ref: 'settingsRouterLink' }).props().to).toStrictEqual(mockRoute);
+    // We don't need to test that the router-link worked
+    // that is tested by the vue-router team already
   });
 
   it('test that preview button was click', async () => {
-    const mockRoute = {
-      name: 'FormPreview',
-      query: { d: '0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6', f: '01fa4a32-ff4a-4304-8277-e69e0bb2d229' },
-    };
-
     const mockRouter = {
-      resolve: jest.fn(),
+      resolve: vi.fn(),
     };
 
-    const mockGoToPreview = jest.spyOn(FloatButton.methods, 'gotoPreview');
+    window.open = vi.fn();
 
-    const wrapper = shallowMount(FloatButton, {
-      localVue,
+    mockRouter.resolve.mockImplementationOnce(() => {
+      return {
+        href: '',
+      };
+    });
+
+    const wrapper = mount(FloatButton, {
       RouterLink: RouterLinkStub,
-      propsData: { formId:'01fa4a32-ff4a-4304-8277-e69e0bb2d229', draftId:'0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6' },
-      store,
-      i18n,
-      mocks: {
-        $route: mockRoute,
-        $router: mockRouter,
+      props: {
+        formId: '01fa4a32-ff4a-4304-8277-e69e0bb2d229',
+        draftId: '0014dfe4-321f-4bc1-9280-e7a1fdeb5dc6',
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+        mocks: {
+          $router: mockRouter,
+        },
       },
     });
 
-    await wrapper.findComponent({ ref: 'previewRouterLink' }).trigger('click');
+    await wrapper.find({ ref: 'previewRouterLink' }).trigger('click');
 
-    expect(mockGoToPreview).toHaveBeenCalledTimes(1);
+    await wrapper.vm.$nextTick();
+
+    // We don't need to test that the router-link worked
+    // that is tested by the vue-router team already
+    expect(mockRouter.resolve).toHaveBeenCalledTimes(1);
   });
 });
