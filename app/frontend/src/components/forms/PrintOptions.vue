@@ -28,6 +28,7 @@ export default {
         outputFileName: '',
         outputFileType: null,
       },
+      expandedText: false,
       timeout: undefined,
     };
   },
@@ -39,8 +40,13 @@ export default {
   },
   watch: {
     files() {
-      if (this.templateForm?.files && this.templateForm.files instanceof File) {
-        const { name, extension } = this.splitFileName(this.files.name);
+      if (
+        this.templateForm?.files &&
+        this.templateForm.files[0] instanceof File
+      ) {
+        const { name, extension } = this.splitFileName(
+          this.templateForm.files[0].name
+        );
         if (!this.templateForm.outputFileName) {
           this.templateForm.outputFileName = name;
         }
@@ -54,12 +60,52 @@ export default {
   methods: {
     ...mapActions(useNotificationStore, ['addNotification']),
     async printBrowser() {
+      //handle the 'Download Options' popup (v-dialog)
       this.dialog = false;
-      // Setting a timeout to allow the modal to close before opening the windows print
-      this.timeout = setTimeout(() => {
-        window.print();
-      }, 500);
+
+      if (this.expandedText) {
+        // Get all text input elements
+        let inputs = document.querySelectorAll('input[type="text"]');
+
+        // Create arrays to store original input fields and new divs
+        let originalInputs = [];
+        let divs = [];
+
+        inputs.forEach((input) => {
+          let div = document.createElement('div');
+          div.textContent = input.value;
+          // apply styling
+          div.style.width = '100%';
+          div.style.height = 'auto';
+          div.style.padding = '6px 12px';
+          div.style.lineHeight = '1.5';
+          div.style.color = '#495057';
+          div.style.border = '1px solid #606060';
+          div.style.borderRadius = '4px';
+          div.style.boxSizing = 'border-box';
+
+          // Store the original input and new div
+          originalInputs.push(input);
+          divs.push(div);
+
+          // Replace the input with the div
+          input.parentNode.replaceChild(div, input);
+        });
+
+        window.onafterprint = () => {
+          // Restore the original input fields after printing
+          originalInputs.forEach((input, index) => {
+            divs[index].parentNode.replaceChild(input, divs[index]);
+          });
+          //show the dialog again
+          this.dialog = true;
+        };
+      }
+
+      //delaying window.print() so that the 'Download Options' popup isn't rendered
+      setTimeout(() => window.print(), 500);
     },
+
     splitFileName(filename = undefined) {
       let name = undefined;
       let extension = undefined;
@@ -106,7 +152,7 @@ export default {
         let contentFileType = '';
         let outputFileName = '';
 
-        content = await this.fileToBase64(this.templateForm.files);
+        content = await this.fileToBase64(this.templateForm.files[0]);
         contentFileType = this.templateForm.contentFileType;
         outputFileName = this.templateForm.outputFileName;
 
@@ -212,6 +258,11 @@ export default {
             </a>
             {{ $t('trans.printOptions.pageFromBrowser') }}
           </p>
+          <v-switch v-model="expandedText" color="primary">
+            <template #label>
+              <span style="font-size: 16px">Expand text fields</span>
+            </template>
+          </v-switch>
           <v-btn class="mb-5 mr-5" color="primary" @click="printBrowser">
             <span :lang="lang">{{
               $t('trans.printOptions.browserPrint')

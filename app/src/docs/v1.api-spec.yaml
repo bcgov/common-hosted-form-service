@@ -92,7 +92,8 @@ paths:
       tags:
         - Form
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       parameters:
         - in: query
@@ -165,6 +166,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Form'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -201,6 +207,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Form'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -231,6 +242,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormBasic'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -351,13 +367,13 @@ paths:
         - in: query
           name: deleted
           schema:
-            type: Boolean
+            type: boolean
           description: (optional) This optional parameter should be set to true if deleted records (submissions) need to be fetched
           example: false
         - in: query
           name: drafts
           schema:
-            type: Boolean
+            type: boolean
           description: (optional) This optional parameter should be set to true if draft records (submissions) need to be fetched
           example: false
         - in: query
@@ -385,6 +401,10 @@ paths:
               schema:
                 type: object
               example: text/json; charset=utf-8
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
           content:
             text/csv:
               schema:
@@ -408,7 +428,7 @@ paths:
                 $ref: '#/components/schemas/Error'
   /forms/{formId}/export/fields:
     post:
-      summary: Export submissions for a form with the ability to select fields to export if CSV is selected. Use only in frontend (from an interface)
+      summary: Export submissions for a form with the ability to select fields to export if CSV is selected.
       operationId: exportWithFields
       security:
         - BasicAuth: []
@@ -433,6 +453,10 @@ paths:
               schema:
                 type: object
               example: text/json; charset=utf-8
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
           content:
             text/csv:
               schema:
@@ -495,6 +519,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormVersion'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -527,6 +556,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormVersionFields'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -558,6 +592,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Form'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -597,6 +636,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormVersionBasic'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -630,6 +674,11 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FormDraft'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -674,6 +723,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormDraft'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -706,6 +760,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormDraft'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -746,6 +805,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormDraft'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -773,6 +837,11 @@ paths:
       responses:
         '204':
           description: OK
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -805,6 +874,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormVersionBasic'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -847,6 +921,11 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FormSubmissionSummary'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -881,6 +960,11 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FormSubmission'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -918,6 +1002,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormSubmission'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -956,6 +1045,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormSubmissionResponseMultiple'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -1003,6 +1097,11 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FormSubmissionDiscover'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -1034,6 +1133,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubmissionFormVersion'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -1077,6 +1181,10 @@ paths:
     delete:
       summary: (Soft) delete a form submission
       operationId: deleteSubmission
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
       tags:
         - Submission
       parameters:
@@ -1087,9 +1195,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FormSubmission'
+                $ref: '#/components/schemas/SubmissionFormVersionDeleted'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -1111,7 +1226,7 @@ paths:
             type: string
           required: true
           example: >-
-            https://survey.gov.bc.com/app/form/success?s=7d66664b-87c5-4df8-ba7c-a6fb7d62c379
+            https://submit.digital.gov.bc.ca/app/form/success?s=7d66664b-87c5-4df8-ba7c-a6fb7d62c379
       requestBody:
         required: true
         content:
@@ -1231,6 +1346,11 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SubmissionStatusHistory'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -1316,6 +1436,8 @@ paths:
               example: application/pdf
         '400':
           $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
         default:
@@ -1421,6 +1543,10 @@ paths:
     get:
       summary: Get a file
       operationId: fileGet
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
       tags:
         - Files
       parameters:
@@ -1435,6 +1561,8 @@ paths:
                 format: binary
         '403':
           $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -1466,7 +1594,8 @@ paths:
       tags:
         - Permission
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       responses:
         '200':
@@ -1491,7 +1620,8 @@ paths:
       tags:
         - Permission
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       requestBody:
         required: true
@@ -1523,7 +1653,8 @@ paths:
       tags:
         - Permission
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       parameters:
         - in: path
@@ -1554,7 +1685,8 @@ paths:
       tags:
         - Permission
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       parameters:
         - in: path
@@ -1614,7 +1746,8 @@ paths:
       tags:
         - Role
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       requestBody:
         required: true
@@ -1673,7 +1806,8 @@ paths:
       tags:
         - Role
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       parameters:
         - in: path
@@ -2063,7 +2197,8 @@ paths:
       tags:
         - RBAC
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       parameters:
         - in: query
@@ -2495,7 +2630,8 @@ paths:
       tags:
         - Admin
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       parameters:
         - in: query
@@ -2528,7 +2664,8 @@ paths:
       tags:
         - Admin
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       parameters:
         - $ref: '#/components/parameters/formIdParam'
@@ -2554,6 +2691,10 @@ paths:
       operationId: adminReadApiDetails
       tags:
         - Admin
+      security:
+        - BearerAuth: []
+          OpenID:
+            - admin
       parameters:
         - $ref: '#/components/parameters/formIdParam'
       responses:
@@ -2577,6 +2718,10 @@ paths:
       operationId: adminDeleteApiKey
       tags:
         - Admin
+      security:
+        - BearerAuth: []
+          OpenID:
+            - admin
       parameters:
         - $ref: '#/components/parameters/formIdParam'
       responses:
@@ -2597,7 +2742,8 @@ paths:
       tags:
         - Admin
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       parameters:
         - $ref: '#/components/parameters/formIdParam'
@@ -2623,7 +2769,8 @@ paths:
       tags:
         - Admin
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       parameters:
         - $ref: '#/components/parameters/formIdParam'
@@ -2651,7 +2798,8 @@ paths:
       tags:
         - Admin
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       parameters:
         - $ref: '#/components/parameters/formIdParam'
@@ -2691,7 +2839,8 @@ paths:
       tags:
         - Admin
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       responses:
         '200':
@@ -2717,7 +2866,8 @@ paths:
       tags:
         - Admin
       security:
-        - OpenID:
+        - BearerAuth: []
+          OpenID:
             - admin
       parameters:
         - in: path
@@ -2743,6 +2893,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 components:
+  headers:
+    RateLimit:
+      schema:
+        type: string
+      description: >-
+        Indicates the remaining number of allowed API calls within the
+        remaining window. In the example, 18 more requests are allowed
+        within the 45 seconds that remain in the window. When the window resets
+        after 45 seconds then the "remaining" will be reset to "limit".
+      example: limit=20, remaining=18, reset=45
+    RateLimit-Policy:
+      schema:
+        type: string
+      description: >-
+        Indicates how many API calls can be made within a "window" of time.
+        Additional API calls within the window will result in HTTP 429
+        responses. In the example, 20 requests are allowed within a 60
+        second window.
+      example: 20;w=60
+    retry-after:
+      schema:
+        type: integer
+      description: >-
+        Only returned when the rate limit is exceeded (HTTP 429). Indicates the
+        number of seconds before the window resets, after which API calls will
+        again be allowed. In the example, 13 seconds remain before the window is
+        reset.
+      example: 13
   securitySchemes:
     BasicAuth:
       type: http
@@ -2907,27 +3085,13 @@ components:
     Form:
       allOf:
         - $ref: '#/components/schemas/FormBasic'
+        - $ref: '#/components/schemas/FormWithoutVersions'
         - type: object
           properties:
-            id:
-              type: string
-              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
-            active:
-              type: boolean
-              example: true
-            labels:
-              type: array
-              example:
-                - Survey
-              items:
-                type: string
             versions:
               type: array
               items:
                 $ref: '#/components/schemas/FormVersionBasic'
-            snake:
-              type: string
-              example: my-survey-form
         - $ref: '#/components/schemas/TimeStampUserData'
     FormApiKey:
       allOf:
@@ -2984,7 +3148,7 @@ components:
               example: true
               description: Allow form to send reminder email to all submitters
             schedule:
-              type: Object
+              type: object
               description: Contains schedule related data
               properties:
                 enabled:
@@ -3008,7 +3172,7 @@ components:
                   description: This contain a value that can be used with combination to another key i.e. keepOpenForTerm to calculate a period. Thats tells a form to be keep open for particular period.  40 Days, 3 Weeks, 1 Years etc.
                   example: '15'
                 repeatSubmission:
-                  type: Object
+                  type: object
                   properties:
                     enabled:
                       type: boolean
@@ -3027,14 +3191,14 @@ components:
                       description: This contain a value that can be used with combination to another key i.e. everyTerm to calculate a period. Thats tells a form to be schedule a form repetition after particular period.  40 Days, 3 Weeks, 1 Years etc.
                       example: '15'
                 allowLateSubmissions:
-                  type: Object
+                  type: object
                   properties:
                     enabled:
                       type: boolean
                       description: Used to indicate if late submission allowed on a form or not, Will be true if enabled
                       example: true
                     forNext:
-                      type: Object
+                      type: object
                       properties:
                         term:
                           type: string
@@ -3055,7 +3219,7 @@ components:
                   description: Contains closing date of form schedule system when type of ScheduleType set to closingDate.
                   example: '2022-12-22'
             subscribe:
-              type: Object
+              type: object
               description: Contains subscription related data - future storage of subscribed events
               properties:
                 enabled:
@@ -3086,7 +3250,7 @@ components:
       properties:
         name:
           type: string
-          example: My First Form
+          example: My Survey Form
         description:
           type: string
           example: I built this survey form. It is amazing.
@@ -3108,6 +3272,27 @@ components:
               description: ID of the FormVersion this submission is for.
               example: a675ab2a-1e88-4fb5-88f9-c7cb051a18b2
         - $ref: '#/components/schemas/FormSchema'
+        - $ref: '#/components/schemas/TimeStampUserData'
+    FormWithoutVersions:
+      allOf:
+        - $ref: '#/components/schemas/FormBasic'
+        - type: object
+          properties:
+            id:
+              type: string
+              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+            active:
+              type: boolean
+              example: true
+            labels:
+              type: array
+              example:
+                - Survey
+              items:
+                type: string
+            snake:
+              type: string
+              example: my-survey-form
         - $ref: '#/components/schemas/TimeStampUserData'
     FormOptions:
       allOf:
@@ -3244,11 +3429,20 @@ components:
       properties:
         id:
           type: string
-          example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+          example: c0822716-01f5-43e6-b4d4-ffcacd13aae3
         formVersionId:
           type: string
           description: ID of the FormVersion this submission is for.
-          example: a675ab2a-1e88-4fb5-88f9-c7cb051a18b2
+          example: b6908dd4-2f01-4e08-831d-921edae99ca3
+    FormSubmissionDeleted:
+      allOf:
+        - $ref: '#/components/schemas/FormSubmission'
+        - type: object
+          properties:
+            deleted:
+              type: boolean
+              description: Used to indicate a soft delete.
+              example: true
     FormSubmissionDiscover:
       type: object
       properties:
@@ -3304,11 +3498,11 @@ components:
         - type: object
           properties:
             format:
-              type: String
+              type: string
               description: Chosen file type for the submission data exported
               example: csv
             template:
-              type: String
+              type: string
               description: Chosen CSV format for the submission data exported
               example: multiRowEmptySpacesCSVExport
             version:
@@ -3316,7 +3510,7 @@ components:
               description: The version number of the form for the submission data exported
               example: 1
             type:
-              type: String
+              type: string
               description: default value is submissions and should be changed
               example: submissions
             preference:
@@ -3350,7 +3544,7 @@ components:
                 - oneRowPerLake.dataGrid.numberCaught,
                 - oneRowPerLake.dataGrid.numberKept
             emailExport:
-              type: Boolean
+              type: boolean
               description: This parameter should be set to true if the form submissions are large (e.g. above 500) or the form is big
               example: false
     FormSubmissionSummary:
@@ -3406,7 +3600,7 @@ components:
               example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
             name:
               type: string
-              example: My First Form.
+              example: My Survey Form.
             users:
               type: array
               items:
@@ -3432,7 +3626,7 @@ components:
       properties:
         id:
           type: string
-          example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+          example: b6908dd4-2f01-4e08-831d-921edae99ca3
         formId:
           type: string
           format: uuid
@@ -3627,6 +3821,15 @@ components:
           $ref: '#/components/schemas/FormVersion'
         form:
           $ref: '#/components/schemas/Form'
+    SubmissionFormVersionDeleted:
+      type: object
+      properties:
+        submission:
+          $ref: '#/components/schemas/FormSubmissionDeleted'
+        version:
+          $ref: '#/components/schemas/FormVersion'
+        form:
+          $ref: '#/components/schemas/FormWithoutVersions'
     SubmissionFormVersionOptions:
       type: object
       properties:
@@ -3728,7 +3931,7 @@ components:
           example: jsmith@idir
         updatedAt:
           type: string
-          example: '2020-06-04T18:49:20.672Z'
+          example: '2020-06-05T11:27:15.853Z'
     User:
       allOf:
         - type: object
@@ -3756,7 +3959,7 @@ components:
               example: Smith
             email:
               type: string
-              example: jsmith@gov.bc.
+              example: jsmith@gov.bc.ca
             idpCode:
               type: string
               example: idir
@@ -4133,6 +4336,13 @@ components:
             $ref: '#/components/schemas/NotFound'
     TooManyRequests:
       description: BasicAuth request exceeds rate limiting
+      headers:
+        RateLimit:
+          $ref: '#/components/headers/RateLimit'
+        RateLimit-Policy:
+          $ref: '#/components/headers/RateLimit-Policy'
+        retry-after:
+          $ref: '#/components/headers/retry-after'
     UnauthorizedError:
       description: Invalid authorization credentials
     UnprocessableEntity:
