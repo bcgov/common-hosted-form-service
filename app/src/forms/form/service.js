@@ -31,7 +31,6 @@ const service = {
   _findFileIds: (schema, data) => {
     const findFiles = (currentData) => {
       let fileIds = [];
-
       // Check if the current level is an array or an object
       if (Array.isArray(currentData)) {
         currentData.forEach((item) => {
@@ -48,7 +47,6 @@ const service = {
           }
         });
       }
-
       return fileIds;
     };
 
