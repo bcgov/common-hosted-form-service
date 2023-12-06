@@ -369,6 +369,16 @@ const service = {
 
       await trx.commit();
 
+      const { subscribe } = await service.readForm(formId);
+      if (subscribe && subscribe.enabled) {
+        const subscribeConfig = await service.readFormSubscriptionDetails(formId);
+        const config = Object.assign({}, subscribe, subscribeConfig);
+        const formVersion = new FormVersion();
+        formVersion.id = formVersionId;
+        formVersion.formId = formId;
+        service.postSubscriptionEvent(config, formVersion, null, SubscriptionEvent.FORM_PUBLISHED);
+      }
+
       // return the published form/version...
       return await service.readPublishedForm(formId);
     } catch (err) {
@@ -469,6 +479,7 @@ const service = {
 
         await FormSubmissionStatus.query(trx).insert(stObj);
       }
+
       if (subscribe && subscribe.enabled) {
         const subscribeConfig = await service.readFormSubscriptionDetails(formVersion.formId);
         const config = Object.assign({}, subscribe, subscribeConfig);
@@ -733,7 +744,10 @@ const service = {
       if (subscribe && subscribe.endpointUrl) {
         const axiosOptions = { timeout: 10000 };
         const axiosInstance = axios.create(axiosOptions);
-        const jsonData = { formId: formVersion.formId, formVersion: formVersion.id, submissionId: submissionId, subscriptionEvent: subscriptionEvent };
+        const jsonData = { formId: formVersion.formId, formVersion: formVersion.id, subscriptionEvent: subscriptionEvent };
+        if (submissionId != null) {
+          jsonData['submissionId'] = submissionId;
+        }
 
         axiosInstance.interceptors.request.use(
           (cfg) => {
@@ -744,7 +758,6 @@ const service = {
             return Promise.reject(error);
           }
         );
-
         axiosInstance.post(subscribe.endpointUrl, jsonData);
       }
     } catch (err) {
