@@ -5,9 +5,9 @@ import { i18n } from '~/internationalization';
 import { FormProfileValues } from '~/utils/constants';
 
 const formStore = useFormStore();
-const form = formStore.form;
-const lang = formStore.lang;
-const isRTL = formStore.isRTL;
+const form = computed(() => formStore.form);
+const lang = computed(() => formStore.lang);
+const isRTL = computed(() => formStore.isRTL);
 const FORM_PROFILE = computed(() => FormProfileValues);
 
 const deploymentRules = ref([
