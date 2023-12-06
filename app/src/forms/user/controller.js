@@ -33,7 +33,7 @@ module.exports = {
 
   readUserLabels: async (req, res, next) => {
     try {
-      const response = await service.readUserLabels(req.currentUser.id);
+      const response = await service.readUserLabels(req.currentUser);
       const labelText = response.map((label) => label.labelText);
       res.status(200).json(labelText);
     } catch (error) {
@@ -43,7 +43,7 @@ module.exports = {
 
   updateUserLabels: async (req, res, next) => {
     try {
-      const response = await service.updateUserLabels(req.currentUser.id, req.body);
+      const response = await service.updateUserLabels(req.currentUser, req.body);
       const labelText = response.map((label) => label.labelText);
       res.status(200).json(labelText);
     } catch (error) {

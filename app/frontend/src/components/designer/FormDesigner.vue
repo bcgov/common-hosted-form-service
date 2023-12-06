@@ -86,6 +86,7 @@ export default {
       'form',
       'isRTL',
       'lang',
+      'userLabels',
     ]),
     ...mapState(useAuthStore, ['tokenParsed', 'user']),
     ID_MODE() {
@@ -635,8 +636,13 @@ export default {
         useCase: this.form.useCase,
         labels: this.form.labels,
       });
-      if (this.form.labels.length > 0)
-        await userService.updateUserLabels(this.form.labels);
+      // update user labels with any new added labels
+      if (
+        this.form.labels.some((label) => this.userLabels.indexOf(label) === -1)
+      ) {
+        const response = await userService.updateUserLabels(this.form.labels);
+        this.userLabels = response.data;
+      }
 
       // Navigate back to this page with ID updated
       this.$router

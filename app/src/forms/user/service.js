@@ -41,18 +41,23 @@ const service = {
   //
   // User Labels
   //
-  readUserLabels: (userId) => {
-    return Label.query().where({ userId }).select('labelText');
+  readUserLabels: (currentUser) => {
+    return Label.query().where('userId', currentUser.id).select('labelText');
   },
 
-  updateUserLabels: async (userId, body) => {
+  updateUserLabels: async (currentUser, body) => {
     let trx;
     try {
+      if (!body || !Array.isArray(body)) {
+        throw new Problem(422, {
+          detail: 'Could not update user labels. Invalid options provided',
+        });
+      }
       trx = await Label.startTransaction();
       for (const labelText of body) {
         const existingLabel = await Label.query()
           .where({
-            userId: userId,
+            userId: currentUser.id,
             labelText: labelText,
           })
           .first();
@@ -60,13 +65,13 @@ const service = {
         if (!existingLabel) {
           await Label.query(trx).insert({
             id: uuidv4(),
-            userId: userId,
+            userId: currentUser.id,
             labelText: labelText,
           });
         }
       }
       await trx.commit();
-      return service.readUserLabels(userId);
+      return service.readUserLabels(currentUser);
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;

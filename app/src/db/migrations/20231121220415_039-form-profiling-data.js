@@ -6,14 +6,14 @@ exports.up = function (knex) {
         .then(() => knex.schema.createTable('label', table => {
             table.uuid('id').primary();
             table.uuid('userId').references('id').inTable('user').notNullable().index();
-            table.string('labelText');
+            table.string('labelText', 25);
             stamps(knex, table);
         }))
         .then(() => knex.schema.alterTable('form', table => {
-            table.string('deploymentLevel').notNullable().defaultTo('');
-            table.string('ministry').notNullable().defaultTo('');
+            table.string('deploymentLevel', 25).notNullable().defaultTo('');
+            table.string('ministry', 25).notNullable().defaultTo('');
             table.boolean('apiIntegration').nullable().comment('Use of API integrations');
-            table.string('useCase').notNullable().defaultTo('').comment('Explains the use case for this particualar form');
+            table.string('useCase', 25).notNullable().defaultTo('').comment('Explains the use case for this particualar form');
 
         }));
 };
