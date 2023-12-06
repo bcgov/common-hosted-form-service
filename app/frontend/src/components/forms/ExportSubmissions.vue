@@ -199,11 +199,13 @@ export default {
           {
             minDate: from,
             maxDate: to,
-            // deleted: true,
-            // drafts: true
           },
           fieldToExport,
-          emailExport
+          emailExport,
+          {
+            deleted: false,
+            drafts: false,
+          }
         );
 
         if (response && response.data && !emailExport) {
@@ -224,8 +226,13 @@ export default {
           throw new Error(i18n.t('trans.exportSubmissions.noResponseDataErr'));
         }
       } catch (error) {
+        const data = error?.response?.data
+          ? JSON.parse(await error.response.data.text())
+          : undefined;
         this.addNotification({
-          text: i18n.t('trans.exportSubmissions.apiCallErrorMsg'),
+          text: data?.detail
+            ? data.detail
+            : i18n.t('trans.exportSubmissions.apiCallErrorMsg'),
           consoleError:
             i18n.t('trans.exportSubmissions.apiCallConsErrorMsg') +
             `${this.form.id}: ${error}`,
