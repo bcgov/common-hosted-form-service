@@ -28,18 +28,30 @@ const { Permissions, Roles, Statuses } = require('../common/constants');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
 const service = {
-  // Get the list of file IDs from the submission
   _findFileIds: (schema, data) => {
-    return (
-      schema.components
-        // Get the file controls
-        .filter((x) => x.type === 'simplefile')
-        // for the file controls, get their respective data element (skip if it's not in data)
-        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap#for_adding_and_removing_items_during_a_map
-        .flatMap((x) => (data.submission.data[x.key] ? data.submission.data[x.key] : []))
-        // get the id from the data
-        .map((x) => x.data.id)
-    );
+    const findFiles = (currentData) => {
+      let fileIds = [];
+      // Check if the current level is an array or an object
+      if (Array.isArray(currentData)) {
+        currentData.forEach((item) => {
+          fileIds = fileIds.concat(findFiles(item));
+        });
+      } else if (typeof currentData === 'object' && currentData !== null) {
+        Object.keys(currentData).forEach((key) => {
+          if (key === 'data' && currentData[key] && currentData[key].id) {
+            // Add the file ID if it exists
+            fileIds.push(currentData[key].id);
+          } else {
+            // Recurse into nested objects
+            fileIds = fileIds.concat(findFiles(currentData[key]));
+          }
+        });
+      }
+      return fileIds;
+    };
+
+    // Start the search from the top-level submission data
+    return findFiles(data.submission.data);
   },
 
   listForms: async (params) => {
