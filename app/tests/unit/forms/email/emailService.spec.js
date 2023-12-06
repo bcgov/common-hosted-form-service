@@ -94,6 +94,7 @@ describe('public methods', () => {
     id: 'xxx-yyy',
     showSubmissionConfirmation: true,
     name: '123',
+    sendSubmissionReceivedEmail: true,
     submissionReceivedEmails: ['a@b.com', 'z@y.com'],
     identityProviders: [
       {
