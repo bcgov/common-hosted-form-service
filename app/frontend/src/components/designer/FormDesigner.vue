@@ -609,13 +609,6 @@ export default {
     },
 
     async schemaCreateNew() {
-      const emailList =
-        this.form.sendSubReceivedEmail &&
-        this.form.submissionReceivedEmails &&
-        Array.isArray(this.form.submissionReceivedEmails)
-          ? this.form.submissionReceivedEmails
-          : [];
-
       const response = await formService.createForm({
         name: this.form.name,
         description: this.form.description,
@@ -624,11 +617,12 @@ export default {
           idps: this.form.idps,
           userType: this.form.userType,
         }),
+        sendSubmissionReceivedEmail: this.form.sendSubmissionReceivedEmail,
         enableSubmitterDraft: this.form.enableSubmitterDraft,
         enableCopyExistingSubmission: this.form.enableCopyExistingSubmission,
         enableStatusUpdates: this.form.enableStatusUpdates,
         showSubmissionConfirmation: this.form.showSubmissionConfirmation,
-        submissionReceivedEmails: emailList,
+        submissionReceivedEmails: this.form.submissionReceivedEmails,
         reminder_enabled: false,
         deploymentLevel: this.form.deploymentLevel,
         ministry: this.form.ministry,

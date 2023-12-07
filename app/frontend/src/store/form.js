@@ -54,7 +54,7 @@ const genInitialForm = () => ({
   idps: [],
   isDirty: false,
   name: '',
-  sendSubReceivedEmail: false,
+  sendSubmissionReceivedEmail: false,
   showSubmissionConfirmation: true,
   snake: '',
   submissionReceivedEmails: [],
@@ -304,8 +304,6 @@ export const useFormStore = defineStore('form', {
         const identityProviders = parseIdps(data.identityProviders);
         data.idps = identityProviders.idps;
         data.userType = identityProviders.userType;
-        data.sendSubRecieviedEmail =
-          data.submissionReceivedEmails && data.submissionReceivedEmails.length;
         data.schedule = {
           ...genInitialSchedule(),
           ...data.schedule,
@@ -399,13 +397,6 @@ export const useFormStore = defineStore('form', {
     },
     async updateForm() {
       try {
-        const emailList =
-          this.form.sendSubRecieviedEmail &&
-          this.form.submissionReceivedEmails &&
-          Array.isArray(this.form.submissionReceivedEmails)
-            ? this.form.submissionReceivedEmails
-            : [];
-
         const schedule = this.form.schedule.enabled ? this.form.schedule : {};
         const subscribe = this.form.subscribe.enabled
           ? this.form.subscribe
@@ -421,7 +412,8 @@ export const useFormStore = defineStore('form', {
             userType: this.form.userType,
           }),
           showSubmissionConfirmation: this.form.showSubmissionConfirmation,
-          submissionReceivedEmails: emailList,
+          sendSubmissionReceivedEmail: this.form.sendSubmissionReceivedEmail,
+          submissionReceivedEmails: this.form.submissionReceivedEmails,
           schedule: schedule,
           subscribe: subscribe,
           allowSubmitterToUploadFile: this.form.allowSubmitterToUploadFile,
