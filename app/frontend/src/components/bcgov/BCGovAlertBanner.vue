@@ -24,7 +24,7 @@ export default {
       default: NotificationTypes.ERROR.type,
     },
     translate: {
-      default: false,
+      default: true,
       type: Boolean,
     },
   },
