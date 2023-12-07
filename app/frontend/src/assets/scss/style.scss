@@ -6,7 +6,7 @@
 @import 'vue-json-pretty/lib/styles.css';
 
 // Override bootstrap default value
-$enable-smooth-scroll: false; 
+$enable-smooth-scroll: false;
 @import 'bootstrap-scss/bootstrap.scss'; // TODO: import this only for form designer/renderer formio components
 
 // Variables
@@ -135,7 +135,7 @@ a,
 }
 
 .v-tooltip > .v-overlay__content {
-  background: rgba(97, 97, 97, .9) !important;
+  background: rgba(97, 97, 97, 0.9) !important;
 }
 
 // Customized expand/collapse section
@@ -318,7 +318,7 @@ a,
 
   // add margin to create space between the button and form.io inputs
   .formio-component-button {
-      margin-top: 1rem;
+    margin-top: 1rem;
   }
 
   // tooltips
@@ -510,9 +510,8 @@ a,
   left: auto !important;
 }
 
-
 .label span {
-  margin-right:30px;
+  margin-right: 30px;
 }
 
 .flex-xs-column-reverse {
