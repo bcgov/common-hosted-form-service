@@ -40,7 +40,7 @@ export default {
           <div v-if="form.showSubmissionConfirmation">
             <h3>
               <span class="d-print-none" :lang="lang">
-                {{ $t('trans.sucess.keepRecord') }}
+                {{ $t('trans.sucess.keepRecord') }}{{ ' ' }}
               </span>
               <span :lang="lang">
                 {{ $t('trans.sucess.confirmationId') }}:
