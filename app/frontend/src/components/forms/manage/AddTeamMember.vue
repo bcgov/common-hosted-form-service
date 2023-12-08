@@ -1,4 +1,5 @@
 <script>
+import _ from 'lodash';
 import { mapState } from 'pinia';
 import { i18n } from '~/internationalization';
 
@@ -25,6 +26,7 @@ export default {
       selectedRoles: [],
       showError: false,
       entries: [],
+      debounceSearch: _.debounce(this.searchUsers, 175),
     };
   },
   computed: {
@@ -56,7 +58,7 @@ export default {
   watch: {
     search(val) {
       if (val && val !== this.model) {
-        this.searchUsers(val);
+        this.debounceSearch(val);
       }
 
       if (!val) {
@@ -85,9 +87,17 @@ export default {
     filterObject(_itemTitle, queryText, item) {
       return Object.values(item)
         .filter((v) => v)
-        .some((v) =>
-          v.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
-        );
+        .some((v) => {
+          if (typeof v === 'string')
+            return v.toLowerCase().includes(queryText.toLowerCase());
+          else {
+            return Object.values(v).some(
+              (nestedValue) =>
+                typeof nestedValue === 'string' &&
+                nestedValue.toLowerCase().includes(queryText.toLowerCase())
+            );
+          }
+        });
     },
 
     save() {
