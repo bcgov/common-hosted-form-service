@@ -17,6 +17,7 @@ export default {
       showConfirmationDialog: false,
       showDeleteDialog: false,
       showSecret: false,
+      filesApiAccess: false,
     };
   },
   computed: {
@@ -78,6 +79,10 @@ export default {
     },
     showHideKey() {
       this.showSecret = !this.showSecret;
+    },
+    handleFilesApiAccess() {
+      //this.filesApiAccess = !this.filesApiAccess;
+      console.log('API Access', this.filesApiAccess);
     },
   },
 };
@@ -234,4 +239,13 @@ export default {
       </template>
     </BaseDialog>
   </div>
+  <v-row>
+    <v-col cols="12" sm="4" lg="3" xl="2">
+      <v-checkbox
+        v-model="filesApiAccess"
+        label="Files API Access"
+        @update:model-value="handleFilesApiAccess"
+      ></v-checkbox>
+    </v-col>
+  </v-row>
 </template>
