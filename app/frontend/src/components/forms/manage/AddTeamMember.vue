@@ -26,7 +26,7 @@ export default {
       selectedRoles: [],
       showError: false,
       entries: [],
-      debounceSearch: _.debounce(this.searchUsers, 175),
+      debounceSearch: _.debounce(this.searchUsers, 250),
     };
   },
   computed: {
