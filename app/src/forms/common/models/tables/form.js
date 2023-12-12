@@ -127,6 +127,10 @@ class Form extends Timestamps(Model) {
       'createdAt',
       'updatedBy',
       'updatedAt',
+      'deploymentLevel',
+      'ministry',
+      'apiIntegration',
+      'useCase',
     ];
   }
 
@@ -150,6 +154,10 @@ class Form extends Timestamps(Model) {
         subscribe: { type: 'object' },
         reminder_enabled: { type: 'boolean' },
         enableCopyExistingSubmission: { type: 'boolean' },
+        deploymentLevel: { type: 'string', minLength: 1, maxLength: 25 },
+        ministry: { type: 'string', minLength: 1, maxLength: 25 },
+        apiIntegration: { type: 'boolean' },
+        useCase: { type: 'string', minLength: 1, maxLength: 25 },
         ...stamps,
       },
       additionalProperties: false,
