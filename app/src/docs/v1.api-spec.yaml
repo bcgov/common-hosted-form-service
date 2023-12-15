@@ -3868,6 +3868,27 @@ components:
                 template substitution using the form data. If not supplied, will
                 use a random UUID.
               example: abc_123_{d.firstName}_{d.lastName}.pdf
+        template:
+          type: object
+          description: Object containing the document template
+          properties:
+            content:
+              type: string
+              description: >-
+                The document template encoded as a `base64` string. The example
+                is the encoded value of the text file
+                `Hello {d.firstName} {d.lastName}!`.
+              example: 'SGVsbG8ge2QuZmlyc3ROYW1lfSB7ZC5sYXN0TmFtZX0hCg=='
+            encodingType:
+              type: string
+              description: >-
+                The encoding of the `content` property: use `base64`.
+              example: base64
+            fileType:
+              type: string
+              description: >-
+                The original file type of the `content` document template.
+              example: txt
     TimeStampUserData:
       type: object
       properties:
