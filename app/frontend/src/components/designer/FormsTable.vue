@@ -14,7 +14,18 @@ export default {
   },
   data() {
     return {
-      headers: [
+      formId: null,
+      showDescriptionDialog: false,
+      loading: true,
+      formDescription: null,
+      search: null,
+    };
+  },
+  computed: {
+    ...mapState(useFormStore, ['formList', 'isRTL', 'lang']),
+    ...mapState(useAuthStore, ['user']),
+    headers() {
+      return [
         {
           title: i18n.t('trans.formsTable.formTitle'),
           align: 'start',
@@ -29,17 +40,8 @@ export default {
           sortable: false,
           width: '1%',
         },
-      ],
-      formId: null,
-      showDescriptionDialog: false,
-      loading: true,
-      formDescription: null,
-      search: null,
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['formList', 'isRTL', 'lang']),
-    ...mapState(useAuthStore, ['user']),
+      ];
+    },
     canCreateForm() {
       return this.user.idp === IdentityProviders.IDIR;
     },
