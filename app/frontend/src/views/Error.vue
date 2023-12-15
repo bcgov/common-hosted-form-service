@@ -12,7 +12,7 @@ export default {
       type: String,
     },
     translate: {
-      default: false,
+      default: true,
       type: Boolean,
     },
   },
@@ -26,7 +26,7 @@ export default {
         text = i18n.t(text.text, text.options);
       } catch {
         // Can't parse JSON so it's probably already a locale
-        if (this.translate) text = i18n.t(text);
+        text = this.translate ? i18n.t(text) : text;
       }
       return text;
     },
