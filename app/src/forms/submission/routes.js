@@ -56,7 +56,7 @@ routes.get('/:formSubmissionId/edits', hasSubmissionPermissions(P.SUBMISSION_REA
   await controller.listEdits(req, res, next);
 });
 
-routes.post('/:formSubmissionId/template/render', hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
+routes.post('/:formSubmissionId/template/render', rateLimiter, apiAccess, hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
   await controller.templateUploadAndRender(req, res, next);
 });
 
