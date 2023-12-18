@@ -2,6 +2,7 @@ const fs = require('fs');
 const Handlebars = require('handlebars');
 const path = require('path');
 
+const { getBaseUrl } = require('../common/utils');
 const chesService = require('../../components/chesService');
 const log = require('../../components/log')(module.filename);
 const { EmailProperties, EmailTypes } = require('../common/constants');
@@ -120,16 +121,18 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
     };
   }
 
+  const baseUrl = getBaseUrl();
+
   return {
     configData,
     contexts: [
       {
         context: {
-          allFormSubmissionUrl: `${service._appUrl(referer)}/user/submissions?f=${configData.form.id}`,
+          allFormSubmissionUrl: `${baseUrl}/user/submissions?f=${configData.form.id}`,
           confirmationNumber: submission.confirmationId,
           form: configData.form,
           messageLinkText: configData.messageLinkText,
-          messageLinkUrl: `${service._appUrl(referer)}/${userTypePath}?s=${submission.id}`,
+          messageLinkUrl: `${baseUrl}/${userTypePath}?s=${submission.id}`,
           emailContent: additionalProperties.emailContent,
           title: configData.title,
         },
@@ -202,27 +205,6 @@ const buildEmailTemplateFormForReminder = async (form, emailType, users, report,
 };
 
 const service = {
-  /**
-   * @function _appUrl
-   * Attempts to parse out the base application url
-   * @param {string} referer
-   * @returns base url for the application
-   */
-  _appUrl: (referer) => {
-    try {
-      const url = new URL(referer);
-      const p = url.pathname.split('/')[1];
-      const u = url.href.substring(0, url.href.indexOf(`/${p}`));
-      return `${u}/${p}`;
-    } catch (err) {
-      log.error(err.message, {
-        function: '_appUrl',
-        referer: referer,
-      });
-      throw err;
-    }
-  },
-
   /**
    * @function _mergeEmailTemplate
    * Merges the template and body HTML files to allow dynamic content in the emails
@@ -492,7 +474,7 @@ const service = {
           context: {
             form: configData.form,
             messageLinkText: configData.messageLinkText,
-            messageLinkUrl: `${service._appUrl(referer)}/${userTypePath}?id=${fileId}`,
+            messageLinkUrl: getBaseUrl() + `/${userTypePath}?id=${fileId}`,
             title: configData.title,
           },
           to: contextToVal,

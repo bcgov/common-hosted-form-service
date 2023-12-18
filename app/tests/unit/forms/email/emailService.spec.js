@@ -6,19 +6,6 @@ const mockedReadFileSync = jest.spyOn(fs, 'readFileSync');
 
 const referer = 'https://submit.digital.gov.bc.ca';
 
-describe('_appUrl', () => {
-  it('should format the url', () => {
-    expect(emailService._appUrl('https://chefs-dev.apps.silver.devops.gov.bc.ca/pr-139/form/success?s=13978f3b-056b-4022-9a30-60d3b63ec459')).toEqual(
-      'https://chefs-dev.apps.silver.devops.gov.bc.ca/pr-139'
-    );
-    expect(emailService._appUrl('https://chefs.nrs.gov.bc.ca/app/form/success?s=13978f3b-056b-4022-9a30-60d3b63ec459')).toEqual('https://chefs.nrs.gov.bc.ca/app');
-  });
-
-  it('should rethrow exceptions', () => {
-    expect(() => emailService._appUrl('notaurl')).toThrow('Invalid URL');
-  });
-});
-
 describe('_mergeEmailTemplate', () => {
   it('should merge two html files', () => {
     mockedReadFileSync.mockReturnValueOnce('<!-- BODY END -->').mockReturnValueOnce('<h1>New Body</h1>');
@@ -125,6 +112,8 @@ describe('public methods', () => {
   const body_low = { priority: 'low', to: 'a@b.com' };
   const body_normal = { priority: 'normal', to: 'a@b.com' };
   const emailContent = 'Email Content';
+  const baseUrl = 'http://localhost/app';
+  const allFormSubmissionUrl = `${baseUrl}/user/submissions?f=xxx-yyy`;
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -147,11 +136,11 @@ describe('public methods', () => {
     const contexts = [
       {
         context: {
-          allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+          allFormSubmissionUrl: allFormSubmissionUrl,
           confirmationNumber: 'abc',
           form: form,
           messageLinkText: 'You have been assigned to a 123 submission. Please login to review it.',
-          messageLinkUrl: 'https://form/view?s=123',
+          messageLinkUrl: `${baseUrl}/form/view?s=123`,
           emailContent: 'Email Content',
           title: '123 Submission Assignment',
         },
@@ -181,11 +170,11 @@ describe('public methods', () => {
     const contexts = [
       {
         context: {
-          allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+          allFormSubmissionUrl: allFormSubmissionUrl,
           confirmationNumber: 'abc',
           form: form,
           messageLinkText: `You have been asked to revise a ${form.name} submission. Please login to review it.`,
-          messageLinkUrl: `https://user/view?s=${form.name}`,
+          messageLinkUrl: `${baseUrl}/user/view?s=${form.name}`,
           emailContent: 'Email Content',
           title: `${form.name} Submission Revision Requested`,
         },
@@ -215,11 +204,11 @@ describe('public methods', () => {
     const contexts = [
       {
         context: {
-          allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+          allFormSubmissionUrl: allFormSubmissionUrl,
           confirmationNumber: 'abc',
           form: form,
           messageLinkText: `Your submission from ${form.name} has been Completed.`,
-          messageLinkUrl: `https://user/view?s=${form.name}`,
+          messageLinkUrl: `${baseUrl}/user/view?s=${form.name}`,
           emailContent: 'Email Content',
           title: `${form.name} Has Been Completed`,
         },
@@ -256,11 +245,11 @@ describe('public methods', () => {
     const contexts = [
       {
         context: {
-          allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+          allFormSubmissionUrl: allFormSubmissionUrl,
           confirmationNumber: 'abc',
           form: form_idir,
           messageLinkText: `Thank you for your ${form_idir.name} submission. You can view your submission details by visiting the following links:`,
-          messageLinkUrl: `https://form/success?s=${form_idir.name}`,
+          messageLinkUrl: `${baseUrl}/form/success?s=${form_idir.name}`,
           revisionNotificationEmailContent: undefined,
           title: `${form_idir.name} Accepted`,
         },
@@ -301,11 +290,11 @@ describe('public methods', () => {
     const contexts = [
       {
         context: {
-          allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+          allFormSubmissionUrl: allFormSubmissionUrl,
           confirmationNumber: 'abc',
           form: form,
           messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
-          messageLinkUrl: `https://form/success?s=${form.name}`,
+          messageLinkUrl: `${baseUrl}/form/success?s=${form.name}`,
           revisionNotificationEmailContent: undefined,
           title: `${form.name} Accepted`,
         },
@@ -346,11 +335,11 @@ describe('public methods', () => {
     const contexts = [
       {
         context: {
-          allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+          allFormSubmissionUrl: allFormSubmissionUrl,
           confirmationNumber: 'abc',
           form: form,
           messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
-          messageLinkUrl: `https://form/success?s=${form.name}`,
+          messageLinkUrl: `${baseUrl}/form/success?s=${form.name}`,
           revisionNotificationEmailContent: undefined,
           title: `${form.name} Accepted`,
         },
@@ -391,11 +380,11 @@ describe('public methods', () => {
     const contexts = [
       {
         context: {
-          allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+          allFormSubmissionUrl: allFormSubmissionUrl,
           confirmationNumber: 'abc',
           form: form,
           messageLinkText: `Thank you for your ${form.name} submission. You can view your submission details by visiting the following links:`,
-          messageLinkUrl: `https://form/success?s=${form.name}`,
+          messageLinkUrl: `${baseUrl}/form/success?s=${form.name}`,
           revisionNotificationEmailContent: undefined,
           title: `${form.name} Accepted`,
         },
@@ -436,11 +425,11 @@ describe('public methods', () => {
     const contexts = [
       {
         context: {
-          allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+          allFormSubmissionUrl: allFormSubmissionUrl,
           confirmationNumber: 'abc',
           form: form,
           messageLinkText: `Thank you for your ${form.name} submission regarding . You can view your submission details by visiting the following links:`,
-          messageLinkUrl: `https://form/success?s=${form.name}`,
+          messageLinkUrl: `${baseUrl}/form/success?s=${form.name}`,
           revisionNotificationEmailContent: undefined,
           title: `${form.name} Accepted`,
         },
@@ -486,11 +475,11 @@ describe('public methods', () => {
     const contexts = [
       {
         context: {
-          allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+          allFormSubmissionUrl: allFormSubmissionUrl,
           confirmationNumber: 'abc',
           form: form,
           messageLinkText: `There is a new ${form.name} submission. Please login to review it.`,
-          messageLinkUrl: `https://form/view?s=${form.name}`,
+          messageLinkUrl: `${baseUrl}/form/view?s=${form.name}`,
           revisionNotificationEmailContent: undefined,
           title: `${form.name} Submission`,
         },
@@ -527,11 +516,11 @@ describe('public methods', () => {
     const contexts = [
       {
         context: {
-          allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+          allFormSubmissionUrl: allFormSubmissionUrl,
           confirmationNumber: 'abc',
           form: form,
           messageLinkText: `You have been uninvited from ${form.name} submission draft.`,
-          messageLinkUrl: `https://user/view?s=${form.name}`,
+          messageLinkUrl: `${baseUrl}/user/view?s=${form.name}`,
           revisionNotificationEmailContent: undefined,
           title: `Uninvited From ${form.name} Draft`,
         },
@@ -565,11 +554,11 @@ describe('public methods', () => {
     const contexts = [
       {
         context: {
-          allFormSubmissionUrl: 'https://user/submissions?f=xxx-yyy',
+          allFormSubmissionUrl: allFormSubmissionUrl,
           confirmationNumber: 'abc',
           form: form,
           messageLinkText: `You have been invited to a ${form.name} submission draft. You can review your submission draft details by visiting the following links:`,
-          messageLinkUrl: `https://user/view?s=${form.name}`,
+          messageLinkUrl: `${baseUrl}/user/view?s=${form.name}`,
           revisionNotificationEmailContent: undefined,
           title: `Invited to ${form.name} Draft`,
         },
