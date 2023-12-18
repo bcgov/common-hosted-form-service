@@ -76,6 +76,47 @@ export const IdentityProviders = Object.freeze({
   IDIR: 'idir', // IDIR
 });
 
+/** List of Ministries within BC Public Service */
+export const Ministries = Object.freeze([
+  { id: 'AF', text: 'trans.ministries.AF' },
+  { id: 'AG', text: 'trans.ministries.AG' },
+  { id: 'MCF', text: 'trans.ministries.MCF' },
+  { id: 'CITZ', text: 'trans.ministries.CITZ' },
+  { id: 'ECC', text: 'trans.ministries.ECC' },
+  { id: 'EMCR', text: 'trans.ministries.EMCR' },
+  { id: 'EMLI', text: 'trans.ministries.EMLI' },
+  { id: 'ENV', text: 'trans.ministries.ENV' },
+  { id: 'FIN', text: 'trans.ministries.FIN' },
+  { id: 'FOR', text: 'trans.ministries.FOR' },
+  { id: 'HLTH', text: 'trans.ministries.HLTH' },
+  { id: 'HOUS', text: 'trans.ministries.HOUS' },
+  { id: 'IRR', text: 'trans.ministries.IRR' },
+  { id: 'JEDI', text: 'trans.ministries.JEDI' },
+  { id: 'LBR', text: 'trans.ministries.LBR' },
+  { id: 'MMHA', text: 'trans.ministries.MMHA' },
+  { id: 'MUNI', text: 'trans.ministries.MUNI' },
+  { id: 'PSFS', text: 'trans.ministries.PSFS' },
+  { id: 'PSSG', text: 'trans.ministries.PSSG' },
+  { id: 'SDPR', text: 'trans.ministries.SDPR' },
+  { id: 'TACS', text: 'trans.ministries.TACS' },
+  { id: 'MOTI', text: 'trans.ministries.MOTI' },
+  { id: 'WLRS', text: 'trans.ministries.WLRS' },
+]);
+
+/** Corresponds to the values of form profile fields */
+export const FormProfileValues = Object.freeze({
+  DEVELOPMENT: 'development',
+  PRODUCTION: 'production',
+  TEST: 'test',
+  USE_CASE: Object.freeze([
+    { id: 'application', text: 'trans.formProfile.application' },
+    { id: 'collection', text: 'trans.formProfile.collection' },
+    { id: 'registration', text: 'trans.formProfile.registration' },
+    { id: 'report', text: 'trans.formProfile.report' },
+    { id: 'feedback', text: 'trans.formProfile.feedback' },
+  ]),
+});
+
 /** Corresponds to vuetify alert classes for notification types */
 export const NotificationTypes = Object.freeze({
   ERROR: {

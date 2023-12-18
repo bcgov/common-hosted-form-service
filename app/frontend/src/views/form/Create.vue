@@ -6,6 +6,7 @@ import BasePanel from '~/components/base/BasePanel.vue';
 import FormDesigner from '~/components/designer/FormDesigner.vue';
 import FormDisclaimer from '~/components/designer/FormDisclaimer.vue';
 import FormSettings from '~/components/designer/FormSettings.vue';
+import FormProfile from '~/components/designer/FormProfile.vue';
 import { i18n } from '~/internationalization';
 import { useFormStore } from '~/store/form';
 import { IdentityMode, IdentityProviders } from '~/utils/constants';
@@ -16,6 +17,7 @@ export default {
     BasePanel,
     FormDesigner,
     FormSettings,
+    FormProfile,
     FormDisclaimer,
   },
   beforeRouteLeave(_to, _from, next) {
@@ -74,6 +76,8 @@ export default {
           {{ $t('trans.create.formSettings') }}
         </h1>
         <FormSettings />
+
+        <FormProfile />
 
         <BasePanel class="my-6">
           <template #title
