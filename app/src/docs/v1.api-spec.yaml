@@ -2602,7 +2602,6 @@ paths:
       operationId: readUserLabels
       tags:
         - User
-      parameters:
       responses:
         '200':
           description: OK
