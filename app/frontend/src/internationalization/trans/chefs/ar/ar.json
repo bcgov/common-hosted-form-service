@@ -912,7 +912,8 @@
     "submissnHistory": "تاريخ التقديم الخاص بك (يتم تحديده لاحقًا)"
   },
   "error": {
-    "logout": "تسجيل خروج"
+    "logout": "تسجيل خروج",
+    "somethingWentWrong": "خطأ: حدث خطأ ما... :("
   },
   "login": {
     "authenticateWith": "المصادقة مع:",
