@@ -493,6 +493,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormOptions'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         default:
           description: Unexpected error
           content:
@@ -926,6 +928,8 @@ paths:
               $ref: '#/components/headers/RateLimit'
             RateLimit-Policy:
               $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -2602,14 +2606,13 @@ paths:
       operationId: readUserLabels
       tags:
         - User
-      parameters:
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/Label'
+                $ref: '#/components/schemas/Label'
         '403':
           $ref: '#/components/responses/Forbidden'
         default:
@@ -2619,7 +2622,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     put:
-      summary: Update user labels 
+      summary: Update user labels
       operationId: updateUserLabels
       tags:
         - User
@@ -3254,13 +3257,13 @@ components:
             enableCopyExistingSubmission:
               type: boolean
               example: false
-            deploymentLevel: 
+            deploymentLevel:
               type: string
               description: Indicates whether the created form is for development, test, or production purposes
               example: production
             ministry:
               type: string
-              description: Contains the ministry the form is associated to 
+              description: Contains the ministry the form is associated to
               example: CITZ
             apiIntegration:
               type: boolean
@@ -3268,7 +3271,7 @@ components:
               example: true
             useCase:
               type: string
-              description: This contains a value that makes apparent that use case of the created form 
+              description: This contains a value that makes apparent that use case of the created form
               example: feedback
     FormCore:
       type: object
@@ -3688,7 +3691,7 @@ components:
         - $ref: '#/components/schemas/TimeStampUserData'
     Label:
       type: array
-      example: 
+      example:
         - Survey
         - Questionnaire
         - Feedback
