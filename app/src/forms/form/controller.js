@@ -1,3 +1,5 @@
+const { validate } = require('uuid');
+
 const emailService = require('../email/emailService');
 const exportService = require('./exportService');
 const service = require('./service');
@@ -53,8 +55,13 @@ module.exports = {
   },
   readFormOptions: async (req, res, next) => {
     try {
-      const response = await service.readFormOptions(req.params.formId, req.query);
-      res.status(200).json(response);
+      const formId = req.params.formId;
+      if (!validate(formId)) {
+        res.status(400).json({ detail: `Bad formId "${formId}".` });
+      } else {
+        const response = await service.readFormOptions(formId, req.query);
+        res.status(200).json(response);
+      }
     } catch (error) {
       next(error);
     }
@@ -85,8 +92,13 @@ module.exports = {
   },
   listFormSubmissions: async (req, res, next) => {
     try {
-      const response = await service.listFormSubmissions(req.params.formId, req.query);
-      res.status(200).json(response);
+      const formId = req.params.formId;
+      if (!validate(formId)) {
+        res.status(400).json({ detail: `Bad formId "${formId}".` });
+      } else {
+        const response = await service.listFormSubmissions(formId, req.query);
+        res.status(200).json(response);
+      }
     } catch (error) {
       next(error);
     }
