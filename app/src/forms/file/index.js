@@ -1,5 +1,4 @@
 const config = require('config');
-const dataErrors = require('../common/middleware').dataErrors;
 const routes = require('./routes');
 
 const _PATH = config.get('files.uploads.path') || 'files';
@@ -16,6 +15,5 @@ fileUpload.init({
 module.exports.mount = (app) => {
   const p = `/${_PATH}`;
   app.use(p, routes);
-  app.use(dataErrors);
   return p;
 };
