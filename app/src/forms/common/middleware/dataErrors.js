@@ -1,7 +1,7 @@
 const Problem = require('api-problem');
 const Objection = require('objection');
 
-module.exports.dataErrors = async (err, req, res, next) => {
+module.exports.dataErrors = async (err, _req, _res, next) => {
   let error = err;
   if (err instanceof Objection.NotFoundError) {
     error = new Problem(404, {

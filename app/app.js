@@ -8,6 +8,7 @@ const querystring = require('querystring');
 const keycloak = require('./src/components/keycloak');
 const log = require('./src/components/log')(module.filename);
 const httpLogger = require('./src/components/log').httpLogger;
+const middleware = require('./src/forms/common/middleware');
 const v1Router = require('./src/routes/v1');
 
 const DataConnection = require('./src/db/dataConnection');
@@ -72,6 +73,7 @@ apiRouter.get('/api', (_req, res) => {
 // Host API endpoints
 apiRouter.use(config.get('server.apiPath'), v1Router);
 app.use(config.get('server.basePath'), apiRouter);
+app.use(middleware.dataErrors);
 
 // Host the static frontend assets
 const staticFilesPath = config.get('frontend.basePath');
