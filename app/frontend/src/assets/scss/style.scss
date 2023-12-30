@@ -201,6 +201,11 @@ a,
     }
   }
 
+  // Undo "break-all". Breaking in the middle of all words affects readability.
+  .formio-component .table {
+    word-break: break-word;
+  }
+
   // tabs component
   .formio-component-simpletabs {
     & > .card {
