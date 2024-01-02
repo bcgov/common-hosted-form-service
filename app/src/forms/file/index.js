@@ -1,4 +1,5 @@
 const config = require('config');
+const setupMount = require('../common/utils').setupMount;
 const routes = require('./routes');
 
 const _PATH = config.get('files.uploads.path') || 'files';
@@ -13,7 +14,5 @@ fileUpload.init({
 });
 
 module.exports.mount = (app) => {
-  const p = `/${_PATH}`;
-  app.use(p, routes);
-  return p;
+  return setupMount(_PATH, app, routes);
 };
