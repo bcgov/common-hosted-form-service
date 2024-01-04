@@ -112,7 +112,7 @@ export default {
     ...mapState(useAppStore, ['config']),
     ...mapState(useAuthStore, [
       'authenticated',
-      'token',
+      'keycloak',
       'tokenParsed',
       'user',
     ]),
@@ -192,7 +192,7 @@ export default {
     ...mapActions(useNotificationStore, ['addNotification']),
     isFormPublic: isFormPublic,
     getCurrentAuthHeader() {
-      return `Bearer ${this.token}`;
+      return `Bearer ${this.keycloak.token}`;
     },
     async getFormData() {
       function iterate(obj, stack, fields, propNeeded) {
