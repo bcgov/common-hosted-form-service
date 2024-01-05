@@ -78,6 +78,7 @@ const httpLogger = logger({
     return {
       azp: (token && token.azp) || undefined,
       contentLength: res.get('content-length'),
+      formId: (req.auth && req.auth.user) || undefined,
       httpVersion: req.httpVersion,
       ip: req.ip,
       method: req.method,
@@ -86,6 +87,7 @@ const httpLogger = logger({
       responseTime: res.responseTime,
       statusCode: res.statusCode,
       userAgent: req.get('user-agent'),
+      username: (token && token.idp_username) || undefined,
     };
   },
   expressFormat: true, // Use express style message strings
