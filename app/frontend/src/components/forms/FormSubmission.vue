@@ -66,7 +66,7 @@ export default {
       });
     },
     refreshNotes() {
-      this.$fefs.notesPanel.getNotes();
+      this.$refs.notesPanel.getNotes();
     },
 
     setDraft(status) {
