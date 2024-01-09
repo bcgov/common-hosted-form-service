@@ -75,6 +75,14 @@ apiRouter.use(config.get('server.apiPath'), v1Router);
 app.use(config.get('server.basePath'), apiRouter);
 app.use(middleware.dataErrors);
 
+// Temporary.
+app.set('trust proxy', 1);
+app.get(config.get('server.basePath') + config.get('server.apiPath') + '/ip', (req, res) => {
+  console.error('------------->', req);
+  return res.send(req.ip);
+});
+app.get(config.get('server.basePath') + config.get('server.apiPath') + '/x-forwarded-for', (request, response) => response.send(request.headers['x-forwarded-for']));
+
 // Host the static frontend assets
 const staticFilesPath = config.get('frontend.basePath');
 app.use('/favicon.ico', (_req, res) => {
