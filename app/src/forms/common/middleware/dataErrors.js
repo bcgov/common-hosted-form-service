@@ -1,7 +1,7 @@
 const Problem = require('api-problem');
 const Objection = require('objection');
 
-module.exports.dataErrors = async (err, _req, _res, next) => {
+module.exports.dataErrors = async (err, _req, res, next) => {
   let error = err;
   if (err instanceof Objection.NotFoundError) {
     error = new Problem(404, {
@@ -17,5 +17,16 @@ module.exports.dataErrors = async (err, _req, _res, next) => {
       detail: 'Sorry... the database does not like the data you provided :(',
     });
   }
-  next(error);
+
+  if (error instanceof Problem && error.status !== 500) {
+    // Handle here when not an internal error. These are mostly from buggy
+    // systems using API Keys, but could also be from frontend bugs. Save the
+    // ERROR level logs (below) for only the things that need investigation.
+    error.send(res);
+  } else {
+    // HTTP 500 Problems and all other exceptions should be handled by the
+    // Express error handler. It will log them at the ERROR level and include a
+    // full stack trace.
+    next(error);
+  }
 };
