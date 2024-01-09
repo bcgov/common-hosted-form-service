@@ -59,7 +59,7 @@ export default {
     ]),
     async createKey() {
       this.loading = true;
-      await this.generateApiKey(this.form.id);
+      await this.generateApiKey(this.form.id, this.filesApiAccess);
       this.showSecret = false;
       this.loading = false;
       this.showConfirmationDialog = false;
@@ -73,16 +73,18 @@ export default {
     },
 
     async readKey() {
+      console.log('readKey\n');
       this.loading = true;
-      await this.readApiKey(this.form.id);
+      const response = await this.readApiKey(this.form.id);
+      console.log('readKey response\n', response);
+      if (response) {
+        console.log('API Key', response);
+        this.filesApiAccess = response.filesAPIAccess;
+      }
       this.loading = false;
     },
     showHideKey() {
       this.showSecret = !this.showSecret;
-    },
-    handleFilesApiAccess() {
-      //this.filesApiAccess = !this.filesApiAccess;
-      console.log('API Access', this.filesApiAccess);
     },
   },
 };
@@ -240,11 +242,10 @@ export default {
     </BaseDialog>
   </div>
   <v-row>
-    <v-col cols="12" sm="4" lg="3" xl="2">
+    <v-col>
       <v-checkbox
         v-model="filesApiAccess"
-        label="Files API Access"
-        @update:model-value="handleFilesApiAccess"
+        label="Allow this API key to access files"
       ></v-checkbox>
     </v-col>
   </v-row>

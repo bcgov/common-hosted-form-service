@@ -689,10 +689,13 @@ export const useFormStore = defineStore('form', {
         });
       }
     },
-    async generateApiKey(formId) {
+    async generateApiKey(formId, filesAPIAccess) {
       const notificationStore = useNotificationStore();
       try {
-        const { data } = await apiKeyService.generateApiKey(formId);
+        const { data } = await apiKeyService.generateApiKey(
+          formId,
+          filesAPIAccess
+        );
         this.apiKey = data;
         notificationStore.addNotification({
           text: i18n.t('trans.store.form.generateApiKeyNotifyMsg'),
@@ -708,7 +711,9 @@ export const useFormStore = defineStore('form', {
     async readApiKey(formId) {
       try {
         const { data } = await apiKeyService.readApiKey(formId);
+        console.log('data', data);
         this.apiKey = data;
+        console.log('this.apiKey', this.apiKey);
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({

@@ -89,6 +89,7 @@ exports.up = function (knex) {
       );
       table.uuid('formId').references('id').inTable('form').notNullable().index();
       table.uuid('secret').unique().notNullable();
+      table.boolean('filesAPIAccess').defaultTo(false);
       stamps(knex, table);
     }))
 

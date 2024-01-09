@@ -684,7 +684,8 @@ const service = {
   },
 
   // Add an API key to the form, delete any existing key
-  createOrReplaceApiKey: async (formId, currentUser) => {
+  //updated to add filesAPIAccess
+  createOrReplaceApiKey: async (formId, currentUser, filesAPIAccess) => {
     let trx;
     try {
       const currentKey = await service.readApiKey(formId);
@@ -695,6 +696,7 @@ const service = {
         await FormApiKey.query(trx).modify('filterFormId', formId).update({
           formId: formId,
           secret: uuidv4(),
+          filesAPIAccess: filesAPIAccess,
           updatedBy: currentUser.usernameIdp,
         });
       } else {
@@ -702,6 +704,7 @@ const service = {
         await FormApiKey.query(trx).insert({
           formId: formId,
           secret: uuidv4(),
+          filesAPIAccess: filesAPIAccess,
           createdBy: currentUser.usernameIdp,
         });
       }
