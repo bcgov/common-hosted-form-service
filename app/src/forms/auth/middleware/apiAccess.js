@@ -31,19 +31,22 @@ module.exports = async (req, res, next) => {
         }
         const result = await submissionService.read(sid.formSubmissionId);
         formId = result?.form?.id;
+
+        let filesAPIAccess = false; // Must be initialized as a boolean
+        if (formId && uuidValidate(formId)) {
+          const result = await formService.readApiKey(formId);
+          filesAPIAccess = result && result.filesAPIAccess ? result.filesAPIAccess : false;
+          if (!filesAPIAccess) {
+            throw new Error('Files API access is not enabled for this form.');
+          }
+        }
       }
 
       let secret = ''; // Must be initialized as a string
-      let filesAPIAccess = false; // Must be initialized as a boolean
 
       if (formId && uuidValidate(formId)) {
         const result = await formService.readApiKey(formId);
         secret = result && result.secret ? result.secret : '';
-        filesAPIAccess = result && result.filesAPIAccess ? result.filesAPIAccess : false;
-      }
-
-      if(!filesAPIAccess) {
-        return next(new Problem(403, { detail: 'Files API access is not enabled for this form.' }));
       }
 
       const checkCredentials = basicAuth({

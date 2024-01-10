@@ -214,7 +214,7 @@ describe('apiAccess', () => {
   it('should process correctly with a valid file id and associated submissionId', async () => {
     fileService.read = jest.fn().mockResolvedValue({ formSubmissionId: formSubmissionId });
     submissionService.read = jest.fn().mockResolvedValue({ form: { id: formId } });
-    mockReadApiKey.mockResolvedValue({ secret: secret });
+    mockReadApiKey.mockResolvedValue({ secret: secret, filesAPIAccess: true });
     const req = {
       headers: { authorization: authHeader },
       params: { id: 'c6455376-382c-439d-a811-0381a012d696' },
@@ -244,5 +244,36 @@ describe('apiAccess', () => {
     expect(next).toHaveBeenCalledTimes(1);
     expect(next).toHaveBeenCalledWith(new Error('Submission ID not found in file storage.'));
     expect(req.apiUser).toBeUndefined();
+  });
+
+  it('should throw an error if filesAPIAccess is false', async () => {
+    fileService.read = jest.fn().mockResolvedValue({ formSubmissionId: formSubmissionId });
+    submissionService.read = jest.fn().mockResolvedValue({ form: { id: formId } });
+    mockReadApiKey.mockResolvedValue({ secret: secret, filesAPIAccess: false });
+    const req = {
+      headers: { authorization: authHeader },
+      params: { id: 'c6455376-382c-439d-a811-0381a012d696' },
+    };
+    const res = { ...baseRes };
+    await apiAccess(req, res, next);
+
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith(new Error('Files API access is not enabled for this form.'));
+    expect(req.apiUser).toBeUndefined();
+    expect(mockReadApiKey).toHaveBeenCalledTimes(1);
+  });
+
+  it('should allow access to the files API if filesAPIAccess is true', async () => {
+    mockReadApiKey.mockResolvedValue({ secret: secret, filesAPIAccess: true });
+    const req = {
+      headers: { authorization: authHeader },
+      params: { formId: formId },
+    };
+    const res = { ...baseRes };
+    await apiAccess(req, res, next);
+
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(mockReadApiKey).toHaveBeenCalledTimes(1);
+    expect(req.apiUser).toBeTruthy();
   });
 });
