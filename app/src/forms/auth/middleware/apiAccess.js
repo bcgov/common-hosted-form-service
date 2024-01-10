@@ -37,7 +37,7 @@ module.exports = async (req, res, next) => {
           const result = await formService.readApiKey(formId);
           filesAPIAccess = result && result.filesAPIAccess ? result.filesAPIAccess : false;
           if (!filesAPIAccess) {
-            throw new Error('Files API access is not enabled for this form.');
+            return next(new Problem(403, { detail: 'Files API access is not enabled for this form.' }));
           }
         }
       }

@@ -3,6 +3,7 @@ const apiAccess = require('../../../../../src/forms/auth/middleware/apiAccess');
 const formService = require('../../../../../src/forms/form/service');
 const submissionService = require('../../../../../src/forms/submission/service');
 const fileService = require('../../../../../src/forms/file/service');
+const Problem = require('api-problem');
 
 describe('apiAccess', () => {
   const formId = 'c6455376-382c-439d-a811-0381a012d696';
@@ -258,7 +259,7 @@ describe('apiAccess', () => {
     await apiAccess(req, res, next);
 
     expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith(new Error('Files API access is not enabled for this form.'));
+    expect(next).toHaveBeenCalledWith(new Problem(403, { detail: 'Files API access is not enabled for this form.' }));
     expect(req.apiUser).toBeUndefined();
     expect(mockReadApiKey).toHaveBeenCalledTimes(1);
   });
