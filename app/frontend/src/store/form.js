@@ -711,9 +711,7 @@ export const useFormStore = defineStore('form', {
     async readApiKey(formId) {
       try {
         const { data } = await apiKeyService.readApiKey(formId);
-        console.log('data', data);
         this.apiKey = data;
-        console.log('this.apiKey', this.apiKey);
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
