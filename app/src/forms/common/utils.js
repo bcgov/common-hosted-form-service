@@ -1,12 +1,43 @@
+const config = require('config');
 const falsey = require('falsey');
 const moment = require('moment');
 const clone = require('lodash/clone');
 const _ = require('lodash');
-const setupMount = (type, app, routes, dataErrors) => {
+
+const setupMount = (type, app, routes) => {
   const p = `/${type}`;
   app.use(p, routes);
-  app.use(dataErrors);
+
   return p;
+};
+
+/**
+ * Gets the base url used when providing links to the application, such as in
+ * emails that are sent out by the application. Handles both localhost and
+ * deployed versions of the application, in the form:
+ *  - http://localhost:5173/app (localhost development including port)
+ *  - https://chefs-dev.apps.silver.devops.gov.bc.ca/pr-1234 (pr deployment)
+ *  - https://chefs-dev.apps.silver.devops.gov.bc.ca/app (non-prod deployment)
+ *  - https://submit.digital.gov.bc.ca/app (vanity url deployment)
+ * @returns a string containing the base url
+ */
+const getBaseUrl = () => {
+  let protocol = 'https';
+  let host = process.env.SERVER_HOST;
+
+  if (!host) {
+    protocol = 'http';
+    host = 'localhost';
+
+    // This only needs to be defined to use the email links in local dev.
+    if (config.has('frontend.localhostPort')) {
+      host += ':' + config.get('frontend.localhostPort');
+    }
+  }
+
+  const basePath = config.get('frontend.basePath');
+
+  return `${protocol}://${host}${basePath}`;
 };
 
 const typeUtils = {
@@ -729,6 +760,7 @@ const isClosingMessageValid = (schedule) => {
 
 module.exports = {
   falsey,
+  getBaseUrl,
   setupMount,
   queryUtils,
   typeUtils,

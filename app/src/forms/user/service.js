@@ -1,6 +1,6 @@
 const Problem = require('api-problem');
-
-const { User, UserFormPreferences } = require('../common/models');
+const { v4: uuidv4 } = require('uuid');
+const { User, UserFormPreferences, Label } = require('../common/models');
 const { IdentityProviders } = require('../common/constants');
 
 const service = {
@@ -36,6 +36,46 @@ const service = {
 
   readSafe: (userId) => {
     return User.query().modify('safeSelect').findById(userId).throwIfNotFound();
+  },
+
+  //
+  // User Labels
+  //
+  readUserLabels: (currentUser) => {
+    return Label.query().where('userId', currentUser.id).select('labelText');
+  },
+
+  updateUserLabels: async (currentUser, body) => {
+    let trx;
+    try {
+      if (!body || !Array.isArray(body)) {
+        throw new Problem(422, {
+          detail: 'Could not update user labels. Invalid options provided',
+        });
+      }
+      trx = await Label.startTransaction();
+      for (const labelText of body) {
+        const existingLabel = await Label.query()
+          .where({
+            userId: currentUser.id,
+            labelText: labelText,
+          })
+          .first();
+
+        if (!existingLabel) {
+          await Label.query(trx).insert({
+            id: uuidv4(),
+            userId: currentUser.id,
+            labelText: labelText,
+          });
+        }
+      }
+      await trx.commit();
+      return service.readUserLabels(currentUser);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
   },
 
   //

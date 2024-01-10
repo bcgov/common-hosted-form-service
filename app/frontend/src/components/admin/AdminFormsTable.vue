@@ -18,7 +18,7 @@ export default {
     ...mapState(useFormStore, ['isRTL', 'lang']),
     calcHeaders() {
       return this.headers.filter(
-        (x) => x.key !== 'updatedAt' || !this.showDeleted
+        (x) => x.key !== 'updatedAt' || this.showDeleted
       );
     },
     headers() {

@@ -90,6 +90,10 @@ const service = {
       obj.subscribe = data.subscribe;
       obj.reminder_enabled = data.reminder_enabled;
       obj.enableCopyExistingSubmission = data.enableCopyExistingSubmission;
+      obj.deploymentLevel = data.deploymentLevel;
+      obj.ministry = data.ministry;
+      obj.apiIntegration = data.apiIntegration;
+      obj.useCase = data.useCase;
 
       await Form.query(trx).insert(obj);
       if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
@@ -163,6 +167,10 @@ const service = {
         subscribe: data.subscribe,
         reminder_enabled: data.reminder_enabled,
         enableCopyExistingSubmission: data.enableCopyExistingSubmission,
+        deploymentLevel: data.deploymentLevel,
+        ministry: data.ministry,
+        apiIntegration: data.apiIntegration,
+        useCase: data.useCase,
       };
 
       await Form.query(trx).patchAndFetchById(formId, upd);
