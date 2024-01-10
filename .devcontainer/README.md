@@ -1,11 +1,29 @@
-# Common Hosted Form Service - devcontainer
+# CHEFS Development with Dev Container
+The following guide will get you up and running and developing/debugging CHEFS as quickly as possible. 
+We provide a [`devcontainer`](https://containers.dev) and will use [`VS Code`](https://code.visualstudio.com) to illustrate.
 
-***fill this in with more detail***
+By no means is CHEFS development limited to these tools; they are merely examples.  
 
-## Purpose
-The `devcontainer` is for developers to be up and running with a local version of CHEFS as quickly as possible. In order to run CHEFS you require Keycloak (configured), Postgresql (seeded) and the CHEFS backend/API and frontend/UX. Previously, this was a series of downloads and configuration updates and numerous commands to run.
+## Caveats
 
-In this container, we provide a preconfigured Keycloak, standup a Postgresql instance, load all required node libraries for backend and frontend (including building the formio components library) and convenient launch tasks to run and debug CHEFS.
+The primary use case for this `devcontainer` is for developing, debugging and unit testing CHEFS source code.
+
+There are limitations running this devcontainer, such as all networking is within this container. This container has [docker-in-docker](https://github.com/microsoft/vscode-dev-containers/blob/main/script-library/docs/docker-in-docker.md) which allows running demos, building docker images, running `docker compose` all within this container.
+
+## Files
+The `.devcontainer` folder contains the `devcontainer.json` file which defines this container. We are using a `Dockerfile` and `post-install.sh` to build and configure the container run image. The `Dockerfile` is simple but in place for simplifying image enhancements. The `post-install.sh` will install the required node libraries for CHEFS including the frontend and formio components.
+
+In order to run CHEFS you require Keycloak (configured), Postgresql (seeded) and the CHEFS backend/API and frontend/UX. Previously, this was a series of downloads and configuration updates and numerous commands to run. See `.devcontainer/chefs_local` files.
+
+Also included are convenient launch tasks to run and debug CHEFS.
+
+## Open CHEFS in the devcontainer
+
+To open CHEFS in a devcontainer, we open the *root* of this repository. We can open in 2 ways:
+
+1. Open Visual Studio Code, and use the Command Palette and use `Dev Containers: Open Folder in Container...`
+2. Open Visual Studio Code and `File|Open Folder...`, you should be prompted to `Reopen in Container`.
+
 
 ## Running CHEFS locally
 Keycloak and Postgresql will be launched using docker compose. These will run inside of the devcontainer (docker-in-docker) but the ports are forwarded to the host machine and are accessible on the local host.
