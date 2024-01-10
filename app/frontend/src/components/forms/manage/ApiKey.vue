@@ -17,6 +17,7 @@ export default {
       showConfirmationDialog: false,
       showDeleteDialog: false,
       showSecret: false,
+      filesAPIAccess: false,
     };
   },
   computed: {
@@ -58,7 +59,7 @@ export default {
     ]),
     async createKey() {
       this.loading = true;
-      await this.generateApiKey(this.form.id);
+      await this.generateApiKey(this.form.id, this.filesAPIAccess);
       this.showSecret = false;
       this.loading = false;
       this.showConfirmationDialog = false;
@@ -74,6 +75,7 @@ export default {
     async readKey() {
       this.loading = true;
       await this.readApiKey(this.form.id);
+      this.filesAPIAccess = this.apiKey?.filesAPIAccess;
       this.loading = false;
     },
     showHideKey() {
@@ -234,4 +236,12 @@ export default {
       </template>
     </BaseDialog>
   </div>
+  <v-row>
+    <v-col>
+      <v-checkbox
+        v-model="filesAPIAccess"
+        label="Allow this API key to access files"
+      ></v-checkbox>
+    </v-col>
+  </v-row>
 </template>

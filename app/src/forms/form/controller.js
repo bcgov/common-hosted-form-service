@@ -242,9 +242,9 @@ module.exports = {
       next(error);
     }
   },
-  createOrReplaceApiKey: async (req, res, next) => {
+  createOrReplaceApiKey: async (req, res, next, filesAPIAccess) => {
     try {
-      const response = await service.createOrReplaceApiKey(req.params.formId, req.currentUser);
+      const response = await service.createOrReplaceApiKey(req.params.formId, req.currentUser, filesAPIAccess);
       res.status(200).json(response);
     } catch (error) {
       next(error);

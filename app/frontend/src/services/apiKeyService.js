@@ -18,8 +18,10 @@ export default {
    * @param {string} formId The form uuid
    * @returns {Promise} An axios response
    */
-  generateApiKey(formId) {
-    return appAxios().put(`${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
+  generateApiKey(formId, filesAPIAccess) {
+    return appAxios().put(`${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`, {
+      filesAPIAccess,
+    });
   },
 
   /**

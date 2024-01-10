@@ -710,10 +710,13 @@ export const useFormStore = defineStore('form', {
         });
       }
     },
-    async generateApiKey(formId) {
+    async generateApiKey(formId, filesAPIAccess) {
       const notificationStore = useNotificationStore();
       try {
-        const { data } = await apiKeyService.generateApiKey(formId);
+        const { data } = await apiKeyService.generateApiKey(
+          formId,
+          filesAPIAccess
+        );
         this.apiKey = data;
         notificationStore.addNotification({
           text: i18n.t('trans.store.form.generateApiKeyNotifyMsg'),
