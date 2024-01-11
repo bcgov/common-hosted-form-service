@@ -1,4 +1,5 @@
 const { getMockReq, getMockRes } = require('@jest-mock/express');
+const { v4: uuidv4 } = require('uuid');
 
 const apiAccess = require('../../../../../src/forms/auth/middleware/apiAccess');
 const formService = require('../../../../../src/forms/form/service');
@@ -7,10 +8,10 @@ const fileService = require('../../../../../src/forms/file/service');
 const { NotFoundError } = require('objection');
 
 describe('apiAccess', () => {
-  const fileId = 'eb6fad21-985c-46f1-865b-24807f5f970e';
-  const formId = 'c6455376-382c-439d-a811-0381a012d696';
-  const formSubmissionId = '3ba5659c-1a3f-4e76-a0d4-ef00f5102387';
-  const secret = 'dd7d1699-61ec-4037-aa33-727f8aa79c0a';
+  const fileId = uuidv4();
+  const formId = uuidv4();
+  const formSubmissionId = uuidv4();
+  const secret = uuidv4();
 
   const token = Buffer.from(`${formId}:${secret}`).toString('base64');
   const authHeader = `Basic ${token}`;
