@@ -31,7 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 // pulls the IP address from the headers, rather than use the proxy IP address.
 // This gives the correct IP address in the logs and for the rate limiting.
 // See https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
-app.set('trust proxy', 1);
+// app.set('trust proxy', 1);
 
 // Skip if running tests
 if (process.env.NODE_ENV !== 'test') {
