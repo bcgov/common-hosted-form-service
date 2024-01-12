@@ -43,6 +43,30 @@ const currentUser = async (req, res, next) => {
   return setUser(req, res, next);
 };
 
+// Temporary version of currentUser that only calls sets req.currentUser for
+// requests using Bearer tokens. This can only be used for routes that call
+// controller methods that don't use req.currentUser.
+//
+// Plan: If this code is a success it will eventually be rolled out to all
+// endpoints that don't need req.currentUser for API Key use. Then, all those
+// that do need req.currentUser will be refactored to use the minimal query we
+// need.
+const currentUserTemp = async (req, res, next) => {
+  // Check if authorization header is a bearer token
+  if (req.headers && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    // need to check keycloak, ensure the bearer token is valid
+    const token = req.headers.authorization.substring(7);
+    const ok = await keycloak.grantManager.validateAccessToken(token);
+    if (!ok) {
+      return new Problem(403, { detail: 'Authorization token is invalid.' }).send(res);
+    }
+
+    return setUser(req, res, next);
+  }
+
+  next();
+};
+
 const hasFormPermissions = (permissions) => {
   return (req, res, next) => {
     // Skip permission checks if requesting as API entity
@@ -329,6 +353,7 @@ const hasRolePermissions = (removingUsers = false) => {
 
 module.exports = {
   currentUser,
+  currentUserTemp,
   hasFormPermissions,
   hasSubmissionPermissions,
   hasFormRoles,
