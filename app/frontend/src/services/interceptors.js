@@ -8,7 +8,8 @@ import { useAppStore } from '~/store/app';
  * @param {integer} [timeout=10000] Number of milliseconds before timing out the request
  * @returns {object} An axios instance
  */
-export function appAxios(timeout = 10000) {
+export function appAxios(timeout = 60000) {
+  // 2024-01-12 Urgent timeout increase from 10000 to help with performance.
   const appStore = useAppStore();
   const axiosOptions = { timeout: timeout };
   if (appStore.config) {
