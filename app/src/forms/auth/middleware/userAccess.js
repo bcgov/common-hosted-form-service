@@ -91,6 +91,7 @@ const hasFormPermissions = (permissions) => {
 const hasSubmissionPermissions = (permissions) => {
   return async (req, _res, next) => {
     try {
+      const d0 = new Date(); // TEMP
       // Skip permission checks if requesting as API entity
       if (req.apiUser) {
         return next();
@@ -107,17 +108,22 @@ const hasSubmissionPermissions = (permissions) => {
         return next(new Problem(401, { detail: 'Submission Id not found on request.' }));
       }
 
+      const d1 = new Date(); // TEMP
       // Get the submission results so we know what form this submission is for
       const submissionForm = await service.getSubmissionForm(submissionId);
+      const d2 = new Date(); // TEMP
 
       // Does the user have permissions for this submission due to their FORM permissions
       if (req.currentUser) {
         let formFromCurrentUser = req.currentUser.forms.find((f) => f.formId === submissionForm.form.id);
+        const d3 = new Date(); // TEMP
         if (formFromCurrentUser) {
           // Do they have the submission permissions being requested on this FORM
           const intersection = permissions.filter((p) => {
             return formFromCurrentUser.permissions.includes(p);
           });
+          const d4 = new Date(); // TEMP
+          console.error('t1=' + (d1 - d0) + ' t2=' + (d2 - d1) + ' t3=' + (d3 - d2) + ' t4=' + (d4 - d3));
           if (intersection.length === permissions.length) {
             req.formIdWithDeletePermission = submissionForm.form.id;
             return next();
