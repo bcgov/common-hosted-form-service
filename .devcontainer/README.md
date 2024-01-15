@@ -30,6 +30,19 @@ Keycloak and Postgresql will be launched using docker compose. These will run in
 
 CHEFS API and Frontend are running as node applications on the devcontainer - again, ports are forwarded to the host.
 
+### Configuring CHEFS locally
+When the devcontainer is built, it copies `.devcontainer/chefs_local/local.json.sample` and `.devcontainer/chefs_local/realm-export.json.sample` to `.devcontainer/chefs_local/local.json` and `.devcontainer/chefs_local/realm-export.json` respectively. These copies are not checked in and allow the developer to make changes and tweaks without impacting other developers or accidentially sharing passwords. 
+
+### Authorization Prerequisites
+1.  An IDIR account is required to access CHEFS. 
+2.  Request an SSO Integration from the Common Hosted Single Sign-on (CSS) page in order to obtain a resource and secret that will be used for authentication when building CHEFS. View the [detailed documentation](https://bcdevex.atlassian.net/wiki/spaces/CCP/pages/961675282) about requesting the Pathfinder SSO integration. 
+3.  Open realm-export.json  located at chefs_build/docker/imports/keycloak and search for `XXXXXXXXXXXX`. This value must match the `clientSecret` value in `local.json`  so that the CHEFS API can connect to your Keycloak instance. By default, these are set to be equal and don’t need to be altered.
+4.  Navigate to the CSS page, login with your IDIR, and download the ‘Development’ Installation JSON from your SSO Integration. 
+5.  Back in the `realm-export.json` file, search for all instances of `YYYYYYYYYYYY` and replace it with the `resource` you obtained from the downloaded JSON file. Search for all instances of `ZZZZZZZZZZZZ` and replace it with the `secret`. 
+
+Note that `CHEFS Frontend` launch configuration is using the `chefs-frontend-local` client in Keycloak, not `chefs-frontend-local` as we do in production.
+
+### Run/Debug
 1. start Keycloak and Postgresql. Many ways to start... 
     - right click on `.devcontainer/chefs_local/docker-compose.yml` and select `Compose up`
     - or use command palette `Docker: Compose Up` then select `.devcontainer/chefs_local/docker-compose.yml`
@@ -38,6 +51,10 @@ CHEFS API and Frontend are running as node applications on the devcontainer - ag
     - Run and Debug, select 'CHEFS' which will start both the API and the frontend.
 3. debug Frontend with Chrome
     - Run and Debug, select 'CHEFS Frontend - chrome' which will start a Chrome browser against the frontend, will allow breakpoints in `/app/frontend/src`
+4. stop Keycloak and Postgresql. Many ways to stop... 
+    - right click on `.devcontainer/chefs_local/docker-compose.yml` and select `Compose down`
+    - or use command palette `Docker: Compose Down` then select `.devcontainer/chefs_local/docker-compose.yml`
+    - or `Terminal | Run Task...|chefs_local down`
 
 ## Troubleshooting
 All development machines are unique and here we will document problems that have been encountered and how to fix them.

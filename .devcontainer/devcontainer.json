@@ -10,12 +10,7 @@
         }
     },
 
-	"features": {
-		// "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
-		// 	"version": "20.10",
-		// 	"enableNonRootDocker": "true",
-		// 	"moby": "true"
-		// }
+    "features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
 	},
 
@@ -28,7 +23,7 @@
 	"forwardPorts": [8082, 8081, 8080, 5432, 5173],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "bash ./.devcontainer/post-install.sh",
+    "postCreateCommand": "bash ./.devcontainer/post-install.sh",
 
 	// Configure tool-specific properties.
 	// "customizations": {},
