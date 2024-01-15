@@ -31,7 +31,7 @@ Keycloak and Postgresql will be launched using docker compose. These will run in
 CHEFS API and Frontend are running as node applications on the devcontainer - again, ports are forwarded to the host.
 
 ### Configuring CHEFS locally
-When the devcontainer is built, it copies `.devcontainer/chefs_local/local.json.sample` and `.devcontainer/chefs_local/realm-export.json.sample` to `.devcontainer/chefs_local/local.json` and `.devcontainer/chefs_local/realm-export.json` respectively. These copies are not checked in and allow the developer to make changes and tweaks without impacting other developers or accidentially sharing passwords. 
+When the devcontainer is built, it copies `.devcontainer/chefs_local/local.json.sample` and `.devcontainer/chefs_local/realm-export.json.sample` to `.devcontainer/chefs_local/local.json` and `.devcontainer/chefs_local/realm-export.json` respectively. These copies are not checked in and allow the developer to make changes and tweaks without impacting other developers or accidentially committing passwords. 
 
 ### Authorization Prerequisites
 1.  An IDIR account is required to access CHEFS. 
@@ -39,8 +39,6 @@ When the devcontainer is built, it copies `.devcontainer/chefs_local/local.json.
 3.  Open realm-export.json  located at chefs_build/docker/imports/keycloak and search for `XXXXXXXXXXXX`. This value must match the `clientSecret` value in `local.json`  so that the CHEFS API can connect to your Keycloak instance. By default, these are set to be equal and don’t need to be altered.
 4.  Navigate to the CSS page, login with your IDIR, and download the ‘Development’ Installation JSON from your SSO Integration. 
 5.  Back in the `realm-export.json` file, search for all instances of `YYYYYYYYYYYY` and replace it with the `resource` you obtained from the downloaded JSON file. Search for all instances of `ZZZZZZZZZZZZ` and replace it with the `secret`. 
-
-Note that `CHEFS Frontend` launch configuration is using the `chefs-frontend-local` client in Keycloak, not `chefs-frontend-local` as we do in production.
 
 ### Run/Debug
 1. start Keycloak and Postgresql. Many ways to start... 
@@ -55,6 +53,13 @@ Note that `CHEFS Frontend` launch configuration is using the `chefs-frontend-loc
     - right click on `.devcontainer/chefs_local/docker-compose.yml` and select `Compose down`
     - or use command palette `Docker: Compose Down` then select `.devcontainer/chefs_local/docker-compose.yml`
     - or `Terminal | Run Task...|chefs_local down`
+
+*Notes*
+- `CHEFS Frontend` launch configuration is using the `chefs-frontend-local` client in Keycloak, not `chefs-frontend` client as we do in production.
+- `CHEFS API` will use the configuration found at `.devcontainer/chefs_local/local.json`
+- `Keycloak Admin console`: http://localhost:8082 - username/password = admin/admin
+- `CHEFS Frontend`: http://localhost:5173/app
+- `CHEFS API`: http://localhost:5173/app/api/v1
 
 ## Troubleshooting
 All development machines are unique and here we will document problems that have been encountered and how to fix them.
