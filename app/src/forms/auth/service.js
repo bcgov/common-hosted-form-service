@@ -132,12 +132,12 @@ const service = {
     let items = [];
     if (userInfo && userInfo.public) {
       // if the user is 'public', then we can only fetch public accessible forms...
-      items = await PublicFormAccess.query().modify('filterFormId', params.formId).modify('filterActive', params.active).modify('orderDefault');
+      items = await PublicFormAccess.query().modify('filterFormId', params.formId).modify('filterActive', params.active);
       // ignore any passed in accessLevel params, only return public
       return service.filterForms(userInfo, items, ['public']);
     } else {
       // if user has an id, then we fetch whatever forms match the query params
-      items = await UserFormAccess.query().modify('filterUserId', userInfo.id).modify('filterFormId', params.formId).modify('filterActive', params.active).modify('orderDefault');
+      items = await UserFormAccess.query().modify('filterUserId', userInfo.id).modify('filterFormId', params.formId).modify('filterActive', params.active);
       return service.filterForms(userInfo, items, params.accessLevels);
     }
   },
