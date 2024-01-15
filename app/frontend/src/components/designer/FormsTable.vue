@@ -19,6 +19,7 @@ export default {
       loading: true,
       formDescription: null,
       search: null,
+      sortBy: [{ key: 'name', order: 'asc' }],
     };
   },
   computed: {
@@ -136,6 +137,7 @@ export default {
     :loading-text="$t('trans.formsTable.loadingText')"
     :search="search"
     :lang="lang"
+    :sort-by="sortBy"
   >
     <template #item.name="{ item }">
       <router-link
