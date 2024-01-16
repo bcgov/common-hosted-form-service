@@ -40,6 +40,26 @@
       "type": "shell"
     },
     {
+      "args": ["run", "build:formio"],
+      "command": "npm",
+      "group": "test",
+      "label": "Components build",
+      "options": {
+        "cwd": "${workspaceFolder}/app/frontend"
+      },
+      "type": "shell"
+    },
+    {
+      "args": ["run", "deploy:formio"],
+      "command": "npm",
+      "group": "test",
+      "label": "Components deploy",
+      "options": {
+        "cwd": "${workspaceFolder}/app/frontend"
+      },
+      "type": "shell"
+    },
+    {
       "label": "chefs_local up",
       "type": "shell",
       "command": "docker-compose -f ${workspaceFolder}/.devcontainer/chefs_local/docker-compose.yml up -d",

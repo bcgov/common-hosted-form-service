@@ -57,9 +57,13 @@ When the devcontainer is built, it copies `.devcontainer/chefs_local/local.json.
 *Notes*
 - `CHEFS Frontend` launch configuration is using the `chefs-frontend-local` client in Keycloak, not `chefs-frontend` client as we do in production.
 - `CHEFS API` will use the configuration found at `.devcontainer/chefs_local/local.json`
+- `Postgres DB`: localhost:5432
 - `Keycloak Admin console`: http://localhost:8082 - username/password = admin/admin
 - `CHEFS Frontend`: http://localhost:5173/app
 - `CHEFS API`: http://localhost:5173/app/api/v1
+
+## Formio Components
+If you are developing the formio components, you should build and redeploy them before running your local debug instances of CHEFS. Use tasks `Components build` and `Components Deploy`.
 
 ## Troubleshooting
 All development machines are unique and here we will document problems that have been encountered and how to fix them.
