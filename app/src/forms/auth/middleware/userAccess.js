@@ -160,7 +160,14 @@ const hasSubmissionPermissions = (permissions) => {
 
       // Does the user have permissions for this submission due to their FORM permissions
       if (req.currentUser) {
-        let formFromCurrentUser = req.currentUser.forms.find((f) => f.formId === submissionForm.form.id);
+        let forms;
+        if (req.currentUser.forms) {
+          forms = req.currentUser.forms;
+        } else {
+          forms = await service.getUserForms(req.currentUser, { active: true, formId: submissionForm.form.id });
+        }
+
+        let formFromCurrentUser = forms.find((f) => f.formId === submissionForm.form.id);
         if (formFromCurrentUser) {
           // Do they have the submission permissions being requested on this FORM
           const intersection = permissions.filter((p) => {

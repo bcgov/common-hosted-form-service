@@ -641,6 +641,32 @@ describe('hasSubmissionPermissions', () => {
     expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You do not have access to this submission.' }));
   });
 
+  it('falls through to the query if the current user has no forms', async () => {
+    service.checkSubmissionPermission = jest.fn().mockReturnValue(undefined);
+    service.getSubmissionForm = jest.fn().mockReturnValue({
+      submission: { id: 456, deleted: false },
+      form: { identityProviders: [{ code: 'idir' }, { code: 'bceid' }] },
+    });
+    service.getUserForms = jest.fn().mockReturnValue([]);
+
+    const nxt = jest.fn();
+    const req = {
+      currentUser: {},
+      params: {
+        formSubmissionId: 123,
+      },
+    };
+
+    const mw = hasSubmissionPermissions('submission_read');
+    await mw(req, testRes, nxt);
+
+    // just run to the end and fall into the base case
+    expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(1);
+    expect(service.checkSubmissionPermission).toHaveBeenCalledWith(req.currentUser, 123, ['submission_read']);
+    expect(nxt).toHaveBeenCalledTimes(1);
+    expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You do not have access to this submission.' }));
+  });
+
   it('falls through to the query if the current user does not have any FORM access on the current form', async () => {
     service.getSubmissionForm = jest.fn().mockReturnValue({
       submission: { deleted: false },
