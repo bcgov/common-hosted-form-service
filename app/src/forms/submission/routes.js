@@ -3,17 +3,14 @@ const routes = require('express').Router();
 
 const controller = require('./controller');
 const P = require('../common/constants').Permissions;
-const { currentUser, currentUserTemp, hasSubmissionPermissions, filterMultipleSubmissions } = require('../auth/middleware/userAccess');
+const { currentUser, hasSubmissionPermissions, filterMultipleSubmissions } = require('../auth/middleware/userAccess');
 const rateLimiter = require('../common/middleware').apiKeyRateLimiter;
 
-// This endpoint is the one most used by API Key users. Try it with a temporary
-// version of currentUser that only creates req.currentUser for Bearer tokens.
-// This saves a couple of big database calls that are not needed for API Keys.
-routes.get('/:formSubmissionId', currentUserTemp, rateLimiter, apiAccess, hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
+routes.use(currentUser);
+
+routes.get('/:formSubmissionId', rateLimiter, apiAccess, hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
   await controller.read(req, res, next);
 });
-
-routes.use(currentUser);
 
 routes.put('/:formSubmissionId', hasSubmissionPermissions(P.SUBMISSION_UPDATE), async (req, res, next) => {
   await controller.update(req, res, next);
