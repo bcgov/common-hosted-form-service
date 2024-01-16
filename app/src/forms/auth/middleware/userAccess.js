@@ -60,16 +60,14 @@ const currentUserTemp = async (req, res, next) => {
     if (!ok) {
       return new Problem(403, { detail: 'Authorization token is invalid.' }).send(res);
     }
-
-    // Temporarily set a flag to prevent expensive database calls. We will
-    // eventually move all routes to working in this way, and then the extra
-    // downstream logic can be removed.
-    req.chefsLoadForms = false;
-
-    return setUser(req, res, next);
   }
 
-  next();
+  // Temporarily set a flag to prevent expensive database calls. We will
+  // eventually move all routes to working in this way, and then the extra
+  // downstream logic can be removed.
+  req.chefsLoadForms = false;
+
+  return setUser(req, res, next);
 };
 
 // To deal with performance problems, we are going to move away from setting the
