@@ -75,7 +75,7 @@ const service = {
       if (params.team) accessLevels.push('team');
     }
 
-    const forms = await authService.getUserForms(user, { active: true });
+    const forms = await authService.getUserForms(user, { ...params, active: true });
     const filteredForms = authService.filterForms(user, forms, accessLevels);
     user.forms = filteredForms;
 
