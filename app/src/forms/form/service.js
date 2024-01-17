@@ -483,12 +483,11 @@ const service = {
         };
 
         await FormSubmissionStatus.query(trx).insert(stObj);
-      }
-
-      if (subscribe && subscribe.enabled) {
-        const subscribeConfig = await service.readFormSubscriptionDetails(formVersion.formId);
-        const config = Object.assign({}, subscribe, subscribeConfig);
-        service.postSubscriptionEvent(config, formVersion, submissionId, SubscriptionEvent.FORM_SUBMITTED);
+        if (subscribe && subscribe.enabled) {
+          const subscribeConfig = await service.readFormSubscriptionDetails(formVersion.formId);
+          const config = Object.assign({}, subscribe, subscribeConfig);
+          service.postSubscriptionEvent(config, formVersion, submissionId, SubscriptionEvent.FORM_SUBMITTED);
+        }
       }
 
       // does this submission contain any file uploads?
