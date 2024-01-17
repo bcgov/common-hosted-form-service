@@ -85,6 +85,7 @@ export default {
     :icon="notification.icon"
     prominent
     closable
+    class="mb-3"
     :title="notification.title"
     :text="$t(notification.text)"
     @update:model-value="alertClosed"

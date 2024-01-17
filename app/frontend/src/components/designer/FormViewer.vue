@@ -112,7 +112,7 @@ export default {
     ...mapState(useAppStore, ['config']),
     ...mapState(useAuthStore, [
       'authenticated',
-      'token',
+      'keycloak',
       'tokenParsed',
       'user',
     ]),
@@ -192,7 +192,7 @@ export default {
     ...mapActions(useNotificationStore, ['addNotification']),
     isFormPublic: isFormPublic,
     getCurrentAuthHeader() {
-      return `Bearer ${this.token}`;
+      return `Bearer ${this.keycloak.token}`;
     },
     async getFormData() {
       function iterate(obj, stack, fields, propNeeded) {
@@ -272,7 +272,9 @@ export default {
             ? false
             : true;
         this.form = response.data.form;
-        this.versionIdToSubmitTo = response.data?.version?.id;
+        this.versionIdToSubmitTo = this.versionIdToSubmitTo
+          ? this.versionIdToSubmitTo
+          : response.data?.version?.id;
         if (!this.isDuplicate) {
           //As we know this is a Submission from existing one so we will wait for the latest version to be set on the getFormSchema
           this.formSchema = response.data.version.schema;

@@ -33,8 +33,25 @@ export default {
   },
 
   /**
+   * @function getUserLabels
+   * Get all created labels for the current user
+   * @returns {Promise} An axios response
+   */
+  getUserLabels() {
+    return appAxios().get(`${ApiRoutes.USERS}/labels`);
+  },
+  /**
    * @function updateUserFormPreferences
-   * Set the preferences for a the current user for a specific form
+   * Update the current user labels from the newly created one
+   * @param {Array} labels The list of labels created for a specific form
+   * @returns {Promise} An axios response
+   */
+  updateUserLabels(labels) {
+    return appAxios().put(`${ApiRoutes.USERS}/labels`, labels);
+  },
+  /**
+   * @function updateUserFormPreferences
+   * Set the preferences for the current user for a specific form
    * @param {String} formId The form
    * @param {Object} body The user form preferences
    * @returns {Promise} An axios response

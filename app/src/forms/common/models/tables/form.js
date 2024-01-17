@@ -127,6 +127,10 @@ class Form extends Timestamps(Model) {
       'createdAt',
       'updatedBy',
       'updatedAt',
+      'deploymentLevel',
+      'ministry',
+      'apiIntegration',
+      'useCase',
     ];
   }
 
@@ -141,6 +145,7 @@ class Form extends Timestamps(Model) {
         active: { type: 'boolean' },
         allowSubmitterToUploadFile: { type: 'boolean' },
         labels: { type: ['array', 'null'], items: { type: 'string' } },
+        sendSubmissionReceivedEmail: { type: 'boolean' },
         showSubmissionConfirmation: { type: 'boolean' },
         submissionReceivedEmails: { type: ['array', 'null'], items: { type: 'string', pattern: Regex.EMAIL } },
         enableStatusUpdates: { type: 'boolean' },
@@ -149,6 +154,10 @@ class Form extends Timestamps(Model) {
         subscribe: { type: 'object' },
         reminder_enabled: { type: 'boolean' },
         enableCopyExistingSubmission: { type: 'boolean' },
+        deploymentLevel: { type: 'string', minLength: 1, maxLength: 25 },
+        ministry: { type: 'string', minLength: 1, maxLength: 25 },
+        apiIntegration: { type: 'boolean' },
+        useCase: { type: 'string', minLength: 1, maxLength: 25 },
         ...stamps,
       },
       additionalProperties: false,
