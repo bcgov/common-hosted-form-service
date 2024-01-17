@@ -74,8 +74,11 @@ const service = {
       if (params.idp) accessLevels.push('idp');
       if (params.team) accessLevels.push('team');
     }
-    const filteredForms = authService.filterForms(user, user.forms, accessLevels);
+
+    const forms = await authService.getUserForms(user, { active: true });
+    const filteredForms = authService.filterForms(user, forms, accessLevels);
     user.forms = filteredForms;
+
     return user;
   },
 
