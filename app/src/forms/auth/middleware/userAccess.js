@@ -22,7 +22,7 @@ const setUser = async (req, _res, next) => {
     // ex. /forms/:formId=ABC/version?formId=123
     // the ABC in the url will be used... so don't do that.
     const params = { ...req.query, ...req.params };
-    req.currentUser = await service.login(token, params);
+    req.currentUser = await service.login(token, params, req.chefsLoadForms);
     next();
   } catch (error) {
     next(error);
@@ -60,15 +60,45 @@ const currentUserTemp = async (req, res, next) => {
     if (!ok) {
       return new Problem(403, { detail: 'Authorization token is invalid.' }).send(res);
     }
-
-    return setUser(req, res, next);
   }
 
-  next();
+  // Temporarily set a flag to prevent expensive database calls. We will
+  // eventually move all routes to working in this way, and then the extra
+  // downstream logic can be removed.
+  req.chefsLoadForms = false;
+
+  return setUser(req, res, next);
+};
+
+// To deal with performance problems, we are going to move away from setting the
+// req.currentUser.forms and req.currentUser.deletedForms data. The code using
+// those will eventually be removed from this function.
+const _getForm = async (currentUser, formId) => {
+  let forms;
+  if (currentUser.forms) {
+    forms = currentUser.forms;
+  } else {
+    forms = await service.getUserForms(currentUser, { active: true, formId: formId });
+  }
+
+  let form = forms.find((f) => f.formId === formId);
+
+  if (!form) {
+    let deletedForms;
+    if (currentUser.deletedForms) {
+      deletedForms = currentUser.deletedForms;
+    } else {
+      deletedForms = await service.getUserForms(currentUser, { active: false, formId: formId });
+    }
+
+    form = deletedForms.find((f) => f.formId === formId);
+  }
+
+  return form;
 };
 
 const hasFormPermissions = (permissions) => {
-  return (req, res, next) => {
+  return async (req, res, next) => {
     // Skip permission checks if requesting as API entity
     if (req.apiUser) {
       return next();
@@ -84,16 +114,10 @@ const hasFormPermissions = (permissions) => {
       // No form provided to this route that secures based on form... that's a problem!
       return new Problem(401, { detail: 'Form Id not found on request.' }).send(res);
     }
-    let form = req.currentUser.forms.find((f) => f.formId === formId);
+    let form = await _getForm(req.currentUser, formId);
     if (!form) {
-      // check deleted... (this allows 404 on other queries later)
-      if (req.currentUser.deletedForms) {
-        form = req.currentUser.deletedForms.find((f) => f.formId === formId);
-      }
-      if (!form) {
-        // cannot find the form... guess we don't have access... FAIL!
-        return new Problem(401, { detail: 'Current user has no access to form.' }).send(res);
-      }
+      // cannot find the form... guess we don't have access... FAIL!
+      return new Problem(401, { detail: 'Current user has no access to form.' }).send(res);
     }
 
     if (!Array.isArray(permissions)) {
@@ -136,7 +160,14 @@ const hasSubmissionPermissions = (permissions) => {
 
       // Does the user have permissions for this submission due to their FORM permissions
       if (req.currentUser) {
-        let formFromCurrentUser = req.currentUser.forms.find((f) => f.formId === submissionForm.form.id);
+        let forms;
+        if (req.currentUser.forms) {
+          forms = req.currentUser.forms;
+        } else {
+          forms = await service.getUserForms(req.currentUser, { active: true, formId: submissionForm.form.id });
+        }
+
+        let formFromCurrentUser = forms.find((f) => f.formId === submissionForm.form.id);
         if (formFromCurrentUser) {
           // Do they have the submission permissions being requested on this FORM
           const intersection = permissions.filter((p) => {
