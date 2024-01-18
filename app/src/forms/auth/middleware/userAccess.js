@@ -18,11 +18,7 @@ const getToken = (req) => {
 const setUser = async (req, _res, next) => {
   try {
     const token = getToken(req);
-    // we can limit the form list from query string or url params.  Url params override query params
-    // ex. /forms/:formId=ABC/version?formId=123
-    // the ABC in the url will be used... so don't do that.
-    const params = { ...req.query, ...req.params };
-    req.currentUser = await service.login(token, params, req.chefsLoadForms);
+    req.currentUser = await service.login(token);
     next();
   } catch (error) {
     next(error);
@@ -43,54 +39,12 @@ const currentUser = async (req, res, next) => {
   return setUser(req, res, next);
 };
 
-// Temporary version of currentUser that only calls sets req.currentUser for
-// requests using Bearer tokens. This can only be used for routes that call
-// controller methods that don't use req.currentUser.
-//
-// Plan: If this code is a success it will eventually be rolled out to all
-// endpoints that don't need req.currentUser for API Key use. Then, all those
-// that do need req.currentUser will be refactored to use the minimal query we
-// need.
-const currentUserTemp = async (req, res, next) => {
-  // Check if authorization header is a bearer token
-  if (req.headers && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
-    // need to check keycloak, ensure the bearer token is valid
-    const token = req.headers.authorization.substring(7);
-    const ok = await keycloak.grantManager.validateAccessToken(token);
-    if (!ok) {
-      return new Problem(403, { detail: 'Authorization token is invalid.' }).send(res);
-    }
-  }
-
-  // Temporarily set a flag to prevent expensive database calls. We will
-  // eventually move all routes to working in this way, and then the extra
-  // downstream logic can be removed.
-  req.chefsLoadForms = false;
-
-  return setUser(req, res, next);
-};
-
-// To deal with performance problems, we are going to move away from setting the
-// req.currentUser.forms and req.currentUser.deletedForms data. The code using
-// those will eventually be removed from this function.
 const _getForm = async (currentUser, formId) => {
-  let forms;
-  if (currentUser.forms) {
-    forms = currentUser.forms;
-  } else {
-    forms = await service.getUserForms(currentUser, { active: true, formId: formId });
-  }
-
+  const forms = await service.getUserForms(currentUser, { active: true, formId: formId });
   let form = forms.find((f) => f.formId === formId);
 
   if (!form) {
-    let deletedForms;
-    if (currentUser.deletedForms) {
-      deletedForms = currentUser.deletedForms;
-    } else {
-      deletedForms = await service.getUserForms(currentUser, { active: false, formId: formId });
-    }
-
+    const deletedForms = await service.getUserForms(currentUser, { active: false, formId: formId });
     form = deletedForms.find((f) => f.formId === formId);
   }
 
@@ -160,13 +114,7 @@ const hasSubmissionPermissions = (permissions) => {
 
       // Does the user have permissions for this submission due to their FORM permissions
       if (req.currentUser) {
-        let forms;
-        if (req.currentUser.forms) {
-          forms = req.currentUser.forms;
-        } else {
-          forms = await service.getUserForms(req.currentUser, { active: true, formId: submissionForm.form.id });
-        }
-
+        const forms = await service.getUserForms(req.currentUser, { active: true, formId: submissionForm.form.id });
         let formFromCurrentUser = forms.find((f) => f.formId === submissionForm.form.id);
         if (formFromCurrentUser) {
           // Do they have the submission permissions being requested on this FORM
@@ -384,7 +332,6 @@ const hasRolePermissions = (removingUsers = false) => {
 
 module.exports = {
   currentUser,
-  currentUserTemp,
   hasFormPermissions,
   hasSubmissionPermissions,
   hasFormRoles,
