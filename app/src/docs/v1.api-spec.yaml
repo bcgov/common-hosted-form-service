@@ -325,6 +325,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /forms/{formId}/apiKey/filesApiAccess:
+    put:
+      summary: Toggle Files API Access
+      description: Allow/prevent access to submitted files using the API key.
+      operationId: filesApiAccess
+      tags:
+        - Form API
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormApiKey'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /forms/{formId}/export:
     get:
       summary: Export submissions for a form
@@ -3130,6 +3154,9 @@ components:
             secret:
               type: string
               example: dd7d1699-61ec-4037-aa33-727f8aa79c0a
+            filesApiAccess:
+              type: boolean
+              example: true
         - $ref: '#/components/schemas/TimeStampUserData'
     FormApiDetails:
       allOf:
