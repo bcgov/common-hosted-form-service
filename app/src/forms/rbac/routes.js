@@ -5,9 +5,9 @@ const controller = require('./controller');
 const keycloak = require('../../components/keycloak');
 const P = require('../common/constants').Permissions;
 const R = require('../common/constants').Roles;
-const { currentUserTemp, hasFormPermissions, hasSubmissionPermissions, hasFormRoles, hasRolePermissions } = require('../auth/middleware/userAccess');
+const { currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles, hasRolePermissions } = require('../auth/middleware/userAccess');
 
-routes.use(currentUserTemp);
+routes.use(currentUser);
 
 routes.get('/current', keycloak.protect(), async (req, res, next) => {
   await controller.getCurrentUser(req, res, next);

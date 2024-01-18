@@ -3,10 +3,10 @@ const routes = require('express').Router();
 
 const controller = require('./controller');
 const P = require('../common/constants').Permissions;
-const { currentUserTemp, hasSubmissionPermissions, filterMultipleSubmissions } = require('../auth/middleware/userAccess');
+const { currentUser, hasSubmissionPermissions, filterMultipleSubmissions } = require('../auth/middleware/userAccess');
 const rateLimiter = require('../common/middleware').apiKeyRateLimiter;
 
-routes.use(currentUserTemp);
+routes.use(currentUser);
 
 routes.get('/:formSubmissionId', rateLimiter, apiAccess, hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
   await controller.read(req, res, next);
