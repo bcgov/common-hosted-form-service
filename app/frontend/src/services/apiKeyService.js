@@ -31,4 +31,16 @@ export default {
   deleteApiKey(formId) {
     return appAxios().delete(`${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}`);
   },
+
+  /**
+   * @function filesApiKeyAccess
+   * Toggle whether the API key can access files
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  filesApiKeyAccess(formId) {
+    return appAxios().put(
+      `${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}${ApiRoutes.FILES_API_ACCESS}`
+    );
+  },
 };

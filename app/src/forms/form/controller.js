@@ -250,6 +250,14 @@ module.exports = {
       next(error);
     }
   },
+  filesApiKeyAccess: async (req, res, next) => {
+    try {
+      const response = await service.filesApiKeyAccess(req.params.formId);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
   deleteApiKey: async (req, res, next) => {
     try {
       const response = await service.deleteApiKey(req.params.formId);
