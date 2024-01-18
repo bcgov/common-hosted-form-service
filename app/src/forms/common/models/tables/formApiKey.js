@@ -26,6 +26,7 @@ class FormApiKey extends Timestamps(Model) {
         id: { type: 'integer' },
         formId: { type: 'string', pattern: Regex.UUID },
         secret: { type: 'string', pattern: Regex.UUID },
+        filesApiAccess: { type: 'boolean', default: false },
         ...stamps,
       },
       additionalProperties: false,

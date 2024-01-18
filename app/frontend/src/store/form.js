@@ -741,6 +741,23 @@ export const useFormStore = defineStore('form', {
         });
       }
     },
+    async filesApiKeyAccess(formId) {
+      const notificationStore = useNotificationStore();
+      try {
+        const { data } = await apiKeyService.filesApiKeyAccess(formId);
+        this.apiKey = data;
+        notificationStore.addNotification({
+          text: 'API Key updated successfully.',
+          ...NotificationTypes.SUCCESS,
+        });
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: 'An error occurred while trying to update the API Key.',
+          consoleError: `Error updating API Key for form ${formId}: ${error}`,
+        });
+      }
+    },
 
     async getFCProactiveHelpImageUrl(componentId) {
       try {

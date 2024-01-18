@@ -122,6 +122,11 @@ routes.put('/:formId/apiKey', hasFormPermissions(P.FORM_API_CREATE), async (req,
   await controller.createOrReplaceApiKey(req, res, next);
 });
 
+routes.put('/:formId/apiKey/filesApiAccess', hasFormPermissions(P.FORM_API_CREATE), async (req, res, next) => {
+  console.log('routes.js: calling controller.filesApiKeyAccess');
+  await controller.filesApiKeyAccess(req, res, next);
+});
+
 routes.delete('/:formId/apiKey', hasFormPermissions(P.FORM_API_DELETE), async (req, res, next) => {
   await controller.deleteApiKey(req, res, next);
 });

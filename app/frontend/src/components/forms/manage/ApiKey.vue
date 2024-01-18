@@ -17,6 +17,7 @@ export default {
       showConfirmationDialog: false,
       showDeleteDialog: false,
       showSecret: false,
+      filesApiAccess: false,
     };
   },
   computed: {
@@ -55,6 +56,7 @@ export default {
       'deleteApiKey',
       'generateApiKey',
       'readApiKey',
+      'filesApiKeyAccess',
     ]),
     async createKey() {
       this.loading = true;
@@ -67,6 +69,7 @@ export default {
     async deleteKey() {
       this.loading = true;
       await this.deleteApiKey(this.form.id);
+      this.filesApiAccess = false;
       this.loading = false;
       this.showDeleteDialog = false;
     },
@@ -74,8 +77,18 @@ export default {
     async readKey() {
       this.loading = true;
       await this.readApiKey(this.form.id);
+      console.log(this.apiKey);
+      this.filesApiAccess = this.apiKey?.filesApiAccess;
       this.loading = false;
     },
+
+    async updateKey() {
+      this.loading = true;
+      //console.log(this.form.id, this.filesApiAccess);
+      await this.filesApiKeyAccess(this.form.id);
+      this.loading = false;
+    },
+
     showHideKey() {
       this.showSecret = !this.showSecret;
     },
@@ -99,6 +112,9 @@ export default {
       </li>
       <li :lang="lang">
         {{ $t('trans.apiKey.infoC') }}
+      </li>
+      <li :lang="lang">
+        {{ $t('trans.apiKey.infoD') }}
       </li>
     </ul>
 
@@ -234,4 +250,14 @@ export default {
       </template>
     </BaseDialog>
   </div>
+  <v-row>
+    <v-col>
+      <v-checkbox
+        v-model="filesApiAccess"
+        :disabled="!apiKey"
+        :label="$t('trans.apiKey.filesAPIAccess')"
+        @update:model-value="updateKey"
+      ></v-checkbox>
+    </v-col>
+  </v-row>
 </template>

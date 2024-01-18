@@ -5,7 +5,7 @@
 exports.up = function(knex) {
   return Promise.resolve()
     .then(() => knex.schema.alterTable('form_api_key', table => {
-      table.boolean('filesAPIAccess').defaultTo(false).comment('Keeps track of whether files can be accessed using the API key');
+      table.boolean('filesApiAccess').defaultTo(false).comment('Keeps track of whether files can be accessed using the API key');
     }));
 };
 
@@ -16,6 +16,6 @@ exports.up = function(knex) {
 exports.down = function(knex) {
   return Promise.resolve()
     .then(() => knex.schema.alterTable('form_api_key', table => {
-      table.dropColumn('filesAPIAccess');
+      table.dropColumn('filesApiAccess');
     }));
 };
