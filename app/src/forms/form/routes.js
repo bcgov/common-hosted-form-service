@@ -123,7 +123,6 @@ routes.put('/:formId/apiKey', hasFormPermissions(P.FORM_API_CREATE), async (req,
 });
 
 routes.put('/:formId/apiKey/filesApiAccess', hasFormPermissions(P.FORM_API_CREATE), async (req, res, next) => {
-  console.log('routes.js: calling controller.filesApiKeyAccess');
   await controller.filesApiKeyAccess(req, res, next);
 });
 

@@ -252,7 +252,6 @@ module.exports = {
   },
   filesApiKeyAccess: async (req, res, next) => {
     try {
-      console.log('in controller filesApiKeyAccess', req.params.formId);
       const response = await service.filesApiKeyAccess(req.params.formId);
       res.status(200).json(response);
     } catch (error) {

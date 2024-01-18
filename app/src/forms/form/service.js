@@ -726,29 +726,23 @@ const service = {
 
   // toggle filesApiAccess for the api key
   filesApiKeyAccess: async (formId) => {
-    console.log('in service filesApiKeyAccess', formId);
     let trx;
     try {
       const currentKey = await service.readApiKey(formId);
       trx = await FormApiKey.startTransaction();
 
       if (currentKey) {
-        // Replace API key for the form
-        console.log('currentKey.filesApiAccess', currentKey);
         await FormApiKey.query(trx).modify('filterFormId', formId).update({
           formId: formId,
           filesApiAccess: !currentKey.filesApiAccess,
         });
-        console.log('currentKey after update', currentKey);
       } else {
         throw new Problem(404, `No API key found for form ${formId}`);
       }
 
-      console.log('currentKey before commit', currentKey);
       await trx.commit();
       return service.readApiKey(formId);
     } catch (err) {
-      console.log('in service filesApiKeyAccess error', err);
       if (trx) await trx.rollback();
       throw err;
     }

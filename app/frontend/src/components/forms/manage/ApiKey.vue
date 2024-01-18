@@ -77,14 +77,12 @@ export default {
     async readKey() {
       this.loading = true;
       await this.readApiKey(this.form.id);
-      console.log(this.apiKey);
       this.filesApiAccess = this.apiKey?.filesApiAccess;
       this.loading = false;
     },
 
     async updateKey() {
       this.loading = true;
-      //console.log(this.form.id, this.filesApiAccess);
       await this.filesApiKeyAccess(this.form.id);
       this.loading = false;
     },
