@@ -200,15 +200,17 @@ const filterMultipleSubmissions = () => {
   };
 };
 
-const hasFormRole = (formId, user, role) => {
+const hasFormRole = async (formId, user, role) => {
   let hasRole = false;
-  form_loop: for (let i = 0; i < user.forms.length; i++) {
-    if (user.forms[i].formId === formId) {
-      for (let j = 0; j < user.forms[i].roles.length; j++) {
-        if (user.forms[i].roles[j] === role) {
-          hasRole = true;
-          break form_loop;
-        }
+
+  const forms = await service.getUserForms(currentUser, { active: true, formId: formId });
+  const form = forms.find((f) => f.formId === formId);
+
+  if (form) {
+    for (let j = 0; j < form.roles.length; j++) {
+      if (form.roles[j] === role) {
+        hasRole = true;
+        break;
       }
     }
   }
@@ -225,26 +227,22 @@ const hasFormRoles = (formRoles, hasAll = false) => {
       return new Problem(401, { detail: 'Form Id not found on request.' }).send(res);
     }
 
-    // Iterate all the forms the current user has access to
-    form_loop: for (let formIndex = 0; formIndex < req.currentUser.forms.length; formIndex++) {
-      // If the indexed form is the form we're checking role access
-      if (req.query.formId === req.currentUser.forms[formIndex].formId) {
-        // Iterate all the roles for this form
-        for (let roleIndex = 0; roleIndex < req.currentUser.forms[formIndex].roles.length; roleIndex++) {
-          let index = formRoles.indexOf(req.currentUser.forms[formIndex].roles[roleIndex]);
-          // If the user has the indexed role requested by the route
-          if (index > -1) {
-            // If the route specifies all roles must exist for the form
-            if (hasAll)
-              // Remove that role from the search
-              formRoles.splice(index, 1);
-            // The user has at least one of the roles
-            else return next();
-          }
-
-          // The user has all of the required roles
-          if (formRoles.length == 0) break form_loop;
+    const forms = await service.getUserForms(currentUser, { active: true, formId: formId });
+    const form = forms.find((f) => f.formId === formId);
+    if (form) {
+      for (let roleIndex = 0; roleIndex < form.roles.length; roleIndex++) {
+        let index = formRoles.indexOf(form.roles[roleIndex]);
+        // If the user has the indexed role requested by the route
+        if (index > -1) {
+          // If the route specifies all roles must exist for the form
+          if (hasAll)
+            // Remove that role from the search
+            formRoles.splice(index, 1);
+          // The user has at least one of the roles
+          else return next();
         }
+        // The user has all of the required roles
+        if (formRoles.length == 0) break;
       }
     }
 
@@ -269,7 +267,7 @@ const hasRolePermissions = (removingUsers = false) => {
       const currentUser = req.currentUser;
       const data = req.body;
 
-      const isOwner = hasFormRole(formId, currentUser, Roles.OWNER);
+      const isOwner = await hasFormRole(formId, currentUser, Roles.OWNER);
 
       if (removingUsers) {
         if (data.includes(currentUser.id)) return next(new Problem(401, { detail: "You can't remove yourself from this form." }));
