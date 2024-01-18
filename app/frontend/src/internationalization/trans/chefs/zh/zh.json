@@ -229,6 +229,7 @@
     "infoA": "确保您的 API 密钥秘密存储在安全位置（即密钥保管库）。",
     "infoB": "您的 API 密钥可以不受限制地访问您的表单。请勿将您的 API 密钥透露给任何人。",
     "infoC": "API 密钥只能用于自动化系统交互。请勿使用您的 API 密钥进行基于用户的访问",
+    "infoD": "如果您希望通过 API 密钥访问提交的文件，请在生成密钥后启用以下复选框。",
     "deleteKey": "删除键",
     "apiKey": "API密钥",
     "hideSecret": "隐藏秘密",
@@ -245,7 +246,8 @@
     "formOwnerKeyAcess": "您必须是<strong>表单所有者</strong>才能管理 API 密钥。",
     "regenerate": "再生",
     "generate": "产生",
-    "secret": "秘密"
+    "secret": "秘密",
+    "filesAPIAccess": "允许此 API 密钥访问提交的文件"
   },
   "manageVersions": {
     "important": "重要的！",
