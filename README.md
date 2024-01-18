@@ -8,6 +8,7 @@ Create, edit and publish forms.
 
 ## Directory Structure
 
+    .devcontainer              - Visual Studio Code devcontainer and local environment config
     .github/                   - PR and Issue templates
     .vscode/                   - Visual Studio Code's Launcher and Tasks
     app/                       - Application Root
