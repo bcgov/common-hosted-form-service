@@ -203,7 +203,7 @@ const filterMultipleSubmissions = () => {
 const hasFormRole = async (formId, user, role) => {
   let hasRole = false;
 
-  const forms = await service.getUserForms(currentUser, { active: true, formId: formId });
+  const forms = await service.getUserForms(user, { active: true, formId: formId });
   const form = forms.find((f) => f.formId === formId);
 
   if (form) {
@@ -227,7 +227,7 @@ const hasFormRoles = (formRoles, hasAll = false) => {
       return new Problem(401, { detail: 'Form Id not found on request.' }).send(res);
     }
 
-    const forms = await service.getUserForms(currentUser, { active: true, formId: formId });
+    const forms = await service.getUserForms(req.currentUser, { active: true, formId: formId });
     const form = forms.find((f) => f.formId === formId);
     if (form) {
       for (let roleIndex = 0; roleIndex < form.roles.length; roleIndex++) {
