@@ -538,7 +538,7 @@ The application appears to be a modern web application. If you need to explore i
   * Method: `GET`
   * Parameter: ``
   * Attack: ``
-  * Evidence: `<script type="module" crossorigin src="/pr-1180/assets/index-a36bec21.js"></script>`
+  * Evidence: `<script type="module" crossorigin src="/pr-1180/assets/index-8538dcf2.js"></script>`
   * Other Info: `No links have been found while there are scripts, which is an indication that this is a modern web application.`
 
 Instances: 1
@@ -687,7 +687,7 @@ Specifies how and where the data would be used. For instance, if the value is au
   * Attack: ``
   * Evidence: ``
   * Other Info: ``
-* URL: https://chefs-dev.apps.silver.devops.gov.bc.ca/robots.txt
+* URL: https://chefs-dev.apps.silver.devops.gov.bc.ca/sitemap.xml
   * Method: `GET`
   * Parameter: `Sec-Fetch-Dest`
   * Attack: ``
@@ -741,7 +741,7 @@ Allows to differentiate between requests for navigating between HTML pages and r
   * Attack: ``
   * Evidence: ``
   * Other Info: ``
-* URL: https://chefs-dev.apps.silver.devops.gov.bc.ca/robots.txt
+* URL: https://chefs-dev.apps.silver.devops.gov.bc.ca/sitemap.xml
   * Method: `GET`
   * Parameter: `Sec-Fetch-Mode`
   * Attack: ``
@@ -795,7 +795,7 @@ Specifies the relationship between request initiator's origin and target's origi
   * Attack: ``
   * Evidence: ``
   * Other Info: ``
-* URL: https://chefs-dev.apps.silver.devops.gov.bc.ca/robots.txt
+* URL: https://chefs-dev.apps.silver.devops.gov.bc.ca/sitemap.xml
   * Method: `GET`
   * Parameter: `Sec-Fetch-Site`
   * Attack: ``
@@ -849,7 +849,7 @@ Specifies if a navigation request was initiated by a user.
   * Attack: ``
   * Evidence: ``
   * Other Info: ``
-* URL: https://chefs-dev.apps.silver.devops.gov.bc.ca/robots.txt
+* URL: https://chefs-dev.apps.silver.devops.gov.bc.ca/sitemap.xml
   * Method: `GET`
   * Parameter: `Sec-Fetch-User`
   * Attack: ``
@@ -889,7 +889,7 @@ The given response has been identified as containing a session management token.
   * Method: `GET`
   * Parameter: `8c745e4409e9f61c1c3dcb8c9d512912`
   * Attack: ``
-  * Evidence: `7dcc6c2a0abc459473c6f640043a0e42`
+  * Evidence: `48dbd72fe7c04bc380ec81edaa6bec60`
   * Other Info: `
 cookie:8c745e4409e9f61c1c3dcb8c9d512912`
 

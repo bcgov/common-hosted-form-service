@@ -1,7 +1,7 @@
 {
 	"@programName": "ZAP",
 	"@version": "2.14.0",
-	"@generated": "Tue, 23 Jan 2024 00:26:34",
+	"@generated": "Tue, 23 Jan 2024 00:32:33",
 	"site":[ 
 		{
 			"@name": "https://chefs-dev.apps.silver.devops.gov.bc.ca",
@@ -147,7 +147,7 @@
 					"reference": "<p>https://tools.ietf.org/html/rfc7231#section-5.1.2</p>",
 					"cweid": "200",
 					"wascid": "45",
-					"sourceid": "453"
+					"sourceid": "458"
 				},
 				{
 					"pluginid": "10054",
@@ -373,7 +373,7 @@
 					"reference": "<p>https://cwe.mitre.org/data/definitions/205.html</p>",
 					"cweid": "200",
 					"wascid": "45",
-					"sourceid": "554"
+					"sourceid": "557"
 				},
 				{
 					"pluginid": "10109",
@@ -390,7 +390,7 @@
 							"method": "GET",
 							"param": "",
 							"attack": "",
-							"evidence": "<script type=\"module\" crossorigin src=\"/pr-1180/assets/index-a36bec21.js\"></script>",
+							"evidence": "<script type=\"module\" crossorigin src=\"/pr-1180/assets/index-8538dcf2.js\"></script>",
 							"otherinfo": "No links have been found while there are scripts, which is an indication that this is a modern web application."
 						}
 					],
@@ -515,7 +515,7 @@
 							"otherinfo": ""
 						},
 						{
-							"uri": "https://chefs-dev.apps.silver.devops.gov.bc.ca/robots.txt",
+							"uri": "https://chefs-dev.apps.silver.devops.gov.bc.ca/sitemap.xml",
 							"method": "GET",
 							"param": "Sec-Fetch-Dest",
 							"attack": "",
@@ -566,7 +566,7 @@
 							"otherinfo": ""
 						},
 						{
-							"uri": "https://chefs-dev.apps.silver.devops.gov.bc.ca/robots.txt",
+							"uri": "https://chefs-dev.apps.silver.devops.gov.bc.ca/sitemap.xml",
 							"method": "GET",
 							"param": "Sec-Fetch-Mode",
 							"attack": "",
@@ -617,7 +617,7 @@
 							"otherinfo": ""
 						},
 						{
-							"uri": "https://chefs-dev.apps.silver.devops.gov.bc.ca/robots.txt",
+							"uri": "https://chefs-dev.apps.silver.devops.gov.bc.ca/sitemap.xml",
 							"method": "GET",
 							"param": "Sec-Fetch-Site",
 							"attack": "",
@@ -668,7 +668,7 @@
 							"otherinfo": ""
 						},
 						{
-							"uri": "https://chefs-dev.apps.silver.devops.gov.bc.ca/robots.txt",
+							"uri": "https://chefs-dev.apps.silver.devops.gov.bc.ca/sitemap.xml",
 							"method": "GET",
 							"param": "Sec-Fetch-User",
 							"attack": "",
@@ -699,7 +699,7 @@
 							"method": "GET",
 							"param": "8c745e4409e9f61c1c3dcb8c9d512912",
 							"attack": "",
-							"evidence": "7dcc6c2a0abc459473c6f640043a0e42",
+							"evidence": "48dbd72fe7c04bc380ec81edaa6bec60",
 							"otherinfo": "\ncookie:8c745e4409e9f61c1c3dcb8c9d512912"
 						}
 					],
@@ -851,7 +851,7 @@
 					"reference": "<p>https://owasp.org/wstg</p>",
 					"cweid": "0",
 					"wascid": "0",
-					"sourceid": "215"
+					"sourceid": "221"
 				}
 			]
 		}
