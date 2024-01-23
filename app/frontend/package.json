@@ -26,11 +26,12 @@
     "purge": "rm -rf src/formio node_modules",
     "purge:formio": "node ./component-update.js purge",
     "rebuild": "npm run clean && npm run build",
-    "reinstall": "npm run purge && npm install"
+    "reinstall": "npm run purge && npm install",
+    "dev": "vite --port 5173 --host"
   },
   "dependencies": {
     "@bcgov/bc-sans": "^1.0.1",
-    "@formio/vue": "github:formio/vue#v5.0.0-rc.2",
+    "@formio/vue": "^5.0.0",
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/vue-fontawesome": "^3.0.3",

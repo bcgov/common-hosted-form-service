@@ -1,9 +1,7 @@
-const { getAvailableDates } = require('../common/utils');
+const { getAvailableDates, getBaseUrl } = require('../common/utils');
 const emailService = require('./emailService');
 const moment = require('moment');
 const { EmailTypes, ScheduleType } = require('../common/constants');
-const config = require('config');
-const log = require('../../components/log')(module.filename);
 const { SubmissionData, UserFormAccess, Form } = require('../common/models');
 const { Roles } = require('../common/constants');
 
@@ -13,7 +11,7 @@ const service = {
 
     const q = await service._getReminders(forms);
 
-    const referer = service._getReferer();
+    const referer = getBaseUrl();
     const resolve = [];
     const errors = [];
     let mail = 0;
@@ -263,21 +261,6 @@ const service = {
       statement.submitters = obj.submitters;
     }
     return statement;
-  },
-  _getReferer: () => {
-    // We create this function because in the header we cant get the real referer but
-    // this function allow us to generate the referer dynamicly
-    try {
-      const protocol = 'https://';
-      const basePath = config.get('frontend.basePath');
-      const host = process.env.SERVER_HOST;
-      return `${protocol}${host}${basePath}`;
-    } catch (error) {
-      log.error(error.message, {
-        function: '_getReferer',
-      });
-      throw error;
-    }
   },
   _initMailSender: async (statement, referer) => {
     const chesResponse = [];

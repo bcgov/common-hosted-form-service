@@ -1,5 +1,6 @@
 const request = require('supertest');
 const Problem = require('api-problem');
+const { v4: uuidv4 } = require('uuid');
 
 const { expressHelper } = require('../../../common/helper');
 
@@ -900,7 +901,7 @@ describe(`${basePath}/:formId/export/fields`, () => {
 });
 
 describe(`${basePath}/:formId/options`, () => {
-  const path = `${basePath}/:formId/options`;
+  const path = `${basePath}/${uuidv4()}/options`;
 
   describe('GET', () => {
     it('should return 200', async () => {
@@ -980,7 +981,7 @@ describe(`${basePath}/:formId/statusCodes`, () => {
 });
 
 describe(`${basePath}/:formId/submissions`, () => {
-  const path = `${basePath}/:formId/submissions`;
+  const path = `${basePath}/${uuidv4()}/submissions`;
 
   describe('GET', () => {
     it('should return 200', async () => {

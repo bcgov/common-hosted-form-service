@@ -60,7 +60,7 @@ export default {
     },
     DeleteMessage() {
       return this.itemsToDelete.length > 1
-        ? i18n.t('trans.teamManagement.delSelectedMembersWarning"')
+        ? i18n.t('trans.teamManagement.delSelectedMembersWarning')
         : i18n.t('trans.teamManagement.delSelectedMemberWarning');
     },
     DEFAULT_HEADERS() {

@@ -8,6 +8,7 @@ const querystring = require('querystring');
 const keycloak = require('./src/components/keycloak');
 const log = require('./src/components/log')(module.filename);
 const httpLogger = require('./src/components/log').httpLogger;
+const middleware = require('./src/forms/common/middleware');
 const v1Router = require('./src/routes/v1');
 
 const DataConnection = require('./src/db/dataConnection');
@@ -25,6 +26,12 @@ const app = express();
 app.use(compression());
 app.use(express.json({ limit: config.get('server.bodyLimit') }));
 app.use(express.urlencoded({ extended: true }));
+
+// Express needs to know about the OpenShift proxy. With this setting Express
+// pulls the IP address from the headers, rather than use the proxy IP address.
+// This gives the correct IP address in the logs and for the rate limiting.
+// See https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
+app.set('trust proxy', 1);
 
 // Skip if running tests
 if (process.env.NODE_ENV !== 'test') {
@@ -72,6 +79,7 @@ apiRouter.get('/api', (_req, res) => {
 // Host API endpoints
 apiRouter.use(config.get('server.apiPath'), v1Router);
 app.use(config.get('server.basePath'), apiRouter);
+app.use(middleware.dataErrors);
 
 // Host the static frontend assets
 const staticFilesPath = config.get('frontend.basePath');

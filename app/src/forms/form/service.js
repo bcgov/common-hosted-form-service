@@ -28,25 +28,30 @@ const { Permissions, Roles, Statuses } = require('../common/constants');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
 
 const service = {
-  // Get the list of file IDs from the submission
   _findFileIds: (schema, data) => {
-    const findFiles = (components) => {
-      // Reduce the array of components to a flat array of file IDs
-      return components.reduce((fileIds, x) => {
-        if (x.type === 'simplefile' && data.submission.data[x.key]) {
-          // Add the file ID if it's a 'simplefile' and it exists in the data
-          const files = data.submission.data[x.key];
-          const ids = Array.isArray(files) ? files.map((file) => file.data.id) : [files.data.id];
-          return fileIds.concat(ids);
-        } else if (x.components) {
-          // If the component has nested components, recurse into them
-          return fileIds.concat(findFiles(x.components));
-        }
-        return fileIds;
-      }, []);
+    const findFiles = (currentData) => {
+      let fileIds = [];
+      // Check if the current level is an array or an object
+      if (Array.isArray(currentData)) {
+        currentData.forEach((item) => {
+          fileIds = fileIds.concat(findFiles(item));
+        });
+      } else if (typeof currentData === 'object' && currentData !== null) {
+        Object.keys(currentData).forEach((key) => {
+          if (key === 'data' && currentData[key] && currentData[key].id) {
+            // Add the file ID if it exists
+            fileIds.push(currentData[key].id);
+          } else {
+            // Recurse into nested objects
+            fileIds = fileIds.concat(findFiles(currentData[key]));
+          }
+        });
+      }
+      return fileIds;
     };
-    // Start the recursive search from the top-level components
-    return findFiles(schema.components);
+
+    // Start the search from the top-level submission data
+    return findFiles(data.submission.data);
   },
 
   listForms: async (params) => {
@@ -75,6 +80,7 @@ const service = {
       obj.active = true;
       obj.labels = data.labels;
       obj.showSubmissionConfirmation = data.showSubmissionConfirmation;
+      obj.sendSubmissionReceivedEmail = data.sendSubmissionReceivedEmail;
       obj.submissionReceivedEmails = data.submissionReceivedEmails;
       obj.enableStatusUpdates = data.enableStatusUpdates;
       obj.enableSubmitterDraft = data.enableSubmitterDraft;
@@ -84,6 +90,10 @@ const service = {
       obj.subscribe = data.subscribe;
       obj.reminder_enabled = data.reminder_enabled;
       obj.enableCopyExistingSubmission = data.enableCopyExistingSubmission;
+      obj.deploymentLevel = data.deploymentLevel;
+      obj.ministry = data.ministry;
+      obj.apiIntegration = data.apiIntegration;
+      obj.useCase = data.useCase;
 
       await Form.query(trx).insert(obj);
       if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
@@ -147,6 +157,7 @@ const service = {
         description: data.description,
         labels: data.labels ? data.labels : [],
         showSubmissionConfirmation: data.showSubmissionConfirmation,
+        sendSubmissionReceivedEmail: data.sendSubmissionReceivedEmail,
         submissionReceivedEmails: data.submissionReceivedEmails ? data.submissionReceivedEmails : [],
         enableStatusUpdates: data.enableStatusUpdates,
         enableSubmitterDraft: data.enableSubmitterDraft,
@@ -156,6 +167,10 @@ const service = {
         subscribe: data.subscribe,
         reminder_enabled: data.reminder_enabled,
         enableCopyExistingSubmission: data.enableCopyExistingSubmission,
+        deploymentLevel: data.deploymentLevel,
+        ministry: data.ministry,
+        apiIntegration: data.apiIntegration,
+        useCase: data.useCase,
       };
 
       await Form.query(trx).patchAndFetchById(formId, upd);
