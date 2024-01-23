@@ -8,6 +8,7 @@ import Subscription from '~/components/forms/manage/Subscription.vue';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { FormPermissions, NotificationTypes } from '~/utils/constants';
+import FormProfile from '~/components/designer/FormProfile.vue';
 
 export default {
   components: {
@@ -15,6 +16,7 @@ export default {
     FormSettings,
     ManageVersions,
     Subscription,
+    FormProfile,
   },
   data() {
     return {
@@ -166,6 +168,7 @@ export default {
               :disabled="formSettingsDisabled"
               @onSubscription="onSubscription"
             />
+            <FormProfile :disabled="formSettingsDisabled" />
           </v-form>
 
           <div v-if="canEditForm && !formSettingsDisabled" class="mb-5">

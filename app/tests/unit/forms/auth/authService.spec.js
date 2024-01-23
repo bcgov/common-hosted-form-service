@@ -44,23 +44,17 @@ describe('formAccessToForm', () => {
 describe('login', () => {
   const resultSample = {
     user: 'me',
-    forms: [{ formID: 1 }, { formId: 2 }],
-    deletedForms: [{ formID: 1 }, { formId: 2 }],
   };
 
   it('returns a currentUser object', async () => {
     service.parseToken = jest.fn().mockReturnValue('userInf');
     service.getUserId = jest.fn().mockReturnValue({ user: 'me' });
-    service.getUserForms = jest.fn().mockReturnValue([{ formID: 1 }, { formId: 2 }]);
-    const params = { p: 1 };
     const token = 'token';
-    const result = await service.login(token, params);
+    const result = await service.login(token);
     expect(service.parseToken).toHaveBeenCalledTimes(1);
     expect(service.parseToken).toHaveBeenCalledWith(token);
     expect(service.getUserId).toHaveBeenCalledTimes(1);
     expect(service.getUserId).toHaveBeenCalledWith('userInf');
-    expect(service.getUserForms).toHaveBeenCalledTimes(2);
-    expect(service.getUserForms).toHaveBeenCalledWith({ user: 'me' }, { p: 1, active: false });
     expect(result).toBeTruthy();
     expect(result).toEqual(resultSample);
   });

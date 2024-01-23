@@ -122,7 +122,16 @@ module.exports = {
   templateUploadAndRender: async (req, res, next) => {
     try {
       const submission = await service.read(req.params.formSubmissionId);
-      const templateBody = { ...req.body, data: submission.submission.submission.data };
+      const templateBody = {
+        ...req.body,
+        data: {
+          ...submission.submission.submission.data,
+          chefs: {
+            confirmationId: submission.submission.confirmationId,
+            submissionId: submission.submission.id,
+          },
+        },
+      };
       const { data, headers, status } = await cdogsService.templateUploadAndRender(templateBody);
       const contentDisposition = headers['content-disposition'];
 

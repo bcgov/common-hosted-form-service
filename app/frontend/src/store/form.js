@@ -54,7 +54,7 @@ const genInitialForm = () => ({
   idps: [],
   isDirty: false,
   name: '',
-  sendSubReceivedEmail: false,
+  sendSubmissionReceivedEmail: false,
   showSubmissionConfirmation: true,
   snake: '',
   submissionReceivedEmails: [],
@@ -64,6 +64,11 @@ const genInitialForm = () => ({
   userType: IdentityMode.TEAM,
   versions: [],
   enableCopyExistingSubmission: false,
+  deploymentLevel: null,
+  ministry: null,
+  labels: [],
+  apiIntegration: null,
+  useCase: null,
 });
 
 export const useFormStore = defineStore('form', {
@@ -98,6 +103,7 @@ export const useFormStore = defineStore('form', {
     totalSubmissions: 0,
     userFormPreferences: {},
     version: {},
+    userLabels: [],
   }),
   getters: {
     isFormPublished: (state) =>
@@ -298,8 +304,6 @@ export const useFormStore = defineStore('form', {
         const identityProviders = parseIdps(data.identityProviders);
         data.idps = identityProviders.idps;
         data.userType = identityProviders.userType;
-        data.sendSubRecieviedEmail =
-          data.submissionReceivedEmails && data.submissionReceivedEmails.length;
         data.schedule = {
           ...genInitialSchedule(),
           ...data.schedule,
@@ -393,13 +397,6 @@ export const useFormStore = defineStore('form', {
     },
     async updateForm() {
       try {
-        const emailList =
-          this.form.sendSubRecieviedEmail &&
-          this.form.submissionReceivedEmails &&
-          Array.isArray(this.form.submissionReceivedEmails)
-            ? this.form.submissionReceivedEmails
-            : [];
-
         const schedule = this.form.schedule.enabled ? this.form.schedule : {};
         const subscribe = this.form.subscribe.enabled
           ? this.form.subscribe
@@ -415,10 +412,16 @@ export const useFormStore = defineStore('form', {
             userType: this.form.userType,
           }),
           showSubmissionConfirmation: this.form.showSubmissionConfirmation,
-          submissionReceivedEmails: emailList,
+          sendSubmissionReceivedEmail: this.form.sendSubmissionReceivedEmail,
+          submissionReceivedEmails: this.form.submissionReceivedEmails,
           schedule: schedule,
           subscribe: subscribe,
           allowSubmitterToUploadFile: this.form.allowSubmitterToUploadFile,
+          deploymentLevel: this.form.deploymentLevel,
+          ministry: this.form.ministry,
+          labels: this.form.labels,
+          apiIntegration: this.form.apiIntegration,
+          useCase: this.form.useCase,
           reminder_enabled: this.form.reminder_enabled
             ? this.form.reminder_enabled
             : false,
@@ -426,6 +429,16 @@ export const useFormStore = defineStore('form', {
             ? this.form.enableCopyExistingSubmission
             : false,
         });
+
+        // update user labels with any new added labels
+        if (
+          this.form.labels.some(
+            (label) => this.userLabels.indexOf(label) === -1
+          )
+        ) {
+          const response = await userService.updateUserLabels(this.form.labels);
+          this.userLabels = response.data;
+        }
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({

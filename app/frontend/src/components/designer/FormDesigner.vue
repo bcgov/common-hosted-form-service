@@ -15,6 +15,7 @@ import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { IdentityMode, NotificationTypes } from '~/utils/constants';
 import { generateIdps } from '~/utils/transformUtils';
+import { userService } from '../../services';
 
 export default {
   components: {
@@ -85,6 +86,7 @@ export default {
       'form',
       'isRTL',
       'lang',
+      'userLabels',
     ]),
     ...mapState(useAuthStore, ['tokenParsed', 'user']),
     ID_MODE() {
@@ -607,13 +609,6 @@ export default {
     },
 
     async schemaCreateNew() {
-      const emailList =
-        this.form.sendSubReceivedEmail &&
-        this.form.submissionReceivedEmails &&
-        Array.isArray(this.form.submissionReceivedEmails)
-          ? this.form.submissionReceivedEmails
-          : [];
-
       const response = await formService.createForm({
         name: this.form.name,
         description: this.form.description,
@@ -622,13 +617,26 @@ export default {
           idps: this.form.idps,
           userType: this.form.userType,
         }),
+        sendSubmissionReceivedEmail: this.form.sendSubmissionReceivedEmail,
         enableSubmitterDraft: this.form.enableSubmitterDraft,
         enableCopyExistingSubmission: this.form.enableCopyExistingSubmission,
         enableStatusUpdates: this.form.enableStatusUpdates,
         showSubmissionConfirmation: this.form.showSubmissionConfirmation,
-        submissionReceivedEmails: emailList,
+        submissionReceivedEmails: this.form.submissionReceivedEmails,
         reminder_enabled: false,
+        deploymentLevel: this.form.deploymentLevel,
+        ministry: this.form.ministry,
+        apiIntegration: this.form.apiIntegration,
+        useCase: this.form.useCase,
+        labels: this.form.labels,
       });
+      // update user labels with any new added labels
+      if (
+        this.form.labels.some((label) => this.userLabels.indexOf(label) === -1)
+      ) {
+        const response = await userService.updateUserLabels(this.form.labels);
+        this.userLabels = response.data;
+      }
 
       // Navigate back to this page with ID updated
       this.$router

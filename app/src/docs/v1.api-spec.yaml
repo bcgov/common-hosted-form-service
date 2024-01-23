@@ -493,6 +493,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormOptions'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         default:
           description: Unexpected error
           content:
@@ -926,6 +928,8 @@ paths:
               $ref: '#/components/headers/RateLimit'
             RateLimit-Policy:
               $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
@@ -1396,11 +1400,26 @@ paths:
                 $ref: '#/components/schemas/Error'
   /submissions/{formSubmissionId}/template/render:
     post:
-      summary: Generate document from inline Template
+      summary: Generate a document from a document template
       description: >-
-        This endpoint accepts a document template and a set (or multiple sets)
-        of substitution variables and merges them into the document.
+        Merges data from a form submission into a document template.
+
+        #### Common Document Generation Service (CDOGS)
+
+        This endpoint is a passthrough to CDOGS. Instead of using *BasicAuth* to
+        call this endpoint, it is highly recommended that you [directly call
+        CDOGS](https://bcgov.github.io/common-service-showcase/services/cdogs.html).
+        Benefits of calling CDOGS directly from your application:
+          - avoid CHEFS API rate limiting restrictions
+          - avoid CHEFS API timeout restrictions (for large documents)
+          - better performance (direct call instead of passthrough)
+          - ability to use the CDOGS template cache
+          - direct support from the CDOGS team for your specific Client ID
       operationId: uploadTemplateAndRenderReport
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
       tags:
         - Template
       parameters:
@@ -1414,7 +1433,7 @@ paths:
               $ref: '#/components/schemas/TemplateRenderObject'
       responses:
         '200':
-          description: Returns the supplied document with variables merged in
+          description: Returns the document template with merged variables
           content:
             application/octet-stream:
               schema:
@@ -1434,12 +1453,18 @@ paths:
                 type: string
               description: The MIME-type of the binary file payload
               example: application/pdf
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
         '400':
           $ref: '#/components/responses/BadRequest'
         '403':
           $ref: '#/components/responses/Forbidden'
         '422':
           $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
         default:
           description: Unexpected error
           content:
@@ -2574,6 +2599,54 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /user/labels:
+    get:
+      summary: Get all the labels associated with the current user
+      description: Fetches the labels for the current user to this form
+      operationId: readUserLabels
+      tags:
+        - User
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Label'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update user labels
+      operationId: updateUserLabels
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Label'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Label'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /admin/forms:
     get:
       summary: List all forms in the system
@@ -3081,6 +3154,10 @@ components:
             showSubmissionConfirmation:
               type: boolean
               example: true
+            sendSubmissionReceivedEmail:
+              type: boolean
+              example: true
+              description: Used to indicate if team should be notified upon submission
             submissionReceivedEmails:
               type: array
               items:
@@ -3180,6 +3257,22 @@ components:
             enableCopyExistingSubmission:
               type: boolean
               example: false
+            deploymentLevel:
+              type: string
+              description: Indicates whether the created form is for development, test, or production purposes
+              example: production
+            ministry:
+              type: string
+              description: Contains the ministry the form is associated to
+              example: CITZ
+            apiIntegration:
+              type: boolean
+              description: Set to true if the form user will utilize API integration
+              example: true
+            useCase:
+              type: string
+              description: This contains a value that makes apparent that use case of the created form
+              example: feedback
     FormCore:
       type: object
       properties:
@@ -3596,6 +3689,14 @@ components:
               type: boolean
               example: true
         - $ref: '#/components/schemas/TimeStampUserData'
+    Label:
+      type: array
+      example:
+        - Survey
+        - Questionnaire
+        - Feedback
+      items:
+        type: string
     Note:
       type: object
       properties:
@@ -3833,17 +3934,37 @@ components:
             convertTo:
               type: string
               description: >-
-                The desired file extension of the generated document, used for
-                converting to other types of document. If not supplied, will
-                just use the original contentFileType.
+                The desired file type of the generated document. If not
+                supplied, will use the original contentFileType.
               example: pdf
             reportName:
               type: string
               description: >-
-                The desired file name of the generated document, can accept
-                template substitution fields from the contexts. If not supplied,
-                will use a random UUID.  Extension will be from convertTo.
-              example: abc_123_{d.firstName}_{d.lastName}
+                The desired file name of the generated document. Can perform
+                template substitution using the form data. If not supplied, will
+                use a random UUID.
+              example: abc_123_{d.firstName}_{d.lastName}.pdf
+        template:
+          type: object
+          description: Object containing the document template
+          properties:
+            content:
+              type: string
+              description: >-
+                The document template encoded as a `base64` string. The example
+                is the encoded value of the text file
+                `Hello {d.firstName} {d.lastName}!`.
+              example: 'SGVsbG8ge2QuZmlyc3ROYW1lfSB7ZC5sYXN0TmFtZX0hCg=='
+            encodingType:
+              type: string
+              description: >-
+                The encoding of the `content` property: use `base64`.
+              example: base64
+            fileType:
+              type: string
+              description: >-
+                The original file type of the `content` document template.
+              example: txt
     TimeStampUserData:
       type: object
       properties:

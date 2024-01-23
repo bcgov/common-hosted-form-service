@@ -1,4 +1,60 @@
-const { queryUtils, typeUtils, validateScheduleObject } = require('../../../../src/forms/common/utils');
+const config = require('config');
+
+const { getBaseUrl, queryUtils, typeUtils, validateScheduleObject } = require('../../../../src/forms/common/utils');
+
+jest.mock('config');
+
+describe('getBaseUrl', () => {
+  const basePath = '/app';
+  const basePathPr = '/pr-1234';
+  const localhostPort = '5173';
+  const serverDev = 'chefs-dev.apps.silver.devops.gov.bc.ca';
+  const serverProd = 'submit.digital.gov.bc.ca';
+
+  it('should return a default for local development', () => {
+    config.get.mockReturnValue(basePath);
+
+    const baseUrl = getBaseUrl();
+
+    expect(baseUrl).toEqual(`http://localhost${basePath}`);
+  });
+
+  it('should return a default with port for local development', () => {
+    config.get = jest.fn((k) => (k === 'frontend.basePath' ? basePath : localhostPort));
+    config.has.mockReturnValue(true);
+
+    const baseUrl = getBaseUrl();
+
+    expect(baseUrl).toEqual(`http://localhost:${localhostPort}${basePath}`);
+  });
+
+  it('should handle non-prod SERVER_URL variable', () => {
+    process.env.SERVER_HOST = serverDev;
+    config.get.mockReturnValue(basePath);
+
+    const baseUrl = getBaseUrl();
+
+    expect(baseUrl).toEqual(`https://${serverDev}${basePath}`);
+  });
+
+  it('should handle non-prod SERVER_URL variable for PRs', () => {
+    process.env.SERVER_HOST = serverDev;
+    config.get.mockReturnValue(basePathPr);
+
+    const baseUrl = getBaseUrl();
+
+    expect(baseUrl).toEqual(`https://${serverDev}${basePathPr}`);
+  });
+
+  it('should handle prod SERVER_URL variable', () => {
+    process.env.SERVER_HOST = serverProd;
+    config.get.mockReturnValue(basePath);
+
+    const baseUrl = getBaseUrl();
+
+    expect(baseUrl).toEqual(`https://${serverProd}${basePath}`);
+  });
+});
 
 describe('Test Query Utils functions', () => {
   it('defaultActiveOnly should return params object', () => {

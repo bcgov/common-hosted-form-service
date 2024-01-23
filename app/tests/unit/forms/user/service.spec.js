@@ -2,6 +2,7 @@ const { MockModel, MockTransaction } = require('../../../common/dbHelper');
 
 jest.mock('../../../../src/forms/common/models/tables/user', () => MockModel);
 jest.mock('../../../../src/forms/common/models/tables/userFormPreferences', () => MockModel);
+jest.mock('../../../../src/forms/common/models/tables/label', () => MockModel);
 
 const service = require('../../../../src/forms/user/service');
 
@@ -106,6 +107,58 @@ describe('readUserFormPreferences', () => {
     expect(MockModel.findById).toHaveBeenCalledWith([userId, formId]);
     expect(MockModel.first).toHaveBeenCalledTimes(1);
     expect(MockModel.first).toHaveBeenCalledWith();
+  });
+});
+
+describe('readUserLabels', () => {
+  it('should query user labels by user id', async () => {
+    await service.readUserLabels({ id: userId });
+
+    expect(MockModel.query).toHaveBeenCalledTimes(1);
+    expect(MockModel.query).toHaveBeenCalledWith();
+    expect(MockModel.where).toHaveBeenCalledTimes(1);
+    expect(MockModel.where).toHaveBeenCalledWith('userId', userId);
+    expect(MockModel.select).toHaveBeenCalledWith('labelText');
+  });
+});
+
+describe('updateUserLabels', () => {
+  const body = ['survey', 'registration', 'feedback'];
+
+  it('should insert new labels', async () => {
+    MockModel.mockResolvedValue(undefined);
+
+    await service.updateUserLabels({ id: userId }, body);
+
+    expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
+    expect(MockModel.query).toHaveBeenCalledTimes(body.length * 2 + 1);
+    expect(MockModel.query).toHaveBeenCalledWith(expect.anything());
+    expect(MockModel.insert).toHaveBeenCalledTimes(body.length);
+    expect(MockModel.insert).toHaveBeenCalledWith({
+      id: expect.any(String),
+      userId: userId,
+      labelText: expect.any(String),
+    });
+    expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+  });
+
+  it('should throw when invalid options are provided', () => {
+    MockModel.mockResolvedValue(undefined);
+    const fn = (currentUser, body) => service.updateUserLabels(currentUser, body);
+
+    expect(fn({ id: userId }, undefined)).rejects.toThrow();
+    expect(fn({ id: userId }, {})).rejects.toThrow();
+    expect(MockModel.startTransaction).toHaveBeenCalledTimes(0);
+    expect(MockModel.query).toHaveBeenCalledTimes(0);
+  });
+
+  it('should handle empty label body', async () => {
+    await service.updateUserLabels({ id: userId }, []);
+
+    expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
+    expect(MockModel.query).toHaveBeenCalledTimes(1);
+    expect(MockModel.insert).not.toHaveBeenCalled();
+    expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
   });
 });
 

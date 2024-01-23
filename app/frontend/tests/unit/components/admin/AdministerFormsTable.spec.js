@@ -79,4 +79,48 @@ describe('AdministerFormsTable.vue', () => {
     expect(store.getForms).toHaveBeenCalledTimes(3);
     expect(store.getForms).toHaveBeenLastCalledWith(true);
   });
+
+  it('headers shown active forms', async () => {
+    const wrapper = mount(AdministerFormsTable, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: ROUTER_LINK,
+        },
+      },
+    });
+    
+    const thead = wrapper.find('thead');
+    const th = thead.findAll('.v-data-table__td');
+    expect(th.length).toBe(3);
+    expect(th[0].text()).toMatch('trans.adminFormsTable.formTitle');
+    expect(th[1].text()).toMatch('trans.adminFormsTable.created');
+    expect(th[2].text()).toMatch('trans.adminFormsTable.actions');
+
+  });
+
+  it('headers shown deleted forms', async () => {
+    const wrapper = mount(AdministerFormsTable, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: ROUTER_LINK,
+        },
+      },
+    });
+    
+    const showDeleted = wrapper.findComponent(CHECKBOX_SHOW_DELETED);
+    showDeleted.setValue(true);
+    await nextTick();
+
+    const thead = wrapper.find('thead');
+    const th = thead.findAll('.v-data-table__td');
+
+    expect(th.length).toBe(4);
+    expect(th[0].text()).toMatch('trans.adminFormsTable.formTitle');
+    expect(th[1].text()).toMatch('trans.adminFormsTable.created');
+    expect(th[2].text()).toMatch('trans.adminFormsTable.deleted');
+    expect(th[3].text()).toMatch('trans.adminFormsTable.actions');
+
+  });
 });
