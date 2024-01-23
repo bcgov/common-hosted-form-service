@@ -201,13 +201,11 @@ const service = {
     };
   },
 
-  login: async (token, params = {}) => {
+  login: async (token) => {
     const userInfo = service.parseToken(token);
     const user = await service.getUserId(userInfo);
-    const forms = await service.getUserForms(user, params); // get forms for user (filtered by params)...
-    params.active = false;
-    const deletedForms = await service.getUserForms(user, params); // get forms for user (filtered by params)...
-    return { ...user, forms: forms, deletedForms: deletedForms };
+
+    return { ...user };
   },
 
   // -------------------------------------------------------------------------------------------------------------
