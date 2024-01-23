@@ -59,6 +59,8 @@ module.exports = Object.freeze({
     FORM_STATUS_CHANGE: 'eventStatusChange',
     FORM_ASSIGNMENT: 'eventAssignment',
     FORM_PUBLISHED: 'eventFormPublished',
+    FORM_DRAFT_PUBLISHED: 'eventFormDraftPublished',
+    FORM_UNPUBLISHED: 'eventFormUnPublished',
   },
   StorageTypes: {
     UPLOADS: 'uploads',
