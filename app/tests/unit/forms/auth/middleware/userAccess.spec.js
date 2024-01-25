@@ -59,7 +59,7 @@ describe('currentUser', () => {
     expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledTimes(1);
     expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledWith('hjvds0uds');
     expect(service.login).toHaveBeenCalledTimes(1);
-    expect(service.login).toHaveBeenCalledWith(kauth.grant.access_token, { formId: 2 }, undefined);
+    expect(service.login).toHaveBeenCalledWith(kauth.grant.access_token);
     expect(testReq.currentUser).toEqual(mockUser);
     expect(nxt).toHaveBeenCalledTimes(1);
     expect(nxt).toHaveBeenCalledWith();
@@ -80,7 +80,7 @@ describe('currentUser', () => {
     };
 
     await currentUser(testReq, testRes, jest.fn());
-    expect(service.login).toHaveBeenCalledWith(kauth.grant.access_token, { formId: 2 }, undefined);
+    expect(service.login).toHaveBeenCalledWith(kauth.grant.access_token);
   });
 
   it('uses the query param if both if that is whats provided', async () => {
@@ -95,7 +95,7 @@ describe('currentUser', () => {
     };
 
     await currentUser(testReq, testRes, jest.fn());
-    expect(service.login).toHaveBeenCalledWith(kauth.grant.access_token, { formId: 99 }, undefined);
+    expect(service.login).toHaveBeenCalledWith(kauth.grant.access_token);
   });
 
   it('403s if the token is invalid', async () => {
@@ -128,7 +128,7 @@ describe('getToken', () => {
 
     await currentUser(testReq, testRes, jest.fn());
     expect(service.login).toHaveBeenCalledTimes(1);
-    expect(service.login).toHaveBeenCalledWith(null, { formId: 2 }, undefined);
+    expect(service.login).toHaveBeenCalledWith(null);
   });
 });
 
@@ -152,9 +152,7 @@ describe('hasFormPermissions', () => {
     const mw = hasFormPermissions(['abc']);
     const nxt = jest.fn();
     const req = {
-      currentUser: {
-        forms: 1,
-      },
+      currentUser: {},
       params: {
         submissionId: 123,
       },
@@ -166,31 +164,6 @@ describe('hasFormPermissions', () => {
     await mw(req, testRes, nxt);
     expect(nxt).toHaveBeenCalledTimes(0);
     // expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'Form Id not found on request.' }));
-  });
-
-  it('401s if the user does not have access to the form', async () => {
-    const mw = hasFormPermissions(['abc']);
-    const nxt = jest.fn();
-    const req = {
-      currentUser: {
-        deletedForms: [],
-        forms: [
-          {
-            formId: '456',
-          },
-          {
-            formId: '789',
-          },
-        ],
-      },
-      params: {
-        formId: '123',
-      },
-    };
-
-    await mw(req, testRes, nxt);
-    expect(nxt).toHaveBeenCalledTimes(0);
-    // expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'Current user has no access to form.' }));
   });
 
   it('401s if the user does not have access to the form', async () => {
@@ -214,24 +187,7 @@ describe('hasFormPermissions', () => {
     const mw = hasFormPermissions(['abc']);
     const nxt = jest.fn();
     const req = {
-      currentUser: {
-        forms: [
-          {
-            formId: '456',
-          },
-          {
-            formId: '789',
-          },
-        ],
-        deletedForms: [
-          {
-            formId: '888',
-          },
-          {
-            formId: '999',
-          },
-        ],
-      },
+      currentUser: {},
       params: {
         formId: '123',
       },
@@ -240,39 +196,6 @@ describe('hasFormPermissions', () => {
     await mw(req, testRes, nxt);
     expect(nxt).toHaveBeenCalledTimes(0);
     // expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'Current user has no access to form.' }));
-  });
-
-  it('does not 401 if the user has deleted form access', async () => {
-    const mw = hasFormPermissions(['abc']);
-    const nxt = jest.fn();
-    const req = {
-      currentUser: {
-        forms: [
-          {
-            formId: '456',
-          },
-          {
-            formId: '789',
-          },
-        ],
-        deletedForms: [
-          {
-            formId: '888',
-          },
-          {
-            formId: '123',
-            permissions: ['abc'],
-          },
-        ],
-      },
-      params: {
-        formId: '123',
-      },
-    };
-
-    await mw(req, testRes, nxt);
-    expect(nxt).toHaveBeenCalledTimes(1);
-    expect(nxt).toHaveBeenCalledWith();
   });
 
   it('does not 401 if the user has deleted form access', async () => {
@@ -301,32 +224,6 @@ describe('hasFormPermissions', () => {
   });
 
   it('401s if the expected permissions are not included', async () => {
-    const mw = hasFormPermissions(['FORM_READ', 'SUBMISSION_DELETE', 'DESIGN_CREATE']);
-    const nxt = jest.fn();
-    const req = {
-      currentUser: {
-        deletedForms: [],
-        forms: [
-          {
-            formId: '456',
-          },
-          {
-            formId: '123',
-            permissions: ['FORM_READ', 'SUBMISSION_READ', 'DESIGN_CREATE'],
-          },
-        ],
-      },
-      params: {
-        formId: '123',
-      },
-    };
-
-    await mw(req, testRes, nxt);
-    expect(nxt).toHaveBeenCalledTimes(0);
-    // expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'Current user does not have required permission(s) on form.' }));
-  });
-
-  it('401s if the expected permissions are not included', async () => {
     service.getUserForms = jest.fn().mockReturnValue([
       {
         formId: '123',
@@ -349,32 +246,6 @@ describe('hasFormPermissions', () => {
   });
 
   it('401s if the expected permissions are not included (string, not array check)', async () => {
-    const mw = hasFormPermissions('FORM_READ');
-    const nxt = jest.fn();
-    const req = {
-      currentUser: {
-        deletedForms: [],
-        forms: [
-          {
-            formId: '456',
-          },
-          {
-            formId: '123',
-            permissions: ['FORM_DELETE'],
-          },
-        ],
-      },
-      params: {
-        formId: '123',
-      },
-    };
-
-    await mw(req, testRes, nxt);
-    expect(nxt).toHaveBeenCalledTimes(0);
-    // expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'Current user does not have required permission(s) on form.' }));
-  });
-
-  it('401s if the expected permissions are not included (string, not array check)', async () => {
     service.getUserForms = jest.fn().mockReturnValue([
       {
         formId: '123',
@@ -394,32 +265,6 @@ describe('hasFormPermissions', () => {
 
     expect(res.end).toHaveBeenCalledWith(expect.stringContaining('401'));
     expect(next).toHaveBeenCalledTimes(0);
-  });
-
-  it('moves on if the expected permissions are included', async () => {
-    const mw = hasFormPermissions(['FORM_READ', 'SUBMISSION_DELETE', 'DESIGN_CREATE']);
-    const nxt = jest.fn();
-    const req = {
-      currentUser: {
-        deletedForms: [],
-        forms: [
-          {
-            formId: '456',
-          },
-          {
-            formId: '123',
-            permissions: ['FORM_READ', 'SUBMISSION_DELETE', 'DESIGN_CREATE'],
-          },
-        ],
-      },
-      params: {
-        formId: '123',
-      },
-    };
-
-    await mw(req, testRes, nxt);
-    expect(nxt).toHaveBeenCalledTimes(1);
-    expect(nxt).toHaveBeenCalledWith();
   });
 
   it('moves on if the expected permissions are included', async () => {
@@ -623,9 +468,7 @@ describe('hasSubmissionPermissions', () => {
 
     const mw = hasSubmissionPermissions('submission_read');
     const nxt = jest.fn();
-    const cu = {
-      forms: [],
-    };
+    const cu = {};
     const req = {
       currentUser: cu,
       params: {
@@ -676,16 +519,7 @@ describe('hasSubmissionPermissions', () => {
 
     const mw = hasSubmissionPermissions('submission_read');
     const nxt = jest.fn();
-    const cu = {
-      forms: [
-        {
-          formId: '456',
-        },
-        {
-          formId: '789',
-        },
-      ],
-    };
+    const cu = {};
     const req = {
       currentUser: cu,
       params: {
@@ -713,17 +547,7 @@ describe('hasSubmissionPermissions', () => {
 
     const mw = hasSubmissionPermissions(['submission_delete', 'submission_create']);
     const nxt = jest.fn();
-    const cu = {
-      forms: [
-        {
-          formId: '456',
-        },
-        {
-          formId: '999',
-          permissions: ['submission_read', 'submission_update'],
-        },
-      ],
-    };
+    const cu = {};
     const req = {
       currentUser: cu,
       params: {
@@ -751,17 +575,7 @@ describe('hasSubmissionPermissions', () => {
 
     const mw = hasSubmissionPermissions('submission_delete');
     const nxt = jest.fn();
-    const cu = {
-      forms: [
-        {
-          formId: '456',
-        },
-        {
-          formId: '999',
-          permissions: ['submission_read'],
-        },
-      ],
-    };
+    const cu = {};
     const req = {
       currentUser: cu,
       params: {
@@ -785,23 +599,21 @@ describe('hasSubmissionPermissions', () => {
         identityProviders: [{ code: 'idir' }, { code: 'bceid' }],
       },
     });
+    service.getUserForms = jest.fn().mockReturnValue([
+      {
+        formId: '456',
+      },
+      {
+        formId: '999',
+        permissions: ['submission_read', 'submission_update'],
+      },
+    ]);
     service.checkSubmissionPermission = jest.fn().mockReturnValue(undefined);
 
     const mw = hasSubmissionPermissions(['submission_read', 'submission_update']);
     const nxt = jest.fn();
-    const cu = {
-      forms: [
-        {
-          formId: '456',
-        },
-        {
-          formId: '999',
-          permissions: ['submission_read', 'submission_update'],
-        },
-      ],
-    };
     const req = {
-      currentUser: cu,
+      currentUser: {},
       params: {
         formSubmissionId: 123,
       },
@@ -826,17 +638,7 @@ describe('hasSubmissionPermissions', () => {
 
     const mw = hasSubmissionPermissions('submission_read');
     const nxt = jest.fn();
-    const cu = {
-      forms: [
-        {
-          formId: '456',
-        },
-        {
-          formId: '999',
-          permissions: ['submission_read', 'submission_update', 'submission_delete'],
-        },
-      ],
-    };
+    const cu = {};
     const req = {
       currentUser: cu,
       params: {
@@ -856,9 +658,7 @@ describe('hasFormRoles', () => {
   it('falls through if the current user does not have any forms', async () => {
     const hfr = hasFormRoles([Roles.OWNER, Roles.TEAM_MANAGER]);
     const nxt = jest.fn();
-    const cu = {
-      forms: [],
-    };
+    const cu = {};
     const req = {
       currentUser: cu,
       params: {},
@@ -876,14 +676,7 @@ describe('hasFormRoles', () => {
   it('falls through if the current user does not have at least one of the required form roles', async () => {
     const hfr = hasFormRoles([Roles.OWNER, Roles.TEAM_MANAGER]);
     const nxt = jest.fn();
-    const cu = {
-      forms: [
-        {
-          id: formId,
-          roles: [],
-        },
-      ],
-    };
+    const cu = {};
     const req = {
       currentUser: cu,
       params: {},
@@ -901,14 +694,7 @@ describe('hasFormRoles', () => {
   it('falls through if the current user does not have all of the required form roles', async () => {
     const hfr = hasFormRoles([Roles.OWNER, Roles.TEAM_MANAGER], true);
     const nxt = jest.fn();
-    const cu = {
-      forms: [
-        {
-          id: formId,
-          roles: [Roles.TEAM_MANAGER],
-        },
-      ],
-    };
+    const cu = {};
     const req = {
       currentUser: cu,
       params: {},
@@ -924,16 +710,15 @@ describe('hasFormRoles', () => {
   });
 
   it('moves on if the user has at least one of the required form roles', async () => {
+    service.getUserForms = jest.fn().mockReturnValue([
+      {
+        formId: formId,
+        roles: [Roles.TEAM_MANAGER],
+      },
+    ]);
     const hfr = hasFormRoles([Roles.OWNER, Roles.TEAM_MANAGER]);
     const nxt = jest.fn();
-    const cu = {
-      forms: [
-        {
-          formId: formId,
-          roles: [Roles.TEAM_MANAGER],
-        },
-      ],
-    };
+    const cu = {};
     const req = {
       currentUser: cu,
       params: {},
@@ -949,16 +734,15 @@ describe('hasFormRoles', () => {
   });
 
   it('moves on if the user has all of the required form roles', async () => {
+    service.getUserForms = jest.fn().mockReturnValue([
+      {
+        formId: formId,
+        roles: [Roles.OWNER, Roles.TEAM_MANAGER],
+      },
+    ]);
     const hfr = hasFormRoles([Roles.OWNER, Roles.TEAM_MANAGER], true);
     const nxt = jest.fn();
-    const cu = {
-      forms: [
-        {
-          formId: formId,
-          roles: [Roles.OWNER, Roles.TEAM_MANAGER],
-        },
-      ],
-    };
+    const cu = {};
     const req = {
       currentUser: cu,
       params: {},
@@ -990,12 +774,6 @@ describe('hasRolePermissions', () => {
 
         const cu = {
           id: userId,
-          forms: [
-            {
-              formId: formId,
-              roles: [Roles.OWNER, Roles.TEAM_MANAGER],
-            },
-          ],
         };
         const req = {
           currentUser: cu,
@@ -1029,12 +807,6 @@ describe('hasRolePermissions', () => {
 
         const cu = {
           id: userId,
-          forms: [
-            {
-              formId: formId,
-              roles: [Roles.TEAM_MANAGER],
-            },
-          ],
         };
         const req = {
           currentUser: cu,
@@ -1066,12 +838,6 @@ describe('hasRolePermissions', () => {
 
         const cu = {
           id: userId,
-          forms: [
-            {
-              formId: formId,
-              roles: [Roles.TEAM_MANAGER],
-            },
-          ],
         };
         const req = {
           currentUser: cu,
@@ -1089,6 +855,12 @@ describe('hasRolePermissions', () => {
       });
 
       it("falls through if you're trying to remove an owner role", async () => {
+        service.getUserForms = jest.fn().mockReturnValue([
+          {
+            formId: formId,
+            roles: [Roles.TEAM_MANAGER],
+          },
+        ]);
         rbacService.readUserRole = jest.fn().mockReturnValue([
           {
             userId: userId2,
@@ -1103,12 +875,6 @@ describe('hasRolePermissions', () => {
 
         const cu = {
           id: userId,
-          forms: [
-            {
-              formId: formId,
-              roles: [Roles.TEAM_MANAGER],
-            },
-          ],
         };
         const req = {
           currentUser: cu,
@@ -1140,12 +906,6 @@ describe('hasRolePermissions', () => {
 
         const cu = {
           id: userId,
-          forms: [
-            {
-              formId: formId,
-              roles: [Roles.TEAM_MANAGER],
-            },
-          ],
         };
         const req = {
           currentUser: cu,
@@ -1167,6 +927,12 @@ describe('hasRolePermissions', () => {
   describe('when updating user roles on a team', () => {
     describe('as an owner', () => {
       it('should succeed when removing any roles', async () => {
+        service.getUserForms = jest.fn().mockReturnValue([
+          {
+            formId: formId,
+            roles: [Roles.OWNER],
+          },
+        ]);
         rbacService.readUserRole = jest.fn().mockReturnValue([
           {
             id: '1',
@@ -1226,12 +992,6 @@ describe('hasRolePermissions', () => {
 
         const cu = {
           id: userId,
-          forms: [
-            {
-              formId: formId,
-              roles: [Roles.OWNER],
-            },
-          ],
         };
         const req = {
           currentUser: cu,
@@ -1255,6 +1015,12 @@ describe('hasRolePermissions', () => {
     describe('as a team manager', () => {
       describe('the user being updated is your own', () => {
         it("falls through if you're trying to remove your own team manager role", async () => {
+          service.getUserForms = jest.fn().mockReturnValue([
+            {
+              formId: formId,
+              roles: [Roles.TEAM_MANAGER, Roles.FORM_DESIGNER],
+            },
+          ]);
           rbacService.readUserRole = jest.fn().mockReturnValue([
             {
               id: '1',
@@ -1284,12 +1050,6 @@ describe('hasRolePermissions', () => {
 
           const cu = {
             id: userId,
-            forms: [
-              {
-                formId: formId,
-                roles: [Roles.TEAM_MANAGER, Roles.FORM_DESIGNER],
-              },
-            ],
           };
           const req = {
             currentUser: cu,
@@ -1357,12 +1117,6 @@ describe('hasRolePermissions', () => {
 
             const cu = {
               id: userId,
-              forms: [
-                {
-                  formId: formId,
-                  roles: [Roles.TEAM_MANAGER],
-                },
-              ],
             };
             const req = {
               currentUser: cu,
@@ -1424,12 +1178,6 @@ describe('hasRolePermissions', () => {
 
             const cu = {
               id: userId,
-              forms: [
-                {
-                  formId: formId,
-                  roles: [Roles.TEAM_MANAGER],
-                },
-              ],
             };
             const req = {
               currentUser: cu,
@@ -1499,12 +1247,6 @@ describe('hasRolePermissions', () => {
 
             const cu = {
               id: userId,
-              forms: [
-                {
-                  formId: formId,
-                  roles: [Roles.TEAM_MANAGER],
-                },
-              ],
             };
             const req = {
               currentUser: cu,
@@ -1564,12 +1306,6 @@ describe('hasRolePermissions', () => {
 
             const cu = {
               id: userId,
-              forms: [
-                {
-                  formId: formId,
-                  roles: [Roles.TEAM_MANAGER],
-                },
-              ],
             };
             const req = {
               currentUser: cu,
@@ -1639,12 +1375,6 @@ describe('hasRolePermissions', () => {
 
             const cu = {
               id: userId,
-              forms: [
-                {
-                  formId: formId,
-                  roles: [Roles.TEAM_MANAGER],
-                },
-              ],
             };
             const req = {
               currentUser: cu,
@@ -1683,12 +1413,6 @@ describe('hasRolePermissions', () => {
 
             const cu = {
               id: userId,
-              forms: [
-                {
-                  formId: formId,
-                  roles: [Roles.TEAM_MANAGER],
-                },
-              ],
             };
             const req = {
               currentUser: cu,
@@ -1763,12 +1487,6 @@ describe('hasRolePermissions', () => {
 
             const cu = {
               id: userId,
-              forms: [
-                {
-                  formId: formId,
-                  roles: [Roles.TEAM_MANAGER],
-                },
-              ],
             };
             const req = {
               currentUser: cu,
@@ -1839,12 +1557,6 @@ describe('hasRolePermissions', () => {
 
             const cu = {
               id: userId,
-              forms: [
-                {
-                  formId: formId,
-                  roles: [Roles.TEAM_MANAGER],
-                },
-              ],
             };
             const req = {
               currentUser: cu,
@@ -1915,12 +1627,6 @@ describe('hasRolePermissions', () => {
 
             const cu = {
               id: userId,
-              forms: [
-                {
-                  formId: formId,
-                  roles: [Roles.TEAM_MANAGER],
-                },
-              ],
             };
             const req = {
               currentUser: cu,
@@ -1991,12 +1697,6 @@ describe('hasRolePermissions', () => {
 
             const cu = {
               id: userId,
-              forms: [
-                {
-                  formId: formId,
-                  roles: [Roles.TEAM_MANAGER],
-                },
-              ],
             };
             const req = {
               currentUser: cu,
