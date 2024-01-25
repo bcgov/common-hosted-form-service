@@ -4,7 +4,7 @@ import { mapActions, mapState } from 'pinia';
 import BaseSecure from '~/components/base/BaseSecure.vue';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
-import { IdentityProviders } from '~/utils/constants';
+import { AppPermissions } from '~/utils/constants';
 
 export default {
   components: {
@@ -23,7 +23,7 @@ export default {
   },
   computed: {
     ...mapState(useFormStore, ['downloadedFile', 'lang', 'isRTL']),
-    IDP: () => IdentityProviders,
+    APP_PERMS: () => AppPermissions,
   },
   async mounted() {
     await this.getFile(this.id);
@@ -77,7 +77,7 @@ export default {
 </script>
 
 <template>
-  <BaseSecure :idp="[IDP.IDIR]">
+  <BaseSecure :permission="APP_PERMS.VIEWS_FILE_DOWNLOAD">
     <v-container fluid class="center_vertical_content">
       <h1 :lang="lang">{{ $t('trans.download.chefsDataExport') }}</h1>
       <v-progress-circular

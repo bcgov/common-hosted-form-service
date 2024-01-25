@@ -14,9 +14,7 @@
       "runtimeArgs": ["run", "serve"],
       "runtimeExecutable": "npm",
       "type": "node",
-      "env": {
-        "NODE_CONFIG_DIR": "${workspaceFolder}/.devcontainer/chefs_local",
-      }
+      "env": {}
     },
     {
       "cwd": "${workspaceFolder}/app/frontend",

@@ -4,8 +4,9 @@ import { nextTick } from 'vue';
 
 import BasePanel from '~/components/base/BasePanel.vue';
 import BaseInfoCard from '~/components/base/BaseInfoCard.vue';
-import { IdentityMode, IdentityProviders } from '~/utils/constants';
+import { IdentityMode } from '~/utils/constants';
 import { useFormStore } from '~/store/form';
+import { useIdpStore } from '~/store/identityProviders';
 
 export default {
   components: {
@@ -28,12 +29,10 @@ export default {
   },
   computed: {
     ...mapState(useFormStore, ['isRTL', 'lang']),
+    ...mapState(useIdpStore, ['loginButtons', 'hasFormAccessSettings']),
     ...mapWritableState(useFormStore, ['form']),
     ID_MODE() {
       return IdentityMode;
-    },
-    ID_PROVIDERS() {
-      return IdentityProviders;
     },
   },
   methods: {
@@ -128,31 +127,20 @@ export default {
             class="my-0"
             @update:model-value="updateLoginType"
           >
-            <v-radio class="mx-2" :value="ID_PROVIDERS.IDIR">
+            <v-radio
+              v-for="button in loginButtons"
+              :key="button.type"
+              :value="button.type"
+              class="mx-2"
+            >
               <template #label>
-                <span :class="{ 'mr-2': isRTL }"> IDIR </span>
-              </template>
-            </v-radio>
-            <v-radio class="mx-2" :value="ID_PROVIDERS.BCEIDBASIC">
-              <template #label>
-                <span :class="{ 'mr-2': isRTL }"> Basic BCeID </span>
-              </template>
-            </v-radio>
-            <v-radio class="mx-2" :value="ID_PROVIDERS.BCEIDBUSINESS">
-              <template #label>
-                <span :class="{ 'mr-2': isRTL }"> Business BCeID </span>
+                <span :class="{ 'mr-2': isRTL }"> {{ button.label }} </span>
               </template>
             </v-radio>
             <!-- Mandatory BCeID process notification -->
             <v-expand-transition>
               <BaseInfoCard
-                v-if="
-                  idpType &&
-                  [
-                    ID_PROVIDERS.BCEIDBASIC,
-                    ID_PROVIDERS.BCEIDBUSINESS,
-                  ].includes(idpType)
-                "
+                v-if="hasFormAccessSettings(idpType, 'idim')"
                 class="mr-4"
                 :class="{ 'dir-rtl': isRTL }"
               >

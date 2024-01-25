@@ -2,6 +2,7 @@
 import { mapActions, mapState } from 'pinia';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useIdpStore } from '~/store/identityProviders';
 
 export default {
   props: {
@@ -11,6 +12,10 @@ export default {
     },
     idp: {
       type: Array,
+      default: undefined,
+    },
+    permission: {
+      type: String,
       default: undefined,
     },
   },
@@ -23,6 +28,7 @@ export default {
       'ready',
     ]),
     ...mapState(useFormStore, ['lang']),
+    ...mapState(useIdpStore, ['hasPermission']),
     mailToLink() {
       return `mailto:${
         import.meta.env.VITE_CONTACT
@@ -34,7 +40,9 @@ export default {
       return import.meta.env.VITE_CONTACT;
     },
   },
-  methods: mapActions(useAuthStore, ['login']),
+  methods: {
+    ...mapActions(useAuthStore, ['login']),
+  },
 };
 </script>
 
@@ -50,7 +58,7 @@ export default {
         </p>
       </div>
       <div
-        v-else-if="idp && idp.length > 0 && !idp.includes(identityProvider)"
+        v-else-if="permission && !hasPermission(identityProvider, permission)"
         class="text-center"
       >
         <h1 class="my-8" :lang="lang">
@@ -59,7 +67,7 @@ export default {
         <p :lang="lang">
           {{
             $t('trans.baseSecure.403ErrorMsg', {
-              idp: idp,
+              idp: permission,
             })
           }}
         </p>

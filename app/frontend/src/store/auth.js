@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import getRouter from '~/router';
+import { useIdpStore } from '~/store/identityProviders';
 
 /**
  * @function hasRoles
@@ -106,9 +107,10 @@ export const useAuthStore = defineStore('auth', {
         } else {
           // Navigate to internal login page if no idpHint specified
           const router = getRouter();
+          const idpStore = useIdpStore();
           router.replace({
             name: 'Login',
-            query: { idpHint: ['idir', 'bceid-business', 'bceid-basic'] },
+            query: { idpHint: idpStore.loginIdpHints },
           });
         }
       }

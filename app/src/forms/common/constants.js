@@ -90,4 +90,21 @@ module.exports = Object.freeze({
     json: 'json',
     default: 'csv',
   },
+  // app permissions are not assigned on the form
+  // they are for flow within the UX, what views one can navigate
+  // what buttons one can have.
+  // these will be assigned via the user's IDP.
+  APP_PERMISSIONS: {
+    VIEWS_FORM_STEPPER: 'views_form_stepper',
+    VIEWS_ADMIN: 'views_admin',
+    VIEWS_FILE_DOWNLOAD: 'views_file_download',
+    VIEWS_FORM_EMAILS: 'views_form_emails',
+    VIEWS_FORM_EXPORT: 'views_form_export',
+    VIEWS_FORM_MANAGE: 'views_form_manage',
+    VIEWS_FORM_PREVIEW: 'views_form_preview',
+    VIEWS_FORM_SUBMISSIONS: 'views_form_submissions',
+    VIEWS_FORM_TEAMS: 'views_form_teamS',
+    VIEWS_FORM_VIEW: 'views_form_view',
+    VIEWS_USER_SUBMISSIONS: 'views_user_submissions',
+  },
 });

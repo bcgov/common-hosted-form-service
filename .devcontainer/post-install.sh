@@ -5,6 +5,8 @@ set -ex
 WORKSPACE_DIR=$(pwd)
 CHEFS_LOCAL_DIR=${WORKSPACE_DIR}/.devcontainer/chefs_local
 
+npm install knex -g
+
 # install app libraries, prepare for app development and debugging...
 cd app
 npm install

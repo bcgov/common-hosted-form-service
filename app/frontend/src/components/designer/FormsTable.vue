@@ -4,8 +4,8 @@ import { mapActions, mapState } from 'pinia';
 import { i18n } from '~/internationalization';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useIdpStore } from '~/store/identityProviders';
 import BaseDialog from '~/components/base/BaseDialog.vue';
-import { IdentityProviders } from '~/utils/constants';
 import { checkFormManage, checkSubmissionView } from '~/utils/permissionUtils';
 
 export default {
@@ -25,6 +25,7 @@ export default {
   computed: {
     ...mapState(useFormStore, ['formList', 'isRTL', 'lang']),
     ...mapState(useAuthStore, ['user']),
+    ...mapState(useIdpStore, ['isPrimary']),
     headers() {
       return [
         {
@@ -44,7 +45,7 @@ export default {
       ];
     },
     canCreateForm() {
-      return this.user.idp === IdentityProviders.IDIR;
+      return this.isPrimary(this.user.idp);
     },
     filteredFormList() {
       return this.formList.filter(

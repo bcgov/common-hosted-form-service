@@ -3,7 +3,8 @@ import { mapState, mapWritableState } from 'pinia';
 import BasePanel from '~/components/base/BasePanel.vue';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
-import { IdentityMode, IdentityProviders } from '~/utils/constants';
+import { useIdpStore } from '~/store/identityProviders';
+import { IdentityMode } from '~/utils/constants';
 
 export default {
   components: {
@@ -24,12 +25,13 @@ export default {
   computed: {
     ...mapState(useAuthStore, ['identityProvider']),
     ...mapState(useFormStore, ['isFormPublished', 'isRTL', 'lang']),
+    ...mapState(useIdpStore, ['isPrimary']),
     ...mapWritableState(useFormStore, ['form']),
     ID_MODE() {
       return IdentityMode;
     },
-    idirUser() {
-      return this.identityProvider === IdentityProviders.IDIR;
+    primaryIdpUser() {
+      return this.isPrimary(this.identityProvider);
     },
   },
   methods: {
@@ -225,7 +227,7 @@ export default {
       v-model="form.subscribe.enabled"
       hide-details="auto"
       class="my-0"
-      :disabled="idirUser === false || !isFormPublished"
+      :disabled="primaryIdpUser === false || !isFormPublished"
     >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">

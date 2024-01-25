@@ -17,6 +17,8 @@ import getRouter from '~/router';
 import { useAuthStore } from '~/store/auth';
 import { useAppStore } from '~/store/app';
 import { assertOptions, getConfig, sanitizeConfig } from '~/utils/keycloak';
+import { rbacService } from './services';
+import { useIdpStore } from '~/store/identityProviders';
 
 let keycloak = null;
 const pinia = createPinia();
@@ -87,6 +89,25 @@ function initializeApp(kcSuccess = false, basePath = '/') {
 }
 
 /**
+ * @function loadIdentityProviders
+ * Load Identity Provider configuration from API Server/database - NOT from Keycloak.
+ */
+async function loadIdentityProviders() {
+  const idpStore = useIdpStore();
+  try {
+    // Get data if it isn't already in session storage
+    if (!idpStore.providers) {
+      const { data } = await rbacService.getIdentityProviders({ active: true });
+      idpStore.providers = Object.freeze(data);
+    }
+    return true;
+  } catch (err) {
+    idpStore.providers = undefined;
+    return false;
+  }
+}
+
+/**
  * @function loadConfig
  * Acquires the configuration state from the backend server
  */
@@ -108,6 +129,11 @@ async function loadConfig() {
     const config = JSON.parse(sessionStorage.getItem(storageKey));
     const appStore = useAppStore();
     appStore.config = Object.freeze(config);
+
+    const idpsLoaded = await loadIdentityProviders();
+    if (!idpsLoaded) {
+      throw new Error('Could not load Identity Provider configuration.');
+    }
 
     if (
       !config ||
