@@ -10,10 +10,35 @@
         }
     },
 
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "cweijan.vscode-postgresql-client2",
+                "Vue.volar",
+                "esbenp.prettier-vscode"
+            ],
+            "settings": {
+                "database-client.telemetry.usesOnlineServices": false,
+                "editor.defaultFormatter": null,
+                "editor.formatOnSave": false,
+                "[javascript]": {
+                    "editor.defaultFormatter": "esbenp.prettier-vscode",
+                    "editor.formatOnSave": true
+                },
+                "prettier.configPath": "${containerWorkspaceFolder}/app/frontend/.prettierrc", 
+                "prettier.documentSelectors": ["${containerWorkspaceFolder}/app/frontend/**/*.{js,vue}"]
+            }
+        }
+    },
+
     "features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
 	},
 
+    "containerEnv": {
+        "NODE_CONFIG_DIR": "${containerWorkspaceFolder}/.devcontainer/chefs_local"
+    },
+    
 	// Use this environment variable if you need to bind mount your local source code into a new container.
 	"remoteEnv": {
 		"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"

@@ -2,7 +2,7 @@
 import { mapState } from 'pinia';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
-import { IdentityProviders } from '~/utils/constants';
+import { useIdpStore } from '~/store/identityProviders';
 
 export default {
   data() {
@@ -13,12 +13,13 @@ export default {
   computed: {
     ...mapState(useAuthStore, ['authenticated', 'isAdmin', 'identityProvider']),
     ...mapState(useFormStore, ['lang']),
+    ...mapState(useIdpStore, ['isPrimary']),
     hideNavBar() {
       // hide nav bar if user is on form submitter page
       return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;
     },
     hasPrivileges() {
-      return this.identityProvider === IdentityProviders.IDIR;
+      return this.isPrimary(this.identityProvider);
     },
   },
 };

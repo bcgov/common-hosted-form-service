@@ -1,11 +1,11 @@
 import { formService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useNotificationStore } from '~/store/notification';
+import { useIdpStore } from '~/store/identityProviders';
 import {
   FormPermissions,
   FormManagePermissions,
   IdentityMode,
-  IdentityProviders,
   NotificationTypes,
 } from '~/utils/constants';
 
@@ -22,9 +22,8 @@ import {
 export function checkFormSubmit(userForm) {
   return (
     userForm &&
-    ((userForm.idps && userForm.idps.includes(IdentityProviders.PUBLIC)) ||
-      (userForm.permissions &&
-        userForm.permissions.includes(FormPermissions.SUBMISSION_CREATE)))
+    userForm.permissions &&
+    userForm.permissions.includes(FormPermissions.SUBMISSION_CREATE)
   );
 }
 
@@ -83,12 +82,12 @@ function getErrorMessage(options, error) {
  */
 export async function preFlightAuth(options = {}, next) {
   const notificationStore = useNotificationStore();
+  const idpStore = useIdpStore();
   // Support lambda functions (Consider making them util functions?)
   const getIdpHint = (values) => {
     return Array.isArray(values) && values.length ? values[0] : undefined;
   };
-  const isValidIdp = (value) =>
-    Object.values(IdentityProviders).includes(value);
+  const isValidIdp = (value) => idpStore.isValidIdp(value);
 
   // Determine current form or submission idpHint if available
   let idpHint = undefined;

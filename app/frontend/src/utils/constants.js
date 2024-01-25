@@ -62,18 +62,26 @@ export const FormManagePermissions = Object.freeze([
   FormPermissions.TEAM_UPDATE,
 ]);
 
+/** Chefs/Application flow permissions via User's Identity Provider */
+export const AppPermissions = Object.freeze({
+  VIEWS_FORM_STEPPER: 'views_form_stepper',
+  VIEWS_ADMIN: 'views_admin',
+  VIEWS_FILE_DOWNLOAD: 'views_file_download',
+  VIEWS_FORM_EMAILS: 'views_form_emails',
+  VIEWS_FORM_EXPORT: 'views_form_export',
+  VIEWS_FORM_MANAGE: 'views_form_manage',
+  VIEWS_FORM_PREVIEW: 'views_form_preview',
+  VIEWS_FORM_SUBMISSIONS: 'views_form_submissions',
+  VIEWS_FORM_TEAMS: 'views_form_teamS',
+  VIEWS_FORM_VIEW: 'views_form_view',
+  VIEWS_USER_SUBMISSIONS: 'views_user_submissions',
+});
+
 /** Identity modes that a form can operate in regards to user identification */
 export const IdentityMode = Object.freeze({
   LOGIN: 'login', // Requires Login
   PUBLIC: 'public', // Anonymous
   TEAM: 'team', // Specific People
-});
-
-/** Identitiy Providers a user can log in as and a form can be allowed for */
-export const IdentityProviders = Object.freeze({
-  BCEIDBASIC: 'bceid-basic', // Basic BCeID
-  BCEIDBUSINESS: 'bceid-business', // Business BCeID
-  IDIR: 'idir', // IDIR
 });
 
 /** List of Ministries within BC Public Service */

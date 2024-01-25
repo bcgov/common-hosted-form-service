@@ -1,7 +1,7 @@
 <script>
 import BaseSecure from '~/components/base/BaseSecure.vue';
 import TeamManagement from '~/components/forms/manage/TeamManagement.vue';
-import { IdentityProviders } from '~/utils/constants';
+import { AppPermissions } from '~/utils/constants';
 
 export default {
   components: {
@@ -15,13 +15,13 @@ export default {
     },
   },
   computed: {
-    IDP: () => IdentityProviders,
+    APP_PERMS: () => AppPermissions,
   },
 };
 </script>
 
 <template>
-  <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBUSINESS]">
+  <BaseSecure :permission="APP_PERMS.VIEWS_FORM_TEAMS">
     <TeamManagement :form-id="f" />
   </BaseSecure>
 </template>

@@ -15,6 +15,8 @@ The `.devcontainer` folder contains the `devcontainer.json` file which defines t
 
 In order to run CHEFS you require Keycloak (configured), Postgresql (seeded) and the CHEFS backend/API and frontend/UX. Previously, this was a series of downloads and configuration updates and numerous commands to run. See `.devcontainer/chefs_local` files.
 
+**NODE_CONFIG_DIR** to simplify loading a default configuration to the CHEFS infrastructure (Keycloak, Postgresql, etc), we set an environment variable [`NODE_CONFIG_DIR`](https://github.com/node-config/node-config/wiki/Environment-Variables#node_config_dir). This supercedes the files found under `app/config`. Running node apps and commands (ex. knex, launch configurations) will use this environment variable and load configuration from `.devcontainer/chefs_local`.
+
 Also included are convenient launch tasks to run and debug CHEFS.
 
 ## Open CHEFS in the devcontainer
@@ -64,6 +66,37 @@ When the devcontainer is built, it copies `.devcontainer/chefs_local/local.json.
 
 ## Formio Components
 If you are developing the formio components, you should build and redeploy them before running your local debug instances of CHEFS. Use tasks `Components build` and `Components Deploy`.
+
+## KNEX - Database tools
+[knex](https://knexjs.org) is installed globally and should be run from the `/app` directory where the knex configuration is located. Use knex to stub out migrations or to rollback migrations as you are developing.
+
+### create a migration file
+This will create a stub file with a timestamp. You will populate the up and down methods to add/update/delete database objects.
+
+```
+cd app
+knex migrate:make my_new_migration_script
+> Created Migration: /workspaces/common-hosted-form-service/app/src/db/migrations/20240119172630_my_new_migration_script.js
+```
+
+### rollback previous migration
+When developing your migrations, you may find it useful to run the migration and roll it back if it isn't exactly what you expect to happen. 
+
+#### run the migration(s)
+```
+cd app
+knex migrate:latest
+> Batch 2 run: 1 migrations
+```
+
+#### rollback the migration(s)
+```
+cd app
+knex migrate:rollback
+> Batch 2 rolled back: 1 migrations
+```
+
+Please review the [knex](https://knexjs.org) for more detail and how to leverage the tool.
 
 ## Troubleshooting
 All development machines are unique and here we will document problems that have been encountered and how to fix them.
