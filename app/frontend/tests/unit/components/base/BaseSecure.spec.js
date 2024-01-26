@@ -9,6 +9,8 @@ import { expect, vi } from 'vitest';
 import getRouter from '~/router';
 import BaseSecure from '~/components/base/BaseSecure.vue';
 import { useAuthStore } from '~/store/auth';
+import { useIdpStore } from '~/store/identityProviders';
+import { AppPermissions } from '~/utils/constants';
 
 describe('BaseSecure.vue', () => {
   const pinia = createPinia();
@@ -19,6 +21,12 @@ describe('BaseSecure.vue', () => {
 
   setActivePinia(pinia);
   const authStore = useAuthStore();
+  const idpStore = useIdpStore();
+
+  idpStore.providers = require('../../fixtures/identityProviders.json');
+  const nonPrimaryIdp = idpStore.providers.find(
+    (x) => x.active && x.login && !x.primary
+  );
 
   it('renders nothing if authenticated, user', () => {
     authStore.authenticated = true;
@@ -30,6 +38,7 @@ describe('BaseSecure.vue', () => {
             roles: ['user'],
           },
         },
+        identity_provider: nonPrimaryIdp.code,
       },
     };
     const wrapper = mount(BaseSecure, {
@@ -51,6 +60,7 @@ describe('BaseSecure.vue', () => {
             roles: [],
           },
         },
+        identity_provider: nonPrimaryIdp.code,
       },
     };
     const wrapper = mount(BaseSecure, {
@@ -71,6 +81,7 @@ describe('BaseSecure.vue', () => {
           chefs: {
             roles: ['user'],
           },
+          identity_provider: nonPrimaryIdp.code,
         },
       },
     };
@@ -96,6 +107,7 @@ describe('BaseSecure.vue', () => {
             roles: ['user'],
           },
         },
+        identity_provider: nonPrimaryIdp.code,
       },
     };
     const wrapper = mount(BaseSecure, {
@@ -170,13 +182,14 @@ describe('BaseSecure.vue', () => {
           chefs: {
             roles: ['user'],
           },
+          identity_provider: nonPrimaryIdp.code,
         },
       },
     };
     const wrapper = mount(BaseSecure, {
       props: {
         admin: false,
-        idp: ['IDIR'],
+        permission: AppPermissions.VIEWS_ADMIN,
       },
       global: {
         plugins: [router, pinia],

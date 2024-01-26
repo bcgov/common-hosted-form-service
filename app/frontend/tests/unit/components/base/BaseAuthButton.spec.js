@@ -8,13 +8,16 @@ import { vi } from 'vitest';
 import getRouter from '~/router';
 import BaseAuthButton from '~/components/base/BaseAuthButton.vue';
 import { useAuthStore } from '~/store/auth';
+import { useIdpStore } from '~/store/identityProviders';
 
 describe('BaseAuthButton.vue', () => {
   const pinia = createPinia();
   setActivePinia(pinia);
   const authStore = useAuthStore();
+  const idpStore = useIdpStore();
   const router = getRouter();
   const windowReplaceSpy = vi.spyOn(window.location, 'replace');
+  idpStore.providers = require('../../fixtures/identityProviders.json');
 
   beforeEach(async () => {
     windowReplaceSpy.mockReset();
@@ -95,7 +98,7 @@ describe('BaseAuthButton.vue', () => {
     expect(replace).toHaveBeenCalledTimes(1);
     expect(replace).toHaveBeenCalledWith({
       name: 'Login',
-      query: { idpHint: ['idir', 'bceid-business', 'bceid-basic'] },
+      query: { idpHint: idpStore.loginIdpHints },
     });
   });
 

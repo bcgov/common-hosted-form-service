@@ -377,7 +377,7 @@
     "401NotAuthorized": "401：未授权。 :",
     "401ErrorMsg": "您的帐户设置不正确。<br />请联系",
     "403Forbidden": "403：禁止。 :",
-    "403ErrorMsg": "此页面需要 {idp} 身份验证。",
+    "403ErrorMsg": "此页面需要 {permission} 身份验证。",
     "401UnAuthorized": "401：未经授权。 :",
     "401UnAuthorizedErrMsg": "您没有权限访问此页面。"
   },

@@ -377,7 +377,7 @@
     "401NotAuthorized": "401: hindi awtorisado. :",
     "401ErrorMsg": "Ang iyong account ay hindi na-set up nang tama.<br /> Mangyaring makipag-ugnayan",
     "403Forbidden": "403 Ipinagbabawal. :",
-    "403ErrorMsg": "Nangangailangan ang page na ito ng {idp} authentication.",
+    "403ErrorMsg": "Nangangailangan ang page na ito ng {permission} authentication.",
     "401UnAuthorized": "401: Hindi awtorisado. :",
     "401UnAuthorizedErrMsg": "Wala kang pahintulot na i-access ang pahinang ito."
   },

@@ -68,11 +68,19 @@ describe('Constants', () => {
     });
   });
 
-  it('IdentityProviders has the right values defined', () => {
-    expect(constants.IdentityProviders).toEqual({
-      BCEIDBASIC: 'bceid-basic',
-      BCEIDBUSINESS: 'bceid-business',
-      IDIR: 'idir',
+  it('AppPermissions has the right values defined', () => {
+    expect(constants.AppPermissions).toEqual({
+      VIEWS_FORM_STEPPER: 'views_form_stepper',
+      VIEWS_ADMIN: 'views_admin',
+      VIEWS_FILE_DOWNLOAD: 'views_file_download',
+      VIEWS_FORM_EMAILS: 'views_form_emails',
+      VIEWS_FORM_EXPORT: 'views_form_export',
+      VIEWS_FORM_MANAGE: 'views_form_manage',
+      VIEWS_FORM_PREVIEW: 'views_form_preview',
+      VIEWS_FORM_SUBMISSIONS: 'views_form_submissions',
+      VIEWS_FORM_TEAMS: 'views_form_teamS',
+      VIEWS_FORM_VIEW: 'views_form_view',
+      VIEWS_USER_SUBMISSIONS: 'views_user_submissions',
     });
   });
 

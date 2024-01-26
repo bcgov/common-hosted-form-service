@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { formService } from '~/services';
 import { useAuthStore } from '~/store/auth';
+import { useIdpStore } from '~/store/identityProviders';
 import { useNotificationStore } from '~/store/notification';
 import {
   FormPermissions,
@@ -22,12 +23,6 @@ describe('checkFormSubmit', () => {
 
   it('should be false when permissions is undefined', () => {
     expect(permissionUtils.checkFormSubmit({ idps: [] })).toBeFalsy();
-  });
-
-  it('should be true when idps is public', () => {
-    expect(
-      permissionUtils.checkFormSubmit({ idps: [IdentityProviders.PUBLIC] })
-    ).toBeTruthy();
   });
 
   it('should be true when permissions is submission creator', () => {
@@ -109,6 +104,7 @@ describe('preFlightAuth', () => {
   setActivePinia(createPinia());
   const authStore = useAuthStore();
   const notificationStore = useNotificationStore();
+  const idpStore = useIdpStore();
   const mockNext = vi.fn();
   const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
   const alertNavigateSpy = vi.spyOn(notificationStore, 'alertNavigate');
@@ -116,9 +112,16 @@ describe('preFlightAuth', () => {
   const getSubmissionOptionsSpy = vi.spyOn(formService, 'getSubmissionOptions');
   const readFormOptionsSpy = vi.spyOn(formService, 'readFormOptions');
 
+  idpStore.providers = require('../fixtures/identityProviders.json');
+  const primaryIdp = idpStore.primaryIdp;
+  const secondaryIdp = idpStore.providers.find(
+    (x) => x.active && x.login && !x.primary
+  );
+
   beforeEach(() => {
     authStore.$reset();
     notificationStore.$reset();
+    //idpStore.$reset();
     mockNext.mockReset();
     addNotificationSpy.mockReset();
     alertNavigateSpy.mockReset();
@@ -146,7 +149,7 @@ describe('preFlightAuth', () => {
     authStore.authenticated = true;
     authStore.keycloak = {
       tokenParsed: {
-        identity_provider: IdentityProviders.PUBLIC,
+        identity_provider: 'public',
       },
     };
 
@@ -172,7 +175,7 @@ describe('preFlightAuth', () => {
     authStore.authenticated = true;
     authStore.keycloak = {
       tokenParsed: {
-        identity_provider: IdentityProviders.PUBLIC,
+        identity_provider: 'public',
       },
     };
     readFormOptionsSpy.mockImplementation(() => {
@@ -197,7 +200,7 @@ describe('preFlightAuth', () => {
     authStore.authenticated = true;
     authStore.keycloak = {
       tokenParsed: {
-        identity_provider: IdentityProviders.PUBLIC,
+        identity_provider: 'public',
       },
     };
     const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
@@ -225,7 +228,7 @@ describe('preFlightAuth', () => {
     authStore.authenticated = true;
     authStore.keycloak = {
       tokenParsed: {
-        identity_provider: IdentityProviders.PUBLIC,
+        identity_provider: 'unknown',
       },
     };
     const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
@@ -253,11 +256,11 @@ describe('preFlightAuth', () => {
     authStore.authenticated = true;
     authStore.keycloak = {
       tokenParsed: {
-        identity_provider: IdentityProviders.PUBLIC,
+        identity_provider: 'unknown',
       },
     };
     readFormOptionsSpy.mockResolvedValue({
-      data: { idpHints: [IdentityMode.PUBLIC] },
+      data: { idpHints: [] },
     });
 
     await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
@@ -272,11 +275,11 @@ describe('preFlightAuth', () => {
     authStore.authenticated = true;
     authStore.keycloak = {
       tokenParsed: {
-        identity_provider: IdentityProviders.IDIR,
+        identity_provider: primaryIdp.code,
       },
     };
     readFormOptionsSpy.mockResolvedValue({
-      data: { idpHints: [IdentityProviders.IDIR] },
+      data: { idpHints: [primaryIdp.code] },
     });
 
     await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
@@ -291,13 +294,13 @@ describe('preFlightAuth', () => {
     authStore.authenticated = true;
     authStore.keycloak = {
       tokenParsed: {
-        identity_provider: IdentityProviders.IDIR,
+        identity_provider: primaryIdp.code,
       },
     };
     const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
     const errorNavigateSpy = vi.spyOn(notificationStore, 'errorNavigate');
     readFormOptionsSpy.mockResolvedValue({
-      data: { idpHints: [IdentityProviders.BCEIDBASIC] },
+      data: { idpHints: [secondaryIdp.code] },
     });
 
     await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
@@ -327,7 +330,7 @@ describe('preFlightAuth', () => {
   it('should call getSubmissionOptions and login flow with idpHint', async () => {
     authStore.authenticated = false;
     getSubmissionOptionsSpy.mockResolvedValue({
-      data: { form: { idpHints: [IdentityProviders.IDIR] } },
+      data: { form: { idpHints: ['idir'] } },
     });
 
     await permissionUtils.preFlightAuth({ submissionId: 's' }, mockNext);
