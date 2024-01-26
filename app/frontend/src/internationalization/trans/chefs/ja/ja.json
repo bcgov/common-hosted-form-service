@@ -377,7 +377,7 @@
     "401NotAuthorized": "401: 権限がありません。 :",
     "401ErrorMsg": "アカウントが正しく設定されていません。<br />お問い合わせください",
     "403Forbidden": "403禁止します。 :",
-    "403ErrorMsg": "このページには {idp} 認証が必要です。",
+    "403ErrorMsg": "このページには {permission} 認証が必要です。",
     "401UnAuthorized": "401: 不正です。 :",
     "401UnAuthorizedErrMsg": "このページにアクセスする権限がありません。"
   },

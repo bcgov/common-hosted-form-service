@@ -377,7 +377,7 @@
     "401NotAuthorized": "401: không được ủy quyền. :",
     "401ErrorMsg": "Tài khoản của bạn không được thiết lập chính xác.<br /> Vui lòng liên hệ",
     "403Forbidden": "403: Cấm. :",
-    "403ErrorMsg": "Trang này yêu cầu xác thực {idp}.",
+    "403ErrorMsg": "Trang này yêu cầu xác thực {permission}.",
     "401UnAuthorized": "401: Trái phép. :",
     "401UnAuthorizedErrMsg": "Bạn không có quyền truy cập trang này."
   },

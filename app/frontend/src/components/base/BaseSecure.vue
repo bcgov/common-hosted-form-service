@@ -10,10 +10,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    idp: {
-      type: Array,
-      default: undefined,
-    },
     permission: {
       type: String,
       default: undefined,

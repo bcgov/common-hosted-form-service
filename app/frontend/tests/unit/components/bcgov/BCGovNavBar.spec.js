@@ -9,6 +9,7 @@ import { VApp } from 'vuetify/components';
 import BCGovNavBar from '~/components/bcgov/BCGovNavBar.vue';
 import getRouter from '~/router';
 import { useAuthStore } from '~/store/auth';
+import { useIdpStore } from '~/store/identityProviders';
 
 describe('BCGovNavBar.vue', () => {
   const pinia = createPinia();
@@ -17,12 +18,16 @@ describe('BCGovNavBar.vue', () => {
     history: createWebHistory(),
     routes: getRouter().getRoutes(),
   });
+  const idpStore = useIdpStore();
+
+  idpStore.providers = require('../../fixtures/identityProviders');
+  const primaryIdp = idpStore.primaryIdp;
 
   it('renders as non-admin', async () => {
     const authStore = useAuthStore();
     authStore.keycloak = {
       tokenParsed: {
-        identity_provider: 'idir',
+        identity_provider: primaryIdp.code,
         resource_access: {
           chefs: {
             roles: [],
@@ -64,7 +69,7 @@ describe('BCGovNavBar.vue', () => {
     const authStore = useAuthStore();
     authStore.keycloak = {
       tokenParsed: {
-        identity_provider: 'idir',
+        identity_provider: primaryIdp.code,
         resource_access: {
           chefs: {
             roles: ['admin'],

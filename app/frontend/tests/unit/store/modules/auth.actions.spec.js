@@ -6,6 +6,7 @@ import getRouter from '~/router';
 
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useIdpStore } from '~/store/identityProviders';
 
 describe('auth actions', () => {
   let router = getRouter();
@@ -14,6 +15,9 @@ describe('auth actions', () => {
   setActivePinia(createPinia());
   const mockStore = useAuthStore();
   const formStore = useFormStore();
+  const idpStore = useIdpStore();
+
+  idpStore.providers = require('../../fixtures/identityProviders.json');
 
   describe('login', () => {
     beforeEach(() => {
@@ -74,7 +78,7 @@ describe('auth actions', () => {
       expect(replaceSpy).toHaveBeenCalledTimes(1);
       expect(replaceSpy).toHaveBeenCalledWith({
         name: 'Login',
-        query: { idpHint: ['idir', 'bceid-business', 'bceid-basic'] },
+        query: { idpHint: idpStore.loginIdpHints },
       });
     });
 
