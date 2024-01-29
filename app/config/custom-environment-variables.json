@@ -1,71 +1,70 @@
 {
   "db": {
-    "database": "DB_DATABASE",
-    "host": "DB_HOST",
-    "password": "DB_PASSWORD",
-    "port": "DB_PORT",
-    "username": "DB_USERNAME"
+    "database": "chefs",
+    "host": "localhost",
+    "password": "admin",
+    "port": "5432",
+    "username": "app"
   },
   "files": {
     "uploads": {
       "dir": "FILES_UPLOADS_DIR",
-      "enabled": "FILES_UPLOADS_ENABLED",
-      "fileCount": "FILES_UPLOADS_FILECOUNT",
-      "fileKey": "FILES_UPLOADS_FILEKEY",
-      "fileMaxSize": "FILES_UPLOADS_FILEMAXSIZE",
-      "fileMinSize": "FILES_UPLOADS_FILEMINSIZE",
-      "path": "FILES_UPLOADS_PATH"
+      "enabled": "true",
+      "fileCount": "1",
+      "fileKey": "files",
+      "fileMaxSize": "25MB",
+      "fileMinSize": "0KB",
+      "path": "files"
     },
-    "permanent": "FILES_PERMANENT",
+    "permanent": "localStorage",
     "localStorage": {
-      "path": "FILES_LOCALSTORAGE_PATH"
+      "path": "myfiles"
     },
     "objectStorage": {
-      "accessKeyId": "FILES_OBJECTSTORAGE_ACCESSKEYID",
-      "bucket": "FILES_OBJECTSTORAGE_BUCKET",
-      "endpoint": "FILES_OBJECTSTORAGE_ENDPOINT",
-      "key": "FILES_OBJECTSTORAGE_KEY",
-      "secretAccessKey": "FILES_OBJECTSTORAGE_SECRETACCESSKEY"
+      "accessKeyId": "bcgov-citz-ccft",
+      "bucket": "chefs",
+      "endpoint": "https://commonservices.objectstore.gov.bc.ca",
+      "key": "chefs/dev/",
+      "secretAccessKey": "anything"
     }
   },
   "frontend": {
     "adminDashboardUrl": "VITE_ADMIN_DASHBOARD_URL",
-    "apiPath": "FRONTEND_APIPATH",
-    "basePath": "VITE_FRONTEND_BASEPATH",
+    "apiPath": "api/v1",
+    "basePath" : "/app",
     "keycloak": {
-      "clientId": "FRONTEND_KC_CLIENTID",
-      "realm": "FRONTEND_KC_REALM",
-      "serverUrl": "FRONTEND_KC_SERVERURL"
+      "clientId": "chefs-frontend",
+      "realm": "chefs", 
+      "serverUrl": "http://localhost:8082"
     }
   },
   "server": {
-    "apiPath": "SERVER_APIPATH",
-    "basePath": "SERVER_BASEPATH",
-    "bodyLimit": "SERVER_BODYLIMIT",
-    "keycloak": {
-      "clientId": "SERVER_KC_CLIENTID",
-      "clientSecret": "SERVER_KC_CLIENTSECRET",
-      "publicKey": "SERVER_KC_PUBLICKEY",
-      "realm": "SERVER_KC_REALM",
-      "serverUrl": "SERVER_KC_SERVERURL"
+    "apiPath": "/api/v1",
+      "basePath" : "/app",
+      "bodyLimit": "30mb",
+      "keycloak": {
+        "clientId": "chefs-frontend",
+        "realm": "chefs",
+        "serverUrl": "http://localhost:8082",
+        "clientSecret": "XXXXXXXXXXXX"
     },
     "logFile": "SERVER_LOGFILE",
-    "logLevel": "SERVER_LOGLEVEL",
-    "port": "SERVER_PORT"
+    "logLevel": "http",
+    "port": "8080"
   },
   "serviceClient": {
     "commonServices": {
       "ches": {
-        "endpoint": "SC_CS_CHES_ENDPOINT",
-        "tokenEndpoint": "SC_CS_CHES_TOKEN_ENDPOINT",
-        "clientId": "SC_CS_CHES_CLIENT_ID",
-        "clientSecret": "SC_CS_CHES_CLIENT_SECRET"
+        "endpoint": "https://ches-dev.api.gov.bc.ca/api",
+        "tokenEndpoint": "https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token",
+        "clientId": "CHES_CLIENT_ID",
+        "clientSecret": "CHES_CLIENT_SECRET"
       },
       "cdogs": {
-        "endpoint": "SC_CS_CDOGS_ENDPOINT",
-        "tokenEndpoint": "SC_CS_CDOGS_TOKEN_ENDPOINT",
-        "clientId": "SC_CS_CDOGS_CLIENT_ID",
-        "clientSecret": "SC_CS_CDOGS_CLIENT_SECRET"
+        "endpoint": "https://cdogs-dev.api.gov.bc.ca/api",
+        "tokenEndpoint": "https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token",
+        "clientId": "CDOGS_CLIENT_ID",
+        "clientSecret": "CDOGS_CLIENT_SECRET"
       }
     }
   }
