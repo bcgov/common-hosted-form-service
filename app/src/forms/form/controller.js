@@ -9,15 +9,10 @@ module.exports = {
   export: async (req, res, next) => {
     try {
       const result = await exportService.export(req.params.formId, req.query, req.currentUser, req.headers.referer);
-      if (result.data.length === 0) {
-        res.setHeader('Content-Type', 'application/json');
-        res.status(400).send(JSON.stringify({ detail: 'There are no submissions to export.' }));
-      } else {
-        ['Content-Disposition', 'Content-Type'].forEach((h) => {
-          res.setHeader(h, result.headers[h.toLowerCase()]);
-        });
-        return res.send(result.data);
-      }
+      ['Content-Disposition', 'Content-Type'].forEach((h) => {
+        res.setHeader(h, result.headers[h.toLowerCase()]);
+      });
+      return res.send(result.data);
     } catch (error) {
       next(error);
     }
@@ -26,15 +21,10 @@ module.exports = {
   exportWithFields: async (req, res, next) => {
     try {
       const result = await exportService.export(req.params.formId, req.body, req.currentUser, req.headers.referer);
-      if (result.data.length === 0) {
-        res.setHeader('Content-Type', 'application/json');
-        res.status(400).send(JSON.stringify({ detail: 'There are no submissions to export.' }));
-      } else {
-        ['Content-Disposition', 'Content-Type'].forEach((h) => {
-          res.setHeader(h, result.headers[h.toLowerCase()]);
-        });
-        return res.send(result.data);
-      }
+      ['Content-Disposition', 'Content-Type'].forEach((h) => {
+        res.setHeader(h, result.headers[h.toLowerCase()]);
+      });
+      return res.send(result.data);
     } catch (error) {
       next(error);
     }
