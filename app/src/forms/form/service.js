@@ -384,6 +384,21 @@ const service = {
 
       await trx.commit();
 
+      const { subscribe } = await service.readForm(formId);
+      if (subscribe && subscribe.enabled) {
+        const subscribeConfig = await service.readFormSubscriptionDetails(formId);
+        const config = Object.assign({}, subscribe, subscribeConfig);
+        const formVersion = new FormVersion();
+        formVersion.id = formVersionId;
+        formVersion.formId = formId;
+
+        if (publish) {
+          service.postSubscriptionEvent(config, formVersion, null, SubscriptionEvent.FORM_PUBLISHED);
+        } else {
+          service.postSubscriptionEvent(config, formVersion, null, SubscriptionEvent.FORM_UNPUBLISHED);
+        }
+      }
+
       // return the published form/version...
       return await service.readPublishedForm(formId);
     } catch (err) {
@@ -483,11 +498,11 @@ const service = {
         };
 
         await FormSubmissionStatus.query(trx).insert(stObj);
-      }
-      if (subscribe && subscribe.enabled) {
-        const subscribeConfig = await service.readFormSubscriptionDetails(formVersion.formId);
-        const config = Object.assign({}, subscribe, subscribeConfig);
-        service.postSubscriptionEvent(config, formVersion, submissionId, SubscriptionEvent.FORM_SUBMITTED);
+        if (subscribe && subscribe.enabled) {
+          const subscribeConfig = await service.readFormSubscriptionDetails(formVersion.formId);
+          const config = Object.assign({}, subscribe, subscribeConfig);
+          service.postSubscriptionEvent(config, formVersion, submissionId, SubscriptionEvent.FORM_SUBMITTED);
+        }
       }
 
       // does this submission contain any file uploads?
@@ -670,6 +685,16 @@ const service = {
       await FormVersionDraft.query().deleteById(formVersionDraftId);
       await trx.commit();
 
+      const { subscribe } = await service.readForm(formId);
+      if (subscribe && subscribe.enabled) {
+        const subscribeConfig = await service.readFormSubscriptionDetails(formId);
+        const config = Object.assign({}, subscribe, subscribeConfig);
+        const formVersion = new FormVersion();
+        formVersion.id = version.id;
+        formVersion.formId = formId;
+        service.postSubscriptionEvent(config, formVersion, null, SubscriptionEvent.FORM_DRAFT_PUBLISHED);
+      }
+
       // return the published version...
       return await service.readVersion(version.id);
     } catch (err) {
@@ -774,7 +799,10 @@ const service = {
       if (subscribe && subscribe.endpointUrl) {
         const axiosOptions = { timeout: 10000 };
         const axiosInstance = axios.create(axiosOptions);
-        const jsonData = { formId: formVersion.formId, formVersion: formVersion.id, submissionId: submissionId, subscriptionEvent: subscriptionEvent };
+        const jsonData = { formId: formVersion.formId, formVersion: formVersion.id, subscriptionEvent: subscriptionEvent };
+        if (submissionId != null) {
+          jsonData['submissionId'] = submissionId;
+        }
 
         axiosInstance.interceptors.request.use(
           (cfg) => {
@@ -785,7 +813,6 @@ const service = {
             return Promise.reject(error);
           }
         );
-
         axiosInstance.post(subscribe.endpointUrl, jsonData);
       }
     } catch (err) {
