@@ -82,7 +82,9 @@ export default {
     },
     FILTER_HEADERS() {
       return this.versionSelected !== ''
-        ? this.formFields.map((f) => ({ name: f, value: f }))
+        ? this.formFields.length > 0
+          ? this.formFields.map((f) => ({ name: f, value: f }))
+          : []
         : [];
     },
   },
