@@ -35,7 +35,7 @@ describe('BCGovHeader.vue', () => {
     expect(btnHeaderTitle.text()).toEqual(
       router?.currentRoute?.value?.meta?.title
         ? router.currentRoute.value.meta.title
-        : ''
+        : import.meta.env.VITE_TITLE
     );
     expect(wrapper.find('[data-test="base-auth-btn"]').exists()).toBeTruthy();
     expect(

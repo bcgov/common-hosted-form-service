@@ -65,7 +65,7 @@ describe('form controller', () => {
     expect(exportServiceSpy).toHaveBeenCalledTimes(1);
     expect(exportService._getForm).toHaveBeenCalledTimes(1);
     expect(exportService._getSubmissions).toHaveBeenCalledTimes(1);
-    expect(formatDataSpy).toHaveBeenCalledTimes(0);
+    expect(formatDataSpy).toHaveBeenCalledTimes(1);
   });
 });
 
