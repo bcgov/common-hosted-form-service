@@ -19,6 +19,7 @@ concurrency:
 jobs:
   build:
     name: Build & Push
+    if: "github.event.pull_request.author_association != 'COLLABORATOR' && github.event.review.author_association != 'OWNER'"
     environment:
       name: pr-external
       url: https://${{ env.ACRONYM }}-dev.apps.silver.devops.gov.bc.ca/pr-${{ github.event.number }}
