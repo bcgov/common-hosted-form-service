@@ -7,12 +7,6 @@ const keycloak = require('../../../../../src/components/keycloak');
 const service = require('../../../../../src/forms/auth/service');
 const rbacService = require('../../../../../src/forms/rbac/service');
 
-const kauth = {
-  grant: {
-    access_token: 'fsdfhsd08f0283hr',
-  },
-};
-
 const userId = 'c6455376-382c-439d-a811-0381a012d695';
 const userId2 = 'c6455376-382c-439d-a811-0381a012d696';
 const formId = 'c6455376-382c-439d-a811-0381a012d697';
@@ -25,13 +19,6 @@ const Roles = {
   FORM_SUBMITTER: 'form_submitter',
 };
 
-// Mock the token validation in the KC lib
-keycloak.grantManager.validateAccessToken = jest.fn().mockReturnValue('yeah ok');
-
-// Mock the service login
-const mockUser = { user: 'me' };
-service.login = jest.fn().mockReturnValue(mockUser);
-
 const testRes = {
   writeHead: jest.fn(),
   end: jest.fn(),
@@ -41,94 +28,193 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
+// External dependencies used by the implementation are:
+//  - keycloak.grantmanager.validateAccessToken: to validate a Bearer token
+//  - service.login: to create the object for req.currentUser
+//
 describe('currentUser', () => {
-  it('gets the current user with valid request', async () => {
-    const testReq = {
-      params: {
-        formId: 2,
-      },
+  // Default mock of the token validation in the KC lib
+  keycloak.grantManager.validateAccessToken = jest.fn().mockReturnValue('yeah ok');
+
+  // Default mock of the service login
+  const mockUser = { user: 'me' };
+  service.login = jest.fn().mockReturnValue(mockUser);
+
+  // Bearer token to be used in request headers
+  const bearerToken = 'pretend-bearer-token';
+
+  // Keycloak info to be used in request headers
+  const kauth = {
+    grant: {
+      access_token: 'pretend-access-token',
+    },
+  };
+
+  it('403s if the bearer token is invalid', async () => {
+    keycloak.grantManager.validateAccessToken.mockReturnValueOnce(false);
+    const req = getMockReq({
       headers: {
-        authorization: 'Bearer hjvds0uds',
+        authorization: 'Bearer ' + bearerToken,
       },
-      kauth: kauth,
-    };
+    });
+    const { res, next } = getMockRes();
 
-    const nxt = jest.fn();
+    await currentUser(req, res, next);
 
-    await currentUser(testReq, testRes, nxt);
     expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledTimes(1);
-    expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledWith('hjvds0uds');
-    expect(service.login).toHaveBeenCalledTimes(1);
-    expect(service.login).toHaveBeenCalledWith(kauth.grant.access_token);
-    expect(testReq.currentUser).toEqual(mockUser);
-    expect(nxt).toHaveBeenCalledTimes(1);
-    expect(nxt).toHaveBeenCalledWith();
-  });
-
-  it('prioritizes the url param if both url and query are provided', async () => {
-    const testReq = {
-      params: {
-        formId: 2,
-      },
-      query: {
-        formId: 99,
-      },
-      headers: {
-        authorization: 'Bearer hjvds0uds',
-      },
-      kauth: kauth,
-    };
-
-    await currentUser(testReq, testRes, jest.fn());
-    expect(service.login).toHaveBeenCalledWith(kauth.grant.access_token);
-  });
-
-  it('uses the query param if both if that is whats provided', async () => {
-    const testReq = {
-      query: {
-        formId: 99,
-      },
-      headers: {
-        authorization: 'Bearer hjvds0uds',
-      },
-      kauth: kauth,
-    };
-
-    await currentUser(testReq, testRes, jest.fn());
-    expect(service.login).toHaveBeenCalledWith(kauth.grant.access_token);
-  });
-
-  it('403s if the token is invalid', async () => {
-    const testReq = {
-      headers: {
-        authorization: 'Bearer hjvds0uds',
-      },
-    };
-
-    const nxt = jest.fn();
-    keycloak.grantManager.validateAccessToken = jest.fn().mockReturnValue(undefined);
-
-    await currentUser(testReq, testRes, nxt);
-    expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledTimes(1);
-    expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledWith('hjvds0uds');
+    expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledWith(bearerToken);
     expect(service.login).toHaveBeenCalledTimes(0);
-    expect(testReq.currentUser).toEqual(undefined);
-    expect(nxt).toHaveBeenCalledTimes(0);
-    // expect(nxt).toHaveBeenCalledWith(new Problem(403, { detail: 'Authorization token is invalid.' }));
+    expect(req.currentUser).toEqual(undefined);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect.objectContaining({ status: 403 });
   });
-});
 
-describe('getToken', () => {
-  it('returns a null token if no kauth in the request', async () => {
-    const testReq = {
-      params: {
-        formId: 2,
+  it('passes on the error if the service login fails unexpectedly', async () => {
+    service.login.mockRejectedValueOnce(new Error());
+    const req = getMockReq({
+      headers: {
+        authorization: 'Bearer ' + bearerToken,
       },
-    };
+    });
+    const { res, next } = getMockRes();
 
-    await currentUser(testReq, testRes, jest.fn());
+    await currentUser(req, res, next);
+
+    expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledTimes(1);
+    expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledWith(bearerToken);
     expect(service.login).toHaveBeenCalledTimes(1);
-    expect(service.login).toHaveBeenCalledWith(null);
+    expect(req.currentUser).toEqual(undefined);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith(expect.any(Error));
+  });
+
+  it('gets the current user with no bearer token', async () => {
+    const req = getMockReq({});
+    const { res, next } = getMockRes();
+
+    await currentUser(req, res, next);
+
+    expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledTimes(0);
+    expect(service.login).toHaveBeenCalledTimes(1);
+    expect(service.login).toHaveBeenCalledWith(undefined);
+    expect(req.currentUser).toEqual(mockUser);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it('does not keycloak validate with basic auth header', async () => {
+    const req = getMockReq({
+      headers: {
+        authorization: 'Basic XYZ',
+      },
+    });
+    const { res, next } = getMockRes();
+
+    await currentUser(req, res, next);
+
+    expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledTimes(0);
+    expect(req.currentUser).toEqual(mockUser);
+    expect(service.login).toHaveBeenCalledTimes(1);
+    expect(service.login).toHaveBeenCalledWith(undefined);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it('does not keycloak validate with unexpected auth header', async () => {
+    const req = getMockReq({
+      headers: {
+        authorization: 'Garbage',
+      },
+    });
+    const { res, next } = getMockRes();
+
+    await currentUser(req, res, next);
+
+    expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledTimes(0);
+    expect(req.currentUser).toEqual(mockUser);
+    expect(service.login).toHaveBeenCalledTimes(1);
+    expect(service.login).toHaveBeenCalledWith(undefined);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it('does handle missing kauth attribute', async () => {
+    const req = getMockReq({
+      headers: {
+        authorization: 'Bearer ' + bearerToken,
+      },
+    });
+    const { res, next } = getMockRes();
+
+    await currentUser(req, res, next);
+
+    expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledTimes(1);
+    expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledWith(bearerToken);
+    expect(service.login).toHaveBeenCalledTimes(1);
+    expect(service.login).toHaveBeenCalledWith(undefined);
+    expect(req.currentUser).toEqual(mockUser);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it('does handle missing kauth.grant attribute', async () => {
+    const req = getMockReq({
+      headers: {
+        authorization: 'Bearer ' + bearerToken,
+      },
+      kauth: {},
+    });
+    const { res, next } = getMockRes();
+
+    await currentUser(req, res, next);
+
+    expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledTimes(1);
+    expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledWith(bearerToken);
+    expect(service.login).toHaveBeenCalledTimes(1);
+    expect(service.login).toHaveBeenCalledWith(undefined);
+    expect(req.currentUser).toEqual(mockUser);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it('does handle missing kauth.grant.access_token attribute', async () => {
+    const req = getMockReq({
+      headers: {
+        authorization: 'Bearer ' + bearerToken,
+      },
+      kauth: { grant: {} },
+    });
+    const { res, next } = getMockRes();
+
+    await currentUser(req, res, next);
+
+    expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledTimes(1);
+    expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledWith(bearerToken);
+    expect(service.login).toHaveBeenCalledTimes(1);
+    expect(service.login).toHaveBeenCalledWith(undefined);
+    expect(req.currentUser).toEqual(mockUser);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it('does keycloak validate with bearer token', async () => {
+    const req = getMockReq({
+      headers: {
+        authorization: 'Bearer ' + bearerToken,
+      },
+      kauth: kauth,
+    });
+    const { res, next } = getMockRes();
+
+    await currentUser(req, res, next);
+
+    expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledTimes(1);
+    expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledWith(bearerToken);
+    expect(service.login).toHaveBeenCalledTimes(1);
+    expect(service.login).toHaveBeenCalledWith(kauth.grant.access_token);
+    expect(req.currentUser).toEqual(mockUser);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith();
   });
 });
 
