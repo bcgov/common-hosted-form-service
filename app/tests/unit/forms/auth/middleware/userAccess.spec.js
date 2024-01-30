@@ -125,7 +125,7 @@ describe('currentUser', () => {
   it('does not keycloak validate with unexpected auth header', async () => {
     const req = getMockReq({
       headers: {
-        authorization: 'Garbage',
+        authorization: Math.random().toString(36).substring(2),
       },
     });
     const { res, next } = getMockRes();
