@@ -42,6 +42,7 @@ describe('currentUser', () => {
 
   // Bearer token to be used in request headers
   const bearerToken = 'pretend-bearer-token';
+  const authorizationHeader = { authorization: 'Bearer ' + bearerToken };
 
   // Keycloak info to be used in request headers
   const kauth = {
@@ -54,7 +55,7 @@ describe('currentUser', () => {
     keycloak.grantManager.validateAccessToken.mockReturnValueOnce(false);
     const req = getMockReq({
       headers: {
-        authorization: 'Bearer ' + bearerToken,
+        ...authorizationHeader,
       },
     });
     const { res, next } = getMockRes();
@@ -73,7 +74,7 @@ describe('currentUser', () => {
     service.login.mockRejectedValueOnce(new Error());
     const req = getMockReq({
       headers: {
-        authorization: 'Bearer ' + bearerToken,
+        ...authorizationHeader,
       },
     });
     const { res, next } = getMockRes();
@@ -141,7 +142,7 @@ describe('currentUser', () => {
   it('does handle missing kauth attribute', async () => {
     const req = getMockReq({
       headers: {
-        authorization: 'Bearer ' + bearerToken,
+        ...authorizationHeader,
       },
     });
     const { res, next } = getMockRes();
@@ -160,7 +161,7 @@ describe('currentUser', () => {
   it('does handle missing kauth.grant attribute', async () => {
     const req = getMockReq({
       headers: {
-        authorization: 'Bearer ' + bearerToken,
+        ...authorizationHeader,
       },
       kauth: {},
     });
@@ -180,7 +181,7 @@ describe('currentUser', () => {
   it('does handle missing kauth.grant.access_token attribute', async () => {
     const req = getMockReq({
       headers: {
-        authorization: 'Bearer ' + bearerToken,
+        ...authorizationHeader,
       },
       kauth: { grant: {} },
     });
@@ -200,7 +201,7 @@ describe('currentUser', () => {
   it('does keycloak validate with bearer token', async () => {
     const req = getMockReq({
       headers: {
-        authorization: 'Bearer ' + bearerToken,
+        ...authorizationHeader,
       },
       kauth: kauth,
     });
