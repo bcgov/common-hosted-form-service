@@ -1,7 +1,7 @@
 {
 	"@programName": "ZAP",
 	"@version": "2.14.0",
-	"@generated": "Mon, 29 Jan 2024 18:07:28",
+	"@generated": "Tue, 30 Jan 2024 16:30:00",
 	"site":[ 
 		{
 			"@name": "https://chefs-dev.apps.silver.devops.gov.bc.ca",
@@ -147,7 +147,7 @@
 					"reference": "<p>https://tools.ietf.org/html/rfc7231#section-5.1.2</p>",
 					"cweid": "200",
 					"wascid": "45",
-					"sourceid": "460"
+					"sourceid": "456"
 				},
 				{
 					"pluginid": "10054",
@@ -373,7 +373,7 @@
 					"reference": "<p>https://cwe.mitre.org/data/definitions/205.html</p>",
 					"cweid": "200",
 					"wascid": "45",
-					"sourceid": "559"
+					"sourceid": "554"
 				},
 				{
 					"pluginid": "10109",
@@ -390,7 +390,7 @@
 							"method": "GET",
 							"param": "",
 							"attack": "",
-							"evidence": "<script type=\"module\" crossorigin src=\"/pr-1176/assets/index-43130891.js\"></script>",
+							"evidence": "<script type=\"module\" crossorigin src=\"/pr-1176/assets/index-761f7552.js\"></script>",
 							"otherinfo": "No links have been found while there are scripts, which is an indication that this is a modern web application."
 						}
 					],
@@ -513,9 +513,17 @@
 							"attack": "",
 							"evidence": "",
 							"otherinfo": ""
+						},
+						{
+							"uri": "https://chefs-dev.apps.silver.devops.gov.bc.ca/robots.txt",
+							"method": "GET",
+							"param": "Sec-Fetch-Dest",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
 						}
 					],
-					"count": "3",
+					"count": "4",
 					"solution": "<p>Ensure that Sec-Fetch-Dest header is included in request headers.</p>",
 					"otherinfo": "",
 					"reference": "<p>https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-Dest</p>",
@@ -556,9 +564,17 @@
 							"attack": "",
 							"evidence": "",
 							"otherinfo": ""
+						},
+						{
+							"uri": "https://chefs-dev.apps.silver.devops.gov.bc.ca/robots.txt",
+							"method": "GET",
+							"param": "Sec-Fetch-Mode",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
 						}
 					],
-					"count": "3",
+					"count": "4",
 					"solution": "<p>Ensure that Sec-Fetch-Mode header is included in request headers.</p>",
 					"otherinfo": "",
 					"reference": "<p>https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-Mode</p>",
@@ -599,9 +615,17 @@
 							"attack": "",
 							"evidence": "",
 							"otherinfo": ""
+						},
+						{
+							"uri": "https://chefs-dev.apps.silver.devops.gov.bc.ca/robots.txt",
+							"method": "GET",
+							"param": "Sec-Fetch-Site",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
 						}
 					],
-					"count": "3",
+					"count": "4",
 					"solution": "<p>Ensure that Sec-Fetch-Site header is included in request headers.</p>",
 					"otherinfo": "",
 					"reference": "<p>https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-Site</p>",
@@ -642,9 +666,17 @@
 							"attack": "",
 							"evidence": "",
 							"otherinfo": ""
+						},
+						{
+							"uri": "https://chefs-dev.apps.silver.devops.gov.bc.ca/robots.txt",
+							"method": "GET",
+							"param": "Sec-Fetch-User",
+							"attack": "",
+							"evidence": "",
+							"otherinfo": ""
 						}
 					],
-					"count": "3",
+					"count": "4",
 					"solution": "<p>Ensure that Sec-Fetch-User header is included in user initiated requests.</p>",
 					"otherinfo": "",
 					"reference": "<p>https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Sec-Fetch-User</p>",
@@ -667,7 +699,7 @@
 							"method": "GET",
 							"param": "a97f95a2ab74ec0cf3ba8a0cd9d46d27",
 							"attack": "",
-							"evidence": "0a1a136085e367857244ff6ee5736ec7",
+							"evidence": "a5f9f75cff657d3bb736be9d49731b1a",
 							"otherinfo": "\ncookie:a97f95a2ab74ec0cf3ba8a0cd9d46d27"
 						},
 						{
@@ -675,7 +707,7 @@
 							"method": "GET",
 							"param": "a97f95a2ab74ec0cf3ba8a0cd9d46d27",
 							"attack": "",
-							"evidence": "0a1a136085e367857244ff6ee5736ec7",
+							"evidence": "a5f9f75cff657d3bb736be9d49731b1a",
 							"otherinfo": "\ncookie:a97f95a2ab74ec0cf3ba8a0cd9d46d27"
 						}
 					],
@@ -827,7 +859,7 @@
 					"reference": "<p>https://owasp.org/wstg</p>",
 					"cweid": "0",
 					"wascid": "0",
-					"sourceid": "223"
+					"sourceid": "219"
 				}
 			]
 		}
