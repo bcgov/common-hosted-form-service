@@ -15,6 +15,7 @@ import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { IdentityMode, NotificationTypes } from '~/utils/constants';
 import { generateIdps } from '~/utils/transformUtils';
+import { userService } from '../../services';
 
 export default {
   components: {
@@ -85,6 +86,7 @@ export default {
       'form',
       'isRTL',
       'lang',
+      'userLabels',
     ]),
     ...mapState(useAuthStore, ['tokenParsed', 'user']),
     ID_MODE() {
@@ -622,7 +624,19 @@ export default {
         showSubmissionConfirmation: this.form.showSubmissionConfirmation,
         submissionReceivedEmails: this.form.submissionReceivedEmails,
         reminder_enabled: false,
+        deploymentLevel: this.form.deploymentLevel,
+        ministry: this.form.ministry,
+        apiIntegration: this.form.apiIntegration,
+        useCase: this.form.useCase,
+        labels: this.form.labels,
       });
+      // update user labels with any new added labels
+      if (
+        this.form.labels.some((label) => this.userLabels.indexOf(label) === -1)
+      ) {
+        const response = await userService.updateUserLabels(this.form.labels);
+        this.userLabels = response.data;
+      }
 
       // Navigate back to this page with ID updated
       this.$router

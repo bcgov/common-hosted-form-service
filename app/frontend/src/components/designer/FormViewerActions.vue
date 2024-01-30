@@ -107,8 +107,8 @@ export default {
         </v-tooltip>
       </span>
 
-      <span v-if="draftEnabled" class="ml-2">
-        <PrintOptions :submission="submission" />
+      <span class="ml-2 d-print-none">
+        <PrintOptions :submission="submission" :submission-id="submissionId" />
       </span>
 
       <!-- Save a draft -->

@@ -64,6 +64,11 @@ const genInitialForm = () => ({
   userType: IdentityMode.TEAM,
   versions: [],
   enableCopyExistingSubmission: false,
+  deploymentLevel: null,
+  ministry: null,
+  labels: [],
+  apiIntegration: null,
+  useCase: null,
 });
 
 export const useFormStore = defineStore('form', {
@@ -98,6 +103,7 @@ export const useFormStore = defineStore('form', {
     totalSubmissions: 0,
     userFormPreferences: {},
     version: {},
+    userLabels: [],
   }),
   getters: {
     isFormPublished: (state) =>
@@ -411,6 +417,11 @@ export const useFormStore = defineStore('form', {
           schedule: schedule,
           subscribe: subscribe,
           allowSubmitterToUploadFile: this.form.allowSubmitterToUploadFile,
+          deploymentLevel: this.form.deploymentLevel,
+          ministry: this.form.ministry,
+          labels: this.form.labels,
+          apiIntegration: this.form.apiIntegration,
+          useCase: this.form.useCase,
           reminder_enabled: this.form.reminder_enabled
             ? this.form.reminder_enabled
             : false,
@@ -418,6 +429,16 @@ export const useFormStore = defineStore('form', {
             ? this.form.enableCopyExistingSubmission
             : false,
         });
+
+        // update user labels with any new added labels
+        if (
+          this.form.labels.some(
+            (label) => this.userLabels.indexOf(label) === -1
+          )
+        ) {
+          const response = await userService.updateUserLabels(this.form.labels);
+          this.userLabels = response.data;
+        }
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({

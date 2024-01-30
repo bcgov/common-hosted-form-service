@@ -26,7 +26,8 @@
     "purge": "rm -rf src/formio node_modules",
     "purge:formio": "node ./component-update.js purge",
     "rebuild": "npm run clean && npm run build",
-    "reinstall": "npm run purge && npm install"
+    "reinstall": "npm run purge && npm install",
+    "dev": "vite --port 5173 --host"
   },
   "dependencies": {
     "@bcgov/bc-sans": "^1.0.1",

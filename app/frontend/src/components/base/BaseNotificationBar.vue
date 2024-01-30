@@ -21,11 +21,14 @@ export default {
     ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
   },
   created() {
-    if (this.notification.consoleError) {
+    if (
+      this.notification.consoleError &&
+      this.notification.consoleError instanceof String
+    ) {
       // eslint-disable-next-line no-console
       console.error(
         i18n.t(
-          this.notification.consoleError.text,
+          this.notification.consoleError,
           this.notification.consoleError.options
         )
       );
@@ -75,6 +78,7 @@ export default {
     :icon="notification.icon"
     prominent
     closable
+    class="mb-3"
     :title="notification.title"
     :text="$t(notification.text)"
     @update:model-value="alertClosed"
