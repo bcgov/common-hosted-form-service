@@ -1,4 +1,4 @@
-name: Pull Request Opened
+name: Pull Request Opened Collaborator
 
 env:
   ACRONYM: chefs
