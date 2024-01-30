@@ -40,16 +40,17 @@ describe('currentUser', () => {
   const mockUser = { user: 'me' };
   service.login = jest.fn().mockReturnValue(mockUser);
 
-  // Bearer token to be used in request headers
-  const bearerToken = 'pretend-bearer-token';
-  const authorizationHeader = { authorization: 'Bearer ' + bearerToken };
-
   // Keycloak info to be used in request headers
   const kauth = {
     grant: {
-      access_token: 'pretend-access-token',
+      // Static analyzers will complain about hard-coded tokens - randomize.
+      access_token: Math.random().toString(36).substring(2),
     },
   };
+
+  // Bearer token and its authorization header
+  const bearerToken = Math.random().toString(36).substring(2);
+  const authorizationHeader = { authorization: 'Bearer ' + bearerToken };
 
   it('403s if the bearer token is invalid', async () => {
     keycloak.grantManager.validateAccessToken.mockReturnValueOnce(false);
