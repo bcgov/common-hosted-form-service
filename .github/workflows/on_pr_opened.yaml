@@ -4,7 +4,7 @@ env:
   ACRONYM: chefs
 
 on:
-  pull_request:
+  pull_request_target:
     branches:
       - main
     types:
@@ -13,13 +13,13 @@ on:
       - synchronize
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request_target.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
     name: Build & Push
-    if: "github.event.pull_request.author_association != 'COLLABORATOR' && github.event.review.author_association != 'OWNER'"
+    if: "github.event.pull_request_target.author_association != 'COLLABORATOR' && github.event.review.author_association != 'OWNER'"
     environment:
       name: pr-external
       url: https://${{ env.ACRONYM }}-dev.apps.silver.devops.gov.bc.ca/pr-${{ github.event.number }}

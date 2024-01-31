@@ -9,7 +9,7 @@ env:
   ## Creates a pre-signed URL with the results...
   ZAP_GCP_PUBLISH: false
 on:
-  pull_request:
+  pull_request_target:
     branches:
       - main
     types:
@@ -45,7 +45,7 @@ on:
 jobs:
   owasp-zap-scan:
     name: OWASP ZAP Scan
-    if: "! github.event.pull_request.head.repo.fork"
+    if: "! github.event.pull_request_target.head.repo.fork"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
