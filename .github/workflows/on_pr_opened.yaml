@@ -26,20 +26,16 @@ jobs:
       url: https://${{ env.ACRONYM }}-dev.apps.silver.devops.gov.bc.ca/pr-${{ github.event.number }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Build & Push
-        uses: ./.github/actions/build-push-container
-        secrets: inherit
-        with:
-          context: .
-          image_name: ${{ vars.APP_NAME }}
-          github_username: ${{ github.repository_owner }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          app_title: Common Hosted Forms - PR-${{ github.event.number }}
-          route_path: /pr-${{ github.event.number }}
-          app_contact: ${{ secrets.VITE_CONTACT }}
+    uses: ./.github/actions/build-push-container
+    secrets: inherit
+    with:
+      context: .
+      image_name: ${{ vars.APP_NAME }}
+      github_username: ${{ github.repository_owner }}
+      github_token: ${{ secrets.GITHUB_TOKEN }}
+      app_title: Common Hosted Forms - PR-${{ github.event.number }}
+      route_path: /pr-${{ github.event.number }}
+      app_contact: ${{ secrets.VITE_CONTACT }}
 
   deploy-pr-dev:
     name: Deploy Pull Request to Dev
@@ -49,28 +45,26 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     timeout-minutes: 12
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Deploy to Dev
-        uses: ./.github/actions/deploy-to-environment
-        secrets: inherit
-        with:
-          app_name: ${{ vars.APP_NAME }}
-          acronym: ${{ env.ACRONYM }}
-          environment: pr
-          job_name: pr-${{ github.event.number }}
-          namespace_prefix: ${{ vars.NAMESPACE_PREFIX }}
-          namespace_environment: dev
-          openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-          server_host: ${{ vars.SERVER_HOST }}
-          route_path: /pr-${{ github.event.number }}
-          route_prefix: ${{ vars.ROUTE_PREFIX }}
-      - name: Release Comment on PR
-        uses: marocchino/sticky-pull-request-comment@v2
-        if: success()
-        with:
-          header: release
-          message: |
-            Release ${{ github.sha }} deployed at <https://${{ env.ACRONYM }}-dev.apps.silver.devops.gov.bc.ca/pr-${{ github.event.number }}>
+    uses: ./.github/actions/deploy-to-environment
+    secrets: inherit
+    with:
+      app_name: ${{ vars.APP_NAME }}
+      acronym: ${{ env.ACRONYM }}
+      environment: pr
+      job_name: pr-${{ github.event.number }}
+      namespace_prefix: ${{ vars.NAMESPACE_PREFIX }}
+      namespace_environment: dev
+      openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
+      openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+      server_host: ${{ vars.SERVER_HOST }}
+      route_path: /pr-${{ github.event.number }}
+      route_prefix: ${{ vars.ROUTE_PREFIX }}
+
+  release-comment:
+    name: Release Comment on PR
+    uses: marocchino/sticky-pull-request-comment@v2
+    needs: deploy-pr-dev
+    with:
+      header: release
+      message: |
+        Release ${{ github.sha }} deployed at <https://${{ env.ACRONYM }}-dev.apps.silver.devops.gov.bc.ca/pr-${{ github.event.number }}>

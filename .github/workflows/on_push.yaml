@@ -20,18 +20,14 @@ jobs:
     name: Build & Push
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Build & Push
-        uses: ./.github/actions/build-push-container
-        secrets: inherit
-        with:
-          context: .
-          image_name: ${{ vars.APP_NAME }}
-          github_username: ${{ github.repository_owner }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          app_contact: ${{ secrets.VITE_CONTACT }}
+    uses: ./.github/actions/build-push-container
+    secrets: inherit
+    with:
+      context: .
+      image_name: ${{ vars.APP_NAME }}
+      github_username: ${{ github.repository_owner }}
+      github_token: ${{ secrets.GITHUB_TOKEN }}
+      app_contact: ${{ secrets.VITE_CONTACT }}
 
   deploy-dev:
     name: Deploy to Dev
@@ -41,24 +37,20 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     timeout-minutes: 12
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Deploy to Dev
-        uses: ./.github/actions/deploy-to-environment
-        secrets: inherit
-        with:
-          app_name: ${{ vars.APP_NAME }}
-          acronym: ${{ env.ACRONYM }}
-          environment: dev
-          job_name: master
-          namespace_prefix: ${{ vars.NAMESPACE_PREFIX }}
-          namespace_environment: dev
-          openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-          server_host: ${{ vars.SERVER_HOST }}
-          route_path: /app
-          route_prefix: ${{ vars.ROUTE_PREFIX }}
+    uses: ./.github/actions/deploy-to-environment
+    secrets: inherit
+    with:
+      app_name: ${{ vars.APP_NAME }}
+      acronym: ${{ env.ACRONYM }}
+      environment: dev
+      job_name: master
+      namespace_prefix: ${{ vars.NAMESPACE_PREFIX }}
+      namespace_environment: dev
+      openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
+      openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+      server_host: ${{ vars.SERVER_HOST }}
+      route_path: /app
+      route_prefix: ${{ vars.ROUTE_PREFIX }}
 
   deploy-test:
     name: Deploy to Test
@@ -70,23 +62,20 @@ jobs:
       - build
       - deploy-dev
     timeout-minutes: 12
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Deploy to Test
-        uses: ./.github/actions/deploy-to-environment
-        with:
-          app_name: ${{ vars.APP_NAME }}
-          acronym: ${{ env.ACRONYM }}
-          environment: test
-          job_name: master
-          namespace_prefix: ${{ vars.NAMESPACE_PREFIX }}
-          namespace_environment: test
-          openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-          server_host: ${{ vars.SERVER_HOST }}
-          route_path: /app
-          route_prefix: ${{ vars.ROUTE_PREFIX }}
+    uses: ./.github/actions/deploy-to-environment
+    secrets: inherit
+    with:
+      app_name: ${{ vars.APP_NAME }}
+      acronym: ${{ env.ACRONYM }}
+      environment: test
+      job_name: master
+      namespace_prefix: ${{ vars.NAMESPACE_PREFIX }}
+      namespace_environment: test
+      openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
+      openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+      server_host: ${{ vars.SERVER_HOST }}
+      route_path: /app
+      route_prefix: ${{ vars.ROUTE_PREFIX }}
 
   deploy-prod:
     name: Deploy to Prod
@@ -99,20 +88,17 @@ jobs:
       - deploy-dev
       - deploy-test
     timeout-minutes: 12
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Deploy to Prod
-        uses: ./.github/actions/deploy-to-environment
-        with:
-          app_name: ${{ vars.APP_NAME }}
-          acronym: ${{ env.ACRONYM }}
-          environment: prod
-          job_name: master
-          namespace_prefix: ${{ vars.NAMESPACE_PREFIX }}
-          namespace_environment: prod
-          openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
-          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
-          server_host: ${{ vars.SERVER_HOST }}
-          route_path: /app
-          route_prefix: ${{ vars.ROUTE_PREFIX }}
+    uses: ./.github/actions/deploy-to-environment
+    secrets: inherit
+    with:
+      app_name: ${{ vars.APP_NAME }}
+      acronym: ${{ env.ACRONYM }}
+      environment: prod
+      job_name: master
+      namespace_prefix: ${{ vars.NAMESPACE_PREFIX }}
+      namespace_environment: prod
+      openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
+      openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+      server_host: ${{ vars.SERVER_HOST }}
+      route_path: /app
+      route_prefix: ${{ vars.ROUTE_PREFIX }}
