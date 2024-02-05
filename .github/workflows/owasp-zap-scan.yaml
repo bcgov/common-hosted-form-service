@@ -9,6 +9,7 @@ env:
   ## Creates a pre-signed URL with the results...
   ZAP_GCP_PUBLISH: false
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - main

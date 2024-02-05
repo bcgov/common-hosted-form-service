@@ -4,6 +4,7 @@ env:
   ACRONYM: chefs
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -24,6 +25,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Build & Push
         uses: ./.github/actions/build-push-container
+        secrets: inherit
         with:
           context: .
           image_name: ${{ vars.APP_NAME }}
@@ -44,6 +46,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Deploy to Dev
         uses: ./.github/actions/deploy-to-environment
+        secrets: inherit
         with:
           app_name: ${{ vars.APP_NAME }}
           acronym: ${{ env.ACRONYM }}
