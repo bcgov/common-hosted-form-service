@@ -79,41 +79,68 @@ const _getForm = async (currentUser, formId) => {
   return form;
 };
 
+/**
+ * Express middleware to check that a user has all the given permissions for a
+ * form. This will fall through if everything is OK, otherwise it will call
+ * next() with a Problem that describes the error.
+ *
+ * @param {string[]} permissions the form permissions that the user must have.
+ * @returns nothing
+ */
 const hasFormPermissions = (permissions) => {
-  return async (req, res, next) => {
-    // Skip permission checks if requesting as API entity
-    if (req.apiUser) {
-      return next();
-    }
+  return async (req, _res, next) => {
+    try {
+      // Skip permission checks if req is already validated using an API key.
+      if (req.apiUser) {
+        next();
 
-    if (!req.currentUser) {
-      // cannot find the currentUser... guess we don't have access... FAIL!
-      return new Problem(401, { detail: 'Current user not found on request.' }).send(res);
-    }
-    // If we invoke this middleware and the caller is acting on a specific formId, whether in a param or query (precedence to param)
-    const formId = req.params.formId || req.query.formId;
-    if (!formId) {
-      // No form provided to this route that secures based on form... that's a problem!
-      return new Problem(401, { detail: 'Form Id not found on request.' }).send(res);
-    }
-    let form = await _getForm(req.currentUser, formId);
-    if (!form) {
-      // cannot find the form... guess we don't have access... FAIL!
-      return new Problem(401, { detail: 'Current user has no access to form.' }).send(res);
-    }
+        return;
+      }
 
-    if (!Array.isArray(permissions)) {
-      permissions = [permissions];
-    }
+      // If the currentUser does not exist it means that the route is not set up
+      // correctly - the currentUser middleware must be called before this
+      // middleware.
+      if (!req.currentUser) {
+        throw new Problem(401, {
+          detail: 'Current user not found on request.',
+        });
+      }
 
-    const intersection = permissions.filter((p) => {
-      return form.permissions.includes(p);
-    });
+      // We're checking form permissions, so the request must include a formId.
+      // It can be either in params or query, but give precedence to params.
+      const formId = req.params.formId || req.query.formId;
+      if (!formId) {
+        throw new Problem(401, { detail: 'Form Id not found on request.' });
+      }
 
-    if (intersection.length !== permissions.length) {
-      return new Problem(401, { detail: 'Current user does not have required permission(s) on form' }).send(res);
-    } else {
-      return next();
+      if (!validate(formId)) {
+        throw new Problem(400, { detail: `Bad Form ID: "${formId}"` });
+      }
+
+      let form = await _getForm(req.currentUser, formId);
+
+      // Cannot find the form: either it doesn't exist or we don't have access.
+      if (!form) {
+        throw new Problem(401, {
+          detail: 'Current user has no access to form.',
+        });
+      }
+
+      // Get the intersection of the two sets of permissions. If it's the same
+      // size as the permissions then we know the user has all the permissions.
+      const intersection = permissions.filter((p) => {
+        return form.permissions.includes(p);
+      });
+
+      if (intersection.length !== permissions.length) {
+        throw new Problem(401, {
+          detail: 'Current user does not have required permission(s) on form',
+        });
+      }
+
+      next();
+    } catch (error) {
+      next(error);
     }
   };
 };
