@@ -28,10 +28,22 @@ userAccess.hasFormPermissions = jest.fn(() => {
   });
 });
 
+const formId = uuidv4();
+const formVersionDraftId = uuidv4();
+const formVersionId = uuidv4();
+
 //
 // we will mock the underlying data service calls...
 //
 const service = require('../../../../src/forms/form/service');
+service.readDraft = jest.fn().mockReturnValue({
+  formId: formId,
+  id: formVersionDraftId,
+});
+service.readVersion = jest.fn().mockReturnValue({
+  formId: formId,
+  id: formVersionId,
+});
 
 const emailService = require('../../../../src/forms/email/emailService');
 const exportService = require('../../../../src/forms/form/exportService');
@@ -215,7 +227,7 @@ describe(`${basePath}/formcomponents/proactivehelp/list`, () => {
 });
 
 describe(`${basePath}/:formId`, () => {
-  const path = `${basePath}/:formId`;
+  const path = `${basePath}/${formId}`;
 
   describe('DELETE', () => {
     it('should return 204', async () => {
@@ -327,7 +339,7 @@ describe(`${basePath}/:formId`, () => {
 });
 
 describe(`${basePath}/:formId/apiKey`, () => {
-  const path = `${basePath}/:formId/apiKey`;
+  const path = `${basePath}/${formId}/apiKey`;
 
   describe('DELETE', () => {
     it('should return 204', async () => {
@@ -439,7 +451,7 @@ describe(`${basePath}/:formId/apiKey`, () => {
 });
 
 describe(`${basePath}/:formId/csvexport/fields`, () => {
-  const path = `${basePath}/:formId/csvexport/fields`;
+  const path = `${basePath}/${formId}/csvexport/fields`;
 
   describe('GET', () => {
     it('should return 200', async () => {
@@ -501,7 +513,7 @@ describe(`${basePath}/:formId/csvexport/fields`, () => {
 });
 
 describe(`${basePath}/:formId/drafts`, () => {
-  const path = `${basePath}/:formId/drafts`;
+  const path = `${basePath}/${formId}/drafts`;
 
   describe('GET', () => {
     it('should return 200', async () => {
@@ -577,7 +589,7 @@ describe(`${basePath}/:formId/drafts`, () => {
 });
 
 describe(`${basePath}/:formId/drafts/:formVersionDraftId`, () => {
-  const path = `${basePath}/:formId/drafts/:formVersionDraftId`;
+  const path = `${basePath}/${formId}/drafts/${formVersionDraftId}`;
 
   describe('DELETE', () => {
     it('should return 204', async () => {
@@ -617,9 +629,6 @@ describe(`${basePath}/:formId/drafts/:formVersionDraftId`, () => {
 
   describe('GET', () => {
     it('should return 200', async () => {
-      // mock a success return value...
-      service.readDraft = jest.fn().mockReturnValue([]);
-
       const response = await appRequest.get(path).set('Authorization', bearerAuth);
 
       expect(response.statusCode).toBe(200);
@@ -628,9 +637,7 @@ describe(`${basePath}/:formId/drafts/:formVersionDraftId`, () => {
 
     it('should handle 401', async () => {
       // mock an authentication/permission issue...
-      service.readDraft = jest.fn(() => {
-        throw new Problem(401);
-      });
+      service.readDraft.mockRejectedValueOnce(new Problem(401));
 
       const response = await appRequest.get(path).set('Authorization', bearerAuth);
 
@@ -640,9 +647,7 @@ describe(`${basePath}/:formId/drafts/:formVersionDraftId`, () => {
 
     it('should handle 500', async () => {
       // mock an unexpected error...
-      service.readDraft = jest.fn(() => {
-        throw new Error();
-      });
+      service.readDraft.mockRejectedValueOnce(new Error());
 
       const response = await appRequest.get(path).set('Authorization', bearerAuth);
 
@@ -689,7 +694,7 @@ describe(`${basePath}/:formId/drafts/:formVersionDraftId`, () => {
 });
 
 describe(`${basePath}/:formId/drafts/:formVersionDraftId/publish`, () => {
-  const path = `${basePath}/:formId/drafts/:formVersionDraftId/publish`;
+  const path = `${basePath}/${formId}/drafts/${formVersionDraftId}/publish`;
 
   describe('POST', () => {
     it('should return 200', async () => {
@@ -729,7 +734,7 @@ describe(`${basePath}/:formId/drafts/:formVersionDraftId/publish`, () => {
 });
 
 describe(`${basePath}/:formId/emailTemplate`, () => {
-  const path = `${basePath}/:formId/emailTemplate`;
+  const path = `${basePath}/${formId}/emailTemplate`;
 
   describe('PUT', () => {
     it('should return 200', async () => {
@@ -769,7 +774,7 @@ describe(`${basePath}/:formId/emailTemplate`, () => {
 });
 
 describe(`${basePath}/:formId/emailTemplates`, () => {
-  const path = `${basePath}/:formId/emailTemplates`;
+  const path = `${basePath}/${formId}/emailTemplates`;
 
   describe('GET', () => {
     it('should return 200', async () => {
@@ -809,7 +814,7 @@ describe(`${basePath}/:formId/emailTemplates`, () => {
 });
 
 describe(`${basePath}/:formId/export`, () => {
-  const path = `${basePath}/:formId/export`;
+  const path = `${basePath}/${formId}/export`;
 
   describe('GET', () => {
     it('should return 200', async () => {
@@ -855,7 +860,7 @@ describe(`${basePath}/:formId/export`, () => {
 });
 
 describe(`${basePath}/:formId/export/fields`, () => {
-  const path = `${basePath}/:formId/export/fields`;
+  const path = `${basePath}/${formId}/export/fields`;
 
   describe('POST', () => {
     it('should return 200', async () => {
@@ -901,7 +906,7 @@ describe(`${basePath}/:formId/export/fields`, () => {
 });
 
 describe(`${basePath}/:formId/options`, () => {
-  const path = `${basePath}/${uuidv4()}/options`;
+  const path = `${basePath}/${formId}/options`;
 
   describe('GET', () => {
     it('should return 200', async () => {
@@ -941,7 +946,7 @@ describe(`${basePath}/:formId/options`, () => {
 });
 
 describe(`${basePath}/:formId/statusCodes`, () => {
-  const path = `${basePath}/:formId/statusCodes`;
+  const path = `${basePath}/${formId}/statusCodes`;
 
   describe('GET', () => {
     it('should return 200', async () => {
@@ -981,7 +986,7 @@ describe(`${basePath}/:formId/statusCodes`, () => {
 });
 
 describe(`${basePath}/:formId/submissions`, () => {
-  const path = `${basePath}/${uuidv4()}/submissions`;
+  const path = `${basePath}/${formId}/submissions`;
 
   describe('GET', () => {
     it('should return 200', async () => {
@@ -1021,7 +1026,7 @@ describe(`${basePath}/:formId/submissions`, () => {
 });
 
 describe(`${basePath}/:formId/subscriptions`, () => {
-  const path = `${basePath}/:formId/subscriptions`;
+  const path = `${basePath}/${formId}/subscriptions`;
 
   describe('GET', () => {
     it('should return 200', async () => {
@@ -1097,7 +1102,7 @@ describe(`${basePath}/:formId/subscriptions`, () => {
 });
 
 describe(`${basePath}/:formId/version`, () => {
-  const path = `${basePath}/:formId/version`;
+  const path = `${basePath}/${formId}/version`;
 
   describe('GET', () => {
     it('should return 200', async () => {
@@ -1137,13 +1142,10 @@ describe(`${basePath}/:formId/version`, () => {
 });
 
 describe(`${basePath}/:formId/versions/:formVersionId`, () => {
-  const path = `${basePath}/:formId/versions/:formVersionId`;
+  const path = `${basePath}/${formId}/versions/${formVersionId}`;
 
   describe('GET', () => {
     it('should return 200', async () => {
-      // mock a success return value...
-      service.readVersion = jest.fn().mockReturnValue([]);
-
       const response = await appRequest.get(path).set('Authorization', bearerAuth);
 
       expect(response.statusCode).toBe(200);
@@ -1152,9 +1154,7 @@ describe(`${basePath}/:formId/versions/:formVersionId`, () => {
 
     it('should handle 401', async () => {
       // mock an authentication/permission issue...
-      service.readVersion = jest.fn(() => {
-        throw new Problem(401);
-      });
+      service.readVersion.mockRejectedValueOnce(new Problem(401));
 
       const response = await appRequest.get(path).set('Authorization', bearerAuth);
 
@@ -1164,9 +1164,7 @@ describe(`${basePath}/:formId/versions/:formVersionId`, () => {
 
     it('should handle 500', async () => {
       // mock an unexpected error...
-      service.readVersion = jest.fn(() => {
-        throw new Error();
-      });
+      service.readVersion.mockRejectedValueOnce(new Error());
 
       const response = await appRequest.get(path).set('Authorization', bearerAuth);
 
@@ -1177,7 +1175,7 @@ describe(`${basePath}/:formId/versions/:formVersionId`, () => {
 });
 
 describe(`${basePath}/:formId/versions/:formVersionId/fields`, () => {
-  const path = `${basePath}/:formId/versions/:formVersionId/fields`;
+  const path = `${basePath}/${formId}/versions/${formVersionId}/fields`;
 
   describe('GET', () => {
     it('should return 200', async () => {
@@ -1217,7 +1215,7 @@ describe(`${basePath}/:formId/versions/:formVersionId/fields`, () => {
 });
 
 describe(`${basePath}/:formId/versions/:formVersionId/multiSubmission`, () => {
-  const path = `${basePath}/:formId/versions/:formVersionId/multiSubmission`;
+  const path = `${basePath}/${formId}/versions/${formVersionId}/multiSubmission`;
 
   describe('POST', () => {
     it('should return 201', async () => {
@@ -1257,7 +1255,7 @@ describe(`${basePath}/:formId/versions/:formVersionId/multiSubmission`, () => {
 });
 
 describe(`${basePath}/:formId/versions/:formVersionId/publish`, () => {
-  const path = `${basePath}/:formId/versions/:formVersionId/publish`;
+  const path = `${basePath}/${formId}/versions/${formVersionId}/publish`;
 
   describe('POST', () => {
     it('should return 200', async () => {
@@ -1297,7 +1295,7 @@ describe(`${basePath}/:formId/versions/:formVersionId/publish`, () => {
 });
 
 describe(`${basePath}/:formId/versions/:formVersionId/submissions`, () => {
-  const path = `${basePath}/:formId/versions/:formVersionId/submissions`;
+  const path = `${basePath}/${formId}/versions/${formVersionId}/submissions`;
 
   describe('GET', () => {
     it('should return 200', async () => {
@@ -1433,7 +1431,7 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions`, () => {
 });
 
 describe(`${basePath}/:formId/versions/:formVersionId/submissions/discover`, () => {
-  const path = `${basePath}/:formId/versions/:formVersionId/submissions/discover`;
+  const path = `${basePath}/${formId}/versions/${formVersionId}/submissions/discover`;
 
   describe('GET', () => {
     it('should return 200 with comma separated fields', async () => {
@@ -1468,6 +1466,7 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions/discover`, () 
       });
 
       const response = await appRequest.get(path).set('Authorization', bearerAuth);
+      console.log(response);
 
       expect(response.statusCode).toBe(401);
       expect(response.body).toBeTruthy();

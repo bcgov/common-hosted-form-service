@@ -526,10 +526,14 @@ paths:
               $ref: '#/components/headers/RateLimit'
             RateLimit-Policy:
               $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         default:
@@ -563,10 +567,14 @@ paths:
               $ref: '#/components/headers/RateLimit'
             RateLimit-Policy:
               $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         default:
@@ -643,10 +651,14 @@ paths:
               $ref: '#/components/headers/RateLimit'
             RateLimit-Policy:
               $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         default:
@@ -767,10 +779,14 @@ paths:
               $ref: '#/components/headers/RateLimit'
             RateLimit-Policy:
               $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         default:
@@ -812,10 +828,14 @@ paths:
               $ref: '#/components/headers/RateLimit'
             RateLimit-Policy:
               $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         default:
@@ -844,10 +864,14 @@ paths:
               $ref: '#/components/headers/RateLimit'
             RateLimit-Policy:
               $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         default:
@@ -881,10 +905,14 @@ paths:
               $ref: '#/components/headers/RateLimit'
             RateLimit-Policy:
               $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         default:
@@ -969,10 +997,14 @@ paths:
               $ref: '#/components/headers/RateLimit'
             RateLimit-Policy:
               $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         default:
@@ -1011,10 +1043,14 @@ paths:
               $ref: '#/components/headers/RateLimit'
             RateLimit-Policy:
               $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         default:
@@ -1054,10 +1090,14 @@ paths:
               $ref: '#/components/headers/RateLimit'
             RateLimit-Policy:
               $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         default:
@@ -1106,10 +1146,14 @@ paths:
               $ref: '#/components/headers/RateLimit'
             RateLimit-Policy:
               $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
         default:
@@ -3761,13 +3805,13 @@ components:
           description: What type of problem, link to explanation of problem
         title:
           type: string
-          description: Title of problem, generally the Http Status Code description
+          description: Title of problem, generally the HTTP status code description
         status:
           type: string
-          description: The Http Status code
+          description: The HTTP status code
         detail:
           type: string
-          description: short description of why this problem was raised.
+          description: Short description of why this problem was raised
     Role:
       allOf:
         - $ref: '#/components/schemas/RoleBasic'
