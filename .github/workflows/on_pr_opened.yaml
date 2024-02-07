@@ -19,10 +19,7 @@ concurrency:
 jobs:
   build:
     name: Build & Push
-    if: "github.event.pull_request.author_association != 'COLLABORATOR' && github.event.review.author_association != 'OWNER'"
-    environment:
-      name: pr-external
-      url: https://${{ env.ACRONYM }}-dev.apps.silver.devops.gov.bc.ca/pr-${{ github.event.number }}
+    if: "! github.event.pull_request.head.repo.fork"
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -37,12 +34,12 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           app_title: Common Hosted Forms - PR-${{ github.event.number }}
           route_path: /pr-${{ github.event.number }}
-          app_contact: ${{ secrets.VITE_CONTACT }}
+          app_contact: ${{ vars.CHEFS_CONTACT }}
 
   deploy-pr-dev:
     name: Deploy Pull Request to Dev
     environment:
-      name: pr-external
+      name: pr
       url: https://${{ env.ACRONYM }}-dev.apps.silver.devops.gov.bc.ca/pr-${{ github.event.number }}
     runs-on: ubuntu-latest
     needs: build
