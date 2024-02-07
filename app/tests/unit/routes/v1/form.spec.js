@@ -1466,7 +1466,6 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions/discover`, () 
       });
 
       const response = await appRequest.get(path).set('Authorization', bearerAuth);
-      console.log(response);
 
       expect(response.statusCode).toBe(401);
       expect(response.body).toBeTruthy();
