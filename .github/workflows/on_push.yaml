@@ -4,6 +4,12 @@ env:
   ACRONYM: chefs
 
 on:
+  workflow_dispatch:
+    inputs:
+      pr-number:
+        description: "Pull Request Number:"
+        type: string
+        required: true
   push:
     branches:
       - main
@@ -11,7 +17,7 @@ on:
       - v*.*.*
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.inputs.pr-number || github.ref }}
   cancel-in-progress: true
 
 jobs:

@@ -1,14 +1,18 @@
 name: owasp-zap-scan
 env:
   ZAP_SCAN_TYPE: full
-  # Check dev environment for now
-  ZAP_TARGET_URL: https://chefs-dev.apps.silver.devops.gov.bc.ca/pr-${{ github.event.number }}
   ZAP_DURATION: 2
   ZAP_MAX_DURATION: 10
   # PUBLISH RESULTS TO WEBPAGE
   ## Creates a pre-signed URL with the results...
   ZAP_GCP_PUBLISH: false
 on:
+  workflow_dispatch:
+    inputs:
+      pr-number:
+        description: "Pull Request Number:"
+        type: string
+        required: true
   pull_request:
     branches:
       - main
@@ -65,7 +69,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: "owasp/zap2docker-stable"
-          target: ${{ env.ZAP_TARGET_URL }}
+          target: https://chefs-dev.apps.silver.devops.gov.bc.ca/pr-${{ github.event.inputs.pr-number }}
           cmd_options: "-a -d -T ${{ env.ZAP_MAX_DURATION }} -m ${{ env.ZAP_DURATION }}"
           issue_title: OWAP Baseline
       - name: ZAP Full Scan
@@ -74,7 +78,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: "owasp/zap2docker-stable"
-          target: ${{ env.ZAP_TARGET_URL }}
+          target: https://chefs-dev.apps.silver.devops.gov.bc.ca/pr-${{ github.event.inputs.pr-number }}
           cmd_options: "-a -d -T ${{ env.ZAP_MAX_DURATION }} -m ${{ env.ZAP_DURATION }}"
       - name: Create Artifact Directory
         if: ${{ env.ZAP_GCP_PUBLISH == 'true' }}

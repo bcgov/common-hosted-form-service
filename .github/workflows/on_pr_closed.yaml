@@ -4,6 +4,12 @@ env:
   ACRONYM: chefs
 
 on:
+  workflow_dispatch:
+    inputs:
+      pr-number:
+        description: "Pull Request Number:"
+        type: string
+        required: true
   pull_request:
     branches:
       - main
@@ -11,7 +17,7 @@ on:
       - closed
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.inputs.pr-number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -20,7 +26,7 @@ jobs:
     if: "! github.event.pull_request.head.repo.fork"
     environment:
       name: pr
-      url: https://${{ env.ACRONYM }}-dev-pr-${{ github.event.number }}.apps.silver.devops.gov.bc.ca
+      url: https://${{ env.ACRONYM }}-dev-pr-${{ github.event.inputs.pr-number }}.apps.silver.devops.gov.bc.ca
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -36,8 +42,8 @@ jobs:
       - name: Remove PR Deployment
         shell: bash
         run: |
-          oc delete -n ${{ vars.NAMESPACE_PREFIX }}-dev all,secret,networkpolicy,rolebinding --selector app=${{ env.ACRONYM }}-pr-${{ github.event.number }}
-          oc delete -n ${{ vars.NAMESPACE_PREFIX }}-dev all,svc,cm,sa,role,secret --selector cluster-name=pr-${{ github.event.number }}
+          oc delete -n ${{ vars.NAMESPACE_PREFIX }}-dev all,secret,networkpolicy,rolebinding --selector app=${{ env.ACRONYM }}-pr-${{ github.event.inputs.pr-number }}
+          oc delete -n ${{ vars.NAMESPACE_PREFIX }}-dev all,svc,cm,sa,role,secret --selector cluster-name=pr-${{ github.event.inputs.pr-number }}
       - name: Remove Release Comment on PR
         uses: marocchino/sticky-pull-request-comment@v2
         with:
