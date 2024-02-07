@@ -1,5 +1,5 @@
 const Problem = require('api-problem');
-const { validate } = require('uuid');
+const uuid = require('uuid');
 
 const formService = require('../../form/service');
 
@@ -13,7 +13,7 @@ const formService = require('../../form/service');
  */
 const validateFormId = async (_req, _res, next, formId) => {
   try {
-    if (!validate(formId)) {
+    if (!uuid.validate(formId)) {
       throw new Problem(400, {
         detail: 'Bad formId',
       });
@@ -36,7 +36,7 @@ const validateFormId = async (_req, _res, next, formId) => {
  */
 const validateFormVersionDraftId = async (req, _res, next, formVersionDraftId) => {
   try {
-    if (!validate(formVersionDraftId)) {
+    if (!uuid.validate(formVersionDraftId)) {
       throw new Problem(400, {
         detail: 'Bad formVersionDraftId',
       });
@@ -66,7 +66,7 @@ const validateFormVersionDraftId = async (req, _res, next, formVersionDraftId) =
  */
 const validateFormVersionId = async (req, _res, next, formVersionId) => {
   try {
-    if (!validate(formVersionId)) {
+    if (!uuid.validate(formVersionId)) {
       throw new Problem(400, {
         detail: 'Bad formVersionId',
       });
