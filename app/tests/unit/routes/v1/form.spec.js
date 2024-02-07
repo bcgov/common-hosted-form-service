@@ -19,6 +19,9 @@ keycloak.protect = jest.fn(() => {
 });
 
 const userAccess = require('../../../../src/forms/auth/middleware/userAccess');
+userAccess.checkFormVersionId = jest.fn((_req, _res, next) => {
+  next();
+});
 userAccess.currentUser = jest.fn((_req, _res, next) => {
   next();
 });

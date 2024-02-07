@@ -5,6 +5,7 @@ const keycloak = require('../../../components/keycloak');
 const Permissions = require('../../common/constants').Permissions;
 const Roles = require('../../common/constants').Roles;
 const service = require('../service');
+const formService = require('../../form/service');
 const rbacService = require('../../rbac/service');
 
 const getToken = (req) => {
@@ -19,6 +20,44 @@ const setUser = async (req, _res, next) => {
   try {
     const token = getToken(req);
     req.currentUser = await service.login(token);
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Express middleware for routes that include both a formId and formVersionId.
+ * Checks that the form has the corresponding form version and that it isn't
+ * a version for some other form.
+ *
+ * @param {*} req the Express object representing the HTTP request
+ * @param {*} _res the Express object representing the HTTP response - unused
+ * @param {*} next the Express chaining function
+ */
+const checkFormVersionId = async (req, _res, next) => {
+  try {
+    const formId = req.params.formId;
+    if (!validate(formId)) {
+      throw new Problem(400, {
+        detail: `Bad formId "${formId}".`,
+      });
+    }
+
+    const formVersionId = req.params.formVersionId;
+    if (!validate(formVersionId)) {
+      throw new Problem(400, {
+        detail: `Bad formVersionId "${formVersionId}".`,
+      });
+    }
+
+    const formVersion = await formService.readVersion(formVersionId);
+    if (formVersion.formId !== formId) {
+      throw new Problem(404, {
+        detail: `formId "${formId}" does not have formVersionId "${formVersionId}".`,
+      });
+    }
+
     next();
   } catch (error) {
     next(error);
@@ -329,6 +368,7 @@ const hasRolePermissions = (removingUsers = false) => {
 };
 
 module.exports = {
+  checkFormVersionId,
   currentUser,
   hasFormPermissions,
   hasSubmissionPermissions,

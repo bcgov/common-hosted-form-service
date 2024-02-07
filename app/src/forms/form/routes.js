@@ -1,7 +1,7 @@
 const config = require('config');
 const routes = require('express').Router();
 const apiAccess = require('../auth/middleware/apiAccess');
-const { currentUser, hasFormPermissions } = require('../auth/middleware/userAccess');
+const { checkFormVersionId, currentUser, hasFormPermissions } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
 const rateLimiter = require('../common/middleware').apiKeyRateLimiter;
 
@@ -58,33 +58,61 @@ routes.get('/:formId/submissions', rateLimiter, apiAccess, hasFormPermissions([P
   await controller.listFormSubmissions(req, res, next);
 });
 
-routes.get('/:formId/versions/:formVersionId', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+routes.get('/:formId/versions/:formVersionId', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ]), checkFormVersionId, async (req, res, next) => {
   await controller.readVersion(req, res, next);
 });
 
-routes.get('/:formId/versions/:formVersionId/fields', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+routes.get('/:formId/versions/:formVersionId/fields', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ]), checkFormVersionId, async (req, res, next) => {
   await controller.readVersionFields(req, res, next);
 });
 
-routes.post('/:formId/versions/:formVersionId/publish', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_CREATE]), async (req, res, next) => {
+routes.post('/:formId/versions/:formVersionId/publish', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_CREATE]), checkFormVersionId, async (req, res, next) => {
   await controller.publishVersion(req, res, next);
 });
 
-routes.get('/:formId/versions/:formVersionId/submissions', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
-  await controller.listSubmissions(req, res, next);
-});
+routes.get(
+  '/:formId/versions/:formVersionId/submissions',
+  rateLimiter,
+  apiAccess,
+  hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]),
+  checkFormVersionId,
+  async (req, res, next) => {
+    await controller.listSubmissions(req, res, next);
+  }
+);
 
-routes.post('/:formId/versions/:formVersionId/submissions', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_CREATE]), async (req, res, next) => {
-  await controller.createSubmission(req, res, next);
-});
+routes.post(
+  '/:formId/versions/:formVersionId/submissions',
+  rateLimiter,
+  apiAccess,
+  hasFormPermissions([P.FORM_READ, P.SUBMISSION_CREATE]),
+  checkFormVersionId,
+  async (req, res, next) => {
+    await controller.createSubmission(req, res, next);
+  }
+);
 
-routes.post('/:formId/versions/:formVersionId/multiSubmission', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_CREATE]), async (req, res, next) => {
-  await controller.createMultiSubmission(req, res, next);
-});
+routes.post(
+  '/:formId/versions/:formVersionId/multiSubmission',
+  rateLimiter,
+  apiAccess,
+  hasFormPermissions([P.FORM_READ, P.SUBMISSION_CREATE]),
+  checkFormVersionId,
+  async (req, res, next) => {
+    await controller.createMultiSubmission(req, res, next);
+  }
+);
 
-routes.get('/:formId/versions/:formVersionId/submissions/discover', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), (req, res, next) => {
-  controller.listSubmissionFields(req, res, next);
-});
+routes.get(
+  '/:formId/versions/:formVersionId/submissions/discover',
+  rateLimiter,
+  apiAccess,
+  hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]),
+  checkFormVersionId,
+  (req, res, next) => {
+    controller.listSubmissionFields(req, res, next);
+  }
+);
 
 routes.get('/:formId/drafts', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_READ]), async (req, res, next) => {
   await controller.listDrafts(req, res, next);

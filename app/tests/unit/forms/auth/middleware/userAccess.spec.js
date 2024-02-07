@@ -1,10 +1,19 @@
 const { getMockReq, getMockRes } = require('@jest-mock/express');
 const Problem = require('api-problem');
+const { v4: uuidv4 } = require('uuid');
 
-const { currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles, hasRolePermissions } = require('../../../../../src/forms/auth/middleware/userAccess');
+const {
+  checkFormVersionId,
+  currentUser,
+  hasFormPermissions,
+  hasSubmissionPermissions,
+  hasFormRoles,
+  hasRolePermissions,
+} = require('../../../../../src/forms/auth/middleware/userAccess');
 
 const keycloak = require('../../../../../src/components/keycloak');
 const service = require('../../../../../src/forms/auth/service');
+const formService = require('../../../../../src/forms/form/service');
 const rbacService = require('../../../../../src/forms/rbac/service');
 
 const kauth = {
@@ -15,7 +24,8 @@ const kauth = {
 
 const userId = 'c6455376-382c-439d-a811-0381a012d695';
 const userId2 = 'c6455376-382c-439d-a811-0381a012d696';
-const formId = 'c6455376-382c-439d-a811-0381a012d697';
+const formId = uuidv4();
+const formVersionId = uuidv4();
 
 const Roles = {
   OWNER: 'owner',
@@ -39,6 +49,94 @@ const testRes = {
 
 afterEach(() => {
   jest.clearAllMocks();
+});
+
+describe('checkFormVersionId', () => {
+  const mockReadVersionResponse = {
+    formId: formId,
+    id: formVersionId,
+  };
+
+  formService.readVersion = jest.fn().mockReturnValue(mockReadVersionResponse);
+
+  it('400s if the formId is missing', async () => {
+    const req = getMockReq({
+      params: {
+        formVersionId: formVersionId,
+      },
+    });
+    const { res, next } = getMockRes();
+
+    await checkFormVersionId(req, res, next);
+
+    expect(formService.readVersion).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 400 }));
+  });
+
+  it('400s if the formVersionId is missing', async () => {
+    const req = getMockReq({
+      params: {
+        formId: formId,
+      },
+    });
+    const { res, next } = getMockRes();
+
+    await checkFormVersionId(req, res, next);
+
+    expect(formService.readVersion).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 400 }));
+  });
+
+  it('404s if the formVersionId does not match', async () => {
+    formService.readVersion.mockReturnValueOnce({
+      formId: uuidv4(),
+      id: formVersionId,
+    });
+    const req = getMockReq({
+      params: {
+        formId: formId,
+        formVersionId: uuidv4(),
+      },
+    });
+    const { res, next } = getMockRes();
+
+    await checkFormVersionId(req, res, next);
+
+    expect(formService.readVersion).toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 404 }));
+  });
+
+  it('propagates service errors', async () => {
+    const error = new Error();
+    formService.readVersion.mockRejectedValueOnce(error);
+    const req = getMockReq({
+      params: {
+        formId: formId,
+        formVersionId: formVersionId,
+      },
+    });
+    const { res, next } = getMockRes();
+
+    await checkFormVersionId(req, res, next);
+
+    expect(formService.readVersion).toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(error);
+  });
+
+  it('passes through if the formVersionId matches', async () => {
+    const req = getMockReq({
+      params: {
+        formId: formId,
+        formVersionId: formVersionId,
+      },
+    });
+    const { res, next } = getMockRes();
+
+    await checkFormVersionId(req, res, next);
+
+    expect(formService.readVersion).toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith();
+  });
 });
 
 describe('currentUser', () => {
