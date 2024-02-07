@@ -27,6 +27,44 @@ const setUser = async (req, _res, next) => {
 };
 
 /**
+ * Express middleware for routes that include both a formId and
+ * formVersionDraftId. Checks that the form has the corresponding form draft and
+ * that it isn't a draft for some other form.
+ *
+ * @param {*} req the Express object representing the HTTP request
+ * @param {*} _res the Express object representing the HTTP response - unused
+ * @param {*} next the Express chaining function
+ */
+const checkFormVersionDraftId = async (req, _res, next) => {
+  try {
+    const formId = req.params.formId;
+    if (!validate(formId)) {
+      throw new Problem(400, {
+        detail: `Bad formId "${formId}".`,
+      });
+    }
+
+    const formVersionDraftId = req.params.formVersionDraftId;
+    if (!validate(formVersionDraftId)) {
+      throw new Problem(400, {
+        detail: `Bad formVersionDraftId "${formVersionDraftId}".`,
+      });
+    }
+
+    const formVersionDraft = await formService.readDraft(formVersionDraftId);
+    if (formVersionDraft.formId !== formId) {
+      throw new Problem(404, {
+        detail: `formId "${formId}" does not have formVersionDraftId "${formVersionDraftId}".`,
+      });
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Express middleware for routes that include both a formId and formVersionId.
  * Checks that the form has the corresponding form version and that it isn't
  * a version for some other form.
@@ -368,6 +406,7 @@ const hasRolePermissions = (removingUsers = false) => {
 };
 
 module.exports = {
+  checkFormVersionDraftId,
   checkFormVersionId,
   currentUser,
   hasFormPermissions,

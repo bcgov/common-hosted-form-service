@@ -1,7 +1,7 @@
 const config = require('config');
 const routes = require('express').Router();
 const apiAccess = require('../auth/middleware/apiAccess');
-const { checkFormVersionId, currentUser, hasFormPermissions } = require('../auth/middleware/userAccess');
+const { checkFormVersionDraftId, checkFormVersionId, currentUser, hasFormPermissions } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
 const rateLimiter = require('../common/middleware').apiKeyRateLimiter;
 
@@ -122,21 +122,35 @@ routes.post('/:formId/drafts', rateLimiter, apiAccess, hasFormPermissions([P.FOR
   await controller.createDraft(req, res, next);
 });
 
-routes.get('/:formId/drafts/:formVersionDraftId', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_READ]), async (req, res, next) => {
+routes.get('/:formId/drafts/:formVersionDraftId', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_READ]), checkFormVersionDraftId, async (req, res, next) => {
   await controller.readDraft(req, res, next);
 });
 
-routes.put('/:formId/drafts/:formVersionDraftId', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_UPDATE]), async (req, res, next) => {
+routes.put('/:formId/drafts/:formVersionDraftId', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_UPDATE]), checkFormVersionDraftId, async (req, res, next) => {
   await controller.updateDraft(req, res, next);
 });
 
-routes.delete('/:formId/drafts/:formVersionDraftId', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_DELETE]), async (req, res, next) => {
-  await controller.deleteDraft(req, res, next);
-});
+routes.delete(
+  '/:formId/drafts/:formVersionDraftId',
+  rateLimiter,
+  apiAccess,
+  hasFormPermissions([P.FORM_READ, P.DESIGN_DELETE]),
+  checkFormVersionDraftId,
+  async (req, res, next) => {
+    await controller.deleteDraft(req, res, next);
+  }
+);
 
-routes.post('/:formId/drafts/:formVersionDraftId/publish', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.DESIGN_CREATE]), async (req, res, next) => {
-  await controller.publishDraft(req, res, next);
-});
+routes.post(
+  '/:formId/drafts/:formVersionDraftId/publish',
+  rateLimiter,
+  apiAccess,
+  hasFormPermissions([P.FORM_READ, P.DESIGN_CREATE]),
+  checkFormVersionDraftId,
+  async (req, res, next) => {
+    await controller.publishDraft(req, res, next);
+  }
+);
 
 routes.get('/:formId/statusCodes', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.getStatusCodes(req, res, next);
