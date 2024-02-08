@@ -1,0 +1,111 @@
+name: Deploy
+
+env:
+  ACRONYM: chefs
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr-number:
+        description: Pull request number, leave blank for dev/test/prod deployment
+        required: false
+        type: string
+      environment:
+        description: Environment name; choose dev for PR
+        required: true
+        type: choice
+        options:
+        - dev
+        - test
+        - prod
+        default: dev
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.inputs.release || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  name: Set variables
+  id: precheck
+  steps:
+    # If it's a pull request
+    - name: Pull request variables
+      run: echo "PULL_REQUEST=true" >> "$GITHUB_OUTPUT"
+      if: github.event.inputs.pr-number != ''
+    - name: Default variables
+      env:
+        ENVIRONMENT: ${{ github.event.inputs.environment }}
+        ACRONYM: ${{ env.ACRONYM }}
+      run: |
+        echo "APP_TITLE=Common Hosted Forms" >> "$GITHUB_OUTPUT"
+        echo "ROUTE_PATH=/app" >> "$GITHUB_OUTPUT"
+        echo "ENVIRONMENT=$ENVIRONMENT" >> "$GITHUB_OUTPUT"
+        echo "URL=https://$ACRONYM-$ENVIRONMENT.apps.silver.devops.gov.bc.ca" >> "$GITHUB_OUTPUT"
+        echo "JOB_NAME=master" >> "$GITHUB_OUTPUT"
+    - name: Pull request changes
+      env:
+        APP_TITLE: ${{ steps.precheck.outputs.APP_TITLE }}
+        ENVIRONMENT: ${{ steps.precheck.outputs.ENVIRONMENT }}
+        JOB_NAME: ${{ steps.precheck.outputs.JOB_NAME }}
+        PR_NUMBER: ${{ github.event.inputs.pr-number }}
+        URL: ${{ steps.precheck.outputs.URL }}
+      run: |
+        echo "APP_TITLE=$APP_TITLE - PR-$PR_NUMBER" >> "$GITHUB_OUTPUT"
+        echo "ENVIRONMENT=pr" >> "$GITHUB_OUTPUT"
+        echo "JOB_NAME=pr-$PR_NUMBER" >> "$GITHUB_OUTPUT"
+        echo "ROUTE_PATH=/pr-$PR_NUMBER" >> "$GITHUB_OUTPUT"
+        echo "URL=$URL/pr-$PR_NUMBER" >> "$GITHUB_OUTPUT"
+      if: github.event.inputs.pr-number != ''
+    - name: Non pull request changes
+      run: |
+        echo "URL=$URL/app" >> "$GITHUB_OUTPUT"
+      if: github.event.inputs.pr-number == ''
+
+  name: Build & Push
+  runs-on: ubuntu-latest
+  timeout-minutes: 10
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Build & Push
+      uses: ./.github/actions/build-push-container
+      with:
+        context: .
+        image_name: ${{ vars.APP_NAME }}
+        github_username: ${{ github.repository_owner }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        app_title: ${{ steps.precheck.outputs.APP_TITLE }}
+        route_path: ${{ steps.precheck.outputs.ROUTE_PATH }}
+        app_contact: ${{ vars.CHEFS_CONTACT }}
+
+  name: Deploys to selected environment
+    environment:
+      name: ${{ steps.precheck.outputs.ENVIRONMENT }}
+      url: ${{ steps.precheck.outputs.URL }}
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Deploy to environment
+        uses: ./.github/actions/deploy-to-environment
+        with:
+          app_name: ${{ vars.APP_NAME }}
+          acronym: ${{ env.ACRONYM }}
+          environment: ${{ steps.precheck.outputs.ENVIRONMENT }}
+          job_name: ${{ steps.precheck.outputs.JOB_NAME }}
+          namespace_prefix: ${{ vars.NAMESPACE_PREFIX }}
+          namespace_environment: ${{ github.event.inputs.environment }}
+          openshift_server: ${{ secrets.OPENSHIFT_SERVER }}
+          openshift_token: ${{ secrets.OPENSHIFT_TOKEN }}
+          server_host: ${{ vars.SERVER_HOST }}
+          route_path: ${{ steps.precheck.outputs.ROUTE_PATH }}
+          route_prefix: ${{ vars.ROUTE_PREFIX }}
+      - name: Release Comment on PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event.inputs.pr-number != '' && success()
+        with:
+          header: release
+          message: |
+            Release ${{ github.sha }} deployed at <https://${{ env.ACRONYM }}-dev.apps.silver.devops.gov.bc.ca/pr-${{ github.event.inputs.pr-number }}>
