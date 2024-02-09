@@ -1,5 +1,5 @@
 const Problem = require('api-problem');
-const { validate } = require('uuid');
+const uuid = require('uuid');
 
 const keycloak = require('../../../components/keycloak');
 const Permissions = require('../../common/constants').Permissions;
@@ -113,7 +113,9 @@ const hasFormPermissions = (permissions) => {
         throw new Problem(401, { detail: 'Form Id not found on request.' });
       }
 
-      if (!validate(formId)) {
+      // Validate in case the route param validation is missing or it comes from
+      // the query string.
+      if (!uuid.validate(formId)) {
         throw new Problem(400, { detail: `Bad Form ID: "${formId}"` });
       }
 
@@ -228,12 +230,12 @@ const filterMultipleSubmissions = () => {
       }
 
       //validate form id
-      if (!validate(formId)) {
+      if (!uuid.validate(formId)) {
         return next(new Problem(401, { detail: 'Not a valid form id' }));
       }
 
       //validate all submission ids
-      const isValidSubmissionId = submissionIds.every((submissionId) => validate(submissionId));
+      const isValidSubmissionId = submissionIds.every((submissionId) => uuid.validate(submissionId));
       if (!isValidSubmissionId) {
         return next(new Problem(401, { detail: 'Invalid submissionId(s) in the submissionIds list.' }));
       }
