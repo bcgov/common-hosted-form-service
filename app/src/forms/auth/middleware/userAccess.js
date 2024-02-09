@@ -7,11 +7,25 @@ const Roles = require('../../common/constants').Roles;
 const service = require('../service');
 const rbacService = require('../../rbac/service');
 
-const _getAccessToken = (kauth) => {
-  return kauth?.grant?.access_token;
+/**
+ * Gets the access token from the request, if it exists.
+ *
+ * @param {*} req the Express object representing the HTTP request
+ * @returns a string that is the access token, or undefined if it doesn't exist.
+ */
+const _getAccessToken = (req) => {
+  return req.kauth?.grant?.access_token;
 };
 
-const _getBearerToken = (authorization) => {
+/**
+ * Gets the bearer token from the request, if it exists.
+ *
+ * @param {*} req the Express object representing the HTTP request
+ * @returns a string that is the bearer token, or undefined if it doesn't exist.
+ */
+const _getBearerToken = (req) => {
+  const authorization = req.headers?.authorization;
+
   let token;
   if (authorization && authorization.startsWith('Bearer ')) {
     token = authorization.substring(7);
@@ -34,7 +48,7 @@ const _getBearerToken = (authorization) => {
 const currentUser = async (req, _res, next) => {
   try {
     // Validate bearer tokens before anything else - failure means no access.
-    const bearerToken = _getBearerToken(req.headers?.authorization);
+    const bearerToken = _getBearerToken(req);
     if (bearerToken) {
       const ok = await keycloak.grantManager.validateAccessToken(bearerToken);
       if (!ok) {
@@ -44,7 +58,7 @@ const currentUser = async (req, _res, next) => {
 
     // Add the request element that contains the current user's parsed info. It
     // is ok if the access token isn't defined: then we'll have a public user.
-    const accessToken = _getAccessToken(req.kauth);
+    const accessToken = _getAccessToken(req);
     req.currentUser = await service.login(accessToken);
 
     next();
