@@ -749,8 +749,8 @@ const service = {
     }
   },
 
-  // toggle filesApiAccess for the api key
-  filesApiKeyAccess: async (formId) => {
+  // Set the filesApiAccess boolean for the api key
+  filesApiKeyAccess: async (formId, filesApiAccess) => {
     let trx;
     try {
       const currentKey = await service.readApiKey(formId);
@@ -759,7 +759,7 @@ const service = {
       if (currentKey) {
         await FormApiKey.query(trx).modify('filterFormId', formId).update({
           formId: formId,
-          filesApiAccess: !currentKey.filesApiAccess,
+          filesApiAccess: filesApiAccess,
         });
       } else {
         throw new Problem(404, `No API key found for form ${formId}`);

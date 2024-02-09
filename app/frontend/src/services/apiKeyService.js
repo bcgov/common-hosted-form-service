@@ -38,9 +38,10 @@ export default {
    * @param {string} formId The form uuid
    * @returns {Promise} An axios response
    */
-  filesApiKeyAccess(formId) {
+  filesApiKeyAccess(formId, filesApiAccess) {
     return appAxios().put(
-      `${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}${ApiRoutes.FILES_API_ACCESS}`
+      `${ApiRoutes.FORMS}/${formId}${ApiRoutes.APIKEY}${ApiRoutes.FILES_API_ACCESS}`,
+      { filesApiAccess }
     );
   },
 };

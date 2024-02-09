@@ -741,10 +741,13 @@ export const useFormStore = defineStore('form', {
         });
       }
     },
-    async filesApiKeyAccess(formId) {
+    async filesApiKeyAccess(formId, filesApiAccess) {
       const notificationStore = useNotificationStore();
       try {
-        const { data } = await apiKeyService.filesApiKeyAccess(formId);
+        const { data } = await apiKeyService.filesApiKeyAccess(
+          formId,
+          filesApiAccess
+        );
         this.apiKey = data;
         notificationStore.addNotification({
           text: 'API Key updated successfully.',
