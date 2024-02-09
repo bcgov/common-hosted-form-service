@@ -538,7 +538,7 @@ The application appears to be a modern web application. If you need to explore i
   * Method: `GET`
   * Parameter: ``
   * Attack: ``
-  * Evidence: `<script type="module" crossorigin src="/pr-1253/assets/index-abc27496.js"></script>`
+  * Evidence: `<script type="module" crossorigin src="/pr-1253/assets/index-9aa71f5d.js"></script>`
   * Other Info: `No links have been found while there are scripts, which is an indication that this is a modern web application.`
 
 Instances: 1
@@ -889,7 +889,7 @@ The given response has been identified as containing a session management token.
   * Method: `GET`
   * Parameter: `eed6a67d093ebd7ab21b438a506ffb35`
   * Attack: ``
-  * Evidence: `85eb57c27ef47ea1406416a6dac6ad0c`
+  * Evidence: `71ba044ad44c26f865f8272814c9b1da`
   * Other Info: `
 cookie:eed6a67d093ebd7ab21b438a506ffb35`
 
