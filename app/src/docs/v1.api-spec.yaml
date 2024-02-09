@@ -339,8 +339,8 @@ paths:
                 $ref: '#/components/schemas/Error'
   /forms/{formId}/apiKey/filesApiAccess:
     put:
-      summary: Toggle Files API Access
-      description: Allow/prevent access to submitted files using the API key.
+      summary: Set the API key access to submitted files
+      description: Enable/disable access to submitted files using the API key.
       operationId: filesApiAccess
       tags:
         - Form API
@@ -353,8 +353,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormApiKey'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
         default:
           description: Unexpected error
           content:
