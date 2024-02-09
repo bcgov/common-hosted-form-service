@@ -15,13 +15,16 @@
       "runtimeExecutable": "npm",
       "type": "node",
       "env": {
-        "NODE_CONFIG_DIR": "${workspaceFolder}/.devcontainer/chefs_local",
+        "NODE_CONFIG_DIR": "${workspaceFolder}/.devcontainer/chefs_local"
       }
     },
     {
       "cwd": "${workspaceFolder}/app/frontend",
       "env": {
         "VITE_TITLE": "Common Hosted Forms - Local",
+        "VITE_BC_GEO_ADDRESS_APIURL": "https://geocoder.api.gov.bc.ca/addresses.json",
+        "VITE_CHEFS_ADVANCE_GEO_ADDRESS_APIURL": "api/v1/bcgeoaddress/advance/address",
+        "VITE_CHEFS_GEO_ADDRESS_APIURL": "api/v1/bcgeoaddress/address",
         "VITE_CONTACT": "submit.digital@gov.bc.ca",
         "VITE_FRONTEND_BASEPATH": "/app",
         "VITE_CHEFSTOURURL": "https://www.youtube.com/embed/obOhyYusMjM",
@@ -32,7 +35,7 @@
       "request": "launch",
       "runtimeArgs": ["run", "dev"],
       "runtimeExecutable": "npm",
-      "type": "node",
+      "type": "node"
     },
     {
       "name": "CHEFS Frontend - chrome",
@@ -41,7 +44,7 @@
       "url": "http://localhost:5173/app",
       "enableContentValidation": false,
       "webRoot": "${workspaceFolder}/app/frontend/src",
-      "pathMapping": {"url": "//src/", "path": "${webRoot}/"}
+      "pathMapping": { "url": "//src/", "path": "${webRoot}/" }
     }
   ],
   "version": "0.2.0"

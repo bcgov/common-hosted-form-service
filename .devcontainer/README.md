@@ -1,8 +1,9 @@
 # CHEFS Development with Dev Container
-The following guide will get you up and running and developing/debugging CHEFS as quickly as possible. 
+
+The following guide will get you up and running and developing/debugging CHEFS as quickly as possible.
 We provide a [`devcontainer`](https://containers.dev) and will use [`VS Code`](https://code.visualstudio.com) to illustrate.
 
-By no means is CHEFS development limited to these tools; they are merely examples.  
+By no means is CHEFS development limited to these tools; they are merely examples.
 
 ## Caveats
 
@@ -11,6 +12,7 @@ The primary use case for this `devcontainer` is for developing, debugging and un
 There are limitations running this devcontainer, such as all networking is within this container. This container has [docker-in-docker](https://github.com/microsoft/vscode-dev-containers/blob/main/script-library/docs/docker-in-docker.md) which allows running demos, building docker images, running `docker compose` all within this container.
 
 ## Files
+
 The `.devcontainer` folder contains the `devcontainer.json` file which defines this container. We are using a `Dockerfile` and `post-install.sh` to build and configure the container run image. The `Dockerfile` is simple but in place for simplifying image enhancements. The `post-install.sh` will install the required node libraries for CHEFS including the frontend and formio components.
 
 In order to run CHEFS you require Keycloak (configured), Postgresql (seeded) and the CHEFS backend/API and frontend/UX. Previously, this was a series of downloads and configuration updates and numerous commands to run. See `.devcontainer/chefs_local` files.
@@ -19,42 +21,46 @@ Also included are convenient launch tasks to run and debug CHEFS.
 
 ## Open CHEFS in the devcontainer
 
-To open CHEFS in a devcontainer, we open the *root* of this repository. We can open in 2 ways:
+To open CHEFS in a devcontainer, we open the _root_ of this repository. We can open in 2 ways:
 
 1. Open Visual Studio Code, and use the Command Palette and use `Dev Containers: Open Folder in Container...`
 2. Open Visual Studio Code and `File|Open Folder...`, you should be prompted to `Reopen in Container`.
 
-
 ## Running CHEFS locally
+
 Keycloak and Postgresql will be launched using docker compose. These will run inside of the devcontainer (docker-in-docker) but the ports are forwarded to the host machine and are accessible on the local host.
 
 CHEFS API and Frontend are running as node applications on the devcontainer - again, ports are forwarded to the host.
 
 ### Configuring CHEFS locally
-When the devcontainer is built, it copies `.devcontainer/chefs_local/local.json.sample` and `.devcontainer/chefs_local/realm-export.json.sample` to `.devcontainer/chefs_local/local.json` and `.devcontainer/chefs_local/realm-export.json` respectively. These copies are not checked in and allow the developer to make changes and tweaks without impacting other developers or accidentially committing passwords. 
+
+When the devcontainer is built, it copies `.devcontainer/chefs_local/local.json.sample` and `.devcontainer/chefs_local/realm-export.json.sample` to `.devcontainer/chefs_local/local.json` and `.devcontainer/chefs_local/realm-export.json` respectively. These copies are not checked in and allow the developer to make changes and tweaks without impacting other developers or accidentially committing passwords.
 
 ### Authorization Prerequisites
-1.  An IDIR account is required to access CHEFS. 
-2.  Request an SSO Integration from the Common Hosted Single Sign-on (CSS) page in order to obtain a resource and secret that will be used for authentication when building CHEFS. View the [detailed documentation](https://bcdevex.atlassian.net/wiki/spaces/CCP/pages/961675282) about requesting the Pathfinder SSO integration. 
-3.  Open realm-export.json  located at chefs_build/docker/imports/keycloak and search for `XXXXXXXXXXXX`. This value must match the `clientSecret` value in `local.json`  so that the CHEFS API can connect to your Keycloak instance. By default, these are set to be equal and don’t need to be altered.
-4.  Navigate to the CSS page, login with your IDIR, and download the ‘Development’ Installation JSON from your SSO Integration. 
-5.  Back in the `realm-export.json` file, search for all instances of `YYYYYYYYYYYY` and replace it with the `resource` you obtained from the downloaded JSON file. Search for all instances of `ZZZZZZZZZZZZ` and replace it with the `secret`. 
+
+1.  An IDIR account is required to access CHEFS.
+2.  Request an SSO Integration from the Common Hosted Single Sign-on (CSS) page in order to obtain a resource and secret that will be used for authentication when building CHEFS. View the [detailed documentation](https://bcdevex.atlassian.net/wiki/spaces/CCP/pages/961675282) about requesting the Pathfinder SSO integration.
+3.  Open `build/docker/imports/keycloak/realm-export.json` and search for `XXXXXXXXXXXX`. This value must match the `clientSecret` value in `local.json` so that the CHEFS API can connect to your Keycloak instance. By default, these are set to be equal and don’t need to be altered.
+4.  Navigate to the CSS page, login with your IDIR, and download the ‘Development’ Installation JSON from your SSO Integration.
+5.  Back in the `realm-export.json` file, search for all instances of `YYYYYYYYYYYY` and replace it with the `resource` you obtained from the downloaded JSON file. Search for all instances of `ZZZZZZZZZZZZ` and replace it with the `secret`.
 
 ### Run/Debug
-1. start Keycloak and Postgresql. Many ways to start... 
-    - right click on `.devcontainer/chefs_local/docker-compose.yml` and select `Compose up`
-    - or use command palette `Docker: Compose Up` then select `.devcontainer/chefs_local/docker-compose.yml`
-    - or `Terminal | Run Task...|chefs_local up`
-2. start CHEFS
-    - Run and Debug, select 'CHEFS' which will start both the API and the frontend.
-3. debug Frontend with Chrome
-    - Run and Debug, select 'CHEFS Frontend - chrome' which will start a Chrome browser against the frontend, will allow breakpoints in `/app/frontend/src`
-4. stop Keycloak and Postgresql. Many ways to stop... 
-    - right click on `.devcontainer/chefs_local/docker-compose.yml` and select `Compose down`
-    - or use command palette `Docker: Compose Down` then select `.devcontainer/chefs_local/docker-compose.yml`
-    - or `Terminal | Run Task...|chefs_local down`
 
-*Notes*
+1. start Keycloak and Postgresql. Many ways to start...
+   - right click on `.devcontainer/chefs_local/docker-compose.yml` and select `Compose up`
+   - or use command palette `Docker: Compose Up` then select `.devcontainer/chefs_local/docker-compose.yml`
+   - or `Terminal | Run Task...|chefs_local up`
+2. start CHEFS
+   - Run and Debug, select 'CHEFS' which will start both the API and the frontend.
+3. debug Frontend with Chrome
+   - Run and Debug, select 'CHEFS Frontend - chrome' which will start a Chrome browser against the frontend, will allow breakpoints in `/app/frontend/src`
+4. stop Keycloak and Postgresql. Many ways to stop...
+   - right click on `.devcontainer/chefs_local/docker-compose.yml` and select `Compose down`
+   - or use command palette `Docker: Compose Down` then select `.devcontainer/chefs_local/docker-compose.yml`
+   - or `Terminal | Run Task...|chefs_local down`
+
+_Notes_
+
 - `CHEFS Frontend` launch configuration is using the `chefs-frontend-local` client in Keycloak, not `chefs-frontend` client as we do in production.
 - `CHEFS API` will use the configuration found at `.devcontainer/chefs_local/local.json`
 - `Postgres DB`: localhost:5432
@@ -63,12 +69,15 @@ When the devcontainer is built, it copies `.devcontainer/chefs_local/local.json.
 - `CHEFS API`: http://localhost:5173/app/api/v1
 
 ## Formio Components
+
 If you are developing the formio components, you should build and redeploy them before running your local debug instances of CHEFS. Use tasks `Components build` and `Components Deploy`.
 
 ## Troubleshooting
+
 All development machines are unique and here we will document problems that have been encountered and how to fix them.
 
 ### Failure during load of devcontainer when running webpack (Segmentation Fault)
+
 Encountered on Mac Ventura 13.6, with Mac Docker Desktop 4.26.1 when running `npm run build:formio` on load, we hit a `Segmentation Fault`. The issue was resolved when turning off the virtualization settings in Docker Desktop.
 
 Under Settings, select `gRPC Fuse` instead of `VirtioFS` then unselect `Use Virtualization framework`. Restart Docker and VS Code.
