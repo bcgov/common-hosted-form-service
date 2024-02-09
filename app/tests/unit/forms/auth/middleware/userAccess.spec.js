@@ -52,6 +52,7 @@ describe('currentUser', () => {
   const bearerToken = Math.random().toString(36).substring(2);
   const authorizationHeader = { authorization: 'Bearer ' + bearerToken };
 
+  // TODO: Shouldn't this be a 401?
   it('403s if the bearer token is invalid', async () => {
     keycloak.grantManager.validateAccessToken.mockReturnValueOnce(false);
     const req = getMockReq({
