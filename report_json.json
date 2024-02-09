@@ -1,7 +1,7 @@
 {
 	"@programName": "ZAP",
 	"@version": "2.14.0",
-	"@generated": "Thu, 8 Feb 2024 15:59:10",
+	"@generated": "Fri, 9 Feb 2024 17:54:44",
 	"site":[ 
 		{
 			"@name": "https://chefs-dev.apps.silver.devops.gov.bc.ca",
@@ -373,7 +373,7 @@
 					"reference": "<p>https://cwe.mitre.org/data/definitions/205.html</p>",
 					"cweid": "200",
 					"wascid": "45",
-					"sourceid": "553"
+					"sourceid": "552"
 				},
 				{
 					"pluginid": "10109",
@@ -515,7 +515,7 @@
 							"otherinfo": ""
 						},
 						{
-							"uri": "https://chefs-dev.apps.silver.devops.gov.bc.ca/robots.txt",
+							"uri": "https://chefs-dev.apps.silver.devops.gov.bc.ca/sitemap.xml",
 							"method": "GET",
 							"param": "Sec-Fetch-Dest",
 							"attack": "",
@@ -566,7 +566,7 @@
 							"otherinfo": ""
 						},
 						{
-							"uri": "https://chefs-dev.apps.silver.devops.gov.bc.ca/robots.txt",
+							"uri": "https://chefs-dev.apps.silver.devops.gov.bc.ca/sitemap.xml",
 							"method": "GET",
 							"param": "Sec-Fetch-Mode",
 							"attack": "",
@@ -617,7 +617,7 @@
 							"otherinfo": ""
 						},
 						{
-							"uri": "https://chefs-dev.apps.silver.devops.gov.bc.ca/robots.txt",
+							"uri": "https://chefs-dev.apps.silver.devops.gov.bc.ca/sitemap.xml",
 							"method": "GET",
 							"param": "Sec-Fetch-Site",
 							"attack": "",
@@ -668,7 +668,7 @@
 							"otherinfo": ""
 						},
 						{
-							"uri": "https://chefs-dev.apps.silver.devops.gov.bc.ca/robots.txt",
+							"uri": "https://chefs-dev.apps.silver.devops.gov.bc.ca/sitemap.xml",
 							"method": "GET",
 							"param": "Sec-Fetch-User",
 							"attack": "",
@@ -699,11 +699,19 @@
 							"method": "GET",
 							"param": "eed6a67d093ebd7ab21b438a506ffb35",
 							"attack": "",
-							"evidence": "0638612519a4a4e878d1de05d5624c14",
+							"evidence": "02fb4420be75f55d1adf1a7f3044d838",
+							"otherinfo": "\ncookie:eed6a67d093ebd7ab21b438a506ffb35"
+						},
+						{
+							"uri": "https://chefs-dev.apps.silver.devops.gov.bc.ca/pr-1253",
+							"method": "GET",
+							"param": "eed6a67d093ebd7ab21b438a506ffb35",
+							"attack": "",
+							"evidence": "02fb4420be75f55d1adf1a7f3044d838",
 							"otherinfo": "\ncookie:eed6a67d093ebd7ab21b438a506ffb35"
 						}
 					],
-					"count": "1",
+					"count": "2",
 					"solution": "<p>This is an informational alert rather than a vulnerability and so there is nothing to fix.</p>",
 					"otherinfo": "<p></p><p>cookie:eed6a67d093ebd7ab21b438a506ffb35</p>",
 					"reference": "<p>https://www.zaproxy.org/docs/desktop/addons/authentication-helper/session-mgmt-id</p>",
