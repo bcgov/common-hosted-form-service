@@ -8,7 +8,7 @@ const service = require('../service');
 const rbacService = require('../../rbac/service');
 
 /**
- * Gets the access token from the request, if it exists.
+ * Gets the access token, if it exists, from the request.
  *
  * @param {*} req the Express object representing the HTTP request.
  * @returns a string that is the access token, or undefined if it doesn't exist.
@@ -18,7 +18,7 @@ const _getAccessToken = (req) => {
 };
 
 /**
- * Gets the bearer token from the request, if it exists.
+ * Gets the bearer token, if it exists, from the request.
  *
  * @param {*} req the Express object representing the HTTP request.
  * @returns a string that is the bearer token, or undefined if it doesn't exist.
