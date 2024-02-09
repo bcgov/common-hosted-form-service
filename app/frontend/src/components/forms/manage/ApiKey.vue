@@ -83,7 +83,7 @@ export default {
 
     async updateKey() {
       this.loading = true;
-      await this.filesApiKeyAccess(this.form.id);
+      await this.filesApiKeyAccess(this.form.id, this.filesApiAccess);
       this.loading = false;
     },
 
