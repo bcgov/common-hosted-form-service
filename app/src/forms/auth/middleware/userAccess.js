@@ -10,7 +10,7 @@ const rbacService = require('../../rbac/service');
 /**
  * Gets the access token from the request, if it exists.
  *
- * @param {*} req the Express object representing the HTTP request
+ * @param {*} req the Express object representing the HTTP request.
  * @returns a string that is the access token, or undefined if it doesn't exist.
  */
 const _getAccessToken = (req) => {
@@ -20,7 +20,7 @@ const _getAccessToken = (req) => {
 /**
  * Gets the bearer token from the request, if it exists.
  *
- * @param {*} req the Express object representing the HTTP request
+ * @param {*} req the Express object representing the HTTP request.
  * @returns a string that is the bearer token, or undefined if it doesn't exist.
  */
 const _getBearerToken = (req) => {
@@ -41,9 +41,9 @@ const _getBearerToken = (req) => {
  * This will fall through if everything is OK. If the Bearer auth is not valid,
  * this will produce a 403 error.
  *
- * @param {*} req the Express object representing the HTTP request
- * @param {*} _res the Express object representing the HTTP response - unused
- * @param {*} next the Express chaining function
+ * @param {*} req the Express object representing the HTTP request.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
  */
 const currentUser = async (req, _res, next) => {
   try {
