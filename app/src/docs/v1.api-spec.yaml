@@ -353,10 +353,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FormApiKey'
-        '404':
-          $ref: '#/components/responses/NotFound'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
         default:
           description: Unexpected error
           content:
