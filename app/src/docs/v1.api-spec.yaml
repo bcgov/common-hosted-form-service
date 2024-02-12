@@ -355,8 +355,8 @@ paths:
                 $ref: '#/components/schemas/FormApiKey'
         '404':
           $ref: '#/components/responses/NotFound'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         default:
           description: Unexpected error
           content:
