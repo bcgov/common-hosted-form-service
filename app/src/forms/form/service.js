@@ -754,7 +754,7 @@ const service = {
     let trx;
     try {
       if (typeof filesApiAccess !== 'boolean') {
-        throw new Problem(422, `filesApiAccess must be a boolean`);
+        throw new Problem(400, `filesApiAccess must be a boolean`);
       }
       const currentKey = await service.readApiKey(formId);
       trx = await FormApiKey.startTransaction();
