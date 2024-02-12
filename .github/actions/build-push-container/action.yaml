@@ -66,7 +66,7 @@ runs:
     - name: Creates env variables
       env:
         VITE_TITLE: ${{ inputs.app_title }}
-        VITE_CONTACT: ${{ inputs.VITE_CONTACT }}
+        VITE_CONTACT: ${{ inputs.app_contact }}
         VITE_HOWTOURL: ${{ inputs.app_howtourl }}
         VITE_CHEFSTOURURL: ${{ inputs.app_chefstoururl }}
         VITE_FRONTEND_BASEPATH: ${{ inputs.route_path }}

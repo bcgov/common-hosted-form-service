@@ -1,4 +1,4 @@
-name: Pull Request Closed
+name: Deploy
 
 env:
   ACRONYM: chefs
@@ -7,26 +7,25 @@ on:
   workflow_dispatch:
     inputs:
       pr-number:
-        description: "Pull Request Number:"
+        description: Pull request number, leave blank for dev/test/prod deployment
+        required: false
         type: string
+      environment:
+        description: Environment name; choose dev for PR
         required: true
-  pull_request:
-    branches:
-      - main
-    types:
-      - closed
+        type: choice
+        options:
+        - dev
+        - test
+        - prod
+        default: dev
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.inputs.pr-number || github.ref }}
-  cancel-in-progress: true
 
 jobs:
   remove-pr-dev:
     name: Remove PR build from dev namespace
-    if: "! github.event.pull_request.head.repo.fork"
     environment:
       name: pr
-      url: https://${{ env.ACRONYM }}-dev-pr-${{ github.event.inputs.pr-number }}.apps.silver.devops.gov.bc.ca
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -49,9 +48,4 @@ jobs:
         with:
           header: release
           delete: true
-      - name: Remove Github Deployment Environment
-        uses: strumwolf/delete-deployment-environment@v2
-        with:
-          environment: pr
-          onlyRemoveDeployments: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+          number: ${{ github.event.inputs.pr-number }}

@@ -1,11 +1,5 @@
 name: owasp-zap-scan
-env:
-  ZAP_SCAN_TYPE: full
-  ZAP_DURATION: 2
-  ZAP_MAX_DURATION: 10
-  # PUBLISH RESULTS TO WEBPAGE
-  ## Creates a pre-signed URL with the results...
-  ZAP_GCP_PUBLISH: false
+
 on:
   workflow_dispatch:
     inputs:
@@ -13,43 +7,38 @@ on:
         description: "Pull Request Number:"
         type: string
         required: true
-  pull_request:
-    branches:
-      - main
-    types:
-      - opened
-      - reopened
-      - synchronize
-  workflow_call:
-    inputs:
       ZAP_SCAN_TYPE:
+        description: Zap scan type
+        type: choice
+        options:
+        - base
+        - full
+        default: full
         required: true
-        type: string
-      ZAP_TARGET_URL:
-        required: true
-        type: string
       ZAP_DURATION:
+        description: Zap duration
         required: true
         type: string
+        default: 2
       ZAP_MAX_DURATION:
+        description: Zap max duration
         required: true
         type: string
+        default: 10
       ZAP_GCP_PUBLISH:
+        description: Creates a pre-signed URL with the results
         required: true
         type: boolean
+        default: false
       ZAP_GCP_PROJECT:
         required: false
         type: string
       ZAP_GCP_BUCKET:
         required: false
         type: string
-    secrets:
-      GCP_SA_KEY:
-        required: false
 jobs:
   owasp-zap-scan:
     name: OWASP ZAP Scan
-    if: "! github.event.pull_request.head.repo.fork"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
