@@ -98,6 +98,9 @@ jobs:
 
   deploy:
     name: Deploys to selected environment
+    environment:
+      name: ${{ needs.set-vars.outputs.ENVIRONMENT }}
+      url: ${{ needs.set-vars.outputs.URL }}
     runs-on: ubuntu-latest
     needs: [set-vars, build]
     timeout-minutes: 12
