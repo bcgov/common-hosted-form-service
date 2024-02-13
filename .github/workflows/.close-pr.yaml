@@ -1,4 +1,4 @@
-name: Deploy
+name: Close pull request deployment
 
 env:
   ACRONYM: chefs
