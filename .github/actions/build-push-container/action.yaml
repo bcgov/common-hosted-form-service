@@ -56,17 +56,27 @@ inputs:
     description: Proxy URL to BC Geo Address API URL for advance search
     required: true
     default: "../api/v1/bcgeoaddress/advance/address"
+  ref:
+    description: The checkout ref id
+    required: false
+    default: ''
 
 runs:
   using: composite
   steps:
+    - name: Checkout repository from pull request
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ inputs.ref }}
+      if: ${{ inputs.ref != '' }}
     - name: Checkout repository
       uses: actions/checkout@v3
+      if: ${{ inputs.ref == '' }}
 
     - name: Creates env variables
       env:
         VITE_TITLE: ${{ inputs.app_title }}
-        VITE_CONTACT: ${{ inputs.VITE_CONTACT }}
+        VITE_CONTACT: ${{ inputs.app_contact }}
         VITE_HOWTOURL: ${{ inputs.app_howtourl }}
         VITE_CHEFSTOURURL: ${{ inputs.app_chefstoururl }}
         VITE_FRONTEND_BASEPATH: ${{ inputs.route_path }}
