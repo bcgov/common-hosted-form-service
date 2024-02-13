@@ -35,6 +35,7 @@ jobs:
       JOB_NAME: ${{ steps.vars.outputs.JOB_NAME }}
       ROUTE_PATH: ${{ steps.vars.outputs.ROUTE_PATH }}
       URL: ${{ steps.vars.outputs.URL }}
+      ref: ${{ steps.vars.outputs.ref }}
     steps:
       - name: Setting variables
         id: default-vars
@@ -53,6 +54,9 @@ jobs:
         env:
           PR_NUMBER: ${{ github.event.inputs.pr-number }}
         run: |
+          REF=refs/pull/$PR_NUMBER/head
+          echo REF:$REF
+          echo "ref=$REF" >> $GITHUB_OUTPUT
           if [[ "$PR_NUMBER" != '' ]]; then
             echo "APP_TITLE=${{ steps.default-vars.outputs.APP_TITLE }} - PR-$PR_NUMBER" >> "$GITHUB_OUTPUT"
             echo "ENVIRONMENT=pr" >> "$GITHUB_OUTPUT"
@@ -73,8 +77,14 @@ jobs:
     needs: set-vars
     timeout-minutes: 10
     steps:
-      - name: Checkout
+      - name: Checkout repository from pull request
         uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.set-vars.outputs.ref }}
+        if: ${{ needs.set-vars.outputs.ref != '' }}
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        if: ${{ needs.set-vars.outputs.ref == '' }}
       - name: Build & Push
         uses: ./.github/actions/build-push-container
         with:
@@ -85,6 +95,7 @@ jobs:
           app_title: ${{ needs.set-vars.outputs.APP_TITLE }}
           route_path: ${{ needs.set-vars.outputs.ROUTE_PATH }}
           app_contact: ${{ vars.CHEFS_CONTACT }}
+          ref: ${{ needs.set-vars.outputs.ref }}
 
   deploy:
     name: Deploys to selected environment
@@ -92,8 +103,14 @@ jobs:
     needs: [set-vars, build]
     timeout-minutes: 12
     steps:
-      - name: Checkout
+      - name: Checkout repository from pull request
         uses: actions/checkout@v3
+        with:
+          ref: ${{ needs.set-vars.outputs.ref }}
+        if: ${{ needs.set-vars.outputs.ref != '' }}
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        if: ${{ needs.set-vars.outputs.ref == '' }}
       - name: Deploy to environment
         uses: ./.github/actions/deploy-to-environment
         with:
@@ -108,6 +125,7 @@ jobs:
           server_host: ${{ vars.SERVER_HOST }}
           route_path: ${{ needs.set-vars.outputs.ROUTE_PATH }}
           route_prefix: ${{ vars.ROUTE_PREFIX }}
+          ref: ${{ needs.set-vars.outputs.ref }}
       - name: Release Comment on PR
         uses: marocchino/sticky-pull-request-comment@v2
         if: github.event.inputs.pr-number != '' && success()
