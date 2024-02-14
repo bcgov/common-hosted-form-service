@@ -1051,9 +1051,9 @@ export default {
 };
 </script>
 
-<template>
+<template class="fixed-width-container">
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
-    <v-container fluid>
+    <v-container class="test1">
       <div v-if="isFormScheduleExpired">
         <v-alert
           :text="
@@ -1214,6 +1214,7 @@ export default {
           </p>
         </div>
       </div>
+
       <BaseDialog
         v-model="doYouWantToSaveTheDraft"
         :class="{ 'dir-rtl': isRTL }"
@@ -1258,4 +1259,61 @@ export default {
     }
   }
 }
+.test1 {
+  max-width: 100%;
+  padding: auto;
+}
+// @media (max-width: 767px) {
+//   .fixed-width-container {
+//     width: 100%; /* Adjust for extra small devices */
+//   }
+// }
+
+// @media (min-width: 768px) and (max-width: 991px) {
+//   .fixed-width-container {
+//     width: 750px; /* Adjust for small devices */
+//   }
+// }
+
+// // @media (min-width: 992px) and (max-width: 1199px) {
+// //   .fixed-width-container {
+// //     width: 970px; /* Adjust for medium devices */
+// //   }
+// // }
+
+// @media (min-width: 1300px) {
+//   .fixed-width-container {
+//     width: 750px; /* Adjust for large devices */
+//   }
+// }
+
+// @media (min-width: 1400px) {
+//   .fixed-width-container {
+//     width: 750px; /* Or any specific width you prefer, adjust for extra large devices */
+//   }
+// }
+
+// @media (min-width: 1600px) {
+//   .fixed-width-container {
+//     width: 750px; /* Or any specific width you prefer, adjust for extra large devices */
+//   }
+// }
+
+// @media (min-width: 1800px) {
+//   .fixed-width-container {
+//     width: 750px; /* Or any specific width you prefer, adjust for extra large devices */
+//   }
+// }
+
+// @media (min-width: 2000px) {
+//   .fixed-width-container {
+//     width: 750px; /* Or any specific width you prefer, adjust for extra large devices */
+//   }
+// }
+
+// @media (min-width: 3000px) {
+//   .fixed-width-container {
+//     width: 750px; /* Or any specific width you prefer, adjust for extra large devices */
+//   }
+// }
 </style>

@@ -40,5 +40,9 @@ export default {
 
 .main {
   flex: 1 0 auto;
+  max-width: 100%; /* Example max-width */
+  padding-left: 100px;
+  padding-right: 100px;
+  // margin: 0 auto; /* Center the content */
 }
 </style>
