@@ -46,9 +46,10 @@ export default {
           s: this.formSubmission?.id,
         },
       });
+
       this.addNotification({
         ...NotificationTypes.WARNING,
-        message: this.$t('trans.formViewer.formDraftAccessErrMsg'),
+        text: this.$t('trans.formViewer.formDraftAccessErrMsg'),
       });
     }
     this.loading = false;
