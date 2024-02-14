@@ -60,6 +60,10 @@ inputs:
     description: The checkout ref id
     required: false
     default: ''
+  pr_number:
+    description: Pull request number
+    required: false
+    type: string
 
 runs:
   using: composite
@@ -72,6 +76,18 @@ runs:
     - name: Checkout repository
       uses: actions/checkout@v3
       if: ${{ inputs.ref == '' }}
+
+    - name: Set variables
+      run: |
+        echo "SHA=sha-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        echo "IMAGE_REVISION=$(git rev-parse HEAD)" >> $GITHUB_ENV
+        echo "IMAGE_VERSION=main" >> $GITHUB_ENV
+        if [[ "${{ inputs.ref }}" != '' ]]; then
+          git fetch origin ${{ inputs.ref }}
+          echo "SHA=sha-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "IMAGE_REVISION=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          echo "IMAGE_VERSION=pr-${{ inputs.pr_number }}" >> $GITHUB_ENV
+        fi
 
     - name: Creates env variables
       env:
@@ -132,12 +148,12 @@ runs:
           latest=true
         # Creates tags based off of branch names and semver tags
         tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=semver,pattern={{version}}
-          type=semver,pattern={{major}}.{{minor}}
-          type=semver,pattern={{major}}
-          type=sha
+          type=raw,value=ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:${{ env.IMAGE_VERSION }}
+          type=raw,value=ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:${{ env.SHA }}
+          type=raw,value=ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:latest
+        labels: |
+          org.opencontainers.image.revision=${{ env.IMAGE_REVISION }}
+          org.opencontainers.image.version=${{ env.IMAGE_VERSION }}
 
     - name: Build and Push to Container Registry
       id: builder

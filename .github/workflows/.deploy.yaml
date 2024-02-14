@@ -95,6 +95,7 @@ jobs:
           route_path: ${{ needs.set-vars.outputs.ROUTE_PATH }}
           app_contact: ${{ vars.CHEFS_CONTACT }}
           ref: ${{ needs.set-vars.outputs.ref }}
+          pr_number: ${{ github.event.inputs.pr-number }}
 
   deploy:
     name: Deploys to selected environment
