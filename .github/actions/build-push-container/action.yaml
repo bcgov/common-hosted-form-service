@@ -80,7 +80,7 @@ runs:
     - name: Set variables
       run: |
         echo "SHA=sha-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-        echo "IMAGE_REVISION=${{ github.sha }}" >> $GITHUB_ENV
+        echo "IMAGE_REVISION=$(git rev-parse HEAD)" >> $GITHUB_ENV
         echo "IMAGE_VERSION=main" >> $GITHUB_ENV
         if [[ "${{ inputs.ref }}" != '' ]]; then
           git fetch origin ${{ inputs.ref }}
