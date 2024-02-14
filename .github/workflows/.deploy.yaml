@@ -136,3 +136,4 @@ jobs:
           header: release
           message: |
             Release ${{ github.sha }} deployed at <https://${{ env.ACRONYM }}-dev.apps.silver.devops.gov.bc.ca/pr-${{ github.event.inputs.pr-number }}>
+          number: github.event.inputs.pr-number
