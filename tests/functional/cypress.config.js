@@ -9,14 +9,15 @@ module.exports = defineConfig({
     keycloakUrl: 'http://localhost:8082',
     keycloakRealm: 'chefs',
     keycloakClientId: 'chefs-frontend',
-    keycloakUsername: 'testuser@gmail.com',
-    keycloakPassword: 'testuser',
+    keycloakUsername: 'test',
+    keycloakPassword: 'test',
   },
   chromeWebSecurity: false,
   video: false,
   fixturesFolder: 'cypress/fixtures',
   screenshotsFolder: 'screenshots',
   videosFolder: 'videos',
+  
   e2e: {
     // We've imported your old cypress plugins here.
     // You may want to clean this up later by importing these.
@@ -25,6 +26,7 @@ module.exports = defineConfig({
     
     baseUrl: 'http://localhost:5173',
     specPattern: 'cypress/specs/*.cy.{js,jsx,ts,tsx}',
+    
     //supportFile: 'support/index.js',
   }
   },
