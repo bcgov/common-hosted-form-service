@@ -149,9 +149,8 @@ runs:
           latest=true
         # Creates tags based off of branch names and semver tags
         tags: |
-          type=raw,value=ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:${{ env.IMAGE_VERSION }}
-          type=raw,value=ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:${{ env.SHA }}
-          type=raw,value=ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:latest
+          type=raw,value=${{ env.IMAGE_VERSION }}
+          type=raw,value=${{ env.SHA }}
         labels: |
           org.opencontainers.image.revision=${{ env.IMAGE_REVISION }}
           org.opencontainers.image.version=${{ env.IMAGE_VERSION }}
