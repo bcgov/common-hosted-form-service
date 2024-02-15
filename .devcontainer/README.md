@@ -40,7 +40,7 @@ When the devcontainer is built, it copies `.devcontainer/chefs_local/local.json.
 
 1.  An IDIR account is required to access CHEFS.
 2.  Request an SSO Integration from the Common Hosted Single Sign-on (CSS) page in order to obtain a resource and secret that will be used for authentication when building CHEFS. View the [detailed documentation](https://bcdevex.atlassian.net/wiki/spaces/CCP/pages/961675282) about requesting the Pathfinder SSO integration.
-3.  Open `build/docker/imports/keycloak/realm-export.json` and search for `XXXXXXXXXXXX`. This value must match the `clientSecret` value in `local.json` so that the CHEFS API can connect to your Keycloak instance. By default, these are set to be equal and don’t need to be altered.
+3.  Open realm-export.json located at build/docker/imports/keycloak and search for `XXXXXXXXXXXX`. This value must match the `clientSecret` value in `local.json` so that the CHEFS API can connect to your Keycloak instance. By default, these are set to be equal and don’t need to be altered.
 4.  Navigate to the CSS page, login with your IDIR, and download the ‘Development’ Installation JSON from your SSO Integration.
 5.  Back in the `realm-export.json` file, search for all instances of `YYYYYYYYYYYY` and replace it with the `resource` you obtained from the downloaded JSON file. Search for all instances of `ZZZZZZZZZZZZ` and replace it with the `secret`.
 

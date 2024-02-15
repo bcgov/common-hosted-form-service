@@ -35,11 +35,18 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "cweijan.vscode-postgresql-client2", // PostgreSQL client
         "dbaeumer.vscode-eslint", // ESLint to catch problems early
         "esbenp.prettier-vscode", // Prettier to format files on save
+        "postman.postman-for-vscode", // Postman for integration tests
         "redocly.openapi-vs-code", // ReDocly to catch OpenAPI errors
-        "vue.volar" // Vue 3
+        "vue.volar" // Vue 3 recommended extension
       ]
+    },
+    "settings": {
+      "database-client.telemetry.usesOnlineServices": false,
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true
     }
   }
 
