@@ -41,12 +41,12 @@
         "postman.postman-for-vscode", // Postman for integration tests
         "redocly.openapi-vs-code", // ReDocly to catch OpenAPI errors
         "vue.volar" // Vue 3 recommended extension
-      ]
-    },
-    "settings": {
-      "database-client.telemetry.usesOnlineServices": false,
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
+      ],
+      "settings": {
+        "database-client.telemetry.usesOnlineServices": false,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+      }
     }
   }
 
