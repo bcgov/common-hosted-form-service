@@ -131,8 +131,9 @@ jobs:
           ref: ${{ needs.set-vars.outputs.ref }}
       - name: Release Comment on PR
         uses: marocchino/sticky-pull-request-comment@v2
-        if: github.event.inputs.pr-number != '' && success()
+        if: ${{ github.event.inputs.pr-number }} != '' && success()
         with:
           header: release
           message: |
             Release ${{ github.sha }} deployed at <https://${{ env.ACRONYM }}-dev.apps.silver.devops.gov.bc.ca/pr-${{ github.event.inputs.pr-number }}>
+          number: ${{ github.event.inputs.pr-number }}
