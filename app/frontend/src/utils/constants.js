@@ -13,6 +13,7 @@ export const ApiRoutes = Object.freeze({
   USERS: '/users',
   FILES: '/files',
   UTILS: '/utils',
+  FILES_API_ACCESS: '/filesApiAccess',
 });
 
 /** Roles a user can have on a form. These are defined in the DB and sent from the API */

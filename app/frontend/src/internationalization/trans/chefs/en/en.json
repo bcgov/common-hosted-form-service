@@ -225,6 +225,7 @@
     "infoA": "Ensure that your API key secret is stored in a secure location (i.e. key vault).",
     "infoB": "Your API key grants unrestricted access to your form. Do not give out your API key to anyone.",
     "infoC": "The API key should ONLY be used for automated system interactions. Do not use your API key for user based access",
+    "infoD": "If you wish to access submitted files via the API Key, please enable the following checkbox after generating the key.",
     "deleteKey": "Delete Key",
     "apiKey": "api key",
     "hideSecret": "Hide Secret",
@@ -241,7 +242,8 @@
     "formOwnerKeyAcess": "You must be the <strong>Form Owner</strong> to manage API Keys.",
     "regenerate": "Regenerate",
     "generate": "Generate",
-    "secret": "Secret"
+    "secret": "Secret",
+    "filesAPIAccess": "Allow this API key to access submitted files"
   },
   "manageVersions": {
     "important": "IMPORTANT!",

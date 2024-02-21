@@ -7,36 +7,64 @@ const Roles = require('../../common/constants').Roles;
 const service = require('../service');
 const rbacService = require('../../rbac/service');
 
-const getToken = (req) => {
-  try {
-    return req.kauth.grant.access_token;
-  } catch (err) {
-    return null;
-  }
+/**
+ * Gets the access token, if it exists, from the request.
+ *
+ * @param {*} req the Express object representing the HTTP request.
+ * @returns a string that is the access token, or undefined if it doesn't exist.
+ */
+const _getAccessToken = (req) => {
+  return req.kauth?.grant?.access_token;
 };
 
-const setUser = async (req, _res, next) => {
+/**
+ * Gets the bearer token, if it exists, from the request.
+ *
+ * @param {*} req the Express object representing the HTTP request.
+ * @returns a string that is the bearer token, or undefined if it doesn't exist.
+ */
+const _getBearerToken = (req) => {
+  const authorization = req.headers?.authorization;
+
+  let token;
+  if (authorization && authorization.startsWith('Bearer ')) {
+    token = authorization.substring(7);
+  }
+
+  return token;
+};
+
+/**
+ * Express middleware that adds the user information as the res.currentUser
+ * attribute so that all downstream middleware and business logic can use it.
+ *
+ * This will fall through if everything is OK. If the Bearer auth is not valid,
+ * this will produce a 403 error.
+ *
+ * @param {*} req the Express object representing the HTTP request.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ */
+const currentUser = async (req, _res, next) => {
   try {
-    const token = getToken(req);
-    req.currentUser = await service.login(token);
+    // Validate bearer tokens before anything else - failure means no access.
+    const bearerToken = _getBearerToken(req);
+    if (bearerToken) {
+      const ok = await keycloak.grantManager.validateAccessToken(bearerToken);
+      if (!ok) {
+        throw new Problem(403, { detail: 'Authorization token is invalid.' });
+      }
+    }
+
+    // Add the request element that contains the current user's parsed info. It
+    // is ok if the access token isn't defined: then we'll have a public user.
+    const accessToken = _getAccessToken(req);
+    req.currentUser = await service.login(accessToken);
+
     next();
   } catch (error) {
     next(error);
   }
-};
-
-const currentUser = async (req, res, next) => {
-  // Check if authorization header is a bearer token
-  if (req.headers && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
-    // need to check keycloak, ensure the bearer token is valid
-    const token = req.headers.authorization.substring(7);
-    const ok = await keycloak.grantManager.validateAccessToken(token);
-    if (!ok) {
-      return new Problem(403, { detail: 'Authorization token is invalid.' }).send(res);
-    }
-  }
-
-  return setUser(req, res, next);
 };
 
 const _getForm = async (currentUser, formId) => {

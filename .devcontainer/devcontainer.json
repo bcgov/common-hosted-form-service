@@ -1,33 +1,55 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 {
-    "name": "common-hosted-form-service",
-    
-	"build": {
-        "dockerfile": "Dockerfile",
-        "context": "..",
-        "args": {
-          "VARIANT": "18.18.2-bullseye"
-        }
-    },
+  "name": "common-hosted-form-service",
 
-    "features": {
-		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
-	},
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "..",
+    "args": {
+      "VARIANT": "18.18.2-bullseye"
+    }
+  },
 
-	// Use this environment variable if you need to bind mount your local source code into a new container.
-	"remoteEnv": {
-		"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
-	},
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
 
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [8082, 8081, 8080, 5432, 5173],
+  // Use this environment variable if you need to bind mount your local source code into a new container.
+  "remoteEnv": {
+    "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
+  },
 
-	// Use 'postCreateCommand' to run commands after the container is created.
-    "postCreateCommand": "bash ./.devcontainer/post-install.sh",
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  "forwardPorts": [
+    5173, // CHEFS Frontend
+    5432, // PostgreSQL
+    8080, // CHEFS Backend
+    8081,
+    8082 // Keycloak
+  ],
 
-	// Configure tool-specific properties.
-	// "customizations": {},
+  // Use 'postCreateCommand' to run commands after the container is created.
+  "postCreateCommand": "bash ./.devcontainer/post-install.sh",
 
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	//"remoteUser": "root"
+  // Configure tool-specific properties.
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "cweijan.vscode-postgresql-client2", // PostgreSQL client
+        "dbaeumer.vscode-eslint", // ESLint to catch problems early
+        "esbenp.prettier-vscode", // Prettier to format files on save
+        "postman.postman-for-vscode", // Postman for integration tests
+        "redocly.openapi-vs-code", // ReDocly to catch OpenAPI errors
+        "vue.volar" // Vue 3 recommended extension
+      ],
+      "settings": {
+        "database-client.telemetry.usesOnlineServices": false,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+      }
+    }
+  }
+
+  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+  //"remoteUser": "root"
 }

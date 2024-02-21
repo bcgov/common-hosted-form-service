@@ -729,6 +729,7 @@ const service = {
           formId: formId,
           secret: uuidv4(),
           updatedBy: currentUser.usernameIdp,
+          filesApiAccess: false,
         });
       } else {
         // Add new API key for the form
@@ -736,7 +737,35 @@ const service = {
           formId: formId,
           secret: uuidv4(),
           createdBy: currentUser.usernameIdp,
+          filesApiAccess: false,
         });
+      }
+
+      await trx.commit();
+      return service.readApiKey(formId);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  // Set the filesApiAccess boolean for the api key
+  filesApiKeyAccess: async (formId, filesApiAccess) => {
+    let trx;
+    try {
+      if (typeof filesApiAccess !== 'boolean') {
+        throw new Problem(400, `filesApiAccess must be a boolean`);
+      }
+      const currentKey = await service.readApiKey(formId);
+      trx = await FormApiKey.startTransaction();
+
+      if (currentKey) {
+        await FormApiKey.query(trx).modify('filterFormId', formId).update({
+          formId: formId,
+          filesApiAccess: filesApiAccess,
+        });
+      } else {
+        throw new Problem(404, `No API key found for form ${formId}`);
       }
 
       await trx.commit();
