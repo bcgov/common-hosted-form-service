@@ -8,16 +8,15 @@ const service = require('../service');
 const rbacService = require('../../rbac/service');
 
 /**
- * Checks that every value in the permissionsNeeded array exists in the
- * permissions array.
+ * Checks that every permission is in the user's form permissions.
  *
- * @param {*} form the form including permissions that someone holds.
+ * @param {*} form the user's form metadata including permissions.
  * @param {string[]} permissions the permissions needed for access.
- * @returns true if every permissionsNeeded value is in permissions.
+ * @returns true if every permissions value is in the user's form permissions.
  */
 const _formHasPermissions = (form, permissions) => {
   // Get the intersection of the two sets of permissions. If it's the same
-  // size as permissionsNeeded then the user has all the needed permissions.
+  // size as permissions then the user has all the needed permissions.
   const intersection = permissions.filter((p) => {
     return form.permissions.includes(p);
   });
@@ -58,7 +57,8 @@ const _getBearerToken = (req) => {
  *
  * @param {*} currentUser the user that is currently logged in; may be public.
  * @param {uuid} formId the ID of the form to retrieve for the current user.
- * @param {boolean} includeDeleted if no active form found, look for deleted.
+ * @param {boolean} includeDeleted if active form not found, look for a deleted
+ *   form.
  * @returns the form metadata.
  * @throws Problem if the form metadata for the formId cannot be retrieved.
  */

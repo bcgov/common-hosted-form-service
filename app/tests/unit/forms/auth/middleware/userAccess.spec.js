@@ -1,6 +1,6 @@
 const { getMockReq, getMockRes } = require('@jest-mock/express');
 const Problem = require('api-problem');
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 
 const { currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles, hasRolePermissions } = require('../../../../../src/forms/auth/middleware/userAccess');
 
@@ -8,8 +8,8 @@ const keycloak = require('../../../../../src/components/keycloak');
 const service = require('../../../../../src/forms/auth/service');
 const rbacService = require('../../../../../src/forms/rbac/service');
 
-const formId = uuidv4();
-const formSubmissionId = uuidv4();
+const formId = uuid.v4();
+const formSubmissionId = uuid.v4();
 const userId = 'c6455376-382c-439d-a811-0381a012d695';
 const userId2 = 'c6455376-382c-439d-a811-0381a012d696';
 
