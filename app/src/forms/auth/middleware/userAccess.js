@@ -8,6 +8,24 @@ const service = require('../service');
 const rbacService = require('../../rbac/service');
 
 /**
+ * Checks that every value in the permissionsNeeded array exists in the
+ * permissions array.
+ *
+ * @param {*} form the form including permissions that someone holds.
+ * @param {string[]} permissions the permissions needed for access.
+ * @returns true if every permissionsNeeded value is in permissions.
+ */
+const _formHasPermissions = (form, permissions) => {
+  // Get the intersection of the two sets of permissions. If it's the same
+  // size as permissionsNeeded then the user has all the needed permissions.
+  const intersection = permissions.filter((p) => {
+    return form.permissions.includes(p);
+  });
+
+  return intersection.length === permissions.length;
+};
+
+/**
  * Gets the access token, if it exists, from the request.
  *
  * @param {*} req the Express object representing the HTTP request.
@@ -32,6 +50,37 @@ const _getBearerToken = (req) => {
   }
 
   return token;
+};
+
+/**
+ * Gets the form metadata for the given formId from the forms available to the
+ * current user.
+ *
+ * @param {*} currentUser the user that is currently logged in; may be public.
+ * @param {uuid} formId the ID of the form to retrieve for the current user.
+ * @param {boolean} includeDeleted if no active form found, look for deleted.
+ * @returns the form metadata.
+ * @throws Problem if the form metadata for the formId cannot be retrieved.
+ */
+const _getForm = async (currentUser, formId, includeDeleted) => {
+  if (!uuid.validate(formId)) {
+    throw new Problem(400, { detail: 'Bad formId' });
+  }
+
+  const forms = await service.getUserForms(currentUser, { active: true, formId: formId });
+  let form = forms.find((f) => f.formId === formId);
+
+  if (!form && includeDeleted) {
+    const deletedForms = await service.getUserForms(currentUser, { active: false, formId: formId });
+    form = deletedForms.find((f) => f.formId === formId);
+  }
+
+  // Cannot find the form: either it doesn't exist or we don't have access.
+  if (!form) {
+    throw new Problem(401, { detail: 'Current user has no access to form' });
+  }
+
+  return form;
 };
 
 /**
@@ -67,18 +116,6 @@ const currentUser = async (req, _res, next) => {
   }
 };
 
-const _getForm = async (currentUser, formId) => {
-  const forms = await service.getUserForms(currentUser, { active: true, formId: formId });
-  let form = forms.find((f) => f.formId === formId);
-
-  if (!form) {
-    const deletedForms = await service.getUserForms(currentUser, { active: false, formId: formId });
-    form = deletedForms.find((f) => f.formId === formId);
-  }
-
-  return form;
-};
-
 /**
  * Express middleware to check that a user has all the given permissions for a
  * form. This will fall through if everything is OK, otherwise it will call
@@ -101,40 +138,16 @@ const hasFormPermissions = (permissions) => {
       // correctly - the currentUser middleware must be called before this
       // middleware.
       if (!req.currentUser) {
-        throw new Problem(401, {
-          detail: 'Current user not found on request.',
+        throw new Problem(500, {
+          detail: 'Current user not found on request',
         });
       }
 
-      // We're checking form permissions, so the request must include a formId.
-      // It can be either in params or query, but give precedence to params.
-      const formId = req.params.formId || req.query.formId;
-      if (!formId) {
-        throw new Problem(401, { detail: 'Form Id not found on request.' });
-      }
+      // The request must include a formId, either in params or query, but give
+      // precedence to params.
+      const form = await _getForm(req.currentUser, req.params.formId || req.query.formId, true);
 
-      // Validate in case the route param validation is missing or it comes from
-      // the query string.
-      if (!uuid.validate(formId)) {
-        throw new Problem(400, { detail: `Bad Form ID: "${formId}"` });
-      }
-
-      let form = await _getForm(req.currentUser, formId);
-
-      // Cannot find the form: either it doesn't exist or we don't have access.
-      if (!form) {
-        throw new Problem(401, {
-          detail: 'Current user has no access to form.',
-        });
-      }
-
-      // Get the intersection of the two sets of permissions. If it's the same
-      // size as the permissions then we know the user has all the permissions.
-      const intersection = permissions.filter((p) => {
-        return form.permissions.includes(p);
-      });
-
-      if (intersection.length !== permissions.length) {
+      if (!_formHasPermissions(form, permissions)) {
         throw new Problem(401, {
           detail: 'Current user does not have required permission(s) on form',
         });

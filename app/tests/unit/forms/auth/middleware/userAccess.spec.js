@@ -48,7 +48,7 @@ describe('currentUser', () => {
       // Static analyzers will complain about hard-coded tokens - randomize.
       access_token: Math.random().toString(36).substring(2),
     },
-  }; 
+  };
 
   // Bearer token and its authorization header
   const bearerToken = Math.random().toString(36).substring(2);
@@ -236,8 +236,7 @@ describe('hasFormPermissions', () => {
     expect(middleware).toBeInstanceOf(Function);
   });
 
-  // TODO: This should be a 400, but bundle all breaking changes in a small PR.
-  it('401s if the request has no formId', async () => {
+  it('400s if the request has no formId', async () => {
     const req = getMockReq({
       currentUser: {},
       params: {
@@ -253,7 +252,7 @@ describe('hasFormPermissions', () => {
 
     expect(service.getUserForms).toHaveBeenCalledTimes(0);
     expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 400 }));
   });
 
   it('400s if the formId is not a uuid', async () => {
@@ -315,8 +314,30 @@ describe('hasFormPermissions', () => {
     expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
   });
 
-  // TODO: This should be a 500, but bundle all breaking changes in a small PR.
-  it('401s if the request has no current user', async () => {
+  // TODO: This should be a 403, but bundle all breaking changes in a small PR.
+  it('401s if the permissions are a subset but not including everything', async () => {
+    service.getUserForms.mockReturnValueOnce([
+      {
+        formId: formId,
+        permissions: ['DESIGN_CREATE', 'FORM_READ'],
+      },
+    ]);
+    const req = getMockReq({
+      currentUser: {},
+      params: {
+        formId: formId,
+      },
+    });
+    const { res, next } = getMockRes();
+
+    await hasFormPermissions(['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_DELETE'])(req, res, next);
+
+    expect(service.getUserForms).toHaveBeenCalled();
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
+  });
+
+  it('500s if the request has no current user', async () => {
     const req = getMockReq({
       params: { formId: formId },
     });
@@ -326,7 +347,7 @@ describe('hasFormPermissions', () => {
 
     expect(service.getUserForms).toHaveBeenCalledTimes(0);
     expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 500 }));
   });
 
   it('moves on if a valid API key user has already been set', async () => {
