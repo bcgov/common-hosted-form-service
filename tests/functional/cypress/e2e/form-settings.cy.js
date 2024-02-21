@@ -21,22 +21,26 @@ describe('Form Designer', () => {
     cy.kcLogout();
     cy.kcLogin("user");
     
-    /*cy.on('uncaught:exception', (err, runnable) => {
+    cy.on('uncaught:exception', (err, runnable) => {
       // Form.io throws an uncaught exception for missing projectid
       // Cypress catches it as undefined: undefined so we can't get the text
       console.log(err);
       return false;
-      */
     });
+  });
     
 // Verifying fields in the form settings page
-    it('Visits the form settings page', () => {
+ it('Visits the form settings page', () => {
+   
     cy.visit(`/${depEnv}/form/create`);
     cy.location('pathname').should('eq', `/${depEnv}/form/create`);
     cy.contains('h1', 'Form Settings');
     cy.get('.v-row > :nth-child(1) > .v-card > .v-card-title > span').contains('Form Title');
+
+    let title="title" + Math.random().toString(16).slice(2);
+
     
-    cy.get('#input-15').type('test title');
+    cy.get('#input-15').type(title);
     cy.get('#input-17').type('test description');
     cy.get('#input-22').click();
     cy.get('.v-selection-control-group > .v-card').should('be.visible');
@@ -61,7 +65,7 @@ describe('Form Designer', () => {
     cy.get('#input-88').click();
     cy.get('#input-88').type('abc@gmail.com');
    
-    //let value=["Applications that will be evaluated followed","Collection of Datasets, data submission","Registrations or Sign up - no evaluation","Reporting usually on a repeating schedule or event driven like follow-ups","Feedback Form to determine satisfaction, agreement, likelihood, or other qualitative questions"];
+   
     
    cy.get('#input-54').click();
    cy.contains("Citizens' Services (CITZ)").click();
@@ -84,14 +88,10 @@ describe('Form Designer', () => {
    cy.get('#checkbox-76').click();
    cy.get('button').contains('Continue').click();
 
+ 
+  // Form design page with simple textbox components
 
-
-   /*for(let i=0;i<value.length;i++)
-    {
-      cy.get('.v-list').invoke('val').should('deep.equal', value[i]);
-
-    }
-    */
+ 
     let textFields = ["First Name", "Middle Name", "Last Name"];
 
     for(let i=0; i<textFields.length; i++) {
@@ -108,45 +108,53 @@ describe('Form Designer', () => {
       });
     }
     cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
-
+  // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
+    cy.waitForLoad();
 
+
+  // Go to My forms  
     cy.wait('@getForm').then(()=>{
       let userFormsLinks = cy.get('[data-cy=userFormsLinks]');
       expect(userFormsLinks).to.not.be.null;
       userFormsLinks.trigger('click');
     });
-
-    cy.get(".submissions-table tbody").children().its('length').should('be.gte', 1);
-    cy.contains('td', 'formSubmissionTest')  // gives you the cell
-    .parent()                              // gives you the row
-    .within($tr => {                    // filters just that row
-    cy.wrap($tr).find('td').eq(1).contains('Manage')                  // finds the delete button
-    .click()
-    });
-
-    let formPublishedSwitch = cy.get('[data-cy=formPublishedSwitch]');
-    expect(formPublishedSwitch).to.not.be.null;
-    formPublishedSwitch.parent().trigger('click');
+  // Filter the newly created form
+    cy.location('search').then(search => {
+      //let pathName = fullUrl.pathname
+      let arr = search.split('=');
+      let arrayValues = arr[1].split('&');
+      cy.log(arrayValues[0]);
+      //cy.log(arrayValues[1]);
+      //cy.log(arrayValues[2]);
+      cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+      cy.waitForLoad();
+      })
+   
+    //Publish the form
+    cy.get('.v-label > span').click();
 
     cy.get('span').contains('Publish Version 1');
 
     cy.contains('Continue').should('be.visible');
     cy.contains('Continue').trigger('click');
-
+    //Share link verification
     let shareFormButton = cy.get('[data-cy=shareFormButton]');
     expect(shareFormButton).to.not.be.null;
     shareFormButton.trigger('click').then(()=>{
-      let shareFormLinkButton = cy.get('[data-cy=shareFormLinkButtonss]');
+      //let shareFormLinkButton = cy.get('[data-cy=shareFormLinkButtonss]');
+      let shareFormLinkButton=cy.get('.mx-2');
       expect(shareFormLinkButton).to.not.be.null;
       shareFormLinkButton.trigger('click');
+      cy.get('.mx-2 > .v-btn').click();
     });
 
+  
 
 
 
-    });
+  });
     
 });
