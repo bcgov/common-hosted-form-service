@@ -7,90 +7,72 @@ const Roles = require('../../common/constants').Roles;
 const service = require('../service');
 const rbacService = require('../../rbac/service');
 
-const getToken = (req) => {
-  try {
-    return req.kauth.grant.access_token;
-  } catch (err) {
-    return null;
-  }
+/**
+ * Gets the access token, if it exists, from the request.
+ *
+ * @param {*} req the Express object representing the HTTP request.
+ * @returns a string that is the access token, or undefined if it doesn't exist.
+ */
+const _getAccessToken = (req) => {
+  return req.kauth?.grant?.access_token;
 };
 
-const setUser = async (req, _res, next) => {
+/**
+ * Gets the bearer token, if it exists, from the request.
+ *
+ * @param {*} req the Express object representing the HTTP request.
+ * @returns a string that is the bearer token, or undefined if it doesn't exist.
+ */
+const _getBearerToken = (req) => {
+  const authorization = req.headers?.authorization;
+
+  let token;
+  if (authorization && authorization.startsWith('Bearer ')) {
+    token = authorization.substring(7);
+  }
+
+  return token;
+};
+
+/**
+ * Express middleware that adds the user information as the res.currentUser
+ * attribute so that all downstream middleware and business logic can use it.
+ *
+ * This will fall through if everything is OK. If the Bearer auth is not valid,
+ * this will produce a 403 error.
+ *
+ * @param {*} req the Express object representing the HTTP request.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ */
+const currentUser = async (req, _res, next) => {
   try {
-    const token = getToken(req);
-    // we can limit the form list from query string or url params.  Url params override query params
-    // ex. /forms/:formId=ABC/version?formId=123
-    // the ABC in the url will be used... so don't do that.
-    const params = { ...req.query, ...req.params };
-    req.currentUser = await service.login(token, params, req.chefsLoadForms);
+    // Validate bearer tokens before anything else - failure means no access.
+    const bearerToken = _getBearerToken(req);
+    if (bearerToken) {
+      const ok = await keycloak.grantManager.validateAccessToken(bearerToken);
+      if (!ok) {
+        throw new Problem(403, { detail: 'Authorization token is invalid.' });
+      }
+    }
+
+    // Add the request element that contains the current user's parsed info. It
+    // is ok if the access token isn't defined: then we'll have a public user.
+    const accessToken = _getAccessToken(req);
+    req.currentUser = await service.login(accessToken);
+
     next();
   } catch (error) {
     next(error);
   }
 };
 
-const currentUser = async (req, res, next) => {
-  // Check if authorization header is a bearer token
-  if (req.headers && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
-    // need to check keycloak, ensure the bearer token is valid
-    const token = req.headers.authorization.substring(7);
-    const ok = await keycloak.grantManager.validateAccessToken(token);
-    if (!ok) {
-      return new Problem(403, { detail: 'Authorization token is invalid.' }).send(res);
-    }
-  }
-
-  return setUser(req, res, next);
-};
-
-// Temporary version of currentUser that only calls sets req.currentUser for
-// requests using Bearer tokens. This can only be used for routes that call
-// controller methods that don't use req.currentUser.
-//
-// Plan: If this code is a success it will eventually be rolled out to all
-// endpoints that don't need req.currentUser for API Key use. Then, all those
-// that do need req.currentUser will be refactored to use the minimal query we
-// need.
-const currentUserTemp = async (req, res, next) => {
-  // Check if authorization header is a bearer token
-  if (req.headers && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
-    // need to check keycloak, ensure the bearer token is valid
-    const token = req.headers.authorization.substring(7);
-    const ok = await keycloak.grantManager.validateAccessToken(token);
-    if (!ok) {
-      return new Problem(403, { detail: 'Authorization token is invalid.' }).send(res);
-    }
-  }
-
-  // Temporarily set a flag to prevent expensive database calls. We will
-  // eventually move all routes to working in this way, and then the extra
-  // downstream logic can be removed.
-  req.chefsLoadForms = false;
-
-  return setUser(req, res, next);
-};
-
-// To deal with performance problems, we are going to move away from setting the
-// req.currentUser.forms and req.currentUser.deletedForms data. The code using
-// those will eventually be removed from this function.
 const _getForm = async (currentUser, formId) => {
-  let forms;
-  if (currentUser.forms) {
-    forms = currentUser.forms;
-  } else {
-    forms = await service.getUserForms(currentUser, { active: true, formId: formId });
-  }
-
+  const forms = await service.getUserForms(currentUser, { active: true, formId: formId });
   let form = forms.find((f) => f.formId === formId);
 
   if (!form) {
-    let deletedForms;
-    if (currentUser.deletedForms) {
-      deletedForms = currentUser.deletedForms;
-    } else {
-      deletedForms = await service.getUserForms(currentUser, { active: false, formId: formId });
-    }
-
+    const deletedForms = await service.getUserForms(currentUser, { active: false, formId: formId });
     form = deletedForms.find((f) => f.formId === formId);
   }
 
@@ -160,13 +142,7 @@ const hasSubmissionPermissions = (permissions) => {
 
       // Does the user have permissions for this submission due to their FORM permissions
       if (req.currentUser) {
-        let forms;
-        if (req.currentUser.forms) {
-          forms = req.currentUser.forms;
-        } else {
-          forms = await service.getUserForms(req.currentUser, { active: true, formId: submissionForm.form.id });
-        }
-
+        const forms = await service.getUserForms(req.currentUser, { active: true, formId: submissionForm.form.id });
         let formFromCurrentUser = forms.find((f) => f.formId === submissionForm.form.id);
         if (formFromCurrentUser) {
           // Do they have the submission permissions being requested on this FORM
@@ -252,15 +228,17 @@ const filterMultipleSubmissions = () => {
   };
 };
 
-const hasFormRole = (formId, user, role) => {
+const hasFormRole = async (formId, user, role) => {
   let hasRole = false;
-  form_loop: for (let i = 0; i < user.forms.length; i++) {
-    if (user.forms[i].formId === formId) {
-      for (let j = 0; j < user.forms[i].roles.length; j++) {
-        if (user.forms[i].roles[j] === role) {
-          hasRole = true;
-          break form_loop;
-        }
+
+  const forms = await service.getUserForms(user, { active: true, formId: formId });
+  const form = forms.find((f) => f.formId === formId);
+
+  if (form) {
+    for (let j = 0; j < form.roles.length; j++) {
+      if (form.roles[j] === role) {
+        hasRole = true;
+        break;
       }
     }
   }
@@ -277,26 +255,22 @@ const hasFormRoles = (formRoles, hasAll = false) => {
       return new Problem(401, { detail: 'Form Id not found on request.' }).send(res);
     }
 
-    // Iterate all the forms the current user has access to
-    form_loop: for (let formIndex = 0; formIndex < req.currentUser.forms.length; formIndex++) {
-      // If the indexed form is the form we're checking role access
-      if (req.query.formId === req.currentUser.forms[formIndex].formId) {
-        // Iterate all the roles for this form
-        for (let roleIndex = 0; roleIndex < req.currentUser.forms[formIndex].roles.length; roleIndex++) {
-          let index = formRoles.indexOf(req.currentUser.forms[formIndex].roles[roleIndex]);
-          // If the user has the indexed role requested by the route
-          if (index > -1) {
-            // If the route specifies all roles must exist for the form
-            if (hasAll)
-              // Remove that role from the search
-              formRoles.splice(index, 1);
-            // The user has at least one of the roles
-            else return next();
-          }
-
-          // The user has all of the required roles
-          if (formRoles.length == 0) break form_loop;
+    const forms = await service.getUserForms(req.currentUser, { active: true, formId: formId });
+    const form = forms.find((f) => f.formId === formId);
+    if (form) {
+      for (let roleIndex = 0; roleIndex < form.roles.length; roleIndex++) {
+        let index = formRoles.indexOf(form.roles[roleIndex]);
+        // If the user has the indexed role requested by the route
+        if (index > -1) {
+          // If the route specifies all roles must exist for the form
+          if (hasAll)
+            // Remove that role from the search
+            formRoles.splice(index, 1);
+          // The user has at least one of the roles
+          else return next();
         }
+        // The user has all of the required roles
+        if (formRoles.length == 0) break;
       }
     }
 
@@ -321,7 +295,7 @@ const hasRolePermissions = (removingUsers = false) => {
       const currentUser = req.currentUser;
       const data = req.body;
 
-      const isOwner = hasFormRole(formId, currentUser, Roles.OWNER);
+      const isOwner = await hasFormRole(formId, currentUser, Roles.OWNER);
 
       if (removingUsers) {
         if (data.includes(currentUser.id)) return next(new Problem(401, { detail: "You can't remove yourself from this form." }));
@@ -384,7 +358,6 @@ const hasRolePermissions = (removingUsers = false) => {
 
 module.exports = {
   currentUser,
-  currentUserTemp,
   hasFormPermissions,
   hasSubmissionPermissions,
   hasFormRoles,

@@ -1,14 +1,19 @@
 const config = require('config');
 const routes = require('express').Router();
 const apiAccess = require('../auth/middleware/apiAccess');
-const { currentUserTemp, hasFormPermissions } = require('../auth/middleware/userAccess');
+const { currentUser, hasFormPermissions } = require('../auth/middleware/userAccess');
+const params = require('../auth/middleware/params');
 const P = require('../common/constants').Permissions;
 const rateLimiter = require('../common/middleware').apiKeyRateLimiter;
 
 const keycloak = require('../../components/keycloak');
 const controller = require('./controller');
 
-routes.use(currentUserTemp);
+routes.use(currentUser);
+
+routes.param('formId', params.validateFormId);
+routes.param('formVersionDraftId', params.validateFormVersionDraftId);
+routes.param('formVersionId', params.validateFormVersionId);
 
 routes.get('/', keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`), async (req, res, next) => {
   await controller.listForms(req, res, next);
@@ -120,6 +125,10 @@ routes.get('/:formId/apiKey', hasFormPermissions(P.FORM_API_READ), async (req, r
 
 routes.put('/:formId/apiKey', hasFormPermissions(P.FORM_API_CREATE), async (req, res, next) => {
   await controller.createOrReplaceApiKey(req, res, next);
+});
+
+routes.put('/:formId/apiKey/filesApiAccess', hasFormPermissions(P.FORM_API_CREATE), async (req, res, next) => {
+  await controller.filesApiKeyAccess(req, res, next);
 });
 
 routes.delete('/:formId/apiKey', hasFormPermissions(P.FORM_API_DELETE), async (req, res, next) => {
