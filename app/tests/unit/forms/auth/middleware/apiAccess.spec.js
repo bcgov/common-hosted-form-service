@@ -307,7 +307,7 @@ describe('apiAccess', () => {
       expect(mockReadApiKey).toHaveBeenCalledTimes(0);
       expect(res.status).not.toHaveBeenCalled();
       expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 500 }));
+      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 403 }));
     });
 
     it('should be unauthorized when file has no form submission id', async () => {
@@ -324,7 +324,7 @@ describe('apiAccess', () => {
       expect(mockReadApiKey).toHaveBeenCalledTimes(0);
       expect(res.status).not.toHaveBeenCalled();
       expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 500 }));
+      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 403 }));
     });
 
     it('should be unauthorized when form submission does not exist', async () => {

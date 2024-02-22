@@ -1,6 +1,6 @@
 const Problem = require('api-problem');
 const basicAuth = require('express-basic-auth');
-const { validate: uuidValidate } = require('uuid');
+const uuid = require('uuid');
 
 const formService = require('../../form/service');
 const submissionService = require('../../submission/service');
@@ -23,7 +23,7 @@ const _getFormId = async (params) => {
   if (params.formId) {
     formId = params.formId;
 
-    if (!uuidValidate(formId)) {
+    if (!uuid.validate(formId)) {
       throw new Problem(400, { detail: `Bad formId "${formId}".` });
     }
   } else if (params.formSubmissionId) {
@@ -43,7 +43,7 @@ const _getFormId = async (params) => {
  * @throws Problem if there is a UUID validation error.
  */
 const _getFormIdFromFileId = async (fileId) => {
-  if (!uuidValidate(fileId)) {
+  if (!uuid.validate(fileId)) {
     throw new Problem(400, { detail: `Bad fileId "${fileId}".` });
   }
 
@@ -52,7 +52,7 @@ const _getFormIdFromFileId = async (fileId) => {
 
   // check to see that an associated submissionId exists
   if (file && !file.formSubmissionId) {
-    throw new Problem(500, { detail: `Submission ID missing in file storage "${fileId}".` });
+    throw new Problem(403, { detail: HTTP_403_DETAIL });
   }
 
   return _getFormIdFromSubmissionId(file.formSubmissionId);
@@ -66,7 +66,7 @@ const _getFormIdFromFileId = async (fileId) => {
  * @throws Problem if there is a UUID validation error.
  */
 const _getFormIdFromSubmissionId = async (formSubmissionId) => {
-  if (!uuidValidate(formSubmissionId)) {
+  if (!uuid.validate(formSubmissionId)) {
     throw new Problem(400, { detail: `Bad formSubmissionId "${formSubmissionId}".` });
   }
 

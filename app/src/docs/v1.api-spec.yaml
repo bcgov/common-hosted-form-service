@@ -1661,6 +1661,11 @@ paths:
   /files/{fileId}:
     get:
       summary: Get a file
+      description: >-
+        Gets an uploaded file that belongs to a submission.
+
+        > Note: _BasicAuth_ users cannot retrieve files belonging to draft
+        submissions. This will produce a `403` response.
       operationId: fileGet
       security:
         - BasicAuth: []
