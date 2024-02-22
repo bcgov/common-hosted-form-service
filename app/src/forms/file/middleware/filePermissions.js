@@ -49,7 +49,7 @@ const hasFileCreate = (req, res, next) => {
  * Middleware to determine if the current user can do a specific permission on a file
  * This is generally based on the SUBMISSION permissions that the file is attached to
  * but has to handle management for files that are added before submit
- * @param {string} permissions the permission to require on this route
+ * @param {string[]} permissions the permission to require on this route
  * @returns {Function} a middleware function
  */
 const hasFilePermissions = (permissions) => {

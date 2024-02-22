@@ -86,9 +86,8 @@ const _getForm = async (currentUser, formId, includeDeleted) => {
 /**
  * Express middleware that adds the user information as the res.currentUser
  * attribute so that all downstream middleware and business logic can use it.
- *
- * This will fall through if everything is OK. If the Bearer auth is not valid,
- * this will produce a 403 error.
+ * This will fall through if everything is OK, otherwise it will call next()
+ * with a Problem describing the error.
  *
  * @param {*} req the Express object representing the HTTP request.
  * @param {*} _res the Express object representing the HTTP response - unused.
@@ -119,7 +118,7 @@ const currentUser = async (req, _res, next) => {
 /**
  * Express middleware to check that a user has all the given permissions for a
  * form. This will fall through if everything is OK, otherwise it will call
- * next() with a Problem that describes the error.
+ * next() with a Problem describing the error.
  *
  * @param {string[]} permissions the form permissions that the user must have.
  * @returns nothing
@@ -160,23 +159,28 @@ const hasFormPermissions = (permissions) => {
   };
 };
 
+/**
+ * Express middleware to check that the caller has the given permissions for the
+ * submission identified by params.formSubmissionId or query.formSubmissionId.
+ * This will fall through if everything is OK, otherwise it will call next()
+ * with a Problem describing the error.
+ *
+ * @param {string[]} permissions the access the user needs for the submission
+ * @returns nothing
+ */
 const hasSubmissionPermissions = (permissions) => {
   return async (req, _res, next) => {
     try {
-      // Skip permission checks if requesting as API entity
+      // Skip permission checks if req is already authorized using an API key.
       if (req.apiUser) {
         return next();
       }
 
-      if (!Array.isArray(permissions)) {
-        permissions = [permissions];
-      }
-
       // Get the provided submission ID whether in a param or query (precedence to param)
       const submissionId = req.params.formSubmissionId || req.query.formSubmissionId;
-      if (!submissionId) {
+      if (!uuid.validate(submissionId)) {
         // No submission provided to this route that secures based on form... that's a problem!
-        return next(new Problem(401, { detail: 'Submission Id not found on request.' }));
+        throw new Problem(400, { detail: 'Bad formSubmissionId' });
       }
 
       // Get the submission results so we know what form this submission is for
@@ -200,12 +204,14 @@ const hasSubmissionPermissions = (permissions) => {
 
       // Deleted submissions are inaccessible
       if (submissionForm.submission.deleted) {
-        return next(new Problem(401, { detail: 'You do not have access to this submission.' }));
+        throw new Problem(401, {
+          detail: 'You do not have access to this submission.',
+        });
       }
 
       // TODO: consider whether DRAFT submissions are restricted as deleted above
 
-      // Public (annonymous) forms are publicly viewable
+      // Public (anonymous) forms are publicly viewable
       const publicAllowed = submissionForm.form.identityProviders.find((p) => p.code === 'public') !== undefined;
       if (permissions.length === 1 && permissions.includes(Permissions.SUBMISSION_READ) && publicAllowed) {
         return next();
@@ -213,10 +219,14 @@ const hasSubmissionPermissions = (permissions) => {
 
       // check against the submission level permissions assigned to the user...
       const submissionPermission = await service.checkSubmissionPermission(req.currentUser, submissionId, permissions);
-      if (submissionPermission) return next();
+      if (!submissionPermission) {
+        // no access to this submission...
+        throw new Problem(401, {
+          detail: 'You do not have access to this submission.',
+        });
+      }
 
-      // no access to this submission...
-      return next(new Problem(401, { detail: 'You do not have access to this submission.' }));
+      return next();
     } catch (error) {
       next(error);
     }
