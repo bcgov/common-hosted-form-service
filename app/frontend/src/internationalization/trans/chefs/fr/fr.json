@@ -229,6 +229,7 @@
     "infoA": "Assurez-vous que la clé secrète de votre API est stockée dans un emplacement sécurisé (c'est-à-dire un coffre de clés).",
     "infoB": "Votre clé API accorde un accès illimité à votre formulaire. Ne donnez votre clé API à personne.",
     "infoC": "La clé API doit UNIQUEMENT être utilisée pour les interactions système automatisées. N'utilisez pas votre clé API pour un accès basé sur l'utilisateur",
+    "infoD": "Si vous souhaitez accéder aux fichiers soumis via la clé API, veuillez cocher la case suivante après avoir généré la clé.",
     "deleteKey": "Supprimer la clé",
     "apiKey": "clé API",
     "hideSecret": "Cacher le secret",
@@ -245,7 +246,8 @@
     "formOwnerKeyAcess": "Vous devez être le <strong>propriétaire du formulaire</strong> pour gérer les clés API.",
     "regenerate": "Régénérer",
     "generate": "Générer",
-    "secret": "Secret"
+    "secret": "Secret",
+    "filesAPIAccess":"Autoriser cette clé API à accéder aux fichiers soumis"
   },
   "manageVersions": {
     "important": "IMPORTANT!",

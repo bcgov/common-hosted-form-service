@@ -35,12 +35,22 @@ inputs:
     description: Route Subpath Mount point
     required: true
     default: "/app"
+  ref:
+    description: The checkout ref id
+    required: false
+    default: ''
 
 runs:
   using: composite
   steps:
+    - name: Checkout repository from pull request
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ inputs.ref }}
+      if: ${{ inputs.ref != '' }}
     - name: Checkout repository
       uses: actions/checkout@v3
+      if: ${{ inputs.ref == '' }}
 
     - name: Login to OpenShift Cluster
       uses: jasonchung1871/oc-login@v1.1.2

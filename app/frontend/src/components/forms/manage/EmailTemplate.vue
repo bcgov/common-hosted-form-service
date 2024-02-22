@@ -58,7 +58,7 @@ export default {
         this.formChanged = false;
       } catch (error) {
         this.addNotification({
-          message: i18n.t('trans.emailTemplate.saveEmailTemplateErrMsg'),
+          text: i18n.t('trans.emailTemplate.saveEmailTemplateErrMsg'),
           consoleError: i18n.t(
             'trans.emailTemplate.saveEmailTemplateConsoleErrMsg',
             {

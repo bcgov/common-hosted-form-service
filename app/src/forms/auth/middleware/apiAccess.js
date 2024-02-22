@@ -7,6 +7,7 @@ const submissionService = require('../../submission/service');
 const fileService = require('../../file/service');
 
 const HTTP_401_DETAIL = 'Invalid authorization credentials.';
+const HTTP_403_DETAIL = 'You do not have access to this resource.';
 
 /**
  * Gets the Form ID from the request parameters. Handles the cases where instead
@@ -93,9 +94,9 @@ module.exports = async (req, res, next) => {
         throw new Problem(401, { detail: HTTP_401_DETAIL });
       }
 
-      // if (params.id && apiKey.filesApiAccess === false) {
-      //   throw new Problem(401, { detail: HTTP_401_DETAIL });
-      // }
+      if (params.id && apiKey.filesApiAccess === false) {
+        throw new Problem(403, { detail: HTTP_403_DETAIL });
+      }
 
       const secret = apiKey.secret;
 
