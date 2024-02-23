@@ -83,9 +83,8 @@ const service = {
    */
   publishFormEvent: async (formId, formVersionId, publish) => {
     const { subscribe } = await service.readForm(formId);
-    log.error('in publish event');
+
     if (subscribe && subscribe.enabled) {
-      log.error('sub enabled');
       const subscribeConfig = await service.readFormSubscriptionDetails(formId);
       const config = Object.assign({}, subscribe, subscribeConfig);
       const formVersion = new FormVersion();
