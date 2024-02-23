@@ -204,9 +204,7 @@ const hasSubmissionPermissions = (permissions) => {
 
       // Deleted submissions are inaccessible
       if (submissionForm.submission.deleted) {
-        throw new Problem(401, {
-          detail: 'You do not have access to this submission.',
-        });
+        return next(new Problem(401, { detail: 'You do not have access to this submission.' }));
       }
 
       // TODO: consider whether DRAFT submissions are restricted as deleted above
@@ -219,14 +217,10 @@ const hasSubmissionPermissions = (permissions) => {
 
       // check against the submission level permissions assigned to the user...
       const submissionPermission = await service.checkSubmissionPermission(req.currentUser, submissionId, permissions);
-      if (!submissionPermission) {
-        // no access to this submission...
-        throw new Problem(401, {
-          detail: 'You do not have access to this submission.',
-        });
-      }
+      if (submissionPermission) return next();
 
-      return next();
+      // no access to this submission...
+      return next(new Problem(401, { detail: 'You do not have access to this submission.' }));
     } catch (error) {
       next(error);
     }
