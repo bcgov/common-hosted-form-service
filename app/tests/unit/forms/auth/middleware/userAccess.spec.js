@@ -3,6 +3,7 @@ const Problem = require('api-problem');
 const uuid = require('uuid');
 
 const { currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles, hasRolePermissions } = require('../../../../../src/forms/auth/middleware/userAccess');
+const { Permissions } = require('../../../../../src/forms/common/constants');
 
 const keycloak = require('../../../../../src/components/keycloak');
 const service = require('../../../../../src/forms/auth/service');
@@ -231,203 +232,261 @@ describe('hasFormPermissions', () => {
   service.getUserForms = jest.fn().mockReturnValue([]);
 
   it('returns a middleware function', async () => {
-    const middleware = hasFormPermissions(['FORM_READ']);
+    const middleware = hasFormPermissions([Permissions.FORM_READ]);
 
     expect(middleware).toBeInstanceOf(Function);
   });
 
-  it('400s if the request has no formId', async () => {
-    const req = getMockReq({
-      currentUser: {},
-      params: {
-        submissionId: formSubmissionId,
-      },
-      query: {
-        otherQueryThing: 'SOMETHING',
-      },
+  describe('400 response when', () => {
+    const expectedStatus = { status: 400 };
+
+    test('formId missing', async () => {
+      const req = getMockReq({
+        currentUser: {},
+        params: {
+          submissionId: formSubmissionId,
+        },
+        query: {
+          otherQueryThing: 'SOMETHING',
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFormPermissions([Permissions.FORM_READ])(req, res, next);
+
+      expect(service.getUserForms).toHaveBeenCalledTimes(0);
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
     });
-    const { res, next } = getMockRes();
 
-    await hasFormPermissions(['FORM_READ'])(req, res, next);
+    test('formId not a uuid', async () => {
+      const req = getMockReq({
+        currentUser: {},
+        params: {
+          formId: 'undefined',
+        },
+        query: {
+          otherQueryThing: 'SOMETHING',
+        },
+      });
+      const { res, next } = getMockRes();
 
-    expect(service.getUserForms).toHaveBeenCalledTimes(0);
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 400 }));
+      await hasFormPermissions([Permissions.FORM_READ])(req, res, next);
+
+      expect(service.getUserForms).toHaveBeenCalledTimes(0);
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+    });
   });
 
-  it('400s if the formId is not a uuid', async () => {
-    const req = getMockReq({
-      currentUser: {},
-      params: {
-        formId: 'undefined',
-      },
-      query: {
-        otherQueryThing: 'SOMETHING',
-      },
+  // TODO: These should be 403, but bundle all breaking changes in a small PR.
+  describe('401 response when', () => {
+    const expectedStatus = { status: 401 };
+
+    test('user does not have form access', async () => {
+      const req = getMockReq({
+        currentUser: {},
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFormPermissions([Permissions.FORM_READ])(req, res, next);
+
+      expect(service.getUserForms).toHaveBeenCalled();
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
     });
-    const { res, next } = getMockRes();
 
-    await hasFormPermissions(['FORM_READ'])(req, res, next);
+    test('permissions are not included', async () => {
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+          permissions: [Permissions.DESIGN_CREATE, Permissions.FORM_READ, Permissions.SUBMISSION_READ],
+        },
+      ]);
+      const req = getMockReq({
+        currentUser: {},
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
 
-    expect(service.getUserForms).toHaveBeenCalledTimes(0);
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 400 }));
+      await hasFormPermissions([Permissions.DESIGN_CREATE, Permissions.FORM_READ, Permissions.SUBMISSION_DELETE])(req, res, next);
+
+      expect(service.getUserForms).toHaveBeenCalled();
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+    });
+
+    test('permissions are only a subset', async () => {
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+          permissions: [Permissions.DESIGN_CREATE, Permissions.FORM_READ],
+        },
+      ]);
+      const req = getMockReq({
+        currentUser: {},
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFormPermissions([Permissions.DESIGN_CREATE, Permissions.FORM_READ, Permissions.SUBMISSION_DELETE])(req, res, next);
+
+      expect(service.getUserForms).toHaveBeenCalled();
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+    });
   });
 
-  // TODO: This should be a 403, but bundle all breaking changes in a small PR.
-  it('401s if the user does not have access to the form', async () => {
-    const req = getMockReq({
-      currentUser: {},
-      params: {
-        formId: formId,
-      },
+  describe('500 response when', () => {
+    const expectedStatus = { status: 500 };
+
+    test('request has no current user', async () => {
+      const req = getMockReq({
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFormPermissions([Permissions.FORM_READ])(req, res, next);
+
+      expect(service.getUserForms).toHaveBeenCalledTimes(0);
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
     });
-    const { res, next } = getMockRes();
-
-    await hasFormPermissions(['FORM_READ'])(req, res, next);
-
-    expect(service.getUserForms).toHaveBeenCalled();
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
   });
 
-  // TODO: This should be a 403, but bundle all breaking changes in a small PR.
-  it('401s if the expected permissions are not included', async () => {
-    service.getUserForms.mockReturnValueOnce([
-      {
-        formId: formId,
-        permissions: ['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_READ'],
-      },
-    ]);
-    const req = getMockReq({
-      currentUser: {},
-      params: {
-        formId: formId,
-      },
+  describe('handles error thrown by', () => {
+    test('getUserForms', async () => {
+      const error = new Error();
+      service.getUserForms.mockRejectedValueOnce(error);
+      const req = getMockReq({
+        currentUser: {},
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFormPermissions([Permissions.FORM_READ])(req, res, next);
+
+      expect(service.getUserForms).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith(error);
     });
-    const { res, next } = getMockRes();
-
-    await hasFormPermissions(['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_DELETE'])(req, res, next);
-
-    expect(service.getUserForms).toHaveBeenCalled();
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
   });
 
-  // TODO: This should be a 403, but bundle all breaking changes in a small PR.
-  it('401s if the permissions are a subset but not including everything', async () => {
-    service.getUserForms.mockReturnValueOnce([
-      {
-        formId: formId,
-        permissions: ['DESIGN_CREATE', 'FORM_READ'],
-      },
-    ]);
-    const req = getMockReq({
-      currentUser: {},
-      params: {
-        formId: formId,
-      },
+  describe('allows', () => {
+    test('api key users', async () => {
+      const req = getMockReq({
+        apiUser: true,
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFormPermissions([Permissions.FORM_READ])(req, res, next);
+
+      expect(service.getUserForms).toHaveBeenCalledTimes(0);
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith();
     });
-    const { res, next } = getMockRes();
 
-    await hasFormPermissions(['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_DELETE'])(req, res, next);
+    test('user has permission', async () => {
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+          permissions: [Permissions.FORM_READ],
+        },
+      ]);
+      const req = getMockReq({
+        currentUser: {},
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
 
-    expect(service.getUserForms).toHaveBeenCalled();
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
-  });
+      await hasFormPermissions([Permissions.FORM_READ])(req, res, next);
 
-  it('500s if the request has no current user', async () => {
-    const req = getMockReq({
-      params: { formId: formId },
+      expect(service.getUserForms).toHaveBeenCalled();
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith();
     });
-    const { res, next } = getMockRes();
 
-    await hasFormPermissions(['FORM_READ'])(req, res, next);
+    test('user has permissions', async () => {
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+          permissions: [Permissions.DESIGN_CREATE, Permissions.FORM_READ, Permissions.SUBMISSION_DELETE],
+        },
+      ]);
+      const req = getMockReq({
+        currentUser: {},
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
 
-    expect(service.getUserForms).toHaveBeenCalledTimes(0);
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 500 }));
-  });
+      await hasFormPermissions([Permissions.DESIGN_CREATE, Permissions.FORM_READ, Permissions.SUBMISSION_DELETE])(req, res, next);
 
-  it('moves on if a valid API key user has already been set', async () => {
-    const req = getMockReq({
-      apiUser: true,
-      params: { formId: formId },
+      expect(service.getUserForms).toHaveBeenCalled();
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith();
     });
-    const { res, next } = getMockRes();
 
-    await hasFormPermissions(['FORM_READ'])(req, res, next);
+    test('user has permissions from query', async () => {
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+          permissions: [Permissions.DESIGN_CREATE, Permissions.FORM_READ, Permissions.SUBMISSION_DELETE],
+        },
+      ]);
+      const req = getMockReq({
+        currentUser: {},
+        query: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
 
-    expect(service.getUserForms).toHaveBeenCalledTimes(0);
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith();
-  });
+      await hasFormPermissions([Permissions.DESIGN_CREATE, Permissions.FORM_READ, Permissions.SUBMISSION_DELETE])(req, res, next);
 
-  it('moves on if the expected permissions are included', async () => {
-    service.getUserForms.mockReturnValueOnce([
-      {
-        formId: formId,
-        permissions: ['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_DELETE'],
-      },
-    ]);
-    const req = getMockReq({
-      currentUser: {},
-      params: {
-        formId: formId,
-      },
+      expect(service.getUserForms).toHaveBeenCalled();
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith();
     });
-    const { res, next } = getMockRes();
 
-    await hasFormPermissions(['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_DELETE'])(req, res, next);
+    test('user has permissions on deleted form', async () => {
+      service.getUserForms.mockReturnValueOnce([]).mockReturnValueOnce([
+        {
+          formId: formId,
+          permissions: [Permissions.FORM_READ],
+        },
+      ]);
+      const req = getMockReq({
+        currentUser: {},
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
 
-    expect(service.getUserForms).toHaveBeenCalled();
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith();
-  });
+      await hasFormPermissions([Permissions.FORM_READ])(req, res, next);
 
-  it('moves on if the expected permissions are included with query formId', async () => {
-    service.getUserForms.mockReturnValueOnce([
-      {
-        formId: formId,
-        permissions: ['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_DELETE'],
-      },
-    ]);
-    const req = getMockReq({
-      currentUser: {},
-      query: {
-        formId: formId,
-      },
+      expect(service.getUserForms).toHaveBeenCalled();
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith();
     });
-    const { res, next } = getMockRes();
-
-    await hasFormPermissions(['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_DELETE'])(req, res, next);
-
-    expect(service.getUserForms).toHaveBeenCalled();
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith();
-  });
-
-  it('moves on if the user has deleted form access', async () => {
-    service.getUserForms.mockReturnValueOnce([]).mockReturnValueOnce([
-      {
-        formId: formId,
-        permissions: ['FORM_READ'],
-      },
-    ]);
-    const req = getMockReq({
-      currentUser: {},
-      params: {
-        formId: formId,
-      },
-    });
-    const { res, next } = getMockRes();
-
-    await hasFormPermissions(['FORM_READ'])(req, res, next);
-
-    expect(service.getUserForms).toHaveBeenCalled();
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith();
   });
 });
 
@@ -447,19 +506,19 @@ describe('hasSubmissionPermissions', () => {
   service.getUserForms = jest.fn().mockReturnValue([]);
 
   it('returns a middleware function', () => {
-    const middleware = hasSubmissionPermissions(['submission_read']);
+    const middleware = hasSubmissionPermissions([Permissions.SUBMISSION_READ]);
 
     expect(middleware).toBeInstanceOf(Function);
   });
 
-  describe('returns 400 when', () => {
+  describe('400 response when', () => {
     const expectedStatus = { status: 400 };
 
     test('formSubmissionId missing', async () => {
       const req = getMockReq();
       const { res, next } = getMockRes();
 
-      await hasSubmissionPermissions(['submission_read'])(req, res, next);
+      await hasSubmissionPermissions([Permissions.SUBMISSION_READ])(req, res, next);
 
       expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
       expect(service.getSubmissionForm).toHaveBeenCalledTimes(0);
@@ -477,7 +536,7 @@ describe('hasSubmissionPermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasSubmissionPermissions(['submission_read'])(req, res, next);
+      await hasSubmissionPermissions([Permissions.SUBMISSION_READ])(req, res, next);
 
       expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
       expect(service.getSubmissionForm).toHaveBeenCalledTimes(0);
@@ -487,7 +546,8 @@ describe('hasSubmissionPermissions', () => {
     });
   });
 
-  describe('returns 401 when', () => {
+  // TODO: These should be 403, but bundle all breaking changes in a small PR.
+  describe('401 response when', () => {
     const expectedStatus = { status: 401 };
 
     test('deleted submission and no current user', async () => {
@@ -502,7 +562,7 @@ describe('hasSubmissionPermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasSubmissionPermissions(['submission_read'])(req, res, next);
+      await hasSubmissionPermissions([Permissions.SUBMISSION_READ])(req, res, next);
 
       expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
       expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
@@ -524,7 +584,7 @@ describe('hasSubmissionPermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasSubmissionPermissions(['submission_read'])(req, res, next);
+      await hasSubmissionPermissions([Permissions.SUBMISSION_READ])(req, res, next);
 
       expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
       expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
@@ -552,7 +612,7 @@ describe('hasSubmissionPermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasSubmissionPermissions(['submission_read'])(req, res, next);
+      await hasSubmissionPermissions([Permissions.SUBMISSION_READ])(req, res, next);
 
       expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
       expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
@@ -569,7 +629,7 @@ describe('hasSubmissionPermissions', () => {
       service.getUserForms.mockReturnValueOnce([
         {
           formId: formId,
-          permissions: ['submission_read'],
+          permissions: [Permissions.SUBMISSION_READ],
         },
       ]);
       const req = getMockReq({
@@ -580,7 +640,7 @@ describe('hasSubmissionPermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasSubmissionPermissions(['submission_read', 'submission_update'])(req, res, next);
+      await hasSubmissionPermissions([Permissions.SUBMISSION_READ, Permissions.SUBMISSION_UPDATE])(req, res, next);
 
       expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
       expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
@@ -603,7 +663,7 @@ describe('hasSubmissionPermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasSubmissionPermissions(['submission_delete'])(req, res, next);
+      await hasSubmissionPermissions([Permissions.SUBMISSION_DELETE])(req, res, next);
 
       expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(1);
       expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
@@ -625,7 +685,7 @@ describe('hasSubmissionPermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasSubmissionPermissions(['submission_read', 'submission_delete'])(req, res, next);
+      await hasSubmissionPermissions([Permissions.SUBMISSION_READ, Permissions.SUBMISSION_DELETE])(req, res, next);
 
       expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(1);
       expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
@@ -650,7 +710,7 @@ describe('hasSubmissionPermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasSubmissionPermissions(['submission_read'])(req, res, next);
+      await hasSubmissionPermissions([Permissions.SUBMISSION_READ])(req, res, next);
 
       expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(1);
       expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
@@ -679,7 +739,7 @@ describe('hasSubmissionPermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasSubmissionPermissions(['submission_read'])(req, res, next);
+      await hasSubmissionPermissions([Permissions.SUBMISSION_READ])(req, res, next);
 
       expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(1);
       expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
@@ -699,7 +759,7 @@ describe('hasSubmissionPermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasSubmissionPermissions(['submission_read'])(req, res, next);
+      await hasSubmissionPermissions([Permissions.SUBMISSION_READ])(req, res, next);
 
       expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
       expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
@@ -723,7 +783,7 @@ describe('hasSubmissionPermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasSubmissionPermissions(['submission_read'])(req, res, next);
+      await hasSubmissionPermissions([Permissions.SUBMISSION_READ])(req, res, next);
 
       expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
       expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
@@ -743,7 +803,7 @@ describe('hasSubmissionPermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasSubmissionPermissions(['submission_read'])(req, res, next);
+      await hasSubmissionPermissions([Permissions.SUBMISSION_READ])(req, res, next);
 
       expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
       expect(service.getSubmissionForm).toHaveBeenCalledTimes(0);
@@ -764,7 +824,7 @@ describe('hasSubmissionPermissions', () => {
         },
         {
           formId: formId,
-          permissions: ['submission_read', 'submission_update'],
+          permissions: [Permissions.SUBMISSION_READ, Permissions.SUBMISSION_UPDATE],
         },
       ]);
       const req = getMockReq({
@@ -775,7 +835,7 @@ describe('hasSubmissionPermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasSubmissionPermissions(['submission_read', 'submission_update'])(req, res, next);
+      await hasSubmissionPermissions([Permissions.SUBMISSION_READ, Permissions.SUBMISSION_UPDATE])(req, res, next);
 
       expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
       expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
@@ -791,12 +851,12 @@ describe('hasSubmissionPermissions', () => {
       });
       service.getUserForms.mockReturnValueOnce([
         {
-          // Ignore this form but match formId on the next one.
+          // Ignore this form and match formId on the next one.
           formId: uuid.v4(),
         },
         {
           formId: formId,
-          permissions: ['submission_read', 'submission_update'],
+          permissions: [Permissions.SUBMISSION_READ, Permissions.SUBMISSION_UPDATE],
         },
       ]);
       const req = getMockReq({
@@ -807,7 +867,7 @@ describe('hasSubmissionPermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasSubmissionPermissions(['submission_update'])(req, res, next);
+      await hasSubmissionPermissions([Permissions.SUBMISSION_UPDATE])(req, res, next);
 
       expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
       expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
@@ -835,7 +895,7 @@ describe('hasSubmissionPermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasSubmissionPermissions(['submission_read'])(req, res, next);
+      await hasSubmissionPermissions([Permissions.SUBMISSION_READ])(req, res, next);
 
       expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
       expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
@@ -866,7 +926,7 @@ describe('hasSubmissionPermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasSubmissionPermissions(['submission_read'])(req, res, next);
+      await hasSubmissionPermissions([Permissions.SUBMISSION_READ])(req, res, next);
 
       expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
       expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
@@ -892,7 +952,7 @@ describe('hasSubmissionPermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasSubmissionPermissions(['submission_read'])(req, res, next);
+      await hasSubmissionPermissions([Permissions.SUBMISSION_READ])(req, res, next);
 
       expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(1);
       expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
