@@ -1,7 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const { Statuses } = require('../common/constants');
 const { Form, FormVersion, FormSubmission, FormSubmissionStatus, Note, SubmissionAudit, SubmissionMetadata } = require('../common/models');
-const log = require('../../components/log')(module.filename);
 const emailService = require('../email/emailService');
 const eventService = require('../event/eventService');
 const formService = require('../form/service');
@@ -60,6 +59,7 @@ const service = {
     let trx;
     try {
       trx = etrx ? etrx : await FormSubmission.startTransaction();
+
       // If we're restoring a submission
       if (data['deleted'] !== undefined && typeof data.deleted == 'boolean') {
         await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { deleted: data.deleted, updatedBy: currentUser.usernameIdp });
