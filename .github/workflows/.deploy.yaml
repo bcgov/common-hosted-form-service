@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       pr-number:
-        description: Pull request number, leave blank for dev/test/prod deployment
+        description: Pull request number
         required: false
         type: string
 
