@@ -37,26 +37,6 @@ const service = {
   },
 
   /**
-   * @function readFormSubscriptionDetails
-   * @param {string} formId
-   * Get the current subscription settings for a form
-   * @returns The subscription settings for a form
-   */
-  readFormSubscriptionDetails: (formId) => {
-    return FormSubscription.query().modify('filterFormId', formId).first();
-  },
-
-  /**
-   * @function readVersion
-   * Get the current FormVersion
-   * @param {string} formVersionId
-   * @returns The FormVersion
-   */
-  readVersion: (formVersionId) => {
-    return FormVersion.query().findById(formVersionId).throwIfNotFound();
-  },
-
-  /**
    * @function postSubscriptionEvent
    * Post the subscription event
    * @param {string} subscribe settings
@@ -95,6 +75,51 @@ const service = {
   },
 
   /**
+   * @function publishFormEvent
+   * Publish Event for form
+   * @param {string} formId the form id
+   * @param {string} formVersionId form version id
+   * @param {boolean} publish bool true or false - Published or Unpublished
+   */
+  publishFormEvent: async (formId, formVersionId, publish) => {
+    const { subscribe } = await service.readForm(formId);
+    log.error('in publish event');
+    if (subscribe && subscribe.enabled) {
+      log.error('sub enabled');
+      const subscribeConfig = await service.readFormSubscriptionDetails(formId);
+      const config = Object.assign({}, subscribe, subscribeConfig);
+      const formVersion = new FormVersion();
+      formVersion.id = formVersionId;
+      formVersion.formId = formId;
+
+      if (publish) {
+        service.postSubscriptionEvent(config, formVersion, null, SubscriptionEvent.FORM_PUBLISHED);
+      } else {
+        service.postSubscriptionEvent(config, formVersion, null, SubscriptionEvent.FORM_UNPUBLISHED);
+      }
+    }
+  },
+
+  /**
+   * @function readFormSubscriptionDetails
+   * @param {string} formId
+   * Get the current subscription settings for a form
+   * @returns The subscription settings for a form
+   */
+  readFormSubscriptionDetails: (formId) => {
+    return FormSubscription.query().modify('filterFormId', formId).first();
+  },
+
+  /**
+   * @function readVersion
+   * Get the current FormVersion
+   * @param {string} formVersionId
+   * @returns The FormVersion
+   */
+  readVersion: (formVersionId) => {
+    return FormVersion.query().findById(formVersionId).throwIfNotFound();
+  },
+  /**
    * @function readForm
    * Read Form
    * @param {string} formId form id
@@ -112,29 +137,6 @@ const service = {
       .throwIfNotFound();
   },
 
-  /**
-   * @function publishFormEvent
-   * Publish Event for form
-   * @param {string} formId the form id
-   * @param {string} formVersionId form version id
-   * @param {boolean} publish bool true or false - Published or Unpublished
-   */
-  publishEvent: async (formId, formVersionId, publish) => {
-    const { subscribe } = await service.readForm(formId);
-    if (subscribe && subscribe.enabled) {
-      const subscribeConfig = await service.readFormSubscriptionDetails(formId);
-      const config = Object.assign({}, subscribe, subscribeConfig);
-      const formVersion = new FormVersion();
-      formVersion.id = formVersionId;
-      formVersion.formId = formId;
-
-      if (publish) {
-        service.postSubscriptionEvent(config, formVersion, null, SubscriptionEvent.FORM_PUBLISHED);
-      } else {
-        service.postSubscriptionEvent(config, formVersion, null, SubscriptionEvent.FORM_UNPUBLISHED);
-      }
-    }
-  },
 };
 
 module.exports = service;
