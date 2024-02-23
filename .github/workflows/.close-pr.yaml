@@ -30,7 +30,7 @@ jobs:
     timeout-minutes: 12
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Login to OpenShift Cluster
         uses: redhat-actions/oc-login@v1
         with:
