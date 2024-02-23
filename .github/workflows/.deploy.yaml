@@ -63,7 +63,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout repository from pull request
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ needs.set-vars.outputs.ref }}
         if: ${{ needs.set-vars.outputs.ref != '' }}
@@ -93,12 +93,12 @@ jobs:
     timeout-minutes: 12
     steps:
       - name: Checkout repository from pull request
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ needs.set-vars.outputs.ref }}
         if: ${{ needs.set-vars.outputs.ref != '' }}
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         if: ${{ needs.set-vars.outputs.ref == '' }}
       - name: Deploy to environment
         uses: ./.github/actions/deploy-to-environment
