@@ -18,7 +18,6 @@ const service = {
     try {
       const { subscribe } = await service.readForm(formId, {});
       if (subscribe && subscribe.enabled && data.submission.data.submit) {
-        log.error('made it to subscribe event');
         const formVersion = await service.readVersion(formVersionId);
         const subscribeConfig = await service.readFormSubscriptionDetails(formId);
         const config = Object.assign({}, subscribe, subscribeConfig);
