@@ -60,9 +60,6 @@ const service = {
     let trx;
     try {
       trx = etrx ? etrx : await FormSubmission.startTransaction();
-
-      log.error('made it in to update');
-      log.error(data);
       // If we're restoring a submission
       if (data['deleted'] !== undefined && typeof data.deleted == 'boolean') {
         await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { deleted: data.deleted, updatedBy: currentUser.usernameIdp });

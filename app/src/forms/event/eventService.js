@@ -1,8 +1,8 @@
 const log = require('../../components/log')(module.filename);
-const formService = require('../form/service');
 const { SubscriptionEvent } = require('../common/constants');
-const { FormVersion, FormSubscription } = require('../common/models');
+const { FormVersion, Form, FormSubscription } = require('../common/models');
 const axios = require('axios');
+const { queryUtils } = require('../common/utils');
 
 const service = {
   /**
@@ -16,9 +16,9 @@ const service = {
    */
   formSubmissionEventReceived: async (formId, formVersionId, submissionId, data) => {
     try {
-      const { subscribe } = await formService.readForm(formId);
+      const { subscribe } = await service.readForm(formId, {});
       if (subscribe && subscribe.enabled && data.submission.data.submit) {
-        log.error('made it to subscribe');
+        log.error('made it to subscribe event');
         const formVersion = await service.readVersion(formVersionId);
         const subscribeConfig = await service.readFormSubscriptionDetails(formId);
         const config = Object.assign({}, subscribe, subscribeConfig);
@@ -58,7 +58,7 @@ const service = {
 
   /**
    * @function postSubscriptionEvent
-   *  Post the subscription event
+   * Post the subscription event
    * @param {string} subscribe settings
    * @param {string} formVersion form version json object
    * @param {string} submissionId submission id
@@ -92,6 +92,24 @@ const service = {
         function: 'postSubscriptionEvent',
       });
     }
+  },
+
+  /**
+   * @function readForm
+   * Read Form
+   * @param {string} formId form id
+   * @param {object} params form query params
+   * @returns The Form object
+   */
+  readForm: (formId, params = {}) => {
+    params = queryUtils.defaultActiveOnly(params);
+    return Form.query()
+      .findById(formId)
+      .modify('filterActive', params.active)
+      .allowGraph('[identityProviders,versions]')
+      .withGraphFetched('identityProviders(orderDefault)')
+      .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
+      .throwIfNotFound();
   },
 
   /**
