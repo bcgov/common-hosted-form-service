@@ -68,7 +68,7 @@ jobs:
           ref: ${{ needs.set-vars.outputs.ref }}
         if: ${{ needs.set-vars.outputs.ref != '' }}
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         if: ${{ needs.set-vars.outputs.ref == '' }}
       - name: Build & Push
         uses: ./.github/actions/build-push-container
