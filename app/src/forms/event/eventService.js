@@ -134,7 +134,6 @@ const service = {
       .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
       .throwIfNotFound();
   },
-
 };
 
 module.exports = service;
