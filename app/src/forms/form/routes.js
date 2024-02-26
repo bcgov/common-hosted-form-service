@@ -2,7 +2,7 @@ const config = require('config');
 const routes = require('express').Router();
 const apiAccess = require('../auth/middleware/apiAccess');
 const { currentUser, hasFormPermissions } = require('../auth/middleware/userAccess');
-const params = require('../auth/middleware/params');
+const validateParameter = require('../common/middleware/validateParameter');
 const P = require('../common/constants').Permissions;
 const rateLimiter = require('../common/middleware').apiKeyRateLimiter;
 
@@ -11,9 +11,9 @@ const controller = require('./controller');
 
 routes.use(currentUser);
 
-routes.param('formId', params.validateFormId);
-routes.param('formVersionDraftId', params.validateFormVersionDraftId);
-routes.param('formVersionId', params.validateFormVersionId);
+routes.param('formId', validateParameter.validateFormId);
+routes.param('formVersionDraftId', validateParameter.validateFormVersionDraftId);
+routes.param('formVersionId', validateParameter.validateFormVersionId);
 
 routes.get('/', keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`), async (req, res, next) => {
   await controller.listForms(req, res, next);

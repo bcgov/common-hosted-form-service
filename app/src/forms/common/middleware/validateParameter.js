@@ -4,6 +4,21 @@ const uuid = require('uuid');
 const formService = require('../../form/service');
 
 /**
+ * Throws a 400 problem if the parameter is not a valid UUID.
+ *
+ * @param {*} parameter the parameter to validate as a UUID.
+ * @param {*} parameterName the name of the parameter to use in 400 Problems.
+ * @throws Problem if the parameter is not a valid UUID.
+ */
+const _validateUuid = (parameter, parameterName) => {
+  if (!uuid.validate(parameter)) {
+    throw new Problem(400, {
+      detail: 'Bad ' + parameterName,
+    });
+  }
+};
+
+/**
  * Validates that the :formId route parameter exists and is a UUID.
  *
  * @param {*} _req the Express object representing the HTTP request - unused
@@ -13,11 +28,7 @@ const formService = require('../../form/service');
  */
 const validateFormId = async (_req, _res, next, formId) => {
   try {
-    if (!uuid.validate(formId)) {
-      throw new Problem(400, {
-        detail: 'Bad formId',
-      });
-    }
+    _validateUuid(formId, 'formId');
 
     next();
   } catch (error) {
@@ -36,11 +47,7 @@ const validateFormId = async (_req, _res, next, formId) => {
  */
 const validateFormVersionDraftId = async (req, _res, next, formVersionDraftId) => {
   try {
-    if (!uuid.validate(formVersionDraftId)) {
-      throw new Problem(400, {
-        detail: 'Bad formVersionDraftId',
-      });
-    }
+    _validateUuid(formVersionDraftId, 'formVersionDraftId');
 
     const formVersionDraft = await formService.readDraft(formVersionDraftId);
     if (!formVersionDraft || formVersionDraft.formId !== req.params.formId) {
@@ -66,11 +73,7 @@ const validateFormVersionDraftId = async (req, _res, next, formVersionDraftId) =
  */
 const validateFormVersionId = async (req, _res, next, formVersionId) => {
   try {
-    if (!uuid.validate(formVersionId)) {
-      throw new Problem(400, {
-        detail: 'Bad formVersionId',
-      });
-    }
+    _validateUuid(formVersionId, 'formVersionId');
 
     const formVersion = await formService.readVersion(formVersionId);
     if (!formVersion || formVersion.formId !== req.params.formId) {
