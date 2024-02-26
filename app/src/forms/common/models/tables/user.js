@@ -1,6 +1,6 @@
 const { Model } = require('objection');
 const { Timestamps } = require('../mixins');
-const { Regex, Restricted } = require('../../constants');
+const { Regex } = require('../../constants');
 const stamps = require('../jsonSchema').stamps;
 
 class User extends Timestamps(Model) {
@@ -39,9 +39,6 @@ class User extends Timestamps(Model) {
         if (value) {
           query.where('idpCode', value);
         }
-      },
-      filterRestricted(query) {
-        query.whereNotIn('idpCode', Object.values(Restricted.IDP));
       },
       filterUsername(query, value, exact = false) {
         if (value) {

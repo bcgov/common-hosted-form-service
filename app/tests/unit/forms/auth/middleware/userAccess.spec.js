@@ -3,15 +3,9 @@ const Problem = require('api-problem');
 
 const { currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles, hasRolePermissions } = require('../../../../../src/forms/auth/middleware/userAccess');
 
-const keycloak = require('../../../../../src/components/keycloak');
+const jwtService = require('../../../../../src/components/jwtService');
 const service = require('../../../../../src/forms/auth/service');
 const rbacService = require('../../../../../src/forms/rbac/service');
-
-const kauth = {
-  grant: {
-    access_token: 'fsdfhsd08f0283hr',
-  },
-};
 
 const userId = 'c6455376-382c-439d-a811-0381a012d695';
 const userId2 = 'c6455376-382c-439d-a811-0381a012d696';
@@ -26,7 +20,9 @@ const Roles = {
 };
 
 // Mock the token validation in the KC lib
-keycloak.grantManager.validateAccessToken = jest.fn().mockReturnValue('yeah ok');
+jwtService.validateAccessToken = jest.fn().mockReturnValue(true);
+jwtService.getBearerToken = jest.fn().mockReturnValue('bearer-token-value');
+jwtService.getTokenPayload = jest.fn().mockReturnValue({ token: 'payload' });
 
 // Mock the service login
 const mockUser = { user: 'me' };
@@ -50,16 +46,16 @@ describe('currentUser', () => {
       headers: {
         authorization: 'Bearer hjvds0uds',
       },
-      kauth: kauth,
     };
 
     const nxt = jest.fn();
 
     await currentUser(testReq, testRes, nxt);
-    expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledTimes(1);
-    expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledWith('hjvds0uds');
+    expect(jwtService.validateAccessToken).toHaveBeenCalledTimes(1);
+    expect(jwtService.getBearerToken).toHaveBeenCalledTimes(1);
+    expect(jwtService.validateAccessToken).toHaveBeenCalledWith('bearer-token-value');
     expect(service.login).toHaveBeenCalledTimes(1);
-    expect(service.login).toHaveBeenCalledWith(kauth.grant.access_token);
+    expect(service.login).toHaveBeenCalledWith({ token: 'payload' });
     expect(testReq.currentUser).toEqual(mockUser);
     expect(nxt).toHaveBeenCalledTimes(1);
     expect(nxt).toHaveBeenCalledWith();
@@ -76,11 +72,12 @@ describe('currentUser', () => {
       headers: {
         authorization: 'Bearer hjvds0uds',
       },
-      kauth: kauth,
     };
 
     await currentUser(testReq, testRes, jest.fn());
-    expect(service.login).toHaveBeenCalledWith(kauth.grant.access_token);
+    expect(jwtService.getBearerToken).toHaveBeenCalledTimes(1);
+    expect(jwtService.getTokenPayload).toHaveBeenCalledTimes(1);
+    expect(service.login).toHaveBeenCalledWith({ token: 'payload' });
   });
 
   it('uses the query param if both if that is whats provided', async () => {
@@ -91,11 +88,12 @@ describe('currentUser', () => {
       headers: {
         authorization: 'Bearer hjvds0uds',
       },
-      kauth: kauth,
     };
 
     await currentUser(testReq, testRes, jest.fn());
-    expect(service.login).toHaveBeenCalledWith(kauth.grant.access_token);
+    expect(jwtService.getBearerToken).toHaveBeenCalledTimes(1);
+    expect(jwtService.getTokenPayload).toHaveBeenCalledTimes(1);
+    expect(service.login).toHaveBeenCalledWith({ token: 'payload' });
   });
 
   it('403s if the token is invalid', async () => {
@@ -106,27 +104,33 @@ describe('currentUser', () => {
     };
 
     const nxt = jest.fn();
-    keycloak.grantManager.validateAccessToken = jest.fn().mockReturnValue(undefined);
+    jwtService.validateAccessToken = jest.fn().mockReturnValue(false);
 
     await currentUser(testReq, testRes, nxt);
-    expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledTimes(1);
-    expect(keycloak.grantManager.validateAccessToken).toHaveBeenCalledWith('hjvds0uds');
+    expect(jwtService.getBearerToken).toHaveBeenCalledTimes(1);
+    expect(jwtService.validateAccessToken).toHaveBeenCalledTimes(1);
+    expect(jwtService.validateAccessToken).toHaveBeenCalledWith('bearer-token-value');
     expect(service.login).toHaveBeenCalledTimes(0);
     expect(testReq.currentUser).toEqual(undefined);
     expect(nxt).toHaveBeenCalledTimes(0);
-    // expect(nxt).toHaveBeenCalledWith(new Problem(403, { detail: 'Authorization token is invalid.' }));
+    //expect(nxt).toHaveBeenCalledWith(new Problem(403, { detail: 'Authorization token is invalid.' }));
   });
 });
 
 describe('getToken', () => {
-  it('returns a null token if no kauth in the request', async () => {
+  it('returns a null token if no auth bearer in the headers', async () => {
     const testReq = {
       params: {
         formId: 2,
       },
     };
 
+    jwtService.getBearerToken = jest.fn().mockReturnValue(null);
+    jwtService.getTokenPayload = jest.fn().mockReturnValue(null);
+
     await currentUser(testReq, testRes, jest.fn());
+    expect(jwtService.getBearerToken).toHaveBeenCalledTimes(1);
+    expect(jwtService.getTokenPayload).toHaveBeenCalledTimes(1);
     expect(service.login).toHaveBeenCalledTimes(1);
     expect(service.login).toHaveBeenCalledWith(null);
   });
@@ -513,7 +517,10 @@ describe('hasSubmissionPermissions', () => {
   it('falls through to the query if the current user does not have any FORM access on the current form', async () => {
     service.getSubmissionForm = jest.fn().mockReturnValue({
       submission: { deleted: false },
-      form: { id: '999', identityProviders: [{ code: 'idir' }, { code: 'bceid' }] },
+      form: {
+        id: '999',
+        identityProviders: [{ code: 'idir' }, { code: 'bceid' }],
+      },
     });
     service.checkSubmissionPermission = jest.fn().mockReturnValue(undefined);
 
@@ -688,7 +695,11 @@ describe('hasFormRoles', () => {
     await hfr(req, testRes, nxt);
 
     expect(nxt).toHaveBeenCalledTimes(1);
-    expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You do not have permission to update this role.' }));
+    expect(nxt).toHaveBeenCalledWith(
+      new Problem(401, {
+        detail: 'You do not have permission to update this role.',
+      })
+    );
   });
 
   it('falls through if the current user does not have all of the required form roles', async () => {
@@ -706,7 +717,11 @@ describe('hasFormRoles', () => {
     await hfr(req, testRes, nxt);
 
     expect(nxt).toHaveBeenCalledTimes(1);
-    expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You do not have permission to update this role.' }));
+    expect(nxt).toHaveBeenCalledWith(
+      new Problem(401, {
+        detail: 'You do not have permission to update this role.',
+      })
+    );
   });
 
   it('moves on if the user has at least one of the required form roles', async () => {
@@ -975,7 +990,7 @@ describe('hasRolePermissions', () => {
             updatedAt: '',
           },
           {
-            id: '5',
+            id: '6',
             role: Roles.FORM_SUBMITTER,
             formId: formId,
             userId: userId2,
@@ -1071,7 +1086,11 @@ describe('hasRolePermissions', () => {
           await hrp(req, testRes, nxt);
 
           expect(nxt).toHaveBeenCalledTimes(1);
-          expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: "You can't remove your own team manager role." }));
+          expect(nxt).toHaveBeenCalledWith(
+            new Problem(401, {
+              detail: "You can't remove your own team manager role.",
+            })
+          );
         });
       });
 
@@ -1332,7 +1351,11 @@ describe('hasRolePermissions', () => {
             await hrp(req, testRes, nxt);
 
             expect(nxt).toHaveBeenCalledTimes(1);
-            expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: "You can't add a form designer role." }));
+            expect(nxt).toHaveBeenCalledWith(
+              new Problem(401, {
+                detail: "You can't add a form designer role.",
+              })
+            );
           });
 
           it('falls through if trying to remove a designer role', async () => {
@@ -1401,7 +1424,11 @@ describe('hasRolePermissions', () => {
             await hrp(req, testRes, nxt);
 
             expect(nxt).toHaveBeenCalledTimes(1);
-            expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: "You can't remove a form designer role." }));
+            expect(nxt).toHaveBeenCalledWith(
+              new Problem(401, {
+                detail: "You can't remove a form designer role.",
+              })
+            );
           });
 
           it('should succeed when adding a manager/reviewer/submitter roles', async () => {

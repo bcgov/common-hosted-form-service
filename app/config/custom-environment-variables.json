@@ -35,7 +35,8 @@
     "keycloak": {
       "clientId": "FRONTEND_KC_CLIENTID",
       "realm": "FRONTEND_KC_REALM",
-      "serverUrl": "FRONTEND_KC_SERVERURL"
+      "serverUrl": "FRONTEND_KC_SERVERURL",
+      "logoutUrl": "FRONTEND_KC_LOGOUTURL"
     }
   },
   "server": {
@@ -43,11 +44,11 @@
     "basePath": "SERVER_BASEPATH",
     "bodyLimit": "SERVER_BODYLIMIT",
     "keycloak": {
-      "clientId": "SERVER_KC_CLIENTID",
-      "clientSecret": "SERVER_KC_CLIENTSECRET",
-      "publicKey": "SERVER_KC_PUBLICKEY",
-      "realm": "SERVER_KC_REALM",
-      "serverUrl": "SERVER_KC_SERVERURL"
+      "serverUrl": "SERVER_KC_SERVERURL",
+      "jwksUri": "SERVER_KC_JWKSURI",
+      "issuer": "SERVER_KC_ISSUER",
+      "audience": "SERVER_KC_AUDIENCE",
+      "maxTokenAge": "SERVER_KC_MAXTOKENAGE"
     },
     "logFile": "SERVER_LOGFILE",
     "logLevel": "SERVER_LOGLEVEL",

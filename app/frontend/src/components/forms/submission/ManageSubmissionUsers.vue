@@ -58,7 +58,7 @@ export default {
       if (!input) return;
       this.isLoadingDropdown = true;
       try {
-        // The form's IDP (only support 1 at a time right now), blank is 'team' and should be IDIR
+        // The form's IDP (only support 1 at a time right now), blank is 'team' and should be Primary
         let params = {};
         params.idpCode = this.selectedIdp;
         let teamMembershipConfig = this.teamMembershipSearch(this.selectedIdp);
@@ -242,8 +242,8 @@ export default {
           <v-radio-group v-if="isDraft" v-model="selectedIdp" inline>
             <v-radio
               v-for="button in loginButtons"
-              :key="button.type"
-              :value="button.type"
+              :key="button.code"
+              :value="button.code"
               :label="button.display"
             />
           </v-radio-group>

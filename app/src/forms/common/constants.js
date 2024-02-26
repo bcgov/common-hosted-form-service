@@ -68,21 +68,10 @@ module.exports = Object.freeze({
     OBJECT_STORAGE: 'objectStorage',
     LOCAL_STORES: ['uploads', 'localStorage', 'exports'],
   },
-  Restricted: {
-    IDP: {
-      BCEID_BASIC: 'bceid-basic',
-      BCEID_BUSINESS: 'bceid-business',
-    },
-  },
   ScheduleType: {
     MANUAL: 'manual',
     CLOSINGDATE: 'closingDate',
     PERIOD: 'period',
-  },
-  IdentityProviders: {
-    BCEIDBASIC: 'bceid-basic', // Basic BCeID
-    BCEIDBUSINESS: 'bceid-business', // Business BCeID
-    IDIR: 'idir', // IDIR
   },
   EXPORT_TYPES: {
     submissions: 'submissions',

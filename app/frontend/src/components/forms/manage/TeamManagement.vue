@@ -123,6 +123,7 @@ export default {
   methods: {
     ...mapActions(useFormStore, ['fetchForm', 'getFormPermissionsForUser']),
     ...mapActions(useNotificationStore, ['addNotification']),
+    ...mapActions(useIdpStore, ['findByCode']),
     async loadItems() {
       this.loading = true;
 
@@ -162,7 +163,7 @@ export default {
           roles: '*',
         });
         this.formUsers = formUsersResponse?.data?.map((user) => {
-          user.idp = user.user_idpCode;
+          user.idp = this.findByCode(user.user_idpCode);
           return user;
         });
       } catch (error) {
@@ -185,7 +186,7 @@ export default {
           fullName: user.fullName,
           userId: user.userId,
           username: user.username,
-          identityProvider: user.idp,
+          identityProvider: user.idp?.code,
         };
         this.roleList
           .map((role) => role.code)
@@ -201,7 +202,7 @@ export default {
       )
         return true;
       // if the header isn't in the IDPs roles, then disable
-      const idpRoles = this.listRoles(user.identityProvider);
+      const idpRoles = this.listRoles(user.identityProvider?.code);
       return idpRoles && !idpRoles.includes(header);
     },
 

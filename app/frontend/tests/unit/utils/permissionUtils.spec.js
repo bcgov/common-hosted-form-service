@@ -279,7 +279,7 @@ describe('preFlightAuth', () => {
       },
     };
     readFormOptionsSpy.mockResolvedValue({
-      data: { idpHints: [primaryIdp.code] },
+      data: { idpHints: [primaryIdp.hint] },
     });
 
     await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);

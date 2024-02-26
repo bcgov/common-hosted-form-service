@@ -18,6 +18,11 @@ class IdentityProvider extends Timestamps(Model) {
           query.where('active', value);
         }
       },
+      filterIdp(query, value) {
+        if (value !== undefined) {
+          query.where('idp', value);
+        }
+      },
       orderDefault(builder) {
         builder.orderByRaw('"identity_provider"."primary" DESC NULLS LAST, lower("identity_provider"."code")');
       },
@@ -37,6 +42,7 @@ class IdentityProvider extends Timestamps(Model) {
         login: { type: 'boolean' },
         permissions: { type: ['array', 'null'], items: { type: 'string' } },
         roles: { type: ['array', 'null'], items: { type: 'string' } },
+        tokenmap: { type: 'object' },
         extra: { type: 'object' },
         ...stamps,
       },

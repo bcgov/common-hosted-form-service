@@ -20,7 +20,6 @@ export default {
       'authenticated',
       'identityProvider',
       'isAdmin',
-      'isUser',
       'ready',
     ]),
     ...mapState(useFormStore, ['lang']),
@@ -44,48 +43,32 @@ export default {
 
 <template>
   <div v-if="authenticated">
-    <div v-if="isUser">
-      <div v-if="admin && !isAdmin" class="text-center">
-        <h1 class="my-8" :lang="lang">
-          {{ $t('trans.baseSecure.401UnAuthorized') }}
-        </h1>
-        <p :lang="lang">
-          {{ $t('trans.baseSecure.401UnAuthorizedErrMsg') }}
-        </p>
-      </div>
-      <div
-        v-else-if="permission && !hasPermission(identityProvider, permission)"
-        class="text-center"
-      >
-        <h1 class="my-8" :lang="lang">
-          {{ $t('trans.baseSecure.403Forbidden') }}
-        </h1>
-        <p :lang="lang">
-          {{
-            $t('trans.baseSecure.403ErrorMsg', {
-              idp: permission,
-            })
-          }}
-        </p>
-      </div>
-      <slot v-else />
-    </div>
-    <!-- TODO: Figure out better way to alert when user lacks chefs user role -->
-    <div v-else class="text-center">
+    <div v-if="admin && !isAdmin" class="text-center">
       <h1 class="my-8" :lang="lang">
         {{ $t('trans.baseSecure.401UnAuthorized') }}
       </h1>
-      <p>
-        <span :lang="lang" v-html="$t('trans.baseSecure.401ErrorMsg')"> </span>
-        <a :href="mailToLink">{{ contactInfo }}</a>
+      <p :lang="lang">
+        {{ $t('trans.baseSecure.401UnAuthorizedErrMsg') }}
       </p>
-      <router-link :to="{ name: 'About' }">
-        <v-btn color="primary" class="about-btn" size="large">
-          <v-icon start icon="mdi:mdi-home"></v-icon>
-          <span :lang="lang">{{ $t('trans.baseSecure.about') }}</span>
-        </v-btn>
-      </router-link>
     </div>
+    <div
+      v-else-if="
+        permission && !hasPermission(identityProvider?.code, permission)
+      "
+      class="text-center"
+    >
+      <h1 class="my-8" :lang="lang">
+        {{ $t('trans.baseSecure.403Forbidden') }}
+      </h1>
+      <p :lang="lang">
+        {{
+          $t('trans.baseSecure.403ErrorMsg', {
+            idp: permission,
+          })
+        }}
+      </p>
+    </div>
+    <slot v-else />
   </div>
   <div v-else class="text-center">
     <h1 class="my-8" :lang="lang">

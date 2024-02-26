@@ -28,11 +28,7 @@ describe('BCGovNavBar.vue', () => {
     authStore.keycloak = {
       tokenParsed: {
         identity_provider: primaryIdp.code,
-        resource_access: {
-          chefs: {
-            roles: [],
-          },
-        },
+        client_roles: [],
       },
     };
     authStore.authenticated = true;
@@ -70,11 +66,7 @@ describe('BCGovNavBar.vue', () => {
     authStore.keycloak = {
       tokenParsed: {
         identity_provider: primaryIdp.code,
-        resource_access: {
-          chefs: {
-            roles: ['admin'],
-          },
-        },
+        client_roles: ['admin'],
       },
     };
     authStore.authenticated = true;
