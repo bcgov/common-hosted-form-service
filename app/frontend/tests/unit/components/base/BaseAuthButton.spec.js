@@ -16,7 +16,7 @@ describe('BaseAuthButton.vue', () => {
   const authStore = useAuthStore();
   const idpStore = useIdpStore();
   const router = getRouter();
-  const windowReplaceSpy = vi.spyOn(window.location, 'replace');
+  const windowReplaceSpy = vi.spyOn(window.location, 'assign');
   idpStore.providers = require('../../fixtures/identityProviders.json');
 
   beforeEach(async () => {
@@ -24,7 +24,6 @@ describe('BaseAuthButton.vue', () => {
     authStore.$reset();
     authStore.keycloak = {
       createLoginUrl: vi.fn((opts) => opts),
-      createLogoutUrl: vi.fn((opts) => opts),
     };
     router.currentRoute.value.meta.hasLogin = true;
     router.push('/');
@@ -104,6 +103,7 @@ describe('BaseAuthButton.vue', () => {
 
   it('logout button redirects to logout url', async () => {
     authStore.authenticated = true;
+    authStore.logoutUrl = location.origin;
     authStore.ready = true;
     const wrapper = mount(BaseAuthButton, {
       global: {
@@ -114,8 +114,6 @@ describe('BaseAuthButton.vue', () => {
     wrapper.vm.logout();
     expect(wrapper.text()).toMatch('trans.baseAuthButton.logout');
     expect(windowReplaceSpy).toHaveBeenCalledTimes(1);
-    expect(windowReplaceSpy).toHaveBeenCalledWith({
-      redirectUri: location.origin,
-    });
+    expect(windowReplaceSpy).toHaveBeenCalledWith(location.origin);
   });
 });

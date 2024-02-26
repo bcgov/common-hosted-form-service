@@ -174,8 +174,8 @@ export default {
               >
                 <v-radio
                   v-for="button in loginButtons"
-                  :key="button.type"
-                  :value="button.type"
+                  :key="button.code"
+                  :value="button.code"
                   :label="button.display"
                 />
               </v-radio-group>

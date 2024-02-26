@@ -12,6 +12,19 @@ const BCEID_EXTRAS = {
       message: 'trans.manageSubmissionUsers.exactBCEIDSearch',
     },
   },
+  userSearch: {
+    filters: [ 
+      { name: 'filterIdpUserId', param: 'idpUserId', required: 0 }, 
+      { name: 'filterIdpCode', param: 'idpCode', required: 0 }, 
+      { name: 'filterUsername', param: 'username', required: 2, exact: true }, 
+      { name: 'filterFullName', param: 'fullName', required: 0 }, 
+      { name: 'filterFirstName', param: 'firstName', required: 0 }, 
+      { name: 'filterLastName', param: 'lastName', required: 0 }, 
+      { name: 'filterEmail', param: 'email', required: 2, exact: true }, 
+      { name: 'filterSearch', param: 'search', required: 0 }, 
+    ],
+    detail: 'Could not retrieve BCeID users. Invalid options provided.'
+  }
 };
 
 exports.up = function (knex) {
@@ -30,6 +43,9 @@ exports.up = function (knex) {
         table
           .specificType('roles', 'text ARRAY')
           .comment('Map Form role codes to the idp');
+        table
+          .jsonb('tokenmap')
+          .comment('Map of token fields to CHEFs user fields');
         table
           .jsonb('extra')
           .comment(
@@ -70,6 +86,16 @@ exports.up = function (knex) {
               Roles.SUBMISSION_REVIEWER,
               Roles.FORM_SUBMITTER,
             ],
+            tokenmap: {
+              idpUserId: 'idir_user_guid',
+              keycloakId: 'idir_user_guid',
+              username: 'idir_username',
+              firstName: 'given_name',
+              lastName: 'family_name',
+              fullName: 'name',
+              email: 'email',
+              idp: 'identity_provider',
+            },
             extra: {},
           })
       )
@@ -77,6 +103,7 @@ exports.up = function (knex) {
         knex('identity_provider')
           .where({ code: 'bceid-business' })
           .update({
+            idp: 'bceidbusiness',
             login: true,
             permissions: [
               APP_PERMISSIONS.VIEWS_FORM_EXPORT,
@@ -91,6 +118,16 @@ exports.up = function (knex) {
               Roles.SUBMISSION_REVIEWER,
               Roles.FORM_SUBMITTER,
             ],
+            tokenmap: {
+              idpUserId: 'bceid_user_guid',
+              keycloakId: 'bceid_user_guid',
+              username: 'bceid_username',
+              firstName: null,
+              lastName: null,
+              fullName: 'name',
+              email: 'email',
+              idp: 'identity_provider',
+            },
             extra: BCEID_EXTRAS,
           })
       )
@@ -98,9 +135,20 @@ exports.up = function (knex) {
         knex('identity_provider')
           .where({ code: 'bceid-basic' })
           .update({
+            idp: 'bceidbasic',
             login: true,
             permissions: [APP_PERMISSIONS.VIEWS_USER_SUBMISSIONS],
             roles: [Roles.FORM_SUBMITTER],
+            tokenmap: {
+              idpUserId: 'bceid_user_guid',
+              keycloakId: 'bceid_user_guid',
+              username: 'bceid_username',
+              firstName: null,
+              lastName: null,
+              fullName: 'name',
+              email: 'email',
+              idp: 'identity_provider',
+            },
             extra: BCEID_EXTRAS,
           })
       )

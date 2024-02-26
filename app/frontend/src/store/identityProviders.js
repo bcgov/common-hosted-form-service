@@ -11,8 +11,9 @@ export const useIdpStore = defineStore('idps', {
         for (const p of state.providers) {
           if (p.login) {
             result.push({
-              label: p.display,
-              type: p.code,
+              code: p.code,
+              display: p.display,
+              hint: p.idp,
             });
           }
         }
@@ -24,7 +25,7 @@ export const useIdpStore = defineStore('idps', {
       if (state.providers) {
         for (const p of state.providers) {
           if (p.login) {
-            result.push(p.code);
+            result.push(p.idp);
           }
         }
       }
@@ -47,9 +48,9 @@ export const useIdpStore = defineStore('idps', {
       }
       return false;
     },
-    isValidIdp(code) {
-      if (code && this.providers) {
-        return this.providers.findIndex((x) => x.code === code) > -1;
+    isValidIdpHint(hint) {
+      if (hint && this.providers) {
+        return this.providers.findIndex((x) => x.hint === hint) > -1;
       }
       return false;
     },
@@ -66,7 +67,7 @@ export const useIdpStore = defineStore('idps', {
     teamMembershipSearch(code) {
       if (code && this.providers) {
         const idp = this.providers.find(
-          (x) => x.code === code && idp.extra?.addTeamMemberSearch
+          (x) => x.code === code && x.extra?.addTeamMemberSearch
         );
         return idp ? idp.extra?.addTeamMemberSearch : null;
       }
@@ -106,6 +107,32 @@ export const useIdpStore = defineStore('idps', {
         const idp = this.providers.find((x) => x.code === code);
         if (idp) {
           return idp.roles;
+        }
+      }
+      return undefined;
+    },
+    findByCode(code) {
+      if (code && this.providers) {
+        const idp = this.providers.find((x) => x.code === code);
+        if (idp) {
+          return {
+            code: idp.code,
+            display: idp.display,
+            hint: idp.idp,
+          };
+        }
+      }
+      return undefined;
+    },
+    findByHint(hint) {
+      if (hint && this.providers) {
+        const idp = this.providers.find((x) => x.idp === hint);
+        if (idp) {
+          return {
+            code: idp.code,
+            display: idp.display,
+            hint: idp.idp,
+          };
         }
       }
       return undefined;

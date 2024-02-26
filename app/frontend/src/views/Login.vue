@@ -36,16 +36,16 @@ export default {
       <h1 class="my-6" :lang="lang">
         {{ $t('trans.login.authenticateWith') }}
       </h1>
-      <v-row v-for="button in loginButtons" :key="button.type" justify="center">
+      <v-row v-for="button in loginButtons" :key="button.code" justify="center">
         <v-col sm="3">
           <v-btn
             block
             color="primary"
             size="large"
-            :data-test="button.type"
-            @click="login(button.type)"
+            :data-test="button.code"
+            @click="login(button.hint)"
           >
-            {{ button.label }}
+            {{ button.display }}
           </v-btn>
         </v-col>
       </v-row>

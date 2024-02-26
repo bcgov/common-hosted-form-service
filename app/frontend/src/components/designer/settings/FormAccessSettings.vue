@@ -35,6 +35,11 @@ export default {
       return IdentityMode;
     },
   },
+  mounted() {
+    if (this.form?.idps && this.form.idps.length) {
+      this.idpType = this.form.idps[0];
+    }
+  },
   methods: {
     userTypeChanged() {
       // if they checked enable drafts then went back to public, uncheck it
@@ -129,12 +134,12 @@ export default {
           >
             <v-radio
               v-for="button in loginButtons"
-              :key="button.type"
-              :value="button.type"
+              :key="button.code"
+              :value="button.code"
               class="mx-2"
             >
               <template #label>
-                <span :class="{ 'mr-2': isRTL }"> {{ button.label }} </span>
+                <span :class="{ 'mr-2': isRTL }"> {{ button.display }} </span>
               </template>
             </v-radio>
             <!-- Mandatory BCeID process notification -->

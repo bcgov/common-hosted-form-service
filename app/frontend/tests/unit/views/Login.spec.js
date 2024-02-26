@@ -69,8 +69,8 @@ describe('Login.vue', () => {
 
     await nextTick();
 
-    Object.values(idpStore.loginIdpHints).forEach((idp) => {
-      const button = wrapper.find(`[data-test="${idp}"]`);
+    Object.values(idpStore.loginButtons).forEach((idp) => {
+      const button = wrapper.find(`[data-test="${idp.code}"]`);
       expect(button.exists()).toBeTruthy();
     });
   });

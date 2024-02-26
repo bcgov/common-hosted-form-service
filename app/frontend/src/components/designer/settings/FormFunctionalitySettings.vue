@@ -31,7 +31,7 @@ export default {
       return IdentityMode;
     },
     primaryIdpUser() {
-      return this.isPrimary(this.identityProvider);
+      return this.isPrimary(this.identityProvider?.code);
     },
   },
   methods: {

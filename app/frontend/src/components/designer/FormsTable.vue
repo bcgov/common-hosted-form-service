@@ -45,7 +45,7 @@ export default {
       ];
     },
     canCreateForm() {
-      return this.isPrimary(this.user.idp);
+      return this.isPrimary(this.user.idp?.code);
     },
     filteredFormList() {
       return this.formList.filter(

@@ -19,7 +19,7 @@ export default {
       return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;
     },
     hasPrivileges() {
-      return this.isPrimary(this.identityProvider);
+      return this.isPrimary(this.identityProvider?.code);
     },
   },
 };

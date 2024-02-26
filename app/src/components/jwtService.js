@@ -1,0 +1,100 @@
+const jose = require('jose');
+const config = require('config');
+const errorToProblem = require('./errorToProblem');
+
+const SERVICE = 'JwtService';
+
+const jwksUri = config.get('server.keycloak.jwksUri');
+
+// Create a remote JWK set that fetches the JWK set from server with caching
+const JWKS = jose.createRemoteJWKSet(new URL(jwksUri));
+
+class JwtService {
+  constructor({ issuer, audience, maxTokenAge }) {
+    if (!issuer || !audience || !maxTokenAge) {
+      throw new Error('JwtService is not configured. Check configuration.');
+    }
+
+    this.audience = audience;
+    this.issuer = issuer;
+    this.maxTokenAge = maxTokenAge;
+  }
+
+  getBearerToken(req) {
+    if (req.headers && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+      return req.headers.authorization.substring(7);
+    }
+    // do we want to throw errors?
+    return null;
+  }
+
+  async getTokenPayload(req) {
+    const bear = this.getBearerToken(req);
+    if (bear) {
+      return await this._verify(bear);
+    }
+    return null;
+  }
+
+  async _verify(token) {
+    // could throw JWTClaimValidationFailed
+    const { payload } = await jose.jwtVerify(token, JWKS, {
+      issuer: this.issuer,
+      audience: this.audience,
+      maxTokenAge: parseInt(this.maxTokenAge),
+    });
+    return payload;
+  }
+
+  async validateAccessToken(token) {
+    try {
+      await this._verify(token);
+      // these claims passed, just return true.
+      return true;
+    } catch (e) {
+      if (e instanceof jose.errors.JWTClaimValidationFailed) {
+        return false;
+      } else {
+        errorToProblem(SERVICE, e);
+      }
+    }
+  }
+
+  protect(spec) {
+    // actual middleware
+    return async (req, res, next) => {
+      let authorized = false;
+      try {
+        // get token, check if valid
+        const token = this.getBearerToken(req);
+        if (token) {
+          const payload = await this._verify(token);
+          if (spec) {
+            authorized = payload.client_roles?.includes(spec);
+          } else {
+            authorized = true;
+          }
+        }
+      } catch (error) {
+        authorized = false;
+      }
+      if (!authorized) {
+        res.status(403);
+        res.end('Access denied');
+      } else {
+        return next();
+      }
+    };
+  }
+}
+
+const audience = config.get('server.keycloak.audience');
+const issuer = config.get('server.keycloak.issuer');
+const maxTokenAge = config.get('server.keycloak.maxTokenAge');
+
+let jwtService = new JwtService({
+  issuer: issuer,
+  audience: audience,
+  maxTokenAge: maxTokenAge,
+});
+module.exports = jwtService;
