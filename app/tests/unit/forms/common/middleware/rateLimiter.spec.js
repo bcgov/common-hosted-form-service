@@ -9,8 +9,13 @@ const rateWindowSeconds = 11;
 jest.mock('config', () => {
   return {
     get: jest.fn((key) => {
-      if (key === 'server.rateLimit.public.max') return rateLimit;
-      if (key === 'server.rateLimit.public.windowMs') return rateWindowSeconds * 1000;
+      if (key === 'server.rateLimit.public.max') {
+        return rateLimit;
+      }
+
+      if (key === 'server.rateLimit.public.windowMs') {
+        return rateWindowSeconds * 1000;
+      }
     }),
   };
 });
