@@ -1,5 +1,5 @@
 const config = require('config');
-const { rateLimit } = require('express-rate-limit');
+const rateLimit = require('express-rate-limit');
 
 const apiKeyRateLimiter = rateLimit({
   // Instead of legacy headers use the standardHeaders version defined below.
