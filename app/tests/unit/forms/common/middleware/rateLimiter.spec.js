@@ -17,9 +17,9 @@ jest.mock('config', () => {
 
 // Headers for Draft 7 of the standard.
 const rateLimitName = 'RateLimit';
-const rateLimitValue = 'limit=' + rateLimit + ', remaining=' + (rateLimit - 1) + ', reset=' + rateWindowSeconds;
+const rateLimitValue = `limit=${rateLimit}, remaining=${rateLimit - 1}, reset=${rateWindowSeconds}`;
 const rateLimitPolicyName = 'RateLimit-Policy';
-const rateLimitPolicyValue = '' + rateLimit + ';w=' + rateWindowSeconds;
+const rateLimitPolicyValue = `${rateLimit};w=${rateWindowSeconds}`;
 
 const ipAddress = '1.2.3.4';
 
