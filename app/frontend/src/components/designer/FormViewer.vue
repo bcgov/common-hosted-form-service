@@ -982,7 +982,7 @@ export default {
       }
     },
     showdoYouWantToSaveTheDraftModal() {
-      if (!this.bulkFile) {
+      if (!this.bulkFile && !this.form.enableSubmitterDraft) {
         this.saveDraftState = 0;
         if (
           (this.submissionId == undefined || this.formDataEntered) &&
