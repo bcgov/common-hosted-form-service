@@ -1,11 +1,60 @@
 const Problem = require('api-problem');
-const { validate } = require('uuid');
+const uuid = require('uuid');
 
 const jwtService = require('../../../components/jwtService');
 const Permissions = require('../../common/constants').Permissions;
 const Roles = require('../../common/constants').Roles;
 const service = require('../service');
 const rbacService = require('../../rbac/service');
+
+/**
+ * Checks that every permission is in the user's form permissions.
+ *
+ * @param {*} form the user's form metadata including permissions.
+ * @param {string[]} permissions the permissions needed for access.
+ * @returns true if every permissions value is in the user's form permissions.
+ */
+const _formHasPermissions = (form, permissions) => {
+  // Get the intersection of the two sets of permissions. If it's the same
+  // size as permissions then the user has all the needed permissions.
+  const intersection = permissions.filter((p) => {
+    return form.permissions.includes(p);
+  });
+
+  return intersection.length === permissions.length;
+};
+
+/**
+ * Gets the form metadata for the given formId from the forms available to the
+ * current user.
+ *
+ * @param {*} currentUser the user that is currently logged in; may be public.
+ * @param {uuid} formId the ID of the form to retrieve for the current user.
+ * @param {boolean} includeDeleted if active form not found, look for a deleted
+ *   form.
+ * @returns the form metadata.
+ * @throws Problem if the form metadata for the formId cannot be retrieved.
+ */
+const _getForm = async (currentUser, formId, includeDeleted) => {
+  if (!uuid.validate(formId)) {
+    throw new Problem(400, { detail: 'Bad formId' });
+  }
+
+  const forms = await service.getUserForms(currentUser, { active: true, formId: formId });
+  let form = forms.find((f) => f.formId === formId);
+
+  if (!form && includeDeleted) {
+    const deletedForms = await service.getUserForms(currentUser, { active: false, formId: formId });
+    form = deletedForms.find((f) => f.formId === formId);
+  }
+
+  // Cannot find the form: either it doesn't exist or we don't have access.
+  if (!form) {
+    throw new Problem(401, { detail: 'Current user has no access to form' });
+  }
+
+  return form;
+};
 
 const setUser = async (req, _res, next) => {
   try {
@@ -32,65 +81,46 @@ const currentUser = async (req, res, next) => {
   return setUser(req, res, next);
 };
 
-const _getForm = async (currentUser, formId) => {
-  const forms = await service.getUserForms(currentUser, {
-    active: true,
-    formId: formId,
-  });
-  let form = forms.find((f) => f.formId === formId);
-
-  if (!form) {
-    const deletedForms = await service.getUserForms(currentUser, {
-      active: false,
-      formId: formId,
-    });
-    form = deletedForms.find((f) => f.formId === formId);
-  }
-
-  return form;
-};
-
+/**
+ * Express middleware to check that a user has all the given permissions for a
+ * form. This will fall through if everything is OK, otherwise it will call
+ * next() with a Problem that describes the error.
+ *
+ * @param {string[]} permissions the form permissions that the user must have.
+ * @returns nothing
+ */
 const hasFormPermissions = (permissions) => {
-  return async (req, res, next) => {
-    // Skip permission checks if requesting as API entity
-    if (req.apiUser) {
-      return next();
-    }
+  return async (req, _res, next) => {
+    try {
+      // Skip permission checks if req is already validated using an API key.
+      if (req.apiUser) {
+        next();
 
-    if (!req.currentUser) {
-      // cannot find the currentUser... guess we don't have access... FAIL!
-      return new Problem(401, {
-        detail: 'Current user not found on request.',
-      }).send(res);
-    }
-    // If we invoke this middleware and the caller is acting on a specific formId, whether in a param or query (precedence to param)
-    const formId = req.params.formId || req.query.formId;
-    if (!formId) {
-      // No form provided to this route that secures based on form... that's a problem!
-      return new Problem(401, { detail: 'Form Id not found on request.' }).send(res);
-    }
-    let form = await _getForm(req.currentUser, formId);
-    if (!form) {
-      // cannot find the form... guess we don't have access... FAIL!
-      return new Problem(401, {
-        detail: 'Current user has no access to form.',
-      }).send(res);
-    }
+        return;
+      }
 
-    if (!Array.isArray(permissions)) {
-      permissions = [permissions];
-    }
+      // If the currentUser does not exist it means that the route is not set up
+      // correctly - the currentUser middleware must be called before this
+      // middleware.
+      if (!req.currentUser) {
+        throw new Problem(500, {
+          detail: 'Current user not found on request',
+        });
+      }
 
-    const intersection = permissions.filter((p) => {
-      return form.permissions.includes(p);
-    });
+      // The request must include a formId, either in params or query, but give
+      // precedence to params.
+      const form = await _getForm(req.currentUser, req.params.formId || req.query.formId, true);
 
-    if (intersection.length !== permissions.length) {
-      return new Problem(401, {
-        detail: 'Current user does not have required permission(s) on form',
-      }).send(res);
-    } else {
-      return next();
+      if (!_formHasPermissions(form, permissions)) {
+        throw new Problem(401, {
+          detail: 'Current user does not have required permission(s) on form',
+        });
+      }
+
+      next();
+    } catch (error) {
+      next(error);
     }
   };
 };
@@ -189,12 +219,12 @@ const filterMultipleSubmissions = () => {
       }
 
       //validate form id
-      if (!validate(formId)) {
+      if (!uuid.validate(formId)) {
         return next(new Problem(401, { detail: 'Not a valid form id' }));
       }
 
       //validate all submission ids
-      const isValidSubmissionId = submissionIds.every((submissionId) => validate(submissionId));
+      const isValidSubmissionId = submissionIds.every((submissionId) => uuid.validate(submissionId));
       if (!isValidSubmissionId) {
         return next(
           new Problem(401, {
