@@ -229,6 +229,7 @@
     "infoA": "Tiyaking nakaimbak ang iyong lihim ng API key sa isang secure na lokasyon (ibig sabihin, key vault).",
     "infoB": "Ang iyong API key ay nagbibigay ng walang limitasyong pag-access sa iyong form. Huwag ibigay ang iyong API key sa sinuman.",
     "infoC": "Dapat LAMANG gamitin ang API key para sa mga automated na pakikipag-ugnayan ng system. Huwag gamitin ang iyong API key para sa user based na access",
+    "infoD": "Kung gusto mong i-access ang mga isinumiteng file sa pamamagitan ng API Key, mangyaring paganahin ang sumusunod na checkbox pagkatapos mabuo ang key.",
     "deleteKey": "Tanggalin ang Susi",
     "apiKey": "susi ng api",
     "hideSecret": "Itago ang Lihim",
@@ -245,7 +246,8 @@
     "formOwnerKeyAcess": "Ikaw dapat ang <strong>May-ari ng Form</strong> para pamahalaan ang Mga API Key.",
     "regenerate": "Magbagong-buhay",
     "generate": "Bumuo",
-    "secret": "Lihim"
+    "secret": "Lihim",
+    "filesAPIAccess": "Payagan ang API key na ito na ma-access ang mga isinumiteng file"
   },
   "manageVersions": {
     "important": "MAHALAGA!",

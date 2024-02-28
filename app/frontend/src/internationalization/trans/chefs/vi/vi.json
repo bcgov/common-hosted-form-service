@@ -229,6 +229,7 @@
     "infoA": "Đảm bảo rằng khóa bí mật API của bạn được lưu trữ ở một vị trí an toàn (tức là kho khóa).",
     "infoB": "Khóa API của bạn cấp quyền truy cập không hạn chế vào biểu mẫu của bạn. Không cung cấp khóa API của bạn cho bất kỳ ai.",
     "infoC": "Khóa API CHỈ nên được sử dụng cho các tương tác hệ thống tự động. Không sử dụng khóa API của bạn để truy cập dựa trên người dùng",
+    "infoD": "Nếu bạn muốn truy cập các tệp đã gửi qua Khóa API, vui lòng bật hộp kiểm sau sau khi tạo khóa.",
     "deleteKey": "Phím xoá",
     "apiKey": "Mã API",
     "hideSecret": "Ẩn bí mật",
@@ -245,7 +246,8 @@
     "formOwnerKeyAcess": "Bạn phải là <strong>Chủ sở hữu biểu mẫu</strong> để quản lý Khóa API.",
     "regenerate": "tái tạo",
     "generate": "Phát ra",
-    "secret": "Bí mật"
+    "secret": "Bí mật",
+    "filesAPIAccess": "Cho phép khóa API này truy cập vào các tệp đã gửi"
   },
   "manageVersions": {
     "important": "QUAN TRỌNG!",
