@@ -7,7 +7,7 @@ const IDP_KEY = 'identity_provider';
 const KC_ID_KEY = 'keycloakId';
 
 function stringToGUID(s) {
-  const regex = /^([0-f]{8})([0-f]{4})([0-f]{4})([0-f]{4})([0-f]{12})/;
+  const regex = /^([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{12})/;
   const m = s.replace(/-+/g, '').match(regex);
   return m ? `${m[1]}-${m[2]}-${m[3]}-${m[4]}-${m[5]}` : null;
 }
