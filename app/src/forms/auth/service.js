@@ -113,7 +113,7 @@ const service = {
     let forms = [];
     let filtered = items.filter((x) => {
       // include if user has idp, or form is public, or user has an explicit role.
-      if (x.idps.includes(userInfo.idp) || x.idps.includes('public')) {
+      if (x.idps.includes(userInfo.idpHint) || x.idps.includes('public')) {
         // always give submitter permissions to launch by idp and public
         x.permissions = Array.from(new Set([...x.permissions, ...FORM_SUBMITTER]));
         return true;
@@ -132,7 +132,7 @@ const service = {
           hasPublic = item.idps.includes('public');
         } else if (accessLevels.includes('idp')) {
           // must have user's idp in idps...
-          hasIdp = item.idps.includes(userInfo.idp);
+          hasIdp = item.idps.includes(userInfo.idpHint);
         } else if (accessLevels.includes('team')) {
           // must have a role...
           hasTeam = item.roles.length;
