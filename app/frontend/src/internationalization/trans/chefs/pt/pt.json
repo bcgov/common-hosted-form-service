@@ -229,6 +229,7 @@
     "infoA": "Certifique-se de que o segredo da sua chave de API esteja armazenado em um local seguro (ou seja, cofre de chaves).",
     "infoB": "Sua chave de API concede acesso irrestrito ao seu formulário. Não dê sua chave de API para ninguém.",
     "infoC": "A chave de API APENAS deve ser usada para interações automatizadas do sistema. Não use sua chave de API para acesso baseado no usuário",
+    "infoD": "Se você deseja acessar os arquivos enviados por meio da chave API, marque a caixa de seleção a seguir após gerar a chave.",
     "deleteKey": "Excluir chave",
     "apiKey": "Chave API",
     "hideSecret": "Ocultar Segredo",
@@ -245,7 +246,8 @@
     "formOwnerKeyAcess": "Você deve ser o <strong>proprietário do formulário</strong> para gerenciar chaves de API.",
     "regenerate": "Regenerado",
     "generate": "Gerar",
-    "secret": "Segredo"
+    "secret": "Segredo",
+    "filesAPIAccess": "Permitir que esta chave de API acesse os arquivos enviados"
   },
   "manageVersions": {
     "important": "IMPORTANTE!",

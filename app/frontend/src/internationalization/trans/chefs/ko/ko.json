@@ -229,6 +229,7 @@
     "infoA": "API 키 비밀이 안전한 위치(예: 키 자격 증명 모음)에 저장되어 있는지 확인합니다.",
     "infoB": "API 키는 양식에 대한 무제한 액세스 권한을 부여합니다. 누구에게도 API 키를 제공하지 마십시오.",
     "infoC": "API 키는 자동화된 시스템 상호 작용에만 사용해야 합니다. 사용자 기반 액세스에 API 키를 사용하지 마십시오.",
+    "infoD": "API 키를 통해 제출된 파일에 액세스하려면 키를 생성한 후 다음 확인란을 활성화하세요.",
     "deleteKey": "키 삭제",
     "apiKey": "API 키",
     "hideSecret": "비밀 숨기기",
@@ -245,7 +246,8 @@
     "formOwnerKeyAcess": "API 키를 관리하려면 <strong>양식 소유자</strong> 여야 합니다.",
     "regenerate": "재생하다",
     "generate": "생성하다",
-    "secret": "비밀"
+    "secret": "비밀",
+    "filesAPIAccess": "이 API 키가 제출된 파일에 액세스하도록 허용"
   },
   "manageVersions": {
     "important": "중요한!",

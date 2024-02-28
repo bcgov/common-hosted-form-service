@@ -229,6 +229,7 @@
     "infoA": "Assicurati che il segreto della tua chiave API sia archiviato in un luogo sicuro (ad es. Key Vault).",
     "infoB": "La tua chiave API garantisce l'accesso illimitato al tuo modulo. Non dare la tua chiave API a nessuno.",
     "infoC": "La chiave API deve essere utilizzata SOLO per le interazioni di sistema automatizzate. Non utilizzare la chiave API per l'accesso basato sull'utente",
+    "infoD":"Se desideri accedere ai file inviati tramite la chiave API, abilita la seguente casella di controllo dopo aver generato la chiave.",
     "deleteKey": "Elimina chiave",
     "apiKey": "chiave API",
     "hideSecret": "Nascondi segreto",
@@ -245,7 +246,8 @@
     "formOwnerKeyAcess": "Devi essere il <strong>proprietario del modulo</strong> per gestire le chiavi API.",
     "regenerate": "Rigenerare",
     "generate": "creare",
-    "secret": "Segreto"
+    "secret": "Segreto",
+    "filesAPIAccess": "Consenti a questa chiave API di accedere ai file inviati"
   },
   "manageVersions": {
     "important": "IMPORTANTE!",

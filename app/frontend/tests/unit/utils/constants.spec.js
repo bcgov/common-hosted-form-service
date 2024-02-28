@@ -13,6 +13,7 @@ describe('Constants', () => {
       SUBMISSION: '/submissions',
       USERS: '/users',
       UTILS: '/utils',
+      FILES_API_ACCESS: '/filesApiAccess',
     });
   });
 
