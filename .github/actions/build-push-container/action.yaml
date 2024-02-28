@@ -69,12 +69,12 @@ runs:
   using: composite
   steps:
     - name: Checkout repository from pull request
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         ref: ${{ inputs.ref }}
       if: ${{ inputs.ref != '' }}
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       if: ${{ inputs.ref == '' }}
 
     - name: Set variables
