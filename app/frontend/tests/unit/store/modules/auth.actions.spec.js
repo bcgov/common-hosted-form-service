@@ -7,6 +7,7 @@ import getRouter from '~/router';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
+import { useAppStore } from '~/store/app';
 
 describe('auth actions', () => {
   let router = getRouter();
@@ -17,6 +18,7 @@ describe('auth actions', () => {
   const mockStore = useAuthStore();
   const formStore = useFormStore();
   const idpStore = useIdpStore();
+  const appStore = useAppStore();
 
   idpStore.providers = require('../../fixtures/identityProviders.json');
 
@@ -31,6 +33,7 @@ describe('auth actions', () => {
       replaceSpy.mockReset();
       windowReplaceSpy.mockReset();
       router.replace.mockReset();
+      appStore.config = { basePath: '/app' };
     });
 
     it('should do nothing if keycloak is not ready', () => {

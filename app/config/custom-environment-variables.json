@@ -32,23 +32,24 @@
     "adminDashboardUrl": "VITE_ADMIN_DASHBOARD_URL",
     "apiPath": "FRONTEND_APIPATH",
     "basePath": "VITE_FRONTEND_BASEPATH",
-    "keycloak": {
-      "clientId": "FRONTEND_KC_CLIENTID",
-      "realm": "FRONTEND_KC_REALM",
-      "serverUrl": "FRONTEND_KC_SERVERURL",
-      "logoutUrl": "FRONTEND_KC_LOGOUTURL"
+    "oidc": {
+      "clientId": "OIDC_CLIENTID",
+      "realm": "OIDC_REALM",
+      "serverUrl": "OIDC_SERVERURL",
+      "logoutUrl": "OIDC_LOGOUTURL"
     }
   },
   "server": {
     "apiPath": "SERVER_APIPATH",
     "basePath": "SERVER_BASEPATH",
     "bodyLimit": "SERVER_BODYLIMIT",
-    "keycloak": {
-      "serverUrl": "SERVER_KC_SERVERURL",
-      "jwksUri": "SERVER_KC_JWKSURI",
-      "issuer": "SERVER_KC_ISSUER",
-      "audience": "SERVER_KC_AUDIENCE",
-      "maxTokenAge": "SERVER_KC_MAXTOKENAGE"
+    "oidc": {
+      "realm": "OIDC_REALM",
+      "serverUrl": "OIDC_SERVERURL",
+      "jwksUri": "OIDC_JWKSURI",
+      "issuer": "OIDC_ISSUER",
+      "audience": "OIDC_CLIENTID",
+      "maxTokenAge": "OIDC_MAXTOKENAGE"
     },
     "logFile": "SERVER_LOGFILE",
     "logLevel": "SERVER_LOGLEVEL",

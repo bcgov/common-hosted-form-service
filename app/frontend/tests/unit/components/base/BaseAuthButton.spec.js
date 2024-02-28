@@ -3,27 +3,34 @@
 
 import { mount } from '@vue/test-utils';
 import { setActivePinia, createPinia } from 'pinia';
-import { vi } from 'vitest';
+import { expect, vi } from 'vitest';
 
 import getRouter from '~/router';
 import BaseAuthButton from '~/components/base/BaseAuthButton.vue';
 import { useAuthStore } from '~/store/auth';
 import { useIdpStore } from '~/store/identityProviders';
+import { useAppStore } from '~/store/app';
 
 describe('BaseAuthButton.vue', () => {
   const pinia = createPinia();
   setActivePinia(pinia);
   const authStore = useAuthStore();
   const idpStore = useIdpStore();
+  const appStore = useAppStore();
   const router = getRouter();
   const windowReplaceSpy = vi.spyOn(window.location, 'assign');
   idpStore.providers = require('../../fixtures/identityProviders.json');
 
   beforeEach(async () => {
     windowReplaceSpy.mockReset();
+    appStore.$reset();
+    appStore.config = {
+      basePath: '/app'
+    };
     authStore.$reset();
     authStore.keycloak = {
       createLoginUrl: vi.fn((opts) => opts),
+      clientId: 'clientid'
     };
     router.currentRoute.value.meta.hasLogin = true;
     router.push('/');
@@ -103,7 +110,8 @@ describe('BaseAuthButton.vue', () => {
 
   it('logout button redirects to logout url', async () => {
     authStore.authenticated = true;
-    authStore.logoutUrl = location.origin;
+    authStore.logoutUrl = 'http://redirect.com/logout';
+    authStore.keycloak
     authStore.ready = true;
     const wrapper = mount(BaseAuthButton, {
       global: {
@@ -114,6 +122,7 @@ describe('BaseAuthButton.vue', () => {
     wrapper.vm.logout();
     expect(wrapper.text()).toMatch('trans.baseAuthButton.logout');
     expect(windowReplaceSpy).toHaveBeenCalledTimes(1);
-    expect(windowReplaceSpy).toHaveBeenCalledWith(location.origin);
+    const params = encodeURIComponent(`post_logout_redirect_uri=null/app&client_id=clientid`)
+    expect(windowReplaceSpy).toHaveBeenCalledWith(`http://redirect.com/logout?${params}`);
   });
 });
