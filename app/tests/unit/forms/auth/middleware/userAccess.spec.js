@@ -1,5 +1,6 @@
 const { getMockReq, getMockRes } = require('@jest-mock/express');
 const Problem = require('api-problem');
+const uuid = require('uuid');
 
 const { currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles, hasRolePermissions } = require('../../../../../src/forms/auth/middleware/userAccess');
 
@@ -7,9 +8,10 @@ const jwtService = require('../../../../../src/components/jwtService');
 const service = require('../../../../../src/forms/auth/service');
 const rbacService = require('../../../../../src/forms/rbac/service');
 
+const formId = uuid.v4();
+const formSubmissionId = uuid.v4();
 const userId = 'c6455376-382c-439d-a811-0381a012d695';
 const userId2 = 'c6455376-382c-439d-a811-0381a012d696';
-const formId = 'c6455376-382c-439d-a811-0381a012d697';
 
 const Roles = {
   OWNER: 'owner',
@@ -19,7 +21,6 @@ const Roles = {
   FORM_SUBMITTER: 'form_submitter',
 };
 
-// Mock the token validation in the KC lib
 jwtService.validateAccessToken = jest.fn().mockReturnValue(true);
 jwtService.getBearerToken = jest.fn().mockReturnValue('bearer-token-value');
 jwtService.getTokenPayload = jest.fn().mockReturnValue({ token: 'payload' });
@@ -37,6 +38,10 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
+// External dependencies used by the implementation are:
+//  - jwtService.validateAccessToken: to validate a Bearer token
+//  - service.login: to create the object for req.currentUser
+//
 describe('currentUser', () => {
   it('gets the current user with valid request', async () => {
     const testReq = {
@@ -136,173 +141,211 @@ describe('getToken', () => {
   });
 });
 
+// External dependencies used by the implementation are:
+//  - service.getUserForms: gets the forms that the user can access
+//
 describe('hasFormPermissions', () => {
+  // Default mock value where the user has no access to forms
+  service.getUserForms = jest.fn().mockReturnValue([]);
+
   it('returns a middleware function', async () => {
-    const mw = hasFormPermissions(['abc']);
-    expect(mw).toBeInstanceOf(Function);
+    const middleware = hasFormPermissions(['FORM_READ']);
+
+    expect(middleware).toBeInstanceOf(Function);
   });
 
-  it('401s if the request has no current user', async () => {
-    const mw = hasFormPermissions(['abc']);
-    const nxt = jest.fn();
-    const req = { params: { formId: 1 } };
-
-    await mw(req, testRes, nxt);
-    expect(nxt).toHaveBeenCalledTimes(0);
-    // expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'Current user not found on request.' }));
-  });
-
-  it('401s if the request has no formId', async () => {
-    const mw = hasFormPermissions(['abc']);
-    const nxt = jest.fn();
-    const req = {
+  it('400s if the request has no formId', async () => {
+    const req = getMockReq({
       currentUser: {},
       params: {
-        submissionId: 123,
+        submissionId: formSubmissionId,
       },
       query: {
-        otherQueryThing: 'abc',
+        otherQueryThing: 'SOMETHING',
       },
-    };
+    });
+    const { res, next } = getMockRes();
 
-    await mw(req, testRes, nxt);
-    expect(nxt).toHaveBeenCalledTimes(0);
-    // expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'Form Id not found on request.' }));
+    await hasFormPermissions(['FORM_READ'])(req, res, next);
+
+    expect(service.getUserForms).toHaveBeenCalledTimes(0);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 400 }));
   });
 
+  it('400s if the formId is not a uuid', async () => {
+    const req = getMockReq({
+      currentUser: {},
+      params: {
+        formId: 'undefined',
+      },
+      query: {
+        otherQueryThing: 'SOMETHING',
+      },
+    });
+    const { res, next } = getMockRes();
+
+    await hasFormPermissions(['FORM_READ'])(req, res, next);
+
+    expect(service.getUserForms).toHaveBeenCalledTimes(0);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 400 }));
+  });
+
+  // TODO: This should be a 403, but bundle all breaking changes in a small PR.
   it('401s if the user does not have access to the form', async () => {
-    service.getUserForms = jest.fn().mockReturnValue([]);
     const req = getMockReq({
       currentUser: {},
       params: {
-        formId: '123',
+        formId: formId,
       },
     });
     const { res, next } = getMockRes();
 
-    const mw = hasFormPermissions(['abc']);
-    await mw(req, res, next);
+    await hasFormPermissions(['FORM_READ'])(req, res, next);
 
-    expect(res.end).toHaveBeenCalledWith(expect.stringContaining('401'));
-    expect(next).toHaveBeenCalledTimes(0);
+    expect(service.getUserForms).toHaveBeenCalled();
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
   });
 
-  it('401s if the user does not have access to the form nor is it in their deleted', async () => {
-    const mw = hasFormPermissions(['abc']);
-    const nxt = jest.fn();
-    const req = {
-      currentUser: {},
-      params: {
-        formId: '123',
+  // TODO: This should be a 403, but bundle all breaking changes in a small PR.
+  it('401s if the expected permissions are not included', async () => {
+    service.getUserForms.mockReturnValueOnce([
+      {
+        formId: formId,
+        permissions: ['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_READ'],
       },
-    };
-
-    await mw(req, testRes, nxt);
-    expect(nxt).toHaveBeenCalledTimes(0);
-    // expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'Current user has no access to form.' }));
-  });
-
-  it('does not 401 if the user has deleted form access', async () => {
-    service.getUserForms = jest
-      .fn()
-      .mockReturnValueOnce([])
-      .mockReturnValueOnce([
-        {
-          formId: '123',
-          permissions: ['abc'],
-        },
-      ]);
+    ]);
     const req = getMockReq({
       currentUser: {},
       params: {
-        formId: '123',
+        formId: formId,
       },
     });
     const { res, next } = getMockRes();
 
-    const mw = hasFormPermissions(['abc']);
-    await mw(req, res, next);
+    await hasFormPermissions(['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_DELETE'])(req, res, next);
 
+    expect(service.getUserForms).toHaveBeenCalled();
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
+  });
+
+  // TODO: This should be a 403, but bundle all breaking changes in a small PR.
+  it('401s if the permissions are a subset but not including everything', async () => {
+    service.getUserForms.mockReturnValueOnce([
+      {
+        formId: formId,
+        permissions: ['DESIGN_CREATE', 'FORM_READ'],
+      },
+    ]);
+    const req = getMockReq({
+      currentUser: {},
+      params: {
+        formId: formId,
+      },
+    });
+    const { res, next } = getMockRes();
+
+    await hasFormPermissions(['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_DELETE'])(req, res, next);
+
+    expect(service.getUserForms).toHaveBeenCalled();
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
+  });
+
+  it('500s if the request has no current user', async () => {
+    const req = getMockReq({
+      params: { formId: formId },
+    });
+    const { res, next } = getMockRes();
+
+    await hasFormPermissions(['FORM_READ'])(req, res, next);
+
+    expect(service.getUserForms).toHaveBeenCalledTimes(0);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 500 }));
+  });
+
+  it('moves on if a valid API key user has already been set', async () => {
+    const req = getMockReq({
+      apiUser: true,
+      params: { formId: formId },
+    });
+    const { res, next } = getMockRes();
+
+    await hasFormPermissions(['FORM_READ'])(req, res, next);
+
+    expect(service.getUserForms).toHaveBeenCalledTimes(0);
     expect(next).toHaveBeenCalledTimes(1);
     expect(next).toHaveBeenCalledWith();
   });
 
-  it('401s if the expected permissions are not included', async () => {
-    service.getUserForms = jest.fn().mockReturnValue([
-      {
-        formId: '123',
-        permissions: ['FORM_READ', 'SUBMISSION_READ', 'DESIGN_CREATE'],
-      },
-    ]);
-    const req = getMockReq({
-      currentUser: {},
-      params: {
-        formId: '123',
-      },
-    });
-    const { res, next } = getMockRes();
-
-    const mw = hasFormPermissions(['FORM_READ', 'SUBMISSION_DELETE', 'DESIGN_CREATE']);
-    await mw(req, res, next);
-
-    expect(res.end).toHaveBeenCalledWith(expect.stringContaining('401'));
-    expect(next).toHaveBeenCalledTimes(0);
-  });
-
-  it('401s if the expected permissions are not included (string, not array check)', async () => {
-    service.getUserForms = jest.fn().mockReturnValue([
-      {
-        formId: '123',
-        permissions: ['FORM_DELETE'],
-      },
-    ]);
-    const req = getMockReq({
-      currentUser: {},
-      params: {
-        formId: '123',
-      },
-    });
-    const { res, next } = getMockRes();
-
-    const mw = hasFormPermissions('FORM_READ');
-    await mw(req, res, next);
-
-    expect(res.end).toHaveBeenCalledWith(expect.stringContaining('401'));
-    expect(next).toHaveBeenCalledTimes(0);
-  });
-
   it('moves on if the expected permissions are included', async () => {
-    service.getUserForms = jest.fn().mockReturnValue([
+    service.getUserForms.mockReturnValueOnce([
       {
-        formId: '123',
+        formId: formId,
         permissions: ['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_DELETE'],
       },
     ]);
     const req = getMockReq({
       currentUser: {},
       params: {
-        formId: '123',
+        formId: formId,
       },
     });
     const { res, next } = getMockRes();
 
-    const mw = hasFormPermissions(['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_DELETE']);
-    await mw(req, res, next);
+    await hasFormPermissions(['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_DELETE'])(req, res, next);
 
+    expect(service.getUserForms).toHaveBeenCalled();
     expect(next).toHaveBeenCalledTimes(1);
     expect(next).toHaveBeenCalledWith();
   });
 
-  it('moves on if a valid API key user has already been set', async () => {
-    const mw = hasFormPermissions(['abc']);
-    const nxt = jest.fn();
-    const req = {
-      apiUser: 1,
-    };
+  it('moves on if the expected permissions are included with query formId', async () => {
+    service.getUserForms.mockReturnValueOnce([
+      {
+        formId: formId,
+        permissions: ['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_DELETE'],
+      },
+    ]);
+    const req = getMockReq({
+      currentUser: {},
+      query: {
+        formId: formId,
+      },
+    });
+    const { res, next } = getMockRes();
 
-    await mw(req, testRes, nxt);
-    expect(nxt).toHaveBeenCalledTimes(1);
-    expect(nxt).toHaveBeenCalledWith();
+    await hasFormPermissions(['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_DELETE'])(req, res, next);
+
+    expect(service.getUserForms).toHaveBeenCalled();
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it('moves on if the user has deleted form access', async () => {
+    service.getUserForms.mockReturnValueOnce([]).mockReturnValueOnce([
+      {
+        formId: formId,
+        permissions: ['FORM_READ'],
+      },
+    ]);
+    const req = getMockReq({
+      currentUser: {},
+      params: {
+        formId: formId,
+      },
+    });
+    const { res, next } = getMockRes();
+
+    await hasFormPermissions(['FORM_READ'])(req, res, next);
+
+    expect(service.getUserForms).toHaveBeenCalled();
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith();
   });
 });
 
@@ -517,10 +560,7 @@ describe('hasSubmissionPermissions', () => {
   it('falls through to the query if the current user does not have any FORM access on the current form', async () => {
     service.getSubmissionForm = jest.fn().mockReturnValue({
       submission: { deleted: false },
-      form: {
-        id: '999',
-        identityProviders: [{ code: 'idir' }, { code: 'bceid' }],
-      },
+      form: { id: '999', identityProviders: [{ code: 'idir' }, { code: 'bceid' }] },
     });
     service.checkSubmissionPermission = jest.fn().mockReturnValue(undefined);
 
@@ -695,11 +735,7 @@ describe('hasFormRoles', () => {
     await hfr(req, testRes, nxt);
 
     expect(nxt).toHaveBeenCalledTimes(1);
-    expect(nxt).toHaveBeenCalledWith(
-      new Problem(401, {
-        detail: 'You do not have permission to update this role.',
-      })
-    );
+    expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You do not have permission to update this role.' }));
   });
 
   it('falls through if the current user does not have all of the required form roles', async () => {
@@ -717,11 +753,7 @@ describe('hasFormRoles', () => {
     await hfr(req, testRes, nxt);
 
     expect(nxt).toHaveBeenCalledTimes(1);
-    expect(nxt).toHaveBeenCalledWith(
-      new Problem(401, {
-        detail: 'You do not have permission to update this role.',
-      })
-    );
+    expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'You do not have permission to update this role.' }));
   });
 
   it('moves on if the user has at least one of the required form roles', async () => {
@@ -990,7 +1022,7 @@ describe('hasRolePermissions', () => {
             updatedAt: '',
           },
           {
-            id: '6',
+            id: '5',
             role: Roles.FORM_SUBMITTER,
             formId: formId,
             userId: userId2,
@@ -1086,11 +1118,7 @@ describe('hasRolePermissions', () => {
           await hrp(req, testRes, nxt);
 
           expect(nxt).toHaveBeenCalledTimes(1);
-          expect(nxt).toHaveBeenCalledWith(
-            new Problem(401, {
-              detail: "You can't remove your own team manager role.",
-            })
-          );
+          expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: "You can't remove your own team manager role." }));
         });
       });
 
@@ -1351,11 +1379,7 @@ describe('hasRolePermissions', () => {
             await hrp(req, testRes, nxt);
 
             expect(nxt).toHaveBeenCalledTimes(1);
-            expect(nxt).toHaveBeenCalledWith(
-              new Problem(401, {
-                detail: "You can't add a form designer role.",
-              })
-            );
+            expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: "You can't add a form designer role." }));
           });
 
           it('falls through if trying to remove a designer role', async () => {
@@ -1424,11 +1448,7 @@ describe('hasRolePermissions', () => {
             await hrp(req, testRes, nxt);
 
             expect(nxt).toHaveBeenCalledTimes(1);
-            expect(nxt).toHaveBeenCalledWith(
-              new Problem(401, {
-                detail: "You can't remove a form designer role.",
-              })
-            );
+            expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: "You can't remove a form designer role." }));
           });
 
           it('should succeed when adding a manager/reviewer/submitter roles', async () => {
