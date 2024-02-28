@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import getRouter from '~/router';
 import { useIdpStore } from '~/store/identityProviders';
+import { useAppStore } from '~/store/app';
 
 /**
  * @function hasRoles
@@ -26,6 +27,8 @@ export const useAuthStore = defineStore('auth', {
   getters: {
     createLoginUrl: (state) => (options) =>
       state.keycloak.createLoginUrl(options),
+    createLogoutUrl: (state) => (options) =>
+      state.keycloak.createLogoutUrl(options),
     email: (state) =>
       state.keycloak.tokenParsed ? state.keycloak.tokenParsed.email : '',
     fullName: (state) => state.keycloak.tokenParsed.name,
@@ -123,7 +126,21 @@ export const useAuthStore = defineStore('auth', {
     },
     logout() {
       if (this.ready) {
-        window.location.assign(this.logoutUrl);
+        // if we have not specified a logoutUrl, then use default
+        if (!this.logoutUrl) {
+          window.location.replace(
+            this.createLogoutUrl({
+              redirectUri: location.origin,
+            })
+          );
+        } else {
+          const appStore = useAppStore();
+          const cli_param = `client_id=${this.keycloak.clientId}`;
+          const redirect_param = `post_logout_redirect_uri=${location.origin}${appStore.config.basePath}`;
+          const logout_param = `${redirect_param}&${cli_param}`;
+          let logout = `${this.logoutUrl}?${encodeURIComponent(logout_param)}`;
+          window.location.assign(logout);
+        }
       }
     },
   },

@@ -137,11 +137,10 @@ async function loadConfig() {
 
     if (
       !config ||
-      !config.keycloak ||
-      !config.keycloak.clientId ||
-      !config.keycloak.realm ||
-      !config.keycloak.serverUrl ||
-      !config.keycloak.logoutUrl
+      !config.oidc ||
+      !config.oidc.clientId ||
+      !config.oidc.realm ||
+      !config.oidc.serverUrl
     ) {
       throw new Error('Keycloak is misconfigured');
     }
@@ -168,9 +167,9 @@ function loadKeycloak(config) {
   const options = Object.assign({}, defaultParams, {
     init: { pkceMethod: 'S256', checkLoginIframe: false, onLoad: 'check-sso' },
     config: {
-      clientId: config.keycloak.clientId,
-      realm: config.keycloak.realm,
-      url: config.keycloak.serverUrl,
+      clientId: config.oidc.clientId,
+      realm: config.oidc.realm,
+      url: config.oidc.serverUrl,
     },
     onReady: () => {
       initializeApp(true, config.basePath);
@@ -189,7 +188,7 @@ function loadKeycloak(config) {
       const ctor = sanitizeConfig(cfg);
 
       const authStore = useAuthStore();
-      authStore.logoutUrl = config.keycloak.logoutUrl;
+      authStore.logoutUrl = config.oidc.logoutUrl;
 
       keycloak = new Keycloak(ctor);
       keycloak.onReady = (authenticated) => {

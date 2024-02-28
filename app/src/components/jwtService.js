@@ -4,7 +4,7 @@ const errorToProblem = require('./errorToProblem');
 
 const SERVICE = 'JwtService';
 
-const jwksUri = config.get('server.keycloak.jwksUri');
+const jwksUri = config.get('server.oidc.jwksUri');
 
 // Create a remote JWK set that fetches the JWK set from server with caching
 const JWKS = jose.createRemoteJWKSet(new URL(jwksUri));
@@ -88,9 +88,9 @@ class JwtService {
   }
 }
 
-const audience = config.get('server.keycloak.audience');
-const issuer = config.get('server.keycloak.issuer');
-const maxTokenAge = config.get('server.keycloak.maxTokenAge');
+const audience = config.get('server.oidc.audience');
+const issuer = config.get('server.oidc.issuer');
+const maxTokenAge = config.get('server.oidc.maxTokenAge');
 
 let jwtService = new JwtService({
   issuer: issuer,
