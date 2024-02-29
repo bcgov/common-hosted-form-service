@@ -1,7 +1,7 @@
 const Problem = require('api-problem');
 const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
-const { EmailTypes, SubscriptionEvent } = require('../common/constants');
+const { EmailTypes } = require('../common/constants');
 const eventService = require('../event/eventService');
 const moment = require('moment');
 const {
