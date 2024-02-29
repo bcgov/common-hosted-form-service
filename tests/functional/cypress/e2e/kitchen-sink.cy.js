@@ -44,13 +44,19 @@ const data = {
 // Helper Functions
 //
 function helperTwoColumn() {
+  //cy.contains('span', 'Layout & Static Content').click();
+  cy.get('[href="#2Column"]').click();
+  cy.contains('span', 'Layout & Static Content').click();
   cy.get('[href="#2Column"]').click();
 
   // textFieldNested1
-  cy.get('#eflswzo').contains('label', 'Text Field Nested 1').type(data.textFieldNested1);
+  
+  
+  cy.contains('Text Field Nested 1').type(data.textFieldNested1);
 
   // textFieldNested2
-  cy.get('#epo28b6').contains('label', 'Text Field Nested 2').type(data.textFieldNested2);
+  cy.contains('Text Field Nested 2').type(data.textFieldNested2);
+  
 }
 
 function helperThreeColumn() {
@@ -62,84 +68,110 @@ function helperThreeColumn() {
   cy.contains('p', 'Paragraph test with no logic.');
 
   // textFieldInFieldset1
-  cy.get('#e7t221q').contains('label', 'Text Field in Fieldset 1').type(data.textFieldInFieldset1);
+ 
+  cy.contains('Text Field in Fieldset 1').type(data.textFieldInFieldset1);
 
+  
   // selectListInFieldset1
-  cy.get('#e67463a').contains('label', 'Select List in Fieldset 1').click();
-  cy.get('#choices--e67463a-selectListInFieldset1-item-choice-2').click();
+ 
+  cy.contains('Select List in Fieldset 1').click();
+  
+  
+  
+  
+  cy.get('[data-value="2"]').click();
+
 }
 
 function helperFourColumn() {
   cy.get('[href="#4Column"]').click();
 
   // email2
-  cy.get('#eejkjy9').contains('label', 'Email 2').type(data.email2);
+ 
+ cy.contains('Email 2').type(data.email2);
 
   // number2
-  cy.get('#eto8jk').contains('label', 'Number 2').type(data.number2);
+ 
+  cy.contains('Number 2').type(data.number2);
 
   // textField3
-  cy.get('#e4zi6q').contains('label', 'Text Field 2').type(data.textField3);
+ 
+ cy.contains('Text Field 2').type(data.textField3);
 
   // phoneNumber2
-  cy.get('#erq1vo').contains('label', 'Phone Number 2').type(data.phoneNumber2);
+ 
+  cy.contains('Phone Number 2').type(data.phoneNumber2);
 }
 
 function helperFormFields() {
   // registeredBusinessName1
-  cy.get('#e9kc7ln').contains('label', 'Registered Business Name 1').click();
+  cy.contains('Registered Business Name 1').click();
   cy.get('[aria-label="Start typing to search BC Registered Businesses database"]').type('test');
-  cy.get('#choices--e9kc7ln-registeredBusinessName1-item-choice-2').click();
+  //cy.get('#choices--e9kc7ln-registeredBusinessName1-item-choice-2').click();
+  cy.contains('TEST COMMUNICATIONS').click();
 
   // textField1
-  cy.get('#epe4uo').contains('label', 'Text Field 1').type(data.textField1);
+ 
+  cy.contains('Text Field 1').type(data.textField1);
 
   // multiLineText1
-  cy.get('#eozuc1').contains('label', 'Multi-line Text 1').type(data.multiLineText1);
+  
+  cy.contains('Multi-line Text 1').type(data.multiLineText1);
 
   // selectList1
-  cy.get('#eywliig').contains('label', 'Select List 1').click();
-  cy.get('#choices--eywliig-selectList1-item-choice-3').click();
+  
+  cy.contains('Select List 1').click();
+  //cy.get('#choices--eywliig-selectList1-item-choice-3').click();
+  cy.contains('Selection 2').click();
 
   // selectList2
-  cy.get('#e1mw1vq').contains('label', 'Select List 1').click();
-  cy.get('#choices--e1mw1vq-selectList2-item-choice-2').click();
-  cy.get('#choices--e1mw1vq-selectList2-item-choice-3').click();
+ 
+  cy.get('.ui > .choices__input--cloned').click();
+  cy.contains('Select 2').click();
+  cy.contains('Select 3').click();
+  //cy.get('#choices--e1mw1vq-selectList2-item-choice-3').click();
 
   // checkbox1
-  cy.get('#e6ceb5').contains('label', 'Checkbox 1').click();
+  
+  cy.contains('Checkbox 1').click();
 
   // checkboxGroup1
-  cy.get('#eoqkh1').contains('label', 'Checkbox Group 1');
-  cy.get('[id*="eoqkh1--check1"]').click();
-  cy.get('[id*="eoqkh1--check3"]').click();
+  
+  cy.contains('Check 1').click();
+  cy.contains('Check 3').click();
+ 
 
   // radioGroup1
-  cy.get('#ev6fyvb').contains('label', 'Radio Group 1');
-  cy.get('[for*="ev6fyvb--radio2"]').click();
+  
+  cy.contains('Radio 2').click();
 
   // number
-  cy.get('#ebedo1d').contains('label', 'Number 1').type(data.number);
+ 
+ cy.contains('Number 1').type(data.number);
 
   // phoneNumber1
-  cy.get('#ep7r3ch').contains('label', 'Phone Number 1').type(data.phoneNumber1);
+  
+  cy.contains('Phone Number 1').type(data.phoneNumber1);
 
   // email1
-  cy.get('#ebejr93').contains('label', 'Email 1').type(data.email1);
+  cy.contains('Email 1').type(data.email1);
 
   // dateTime1
-  cy.get('#eb683f').contains('label', 'Date / Time 1');
-  cy.get('#eb683f .form-control.input').click();
+ 
+  cy.get('.input-group-text > .fa').click();
   cy.get('.flatpickr-day.today').click();
 
   // day1
-  cy.get('#e619db6').contains('label', 'Day 1');
   cy.get('#day1-month').select('June');
   cy.get('#day1-day').type('29');
   cy.get('#day1-year').type('2021');
 
   // time1
-  cy.get('#eupvl3').contains('label', 'Time 1').type('11:30');
+ 
+  
+  cy.get('[type="time"]').type('11:30');
+  
+  
 }
 
 //
@@ -207,11 +239,16 @@ describe('Kitchen Sink Example Form', () => {
       expect(req.request.body.draft).to.be.false;
       // Ensure submission data object deeply matches expectations
       Object.entries(data).forEach(([k, v]) => {
-        expect(req.request.body.submission.data[k]).to.deep.equal(v);
+        //debugger ;
+        console.log(`k is ${req.request.body.submission.data[k]}`)
+        console.log(`v is ${v}`)
+       
+       expect(req.request.body.submission.data[k]).to.deep.equal(v);
       });
-    });
+   });
 
-    // Success
+    //// Success
+    //
     cy.wait('@submission');
     cy.location('pathname').should('eq', `/${depEnv}/form/success`);
     cy.location('search').should('eq', `?s=${submissionId}`);

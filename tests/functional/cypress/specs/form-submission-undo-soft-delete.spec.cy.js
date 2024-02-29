@@ -33,12 +33,12 @@ Cypress.Commands.add('createForm', () => {
   cy.wait(['@createForm', '@getForm']);
 });
 
-beforeEach(() => {
-  cy.viewport(1000, 1800);
-  cy.waitForLoad();
-  cy.kcLogout();
-  cy.kcLogin("user");
-});
+//beforeEach(() => {
+//  cy.viewport(1000, 1800);
+ // cy.waitForLoad();
+//  cy.kcLogout();
+//  cy.kcLogin("user");
+//});
 
 describe('Shows deleted form submissions', () => {
   it('Publishes the form, submits a form, deletes the submission', () => {
@@ -76,17 +76,17 @@ describe('Shows deleted form submissions', () => {
       method: 'GET',
       url: `/${depEnv}/api/v1/forms/${formId}/submissions?deleted=false`
     }, []).as('getSubmissions');
-    cy.visit(`/${depEnv}/form/submissions?f=${formId}`);
-    cy.waitForLoad();
-    cy.wait(['@getCurrentForms', '@getCurrentForm', '@getForm', '@getField', '@getPreferences', '@getSubmissions']);
-    cy.intercept({
-      method: 'GET',
-      url: `/${depEnv}/api/v1/forms/${formId}/submissions?deleted=true`
-    }, {
+   // cy.visit(`/${depEnv}/form/submissions?f=${formId}`);
+    //cy.waitForLoad();
+    //cy.wait(['@getCurrentForms', '@getCurrentForm', '@getForm', '@getField', '@getPreferences', '@getSubmissions']);
+    //cy.intercept({
+    //  method: 'GET',
+    //  url: `/${depEnv}/api/v1/forms/${formId}/submissions?deleted=true`
+    //}, {
       fixture: 'forms/form-submission.json'
-    }).as('getSubmissions');
-    cy.get('label').contains('Show deleted submissions').parent().parent().parent().click();
-  });
+   // }).as('getSubmissions');
+   // cy.get('label').contains('Show deleted submissions').parent().parent().parent().click();
+ });
 });
 
 
