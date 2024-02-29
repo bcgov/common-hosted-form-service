@@ -667,15 +667,7 @@ const service = {
       await FormVersionDraft.query().deleteById(formVersionDraftId);
       await trx.commit();
 
-      const { subscribe } = await service.readForm(formId);
-      if (subscribe && subscribe.enabled) {
-        const subscribeConfig = await service.readFormSubscriptionDetails(formId);
-        const config = Object.assign({}, subscribe, subscribeConfig);
-        const formVersion = new FormVersion();
-        formVersion.id = version.id;
-        formVersion.formId = formId;
-        service.postSubscriptionEvent(config, formVersion, null, SubscriptionEvent.FORM_DRAFT_PUBLISHED);
-      }
+      eventService.publishFormEvent(formId, version.id, version.published);
 
       // return the published version...
       return await service.readVersion(version.id);
