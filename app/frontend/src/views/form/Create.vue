@@ -79,8 +79,7 @@ export default {
 
         <FormProfile />
 
-        <BasePanel class="my-6"
-          >z
+        <BasePanel class="my-6">
           <template #title
             ><span :lang="lang">{{
               $t('trans.create.disclaimer')
