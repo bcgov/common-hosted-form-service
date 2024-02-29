@@ -40,7 +40,7 @@ beforeEach(() => {
 });
 
 describe('apiKeyRateLimiter', () => {
-  it('rate limits basic auth', () => {
+  it('rate limits basic auth', async () => {
     const req = getMockReq({
       headers: {
         authorization: 'Basic ' + basicToken,
@@ -48,43 +48,49 @@ describe('apiKeyRateLimiter', () => {
       ip: ipAddress,
     });
     req.app.get = jest.fn().mockReturnValue();
-    const { res } = getMockRes();
+    const { res, next } = getMockRes();
 
-    apiKeyRateLimiter(req, res, function () {
-      expect(res.setHeader).toHaveBeenCalledTimes(2);
-      // These also test that the rate limiter uses our custom config values.
-      expect(res.setHeader).toHaveBeenNthCalledWith(1, rateLimitPolicyName, rateLimitPolicyValue);
-      expect(res.setHeader).toHaveBeenNthCalledWith(2, rateLimitName, rateLimitValue);
-    });
+    await apiKeyRateLimiter(req, res, next);
+
+    expect(res.setHeader).toHaveBeenCalledTimes(2);
+    // These also test that the rate limiter uses our custom config values.
+    expect(res.setHeader).toHaveBeenNthCalledWith(1, rateLimitPolicyName, rateLimitPolicyValue);
+    expect(res.setHeader).toHaveBeenNthCalledWith(2, rateLimitName, rateLimitValue);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith();
   });
 
   describe('skips rate limiting for', () => {
-    test('no headers', () => {
+    test('no headers', async () => {
       const req = getMockReq({
         ip: ipAddress,
       });
       req.app.get = jest.fn().mockReturnValue();
-      const { res } = getMockRes();
+      const { res, next } = getMockRes();
 
-      apiKeyRateLimiter(req, res, function () {
-        expect(res.setHeader).toHaveBeenCalledTimes(0);
-      });
+      await apiKeyRateLimiter(req, res, next);
+
+      expect(res.setHeader).toHaveBeenCalledTimes(0);
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith();
     });
 
-    test('no authorization header', () => {
+    test('no authorization header', async () => {
       const req = getMockReq({
         headers: {},
         ip: ipAddress,
       });
       req.app.get = jest.fn().mockReturnValue();
-      const { res } = getMockRes();
+      const { res, next } = getMockRes();
 
-      apiKeyRateLimiter(req, res, function () {
-        expect(res.setHeader).toHaveBeenCalledTimes(0);
-      });
+      await apiKeyRateLimiter(req, res, next);
+
+      expect(res.setHeader).toHaveBeenCalledTimes(0);
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith();
     });
 
-    test('empty authorization header', () => {
+    test('empty authorization header', async () => {
       const req = getMockReq({
         headers: {
           authorization: '',
@@ -92,14 +98,16 @@ describe('apiKeyRateLimiter', () => {
         ip: ipAddress,
       });
       req.app.get = jest.fn().mockReturnValue();
-      const { res } = getMockRes();
+      const { res, next } = getMockRes();
 
-      apiKeyRateLimiter(req, res, function () {
-        expect(res.setHeader).toHaveBeenCalledTimes(0);
-      });
+      await apiKeyRateLimiter(req, res, next);
+
+      expect(res.setHeader).toHaveBeenCalledTimes(0);
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith();
     });
 
-    test('unexpected authorization type', () => {
+    test('unexpected authorization type', async () => {
       const req = getMockReq({
         headers: {
           authorization: Math.random().toString(36).substring(2),
@@ -107,14 +115,16 @@ describe('apiKeyRateLimiter', () => {
         ip: ipAddress,
       });
       req.app.get = jest.fn().mockReturnValue();
-      const { res } = getMockRes();
+      const { res, next } = getMockRes();
 
-      apiKeyRateLimiter(req, res, function () {
-        expect(res.setHeader).toHaveBeenCalledTimes(0);
-      });
+      await apiKeyRateLimiter(req, res, next);
+
+      expect(res.setHeader).toHaveBeenCalledTimes(0);
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith();
     });
 
-    test('bearer auth', () => {
+    test('bearer auth', async () => {
       const req = getMockReq({
         headers: {
           authorization: 'Bearer ' + bearerToken,
@@ -122,11 +132,13 @@ describe('apiKeyRateLimiter', () => {
         ip: ipAddress,
       });
       req.app.get = jest.fn().mockReturnValue();
-      const { res } = getMockRes();
+      const { res, next } = getMockRes();
 
-      apiKeyRateLimiter(req, res, function () {
-        expect(res.setHeader).toHaveBeenCalledTimes(0);
-      });
+      await apiKeyRateLimiter(req, res, next);
+
+      expect(res.setHeader).toHaveBeenCalledTimes(0);
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith();
     });
   });
 });
