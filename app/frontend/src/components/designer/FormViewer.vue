@@ -1053,7 +1053,7 @@ export default {
 
 <template>
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
-    <v-container class="max-width-container">
+    <v-container fluid>
       <div v-if="isFormScheduleExpired">
         <v-alert
           :text="
@@ -1258,8 +1258,5 @@ export default {
       border: 1px solid #606060;
     }
   }
-}
-.max-width-container {
-  max-width: 100%;
 }
 </style>
