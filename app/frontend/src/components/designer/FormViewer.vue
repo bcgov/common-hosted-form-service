@@ -1214,7 +1214,6 @@ export default {
           </p>
         </div>
       </div>
-
       <BaseDialog
         v-model="doYouWantToSaveTheDraft"
         :class="{ 'dir-rtl': isRTL }"
