@@ -15,6 +15,8 @@ afterEach(() => {
 
 describe('validateFormId', () => {
   describe('400 response when', () => {
+    const expectedStatus = { status: 400 };
+
     test('formId is missing', async () => {
       const req = getMockReq({
         params: {},
@@ -23,7 +25,7 @@ describe('validateFormId', () => {
 
       await validateParameter.validateFormId(req, res, next);
 
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 400 }));
+      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
     });
 
     test.each(invalidUuids)('formId is "%s"', async (eachFormId) => {
@@ -34,7 +36,7 @@ describe('validateFormId', () => {
 
       await validateParameter.validateFormId(req, res, next, eachFormId);
 
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 400 }));
+      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
     });
   });
 
@@ -65,6 +67,8 @@ describe('validateFormVersionDraftId', () => {
   formService.readDraft = jest.fn().mockReturnValue(mockReadDraftResponse);
 
   describe('400 response when', () => {
+    const expectedStatus = { status: 400 };
+
     test('formVersionDraftId is missing', async () => {
       const req = getMockReq({
         params: {
@@ -76,7 +80,7 @@ describe('validateFormVersionDraftId', () => {
       await validateParameter.validateFormVersionDraftId(req, res, next);
 
       expect(formService.readDraft).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 400 }));
+      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
     });
 
     test.each(invalidUuids)('formVersionDraftId is "%s"', async (eachFormVersionDraftId) => {
@@ -88,11 +92,13 @@ describe('validateFormVersionDraftId', () => {
       await validateParameter.validateFormVersionDraftId(req, res, next, eachFormVersionDraftId);
 
       expect(formService.readDraft).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 400 }));
+      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
     });
   });
 
   describe('404 response when', () => {
+    const expectedStatus = { status: 404 };
+
     test('formId does not match', async () => {
       formService.readDraft.mockReturnValueOnce({
         formId: uuidv4(),
@@ -109,7 +115,7 @@ describe('validateFormVersionDraftId', () => {
       await validateParameter.validateFormVersionDraftId(req, res, next, formVersionDraftId);
 
       expect(formService.readDraft).toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 404 }));
+      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
     });
   });
 
@@ -161,6 +167,8 @@ describe('validateFormVersionId', () => {
   formService.readVersion = jest.fn().mockReturnValue(mockReadVersionResponse);
 
   describe('400 response when', () => {
+    const expectedStatus = { status: 400 };
+
     test('formVersionId is missing', async () => {
       const req = getMockReq({
         params: {
@@ -172,7 +180,7 @@ describe('validateFormVersionId', () => {
       await validateParameter.validateFormVersionId(req, res, next);
 
       expect(formService.readVersion).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 400 }));
+      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
     });
 
     test.each(invalidUuids)('formVersionId is "%s"', async (eachFormVersionId) => {
@@ -184,11 +192,13 @@ describe('validateFormVersionId', () => {
       await validateParameter.validateFormVersionId(req, res, next, eachFormVersionId);
 
       expect(formService.readVersion).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 400 }));
+      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
     });
   });
 
   describe('404 response when', () => {
+    const expectedStatus = { status: 404 };
+
     test('formId does not match', async () => {
       formService.readVersion.mockReturnValueOnce({
         formId: uuidv4(),
@@ -205,7 +215,7 @@ describe('validateFormVersionId', () => {
       await validateParameter.validateFormVersionId(req, res, next, formVersionId);
 
       expect(formService.readVersion).toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 404 }));
+      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
     });
   });
 
