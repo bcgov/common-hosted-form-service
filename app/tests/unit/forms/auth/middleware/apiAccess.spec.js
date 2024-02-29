@@ -417,5 +417,39 @@ describe('apiAccess', () => {
       expect(next).toHaveBeenCalledTimes(1);
       expect(next).toHaveBeenCalledWith();
     });
+
+    it('should be forbidden if filesApiAccess is false', async () => {
+      mockReadApiKey.mockResolvedValue({ secret: secret, filesApiAccess: false });
+      fileService.read = jest.fn().mockResolvedValue({ formSubmissionId: formSubmissionId });
+      submissionService.read = jest.fn().mockResolvedValue({ form: { id: formId } });
+      const req = {
+        headers: { authorization: authHeader },
+        params: { id: fileId },
+      };
+      const { res, next } = getMockRes();
+
+      await apiAccess(req, res, next);
+
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 403 }));
+      expect(res.status).not.toHaveBeenCalled();
+      expect(req.apiUser).toBeUndefined();
+      expect(mockReadApiKey).toHaveBeenCalledTimes(1);
+    });
+
+    it('should allow access to files if filesAPIAccess is true', async () => {
+      mockReadApiKey.mockResolvedValue({ secret: secret, filesAPIAccess: true });
+      const req = {
+        headers: { authorization: authHeader },
+        params: { formId: formId },
+      };
+      const { res, next } = getMockRes();
+
+      await apiAccess(req, res, next);
+
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(mockReadApiKey).toHaveBeenCalledTimes(1);
+      expect(req.apiUser).toBeTruthy();
+    });
   });
 });

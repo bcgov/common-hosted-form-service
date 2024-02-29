@@ -13,7 +13,7 @@ import { formService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
-import { IdentityMode, NotificationTypes } from '~/utils/constants';
+import { IdentityMode } from '~/utils/constants';
 import { generateIdps } from '~/utils/transformUtils';
 import { userService } from '../../services';
 
@@ -227,7 +227,6 @@ export default {
       'setDirtyFlag',
       'getFCProactiveHelpImageUrl',
     ]),
-    ...mapActions(useNotificationStore, ['addNotification']),
 
     async getFormSchema() {
       try {
@@ -431,11 +430,13 @@ export default {
           this.canSave = true;
           modified?.components?.map((comp) => {
             if (comp.key === 'form') {
-              this.addNotification({
-                ...NotificationTypes.ERROR,
-                message: this.$t('trans.formDesigner.fieldnameError', {
-                  label: comp.label,
-                }),
+              const notificationStore = useNotificationStore();
+              const msg = i18n.t('trans.formDesigner.fieldnameError', {
+                label: comp.label,
+              });
+              notificationStore.addNotification({
+                text: msg,
+                consoleError: msg,
               });
               this.canSave = false;
             }
