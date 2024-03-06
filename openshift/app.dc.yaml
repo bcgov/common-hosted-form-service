@@ -362,4 +362,4 @@ parameters:
   - name: REPLICAS
     description: The number of replicas to run
     displayName: Replicas
-    value: 2
+    value: "2"
