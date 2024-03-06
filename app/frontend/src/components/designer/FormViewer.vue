@@ -982,14 +982,15 @@ export default {
       }
     },
     showdoYouWantToSaveTheDraftModal() {
-      if (!this.bulkFile && !this.form.enableSubmitterDraft) {
+      if (!this.bulkFile) {
         this.saveDraftState = 0;
         if (
           (this.submissionId == undefined || this.formDataEntered) &&
-          this.showModal
-        )
+          this.showModal &&
+          this.form.enableSubmitterDraft
+        ) {
           this.doYouWantToSaveTheDraft = true;
-        else this.leaveThisPage();
+        } else this.leaveThisPage();
       } else {
         this.leaveThisPage();
       }
