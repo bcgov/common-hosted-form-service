@@ -124,6 +124,8 @@ const service = {
         }),
       ];
     }
+
+    return [];
   },
   _getGraceDate: (schedule) => {
     let substartDate = moment(schedule.openSubmissionDateTime);
