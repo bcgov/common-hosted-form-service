@@ -1,8 +1,8 @@
 const { v4: uuidv4 } = require('uuid');
-
 const { Statuses } = require('../common/constants');
 const { Form, FormVersion, FormSubmission, FormSubmissionStatus, Note, SubmissionAudit, SubmissionMetadata } = require('../common/models');
 const emailService = require('../email/emailService');
+const eventService = require('../event/eventService');
 const formService = require('../form/service');
 const permissionService = require('../permission/service');
 
@@ -72,6 +72,7 @@ const service = {
             // If finalizing submission, send the submission email (quiet fail if anything goes wrong)
             const submissionMetaData = await SubmissionMetadata.query().where('submissionId', formSubmissionId).first();
             emailService.submissionReceived(submissionMetaData.formId, formSubmissionId, data, referrer).catch(() => {});
+            eventService.formSubmissionEventReceived(submissionMetaData.formId, submissionMetaData.formVersionId, formSubmissionId, data);
           }
         } else {
           if (statuses && statuses.length > 0 && (statuses[0].code === Statuses.SUBMITTED || statuses[0].code === Statuses.COMPLETED)) {
