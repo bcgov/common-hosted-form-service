@@ -220,19 +220,9 @@ describe('Form Designer', () => {
         //cy.get('p').contains('Multi-line Text Component');
         cy.get('button').contains('Save').click();
     });
-    cy.get('div.formio-builder-form').then($el => {
-        const coords = $el[0].getBoundingClientRect();
-        cy.get('span.btn').contains('Day')
-        
-        .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, +10, { force: true })
-        .trigger('mouseup', { force: true });
-        //cy.get('p').contains('Multi-line Text Component');
-        cy.get('button').contains('Save').click();
-    });
     cy.waitForLoad();
-    //cy.get('#heading-layoutControls').click();
-    cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
+    
+    
     // Form saving
       let savedButton = cy.get('[data-cy=saveButton]');
       expect(savedButton).to.not.be.null;
@@ -240,19 +230,21 @@ describe('Form Designer', () => {
       cy.waitForLoad();
       cy.get('[data-cy="settingsRouterLink"]').click();
       cy.get('a > .v-btn > .v-btn__content > .mdi-pencil').click();
+      cy.waitForLoad();
+      cy.waitForLoad();
       cy.get('[name="data[middleName]"]').realHover('mouse');
       //
-      //removeComponent
+      //removeComponent "middle Name" 
 
       cy.get('[ref=removeComponent]').then($el => {
 
-        const rem=$el[12];
+        const rem=$el[11];
         rem.click();
         
         });
 
 
-      
+      //Adding another component
 
       
       cy.get('button').contains('Basic Fields').click();
