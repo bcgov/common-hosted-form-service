@@ -95,7 +95,7 @@ module.exports = Object.freeze({
     VIEWS_FORM_MANAGE: 'views_form_manage',
     VIEWS_FORM_PREVIEW: 'views_form_preview',
     VIEWS_FORM_SUBMISSIONS: 'views_form_submissions',
-    VIEWS_FORM_TEAMS: 'views_form_teamS',
+    VIEWS_FORM_TEAMS: 'views_form_teams',
     VIEWS_FORM_VIEW: 'views_form_view',
     VIEWS_USER_SUBMISSIONS: 'views_user_submissions',
   },
