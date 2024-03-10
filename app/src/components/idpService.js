@@ -13,7 +13,7 @@ function stringToGUID(s) {
 }
 
 function isEmpty(s) {
-  return s === null || (s && s.trim() === '');
+  return s === undefined || s === null || (s && s.trim() === '');
 }
 
 function isNotEmpty(s) {

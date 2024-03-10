@@ -117,8 +117,7 @@ describe('currentUser', () => {
     expect(jwtService.validateAccessToken).toHaveBeenCalledWith('bearer-token-value');
     expect(service.login).toHaveBeenCalledTimes(0);
     expect(testReq.currentUser).toEqual(undefined);
-    expect(nxt).toHaveBeenCalledTimes(0);
-    //expect(nxt).toHaveBeenCalledWith(new Problem(403, { detail: 'Authorization token is invalid.' }));
+    expect(nxt).toHaveBeenCalledWith(new Problem(403, { detail: 'Authorization token is invalid.' }));
   });
 });
 

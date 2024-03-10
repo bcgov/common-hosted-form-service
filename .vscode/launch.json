@@ -14,7 +14,9 @@
       "runtimeArgs": ["run", "serve"],
       "runtimeExecutable": "npm",
       "type": "node",
-      "env": {}
+      "env": {
+        "NODE_CONFIG_DIR": "${workspaceFolder}/.devcontainer/chefs_local"
+      }
     },
     {
       "cwd": "${workspaceFolder}/app/frontend",
@@ -30,7 +32,7 @@
       "request": "launch",
       "runtimeArgs": ["run", "dev"],
       "runtimeExecutable": "npm",
-      "type": "node",
+      "type": "node"
     },
     {
       "name": "CHEFS Frontend - chrome",
@@ -39,7 +41,7 @@
       "url": "http://localhost:5173/app",
       "enableContentValidation": false,
       "webRoot": "${workspaceFolder}/app/frontend/src",
-      "pathMapping": {"url": "//src/", "path": "${webRoot}/"}
+      "pathMapping": { "url": "//src/", "path": "${webRoot}/" }
     }
   ],
   "version": "0.2.0"

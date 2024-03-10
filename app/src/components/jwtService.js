@@ -1,5 +1,7 @@
 const jose = require('jose');
 const config = require('config');
+const Problem = require('api-problem');
+
 const errorToProblem = require('./errorToProblem');
 
 const SERVICE = 'JwtService';
@@ -63,26 +65,29 @@ class JwtService {
   protect(spec) {
     // actual middleware
     return async (req, res, next) => {
-      let authorized = false;
       try {
-        // get token, check if valid
-        const token = this.getBearerToken(req);
-        if (token) {
-          const payload = await this._verify(token);
-          if (spec) {
-            authorized = payload.client_roles?.includes(spec);
-          } else {
-            authorized = true;
+        let authorized = false;
+        try {
+          // get token, check if valid
+          const token = this.getBearerToken(req);
+          if (token) {
+            const payload = await this._verify(token);
+            if (spec) {
+              authorized = payload.client_roles?.includes(spec);
+            } else {
+              authorized = true;
+            }
           }
+        } catch (error) {
+          authorized = false;
+        }
+        if (!authorized) {
+          throw new Problem(401, { detail: 'Access denied' });
+        } else {
+          return next();
         }
       } catch (error) {
-        authorized = false;
-      }
-      if (!authorized) {
-        res.status(403);
-        res.end('Access denied');
-      } else {
-        return next();
+        next(error);
       }
     };
   }
