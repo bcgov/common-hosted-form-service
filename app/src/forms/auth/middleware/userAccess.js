@@ -61,7 +61,7 @@ const _getForm = async (currentUser, formId, includeDeleted) => {
  * attribute so that all downstream middleware and business logic can use it.
  *
  * This will fall through if everything is OK. If the Bearer auth is not valid,
- * this will produce a 403 error.
+ * this will produce a 401 error.
  *
  * @param {*} req the Express object representing the HTTP request.
  * @param {*} _res the Express object representing the HTTP response - unused.
@@ -74,7 +74,7 @@ const currentUser = async (req, _res, next) => {
     if (bearerToken) {
       const ok = await jwtService.validateAccessToken(bearerToken);
       if (!ok) {
-        throw new Problem(403, { detail: 'Authorization token is invalid.' });
+        throw new Problem(401, { detail: 'Authorization token is invalid.' });
       }
     }
 

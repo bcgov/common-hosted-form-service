@@ -39,7 +39,7 @@ class JwtService {
   }
 
   async _verify(token) {
-    // could throw JWTClaimValidationFailed
+    // could throw JWTClaimValidationFailed (JOSEError)
     const { payload } = await jose.jwtVerify(token, JWKS, {
       issuer: this.issuer,
       audience: this.audience,
@@ -54,7 +54,7 @@ class JwtService {
       // these claims passed, just return true.
       return true;
     } catch (e) {
-      if (e instanceof jose.errors.JWTClaimValidationFailed) {
+      if (e instanceof jose.errors.JOSEError) {
         return false;
       } else {
         errorToProblem(SERVICE, e);

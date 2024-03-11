@@ -101,7 +101,7 @@ describe('currentUser', () => {
     expect(service.login).toHaveBeenCalledWith({ token: 'payload' });
   });
 
-  it('403s if the token is invalid', async () => {
+  it('401s if the token is invalid', async () => {
     const testReq = {
       headers: {
         authorization: 'Bearer hjvds0uds',
@@ -117,7 +117,7 @@ describe('currentUser', () => {
     expect(jwtService.validateAccessToken).toHaveBeenCalledWith('bearer-token-value');
     expect(service.login).toHaveBeenCalledTimes(0);
     expect(testReq.currentUser).toEqual(undefined);
-    expect(nxt).toHaveBeenCalledWith(new Problem(403, { detail: 'Authorization token is invalid.' }));
+    expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'Authorization token is invalid.' }));
   });
 });
 
