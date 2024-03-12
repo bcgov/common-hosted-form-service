@@ -27,6 +27,16 @@ const schedule = {
   closeSubmissionDateTime: null,
 };
 
+describe('_init', () => {
+  it('should handle reminder enabled with empty schedule', async () => {
+    reminderService._getForms = jest.fn().mockReturnValue([{ schedule: {} }]);
+
+    const result = await reminderService._init();
+
+    expect(result.errors).not.toBe([]);
+  });
+});
+
 describe('getDifference', () => {
   it('should return the difference between 2 arrays of object', () => {
     let obj1 = [
