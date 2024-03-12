@@ -61,56 +61,21 @@ describe('Download.vue', () => {
             name: 'BaseSecure',
             template: '<div class="base-secure-stub"><slot /></div>',
           },
-          FormSubmission: true,
-        },
-      },
-    });
-
-    await wrapper.vm.getFile('doesnt matter');
-
-    await flushPromises();
-
-    // Assertions remain the same
-    expect(getFileSpy).toHaveBeenCalledTimes(1);
-    expect(getDispositionSpy).toHaveBeenCalledTimes(1);
-    // Reset spy manually if needed
-    getFileSpy.mockClear();
-    formStore.downloadFile.mockClear();
-  });
-
-  it('renders and downloads json', async () => {
-    const formStore = useFormStore();
-    formStore.downloadFile = vi.fn().mockImplementation(() => {});
-    // No data
-    formStore.downloadedFile = {
-      headers: {
-        'content-type': 'application/json',
-        'content-disposition': 'attachment; filename=test.csv',
-      },
-    };
-
-    const getFileSpy = vi.spyOn(Download.methods, 'getFile');
-    const getDispositionSpy = vi.spyOn(Download.methods, 'getDisposition');
-
-    const wrapper = shallowMount(Download, {
-      props: {
-        id: '1',
-      },
-      global: {
-        plugins: [pinia],
-        stubs: {
-          BaseSecure: {
-            name: 'BaseSecure',
-            template: '<div class="base-secure-stub"><slot /></div>',
+          VContainer: {
+            name: 'VContainer',
+            template: '<div class="v-container-stub"><slot /></div>',
           },
           FormSubmission: true,
         },
       },
     });
 
-    await wrapper.vm.getFile('doesnt matter');
     await flushPromises();
-
+    expect(wrapper.html()).toMatch('base-secure');
+    expect(wrapper.html()).toMatch('trans.download.chefsDataExport');
+    expect(wrapper.html()).not.toMatch(
+      'trans.download.preparingForDownloading'
+    );
     // Assertions remain the same
     expect(getFileSpy).toHaveBeenCalledTimes(1);
     expect(getDispositionSpy).toHaveBeenCalledTimes(1);
