@@ -586,6 +586,7 @@ export default {
       <!-- page title -->
       <div>
         <h1 :lang="lang">{{ $t('trans.formsTable.submissions') }}</h1>
+        <h3>{{ formId ? form.name : 'All Forms' }}</h3>
       </div>
       <!-- buttons -->
       <div>
