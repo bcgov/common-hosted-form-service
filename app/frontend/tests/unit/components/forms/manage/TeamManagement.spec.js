@@ -2,14 +2,14 @@ import { createTestingPinia } from '@pinia/testing';
 import { setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
-import { beforeEach, expect } from 'vitest';
+import { beforeEach, expect, vi } from 'vitest';
 
 import getRouter from '~/router';
-import ExportSubmissions from '~/components/forms/ExportSubmissions.vue';
+import TeamManagement from '~/components/forms/manage/TeamManagement.vue';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 
-describe('ExportSubmissions.vue', () => {
+describe('TeamManagement.vue', () => {
   const formId = '123-456';
 
   const pinia = createTestingPinia();
@@ -29,12 +29,12 @@ describe('ExportSubmissions.vue', () => {
   });
 
   it('renders', () => {
-    const fetchFormSpy = vi.spyOn(ExportSubmissions.methods, 'fetchForm');
+    const loadItemsSpy = vi.spyOn(TeamManagement.methods, 'loadItems');
     formStore.form = {
       name: 'This is a form title',
     };
-    fetchFormSpy.mockImplementation(() => {});
-    const wrapper = mount(ExportSubmissions, {
+    loadItemsSpy.mockImplementation(() => {});
+    const wrapper = mount(TeamManagement, {
       props: {
         formId: formId,
       },
@@ -43,9 +43,7 @@ describe('ExportSubmissions.vue', () => {
       },
     });
 
-    expect(wrapper.text()).toContain(
-      'trans.exportSubmissions.exportSubmissionsToFile'
-    );
+    expect(wrapper.text()).toContain('trans.teamManagement.teamManagement');
     expect(wrapper.html()).toContain(formStore.form.name);
   });
 });

@@ -277,6 +277,7 @@ export default {
             <h1 :lang="lang">
               {{ $t('trans.exportSubmissions.exportSubmissionsToFile') }}
             </h1>
+            <h3>{{ formId ? form.name : '' }}</h3>
           </v-col>
           <v-col :class="isRTL ? 'text-left' : 'text-right'" cols="1">
             <span>

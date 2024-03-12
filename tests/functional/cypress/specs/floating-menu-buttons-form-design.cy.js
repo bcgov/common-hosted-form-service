@@ -12,22 +12,30 @@ Cypress.Commands.add('waitForLoad', () => {
 
 describe('Form Designer', () => {
   beforeEach(()=>{
+    debugger;
     cy.viewport(1000, 1800);
     cy.waitForLoad();
     cy.kcLogout();
     cy.kcLogin("user");
     cy.visit(`/${depEnv}/form/create`);
+    cy.log(`pathname is this : ${cy.location('pathname')}`)
+    console.log(`pathname is this : ${cy.location('pathname')}`);
     cy.location('pathname').should('eq', `/${depEnv}/form/create`);
     cy.on('uncaught:exception', (err, runnable) => {
-      // Form.io throws an uncaught exception for missing projectid
-      // Cypress catches it as undefined: undefined so we can't get the text
-      console.log(err);
-      return false;
+      //Form.io throws an uncaught exception for missing projectid
+      //Cypress catches it as undefined: undefined so we can't get the text
+     console.log(err);
+     return false;
     });
-    cy.get(`input[data-test='text-name']`).type('Test', { delay: 0 });
-    cy.get('div').contains('Disclaimer').parent().find(`input[type='checkbox']`).parent().click();
-    cy.get('button').contains('Continue').click();
-    cy.get('h1').contains('Form Design');
+    cy.get('[data-cy="userFormsLinks"]').should('be.visible');
+    cy.get('[data-cy="createNewForm"]').should('be.visible');
+    cy.get('[data-cy="help"]').should('be.visible');
+    cy.get('[data-cy="feedback"]').should('be.visible');
+
+    //cy.get(`input[data-test='text-name']`).type('Test', { delay: 0 });
+    //cy.get('div').contains('Disclaimer').parent().find(`input[type='checkbox']`).parent().click();
+    //cy.get('button').contains('Continue').click();
+    cy.get('h1').contains('Form Settings');
   })
 
 
