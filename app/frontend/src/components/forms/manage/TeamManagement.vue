@@ -390,6 +390,7 @@ export default {
         <h1 class="mr-auto" :lang="lang">
           {{ $t('trans.teamManagement.teamManagement') }}
         </h1>
+        <h3>{{ formId ? form.name : '' }}</h3>
       </div>
       <div style="z-index: 50">
         <span>
