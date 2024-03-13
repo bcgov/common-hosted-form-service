@@ -2,7 +2,7 @@ import { createTestingPinia } from '@pinia/testing';
 import { setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
-import { beforeEach, expect, vi } from 'vitest';
+import { beforeEach, expect } from 'vitest';
 
 import getRouter from '~/router';
 import ExportSubmissions from '~/components/forms/ExportSubmissions.vue';
