@@ -45,11 +45,7 @@ export default {
     async getFile(fileId) {
       this.showDownloadLink = false;
       await this.downloadFile(fileId);
-      if (
-        this.downloadedFile &&
-        this.downloadedFile.data &&
-        this.downloadedFile.headers
-      ) {
+      if (this.downloadedFile && this.downloadedFile.headers) {
         this.showDownloadLink = true;
         const data = this.downloadedFile.headers['content-type'].includes(
           'application/json'

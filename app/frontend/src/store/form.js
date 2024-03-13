@@ -839,6 +839,8 @@ export const useFormStore = defineStore('form', {
         const { data } = await formService.readFormSubscriptionData(formId);
         if (data) {
           this.subscriptionData = data;
+        } else {
+          this.subscriptionData = genInitialSubscribeDetails();
         }
       } catch (error) {
         const notificationStore = useNotificationStore();
