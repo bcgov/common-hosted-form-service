@@ -42,6 +42,23 @@
       "enableContentValidation": false,
       "webRoot": "${workspaceFolder}/app/frontend/src",
       "pathMapping": { "url": "//src/", "path": "${webRoot}/" }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Jest: current file",
+      //"env": { "NODE_ENV": "test" },
+      "program": "${workspaceFolder}/app/node_modules/.bin/jest",
+      "args": [
+        "${fileBasenameNoExtension}",
+        "--config",
+        "${workspaceFolder}/app/jest.config.js",
+        "--coverage=false"
+      ],
+      "console": "integratedTerminal",
+      "windows": {
+        "program": "${workspaceFolder}/app/node_modules/jest/bin/jest"
+      }
     }
   ],
   "version": "0.2.0"

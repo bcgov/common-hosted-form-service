@@ -221,10 +221,10 @@
     "extra": {}
   },
   {
-    "code": "testonly",
-    "display": "N/A",
-    "active": false,
-    "idp": "testonly",
+    "code": "digital-credential",
+    "display": "Digital Credential",
+    "active": true,
+    "idp": "digitalcredential",
     "createdBy": "testonly",
     "createdAt": "2024-03-08T22:02:34.399Z",
     "updatedBy": null,
@@ -233,7 +233,27 @@
     "login": false,
     "permissions": [],
     "roles": null,
-    "tokenmap": null,
+    "tokenmap": {
+      "idpUserId": "vc_user_guid::stringToGUID",
+      "keycloakId": "preferred_username",
+      "email": "vc_presented_attributes,email::parseJsonField",
+      "firstName": "vc_presented_attributes,name.first::parseJsonField",
+      "lastName": "vc_presented_attributes,name.last::parseJsonField",
+      "idp": "identity_provider"
+    },
+    "extra": {}
+  },
+  {
+    "code": "testonly",
+    "display": "N/A",
+    "active": false,
+    "idp": "testonly",
+    "createdBy": "testonly",
+    "createdAt": "2024-03-08T22:02:34.399Z",
+    "updatedBy": null,
+    "login": false,
+    "permissions": [],
+    "roles": null,
     "extra": {}
   }
 ]

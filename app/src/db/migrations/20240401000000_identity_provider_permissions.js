@@ -30,6 +30,9 @@ const BCEID_EXTRAS = {
 exports.up = function (knex) {
   return Promise.resolve().then(() =>
     knex.schema
+      .alterTable('user', function (table) {
+        table.dropIndex('keycloakId');
+      })
       .alterTable('identity_provider', (table) => {
         table.boolean('primary').notNullable().defaultTo(false);
         table.boolean('login').notNullable().defaultTo(false).comment('When true, supply buttons to launch login process');
@@ -126,6 +129,9 @@ exports.up = function (knex) {
 exports.down = function (knex) {
   return Promise.resolve().then(() =>
     knex.schema
+      .alterTable('user', function (table) {
+        table.index('keycloakId');
+      })
       .alterTable('identity_provider', (table) => {
         table.dropColumn('primary');
         table.dropColumn('login');
