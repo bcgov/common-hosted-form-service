@@ -6,6 +6,9 @@ const idpData = require('../../fixtures/form/identity_providers.json');
 // let's just load data once..
 idpService.providers = idpData;
 idpService.activeProviders = idpData.filter((x) => x.active);
+// change these as appropriate if adding test case idps...
+const IDP_COUNT = 6;
+const IDP_ACTIVE_COUNT = 5;
 
 jest.mock('../../../src/forms/common/models/tables/user', () => MockModel);
 
@@ -38,6 +41,31 @@ function idirToken() {
   };
 }
 
+function digitalCredentialToken() {
+  return {
+    exp: 1709853624,
+    iat: 1709853324,
+    auth_time: 1709853313,
+    jti: '7d85f2db-d4a5-4ce8-bcf0-4ecc1ab009d2',
+    iss: 'https://dev.sandbox.loginproxy.gov.bc.ca/auth/realms/standard',
+    aud: 'chefs-frontend-localhost-12200',
+    sub: '5bc63f3b8d93f6fa259f2ca8fa5e79a4175567c63871b5bad13e3e846ded4b19@digitalcredential',
+    typ: 'Bearer',
+    azp: 'chefs-frontend-localhost-12200',
+    nonce: '47652a72-83cf-46b2-8872-2ddbe6e32bd3',
+    session_state: '2682bdcd-2778-4709-a9d0-bf6f7d0f153d',
+    scope: 'openid email idir profile digitalcredential bceidbusiness bceidbasic',
+    sid: '2682bdcd-2778-4709-a9d0-bf6f7d0f153d',
+    identity_provider: 'digitalcredential',
+    email_verified: false,
+    pres_req_conf_id: 'verified-email',
+    vc_presented_attributes: '{"email": "patrick.swayze@gmail.com", "name": {"first": "patrick", "last": "swayze"}}',
+    preferred_username: '5bc63f3b8d93f6fa259f2ca8fa5e79a4175567c63871b5bad13e3e846ded4b19@digitalcredential',
+    vc_user_guid: '674861AA34E546F8BDA6A7004DC9C6C9',
+    vc_user_guid_converted: '674861AA-34E5-46F8-BDA6-A7004DC9C6C9',
+  };
+}
+
 beforeEach(() => {
   MockModel.mockReset();
 });
@@ -49,8 +77,8 @@ afterEach(() => {
 describe('idpService', () => {
   const assertService = (srv) => {
     expect(srv).toBeTruthy();
-    expect(srv.providers).toHaveLength(5);
-    expect(srv.activeProviders).toHaveLength(4);
+    expect(srv.providers).toHaveLength(IDP_COUNT);
+    expect(srv.activeProviders).toHaveLength(IDP_ACTIVE_COUNT);
   };
 
   it('should return a service', () => {
@@ -59,12 +87,12 @@ describe('idpService', () => {
 
   it('should return active idps', async () => {
     const idps = await idpService.getIdentityProviders(true);
-    expect(idps).toHaveLength(4);
+    expect(idps).toHaveLength(IDP_ACTIVE_COUNT);
   });
 
   it('should return all idps', async () => {
     const idps = await idpService.getIdentityProviders(false);
-    expect(idps).toHaveLength(5);
+    expect(idps).toHaveLength(IDP_COUNT);
   });
 
   it('should return bceid-business by idp', async () => {
@@ -79,6 +107,20 @@ describe('idpService', () => {
     expect(idp).toBeTruthy();
     expect(idp.code).toBe('bceid-business');
     expect(idp.idp).toBe('bceidbusiness');
+  });
+
+  it('should return digital-credential by idp', async () => {
+    const idp = await idpService.findByIdp('digitalcredential');
+    expect(idp).toBeTruthy();
+    expect(idp.code).toBe('digital-credential');
+    expect(idp.idp).toBe('digitalcredential');
+  });
+
+  it('should return digital-credential by code', async () => {
+    const idp = await idpService.findByCode('digital-credential');
+    expect(idp).toBeTruthy();
+    expect(idp.code).toBe('digital-credential');
+    expect(idp.idp).toBe('digitalcredential');
   });
 
   it('should return nothing by bad idp', async () => {
@@ -174,9 +216,8 @@ describe('idpService', () => {
     expect(r).toBe(undefined);
   });
 
-  it('should throw a Problem when token has no keycloakId cannot parse into GUID', async () => {
-    let token = idirToken();
-    token.idir_user_guid = 123; //will not parse into a GUID...
+  it('should return userInfo with good digitalcredential token', async () => {
+    const token = digitalCredentialToken();
     let r = undefined;
     let e = undefined;
     try {
@@ -185,9 +226,15 @@ describe('idpService', () => {
       e = error;
     }
 
-    expect(e).toBeTruthy();
-    expect(r).toBeFalsy();
-    expect(e).toBeInstanceOf(Problem);
-    expect(r).toBe(undefined);
+    expect(e).toBeFalsy();
+    expect(r).toBeTruthy();
+    expect(r.keycloakId).toBeTruthy();
+    expect(r.keycloakId).toBe(token.preferred_username); // not a GUID!
+    // test the stringToGUID parsing (valid answer in token...)
+    expect(r.idpUserId).toEqual(token.vc_user_guid_converted);
+    // test JSON parsing
+    expect(r.email).toBe('patrick.swayze@gmail.com');
+    expect(r.firstName).toBe('patrick');
+    expect(r.lastName).toBe('swayze');
   });
 });

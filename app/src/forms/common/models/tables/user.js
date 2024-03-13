@@ -97,7 +97,7 @@ class User extends Timestamps(Model) {
       properties: {
         id: { type: 'string', pattern: Regex.UUID },
         idpUserId: { type: 'string', maxLength: 255 },
-        keycloakId: { type: 'string', pattern: Regex.UUID },
+        keycloakId: { type: 'string', maxLength: 255 },
         username: { type: ['string', 'null'], maxLength: 255 },
         firstName: { type: ['string', 'null'], maxLength: 255 },
         lastName: { type: ['string', 'null'], maxLength: 255 },

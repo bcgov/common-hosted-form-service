@@ -4,12 +4,28 @@ const { IdentityProvider, User } = require('../forms/common/models');
 const SERVICE = 'IdpService';
 
 const IDP_KEY = 'identity_provider';
-const KC_ID_KEY = 'keycloakId';
 
 function stringToGUID(s) {
   const regex = /^([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{12})/;
   const m = s.replace(/-+/g, '').match(regex);
   return m ? `${m[1]}-${m[2]}-${m[3]}-${m[4]}-${m[5]}` : null;
+}
+
+function getNestedObject(obj, key) {
+  return key.split('.').reduce(function (o, x) {
+    return typeof o == 'undefined' || o === null ? o : o[x];
+  }, obj);
+}
+
+function parseJsonField(attributeName, searchpath, token) {
+  let value = null;
+  for (const k of Object.keys(token)) {
+    if (k === attributeName) {
+      const obj = JSON.parse(token[k]);
+      value = getNestedObject(obj, searchpath);
+    }
+  }
+  return value;
 }
 
 function isEmpty(s) {
@@ -45,6 +61,40 @@ class IdpService {
     return p.find((x) => x.code === code);
   }
 
+  async getValue(key, tokenKey, token) {
+    let tokenValue = null;
+    // examine the key, it may contain parsing information
+    // if key contains `::`, then we have parsing method to call.
+    if (tokenKey.includes('::')) {
+      // determine which convert method...
+      const k_fn = tokenKey.split('::'); //split to key and function
+      const tv = token[k_fn[0]]; //token value
+      const fn = k_fn[1]; //function name
+      switch (fn) {
+        case 'stringToGUID':
+          tokenValue = stringToGUID(tv);
+          if (!tokenValue) {
+            throw new Error(`Value in token for '${tv}' cannot be converted to GUID.`);
+          }
+          break;
+        case 'parseJsonField':
+          try {
+            // k_fn[0] is [attribute name ,  json search path]
+            tokenValue = parseJsonField(k_fn[0].split(',')[0], k_fn[0].split(',')[1], token);
+          } catch (error) {
+            throw new Error(`Value in token mapped to '${key}' cannot be converted from JSON.`);
+          }
+          break;
+        default:
+          throw new Error(`Value in token mapped to '${key}' specified unknown parsing routine: ${fn}.`);
+      }
+    } else {
+      tokenValue = token[tokenKey];
+    }
+    // errors if no value???
+    return tokenValue;
+  }
+
   // given a token, determine idp and transform
   async parseToken(token) {
     try {
@@ -69,14 +119,7 @@ class IdpService {
             for (const key of Object.keys(userInfo)) {
               const tokenKey = idp.tokenmap[key];
               if (tokenKey) {
-                let tokenValue = token[tokenKey];
-                if (key === KC_ID_KEY) {
-                  tokenValue = stringToGUID(token[tokenKey]);
-                  if (!tokenValue) {
-                    throw new Error(`Value in token for '${tokenKey}' cannot be converted to GUID.`);
-                  }
-                }
-                userInfo[key] = tokenValue;
+                userInfo[key] = await this.getValue(key, tokenKey, token);
               }
             }
             userInfo.public = false;
