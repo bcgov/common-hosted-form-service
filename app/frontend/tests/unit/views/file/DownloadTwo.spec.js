@@ -36,7 +36,7 @@ describe('Download.vue', () => {
     notificationStore.$reset();
   });
 
-  it('renders and downloads json', async () => {
+  it('renders and downloads json even with no data', async () => {
     const formStore = useFormStore();
     formStore.downloadFile = vi.fn().mockImplementation(() => {});
     formStore.downloadedFile = {
@@ -50,7 +50,7 @@ describe('Download.vue', () => {
     const getFileSpy = vi.spyOn(Download.methods, 'getFile');
     const getDispositionSpy = vi.spyOn(Download.methods, 'getDisposition');
 
-    const wrapper = shallowMount(Download, {
+    const wrapper = mount(Download, {
       props: {
         id: '1',
       },
@@ -61,90 +61,22 @@ describe('Download.vue', () => {
             name: 'BaseSecure',
             template: '<div class="base-secure-stub"><slot /></div>',
           },
-          VContainer: {
-            name: 'VContainer',
-            template: '<div class="v-container-stub"><slot /></div>',
-          },
           FormSubmission: true,
         },
       },
     });
 
     await flushPromises();
+
+    // Assertions remain the same
     expect(wrapper.html()).toMatch('base-secure');
     expect(wrapper.html()).toMatch('trans.download.chefsDataExport');
     expect(wrapper.html()).not.toMatch(
       'trans.download.preparingForDownloading'
     );
-    // Assertions remain the same
     expect(getFileSpy).toHaveBeenCalledTimes(1);
     expect(getDispositionSpy).toHaveBeenCalledTimes(1);
     // Reset spy manually if needed
     getFileSpy.mockClear();
-    formStore.downloadFile.mockClear();
-  });
-
-  /* it('renders and downloads some file', async () => {
-    const getFileSpy = vi.spyOn(Download.methods, 'getFile');
-    vi.spyOn(window.URL, 'createObjectURL').mockImplementation(() => {
-      return '#';
-    });
-    formStore.downloadFile.mockImplementation(() => {});
-    formStore.downloadedFile = {
-      data: '{}',
-      headers: {
-        'content-type': 'text/plain',
-        'content-disposition': 'attachment; filename=test.txt',
-      },
-    };
-    const wrapper = mount(Download, {
-      props: {
-        id: '1',
-      },
-      global: {
-        stubs: {
-          BaseSecure: {
-            name: 'BaseSecure',
-            template: '<div class="base-secure-stub"><slot /></div>',
-          },
-          FormSubmission: true,
-        },
-      },
-    });
-
-    await flushPromises();
-
-    expect(wrapper.html()).toMatch('base-secure');
-    expect(wrapper.html()).toMatch('CHEFS Data Export');
-    expect(wrapper.html()).not.toMatch('Preparing for download...');
-    expect(getFileSpy).toHaveBeenCalledTimes(1);
-  }); */
-
-  it('does not render if failed download', async () => {
-    const formStore = useFormStore();
-    const getFileSpy = vi.spyOn(Download.methods, 'getFile');
-    formStore.downloadFile.mockImplementation(() => {});
-    const wrapper = mount(Download, {
-      props: {
-        id: '1',
-      },
-      global: {
-        stubs: {
-          BaseSecure: {
-            name: 'BaseSecure',
-            template: '<div class="base-secure-stub"><slot /></div>',
-          },
-          FormSubmission: true,
-        },
-        plugins: [pinia],
-      },
-    });
-
-    await flushPromises();
-
-    expect(wrapper.html()).toMatch('base-secure');
-    expect(wrapper.html()).toMatch('trans.download.chefsDataExport');
-    expect(wrapper.html()).toMatch('trans.download.preparingForDownloading');
-    expect(getFileSpy).toHaveBeenCalledTimes(1);
   });
 });

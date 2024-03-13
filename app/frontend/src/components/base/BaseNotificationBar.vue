@@ -21,17 +21,24 @@ export default {
     ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
   },
   created() {
-    if (
-      this.notification.consoleError &&
-      this.notification.consoleError instanceof String
-    ) {
-      // eslint-disable-next-line no-console
-      console.error(
-        i18n.t(
-          this.notification.consoleError,
-          this.notification.consoleError.options
-        )
-      );
+    if (this.notification.consoleError) {
+      if (typeof this.notification.consoleError === 'string') {
+        // eslint-disable-next-line no-console
+        console.error(this.notification.consoleError);
+      } else if (this.notification.consoleError.text) {
+        if (this.notification.consoleError.options) {
+          // eslint-disable-next-line no-console
+          console.error(
+            i18n.t(
+              this.notification.consoleError.text,
+              this.notification.consoleError.options
+            )
+          );
+        } else {
+          // eslint-disable-next-line no-console
+          console.error(i18n.t(this.notification.consoleError.text));
+        }
+      }
     }
   },
   mounted() {

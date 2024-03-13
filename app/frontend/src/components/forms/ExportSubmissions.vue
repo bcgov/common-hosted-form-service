@@ -82,7 +82,9 @@ export default {
     },
     FILTER_HEADERS() {
       return this.versionSelected !== ''
-        ? this.formFields.map((f) => ({ name: f, value: f }))
+        ? this.formFields.length > 0
+          ? this.formFields.map((f) => ({ name: f, value: f }))
+          : []
         : [];
     },
   },
@@ -199,11 +201,13 @@ export default {
           {
             minDate: from,
             maxDate: to,
-            // deleted: true,
-            // drafts: true
           },
           fieldToExport,
-          emailExport
+          emailExport,
+          {
+            deleted: false,
+            drafts: false,
+          }
         );
 
         if (response && response.data && !emailExport) {
@@ -224,8 +228,13 @@ export default {
           throw new Error(i18n.t('trans.exportSubmissions.noResponseDataErr'));
         }
       } catch (error) {
+        const data = error?.response?.data
+          ? JSON.parse(await error.response.data.text())
+          : undefined;
         this.addNotification({
-          text: i18n.t('trans.exportSubmissions.apiCallErrorMsg'),
+          text: data?.detail
+            ? data.detail
+            : i18n.t('trans.exportSubmissions.apiCallErrorMsg'),
           consoleError:
             i18n.t('trans.exportSubmissions.apiCallConsErrorMsg') +
             `${this.form.id}: ${error}`,
@@ -268,6 +277,7 @@ export default {
             <h1 :lang="lang">
               {{ $t('trans.exportSubmissions.exportSubmissionsToFile') }}
             </h1>
+            <h3>{{ formId ? form.name : '' }}</h3>
           </v-col>
           <v-col :class="isRTL ? 'text-left' : 'text-right'" cols="1">
             <span>
