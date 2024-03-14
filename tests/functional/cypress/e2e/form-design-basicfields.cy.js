@@ -232,16 +232,7 @@ describe('Form Designer', () => {
       cy.get('a > .v-btn > .v-btn__content > .mdi-pencil').click();
       cy.waitForLoad();
       cy.waitForLoad();
-      cy.get('[name="data[middleName]"]').realHover('mouse');
-      //
-      //removeComponent "middle Name" 
-
-      cy.get('[ref=removeComponent]').then($el => {
-
-        const rem=$el[11];
-        rem.click();
-        
-        });
+      
 
 
       //Adding another component
@@ -259,6 +250,16 @@ describe('Form Designer', () => {
         cy.get('input[name="data[label]"]').clear().type('ID Number');
         cy.get('button').contains('Save').click();
     });
+    cy.get('[name="data[middleName]"]').realHover('mouse');
+      //
+      //removeComponent "middle Name" 
+
+      cy.get('[ref=removeComponent]').then($el => {
+
+        const rem=$el[11];
+        rem.click();
+        
+        });
 
     cy.get('[data-cy=saveButton]').click();
   });

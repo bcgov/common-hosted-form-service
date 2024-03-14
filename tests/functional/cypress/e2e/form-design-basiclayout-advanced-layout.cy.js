@@ -92,7 +92,25 @@ it('Visits the form design page for basic layout', () => {
    cy.get('button').contains('Continue').click();
 
  
-  // Form design page with simple textbox components
+  // Form design page with Advanced Layput components
+  
+  cy.get('button').contains('Advanced Layout').click();
+  cy.get('div.formio-builder-form').then($el => {
+    const coords = $el[0].getBoundingClientRect();
+    cy.get('span.btn').contains('Field Set')
+    
+    .trigger('mousedown', { which: 1}, { force: true })
+    .trigger('mousemove', coords.x, -400, { force: true })
+    //.trigger('mousemove', coords.y, -50, { force: true })
+    .trigger('mouseup', { force: true });
+    cy.waitForLoad();
+    cy.get('input[name="data[legend]"]').clear().type('Application');
+    cy.get('input[name="data[customClass]"]').type('bg-primary');
+    
+    
+    
+    cy.get('button').contains('Save').click();
+});
 
   cy.get('button').contains('Basic Layout').click();
 
@@ -108,18 +126,21 @@ it('Visits the form design page for basic layout', () => {
       cy.waitForLoad();
     
     cy.get('div.ck.ck-dropdown.ck-toolbar__grouped-dropdown.ck-toolbar-dropdown > button.ck.ck-button.ck-off.ck-dropdown__button').click();
-    
+    cy.waitForLoad();
     
    
-   cy.get('.ck-file-dialog-button > .ck-button').click();
+   //cy.get('.ck-file-dialog-button > .ck-button'
+   cy.get('span.ck-file-dialog-button > button.ck.ck-button.ck-off').click();
    
+   
+   cy.waitForLoad();
   
    //cy.get('input[type="file"]').invoke('show');
    let fileUploadInputField = cy.get('input[type=file]')
    
    fileUploadInputField.should('not.to.be.null');
    cy.get('input[type=file]').should('not.to.be.null');
-   fileUploadInputField.attachFile('add1.png');
+   fileUploadInputField.attachFile('Green.jpg');
     //cy.get('button').contains('Save').click();
     cy.get('.btn-success').click();
   });
@@ -142,14 +163,17 @@ cy.get('div.formio-builder-form').then($el => {
   cy.get('span.btn').contains('Tabs')
   
   .trigger('mousedown', { which: 1}, { force: true })
-  .trigger('mousemove', coords.x, -80, { force: true })
+  .trigger('mousemove', coords.x, -50, { force: true })
   .trigger('mouseup', { force: true });
   
   cy.get('tbody > tr > :nth-child(2)').click();
         
        // cy.get('tbody > tr > :nth-child(2)').clear().type('Info');
   cy.get('[name="data[components][0][label]"]').clear().type('work');
-  cy.get('[name="data[components][0][key]"]').clear().type('Home');
+  cy.get('tfoot > tr > td > .btn').click();
+  
+        
+  cy.get('[name="data[components][1][label]"]').clear().type('Home');
   cy.get('button').contains('Save').click();
 });
 
@@ -159,13 +183,14 @@ cy.get('div.formio-builder-form').then($el => {
 
 cy.waitForLoad();
 cy.get('button').contains('Advanced Layout').click();
-    cy.waitForLoad();
-    cy.get('div.formio-builder-form').then($el => {
+
+cy.waitForLoad();
+cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('span.btn').contains('HTML Element')
       
       .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -140, { force: true })
+      .trigger('mousemove', coords.x, -50, { force: true })
       //.trigger('mousemove', coords.y, -50, { force: true })
       .trigger('mouseup', { force: true });
       cy.get('tbody > tr > :nth-child(2)').click();
@@ -176,11 +201,11 @@ cy.get('button').contains('Advanced Layout').click();
        
       
       cy.get('button').contains('Save').click();
-    });
-    cy.waitForLoad();
-    cy.get('button').contains('Advanced Layout').click();
-    cy.waitForLoad();
-    cy.get('div.formio-builder-form').then($el => {
+});
+cy.waitForLoad();
+cy.get('button').contains('Advanced Layout').click();
+cy.waitForLoad();
+cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       //cy.get('span.btn').contains('Columns')
       cy.get('[data-type="columns"]')
@@ -219,35 +244,32 @@ cy.get('button').contains('Advanced Layout').click();
         
 
       cy.get('button').contains('Save').click();
-    });
+});
+
+
+
+    cy.waitForLoad();
+
+    
     cy.waitForLoad();
 
     cy.get('div.formio-builder-form').then($el => {
-        const coords = $el[0].getBoundingClientRect();
-        cy.get('span.btn').contains('Field Set')
-        
-        .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, -140, { force: true })
-        //.trigger('mousemove', coords.y, -50, { force: true })
-        .trigger('mouseup', { force: true });
-        cy.get('button').contains('Save').click();
-    });
-    cy.waitForLoad();
+      const coords = $el[0].getBoundingClientRect();
+      cy.get('span.btn').contains('Table')
+      
+      .trigger('mousedown', { which: 1}, { force: true })
+      //.trigger('mousemove', coords.x, -50, { force: true })
+      .trigger('mousemove', coords.y, +50, { force: true })
+      .trigger('mouseup', { force: true });
+      
+       
+      
+      cy.get('button').contains('Save').click();
+});
+   
 
-      cy.get('div.formio-builder-form').then($el => {
-        const coords = $el[0].getBoundingClientRect();
-        cy.get('span.btn').contains('Table')
-        
-        .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, -140, { force: true })
-        //.trigger('mousemove', coords.y, -50, { force: true })
-        .trigger('mouseup', { force: true });
-        
-        
-        
-        
-        cy.get('button').contains('Save').click();
-    });
+
+      
     
 
 
