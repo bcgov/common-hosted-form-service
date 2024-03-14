@@ -11,14 +11,6 @@ export default {
     BCGovNavBar,
     BCGovFooter,
   },
-  computed: {
-    isSubmitPage() {
-      // return this.$route.name === 'FormSubmit' or FormView
-      return (
-        this.$route.name === 'FormSubmit' || this.$route.name === 'FormView'
-      );
-    },
-  },
 };
 </script>
 
@@ -30,10 +22,7 @@ export default {
       <BCGovNavBar />
       <RouterView v-slot="{ Component }">
         <transition name="component-fade" mode="out-in">
-          <component
-            :is="Component"
-            :class="[isSubmitPage ? 'main-wide' : 'main']"
-          />
+          <component :is="Component" class="main" />
         </transition>
       </RouterView>
       <BCGovFooter />
@@ -51,17 +40,5 @@ export default {
 
 .main {
   flex: 1 0 auto;
-}
-
-.main-wide {
-  flex: 1 0 auto;
-  max-width: 100%;
-}
-
-@media (min-width: 1024px) {
-  .main-wide {
-    padding-left: 50px;
-    padding-right: 50px;
-  }
 }
 </style>
