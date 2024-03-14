@@ -31,7 +31,7 @@ describe('Form Designer', () => {
     
 });
   
-
+// Form settings page
 
 it('Visits the form design page for basic layout', () => {
 
@@ -48,15 +48,10 @@ it('Visits the form design page for basic layout', () => {
     cy.get('#input-22').click();
     cy.get('.v-selection-control-group > .v-card').should('be.visible');
     cy.get('#input-23').click();
-    //cy.get('.v-selection-control-group > .v-card').should('not.be.visible');
-    //cy.get('#input-91').should('be.visible');
     cy.get('.v-row > .v-input > .v-input__control > .v-selection-control-group > :nth-child(1) > .v-label > span').contains('IDIR');
     cy.get('span').contains('Basic BCeID');
     
     cy.get(':nth-child(2) > .v-card > .v-card-text > .v-input--error > :nth-child(2)').contains('Please select 1 log-in type');
-    //cy.get('#input-92').should('be.visible');
-    //cy.get('#input-93').should('be.visible');
-
 
     cy.get('#input-24').click();
     
@@ -92,7 +87,7 @@ it('Visits the form design page for basic layout', () => {
    cy.get('button').contains('Continue').click();
 
  
-  // Form design page with Advanced Layput components
+  // Form design page with Advanced Layout components
   
   cy.get('button').contains('Advanced Layout').click();
   cy.get('div.formio-builder-form').then($el => {
@@ -111,7 +106,7 @@ it('Visits the form design page for basic layout', () => {
     
     cy.get('button').contains('Save').click();
 });
-
+// form design page for Basic Layout components
   cy.get('button').contains('Basic Layout').click();
 
 //
@@ -182,6 +177,7 @@ cy.get('div.formio-builder-form').then($el => {
 
 
 cy.waitForLoad();
+// using Advance Layout components
 cy.get('button').contains('Advanced Layout').click();
 
 cy.waitForLoad();

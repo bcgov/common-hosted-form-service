@@ -135,13 +135,9 @@ it('Visits the form design page for advanced Data', () => {
         
         cy.get('button').contains('Save').click();
     
-        /*cy.get('[aria-describedby="v-tooltip-51"]').click();
-        let fileUploadInputField = cy.get('input[type=file]');
-        //fileUploadInputField.should('not.to.be.null');
-        cy.get('input[type=file]').should('not.to.be.null');
-        fileUploadInputField.attachFile('forms/griddata.json');
+        
     
-    */
+    
     });
     
         
@@ -157,10 +153,6 @@ it('Visits the form design page for advanced Data', () => {
     cy.get('div.ace_content').then($el => {
     cy.get('div.ace_content').type('{selectall}{backspace}');
     
-    //var pretty = JSON.stringify ({"firstname":"nim"});
-    
-    
-    //var pretty = JSON.stringify(trackdata);
     var pretty=JSON.stringify({
       "label": "Applicant Details",
           "customClass": "bg-primary",
