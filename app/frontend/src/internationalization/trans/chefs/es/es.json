@@ -229,6 +229,7 @@
     "infoA": "Asegúrese de que el secreto de su clave de API esté almacenado en una ubicación segura (es decir, un almacén de claves).",
     "infoB": "Su clave API otorga acceso sin restricciones a su formulario. No proporcione su clave API a nadie.",
     "infoC": "La clave API SÓLO debe usarse para interacciones automatizadas del sistema. No utilice su clave API para el acceso basado en usuarios",
+    "infoD": "Si desea acceder a los archivos enviados a través de la clave API, habilite la siguiente casilla de verificación después de generar la clave.",
     "deleteKey": "Eliminar clave",
     "apiKey": "Clave API",
     "hideSecret": "Ocultar secreto",
@@ -245,7 +246,8 @@
     "formOwnerKeyAcess": "Debe ser el <strong>propietario del formulario</strong> para administrar las claves API.",
     "regenerate": "Regenerado",
     "generate": "Generar",
-    "secret": "Secreto"
+    "secret": "Secreto",
+    "filesAPIAccess": "Permitir que esta clave API acceda a los archivos enviados"
   },
   "manageVersions": {
     "important": "¡IMPORTANTE!",

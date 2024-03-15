@@ -1,9 +1,8 @@
 const Problem = require('api-problem');
 const { ref } = require('objection');
 const { v4: uuidv4 } = require('uuid');
-const { EmailTypes, SubscriptionEvent } = require('../common/constants');
-const axios = require('axios');
-const log = require('../../components/log')(module.filename);
+const { EmailTypes } = require('../common/constants');
+const eventService = require('../event/eventService');
 const moment = require('moment');
 const {
   FileStorage,
@@ -383,6 +382,7 @@ const service = {
       });
 
       await trx.commit();
+      eventService.publishFormEvent(formId, formVersionId, publish);
 
       // return the published form/version...
       return await service.readPublishedForm(formId);
@@ -430,7 +430,7 @@ const service = {
     let trx;
     try {
       const formVersion = await service.readVersion(formVersionId);
-      const { identityProviders, subscribe } = await service.readForm(formVersion.formId);
+      const { identityProviders } = await service.readForm(formVersion.formId);
 
       trx = await FormSubmission.startTransaction();
 
@@ -484,11 +484,8 @@ const service = {
 
         await FormSubmissionStatus.query(trx).insert(stObj);
       }
-      if (subscribe && subscribe.enabled) {
-        const subscribeConfig = await service.readFormSubscriptionDetails(formVersion.formId);
-        const config = Object.assign({}, subscribe, subscribeConfig);
-        service.postSubscriptionEvent(config, formVersion, submissionId, SubscriptionEvent.FORM_SUBMITTED);
-      }
+
+      eventService.formSubmissionEventReceived(formVersion.formId, formVersion.id, submissionId, data);
 
       // does this submission contain any file uploads?
       // if so, we need to update the file storage records.
@@ -670,6 +667,8 @@ const service = {
       await FormVersionDraft.query().deleteById(formVersionDraftId);
       await trx.commit();
 
+      eventService.publishFormEvent(formId, version.id, version.published);
+
       // return the published version...
       return await service.readVersion(version.id);
     } catch (err) {
@@ -704,6 +703,7 @@ const service = {
           formId: formId,
           secret: uuidv4(),
           updatedBy: currentUser.usernameIdp,
+          filesApiAccess: false,
         });
       } else {
         // Add new API key for the form
@@ -711,7 +711,35 @@ const service = {
           formId: formId,
           secret: uuidv4(),
           createdBy: currentUser.usernameIdp,
+          filesApiAccess: false,
         });
+      }
+
+      await trx.commit();
+      return service.readApiKey(formId);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  // Set the filesApiAccess boolean for the api key
+  filesApiKeyAccess: async (formId, filesApiAccess) => {
+    let trx;
+    try {
+      if (typeof filesApiAccess !== 'boolean') {
+        throw new Problem(400, `filesApiAccess must be a boolean`);
+      }
+      const currentKey = await service.readApiKey(formId);
+      trx = await FormApiKey.startTransaction();
+
+      if (currentKey) {
+        await FormApiKey.query(trx).modify('filterFormId', formId).update({
+          formId: formId,
+          filesApiAccess: filesApiAccess,
+        });
+      } else {
+        throw new Problem(404, `No API key found for form ${formId}`);
       }
 
       await trx.commit();
@@ -740,33 +768,6 @@ const service = {
     let item = result.length > 0 ? result[0] : null;
     let imageUrl = item !== null ? 'data:' + item.imageType + ';' + 'base64' + ',' + item.image : '';
     return { url: imageUrl };
-  },
-
-  postSubscriptionEvent: async (subscribe, formVersion, submissionId, subscriptionEvent) => {
-    try {
-      // Check if there are endpoints subscribed for form submission event
-      if (subscribe && subscribe.endpointUrl) {
-        const axiosOptions = { timeout: 10000 };
-        const axiosInstance = axios.create(axiosOptions);
-        const jsonData = { formId: formVersion.formId, formVersion: formVersion.id, submissionId: submissionId, subscriptionEvent: subscriptionEvent };
-
-        axiosInstance.interceptors.request.use(
-          (cfg) => {
-            cfg.headers = { [subscribe.key]: `${subscribe.endpointToken}` };
-            return Promise.resolve(cfg);
-          },
-          (error) => {
-            return Promise.reject(error);
-          }
-        );
-
-        axiosInstance.post(subscribe.endpointUrl, jsonData);
-      }
-    } catch (err) {
-      log.error(err.message, err, {
-        function: 'postSubscriptionEvent',
-      });
-    }
   },
 
   /**

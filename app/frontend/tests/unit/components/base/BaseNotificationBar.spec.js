@@ -1,5 +1,5 @@
 import { createTestingPinia } from '@pinia/testing';
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import { describe, expect, it, vi } from 'vitest';
 
 import BaseNotificationBar from '~/components/base/BaseNotificationBar.vue';
@@ -11,6 +11,73 @@ describe('BaseNotificationBar.vue', () => {
     text: 'Test Notification',
     ...NotificationTypes.ERROR,
   };
+
+  it('notification is just a string', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    mount(BaseNotificationBar, {
+      props: {
+        notification: {
+          id: 1,
+          consoleError: 'Hello',
+        },
+      },
+      global: {
+        plugins: [createTestingPinia()],
+      },
+    });
+
+    await flushPromises();
+
+    // eslint-disable-next-line no-console
+    expect(console.error).toHaveBeenLastCalledWith('Hello');
+  });
+
+  it('notification is an object', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    mount(BaseNotificationBar, {
+      props: {
+        notification: {
+          id: 1,
+          consoleError: {
+            text: 'Just an object',
+          },
+        },
+      },
+      global: {
+        plugins: [createTestingPinia()],
+      },
+    });
+
+    await flushPromises();
+
+    // eslint-disable-next-line no-console
+    expect(console.error).toHaveBeenLastCalledWith('Just an object');
+  });
+
+  it('notification is an object with options', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    mount(BaseNotificationBar, {
+      props: {
+        notification: {
+          id: 1,
+          consoleError: {
+            text: 'Object with options',
+            options: {
+              to: 'nowhere',
+            },
+          },
+        },
+      },
+      global: {
+        plugins: [createTestingPinia()],
+      },
+    });
+
+    await flushPromises();
+
+    // eslint-disable-next-line no-console
+    expect(console.error).toHaveBeenLastCalledWith('Object with options');
+  });
 
   it('renders', async () => {
     const wrapper = mount(BaseNotificationBar, {
