@@ -41,6 +41,7 @@ class JwtService {
   async _verify(token) {
     // could throw JWTClaimValidationFailed (JOSEError)
     const { payload } = await jose.jwtVerify(token, JWKS, {
+      clockTolerance: '15 seconds',
       issuer: this.issuer,
       audience: this.audience,
       maxTokenAge: parseInt(this.maxTokenAge),
