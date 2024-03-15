@@ -110,13 +110,14 @@ export const useAuthStore = defineStore('auth', {
         // Determine idpHint based on input or form
         if (idpHint && typeof idpHint === 'string') options.idpHint = idpHint;
 
+        const idpStore = useIdpStore();
         if (options.idpHint) {
           // Redirect to Keycloak if idpHint is available
-          window.location.replace(this.createLoginUrl(options));
+          const loginOptions = idpStore.getLoginOptions(options.idpHint);
+          window.location.replace(this.createLoginUrl(options) + loginOptions);
         } else {
           // Navigate to internal login page if no idpHint specified
           const router = getRouter();
-          const idpStore = useIdpStore();
           router.replace({
             name: 'Login',
             query: { idpHint: idpStore.loginIdpHints },
