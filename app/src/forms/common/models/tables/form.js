@@ -31,7 +31,6 @@ class Form extends Timestamps(Model) {
   }
 
   static get relationMappings() {
-    const FormIdentityProvider = require('./formIdentityProvider');
     const FormVersion = require('./formVersion');
     const FormVersionDraft = require('./formVersionDraft');
     const IdentityProvider = require('./identityProvider');
@@ -45,12 +44,16 @@ class Form extends Timestamps(Model) {
         },
       },
       idpHints: {
-        relation: Model.HasManyRelation,
-        modelClass: FormIdentityProvider,
-        filter: (query) => query.select('code'),
+        relation: Model.ManyToManyRelation,
+        modelClass: IdentityProvider,
+        filter: (query) => query.select('idp'),
         join: {
           from: 'form.id',
-          to: 'form_identity_provider.formId',
+          through: {
+            from: 'form_identity_provider.formId',
+            to: 'form_identity_provider.code',
+          },
+          to: 'identity_provider.code',
         },
       },
       identityProviders: {

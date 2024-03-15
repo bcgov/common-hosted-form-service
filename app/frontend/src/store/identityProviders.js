@@ -50,7 +50,7 @@ export const useIdpStore = defineStore('idps', {
     },
     isValidIdpHint(hint) {
       if (hint && this.providers) {
-        return this.providers.findIndex((x) => x.hint === hint) > -1;
+        return this.providers.findIndex((x) => x.idp === hint) > -1;
       }
       return false;
     },
