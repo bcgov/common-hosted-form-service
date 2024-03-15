@@ -1,4 +1,4 @@
-const { Roles } = require('../../forms/common/constants');
+const { APP_PERMISSIONS, Roles } = require('../../forms/common/constants');
 
 const CREATED_BY = 'migration-dc-idp';
 /**
@@ -16,7 +16,7 @@ exports.up = function (knex) {
         idp: 'digitalcredential',
         primary: false,
         login: true,
-        permissions: [],
+        permissions: [APP_PERMISSIONS.VIEWS_USER_SUBMISSIONS],
         roles: [Roles.FORM_SUBMITTER],
         tokenmap: {
           idpUserId: 'preferred_username',
