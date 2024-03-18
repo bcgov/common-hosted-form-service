@@ -255,6 +255,8 @@ objects:
                 - configMapRef:
                     name: "${APP_NAME}-oidc-config"
                 - configMapRef:
+                    name: "${APP_NAME}-sandbox-oidc-config"
+                - configMapRef:
                     name: "${APP_NAME}-custombcaddressformiocomponent-config"
           restartPolicy: Always
           terminationGracePeriodSeconds: 30

@@ -33,10 +33,10 @@
     "apiPath": "FRONTEND_APIPATH",
     "basePath": "VITE_FRONTEND_BASEPATH",
     "oidc": {
-      "clientId": "OIDC_CLIENTID",
-      "realm": "OIDC_REALM",
-      "serverUrl": "OIDC_SERVERURL",
-      "logoutUrl": "OIDC_LOGOUTURL"
+      "clientId": "SANDBOX_OIDC_CLIENTID",
+      "realm": "SANDBOX_OIDC_REALM",
+      "serverUrl": "SANDBOX_OIDC_SERVERURL",
+      "logoutUrl": "SANDBOX_OIDC_LOGOUTURL"
     }
   },
   "server": {
@@ -44,12 +44,12 @@
     "basePath": "SERVER_BASEPATH",
     "bodyLimit": "SERVER_BODYLIMIT",
     "oidc": {
-      "realm": "OIDC_REALM",
-      "serverUrl": "OIDC_SERVERURL",
-      "jwksUri": "OIDC_JWKSURI",
-      "issuer": "OIDC_ISSUER",
-      "audience": "OIDC_CLIENTID",
-      "maxTokenAge": "OIDC_MAXTOKENAGE"
+      "realm": "SANDBOX_OIDC_REALM",
+      "serverUrl": "SANDBOX_OIDC_SERVERURL",
+      "jwksUri": "SANDBOX_OIDC_JWKSURI",
+      "issuer": "SANDBOX_OIDC_ISSUER",
+      "audience": "SANDBOX_OIDC_CLIENTID",
+      "maxTokenAge": "SANDBOX_OIDC_MAXTOKENAGE"
     },
     "logFile": "SERVER_LOGFILE",
     "logLevel": "SERVER_LOGLEVEL",
