@@ -1,17 +1,18 @@
-<script>
+<script setup>
 import BaseNotificationContainer from '~/components/base/BaseNotificationContainer.vue';
 import BCGovHeader from '~/components/bcgov/BCGovHeader.vue';
 import BCGovNavBar from './components/bcgov/BCGovNavBar.vue';
 import BCGovFooter from '~/components/bcgov/BCGovFooter.vue';
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 
-export default {
-  components: {
-    BaseNotificationContainer,
-    BCGovHeader,
-    BCGovNavBar,
-    BCGovFooter,
-  },
-};
+const route = useRoute();
+
+const isSubmitPageClass = computed(() => {
+  return ['FormSubmit', 'FormView'].includes(route.name) ? 'main-wide' : 'main';
+});
+
+defineExpose({ isSubmitPageClass });
 </script>
 
 <template>
@@ -22,7 +23,7 @@ export default {
       <BCGovNavBar />
       <RouterView v-slot="{ Component }">
         <transition name="component-fade" mode="out-in">
-          <component :is="Component" class="main" />
+          <component :is="Component" :class="isSubmitPageClass" />
         </transition>
       </RouterView>
       <BCGovFooter />

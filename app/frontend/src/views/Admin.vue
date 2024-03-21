@@ -1,22 +1,14 @@
-<script>
-import { mapState } from 'pinia';
-import BaseSecure from '~/components/base/BaseSecure.vue';
+<script setup>
+import { storeToRefs } from 'pinia';
+
 import { useAuthStore } from '~/store/auth';
 import { IdentityProviders } from '~/utils/constants';
 
-export default {
-  components: {
-    BaseSecure,
-  },
-  computed: {
-    ...mapState(useAuthStore, ['isAdmin']),
-    IDP: () => IdentityProviders,
-  },
-};
+const { isAdmin } = storeToRefs(useAuthStore());
 </script>
 
 <template>
-  <BaseSecure :admin="isAdmin" :idp="[IDP.IDIR]">
+  <BaseSecure :admin="isAdmin" :idp="[IdentityProviders.IDIR]">
     <v-container>
       <router-view v-slot="{ Component }">
         <transition name="component-fade" mode="out-in">

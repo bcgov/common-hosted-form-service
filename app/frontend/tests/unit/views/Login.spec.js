@@ -71,4 +71,28 @@ describe('Login.vue', () => {
       expect(button.exists()).toBeTruthy();
     });
   });
+
+  it('shows supplied login options', async () => {
+    const IDPs = ['idir', 'bceid-business'];
+    authStore.authenticated = false;
+    authStore.ready = true;
+    const wrapper = mount(Login, {
+      props: {
+        idpHint: IDPs,
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: true,
+        },
+      },
+    });
+
+    await nextTick();
+
+    IDPs.forEach((idp) => {
+      const button = wrapper.find(`[data-test="${idp}"]`);
+      expect(button.exists()).toBeTruthy();
+    });
+  });
 });

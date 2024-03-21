@@ -1,53 +1,43 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
 
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { IdentityProviders } from '~/utils/constants';
+import { isIdpEnabled } from '../utils/permissionUtils';
 
-export default {
-  props: {
-    idpHint: {
-      type: Array,
-      default: () => [
-        IdentityProviders.IDIR,
-        IdentityProviders.BCEIDBUSINESS,
-        IdentityProviders.BCEIDBASIC,
-      ],
-    },
-  },
-  computed: {
-    ...mapState(useAuthStore, ['authenticated', 'createLoginUrl', 'ready']),
-    ...mapState(useFormStore, ['lang']),
-    buttons: () => [
-      {
-        label: 'IDIR',
-        type: IdentityProviders.IDIR,
-      },
-      {
-        label: 'Basic BCeID',
-        type: IdentityProviders.BCEIDBASIC,
-      },
-      {
-        label: 'Business BCeID',
-        type: IdentityProviders.BCEIDBUSINESS,
-      },
+const props = defineProps({
+  idpHint: {
+    type: Array,
+    default: () => [
+      IdentityProviders.IDIR,
+      IdentityProviders.BCEIDBUSINESS,
+      IdentityProviders.BCEIDBASIC,
     ],
-    IDPS() {
-      return IdentityProviders;
-    },
   },
-  created() {
-    // If component gets idpHint, invoke login flow via vuex
-    if (this.idpHint && this.idpHint.length === 1) this.login(this.idpHint[0]);
+});
+
+const authStore = useAuthStore();
+const formStore = useFormStore();
+
+const { authenticated, ready } = storeToRefs(authStore);
+const { lang } = storeToRefs(formStore);
+
+const buttons = computed(() => [
+  {
+    label: 'IDIR',
+    type: IdentityProviders.IDIR,
   },
-  methods: {
-    ...mapActions(useAuthStore, ['login']),
-    buttonEnabled(type) {
-      return this.idpHint ? this.idpHint.includes(type) : false;
-    },
+  {
+    label: 'Basic BCeID',
+    type: IdentityProviders.BCEIDBASIC,
   },
-};
+  {
+    label: 'Business BCeID',
+    type: IdentityProviders.BCEIDBUSINESS,
+  },
+]);
 </script>
 
 <template>
@@ -57,7 +47,7 @@ export default {
         {{ $t('trans.login.authenticateWith') }}
       </h1>
       <v-row v-for="button in buttons" :key="button.type" justify="center">
-        <v-col v-if="buttonEnabled(button.type)" sm="3">
+        <v-col v-if="isIdpEnabled(props.idpHint, button.type)" sm="3">
           <v-btn
             block
             color="primary"
