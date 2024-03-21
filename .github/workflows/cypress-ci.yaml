@@ -1,66 +1,39 @@
-name: Cypress Tests
+name: Cypress Report
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  push:
     branches:
-      - main
-
+        - 'master'
 jobs:
-  install:
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: dev
-        shell: cmd
-      - name: Cypress install
-        uses: cypress-io/github-action@v6
-        with:
-           version: '13.6.4'
-           spec: cypress/e2e
-          # Disable running of tests within install job
-          runTests: false
-          build: npm run build
+  cypress-test:
+     name: Run on Chrome 106
+     runs-on: ubuntu-22.04
+     container:cypress/browsers: node-18.15.0-chrome-106.0.5249.61-1-ff-99.0.1
+     steps:
+      - uses: actions/checkout@v2
 
-        shell: cmd
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-        node-version: '19.9.0'
+  -  name: Cypress install
+     run: |
+       npm ci
+       $(npm bin)/cypress verify
 
-      - name: Save build folder
-        uses: actions/upload-artifact@v4
-        with:
-          name: build
-          if-no-files-found: error
-          path: build
+  -  name: Run Cypress tests
+     run: npm run test:chrome
+      continue-on-error: false
 
-  cypress-run:
-    runs-on: ubuntu-22.04
-    needs: install
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  -  name: Copy test execution videos and screenshots
+     run: |
+        mkdir artifacts
+        cp -r cypress/videos artifacts/videos
+        cp -r cypress/screenshots artifacts/screenshots
 
-      - name: Download the build folder
-        uses: actions/download-artifact@v4
-        with:
-          name: build
-          path: build
+  -  name: Merge test reports
+     run: npm run combine:report
 
-      - name: Cypress run
-        uses: cypress-io/github-action@v6
-        with:
-          start: npm start
-          browser: chrome
+  -  name: Generate HTML report
+     run: npm run generate:report
 
-      - name: Create test report    
-      run: |
-            npm i -g xunit-viewer
-            xunit-viewer -r  artifacts\JUnit_Report.xml -o artifacts\chefs-test.html
-    - name: Archive cypress report
-      uses: actions/upload-artifact@v2
+  -  name: Deploy report page to GitHub page
+      uses: peaceiris/actions-gh-pages@v3
       with:
-        name: cypress-report
-        path: artifacts
+        github_token: ${{secrets.GITHUB_TOKEN}}   
+        publish_dir: ./artifacts
