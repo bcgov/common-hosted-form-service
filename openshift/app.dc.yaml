@@ -59,7 +59,7 @@ objects:
         app.openshift.io/connects-to: '[{"apiVersion":"apps/v1","kind":"StatefulSet","name":"patroni-${JOB_NAME}"}]'
       name: "${APP_NAME}-app-${JOB_NAME}"
     spec:
-      replicas: 2
+      replicas: ${{REPLICAS}}
       revisionHistoryLimit: 10
       selector:
         app: "${APP_NAME}-${JOB_NAME}"
@@ -359,3 +359,7 @@ parameters:
     description: Requested Memory per pod (in gigabytes Gi or megabytes Mi ex. 500Mi)
     displayName: Memory Request
     value: 256Mi
+  - name: REPLICAS
+    description: The number of replicas to run
+    displayName: Replicas
+    value: "2"
