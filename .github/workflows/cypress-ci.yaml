@@ -33,7 +33,7 @@ jobs:
        run: |
            mkdir artifacts
            cp -r cypress/screenshots artifacts/screenshots
-      - name: Archive Cypress report
+     -  name: Archive Cypress report
         uses: actions/upload-artifact@v2
         with:
          name: cypress-report
