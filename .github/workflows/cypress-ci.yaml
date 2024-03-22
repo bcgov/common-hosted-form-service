@@ -4,36 +4,37 @@ on:
     branches:
         - 'master'
 jobs:
-  cypress-test:
-     name: Run on Chrome 121
-     runs-on: ubuntu-latest
-     container:cypress/browsers: node-20.11.0-chrome-121.0.6167.184-1-ff-123
-     steps:
-       - uses: actions/checkout@v3
+  install:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Cypress install
+        uses: cypress-io/github-action@v6
+        with:
+           version: '13.6.4'
+           spec: tests/functional/cypress/e2e
+        steps:
+        - uses: actions/checkout@v3
 
-       - name: Cypress install
-         run: |
-            npm ci
-            $(npm bin)/cypress verify
-         with:
-            projectPath: '${{ github.workspace }}/tests/functional'
-            
+       
+         
+        - name: Run Cypress tests
+        run: npm run test:chrome
+        continue-on-error: false
 
-       - name: Run Cypress tests
-         run: npm run test:chrome
-         continue-on-error: false
-
-       - name: Copy test execution videos and screenshots
-         run: |
+      - name: Copy test execution videos and screenshots
+        run: |
            mkdir artifacts
            cp -r cypress/videos artifacts/videos
            cp -r cypress/screenshots artifacts/screenshots
 
-       - name: Merge test reports
-         run: npm run combine:report
+      - name: Merge test reports
+        run: npm run combine:report
 
-       - name: Generate HTML report
-         run: npm run generate:report
+      - name: Generate HTML report
+        run: npm run generate:report
 
        - name: Deploy report page to GitHub page
          uses: peaceiris/actions-gh-pages@v3
