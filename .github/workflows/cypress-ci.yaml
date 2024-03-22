@@ -15,6 +15,9 @@ jobs:
          run: |
             npm ci
             $(npm bin)/cypress verify
+         with:
+            projectPath: '${{ github.workspace }}/tests/functional'
+            
 
        - name: Run Cypress tests
          run: npm run test:chrome
