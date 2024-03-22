@@ -11,7 +11,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
          node-version: '20'
-         
+         cache: 'npm'
+         cache-dependency-path: '${{ github.workspace }}tests/functional/cypress/package-lock.json'
         
       - name: Cypress install
         uses: cypress-io/github-action@v6
