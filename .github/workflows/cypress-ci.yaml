@@ -12,30 +12,20 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
            version: '13.6.4'
-           spec: tests/functional/cypress/e2e
-        steps:
-        - uses: actions/checkout@v3
+           spec: cypress/e2e
 
        
          
-        - name: Run Cypress tests
+      - name: Run Cypress tests
         run: npm run test:chrome
         continue-on-error: false
 
-      - name: Copy test execution videos and screenshots
+      - name: Copy test execution screenshots
         run: |
            mkdir artifacts
-           cp -r cypress/videos artifacts/videos
            cp -r cypress/screenshots artifacts/screenshots
-
-      - name: Merge test reports
-        run: npm run combine:report
-
-      - name: Generate HTML report
-        run: npm run generate:report
-
-       - name: Deploy report page to GitHub page
-         uses: peaceiris/actions-gh-pages@v3
-         with:
-          github_token: ${{secrets.GITHUB_TOKEN}}   
-          publish_dir: ./artifacts
+      - name: Archive Cypress report
+        uses: actions/upload-artifact@v2
+        with:
+         name: cypress-report
+         path: artifacts
