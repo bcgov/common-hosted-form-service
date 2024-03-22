@@ -19,10 +19,8 @@ jobs:
             key: node-modules-${{ hashFiles('tests/functional/package.json') }}
 
      - name: cypress install
-       run: |
-        npm ci
-        $(npm bin)/cypress verify
-        spec: cypress/e2e
+       uses: cypress-io/github-action@v6
+      
 
         
      - name: Run Cypress tests
