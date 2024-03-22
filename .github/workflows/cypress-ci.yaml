@@ -7,6 +7,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+         node-version: '16'
+         cache: 'npm'
+         cache-dependency-path: tests/functional/cypress/package-lock.json
         
       - name: Cypress install
         uses: cypress-io/github-action@v6
