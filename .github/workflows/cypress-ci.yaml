@@ -22,7 +22,7 @@ jobs:
        uses: cypress-io/github-action@v6
        with:
           version: '13.6.4'
-          projectPath: '${{ github.workspace }}/tests/functional'
+          working-directory: '${{ github.workspace }}/tests/functional'
      - name: Cypress install   
        run: |
         npm ci
