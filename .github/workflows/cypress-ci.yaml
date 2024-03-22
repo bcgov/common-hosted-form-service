@@ -1,42 +1,47 @@
-name: Cypress Report
-on:
-  push:
-    branches:
-        - 'master'
+name: Cypress Tests
+on: [push]
+  
 jobs:
-  cypress-test:
-     name: Run on Chrome 121
-     runs-on: ubuntu-latest
-     container:cypress/browsers: node-20.11.0-chrome-121.0.6167.184-1-ff-123
-     steps:
-       - uses: actions/checkout@v3
+  cypress-run:
+    runs-on: ubuntu-22.04
+    steps:
+     - name: Checkout
+       uses: actions/checkout@v4
+     - name: Setup Node.js
+       uses: actions/setup-node@v4
+       with:
+         node-version: '20'
+         
+     - name: cache
+       uses: actions/cache@v4
+       with:
+            path: "tests/functional/node_modules"
+            key: node-modules-${{ hashFiles('tests/functional/package.json') }}
 
-       - name: Cypress install
-         run: |
-            npm ci
-            $(npm bin)/cypress verify
-         with:
-            projectPath: '${{ github.workspace }}/tests/functional'
-            
+     - name: cypress install
+       uses: cypress-io/github-action@v6
+       with:
+          version: '13.6.4'
+          working-directory: '${{ github.workspace }}/tests/functional'
+     - name: Cypress install   
+       run: |
+        npm ci
+        $(npm bin)/cypress verify
+        
+        
+      
 
-       - name: Run Cypress tests
-         run: npm run test:chrome
-         continue-on-error: false
+        
+     - name: Run Cypress tests
+       run: npm run test:chrome
+       continue-on-error: false
 
-       - name: Copy test execution videos and screenshots
-         run: |
+     - name: Copy test execution screenshots
+       run: |
            mkdir artifacts
-           cp -r cypress/videos artifacts/videos
            cp -r cypress/screenshots artifacts/screenshots
-
-       - name: Merge test reports
-         run: npm run combine:report
-
-       - name: Generate HTML report
-         run: npm run generate:report
-
-       - name: Deploy report page to GitHub page
-         uses: peaceiris/actions-gh-pages@v3
-         with:
-          github_token: ${{secrets.GITHUB_TOKEN}}   
-          publish_dir: ./artifacts
+     -  name: Archive Cypress report
+        uses: actions/upload-artifact@v2
+        with:
+         name: cypress-report
+         path: artifacts
