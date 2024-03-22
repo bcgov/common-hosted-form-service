@@ -15,7 +15,7 @@ jobs:
      - name: cache
        uses: actions/cache@v4
        with:
-            path: "tests/functional/node_modules"
+            path: "tests/functional"
             key: node-modules-${{ hashFiles('tests/functional/package.json') }}
 
      - name: cypress install
