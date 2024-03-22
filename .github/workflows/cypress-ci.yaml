@@ -12,7 +12,7 @@ jobs:
         with:
          node-version: '20'
          cache: 'npm'
-         cache-dependency-path: 'tests/functional/cypress/package-lock.json'
+         cache-dependency-path: '${{ github.workspace }}tests/functional/cypress/package-lock.json'
         
       - name: Cypress install
         uses: cypress-io/github-action@v6
