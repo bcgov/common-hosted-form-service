@@ -5,25 +5,32 @@ jobs:
   cypress-run:
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-     
-      
-        
-      - name: Cypress install
-        uses: cypress-io/github-action@v6
-        with:
-           version: '13.6.4'
-           spec: cypress/e2e
-
-       
+     - name: Checkout
+       uses: actions/checkout@v4
+     - name: Setup Node.js
+       uses: actions/setup-node@v4
+       with:
+         node-version: '20'
          
-      - name: Run Cypress tests
-        run: npm run test:chrome
-        continue-on-error: false
+     - name: cache
+       uses: actions/cache@v2
+       with:
+            path: "tests/functional/node_modules"
+            key: node-modules-${{ hashFiles('tests/functional/package.json') }}
 
-      - name: Copy test execution screenshots
-        run: |
+     - name: cypress install
+       run: |
+        npm ci
+        $(npm bin)/cypress verify
+        spec: cypress/e2e
+
+        
+     - name: Run Cypress tests
+       run: npm run test:chrome
+       continue-on-error: false
+
+     - name: Copy test execution screenshots
+       run: |
            mkdir artifacts
            cp -r cypress/screenshots artifacts/screenshots
       - name: Archive Cypress report
