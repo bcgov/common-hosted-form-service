@@ -135,7 +135,7 @@ it('Visits the form design page for basic layout', () => {
    
    fileUploadInputField.should('not.to.be.null');
    cy.get('input[type=file]').should('not.to.be.null');
-   fileUploadInputField.attachFile('Green.jpg');
+   fileUploadInputField.attachFile('add1.png');
     //cy.get('button').contains('Save').click();
     cy.get('.btn-success').click();
   });

@@ -1,6 +1,6 @@
 import 'cypress-keycloak-commands';
 import 'cypress-drag-drop';
-import "cypress-real-events/support";
+
 
 const depEnv = Cypress.env('depEnv');
 
@@ -32,7 +32,7 @@ describe('Form Designer', () => {
     
 // Verifying fields in the form settings page
  it('Visits the form settings page', () => {
-   
+  
     cy.visit(`/${depEnv}/form/create`);
     cy.location('pathname').should('eq', `/${depEnv}/form/create`);
     //cy.contains('h1', 'Form Settings');
@@ -250,7 +250,7 @@ describe('Form Designer', () => {
         cy.get('input[name="data[label]"]').clear().type('ID Number');
         cy.get('button').contains('Save').click();
     });
-    cy.get('[name="data[middleName]"]').realHover('mouse');
+    //cy.get('[name="data[middleName]"]').realHover('mouse');
       //
       //removeComponent "middle Name" 
 
