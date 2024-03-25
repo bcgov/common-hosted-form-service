@@ -21,7 +21,7 @@ jobs:
      - name: cypress install
        uses: cypress-io/github-action@v6
        with:
-          version: '13.6.4'
+          
           working-directory: '${{ github.workspace }}/tests/functional'
      - name: Cypress install   
        run: |
