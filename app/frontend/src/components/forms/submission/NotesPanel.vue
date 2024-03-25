@@ -19,6 +19,7 @@ export default {
       loading: true,
       newNote: '',
       notes: [],
+      page: 1,
       showNoteField: false,
     };
   },
@@ -145,7 +146,24 @@ export default {
       </v-row>
     </v-form>
 
-    <ul class="mt-5" :class="{ 'dir-rtl': isRTL, 'mr-2': isRTL }">
+    <v-data-iterator :items="notes" :items-per-page="3" :page="page">
+      <template #default="props">
+        <ul class="mt-5" :class="{ 'dir-rtl': isRTL, 'mr-2': isRTL }">
+          <li v-for="note in props.items" :key="note.id">
+            <strong>
+              {{ $filters.formatDateLong(note.raw.createdAt) }} -
+              {{ note.raw.createdBy }}
+            </strong>
+            <br />
+            {{ note.raw.note }}
+          </li>
+        </ul>
+      </template>
+      <template #footer="{ pageCount }">
+        <v-pagination v-model="page" :length="pageCount"></v-pagination>
+      </template>
+    </v-data-iterator>
+    <!-- <ul class="mt-5" :class="{ 'dir-rtl': isRTL, 'mr-2': isRTL }">
       <li v-for="note in notes" :key="note.noteId" class="mb-2">
         <strong>
           {{ $filters.formatDateLong(note.createdAt) }} -
@@ -154,7 +172,7 @@ export default {
         <br />
         {{ note.note }}
       </li>
-    </ul>
+    </ul> -->
   </v-skeleton-loader>
 </template>
 
