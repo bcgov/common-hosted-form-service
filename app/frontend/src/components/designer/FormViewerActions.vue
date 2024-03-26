@@ -142,7 +142,7 @@ export default {
               @click="toggleWideLayout"
             />
           </template>
-          <span>Wide Layout</span>
+          <span>{{ $t('trans.formViewerActions.wideLayout') }}</span>
         </v-tooltip>
       </span>
 

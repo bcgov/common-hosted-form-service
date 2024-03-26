@@ -885,7 +885,8 @@
     "saveAsADraft": "Save as a Draft",
     "editThisDraft": "Edit this Draft",
     "switchSingleSubmssn": "Switch to single submission",
-    "switchMultiSubmssn": "Switch to multiple submissions"
+    "switchMultiSubmssn": "Switch to multiple submissions",
+    "wideLayout": "Wide Layout"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Link copied to clipboard",
