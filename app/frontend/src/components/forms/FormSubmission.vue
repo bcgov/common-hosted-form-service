@@ -172,12 +172,41 @@ export default {
     </div>
     <br />
     <v-row>
-      <!-- The form submission -->
+      <!-- Status updates and notes -->
       <v-col
+        v-if="form.enableStatusUpdates"
         cols="12"
-        :md="form.enableStatusUpdates ? 8 : 12"
-        class="pl-0 pt-0"
+        class="pl-0 pt-0 d-print-none"
+        order="first"
+        order-md="last"
       >
+        <v-card
+          variant="outlined"
+          class="review-form"
+          :disabled="!submissionReadOnly"
+        >
+          <h2 class="review-heading" :class="{ 'dir-rtl': isRTL }" :lang="lang">
+            {{ $t('trans.formSubmission.status') }}
+          </h2>
+          <StatusPanel
+            :submission-id="submissionId"
+            :form-id="form.id"
+            @note-updated="refreshNotes"
+            @draft-enabled="setDraft"
+          />
+        </v-card>
+        <v-card
+          variant="outlined"
+          class="review-form"
+          :disabled="!submissionReadOnly"
+        >
+          <NotesPanel ref="notesPanel" :submission-id="submissionId" />
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row>
+      <!-- The form submission -->
+      <v-col cols="12" class="pl-0 pt-0">
         <transition name="scale-transition">
           <v-alert
             v-if="!submissionReadOnly"
@@ -246,39 +275,6 @@ export default {
             :submission-id="submissionId"
             @submission-updated="toggleSubmissionEdit(false)"
           />
-        </v-card>
-      </v-col>
-
-      <!-- Status updates and notes -->
-      <v-col
-        v-if="form.enableStatusUpdates"
-        cols="12"
-        md="4"
-        class="pl-0 pt-0 d-print-none"
-        order="first"
-        order-md="last"
-      >
-        <v-card
-          variant="outlined"
-          class="review-form"
-          :disabled="!submissionReadOnly"
-        >
-          <h2 class="review-heading" :class="{ 'dir-rtl': isRTL }" :lang="lang">
-            {{ $t('trans.formSubmission.status') }}
-          </h2>
-          <StatusPanel
-            :submission-id="submissionId"
-            :form-id="form.id"
-            @note-updated="refreshNotes"
-            @draft-enabled="setDraft"
-          />
-        </v-card>
-        <v-card
-          variant="outlined"
-          class="review-form"
-          :disabled="!submissionReadOnly"
-        >
-          <NotesPanel ref="notesPanel" :submission-id="submissionId" />
         </v-card>
       </v-col>
     </v-row>
