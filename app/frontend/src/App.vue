@@ -11,12 +11,26 @@ export default {
     BCGovNavBar,
     BCGovFooter,
   },
+  provide() {
+    return {
+      setWideLayout: this.setWideLayout,
+    };
+  },
+  data() {
+    return {
+      isWideLayout: false,
+    };
+  },
   computed: {
-    isSubmitPage() {
-      // return this.$route.name === 'FormSubmit' or FormView
+    isValidRoute() {
       return (
         this.$route.name === 'FormSubmit' || this.$route.name === 'FormView'
       );
+    },
+  },
+  methods: {
+    setWideLayout(isWide) {
+      this.isWideLayout = isWide;
     },
   },
 };
@@ -32,7 +46,7 @@ export default {
         <transition name="component-fade" mode="out-in">
           <component
             :is="Component"
-            :class="[isSubmitPage ? 'main-wide' : 'main']"
+            :class="[isWideLayout && isValidRoute ? 'main-wide' : 'main']"
           />
         </transition>
       </RouterView>
@@ -60,8 +74,8 @@ export default {
 
 @media (min-width: 1024px) {
   .main-wide {
-    padding-left: 50px;
-    padding-right: 50px;
+    padding-left: 65px;
+    padding-right: 65px;
   }
 }
 </style>

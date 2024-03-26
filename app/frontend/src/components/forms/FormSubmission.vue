@@ -20,6 +20,7 @@ export default {
     StatusPanel,
     PrintOptions,
   },
+  inject: ['setWideLayout'],
   props: {
     submissionId: {
       type: String,
@@ -32,6 +33,7 @@ export default {
       loading: true,
       reRenderSubmission: 0,
       submissionReadOnly: true,
+      isWideLayout: false,
     };
   },
   computed: {
@@ -51,6 +53,8 @@ export default {
     // get current user's permissions on associated form
     await this.getFormPermissionsForUser(this.form.id);
     this.loading = false;
+    // set wide layout
+    this.setWideLayout(this.isWideLayout);
   },
   methods: {
     ...mapActions(useFormStore, [
@@ -72,7 +76,10 @@ export default {
     setDraft(status) {
       this.isDraft = status === 'REVISING';
     },
-
+    async toggleWideLayout() {
+      this.isWideLayout = !this.isWideLayout;
+      this.setWideLayout(this.isWideLayout);
+    },
     async toggleSubmissionEdit(editing) {
       this.submissionReadOnly = !editing;
       this.reRenderSubmission += 1;
@@ -117,6 +124,24 @@ export default {
         </div>
         <!-- buttons -->
         <div class="d-print-none">
+          <span>
+            <v-tooltip location="bottom">
+              <template #activator="{ props }">
+                <v-btn
+                  v-if="form.wideFormLayout"
+                  class="mx-1"
+                  color="primary"
+                  v-bind="props"
+                  size="x-small"
+                  density="default"
+                  icon="mdi:mdi-panorama-variant-outline"
+                  @click="toggleWideLayout"
+                />
+              </template>
+              <span>Wide Layout</span>
+            </v-tooltip>
+          </span>
+
           <span>
             <PrintOptions :submission-id="submissionId" />
           </span>

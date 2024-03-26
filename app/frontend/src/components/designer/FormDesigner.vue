@@ -621,6 +621,7 @@ export default {
         sendSubmissionReceivedEmail: this.form.sendSubmissionReceivedEmail,
         enableSubmitterDraft: this.form.enableSubmitterDraft,
         enableCopyExistingSubmission: this.form.enableCopyExistingSubmission,
+        wideFormLayout: this.form.wideFormLayout,
         enableStatusUpdates: this.form.enableStatusUpdates,
         showSubmissionConfirmation: this.form.showSubmissionConfirmation,
         submissionReceivedEmails: this.form.submissionReceivedEmails,
