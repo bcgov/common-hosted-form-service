@@ -32,22 +32,24 @@
     "adminDashboardUrl": "VITE_ADMIN_DASHBOARD_URL",
     "apiPath": "FRONTEND_APIPATH",
     "basePath": "VITE_FRONTEND_BASEPATH",
-    "keycloak": {
-      "clientId": "FRONTEND_KC_CLIENTID",
-      "realm": "FRONTEND_KC_REALM",
-      "serverUrl": "FRONTEND_KC_SERVERURL"
+    "oidc": {
+      "clientId": "SANDBOX_OIDC_CLIENTID",
+      "realm": "SANDBOX_OIDC_REALM",
+      "serverUrl": "SANDBOX_OIDC_SERVERURL",
+      "logoutUrl": "SANDBOX_OIDC_LOGOUTURL"
     }
   },
   "server": {
     "apiPath": "SERVER_APIPATH",
     "basePath": "SERVER_BASEPATH",
     "bodyLimit": "SERVER_BODYLIMIT",
-    "keycloak": {
-      "clientId": "SERVER_KC_CLIENTID",
-      "clientSecret": "SERVER_KC_CLIENTSECRET",
-      "publicKey": "SERVER_KC_PUBLICKEY",
-      "realm": "SERVER_KC_REALM",
-      "serverUrl": "SERVER_KC_SERVERURL"
+    "oidc": {
+      "realm": "SANDBOX_OIDC_REALM",
+      "serverUrl": "SANDBOX_OIDC_SERVERURL",
+      "jwksUri": "SANDBOX_OIDC_JWKSURI",
+      "issuer": "SANDBOX_OIDC_ISSUER",
+      "audience": "SANDBOX_OIDC_CLIENTID",
+      "maxTokenAge": "SANDBOX_OIDC_MAXTOKENAGE"
     },
     "logFile": "SERVER_LOGFILE",
     "logLevel": "SERVER_LOGLEVEL",

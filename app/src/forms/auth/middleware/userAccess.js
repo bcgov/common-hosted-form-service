@@ -1,7 +1,7 @@
 const Problem = require('api-problem');
 const uuid = require('uuid');
 
-const keycloak = require('../../../components/keycloak');
+const jwtService = require('../../../components/jwtService');
 const Permissions = require('../../common/constants').Permissions;
 const Roles = require('../../common/constants').Roles;
 const service = require('../service');
@@ -22,33 +22,6 @@ const _formHasPermissions = (form, permissions) => {
   });
 
   return intersection.length === permissions.length;
-};
-
-/**
- * Gets the access token, if it exists, from the request.
- *
- * @param {*} req the Express object representing the HTTP request.
- * @returns a string that is the access token, or undefined if it doesn't exist.
- */
-const _getAccessToken = (req) => {
-  return req.kauth?.grant?.access_token;
-};
-
-/**
- * Gets the bearer token, if it exists, from the request.
- *
- * @param {*} req the Express object representing the HTTP request.
- * @returns a string that is the bearer token, or undefined if it doesn't exist.
- */
-const _getBearerToken = (req) => {
-  const authorization = req.headers?.authorization;
-
-  let token;
-  if (authorization && authorization.startsWith('Bearer ')) {
-    token = authorization.substring(7);
-  }
-
-  return token;
 };
 
 /**
@@ -88,7 +61,7 @@ const _getForm = async (currentUser, formId, includeDeleted) => {
  * attribute so that all downstream middleware and business logic can use it.
  *
  * This will fall through if everything is OK. If the Bearer auth is not valid,
- * this will produce a 403 error.
+ * this will produce a 401 error.
  *
  * @param {*} req the Express object representing the HTTP request.
  * @param {*} _res the Express object representing the HTTP response - unused.
@@ -97,17 +70,17 @@ const _getForm = async (currentUser, formId, includeDeleted) => {
 const currentUser = async (req, _res, next) => {
   try {
     // Validate bearer tokens before anything else - failure means no access.
-    const bearerToken = _getBearerToken(req);
+    const bearerToken = jwtService.getBearerToken(req);
     if (bearerToken) {
-      const ok = await keycloak.grantManager.validateAccessToken(bearerToken);
+      const ok = await jwtService.validateAccessToken(bearerToken);
       if (!ok) {
-        throw new Problem(403, { detail: 'Authorization token is invalid.' });
+        throw new Problem(401, { detail: 'Authorization token is invalid.' });
       }
     }
 
     // Add the request element that contains the current user's parsed info. It
     // is ok if the access token isn't defined: then we'll have a public user.
-    const accessToken = _getAccessToken(req);
+    const accessToken = await jwtService.getTokenPayload(req);
     req.currentUser = await service.login(accessToken);
 
     next();
@@ -184,7 +157,10 @@ const hasSubmissionPermissions = (permissions) => {
 
       // Does the user have permissions for this submission due to their FORM permissions
       if (req.currentUser) {
-        const forms = await service.getUserForms(req.currentUser, { active: true, formId: submissionForm.form.id });
+        const forms = await service.getUserForms(req.currentUser, {
+          active: true,
+          formId: submissionForm.form.id,
+        });
         let formFromCurrentUser = forms.find((f) => f.formId === submissionForm.form.id);
         if (formFromCurrentUser) {
           // Do they have the submission permissions being requested on this FORM
@@ -200,7 +176,11 @@ const hasSubmissionPermissions = (permissions) => {
 
       // Deleted submissions are inaccessible
       if (submissionForm.submission.deleted) {
-        return next(new Problem(401, { detail: 'You do not have access to this submission.' }));
+        return next(
+          new Problem(401, {
+            detail: 'You do not have access to this submission.',
+          })
+        );
       }
 
       // TODO: consider whether DRAFT submissions are restricted as deleted above
@@ -216,7 +196,11 @@ const hasSubmissionPermissions = (permissions) => {
       if (submissionPermission) return next();
 
       // no access to this submission...
-      return next(new Problem(401, { detail: 'You do not have access to this submission.' }));
+      return next(
+        new Problem(401, {
+          detail: 'You do not have access to this submission.',
+        })
+      );
     } catch (error) {
       next(error);
     }
@@ -250,7 +234,11 @@ const filterMultipleSubmissions = () => {
       //validate all submission ids
       const isValidSubmissionId = submissionIds.every((submissionId) => uuid.validate(submissionId));
       if (!isValidSubmissionId) {
-        return next(new Problem(401, { detail: 'Invalid submissionId(s) in the submissionIds list.' }));
+        return next(
+          new Problem(401, {
+            detail: 'Invalid submissionId(s) in the submissionIds list.',
+          })
+        );
       }
 
       if (formIdWithDeletePermission === formId) {
@@ -259,11 +247,19 @@ const filterMultipleSubmissions = () => {
 
         const isForeignSubmissionId = metaData.every((SubmissionMetadata) => SubmissionMetadata.formId === formId);
         if (!isForeignSubmissionId || metaData.length !== submissionIds.length) {
-          return next(new Problem(401, { detail: 'Current user does not have required permission(s) for some submissions in the submissionIds list.' }));
+          return next(
+            new Problem(401, {
+              detail: 'Current user does not have required permission(s) for some submissions in the submissionIds list.',
+            })
+          );
         }
         return next();
       }
-      return next(new Problem(401, { detail: 'Current user does not have required permission(s) for to delete submissions' }));
+      return next(
+        new Problem(401, {
+          detail: 'Current user does not have required permission(s) for to delete submissions',
+        })
+      );
     } catch (error) {
       next(error);
     }
@@ -273,7 +269,10 @@ const filterMultipleSubmissions = () => {
 const hasFormRole = async (formId, user, role) => {
   let hasRole = false;
 
-  const forms = await service.getUserForms(user, { active: true, formId: formId });
+  const forms = await service.getUserForms(user, {
+    active: true,
+    formId: formId,
+  });
   const form = forms.find((f) => f.formId === formId);
 
   if (form) {
@@ -297,7 +296,10 @@ const hasFormRoles = (formRoles, hasAll = false) => {
       return new Problem(401, { detail: 'Form Id not found on request.' }).send(res);
     }
 
-    const forms = await service.getUserForms(req.currentUser, { active: true, formId: formId });
+    const forms = await service.getUserForms(req.currentUser, {
+      active: true,
+      formId: formId,
+    });
     const form = forms.find((f) => f.formId === formId);
     if (form) {
       for (let roleIndex = 0; roleIndex < form.roles.length; roleIndex++) {
@@ -317,10 +319,19 @@ const hasFormRoles = (formRoles, hasAll = false) => {
     }
 
     if (hasAll) {
-      if (formRoles.length > 0) return next(new Problem(401, { detail: 'You do not have permission to update this role.' }));
+      if (formRoles.length > 0)
+        return next(
+          new Problem(401, {
+            detail: 'You do not have permission to update this role.',
+          })
+        );
       else return next();
     }
-    return next(new Problem(401, { detail: 'You do not have permission to update this role.' }));
+    return next(
+      new Problem(401, {
+        detail: 'You do not have permission to update this role.',
+      })
+    );
   };
 };
 
@@ -331,7 +342,9 @@ const hasRolePermissions = (removingUsers = false) => {
       const formId = req.params.formId || req.query.formId;
       if (!formId) {
         // No form provided to this route that secures based on form... that's a problem!
-        return new Problem(401, { detail: 'Form Id not found on request.' }).send(res);
+        return new Problem(401, {
+          detail: 'Form Id not found on request.',
+        }).send(res);
       }
 
       const currentUser = req.currentUser;
@@ -340,7 +353,12 @@ const hasRolePermissions = (removingUsers = false) => {
       const isOwner = await hasFormRole(formId, currentUser, Roles.OWNER);
 
       if (removingUsers) {
-        if (data.includes(currentUser.id)) return next(new Problem(401, { detail: "You can't remove yourself from this form." }));
+        if (data.includes(currentUser.id))
+          return next(
+            new Problem(401, {
+              detail: "You can't remove yourself from this form.",
+            })
+          );
 
         if (!isOwner) {
           for (let i = 0; i < data.length; i++) {
@@ -350,12 +368,20 @@ const hasRolePermissions = (removingUsers = false) => {
 
             // Can't update another user's roles if they are an owner
             if (userRoles.some((fru) => fru.role === Roles.OWNER) && userId !== currentUser.id) {
-              return next(new Problem(401, { detail: "You can not update an owner's roles." }));
+              return next(
+                new Problem(401, {
+                  detail: "You can not update an owner's roles.",
+                })
+              );
             }
 
             // If the user is trying to remove the designer role
             if (userRoles.some((fru) => fru.role === Roles.FORM_DESIGNER)) {
-              return next(new Problem(401, { detail: "You can't remove a form designer role." }));
+              return next(
+                new Problem(401, {
+                  detail: "You can't remove a form designer role.",
+                })
+              );
             }
           }
         }
@@ -370,7 +396,11 @@ const hasRolePermissions = (removingUsers = false) => {
 
           // If the user is trying to remove the team manager role for their own userid
           if (userRoles.some((fru) => fru.role === Roles.TEAM_MANAGER) && !data.some((role) => role.role === Roles.TEAM_MANAGER) && userId == currentUser.id) {
-            return next(new Problem(401, { detail: "You can't remove your own team manager role." }));
+            return next(
+              new Problem(401, {
+                detail: "You can't remove your own team manager role.",
+              })
+            );
           }
 
           // Can't update another user's roles if they are an owner
@@ -383,10 +413,18 @@ const hasRolePermissions = (removingUsers = false) => {
 
           // If the user is trying to remove the designer role for another userid
           if (userRoles.some((fru) => fru.role === Roles.FORM_DESIGNER) && !data.some((role) => role.role === Roles.FORM_DESIGNER)) {
-            return next(new Problem(401, { detail: "You can't remove a form designer role." }));
+            return next(
+              new Problem(401, {
+                detail: "You can't remove a form designer role.",
+              })
+            );
           }
           if (!userRoles.some((fru) => fru.role === Roles.FORM_DESIGNER) && data.some((role) => role.role === Roles.FORM_DESIGNER)) {
-            return next(new Problem(401, { detail: "You can't add a form designer role." }));
+            return next(
+              new Problem(401, {
+                detail: "You can't add a form designer role.",
+              })
+            );
           }
         }
       }

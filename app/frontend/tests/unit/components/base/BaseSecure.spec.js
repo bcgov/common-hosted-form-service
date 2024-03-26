@@ -9,6 +9,8 @@ import { expect, vi } from 'vitest';
 import getRouter from '~/router';
 import BaseSecure from '~/components/base/BaseSecure.vue';
 import { useAuthStore } from '~/store/auth';
+import { useIdpStore } from '~/store/identityProviders';
+import { AppPermissions } from '~/utils/constants';
 
 describe('BaseSecure.vue', () => {
   const pinia = createPinia();
@@ -19,17 +21,20 @@ describe('BaseSecure.vue', () => {
 
   setActivePinia(pinia);
   const authStore = useAuthStore();
+  const idpStore = useIdpStore();
+
+  idpStore.providers = require('../../fixtures/identityProviders.json');
+  const nonPrimaryIdp = idpStore.providers.find(
+    (x) => x.active && x.login && !x.primary
+  );
 
   it('renders nothing if authenticated, user', () => {
     authStore.authenticated = true;
     authStore.ready = true;
     authStore.keycloak = {
       tokenParsed: {
-        resource_access: {
-          chefs: {
-            roles: ['user'],
-          },
-        },
+        client_roles: [],
+        identity_provider: nonPrimaryIdp.code,
       },
     };
     const wrapper = mount(BaseSecure, {
@@ -41,39 +46,16 @@ describe('BaseSecure.vue', () => {
     expect(wrapper.text()).toEqual('');
   });
 
-  it('renders a message if authenticated, not user', () => {
-    authStore.authenticated = true;
-    authStore.ready = true;
-    authStore.keycloak = {
-      tokenParsed: {
-        resource_access: {
-          chefs: {
-            roles: [],
-          },
-        },
-      },
-    };
-    const wrapper = mount(BaseSecure, {
-      global: {
-        plugins: [router, pinia],
-      },
-    });
-
-    expect(wrapper.text()).toContain('trans.baseSecure.401UnAuthorized');
-  });
-
   it('renders a message if admin required, not admin', () => {
     authStore.authenticated = true;
     authStore.ready = true;
     authStore.keycloak = {
       tokenParsed: {
-        resource_access: {
-          chefs: {
-            roles: ['user'],
-          },
+        client_roles: [],
+        identity_provider: nonPrimaryIdp.code,
         },
-      },
-    };
+      };
+
     const wrapper = mount(BaseSecure, {
       props: {
         admin: true,
@@ -91,11 +73,8 @@ describe('BaseSecure.vue', () => {
     authStore.ready = true;
     authStore.keycloak = {
       tokenParsed: {
-        resource_access: {
-          chefs: {
-            roles: ['user'],
-          },
-        },
+        client_roles: ['admin'],
+        identity_provider: nonPrimaryIdp.code,
       },
     };
     const wrapper = mount(BaseSecure, {
@@ -166,17 +145,14 @@ describe('BaseSecure.vue', () => {
     authStore.ready = true;
     authStore.keycloak = {
       tokenParsed: {
-        resource_access: {
-          chefs: {
-            roles: ['user'],
-          },
+          client_roles: [],
+          identity_provider: 'fake', //nonPrimaryIdp.code,
         },
-      },
     };
     const wrapper = mount(BaseSecure, {
       props: {
         admin: false,
-        idp: ['IDIR'],
+        permission: AppPermissions.VIEWS_ADMIN,
       },
       global: {
         plugins: [router, pinia],

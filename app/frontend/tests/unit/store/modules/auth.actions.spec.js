@@ -6,14 +6,21 @@ import getRouter from '~/router';
 
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useIdpStore } from '~/store/identityProviders';
+import { useAppStore } from '~/store/app';
 
 describe('auth actions', () => {
   let router = getRouter();
   const replaceSpy = vi.spyOn(router, 'replace');
   const windowReplaceSpy = vi.spyOn(window.location, 'replace');
+  const windowAssignSpy = vi.spyOn(window.location, 'assign');
   setActivePinia(createPinia());
   const mockStore = useAuthStore();
   const formStore = useFormStore();
+  const idpStore = useIdpStore();
+  const appStore = useAppStore();
+
+  idpStore.providers = require('../../fixtures/identityProviders.json');
 
   describe('login', () => {
     beforeEach(() => {
@@ -26,6 +33,7 @@ describe('auth actions', () => {
       replaceSpy.mockReset();
       windowReplaceSpy.mockReset();
       router.replace.mockReset();
+      appStore.config = { basePath: '/app' };
     });
 
     it('should do nothing if keycloak is not ready', () => {
@@ -74,7 +82,7 @@ describe('auth actions', () => {
       expect(replaceSpy).toHaveBeenCalledTimes(1);
       expect(replaceSpy).toHaveBeenCalledWith({
         name: 'Login',
-        query: { idpHint: ['idir', 'bceid-business', 'bceid-basic'] },
+        query: { idpHint: idpStore.loginIdpHints },
       });
     });
 
@@ -97,23 +105,23 @@ describe('auth actions', () => {
       mockStore.$reset();
       mockStore.keycloak = {
         createLoginUrl: vi.fn(() => 'about:blank'),
-        createLogoutUrl: vi.fn(() => 'about:blank'),
       };
-      windowReplaceSpy.mockReset();
+      mockStore.logoutUrl = location.origin;
+      windowAssignSpy.mockReset();
     });
 
     it('should do nothing if keycloak is not ready', () => {
       mockStore.ready = false;
       mockStore.logout();
 
-      expect(windowReplaceSpy).toHaveBeenCalledTimes(0);
+      expect(windowAssignSpy).toHaveBeenCalledTimes(0);
     });
 
     it('should trigger navigation action if keycloak is ready', () => {
       mockStore.ready = true;
       mockStore.logout();
 
-      expect(windowReplaceSpy).toHaveBeenCalledTimes(1);
+      expect(windowAssignSpy).toHaveBeenCalledTimes(1);
     });
   });
 });
