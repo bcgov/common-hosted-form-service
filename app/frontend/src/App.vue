@@ -24,7 +24,9 @@ export default {
   computed: {
     isValidRoute() {
       return (
-        this.$route.name === 'FormSubmit' || this.$route.name === 'FormView'
+        this.$route.name === 'FormSubmit' ||
+        this.$route.name === 'FormView' ||
+        this.$route.name === 'FormSuccess'
       );
     },
   },
