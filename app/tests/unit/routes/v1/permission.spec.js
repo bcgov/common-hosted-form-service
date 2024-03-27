@@ -6,12 +6,12 @@ const { expressHelper } = require('../../../common/helper');
 //
 // mock middleware
 //
-const keycloak = require('../../../../src/components/keycloak');
+const jwtService = require('../../../../src/components/jwtService');
 
 //
 // test assumes that caller has appropriate token, we are not testing middleware here...
 //
-keycloak.protect = jest.fn(() => {
+jwtService.protect = jest.fn(() => {
   return jest.fn((_req, _res, next) => {
     next();
   });

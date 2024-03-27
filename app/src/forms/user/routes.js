@@ -2,9 +2,9 @@ const routes = require('express').Router();
 const controller = require('./controller');
 
 const currentUser = require('../auth/middleware/userAccess').currentUser;
-const keycloak = require('../../components/keycloak');
+const jwtService = require('../../components/jwtService');
 
-routes.use(keycloak.protect());
+routes.use(jwtService.protect());
 routes.use(currentUser);
 
 //

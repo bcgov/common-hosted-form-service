@@ -1,19 +1,18 @@
-const config = require('config');
 const routes = require('express').Router();
 
 const controller = require('./controller');
-const keycloak = require('../../components/keycloak');
+const jwtService = require('../../components/jwtService');
 const P = require('../common/constants').Permissions;
 const R = require('../common/constants').Roles;
 const { currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles, hasRolePermissions } = require('../auth/middleware/userAccess');
 
 routes.use(currentUser);
 
-routes.get('/current', keycloak.protect(), async (req, res, next) => {
+routes.get('/current', jwtService.protect(), async (req, res, next) => {
   await controller.getCurrentUser(req, res, next);
 });
 
-routes.get('/current/submissions', keycloak.protect(), async (req, res, next) => {
+routes.get('/current/submissions', jwtService.protect(), async (req, res, next) => {
   await controller.getCurrentUserSubmissions(req, res, next);
 });
 
@@ -37,7 +36,7 @@ routes.put('/submissions', hasSubmissionPermissions(P.SUBMISSION_UPDATE), async 
   await controller.setSubmissionUserPermissions(req, res, next);
 });
 
-routes.get('/users', keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`), async (req, res, next) => {
+routes.get('/users', jwtService.protect('admin'), async (req, res, next) => {
   await controller.getUserForms(req, res, next);
 });
 

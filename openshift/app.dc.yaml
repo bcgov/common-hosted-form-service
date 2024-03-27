@@ -253,6 +253,8 @@ objects:
                 - configMapRef:
                     name: "${APP_NAME}-files-config"
                 - configMapRef:
+                    name: "${APP_NAME}-oidc-config"
+                - configMapRef:
                     name: "${APP_NAME}-custombcaddressformiocomponent-config"
           restartPolicy: Always
           terminationGracePeriodSeconds: 30

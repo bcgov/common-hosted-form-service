@@ -1,0 +1,259 @@
+[
+  {
+    "code": "idir",
+    "display": "IDIR",
+    "active": true,
+    "idp": "idir",
+    "createdBy": "migration-002",
+    "createdAt": "2024-03-08T22:02:34.399Z",
+    "updatedBy": null,
+    "updatedAt": "2024-03-08T22:02:34.399Z",
+    "primary": true,
+    "login": true,
+    "permissions": [
+      "views_form_stepper",
+      "views_admin",
+      "views_file_download",
+      "views_form_emails",
+      "views_form_export",
+      "views_form_manage",
+      "views_form_preview",
+      "views_form_submissions",
+      "views_form_teams",
+      "views_form_view",
+      "views_user_submissions"
+    ],
+    "roles": ["owner", "team_manager", "form_designer", "submission_reviewer", "form_submitter"],
+    "tokenmap": {
+      "idp": "identity_provider",
+      "email": "email",
+      "fullName": "name",
+      "lastName": "family_name",
+      "username": "idir_username",
+      "firstName": "given_name",
+      "idpUserId": "idir_user_guid",
+      "keycloakId": "idir_user_guid"
+    },
+    "extra": {}
+  },
+  {
+    "code": "bceid-basic",
+    "display": "Basic BCeID",
+    "active": true,
+    "idp": "bceidbasic",
+    "createdBy": "migration-022",
+    "createdAt": "2024-03-08T22:02:34.399Z",
+    "updatedBy": null,
+    "updatedAt": "2024-03-08T22:02:34.399Z",
+    "primary": false,
+    "login": true,
+    "permissions": ["views_user_submissions"],
+    "roles": ["form_submitter"],
+    "tokenmap": {
+      "idp": "identity_provider",
+      "email": "email",
+      "fullName": "name",
+      "lastName": null,
+      "username": "bceid_username",
+      "firstName": null,
+      "idpUserId": "bceid_user_guid",
+      "keycloakId": "bceid_user_guid"
+    },
+    "extra": {
+      "userSearch": {
+        "detail": "Could not retrieve BCeID users. Invalid options provided.",
+        "filters": [
+          {
+            "name": "filterIdpUserId",
+            "param": "idpUserId",
+            "required": 0
+          },
+          {
+            "name": "filterIdpCode",
+            "param": "idpCode",
+            "required": 0
+          },
+          {
+            "name": "filterUsername",
+            "exact": true,
+            "param": "username",
+            "required": 2
+          },
+          {
+            "name": "filterFullName",
+            "param": "fullName",
+            "required": 0
+          },
+          {
+            "name": "filterFirstName",
+            "param": "firstName",
+            "required": 0
+          },
+          {
+            "name": "filterLastName",
+            "param": "lastName",
+            "required": 0
+          },
+          {
+            "name": "filterEmail",
+            "exact": true,
+            "param": "email",
+            "required": 2
+          },
+          {
+            "name": "filterSearch",
+            "param": "search",
+            "required": 0
+          }
+        ]
+      },
+      "formAccessSettings": "idim",
+      "addTeamMemberSearch": {
+        "text": {
+          "message": "trans.manageSubmissionUsers.searchInputLength",
+          "minLength": 6
+        },
+        "email": {
+          "exact": true,
+          "message": "trans.manageSubmissionUsers.exactBCEIDSearch"
+        }
+      }
+    }
+  },
+  {
+    "code": "bceid-business",
+    "display": "Business BCeID",
+    "active": true,
+    "idp": "bceidbusiness",
+    "createdBy": "migration-022",
+    "createdAt": "2024-03-08T22:02:34.399Z",
+    "updatedBy": null,
+    "updatedAt": "2024-03-08T22:02:34.399Z",
+    "primary": false,
+    "login": true,
+    "permissions": ["views_form_export", "views_form_manage", "views_form_submissions", "views_form_teams", "views_form_view", "views_user_submissions"],
+    "roles": ["team_manager", "submission_reviewer", "form_submitter"],
+    "tokenmap": {
+      "idp": "identity_provider",
+      "email": "email",
+      "fullName": "name",
+      "lastName": null,
+      "username": "bceid_username",
+      "firstName": null,
+      "idpUserId": "bceid_user_guid",
+      "keycloakId": "bceid_user_guid"
+    },
+    "extra": {
+      "userSearch": {
+        "detail": "Could not retrieve BCeID users. Invalid options provided.",
+        "filters": [
+          {
+            "name": "filterIdpUserId",
+            "param": "idpUserId",
+            "required": 0
+          },
+          {
+            "name": "filterIdpCode",
+            "param": "idpCode",
+            "required": 0
+          },
+          {
+            "name": "filterUsername",
+            "exact": true,
+            "param": "username",
+            "required": 2
+          },
+          {
+            "name": "filterFullName",
+            "param": "fullName",
+            "required": 0
+          },
+          {
+            "name": "filterFirstName",
+            "param": "firstName",
+            "required": 0
+          },
+          {
+            "name": "filterLastName",
+            "param": "lastName",
+            "required": 0
+          },
+          {
+            "name": "filterEmail",
+            "exact": true,
+            "param": "email",
+            "required": 2
+          },
+          {
+            "name": "filterSearch",
+            "param": "search",
+            "required": 0
+          }
+        ]
+      },
+      "formAccessSettings": "idim",
+      "addTeamMemberSearch": {
+        "text": {
+          "message": "trans.manageSubmissionUsers.searchInputLength",
+          "minLength": 6
+        },
+        "email": {
+          "exact": true,
+          "message": "trans.manageSubmissionUsers.exactBCEIDSearch"
+        }
+      }
+    }
+  },
+  {
+    "code": "public",
+    "display": "Public",
+    "active": true,
+    "idp": "public",
+    "createdBy": "migration-002",
+    "createdAt": "2024-03-08T22:02:34.399Z",
+    "updatedBy": null,
+    "updatedAt": "2024-03-08T22:02:34.399Z",
+    "primary": false,
+    "login": false,
+    "permissions": [],
+    "roles": null,
+    "tokenmap": null,
+    "extra": {}
+  },
+  {
+    "code": "digital-credential",
+    "display": "Digital Credential",
+    "active": true,
+    "idp": "digitalcredential",
+    "createdBy": "testonly",
+    "createdAt": "2024-03-08T22:02:34.399Z",
+    "updatedBy": null,
+    "updatedAt": "2024-03-08T22:02:34.399Z",
+    "primary": false,
+    "login": false,
+    "permissions": [],
+    "roles": null,
+    "tokenmap": {
+      "idpUserId": "vc_user_guid::stringToGUID",
+      "keycloakId": "preferred_username",
+      "email": "vc_presented_attributes,email::parseJsonField",
+      "firstName": "vc_presented_attributes,name.first::parseJsonField",
+      "lastName": "vc_presented_attributes,name.last::parseJsonField",
+      "idp": "identity_provider"
+    },
+    "extra": {}
+  },
+  {
+    "code": "testonly",
+    "display": "N/A",
+    "active": false,
+    "idp": "testonly",
+    "createdBy": "testonly",
+    "createdAt": "2024-03-08T22:02:34.399Z",
+    "updatedBy": null,
+    "login": false,
+    "permissions": [],
+    "roles": null,
+    "extra": {}
+  }
+]

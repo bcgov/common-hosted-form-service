@@ -237,7 +237,7 @@ const service = {
       .withGraphFetched('idpHints')
       .throwIfNotFound()
       .then((form) => {
-        form.idpHints = form.idpHints.map((idp) => idp.code);
+        form.idpHints = form.idpHints.map((idp) => idp.idp);
         return form;
       });
   },

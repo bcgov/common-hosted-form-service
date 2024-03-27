@@ -21,7 +21,7 @@ describe('AdministerUser.vue', () => {
 
   it('renders', async () => {
     appStore.config = {
-      keycloak: {
+      oidc: {
         serverUrl: 'servU',
         realm: 'theRealm',
       },
@@ -43,8 +43,5 @@ describe('AdministerUser.vue', () => {
 
     await flushPromises();
     expect(wrapper.text()).toContain('alice');
-    expect(wrapper.html()).toContain(
-      'servU/admin/theRealm/console/#/realms/theRealm/users/1'
-    );
   });
 });

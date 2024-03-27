@@ -3,49 +3,29 @@ import { mapActions, mapState } from 'pinia';
 
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
-import { IdentityProviders } from '~/utils/constants';
+import { useIdpStore } from '~/store/identityProviders';
 
 export default {
   props: {
     idpHint: {
       type: Array,
-      default: () => [
-        IdentityProviders.IDIR,
-        IdentityProviders.BCEIDBUSINESS,
-        IdentityProviders.BCEIDBASIC,
-      ],
+      default: () => [],
     },
   },
   computed: {
     ...mapState(useAuthStore, ['authenticated', 'createLoginUrl', 'ready']),
     ...mapState(useFormStore, ['lang']),
-    buttons: () => [
-      {
-        label: 'IDIR',
-        type: IdentityProviders.IDIR,
-      },
-      {
-        label: 'Basic BCeID',
-        type: IdentityProviders.BCEIDBASIC,
-      },
-      {
-        label: 'Business BCeID',
-        type: IdentityProviders.BCEIDBUSINESS,
-      },
-    ],
-    IDPS() {
-      return IdentityProviders;
-    },
+    ...mapState(useIdpStore, ['loginButtons', 'loginIdpHints']),
   },
   created() {
     // If component gets idpHint, invoke login flow via vuex
-    if (this.idpHint && this.idpHint.length === 1) this.login(this.idpHint[0]);
+    if (this.idpHint && this.idpHint.length === 1) {
+      const hint = this.idpHint[0];
+      if (this.loginIdpHints.includes(hint)) this.login(hint);
+    }
   },
   methods: {
     ...mapActions(useAuthStore, ['login']),
-    buttonEnabled(type) {
-      return this.idpHint ? this.idpHint.includes(type) : false;
-    },
   },
 };
 </script>
@@ -56,16 +36,16 @@ export default {
       <h1 class="my-6" :lang="lang">
         {{ $t('trans.login.authenticateWith') }}
       </h1>
-      <v-row v-for="button in buttons" :key="button.type" justify="center">
-        <v-col v-if="buttonEnabled(button.type)" sm="3">
+      <v-row v-for="button in loginButtons" :key="button.code" justify="center">
+        <v-col sm="3">
           <v-btn
             block
             color="primary"
             size="large"
-            :data-test="button.type"
-            @click="login(button.type)"
+            :data-test="button.code"
+            @click="login(button.hint)"
           >
-            {{ button.label }}
+            {{ button.display }}
           </v-btn>
         </v-col>
       </v-row>
