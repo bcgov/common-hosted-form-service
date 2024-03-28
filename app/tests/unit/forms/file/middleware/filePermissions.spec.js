@@ -196,7 +196,7 @@ describe('hasFileCreate', () => {
 });
 
 describe('hasFilePermissions', () => {
-  const perm = 'submission_read';
+  const perm = ['submission_read'];
 
   const subPermSpy = jest.spyOn(userAccess, 'hasSubmissionPermissions');
   beforeEach(() => {
