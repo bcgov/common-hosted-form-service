@@ -41,6 +41,7 @@ export default {
       statusToSet: '',
       valid: false,
       showSendConfirmEmail: false,
+      showStatusContent: false,
     };
   },
   computed: {
@@ -299,12 +300,23 @@ export default {
 
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
+    <h2
+      class="status-heading"
+      :class="{ 'dir-rtl': isRTL }"
+      :lang="lang"
+      @click="showStatusContent = !showStatusContent"
+    >
+      {{ $t('trans.formSubmission.status') }}
+      <v-icon>{{
+        showStatusContent ? 'mdi:mdi-chevron-down' : 'mdi:mdi-chevron-right'
+      }}</v-icon>
+    </h2>
     <v-skeleton-loader
       :loading="loading"
       type="list-item-two-line"
       class="bgtrans"
     >
-      <div class="d-flex flex-column flex-1-1-100">
+      <div v-if="showStatusContent" class="d-flex flex-column flex-1-1-100">
         <p :lang="lang">
           <strong>{{ $t('trans.statusPanel.currentStatus') }}</strong>
           {{ currentStatus.code }}
@@ -511,5 +523,13 @@ export default {
 .v-btn__content {
   width: 100%;
   white-space: normal;
+}
+
+.status-heading {
+  color: #003366;
+  margin-bottom: 0;
+  .v-icon {
+    transition: transform 0.3s ease;
+  }
 }
 </style>
