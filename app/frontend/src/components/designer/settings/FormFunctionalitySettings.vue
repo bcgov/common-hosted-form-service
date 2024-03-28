@@ -19,6 +19,8 @@ export default {
         'https://github.com/bcgov/common-hosted-form-service/wiki/Schedule-and-Reminder-notification',
       githubLinkEventSubscriptionFeature:
         'https://github.com/bcgov/common-hosted-form-service/wiki/Event-Subscription',
+      githubLinkWideFormLayout:
+        'https://github.com/bcgov/common-hosted-form-service/wiki/Wide-Form-Layout',
     };
   },
   computed: {
@@ -248,6 +250,41 @@ export default {
               >{{ $t('trans.formSettings.experimental') }}
               <a
                 :href="githubLinkEventSubscriptionFeature"
+                class="preview_info_link_field_white"
+                :target="'_blank'"
+                :hreflang="lang"
+              >
+                {{ $t('trans.formSettings.learnMore') }}
+                <v-icon
+                  icon="mdi:mdi-arrow-top-right-bold-box-outline"
+                ></v-icon></a
+            ></span>
+          </v-tooltip>
+        </div>
+      </template>
+    </v-checkbox>
+    <v-checkbox v-model="form.wideFormLayout" hide-details="auto" class="my-0">
+      <template #label>
+        <div :class="{ 'mr-2': isRTL }">
+          <span
+            style="max-width: 80%"
+            :lang="lang"
+            v-html="$t('trans.formSettings.wideFormLayout')"
+          />
+          <v-tooltip location="bottom" close-delay="2500">
+            <template #activator="{ props }">
+              <v-icon
+                color="primary"
+                class="ml-3"
+                :class="{ 'mr-2': isRTL }"
+                v-bind="props"
+                icon="mdi:mdi-flask"
+              ></v-icon>
+            </template>
+            <span :lang="lang"
+              >{{ $t('trans.formSettings.experimental') }}
+              <a
+                :href="githubLinkWideFormLayout"
                 class="preview_info_link_field_white"
                 :target="'_blank'"
                 :hreflang="lang"

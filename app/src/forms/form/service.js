@@ -89,6 +89,7 @@ const service = {
       obj.subscribe = data.subscribe;
       obj.reminder_enabled = data.reminder_enabled;
       obj.enableCopyExistingSubmission = data.enableCopyExistingSubmission;
+      obj.wideFormLayout = data.wideFormLayout;
       obj.deploymentLevel = data.deploymentLevel;
       obj.ministry = data.ministry;
       obj.apiIntegration = data.apiIntegration;
@@ -167,6 +168,7 @@ const service = {
         reminder_enabled: data.reminder_enabled,
         enableCopyExistingSubmission: data.enableCopyExistingSubmission,
         deploymentLevel: data.deploymentLevel,
+        wideFormLayout: data.wideFormLayout,
         ministry: data.ministry,
         apiIntegration: data.apiIntegration,
         useCase: data.useCase,
