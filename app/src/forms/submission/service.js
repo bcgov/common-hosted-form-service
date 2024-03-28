@@ -1,8 +1,12 @@
 const { v4: uuidv4 } = require('uuid');
+
+const log = require('../../components/log')(module.filename);
+
 const { Statuses } = require('../common/constants');
-const { Form, FormVersion, FormSubmission, FormSubmissionStatus, Note, SubmissionAudit, SubmissionMetadata } = require('../common/models');
+const { FileStorage, Form, FormVersion, FormSubmission, FormSubmissionStatus, Note, SubmissionAudit, SubmissionMetadata } = require('../common/models');
 const emailService = require('../email/emailService');
 const eventService = require('../event/eventService');
+const fileService = require('../file/service');
 const formService = require('../form/service');
 const permissionService = require('../permission/service');
 
@@ -51,6 +55,38 @@ const service = {
     return [];
   },
 
+  /**
+   * Given the data for a submission, find the file uploads.
+   *
+   * @param {object} data the data for a submission.
+   * @returns an array of file UUIDs.
+   */
+  _findFileIds: (data) => {
+    const findFiles = (currentData) => {
+      let fileIds = [];
+      // Check if the current level is an array or an object
+      if (Array.isArray(currentData)) {
+        currentData.forEach((item) => {
+          fileIds = fileIds.concat(findFiles(item));
+        });
+      } else if (typeof currentData === 'object' && currentData !== null) {
+        Object.keys(currentData).forEach((key) => {
+          if (key === 'data' && currentData[key] && currentData[key].id) {
+            // Add the file ID if it exists
+            fileIds.push(currentData[key].id);
+          } else {
+            // Recurse into nested objects
+            fileIds = fileIds.concat(findFiles(currentData[key]));
+          }
+        });
+      }
+      return fileIds;
+    };
+
+    // Start the search from the top-level submission data
+    return findFiles(data.submission.data);
+  },
+
   read: (formSubmissionId) => service._fetchSubmissionData(formSubmissionId),
 
   readSubmissionData: (formSubmissionIds) => service._fetchSpecificSubmissionData(formSubmissionIds),
@@ -86,6 +122,20 @@ const service = {
           submission: data.submission,
           updatedBy: currentUser.usernameIdp,
         });
+
+        // Update new file uploads with the submission ID.
+        const fileIds = service._findFileIds(data);
+        for (const fileId of fileIds) {
+          const fileStorage = await fileService.read(fileId);
+          if (!fileStorage.formSubmissionId) {
+            await FileStorage.query(trx).patchAndFetchById(fileId, { formSubmissionId: formSubmissionId, updatedBy: currentUser.usernameIdp });
+            fileService.moveSubmissionFile(formSubmissionId, fileStorage, currentUser.usernameIdp).catch((error) => {
+              // Log it, but since storage can't be part of the transaction then
+              // deal with the state it's in when the error is investigated.
+              log.error('Error moving file', error);
+            });
+          }
+        }
       }
 
       if (!etrx) await trx.commit();
