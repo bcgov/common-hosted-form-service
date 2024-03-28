@@ -1,119 +1,117 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { onBeforeRouteLeave } from 'vue-router';
+import { ref, watch } from 'vue';
 
-import BaseStepper from '~/components/base/BaseStepper.vue';
-import BasePanel from '~/components/base/BasePanel.vue';
 import FormDesigner from '~/components/designer/FormDesigner.vue';
 import FormDisclaimer from '~/components/designer/FormDisclaimer.vue';
 import FormSettings from '~/components/designer/FormSettings.vue';
 import FormProfile from '~/components/designer/FormProfile.vue';
 import { i18n } from '~/internationalization';
 import { useFormStore } from '~/store/form';
-import { IdentityMode, IdentityProviders } from '~/utils/constants';
+import { IdentityMode } from '~/utils/constants';
 
-export default {
-  components: {
-    BaseStepper,
-    BasePanel,
-    FormDesigner,
-    FormSettings,
-    FormProfile,
-    FormDisclaimer,
-  },
-  beforeRouteLeave(_to, _from, next) {
-    this.form.isDirty
-      ? next(window.confirm(i18n.t('trans.create.confirmPageNav')))
-      : next();
-  },
-  data() {
-    return {
-      step: 1,
-      settingsFormValid: false,
-      disclaimerCheckbox: false,
-      disclaimerRules: [(v) => !!v || i18n.t('trans.create.agreementErrMsg')],
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
-    IDP: () => IdentityProviders,
-    stepper() {
-      return this.step;
-    },
-  },
-  watch: {
-    form() {
-      if (this.form.userType === IdentityMode.LOGIN && this.$refs.settingsForm)
-        this.$refs.settingsForm.validate();
-    },
-  },
-  created() {
-    this.resetForm();
-  },
-  async mounted() {
-    await this.listFCProactiveHelp();
-    this.$nextTick(() => {
-      this.onFormLoad();
-    });
-  },
-  methods: {
-    ...mapActions(useFormStore, ['listFCProactiveHelp', 'resetForm']),
-    reRenderFormDesigner() {
-      this.step = 2;
-      this.onFormLoad();
-    },
-    onFormLoad() {
-      if (this.$refs?.formDesigner) this.$refs.formDesigner.onFormLoad();
-    },
-  },
-};
+const formDesigner = ref(null);
+const settingsForm = ref(null);
+const settingsFormValid = ref(false);
+const step = ref(0);
+const stepper = ref(null);
+const disclaimerCheckbox = ref(false);
+const disclaimerRules = [(v) => !!v || i18n.t('trans.create.agreementErrMsg')];
+
+const formStore = useFormStore();
+
+const { form, isRTL, lang } = storeToRefs(formStore);
+
+watch(form, () => {
+  if (form.userType === IdentityMode.LOGIN && settingsForm.value)
+    settingsForm.value.validate();
+});
+
+onBeforeRouteLeave((_to, _from, next) => {
+  form.value.isDirty
+    ? next(window.confirm(i18n.t('trans.create.confirmPageNav')))
+    : next();
+});
+
+formStore.resetForm();
 </script>
 
 <template>
-  <BaseStepper :step="stepper">
-    <template #setUpForm>
-      <v-form ref="settingsForm" v-model="settingsFormValid">
-        <h1 :lang="lang">
-          {{ $t('trans.create.formSettings') }}
-        </h1>
-        <FormSettings />
+  <v-stepper
+    ref="stepper"
+    :model-value="step"
+    hide-actions
+    alt-labels
+    flat
+    tile
+    :border="false"
+  >
+    <v-stepper-header>
+      <v-stepper-item
+        :title="$t('trans.baseStepper.setUpForm')"
+        value="1"
+        :complete="step == 1"
+      />
+      <v-divider />
+      <v-stepper-item
+        :title="$t('trans.baseStepper.designForm')"
+        value="2"
+        :complete="step > 1"
+      />
+      <v-divider />
+      <v-stepper-item
+        :title="$t('trans.baseStepper.manageForm')"
+        value="3"
+        :complete="step > 2"
+      />
+    </v-stepper-header>
+    <v-stepper-window>
+      <v-stepper-window-item value="1">
+        <v-form ref="settingsForm" v-model="settingsFormValid">
+          <h1 :lang="lang">
+            {{ $t('trans.create.formSettings') }}
+          </h1>
+          <FormSettings />
 
-        <FormProfile />
+          <FormProfile />
 
-        <BasePanel class="my-6">
-          <template #title
-            ><span :lang="lang">{{
-              $t('trans.create.disclaimer')
-            }}</span></template
-          >
-          <FormDisclaimer />
+          <BasePanel class="my-6">
+            <template #title
+              ><span :lang="lang">{{
+                $t('trans.create.disclaimer')
+              }}</span></template
+            >
+            <FormDisclaimer />
 
-          <v-checkbox
-            v-model="disclaimerCheckbox"
-            :rules="disclaimerRules"
-            required="true"
-          >
-            <template #label>
-              <span :class="{ 'mr-2': isRTL }" :lang="lang">{{
-                $t('trans.create.disclaimerStmt')
-              }}</span>
-            </template>
-          </v-checkbox>
-        </BasePanel>
-      </v-form>
-      <v-btn
-        :disabled="!settingsFormValid"
-        color="primary"
-        data-test="continue-btn"
-        @click="reRenderFormDesigner()"
-      >
-        {{ $t('trans.create.continue') }}
-      </v-btn>
-    </template>
-    <template #designForm>
-      <FormDesigner ref="formDesigner" />
-      <v-btn variant="outlined" data-test="back-btn" @click="step = 1">
-        <span :lang="lang">{{ $t('trans.create.back') }}</span>
-      </v-btn>
-    </template>
-  </BaseStepper>
+            <v-checkbox
+              v-model="disclaimerCheckbox"
+              :rules="disclaimerRules"
+              required="true"
+            >
+              <template #label>
+                <span :class="{ 'mr-2': isRTL }" :lang="lang">{{
+                  $t('trans.create.disclaimerStmt')
+                }}</span>
+              </template>
+            </v-checkbox>
+          </BasePanel>
+        </v-form>
+        <v-btn
+          :disabled="!settingsFormValid"
+          color="primary"
+          data-test="continue-btn"
+          @click="stepper.next()"
+        >
+          {{ $t('trans.create.continue') }}
+        </v-btn>
+      </v-stepper-window-item>
+      <v-stepper-window-item value="2">
+        <FormDesigner ref="formDesigner" />
+        <v-btn variant="outlined" data-test="back-btn" @click="stepper.prev()">
+          <span :lang="lang">{{ $t('trans.create.back') }}</span>
+        </v-btn>
+      </v-stepper-window-item>
+    </v-stepper-window>
+  </v-stepper>
 </template>

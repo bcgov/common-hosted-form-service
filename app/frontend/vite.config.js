@@ -1,8 +1,6 @@
 import Vue from '@vitejs/plugin-vue';
 import { resolve } from 'path';
 import { defineConfig, loadEnv } from 'vite';
-import eslintPlugin from 'vite-plugin-eslint';
-import vuetify from 'vite-plugin-vuetify';
 
 const proxyObject = {
   target: 'http://localhost:8080',
@@ -25,7 +23,8 @@ export default defineConfig(({ command, mode }) => {
         '^/app/config': proxyObject,
       },
     },
-    plugins: [Vue(), vuetify(), eslintPlugin()],
+    extends: ['prettier'],
+    plugins: [Vue(), 'prettier'],
     resolve: {
       alias: {
         '~': resolve(__dirname, './src'),

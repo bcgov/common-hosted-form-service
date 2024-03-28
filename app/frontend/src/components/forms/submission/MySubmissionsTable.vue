@@ -399,7 +399,7 @@ export default {
       </template>
       <template #item.actions="{ item }">
         <MySubmissionsActions
-          :submission="item.raw"
+          :submission="item"
           :form-id="formId"
           :is-copy-from-existing-submission-enabled="
             isCopyFromExistingSubmissionEnabled

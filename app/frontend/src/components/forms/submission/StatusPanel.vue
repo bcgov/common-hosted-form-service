@@ -376,14 +376,14 @@ export default {
               >
                 <!-- selected user -->
                 <template #chip="{ props, item }">
-                  <v-chip v-bind="props" :text="item?.raw?.fullName" />
+                  <v-chip v-bind="props" :text="item?.fullName" />
                 </template>
                 <!-- users found in dropdown -->
                 <template #item="{ props, item }">
                   <v-list-item
                     v-bind="props"
-                    :title="`${item?.raw?.fullName} (${item?.raw?.email})`"
-                    :subtitle="`${item?.raw?.username} (${item?.raw?.idpCode})`"
+                    :title="`${item?.fullName} (${item?.email})`"
+                    :subtitle="`${item?.username} (${item?.idpCode})`"
                   >
                   </v-list-item>
                 </template>

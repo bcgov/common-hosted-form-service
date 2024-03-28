@@ -1,22 +1,16 @@
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
 import AdministerUser from '~/components/admin/AdministerUser.vue';
 import { useFormStore } from '~/store/form';
 
-export default {
-  components: {
-    AdministerUser,
+defineProps({
+  u: {
+    type: String,
+    required: true,
   },
-  props: {
-    u: {
-      type: String,
-      required: true,
-    },
-  },
-  computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
-  },
-};
+});
+
+const { isRTL, lang } = storeToRefs(useFormStore());
 </script>
 
 <template>

@@ -53,7 +53,7 @@ const buttons = computed(() => [
             color="primary"
             size="large"
             :data-test="button.type"
-            @click="login(button.type)"
+            @click="authStore.login(button.type)"
           >
             {{ button.label }}
           </v-btn>

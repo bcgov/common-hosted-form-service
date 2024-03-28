@@ -4,9 +4,6 @@ import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 import { fa } from 'vuetify/iconsets/fa';
 import { aliases, mdi } from 'vuetify/iconsets/mdi';
-import { VDataTable, VDataTableServer } from 'vuetify/labs/VDataTable';
-import { VSkeletonLoader } from 'vuetify/labs/VSkeletonLoader';
-import { VStepper } from 'vuetify/labs/VStepper';
 
 global.CSS = { supports: () => false };
 
@@ -48,10 +45,6 @@ const vuetify = createVuetify({
   },
   components: {
     ...components,
-    VDataTable,
-    VDataTableServer,
-    VSkeletonLoader,
-    VStepper,
   },
   directives,
 });

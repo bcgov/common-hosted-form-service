@@ -152,11 +152,11 @@ export default {
         <ul class="mt-5" :class="{ 'dir-rtl': isRTL, 'mr-2': isRTL }">
           <li v-for="note in props.items" :key="note.id">
             <strong>
-              {{ $filters.formatDateLong(note.raw.createdAt) }} -
-              {{ note.raw.createdBy }}
+              {{ $filters.formatDateLong(note.createdAt) }} -
+              {{ note.createdBy }}
             </strong>
             <br />
-            {{ note.raw.note }}
+            {{ note.note }}
           </li>
         </ul>
       </template>

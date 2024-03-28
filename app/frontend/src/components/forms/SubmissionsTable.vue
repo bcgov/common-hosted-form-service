@@ -789,7 +789,7 @@ export default {
               :to="{
                 name: 'FormView',
                 query: {
-                  s: item.raw.submissionId,
+                  s: item.submissionId,
                 },
               }"
             >
@@ -805,7 +805,7 @@ export default {
       </template>
       <template #item.event="{ item }">
         <span>
-          <v-tooltip v-if="!item.raw.deleted" location="bottom">
+          <v-tooltip v-if="!item.deleted" location="bottom">
             <template #activator="{ props }">
               <v-btn
                 color="red"
@@ -814,7 +814,7 @@ export default {
                 v-bind="props"
                 @click="
                   (showDeleteDialog = true),
-                    (deleteItem = item.raw),
+                    (deleteItem = item),
                     (singleSubmissionDelete = true)
                 "
               >
@@ -826,7 +826,7 @@ export default {
             }}</span>
           </v-tooltip>
         </span>
-        <span v-if="item.raw.deleted">
+        <span v-if="item.deleted">
           <v-tooltip location="bottom">
             <template #activator="{ props }">
               <v-btn
@@ -834,7 +834,7 @@ export default {
                 size="x-small"
                 v-bind="props"
                 @click="
-                  restoreItem = item.raw;
+                  restoreItem = item;
                   showRestoreDialog = true;
                   singleSubmissionRestore = true;
                 "

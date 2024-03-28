@@ -131,7 +131,7 @@ export default {
     },
 
     filterObject(_itemTitle, queryText, item) {
-      return Object.values(item.raw)
+      return Object.values(item)
         .filter((v) => v)
         .some((v) =>
           v.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
@@ -288,15 +288,15 @@ export default {
                     />
                   </template>
                   <template #chip="{ props, item }">
-                    <v-chip v-bind="props" :text="item?.raw?.fullName"></v-chip>
+                    <v-chip v-bind="props" :text="item?.fullName"></v-chip>
                   </template>
 
                   <!-- users found in dropdown -->
                   <template #item="{ props, item }">
                     <v-list-item
                       v-bind="props"
-                      :title="`${item?.raw?.fullName} (${item?.raw?.email})`"
-                      :subtitle="`${item?.raw?.username} (${item?.raw?.idpCode})`"
+                      :title="`${item?.fullName} (${item?.email})`"
+                      :subtitle="`${item?.username} (${item?.idpCode})`"
                     >
                     </v-list-item>
                   </template>

@@ -217,10 +217,10 @@ export default {
     },
 
     async toggleRole(user) {
-      await this.setUserForms(user.raw.id, {
-        formId: user.raw.formId,
+      await this.setUserForms(user.id, {
+        formId: user.formId,
         ...user.columns,
-        userId: user.raw.id,
+        userId: user.id,
       });
       this.selectedUsers = [];
     },
@@ -617,7 +617,7 @@ export default {
               :disabled="updating"
               size="24"
               color="red"
-              @click="onRemoveClick(item.raw)"
+              @click="onRemoveClick(item)"
             >
               <v-icon
                 size="16"
