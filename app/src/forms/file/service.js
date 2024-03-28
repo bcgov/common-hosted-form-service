@@ -60,6 +60,30 @@ const service = {
     }
   },
 
+  /**
+   * Move a submission file from the "upload" storage location to the
+   * "submission" location. This is used when a submission is either saved as
+   * draft or submitted, and makes the uploaded files permanent.
+   *
+   * @param {uuidv4} submissionId the id of the submission that holds the file.
+   * @param {FileStorage} fileStorage the file storage object for the file.
+   * @param {string} updatedBy the user who is saving the submission.
+   */
+  moveSubmissionFile: async (submissionId, fileStorage, updatedBy) => {
+    // Move the file from its current directory to the "submissions" subdirectory.
+    const path = await storageService.move(fileStorage, 'submissions', submissionId);
+    if (!path) {
+      throw new Error('Error moving files for submission');
+    }
+
+    await FileStorage.query().patchAndFetchById(fileStorage.id, {
+      formSubmissionId: submissionId,
+      path: path,
+      storage: PERMANENT_STORAGE,
+      updatedBy: updatedBy,
+    });
+  },
+
   moveSubmissionFiles: async (submissionId, currentUser) => {
     let trx;
     try {
