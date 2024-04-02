@@ -1099,6 +1099,7 @@ export default {
               :read-only="readOnly"
               :submission="submission"
               :submission-id="submissionId"
+              :wide-form-layout="form.wideFormLayout"
               class="d-print-none"
               @showdoYouWantToSaveTheDraftModal="
                 showdoYouWantToSaveTheDraftModal

@@ -150,7 +150,8 @@
     "allowEventSubscription": "Permitir assinatura de evento",
     "eventSubscription": "Assinatura de evento",
     "validEndpointRequired": "Insira um endpoint válido começando com https://",
-    "validBearerTokenRequired": "Insira um exemplo de token de portador válido: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+    "validBearerTokenRequired": "Insira um exemplo de token de portador válido: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
+    "wideFormLayout": "Layout de Formulário Amplo"
   },
   "formProfile": {
   "message": "A equipe CHEFS está coletando e organizando informações para servir como entrada crucial para a criação de casos de negócios abrangentes. Esses casos desempenharão um papel fundamental na orientação da operação estratégica e na melhoria contínua do CHEFS nos próximos anos. Essa iniciativa de coleta de dados é essencial para informar decisões críticas e moldar a trajetória do CHEFS, garantindo sua adaptabilidade e eficácia em lidar com necessidades e desafios em evolução.",
@@ -880,7 +881,8 @@
     "saveAsADraft": "Salve como um rascunho",
     "editThisDraft": "Editar este rascunho",
     "switchSingleSubmssn": "Alternar para envio único",
-    "switchMultiSubmssn": "Mudar para vários envios"
+    "switchMultiSubmssn": "Mudar para vários envios",
+    "wideLayout": "Layout Amplo"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Link copiado para a área de transferência",
