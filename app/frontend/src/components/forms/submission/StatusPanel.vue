@@ -308,7 +308,11 @@ export default {
     >
       {{ $t('trans.formSubmission.status') }}
       <v-icon>{{
-        showStatusContent ? 'mdi:mdi-chevron-down' : 'mdi:mdi-chevron-right'
+        showStatusContent
+          ? 'mdi:mdi-chevron-down'
+          : isRTL
+          ? 'mdi:mdi-chevron-left'
+          : 'mdi:mdi-chevron-right'
       }}</v-icon>
     </h2>
     <v-skeleton-loader

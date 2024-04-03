@@ -91,7 +91,11 @@ export default {
         <h2 class="note-heading" :lang="lang">
           {{ $t('trans.notesPanel.notes') }}
           <v-icon>{{
-            showNotesContent ? 'mdi:mdi-chevron-down' : 'mdi:mdi-chevron-right'
+            showNotesContent
+              ? 'mdi:mdi-chevron-down'
+              : isRTL
+              ? 'mdi:mdi-chevron-left'
+              : 'mdi:mdi-chevron-right'
           }}</v-icon>
         </h2>
       </div>
