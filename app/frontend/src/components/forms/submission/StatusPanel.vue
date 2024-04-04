@@ -460,12 +460,12 @@ export default {
           </div>
 
           <v-row class="mt-3">
-            <v-col cols="12" sm="6" xl="4">
+            <v-col>
               <v-dialog v-model="historyDialog" width="1200">
                 <template #activator="{ props }">
                   <v-btn
                     id="btnText"
-                    block
+                    class="wide-button"
                     variant="outlined"
                     color="textLink"
                     v-bind="props"
@@ -473,6 +473,14 @@ export default {
                     <span :lang="lang">{{
                       $t('trans.statusPanel.viewHistory')
                     }}</span>
+                  </v-btn>
+                  <v-btn
+                    class="wide-button"
+                    :disabled="!statusToSet"
+                    color="primary"
+                    @click="updateStatus"
+                  >
+                    <span>{{ statusAction }}</span>
                   </v-btn>
                 </template>
 
@@ -505,17 +513,6 @@ export default {
                 </v-card>
               </v-dialog>
             </v-col>
-
-            <v-col cols="12" sm="6" xl="4" order="first" order-sm="last">
-              <v-btn
-                block
-                :disabled="!statusToSet"
-                color="primary"
-                @click="updateStatus"
-              >
-                <span>{{ statusAction }}</span>
-              </v-btn>
-            </v-col>
           </v-row>
         </v-form>
       </div>
@@ -536,4 +533,20 @@ export default {
     transition: transform 0.3s ease;
   }
 }
+
+.wide-button {
+  width: 200px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.wide-button:last-child {
+  margin-right: 0;
+}
+/* Uncomment this to widen buttons for small screens */
+/* @media (max-width: 599px) {
+  .wide-button {
+    width: 100%;
+  }
+} */
 </style>

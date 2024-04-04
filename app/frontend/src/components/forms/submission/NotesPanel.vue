@@ -99,16 +99,22 @@ export default {
           }}</v-icon>
         </h2>
       </div>
-      <div v-if="showNotesContent" :class="{ 'text-left': isRTL }">
+
+      <div :class="[{ 'text-left': isRTL }, 'd-flex', 'align-items-center']">
+        <!-- Text for number of notes -->
+        <span class="notes-text" :lang="lang">
+          Total Notes: {{ notes.length }}
+        </span>
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <v-btn
-              class="mx-1"
+              class="notes-button"
               color="primary"
               icon
               size="x-small"
               v-bind="props"
               @click.stop="showNoteField = true"
+              @click="showNotesContent = true"
             >
               <v-icon icon="mdi:mdi-plus"></v-icon>
             </v-btn>
@@ -134,19 +140,17 @@ export default {
           :lang="lang"
         />
         <v-row>
-          <v-col cols="12" sm="6" xl="4">
+          <v-col>
             <v-btn
-              block
+              class="wide-button"
               color="primary"
               variant="outlined"
               @click="showNoteField = false"
             >
               <span :lang="lang">{{ $t('trans.notesPanel.cancel') }}</span>
             </v-btn>
-          </v-col>
-          <v-col cols="12" sm="6" xl="4" order="first" order-sm="last">
             <v-btn
-              block
+              class="wide-button"
               color="primary"
               data-test="btn-add-note"
               :disabled="!newNote"
@@ -190,5 +194,28 @@ export default {
   .v-icon {
     transition: transform 0.3s ease;
   }
+}
+
+.notes-text {
+  color: #003366;
+  margin-right: 15px;
+  margin-left: 15px;
+  font-size: larger;
+  font-weight: bold;
+}
+
+.notes-button {
+  margin-right: 1px;
+  margin-left: 1px;
+}
+
+.wide-button {
+  width: 200px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.wide-button:last-child {
+  margin-right: 0;
 }
 </style>
