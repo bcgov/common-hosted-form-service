@@ -197,7 +197,6 @@ export default {
 }
 
 .notes-text {
-  color: #003366;
   margin-right: 15px;
   margin-left: 15px;
   font-size: larger;

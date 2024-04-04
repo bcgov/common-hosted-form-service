@@ -300,38 +300,42 @@ export default {
 
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
-    <h2
-      class="status-heading"
-      :class="{ 'dir-rtl': isRTL }"
-      :lang="lang"
-      @click="showStatusContent = !showStatusContent"
-    >
-      {{ $t('trans.formSubmission.status') }}
-      <v-icon>{{
-        showStatusContent
-          ? 'mdi:mdi-chevron-down'
-          : isRTL
-          ? 'mdi:mdi-chevron-left'
-          : 'mdi:mdi-chevron-right'
-      }}</v-icon>
-    </h2>
+    <div class="flex-container">
+      <h2
+        class="status-heading"
+        :class="{ 'dir-rtl': isRTL }"
+        :lang="lang"
+        @click="showStatusContent = !showStatusContent"
+      >
+        {{ $t('trans.formSubmission.status') }}
+        <v-icon>{{
+          showStatusContent
+            ? 'mdi:mdi-chevron-down'
+            : isRTL
+            ? 'mdi:mdi-chevron-left'
+            : 'mdi:mdi-chevron-right'
+        }}</v-icon>
+      </h2>
+      <p :lang="lang">
+        <span :class="isRTL ? 'status-details-rtl' : 'status-details'">
+          <strong>{{ $t('trans.statusPanel.currentStatus') }}</strong>
+          {{ currentStatus.code }}
+        </span>
+        <span :class="isRTL ? 'status-details-rtl' : 'status-details'">
+          <strong>{{ $t('trans.statusPanel.assignedTo') }}</strong>
+          {{ currentStatus.user ? currentStatus.user.fullName : 'N/A' }}
+          <span v-if="currentStatus.user"
+            >({{ currentStatus.user.email }})</span
+          >
+        </span>
+      </p>
+    </div>
     <v-skeleton-loader
       :loading="loading"
       type="list-item-two-line"
       class="bgtrans"
     >
       <div v-if="showStatusContent" class="d-flex flex-column flex-1-1-100">
-        <p :lang="lang">
-          <strong>{{ $t('trans.statusPanel.currentStatus') }}</strong>
-          {{ currentStatus.code }}
-          <br />
-          <strong>{{ $t('trans.statusPanel.assignedTo') }}</strong>
-          {{ currentStatus.user ? currentStatus.user.fullName : 'N/A' }}
-          <span v-if="currentStatus.user"
-            >({{ currentStatus.user.email }})</span
-          >
-        </p>
-
         <v-form
           ref="statusPanelForm"
           v-model="valid"
@@ -543,10 +547,26 @@ export default {
 .wide-button:last-child {
   margin-right: 0;
 }
+
 /* Uncomment this to widen buttons for small screens */
 /* @media (max-width: 599px) {
   .wide-button {
     width: 100%;
   }
 } */
+
+.flex-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.status-details-rtl {
+  margin-right: 15px;
+}
+
+.status-details {
+  margin-left: 15px;
+}
 </style>
