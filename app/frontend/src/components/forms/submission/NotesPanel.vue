@@ -123,11 +123,8 @@ export default {
         </v-tooltip>
       </div>
     </div>
-    <div v-if="showNotesContent">
+    <div v-if="showNotesContent" class="mt-4">
       <v-form v-if="showNoteField">
-        <div class="mb-2" :class="{ 'dir-rtl': isRTL }" :lang="lang">
-          {{ $t('trans.notesPanel.note') }}
-        </div>
         <v-textarea
           v-model="newNote"
           :class="{ 'dir-rtl': isRTL }"

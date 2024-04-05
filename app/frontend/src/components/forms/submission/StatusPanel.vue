@@ -300,13 +300,8 @@ export default {
 
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
-    <div class="flex-container">
-      <h2
-        class="status-heading"
-        :class="{ 'dir-rtl': isRTL }"
-        :lang="lang"
-        @click="showStatusContent = !showStatusContent"
-      >
+    <div class="flex-container" @click="showStatusContent = !showStatusContent">
+      <h2 class="status-heading" :class="{ 'dir-rtl': isRTL }" :lang="lang">
         {{ $t('trans.formSubmission.status') }}
         <v-icon>{{
           showStatusContent
@@ -316,7 +311,8 @@ export default {
             : 'mdi:mdi-chevron-right'
         }}</v-icon>
       </h2>
-      <p :lang="lang">
+      <!-- Show <p> here for screens greater than 959px  -->
+      <p class="hide-on-narrow" :lang="lang">
         <span :class="isRTL ? 'status-details-rtl' : 'status-details'">
           <strong>{{ $t('trans.statusPanel.currentStatus') }}</strong>
           {{ currentStatus.code }}
@@ -336,6 +332,17 @@ export default {
       class="bgtrans"
     >
       <div v-if="showStatusContent" class="d-flex flex-column flex-1-1-100">
+        <!-- Show <p> here for screens less than 960px  -->
+        <p class="hide-on-wide" :lang="lang">
+          <strong>{{ $t('trans.statusPanel.currentStatus') }}</strong>
+          {{ currentStatus.code }}
+          <br />
+          <strong>{{ $t('trans.statusPanel.assignedTo') }}</strong>
+          {{ currentStatus.user ? currentStatus.user.fullName : 'N/A' }}
+          <span v-if="currentStatus.user"
+            >({{ currentStatus.user.email }})</span
+          >
+        </p>
         <v-form
           ref="statusPanelForm"
           v-model="valid"
@@ -535,6 +542,27 @@ export default {
   margin-bottom: 0;
   .v-icon {
     transition: transform 0.3s ease;
+  }
+}
+
+/* Removing margin to center content */
+/* p {
+  margin: 0;
+} */
+
+.hide-on-narrow {
+  margin: 0;
+}
+
+@media (max-width: 959px) {
+  .hide-on-narrow {
+    display: none;
+  }
+}
+
+@media (min-width: 960px) {
+  .hide-on-wide {
+    display: none;
   }
 }
 
