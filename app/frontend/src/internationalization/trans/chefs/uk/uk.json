@@ -584,7 +584,8 @@
     "fetchConsoleErrMsg": "Помилка додавання примітки:",
     "notes": "Примітки",
     "note": "Примітка",
-    "maxChars": "Макс. 4000 символів"
+    "maxChars": "Макс. 4000 символів",
+    "totalNotes": "Загальні нотатки:"
   },
   "statusPanel": {
     "currentStatus": "Поточний стан:",

@@ -103,7 +103,8 @@ export default {
       <div :class="[{ 'text-left': isRTL }, 'd-flex', 'align-items-center']">
         <!-- Text for number of notes -->
         <span class="notes-text" :lang="lang">
-          Total Notes: {{ notes.length }}
+          <strong>{{ $t('trans.notesPanel.totalNotes') }}</strong>
+          {{ notes.length }}
         </span>
         <v-tooltip location="bottom">
           <template #activator="{ props }">
@@ -196,8 +197,6 @@ export default {
 .notes-text {
   margin-right: 15px;
   margin-left: 15px;
-  font-size: larger;
-  font-weight: bold;
 }
 
 .notes-button {

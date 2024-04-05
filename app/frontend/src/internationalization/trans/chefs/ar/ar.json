@@ -585,7 +585,8 @@
     "fetchConsoleErrMsg": "خطأ في إضافة الملاحظة:",
     "notes": "ملحوظات",
     "note": "ملحوظة",
-    "maxChars": "4000 حرف كحد أقصى"
+    "maxChars": "4000 حرف كحد أقصى",
+    "totalNotes": "مجموع الملاحظات:"
   },
   "statusPanel": {
     "currentStatus": "الحالة الحالية:",

@@ -585,7 +585,9 @@
     "fetchConsoleErrMsg": "Fehler beim Hinzufügen der Notiz:",
     "notes": "Anmerkungen",
     "note": "Notiz",
-    "maxChars": "Maximal 4000 Zeichen"
+    "maxChars": "Maximal 4000 Zeichen",
+    "totalNotes": "Gesamtanzahl Notizen:"
+
   },
   "statusPanel": {
     "currentStatus": "Aktueller Status:",

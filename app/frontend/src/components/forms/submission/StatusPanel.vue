@@ -545,11 +545,6 @@ export default {
   }
 }
 
-/* Removing margin to center content */
-/* p {
-  margin: 0;
-} */
-
 .hide-on-narrow {
   margin: 0;
 }

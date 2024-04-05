@@ -585,7 +585,8 @@
     "fetchConsoleErrMsg": "添加註釋時出錯：",
     "notes": "筆記",
     "note": "筆記",
-    "maxChars": "最多 4000 個字符"
+    "maxChars": "最多 4000 個字符",
+    "totalNotes": "總筆記:"
   },
   "statusPanel": {
     "currentStatus": "當前狀態：",
