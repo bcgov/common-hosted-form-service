@@ -11,6 +11,7 @@ const controller = require('./controller');
 
 routes.use(currentUser);
 
+routes.param('documentTemplateId', validateParameter.validateDocumentTemplateId);
 routes.param('formId', validateParameter.validateFormId);
 routes.param('formVersionDraftId', validateParameter.validateFormVersionDraftId);
 routes.param('formVersionId', validateParameter.validateFormVersionId);
@@ -25,6 +26,22 @@ routes.post('/', async (req, res, next) => {
 
 routes.get('/:formId', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.readForm(req, res, next);
+});
+
+routes.get('/:formId/documentTemplates', rateLimiter, apiAccess, hasFormPermissions([P.DOCUMENT_TEMPLATE_READ]), async (req, res, next) => {
+  await controller.documentTemplateList(req, res, next);
+});
+
+routes.post('/:formId/documentTemplates', rateLimiter, apiAccess, hasFormPermissions([P.DOCUMENT_TEMPLATE_CREATE]), async (req, res, next) => {
+  await controller.documentTemplateCreate(req, res, next);
+});
+
+routes.delete('/:formId/documentTemplates/:documentTemplateId', rateLimiter, apiAccess, hasFormPermissions([P.DOCUMENT_TEMPLATE_DELETE]), async (req, res, next) => {
+  await controller.documentTemplateDelete(req, res, next);
+});
+
+routes.get('/:formId/documentTemplates/:documentTemplateId', rateLimiter, apiAccess, hasFormPermissions([P.DOCUMENT_TEMPLATE_READ]), async (req, res, next) => {
+  await controller.documentTemplateRead(req, res, next);
 });
 
 routes.get('/:formId/export', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.SUBMISSION_READ]), async (req, res, next) => {
