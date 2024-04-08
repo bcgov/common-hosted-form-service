@@ -5,19 +5,35 @@ const { v4: uuidv4 } = require('uuid');
 const { EmailTypes } = require('../../../../src/forms/common/constants');
 const service = require('../../../../src/forms/form/service');
 
+jest.mock('../../../../src/forms/common/models/tables/documentTemplate', () => MockModel);
 jest.mock('../../../../src/forms/common/models/tables/formEmailTemplate', () => MockModel);
 jest.mock('../../../../src/forms/common/models/views/submissionMetadata', () => MockModel);
 
+const documentTemplateId = uuidv4();
+const formId = uuidv4();
+
+const currentUser = {
+  usernameIdp: 'TESTER',
+};
+
+const documentTemplate = {
+  filename: 'cdogs_template.txt',
+  formId: formId,
+  id: documentTemplateId,
+  template: 'My Template',
+};
+
 const emailTemplateSubmissionConfirmation = {
   body: 'default submission confirmation body',
-  formId: uuidv4(),
+  formId: formId,
   subject: 'default submission confirmation subject',
   title: 'default submission confirmation title',
   type: EmailTypes.SUBMISSION_CONFIRMATION,
 };
+
 const emailTemplate = {
   body: 'body',
-  formId: uuidv4(),
+  formId: formId,
   subject: 'subject',
   title: 'title',
   type: EmailTypes.SUBMISSION_CONFIRMATION,
@@ -30,6 +46,157 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.restoreAllMocks();
+});
+
+describe('Document Templates', () => {
+  describe('documentTemplateCreate', () => {
+    // Need to temporarily replace calls to other functions within the module -
+    // they will be tested elsewhere.
+    beforeEach(() => {
+      jest.spyOn(service, 'documentTemplateRead').mockImplementation(() => documentTemplate);
+    });
+
+    it('should not roll back transaction create problems', async () => {
+      const error = new Error('error');
+      MockModel.startTransaction.mockImplementationOnce(() => {
+        throw error;
+      });
+
+      await expect(service.documentTemplateCreate(formId, documentTemplate, currentUser)).rejects.toThrow(error);
+
+      expect(MockTransaction.commit).toBeCalledTimes(0);
+      expect(MockTransaction.rollback).toBeCalledTimes(0);
+    });
+
+    it('should propagate database errors', async () => {
+      const error = new Error('error');
+      MockModel.insert.mockImplementationOnce(() => {
+        throw error;
+      });
+
+      await expect(service.documentTemplateCreate(formId, documentTemplate, currentUser)).rejects.toThrow(error);
+
+      expect(MockTransaction.commit).toBeCalledTimes(0);
+      expect(MockTransaction.rollback).toBeCalledTimes(1);
+    });
+
+    it('should update database', async () => {
+      MockModel.mockResolvedValue(documentTemplate);
+      const newDocumentTemplate = { ...documentTemplate };
+      delete newDocumentTemplate.id;
+
+      await service.documentTemplateCreate(formId, newDocumentTemplate, currentUser.usernameIdp);
+
+      expect(MockModel.query).toBeCalledTimes(1);
+      expect(MockModel.query).toBeCalledWith(MockTransaction);
+      expect(MockModel.insert).toBeCalledTimes(1);
+      expect(MockModel.insert).toBeCalledWith(
+        expect.objectContaining({
+          ...newDocumentTemplate,
+          createdBy: currentUser.usernameIdp,
+        })
+      );
+      expect(MockTransaction.commit).toBeCalledTimes(1);
+      expect(MockTransaction.rollback).toBeCalledTimes(0);
+    });
+  });
+
+  describe('documentTemplateDelete', () => {
+    it('should not roll back transaction create problems', async () => {
+      const error = new Error('error');
+      MockModel.startTransaction.mockImplementationOnce(() => {
+        throw error;
+      });
+
+      await expect(service.documentTemplateDelete(formId, documentTemplate, currentUser)).rejects.toThrow(error);
+
+      expect(MockTransaction.commit).toBeCalledTimes(0);
+      expect(MockTransaction.rollback).toBeCalledTimes(0);
+    });
+
+    it('should propagate database errors', async () => {
+      const error = new Error('error');
+      MockModel.patchAndFetchById.mockImplementationOnce(() => {
+        throw error;
+      });
+
+      await expect(service.documentTemplateDelete(documentTemplateId, currentUser.usernameIdp)).rejects.toThrow(error);
+
+      expect(MockTransaction.commit).toBeCalledTimes(0);
+      expect(MockTransaction.rollback).toBeCalledTimes(1);
+    });
+
+    it('should update database', async () => {
+      MockModel.mockResolvedValue(documentTemplate);
+
+      await service.documentTemplateDelete(documentTemplateId, currentUser.usernameIdp);
+
+      expect(MockModel.query).toBeCalledTimes(1);
+      expect(MockModel.query).toBeCalledWith(MockTransaction);
+      expect(MockModel.patchAndFetchById).toBeCalledTimes(1);
+      expect(MockModel.patchAndFetchById).toBeCalledWith(
+        documentTemplateId,
+        expect.objectContaining({
+          active: false,
+          updatedBy: currentUser.usernameIdp,
+        })
+      );
+      expect(MockTransaction.commit).toBeCalledTimes(1);
+      expect(MockTransaction.rollback).toBeCalledTimes(0);
+    });
+  });
+
+  describe('documentTemplateList', () => {
+    it('should propagate database errors', async () => {
+      const error = new Error('error');
+      MockModel.query.mockImplementationOnce(() => {
+        throw error;
+      });
+
+      expect(service.documentTemplateList).toThrow(error);
+    });
+
+    it('should query database', async () => {
+      MockModel.mockResolvedValue([documentTemplate]);
+
+      const result = await service.documentTemplateList(formId);
+
+      expect(result).toEqual([documentTemplate]);
+
+      expect(MockModel.query).toBeCalledTimes(1);
+      expect(MockModel.query).toBeCalledWith();
+      expect(MockModel.modify).toBeCalledTimes(2);
+      expect(MockModel.modify).toBeCalledWith('filterActive', true);
+      expect(MockModel.modify).toBeCalledWith('filterFormId', formId);
+    });
+  });
+
+  describe('documentTemplateRead', () => {
+    it('should propagate database errors', async () => {
+      const error = new Error('error');
+      MockModel.query.mockImplementationOnce(() => {
+        throw error;
+      });
+
+      expect(service.documentTemplateRead).toThrow(error);
+    });
+
+    it('should query database', async () => {
+      MockModel.mockResolvedValue(documentTemplate);
+
+      const result = await service.documentTemplateRead(documentTemplateId);
+
+      expect(result).toEqual(documentTemplate);
+
+      expect(MockModel.query).toBeCalledTimes(1);
+      expect(MockModel.query).toBeCalledWith();
+      expect(MockModel.findById).toBeCalledTimes(1);
+      expect(MockModel.findById).toBeCalledWith(documentTemplateId);
+      expect(MockModel.modify).toBeCalledTimes(1);
+      expect(MockModel.modify).toBeCalledWith('filterActive', true);
+      expect(MockModel.throwIfNotFound).toBeCalledTimes(1);
+    });
+  });
 });
 
 describe('_findFileIds', () => {
@@ -400,14 +567,8 @@ describe('readVersionFields', () => {
 describe('processPaginationData', () => {
   const SubmissionData = require('../../../fixtures/submission/kitchen_sink_submission_pagination.json');
 
-  // Put the MockModel.query back to what it was, so that the tests that follow
-  // can run.
-  afterAll(() => {
-    MockModel.query = jest.fn().mockReturnThis();
-  });
-
   it('fetch first-page data with 10 items per page', async () => {
-    MockModel.query.mockImplementation((data) => {
+    MockModel.query.mockImplementationOnce((data) => {
       return {
         page: function (page, itemsPerPage) {
           let start = page * itemsPerPage;
@@ -422,7 +583,7 @@ describe('processPaginationData', () => {
     expect(result.total).toEqual(SubmissionData.length);
   });
   it('fetch first-page data with 5 items per page', async () => {
-    MockModel.query.mockImplementation((data) => {
+    MockModel.query.mockImplementationOnce((data) => {
       return {
         page: function (page, itemsPerPage) {
           let start = page * itemsPerPage;
@@ -437,7 +598,7 @@ describe('processPaginationData', () => {
     expect(result.total).toEqual(SubmissionData.length);
   });
   it('fetch second-page data with 5 items per page', async () => {
-    MockModel.query.mockImplementation((data) => {
+    MockModel.query.mockImplementationOnce((data) => {
       return {
         page: function (page, itemsPerPage) {
           let start = page * itemsPerPage;
@@ -452,23 +613,23 @@ describe('processPaginationData', () => {
     expect(result.total).toEqual(SubmissionData.length);
   });
   it('search submission data with pagination base on datetime', async () => {
-    MockModel.query.mockImplementation((data) => data);
+    MockModel.query.mockImplementationOnce((data) => data);
     let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 5, 0, '2023-08-19T19:11', true);
     expect(result.results).toHaveLength(3);
     expect(result.total).toEqual(3);
   });
   it('search submission data with pagination base on any value (first page)', async () => {
-    MockModel.query.mockImplementation((data) => data);
+    MockModel.query.mockImplementationOnce((data) => data);
     let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 5, 0, 'a', true);
     expect(result.results).toHaveLength(5);
   });
   it('search submission data with pagination base on any value (second page)', async () => {
-    MockModel.query.mockImplementation((data) => data);
+    MockModel.query.mockImplementationOnce((data) => data);
     let result = await service.processPaginationData(MockModel.query(SubmissionData), 1, 5, 0, 'a', true);
     expect(result.results).toHaveLength(5);
   });
   it('search submission data with pagination base on any value (test for case)', async () => {
-    MockModel.query.mockImplementation((data) => data);
+    MockModel.query.mockImplementationOnce((data) => data);
     let result = await service.processPaginationData(MockModel.query(SubmissionData), 0, 10, 0, 'A', true);
     expect(result.results).toHaveLength(10);
   });
