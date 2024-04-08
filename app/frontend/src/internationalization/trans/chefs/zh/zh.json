@@ -585,7 +585,8 @@
     "fetchConsoleErrMsg": "添加注释时出错：",
     "notes": "笔记",
     "note": "笔记",
-    "maxChars": "最多 4000 个字符"
+    "maxChars": "最多 4000 个字符",
+    "totalNotes": "总笔记:"
   },
   "statusPanel": {
     "currentStatus": "当前状态：",

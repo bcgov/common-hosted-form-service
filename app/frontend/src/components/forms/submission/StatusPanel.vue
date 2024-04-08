@@ -41,6 +41,7 @@ export default {
       statusToSet: '',
       valid: false,
       showSendConfirmEmail: false,
+      showStatusContent: false,
     };
   },
   computed: {
@@ -299,13 +300,40 @@ export default {
 
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
+    <div class="flex-container" @click="showStatusContent = !showStatusContent">
+      <h2 class="status-heading" :class="{ 'dir-rtl': isRTL }" :lang="lang">
+        {{ $t('trans.formSubmission.status') }}
+        <v-icon>{{
+          showStatusContent
+            ? 'mdi:mdi-chevron-down'
+            : isRTL
+            ? 'mdi:mdi-chevron-left'
+            : 'mdi:mdi-chevron-right'
+        }}</v-icon>
+      </h2>
+      <!-- Show <p> here for screens greater than 959px  -->
+      <p class="hide-on-narrow" :lang="lang">
+        <span :class="isRTL ? 'status-details-rtl' : 'status-details'">
+          <strong>{{ $t('trans.statusPanel.currentStatus') }}</strong>
+          {{ currentStatus.code }}
+        </span>
+        <span :class="isRTL ? 'status-details-rtl' : 'status-details'">
+          <strong>{{ $t('trans.statusPanel.assignedTo') }}</strong>
+          {{ currentStatus.user ? currentStatus.user.fullName : 'N/A' }}
+          <span v-if="currentStatus.user"
+            >({{ currentStatus.user.email }})</span
+          >
+        </span>
+      </p>
+    </div>
     <v-skeleton-loader
       :loading="loading"
       type="list-item-two-line"
       class="bgtrans"
     >
-      <div class="d-flex flex-column flex-1-1-100">
-        <p :lang="lang">
+      <div v-if="showStatusContent" class="d-flex flex-column flex-1-1-100">
+        <!-- Show <p> here for screens less than 960px  -->
+        <p class="hide-on-wide" :lang="lang">
           <strong>{{ $t('trans.statusPanel.currentStatus') }}</strong>
           {{ currentStatus.code }}
           <br />
@@ -315,7 +343,6 @@ export default {
             >({{ currentStatus.user.email }})</span
           >
         </p>
-
         <v-form
           ref="statusPanelForm"
           v-model="valid"
@@ -444,12 +471,12 @@ export default {
           </div>
 
           <v-row class="mt-3">
-            <v-col cols="12" sm="6" xl="4">
+            <v-col>
               <v-dialog v-model="historyDialog" width="1200">
                 <template #activator="{ props }">
                   <v-btn
                     id="btnText"
-                    block
+                    class="wide-button"
                     variant="outlined"
                     color="textLink"
                     v-bind="props"
@@ -457,6 +484,14 @@ export default {
                     <span :lang="lang">{{
                       $t('trans.statusPanel.viewHistory')
                     }}</span>
+                  </v-btn>
+                  <v-btn
+                    class="wide-button"
+                    :disabled="!statusToSet"
+                    color="primary"
+                    @click="updateStatus"
+                  >
+                    <span>{{ statusAction }}</span>
                   </v-btn>
                 </template>
 
@@ -489,17 +524,6 @@ export default {
                 </v-card>
               </v-dialog>
             </v-col>
-
-            <v-col cols="12" sm="6" xl="4" order="first" order-sm="last">
-              <v-btn
-                block
-                :disabled="!statusToSet"
-                color="primary"
-                @click="updateStatus"
-              >
-                <span>{{ statusAction }}</span>
-              </v-btn>
-            </v-col>
           </v-row>
         </v-form>
       </div>
@@ -511,5 +535,61 @@ export default {
 .v-btn__content {
   width: 100%;
   white-space: normal;
+}
+
+.status-heading {
+  color: #003366;
+  margin-bottom: 0;
+  .v-icon {
+    transition: transform 0.3s ease;
+  }
+}
+
+.hide-on-narrow {
+  margin: 0;
+}
+
+@media (max-width: 959px) {
+  .hide-on-narrow {
+    display: none;
+  }
+}
+
+@media (min-width: 960px) {
+  .hide-on-wide {
+    display: none;
+  }
+}
+
+.wide-button {
+  width: 200px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.wide-button:last-child {
+  margin-right: 0;
+}
+
+/* Uncomment this to widen buttons for small screens */
+/* @media (max-width: 599px) {
+  .wide-button {
+    width: 100%;
+  }
+} */
+
+.flex-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.status-details-rtl {
+  margin-right: 15px;
+}
+
+.status-details {
+  margin-left: 15px;
 }
 </style>

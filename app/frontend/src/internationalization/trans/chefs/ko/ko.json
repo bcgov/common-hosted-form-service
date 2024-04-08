@@ -585,7 +585,8 @@
     "fetchConsoleErrMsg": "메모 추가 오류:",
     "notes": "노트",
     "note": "메모",
-    "maxChars": "최대 4000자"
+    "maxChars": "최대 4000자",
+    "totalNotes": "총 노트:"
   },
   "statusPanel": {
     "currentStatus": "현재 상태:",

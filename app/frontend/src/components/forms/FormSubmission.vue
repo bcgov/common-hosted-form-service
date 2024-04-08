@@ -185,9 +185,6 @@ export default {
           class="review-form"
           :disabled="!submissionReadOnly"
         >
-          <h2 class="review-heading" :class="{ 'dir-rtl': isRTL }" :lang="lang">
-            {{ $t('trans.formSubmission.status') }}
-          </h2>
           <StatusPanel
             :submission-id="submissionId"
             :form-id="form.id"

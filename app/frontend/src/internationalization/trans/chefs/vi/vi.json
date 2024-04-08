@@ -585,7 +585,8 @@
     "fetchConsoleErrMsg": "Lỗi khi thêm ghi chú:",
     "notes": "ghi chú",
     "note": "Ghi chú",
-    "maxChars": "Tối đa 4000 ký tự"
+    "maxChars": "Tối đa 4000 ký tự",
+    "totalNotes": "Tổng Số Ghi Chú:"
   },
   "statusPanel": {
     "currentStatus": "Tình trạng hiện tại:",

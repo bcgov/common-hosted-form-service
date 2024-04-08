@@ -585,7 +585,8 @@
     "fetchConsoleErrMsg": "Erreur lors de l'ajout de la note :",
     "notes": "Remarques",
     "note": "Note",
-    "maxChars": "4000 caractères maximum"
+    "maxChars": "4000 caractères maximum",
+    "totalNotes": "Notes Totales:"
   },
   "statusPanel": {
     "currentStatus": "Statut actuel:",
