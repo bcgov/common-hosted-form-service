@@ -585,7 +585,8 @@
     "fetchConsoleErrMsg": "ਨੋਟ ਜੋੜਨ ਵਿੱਚ ਤਰੁੱਟੀ:",
     "notes": "ਨੋਟਸ",
     "note": "ਨੋਟ ਕਰੋ",
-    "maxChars": "ਅਧਿਕਤਮ 4000 ਅੱਖਰ"
+    "maxChars": "ਅਧਿਕਤਮ 4000 ਅੱਖਰ",
+    "totalNotes": "ਕੁੱਲ ਨੋਟਸ:"
   },
   "statusPanel": {
     "currentStatus": "ਮੌਜੂਦਾ ਸਥਿਤੀ:",

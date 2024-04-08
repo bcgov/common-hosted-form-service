@@ -585,7 +585,8 @@
     "fetchConsoleErrMsg": "注記の追加中にエラーが発生しました:",
     "notes": "ノート",
     "note": "ノート",
-    "maxChars": "最大4000文字"
+    "maxChars": "最大4000文字",
+    "totalNotes": "合計ノート:"
   },
   "statusPanel": {
     "currentStatus": "現在のステータス：",

@@ -585,7 +585,8 @@
     "fetchConsoleErrMsg": "خطا در افزودن یادداشت:",
     "notes": "یادداشت",
     "note": "توجه داشته باشید",
-    "maxChars": "حداکثر 4000 کاراکتر"
+    "maxChars": "حداکثر 4000 کاراکتر",
+    "totalNotes": "کل یادداشت‌ها:"
   },
   "statusPanel": {
     "currentStatus": "وضعیت فعلی:",

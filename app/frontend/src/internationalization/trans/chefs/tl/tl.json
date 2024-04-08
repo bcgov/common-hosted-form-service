@@ -585,7 +585,8 @@
     "fetchConsoleErrMsg": "Error sa pagdaragdag ng tala:",
     "notes": "Mga Tala",
     "note": "Tandaan",
-    "maxChars": "Max na 4000 character"
+    "maxChars": "Max na 4000 character",
+    "totalNotes": "Kabuuang Mga Tala:"
   },
   "statusPanel": {
     "currentStatus": "Kasalukuyang kalagayan:",

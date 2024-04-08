@@ -585,7 +585,8 @@
     "fetchConsoleErrMsg": "नोट जोड़ने में त्रुटि:",
     "notes": "टिप्पणियाँ",
     "note": "टिप्पणी",
-    "maxChars": "अधिकतम 4000 अक्षर"
+    "maxChars": "अधिकतम 4000 अक्षर",
+    "totalNotes": "कुल नोट्स:"
   },
   "statusPanel": {
     "currentStatus": "वर्तमान स्थिति:",

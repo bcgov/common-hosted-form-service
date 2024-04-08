@@ -585,7 +585,8 @@
     "fetchConsoleErrMsg": "Erro ao adicionar nota:",
     "notes": "Notas",
     "note": "Observação",
-    "maxChars": "Máximo de 4.000 caracteres"
+    "maxChars": "Máximo de 4.000 caracteres",
+    "totalNotes": "Notas Totais:"
   },
   "statusPanel": {
     "currentStatus": "Status atual:",
