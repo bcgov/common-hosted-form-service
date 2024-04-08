@@ -44,10 +44,10 @@ const data = {
 // Helper Functions
 //
 function helperTwoColumn() {
-  //cy.contains('span', 'Layout & Static Content').click();
-  cy.get('[href="#2Column"]').click();
   cy.contains('span', 'Layout & Static Content').click();
-  cy.get('[href="#2Column"]').click();
+  //cy.get('[href="#2Column"]').click();
+  cy.contains('span', 'Layout & Static Content').click();
+  //cy.get('[href="#2Column"]').click();
 
   // textFieldNested1
   
