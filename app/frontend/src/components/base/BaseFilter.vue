@@ -88,9 +88,6 @@ onMounted(() => {
       <slot name="filter-subtitle"></slot>
     </v-card-subtitle>
     <v-card-text class="mt-0 pt-0">
-      {{ properties.preselectedData }}
-      <hr class="hr" />
-      {{ properties.resetData }}
       <hr class="hr" />
 
       <div class="d-flex flex-row" style="gap: 10px">
