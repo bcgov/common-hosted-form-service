@@ -1,81 +1,82 @@
-<script>
+<script setup>
 import { i18n } from '~/internationalization';
-import { mapState } from 'pinia';
+import { storeToRefs } from 'pinia';
 
 import { useFormStore } from '~/store/form';
+import { ref } from 'vue';
+import { onMounted } from 'vue';
 
-export default {
-  props: {
-    inputHeaders: {
-      type: Array,
-      default: () => [
-        {
-          title: i18n.t('trans.baseFilter.columnName'),
-          align: 'start',
-          sortable: true,
-          key: 'title',
-        },
-      ],
-    },
-    // The data you will be filtering with
-    inputData: {
-      type: Array,
-      default: () => [
-        { title: i18n.t('trans.baseFilter.exampleText'), key: 'exampleText1' },
-        { title: i18n.t('trans.baseFilter.exampleText2'), key: 'exampleText2' },
-      ],
-    },
-    resetData: {
-      type: Array,
-      default: () => [],
-    },
-    // The default selected data
-    preselectedData: {
-      type: Array,
-      default: () => [],
-    },
-    inputItemKey: {
-      type: String,
-      default: 'key',
-    },
-    inputFilterLabel: {
-      type: String,
-      default: '',
-    },
-    inputFilterPlaceholder: {
-      type: String,
-      default: i18n.t('trans.baseFilter.exampleText2'),
-    },
-    inputSaveButtonText: {
-      type: String,
-      default: i18n.t('trans.baseFilter.filter'),
-    },
+const props = defineProps({
+  inputHeaders: {
+    type: Array,
+    default: () => [
+      {
+        title: i18n.t('trans.baseFilter.columnName'),
+        align: 'start',
+        sortable: true,
+        key: 'title',
+      },
+    ],
   },
-  emits: ['saving-filter-data', 'cancel-filter-data'],
-  data() {
-    return {
-      selectedData: this.preselectedData,
-      inputFilter: '',
-    };
+  // The data you will be filtering with
+  inputData: {
+    type: Array,
+    default: () => [
+      { title: i18n.t('trans.baseFilter.exampleText'), key: 'exampleText1' },
+      { title: i18n.t('trans.baseFilter.exampleText2'), key: 'exampleText2' },
+    ],
   },
-  computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
+  resetData: {
+    type: Array,
+    default: () => [],
   },
-  methods: {
-    savingFilterData() {
-      this.inputFilter = '';
-      this.$emit('saving-filter-data', this.selectedData);
-    },
-    onResetColumns() {
-      this.selectedData = this.resetData;
-      this.inputFilter = '';
-    },
-    cancelFilterData() {
-      (this.selectedData = this.preselectedData),
-        this.$emit('cancel-filter-data');
-    },
+  // The default selected data
+  preselectedData: {
+    type: Array,
+    default: () => [],
   },
-};
+  inputItemKey: {
+    type: String,
+    default: 'key',
+  },
+  inputFilterLabel: {
+    type: String,
+    default: '',
+  },
+  inputFilterPlaceholder: {
+    type: String,
+    default: i18n.t('trans.baseFilter.exampleText2'),
+  },
+  inputSaveButtonText: {
+    type: String,
+    default: i18n.t('trans.baseFilter.filter'),
+  },
+});
+
+const emit = defineEmits(['saving-filter-data', 'cancel-filter-data']);
+
+const selectedData = ref([]);
+const inputFilter = ref('');
+
+const { isRTL, lang } = storeToRefs(useFormStore());
+
+function savingFilterData() {
+  inputFilter.value = '';
+  emit('saving-filter-data', selectedData.value);
+}
+
+function onResetColumns() {
+  selectedData.value = props.resetData;
+  inputFilter.value = '';
+}
+
+function cancelFilterData() {
+  (selectedData.value = props.preselectedData), emit('cancel-filter-data');
+}
+
+onMounted(() => {
+  selectedData.value = Object.freeze(props.preselectedData);
+});
 </script>
 
 <template>
@@ -87,6 +88,9 @@ export default {
       <slot name="filter-subtitle"></slot>
     </v-card-subtitle>
     <v-card-text class="mt-0 pt-0">
+      {{ props.preselectedData }}
+      <hr class="hr" />
+      {{ props.resetData }}
       <hr class="hr" />
 
       <div class="d-flex flex-row" style="gap: 10px">
@@ -138,7 +142,6 @@ export default {
         :search="inputFilter"
         class="bg-grey-lighten-5 mb-3"
         disable-pagination
-        return-object
         :lang="lang"
       >
       </v-data-table>

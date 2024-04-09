@@ -1,13 +1,11 @@
 <script>
 import { mapActions, mapState } from 'pinia';
 import { nextTick } from 'vue';
-import BaseStepper from '~/components/base/BaseStepper.vue';
 import FormDesigner from '~/components/designer/FormDesigner.vue';
 import { useFormStore } from '~/store/form';
 
 export default {
   components: {
-    BaseStepper,
     FormDesigner,
   },
   beforeRouteLeave(_to, _from, next) {
@@ -61,19 +59,31 @@ export default {
 </script>
 
 <template>
-  <BaseStepper :step="2">
-    <template #designForm>
-      <v-btn color="primary" size="x-small" icon="mdi:mdi-help" />
-      <FormDesigner
-        ref="formDesigner"
-        class="mt-6"
-        :draft-id="d"
-        :form-id="f"
-        :saved="JSON.parse(sv)"
-        :version-id="v"
-        :is-saved-status="svs"
-        :new-version="nv"
+  <v-stepper :model-value="1" hide-actions alt-labels flat tile :border="false">
+    <v-stepper-header>
+      <v-stepper-item
+        :title="$t('trans.baseStepper.setUpForm')"
+        value="1"
+        :complete="true"
       />
-    </template>
-  </BaseStepper>
+      <v-divider />
+      <v-stepper-item :title="$t('trans.baseStepper.designForm')" value="2" />
+      <v-divider />
+      <v-stepper-item :title="$t('trans.baseStepper.manageForm')" value="3" />
+    </v-stepper-header>
+    <v-stepper-window>
+      <v-stepper-window-item value="2">
+        <FormDesigner
+          ref="formDesigner"
+          class="mt-6"
+          :draft-id="d"
+          :form-id="f"
+          :saved="JSON.parse(sv)"
+          :version-id="v"
+          :is-saved-status="svs"
+          :new-version="nv"
+        />
+      </v-stepper-window-item>
+    </v-stepper-window>
+  </v-stepper>
 </template>

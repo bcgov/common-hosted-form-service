@@ -147,16 +147,21 @@ export default {
       </v-row>
     </v-form>
 
-    <v-data-iterator :items="notes" :items-per-page="notesPerPage" :page="page">
+    <v-data-iterator
+      :items="notes"
+      :items-per-page="notesPerPage"
+      :page="page"
+      return-object
+    >
       <template #default="props">
         <ul class="mt-5" :class="{ 'dir-rtl': isRTL, 'mr-2': isRTL }">
-          <li v-for="note in props.items" :key="note.id">
+          <li v-for="note in props.items" :key="note.raw.id">
             <strong>
-              {{ $filters.formatDateLong(note.createdAt) }} -
-              {{ note.createdBy }}
+              {{ $filters.formatDateLong(note.raw.createdAt) }} -
+              {{ note.raw.createdBy }}
             </strong>
             <br />
-            {{ note.note }}
+            {{ note.raw.note }}
           </li>
         </ul>
       </template>

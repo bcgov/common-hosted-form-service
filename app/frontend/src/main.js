@@ -69,7 +69,6 @@ import BaseNotificationContainer from '~/components/base/BaseNotificationContain
 import BasePanel from '~/components/base/BasePanel.vue';
 import BasePrintButton from '~/components/base/BasePrintButton.vue';
 import BaseSecure from '~/components/base/BaseSecure.vue';
-import BaseStepper from '~/components/base/BaseStepper.vue';
 app.component('BaseAuthButton', BaseAuthButton);
 app.component('BaseCopyToClipboard', BaseCopyToClipboard);
 app.component('BaseDialog', BaseDialog);
@@ -82,7 +81,6 @@ app.component('BaseNotificationContainer', BaseNotificationContainer);
 app.component('BasePanel', BasePanel);
 app.component('BasePrintButton', BasePrintButton);
 app.component('BaseSecure', BaseSecure);
-app.component('BaseStepper', BaseStepper);
 
 // IE11 Detection (https://stackoverflow.com/a/21825207)
 if (!!window.MSInputMethodContext && !!document.documentMode) {

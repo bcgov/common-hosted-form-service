@@ -47,11 +47,6 @@ describe('Create.vue', () => {
             name: 'FormSettings',
             template: '<div class="form-settings-stub"><slot /></div>',
           },
-          BaseStepper: {
-            name: 'BaseStepper',
-            template:
-              '<div class="base-stepper-stub"><slot name="setUpForm" /><slot name="designForm" /></div>',
-          },
           BasePanel: {
             name: 'BasePanel',
             template: '<div class="base-panel-stub"><slot /></div>',
@@ -117,11 +112,6 @@ describe('Create.vue', () => {
       global: {
         plugins: [pinia],
         stubs: {
-          BaseStepper: {
-            name: 'BaseStepper',
-            template:
-              '<div class="base-stepper-stub"><slot name="setUpForm" /><slot name="designForm" /></div>',
-          },
           FormSettings: {
             name: 'FormSettings',
             template: '<div class="form-settings-stub"><slot /></div>',
@@ -181,11 +171,6 @@ describe('Create.vue', () => {
       global: {
         plugins: [pinia],
         stubs: {
-          BaseStepper: {
-            name: 'BaseStepper',
-            template:
-              '<div class="base-stepper-stub"><slot name="setUpForm" /><slot name="designForm" /></div>',
-          },
           FormSettings: {
             name: 'FormSettings',
             template: '<div class="form-settings-stub"><slot /></div>',
@@ -250,11 +235,6 @@ describe('Create.vue', () => {
       global: {
         plugins: [pinia],
         stubs: {
-          BaseStepper: {
-            name: 'BaseStepper',
-            template:
-              '<div class="base-stepper-stub"><slot name="setUpForm" /><slot name="designForm" /></div>',
-          },
           FormSettings: {
             name: 'FormSettings',
             template: '<div class="form-settings-stub"><slot /></div>',

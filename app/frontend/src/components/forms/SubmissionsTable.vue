@@ -215,7 +215,7 @@ export default {
         headers = headers.filter(
           (h) =>
             // It must be in the user preferences
-            this.USER_PREFERENCES.some((up) => up.key === h.key) ||
+            this.USER_PREFERENCES.some((up) => up === h.key) ||
             // except if it's in the filter ignore
             this.filterIgnore.some((fd) => fd.key === h.key)
         );
@@ -261,35 +261,7 @@ export default {
     USER_PREFERENCES() {
       let preselectedData = [];
       if (this.userFormPreferences?.preferences?.columns) {
-        preselectedData = this.userFormPreferences.preferences.columns.map(
-          (column) => {
-            if (column === 'date') {
-              return {
-                title: this.$t('trans.submissionsTable.submissionDate'),
-                align: 'start',
-                key: 'date',
-              };
-            } else if (column === 'submitter') {
-              return {
-                title: this.$t('trans.submissionsTable.submitter'),
-                align: 'start',
-                key: 'submitter',
-              };
-            } else if (column === 'status') {
-              return {
-                title: this.$t('trans.submissionsTable.status'),
-                align: 'start',
-                key: 'status',
-              };
-            } else {
-              return {
-                align: 'start',
-                title: column,
-                key: column,
-              };
-            }
-          }
-        );
+        preselectedData = this.userFormPreferences.preferences.columns;
       }
       return preselectedData;
     },
@@ -313,14 +285,16 @@ export default {
       let headers = this.BASE_FILTER_HEADERS;
       // Remove the form fields because this is the default view
       // we don't need all the form fields
-      headers = headers.filter((header) => {
-        // we want columns that aren't form fields
-        return (
-          !this.formFields.includes(header.key) &&
-          // These values won't be preselected
-          !this.tableFilterIgnore.some((fi) => fi.key === header.key)
-        );
-      });
+      headers = headers
+        .filter((header) => {
+          // we want columns that aren't form fields
+          return (
+            !this.formFields.includes(header.key) &&
+            // These values won't be preselected
+            !this.tableFilterIgnore.some((fi) => fi.key === header.key)
+          );
+        })
+        .map((h) => h.key);
       return headers;
     },
     // These are the columns that will be selected by default when the
@@ -557,7 +531,7 @@ export default {
         columns: [],
       };
       data.forEach((d) => {
-        preferences.columns.push(d.key);
+        preferences.columns.push(d);
       });
 
       await this.updateFormPreferencesForCurrentUser({
@@ -768,10 +742,10 @@ export default {
       </template>
 
       <template #item.date="{ item }">
-        {{ $filters.formatDateLong(item.columns.date) }}
+        {{ $filters.formatDateLong(item.date) }}
       </template>
       <template #item.status="{ item }">
-        {{ item.columns.status }}
+        {{ item.status }}
       </template>
       <template #item.lateEntry="{ item }">
         <span :lang="lang">
@@ -890,10 +864,10 @@ export default {
         :input-filter-placeholder="
           $t('trans.submissionsTable.searchSubmissionFields')
         "
-        :input-save-button-text="$t('trans.submissionsTable.save')"
         :input-data="BASE_FILTER_HEADERS"
-        :preselected-data="PRESELECTED_DATA"
+        :preselected-data="PRESELECTED_DATA.map((pd) => pd.key)"
         :reset-data="RESET_HEADERS"
+        :input-save-button-text="$t('trans.submissionsTable.save')"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"
       >

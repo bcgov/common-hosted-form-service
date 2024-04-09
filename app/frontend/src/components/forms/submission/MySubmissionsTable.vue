@@ -116,7 +116,7 @@ export default {
         headers = headers.filter(
           (header) =>
             // It must be in the user selected columns
-            this.filterData.some((fd) => fd.key === header.key) ||
+            this.filterData.some((fd) => fd === header.key) ||
             // except if it's in the filter ignore
             this.filterIgnore.some((fd) => fd.key === header.key)
         );
@@ -161,14 +161,16 @@ export default {
       let headers = this.BASE_FILTER_HEADERS;
       // Remove the form fields because this is the default view
       // we don't need all the form fields
-      headers = headers.filter((header) => {
-        // we want columns that aren't form fields
-        return (
-          !this.formFields.includes(header.key) &&
-          // These values won't be preselected
-          !this.tableFilterIgnore.some((fi) => fi.key === header.key)
-        );
-      });
+      headers = headers
+        .filter((header) => {
+          // we want columns that aren't form fields
+          return (
+            !this.formFields.includes(header.key) &&
+            // These values won't be preselected
+            !this.tableFilterIgnore.some((fi) => fi.key === header.key)
+          );
+        })
+        .map((h) => h.key);
       return headers;
     },
     // These are the columns that will be selected by default when the
@@ -389,13 +391,13 @@ export default {
       :lang="lang"
     >
       <template #item.lastEdited="{ item }">
-        {{ $filters.formatDateLong(item.columns.lastEdited) }}
+        {{ $filters.formatDateLong(item.lastEdited) }}
       </template>
       <template #item.submittedDate="{ item }">
-        {{ $filters.formatDateLong(item.columns.submittedDate) }}
+        {{ $filters.formatDateLong(item.submittedDate) }}
       </template>
       <template #item.completedDate="{ item }">
-        {{ $filters.formatDateLong(item.columns.completedDate) }}
+        {{ $filters.formatDateLong(item.completedDate) }}
       </template>
       <template #item.actions="{ item }">
         <MySubmissionsActions
@@ -415,7 +417,7 @@ export default {
         "
         :input-save-button-text="$t('trans.mySubmissionsTable.save')"
         :input-data="BASE_FILTER_HEADERS"
-        :preselected-data="PRESELECTED_DATA"
+        :preselected-data="PRESELECTED_DATA.map((pd) => pd.key)"
         :reset-data="RESET_HEADERS"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"

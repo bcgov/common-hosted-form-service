@@ -104,7 +104,7 @@ export default {
       if (this.filterData.length > 0) {
         headers = headers.filter(
           (h) =>
-            this.filterData.some((fd) => fd.key === h.key) ||
+            this.filterData.some((fd) => fd === h.key) ||
             this.filterIgnore.some((ign) => ign.key === h.key)
         );
       }
@@ -112,7 +112,7 @@ export default {
     },
     PRESELECTED_DATA() {
       return this.filterData.length === 0
-        ? this.FILTER_HEADERS
+        ? this.FILTER_HEADERS.map((fd) => fd.key)
         : this.filterData;
     },
   },
@@ -219,7 +219,7 @@ export default {
     async toggleRole(user) {
       await this.setUserForms(user.id, {
         formId: user.formId,
-        ...user.columns,
+        ...user,
         userId: user.id,
       });
       this.selectedUsers = [];
@@ -384,6 +384,7 @@ export default {
     },
 
     updateFilter(data) {
+      console.log(data);
       this.filterData = data ? data : [];
       this.showColumnsDialog = false;
     },
@@ -562,7 +563,7 @@ export default {
         <v-checkbox-btn
           v-if="!disableRole('form_designer', item, form.userType)"
           key="form_designer"
-          v-model="item.columns.form_designer"
+          v-model="item.form_designer"
           v-ripple
           :disabled="updating"
           @update:modelValue="toggleRole(item)"
@@ -572,7 +573,7 @@ export default {
         <v-checkbox-btn
           v-if="!disableRole('owner', item, form.userType)"
           key="owner"
-          v-model="item.columns.owner"
+          v-model="item.owner"
           v-ripple
           :disabled="updating"
           @update:modelValue="toggleRole(item)"
@@ -582,7 +583,7 @@ export default {
         <v-checkbox-btn
           v-if="!disableRole('submission_reviewer', item, form.userType)"
           key="submission_reviewer"
-          v-model="item.columns.submission_reviewer"
+          v-model="item.submission_reviewer"
           v-ripple
           :disabled="updating"
           @update:modelValue="toggleRole(item)"
@@ -592,7 +593,7 @@ export default {
         <v-checkbox-btn
           v-if="!disableRole('form_submitter', item, form.userType)"
           key="form_submitter"
-          v-model="item.columns.form_submitter"
+          v-model="item.form_submitter"
           v-ripple
           :disabled="updating"
           @update:modelValue="toggleRole(item)"
@@ -602,7 +603,7 @@ export default {
         <v-checkbox-btn
           v-if="!disableRole('team_manager', item, form.userType)"
           key="team_manager"
-          v-model="item.columns.team_manager"
+          v-model="item.team_manager"
           v-ripple
           :disabled="updating"
           @update:modelValue="toggleRole(item)"
@@ -660,7 +661,7 @@ export default {
         input-item-key="key"
         :input-save-button-text="$t('trans.teamManagement.save')"
         :input-data="FILTER_HEADERS"
-        :reset-data="FILTER_HEADERS"
+        :reset-data="FILTER_HEADERS.map((h) => h.key)"
         :preselected-data="PRESELECTED_DATA"
         @saving-filter-data="updateFilter"
         @cancel-filter-data="showColumnsDialog = false"

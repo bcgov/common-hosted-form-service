@@ -31,10 +31,6 @@ describe('Design.vue', () => {
       global: {
         plugins: [pinia],
         stubs: {
-          BaseStepper: {
-            name: 'BaseStepper',
-            template: '<div class="base-stepper-stub"><slot name="designForm" /></div>',
-          },
           FormDesigner: {
             name: 'FormDesigner',
             methods: {
@@ -63,10 +59,6 @@ describe('Design.vue', () => {
       global: {
         plugins: [pinia],
         stubs: {
-          BaseStepper: {
-            name: 'BaseStepper',
-            template: '<div class="base-stepper-stub"><slot name="designForm" /></div>',
-          },
           FormDesigner: {
             name: 'FormDesigner',
             methods: {
@@ -93,10 +85,6 @@ describe('Design.vue', () => {
       global: {
         plugins: [pinia],
         stubs: {
-          BaseStepper: {
-            name: 'BaseStepper',
-            template: '<div class="base-stepper-stub"><slot name="designForm" /></div>',
-          },
           FormDesigner: {
             name: 'FormDesigner',
             methods: {
