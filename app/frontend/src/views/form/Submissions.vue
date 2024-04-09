@@ -1,23 +1,16 @@
-<script>
-import BaseSecure from '~/components/base/BaseSecure.vue';
+<script setup>
+import { computed } from 'vue';
 import SubmissionsTable from '~/components/forms/SubmissionsTable.vue';
 import { IdentityProviders } from '~/utils/constants';
 
-export default {
-  components: {
-    BaseSecure,
-    SubmissionsTable,
+defineProps({
+  f: {
+    type: String,
+    required: true,
   },
-  props: {
-    f: {
-      type: String,
-      required: true,
-    },
-  },
-  computed: {
-    IDP: () => IdentityProviders,
-  },
-};
+});
+
+const IDP = computed(() => IdentityProviders);
 </script>
 
 <template>

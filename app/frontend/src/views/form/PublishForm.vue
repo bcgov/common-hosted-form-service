@@ -1,64 +1,49 @@
-<script>
+<script setup>
+import { storeToRefs } from 'pinia';
+import { onBeforeMount, provide, ref } from 'vue';
+
 import ManageForm from '~/components/forms/manage/ManageForm.vue';
 import ManageFormActions from '~/components/forms/manage/ManageFormActions.vue';
-import { mapActions, mapState } from 'pinia';
 import { FormPermissions } from '~/utils/constants';
 import { useFormStore } from '~/store/form';
 
-export default {
-  name: 'PublishForm',
-  components: {
-    ManageForm,
-    ManageFormActions,
+const properties = defineProps({
+  f: {
+    type: String,
+    required: true,
   },
-  provide() {
-    return {
-      formDesigner: JSON.parse(this.fd),
-      draftId: this.d,
-      formId: this.f,
-    };
+  d: {
+    type: String,
+    required: true,
   },
-  props: {
-    f: {
-      type: String,
-      required: true,
-    },
-    d: {
-      type: String,
-      required: true,
-    },
-    fd: {
-      type: Boolean,
-    },
+  fd: {
+    type: Boolean,
   },
-  data() {
-    return {
-      loading: true,
-      showManageForm: false,
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['permissions', 'form', 'lang']),
-  },
-  async beforeMount() {
-    this.loading = true;
+});
 
-    await this.fetchForm(this.f);
-    await this.getFormPermissionsForUser(this.f);
-    if (this.permissions.includes(FormPermissions.DESIGN_READ)) {
-      await this.fetchDrafts(this.f).then(() => (this.showManageForm = true));
-    }
+provide('formDesigner', JSON.parse(properties.fd));
+provide('draftId', properties.d);
+provide('formId', properties.f);
 
-    this.loading = false;
-  },
-  methods: {
-    ...mapActions(useFormStore, [
-      'fetchDrafts',
-      'fetchForm',
-      'getFormPermissionsForUser',
-    ]),
-  },
-};
+const loading = ref(true);
+const showManageForm = ref(false);
+
+const formStore = useFormStore();
+const { permissions, form, lang } = storeToRefs(formStore);
+
+onBeforeMount(async () => {
+  loading.value = true;
+
+  await formStore.fetchForm(properties.f);
+  await formStore.getFormPermissionsForUser(properties.f);
+  if (permissions.value.includes(FormPermissions.DESIGN_READ)) {
+    await formStore
+      .fetchDrafts(properties.f)
+      .then(() => (showManageForm.value = true));
+  }
+
+  loading.value = false;
+});
 </script>
 
 <template>

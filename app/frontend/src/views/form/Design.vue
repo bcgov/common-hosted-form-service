@@ -1,61 +1,62 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { onMounted } from 'vue';
+import { ref } from 'vue';
 import { nextTick } from 'vue';
+import { onBeforeRouteLeave } from 'vue-router';
 import FormDesigner from '~/components/designer/FormDesigner.vue';
 import { useFormStore } from '~/store/form';
 
-export default {
-  components: {
-    FormDesigner,
+defineProps({
+  d: {
+    type: String,
+    default: null,
   },
-  beforeRouteLeave(_to, _from, next) {
-    this.form.isDirty
-      ? next(
-          window.confirm(
-            'Do you really want to leave this page? Changes you made will not be saved.'
-          )
+  f: {
+    type: String,
+    default: null,
+  },
+  sv: Boolean,
+  v: {
+    type: String,
+    default: null,
+  },
+  svs: {
+    type: String,
+    default: null,
+  },
+  nv: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const formStore = useFormStore();
+
+const { form } = storeToRefs(formStore);
+
+const formDesigner = ref(null);
+
+onMounted(async () => {
+  await formStore.listFCProactiveHelp();
+  nextTick(() => {
+    onFormLoad();
+  });
+});
+
+onBeforeRouteLeave((_to, _from, next) => {
+  form.value.isDirty
+    ? next(
+        window.confirm(
+          'Do you really want to leave this page? Changes you made will not be saved.'
         )
-      : next();
-  },
-  props: {
-    d: {
-      type: String,
-      default: null,
-    },
-    f: {
-      type: String,
-      default: null,
-    },
-    sv: Boolean,
-    v: {
-      type: String,
-      default: null,
-    },
-    svs: {
-      type: String,
-      default: null,
-    },
-    nv: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  computed: {
-    ...mapState(useFormStore, ['form']),
-  },
-  async mounted() {
-    await this.listFCProactiveHelp();
-    nextTick(() => {
-      this.onFormLoad();
-    });
-  },
-  methods: {
-    ...mapActions(useFormStore, ['listFCProactiveHelp', 'deleteCurrentForm']),
-    onFormLoad() {
-      if (this.$refs?.formDesigner) this.$refs.formDesigner.onFormLoad();
-    },
-  },
-};
+      )
+    : next();
+});
+
+function onFormLoad() {
+  if (formDesigner.value) formDesigner.value.onFormLoad();
+}
 </script>
 
 <template>
