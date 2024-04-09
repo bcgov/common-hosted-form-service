@@ -25,8 +25,7 @@ export default defineConfig(({ command, mode }) => {
         '^/app/config': proxyObject,
       },
     },
-    extends: ['prettier'],
-    plugins: [Vue(), vuetify(), 'prettier', eslint()],
+    plugins: [Vue(), vuetify(), eslint()],
     resolve: {
       alias: {
         '~': resolve(__dirname, './src'),
