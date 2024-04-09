@@ -3,7 +3,7 @@ import BaseNotificationContainer from '~/components/base/BaseNotificationContain
 import BCGovHeader from '~/components/bcgov/BCGovHeader.vue';
 import BCGovNavBar from './components/bcgov/BCGovNavBar.vue';
 import BCGovFooter from '~/components/bcgov/BCGovFooter.vue';
-import { computed, ref } from 'vue';
+import { computed, provide, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 const isWideLayout = ref(false);
@@ -14,10 +14,10 @@ const isValidRoute = computed(() => {
 });
 
 const isWidePage = computed(() => {
-  return isWideLayout.value && isValidRoute();
+  return isWideLayout.value && isValidRoute ? 'main-wide' : 'main';
 });
 
-defineExpose({ isValidRoute, isWidePage });
+defineExpose({ isValidRoute, isWidePage, setWideLayout, isWideLayout });
 
 provide('setWideLayout', setWideLayout);
 

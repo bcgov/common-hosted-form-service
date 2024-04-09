@@ -160,28 +160,29 @@ export default {
         </v-row>
       </v-form>
 
-    <v-data-iterator
-      :items="notes"
-      :items-per-page="notesPerPage"
-      :page="page"
-      return-object
-    >
-      <template #default="props">
-        <ul class="mt-5" :class="{ 'dir-rtl': isRTL, 'mr-2': isRTL }">
-          <li v-for="note in props.items" :key="note.raw.id">
-            <strong>
-              {{ $filters.formatDateLong(note.raw.createdAt) }} -
-              {{ note.raw.createdBy }}
-            </strong>
-            <br />
-            {{ note.raw.note }}
-          </li>
-        </ul>
-      </template>
-      <template #footer="{ pageCount }">
-        <v-pagination v-model="page" :length="pageCount"></v-pagination>
-      </template>
-    </v-data-iterator>
+      <v-data-iterator
+        :items="notes"
+        :items-per-page="notesPerPage"
+        :page="page"
+        return-object
+      >
+        <template #default="props">
+          <ul class="mt-5" :class="{ 'dir-rtl': isRTL, 'mr-2': isRTL }">
+            <li v-for="note in props.items" :key="note.raw.id">
+              <strong>
+                {{ $filters.formatDateLong(note.raw.createdAt) }} -
+                {{ note.raw.createdBy }}
+              </strong>
+              <br />
+              {{ note.raw.note }}
+            </li>
+          </ul>
+        </template>
+        <template #footer="{ pageCount }">
+          <v-pagination v-model="page" :length="pageCount"></v-pagination>
+        </template>
+      </v-data-iterator>
+    </div>
   </v-skeleton-loader>
 </template>
 

@@ -1,9 +1,9 @@
 import { flushPromises, shallowMount } from '@vue/test-utils';
 import { describe, expect, it, vi } from 'vitest';
+import { useRoute } from 'vue-router';
+import { ref } from 'vue';
 
 import App from '~/App.vue';
-
-import { useRoute } from 'vue-router';
 
 vi.mock('vue-router');
 
@@ -46,7 +46,7 @@ describe('App.vue', () => {
     expect(wrapper.find('b-c-gov-footer-stub').exists()).toBeTruthy();
   });
 
-  it('isSubmitPageClass should be main for non FormSubmit and FormView views', () => {
+  it('isWidePage should be main for non FormSubmit, FormView, FormSuccess views', () => {
     const name = 'NotFormSubmitOrFormView';
 
     useRoute.mockReturnValue({
@@ -65,10 +65,36 @@ describe('App.vue', () => {
       },
     });
 
-    expect(wrapper.vm.isSubmitPageClass).toBe('main');
+    expect(wrapper.vm.isWidePage).toBe('main');
+    expect(wrapper.vm.isValidRoute).toBeFalsy();
   });
 
-  it('isSubmitPageClass should be main-wide for FormSubmit', () => {
+  it('isWidePage should be main for non FormSubmit, FormView, FormSuccess views even if isWideLayout is true', async () => {
+    const name = 'NotFormSubmitOrFormView';
+
+    useRoute.mockReturnValue({
+      query: {
+        name,
+      },
+    });
+    const wrapper = shallowMount(App, {
+      global: {
+        stubs: {
+          RouterView: {
+            name: 'RouterView',
+            template: '<div class="v-router-view-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    wrapper.vm.isWideLayout = ref(true);
+    await flushPromises();
+    expect(wrapper.vm.isWidePage).toBe('main');
+    expect(wrapper.vm.isValidRoute).toBeFalsy();
+  });
+
+  it('isWidePage should be main-wide for FormSubmit', () => {
     const name = 'FormSubmit';
 
     useRoute.mockReturnValue({
@@ -85,10 +111,12 @@ describe('App.vue', () => {
       },
     });
 
-    expect(wrapper.vm.isSubmitPageClass).toBe('main-wide');
+    wrapper.vm.isWideLayout = true;
+    expect(wrapper.vm.isWidePage).toBe('main-wide');
+    expect(wrapper.vm.isValidRoute).toBeTruthy();
   });
 
-  it('isSubmitPageClass should be main-wide for FormView', () => {
+  it('isWidePage should be main-wide for FormView', () => {
     const name = 'FormView';
 
     useRoute.mockReturnValue({
@@ -105,6 +133,53 @@ describe('App.vue', () => {
       },
     });
 
-    expect(wrapper.vm.isSubmitPageClass).toBe('main-wide');
+    wrapper.vm.isWideLayout = true;
+    expect(wrapper.vm.isWidePage).toBe('main-wide');
+    expect(wrapper.vm.isValidRoute).toBeTruthy();
+  });
+
+  it('isWidePage should be main-wide for FormSuccess', () => {
+    const name = 'FormSuccess';
+
+    useRoute.mockReturnValue({
+      name,
+    });
+    const wrapper = shallowMount(App, {
+      global: {
+        stubs: {
+          RouterView: {
+            name: 'RouterView',
+            template: '<div class="v-router-view-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    wrapper.vm.isWideLayout = true;
+    expect(wrapper.vm.isWidePage).toBe('main-wide');
+    expect(wrapper.vm.isValidRoute).toBeTruthy();
+  });
+
+  it('setWideLayout should toggle isWideLayout', () => {
+    const name = 'FormView';
+
+    useRoute.mockReturnValue({
+      name,
+    });
+    const wrapper = shallowMount(App, {
+      global: {
+        stubs: {
+          RouterView: {
+            name: 'RouterView',
+            template: '<div class="v-router-view-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    expect(wrapper.vm.isWideLayout).toBeFalsy();
+    wrapper.vm.setWideLayout(true);
+    expect(wrapper.vm.isWideLayout).toBeTruthy();
+    expect(wrapper.vm.isValidRoute).toBeTruthy();
   });
 });
