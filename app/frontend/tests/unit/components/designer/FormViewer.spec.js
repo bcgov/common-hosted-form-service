@@ -58,6 +58,9 @@ describe('FormViewer.vue', () => {
         displayTitle: true,
       },
       global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
         plugins: [router, pinia],
         stubs: {
           BaseDialog: true,
@@ -100,6 +103,9 @@ describe('FormViewer.vue', () => {
         displayTitle: true,
       },
       global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
         plugins: [router, pinia],
         stubs: {
           BaseDialog: true,
@@ -145,6 +151,9 @@ describe('FormViewer.vue', () => {
         displayTitle: true,
       },
       global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
         plugins: [router, pinia],
         stubs: {
           BaseDialog: true,

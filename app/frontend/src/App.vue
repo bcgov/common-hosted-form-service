@@ -3,16 +3,27 @@ import BaseNotificationContainer from '~/components/base/BaseNotificationContain
 import BCGovHeader from '~/components/bcgov/BCGovHeader.vue';
 import BCGovNavBar from './components/bcgov/BCGovNavBar.vue';
 import BCGovFooter from '~/components/bcgov/BCGovFooter.vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
+const isWideLayout = ref(false);
 const route = useRoute();
 
-const isSubmitPageClass = computed(() => {
-  return ['FormSubmit', 'FormView'].includes(route.name) ? 'main-wide' : 'main';
+const isValidRoute = computed(() => {
+  return ['FormSubmit', 'FormView', 'FormSuccess'].includes(route.name);
 });
 
-defineExpose({ isSubmitPageClass });
+const isWidePage = computed(() => {
+  return isWideLayout.value && isValidRoute();
+});
+
+defineExpose({ isValidRoute, isWidePage });
+
+provide('setWideLayout', setWideLayout);
+
+function setWideLayout(isWide) {
+  isWideLayout.value = isWide;
+}
 </script>
 
 <template>
@@ -23,7 +34,7 @@ defineExpose({ isSubmitPageClass });
       <BCGovNavBar />
       <RouterView v-slot="{ Component }">
         <transition name="component-fade" mode="out-in">
-          <component :is="Component" :class="isSubmitPageClass" />
+          <component :is="Component" :class="isWidePage" />
         </transition>
       </RouterView>
       <BCGovFooter />
@@ -41,5 +52,17 @@ defineExpose({ isSubmitPageClass });
 
 .main {
   flex: 1 0 auto;
+}
+
+.main-wide {
+  flex: 1 0 auto;
+  max-width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .main-wide {
+    padding-left: 65px;
+    padding-right: 65px;
+  }
 }
 </style>

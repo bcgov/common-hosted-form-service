@@ -1,5 +1,6 @@
 module.exports = {
   // Tables
+  DocumentTemplate: require('./tables/documentTemplate'),
   FileStorage: require('./tables/fileStorage'),
   Form: require('./tables/form'),
   FormApiKey: require('./tables/formApiKey'),
