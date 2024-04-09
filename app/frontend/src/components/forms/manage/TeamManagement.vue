@@ -384,7 +384,6 @@ export default {
     },
 
     updateFilter(data) {
-      console.log(data);
       this.filterData = data ? data : [];
       this.showColumnsDialog = false;
     },

@@ -5,7 +5,7 @@ import { i18n } from '~/internationalization';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 
-const props = defineProps({
+const properties = defineProps({
   text: {
     type: String,
     default: 'trans.error.somethingWentWrong',
@@ -23,13 +23,13 @@ const { authenticated, ready } = storeToRefs(authStore);
 const { lang } = storeToRefs(formStore);
 
 const TEXT = computed(() => {
-  let text = props.text;
+  let text = properties.text;
   try {
     text = JSON.parse(text);
     text = i18n.t(text.text, text.options);
   } catch {
     // Can't parse JSON so it's probably already a locale
-    text = props.translate ? i18n.t(text) : text;
+    text = properties.translate ? i18n.t(text) : text;
   }
   return text;
 });

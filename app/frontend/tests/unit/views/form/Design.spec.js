@@ -42,7 +42,7 @@ describe('Design.vue', () => {
       },
     });
 
-    expect(wrapper.html()).toMatch('base-stepper');
+    expect(wrapper.html()).toMatch('v-stepper');
   });
 
   it('beforeRouteLeave guard works when not dirty', () => {

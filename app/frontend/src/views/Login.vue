@@ -7,7 +7,7 @@ import { useFormStore } from '~/store/form';
 import { IdentityProviders } from '~/utils/constants';
 import { isIdpEnabled } from '../utils/permissionUtils';
 
-const props = defineProps({
+const properties = defineProps({
   idpHint: {
     type: Array,
     default: () => [
@@ -47,7 +47,7 @@ const buttons = computed(() => [
         {{ $t('trans.login.authenticateWith') }}
       </h1>
       <v-row v-for="button in buttons" :key="button.type" justify="center">
-        <v-col v-if="isIdpEnabled(props.idpHint, button.type)" sm="3">
+        <v-col v-if="isIdpEnabled(properties.idpHint, button.type)" sm="3">
           <v-btn
             block
             color="primary"

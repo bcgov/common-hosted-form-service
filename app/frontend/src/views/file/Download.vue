@@ -6,7 +6,7 @@ import { useFormStore } from '~/store/form';
 import { IdentityProviders } from '~/utils/constants';
 import { getDisposition } from '~/utils/transformUtils';
 
-const props = defineProps({
+const properties = defineProps({
   id: {
     type: String,
     required: true,
@@ -53,7 +53,7 @@ watch(downloadedFile, () => {
 });
 
 onMounted(async () => {
-  await formStore.downloadFile(props.id);
+  await formStore.downloadFile(properties.id);
 });
 
 onUnmounted(() => {

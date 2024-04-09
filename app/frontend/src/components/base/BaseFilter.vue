@@ -6,7 +6,7 @@ import { useFormStore } from '~/store/form';
 import { ref } from 'vue';
 import { onMounted } from 'vue';
 
-const props = defineProps({
+const properties = defineProps({
   inputHeaders: {
     type: Array,
     default: () => [
@@ -66,16 +66,16 @@ function savingFilterData() {
 }
 
 function onResetColumns() {
-  selectedData.value = props.resetData;
+  selectedData.value = properties.resetData;
   inputFilter.value = '';
 }
 
 function cancelFilterData() {
-  (selectedData.value = props.preselectedData), emit('cancel-filter-data');
+  (selectedData.value = properties.preselectedData), emit('cancel-filter-data');
 }
 
 onMounted(() => {
-  selectedData.value = Object.freeze(props.preselectedData);
+  selectedData.value = Object.freeze(properties.preselectedData);
 });
 </script>
 
@@ -88,9 +88,9 @@ onMounted(() => {
       <slot name="filter-subtitle"></slot>
     </v-card-subtitle>
     <v-card-text class="mt-0 pt-0">
-      {{ props.preselectedData }}
+      {{ properties.preselectedData }}
       <hr class="hr" />
-      {{ props.resetData }}
+      {{ properties.resetData }}
       <hr class="hr" />
 
       <div class="d-flex flex-row" style="gap: 10px">
