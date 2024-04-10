@@ -14,6 +14,9 @@ module.exports = Object.freeze({
     REMINDER_FORM_NOT_FILL: 'formNotFill',
   },
   Permissions: {
+    DOCUMENT_TEMPLATE_CREATE: 'document_template_create',
+    DOCUMENT_TEMPLATE_DELETE: 'document_template_delete',
+    DOCUMENT_TEMPLATE_READ: 'document_template_read',
     EMAIL_TEMPLATE_READ: 'email_template_read',
     EMAIL_TEMPLATE_UPDATE: 'email_template_update',
     FORM_API_CREATE: 'form_api_create',

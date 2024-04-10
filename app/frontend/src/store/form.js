@@ -69,6 +69,7 @@ const genInitialForm = () => ({
   labels: [],
   apiIntegration: null,
   useCase: null,
+  wideFormLayout: false,
 });
 
 export const useFormStore = defineStore('form', {
@@ -407,6 +408,7 @@ export const useFormStore = defineStore('form', {
           description: this.form.description,
           enableSubmitterDraft: this.form.enableSubmitterDraft,
           enableStatusUpdates: this.form.enableStatusUpdates,
+          wideFormLayout: this.form.wideFormLayout,
           identityProviders: generateIdps({
             idps: this.form.idps,
             userType: this.form.userType,
