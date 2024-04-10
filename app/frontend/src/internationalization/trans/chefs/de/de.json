@@ -229,6 +229,7 @@
     "infoA": "Stellen Sie sicher, dass Ihr API-Schlüsselgeheimnis an einem sicheren Ort (d. h. im Schlüsseltresor) gespeichert wird.",
     "infoB": "Ihr API-Schlüssel gewährt uneingeschränkten Zugriff auf Ihr Formular. Geben Sie Ihren API-Schlüssel nicht an Dritte weiter.",
     "infoC": "Der API-Schlüssel sollte NUR für automatisierte Systeminteraktionen verwendet werden. Verwenden Sie Ihren API-Schlüssel nicht für den benutzerbasierten Zugriff",
+    "infoD": "Wenn Sie über den API-Schlüssel auf übermittelte Dateien zugreifen möchten, aktivieren Sie bitte nach der Schlüsselgenerierung das folgende Kontrollkästchen.",
     "deleteKey": "Schlüssel löschen",
     "apiKey": "API-Schlüssel",
     "hideSecret": "Geheimnis verbergen",
@@ -245,7 +246,8 @@
     "formOwnerKeyAcess": "Sie müssen der <strong>Formulareigentümer</strong> sein, um API-Schlüssel verwalten zu können.",
     "regenerate": "Regenerieren",
     "generate": "Generieren",
-    "secret": "Geheimnis"
+    "secret": "Geheimnis",
+    "filesAPIAccess": "Erlauben Sie diesem API-Schlüssel den Zugriff auf übermittelte Dateien"
   },
   "manageVersions": {
     "important": "WICHTIG!",

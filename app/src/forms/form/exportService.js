@@ -430,6 +430,9 @@ const service = {
   fieldsForCSVExport: async (formId, params = {}) => {
     const form = await service._getForm(formId);
     const data = await service._getData(params.type, params.version, form, params);
+    // If there are no submissions then we don't need to format the data
+    if ((Array.isArray(data) && data.length === 0) || (typeof data === 'object' && Object.keys(data).length === 0)) return { data: [] };
+
     const formatted = data.map((obj) => {
       const { submission, ...form } = obj;
       return Object.assign({ form: form }, submission);

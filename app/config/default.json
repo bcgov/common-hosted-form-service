@@ -50,7 +50,7 @@
     "rateLimit": {
       "public": {
         "windowMs": "60000",
-        "max": "60"
+        "max": "120"
       }
     }
   },
