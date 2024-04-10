@@ -7,6 +7,8 @@ export function formsettings(){
     const depEnv = Cypress.env('depEnv');
     const username=Cypress.env('keycloakUsername');
     
+    
+    
     cy.visit(`/${depEnv}`);
     cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
     cy.get('[data-test="idir"]').click();
@@ -19,8 +21,8 @@ export function formsettings(){
 
 
 
-    //cy.location('pathname').should('eq', `/${depEnv}/form/create`);
-    //cy.contains('h1', 'Form Settings');
+    cy.location('pathname').should('eq', `/${depEnv}/form/create`);
+    cy.contains('h1', 'Form Settings');
     cy.get('.v-row > :nth-child(1) > .v-card > .v-card-title > span').contains('Form Title');
 
     let title="title" + Math.random().toString(16).slice(2);
