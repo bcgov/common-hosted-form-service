@@ -704,8 +704,7 @@ export default {
         filename: templateFile.name,
         template: fileContentAsBase64,
       };
-      const result = await formService.documentTemplateCreate(formId, data);
-      console.log('result', result.data);
+      await formService.documentTemplateCreate(formId, data);
       // const documentTemplateId = result.data.id;
       // const formStore = useFormStore();
       // formStore.setDocumentTemplateId(documentTemplateId);
