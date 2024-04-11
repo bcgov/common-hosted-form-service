@@ -300,5 +300,43 @@ export default {
         </div>
       </template>
     </v-checkbox>
+    <v-checkbox
+      v-model="form.enableDocumentTemplates"
+      hide-details="auto"
+      class="my-0"
+    >
+      <template #label>
+        <div :class="{ 'mr-2': isRTL }">
+          <span
+            style="max-width: 80%"
+            :lang="lang"
+            v-html="$t('trans.printOptions.uploadCdogsTemplate')"
+          />
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <v-icon
+                color="primary"
+                class="ml-3"
+                :class="{ 'mr-2': isRTL }"
+                v-bind="props"
+                icon="mdi:mdi-help-circle-outline"
+              ></v-icon>
+            </template>
+            <span :lang="lang">
+              <a
+                :href="techdocsLinkTemplateUpload"
+                class="preview_info_link_field_white"
+                :target="'_blank'"
+                :hreflang="lang"
+              >
+                {{ $t('trans.formSettings.learnMore') }}
+                <v-icon
+                  icon="mdi:mdi-arrow-top-right-bold-box-outline"
+                ></v-icon></a
+            ></span>
+          </v-tooltip>
+        </div>
+      </template>
+    </v-checkbox>
   </BasePanel>
 </template>

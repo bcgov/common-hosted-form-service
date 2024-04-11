@@ -91,6 +91,7 @@ const service = {
       obj.reminder_enabled = data.reminder_enabled;
       obj.enableCopyExistingSubmission = data.enableCopyExistingSubmission;
       obj.wideFormLayout = data.wideFormLayout;
+      obj.enableDocumentTemplates = data.enableDocumentTemplates;
       obj.deploymentLevel = data.deploymentLevel;
       obj.ministry = data.ministry;
       obj.apiIntegration = data.apiIntegration;
@@ -170,6 +171,7 @@ const service = {
         enableCopyExistingSubmission: data.enableCopyExistingSubmission,
         deploymentLevel: data.deploymentLevel,
         wideFormLayout: data.wideFormLayout,
+        enableDocumentTemplates: data.enableDocumentTemplates,
         ministry: data.ministry,
         apiIntegration: data.apiIntegration,
         useCase: data.useCase,

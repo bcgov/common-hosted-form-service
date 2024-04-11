@@ -583,4 +583,30 @@ export default {
       subscriptionData
     );
   },
+  //
+  // CDOGS Template
+  //
+
+  documentTemplateCreate(formId, data) {
+    return appAxios().post(
+      `${ApiRoutes.FORMS}/${formId}/documentTemplates`,
+      data
+    );
+  },
+
+  documentTemplateDelete(formId, documentTemplateId) {
+    return appAxios().delete(
+      `${ApiRoutes.FORMS}/${formId}/documentTemplates/${documentTemplateId}`
+    );
+  },
+
+  documentTemplateRead(formId, documentTemplateId) {
+    return appAxios().get(
+      `${ApiRoutes.FORMS}/${formId}/documentTemplates/${documentTemplateId}`
+    );
+  },
+
+  documentTemplateList(formId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/documentTemplates`);
+  },
 };

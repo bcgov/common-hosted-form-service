@@ -179,6 +179,8 @@ export default {
     window.addEventListener('beforeunload', this.beforeWindowUnload);
 
     this.reRenderFormIo += 1;
+    const formStore = useFormStore();
+    formStore.setFormId(this.form.id);
   },
   beforeUnmount() {
     window.removeEventListener('beforeunload', this.beforeWindowUnload);

@@ -30,10 +30,20 @@ export default {
       },
       expandedText: false,
       timeout: undefined,
+      tab: 'tab-1',
+      selectedOption: null,
+      defaultTemplate: false,
+      enableDocumentTemplates: false,
+      defaultTemplateContent: null,
+      defaultTemplateDate: '',
+      defaultTemplateFilename: '',
+      defaultTemplateExtension: '',
+      defaultReportname: '',
+      formId: '',
     };
   },
   computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
+    ...mapState(useFormStore, ['isRTL', 'lang', 'form', 'getInitialForm']),
     files() {
       return this.templateForm.files;
     },
@@ -152,9 +162,15 @@ export default {
         let contentFileType = '';
         let outputFileName = '';
 
-        content = await this.fileToBase64(this.templateForm.files[0]);
-        contentFileType = this.templateForm.contentFileType;
-        outputFileName = this.templateForm.outputFileName;
+        if (this.selectedOption === 'default') {
+          content = this.defaultTemplateContent;
+          contentFileType = this.defaultTemplateExtension;
+          outputFileName = this.defaultReportname;
+        } else if (this.selectedOption === 'upload') {
+          content = await this.fileToBase64(this.templateForm.files[0]);
+          contentFileType = this.templateForm.contentFileType;
+          outputFileName = this.templateForm.outputFileName;
+        }
 
         const body = this.createBody(
           content,
@@ -162,7 +178,6 @@ export default {
           outputFileName,
           outputFileType
         );
-
         let response = null;
         // Submit Template to CDOGS API
         if (this.submissionId?.length > 0) {
@@ -174,7 +189,6 @@ export default {
           };
           response = await utilsService.draftDocGen(draftData);
         }
-
         // create file to download
         const filename = this.getDispositionFilename(
           response.headers['content-disposition']
@@ -215,6 +229,32 @@ export default {
         },
       };
     },
+    async fetchDefaultTemplate() {
+      const formStore = useFormStore();
+      this.formId = formStore.formId;
+
+      // Calling the API to check whether the form has any uploaded document templates
+      const result = await formService.readForm(this.formId);
+      this.enableDocumentTemplates = result.data.enableDocumentTemplates;
+      if (this.enableDocumentTemplates) {
+        this.defaultTemplate = true;
+      }
+      if (this.formId && this.enableDocumentTemplates) {
+        const response = await formService.documentTemplateList(this.formId);
+        const temp = response.data[0].template.data;
+        const base64String = temp
+          .map((code) => String.fromCharCode(code))
+          .join('');
+        this.defaultTemplateContent = base64String;
+        this.defaultTemplateFilename = response.data[0].filename;
+        const { name, extension } = this.splitFileName(
+          response.data[0].filename
+        );
+        this.defaultTemplateExtension = extension;
+        this.defaultReportname = name;
+        this.defaultTemplateDate = response.data[0].createdAt.split('T')[0];
+      }
+    },
   },
 };
 </script>
@@ -242,87 +282,182 @@ export default {
       content-class="export-submissions-dlg"
     >
       <v-card :class="{ 'dir-rtl': isRTL }">
-        <v-card-title class="text-h5 pb-0" :lang="lang">{{
-          $t('trans.printOptions.downloadOptions')
+        <v-card-title class="text-h5 pb-0 mt-2" :lang="lang">{{
+          $t('trans.printOptions.printOptions')
         }}</v-card-title>
         <v-card-text>
-          <hr />
-          <p :lang="lang">
-            <strong>1. </strong>
-            <a
-              href="https://github.com/bcgov/common-hosted-form-service/wiki/Printing-from-a-browser"
-              target="blank"
-              :hreflang="lang"
-            >
-              {{ $t('trans.printOptions.print') }}
-            </a>
-            {{ $t('trans.printOptions.pageFromBrowser') }}
-          </p>
-          <v-switch v-model="expandedText" color="primary">
-            <template #label>
-              <span style="font-size: 16px">Expand text fields</span>
-            </template>
-          </v-switch>
-          <v-btn class="mb-5 mr-5" color="primary" @click="printBrowser">
-            <span :lang="lang">{{
+          <v-tabs v-model="tab" class="mb-5">
+            <v-tab value="tab-1">{{
               $t('trans.printOptions.browserPrint')
-            }}</span>
-          </v-btn>
-
-          <p :lang="lang">
-            <strong>2.</strong> {{ $t('trans.printOptions.uploadA') }}
-            <a
-              href="https://github.com/bcgov/common-hosted-form-service/wiki/CDOGS-Template-Upload"
-              target="blank"
-              :hreflang="lang"
-            >
-              {{ $t('trans.printOptions.cDogsTemplate') }}
-            </a>
-            {{ $t('trans.printOptions.uploadB') }}
-          </p>
-          <v-file-input
-            v-model="templateForm.files"
-            :class="{ label: isRTL }"
-            :style="isRTL ? { gap: '10px' } : null"
-            counter
-            :clearable="true"
-            :label="$t('trans.printOptions.uploadTemplateFile')"
-            persistent-hint
-            prepend-icon="attachment"
-            required
-            mandatory
-            show-size
-            :lang="lang"
-          />
-          <v-card-actions>
-            <v-tooltip location="top">
-              <template #activator="{ props }">
+            }}</v-tab>
+            <v-tab value="tab-2" @click="fetchDefaultTemplate">{{
+              $t('trans.printOptions.templatePrint')
+            }}</v-tab>
+          </v-tabs>
+          <v-window v-model="tab">
+            <v-window-item value="tab-1">
+              <v-checkbox v-model="expandedText" color="primary">
+                <template #label>
+                  <span>{{ $t('trans.printOptions.expandtextFields') }}</span>
+                </template>
+              </v-checkbox>
+              <div class="flex-container">
                 <v-btn
-                  id="file-input-submit"
-                  variant="flat"
-                  class="btn-file-input-submit px-4"
-                  :disabled="!templateForm.files"
+                  class="mb-5"
+                  :class="isRTL ? 'ml-2' : 'mr-2'"
                   color="primary"
-                  :loading="loading"
-                  v-bind="props"
-                  @click="generate"
+                  @click="printBrowser"
                 >
-                  <v-icon
-                    :start="$vuetify.display.smAndUp"
-                    icon="mdi:mdi-content-save"
-                  />
                   <span :lang="lang">{{
-                    $t('trans.printOptions.templatePrint')
+                    $t('trans.printOptions.browserPrint')
                   }}</span>
                 </v-btn>
-              </template>
-              <span :lang="lang">{{
-                $t('trans.printOptions.submitButtonTxt')
-              }}</span>
-            </v-tooltip>
-          </v-card-actions>
+                <v-btn
+                  variant="outlined"
+                  color="textLink"
+                  :class="isRTL ? 'ml-5' : 'mr-5'"
+                  @click="dialog = false"
+                >
+                  <span :lang="lang">{{
+                    $t('trans.formSubmission.cancel')
+                  }}</span>
+                </v-btn>
+                <!-- More Info Link -->
+                <a
+                  href="https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/Printing-from-a-browser/"
+                  target="_blank"
+                  class="more-info-link"
+                  :lang="lang"
+                >
+                  <v-icon size="small" class="mx-1">mdi-help-circle</v-icon>
+                  {{ $t('trans.printOptions.moreInfo') }}
+                </a>
+              </div>
+            </v-window-item>
+            <v-window-item value="tab-2">
+              <v-radio-group v-model="selectedOption">
+                <!-- Radio 1 -->
+                <v-radio
+                  v-if="defaultTemplate"
+                  :label="$t('trans.printOptions.defaultCdogsTemplate')"
+                  value="default"
+                ></v-radio>
+                <v-table
+                  v-if="selectedOption === 'default'"
+                  style="
+                    color: gray;
+                    border: 1px solid lightgray;
+                    border-radius: 8px;
+                  "
+                  class="mb-5 mt-3 mx-10"
+                >
+                  <thead>
+                    <tr>
+                      <th class="text-left">
+                        {{ $t('trans.printOptions.fileName') }}
+                      </th>
+                      <th class="text-left">
+                        {{ $t('trans.printOptions.uploadDate') }}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{ defaultTemplateFilename }}</td>
+                      <td>{{ defaultTemplateDate }}</td>
+                    </tr>
+                  </tbody>
+                </v-table>
+
+                <!-- Radio 2 -->
+                <v-radio
+                  :label="$t('trans.printOptions.uploadCdogsTemplate')"
+                  value="upload"
+                ></v-radio>
+                <v-file-input
+                  v-model="templateForm.files"
+                  :class="{ label: isRTL }"
+                  :style="isRTL ? { gap: '10px' } : null"
+                  counter
+                  :clearable="true"
+                  :label="$t('trans.printOptions.uploadTemplateFile')"
+                  persistent-hint
+                  required
+                  mandatory
+                  show-size
+                  :lang="lang"
+                  :disabled="selectedOption !== 'upload'"
+                />
+              </v-radio-group>
+
+              <v-card-actions>
+                <v-tooltip location="top">
+                  <template #activator="{ props }">
+                    <div class="flex-container">
+                      <v-btn
+                        id="file-input-submit"
+                        variant="flat"
+                        class="btn-file-input-submit px-4"
+                        :disabled="!templateForm.files"
+                        color="primary"
+                        :loading="loading"
+                        v-bind="props"
+                        @click="generate"
+                      >
+                        <v-icon
+                          :start="$vuetify.display.smAndUp"
+                          icon="mdi:mdi-content-save"
+                        />
+                        <span :lang="lang">{{
+                          $t('trans.printOptions.templatePrint')
+                        }}</span>
+                      </v-btn>
+                      <v-btn
+                        variant="outlined"
+                        color="textLink"
+                        :class="isRTL ? 'ml-5' : 'mr-5'"
+                        @click="dialog = false"
+                      >
+                        <span :lang="lang">{{
+                          $t('trans.formSubmission.cancel')
+                        }}</span>
+                      </v-btn>
+
+                      <a
+                        href="https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/CDOGS-Template-Upload/"
+                        target="_blank"
+                        class="more-info-link"
+                        :lang="lang"
+                      >
+                        <v-icon size="small" class="mx-1"
+                          >mdi-help-circle</v-icon
+                        >
+                        {{ $t('trans.printOptions.moreInfo') }}
+                      </a>
+                    </div>
+                  </template>
+                  <span :lang="lang">{{
+                    $t('trans.printOptions.submitButtonTxt')
+                  }}</span>
+                </v-tooltip>
+              </v-card-actions>
+            </v-window-item>
+          </v-window>
         </v-card-text>
       </v-card>
     </v-dialog>
   </span>
 </template>
+
+<style scoped>
+.more-info-link {
+  color: gray;
+  text-decoration: none;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.flex-container {
+  display: flex;
+}
+</style>

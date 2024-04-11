@@ -622,6 +622,7 @@ export default {
         enableSubmitterDraft: this.form.enableSubmitterDraft,
         enableCopyExistingSubmission: this.form.enableCopyExistingSubmission,
         wideFormLayout: this.form.wideFormLayout,
+        enableDocumentTemplates: this.form.enableDocumentTemplates,
         enableStatusUpdates: this.form.enableStatusUpdates,
         showSubmissionConfirmation: this.form.showSubmissionConfirmation,
         submissionReceivedEmails: this.form.submissionReceivedEmails,
@@ -632,6 +633,11 @@ export default {
         useCase: this.form.useCase,
         labels: this.form.labels,
       });
+      // Post document template
+      const templateFile = useFormStore().documentTemplate;
+      if (templateFile) {
+        await this.postDocumentTemplate(response.data.id, templateFile);
+      }
       // update user labels with any new added labels
       if (
         this.form.labels.some((label) => this.userLabels.indexOf(label) === -1)
@@ -680,6 +686,29 @@ export default {
         name: 'FormDesigner',
         query: { ...this.$route.query, sv: true, svs: 'Saved' },
       });
+    },
+    async postDocumentTemplate(formId, templateFile) {
+      const fileContentAsBase64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(templateFile);
+        reader.onload = () => {
+          // Strip the Data URL scheme part (everything up to, and including, the comma)
+          const base64Content = reader.result.split(',')[1];
+          resolve(base64Content);
+        };
+        reader.onerror = (error) => {
+          reject(error);
+        };
+      });
+      const data = {
+        filename: templateFile.name,
+        template: fileContentAsBase64,
+      };
+      const result = await formService.documentTemplateCreate(formId, data);
+      console.log('result', result.data);
+      // const documentTemplateId = result.data.id;
+      // const formStore = useFormStore();
+      // formStore.setDocumentTemplateId(documentTemplateId);
     },
 
     // ----------------------------------------------------------------------------------/ Patch History
