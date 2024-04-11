@@ -21,6 +21,8 @@ export default {
         'https://github.com/bcgov/common-hosted-form-service/wiki/Event-Subscription',
       githubLinkWideFormLayout:
         'https://github.com/bcgov/common-hosted-form-service/wiki/Wide-Form-Layout',
+      techdocsLinkTemplateUpload:
+        'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/CDOGS-Template-Upload/',
     };
   },
   computed: {
@@ -102,7 +104,7 @@ export default {
             :lang="lang"
             v-html="$t('trans.formSettings.allowMultiDraft')"
           />
-          <v-tooltip location="bottom" close-delay="2500">
+          <v-tooltip location="bottom">
             <template #activator="{ props }">
               <v-icon
                 color="primary"
@@ -155,7 +157,7 @@ export default {
           <span :lang="lang">{{
             $t('trans.formSettings.formSubmissionsSchedule')
           }}</span>
-          <v-tooltip location="bottom" close-delay="2500">
+          <v-tooltip location="bottom">
             <template #activator="{ props }">
               <v-icon
                 color="primary"
@@ -196,7 +198,7 @@ export default {
             :lang="lang"
             v-html="$t('trans.formSettings.submitterCanCopyExistingSubmissn')"
           />
-          <v-tooltip location="bottom" close-delay="2500">
+          <v-tooltip location="bottom">
             <template #activator="{ props }">
               <v-icon
                 color="primary"
@@ -236,7 +238,7 @@ export default {
             :lang="lang"
             v-html="$t('trans.formSettings.allowEventSubscription')"
           />
-          <v-tooltip location="bottom" close-delay="2500">
+          <v-tooltip location="bottom">
             <template #activator="{ props }">
               <v-icon
                 color="primary"
@@ -271,7 +273,7 @@ export default {
             :lang="lang"
             v-html="$t('trans.formSettings.wideFormLayout')"
           />
-          <v-tooltip location="bottom" close-delay="2500">
+          <v-tooltip location="bottom">
             <template #activator="{ props }">
               <v-icon
                 color="primary"
