@@ -146,7 +146,8 @@
     "allowEventSubscription": "Allow event subscription",
     "eventSubscription": "Event Subscription",
     "validEndpointRequired": "Please enter a valid endpoint starting with https://",
-    "validBearerTokenRequired": "Enter a valid bearer token example: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+    "validBearerTokenRequired": "Enter a valid bearer token example: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
+    "wideFormLayout": "Wide Form Layout"
   },
   "formProfile": {
     "message": "The CHEFS team is collecting and organizing information to serve as crucial input for crafting comprehensive business cases. These cases will play a pivotal role in guiding the strategic operation and ongoing improvement of CHEFS in the coming years. This initiative to gather data is essential for informing critical decisions and molding the trajectory of CHEFS, ensuring its adaptability and effectiveness in addressing evolving needs and challenges.",
@@ -580,7 +581,8 @@
     "fetchConsoleErrMsg": "Error adding note:",
     "notes": "Notes",
     "note": "Note",
-    "maxChars": "Max 4000 characters"
+    "maxChars": "Max 4000 characters",
+    "totalNotes": "Total Notes:"
   },
   "statusPanel": {
     "currentStatus": "Current Status:",
@@ -884,7 +886,8 @@
     "saveAsADraft": "Save as a Draft",
     "editThisDraft": "Edit this Draft",
     "switchSingleSubmssn": "Switch to single submission",
-    "switchMultiSubmssn": "Switch to multiple submissions"
+    "switchMultiSubmssn": "Switch to multiple submissions",
+    "wideLayout": "Wide Layout"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Link copied to clipboard",

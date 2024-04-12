@@ -150,7 +150,8 @@
     "allowEventSubscription": "Consenti l'iscrizione agli eventi",
     "eventSubscription": "Abbonamento all'evento",
     "validEndpointRequired": "Inserisci un endpoint valido che inizi con https://",
-    "validBearerTokenRequired": "Inserisci un esempio di token al portatore valido: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+    "validBearerTokenRequired": "Inserisci un esempio di token al portatore valido: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
+    "wideFormLayout": "Layout di modulo ampio"
   },
   "formProfile": {
     "message": "Il team CHEFS sta raccogliendo e organizzando informazioni per servire come input cruciale per la creazione di casi aziendali completi. Questi casi avranno un ruolo cruciale nella guida dell'operazione strategica e nell'ulteriore miglioramento di CHEFS nei prossimi anni. Questa iniziativa di raccolta dati è essenziale per informare decisioni critiche e plasmare la traiettoria di CHEFS, garantendone adattabilità ed efficacia nel affrontare esigenze e sfide in evoluzione.",
@@ -584,7 +585,8 @@
     "fetchConsoleErrMsg": "Errore durante l'aggiunta della nota:",
     "notes": "Appunti",
     "note": "Nota",
-    "maxChars": "Massimo 4000 caratteri"
+    "maxChars": "Massimo 4000 caratteri",
+    "totalNotes": "Note Totali:"
   },
   "statusPanel": {
     "currentStatus": "Stato attuale:",
@@ -880,7 +882,8 @@
     "saveAsADraft": "Salva come bozza",
     "editThisDraft": "Modifica questa bozza",
     "switchSingleSubmssn": "Passa all'invio singolo",
-    "switchMultiSubmssn": "Passa a più invii"
+    "switchMultiSubmssn": "Passa a più invii",
+    "wideLayout": "Layout ampio"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Link copiato negli appunti",

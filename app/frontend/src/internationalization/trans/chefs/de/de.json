@@ -150,7 +150,8 @@
     "allowEventSubscription": "Ereignisabonnement zulassen",
     "eventSubscription": "Ereignisabonnement",
     "validEndpointRequired": "Bitte geben Sie einen gültigen Endpunkt ein, beginnend mit https://",
-    "validBearerTokenRequired": "Bitte geben Sie ein gültiges Token ein. Beispiel: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+    "validBearerTokenRequired": "Bitte geben Sie ein gültiges Token ein. Beispiel: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
+    "wideFormLayout": "Breites Formularlayout"
   },
   "formProfile": {
     "message": "Das CHEFS-Team sammelt und organisiert Informationen, um als entscheidende Grundlage für die Erstellung umfassender Geschäftsfälle zu dienen. Diese Fälle werden eine Schlüsselrolle dabei spielen, den strategischen Betrieb und die laufende Verbesserung von CHEFS in den kommenden Jahren zu leiten. Diese Initiative zur Datensammlung ist entscheidend, um kritische Entscheidungen zu informieren und die Trajektorie von CHEFS zu formen, um seine Anpassungsfähigkeit und Wirksamkeit bei der Bewältigung sich wandelnder Bedürfnisse und Herausforderungen zu gewährleisten.",
@@ -584,7 +585,9 @@
     "fetchConsoleErrMsg": "Fehler beim Hinzufügen der Notiz:",
     "notes": "Anmerkungen",
     "note": "Notiz",
-    "maxChars": "Maximal 4000 Zeichen"
+    "maxChars": "Maximal 4000 Zeichen",
+    "totalNotes": "Gesamtanzahl Notizen:"
+
   },
   "statusPanel": {
     "currentStatus": "Aktueller Status:",
@@ -880,7 +883,8 @@
     "saveAsADraft": "Als einen Entwurf sichern",
     "editThisDraft": "Bearbeiten Sie diesen Entwurf",
     "switchSingleSubmssn": "Wechseln Sie zur Einzeleinreichung",
-    "switchMultiSubmssn": "Wechseln Sie zu mehreren Einreichungen"
+    "switchMultiSubmssn": "Wechseln Sie zu mehreren Einreichungen",
+    "wideLayout": "Breites Layout"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Link in die Zwischenablage kopiert",

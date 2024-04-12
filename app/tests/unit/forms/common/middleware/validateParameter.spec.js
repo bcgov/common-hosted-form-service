@@ -13,6 +13,106 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
+describe('validateDocumentTemplateId', () => {
+  const documentTemplateId = uuidv4();
+
+  const mockReadDocumentTemplateResponse = {
+    formId: formId,
+    id: documentTemplateId,
+  };
+
+  formService.documentTemplateRead = jest.fn().mockReturnValue(mockReadDocumentTemplateResponse);
+
+  describe('400 response when', () => {
+    const expectedStatus = { status: 400 };
+
+    test('documentTemplateId is missing', async () => {
+      const req = getMockReq({
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateDocumentTemplateId(req, res, next);
+
+      expect(formService.documentTemplateRead).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+    });
+
+    test.each(invalidUuids)('documentTemplateId is "%s"', async (eachDocumentTemplateId) => {
+      const req = getMockReq({
+        params: { formId: formId, documentTemplateId: eachDocumentTemplateId },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateDocumentTemplateId(req, res, next, eachDocumentTemplateId);
+
+      expect(formService.documentTemplateRead).not.toHaveBeenCalled();
+      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+    });
+  });
+
+  describe('404 response when', () => {
+    const expectedStatus = { status: 404 };
+
+    test('formId does not match', async () => {
+      formService.documentTemplateRead.mockReturnValueOnce({
+        formId: uuidv4(),
+        id: documentTemplateId,
+      });
+      const req = getMockReq({
+        params: {
+          formId: formId,
+          documentTemplateId: documentTemplateId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateDocumentTemplateId(req, res, next, documentTemplateId);
+
+      expect(formService.documentTemplateRead).toHaveBeenCalled();
+      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+    });
+  });
+
+  describe('handles error thrown by', () => {
+    test('documentTemplateRead', async () => {
+      const error = new Error();
+      formService.documentTemplateRead.mockRejectedValueOnce(error);
+      const req = getMockReq({
+        params: {
+          formId: formId,
+          documentTemplateId: documentTemplateId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateDocumentTemplateId(req, res, next, documentTemplateId);
+
+      expect(formService.documentTemplateRead).toHaveBeenCalled();
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
+  describe('allows', () => {
+    test('document template with matching form id', async () => {
+      const req = getMockReq({
+        params: {
+          formId: formId,
+          documentTemplateId: documentTemplateId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateDocumentTemplateId(req, res, next, documentTemplateId);
+
+      expect(formService.documentTemplateRead).toHaveBeenCalled();
+      expect(next).toHaveBeenCalledWith();
+    });
+  });
+});
+
 describe('validateFormId', () => {
   describe('400 response when', () => {
     const expectedStatus = { status: 400 };
