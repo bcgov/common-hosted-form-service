@@ -22,6 +22,7 @@ export default {
       notesPerPage: 3,
       page: 1,
       showNoteField: false,
+      showNotesContent: false,
     };
   },
   computed: {
@@ -82,22 +83,39 @@ export default {
     type="list-item-two-line"
     class="bgtrans"
   >
-    <div class="mt-6 d-flex flex-md-row justify-space-between">
+    <div
+      class="d-flex flex-md-row justify-space-between"
+      @click="showNotesContent = !showNotesContent"
+    >
       <div cols="12" sm="6">
         <h2 class="note-heading" :lang="lang">
           {{ $t('trans.notesPanel.notes') }}
+          <v-icon>{{
+            showNotesContent
+              ? 'mdi:mdi-chevron-down'
+              : isRTL
+              ? 'mdi:mdi-chevron-left'
+              : 'mdi:mdi-chevron-right'
+          }}</v-icon>
         </h2>
       </div>
-      <div :class="{ 'text-left': isRTL }">
+
+      <div :class="[{ 'text-left': isRTL }, 'd-flex', 'align-items-center']">
+        <!-- Text for number of notes -->
+        <span class="notes-text" :lang="lang">
+          <strong>{{ $t('trans.notesPanel.totalNotes') }}</strong>
+          {{ notes.length }}
+        </span>
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <v-btn
-              class="mx-1"
+              class="notes-button"
               color="primary"
               icon
               size="x-small"
               v-bind="props"
-              @click="showNoteField = true"
+              @click.stop="showNoteField = true"
+              @click="showNotesContent = true"
             >
               <v-icon icon="mdi:mdi-plus"></v-icon>
             </v-btn>
@@ -106,69 +124,93 @@ export default {
         </v-tooltip>
       </div>
     </div>
+    <div v-if="showNotesContent" class="mt-4">
+      <v-form v-if="showNoteField">
+        <v-textarea
+          v-model="newNote"
+          :class="{ 'dir-rtl': isRTL }"
+          :rules="[(v) => v.length <= 4000 || $t('trans.notesPanel.maxChars')]"
+          counter
+          auto-grow
+          density="compact"
+          variant="outlined"
+          solid
+          :lang="lang"
+        />
+        <v-row>
+          <v-col>
+            <v-btn
+              class="wide-button"
+              color="primary"
+              variant="outlined"
+              @click="showNoteField = false"
+            >
+              <span :lang="lang">{{ $t('trans.notesPanel.cancel') }}</span>
+            </v-btn>
+            <v-btn
+              class="wide-button"
+              color="primary"
+              data-test="btn-add-note"
+              :disabled="!newNote"
+              @click="addNote"
+            >
+              <span :lang="lang">{{ $t('trans.notesPanel.addNote') }}</span>
+            </v-btn>
+          </v-col>
+        </v-row>
+      </v-form>
 
-    <v-form v-if="showNoteField">
-      <div class="mb-2" :class="{ 'dir-rtl': isRTL }" :lang="lang">
-        {{ $t('trans.notesPanel.note') }}
-      </div>
-      <v-textarea
-        v-model="newNote"
-        :class="{ 'dir-rtl': isRTL }"
-        :rules="[(v) => v.length <= 4000 || $t('trans.notesPanel.maxChars')]"
-        counter
-        auto-grow
-        density="compact"
-        variant="outlined"
-        solid
-        :lang="lang"
-      />
-      <v-row>
-        <v-col cols="12" sm="6" xl="4">
-          <v-btn
-            block
-            color="primary"
-            variant="outlined"
-            @click="showNoteField = false"
-          >
-            <span :lang="lang">{{ $t('trans.notesPanel.cancel') }}</span>
-          </v-btn>
-        </v-col>
-        <v-col cols="12" sm="6" xl="4" order="first" order-sm="last">
-          <v-btn
-            block
-            color="primary"
-            data-test="btn-add-note"
-            :disabled="!newNote"
-            @click="addNote"
-          >
-            <span :lang="lang">{{ $t('trans.notesPanel.addNote') }}</span>
-          </v-btn>
-        </v-col>
-      </v-row>
-    </v-form>
-
-    <v-data-iterator :items="notes" :items-per-page="notesPerPage" :page="page">
-      <template #default="props">
-        <ul class="mt-5" :class="{ 'dir-rtl': isRTL, 'mr-2': isRTL }">
-          <li v-for="note in props.items" :key="note.id">
-            <strong>
-              {{ $filters.formatDateLong(note.raw.createdAt) }} -
-              {{ note.raw.createdBy }}
-            </strong>
-            <br />
-            {{ note.raw.note }}
-          </li>
-        </ul>
-      </template>
-      <template #footer="{ pageCount }">
-        <v-pagination v-model="page" :length="pageCount"></v-pagination>
-      </template>
-    </v-data-iterator>
+      <v-data-iterator
+        :items="notes"
+        :items-per-page="notesPerPage"
+        :page="page"
+      >
+        <template #default="props">
+          <ul class="mt-5" :class="{ 'dir-rtl': isRTL, 'mr-2': isRTL }">
+            <li v-for="note in props.items" :key="note.id">
+              <strong>
+                {{ $filters.formatDateLong(note.raw.createdAt) }} -
+                {{ note.raw.createdBy }}
+              </strong>
+              <br />
+              {{ note.raw.note }}
+            </li>
+          </ul>
+        </template>
+        <template #footer="{ pageCount }">
+          <v-pagination v-model="page" :length="pageCount"></v-pagination>
+        </template>
+      </v-data-iterator>
+    </div>
   </v-skeleton-loader>
 </template>
 
 <style lang="scss" scoped>
 .note-heading {
   color: #003366;
+  margin-bottom: 0;
+  .v-icon {
+    transition: transform 0.3s ease;
+  }
+}
+
+.notes-text {
+  margin-right: 15px;
+  margin-left: 15px;
+}
+
+.notes-button {
+  margin-right: 1px;
+  margin-left: 1px;
+}
+
+.wide-button {
+  width: 200px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.wide-button:last-child {
+  margin-right: 0;
 }
 </style>
