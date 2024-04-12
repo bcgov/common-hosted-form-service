@@ -147,7 +147,7 @@ export default {
                   mdi-delete-outline
                 </v-icon>
               </template>
-              <span>Delete</span>
+              <span>{{ $t('trans.formSettings.delete') }}</span>
             </v-tooltip>
           </td>
         </tr>

@@ -151,7 +151,8 @@
     "uploadCdogsTemplate": "Upload CDOGS template",
     "cDogsTemplate": "CDOGS Template",
     "filename": "Filename",
-    "uploadDate": "Upload Date"
+    "uploadDate": "Upload Date",
+    "delete": "Delete"
 
   },
   "formProfile": {
