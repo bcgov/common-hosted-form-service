@@ -40,6 +40,7 @@ export default {
       defaultTemplateExtension: '',
       defaultReportname: '',
       formId: '',
+      displayTemplatePrintButton: false,
     };
   },
   computed: {
@@ -51,9 +52,16 @@ export default {
   watch: {
     files() {
       if (
+        this.templateForm.files.length === null ||
+        this.templateForm.files.length === 0
+      ) {
+        this.displayTemplatePrintButton = false;
+      }
+      if (
         this.templateForm?.files &&
         this.templateForm.files[0] instanceof File
       ) {
+        this.displayTemplatePrintButton = true;
         const { name, extension } = this.splitFileName(
           this.templateForm.files[0].name
         );
@@ -61,6 +69,13 @@ export default {
           this.templateForm.outputFileName = name;
         }
         this.templateForm.contentFileType = extension;
+      }
+    },
+    selectedOption() {
+      if (this.selectedOption === 'default') {
+        this.displayTemplatePrintButton = true;
+      } else {
+        this.displayTemplatePrintButton = false;
       }
     },
   },
@@ -398,7 +413,7 @@ export default {
                         id="file-input-submit"
                         variant="flat"
                         class="btn-file-input-submit px-4"
-                        :disabled="!templateForm.files"
+                        :disabled="!displayTemplatePrintButton"
                         color="primary"
                         :loading="loading"
                         v-bind="props"
