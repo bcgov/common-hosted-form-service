@@ -75,6 +75,7 @@ export default {
     },
     async isTemplateAttached(formId) {
       const response = await formService.documentTemplateList(formId);
+      console.log(response);
       if (response.data.length > 0) {
         this.template = response.data[0];
         return true;

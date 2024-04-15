@@ -49,7 +49,7 @@ export default {
         <FormScheduleSettings />
       </v-col>
       <v-col v-if="form.enableDocumentTemplates" cols="12" md="6">
-        <FormDocumentTemplateSettings />
+        <FormDocumentTemplateSettings :disabled="disabled" />
       </v-col>
     </v-row>
   </v-container>
