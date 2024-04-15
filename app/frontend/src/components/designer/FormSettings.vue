@@ -23,6 +23,14 @@ export default {
       default: false,
     },
   },
+  methods: {
+    handleFileUpload(isUploaded) {
+      this.$emit('update:fileUploaded', isUploaded);
+    },
+    handleCheckboxSelected(isSelected) {
+      this.$emit('update:checkboxSelected', isSelected);
+    },
+  },
   computed: {
     ...mapWritableState(useFormStore, ['form']),
     ...mapState(useFormStore, ['isFormPublished', 'isRTL']),
@@ -40,7 +48,10 @@ export default {
         <FormAccessSettings />
       </v-col>
       <v-col cols="12" md="6">
-        <FormFunctionalitySettings :disabled="disabled" />
+        <FormFunctionalitySettings
+          :disabled="disabled"
+          @update:checkboxSelected="handleCheckboxSelected"
+        />
       </v-col>
       <v-col cols="12" md="6">
         <FormSubmissionSettings />
@@ -49,7 +60,10 @@ export default {
         <FormScheduleSettings />
       </v-col>
       <v-col v-if="form.enableDocumentTemplates" cols="12" md="6">
-        <FormDocumentTemplateSettings :disabled="disabled" />
+        <FormDocumentTemplateSettings
+          :disabled="disabled"
+          @update:fileUploaded="handleFileUpload"
+        />
       </v-col>
     </v-row>
   </v-container>

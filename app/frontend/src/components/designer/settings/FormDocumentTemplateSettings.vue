@@ -22,6 +22,7 @@ export default {
     ...mapWritableState(useFormStore, ['form']),
   },
   mounted() {
+    this.$emit('update:fileUploaded', false);
     if (!this.isFormPublished) {
       this.showDropbox = true;
     } else {
@@ -33,7 +34,17 @@ export default {
       }
     }
   },
+  beforeUnmount() {
+    this.$emit('update:fileUploaded', true);
+  },
   methods: {
+    emitFileUploaded(event) {
+      if (event.length > 0) {
+        this.$emit('update:fileUploaded', true);
+      } else {
+        this.$emit('update:fileUploaded', false);
+      }
+    },
     writeFileToStore(event) {
       this.uploadedFile = event.target.files[0];
       if (!this.uploadedFile) return;
@@ -75,7 +86,6 @@ export default {
     },
     async isTemplateAttached(formId) {
       const response = await formService.documentTemplateList(formId);
-      console.log(response);
       if (response.data.length > 0) {
         this.template = response.data[0];
         return true;
@@ -101,11 +111,12 @@ export default {
       counter
       :clearable="true"
       :label="$t('trans.printOptions.uploadTemplateFile')"
-      required
+      required="true"
       mandatory
       show-size
       :lang="lang"
       @change="writeFileToStore($event)"
+      @update:model-value="emitFileUploaded($event)"
     />
     <v-btn
       v-if="showUploadButton"

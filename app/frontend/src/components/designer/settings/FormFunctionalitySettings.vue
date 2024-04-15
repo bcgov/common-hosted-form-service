@@ -50,6 +50,9 @@ export default {
         this.form.enableSubmitterDraft = true;
       }
     },
+    emitTemplateCheckbox(event) {
+      this.$emit('update:checkboxSelected', event);
+    },
   },
 };
 </script>
@@ -304,6 +307,7 @@ export default {
       v-model="form.enableDocumentTemplates"
       hide-details="auto"
       class="my-0"
+      @update:model-value="emitTemplateCheckbox($event)"
     >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">

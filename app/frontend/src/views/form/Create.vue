@@ -31,6 +31,8 @@ export default {
       settingsFormValid: false,
       disclaimerCheckbox: false,
       disclaimerRules: [(v) => !!v || i18n.t('trans.create.agreementErrMsg')],
+      templateAttached: true, // tracks if the CDOGS template is enabled, set to true if not using CDOGS
+      templateCheckbox: false,
     };
   },
   computed: {
@@ -64,6 +66,12 @@ export default {
     onFormLoad() {
       if (this.$refs?.formDesigner) this.$refs.formDesigner.onFormLoad();
     },
+    handleFileUpload(isUploaded) {
+      this.templateAttached = isUploaded;
+    },
+    handleCheckboxSelected(isSelected) {
+      this.templateCheckbox = isSelected;
+    },
   },
 };
 </script>
@@ -75,7 +83,10 @@ export default {
         <h1 :lang="lang">
           {{ $t('trans.create.formSettings') }}
         </h1>
-        <FormSettings />
+        <FormSettings
+          @update:fileUploaded="handleFileUpload"
+          @update:checkboxSelected="handleCheckboxSelected"
+        />
 
         <FormProfile />
 
@@ -101,7 +112,9 @@ export default {
         </BasePanel>
       </v-form>
       <v-btn
-        :disabled="!settingsFormValid"
+        :disabled="
+          !settingsFormValid || (!templateAttached && templateCheckbox)
+        "
         color="primary"
         data-test="continue-btn"
         @click="reRenderFormDesigner()"
