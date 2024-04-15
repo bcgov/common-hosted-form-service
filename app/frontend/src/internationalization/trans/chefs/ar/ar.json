@@ -151,7 +151,12 @@
     "eventSubscription": "اشتراك الحدث",
     "validEndpointRequired": "الرجاء إدخال نقطة نهاية https://",
     "validBearerTokenRequired": "89abddfb-2cff-4fda-83e6-13221f0c3d4f أدخل مثال رمز حامل صالح",
-    "wideFormLayout": "تخطيط نموذج واسع"
+    "wideFormLayout": "تخطيط نموذج واسع",
+    "uploadCdogsTemplate": "تحميل قالب CDOGS",
+    "cDogsTemplate": "قالب CDOGS",
+    "filename": "اسم الملف",
+    "uploadDate": "تاريخ الرفع",
+    "delete": "حذف"
   },
   "formProfile": {
     "message": "تقوم فرق CHEFS بجمع وتنظيم المعلومات لتكون مدخلات حاسمة لصياغة حالات أعمال شاملة. ستلعب هذه الحالات دورًا حيويًا في توجيه العمليات الاستراتيجية وتحسين CHEFS المستمر في السنوات القادمة. هذه المبادرة لجمع البيانات ضرورية لإعلام القرارات الحاسمة وتشكيل مسار CHEFS ، مما يضمن قابليتها للتكيف وفعاليتها في التعامل مع الاحتياجات والتحديات المتطورة.",
@@ -676,7 +681,14 @@
     "docGrnSucess": "تم إنشاء المستند بنجاح",
     "failedDocGenErrMsg": "فشل إنشاء المستند",
     "failedDocGenConsErrMsg": "خطأ في إرسال النموذج: {error}",
-    "cDogsTemplate": "قالب CDOGS"
+    "cDogsTemplate": "قالب CDOGS",
+    "uploadCdogsTemplate": "تحميل قالب CDOGS",
+    "printOptions": "خيارات الطباعة",
+    "expandtextFields": "توسيع حقول النص",
+    "moreInfo": "مزيد من المعلومات",
+    "defaultCdogsTemplate": "استخدام قالب CDOGS الافتراضي",
+    "fileName": "اسم الملف",
+    "uploadDate": "تاريخ الرفع"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "رابط معلومات المكون",

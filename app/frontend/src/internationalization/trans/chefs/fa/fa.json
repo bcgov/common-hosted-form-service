@@ -151,7 +151,12 @@
     "eventSubscription": "اشتراک رویداد",
     "validEndpointRequired": "لطفاً یک نقطه پایان معتبر که با شروع آن شروع می شود وارد کنید https://",
     "validBearerTokenRequired": "89abddfb-2cff-4fda-83e6-13221f0c3d4f یک نمونه توکن حامل معتبر وارد کنید",
-    "wideFormLayout": "طرح فرم گسترده"
+    "wideFormLayout": "طرح فرم گسترده",
+    "uploadCdogsTemplate": "بارگذاری قالب CDOGS",
+    "cDogsTemplate": "قالب CDOGS",
+    "filename": "نام فایل",
+    "uploadDate": "تاریخ بارگذاری",
+    "delete": "حذف"
   },
   "formProfile": {
     "message": "تیم CHEFS اطلاعات را جمع آوری و سازماندهی می‌کند تا به عنوان ورودی حیاتی برای ساخت مورد کارهای تجاری جامع عمل کند. این موارد نقش کلیدی در راهنمایی عملیات استراتژیک و بهبود مستمر CHEFS در سال‌های آینده خواهند داشت. این اقدام برای جمع‌آوری داده‌ها برای اطلاع از تصمیمات حیاتی و شکل‌دهی مسیر CHEFS جهت اطمینان از قابلیت تطبیق و کارایی آن در مواجهه با نیازها و چالش‌های در حال تحول حیاتی است.",
@@ -676,7 +681,14 @@
     "docGrnSucess": "سند با موفقیت ایجاد شد",
     "failedDocGenErrMsg": "سند ایجاد نشد",
     "failedDocGenConsErrMsg": "خطا در ارسال الگو: {error}",
-    "cDogsTemplate": "قالب CDOGS"
+    "cDogsTemplate": "قالب CDOGS",
+    "uploadCdogsTemplate": "بارگذاری قالب CDOGS",
+    "printOptions": "گزینه‌های چاپ",
+    "expandtextFields": "گسترش فیلدهای متنی",
+    "moreInfo": "اطلاعات بیشتر",
+    "defaultCdogsTemplate": "استفاده از قالب پیش‌فرض CDOGS",
+    "fileName": "نام فایل",
+    "uploadDate": "تاریخ بارگذاری"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "لینک اطلاعات کامپوننت",

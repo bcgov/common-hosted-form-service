@@ -151,7 +151,12 @@
     "eventSubscription": "Подписка на события",
     "validEndpointRequired": "Введите допустимый URL, начинающуюся с https://",
     "validBearerTokenRequired": "Введите допустимый пример токена: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
-    "wideFormLayout": "Широкая форма раскладки"
+    "wideFormLayout": "Широкая форма раскладки",
+    "uploadCdogsTemplate": "Загрузить шаблон CDOGS",
+    "cDogsTemplate": "Шаблон CDOGS",
+    "filename": "Имя файла",
+    "uploadDate": "Дата загрузки",
+    "delete": "Удалить"
   },
   "formProfile": {
     "message": "Команда CHEFS собирает и систематизирует информацию для создания ключевых аргументов в пользу формирования всесторонних деловых кейсов. Эти кейсы будут играть решающую роль в направлении стратегической операции и постоянного совершенствования CHEFS в ближайшие годы. Эта инициатива по сбору данных является необходимой для принятия важных решений и формирования траектории CHEFS, обеспечивая его адаптивность и эффективность в решении изменяющихся потребностей и вызовов.",
@@ -676,7 +681,14 @@
     "docGrnSucess": "Документ успешно создан",
     "failedDocGenErrMsg": "Не удалось создать документ",
     "failedDocGenConsErrMsg": "Ошибка при отправке шаблона: {error}",
-    "cDogsTemplate": "Шаблон CDOGS"
+    "cDogsTemplate": "Шаблон CDOGS",
+    "uploadCdogsTemplate": "Загрузить шаблон CDOGS",
+    "printOptions": "Параметры печати",
+    "expandtextFields": "Расширить текстовые поля",
+    "moreInfo": "Дополнительная информация",
+    "defaultCdogsTemplate": "Использовать стандартный шаблон CDOGS",
+    "fileName": "Имя файла",
+    "uploadDate": "Дата загрузки"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Ссылка на информацию о компоненте",

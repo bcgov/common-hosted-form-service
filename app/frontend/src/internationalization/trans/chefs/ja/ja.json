@@ -151,7 +151,12 @@
     "eventSubscription": "イベントのサブスクリプション",
     "validEndpointRequired": "で始まる有効なエンドポイントを入力してください https://",
     "validBearerTokenRequired": "有効なベアラー トークンの例を入力してください: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
-    "wideFormLayout": "ワイドフォームレイアウト"
+    "wideFormLayout": "ワイドフォームレイアウト",
+    "uploadCdogsTemplate": "CDOGSテンプレートをアップロード",
+    "cDogsTemplate": "CDOGSテンプレート",
+    "filename": "ファイル名",
+    "uploadDate": "アップロード日",
+    "delete": "削除"
   },
   "formProfile": {
     "message": "CHEFSチームは包括的なビジネスケースの作成に重要な入力となる情報を収集し、整理しています。これらのケースは、CHEFSの戦略的な運用と今後の改善を指南するうえで重要な役割を果たします。データを収集するこの取り組みは、重要な意思決定の情報提供やCHEFSの軌道を形作るために不可欠です。これにより、CHEFSが変化するニーズと課題に対応するための適応性と効果を確保します.",
@@ -676,7 +681,14 @@
     "docGrnSucess": "ドキュメントが正常に生成されました",
     "failedDocGenErrMsg": "ドキュメントの生成に失敗しました",
     "failedDocGenConsErrMsg": "テンプレートの送信エラー: {error}",
-    "cDogsTemplate": "CDOGS テンプレート"
+    "cDogsTemplate": "CDOGS テンプレート",
+    "uploadCdogsTemplate": "CDOGSテンプレートをアップロード",
+    "printOptions": "印刷オプション",
+    "expandtextFields": "テキストフィールドを拡張",
+    "moreInfo": "詳細情報",
+    "defaultCdogsTemplate": "デフォルトのCDOGSテンプレートを使用する",
+    "fileName": "ファイル名",
+    "uploadDate": "アップロード日"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "コンポーネント情報リンク",

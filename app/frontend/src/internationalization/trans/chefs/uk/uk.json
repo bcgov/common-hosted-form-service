@@ -150,7 +150,12 @@
     "allowEventSubscription": "Дозволити підписку на події",
     "eventSubscription": "Підписка на подію",
     "validEndpointRequired": "Введіть дійсну кінцеву точку, починаючи з https://",
-    "wideFormLayout": "Широкий формат розкладки"
+    "wideFormLayout": "Широкий формат розкладки",
+    "uploadCdogsTemplate": "Завантажити шаблон CDOGS",
+    "cDogsTemplate": "Шаблон CDOGS",
+    "filename": "Назва файлу",
+    "uploadDate": "Дата завантаження",
+    "delete": "Видалити"
   },
   "formProfile": {
     "message": "Команда CHEFS збирає та організовує інформацію для надання ключового внеску у створення всебічних бізнес-кейсів. Ці кейси відіграють вирішальну роль у напрямку стратегічної операції та постійного вдосконалення CHEFS у наступні роки. Ця ініціатива зібрати дані є важливою для інформування критичних рішень та формування траєкторії CHEFS, забезпечуючи його адаптивність та ефективність у вирішенні змінюючихся потреб і викликів.",
@@ -675,7 +680,14 @@
     "docGrnSucess": "Документ створено успішно",
     "failedDocGenErrMsg": "Не вдалося створити документ",
     "failedDocGenConsErrMsg": "Помилка надсилання шаблону: {error}",
-    "cDogsTemplate": "Шаблон CDOGS"
+    "cDogsTemplate": "Шаблон CDOGS",
+    "uploadCdogsTemplate": "Завантажити шаблон CDOGS",
+    "printOptions": "Опції друку",
+    "expandtextFields": "Розширити текстові поля",
+    "moreInfo": "Більше інформації",
+    "defaultCdogsTemplate": "Використовувати стандартний шаблон CDOGS",
+    "fileName": "Назва файлу",
+    "uploadDate": "Дата завантаження"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Інформаційне посилання на компонент",

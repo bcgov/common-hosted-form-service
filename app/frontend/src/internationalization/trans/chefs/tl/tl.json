@@ -151,7 +151,12 @@
     "eventSubscription": "Subscription sa Kaganapan",
     "validEndpointRequired": "Mangyaring magpasok ng wastong endpoint na nagsisimula sa https://",
     "validBearerTokenRequired": "Maglagay ng wastong halimbawa ng token ng maydala: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
-    "wideFormLayout": "Malapad na Porma ng Layout"
+    "wideFormLayout": "Malapad na Porma ng Layout",
+    "uploadCdogsTemplate": "I-upload ang Template ng CDOGS",
+    "cDogsTemplate": "Template ng CDOGS",
+    "filename": "Pangalan ng File",
+    "uploadDate": "Petsa ng Pag-upload",
+    "delete": "Tanggalin"
   },
   "formProfile": {
     "message": "Ang CHEFS team ay nagkokolekta at nag-oorganisa ng impormasyon upang magsilbing mahalagang input para sa pagbuo ng kapsulang kaso ng negosyo. Ang mga kaso na ito ay magiging pangunahing bahagi sa paggabay sa pangangasiwa at patuloy na pagpapabuti ng CHEFS sa mga darating na taon. Ang inisyatibang ito sa pagsasama ng datos ay mahalaga para sa pagbibigay impormasyon sa mga kritikal na desisyon at pagsanay sa takbo ng CHEFS, tiyak na nagiging adaptable at epektibo sa pagsasaad sa mga nagbabagong pangangailangan at hamon.",
@@ -676,7 +681,14 @@
     "docGrnSucess": "Matagumpay na nabuo ang dokumento",
     "failedDocGenErrMsg": "Nabigong bumuo ng Dokumento",
     "failedDocGenConsErrMsg": "Error sa pagsusumite ng template: {error}",
-    "cDogsTemplate": "template ng CDOGS"
+    "cDogsTemplate": "template ng CDOGS",
+    "uploadCdogsTemplate": "I-upload ang Template ng CDOGS",
+    "printOptions": "Mga Opsyon sa Pag-print",
+    "expandtextFields": "Palawakin ang mga patlang ng teksto",
+    "moreInfo": "Karagdagang Impormasyon",
+    "defaultCdogsTemplate": "Gamitin ang default na Template ng CDOGS",
+    "fileName": "Pangalan ng File",
+    "uploadDate": "Petsa ng Pag-upload"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Link ng Impormasyon ng Bahagi",

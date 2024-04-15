@@ -151,7 +151,12 @@
     "eventSubscription": "イベントのサブスクリプション",
     "validEndpointRequired": "で始まる有効なエンドポイントを入力してください https://",
     "validBearerTokenRequired": "有効なベアラー トークンの例を入力してください: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
-    "wideFormLayout": "와이드 폼 레이아웃"
+    "wideFormLayout": "와이드 폼 레이아웃",
+    "uploadCdogsTemplate": "CDOGS 템플릿 업로드",
+    "cDogsTemplate": "CDOGS 템플릿",
+    "filename": "파일 이름",
+    "uploadDate": "업로드 날짜",
+    "delete": "삭제"
   },
   "formProfile": {
     "message": "CHEFS 팀은 포괄적인 비즈니스 케이스를 작성하는 데 중요한 입력으로 사용될 정보를 수집하고 조직하고 있습니다. 이러한 케이스는 향후 몇 년 동안 CHEFS의 전략적 운영과 지속적인 개선을 안내하는 데 중추적인 역할을 할 것입니다. 데이터 수집을 위한 이 이니셔티브는 중요한 결정에 정보를 제공하고 CHEFS의 궤도를 형성하는 데 필수적입니다. 이를 통해 CHEFS가 변화하는 필요와 도전에 대응하여 적응성과 효과를 보장합니다.",
@@ -676,7 +681,14 @@
     "docGrnSucess": "문서가 성공적으로 생성되었습니다.",
     "failedDocGenErrMsg": "문서를 생성하지 못했습니다.",
     "failedDocGenConsErrMsg": "템플릿 제출 오류: {error}",
-    "cDogsTemplate": "CDOGS 템플릿"
+    "cDogsTemplate": "CDOGS 템플릿",
+    "uploadCdogsTemplate": "CDOGS 템플릿 업로드",
+    "printOptions": "인쇄 옵션",
+    "expandtextFields": "텍스트 필드 확장",
+    "moreInfo": "더보기",
+    "defaultCdogsTemplate": "기본 CDOGS 템플릿 사용",
+    "fileName": "파일 이름",
+    "uploadDate": "업로드 날짜"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "구성품 정보 링크",

@@ -151,7 +151,12 @@
     "eventSubscription": "Assinatura de evento",
     "validEndpointRequired": "Insira um endpoint válido começando com https://",
     "validBearerTokenRequired": "Insira um exemplo de token de portador válido: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
-    "wideFormLayout": "Layout de Formulário Amplo"
+    "wideFormLayout": "Layout de Formulário Amplo",
+    "uploadCdogsTemplate": "Carregar modelo CDOGS",
+    "cDogsTemplate": "Modelo CDOGS",
+    "filename": "Nome do arquivo",
+    "uploadDate": "Data de upload",
+    "delete": "Excluir"
   },
   "formProfile": {
   "message": "A equipe CHEFS está coletando e organizando informações para servir como entrada crucial para a criação de casos de negócios abrangentes. Esses casos desempenharão um papel fundamental na orientação da operação estratégica e na melhoria contínua do CHEFS nos próximos anos. Essa iniciativa de coleta de dados é essencial para informar decisões críticas e moldar a trajetória do CHEFS, garantindo sua adaptabilidade e eficácia em lidar com necessidades e desafios em evolução.",
@@ -676,7 +681,14 @@
     "docGrnSucess": "Documento gerado com sucesso",
     "failedDocGenErrMsg": "Falha ao gerar documento",
     "failedDocGenConsErrMsg": "Erro ao enviar modelo: {error}",
-    "cDogsTemplate": "modelo CDOGS"
+    "cDogsTemplate": "modelo CDOGS",
+    "uploadCdogsTemplate": "Carregar modelo CDOGS",
+    "printOptions": "Opções de Impressão",
+    "expandtextFields": "Expandir campos de texto",
+    "moreInfo": "Mais informações",
+    "defaultCdogsTemplate": "Usar modelo padrão CDOGS",
+    "fileName": "Nome do arquivo",
+    "uploadDate": "Data de upload"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Link de informações do componente",

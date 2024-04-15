@@ -151,7 +151,12 @@
     "eventSubscription": "د پیښې ګډون",
     "validEndpointRequired": "مهرباني وکړئ یو معتبر پای ټکی دننه کړئ چې پیل کیږي https://",
     "validBearerTokenRequired": "89abddfb-2cff-4fda-83e6-13221f0c3d4f د اعتبار وړ وړونکي نښه مثال داخل کړئ",
-    "wideFormLayout": "ਵਾਈਡ ਫਾਰਮ ਲੇਆਉਟ"
+    "wideFormLayout": "ਵਾਈਡ ਫਾਰਮ ਲੇਆਉਟ",
+    "uploadCdogsTemplate": "CDOGS ਟੈਂਪਲੇਟ ਅੱਪਲੋਡ ਕਰੋ",
+    "cDogsTemplate": "CDOGS ਟੈਂਪਲੇਟ",
+    "filename": "ਫਾਈਲ ਦਾ ਨਾਂ",
+    "uploadDate": "ਅੱਪਲੋਡ ਮਿਤੀ",
+    "delete": "ਮਿਟਾਓ"
   },
   "formProfile": {
     "message": "CHEFS ਟੀਮ ਜਾਣਕਾਰੀ ਇਕੱਠੀ ਕਰ ਰਹੀ ਹੈ ਅਤੇ ਵਿਗਿਆਨ ਕੇਸਾਂ ਲਈ ਮੁਦਾਵਿਆਂ ਬਣਾਉਣ ਲਈ ਮੁਹਿਮ ਵਰਤ ਰਹੀ ਹੈ। ਇਹ ਕੇਸ ਸੀਧੇ CHEFS ਦੀ ਰਣਨੀਤਿਕ ਓਪਰੇਸ਼ਨ ਅਤੇ ਚਲਦੇ ਸਾਲਾਂ ਵਿੱਚ ਚੋਣ ਦੀ ਮੁਖਮਾਨੇ ਵਿੱਚ ਏਕ ਕੀ ਬੰਦੋਬਸਤੀ ਰੋਲ ਪਵੇਗਾ। ਡਾਟਾ ਇਕੱਠਾ ਕਰਨ ਦੀ ਇਹ ਪ੍ਰਯਾਸ਼ਾ ਜਰੂਰੀ ਹੈ ਜਿਸ ਨਾਲ ਕ੍ਰਿਟਿਕਲ ਫੈਸਲਿਆਂ ਨੂੰ ਸੂਚਿਤ ਕਰਨ ਲਈ ਅਤੇ CHEFS ਦੇ ਤਰੱਕੀਪੂਰਤ ਵਿੱਚ ਮੁਕਾਬਲਾ ਕਰਨ ਲਈ ਲੋੜੀਦਾ ਹੈ। ਇਸ ਨਾਲ ਯਹ ਸੁਨਿਸ਼ਚਿਤ ਹੋ ਜਾਂਦਾ ਹੈ ਕਿ ਇਹ ਆਪਣੇ ਅਨੁਕੂਲਨ ਅਤੇ ਚੁਣੇ ਗਏ ਚੁਣੌਤੀਆਂ ਅਤੇ ਜ਼ਰੂਰਾਤਾਂ ਦਾ ਇੱਜ਼ਤੀਕਾਰ ਅਤੇ ਯੋਜਨਾ ਵਿੱਚ ਇੱਕ ਬਦਲਾਵ ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ ਵਿਚ ਇਹ ਗੁਣਤੀ ਹੈ।",
@@ -676,7 +681,14 @@
     "docGrnSucess": "ਦਸਤਾਵੇਜ਼ ਸਫਲਤਾਪੂਰਵਕ ਸਿਰਜਿਆ ਗਿਆ",
     "failedDocGenErrMsg": "ਦਸਤਾਵੇਜ਼ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ",
     "failedDocGenConsErrMsg": "ਟੈਮਪਲੇਟ ਦਰਜ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
-    "cDogsTemplate": "CDOGS ਟੈਂਪਲੇਟ"
+    "cDogsTemplate": "CDOGS ਟੈਂਪਲੇਟ",
+    "uploadCdogsTemplate": "CDOGS ਟੈਂਪਲੇਟ ਅੱਪਲੋਡ ਕਰੋ",
+    "printOptions": "ਛਪਾਈ ਵਿਕਲਪ",
+    "expandtextFields": "ਟੈਕਸਟ ਖੇਤਰਾਂ ਨੂੰ ਵਿਸਤਾਰ ਦਿਓ",
+    "moreInfo": "ਹੋਰ ਜਾਣਕਾਰੀ",
+    "defaultCdogsTemplate": "ਮੂਲ CDOGS ਟੈਂਪਲੇਟ ਵਰਤੋ",
+    "fileName": "ਫਾਈਲ ਦਾ ਨਾਂ",
+    "uploadDate": "ਅੱਪਲੋਡ ਮਿਤੀ"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "ਕੰਪੋਨੈਂਟ ਜਾਣਕਾਰੀ ਲਿੰਕ",

@@ -151,7 +151,12 @@
     "eventSubscription": "Abonnement à l'événement",
     "validEndpointRequired": "Veuillez saisir un point de terminaison valide commençant par https://",
     "validBearerTokenRequired": "Saisissez un exemple de jeton de support valide : 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
-    "wideFormLayout": "Disposition large du formulaire"
+    "wideFormLayout": "Disposition large du formulaire",
+    "uploadCdogsTemplate": "Télécharger le modèle CDOGS",
+    "cDogsTemplate": "Modèle CDOGS",
+    "filename": "Nom de fichier",
+    "uploadDate": "Date de téléchargement",
+    "delete": "Supprimer"
   },
   "formProfile": {
     "message": "L'équipe CHEFS collecte et organise des informations pour servir de contribution cruciale à l'élaboration de cas d'affaires complets. Ces cas joueront un rôle central dans la direction des opérations stratégiques et l'amélioration continue de CHEFS au cours des prochaines années. Cette initiative de collecte de données est essentielle pour éclairer les décisions critiques et façonner la trajectoire de CHEFS, assurant son adaptabilité et son efficacité face aux besoins et aux défis en constante évolution.",
@@ -676,7 +681,14 @@
     "docGrnSucess": "Document généré avec succès",
     "failedDocGenErrMsg": "Échec de la génération du document",
     "failedDocGenConsErrMsg": "Erreur lors de l'envoi du modèle : {error}",
-    "cDogsTemplate": "Modèle CDOGS"
+    "cDogsTemplate": "Modèle CDOGS",
+    "uploadCdogsTemplate": "Télécharger le modèle CDOGS",
+    "printOptions": "Options d'impression",
+    "expandtextFields": "Étendre les champs de texte",
+    "moreInfo": "Plus d'infos",
+    "defaultCdogsTemplate": "Utiliser le modèle CDOGS par défaut",
+    "fileName": "Nom de fichier",
+    "uploadDate": "Date de téléchargement"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Lien d'informations sur les composants",
