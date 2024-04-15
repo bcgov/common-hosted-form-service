@@ -110,14 +110,18 @@ export default {
       :style="isRTL ? { gap: '10px' } : null"
       counter
       :clearable="true"
-      :label="$t('trans.printOptions.uploadTemplateFile')"
       required="true"
       mandatory
       show-size
       :lang="lang"
       @change="writeFileToStore($event)"
       @update:model-value="emitFileUploaded($event)"
-    />
+    >
+      <template #label>
+        <span style="color: red; font-weight: bold"> * </span
+        >{{ $t('trans.printOptions.uploadTemplateFile') }}
+      </template>
+    </v-file-input>
     <v-btn
       v-if="showUploadButton"
       color="primary"
