@@ -688,7 +688,8 @@
     "moreInfo": "更多信息",
     "defaultCdogsTemplate": "使用預設CDOGS範本",
     "fileName": "檔案名稱",
-    "uploadDate": "上傳日期"
+    "uploadDate": "上傳日期",
+    "upload": "上傳"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "組件信息鏈接",

@@ -31,7 +31,7 @@ export default {
       settingsFormValid: false,
       disclaimerCheckbox: false,
       disclaimerRules: [(v) => !!v || i18n.t('trans.create.agreementErrMsg')],
-      templateAttached: true, // tracks if the CDOGS template is enabled, set to true if not using CDOGS
+      templateAttached: false,
       templateCheckbox: false,
     };
   },
@@ -113,7 +113,7 @@ export default {
       </v-form>
       <v-btn
         :disabled="
-          !settingsFormValid || (!templateAttached && templateCheckbox)
+          !settingsFormValid || (templateCheckbox && !templateAttached)
         "
         color="primary"
         data-test="continue-btn"

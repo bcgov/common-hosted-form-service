@@ -23,6 +23,11 @@ export default {
       default: false,
     },
   },
+  emits: ['update:fileUploaded', 'update:checkboxSelected'],
+  computed: {
+    ...mapWritableState(useFormStore, ['form']),
+    ...mapState(useFormStore, ['isFormPublished', 'isRTL']),
+  },
   methods: {
     handleFileUpload(isUploaded) {
       this.$emit('update:fileUploaded', isUploaded);
@@ -30,10 +35,9 @@ export default {
     handleCheckboxSelected(isSelected) {
       this.$emit('update:checkboxSelected', isSelected);
     },
-  },
-  computed: {
-    ...mapWritableState(useFormStore, ['form']),
-    ...mapState(useFormStore, ['isFormPublished', 'isRTL']),
+    handleBackendFileUpload(isUploaded) {
+      this.$emit('update:fileUploadedToBackend', isUploaded);
+    },
   },
 };
 </script>
@@ -63,6 +67,7 @@ export default {
         <FormDocumentTemplateSettings
           :disabled="disabled"
           @update:fileUploaded="handleFileUpload"
+          @update:fileUploadedToBackend="handleBackendFileUpload"
         />
       </v-col>
     </v-row>

@@ -8,14 +8,16 @@ export default {
   components: {
     BasePanel,
   },
+  emits: ['update:fileUploaded', 'update:fileUploadedToBackend'],
   data() {
     return {
-      showDropbox: false,
-      showTemplate: false,
-      showUploadButton: false,
-      template: null,
-      uploadedFile: null,
-      showAsterisk: true,
+      showDropbox: false, // dropbox to upload the template file if no active template in the backend
+      showTable: false, // table to display if the form has an active template in the backend
+      showUploadButton: false, // upload button enabled after the form is published
+      cdogsTemplate: null, // the cdogs template retrieved from the backend
+      uploadedFile: null, // the file uploaded by the user
+      showAsterisk: true, // red asterisk to indicate required field
+      validateFileExtension: true, // to validate file extension
     };
   },
   computed: {
@@ -23,16 +25,21 @@ export default {
     ...mapWritableState(useFormStore, ['form']),
   },
   mounted() {
-    this.$emit('update:fileUploaded', false);
     if (!this.isFormPublished) {
       this.showDropbox = true;
     } else {
       if (this.isTemplateAttached(this.form.id)) {
-        this.showTemplate = true;
+        this.showTable = true;
       } else {
         this.showDropbox = true;
         this.showUploadButton = true;
       }
+    }
+    if (this.cdogsTemplate) {
+      this.$emit('update:fileUploaded', true);
+    } else {
+      // else should never be triggered
+      this.$emit('update:fileUploaded', false);
     }
   },
   methods: {
@@ -74,28 +81,35 @@ export default {
       if (result) {
         this.showDropbox = false;
         this.showUploadButton = false;
-        this.showTemplate = true;
-        this.template = result.data;
+        this.showTable = true;
+        this.cdogsTemplate = result.data;
+        this.$emit('update:fileUploadedToBackend', true);
       }
     },
     async handleDelete() {
-      await formService.documentTemplateDelete(this.form.id, this.template.id);
+      await formService.documentTemplateDelete(
+        this.form.id,
+        this.cdogsTemplate.id
+      );
       this.showDropbox = true;
       this.showUploadButton = true;
-      this.showTemplate = false;
-      this.template = null;
+      this.showTable = false;
+      this.cdogsTemplate = null;
       this.showAsterisk = true;
+      this.$emit('update:fileUploadedToBackend', false);
     },
     async isTemplateAttached(formId) {
       const response = await formService.documentTemplateList(formId);
       if (response.data.length > 0) {
-        this.template = response.data[0];
-        this.showTemplate = true;
+        this.cdogsTemplate = response.data[0];
+        this.showTable = true;
+        this.$emit('update:fileUploaded', true);
         return true;
       } else {
-        this.showTemplate = false;
+        this.showTable = false;
         this.showDropbox = true;
         this.showUploadButton = true;
+        this.$emit('update:fileUploaded', false);
         return false;
       }
     },
@@ -129,6 +143,13 @@ export default {
         >{{ $t('trans.printOptions.uploadTemplateFile') }}
       </template>
     </v-file-input>
+    <span
+      v-if="showDropbox && showAsterisk"
+      :class="isRTL ? 'mr-10' : 'ml-10'"
+      style="color: red; display: inline-block"
+      >Template must contain one of the following extentions: .txt, .docx,
+      .html, .odt, .pptx, .xlsx</span
+    >
     <v-btn
       v-if="showUploadButton"
       :disabled="showAsterisk"
@@ -140,7 +161,7 @@ export default {
     </v-btn>
 
     <v-table
-      v-if="showTemplate"
+      v-if="showTable"
       style="color: gray; border: 1px solid lightgray; border-radius: 8px"
       class="mb-5 mt-3 mx-10"
     >
@@ -157,17 +178,14 @@ export default {
       </thead>
       <tbody>
         <tr>
-          <td v-if="template">{{ template.filename }}</td>
-          <td v-if="template">{{ template.createdAt.split('T')[0] }}</td>
+          <td v-if="cdogsTemplate">{{ cdogsTemplate.filename }}</td>
+          <td v-if="cdogsTemplate">
+            {{ cdogsTemplate.createdAt.split('T')[0] }}
+          </td>
           <td>
             <v-tooltip location="bottom">
               <template #activator="{ props }">
-                <v-icon
-                  color="red"
-                  v-bind="props"
-                  v-on="on"
-                  @click="handleDelete"
-                >
+                <v-icon color="red" v-bind="props" @click="handleDelete">
                   mdi-delete-outline
                 </v-icon>
               </template>

@@ -689,7 +689,8 @@
     "moreInfo": "अधिक जानकारी",
     "defaultCdogsTemplate": "डिफ़ॉल्ट CDOGS टेम्पलेट का प्रयोग करें",
     "fileName": "फाइल का नाम",
-    "uploadDate": "अपलोड दिनांक"
+    "uploadDate": "अपलोड दिनांक",
+    "upload": "अपलोड करें"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "घटक सूचना लिंक",

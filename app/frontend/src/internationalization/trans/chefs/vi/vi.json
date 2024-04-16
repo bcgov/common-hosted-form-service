@@ -688,7 +688,8 @@
     "moreInfo": "Thêm thông tin",
     "defaultCdogsTemplate": "Sử dụng mẫu CDOGS mặc định",
     "fileName": "Tên tệp",
-    "uploadDate": "Ngày tải lên"
+    "uploadDate": "Ngày tải lên",
+    "upload": "Tải lên"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Liên kết thông tin thành phần",

@@ -688,7 +688,8 @@
     "moreInfo": "詳細情報",
     "defaultCdogsTemplate": "デフォルトのCDOGSテンプレートを使用する",
     "fileName": "ファイル名",
-    "uploadDate": "アップロード日"
+    "uploadDate": "アップロード日",
+    "upload": "アップロード"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "コンポーネント情報リンク",

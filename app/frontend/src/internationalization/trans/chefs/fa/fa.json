@@ -688,7 +688,8 @@
     "moreInfo": "اطلاعات بیشتر",
     "defaultCdogsTemplate": "استفاده از قالب پیش‌فرض CDOGS",
     "fileName": "نام فایل",
-    "uploadDate": "تاریخ بارگذاری"
+    "uploadDate": "تاریخ بارگذاری",
+    "upload": "بارگذاری"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "لینک اطلاعات کامپوننت",

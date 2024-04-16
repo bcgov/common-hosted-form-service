@@ -688,7 +688,8 @@
     "moreInfo": "ਹੋਰ ਜਾਣਕਾਰੀ",
     "defaultCdogsTemplate": "ਮੂਲ CDOGS ਟੈਂਪਲੇਟ ਵਰਤੋ",
     "fileName": "ਫਾਈਲ ਦਾ ਨਾਂ",
-    "uploadDate": "ਅੱਪਲੋਡ ਮਿਤੀ"
+    "uploadDate": "ਅੱਪਲੋਡ ਮਿਤੀ",
+    "upload": "ਅੱਪਲੋਡ ਕਰੋ"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "ਕੰਪੋਨੈਂਟ ਜਾਣਕਾਰੀ ਲਿੰਕ",

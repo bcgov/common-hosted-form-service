@@ -688,7 +688,8 @@
     "moreInfo": "Karagdagang Impormasyon",
     "defaultCdogsTemplate": "Gamitin ang default na Template ng CDOGS",
     "fileName": "Pangalan ng File",
-    "uploadDate": "Petsa ng Pag-upload"
+    "uploadDate": "Petsa ng Pag-upload",
+    "upload": "I-upload"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Link ng Impormasyon ng Bahagi",

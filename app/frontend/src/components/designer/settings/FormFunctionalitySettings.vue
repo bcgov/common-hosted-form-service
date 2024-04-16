@@ -9,6 +9,7 @@ export default {
   components: {
     BasePanel,
   },
+  emits: ['update:checkboxSelected'],
   data() {
     return {
       githubLinkBulkUpload:
