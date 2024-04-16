@@ -4485,6 +4485,7 @@ components:
             - submission_read
             - submission_delete
             - submission_update
+            - submission_review
           items:
             type: string
         submissionStatus:

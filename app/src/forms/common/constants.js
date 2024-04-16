@@ -28,6 +28,7 @@ module.exports = Object.freeze({
     FORM_DELETE: 'form_delete',
     SUBMISSION_CREATE: 'submission_create',
     SUBMISSION_READ: 'submission_read',
+    SUBMISSION_REVIEW: 'submission_review',
     SUBMISSION_UPDATE: 'submission_update',
     SUBMISSION_DELETE: 'submission_delete',
     DESIGN_CREATE: 'design_create',

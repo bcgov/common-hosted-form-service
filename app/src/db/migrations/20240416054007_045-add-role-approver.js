@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
+const { Permissions, Roles } = require('../../forms/common/constants');
 
 const CREATED_BY = 'migration-045';
 
@@ -12,7 +13,7 @@ exports.up = function (knex) {
       const items = [
         {
           createdBy: CREATED_BY,
-          code: 'submission_approver',
+          code: Roles.SUBMISSION_APPROVER,
           display: 'Approver',
           description: "Can review all form submissions but can't edit the submission.",
         },
@@ -20,13 +21,26 @@ exports.up = function (knex) {
       return knex('role').insert(items);
     })
     .then(() => {
+      const items = [
+        {
+          createdBy: CREATED_BY,
+          code: Permissions.SUBMISSION_REVIEW,
+          display: 'Submission Review',
+          description: 'Can add/read notes and update the status of a submission.',
+          active: true,
+        },
+      ];
+
+      return knex('permission').insert(items).returning('code');
+    })
+    .then(() => {
       const items = [];
 
-      ['form_read', 'submission_read', 'team_read'].forEach((p) => {
+      [Permissions.FORM_READ, Permissions.SUBMISSION_READ, Permissions.SUBMISSION_REVIEW, Permissions.TEAM_READ].forEach((p) => {
         const item = {
           id: uuidv4(),
           createdBy: CREATED_BY,
-          role: 'submission_approver',
+          role: Roles.SUBMISSION_APPROVER,
           permission: p,
         };
 
@@ -34,6 +48,26 @@ exports.up = function (knex) {
       });
 
       return knex('role_permission').insert(items).returning('id');
+    })
+    .then(() => {
+      const rolePermssion = {
+        id: uuidv4(),
+        createdBy: CREATED_BY,
+        role: Roles.OWNER,
+        permission: Permissions.SUBMISSION_REVIEW,
+      };
+
+      return knex('role_permission').insert(rolePermssion);
+    })
+    .then(() => {
+      const rolePermssion = {
+        id: uuidv4(),
+        createdBy: CREATED_BY,
+        role: Roles.SUBMISSION_REVIEWER,
+        permission: Permissions.SUBMISSION_REVIEW,
+      };
+
+      return knex('role_permission').insert(rolePermssion);
     });
 };
 
@@ -45,6 +79,13 @@ exports.down = function (knex) {
   return Promise.resolve()
     .then(() => {
       knex('role_permission')
+        .where({
+          createdBy: CREATED_BY,
+        })
+        .del();
+    })
+    .then(() => {
+      knex('permission')
         .where({
           createdBy: CREATED_BY,
         })
