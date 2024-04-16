@@ -22,6 +22,7 @@ describe('Constants', () => {
       OWNER: 'owner',
       TEAM_MANAGER: 'team_manager',
       FORM_DESIGNER: 'form_designer',
+      SUBMISSION_APPROVER: 'submission_approver',
       SUBMISSION_REVIEWER: 'submission_reviewer',
       FORM_SUBMITTER: 'form_submitter',
     });

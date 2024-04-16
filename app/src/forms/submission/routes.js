@@ -36,7 +36,7 @@ routes.get('/:formSubmissionId/notes', hasSubmissionPermissions(P.SUBMISSION_REA
   await controller.getNotes(req, res, next);
 });
 
-routes.post('/:formSubmissionId/notes', hasSubmissionPermissions(P.SUBMISSION_UPDATE), async (req, res, next) => {
+routes.post('/:formSubmissionId/notes', hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
   await controller.addNote(req, res, next);
 });
 
@@ -44,7 +44,7 @@ routes.get('/:formSubmissionId/status', rateLimiter, apiAccess, hasSubmissionPer
   await controller.getStatus(req, res, next);
 });
 
-routes.post('/:formSubmissionId/status', hasSubmissionPermissions(P.SUBMISSION_UPDATE), async (req, res, next) => {
+routes.post('/:formSubmissionId/status', hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
   await controller.addStatus(req, res, next);
 });
 
