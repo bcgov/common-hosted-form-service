@@ -62,7 +62,7 @@ tags:
            a document template for a form.
         2. Subsequent calls to the `POST` route should be paired with calls to
            the `DELETE` route to delete the previously active template.
-        3. When it comes time to print, the
+        3. When it comes time to generate the document, the
            `GET /forms/{formId}/documentTemplates` route is used to get "all"
            the document template metadata for a form (although there is only one
            active document template). This route only returns metadata and not
