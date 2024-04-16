@@ -255,19 +255,22 @@ export default {
         this.defaultTemplate = true;
       }
       if (this.formId && this.enableDocumentTemplates) {
-        const response = await formService.documentTemplateList(this.formId);
-        const temp = response.data[0].template.data;
+        const response1 = await formService.documentTemplateList(this.formId);
+        const docId = response1.data[0].id;
+        const response2 = await formService.documentTemplateRead(
+          this.formId,
+          docId
+        );
+        const temp = response2.data.template.data;
         const base64String = temp
           .map((code) => String.fromCharCode(code))
           .join('');
         this.defaultTemplateContent = base64String;
-        this.defaultTemplateFilename = response.data[0].filename;
-        const { name, extension } = this.splitFileName(
-          response.data[0].filename
-        );
+        this.defaultTemplateFilename = response1.data[0].filename;
+        const { name, extension } = this.splitFileName(response2.data.filename);
         this.defaultTemplateExtension = extension;
         this.defaultReportname = name;
-        this.defaultTemplateDate = response.data[0].createdAt.split('T')[0];
+        this.defaultTemplateDate = response2.data.createdAt.split('T')[0];
       }
     },
   },

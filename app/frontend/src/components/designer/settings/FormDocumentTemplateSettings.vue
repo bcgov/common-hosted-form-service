@@ -21,19 +21,20 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang', 'isFormPublished']),
+    ...mapState(useFormStore, ['isRTL', 'lang']),
     ...mapWritableState(useFormStore, ['form']),
   },
   mounted() {
-    if (!this.isFormPublished) {
-      this.showDropbox = true;
-    } else {
+    console.log('in mounted', this.form.id);
+    if (this.form.id) {
       if (this.isTemplateAttached(this.form.id)) {
         this.showTable = true;
       } else {
         this.showDropbox = true;
         this.showUploadButton = true;
       }
+    } else {
+      this.showDropbox = true;
     }
     if (this.cdogsTemplate) {
       this.$emit('update:fileUploaded', true);
@@ -157,7 +158,7 @@ export default {
       class="mt-5"
       @click="handleFileUpload"
     >
-      Upload
+      {{ $t('trans.printOptions.upload') }}
     </v-btn>
 
     <v-table
