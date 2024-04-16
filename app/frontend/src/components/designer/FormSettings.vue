@@ -23,7 +23,11 @@ export default {
       default: false,
     },
   },
-  emits: ['update:fileUploaded', 'update:checkboxSelected'],
+  emits: [
+    'update:fileUploaded',
+    'update:checkboxSelected',
+    'update:fileUploadedToBackend',
+  ],
   computed: {
     ...mapWritableState(useFormStore, ['form']),
     ...mapState(useFormStore, ['isFormPublished', 'isRTL']),

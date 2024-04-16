@@ -41,6 +41,7 @@ export default {
       defaultReportname: '',
       formId: '',
       displayTemplatePrintButton: false,
+      validFileExtension: true,
     };
   },
   computed: {
@@ -273,6 +274,25 @@ export default {
         this.defaultTemplateDate = response2.data.createdAt.split('T')[0];
       }
     },
+    validateFileExtension(event) {
+      if (event.length > 0) {
+        const fileExtension = event[0].name.split('.').pop();
+        if (
+          fileExtension === 'txt' ||
+          fileExtension === 'docx' ||
+          fileExtension === 'html' ||
+          fileExtension === 'odt' ||
+          fileExtension === 'pptx' ||
+          fileExtension === 'xlsx'
+        ) {
+          this.validFileExtension = true;
+        } else {
+          this.validFileExtension = false;
+        }
+      } else {
+        this.validFileExtension = true;
+      }
+    },
   },
 };
 </script>
@@ -405,7 +425,15 @@ export default {
                   show-size
                   :lang="lang"
                   :disabled="selectedOption !== 'upload'"
+                  @update:model-value="validateFileExtension($event)"
                 />
+                <span
+                  v-if="!validFileExtension"
+                  :class="isRTL ? 'mr-10' : 'ml-10'"
+                  style="color: red; display: inline-block"
+                  >The template must use one of the following extentions: .txt,
+                  .docx, .html, .odt, .pptx, .xlsx</span
+                >
               </v-radio-group>
 
               <v-card-actions>

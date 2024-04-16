@@ -46,10 +46,24 @@ export default {
     emitFileUploaded(event) {
       if (event.length > 0) {
         this.$emit('update:fileUploaded', true);
+        const fileExtension = event[0].name.split('.').pop();
+        if (
+          fileExtension === 'txt' ||
+          fileExtension === 'docx' ||
+          fileExtension === 'html' ||
+          fileExtension === 'odt' ||
+          fileExtension === 'pptx' ||
+          fileExtension === 'xlsx'
+        ) {
+          this.validFileExtension = true;
+        } else {
+          this.validFileExtension = false;
+        }
         this.showAsterisk = false;
       } else {
         this.$emit('update:fileUploaded', false);
         this.showAsterisk = true;
+        this.validFileExtension = true;
       }
     },
     writeFileToStore(event) {
@@ -144,10 +158,10 @@ export default {
       </template>
     </v-file-input>
     <span
-      v-if="showDropbox && showAsterisk"
+      v-if="showDropbox && !validFileExtension"
       :class="isRTL ? 'mr-10' : 'ml-10'"
       style="color: red; display: inline-block"
-      >Template must contain one of the following extentions: .txt, .docx,
+      >The template must use one of the following extentions: .txt, .docx,
       .html, .odt, .pptx, .xlsx</span
     >
     <v-btn
