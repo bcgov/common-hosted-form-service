@@ -634,7 +634,6 @@ export default {
         labels: this.form.labels,
       });
       // Post document template
-      console.log('posting to backend');
       const templateFile = useFormStore().documentTemplate;
       if (templateFile) {
         await this.postDocumentTemplate(response.data.id, templateFile);

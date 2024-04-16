@@ -129,7 +129,6 @@ export default {
       this.subscriptionsPanel = value;
     },
     handleUploadedFile(isUploaded) {
-      console.log('recieeved file upload event in manage form', isUploaded);
       this.fileUploadedInBackend = isUploaded;
     },
     handleTemplateCheckbox(isSelected) {

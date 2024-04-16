@@ -17,7 +17,7 @@ export default {
       cdogsTemplate: null, // the cdogs template retrieved from the backend
       uploadedFile: null, // the file uploaded by the user
       showAsterisk: true, // red asterisk to indicate required field
-      validateFileExtension: true, // to validate file extension
+      validFileExtension: true, // to validate file extension
     };
   },
   computed: {
@@ -25,7 +25,6 @@ export default {
     ...mapWritableState(useFormStore, ['form']),
   },
   mounted() {
-    console.log('in mounted', this.form.id);
     if (this.form.id) {
       if (this.isTemplateAttached(this.form.id)) {
         this.showTable = true;
