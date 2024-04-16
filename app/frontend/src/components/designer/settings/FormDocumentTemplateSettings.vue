@@ -15,6 +15,7 @@ export default {
       showUploadButton: false,
       template: null,
       uploadedFile: null,
+      showAsterisk: true,
     };
   },
   computed: {
@@ -34,15 +35,14 @@ export default {
       }
     }
   },
-  beforeUnmount() {
-    this.$emit('update:fileUploaded', true);
-  },
   methods: {
     emitFileUploaded(event) {
       if (event.length > 0) {
         this.$emit('update:fileUploaded', true);
+        this.showAsterisk = false;
       } else {
         this.$emit('update:fileUploaded', false);
+        this.showAsterisk = true;
       }
     },
     writeFileToStore(event) {
@@ -83,13 +83,19 @@ export default {
       this.showDropbox = true;
       this.showUploadButton = true;
       this.showTemplate = false;
+      this.template = null;
+      this.showAsterisk = true;
     },
     async isTemplateAttached(formId) {
       const response = await formService.documentTemplateList(formId);
       if (response.data.length > 0) {
         this.template = response.data[0];
+        this.showTemplate = true;
         return true;
       } else {
+        this.showTemplate = false;
+        this.showDropbox = true;
+        this.showUploadButton = true;
         return false;
       }
     },
@@ -118,12 +124,14 @@ export default {
       @update:model-value="emitFileUploaded($event)"
     >
       <template #label>
-        <span style="color: red; font-weight: bold"> * </span
+        <span v-if="showAsterisk" style="color: red; font-weight: bold">
+          * </span
         >{{ $t('trans.printOptions.uploadTemplateFile') }}
       </template>
     </v-file-input>
     <v-btn
       v-if="showUploadButton"
+      :disabled="showAsterisk"
       color="primary"
       class="mt-5"
       @click="handleFileUpload"
@@ -149,8 +157,8 @@ export default {
       </thead>
       <tbody>
         <tr>
-          <td>{{ template.filename }}</td>
-          <td>{{ template.createdAt.split('T')[0] }}</td>
+          <td v-if="template">{{ template.filename }}</td>
+          <td v-if="template">{{ template.createdAt.split('T')[0] }}</td>
           <td>
             <v-tooltip location="bottom">
               <template #activator="{ props }">

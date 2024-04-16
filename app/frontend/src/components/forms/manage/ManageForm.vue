@@ -27,6 +27,8 @@ export default {
       versionsPanel: 0,
       subscriptionsPanel: 0,
       subscription: false,
+      templateAttached: true, // tracks if the CDOGS template is enabled, set to true if not using CDOGS
+      templateCheckbox: false,
     };
   },
   computed: {
@@ -126,6 +128,12 @@ export default {
     onSubscription(value) {
       this.subscriptionsPanel = value;
     },
+    handleFileUpload(isUploaded) {
+      this.templateAttached = isUploaded;
+    },
+    handleCheckboxSelected(isSelected) {
+      this.templateCheckbox = isSelected;
+    },
   },
 };
 </script>
@@ -167,6 +175,8 @@ export default {
             <FormSettings
               :disabled="formSettingsDisabled"
               @onSubscription="onSubscription"
+              @update:fileUploaded="handleFileUpload"
+              @update:checkboxSelected="handleCheckboxSelected"
             />
             <FormProfile :disabled="formSettingsDisabled" />
           </v-form>
@@ -174,6 +184,7 @@ export default {
           <div v-if="canEditForm && !formSettingsDisabled" class="mb-5">
             <v-btn
               :class="isRTL ? 'ml-5' : 'mr-5'"
+              :disabled="!templateAttached && templateCheckbox"
               color="primary"
               @click="updateSettings"
             >
