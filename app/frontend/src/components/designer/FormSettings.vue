@@ -27,6 +27,8 @@ export default {
     'update:fileUploaded',
     'update:checkboxSelected',
     'update:fileUploadedToBackend',
+    'update:validFileExtension',
+    'update:deletedCdogsTemplate',
   ],
   computed: {
     ...mapWritableState(useFormStore, ['form']),
@@ -41,6 +43,12 @@ export default {
     },
     handleBackendFileUpload(isUploaded) {
       this.$emit('update:fileUploadedToBackend', isUploaded);
+    },
+    handleValidFileExtension(isValid) {
+      this.$emit('update:validFileExtension', isValid);
+    },
+    handleDeletedCdogsTemplate(isDeleted) {
+      this.$emit('update:deletedCdogsTemplate', isDeleted);
     },
   },
 };
@@ -72,6 +80,8 @@ export default {
           :disabled="disabled"
           @update:fileUploaded="handleFileUpload"
           @update:fileUploadedToBackend="handleBackendFileUpload"
+          @update:validFileExtension="handleValidFileExtension"
+          @update:deletedCdogsTemplate="handleDeletedCdogsTemplate"
         />
       </v-col>
     </v-row>

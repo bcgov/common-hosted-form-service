@@ -8,7 +8,12 @@ export default {
   components: {
     BasePanel,
   },
-  emits: ['update:fileUploaded', 'update:fileUploadedToBackend'],
+  emits: [
+    'update:fileUploaded',
+    'update:fileUploadedToBackend',
+    'update:validFileExtension',
+    'update:deletedCdogsTemplate',
+  ],
   data() {
     return {
       showDropbox: false, // dropbox to upload the template file if no active template in the backend
@@ -18,6 +23,7 @@ export default {
       uploadedFile: null, // the file uploaded by the user
       showAsterisk: true, // red asterisk to indicate required field
       validFileExtension: true, // to validate file extension
+      showDeleteConfirmation: false, // confirmation dialog to delete the template
     };
   },
   computed: {
@@ -56,8 +62,10 @@ export default {
           fileExtension === 'xlsx'
         ) {
           this.validFileExtension = true;
+          this.$emit('update:validFileExtension', true);
         } else {
           this.validFileExtension = false;
+          this.$emit('update:validFileExtension', false);
         }
         this.showAsterisk = false;
       } else {
@@ -110,7 +118,9 @@ export default {
       this.showTable = false;
       this.cdogsTemplate = null;
       this.showAsterisk = true;
+      this.form.enableDocumentTemplates = false;
       this.$emit('update:fileUploadedToBackend', false);
+      this.$emit('update:deletedCdogsTemplate', true);
     },
     async isTemplateAttached(formId) {
       const response = await formService.documentTemplateList(formId);
@@ -127,6 +137,9 @@ export default {
         this.$emit('update:fileUploaded', false);
         return false;
       }
+    },
+    showDeleteConfirmationMessage(value) {
+      this.showDeleteConfirmation = value;
     },
   },
 };
@@ -167,7 +180,7 @@ export default {
     >
     <v-btn
       v-if="showUploadButton"
-      :disabled="showAsterisk"
+      :disabled="showAsterisk || !validFileExtension"
       color="primary"
       class="mt-5"
       @click="handleFileUpload"
@@ -200,7 +213,11 @@ export default {
           <td>
             <v-tooltip location="bottom">
               <template #activator="{ props }">
-                <v-icon color="red" v-bind="props" @click="handleDelete">
+                <v-icon
+                  color="red"
+                  v-bind="props"
+                  @click="showDeleteConfirmationMessage(true)"
+                >
                   mdi-delete-outline
                 </v-icon>
               </template>
@@ -210,5 +227,28 @@ export default {
         </tr>
       </tbody>
     </v-table>
+    <v-dialog v-model="showDeleteConfirmation" max-width="500px">
+      <v-card style="padding: 24px">
+        <v-card-title class="text-h6">Confirm Deletion</v-card-title>
+        <v-card-text
+          >Are you sure you want to delete this template? The form will be
+          updated immediately.
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" variant="flat" @click="handleDelete"
+            >Delete</v-btn
+          >
+          <v-btn
+            variant="outlined"
+            color="textLink"
+            :class="isRTL ? 'ml-5' : 'mr-5'"
+            @click="showDeleteConfirmationMessage(false)"
+          >
+            <span :lang="lang">{{ $t('trans.formSubmission.cancel') }}</span>
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </BasePanel>
 </template>

@@ -29,6 +29,7 @@ export default {
       subscription: false,
       fileUploadedInBackend: false,
       templateCheckbox: false,
+      deletedCdogsTemplate: false,
     };
   },
   computed: {
@@ -134,6 +135,11 @@ export default {
     handleTemplateCheckbox(isSelected) {
       this.templateCheckbox = isSelected;
     },
+    handleDeletedCdogsTemplate(isDeleted) {
+      if (isDeleted === true) {
+        this.updateSettings();
+      }
+    },
   },
 };
 </script>
@@ -177,6 +183,7 @@ export default {
               @onSubscription="onSubscription"
               @update:fileUploadedToBackend="handleUploadedFile"
               @update:checkboxSelected="handleTemplateCheckbox"
+              @update:deletedCdogsTemplate="handleDeletedCdogsTemplate"
             />
             <FormProfile :disabled="formSettingsDisabled" />
           </v-form>

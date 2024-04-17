@@ -33,6 +33,7 @@ export default {
       disclaimerRules: [(v) => !!v || i18n.t('trans.create.agreementErrMsg')],
       templateAttached: false,
       templateCheckbox: false,
+      validFileExtension: true,
     };
   },
   computed: {
@@ -72,6 +73,9 @@ export default {
     handleCheckboxSelected(isSelected) {
       this.templateCheckbox = isSelected;
     },
+    handleValidFileExtension(isValid) {
+      this.validFileExtension = isValid;
+    },
   },
 };
 </script>
@@ -86,6 +90,7 @@ export default {
         <FormSettings
           @update:fileUploaded="handleFileUpload"
           @update:checkboxSelected="handleCheckboxSelected"
+          @update:validFileExtension="handleValidFileExtension"
         />
 
         <FormProfile />
@@ -113,7 +118,9 @@ export default {
       </v-form>
       <v-btn
         :disabled="
-          !settingsFormValid || (templateCheckbox && !templateAttached)
+          !settingsFormValid ||
+          (templateCheckbox && !templateAttached) ||
+          !validFileExtension
         "
         color="primary"
         data-test="continue-btn"

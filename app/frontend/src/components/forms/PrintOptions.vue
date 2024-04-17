@@ -444,7 +444,9 @@ export default {
                         id="file-input-submit"
                         variant="flat"
                         class="btn-file-input-submit px-4"
-                        :disabled="!displayTemplatePrintButton"
+                        :disabled="
+                          !displayTemplatePrintButton || !validFileExtension
+                        "
                         color="primary"
                         :loading="loading"
                         v-bind="props"
