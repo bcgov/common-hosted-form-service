@@ -1,5 +1,6 @@
 import 'cypress-keycloak-commands';
 import 'cypress-drag-drop';
+import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
 
@@ -14,13 +15,7 @@ Cypress.Commands.add('waitForLoad', () => {
 
 describe('Form Designer', () => {
 
-  beforeEach(()=>{
-    
-    cy.viewport(1000, 1100);
-    cy.waitForLoad();
-    cy.kcLogout();
-    cy.kcLogin("user");
-    
+  
     cy.on('uncaught:exception', (err, runnable) => {
       // Form.io throws an uncaught exception for missing projectid
       // Cypress catches it as undefined: undefined so we can't get the text
@@ -28,78 +23,15 @@ describe('Form Designer', () => {
       return false;
     });
     
-});
-  
 
+ // Form design page with Advanced Data components 
 
-it('Visits the form design page for advanced Data', () => {
+// Checks the Container component
+it('Checks the Container component', () => {
 
-    cy.visit(`/${depEnv}/form/create`);
-    cy.location('pathname').should('eq', `/${depEnv}/form/create`);
-    //cy.contains('h1', 'Form Settings');
-    cy.get('.v-row > :nth-child(1) > .v-card > .v-card-title > span').contains('Form Title');
-
-    let title="title" + Math.random().toString(16).slice(2);
-
-    
-    cy.get('#input-15').type(title);
-    cy.get('#input-17').type('test description');
-    cy.get('#input-22').click();
-    cy.get('.v-selection-control-group > .v-card').should('be.visible');
-    cy.get('#input-23').click();
-    //cy.get('.v-selection-control-group > .v-card').should('not.be.visible');
-    //cy.get('#input-91').should('be.visible');
-    cy.get('.v-row > .v-input > .v-input__control > .v-selection-control-group > :nth-child(1) > .v-label > span').contains('IDIR');
-    cy.get('span').contains('Basic BCeID');
-    
-    cy.get(':nth-child(2) > .v-card > .v-card-text > .v-input--error > :nth-child(2)').contains('Please select 1 log-in type');
-    //cy.get('#input-92').should('be.visible');
-    //cy.get('#input-93').should('be.visible');
-
-
-    cy.get('#input-24').click();
-    
-
-    cy.get('#checkbox-25').click();
-    cy.get('#checkbox-28').click();
-    cy.get('#checkbox-38').click();
-    cy.get('#checkbox-50').click();
-    cy.get('#input-88').click();
-    cy.get('#input-88').type('abc@gmail.com');
-   
-   
-    
-   cy.get('#input-54').click();
-   cy.contains("Citizens' Services (CITZ)").click();
-   
-   cy.get('#input-58').click();
-
-   
-   cy.get('.v-list').should('contain','Applications that will be evaluated followed');
-   cy.get('.v-list').should('contain','Collection of Datasets, data submission');
-   cy.get('.v-list').should('contain','Registrations or Sign up - no evaluation');
-   cy.get('.v-list').should('contain','Reporting usually on a repeating schedule or event driven like follow-ups');
-   cy.get('.v-list').should('contain','Feedback Form to determine satisfaction, agreement, likelihood, or other qualitative questions');
-   cy.contains('Reporting usually on a repeating schedule or event driven like follow-ups').click();
-   cy.get('#input-64').click();
-   cy.get('#input-70').click();
-   cy.get('.mt-3 > .mdi-help-circle-outline').should('be.visible')
-   cy.get('.mt-3 > .mdi-help-circle-outline').click();
-   cy.get('.d-flex > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
-   cy.get('.d-flex > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').type('test label');
-   cy.get('#checkbox-76').click();
-   cy.get('button').contains('Continue').click();
-
+  cy.viewport(1000, 1100);
+    formsettings();
  
-  
- // Form design page with advanced data components
-
-  
-  
-    //cy.visit(`/${depEnv}/form/manage?f=5685fa60-e0f3-47e8-aecb-be3b1365b0bd`);
-    //cy.waitForLoad();
-    //cy.get('a > .v-btn > .v-btn__content > .mdi-pencil').click();
-    //cy.waitForLoad();
     cy.get('button').contains('Advanced Data').click();
     cy.waitForLoad();
     cy.waitForLoad();
@@ -109,34 +41,31 @@ it('Visits the form design page for advanced Data', () => {
         
         .trigger('mousedown', { which: 1}, { force: true })
         .trigger('mousemove', coords.x, -400, { force: true })
-        //.trigger('mousemove', coords.y, +100, { force: true })
         .trigger('mouseup', { force: true });
-        
         cy.get('input[name="data[label]"]').clear().type('Application');
         cy.get('input[name="data[customClass]"]').type('bg-primary');
         cy.waitForLoad();
         
         cy.get('button').contains('Save').click();
     });
+
+  });
+  // Checks the Data Grid component
+  it('Checks the Data Grid component', () => {
+
+    cy.viewport(1000, 1100);
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
         cy.get('span.btn').contains('Data Grid')
         
         .trigger('mousedown', { which: 1}, { force: true })
         .trigger('mousemove', coords.x, -400, { force: true })
-        //.trigger('mousemove', coords.y, +100, { force: true })
         .trigger('mouseup', { force: true });
         
         cy.get('input[name="data[label]"]').clear().type('Application');
         cy.get('input[name="data[customClass]"]').type('bg-primary');
         cy.waitForLoad();
-       
-        
-        
         cy.get('button').contains('Save').click();
-    
-        
-    
     
     });
     
@@ -233,13 +162,18 @@ it('Visits the form design page for advanced Data', () => {
             
         
     });
+
+  });
+  // Checks the Edit Grid Component
+  it('Checks the Edit Grid Component', () => {
+
+    cy.viewport(1000, 1100);
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('span.btn').contains('Edit Grid')
       
       .trigger('mousedown', { which: 1}, { force: true })
       .trigger('mousemove', coords.x, -500, { force: true })
-      //.trigger('mousemove', coords.y, +100, { force: true })
       .trigger('mouseup', { force: true });
       
       cy.get('input[name="data[label]"]').clear().type('Add more days');
@@ -248,6 +182,10 @@ it('Visits the form design page for advanced Data', () => {
       
       cy.get('button').contains('Save').click();
     });
+  });
+  it('Visits the form design page for advanced Data', () => {
+
+    cy.viewport(1000, 1100);
     cy.get('button').contains('Basic Fields').click();
     cy.get('div.formio-builder-form').then($el => {
             const coords = $el[0].getBoundingClientRect();
@@ -256,10 +194,15 @@ it('Visits the form design page for advanced Data', () => {
             .trigger('mousedown', { which: 1}, { force: true })
             .trigger('mousemove', coords.x, -400, { force: true })
             .trigger('mouseup', { force: true });
-            //cy.get('p').contains('Multi-line Text Component');
-            
             cy.get('button').contains('Save').click();
     });
+
+
+  });
+// Checks Data Map component
+  it('Checks Data Map component', () => {
+
+    cy.viewport(1000, 1100);
     cy.get('button').contains('Advanced Data').click();
     cy.get('div.formio-builder-form').then($el => {
             const coords = $el[0].getBoundingClientRect();
@@ -268,17 +211,43 @@ it('Visits the form design page for advanced Data', () => {
             .trigger('mousedown', { which: 1}, { force: true })
             .trigger('mousemove', coords.x, -300, { force: true })
             .trigger('mouseup', { force: true });
-            //cy.get('p').contains('Multi-line Text Component');
-            
             cy.get('button').contains('Save').click();
     }); 
+    cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
+ // Form saving
+   let savedButton = cy.get('[data-cy=saveButton]');
+   expect(savedButton).to.not.be.null;
+   savedButton.trigger('click');
+   cy.waitForLoad();
+
+
+ // Go to My forms  
+   cy.wait('@getForm').then(()=>{
+     let userFormsLinks = cy.get('[data-cy=userFormsLinks]');
+     expect(userFormsLinks).to.not.be.null;
+     userFormsLinks.trigger('click');
+   });
+ // Filter the newly created form
+   cy.location('search').then(search => {
+     //let pathName = fullUrl.pathname
+     let arr = search.split('=');
+     let arrayValues = arr[1].split('&');
+     cy.log(arrayValues[0]);
+     //
+     //cy.log(arrayValues[2]);
+     let dval=arr[2].split('&');
+     cy.log(dval);
+     // Form preview
+     cy.visit(`/${depEnv}/form/preview?f=${arrayValues[0]}&d=${dval[0]}`);
+     cy.waitForLoad();
+     cy.get('.v-skeleton-loader > .v-container').should('be.visible');
+     cy.get('.list-group-item').should('be.visible');
+     cy.get('[ref="datagrid-dataGrid"]').should('be.visible');
+     cy.get('.col-md-1').should('be.visible');
+     
+   })
     
-    
-    
-    
-    
-    
-    });
+});
     
 });
         

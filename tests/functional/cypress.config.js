@@ -27,6 +27,7 @@ module.exports = defineConfig({
     //baseUrl: 'http://localhost:5173',
     baseUrl:'https://chefs-dev.apps.silver.devops.gov.bc.ca',
     specPattern: 'cypress/e2e/*.cy.{js,jsx,ts,tsx}',
+    testIsolation: false,
     
     //supportFile: 'support/index.js',
   }
