@@ -1,7 +1,7 @@
 module.exports = {
   clearMocks: true,
   collectCoverage: true,
-  collectCoverageFrom: ['src/**/*.js', '!src/db/migrations/*.js', '!src/db/seeds/*.js', '!frontend/**/*.*'],
+  collectCoverageFrom: ['src/**/*.js', '!src/db/migrations/*.js', '!src/db/seeds/*.js', '!src/forms/common/models/(tables|views)/*.js', '!frontend/**/*.*'],
   moduleFileExtensions: ['js', 'json'],
   moduleNameMapper: {
     '^~/(.*)$': '<rootDir>/src/$1',

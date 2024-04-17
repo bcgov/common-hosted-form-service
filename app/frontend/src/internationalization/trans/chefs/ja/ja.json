@@ -150,7 +150,8 @@
     "allowEventSubscription": "イベントのサブスクリプションを許可する",
     "eventSubscription": "イベントのサブスクリプション",
     "validEndpointRequired": "で始まる有効なエンドポイントを入力してください https://",
-    "validBearerTokenRequired": "有効なベアラー トークンの例を入力してください: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+    "validBearerTokenRequired": "有効なベアラー トークンの例を入力してください: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
+    "wideFormLayout": "ワイドフォームレイアウト"
   },
   "formProfile": {
     "message": "CHEFSチームは包括的なビジネスケースの作成に重要な入力となる情報を収集し、整理しています。これらのケースは、CHEFSの戦略的な運用と今後の改善を指南するうえで重要な役割を果たします。データを収集するこの取り組みは、重要な意思決定の情報提供やCHEFSの軌道を形作るために不可欠です。これにより、CHEFSが変化するニーズと課題に対応するための適応性と効果を確保します.",
@@ -584,7 +585,8 @@
     "fetchConsoleErrMsg": "注記の追加中にエラーが発生しました:",
     "notes": "ノート",
     "note": "ノート",
-    "maxChars": "最大4000文字"
+    "maxChars": "最大4000文字",
+    "totalNotes": "合計ノート:"
   },
   "statusPanel": {
     "currentStatus": "現在のステータス：",
@@ -880,7 +882,8 @@
     "saveAsADraft": "下書きとして保存",
     "editThisDraft": "この下書きを編集する",
     "switchSingleSubmssn": "単一の提出に切り替える",
-    "switchMultiSubmssn": "複数の提出に切り替える"
+    "switchMultiSubmssn": "複数の提出に切り替える",
+    "wideLayout": "ワイドレイアウト"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "リンクがクリップボードにコピーされました",
