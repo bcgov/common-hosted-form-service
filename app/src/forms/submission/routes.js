@@ -5,8 +5,11 @@ const controller = require('./controller');
 const P = require('../common/constants').Permissions;
 const { currentUser, hasSubmissionPermissions, filterMultipleSubmissions } = require('../auth/middleware/userAccess');
 const rateLimiter = require('../common/middleware').apiKeyRateLimiter;
+const validateParameter = require('../common/middleware/validateParameter');
 
 routes.use(currentUser);
+
+routes.param('documentTemplateId', validateParameter.validateDocumentTemplateId);
 
 routes.get('/:formSubmissionId', rateLimiter, apiAccess, hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
   await controller.read(req, res, next);
@@ -56,6 +59,10 @@ routes.get('/:formSubmissionId/edits', hasSubmissionPermissions(P.SUBMISSION_REA
   await controller.listEdits(req, res, next);
 });
 
+routes.get('/:formSubmissionId/template/:documentTemplateId/render', rateLimiter, apiAccess, hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
+  await controller.templateRender(req, res, next);
+});
+
 routes.post('/:formSubmissionId/template/render', rateLimiter, apiAccess, hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
   await controller.templateUploadAndRender(req, res, next);
 });
@@ -63,10 +70,5 @@ routes.post('/:formSubmissionId/template/render', rateLimiter, apiAccess, hasSub
 routes.delete('/:formSubmissionId/:formId/submissions', hasSubmissionPermissions(P.SUBMISSION_DELETE), filterMultipleSubmissions(), async (req, res, next) => {
   await controller.deleteMutipleSubmissions(req, res, next);
 });
-
-// Implement this when we want to fetch a specific audit row including the whole old submission record
-// routes.get('/:formSubmissionId/edits/:auditId', hasSubmissionPermissions(P.SUBMISSION_READ), async (req, res, next) => {
-//   await controller.listEdits(req, res, next);
-// });
 
 module.exports = routes;

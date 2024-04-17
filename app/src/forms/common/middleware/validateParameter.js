@@ -2,6 +2,7 @@ const Problem = require('api-problem');
 const uuid = require('uuid');
 
 const formService = require('../../form/service');
+const submissionService = require('../../submission/service');
 
 /**
  * Throws a 400 problem if the parameter is not a valid UUID.
@@ -20,7 +21,8 @@ const _validateUuid = (parameter, parameterName) => {
 
 /**
  * Validates that the :documentTemplateId route parameter exists and is a UUID.
- * This validator requires that the :formId route parameter also exists.
+ * This validator requires that either the :formId or :formSubmissionId route
+ * parameter also exists.
  *
  * @param {*} req the Express object representing the HTTP request
  * @param {*} _res the Express object representing the HTTP response - unused
@@ -31,8 +33,21 @@ const validateDocumentTemplateId = async (req, _res, next, documentTemplateId) =
   try {
     _validateUuid(documentTemplateId, 'documentTemplateId');
 
+    let formId = req.params.formId;
+    if (!formId) {
+      const formSubmissionId = req.params.formSubmissionId;
+      if (!formSubmissionId) {
+        throw new Problem(404, {
+          detail: 'documentTemplateId does not exist on this form',
+        });
+      }
+
+      const submission = await submissionService.read(formSubmissionId);
+      formId = submission.form.id;
+    }
+
     const documentTemplate = await formService.documentTemplateRead(documentTemplateId);
-    if (!documentTemplate || documentTemplate.formId !== req.params.formId) {
+    if (!documentTemplate || documentTemplate.formId !== formId) {
       throw new Problem(404, {
         detail: 'documentTemplateId does not exist on this form',
       });
