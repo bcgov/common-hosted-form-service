@@ -107,7 +107,6 @@ export const useFormStore = defineStore('form', {
     version: {},
     userLabels: [],
     documentTemplate: null,
-    formId: '',
   }),
   getters: {
     isFormPublished: (state) =>
@@ -458,9 +457,6 @@ export const useFormStore = defineStore('form', {
     },
     async setTemplateFile(file) {
       this.documentTemplate = file;
-    },
-    async setFormId(formId) {
-      this.formId = formId;
     },
     //
     // Submission

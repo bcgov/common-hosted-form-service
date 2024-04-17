@@ -17,6 +17,10 @@ export default {
       type: Object,
       default: undefined,
     },
+    f: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -39,7 +43,6 @@ export default {
       defaultTemplateFilename: '',
       defaultTemplateExtension: '',
       defaultReportname: '',
-      formId: '',
       displayTemplatePrintButton: false,
       validFileExtension: true,
     };
@@ -48,6 +51,9 @@ export default {
     ...mapState(useFormStore, ['isRTL', 'lang', 'form', 'getInitialForm']),
     files() {
       return this.templateForm.files;
+    },
+    formId() {
+      return this.f ? this.f : this.form.id;
     },
   },
   watch: {
@@ -246,9 +252,6 @@ export default {
       };
     },
     async fetchDefaultTemplate() {
-      const formStore = useFormStore();
-      this.formId = formStore.formId;
-
       // Calling the API to check whether the form has any uploaded document templates
       const result = await formService.readForm(this.formId);
       this.enableDocumentTemplates = result.data.enableDocumentTemplates;
