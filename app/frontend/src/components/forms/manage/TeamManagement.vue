@@ -490,7 +490,7 @@ export default {
       :lang="lang"
     >
       <!-- custom header markup - add tooltip to heading that are roles -->
-      <template #column.form_designer="{ column }">
+      <template #header.form_designer="{ column }">
         <v-tooltip v-if="roleOrder.includes(column.key)" location="bottom">
           <template #activator="{ props }">
             <span v-bind="props">{{ column.title }}</span>
@@ -499,7 +499,7 @@ export default {
         </v-tooltip>
         <span v-else>{{ column.title }}</span>
       </template>
-      <template #column.owner="{ column }">
+      <template #header.owner="{ column }">
         <v-tooltip v-if="roleOrder.includes(column.key)" location="bottom">
           <template #activator="{ props }">
             <span v-bind="props">{{ column.title }}</span>
@@ -508,7 +508,7 @@ export default {
         </v-tooltip>
         <span v-else>{{ column.title }}</span>
       </template>
-      <template #column.submission_reviewer="{ column }">
+      <template #header.submission_reviewer="{ column }">
         <v-tooltip v-if="roleOrder.includes(column.key)" location="bottom">
           <template #activator="{ props }">
             <span v-bind="props">{{ column.title }}</span>
@@ -517,7 +517,7 @@ export default {
         </v-tooltip>
         <span v-else>{{ column.title }}</span>
       </template>
-      <template #column.form_submitter="{ column }">
+      <template #header.form_submitter="{ column }">
         <v-tooltip v-if="roleOrder.includes(column.key)" location="bottom">
           <template #activator="{ props }">
             <span v-bind="props">{{ column.title }}</span>
@@ -526,7 +526,7 @@ export default {
         </v-tooltip>
         <span v-else>{{ column.title }}</span>
       </template>
-      <template #column.team_manager="{ column }">
+      <template #header.team_manager="{ column }">
         <v-tooltip v-if="roleOrder.includes(column.key)" location="bottom">
           <template #activator="{ props }">
             <span v-bind="props">{{ column.title }}</span>
@@ -535,7 +535,7 @@ export default {
         </v-tooltip>
         <span v-else>{{ column.title }}</span>
       </template>
-      <template #column.actions>
+      <template #header.actions>
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <v-btn

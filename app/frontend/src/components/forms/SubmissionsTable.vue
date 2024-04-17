@@ -695,7 +695,7 @@ export default {
       return-object
       @update:options="updateTableOptions"
     >
-      <template #column.event>
+      <template #header.event>
         <span v-if="!deletedOnly">
           <v-btn
             color="red"
