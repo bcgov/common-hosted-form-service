@@ -150,7 +150,8 @@
     "allowEventSubscription": "允许事件订阅",
     "eventSubscription": "E活动订阅",
     "validEndpointRequired": "请输入以以下开头的有效端点 https://",
-    "validBearerTokenRequired": "输入有效的不记名令牌示例: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+    "validBearerTokenRequired": "输入有效的不记名令牌示例: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
+    "wideFormLayout": "宽表单布局"
   },
   "formProfile": {
     "message": "CHEFS团队正在收集和组织信息，作为制定全面业务案例的关键输入。这些案例将在指导CHEFS未来几年的战略运作和持续改进中发挥关键作用。这一收集数据的倡议对于提供关键决策的信息和塑造CHEFS轨迹至关重要，确保其在应对不断变化的需求和挑战中的适应性和有效性。",
@@ -584,7 +585,8 @@
     "fetchConsoleErrMsg": "添加注释时出错：",
     "notes": "笔记",
     "note": "笔记",
-    "maxChars": "最多 4000 个字符"
+    "maxChars": "最多 4000 个字符",
+    "totalNotes": "总笔记:"
   },
   "statusPanel": {
     "currentStatus": "当前状态：",
@@ -880,7 +882,8 @@
     "saveAsADraft": "另存为草稿",
     "editThisDraft": "编辑本草稿",
     "switchSingleSubmssn": "切换到单一提交",
-    "switchMultiSubmssn": "切换到多次提交"
+    "switchMultiSubmssn": "切换到多次提交",
+    "wideLayout": "宽阔布局"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "链接已复制到剪贴板",

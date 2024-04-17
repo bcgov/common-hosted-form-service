@@ -45,6 +45,34 @@ tags:
       This section of the API includes endpoints used to perform various
       operations related to form drafts, for example create or publish a draft
       from a specific version of a form.
+  - name: Document Template
+    description: >
+      Documents can be generated using the Common Document Generation Service
+      ([CDOGS](https://bcgov.github.io/common-service-showcase/services/cdogs.html)).
+      Form submission data is merged into a user-defined _document template_ to
+      create the document.
+
+      > This is an experimental API that is currently only MVP, and it will
+      change rapidly. It is best to avoid using these endpoints (outside of the
+      CHEFS app itself) until they stabilize.
+
+
+      The MVP workflow is that a form has a single active document template:
+        1. The `POST /forms/{formId}/documentTemplates` route is used to create
+           a document template for a form.
+        2. Subsequent calls to the `POST` route should be paired with calls to
+           the `DELETE` route to delete the previously active template.
+        3. When it comes time to generate the document, the
+           `GET /forms/{formId}/documentTemplates` route is used to get "all"
+           the document template metadata for a form (although there is only one
+           active document template). This route only returns metadata and not
+           the (possibly huge) template files themselves. 
+        4. The `GET /forms/{formId}/documentTemplates/{documentTemplateId}`
+           route is used to get the specific document template's template file.
+
+      This "double GET" doesn't make a lot of sense when there is only one
+      document template for a form, but this will change soon when we allow the
+      user to choose which template they want to use for document generation.
   - name: Submission
     description: >-
       These API endpoints handle the input data provided by a user that
@@ -84,10 +112,6 @@ tags:
       All calls are secured by a role that operational team members will be
       granted and allow fetching some details about forms without needing a
       user->form permission.
-  - name: Template
-    description: >
-      These API endpoints generate documents from document templates and form
-      submission data.
 paths:
   /forms:
     get:
@@ -381,6 +405,182 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /forms/{formId}/documentTemplates:
+    get:
+      summary: Get all document templates for a form
+      description: >
+        Gets an array containing all the document template metadata for the
+        given form.
+
+        > Objects returned by this route do not include the `template` field. If
+        this document template file is needed, use the `id` field from the
+        returned metadata to make a call to
+        `/forms/{formId}/documentTemplates/{documentTemplateId}`.
+      operationId: readDocumentTemplates
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Document Template
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocumentTemplateResponseBasic'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create a document template for a form
+      description: >
+        Creates a document template for a form. This makes it easier for users
+        to generate documents, as the template is associated with the form and
+        does not need to be distributed to every user.
+      operationId: updateDocumentTemplate
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Document Template
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentTemplateRequest'
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentTemplateResponse'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/{formId}/documentTemplates/{documentTemplateId}:
+    get:
+      summary: Get a document template for a form
+      description: >
+        Gets a document template for the given form. The response will include
+        the `template` field, which is the actual document template file.
+      operationId: readDocumentTemplate
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Document Template
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+        - $ref: '#/components/parameters/documentTemplateIdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentTemplateResponse'
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: (Soft) Delete a document template
+      description: >
+        Marks a document template as no longer being active. In this state the
+        document template is essentially treated as if it does not exist. It
+        will not be returned by the `GET` routes and cannot otherwise be used.
+      operationId: deleteDocumentTemplate
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Document Template
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+        - $ref: '#/components/parameters/documentTemplateIdParam'
+      responses:
+        '204':
+          description: OK
+          headers:
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /forms/{formId}/export:
     get:
       summary: Export submissions for a form
@@ -1526,7 +1726,7 @@ paths:
                 $ref: '#/components/schemas/Error'
   /submissions/{formSubmissionId}/template/render:
     post:
-      summary: Generate a document from a document template
+      summary: Generate a document by providing a document template
       description: >-
         Merges data from a form submission into a document template.
 
@@ -1547,7 +1747,7 @@ paths:
         - BearerAuth: []
           OpenID: []
       tags:
-        - Template
+        - Document Template
       parameters:
         - $ref: '#/components/parameters/formSubmissionIdParam'
       requestBody:
@@ -2028,7 +2228,7 @@ paths:
           schema:
             type: string
             format: uuid
-            example: c6455376-382c-439d-a811-0381a012d696
+            example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
           description: form ID
         - in: query
           name: active
@@ -2078,7 +2278,7 @@ paths:
           schema:
             type: string
             format: uuid
-            example: c6455376-382c-439d-a811-0381a012d696
+            example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
           description: form ID
         - in: query
           name: formSubmissionId
@@ -2159,7 +2359,7 @@ paths:
           schema:
             type: string
             format: uuid
-            example: c6455376-382c-439d-a811-0381a012d696
+            example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
           description: form ID
           required: true
         - in: query
@@ -2253,7 +2453,7 @@ paths:
           schema:
             type: string
             format: uuid
-            example: c6455376-382c-439d-a811-0381a012d696
+            example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
           description: form id
           required: true
         - in: query
@@ -2437,7 +2637,7 @@ paths:
           schema:
             type: string
             format: uuid
-            example: c6455376-382c-439d-a811-0381a012d696
+            example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
           description: form id
           required: true
         - in: query
@@ -2502,7 +2702,7 @@ paths:
           schema:
             type: string
             format: uuid
-            example: c6455376-382c-439d-a811-0381a012d696
+            example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
           description: form id
           required: true
       requestBody:
@@ -3165,51 +3365,60 @@ components:
       type: openIdConnect
       openIdConnectUrl: https://example.com/.well-known/openid-configuration
   parameters:
+    documentTemplateIdParam:
+      in: path
+      name: documentTemplateId
+      description: ID of the document template.
+      schema:
+        type: string
+        format: uuid
+      required: true
+      example: 7a61407b-2c00-467d-9dd5-f9f060779c5b
     fileIdParam:
       in: path
       name: fileId
+      description: ID of the file.
       schema:
         type: string
         format: uuid
       example: 3cb9acc7-cfd8-4491-b091-1277bc0ec303
       required: true
-      description: ID of the File
     formIdParam:
       in: path
       name: formId
+      description: ID of the form.
       schema:
         type: string
         format: uuid
-      description: ID of the form
       required: true
-      example: c6455376-382c-439d-a811-0381a012d696
+      example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
     formVersionIdParam:
       in: path
       name: formVersionId
+      description: ID of the form version.
       schema:
         type: string
         format: uuid
       example: a675ab2a-1e88-4fb5-88f9-c7cb051a18b2
       required: true
-      description: ID of the form version
     formVersionDraftIdParam:
       in: path
       name: formVersionDraftId
+      description: ID of the draft form version.
       schema:
         type: string
         format: uuid
         example: b2e11d09-30fe-4c4c-9375-5a9de0dc2e9e
       required: true
-      description: ID of the draft for form version
     formSubmissionIdParam:
       in: path
       name: formSubmissionId
+      description: ID of the submission.
       schema:
         type: string
         format: uuid
       example: 3cb9acc7-cfd8-4491-b091-1277bc0ec303
       required: true
-      description: ID of the Submission
   schemas:
     CurrentUser:
       type: object
@@ -3241,6 +3450,56 @@ components:
         public:
           type: boolean
           example: false
+    DocumentTemplateRequest:
+      type: object
+      properties:
+        filename:
+          type: string
+          description: >
+            The filename that the document template had when it was
+            originally uploaded.
+          example: my_document_template.txt
+        template:
+          type: string
+          description: >
+            The file that is the document template to be used in document
+            generation.
+          example: Hello {firstName}
+    DocumentTemplateResponse:
+      allOf:
+        - $ref: '#/components/schemas/DocumentTemplateResponseBasic'
+        - type: object
+          properties:
+            template:
+              type: string
+              description: >
+                The file that is the document template to be used in document
+                generation.
+              example: Hello {firstName}
+    DocumentTemplateResponseBasic:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: >
+                The unique identifier for the document template.
+              example: 7a61407b-2c00-467d-9dd5-f9f060779c5b
+            formId:
+              type: string
+              format: uuid
+              description: >
+                The unique identifier for the form that this document template
+                belongs to.
+              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
+            filename:
+              type: string
+              description: >
+                The filename that the document template had when it was
+                originally uploaded.
+              example: my_document_template.docx
+        - $ref: '#/components/schemas/TimeStampCreate'
     EmailMessage:
       allOf:
         - type: object
@@ -3312,7 +3571,7 @@ components:
               example: 4
             formId:
               type: string
-              example: c6455376-382c-439d-a811-0381a012d696
+              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
         - $ref: '#/components/schemas/TimeStampUserData'
     FormApiKey:
       allOf:
@@ -3323,7 +3582,7 @@ components:
               example: 4
             formId:
               type: string
-              example: c6455376-382c-439d-a811-0381a012d696
+              example: aeb3b705-1de5-4f4e-a4e6-0716b7671034
             secret:
               type: string
               example: dd7d1699-61ec-4237-aa33-727f8aa79c0a
@@ -3354,6 +3613,9 @@ components:
               example:
                 - me@email.com
                 - manager@email.com
+            enableDocumentTemplates:
+              type: boolean
+              example: true
             enableStatusUpdates:
               type: boolean
               example: true
@@ -4155,20 +4417,51 @@ components:
               description: >-
                 The original file type of the `content` document template.
               example: txt
+    TimeStampCreate:
+      type: object
+      properties:
+        createdBy:
+          type: string
+          description: >
+            The username of the person who created the object.
+          example: bsmith@idir
+        createdAt:
+          type: string
+          description: >
+            The UTC date and time when the object was created.
+          example: '2020-06-04T18:49:20.672Z'
+        updatedBy:
+          type: string
+          description: >
+            The username of the person who last modified the object.
+          example:
+        updatedAt:
+          type: string
+          description: >
+            The UTC date and time when the object was last modified.
+          example: '2020-06-04T18:49:20.672Z'
     TimeStampUserData:
       type: object
       properties:
         createdBy:
           type: string
+          description: >
+            The username of the person who created the object.
           example: bsmith@idir
         createdAt:
           type: string
+          description: >
+            The UTC date and time when the object was created.
           example: '2020-06-04T18:49:20.672Z'
         updatedBy:
           type: string
+          description: >
+            The username of the person who last modified the object.
           example: jsmith@idir
         updatedAt:
           type: string
+          description: >
+            The UTC date and time when the object was last modified.
           example: '2020-06-05T11:27:15.853Z'
     User:
       allOf:

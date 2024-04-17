@@ -20,6 +20,7 @@ export default {
     StatusPanel,
     PrintOptions,
   },
+  inject: ['setWideLayout'],
   props: {
     submissionId: {
       type: String,
@@ -32,6 +33,7 @@ export default {
       loading: true,
       reRenderSubmission: 0,
       submissionReadOnly: true,
+      isWideLayout: false,
     };
   },
   computed: {
@@ -51,6 +53,8 @@ export default {
     // get current user's permissions on associated form
     await this.getFormPermissionsForUser(this.form.id);
     this.loading = false;
+    // set wide layout
+    this.setWideLayout(this.isWideLayout);
   },
   methods: {
     ...mapActions(useFormStore, [
@@ -72,7 +76,10 @@ export default {
     setDraft(status) {
       this.isDraft = status === 'REVISING';
     },
-
+    async toggleWideLayout() {
+      this.isWideLayout = !this.isWideLayout;
+      this.setWideLayout(this.isWideLayout);
+    },
     async toggleSubmissionEdit(editing) {
       this.submissionReadOnly = !editing;
       this.reRenderSubmission += 1;
@@ -118,6 +125,24 @@ export default {
         <!-- buttons -->
         <div class="d-print-none">
           <span>
+            <v-tooltip location="bottom">
+              <template #activator="{ props }">
+                <v-btn
+                  v-if="form.wideFormLayout"
+                  class="mx-1"
+                  color="primary"
+                  v-bind="props"
+                  size="x-small"
+                  density="default"
+                  icon="mdi:mdi-panorama-variant-outline"
+                  @click="toggleWideLayout"
+                />
+              </template>
+              <span>{{ $t('trans.formViewerActions.wideLayout') }}</span>
+            </v-tooltip>
+          </span>
+
+          <span>
             <PrintOptions :submission-id="submissionId" />
           </span>
           <span>
@@ -147,12 +172,38 @@ export default {
     </div>
     <br />
     <v-row>
-      <!-- The form submission -->
+      <!-- Status updates and notes -->
       <v-col
+        v-if="form.enableStatusUpdates"
         cols="12"
-        :md="form.enableStatusUpdates ? 8 : 12"
-        class="pl-0 pt-0"
+        class="pl-0 pt-0 d-print-none"
+        order="first"
+        order-md="last"
       >
+        <v-card
+          variant="outlined"
+          class="review-form"
+          :disabled="!submissionReadOnly"
+        >
+          <StatusPanel
+            :submission-id="submissionId"
+            :form-id="form.id"
+            @note-updated="refreshNotes"
+            @draft-enabled="setDraft"
+          />
+        </v-card>
+        <v-card
+          variant="outlined"
+          class="review-form"
+          :disabled="!submissionReadOnly"
+        >
+          <NotesPanel ref="notesPanel" :submission-id="submissionId" />
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row>
+      <!-- The form submission -->
+      <v-col cols="12" class="pl-0 pt-0">
         <transition name="scale-transition">
           <v-alert
             v-if="!submissionReadOnly"
@@ -221,39 +272,6 @@ export default {
             :submission-id="submissionId"
             @submission-updated="toggleSubmissionEdit(false)"
           />
-        </v-card>
-      </v-col>
-
-      <!-- Status updates and notes -->
-      <v-col
-        v-if="form.enableStatusUpdates"
-        cols="12"
-        md="4"
-        class="pl-0 pt-0 d-print-none"
-        order="first"
-        order-md="last"
-      >
-        <v-card
-          variant="outlined"
-          class="review-form"
-          :disabled="!submissionReadOnly"
-        >
-          <h2 class="review-heading" :class="{ 'dir-rtl': isRTL }" :lang="lang">
-            {{ $t('trans.formSubmission.status') }}
-          </h2>
-          <StatusPanel
-            :submission-id="submissionId"
-            :form-id="form.id"
-            @note-updated="refreshNotes"
-            @draft-enabled="setDraft"
-          />
-        </v-card>
-        <v-card
-          variant="outlined"
-          class="review-form"
-          :disabled="!submissionReadOnly"
-        >
-          <NotesPanel ref="notesPanel" :submission-id="submissionId" />
         </v-card>
       </v-col>
     </v-row>
