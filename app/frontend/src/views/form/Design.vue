@@ -63,7 +63,6 @@ export default {
 <template>
   <BaseStepper :step="2">
     <template #designForm>
-      <v-btn color="primary" size="x-small" icon="mdi:mdi-help" />
       <FormDesigner
         ref="formDesigner"
         class="mt-6"
