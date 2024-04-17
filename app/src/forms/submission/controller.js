@@ -236,6 +236,7 @@ module.exports = {
       next(error);
     }
   },
+
   listEdits: async (req, res, next) => {
     try {
       const response = await service.listEdits(req.params.formSubmissionId);
