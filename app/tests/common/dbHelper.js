@@ -41,7 +41,6 @@ MockModel.insert = jest.fn().mockReturnThis();
 MockModel.insertAndFetch = jest.fn().mockReturnThis();
 MockModel.insertGraph = jest.fn().mockReturnThis();
 MockModel.insertGraphAndFetch = jest.fn().mockReturnThis();
-MockModel.findById = jest.fn().mockReturnThis();
 MockModel.modify = jest.fn().mockReturnThis();
 MockModel.modifiers = jest.fn().mockReturnThis();
 MockModel.orderBy = jest.fn().mockReturnThis();

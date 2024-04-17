@@ -150,7 +150,8 @@
     "allowEventSubscription": "Permitir suscripción a eventos",
     "eventSubscription": "Suscripción a eventos",
     "validEndpointRequired": "Ingrese un punto final válido que comience con https://",
-    "validBearerTokenRequired": "Introduzca un ejemplo de token de portador válido: 89abddfb-2cff-4fda-83e6-13221f0c3d4f"
+    "validBearerTokenRequired": "Introduzca un ejemplo de token de portador válido: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
+    "wideFormLayout": "Diseño de formulario amplio"
   },
   "formProfile": {
     "message": "El equipo de CHEFS está recopilando y organizando información para servir como entrada crucial para la elaboración de casos de negocio integrales. Estos casos jugarán un papel fundamental en la guía de la operación estratégica y la mejora continua de CHEFS en los próximos años. Esta iniciativa de recopilación de datos es esencial para informar decisiones críticas y dar forma a la trayectoria de CHEFS, asegurando su adaptabilidad y efectividad para abordar necesidades y desafíos en constante evolución.",
@@ -584,7 +585,8 @@
     "fetchConsoleErrMsg": "Error al agregar nota:",
     "notes": "notas",
     "note": "Nota",
-    "maxChars": "4000 caracteres como máximo"
+    "maxChars": "4000 caracteres como máximo",
+    "totalNotes": "Notas Totales:"
   },
   "statusPanel": {
     "currentStatus": "Estado actual:",
@@ -880,7 +882,8 @@
     "saveAsADraft": "Guardar como borrador",
     "editThisDraft": "Editar este borrador",
     "switchSingleSubmssn": "Cambiar a envío único",
-    "switchMultiSubmssn": "Cambiar a envíos múltiples"
+    "switchMultiSubmssn": "Cambiar a envíos múltiples",
+    "wideLayout": "Diseño amplio"
   },
   "baseCopyToClipboard": {
     "linkToClipboard": "Enlace copiado al portapapeles",
