@@ -118,6 +118,7 @@ export default {
         this.cdogsTemplate = response.data[0];
         this.showTable = true;
         this.$emit('update:fileUploaded', true);
+        this.$emit('update:fileUploadedToBackend', true);
         return true;
       } else {
         this.showTable = false;
