@@ -250,4 +250,3 @@ it('Checks the Container component', () => {
 });
     
 });
-        

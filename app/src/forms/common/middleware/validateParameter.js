@@ -19,6 +19,32 @@ const _validateUuid = (parameter, parameterName) => {
 };
 
 /**
+ * Validates that the :documentTemplateId route parameter exists and is a UUID.
+ * This validator requires that the :formId route parameter also exists.
+ *
+ * @param {*} req the Express object representing the HTTP request
+ * @param {*} _res the Express object representing the HTTP response - unused
+ * @param {*} next the Express chaining function
+ * @param {*} documentTemplateId the :documentTemplateId value from the route
+ */
+const validateDocumentTemplateId = async (req, _res, next, documentTemplateId) => {
+  try {
+    _validateUuid(documentTemplateId, 'documentTemplateId');
+
+    const documentTemplate = await formService.documentTemplateRead(documentTemplateId);
+    if (!documentTemplate || documentTemplate.formId !== req.params.formId) {
+      throw new Problem(404, {
+        detail: 'documentTemplateId does not exist on this form',
+      });
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Validates that the :formId route parameter exists and is a UUID.
  *
  * @param {*} _req the Express object representing the HTTP request - unused
@@ -89,6 +115,7 @@ const validateFormVersionId = async (req, _res, next, formVersionId) => {
 };
 
 module.exports = {
+  validateDocumentTemplateId,
   validateFormId,
   validateFormVersionId,
   validateFormVersionDraftId,

@@ -292,14 +292,4 @@ describe('Form Designer', () => {
 
 });
 
-
-  
-
-
-
-
-    
-  
-  
-  
 });
