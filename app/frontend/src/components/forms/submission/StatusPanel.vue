@@ -407,7 +407,6 @@ export default {
                 </template>
                 <!-- users found in dropdown -->
                 <template #item="{ props, item }">
-                  {{ item.raw }}
                   <v-list-item
                     v-bind="props"
                     :title="`${item?.raw?.fullName} (${item?.raw?.email})`"
