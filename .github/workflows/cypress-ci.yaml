@@ -23,6 +23,8 @@ jobs:
        with:
           
           working-directory: '${{ github.workspace }}/tests/functional'
+            
+            
      - name: Cypress install   
        run: |
         npm ci
@@ -33,7 +35,7 @@ jobs:
 
         
      - name: Run Cypress tests
-       run: npm run test:chrome
+       run: npm run test:chrome --env keycloakUsername=${{ secrets.keycloakUsername }},keycloakPassword=${{ secrets.keycloakPassword }}
        continue-on-error: false
 
      - name: Copy test execution screenshots
