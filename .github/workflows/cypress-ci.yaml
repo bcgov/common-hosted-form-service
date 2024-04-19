@@ -23,7 +23,8 @@ jobs:
        with:
           
           working-directory: '${{ github.workspace }}/tests/functional'
-          github_token: ${{secrets.GITHUB_TOKEN}}
+          keycloakUsername: ${{secrets.keycloakUsername}}
+          keycloakPassword: ${{secrets.keycloakPassword}}
             
             
      - name: Cypress install   
