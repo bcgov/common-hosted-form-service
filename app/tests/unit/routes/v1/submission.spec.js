@@ -588,6 +588,9 @@ describe(`${basePath}/:formSubmissionId/template/render`, () => {
         submission: {
           submission: {},
         },
+        version: {
+          version: 1,
+        },
       };
       const renderResponse = {
         headers: {},

@@ -3,8 +3,10 @@ const { v4: uuidv4 } = require('uuid');
 
 const validateParameter = require('../../../../../src/forms/common/middleware/validateParameter');
 const formService = require('../../../../../src/forms/form/service');
+const submissionService = require('../../../../../src/forms/submission/service');
 
 const formId = uuidv4();
+const formSubmissionId = uuidv4();
 
 // Various types of invalid UUIDs that we see in API calls.
 const invalidUuids = [[''], ['undefined'], ['{{id}}'], ['${id}'], [uuidv4() + '.'], [' ' + uuidv4() + ' ']];
@@ -21,7 +23,14 @@ describe('validateDocumentTemplateId', () => {
     id: documentTemplateId,
   };
 
+  const mockReadSubmissionResponse = {
+    form: {
+      id: formId,
+    },
+  };
+
   formService.documentTemplateRead = jest.fn().mockReturnValue(mockReadDocumentTemplateResponse);
+  submissionService.read = jest.fn().mockReturnValue(mockReadSubmissionResponse);
 
   describe('400 response when', () => {
     const expectedStatus = { status: 400 };
@@ -36,8 +45,9 @@ describe('validateDocumentTemplateId', () => {
 
       await validateParameter.validateDocumentTemplateId(req, res, next);
 
-      expect(formService.documentTemplateRead).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(formService.documentTemplateRead).toBeCalledTimes(0);
+      expect(submissionService.read).toBeCalledTimes(0);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
 
     test.each(invalidUuids)('documentTemplateId is "%s"', async (eachDocumentTemplateId) => {
@@ -48,13 +58,29 @@ describe('validateDocumentTemplateId', () => {
 
       await validateParameter.validateDocumentTemplateId(req, res, next, eachDocumentTemplateId);
 
-      expect(formService.documentTemplateRead).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(formService.documentTemplateRead).toBeCalledTimes(0);
+      expect(submissionService.read).toBeCalledTimes(0);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
   });
 
   describe('404 response when', () => {
     const expectedStatus = { status: 404 };
+
+    test('formId and formSubmissionId are missing', async () => {
+      const req = getMockReq({
+        params: {
+          documentTemplateId: documentTemplateId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateDocumentTemplateId(req, res, next, documentTemplateId);
+
+      expect(formService.documentTemplateRead).toBeCalledTimes(0);
+      expect(submissionService.read).toBeCalledTimes(0);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+    });
 
     test('formId does not match', async () => {
       formService.documentTemplateRead.mockReturnValueOnce({
@@ -71,13 +97,53 @@ describe('validateDocumentTemplateId', () => {
 
       await validateParameter.validateDocumentTemplateId(req, res, next, documentTemplateId);
 
-      expect(formService.documentTemplateRead).toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(formService.documentTemplateRead).toBeCalledTimes(1);
+      expect(submissionService.read).toBeCalledTimes(0);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+    });
+
+    test('submission formId does not match', async () => {
+      submissionService.read.mockReturnValueOnce({
+        form: {
+          id: uuidv4(),
+        },
+      });
+      const req = getMockReq({
+        params: {
+          formSubmissionId: formSubmissionId,
+          documentTemplateId: documentTemplateId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateDocumentTemplateId(req, res, next, documentTemplateId);
+
+      expect(formService.documentTemplateRead).toBeCalledTimes(1);
+      expect(submissionService.read).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
   });
 
   describe('handles error thrown by', () => {
-    test('documentTemplateRead', async () => {
+    test('submissionService.read', async () => {
+      const error = new Error();
+      submissionService.read.mockRejectedValueOnce(error);
+      const req = getMockReq({
+        params: {
+          formSubmissionId: formSubmissionId,
+          documentTemplateId: documentTemplateId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateDocumentTemplateId(req, res, next, documentTemplateId);
+
+      expect(formService.documentTemplateRead).toBeCalledTimes(0);
+      expect(submissionService.read).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(error);
+    });
+
+    test('formService.documentTemplateRead', async () => {
       const error = new Error();
       formService.documentTemplateRead.mockRejectedValueOnce(error);
       const req = getMockReq({
@@ -90,8 +156,9 @@ describe('validateDocumentTemplateId', () => {
 
       await validateParameter.validateDocumentTemplateId(req, res, next, documentTemplateId);
 
-      expect(formService.documentTemplateRead).toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith(error);
+      expect(formService.documentTemplateRead).toBeCalledTimes(1);
+      expect(submissionService.read).toBeCalledTimes(0);
+      expect(next).toBeCalledWith(error);
     });
   });
 
@@ -107,8 +174,25 @@ describe('validateDocumentTemplateId', () => {
 
       await validateParameter.validateDocumentTemplateId(req, res, next, documentTemplateId);
 
-      expect(formService.documentTemplateRead).toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith();
+      expect(formService.documentTemplateRead).toBeCalledTimes(1);
+      expect(submissionService.read).toBeCalledTimes(0);
+      expect(next).toBeCalledWith();
+    });
+
+    test('document template with matching submission form id', async () => {
+      const req = getMockReq({
+        params: {
+          formSubmissionId: formSubmissionId,
+          documentTemplateId: documentTemplateId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateDocumentTemplateId(req, res, next, documentTemplateId);
+
+      expect(formService.documentTemplateRead).toBeCalledTimes(1);
+      expect(submissionService.read).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
   });
 });
@@ -125,7 +209,7 @@ describe('validateFormId', () => {
 
       await validateParameter.validateFormId(req, res, next);
 
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
 
     test.each(invalidUuids)('formId is "%s"', async (eachFormId) => {
@@ -136,7 +220,7 @@ describe('validateFormId', () => {
 
       await validateParameter.validateFormId(req, res, next, eachFormId);
 
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
   });
 
@@ -151,7 +235,7 @@ describe('validateFormId', () => {
 
       await validateParameter.validateFormId(req, res, next, formId);
 
-      expect(next).toHaveBeenCalledWith();
+      expect(next).toBeCalledWith();
     });
   });
 });
@@ -179,8 +263,8 @@ describe('validateFormVersionDraftId', () => {
 
       await validateParameter.validateFormVersionDraftId(req, res, next);
 
-      expect(formService.readDraft).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(formService.readDraft).toBeCalledTimes(0);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
 
     test.each(invalidUuids)('formVersionDraftId is "%s"', async (eachFormVersionDraftId) => {
@@ -191,13 +275,27 @@ describe('validateFormVersionDraftId', () => {
 
       await validateParameter.validateFormVersionDraftId(req, res, next, eachFormVersionDraftId);
 
-      expect(formService.readDraft).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(formService.readDraft).toBeCalledTimes(0);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
   });
 
   describe('404 response when', () => {
     const expectedStatus = { status: 404 };
+
+    test('formId is missing', async () => {
+      const req = getMockReq({
+        params: {
+          formVersionDraftId: formVersionDraftId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateFormVersionDraftId(req, res, next, formVersionDraftId);
+
+      expect(formService.readDraft).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+    });
 
     test('formId does not match', async () => {
       formService.readDraft.mockReturnValueOnce({
@@ -214,8 +312,8 @@ describe('validateFormVersionDraftId', () => {
 
       await validateParameter.validateFormVersionDraftId(req, res, next, formVersionDraftId);
 
-      expect(formService.readDraft).toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(formService.readDraft).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
   });
 
@@ -233,8 +331,8 @@ describe('validateFormVersionDraftId', () => {
 
       await validateParameter.validateFormVersionDraftId(req, res, next, formVersionDraftId);
 
-      expect(formService.readDraft).toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith(error);
+      expect(formService.readDraft).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(error);
     });
   });
 
@@ -250,8 +348,8 @@ describe('validateFormVersionDraftId', () => {
 
       await validateParameter.validateFormVersionDraftId(req, res, next, formVersionDraftId);
 
-      expect(formService.readDraft).toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith();
+      expect(formService.readDraft).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
   });
 });
@@ -279,8 +377,8 @@ describe('validateFormVersionId', () => {
 
       await validateParameter.validateFormVersionId(req, res, next);
 
-      expect(formService.readVersion).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(formService.readVersion).toBeCalledTimes(0);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
 
     test.each(invalidUuids)('formVersionId is "%s"', async (eachFormVersionId) => {
@@ -291,13 +389,27 @@ describe('validateFormVersionId', () => {
 
       await validateParameter.validateFormVersionId(req, res, next, eachFormVersionId);
 
-      expect(formService.readVersion).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(formService.readVersion).toBeCalledTimes(0);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
   });
 
   describe('404 response when', () => {
     const expectedStatus = { status: 404 };
+
+    test('formId is missing', async () => {
+      const req = getMockReq({
+        params: {
+          formVersionId: formVersionId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateFormVersionId(req, res, next, formVersionId);
+
+      expect(formService.readVersion).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+    });
 
     test('formId does not match', async () => {
       formService.readVersion.mockReturnValueOnce({
@@ -314,8 +426,8 @@ describe('validateFormVersionId', () => {
 
       await validateParameter.validateFormVersionId(req, res, next, formVersionId);
 
-      expect(formService.readVersion).toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(formService.readVersion).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
   });
 
@@ -333,8 +445,8 @@ describe('validateFormVersionId', () => {
 
       await validateParameter.validateFormVersionId(req, res, next, formVersionId);
 
-      expect(formService.readVersion).toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith(error);
+      expect(formService.readVersion).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(error);
     });
   });
 
@@ -350,8 +462,8 @@ describe('validateFormVersionId', () => {
 
       await validateParameter.validateFormVersionId(req, res, next, formVersionId);
 
-      expect(formService.readVersion).toHaveBeenCalled();
-      expect(next).toHaveBeenCalledWith();
+      expect(formService.readVersion).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
   });
 });
