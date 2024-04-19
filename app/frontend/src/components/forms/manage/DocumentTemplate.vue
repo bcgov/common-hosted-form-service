@@ -1,8 +1,9 @@
 <script>
-import { mapState, mapWritableState } from 'pinia';
+import { mapState, mapWritableState, mapActions } from 'pinia';
 import { useFormStore } from '~/store/form';
 import { formService } from '~/services';
 import { i18n } from '~/internationalization';
+import { useNotificationStore } from '~/store/notification';
 
 export default {
   data() {
@@ -33,6 +34,7 @@ export default {
     this.fetchDocumentTemplates();
   },
   methods: {
+    ...mapActions(useNotificationStore, ['addNotification']),
     async fetchDocumentTemplates() {
       try {
         const result = await formService.documentTemplateList(this.form.id);
@@ -50,10 +52,15 @@ export default {
             });
           });
         } else {
-          console.error('No data returned from the server.');
+          this.addNotification({
+            text: 'Failed to fetch document templates.',
+          });
         }
-      } catch (error) {
-        console.error('Failed to fetch document templates:', error);
+      } catch (e) {
+        this.addNotification({
+          text: 'Failed to fetch document templates.',
+          consoleError: e,
+        });
       }
     },
 
@@ -108,8 +115,11 @@ export default {
           item.raw.templateId
         );
         this.fetchDocumentTemplates();
-      } catch (error) {
-        console.error('Failed to delete document template:', error);
+      } catch (e) {
+        this.addNotification({
+          text: 'Failed to delete document template.',
+          consoleError: e,
+        });
       }
     },
   },

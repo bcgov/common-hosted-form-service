@@ -43,7 +43,8 @@ export default {
       defaultTemplateExtension: '',
       defaultReportname: '',
       displayTemplatePrintButton: false,
-      validFileExtension: true,
+      isValidFile: true,
+      validFileExtensions: ['txt', 'docx', 'html', 'odt', 'pptx', 'xlsx'],
     };
   },
   computed: {
@@ -53,6 +54,11 @@ export default {
     },
     formId() {
       return this.f ? this.f : this.form.id;
+    },
+    validationRules() {
+      return [
+        this.isValidFile || i18n.t('trans.cdogsPanel.invalidFileMessage'),
+      ];
     },
   },
   watch: {
@@ -275,20 +281,13 @@ export default {
     validateFileExtension(event) {
       if (event.length > 0) {
         const fileExtension = event[0].name.split('.').pop();
-        if (
-          fileExtension === 'txt' ||
-          fileExtension === 'docx' ||
-          fileExtension === 'html' ||
-          fileExtension === 'odt' ||
-          fileExtension === 'pptx' ||
-          fileExtension === 'xlsx'
-        ) {
-          this.validFileExtension = true;
+        if (this.validFileExtensions.includes(fileExtension)) {
+          this.isValidFile = true;
         } else {
-          this.validFileExtension = false;
+          this.isValidFile = false;
         }
       } else {
-        this.validFileExtension = true;
+        this.isValidFile = true;
       }
     },
   },
@@ -422,11 +421,12 @@ export default {
                   mandatory
                   show-size
                   :lang="lang"
+                  :rules="validationRules"
                   :disabled="selectedOption !== 'upload'"
                   @update:model-value="validateFileExtension($event)"
                 />
                 <span
-                  v-if="!validFileExtension"
+                  v-if="!isValidFile"
                   :class="isRTL ? 'mr-10' : 'ml-10'"
                   style="color: red; display: inline-block"
                   >The template must use one of the following extentions: .txt,
@@ -442,9 +442,7 @@ export default {
                         id="file-input-submit"
                         variant="flat"
                         class="btn-file-input-submit px-4"
-                        :disabled="
-                          !displayTemplatePrintButton || !validFileExtension
-                        "
+                        :disabled="!displayTemplatePrintButton || !isValidFile"
                         color="primary"
                         :loading="loading"
                         v-bind="props"
