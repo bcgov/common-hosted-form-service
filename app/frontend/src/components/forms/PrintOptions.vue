@@ -253,7 +253,6 @@ export default {
     async fetchDefaultTemplate() {
       // Calling the API to check whether the form has any uploaded document templates
       const response1 = await formService.documentTemplateList(this.formId);
-      console.log('in print', response1);
       const docId = response1.data[0].id;
       if (response1 && response1.data.length > 0) {
         this.defaultTemplate = true;
