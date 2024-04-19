@@ -13,6 +13,16 @@ const controller = require('../../../../src/forms/submission/controller');
 // Mock out all the middleware - we're testing that the routes are set up
 // correctly, not the functionality of the middleware.
 //
+const jwtService = require('../../../../src/components/jwtService');
+
+//
+// test assumes that caller has appropriate token, we are not testing middleware here...
+//
+jwtService.protect = jest.fn(() => {
+  return jest.fn((_req, _res, next) => {
+    next();
+  });
+});
 
 jest.mock('../../../../src/forms/auth/middleware/apiAccess');
 apiAccess.mockImplementation(
@@ -30,6 +40,10 @@ rateLimiter.apiKeyRateLimiter = jest.fn((_req, _res, next) => {
 });
 
 const hasSubmissionPermissionsMock = jest.fn((_req, _res, next) => {
+  next();
+});
+
+userAccess.currentUser = jest.fn((_req, _res, next) => {
   next();
 });
 
