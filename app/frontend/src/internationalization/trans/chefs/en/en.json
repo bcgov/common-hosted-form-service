@@ -64,7 +64,15 @@
     "status": "Status",
     "update": "Update",
     "cancel": "Cancel",
-    "eventSubscription": "Event Subscription"
+    "eventSubscription": "Event Subscription",
+    "cdogsTemplate": "CDOGS Template"
+  },
+  "cdogsPanel": {
+    "uploadTemplate": "Upload CDOGS Template",
+    "uploadTemplateFile":"Upload template file",
+    "upload": "Upload",
+    "delete": "Delete",
+    "invalidFileMessage": "The template must use one of the following extentions: .txt, .docx, .html, .odt, .pptx, .xlsx, .pdf"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Press <kbd>enter</kbd> or <kbd>,</kbd> or <kbd>space</kbd> to add multiple email addresses",
@@ -672,7 +680,15 @@
     "docGrnSucess": "Document generated successfully",
     "failedDocGenErrMsg": "Failed to generate Document",
     "failedDocGenConsErrMsg": "Error submitting template: {error}",
-    "cDogsTemplate": "CDOGS template"
+    "cDogsTemplate": "CDOGS template",
+    "uploadCdogsTemplate": "Upload CDOGS template",
+    "printOptions": "Print Options",
+    "expandtextFields": "Expand text fields",
+    "moreInfo": "More Info",
+    "defaultCdogsTemplate": "Use default CDOGS template",
+    "fileName": "File Name",
+    "uploadDate": "Upload Date",
+    "upload": "Upload"    
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Component Information Link",
