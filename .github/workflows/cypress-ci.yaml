@@ -38,7 +38,7 @@ jobs:
 
         
      - name: Run Cypress tests
-       run: npm run test:chrome --env keycloakUsername=${{ secrets.keycloakUsername }},keycloakPassword=${{ secrets.keycloakPassword }}
+       run: npm run test:chrome
        continue-on-error: false
 
      - name: Copy test execution screenshots
