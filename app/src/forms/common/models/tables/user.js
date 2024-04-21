@@ -1,6 +1,6 @@
 const { Model } = require('objection');
 const { Timestamps } = require('../mixins');
-const { Regex, Restricted } = require('../../constants');
+const { Regex } = require('../../constants');
 const stamps = require('../jsonSchema').stamps;
 
 class User extends Timestamps(Model) {
@@ -39,9 +39,6 @@ class User extends Timestamps(Model) {
         if (value) {
           query.where('idpCode', value);
         }
-      },
-      filterRestricted(query) {
-        query.whereNotIn('idpCode', Object.values(Restricted.IDP));
       },
       filterUsername(query, value, exact = false) {
         if (value) {
@@ -100,7 +97,7 @@ class User extends Timestamps(Model) {
       properties: {
         id: { type: 'string', pattern: Regex.UUID },
         idpUserId: { type: 'string', maxLength: 255 },
-        keycloakId: { type: 'string', pattern: Regex.UUID },
+        keycloakId: { type: 'string', maxLength: 255 },
         username: { type: ['string', 'null'], maxLength: 255 },
         firstName: { type: ['string', 'null'], maxLength: 255 },
         lastName: { type: ['string', 'null'], maxLength: 255 },

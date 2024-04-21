@@ -427,7 +427,7 @@ export default {
         }),
         deletedOnly: this.deletedOnly,
         createdBy: this.currentUserOnly
-          ? `${this.user.username}@${this.user.idp}`
+          ? `${this.user.username}@${this.user.idp?.code}`
           : '',
       };
       await this.fetchSubmissions(criteria);

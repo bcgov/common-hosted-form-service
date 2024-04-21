@@ -3,6 +3,8 @@ const { v4: uuidv4 } = require('uuid');
 const { Form, FormSubmissionUserPermissions, PublicFormAccess, SubmissionMetadata, User, UserFormAccess } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 
+const idpService = require('../../components/idpService');
+
 const FORM_SUBMITTER = require('../common/constants').Permissions.FORM_SUBMITTER;
 
 const service = {
@@ -63,48 +65,6 @@ const service = {
     }
   },
 
-  parseToken: (token) => {
-    try {
-      // identity_provider_* will be undefined if user login is to local keycloak (userid/password)
-      const {
-        idp_userid: idpUserId,
-        idp_username: identity,
-        identity_provider: idp,
-        preferred_username: username,
-        given_name: firstName,
-        family_name: lastName,
-        sub: keycloakId,
-        name: fullName,
-        email,
-      } = token.content;
-
-      return {
-        idpUserId: idpUserId,
-        keycloakId: keycloakId,
-        username: identity ? identity : username,
-        firstName: firstName,
-        lastName: lastName,
-        fullName: fullName,
-        email: email,
-        idp: idp ? idp : '',
-        public: false,
-      };
-    } catch (e) {
-      // any issues parsing the token, or if token doesn't exist, return a default "public" user
-      return {
-        idpUserId: undefined,
-        keycloakId: undefined,
-        username: 'public',
-        firstName: undefined,
-        lastName: undefined,
-        fullName: 'public',
-        email: undefined,
-        idp: 'public',
-        public: true,
-      };
-    }
-  },
-
   getUserId: async (userInfo) => {
     if (userInfo.public) {
       return { id: 'public', ...userInfo };
@@ -124,7 +84,11 @@ const service = {
     }
 
     // return with the db id...
-    return { id: user.id, usernameIdp: user.idpCode ? `${user.username}@${user.idpCode}` : user.username, ...userInfo };
+    return {
+      id: user.id,
+      usernameIdp: user.idpCode ? `${user.username}@${user.idpCode}` : user.username,
+      ...userInfo,
+    };
   },
 
   getUserForms: async (userInfo, params = {}) => {
@@ -147,10 +111,9 @@ const service = {
     // we need to filter out the true access level here.
     // so we need a role, or a valid idp from login, or form needs to be public.
     let forms = [];
-
     let filtered = items.filter((x) => {
       // include if user has idp, or form is public, or user has an explicit role.
-      if (x.idps.includes(userInfo.idp) || x.idps.includes('public')) {
+      if (x.idps.includes(userInfo.idpHint) || x.idps.includes('public')) {
         // always give submitter permissions to launch by idp and public
         x.permissions = Array.from(new Set([...x.permissions, ...FORM_SUBMITTER]));
         return true;
@@ -169,7 +132,7 @@ const service = {
           hasPublic = item.idps.includes('public');
         } else if (accessLevels.includes('idp')) {
           // must have user's idp in idps...
-          hasIdp = item.idps.includes(userInfo.idp);
+          hasIdp = item.idps.includes(userInfo.idpHint);
         } else if (accessLevels.includes('team')) {
           // must have a role...
           hasTeam = item.roles.length;
@@ -202,10 +165,12 @@ const service = {
   },
 
   login: async (token) => {
-    const userInfo = service.parseToken(token);
+    const userInfo = await idpService.parseToken(token);
+    const idp = await idpService.findByIdp(userInfo.idp);
+    userInfo.idp = idp.code;
     const user = await service.getUserId(userInfo);
 
-    return { ...user };
+    return { ...user, idpHint: idp.idp };
   },
 
   // -------------------------------------------------------------------------------------------------------------
