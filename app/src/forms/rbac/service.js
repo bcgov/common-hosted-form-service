@@ -1,9 +1,11 @@
 const Problem = require('api-problem');
 const { v4: uuidv4 } = require('uuid');
-const { FormRoleUser, FormSubmissionUser, IdentityProvider, User, UserFormAccess, UserSubmissions } = require('../common/models');
+const { FormRoleUser, FormSubmissionUser, User, UserFormAccess, UserSubmissions } = require('../common/models');
 const { Roles } = require('../common/constants');
 const { queryUtils } = require('../common/utils');
 const authService = require('../auth/service');
+const idpService = require('../../components/idpService');
+
 const service = {
   list: async () => {
     return FormRoleUser.query().allowGraph('[form, userRole, user]').withGraphFetched('[form, userRole, user]').modify('orderCreatedAtDescending');
@@ -75,7 +77,10 @@ const service = {
       if (params.team) accessLevels.push('team');
     }
 
-    const forms = await authService.getUserForms(user, { ...params, active: true });
+    const forms = await authService.getUserForms(user, {
+      ...params,
+      active: true,
+    });
     const filteredForms = authService.filterForms(user, forms, accessLevels);
     user.forms = filteredForms;
 
@@ -271,7 +276,10 @@ const service = {
       if (items && items.length) await FormRoleUser.query(trx).insert(items);
       await trx.commit();
       // return the new mappings
-      const result = await service.getUserForms({ userId: userId, formId: formId });
+      const result = await service.getUserForms({
+        userId: userId,
+        formId: formId,
+      });
       return result;
     } catch (err) {
       if (trx) await trx.rollback();
@@ -280,7 +288,7 @@ const service = {
   },
 
   getIdentityProviders: (params) => {
-    return IdentityProvider.query().modify('filterActive', params.active).modify('orderDefault');
+    return idpService.getIdentityProviders(params.active);
   },
 };
 

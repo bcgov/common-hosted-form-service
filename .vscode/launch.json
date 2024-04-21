@@ -15,7 +15,7 @@
       "runtimeExecutable": "npm",
       "type": "node",
       "env": {
-        "NODE_CONFIG_DIR": "${workspaceFolder}/.devcontainer/chefs_local",
+        "NODE_CONFIG_DIR": "${workspaceFolder}/.devcontainer/chefs_local"
       }
     },
     {
@@ -32,7 +32,7 @@
       "request": "launch",
       "runtimeArgs": ["run", "dev"],
       "runtimeExecutable": "npm",
-      "type": "node",
+      "type": "node"
     },
     {
       "name": "CHEFS Frontend - chrome",
@@ -41,7 +41,24 @@
       "url": "http://localhost:5173/app",
       "enableContentValidation": false,
       "webRoot": "${workspaceFolder}/app/frontend/src",
-      "pathMapping": {"url": "//src/", "path": "${webRoot}/"}
+      "pathMapping": { "url": "//src/", "path": "${webRoot}/" }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Jest: current file",
+      //"env": { "NODE_ENV": "test" },
+      "program": "${workspaceFolder}/app/node_modules/.bin/jest",
+      "args": [
+        "${fileBasenameNoExtension}",
+        "--config",
+        "${workspaceFolder}/app/jest.config.js",
+        "--coverage=false"
+      ],
+      "console": "integratedTerminal",
+      "windows": {
+        "program": "${workspaceFolder}/app/node_modules/jest/bin/jest"
+      }
     }
   ],
   "version": "0.2.0"

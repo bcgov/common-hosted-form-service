@@ -9,7 +9,7 @@ import FormSettings from '~/components/designer/FormSettings.vue';
 import FormProfile from '~/components/designer/FormProfile.vue';
 import { i18n } from '~/internationalization';
 import { useFormStore } from '~/store/form';
-import { IdentityMode, IdentityProviders } from '~/utils/constants';
+import { IdentityMode } from '~/utils/constants';
 
 export default {
   components: {
@@ -35,7 +35,6 @@ export default {
   },
   computed: {
     ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
-    IDP: () => IdentityProviders,
     stepper() {
       return this.step;
     },

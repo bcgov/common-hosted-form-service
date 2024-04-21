@@ -1,12 +1,13 @@
 <script>
 import _ from 'lodash';
-import { mapState } from 'pinia';
+import { mapState, mapActions } from 'pinia';
 import { i18n } from '~/internationalization';
 
 import userService from '~/services/userService';
-import { FormRoleCodes, IdentityProviders, Regex } from '~/utils/constants';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useIdpStore } from '~/store/identityProviders';
+import { Regex } from '~/utils/constants';
 
 export default {
   props: {
@@ -22,7 +23,7 @@ export default {
       isLoading: false,
       model: null,
       search: null,
-      selectedIdp: IdentityProviders.IDIR,
+      selectedIdp: null,
       selectedRoles: [],
       showError: false,
       entries: [],
@@ -32,25 +33,13 @@ export default {
   computed: {
     ...mapState(useAuthStore, ['identityProvider']),
     ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
-    ID_PROVIDERS() {
-      return IdentityProviders;
-    },
+    ...mapState(useIdpStore, ['loginButtons', 'primaryIdp']),
     FORM_ROLES() {
-      if (this.selectedIdp === IdentityProviders.BCEIDBASIC)
-        return Object.values(FormRoleCodes).filter(
-          (frc) => frc === FormRoleCodes.FORM_SUBMITTER
-        );
-      else if (this.selectedIdp === IdentityProviders.BCEIDBUSINESS)
-        return Object.values(FormRoleCodes)
-          .filter(
-            (frc) =>
-              frc != FormRoleCodes.OWNER && frc != FormRoleCodes.FORM_DESIGNER
-          )
-          .sort();
-      return Object.values(FormRoleCodes).sort();
+      const idpRoles = this.listRoles(this.selectedIdp);
+      return Object.values(idpRoles).sort();
     },
     autocompleteLabel() {
-      return this.selectedIdp == IdentityProviders.IDIR
+      return this.isPrimary(this.selectedIdp)
         ? i18n.t('trans.addTeamMember.enterUsername')
         : i18n.t('trans.addTeamMember.enterExactUsername');
     },
@@ -82,7 +71,19 @@ export default {
       this.$emit('adding-users', this.addingUsers);
     },
   },
+  created() {
+    this.initializeSelectedIdp();
+  },
   methods: {
+    ...mapActions(useIdpStore, [
+      'isPrimary',
+      'listRoles',
+      'teamMembershipSearch',
+    ]),
+    // workaround so we can use computed value (primaryIdp) in created()
+    initializeSelectedIdp() {
+      this.selectedIdp = this.primaryIdp?.code;
+    },
     // show users in dropdown that have a text match on multiple properties
     filterObject(_itemTitle, queryText, item) {
       return Object.values(item)
@@ -119,17 +120,13 @@ export default {
       try {
         let params = {};
         params.idpCode = this.selectedIdp;
-        if (
-          this.selectedIdp == IdentityProviders.BCEIDBASIC ||
-          this.selectedIdp == IdentityProviders.BCEIDBUSINESS
-        ) {
-          if (input.length < 6)
-            throw new Error(
-              'Search input for BCeID username/email must be greater than 6 characters.'
-            );
+        let teamMembershipConfig = this.teamMembershipSearch(this.selectedIdp);
+        if (teamMembershipConfig) {
+          if (input.length < teamMembershipConfig.text.minLength)
+            throw new Error(i18n.t(teamMembershipConfig.text.message));
           if (input.includes('@')) {
             if (!new RegExp(Regex.EMAIL).test(input))
-              throw new Error('Email searches for BCeID must be exact.');
+              throw new Error(i18n.t(teamMembershipConfig.email.message));
             else params.email = input;
           } else {
             params.username = input;
@@ -141,7 +138,12 @@ export default {
         this.entries = response.data;
       } catch (error) {
         this.entries = [];
-        console.error(`Error getting users: ${error}`); // eslint-disable-line no-console
+        /* eslint-disable no-console */
+        console.error(
+          i18n.t('trans.manageSubmissionUsers.getUsersErrMsg', {
+            error: error,
+          })
+        ); // eslint-disable-line no-console
       } finally {
         this.isLoading = false;
       }
@@ -170,11 +172,11 @@ export default {
                 fluid
                 hide-details
               >
-                <v-radio class="my-0" label="IDIR" :value="ID_PROVIDERS.IDIR" />
-                <v-radio label="Basic BCeID" :value="ID_PROVIDERS.BCEIDBASIC" />
                 <v-radio
-                  label="Business BCeID"
-                  :value="ID_PROVIDERS.BCEIDBUSINESS"
+                  v-for="button in loginButtons"
+                  :key="button.code"
+                  :value="button.code"
+                  :label="button.display"
                 />
               </v-radio-group>
             </v-col>

@@ -30,21 +30,24 @@
     "frontend": {
       "apiPath": "api/v1",
       "basePath" : "/app",
-      "keycloak": {
-        "clientId": "chefs-frontend-local",
-        "realm": "chefs",
-        "serverUrl": "http://localhost:8082"
+      "oidc": {
+        "clientId": "chefs-frontend-localhost-5300",
+        "realm": "standard",
+        "serverUrl": "https://dev.loginproxy.gov.bc.ca/auth",
+        "logoutUrl": "https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https%3A%2F%2Fdev.loginproxy.gov.bc.ca%2Fauth%2Frealms%2Fstandard%2Fprotocol%2Fopenid-connect%2Flogout"
       }
     },
     "server": {
       "apiPath": "/api/v1",
       "basePath" : "/app",
       "bodyLimit": "30mb",
-      "keycloak": {
-        "clientId": "chefs",
-        "realm": "chefs",
-        "serverUrl": "http://localhost:8082",
-        "clientSecret": "XXXXXXXXXXXX"
+      "oidc": {
+        "realm": "standard",
+        "serverUrl": "https://dev.loginproxy.gov.bc.ca/auth",
+        "jwksUri": "https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/certs",
+        "issuer": "https://dev.loginproxy.gov.bc.ca/auth/realms/standard",
+        "audience": "chefs-frontend-localhost-5300",
+        "maxTokenAge": "300"
       },
       "logLevel": "http",
       "port": "8080",
