@@ -167,7 +167,9 @@ export default {
         for (let i = 0; i < len; i++) {
           bytes[i] = binaryString.charCodeAt(i);
         }
-        const blob = new Blob([bytes], { type: 'application/octet-stream' });
+        const blob = new Blob([bytes], {
+          type: this.getMimeType(item.raw.filename),
+        });
         const url = window.URL.createObjectURL(blob);
         // Create an anchor element and trigger download
         const a = document.createElement('a');
@@ -187,6 +189,18 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+    getMimeType(filename) {
+      const extension = filename.slice(filename.lastIndexOf('.') + 1);
+      const mimeTypes = {
+        txt: 'text/plain',
+        docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        html: 'text/html',
+        odt: 'application/vnd.oasis.opendocument.text',
+        pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      };
+      return mimeTypes[extension];
     },
   },
 };
