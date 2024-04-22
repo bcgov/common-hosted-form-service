@@ -225,8 +225,8 @@ export default {
       <!-- Empty footer, remove if allowing multiple templates -->
       <template #bottom></template>
     </v-data-table-server>
-    <div class="mt-10 mb-3">
-      <span style="font-weight: 550; color: #003366">
+    <div class="mt-10 mb-3" :class="isRTL ? 'mr-4' : 'ml-4'">
+      <span style="font-weight: 550">
         {{ $t('trans.documentTemplate.uploadTemplate') }}
       </span>
     </div>
@@ -239,7 +239,7 @@ export default {
       :clearable="true"
       show-size
       :lang="lang"
-      prepend-icon=""
+      prepend-icon="false"
       :disabled="documentTemplates.length >= 1"
       :rules="validationRules"
       @update:model-value="handleFileInput($event)"
