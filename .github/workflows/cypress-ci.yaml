@@ -24,8 +24,8 @@ jobs:
           
           working-directory: '${{ github.workspace }}/tests/functional'
        env:
-          keycloakUsername: ${{secrets.keycloakUsername}}
-          keycloakPassword: ${{secrets.keycloakPassword}}
+          CYPRESS_keycloakUsername: ${{secrets.keycloakUsername}}
+          CYPRESS_keycloakPassword: ${{secrets.keycloakPassword}}
             
             
      - name: Cypress install   
