@@ -9,6 +9,7 @@ import { NotificationTypes } from '~/utils/constants';
 export default {
   data() {
     return {
+      loading: false,
       validFileExtensions: ['txt', 'docx', 'html', 'odt', 'pptx', 'xlsx'],
       isValidFile: true,
       isFileInputEmpty: true,
@@ -37,6 +38,7 @@ export default {
   methods: {
     ...mapActions(useNotificationStore, ['addNotification']),
     async fetchDocumentTemplates() {
+      this.loading = true;
       try {
         const result = await formService.documentTemplateList(this.form.id);
         // Clear existing templates before adding new ones
@@ -58,6 +60,8 @@ export default {
             error: e.message,
           }),
         });
+      } finally {
+        this.loading = false;
       }
     },
 
@@ -77,6 +81,7 @@ export default {
       }
     },
     async handleFileUpload() {
+      this.loading = true;
       const fileContentAsBase64 = await new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(this.uploadedFile);
@@ -116,9 +121,12 @@ export default {
             error: e.message,
           }),
         });
+      } finally {
+        this.loading = false;
       }
     },
     async handleDelete(item) {
+      this.loading = true;
       try {
         await formService.documentTemplateDelete(
           this.form.id,
@@ -136,29 +144,43 @@ export default {
             error: e.message,
           }),
         });
+      } finally {
+        this.loading = false;
       }
     },
     async handleFilePreview(item) {
-      const result = await formService.documentTemplateRead(
-        this.form.id,
-        item.raw.templateId
-      );
-      const chars = result.data.template.data
-        .map((byte) => String.fromCharCode(byte))
-        .join('');
+      this.loading = true;
+      try {
+        const result = await formService.documentTemplateRead(
+          this.form.id,
+          item.raw.templateId
+        );
+        const chars = result.data.template.data
+          .map((byte) => String.fromCharCode(byte))
+          .join('');
 
-      const decodedString = atob(chars);
-      // Convert the decoded string to a byte array
-      const decodedBytes = new Uint8Array(
-        new TextEncoder().encode(decodedString)
-      );
+        const decodedString = atob(chars);
+        // Convert the decoded string to a byte array
+        const decodedBytes = new Uint8Array(
+          new TextEncoder().encode(decodedString)
+        );
 
-      // Create a Blob from the decoded bytes
-      const blob = new Blob([decodedBytes], { type: 'text/plain' });
+        // Create a Blob from the decoded bytes
+        const blob = new Blob([decodedBytes], { type: 'text/plain' });
 
-      // Create a URL for the Blob and open it
-      const url = window.URL.createObjectURL(blob);
-      window.open(url);
+        // Create a URL for the Blob and open it
+        const url = window.URL.createObjectURL(blob);
+        window.open(url);
+      } catch (e) {
+        this.addNotification({
+          text: i18n.t('trans.documentTemplate.fetchError'),
+          consoleError: i18n.t('trans.documentTemplate.fetchError', {
+            error: e.message,
+          }),
+        });
+      } finally {
+        this.loading = false;
+      }
     },
   },
 };
@@ -166,9 +188,10 @@ export default {
 
 <template>
   <div>
-    <v-data-table
+    <v-data-table-server
       class="submissions-table mt-3"
       :headers="headers"
+      :loading="loading"
       :items="documentTemplates"
     >
       <!-- Created date  -->
@@ -197,9 +220,9 @@ export default {
 
       <!-- Empty footer, remove if allowing multiple templates -->
       <template #bottom></template>
-    </v-data-table>
-    <div class="mt-16 mb-3">
-      <span style="font-weight: bold; color: #003366">
+    </v-data-table-server>
+    <div class="mt-10 mb-3">
+      <span style="font-weight: 550; color: #003366">
         {{ $t('trans.documentTemplate.uploadTemplate') }}
       </span>
     </div>
