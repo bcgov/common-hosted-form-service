@@ -157,17 +157,17 @@ export default {
           this.form.id,
           item.raw.templateId
         );
-        const chars = result.data.template.data
+        const base64EncodedData = result.data.template.data
           .map((byte) => String.fromCharCode(byte))
           .join('');
-        const decodedString = atob(chars);
-        const decodedBytes = new Uint8Array(
-          new TextEncoder().encode(decodedString)
-        );
-
-        const blob = new Blob([decodedBytes], {
-          type: 'application/octet-stream',
-        });
+        // Decode the base64 string to binary data
+        const binaryString = atob(base64EncodedData);
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        const blob = new Blob([bytes], { type: 'application/octet-stream' });
         const url = window.URL.createObjectURL(blob);
         // Create an anchor element and trigger download
         const a = document.createElement('a');
@@ -196,7 +196,7 @@ export default {
   <div>
     <span style="display: inline-block" class="mt-2">
       <div style="display: inline-flex; align-items: center">
-        Upload a template to use the Common Document Generation Service (CDOGS)
+        {{ $t('trans.documentTemplate.info') }}
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <v-icon
@@ -227,6 +227,7 @@ export default {
       :headers="headers"
       :loading="loading"
       :items="documentTemplates"
+      :items-length="documentTemplates.length"
     >
       <!-- Created date  -->
       <template #item.createdAt="{ item }">

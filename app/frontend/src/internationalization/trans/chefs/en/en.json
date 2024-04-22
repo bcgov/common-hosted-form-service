@@ -77,7 +77,8 @@
     "uploadError": "An error occurred while uploading the template.",
     "deleteSuccess": "Template deleted successfully.",
     "deleteError": "An error occurred while deleting the template.",
-    "fetchError": "An error occurred while fetching the template."
+    "fetchError": "An error occurred while fetching the template.",
+    "info" : "Upload a template to use the Common Document Generation Service (CDOGS)"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Press <kbd>enter</kbd> or <kbd>,</kbd> or <kbd>space</kbd> to add multiple email addresses",
