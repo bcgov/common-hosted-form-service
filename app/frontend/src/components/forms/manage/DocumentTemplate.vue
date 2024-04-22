@@ -163,22 +163,9 @@ export default {
           new TextEncoder().encode(decodedString)
         );
 
-        // Function to determine the MIME type based on file extension
-        const getMimeType = (filename) => {
-          const extension = filename.slice(filename.lastIndexOf('.') + 1);
-          const mimeTypes = {
-            txt: 'text/plain',
-            docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            html: 'text/html',
-            odt: 'application/vnd.oasis.opendocument.text',
-            pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-            xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          };
-          return mimeTypes[extension];
-        };
-
-        const mimeType = getMimeType(item.raw.filename);
-        const blob = new Blob([decodedBytes], { type: mimeType });
+        const blob = new Blob([decodedBytes], {
+          type: 'application/octet-stream',
+        });
         const url = window.URL.createObjectURL(blob);
         // Create an anchor element and trigger download
         const a = document.createElement('a');
