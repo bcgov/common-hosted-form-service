@@ -4,7 +4,7 @@ import BaseSecure from '~/components/base/BaseSecure.vue';
 import FormViewer from '~/components/designer/FormViewer.vue';
 
 import { useFormStore } from '~/store/form';
-import { IdentityProviders } from '~/utils/constants';
+import { AppPermissions } from '~/utils/constants';
 
 export default {
   components: {
@@ -27,13 +27,13 @@ export default {
   },
   computed: {
     ...mapState(useFormStore, ['isRTL', 'lang']),
-    IDP: () => IdentityProviders,
+    APP_PERMS: () => AppPermissions,
   },
 };
 </script>
 
 <template>
-  <BaseSecure :idp="[IDP.IDIR]">
+  <BaseSecure :permission="APP_PERMS.VIEWS_FORM_PREVIEW">
     <h1
       :class="{ 'dir-rtl': isRTL }"
       :lang="lang"

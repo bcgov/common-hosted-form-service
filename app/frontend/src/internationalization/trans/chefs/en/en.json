@@ -389,7 +389,7 @@
     "401NotAuthorized": "401: not authorized. :(",
     "401ErrorMsg": "Your account is not set up correctly.<br />Please contact",
     "403Forbidden": "403: Forbidden. :(",
-    "403ErrorMsg": "This page requires {idp} authentication.",
+    "403ErrorMsg": "This page requires {permission} permission.",
     "401UnAuthorized": "401: Unauthorized. :(",
     "401UnAuthorizedErrMsg": "You do not have permission to access this page."
   },
