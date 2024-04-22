@@ -158,19 +158,36 @@ export default {
         const chars = result.data.template.data
           .map((byte) => String.fromCharCode(byte))
           .join('');
-
         const decodedString = atob(chars);
-        // Convert the decoded string to a byte array
         const decodedBytes = new Uint8Array(
           new TextEncoder().encode(decodedString)
         );
 
-        // Create a Blob from the decoded bytes
-        const blob = new Blob([decodedBytes], { type: 'text/plain' });
+        // Function to determine the MIME type based on file extension
+        const getMimeType = (filename) => {
+          const extension = filename.slice(filename.lastIndexOf('.') + 1);
+          const mimeTypes = {
+            txt: 'text/plain',
+            docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            html: 'text/html',
+            odt: 'application/vnd.oasis.opendocument.text',
+            pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          };
+          return mimeTypes[extension];
+        };
 
-        // Create a URL for the Blob and open it
+        const mimeType = getMimeType(item.raw.filename);
+        const blob = new Blob([decodedBytes], { type: mimeType });
         const url = window.URL.createObjectURL(blob);
-        window.open(url);
+        // Create an anchor element and trigger download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = item.raw.filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove(); // Clean up
       } catch (e) {
         this.addNotification({
           text: i18n.t('trans.documentTemplate.fetchError'),
