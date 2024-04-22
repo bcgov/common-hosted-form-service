@@ -380,7 +380,7 @@
     "401NotAuthorized": "401: 권한이 없습니다. :",
     "401ErrorMsg": "귀하의 계정이 올바르게 설정되지 않았습니다.<br /> 연락주세요",
     "403Forbidden": "403 금지. :",
-    "403ErrorMsg": "이 페이지는 {idp} 인증이 필요합니다.",
+    "403ErrorMsg": "이 페이지는 {permission} 인증이 필요합니다.",
     "401UnAuthorized": "401: 권한이 없습니다. :",
     "401UnAuthorizedErrMsg": "이 페이지에 액세스할 수 있는 권한이 없습니다."
   },

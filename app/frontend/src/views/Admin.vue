@@ -2,7 +2,7 @@
 import { mapState } from 'pinia';
 import BaseSecure from '~/components/base/BaseSecure.vue';
 import { useAuthStore } from '~/store/auth';
-import { IdentityProviders } from '~/utils/constants';
+import { AppPermissions } from '~/utils/constants';
 
 export default {
   components: {
@@ -10,13 +10,13 @@ export default {
   },
   computed: {
     ...mapState(useAuthStore, ['isAdmin']),
-    IDP: () => IdentityProviders,
+    APP_PERMS: () => AppPermissions,
   },
 };
 </script>
 
 <template>
-  <BaseSecure :admin="isAdmin" :idp="[IDP.IDIR]">
+  <BaseSecure :admin="isAdmin" :permission="APP_PERMS.VIEWS_ADMIN">
     <v-container>
       <router-view v-slot="{ Component }">
         <transition name="component-fade" mode="out-in">

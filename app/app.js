@@ -5,7 +5,6 @@ const path = require('path');
 const Problem = require('api-problem');
 const querystring = require('querystring');
 
-const keycloak = require('./src/components/keycloak');
 const log = require('./src/components/log')(module.filename);
 const httpLogger = require('./src/components/log').httpLogger;
 const middleware = require('./src/forms/common/middleware');
@@ -39,9 +38,6 @@ if (process.env.NODE_ENV !== 'test') {
   initializeConnections();
   app.use(httpLogger);
 }
-
-// Use Keycloak OIDC Middleware
-app.use(keycloak.middleware());
 
 // Block requests until service is ready
 app.use((_req, res, next) => {
@@ -178,11 +174,16 @@ function initializeConnections() {
     .then((results) => {
       state.connections.data = results[0];
 
-      if (state.connections.data) log.info('DataConnection Reachable', { function: 'initializeConnections' });
+      if (state.connections.data)
+        log.info('DataConnection Reachable', {
+          function: 'initializeConnections',
+        });
     })
     .catch((error) => {
       log.error(`Initialization failed: Database OK = ${state.connections.data}`, { function: 'initializeConnections' });
-      log.error('Connection initialization failure', error.message, { function: 'initializeConnections' });
+      log.error('Connection initialization failure', error.message, {
+        function: 'initializeConnections',
+      });
       if (!state.ready) {
         process.exitCode = 1;
         shutdown();
@@ -191,7 +192,9 @@ function initializeConnections() {
     .finally(() => {
       state.ready = Object.values(state.connections).every((x) => x);
       if (state.ready) {
-        log.info('Service ready to accept traffic', { function: 'initializeConnections' });
+        log.info('Service ready to accept traffic', {
+          function: 'initializeConnections',
+        });
         // Start periodic 10 second connection probe check
         probeId = setInterval(checkConnections, 10000);
       }
@@ -211,7 +214,10 @@ function checkConnections() {
     Promise.all(tasks).then((results) => {
       state.connections.data = results[0];
       state.ready = Object.values(state.connections).every((x) => x);
-      if (!wasReady && state.ready) log.info('Service ready to accept traffic', { function: 'checkConnections' });
+      if (!wasReady && state.ready)
+        log.info('Service ready to accept traffic', {
+          function: 'checkConnections',
+        });
       log.verbose(state);
       if (!state.ready) {
         process.exitCode = 1;
