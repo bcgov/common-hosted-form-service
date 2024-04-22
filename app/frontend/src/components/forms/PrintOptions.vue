@@ -352,9 +352,8 @@ export default {
                   <span>{{ $t('trans.printOptions.expandtextFields') }}</span>
                 </template>
               </v-checkbox>
-              <div class="flex-container">
+              <div class="flex-container mb-2">
                 <v-btn
-                  class="mb-5"
                   :class="isRTL ? 'ml-2' : 'mr-2'"
                   color="primary"
                   @click="printBrowser"
