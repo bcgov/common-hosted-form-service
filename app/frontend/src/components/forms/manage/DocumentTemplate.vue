@@ -21,6 +21,8 @@ export default {
         { title: 'Actions', key: 'actions', align: 'end' },
       ],
       documentTemplates: [],
+      techdocsLinkTemplateUpload:
+        'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/CDOGS-Template-Upload/',
     };
   },
   computed: {
@@ -192,8 +194,36 @@ export default {
 
 <template>
   <div>
+    <span style="display: inline-block" class="mt-2">
+      <div style="display: inline-flex; align-items: center">
+        Upload a template to use the Common Document Generation Service (CDOGS)
+        <v-tooltip location="bottom">
+          <template #activator="{ props }">
+            <v-icon
+              color="primary"
+              class="ml-2"
+              :class="{ 'mr-2': isRTL }"
+              v-bind="props"
+              icon="mdi:mdi-help-circle-outline"
+            ></v-icon>
+          </template>
+          <span>
+            <a
+              :href="techdocsLinkTemplateUpload"
+              class="preview_info_link_field_white"
+              target="_blank"
+              :hreflang="lang"
+            >
+              {{ $t('trans.formSettings.learnMore') }}
+              <v-icon icon="mdi:mdi-arrow-top-right-bold-box-outline"></v-icon>
+            </a>
+          </span>
+        </v-tooltip>
+      </div>
+    </span>
+
     <v-data-table-server
-      class="submissions-table mt-3"
+      class="submissions-table mt-2"
       :headers="headers"
       :loading="loading"
       :items="documentTemplates"
