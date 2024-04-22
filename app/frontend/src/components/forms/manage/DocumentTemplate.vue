@@ -4,6 +4,7 @@ import { useFormStore } from '~/store/form';
 import { formService } from '~/services';
 import { i18n } from '~/internationalization';
 import { useNotificationStore } from '~/store/notification';
+import { NotificationTypes } from '~/utils/constants';
 
 export default {
   data() {
@@ -26,7 +27,7 @@ export default {
     ...mapWritableState(useFormStore, ['form']),
     validationRules() {
       return [
-        this.isValidFile || i18n.t('trans.cdogsPanel.invalidFileMessage'),
+        this.isValidFile || i18n.t('trans.documentTemplate.invalidFileMessage'),
       ];
     },
   },
@@ -38,28 +39,24 @@ export default {
     async fetchDocumentTemplates() {
       try {
         const result = await formService.documentTemplateList(this.form.id);
-        if (result && result.data) {
-          // Clear existing templates before adding new ones
-          this.documentTemplates = [];
+        // Clear existing templates before adding new ones
+        this.documentTemplates = [];
 
-          // Iterate through each document in the result
-          result.data.forEach((doc) => {
-            this.documentTemplates.push({
-              filename: doc.filename,
-              createdAt: doc.createdAt,
-              templateId: doc.id,
-              actions: '',
-            });
+        // Iterate through each document in the result
+        result.data.forEach((doc) => {
+          this.documentTemplates.push({
+            filename: doc.filename,
+            createdAt: doc.createdAt,
+            templateId: doc.id,
+            actions: '',
           });
-        } else {
-          this.addNotification({
-            text: 'Failed to fetch document templates.',
-          });
-        }
+        });
       } catch (e) {
         this.addNotification({
-          text: 'Failed to fetch document templates.',
-          consoleError: e,
+          text: i18n.t('trans.documentTemplate.fetchError'),
+          consoleError: i18n.t('trans.documentTemplate.fetchError', {
+            error: e.message,
+          }),
         });
       }
     },
@@ -96,16 +93,29 @@ export default {
         filename: this.uploadedFile.name,
         template: fileContentAsBase64,
       };
-      const result = await formService.documentTemplateCreate(
-        this.form.id,
-        data
-      );
-      this.cdogsTemplate = result.data;
-      this.fetchDocumentTemplates();
+      try {
+        const result = await formService.documentTemplateCreate(
+          this.form.id,
+          data
+        );
+        this.cdogsTemplate = result.data;
+        this.fetchDocumentTemplates();
 
-      // Reset the file input
-      if (this.$refs.fileInput) {
-        this.$refs.fileInput.reset();
+        // Reset the file input
+        if (this.$refs.fileInput) {
+          this.$refs.fileInput.reset();
+        }
+        this.addNotification({
+          text: i18n.t('trans.documentTemplate.uploadSuccess'),
+          ...NotificationTypes.SUCCESS,
+        });
+      } catch (e) {
+        this.addNotification({
+          text: i18n.t('trans.documentTemplate.uploadError'),
+          consoleError: i18n.t('trans.documentTemplate.uploadError', {
+            error: e.message,
+          }),
+        });
       }
     },
     async handleDelete(item) {
@@ -115,12 +125,40 @@ export default {
           item.raw.templateId
         );
         this.fetchDocumentTemplates();
+        this.addNotification({
+          text: i18n.t('trans.documentTemplate.deleteSuccess'),
+          ...NotificationTypes.SUCCESS,
+        });
       } catch (e) {
         this.addNotification({
-          text: 'Failed to delete document template.',
-          consoleError: e,
+          text: i18n.t('trans.documentTemplate.deleteError'),
+          consoleError: i18n.t('trans.documentTemplate.deleteError', {
+            error: e.message,
+          }),
         });
       }
+    },
+    async handleFilePreview(item) {
+      const result = await formService.documentTemplateRead(
+        this.form.id,
+        item.raw.templateId
+      );
+      const chars = result.data.template.data
+        .map((byte) => String.fromCharCode(byte))
+        .join('');
+
+      const decodedString = atob(chars);
+      // Convert the decoded string to a byte array
+      const decodedBytes = new Uint8Array(
+        new TextEncoder().encode(decodedString)
+      );
+
+      // Create a Blob from the decoded bytes
+      const blob = new Blob([decodedBytes], { type: 'text/plain' });
+
+      // Create a URL for the Blob and open it
+      const url = window.URL.createObjectURL(blob);
+      window.open(url);
     },
   },
 };
@@ -138,6 +176,13 @@ export default {
         {{ $filters.formatDateLong(item.raw.createdAt) }}
       </template>
 
+      <!-- Preview/Download File -->
+      <template #item.filename="{ item }">
+        <a href="#" @click="handleFilePreview(item)">
+          {{ item.raw.filename }}
+        </a>
+      </template>
+
       <!-- Actions -->
       <template #item.actions="{ item }">
         <v-tooltip location="bottom">
@@ -146,7 +191,7 @@ export default {
               mdi-minus-circle
             </v-icon>
           </template>
-          <span>{{ $t('trans.cdogsPanel.delete') }}</span>
+          <span>{{ $t('trans.documentTemplate.delete') }}</span>
         </v-tooltip>
       </template>
 
@@ -155,7 +200,7 @@ export default {
     </v-data-table>
     <div class="mt-16 mb-3">
       <span style="font-weight: bold; color: #003366">
-        {{ $t('trans.cdogsPanel.uploadTemplate') }}
+        {{ $t('trans.documentTemplate.uploadTemplate') }}
       </span>
     </div>
     <v-file-input
@@ -173,7 +218,7 @@ export default {
       @update:model-value="handleFileInput($event)"
     >
       <template #label>
-        {{ $t('trans.cdogsPanel.uploadTemplateFile') }}
+        {{ $t('trans.documentTemplate.uploadTemplateFile') }}
       </template>
     </v-file-input>
     <v-btn
@@ -183,7 +228,7 @@ export default {
       color="primary"
       @click="handleFileUpload"
     >
-      <span :lang="lang">{{ $t('trans.cdogsPanel.upload') }}</span>
+      <span :lang="lang">{{ $t('trans.documentTemplate.upload') }}</span>
     </v-btn>
   </div>
 </template>

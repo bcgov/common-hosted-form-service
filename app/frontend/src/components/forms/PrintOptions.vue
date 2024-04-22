@@ -258,24 +258,40 @@ export default {
     },
     async fetchDefaultTemplate() {
       // Calling the API to check whether the form has any uploaded document templates
-      const response1 = await formService.documentTemplateList(this.formId);
-      const docId = response1.data[0].id;
-      if (response1 && response1.data.length > 0) {
-        this.defaultTemplate = true;
-        const response2 = await formService.documentTemplateRead(
-          this.formId,
-          docId
-        );
-        const temp = response2.data.template.data;
-        const base64String = temp
-          .map((code) => String.fromCharCode(code))
-          .join('');
-        this.defaultTemplateContent = base64String;
-        this.defaultTemplateFilename = response1.data[0].filename;
-        const { name, extension } = this.splitFileName(response2.data.filename);
-        this.defaultTemplateExtension = extension;
-        this.defaultReportname = name;
-        this.defaultTemplateDate = response2.data.createdAt.split('T')[0];
+      this.loading = true;
+      try {
+        const response1 = await formService.documentTemplateList(this.formId);
+        if (response1 && response1.data.length > 0) {
+          this.defaultTemplate = true;
+        }
+        if (this.defaultTemplate) {
+          const docId = response1.data[0].id;
+          const response2 = await formService.documentTemplateRead(
+            this.formId,
+            docId
+          );
+          const temp = response2.data.template.data;
+          const base64String = temp
+            .map((code) => String.fromCharCode(code))
+            .join('');
+          this.defaultTemplateContent = base64String;
+          this.defaultTemplateFilename = response1.data[0].filename;
+          const { name, extension } = this.splitFileName(
+            response2.data.filename
+          );
+          this.defaultTemplateExtension = extension;
+          this.defaultReportname = name;
+          this.defaultTemplateDate = response2.data.createdAt.split('T')[0];
+        }
+      } catch (e) {
+        this.addNotification({
+          text: i18n.t('trans.documentTemplate.fetchError'),
+          consoleError: i18n.t('trans.documentTemplate.fetchError', {
+            error: e.message,
+          }),
+        });
+      } finally {
+        this.loading = false;
       }
     },
     validateFileExtension(event) {
@@ -370,39 +386,41 @@ export default {
               </div>
             </v-window-item>
             <v-window-item value="tab-2">
-              <v-radio-group v-model="selectedOption">
-                <!-- Radio 1 -->
-                <v-radio
-                  v-if="defaultTemplate"
-                  :label="$t('trans.printOptions.defaultCdogsTemplate')"
-                  value="default"
-                ></v-radio>
-                <v-table
-                  v-if="selectedOption === 'default'"
-                  style="
-                    color: gray;
-                    border: 1px solid lightgray;
-                    border-radius: 8px;
-                  "
-                  class="mb-5 mt-3 mx-10"
-                >
-                  <thead>
-                    <tr>
-                      <th class="text-left">
-                        {{ $t('trans.printOptions.fileName') }}
-                      </th>
-                      <th class="text-left">
-                        {{ $t('trans.printOptions.uploadDate') }}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{{ defaultTemplateFilename }}</td>
-                      <td>{{ defaultTemplateDate }}</td>
-                    </tr>
-                  </tbody>
-                </v-table>
+              <v-radio-group v-if="defaultTemplate" v-model="selectedOption">
+                <v-skeleton-loader type="list-item" :loading="loading">
+                  <!-- Radio 1 -->
+                  <v-radio
+                    v-if="defaultTemplate"
+                    :label="$t('trans.printOptions.defaultCdogsTemplate')"
+                    value="default"
+                  ></v-radio>
+                  <v-table
+                    v-if="selectedOption === 'default'"
+                    style="
+                      color: gray;
+                      border: 1px solid lightgray;
+                      border-radius: 8px;
+                    "
+                    class="mb-5 mt-3 mx-10"
+                  >
+                    <thead>
+                      <tr>
+                        <th class="text-left">
+                          {{ $t('trans.printOptions.fileName') }}
+                        </th>
+                        <th class="text-left">
+                          {{ $t('trans.printOptions.uploadDate') }}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>{{ defaultTemplateFilename }}</td>
+                        <td>{{ defaultTemplateDate }}</td>
+                      </tr>
+                    </tbody>
+                  </v-table>
+                </v-skeleton-loader>
 
                 <!-- Radio 2 -->
                 <v-radio
@@ -420,19 +438,38 @@ export default {
                   required
                   mandatory
                   show-size
+                  prepend-icon="false"
                   :lang="lang"
                   :rules="validationRules"
                   :disabled="selectedOption !== 'upload'"
                   @update:model-value="validateFileExtension($event)"
                 />
-                <span
-                  v-if="!isValidFile"
-                  :class="isRTL ? 'mr-10' : 'ml-10'"
-                  style="color: red; display: inline-block"
-                  >The template must use one of the following extentions: .txt,
-                  .docx, .html, .odt, .pptx, .xlsx</span
-                >
               </v-radio-group>
+
+              <!-- Just show CDOGS upload if no template attached -->
+              <span
+                v-if="!defaultTemplate"
+                style="display: inline-block"
+                class="mb-2"
+                >{{ $t('trans.printOptions.uploadCdogsTemplate') }}</span
+              >
+              <v-file-input
+                v-if="!defaultTemplate"
+                v-model="templateForm.files"
+                :class="{ label: isRTL }"
+                :style="isRTL ? { gap: '10px' } : null"
+                counter
+                :clearable="true"
+                :label="$t('trans.printOptions.uploadTemplateFile')"
+                persistent-hint
+                required
+                mandatory
+                show-size
+                prepend-icon="false"
+                :lang="lang"
+                :rules="validationRules"
+                @update:model-value="validateFileExtension($event)"
+              />
 
               <v-card-actions>
                 <v-tooltip location="top">
@@ -499,6 +536,10 @@ export default {
   text-decoration: none;
   align-items: center;
   margin-top: 4px;
+}
+
+.more-info-link:hover {
+  text-decoration: underline;
 }
 
 .flex-container {

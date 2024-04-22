@@ -67,12 +67,17 @@
     "eventSubscription": "Event Subscription",
     "cdogsTemplate": "CDOGS Template"
   },
-  "cdogsPanel": {
+  "documentTemplate": {
     "uploadTemplate": "Upload CDOGS Template",
     "uploadTemplateFile":"Upload template file",
     "upload": "Upload",
     "delete": "Delete",
-    "invalidFileMessage": "The template must use one of the following extentions: .txt, .docx, .html, .odt, .pptx, .xlsx, .pdf"
+    "invalidFileMessage": "The template must use one of the following extentions: .txt, .docx, .html, .odt, .pptx, .xlsx, .pdf",
+    "uploadSuccess": "Template uploaded successfully.",
+    "uploadError": "An error occurred while uploading the template.",
+    "deleteSuccess": "Template deleted successfully.",
+    "deleteError": "An error occurred while deleting the template.",
+    "fetchError": "An error occurred while fetching the template."
   },
   "formSettings": {
     "pressToAddMultiEmail": "Press <kbd>enter</kbd> or <kbd>,</kbd> or <kbd>space</kbd> to add multiple email addresses",
