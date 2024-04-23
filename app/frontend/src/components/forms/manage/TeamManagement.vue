@@ -8,12 +8,12 @@ import { i18n } from '~/internationalization';
 import { rbacService, roleService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useIdpStore } from '~/store/identityProviders';
 import { useNotificationStore } from '~/store/notification';
 import {
   FormPermissions,
   FormRoleCodes,
   IdentityMode,
-  IdentityProviders,
 } from '~/utils/constants';
 
 export default {
@@ -52,6 +52,7 @@ export default {
   computed: {
     ...mapState(useAuthStore, ['user']),
     ...mapState(useFormStore, ['form', 'permissions', 'isRTL', 'lang']),
+    ...mapState(useIdpStore, ['listRoles']),
     canManageTeam() {
       return this.permissions.includes(FormPermissions.TEAM_UPDATE);
     },
@@ -122,6 +123,7 @@ export default {
   methods: {
     ...mapActions(useFormStore, ['fetchForm', 'getFormPermissionsForUser']),
     ...mapActions(useNotificationStore, ['addNotification']),
+    ...mapActions(useIdpStore, ['findByCode']),
     async loadItems() {
       this.loading = true;
 
@@ -161,7 +163,7 @@ export default {
           roles: '*',
         });
         this.formUsers = formUsersResponse?.data?.map((user) => {
-          user.idp = user.user_idpCode;
+          user.idp = this.findByCode(user.user_idpCode);
           return user;
         });
       } catch (error) {
@@ -184,7 +186,7 @@ export default {
           fullName: user.fullName,
           userId: user.userId,
           username: user.username,
-          identityProvider: user.idp,
+          identityProvider: user.idp?.code,
         };
         this.roleList
           .map((role) => role.code)
@@ -199,21 +201,9 @@ export default {
         userType !== IdentityMode.TEAM
       )
         return true;
-      if (
-        user.identityProvider === IdentityProviders.BCEIDBUSINESS &&
-        (header === FormRoleCodes.OWNER ||
-          header === FormRoleCodes.FORM_DESIGNER)
-      )
-        return true;
-      if (
-        user.identityProvider === IdentityProviders.BCEIDBASIC &&
-        (header === FormRoleCodes.OWNER ||
-          header === FormRoleCodes.FORM_DESIGNER ||
-          header === FormRoleCodes.TEAM_MANAGER ||
-          header === FormRoleCodes.SUBMISSION_REVIEWER)
-      )
-        return true;
-      return false;
+      // if the header isn't in the IDPs roles, then disable
+      const idpRoles = this.listRoles(user.identityProvider?.code);
+      return idpRoles && !idpRoles.includes(header);
     },
 
     async toggleRole(user) {

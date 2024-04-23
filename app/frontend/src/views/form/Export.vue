@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import ExportSubmissions from '~/components/forms/ExportSubmissions.vue';
-import { IdentityProviders } from '~/utils/constants';
+import { AppPermissions } from '~/utils/constants';
 
 defineProps({
   f: {
@@ -10,11 +10,11 @@ defineProps({
   },
 });
 
-const IDP = computed(() => IdentityProviders);
+const APP_PERMS = computed(() => AppPermissions);
 </script>
 
 <template>
-  <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBUSINESS]">
+  <BaseSecure :permission="APP_PERMS.VIEWS_FORM_EXPORT">
     <ExportSubmissions :form-id="f" />
   </BaseSecure>
 </template>

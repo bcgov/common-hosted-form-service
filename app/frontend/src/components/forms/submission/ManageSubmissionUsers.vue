@@ -1,18 +1,13 @@
 <script>
-import { mapState } from 'pinia';
+import { mapState, mapActions } from 'pinia';
 import { i18n } from '~/internationalization';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { rbacService, userService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
-import {
-  FormPermissions,
-  IdentityProviders,
-  NotificationTypes,
-  Regex,
-} from '~/utils/constants';
-import { mapActions } from 'pinia';
+import { useIdpStore } from '~/store/identityProviders';
+import { FormPermissions, NotificationTypes, Regex } from '~/utils/constants';
 
 export default {
   components: {
@@ -38,18 +33,16 @@ export default {
 
       findUsers: null,
       isLoadingDropdown: false,
-      selectedIdp: IdentityProviders.IDIR,
+      selectedIdp: null,
       userSearchResults: [],
       userSearchSelection: null,
     };
   },
   computed: {
     ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
-    ID_PROVIDERS() {
-      return IdentityProviders;
-    },
+    ...mapState(useIdpStore, ['loginButtons', 'primaryIdp']),
     autocompleteLabel() {
-      return this.selectedIdp == IdentityProviders.IDIR
+      return this.isPrimary(this.selectedIdp)
         ? i18n.t('trans.manageSubmissionUsers.requiredFiled')
         : i18n.t('trans.manageSubmissionUsers.exactEmailOrUsername');
     },
@@ -65,22 +58,16 @@ export default {
       if (!input) return;
       this.isLoadingDropdown = true;
       try {
-        // The form's IDP (only support 1 at a time right now), blank is 'team' and should be IDIR
+        // The form's IDP (only support 1 at a time right now), blank is 'team' and should be Primary
         let params = {};
         params.idpCode = this.selectedIdp;
-        if (
-          this.selectedIdp == IdentityProviders.BCEIDBASIC ||
-          this.selectedIdp == IdentityProviders.BCEIDBUSINESS
-        ) {
-          if (input.length < 6)
-            throw new Error(
-              i18n.t('trans.manageSubmissionUsers.searchInputLength')
-            );
+        let teamMembershipConfig = this.teamMembershipSearch(this.selectedIdp);
+        if (teamMembershipConfig) {
+          if (input.length < teamMembershipConfig.text.minLength)
+            throw new Error(i18n.t(teamMembershipConfig.text.message));
           if (input.includes('@')) {
             if (!new RegExp(Regex.EMAIL).test(input))
-              throw new Error(
-                i18n.t('trans.manageSubmissionUsers.exactBCEIDSearch')
-              );
+              throw new Error(i18n.t(teamMembershipConfig.email.message));
             else params.email = input;
           } else {
             params.username = input;
@@ -104,10 +91,16 @@ export default {
     },
   },
   created() {
+    this.initializeSelectedIdp();
     this.getSubmissionUsers();
   },
   methods: {
     ...mapActions(useNotificationStore, ['addNotification']),
+    ...mapActions(useIdpStore, ['isPrimary', 'teamMembershipSearch']),
+    // workaround so we can use computed value (primaryIdp) in created()
+    initializeSelectedIdp() {
+      this.selectedIdp = this.primaryIdp?.code;
+    },
     // show users in dropdown that have a text match on multiple properties
     addUser() {
       if (this.userSearchSelection) {
@@ -255,11 +248,11 @@ export default {
         </v-card-title>
         <v-card-subtitle>
           <v-radio-group v-if="isDraft" v-model="selectedIdp" inline>
-            <v-radio label="IDIR" :value="ID_PROVIDERS.IDIR" />
-            <v-radio label="Basic BCeID" :value="ID_PROVIDERS.BCEIDBASIC" />
             <v-radio
-              label="Business BCeID"
-              :value="ID_PROVIDERS.BCEIDBUSINESS"
+              v-for="button in loginButtons"
+              :key="button.code"
+              :value="button.code"
+              :label="button.display"
             />
           </v-radio-group>
         </v-card-subtitle>

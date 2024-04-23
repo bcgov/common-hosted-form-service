@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import EmailManagement from '~/components/forms/manage/EmailManagement.vue';
-import { IdentityProviders } from '~/utils/constants';
+import { AppPermissions } from '~/utils/constants';
 
 defineProps({
   f: {
@@ -10,11 +10,11 @@ defineProps({
   },
 });
 
-const IDP = computed(() => IdentityProviders);
+const APP_PERMS = computed(() => AppPermissions);
 </script>
 
 <template>
-  <BaseSecure :idp="[IDP.IDIR]">
+  <BaseSecure :permission="APP_PERMS.VIEWS_FORM_EMAILS">
     <EmailManagement :form-id="f" />
   </BaseSecure>
 </template>

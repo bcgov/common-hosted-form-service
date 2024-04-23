@@ -5,7 +5,7 @@ import BaseSecure from '~/components/base/BaseSecure.vue';
 import FormViewer from '~/components/designer/FormViewer.vue';
 
 import { useFormStore } from '~/store/form';
-import { IdentityProviders } from '~/utils/constants';
+import { AppPermissions } from '~/utils/constants';
 
 defineProps({
   d: {
@@ -24,11 +24,11 @@ defineProps({
 
 const { isRTL, lang } = storeToRefs(useFormStore());
 
-const IDP = computed(() => IdentityProviders);
+const APP_PERMS = computed(() => AppPermissions);
 </script>
 
 <template>
-  <BaseSecure :idp="[IDP.IDIR]">
+  <BaseSecure :permission="APP_PERMS.VIEWS_FORM_PREVIEW">
     <h1
       :class="{ 'dir-rtl': isRTL }"
       :lang="lang"

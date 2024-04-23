@@ -3,8 +3,8 @@ import { storeToRefs } from 'pinia';
 import { computed, onMounted, onUnmounted, watch } from 'vue';
 
 import { useFormStore } from '~/store/form';
-import { IdentityProviders } from '~/utils/constants';
 import { getDisposition } from '~/utils/transformUtils';
+import { AppPermissions } from '~/utils/constants';
 
 const properties = defineProps({
   id: {
@@ -21,6 +21,7 @@ let downloadTimeout = null;
 // Set the downloadedFile to a null value on creation
 downloadedFile.value = null;
 
+const APP_PERMS = computed(() => AppPermissions);
 const isFileDownloaded = computed(
   () => downloadedFile.value && downloadedFile.value.headers
 );
@@ -62,7 +63,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <BaseSecure :idp="[IdentityProviders.IDIR]">
+  <BaseSecure :permission="APP_PERMS.VIEWS_FILE_DOWNLOAD">
     <v-container fluid class="center_vertical_content">
       <h1 :lang="lang">{{ $t('trans.download.chefsDataExport') }}</h1>
       <v-progress-circular

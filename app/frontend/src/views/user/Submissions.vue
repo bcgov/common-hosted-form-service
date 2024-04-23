@@ -1,6 +1,7 @@
 <script setup>
+import { computed } from 'vue';
 import MySubmissionsTable from '~/components/forms/submission/MySubmissionsTable.vue';
-import { IdentityProviders } from '~/utils/constants';
+import { AppPermissions } from '~/utils/constants';
 
 defineProps({
   f: {
@@ -8,16 +9,12 @@ defineProps({
     required: true,
   },
 });
+
+const APP_PERMS = computed(() => AppPermissions);
 </script>
 
 <template>
-  <BaseSecure
-    :idp="[
-      IdentityProviders.IDIR,
-      IdentityProviders.BCEIDBASIC,
-      IdentityProviders.BCEIDBUSINESS,
-    ]"
-  >
+  <BaseSecure :permission="APP_PERMS.VIEWS_USER_SUBMISSIONS">
     <MySubmissionsTable :form-id="f" />
   </BaseSecure>
 </template>

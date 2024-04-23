@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import FormSubmission from '~/components/forms/FormSubmission.vue';
-import { IdentityProviders } from '~/utils/constants';
+import { AppPermissions } from '~/utils/constants';
 
 defineProps({
   s: {
@@ -10,11 +10,11 @@ defineProps({
   },
 });
 
-const IDP = computed(() => IdentityProviders);
+const APP_PERMS = computed(() => AppPermissions);
 </script>
 
 <template>
-  <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBUSINESS]">
+  <BaseSecure :permission="APP_PERMS.VIEWS_FORM_VIEW">
     <FormSubmission :submission-id="s" />
   </BaseSecure>
 </template>

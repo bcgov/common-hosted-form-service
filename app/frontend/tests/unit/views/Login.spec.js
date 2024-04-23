@@ -6,13 +6,16 @@ import { nextTick } from 'vue';
 
 import { useAuthStore } from '~/store/auth';
 import Login from '~/views/Login.vue';
-import { IdentityProviders } from '~/utils/constants';
+import { useIdpStore } from '~/store/identityProviders';
 
 describe('Login.vue', () => {
   const pinia = createTestingPinia();
   setActivePinia(pinia);
 
   const authStore = useAuthStore(pinia);
+  const idpStore = useIdpStore(pinia);
+
+  idpStore.providers = require('../fixtures/identityProviders.json');
 
   beforeEach(() => {
     authStore.$reset();
@@ -66,8 +69,8 @@ describe('Login.vue', () => {
 
     await nextTick();
 
-    Object.values(IdentityProviders).forEach((idp) => {
-      const button = wrapper.find(`[data-test="${idp}"]`);
+    Object.values(idpStore.loginButtons).forEach((idp) => {
+      const button = wrapper.find(`[data-test="${idp.code}"]`);
       expect(button.exists()).toBeTruthy();
     });
   });

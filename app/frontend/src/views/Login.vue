@@ -1,43 +1,24 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed } from 'vue';
 
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
-import { IdentityProviders } from '~/utils/constants';
-import { isIdpEnabled } from '../utils/permissionUtils';
+import { useIdpStore } from '~/store/identityProviders';
 
 defineProps({
   idpHint: {
     type: Array,
-    default: () => [
-      IdentityProviders.IDIR,
-      IdentityProviders.BCEIDBUSINESS,
-      IdentityProviders.BCEIDBASIC,
-    ],
+    default: () => [],
   },
 });
 
 const authStore = useAuthStore();
 const formStore = useFormStore();
+const idpStore = useIdpStore();
 
 const { authenticated, ready } = storeToRefs(authStore);
 const { lang } = storeToRefs(formStore);
-
-const buttons = computed(() => [
-  {
-    label: 'IDIR',
-    type: IdentityProviders.IDIR,
-  },
-  {
-    label: 'Basic BCeID',
-    type: IdentityProviders.BCEIDBASIC,
-  },
-  {
-    label: 'Business BCeID',
-    type: IdentityProviders.BCEIDBUSINESS,
-  },
-]);
+const { loginButtons } = storeToRefs(idpStore);
 </script>
 
 <template>
@@ -46,16 +27,16 @@ const buttons = computed(() => [
       <h1 class="my-6" :lang="lang">
         {{ $t('trans.login.authenticateWith') }}
       </h1>
-      <v-row v-for="button in buttons" :key="button.type" justify="center">
-        <v-col v-if="isIdpEnabled(idpHint, button.type)" sm="3">
+      <v-row v-for="button in loginButtons" :key="button.code" justify="center">
+        <v-col sm="3">
           <v-btn
             block
             color="primary"
             size="large"
-            :data-test="button.type"
-            @click="authStore.login(button.type)"
+            :data-test="button.code"
+            @click="authStore.login(button.hint)"
           >
-            {{ button.label }}
+            {{ button.display }}
           </v-btn>
         </v-col>
       </v-row>

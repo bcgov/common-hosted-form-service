@@ -1,7 +1,7 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { onBeforeRouteLeave } from 'vue-router';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import FormDesigner from '~/components/designer/FormDesigner.vue';
 import FormDisclaimer from '~/components/designer/FormDisclaimer.vue';
@@ -9,7 +9,7 @@ import FormSettings from '~/components/designer/FormSettings.vue';
 import FormProfile from '~/components/designer/FormProfile.vue';
 import { i18n } from '~/internationalization';
 import { useFormStore } from '~/store/form';
-import { IdentityMode, IdentityProviders } from '~/utils/constants';
+import { AppPermissions, IdentityMode } from '~/utils/constants';
 
 const formDesigner = ref(null);
 const settingsForm = ref(null);
@@ -22,6 +22,7 @@ const disclaimerRules = [(v) => !!v || i18n.t('trans.create.agreementErrMsg')];
 const formStore = useFormStore();
 
 const { form, isRTL, lang } = storeToRefs(formStore);
+const APP_PERMS = computed(() => AppPermissions);
 
 watch(form, () => {
   if (form.userType === IdentityMode.LOGIN && settingsForm.value)
@@ -38,7 +39,7 @@ formStore.resetForm();
 </script>
 
 <template>
-  <BaseSecure :idp="[IdentityProviders.IDIR]">
+  <BaseSecure :permission="APP_PERMS.VIEWS_FORM_STEPPER">
     <v-stepper
       ref="stepper"
       :model-value="step"
