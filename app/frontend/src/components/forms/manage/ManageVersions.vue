@@ -127,18 +127,6 @@ export default {
     cancelPublish() {
       this.showPublishDialog = false;
       document.documentElement.style.overflow = 'auto';
-      if (this.draftId) {
-        this.$router
-          .replace({
-            name: 'FormDesigner',
-            query: {
-              f: this.formId,
-              d: this.draftId,
-              saved: true,
-            },
-          })
-          .catch(() => {});
-      }
 
       if (this.hasDraft) {
         const idx = this.drafts.map((d) => d.id).indexOf(this.publishOpts.id);
