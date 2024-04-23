@@ -5,11 +5,7 @@ import { formService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useIdpStore } from '~/store/identityProviders';
 import { useNotificationStore } from '~/store/notification';
-import {
-  FormPermissions,
-  IdentityProviders,
-  IdentityMode,
-} from '~/utils/constants';
+import { FormPermissions, IdentityMode } from '~/utils/constants';
 import * as permissionUtils from '~/utils/permissionUtils';
 
 describe('checkFormSubmit', () => {

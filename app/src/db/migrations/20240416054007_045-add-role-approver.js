@@ -68,6 +68,18 @@ exports.up = function (knex) {
       };
 
       return knex('role_permission').insert(rolePermssion);
+    })
+    .then(() => {
+      const roles = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER, Roles.SUBMISSION_APPROVER];
+      knex('identity_provider').where({ code: 'idir' }).update({
+        roles: roles,
+      });
+    })
+    .then(() => {
+      const roles = [Roles.TEAM_MANAGER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER, Roles.SUBMISSION_APPROVER];
+      knex('identity_provider').where({ code: 'bceid-business' }).update({
+        roles: roles,
+      });
     });
 };
 
@@ -77,6 +89,18 @@ exports.up = function (knex) {
  */
 exports.down = function (knex) {
   return Promise.resolve()
+    .then(() => {
+      const roles = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
+      knex('identity_provider').where({ code: 'idir' }).update({
+        roles: roles,
+      });
+    })
+    .then(() => {
+      const roles = [Roles.TEAM_MANAGER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
+      knex('identity_provider').where({ code: 'bceid-business' }).update({
+        roles: roles,
+      });
+    })
     .then(() => {
       knex('role_permission')
         .where({
