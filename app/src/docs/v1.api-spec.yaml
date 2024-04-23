@@ -45,7 +45,7 @@ tags:
       This section of the API includes endpoints used to perform various
       operations related to form drafts, for example create or publish a draft
       from a specific version of a form.
-  - name: Document Template
+  - name: Document Templates
     description: >
       Documents can be generated using the Common Document Generation Service
       ([CDOGS](https://bcgov.github.io/common-service-showcase/services/cdogs.html)).
@@ -57,22 +57,20 @@ tags:
       CHEFS app itself) until they stabilize.
 
 
-      The MVP workflow is that a form has a single active document template:
+      Currently only a single document template per form is supported by the
+      CHEFS application:
         1. The `POST /forms/{formId}/documentTemplates` route is used to create
            a document template for a form.
         2. Subsequent calls to the `POST` route should be paired with calls to
            the `DELETE` route to delete the previously active template.
-        3. When it comes time to generate the document, the
-           `GET /forms/{formId}/documentTemplates` route is used to get "all"
-           the document template metadata for a form (although there is only one
-           active document template). This route only returns metadata and not
-           the (possibly huge) template files themselves. 
-        4. The `GET /forms/{formId}/documentTemplates/{documentTemplateId}`
-           route is used to get the specific document template's template file.
-
-      This "double GET" doesn't make a lot of sense when there is only one
-      document template for a form, but this will change soon when we allow the
-      user to choose which template they want to use for document generation.
+        
+      Submission metadata is available for use in the document templates:
+        - `{d.chefs.submissionId}`: the unique identifier for the submission,
+          such as `3cb9acc7-cfd8-4491-b091-1277bc0ec303` 
+        - `{d.chefs.confirmationId}`: The uppercased first eight characters of
+          the `submissionId`, such as `3CB9ACC7`
+        - `{d.chefs.formVersion}`: The numeric version of the form that was used
+          to create the submission, such as `1`
   - name: Submission
     description: >-
       These API endpoints handle the input data provided by a user that
@@ -422,7 +420,7 @@ paths:
         - BearerAuth: []
           OpenID: []
       tags:
-        - Document Template
+        - Document Templates
       parameters:
         - $ref: '#/components/parameters/formIdParam'
       responses:
@@ -454,7 +452,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      summary: Create a document template for a form
+      summary: Create a document template
       description: >
         Creates a document template for a form. This makes it easier for users
         to generate documents, as the template is associated with the form and
@@ -465,7 +463,7 @@ paths:
         - BearerAuth: []
           OpenID: []
       tags:
-        - Document Template
+        - Document Templates
       parameters:
         - $ref: '#/components/parameters/formIdParam'
       requestBody:
@@ -502,7 +500,7 @@ paths:
                 $ref: '#/components/schemas/Error'
   /forms/{formId}/documentTemplates/{documentTemplateId}:
     get:
-      summary: Get a document template for a form
+      summary: Get a document template
       description: >
         Gets a document template for the given form. The response will include
         the `template` field, which is the actual document template file.
@@ -512,7 +510,7 @@ paths:
         - BearerAuth: []
           OpenID: []
       tags:
-        - Document Template
+        - Document Templates
       parameters:
         - $ref: '#/components/parameters/formIdParam'
         - $ref: '#/components/parameters/documentTemplateIdParam'
@@ -554,7 +552,7 @@ paths:
         - BearerAuth: []
           OpenID: []
       tags:
-        - Document Template
+        - Document Templates
       parameters:
         - $ref: '#/components/parameters/formIdParam'
         - $ref: '#/components/parameters/documentTemplateIdParam'
@@ -580,7 +578,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
   /forms/{formId}/export:
     get:
       summary: Export submissions for a form
@@ -1724,9 +1721,78 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /submissions/{formSubmissionId}/template/{documentTemplateId}/render:
+    get:
+      summary: Generate document from submission ID and template ID
+      description: >-
+        Uses form submission data (given the form submission ID) and a document
+        template (given the document template ID) and generates a document
+        containing the submission data.
+
+        #### Common Document Generation Service (CDOGS)
+
+        This endpoint is a passthrough to CDOGS. Instead of using *BasicAuth* to
+        call this endpoint, it is highly recommended that you [directly call
+        CDOGS](https://bcgov.github.io/common-service-showcase/services/cdogs.html).
+        Benefits of calling CDOGS directly from your application:
+          - avoid CHEFS API rate limiting restrictions
+          - avoid CHEFS API timeout restrictions (for large documents)
+          - better performance (direct call instead of passthrough)
+          - ability to use the CDOGS template cache
+          - direct support from the CDOGS team for your specific Client ID
+      operationId: templateIdSubmissionIdRender
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Document Templates
+      parameters:
+        - $ref: '#/components/parameters/formSubmissionIdParam'
+        - $ref: '#/components/parameters/documentTemplateIdParam'
+      responses:
+        '200':
+          description: Returns the document template with merged variables
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+                description: Raw binary-encoded response
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+              description: >-
+                Indicates if a browser should render this resource inline or
+                treat as an attachment for download
+              example: attachment; filename=file.pdf
+            Content-Type:
+              schema:
+                type: string
+              description: The MIME-type of the binary file payload
+              example: application/pdf
+            RateLimit:
+              $ref: '#/components/headers/RateLimit'
+            RateLimit-Policy:
+              $ref: '#/components/headers/RateLimit-Policy'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /submissions/{formSubmissionId}/template/render:
     post:
-      summary: Generate a document by providing a document template
+      summary: Generate document from submission ID and template object
       description: >-
         Merges data from a form submission into a document template.
 
@@ -1741,13 +1807,13 @@ paths:
           - better performance (direct call instead of passthrough)
           - ability to use the CDOGS template cache
           - direct support from the CDOGS team for your specific Client ID
-      operationId: uploadTemplateAndRenderReport
+      operationId: templateObjectSubmissionIdRender
       security:
         - BasicAuth: []
         - BearerAuth: []
           OpenID: []
       tags:
-        - Document Template
+        - Document Templates
       parameters:
         - $ref: '#/components/parameters/formSubmissionIdParam'
       requestBody:
@@ -3464,7 +3530,7 @@ components:
           description: >
             The file that is the document template to be used in document
             generation.
-          example: Hello {firstName}
+          example: Hello {d.firstName}
     DocumentTemplateResponse:
       allOf:
         - $ref: '#/components/schemas/DocumentTemplateResponseBasic'
@@ -3475,7 +3541,7 @@ components:
               description: >
                 The file that is the document template to be used in document
                 generation.
-              example: Hello {firstName}
+              example: Hello {d.firstName}
     DocumentTemplateResponseBasic:
       allOf:
         - type: object

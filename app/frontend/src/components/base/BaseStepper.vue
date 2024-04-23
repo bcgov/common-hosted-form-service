@@ -2,7 +2,7 @@
 import { mapState } from 'pinia';
 import BaseSecure from '~/components/base/BaseSecure.vue';
 import { useFormStore } from '~/store/form';
-import { IdentityProviders } from '~/utils/constants';
+import { AppPermissions } from '~/utils/constants';
 
 export default {
   name: 'BaseStepper',
@@ -17,7 +17,7 @@ export default {
   },
   computed: {
     ...mapState(useFormStore, ['lang', 'isRTL']),
-    IDP: () => IdentityProviders,
+    APP_PERMS: () => AppPermissions,
     creatorStep() {
       return this.step;
     },
@@ -26,7 +26,10 @@ export default {
 </script>
 
 <template>
-  <BaseSecure :idp="[IDP.IDIR]" :class="{ 'dir-rtl': isRTL }">
+  <BaseSecure
+    :permission="APP_PERMS.VIEWS_FORM_STEPPER"
+    :class="{ 'dir-rtl': isRTL }"
+  >
     <v-stepper
       v-model="creatorStep"
       alt-labels
