@@ -1,10 +1,10 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { onBeforeMount, provide, ref } from 'vue';
+import { computed, onBeforeMount, provide, ref } from 'vue';
 
 import ManageForm from '~/components/forms/manage/ManageForm.vue';
 import ManageFormActions from '~/components/forms/manage/ManageFormActions.vue';
-import { FormPermissions, IdentityProviders } from '~/utils/constants';
+import { AppPermissions, FormPermissions } from '~/utils/constants';
 import { useFormStore } from '~/store/form';
 
 const properties = defineProps({
@@ -31,6 +31,8 @@ const showManageForm = ref(false);
 const formStore = useFormStore();
 const { permissions, form, lang } = storeToRefs(formStore);
 
+const APP_PERMS = computed(() => AppPermissions);
+
 onBeforeMount(async () => {
   loading.value = true;
 
@@ -47,7 +49,7 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <BaseSecure :idp="[IdentityProviders.IDIR]">
+  <BaseSecure :permission="[APP_PERMS.VIEWS_FORM_STEPPER]">
     <v-stepper
       :model-value="2"
       hide-actions

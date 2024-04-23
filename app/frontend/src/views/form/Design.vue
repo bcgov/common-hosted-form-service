@@ -1,12 +1,12 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { onMounted } from 'vue';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { nextTick } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
 import FormDesigner from '~/components/designer/FormDesigner.vue';
 import { useFormStore } from '~/store/form';
-import { IdentityProviders } from '~/utils/constants';
+import { AppPermissions } from '~/utils/constants';
 
 defineProps({
   d: {
@@ -38,6 +38,8 @@ const { form } = storeToRefs(formStore);
 
 const formDesigner = ref(null);
 
+const APP_PERMS = computed(() => AppPermissions);
+
 onMounted(async () => {
   await formStore.listFCProactiveHelp();
   nextTick(() => {
@@ -61,7 +63,7 @@ function onFormLoad() {
 </script>
 
 <template>
-  <BaseSecure :idp="[IdentityProviders.IDIR]">
+  <BaseSecure :permission="[APP_PERMS.VIEWS_FORM_STEPPER]">
     <v-stepper
       :model-value="1"
       hide-actions
