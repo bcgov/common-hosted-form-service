@@ -21,6 +21,7 @@ export default {
         { title: 'Actions', key: 'actions', align: 'end' },
       ],
       documentTemplates: [],
+      enablePreview: false,
       techdocsLinkTemplateUpload:
         'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/CDOGS-Template-Upload/',
     };
@@ -55,6 +56,23 @@ export default {
             actions: '',
           });
         });
+        // disable preview for microsoft docs
+        if (this.documentTemplates.length > 0) {
+          // get file extension
+          const fileExtension = this.documentTemplates[0].filename
+            .split('.')
+            .pop();
+          if (
+            fileExtension === 'docx' ||
+            fileExtension === 'pptx' ||
+            fileExtension === 'xlsx' ||
+            fileExtension === 'odt'
+          ) {
+            this.enablePreview = false;
+          } else {
+            this.enablePreview = true;
+          }
+        }
       } catch (e) {
         this.addNotification({
           text: i18n.t('trans.documentTemplate.fetchError'),
@@ -257,7 +275,8 @@ export default {
 
       <!-- Preview/Download File -->
       <template #item.filename="{ item }">
-        <v-tooltip location="bottom">
+        <span v-if="!enablePreview">{{ item.raw.filename }}</span>
+        <v-tooltip v-if="enablePreview" location="bottom">
           <template #activator="{ props }">
             <a
               href="#"
