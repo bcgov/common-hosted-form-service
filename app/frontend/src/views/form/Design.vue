@@ -6,6 +6,7 @@ import { nextTick } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
 import FormDesigner from '~/components/designer/FormDesigner.vue';
 import { useFormStore } from '~/store/form';
+import { IdentityProviders } from '~/utils/constants';
 
 defineProps({
   d: {
@@ -60,31 +61,40 @@ function onFormLoad() {
 </script>
 
 <template>
-  <v-stepper :model-value="1" hide-actions alt-labels flat tile :border="false">
-    <v-stepper-header>
-      <v-stepper-item
-        :title="$t('trans.baseStepper.setUpForm')"
-        value="1"
-        :complete="true"
-      />
-      <v-divider />
-      <v-stepper-item :title="$t('trans.baseStepper.designForm')" value="2" />
-      <v-divider />
-      <v-stepper-item :title="$t('trans.baseStepper.manageForm')" value="3" />
-    </v-stepper-header>
-    <v-stepper-window>
-      <v-stepper-window-item value="2">
-        <FormDesigner
-          ref="formDesigner"
-          class="mt-6"
-          :draft-id="d"
-          :form-id="f"
-          :saved="JSON.parse(sv)"
-          :version-id="v"
-          :is-saved-status="svs"
-          :new-version="nv"
+  <BaseSecure :idp="[IdentityProviders.IDIR]">
+    <v-stepper
+      :model-value="1"
+      hide-actions
+      alt-labels
+      flat
+      tile
+      :border="false"
+    >
+      <v-stepper-header>
+        <v-stepper-item
+          :title="$t('trans.baseStepper.setUpForm')"
+          value="1"
+          :complete="true"
         />
-      </v-stepper-window-item>
-    </v-stepper-window>
-  </v-stepper>
+        <v-divider />
+        <v-stepper-item :title="$t('trans.baseStepper.designForm')" value="2" />
+        <v-divider />
+        <v-stepper-item :title="$t('trans.baseStepper.manageForm')" value="3" />
+      </v-stepper-header>
+      <v-stepper-window>
+        <v-stepper-window-item value="2">
+          <FormDesigner
+            ref="formDesigner"
+            class="mt-6"
+            :draft-id="d"
+            :form-id="f"
+            :saved="JSON.parse(sv)"
+            :version-id="v"
+            :is-saved-status="svs"
+            :new-version="nv"
+          />
+        </v-stepper-window-item>
+      </v-stepper-window>
+    </v-stepper>
+  </BaseSecure>
 </template>
