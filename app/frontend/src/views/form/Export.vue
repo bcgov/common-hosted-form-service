@@ -1,7 +1,7 @@
 <script>
 import BaseSecure from '~/components/base/BaseSecure.vue';
 import ExportSubmissions from '~/components/forms/ExportSubmissions.vue';
-import { IdentityProviders } from '~/utils/constants';
+import { AppPermissions } from '~/utils/constants';
 
 export default {
   components: {
@@ -15,13 +15,13 @@ export default {
     },
   },
   computed: {
-    IDP: () => IdentityProviders,
+    APP_PERMS: () => AppPermissions,
   },
 };
 </script>
 
 <template>
-  <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBUSINESS]">
+  <BaseSecure :permission="APP_PERMS.VIEWS_FORM_EXPORT">
     <ExportSubmissions :form-id="f" />
   </BaseSecure>
 </template>

@@ -1,7 +1,7 @@
 <script>
 import BaseSecure from '~/components/base/BaseSecure.vue';
 import ManageLayout from '~/components/forms/manage/ManageLayout.vue';
-import { IdentityProviders } from '~/utils/constants';
+import { AppPermissions } from '~/utils/constants';
 
 export default {
   components: { BaseSecure, ManageLayout },
@@ -27,13 +27,13 @@ export default {
     },
   },
   computed: {
-    IDP: () => IdentityProviders,
+    APP_PERMS: () => AppPermissions,
   },
 };
 </script>
 
 <template>
-  <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBUSINESS]">
+  <BaseSecure :permission="APP_PERMS.VIEWS_FORM_MANAGE">
     <ManageLayout :f="f" />
   </BaseSecure>
 </template>

@@ -1,14 +1,13 @@
-const config = require('config');
 const routes = require('express').Router();
 
 const currentUser = require('../auth/middleware/userAccess').currentUser;
 
 const controller = require('./controller');
 const userController = require('../user/controller');
-const keycloak = require('../../components/keycloak');
+const jwtService = require('../../components/jwtService');
 
 // Always have this applied to all routes here
-routes.use(keycloak.protect(`${config.get('server.keycloak.clientId')}:admin`));
+routes.use(jwtService.protect('admin'));
 routes.use(currentUser);
 
 // Routes under the /admin pathing will fetch data without doing Form permission checks in the database

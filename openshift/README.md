@@ -74,6 +74,19 @@ oc create -n $NAMESPACE configmap $APP_NAME-server-config \
   --from-literal=SERVER_PORT=8080
 ```
 
+_Note:_ OIDC config is for moving from a custom Keycloak realm into the BC Gov standard realm a managed SSO platform. Other KC configuration will be deprecated. Urls and Client IDs will change from environment to environment.
+
+```sh
+oc create -n $NAMESPACE configmap $APP_NAME-oidc-config \
+  --from-literal=OIDC_REALM=standard \
+  --from-literal=OIDC_SERVERURL=https://dev.loginproxy.gov.bc.ca/auth \
+  --from-literal=OIDC_JWKSURI=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/certs \
+  --from-literal=OIDC_ISSUER=https://dev.loginproxy.gov.bc.ca/auth/realms/standard \
+  --from-literal=OIDC_CLIENTID=chefs-frontend-5299 \
+  --from-literal=OIDC_MAXTOKENAGE=300 \
+  --from-literal=OIDC_LOGOUTURL='https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https%3A%2F%2Fdev.loginproxy.gov.bc.ca%2Fauth%2Frealms%2Fstandard%2Fprotocol%2Fopenid-connect%2Flogout' 
+```
+
 _Note:_ We use the Common Services Object Storage for CHEFS. You will need to contact them to have your storage bucket created.
 
 ```sh

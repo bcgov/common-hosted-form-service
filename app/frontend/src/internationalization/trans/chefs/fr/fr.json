@@ -380,7 +380,7 @@
     "401NotAuthorized": "401 : non autorisé. :",
     "401ErrorMsg": "Votre compte n&#39;est pas configuré correctement.<br /> S&#39;il vous plaît contactez",
     "403Forbidden": "403 : Interdit. :",
-    "403ErrorMsg": "Cette page nécessite une authentification {idp}.",
+    "403ErrorMsg": "Cette page nécessite une authentification {permission}.",
     "401UnAuthorized": "401 : non autorisé. :",
     "401UnAuthorizedErrMsg": "Vous n'avez pas la permission d'accéder à cette page."
   },

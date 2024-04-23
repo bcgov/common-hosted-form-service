@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
-import { IdentityProviders } from '~/utils/constants';
+import { useIdpStore } from '~/store/identityProviders';
 import { preFlightAuth } from '~/utils/permissionUtils';
 
 let isFirstTransition = true;
@@ -81,7 +81,7 @@ export default function getRouter(basePath = '/') {
             component: () => import('~/views/form/Create.vue'),
             meta: {
               breadcrumbTitle: 'Form Designer',
-              requiresAuth: IdentityProviders.IDIR,
+              requiresAuth: 'primary',
               hasLogin: true,
             },
             props: createProps,
@@ -92,7 +92,7 @@ export default function getRouter(basePath = '/') {
             component: () => import('~/views/form/PublishForm.vue'),
             meta: {
               breadcrumbTitle: 'Publish Form',
-              requiresAuth: IdentityProviders.IDIR,
+              requiresAuth: 'primary',
               hasLogin: true,
             },
             props: (route) => {
@@ -111,7 +111,7 @@ export default function getRouter(basePath = '/') {
             component: () => import('~/views/form/Design.vue'),
             meta: {
               breadcrumbTitle: 'Form Designer',
-              requiresAuth: IdentityProviders.IDIR,
+              requiresAuth: 'primary',
               hasLogin: true,
             },
             props: (route) => {
@@ -145,7 +145,7 @@ export default function getRouter(basePath = '/') {
             component: () => import('~/views/form/Manage.vue'),
             meta: {
               breadcrumbTitle: 'Manage Form',
-              requiresAuth: IdentityProviders.IDIR,
+              requiresAuth: 'primary',
               hasLogin: true,
             },
             props: createProps,
@@ -157,7 +157,7 @@ export default function getRouter(basePath = '/') {
             meta: {
               breadcrumbTitle: 'Preview Form',
               formSubmitMode: true,
-              requiresAuth: IdentityProviders.IDIR,
+              requiresAuth: 'primary',
               hasLogin: true,
             },
             props: createProps,
@@ -168,7 +168,7 @@ export default function getRouter(basePath = '/') {
             component: () => import('~/views/form/Submissions.vue'),
             meta: {
               breadcrumbTitle: 'Submissions',
-              requiresAuth: IdentityProviders.IDIR,
+              requiresAuth: 'primary',
               hasLogin: true,
             },
             props: createProps,
@@ -205,7 +205,7 @@ export default function getRouter(basePath = '/') {
             component: () => import('~/views/form/Emails.vue'),
             meta: {
               breadcrumbTitle: 'Email Management',
-              requiresAuth: IdentityProviders.IDIR,
+              requiresAuth: 'primary',
               hasLogin: true,
             },
             props: createProps,
@@ -216,7 +216,7 @@ export default function getRouter(basePath = '/') {
             component: () => import('~/views/form/Teams.vue'),
             meta: {
               breadcrumbTitle: 'Team Management',
-              requiresAuth: IdentityProviders.IDIR,
+              requiresAuth: 'primary',
               hasLogin: true,
             },
             props: createProps,
@@ -290,7 +290,7 @@ export default function getRouter(basePath = '/') {
             component: () => import('~/views/user/Forms.vue'),
             meta: {
               breadcrumbTitle: 'My Forms',
-              requiresAuth: IdentityProviders.IDIR,
+              requiresAuth: 'primary',
             },
           },
           {
@@ -397,6 +397,7 @@ export default function getRouter(basePath = '/') {
     NProgress.start();
 
     const authStore = useAuthStore();
+    const idpStore = useIdpStore();
 
     if (isFirstTransition) {
       // Always call rbac/current if authenticated and on first page load
@@ -428,8 +429,11 @@ export default function getRouter(basePath = '/') {
 
       // Determine what kind of redirect behavior is needed
       let idpHint = undefined;
-      if (typeof to.meta.requiresAuth === 'string') {
-        idpHint = to.meta.requiresAuth;
+      if (
+        typeof to.meta.requiresAuth === 'string' &&
+        to.meta.requiresAuth === 'primary'
+      ) {
+        idpHint = idpStore.primaryIdp ? idpStore.primaryIdp.code : null;
       }
       authStore.login(idpHint);
     }

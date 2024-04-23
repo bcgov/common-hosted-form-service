@@ -380,7 +380,7 @@
     "401NotAuthorized": "401：未授權。 :",
     "401ErrorMsg": "您的帳戶設置不正確。<br />請聯繫",
     "403Forbidden": "403：禁止。 :",
-    "403ErrorMsg": "此頁面需要 {idp} 身份驗證。",
+    "403ErrorMsg": "此頁面需要 {permission} 身份驗證。",
     "401UnAuthorized": "401：未經授權。 :",
     "401UnAuthorizedErrMsg": "您沒有權限訪問此頁面。"
   },
