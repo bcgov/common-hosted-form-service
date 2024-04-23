@@ -263,6 +263,7 @@ export default {
         const response1 = await formService.documentTemplateList(this.formId);
         if (response1 && response1.data.length > 0) {
           this.defaultTemplate = true;
+          this.selectedOption = 'default';
         }
         if (this.defaultTemplate) {
           const docId = response1.data[0].id;

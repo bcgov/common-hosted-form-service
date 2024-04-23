@@ -150,7 +150,7 @@ export default {
         this.loading = false;
       }
     },
-    async handleFilePreview(item) {
+    async handleFileAction(item, action) {
       this.loading = true;
       try {
         const result = await formService.documentTemplateRead(
@@ -171,14 +171,21 @@ export default {
           type: this.getMimeType(item.raw.filename),
         });
         const url = window.URL.createObjectURL(blob);
-        // Create an anchor element and trigger download
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = item.raw.filename;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        a.remove(); // Clean up
+
+        if (action === 'preview') {
+          // Open the file in a new tab
+          window.open(url, '_blank');
+          window.URL.revokeObjectURL(url);
+        } else if (action === 'download') {
+          // Create an anchor element and trigger download
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = item.raw.filename;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          a.remove();
+        }
       } catch (e) {
         this.addNotification({
           text: i18n.t('trans.documentTemplate.fetchError'),
@@ -250,21 +257,53 @@ export default {
 
       <!-- Preview/Download File -->
       <template #item.filename="{ item }">
-        <a href="#" @click="handleFilePreview(item)">
-          {{ item.raw.filename }}
-        </a>
+        <v-tooltip location="bottom">
+          <template #activator="{ props }">
+            <a
+              href="#"
+              v-bind="props"
+              @click="handleFileAction(item, 'preview')"
+            >
+              {{ item.raw.filename }}
+            </a>
+          </template>
+          <span :lang="lang">
+            {{ $t('trans.manageVersions.clickToPreview') }}
+            <v-icon icon="mdi:mdi-open-in-new"></v-icon>
+          </span>
+        </v-tooltip>
       </template>
 
       <!-- Actions -->
       <template #item.actions="{ item }">
-        <v-tooltip location="bottom">
-          <template #activator="{ props }">
-            <v-icon color="red" v-bind="props" @click="handleDelete(item)">
-              mdi-minus-circle
-            </v-icon>
-          </template>
-          <span>{{ $t('trans.documentTemplate.delete') }}</span>
-        </v-tooltip>
+        <div class="icon-container">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <v-icon
+                color="primary"
+                v-bind="props"
+                class="action-icon"
+                @click="handleFileAction(item, 'download')"
+              >
+                mdi-download
+              </v-icon>
+            </template>
+            <span>{{ $t('trans.documentTemplate.download') }}</span>
+          </v-tooltip>
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <v-icon
+                color="red"
+                v-bind="props"
+                class="action-icon"
+                @click="handleDelete(item)"
+              >
+                mdi-minus-circle
+              </v-icon>
+            </template>
+            <span>{{ $t('trans.documentTemplate.delete') }}</span>
+          </v-tooltip>
+        </div>
       </template>
 
       <!-- Empty footer, remove if allowing multiple templates -->
@@ -306,6 +345,16 @@ export default {
 </template>
 
 <style scoped>
+.action-icon:not(:last-child) {
+  margin-right: 20px;
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
 .submissions-table {
   clear: both;
 }
