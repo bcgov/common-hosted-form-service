@@ -33,7 +33,7 @@ describe('auth getters', () => {
         name: 'John Doe',
         email: 'e@mail.com',
         identity_provider: 'idir',
-        idp_userid: zeroGuid,
+        idir_user_guid: zeroGuid,
         preferred_username: 'johndoe',
         realm_access: {},
         client_roles: roles,
@@ -190,7 +190,8 @@ describe('auth getters', () => {
       lastName: 'Doe',
       fullName: 'John Doe',
       email: 'e@mail.com',
-      idp: {code: 'idir', display: 'IDIR', hint: 'idir'},
+      idp: { code: 'idir', display: 'IDIR', hint: 'idir' },
+      idpUserId: zeroGuid,
       public: false,
     });
   });
@@ -201,6 +202,7 @@ describe('auth getters', () => {
 
     expect(store.user).toBeTruthy();
     expect(store.user).toEqual({
+      idpUserId: '',
       username: '',
       firstName: '',
       lastName: '',

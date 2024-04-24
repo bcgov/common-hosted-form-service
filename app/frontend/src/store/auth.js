@@ -55,7 +55,16 @@ export const useAuthStore = defineStore('auth', {
     },
     isAdmin: (state) => state.hasResourceRoles(['admin']),
     keycloakSubject: (state) => state.keycloak.subject,
-    identityProviderIdentity: (state) => state.keycloak.tokenParsed.idp_userid,
+    identityProviderIdentity: (state) => {
+      // leaving this for backwards compatibility.
+      // please call user.idpUserId instead
+      const idpStore = useIdpStore();
+      return idpStore.getTokenMapValue(
+        state.tokenParsed.identity_provider,
+        'idpUserId',
+        state.tokenParsed
+      );
+    },
     moduleLoaded: (state) => !!state.keycloak,
     realmAccess: (state) => state.keycloak.tokenParsed.realm_access,
     resourceAccess: (state) => state.keycloak.tokenParsed.client_roles,
@@ -65,6 +74,7 @@ export const useAuthStore = defineStore('auth', {
     user: (state) => {
       const idpStore = useIdpStore();
       const user = {
+        idpUserId: '',
         username: '',
         firstName: '',
         lastName: '',
@@ -89,6 +99,11 @@ export const useAuthStore = defineStore('auth', {
         user.email = state.tokenParsed.email;
         const idp = idpStore.findByHint(state.tokenParsed.identity_provider);
         user.idp = idp;
+        user.idpUserId = idpStore.getTokenMapValue(
+          state.tokenParsed.identity_provider,
+          'idpUserId',
+          state.tokenParsed
+        );
       }
 
       return user;
