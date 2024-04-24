@@ -217,6 +217,12 @@ function loadKeycloak(config) {
                 expiredTokenInterval = setInterval(() => {
                   updateToken(60);
                 }, 10000);
+              // If we're failing to update the token, we will clear the token
+              keycloak.clearToken();
+            })
+            .catch(() => {
+              // If we're failing to update the token, we will clear the token
+              keycloak.clearToken();
             });
         } catch (error) {
           // If we're failing to update the token, we will clear the token
