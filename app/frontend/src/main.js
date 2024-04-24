@@ -196,20 +196,53 @@ function loadKeycloak(config) {
         authStore.ready = true;
         typeof options.onReady === 'function' && options.onReady();
       };
+
+      let updateTokenInterval;
+      // The expired token is also used for general update token failures
+      // i.e., network disconnection
+      let expiredTokenInterval;
+
+      function updateToken(seconds) {
+        try {
+          keycloak
+            .updateToken(seconds)
+            .success((refreshed) => {
+              if (refreshed) {
+                if (expiredTokenInterval) clearInterval(expiredTokenInterval);
+              }
+            })
+            .error(() => {
+              // Failed to refresh token
+              if (!expiredTokenInterval)
+                expiredTokenInterval = setInterval(() => {
+                  updateToken(60);
+                }, 10000);
+            });
+        } catch (error) {
+          // If we're failing to update the token, we will clear the token
+          keycloak.clearToken();
+        }
+      }
+
       keycloak.onAuthSuccess = () => {
         // Check token validity every 10 seconds (10 000 ms) and, if necessary, update the token.
         // Refresh token if it's valid for less then 60 seconds
-        const updateTokenInterval = setInterval(
-          () =>
-            keycloak.updateToken(60).catch(() => {
-              keycloak.clearToken();
-            }),
-          10000
-        );
+        updateTokenInterval = setInterval(async () => {
+          updateToken(60);
+        }, 10000);
         authStore.logoutFn = () => {
           clearInterval(updateTokenInterval);
+          clearInterval(expiredTokenInterval);
           authStore.updateKeycloak(keycloak, false);
         };
+      };
+      keycloak.onTokenExpired = () => {
+        if (!expiredTokenInterval) {
+          expiredTokenInterval = setInterval(() => {
+            updateToken(60);
+          }, 10000);
+        }
+        updateToken(60);
       };
       keycloak.onAuthRefreshSuccess = () => {
         authStore.updateKeycloak(keycloak, true);
