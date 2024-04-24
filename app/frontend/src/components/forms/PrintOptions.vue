@@ -35,7 +35,7 @@ export default {
       expandedText: false,
       timeout: undefined,
       tab: 'tab-1',
-      selectedOption: null,
+      selectedOption: 'upload',
       defaultTemplate: false,
       defaultTemplateContent: null,
       defaultTemplateDate: '',
@@ -386,7 +386,7 @@ export default {
               </div>
             </v-window-item>
             <v-window-item value="tab-2">
-              <v-radio-group v-if="defaultTemplate" v-model="selectedOption">
+              <v-radio-group v-model="selectedOption">
                 <v-skeleton-loader type="list-item" :loading="loading">
                   <!-- Radio 1 -->
                   <v-radio
@@ -445,32 +445,6 @@ export default {
                   @update:model-value="validateFileExtension($event)"
                 />
               </v-radio-group>
-
-              <!-- Just show CDOGS upload if no template attached -->
-              <span
-                v-if="!defaultTemplate"
-                style="display: inline-block"
-                class="mb-2"
-                >{{ $t('trans.printOptions.uploadCdogsTemplate') }}</span
-              >
-              <v-file-input
-                v-if="!defaultTemplate"
-                v-model="templateForm.files"
-                :class="{ label: isRTL }"
-                :style="isRTL ? { gap: '10px' } : null"
-                counter
-                :clearable="true"
-                :label="$t('trans.printOptions.uploadTemplateFile')"
-                persistent-hint
-                required
-                mandatory
-                show-size
-                prepend-icon="false"
-                :lang="lang"
-                :rules="validationRules"
-                @update:model-value="validateFileExtension($event)"
-              />
-
               <v-card-actions>
                 <v-tooltip location="top">
                   <template #activator="{ props }">
