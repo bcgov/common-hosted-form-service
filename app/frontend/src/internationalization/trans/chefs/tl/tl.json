@@ -68,7 +68,22 @@
     "status": "Katayuan",
     "update": "Update",
     "cancel": "Kanselahin",
-    "eventSubscription": "Subscription sa Kaganapan"
+    "eventSubscription": "Subscription sa Kaganapan",
+    "cdogsTemplate": "template ng CDOGS"
+  },
+  "documentTemplate": {
+    "uploadTemplate": "I-upload ang Template ng CDOGS",
+    "uploadTemplateFile": "I-upload ang file ng template",
+    "upload": "I-upload",
+    "delete": "Tanggalin",
+    "download": "I-download",
+    "invalidFileMessage": "Ang template ay dapat gumamit ng isa sa mga sumusunod na extension: .txt, .docx, .html, .odt, .pptx, .xlsx, .pdf",
+    "uploadSuccess": "Matagumpay na na-upload ang template.",
+    "uploadError": "Nagkaroon ng error habang ina-upload ang template.",
+    "deleteSuccess": "Matagumpay na natanggal ang template.",
+    "deleteError": "Nagkaroon ng error habang tinatanggal ang template.",
+    "fetchError": "Nagkaroon ng error habang kinukuha ang template.",
+    "info": "Mag-upload ng template upang gamitin ang Common Document Generation Service (CDOGS)"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Pindutin <kbd>ang enter</kbd> o <kbd>,</kbd> o <kbd>space</kbd> para magdagdag ng maraming email address",
@@ -676,7 +691,15 @@
     "docGrnSucess": "Matagumpay na nabuo ang dokumento",
     "failedDocGenErrMsg": "Nabigong bumuo ng Dokumento",
     "failedDocGenConsErrMsg": "Error sa pagsusumite ng template: {error}",
-    "cDogsTemplate": "template ng CDOGS"
+    "cDogsTemplate": "template ng CDOGS",
+    "uploadCdogsTemplate": "I-upload ang Template ng CDOGS",
+    "printOptions": "Mga Opsyon sa Pag-print",
+    "expandtextFields": "Palawakin ang mga patlang ng teksto",
+    "moreInfo": "Karagdagang Impormasyon",
+    "defaultCdogsTemplate": "Gamitin ang default na Template ng CDOGS",
+    "fileName": "Pangalan ng File",
+    "uploadDate": "Petsa ng Pag-upload",
+    "upload": "I-upload"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Link ng Impormasyon ng Bahagi",

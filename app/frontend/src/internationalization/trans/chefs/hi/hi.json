@@ -68,7 +68,22 @@
     "status": "दर्जा",
     "update": "अद्यतन",
     "cancel": "रद्द करना",
-    "eventSubscription": "इवेंट सदस्यता"
+    "eventSubscription": "इवेंट सदस्यता",
+    "cdogsTemplate": "सीडीओजीएस टेम्पलेट"
+  },
+  "documentTemplate": {
+    "uploadTemplate": "CDOGS टेम्पलेट अपलोड करें",
+    "uploadTemplateFile": "टेम्पलेट फ़ाइल अपलोड करें",
+    "upload": "अपलोड करें",
+    "delete": "हटाएं",
+    "download": "डाउनलोड करें",
+    "invalidFileMessage": "टेम्पलेट में निम्नलिखित में से एक एक्सटेंशन का उपयोग करना चाहिए: .txt, .docx, .html, .odt, .pptx, .xlsx, .pdf",
+    "uploadSuccess": "टेम्पलेट सफलतापूर्वक अपलोड हुआ।",
+    "uploadError": "टेम्पलेट अपलोड करते समय एक त्रुटि हुई।",
+    "deleteSuccess": "टेम्पलेट सफलतापूर्वक हटाया गया।",
+    "deleteError": "टेम्पलेट हटाते समय एक त्रुटि हुई।",
+    "fetchError": "टेम्पलेट प्राप्त करते समय एक त्रुटि हुई।",
+    "info": "कॉमन डॉक्युमेंट जनरेशन सर्विस (CDOGS) का उपयोग करने के लिए एक टेम्पलेट अपलोड करें"
   },
   "formSettings": {
     "pressToAddMultiEmail": "एकाधिक ईमेल पते जोड़ने के लिए <kbd>एंटर</kbd> या <kbd>,</kbd> या <kbd>स्पेस</kbd> दबाएँ",
@@ -676,7 +691,15 @@
     "docGrnSucess": "दस्तावेज़ सफलतापूर्वक तैयार हुआ",
     "failedDocGenErrMsg": "दस्तावेज़ जनरेट करने में विफल",
     "failedDocGenConsErrMsg": "टेम्प्लेट सबमिट करने में त्रुटि: {error}",
-    "cDogsTemplate": "सीडीओजीएस टेम्पलेट"
+    "cDogsTemplate": "सीडीओजीएस टेम्पलेट",
+    "uploadCdogsTemplate": "CDOGS टेम्पलेट अपलोड करें",
+    "printOptions": "प्रिंट विकल्प",
+    "expandtextFields": "टेक्स्ट फ़ील्ड्स का विस्तार करें",
+    "moreInfo": "अधिक जानकारी",
+    "defaultCdogsTemplate": "डिफ़ॉल्ट CDOGS टेम्पलेट का प्रयोग करें",
+    "fileName": "फ़ाइल का नाम",
+    "uploadDate": "अपलोड दिनांक",
+    "upload": "अपलोड करें"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "घटक सूचना लिंक",
