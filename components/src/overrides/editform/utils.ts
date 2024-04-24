@@ -15,6 +15,7 @@ function logicVariablesTable(additional = '') {
 
   const customEval =
     '<tr><th>token</th><td>The decoded JWT token for the authenticated user.</td></tr>' +
+    '<tr><th>encoded_token</th><td>The encoded JWT token for the authenticated user.</td></tr>' +
     '<tr><th>user</th><td>The currently logged in user</td></tr>';
   return originalLogicVariablesTable(additional + customEval);
 }

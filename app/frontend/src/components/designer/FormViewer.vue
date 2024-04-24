@@ -148,6 +148,7 @@ export default {
         evalContext: {
           token: this.tokenParsed,
           user: this.user,
+          encoded_token: this.keycloak.token,
         },
       };
     },
