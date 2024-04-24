@@ -68,7 +68,22 @@
     "status": "Statut",
     "update": "Mise à jour",
     "cancel": "Annuler",
-    "eventSubscription": "Abonnement à l'événement"
+    "eventSubscription": "Abonnement à l'événement",
+    "cdogsTemplate": "Modèle CDOGS"
+  },
+  "documentTemplate": {
+    "uploadTemplate": "Télécharger le modèle CDOGS",
+    "uploadTemplateFile": "Télécharger le fichier modèle",
+    "upload": "Télécharger",
+    "delete": "Supprimer",
+    "download": "Télécharger",
+    "invalidFileMessage": "Le modèle doit utiliser l'une des extensions suivantes : .txt, .docx, .html, .odt, .pptx, .xlsx, .pdf",
+    "uploadSuccess": "Modèle téléchargé avec succès.",
+    "uploadError": "Une erreur s'est produite lors du téléchargement du modèle.",
+    "deleteSuccess": "Modèle supprimé avec succès.",
+    "deleteError": "Une erreur s'est produite lors de la suppression du modèle.",
+    "fetchError": "Une erreur s'est produite lors de la récupération du modèle.",
+    "info": "Téléchargez un modèle pour utiliser le Service de Génération de Documents Communs (CDOGS)"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Appuyez sur <kbd>entrée</kbd> ou <kbd>,</kbd> ou <kbd>espace</kbd> pour ajouter plusieurs adresses e-mail",
@@ -676,7 +691,15 @@
     "docGrnSucess": "Document généré avec succès",
     "failedDocGenErrMsg": "Échec de la génération du document",
     "failedDocGenConsErrMsg": "Erreur lors de l'envoi du modèle : {error}",
-    "cDogsTemplate": "Modèle CDOGS"
+    "cDogsTemplate": "Modèle CDOGS",
+    "uploadCdogsTemplate": "Télécharger le modèle CDOGS",
+    "printOptions": "Options d'impression",
+    "expandtextFields": "Étendre les champs de texte",
+    "moreInfo": "Plus d'infos",
+    "defaultCdogsTemplate": "Utiliser le modèle CDOGS par défaut",
+    "fileName": "Nom de fichier",
+    "uploadDate": "Date de téléchargement",
+    "upload": "Télécharger"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Lien d'informations sur les composants",

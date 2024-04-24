@@ -583,4 +583,58 @@ export default {
       subscriptionData
     );
   },
+
+  //
+  // Document Template (CDOGS)
+  //
+
+  /**
+   * @function documentTemplateCreate
+   * Post a new document template for a form
+   * @param {string} formId The form uuid
+   * @param {Object} data An object containing the document template details
+   * @returns {Promise} An axios response
+   */
+  documentTemplateCreate(formId, data) {
+    return appAxios().post(
+      `${ApiRoutes.FORMS}/${formId}/documentTemplates`,
+      data
+    );
+  },
+
+  /**
+   * @function documentTemplateDelete
+   * Delete a document template for a form
+   * @param {string} formId The form uuid
+   * @param {string} documentTemplateId The document template uuid
+   * @returns {Promise} An axios response
+   */
+  documentTemplateDelete(formId, documentTemplateId) {
+    return appAxios().delete(
+      `${ApiRoutes.FORMS}/${formId}/documentTemplates/${documentTemplateId}`
+    );
+  },
+
+  /**
+   * @function documentTemplateRead
+   * Read a document template for a form
+   * @param {string} formId The form uuid
+   * @param {string} documentTemplateId The document template uuid
+   * @returns {Promise} An axios response
+   */
+  documentTemplateRead(formId, documentTemplateId) {
+    return appAxios().get(
+      `${ApiRoutes.FORMS}/${formId}/documentTemplates/${documentTemplateId}`
+    );
+  },
+
+  /**
+   * @function documentTemplateList
+   * List all document templates for a form
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  documentTemplateList(formId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/documentTemplates`);
+  },
 };
