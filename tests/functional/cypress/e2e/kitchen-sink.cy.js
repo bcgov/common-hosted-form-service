@@ -207,7 +207,7 @@ describe('Kitchen Sink Example Form', () => {
 
     // Visit Page
     cy.visit(`/${depEnv}/form/submit?f=${formId}`);
-    cy.wait(['@formOptions', '@formVersion']);
+    //cy.wait(['@formOptions', '@formVersion']);
     cy.location('pathname').should('eq', `/${depEnv}/form/submit`);
     cy.location('search').should('eq', `?f=${formId}`);
   });

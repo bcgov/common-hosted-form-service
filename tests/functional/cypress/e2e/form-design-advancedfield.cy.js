@@ -63,7 +63,7 @@ describe('Form Designer', () => {
     });
 
     }); 
-    it('Checks the simpleradioadvanced', () => {
+    it('Checks the simpletextareaadvanced', () => {
 
     cy.viewport(1000, 1800);
     cy.waitForLoad();
@@ -82,7 +82,7 @@ describe('Form Designer', () => {
 
     });
     }); 
-    it('Checks the simpleradioadvanced', () => {
+    it('Checks the simpleurladvanced', () => {
     cy.viewport(1000, 1800);
     cy.waitForLoad();   
     cy.get('div.formio-builder-form').then($el => {
@@ -103,7 +103,7 @@ describe('Form Designer', () => {
   
     });
     });
-    it('Checks the simpleradioadvanced', () => {
+    it('Checks the simpleselectboxesadvanced', () => {
       cy.viewport(1000, 1800);
       cy.waitForLoad();
       cy.get('div.formio-builder-form').then($el => {
@@ -128,7 +128,7 @@ describe('Form Designer', () => {
       });
     });
 
-    it('Checks the simpleradioadvanced', () => {
+    it('Checks the simpletagsadvanced', () => {
 
       cy.viewport(1000, 1800);
       cy.waitForLoad();
@@ -147,7 +147,7 @@ describe('Form Designer', () => {
       });
     });
 
-    it('Checks the simpleradioadvanced', () => {
+    it('Checks the simplefile', () => {
       cy.viewport(1000, 1800);
       cy.waitForLoad();
       cy.get('button').contains('BC Government').click();
@@ -166,7 +166,7 @@ describe('Form Designer', () => {
       });
     });
 
-    it('Checks the simpleradioadvanced', () => {
+    it('Checks the orgbook', () => {
 
       cy.viewport(1000, 1800);
       cy.waitForLoad();
@@ -186,7 +186,7 @@ describe('Form Designer', () => {
 
     });
 
-    it('Checks the simpleradioadvanced', () => {
+    it('Checks the bcaddress', () => {
       cy.viewport(1000, 1800);
       cy.waitForLoad();
       cy.get('div.formio-builder-form').then($el => {
@@ -205,7 +205,7 @@ describe('Form Designer', () => {
 
     });
 
-    it('Checks the simpleradioadvanced', () => {
+    it('Checks the simplebcaddress', () => {
       cy.viewport(1000, 1800);
       cy.waitForLoad();
       cy.get('div.formio-builder-form').then($el => {
@@ -224,7 +224,7 @@ describe('Form Designer', () => {
 
     });
 
-    it('Checks the simpleradioadvanced', () => {
+    it('Verify form publish and submission', () => {
       cy.viewport(1000, 1800);
       cy.waitForLoad();
       cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
