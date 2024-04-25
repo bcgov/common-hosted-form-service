@@ -2,6 +2,7 @@
 import { mapActions, mapState } from 'pinia';
 
 import ApiKey from '~/components/forms/manage/ApiKey.vue';
+import DocumentTemplate from '~/components/forms/manage/DocumentTemplate.vue';
 import FormSettings from '~/components/designer/FormSettings.vue';
 import ManageVersions from '~/components/forms/manage/ManageVersions.vue';
 import Subscription from '~/components/forms/manage/Subscription.vue';
@@ -13,6 +14,7 @@ import FormProfile from '~/components/designer/FormProfile.vue';
 export default {
   components: {
     ApiKey,
+    DocumentTemplate,
     FormSettings,
     ManageVersions,
     Subscription,
@@ -21,6 +23,7 @@ export default {
   data() {
     return {
       apiKeyPanel: 1,
+      cdogsPanel: 1,
       formSettingsDisabled: true,
       settingsFormValid: false,
       settingsPanel: 1,
@@ -246,6 +249,20 @@ export default {
         </v-expansion-panel-title>
         <v-expansion-panel-text>
           <ApiKey />
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
+
+    <!-- CDOGS Template -->
+    <v-expansion-panels v-model="cdogsPanel" class="nrmc-expand-collapse">
+      <v-expansion-panel v-if="canEditForm" flat>
+        <v-expansion-panel-title>
+          <div class="header" :lang="lang">
+            <strong>{{ $t('trans.manageForm.cdogsTemplate') }}</strong>
+          </div>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
+          <DocumentTemplate />
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>

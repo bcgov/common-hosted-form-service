@@ -45,7 +45,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAuthStore, ['identityProviderIdentity']),
+    ...mapState(useAuthStore, ['user']),
     ...mapState(useFormStore, [
       'form',
       'formSubmission',
@@ -146,7 +146,7 @@ export default {
 
     assignToCurrentUser() {
       this.assignee = this.formReviewers.find(
-        (f) => f.idpUserId === this.identityProviderIdentity
+        (f) => f.idpUserId === this.user.idpUserId
       );
     },
 

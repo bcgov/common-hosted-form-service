@@ -68,7 +68,22 @@
     "status": "Trạng thái",
     "update": "Cập nhật",
     "cancel": "Hủy bỏ",
-    "eventSubscription": "Đăng ký sự kiện"
+    "eventSubscription": "Đăng ký sự kiện",
+    "cdogsTemplate": "mẫu CDOGS"
+  },
+  "documentTemplate": {
+    "uploadTemplate": "Tải lên mẫu CDOGS",
+    "uploadTemplateFile": "Tải lên tệp mẫu",
+    "upload": "Tải lên",
+    "delete": "Xóa",
+    "download": "Tải xuống",
+    "invalidFileMessage": "Mẫu phải sử dụng một trong các phần mở rộng sau: .txt, .docx, .html, .odt, .pptx, .xlsx, .pdf",
+    "uploadSuccess": "Tải lên mẫu thành công.",
+    "uploadError": "Có lỗi xảy ra khi tải lên mẫu.",
+    "deleteSuccess": "Xóa mẫu thành công.",
+    "deleteError": "Có lỗi xảy ra khi xóa mẫu.",
+    "fetchError": "Có lỗi xảy ra khi lấy mẫu.",
+    "info": "Tải lên một mẫu để sử dụng Dịch vụ Tạo Tài liệu Chung (CDOGS)"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Nhấn <kbd>enter</kbd> hoặc <kbd>,</kbd> hoặc <kbd>dấu cách</kbd> để thêm nhiều địa chỉ email",
@@ -676,7 +691,15 @@
     "docGrnSucess": "Tài liệu được tạo thành công",
     "failedDocGenErrMsg": "Không thể tạo tài liệu",
     "failedDocGenConsErrMsg": "Lỗi khi gửi mẫu: {error}",
-    "cDogsTemplate": "mẫu CDOGS"
+    "cDogsTemplate": "mẫu CDOGS",
+    "uploadCdogsTemplate": "Tải lên mẫu CDOGS",
+    "printOptions": "Tùy chọn In",
+    "expandtextFields": "Mở rộng trường văn bản",
+    "moreInfo": "Thêm thông tin",
+    "defaultCdogsTemplate": "Sử dụng mẫu CDOGS mặc định",
+    "fileName": "Tên tệp",
+    "uploadDate": "Ngày tải lên",
+    "upload": "Tải lên"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Liên kết thông tin thành phần",
