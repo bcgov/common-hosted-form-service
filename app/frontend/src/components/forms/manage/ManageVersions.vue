@@ -127,10 +127,12 @@ export default {
     cancelPublish() {
       this.showPublishDialog = false;
       document.documentElement.style.overflow = 'auto';
-
       if (this.hasDraft) {
         const idx = this.drafts.map((d) => d.id).indexOf(this.publishOpts.id);
-        this.drafts[idx].published = !this.drafts[idx].published;
+        if (!this.formDesigner) {
+          // if not navigating from FormDesigner
+          this.drafts[idx].published = !this.drafts[idx].published;
+        }
       } else {
         const idx = this.form.versions
           .map((d) => d.id)
