@@ -24,8 +24,10 @@ module.exports = defineConfig({
     //setupNodeEvents(on, config) {
      // return require('./plugins/index.js')(on, config)
     
-    baseUrl: 'http://localhost:5173',
+    //baseUrl: 'http://localhost:5173',
+    baseUrl:'https://chefs-dev.apps.silver.devops.gov.bc.ca',
     specPattern: 'cypress/e2e/*.cy.{js,jsx,ts,tsx}',
+    testIsolation: false,
     
     //supportFile: 'support/index.js',
   }
