@@ -34,6 +34,7 @@ describe('auth getters', () => {
         email: 'e@mail.com',
         identity_provider: 'idir',
         idir_user_guid: zeroGuid,
+        idir_username: 'JDOE',
         preferred_username: 'johndoe',
         realm_access: {},
         client_roles: roles,
@@ -185,7 +186,7 @@ describe('auth getters', () => {
   it('creates an auth user when authenticated', () => {
     expect(store.user).toBeTruthy();
     expect(store.user).toEqual({
-      username: 'johndoe',
+      username: 'JDOE',
       firstName: 'John',
       lastName: 'Doe',
       fullName: 'John Doe',

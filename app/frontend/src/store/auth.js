@@ -88,22 +88,25 @@ export const useAuthStore = defineStore('auth', {
         public: !state.authenticated,
       };
       if (state.authenticated) {
-        if (state.tokenParsed.idp_username) {
-          user.username = state.tokenParsed.idp_username;
-        } else {
-          user.username = state.tokenParsed.preferred_username;
-        }
         user.firstName = state.tokenParsed.given_name;
         user.lastName = state.tokenParsed.family_name;
         user.fullName = state.tokenParsed.name;
         user.email = state.tokenParsed.email;
         const idp = idpStore.findByHint(state.tokenParsed.identity_provider);
         user.idp = idp;
+        user.username = idpStore.getTokenMapValue(
+          state.tokenParsed.identity_provider,
+          'username',
+          state.tokenParsed
+        );
         user.idpUserId = idpStore.getTokenMapValue(
           state.tokenParsed.identity_provider,
           'idpUserId',
           state.tokenParsed
         );
+        if (!user.username) {
+          user.username = state.tokenParsed.preferred_username;
+        }
       }
 
       return user;
