@@ -68,7 +68,22 @@
     "status": "Estado",
     "update": "Actualizar",
     "cancel": "Cancelar",
-    "eventSubscription": "Suscripción a eventos"
+    "eventSubscription": "Suscripción a eventos",
+    "cdogsTemplate": "Plantilla CDDOGS"
+  },
+  "documentTemplate": {
+    "uploadTemplate": "Subir plantilla de CDOGS",
+    "uploadTemplateFile": "Subir archivo de plantilla",
+    "upload": "Subir",
+    "delete": "Eliminar",
+    "download": "Descargar",
+    "invalidFileMessage": "La plantilla debe usar una de las siguientes extensiones: .txt, .docx, .html, .odt, .pptx, .xlsx, .pdf",
+    "uploadSuccess": "Plantilla subida exitosamente.",
+    "uploadError": "Ocurrió un error al subir la plantilla.",
+    "deleteSuccess": "Plantilla eliminada exitosamente.",
+    "deleteError": "Ocurrió un error al eliminar la plantilla.",
+    "fetchError": "Ocurrió un error al obtener la plantilla.",
+    "info": "Sube una plantilla para usar el Servicio de Generación de Documentos Comunes (CDOGS)"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Presiona <kbd>enter</kbd> o <kbd>,</kbd> o <kbd>espacio</kbd> para agregar varias direcciones de correo electrónico",
@@ -676,7 +691,15 @@
     "docGrnSucess": "Documento generado con éxito",
     "failedDocGenErrMsg": "No se pudo generar el documento",
     "failedDocGenConsErrMsg": "Error al enviar la plantilla: {error}",
-    "cDogsTemplate": "Plantilla CDDOGS"
+    "cDogsTemplate": "Plantilla CDDOGS",
+    "uploadCdogsTemplate": "Subir plantilla de CDOGS",
+    "printOptions": "Opciones de impresión",
+    "expandtextFields": "Expandir campos de texto",
+    "moreInfo": "Más información",
+    "defaultCdogsTemplate": "Usar plantilla CDOGS predeterminada",
+    "fileName": "Nombre del archivo",
+    "uploadDate": "Fecha de subida",
+    "upload": "Subir"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Enlace de información del componente",
