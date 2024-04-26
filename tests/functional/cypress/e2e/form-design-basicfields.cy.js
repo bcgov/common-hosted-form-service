@@ -234,12 +234,12 @@ describe('Form Designer', () => {
       cy.get('button').contains('Basic Fields').click();
       cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
-        cy.get('span.btn').contains('Number')
+        cy.get('span.btn').contains('Text Field')
         
         .trigger('mousedown', { which: 1}, { force: true })
         .trigger('mousemove', coords.x, -50, { force: true })
         .trigger('mouseup', { force: true });
-        //cy.get('p').contains('Multi-line Text Component');
+        
         cy.get('button').contains('Save').click();
       });
       cy.get('[ref=removeComponent]').then($el => {
