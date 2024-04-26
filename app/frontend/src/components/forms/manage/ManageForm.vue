@@ -87,7 +87,9 @@ export default {
     },
   },
   async mounted() {
-    await this.readFormSubscriptionData(this.form.id);
+    if (this.canEditForm) {
+      await this.readFormSubscriptionData(this.form.id);
+    }
   },
   methods: {
     ...mapActions(useFormStore, [
@@ -190,8 +192,9 @@ export default {
       </v-expansion-panel>
     </v-expansion-panels>
 
+    <!-- Event Subscription -->
     <v-expansion-panels
-      v-if="isSubscribed"
+      v-if="isSubscribed && canEditForm"
       v-model="subscription"
       class="nrmc-expand-collapse"
     >
