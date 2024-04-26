@@ -217,7 +217,8 @@ describe('Form Designer', () => {
         .trigger('mouseup', { force: true });
         cy.waitForLoad();
           
-        cy.get('button').contains('Save').click();
+        //cy.get('button').contains('Save').click();
+        cy.get('.btn-success').click();
   
   
       });

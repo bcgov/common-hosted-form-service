@@ -274,14 +274,14 @@ describe('Form Designer', () => {
      //Form preview
      cy.visit(`/${depEnv}/form/preview?f=${dval[0]}&d=${arrayValues[0]}`);
      cy.waitForLoad();
-     cy.get('label').contains('Last Name');
-     cy.get('label').contains('First Name');
+     cy.get('label').contains('Last Name').should('be.visible');
+     cy.get('label').contains('First Name').should('be.visible');
      cy.get('input[name="data[simplecheckbox1]"]').should('be.visible');
      cy.get('label').contains('Select all skills');
      cy.get('input[name="data[simplephonenumber1]').should('be.visible');
      cy.get('input[name="data[simpledatetime]').should('be.visible');
      cy.get('input[name="data[simpleemail]').should('be.visible');
-     cy.get('input[name="data[simplenumber1]').should('be.visible');
+     cy.get('label').contains('Number').should('be.visible');
      cy.get('label').contains('Select Gender');
 
 
