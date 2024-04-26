@@ -27,19 +27,6 @@ jobs:
           CYPRESS_keycloakUsername: ${{secrets.keycloakUsername}}
           CYPRESS_keycloakPassword: ${{secrets.keycloakPassword}}
             
-            
-     - name: Cypress install   
-       run: |
-        npm ci
-        $(npm bin)/cypress verify
-        
-        
-      
-
-        
-     - name: Run Cypress tests
-       run: npm run test:chrome
-       continue-on-error: false
 
      - name: Copy test execution screenshots
        run: |
