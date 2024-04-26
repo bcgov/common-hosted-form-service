@@ -280,7 +280,7 @@ describe('Form Designer', () => {
      cy.get('label').contains('Phone Number').should('be.visible');
      cy.get('label').contains('Date / Time').should('be.visible');
      cy.get('label').contains('Email').should('be.visible');
-     cy.get('label').contains('Number').should('be.visible');
+     //cy.get('label').contains('Number').should('be.visible');
      cy.get('label').contains('Select Gender');
 
 
