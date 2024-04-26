@@ -276,11 +276,11 @@ describe('Form Designer', () => {
      cy.waitForLoad();
      cy.get('label').contains('Last Name').should('be.visible');
      cy.get('label').contains('First Name').should('be.visible');
-     cy.get('input[name="data[simplecheckbox1]"]').should('be.visible');
-     cy.get('label').contains('Select all skills');
-     cy.get('input[name="data[simplephonenumber1]').should('be.visible');
-     cy.get('input[name="data[simpledatetime]').should('be.visible');
-     cy.get('input[name="data[simpleemail]').should('be.visible');
+     cy.get('label').contains('Applying for self').should('be.visible');
+     cy.get('label').contains('Select all skills').should('be.visible');
+     cy.get('label').contains('Phone Number').should('be.visible');
+     cy.get('label').contains('Date / Time').should('be.visible');
+     cy.get('label').contains('Email').should('be.visible');
      cy.get('label').contains('Number').should('be.visible');
      cy.get('label').contains('Select Gender');
 
