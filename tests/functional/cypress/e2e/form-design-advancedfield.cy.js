@@ -216,7 +216,7 @@ describe('Form Designer', () => {
           //.trigger('mousemove', coords.y, +100, { force: true })
         .trigger('mouseup', { force: true });
         cy.waitForLoad();
-        cy.get('input[name="data[label]"]').clear().type('BC Address');
+        cy.get(':nth-child(2) > :nth-child(2) > .card > .card-header > .card-title').click();
           
         cy.get('button').contains('Save').click();
         //cy.get('.btn-success').click();
