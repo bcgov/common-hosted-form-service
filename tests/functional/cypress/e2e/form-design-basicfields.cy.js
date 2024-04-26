@@ -240,7 +240,6 @@ describe('Form Designer', () => {
         .trigger('mousemove', coords.x, -50, { force: true })
         .trigger('mouseup', { force: true });
         //cy.get('p').contains('Multi-line Text Component');
-        cy.get('input[name="data[label]"]').clear().type('ID Number');
         cy.get('button').contains('Save').click();
       });
       cy.get('[ref=removeComponent]').then($el => {
