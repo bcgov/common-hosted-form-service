@@ -26,6 +26,8 @@ jobs:
        env:
           CYPRESS_keycloakUsername: ${{secrets.keycloakUsername}}
           CYPRESS_keycloakPassword: ${{secrets.keycloakPassword}}
+          CYPRESS_depEnv: ${{secrets.depEnv}}
+
             
 
      - name: Copy test execution screenshots
