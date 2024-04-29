@@ -77,9 +77,11 @@ const httpLogger = logger({
     const token = jwt.decode((req.get('authorization') || '').slice(7));
     return {
       azp: (token && token.azp) || undefined,
+      bceid_username: (token && token.bceid_username) || undefined,
       contentLength: res.get('content-length'),
       formId: (req.auth && req.auth.user) || undefined,
       httpVersion: req.httpVersion,
+      idir_username: (token && token.idir_username) || undefined,
       ip: req.ip,
       method: req.method,
       path: req.path,
@@ -87,7 +89,6 @@ const httpLogger = logger({
       responseTime: res.responseTime,
       statusCode: res.statusCode,
       userAgent: req.get('user-agent'),
-      username: (token && token.idp_username) || undefined,
     };
   },
   expressFormat: true, // Use express style message strings
