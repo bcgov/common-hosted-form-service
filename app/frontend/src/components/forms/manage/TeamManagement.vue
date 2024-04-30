@@ -70,7 +70,7 @@ export default {
         { title: i18n.t('trans.teamManagement.username'), key: 'username' },
         {
           title: i18n.t('trans.teamManagement.identityProvider'),
-          key: 'identityProvider',
+          key: 'identityProvider.code',
         },
       ];
       return headers
@@ -186,7 +186,7 @@ export default {
           fullName: user.fullName,
           userId: user.userId,
           username: user.username,
-          identityProvider: user.idp?.code,
+          identityProvider: user.idp,
         };
         this.roleList
           .map((role) => role.code)
