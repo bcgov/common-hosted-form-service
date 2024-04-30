@@ -168,6 +168,10 @@ a,
   }
 }
 
+.v-stepper-header {
+  box-shadow: none !important;
+}
+
 /////////////////////////////////
 ///  override formio styles:
 /////////////////////////////////
@@ -548,4 +552,8 @@ a,
 
 .v-table.v-table--hover > .v-table__wrapper > table > tbody > tr:hover td {
   background-color: #eee !important;
+}
+
+.v-data-table, .v-data-table-server, .v-table {
+  font-size: 16px !important;
 }

@@ -68,7 +68,22 @@
     "status": "Статус",
     "update": "Обновление",
     "cancel": "Отмена",
-    "eventSubscription": "Подписка на события"
+    "eventSubscription": "Подписка на события",
+    "cdogsTemplate": "Шаблон CDOGS"
+  },
+  "documentTemplate": {
+    "uploadTemplate": "Загрузить шаблон CDOGS",
+    "uploadTemplateFile": "Загрузить файл шаблона",
+    "upload": "Загрузить",
+    "delete": "Удалить",
+    "download": "Скачать",
+    "invalidFileMessage": "Шаблон должен использовать одно из следующих расширений: .txt, .docx, .html, .odt, .pptx, .xlsx, .pdf",
+    "uploadSuccess": "Шаблон успешно загружен.",
+    "uploadError": "Произошла ошибка при загрузке шаблона.",
+    "deleteSuccess": "Шаблон успешно удален.",
+    "deleteError": "Произошла ошибка при удалении шаблона.",
+    "fetchError": "Произошла ошибка при получении шаблона.",
+    "info": "Загрузите шаблон для использования Общей службы генерации документов (CDOGS)"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Нажмите <kbd>Enter</kbd> или <kbd>пробел</kbd> <kbd>,</kbd> чтобы добавить несколько адресов электронной почты.",
@@ -676,7 +691,15 @@
     "docGrnSucess": "Документ успешно создан",
     "failedDocGenErrMsg": "Не удалось создать документ",
     "failedDocGenConsErrMsg": "Ошибка при отправке шаблона: {error}",
-    "cDogsTemplate": "Шаблон CDOGS"
+    "cDogsTemplate": "Шаблон CDOGS",
+    "uploadCdogsTemplate": "Загрузить шаблон CDOGS",
+    "printOptions": "Параметры печати",
+    "expandtextFields": "Расширить текстовые поля",
+    "moreInfo": "Дополнительная информация",
+    "defaultCdogsTemplate": "Использовать стандартный шаблон CDOGS",
+    "fileName": "Имя файла",
+    "uploadDate": "Дата загрузки",
+    "upload": "Загрузить"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Ссылка на информацию о компоненте",
