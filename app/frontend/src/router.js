@@ -370,13 +370,29 @@ export default function getRouter(basePath = '/') {
         path: '/login',
         name: 'Login',
         component: () => import('~/views/Login.vue'),
-        props: true,
+        props: createProps,
         beforeEnter(to, from, next) {
           // Block navigation to login page if already authenticated
           NProgress.done();
           const authStore = useAuthStore();
           if (authStore.authenticated) next('/');
-          else next();
+          else {
+            // If there's only one idpHint then log in using the specified IDP
+            if (
+              to?.query?.idpHint &&
+              (!Array.isArray(to.query.idpHint) ||
+                (Array.isArray(to.query.idpHint) &&
+                  to.query.idpHint.length === 1))
+            ) {
+              authStore.login(
+                Array.isArray(to.query.idpHint)
+                  ? to.query.idpHint[0]
+                  : to.query.idpHint
+              );
+            } else {
+              next();
+            }
+          }
         },
       },
       {

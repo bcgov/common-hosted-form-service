@@ -68,7 +68,22 @@
     "status": "حالة",
     "update": "تحديث",
     "cancel": "يلغي",
-    "eventSubscription": "اشتراك الحدث"
+    "eventSubscription": "اشتراك الحدث",
+    "cdogsTemplate": "قالب CDOGS"
+  },
+  "documentTemplate": {
+    "uploadTemplate": "تحميل قالب CDOGS",
+    "uploadTemplateFile": "تحميل ملف القالب",
+    "upload": "تحميل",
+    "delete": "حذف",
+    "download": "تنزيل",
+    "invalidFileMessage": "يجب أن يستخدم القالب أحد الامتدادات التالية: .txt، .docx، .html، .odt، .pptx، .xlsx، .pdf",
+    "uploadSuccess": "تم تحميل القالب بنجاح.",
+    "uploadError": "حدث خطأ أثناء تحميل القالب.",
+    "deleteSuccess": "تم حذف القالب بنجاح.",
+    "deleteError": "حدث خطأ أثناء حذف القالب.",
+    "fetchError": "حدث خطأ أثناء جلب القالب.",
+    "info": "قم بتحميل قالب لاستخدام خدمة توليد الوثائق المشتركة (CDOGS)"
   },
   "formSettings": {
     "pressToAddMultiEmail": "اضغط على <kbd>مفتاح الإدخال</kbd> أو <kbd>،</kbd> أو <kbd>مسافة</kbd> لإضافة عناوين بريد إلكتروني متعددة",
@@ -676,7 +691,15 @@
     "docGrnSucess": "تم إنشاء المستند بنجاح",
     "failedDocGenErrMsg": "فشل إنشاء المستند",
     "failedDocGenConsErrMsg": "خطأ في إرسال النموذج: {error}",
-    "cDogsTemplate": "قالب CDOGS"
+    "cDogsTemplate": "قالب CDOGS",
+    "uploadCdogsTemplate": "تحميل قالب CDOGS",
+    "printOptions": "خيارات الطباعة",
+    "expandtextFields": "توسيع حقول النص",
+    "moreInfo": "المزيد من المعلومات",
+    "defaultCdogsTemplate": "استخدام قالب CDOGS الافتراضي",
+    "fileName": "اسم الملف",
+    "uploadDate": "تاريخ التحميل",
+    "upload": "تحميل"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "رابط معلومات المكون",

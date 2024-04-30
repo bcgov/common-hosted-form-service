@@ -821,8 +821,7 @@ export const useFormStore = defineStore('form', {
     },
     async downloadFile(fileId) {
       try {
-        this.downloadedFile.data = null;
-        this.downloadedFile.headers = null;
+        this.downloadedFile = {};
         const response = await fileService.getFile(fileId);
         this.downloadedFile.data = response.data;
         this.downloadedFile.headers = response.headers;

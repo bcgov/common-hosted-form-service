@@ -12,6 +12,9 @@ import {
 //
 // Utility Functions for determining permissions
 //
+export function isIdpEnabled(idps, type) {
+  return idps ? idps.includes(type) : false;
+}
 
 /**
  * @function checkFormSubmit

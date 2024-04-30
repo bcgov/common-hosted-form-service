@@ -1,75 +1,66 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, onUnmounted } from 'vue';
 
-import BaseSecure from '~/components/base/BaseSecure.vue';
 import { useFormStore } from '~/store/form';
-import { useNotificationStore } from '~/store/notification';
+import { getDisposition } from '~/utils/transformUtils';
 import { AppPermissions } from '~/utils/constants';
 
-export default {
-  components: {
-    BaseSecure,
+const properties = defineProps({
+  id: {
+    type: String,
+    required: true,
   },
-  props: {
-    id: {
-      type: String,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      showDownloadLink: false,
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['downloadedFile', 'lang', 'isRTL']),
-    APP_PERMS: () => AppPermissions,
-  },
-  async mounted() {
-    await this.getFile(this.id);
-  },
-  methods: {
-    ...mapActions(useFormStore, ['downloadFile']),
-    ...mapActions(useNotificationStore, ['addNotification']),
-    // disposition retrieval from https://stackoverflow.com/a/40940790
-    getDisposition(disposition) {
-      if (disposition && disposition.indexOf('attachment') !== -1) {
-        let filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-        let matches = filenameRegex.exec(disposition);
-        if (matches != null && matches[1]) {
-          disposition = matches[1].replace(/['"]/g, '');
-        }
-      }
-      return disposition;
-    },
-    async getFile(fileId) {
-      this.showDownloadLink = false;
-      await this.downloadFile(fileId);
-      if (this.downloadedFile && this.downloadedFile.headers) {
-        this.showDownloadLink = true;
-        const data = this.downloadedFile.headers['content-type'].includes(
-          'application/json'
-        )
-          ? JSON.stringify(this.downloadedFile.data)
-          : this.downloadedFile.data;
-        const blob = new Blob([data], {
-          type: this.downloadedFile.headers['content-type'],
-        });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = this.getDisposition(
-          this.downloadedFile.headers['content-disposition']
-        );
-        a.style.display = 'none';
-        a.classList.add('hiddenDownloadTextElement');
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      }
-    },
-  },
-};
+});
+
+const formStore = useFormStore();
+
+const { downloadedFile, lang } = storeToRefs(formStore);
+let downloadTimeout = null;
+
+// Set the downloadedFile to a null value on creation
+downloadedFile.value = null;
+
+const APP_PERMS = computed(() => AppPermissions);
+const isFileDownloaded = computed(
+  () => downloadedFile.value && downloadedFile.value.headers
+);
+
+async function getFile(fileId) {
+  await formStore.downloadFile(fileId);
+  if (downloadedFile.value && downloadedFile.value.headers) {
+    const data = downloadedFile.value.headers['content-type'].includes(
+      'application/json'
+    )
+      ? JSON.stringify(downloadedFile.value.data)
+      : downloadedFile.value.data;
+    const blob = new Blob([data], {
+      type: downloadedFile.value.headers['content-type'],
+    });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = getDisposition(
+      downloadedFile.value.headers['content-disposition']
+    );
+    a.style.display = 'none';
+    a.classList.add('hiddenDownloadTextElement');
+    document.body.appendChild(a);
+    a.click();
+    downloadTimeout = setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+    });
+  }
+}
+
+onMounted(async () => {
+  await getFile(properties.id);
+});
+
+onUnmounted(() => {
+  clearTimeout(downloadTimeout);
+});
 </script>
 
 <template>
@@ -77,16 +68,16 @@ export default {
     <v-container fluid class="center_vertical_content">
       <h1 :lang="lang">{{ $t('trans.download.chefsDataExport') }}</h1>
       <v-progress-circular
-        v-if="!showDownloadLink"
+        v-if="!isFileDownloaded"
         :size="50"
         color="primary"
         indeterminate
       ></v-progress-circular>
-      <div v-if="!showDownloadLink" :lang="lang">
+      <div v-if="!isFileDownloaded" :lang="lang">
         {{ $t('trans.download.preparingForDownloading') }}
       </div>
       <div
-        v-if="showDownloadLink"
+        v-if="isFileDownloaded"
         class="mt-5 center_vertical_content"
         :lang="lang"
       >
