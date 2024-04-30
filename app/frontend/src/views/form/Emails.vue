@@ -1,27 +1,16 @@
-<script>
-import BaseSecure from '~/components/base/BaseSecure.vue';
+<script setup>
+import { computed } from 'vue';
 import EmailManagement from '~/components/forms/manage/EmailManagement.vue';
 import { AppPermissions } from '~/utils/constants';
 
-export default {
-  name: 'FormEmails',
-
-  components: {
-    BaseSecure,
-    EmailManagement,
+defineProps({
+  f: {
+    type: String,
+    required: true,
   },
+});
 
-  props: {
-    f: {
-      type: String,
-      required: true,
-    },
-  },
-
-  computed: {
-    APP_PERMS: () => AppPermissions,
-  },
-};
+const APP_PERMS = computed(() => AppPermissions);
 </script>
 
 <template>

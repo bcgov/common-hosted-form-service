@@ -100,7 +100,7 @@ export default {
             :lang="lang"
           >
             <template #[`item.actionTimestamp`]="{ item }">
-              {{ $filters.formatDateLong(item.columns.actionTimestamp) }}
+              {{ $filters.formatDateLong(item.actionTimestamp) }}
             </template>
           </v-data-table>
         </v-card-text>
