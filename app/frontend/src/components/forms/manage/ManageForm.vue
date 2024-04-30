@@ -136,9 +136,13 @@ export default {
 </script>
 
 <template>
-  <div :class="{ 'dir-rtl': isRTL }">
-    <v-expansion-panels v-model="settingsPanel" class="nrmc-expand-collapse">
-      <v-expansion-panel v-if="canEditForm" flat>
+  <div :class="{ 'dir-rtl': isRTL }" class="mt-2">
+    <v-expansion-panels
+      v-if="canEditForm"
+      v-model="settingsPanel"
+      class="nrmc-expand-collapse"
+    >
+      <v-expansion-panel flat>
         <!-- Form Settings -->
         <v-expansion-panel-title>
           <div class="header" :lang="lang">
@@ -257,8 +261,12 @@ export default {
     </v-expansion-panels>
 
     <!-- CDOGS Template -->
-    <v-expansion-panels v-model="cdogsPanel" class="nrmc-expand-collapse">
-      <v-expansion-panel v-if="canEditForm" flat>
+    <v-expansion-panels
+      v-if="canEditForm"
+      v-model="cdogsPanel"
+      class="nrmc-expand-collapse"
+    >
+      <v-expansion-panel flat>
         <v-expansion-panel-title>
           <div class="header" :lang="lang">
             <strong>{{ $t('trans.manageForm.cdogsTemplate') }}</strong>
