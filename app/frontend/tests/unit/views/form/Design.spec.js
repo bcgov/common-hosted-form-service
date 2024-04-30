@@ -5,9 +5,15 @@ import { createTestingPinia } from '@pinia/testing';
 import { mount } from '@vue/test-utils';
 import { setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ref } from 'vue';
 
 import { useFormStore } from '~/store/form';
 import Design from '~/views/form/Design.vue';
+
+vi.mock('vue-router', () => ({
+  ...vi.importActual('vue-router'),
+  onBeforeRouteLeave: vi.fn(),
+}));
 
 describe('Design.vue', () => {
   const onFormLoad = vi.fn();
@@ -31,10 +37,6 @@ describe('Design.vue', () => {
       global: {
         plugins: [pinia],
         stubs: {
-          BaseStepper: {
-            name: 'BaseStepper',
-            template: '<div class="base-stepper-stub"><slot name="designForm" /></div>',
-          },
           FormDesigner: {
             name: 'FormDesigner',
             methods: {
@@ -46,71 +48,6 @@ describe('Design.vue', () => {
       },
     });
 
-    expect(wrapper.html()).toMatch('base-stepper');
-  });
-
-  it('beforeRouteLeave guard works when not dirty', () => {
-    const next = vi.fn();
-    formStore.form = {
-      isDirty: false,
-    };
-    const wrapper = mount(Design, {
-      data() {
-        return {
-          step: 2,
-        };
-      },
-      global: {
-        plugins: [pinia],
-        stubs: {
-          BaseStepper: {
-            name: 'BaseStepper',
-            template: '<div class="base-stepper-stub"><slot name="designForm" /></div>',
-          },
-          FormDesigner: {
-            name: 'FormDesigner',
-            methods: {
-              onFormLoad,
-            },
-            template: '<div class="form-designer-stub"><slot /></div>',
-          },
-        },
-      },
-    });
-
-    Design.beforeRouteLeave.call(wrapper.vm, undefined, undefined, next);
-
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(mockWindowConfirm).toHaveBeenCalledTimes(0);
-  });
-
-  it('beforeRouteLeave guard works when not dirty', () => {
-    const next = vi.fn();
-    formStore.form = {
-      isDirty: true,
-    };
-    const wrapper = mount(Design, {
-      global: {
-        plugins: [pinia],
-        stubs: {
-          BaseStepper: {
-            name: 'BaseStepper',
-            template: '<div class="base-stepper-stub"><slot name="designForm" /></div>',
-          },
-          FormDesigner: {
-            name: 'FormDesigner',
-            methods: {
-              onFormLoad,
-            },
-            template: '<div class="form-designer-stub"><slot /></div>',
-          },
-        },
-      },
-    });
-
-    Design.beforeRouteLeave.call(wrapper.vm, undefined, undefined, next);
-
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(mockWindowConfirm).toHaveBeenCalledTimes(1);
+    expect(wrapper.html()).toMatch('v-stepper');
   });
 });

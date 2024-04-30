@@ -1,79 +1,102 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { onMounted } from 'vue';
+import { computed, ref } from 'vue';
 import { nextTick } from 'vue';
-import BaseStepper from '~/components/base/BaseStepper.vue';
+import { onBeforeRouteLeave } from 'vue-router';
 import FormDesigner from '~/components/designer/FormDesigner.vue';
 import { useFormStore } from '~/store/form';
+import { AppPermissions } from '~/utils/constants';
 
-export default {
-  components: {
-    BaseStepper,
-    FormDesigner,
+defineProps({
+  d: {
+    type: String,
+    default: null,
   },
-  beforeRouteLeave(_to, _from, next) {
-    this.form.isDirty
-      ? next(
-          window.confirm(
-            'Do you really want to leave this page? Changes you made will not be saved.'
-          )
+  f: {
+    type: String,
+    default: null,
+  },
+  sv: Boolean,
+  v: {
+    type: String,
+    default: null,
+  },
+  svs: {
+    type: String,
+    default: null,
+  },
+  nv: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const formStore = useFormStore();
+
+const { form } = storeToRefs(formStore);
+
+const formDesigner = ref(null);
+
+const APP_PERMS = computed(() => AppPermissions);
+
+onMounted(async () => {
+  await formStore.listFCProactiveHelp();
+  nextTick(() => {
+    onFormLoad();
+  });
+});
+
+onBeforeRouteLeave((_to, _from, next) => {
+  form.value.isDirty
+    ? next(
+        window.confirm(
+          'Do you really want to leave this page? Changes you made will not be saved.'
         )
-      : next();
-  },
-  props: {
-    d: {
-      type: String,
-      default: null,
-    },
-    f: {
-      type: String,
-      default: null,
-    },
-    sv: Boolean,
-    v: {
-      type: String,
-      default: null,
-    },
-    svs: {
-      type: String,
-      default: null,
-    },
-    nv: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  computed: {
-    ...mapState(useFormStore, ['form']),
-  },
-  async mounted() {
-    await this.listFCProactiveHelp();
-    nextTick(() => {
-      this.onFormLoad();
-    });
-  },
-  methods: {
-    ...mapActions(useFormStore, ['listFCProactiveHelp', 'deleteCurrentForm']),
-    onFormLoad() {
-      if (this.$refs?.formDesigner) this.$refs.formDesigner.onFormLoad();
-    },
-  },
-};
+      )
+    : next();
+});
+
+function onFormLoad() {
+  if (formDesigner.value) formDesigner.value.onFormLoad();
+}
 </script>
 
 <template>
-  <BaseStepper :step="2">
-    <template #designForm>
-      <v-btn color="primary" size="x-small" icon="mdi:mdi-help" />
-      <FormDesigner
-        ref="formDesigner"
-        class="mt-6"
-        :draft-id="d"
-        :form-id="f"
-        :saved="JSON.parse(sv)"
-        :version-id="v"
-        :is-saved-status="svs"
-        :new-version="nv"
-      />
-    </template>
-  </BaseStepper>
+  <BaseSecure :permission="APP_PERMS.VIEWS_FORM_STEPPER">
+    <v-stepper
+      :model-value="1"
+      hide-actions
+      alt-labels
+      flat
+      tile
+      :border="false"
+    >
+      <v-stepper-header>
+        <v-stepper-item
+          :title="$t('trans.baseStepper.setUpForm')"
+          value="1"
+          :complete="true"
+        />
+        <v-divider />
+        <v-stepper-item :title="$t('trans.baseStepper.designForm')" value="2" />
+        <v-divider />
+        <v-stepper-item :title="$t('trans.baseStepper.manageForm')" value="3" />
+      </v-stepper-header>
+      <v-stepper-window>
+        <v-stepper-window-item value="2">
+          <FormDesigner
+            ref="formDesigner"
+            class="mt-6"
+            :draft-id="d"
+            :form-id="f"
+            :saved="JSON.parse(sv)"
+            :version-id="v"
+            :is-saved-status="svs"
+            :new-version="nv"
+          />
+        </v-stepper-window-item>
+      </v-stepper-window>
+    </v-stepper>
+  </BaseSecure>
 </template>

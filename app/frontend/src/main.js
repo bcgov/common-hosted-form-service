@@ -24,6 +24,10 @@ let keycloak = null;
 const pinia = createPinia();
 
 const app = createApp({
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   render: () => h(App),
 });
 
@@ -42,6 +46,7 @@ Formio.use(BcGovFormioComponents);
 
 /* import clipboard */
 import Clipboard from 'vue3-clipboard';
+import { useI18n } from 'vue-i18n';
 app.use(Clipboard, {
   autoSetContainer: true,
   appendToBody: true,
@@ -52,6 +57,32 @@ app.use(vuetify);
 
 NProgress.configure({ showSpinner: false });
 NProgress.start();
+
+// Look into a better way of importing the BaseComponents
+import BaseAuthButton from '~/components/base/BaseAuthButton.vue';
+import BaseCopyToClipboard from '~/components/base/BaseCopyToClipboard.vue';
+import BaseDialog from '~/components/base/BaseDialog.vue';
+import BaseFilter from '~/components/base/BaseFilter.vue';
+import BaseImagePopout from '~/components/base/BaseImagePopout.vue';
+import BaseInfoCard from '~/components/base/BaseInfoCard.vue';
+import BaseInternationalization from '~/components/base/BaseInternationalization.vue';
+import BaseNotificationBar from '~/components/base/BaseNotificationBar.vue';
+import BaseNotificationContainer from '~/components/base/BaseNotificationContainer.vue';
+import BasePanel from '~/components/base/BasePanel.vue';
+import BasePrintButton from '~/components/base/BasePrintButton.vue';
+import BaseSecure from '~/components/base/BaseSecure.vue';
+app.component('BaseAuthButton', BaseAuthButton);
+app.component('BaseCopyToClipboard', BaseCopyToClipboard);
+app.component('BaseDialog', BaseDialog);
+app.component('BaseFilter', BaseFilter);
+app.component('BaseImagePopout', BaseImagePopout);
+app.component('BaseInfoCard', BaseInfoCard);
+app.component('BaseInternationalization', BaseInternationalization);
+app.component('BaseNotificationBar', BaseNotificationBar);
+app.component('BaseNotificationContainer', BaseNotificationContainer);
+app.component('BasePanel', BasePanel);
+app.component('BasePrintButton', BasePrintButton);
+app.component('BaseSecure', BaseSecure);
 
 // IE11 Detection (https://stackoverflow.com/a/21825207)
 if (!!window.MSInputMethodContext && !!document.documentMode) {

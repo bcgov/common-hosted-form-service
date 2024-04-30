@@ -1,11 +1,5 @@
-<script>
+<script setup>
 import FormsTable from '~/components/designer/FormsTable.vue';
-
-export default {
-  components: {
-    FormsTable,
-  },
-};
 </script>
 
 <template>

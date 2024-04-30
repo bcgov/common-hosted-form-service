@@ -137,5 +137,18 @@ export const useIdpStore = defineStore('idps', {
       }
       return undefined;
     },
+    getTokenMapValue(hint, field, token) {
+      if (hint && this.providers) {
+        const idp = this.providers.find((x) => x.idp === hint);
+        if (idp) {
+          // now find this field...
+          const tokenKey = idp.tokenmap[field];
+          if (tokenKey) {
+            return token[tokenKey];
+          }
+        }
+      }
+      return undefined;
+    },
   },
 });

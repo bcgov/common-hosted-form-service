@@ -45,7 +45,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAuthStore, ['identityProviderIdentity']),
+    ...mapState(useAuthStore, ['user']),
     ...mapState(useFormStore, [
       'form',
       'formSubmission',
@@ -146,7 +146,7 @@ export default {
 
     assignToCurrentUser() {
       this.assignee = this.formReviewers.find(
-        (f) => f.idpUserId === this.identityProviderIdentity
+        (f) => f.idpUserId === this.user.idpUserId
       );
     },
 
@@ -410,7 +410,7 @@ export default {
                   <v-list-item
                     v-bind="props"
                     :title="`${item?.raw?.fullName} (${item?.raw?.email})`"
-                    :subtitle="`${item?.raw?.username} (${item?.raw?.idpCode})`"
+                    :subtitle="`${item?.raw?.username} (${item?.raw?.user_idpCode})`"
                   >
                   </v-list-item>
                 </template>

@@ -68,7 +68,22 @@
     "status": "Status",
     "update": "Atualizar",
     "cancel": "Cancelar",
-    "eventSubscription": "Assinatura de evento"
+    "eventSubscription": "Assinatura de evento",
+    "cdogsTemplate": "modelo CDOGS"
+  },
+  "documentTemplate": {
+    "uploadTemplate": "Carregar modelo CDOGS",
+    "uploadTemplateFile": "Carregar arquivo de modelo",
+    "upload": "Carregar",
+    "delete": "Excluir",
+    "download": "Baixar",
+    "invalidFileMessage": "O modelo deve usar uma das seguintes extensões: .txt, .docx, .html, .odt, .pptx, .xlsx, .pdf",
+    "uploadSuccess": "Modelo carregado com sucesso.",
+    "uploadError": "Ocorreu um erro ao carregar o modelo.",
+    "deleteSuccess": "Modelo excluído com sucesso.",
+    "deleteError": "Ocorreu um erro ao excluir o modelo.",
+    "fetchError": "Ocorreu um erro ao buscar o modelo.",
+    "info": "Carregue um modelo para usar o Serviço de Geração de Documentos Comuns (CDOGS)"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Pressione <kbd>enter</kbd> ou <kbd>,</kbd> ou <kbd>espaço</kbd> para adicionar vários endereços de e-mail",
@@ -676,7 +691,15 @@
     "docGrnSucess": "Documento gerado com sucesso",
     "failedDocGenErrMsg": "Falha ao gerar documento",
     "failedDocGenConsErrMsg": "Erro ao enviar modelo: {error}",
-    "cDogsTemplate": "modelo CDOGS"
+    "cDogsTemplate": "modelo CDOGS",
+    "uploadCdogsTemplate": "Carregar modelo CDOGS",
+    "printOptions": "Opções de Impressão",
+    "expandtextFields": "Expandir campos de texto",
+    "moreInfo": "Mais informações",
+    "defaultCdogsTemplate": "Usar modelo padrão CDOGS",
+    "fileName": "Nome do arquivo",
+    "uploadDate": "Data de upload",
+    "upload": "Carregar"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Link de informações do componente",

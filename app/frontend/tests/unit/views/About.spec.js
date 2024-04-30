@@ -1,5 +1,5 @@
 import { createTestingPinia } from '@pinia/testing';
-import { flushPromises, mount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import { setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it } from 'vitest';
 
@@ -20,6 +20,9 @@ describe('About.vue', () => {
     const wrapper = mount(About, {
       global: {
         plugins: [pinia],
+        stubs: {
+          BaseImagePopout: true,
+        },
       },
     });
 
@@ -42,6 +45,9 @@ describe('About.vue', () => {
     const wrapper = mount(About, {
       global: {
         plugins: [pinia],
+        stubs: {
+          BaseImagePopout: true,
+        },
       },
     });
 
@@ -55,6 +61,9 @@ describe('About.vue', () => {
     const wrapper = mount(About, {
       global: {
         plugins: [pinia],
+        stubs: {
+          BaseImagePopout: true,
+        },
       },
     });
 
