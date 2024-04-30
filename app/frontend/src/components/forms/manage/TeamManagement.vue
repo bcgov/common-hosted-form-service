@@ -585,7 +585,7 @@ export default {
         <v-checkbox-btn
           v-if="!disableRole('submission_approver', item, form.userType)"
           key="submission_approver"
-          v-model="item.columns.submission_approver"
+          v-model="item.submission_approver"
           v-ripple
           :disabled="updating"
           @update:modelValue="toggleRole(item)"
