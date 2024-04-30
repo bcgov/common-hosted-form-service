@@ -1,18 +1,12 @@
-<script>
-import { mapState } from 'pinia';
-import BaseSecure from '~/components/base/BaseSecure.vue';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
+
 import { useAuthStore } from '~/store/auth';
 import { AppPermissions } from '~/utils/constants';
 
-export default {
-  components: {
-    BaseSecure,
-  },
-  computed: {
-    ...mapState(useAuthStore, ['isAdmin']),
-    APP_PERMS: () => AppPermissions,
-  },
-};
+const { isAdmin } = storeToRefs(useAuthStore());
+const APP_PERMS = computed(() => AppPermissions);
 </script>
 
 <template>

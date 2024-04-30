@@ -252,3 +252,15 @@ export function isDateValidForMailNotification(parseDate) {
   }
   return false;
 }
+
+// disposition retrieval from https://stackoverflow.com/a/40940790
+export function getDisposition(disposition) {
+  if (disposition && disposition.indexOf('attachment') !== -1) {
+    let filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+    let matches = filenameRegex.exec(disposition);
+    if (matches != null && matches[1]) {
+      disposition = matches[1].replace(/['"]/g, '');
+    }
+  }
+  return disposition;
+}

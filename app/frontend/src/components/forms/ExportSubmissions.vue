@@ -36,6 +36,7 @@ export default {
       ],
       exportFormat: 'json',
       inputFilter: '',
+      items: [],
       selected: [],
       showFieldsOptions: false,
       startDate: moment(Date()).format('YYYY-MM-DD'),
@@ -80,13 +81,6 @@ export default {
     fileName() {
       return `${this.form.snake}_submissions.${this.exportFormat}`;
     },
-    FILTER_HEADERS() {
-      return this.versionSelected !== ''
-        ? this.formFields.length > 0
-          ? this.formFields.map((f) => ({ name: f, value: f }))
-          : []
-        : [];
-    },
   },
   watch: {
     startDate() {
@@ -102,6 +96,13 @@ export default {
         this.versionRequired = false;
       }
       await this.updateVersions();
+
+      this.items =
+        this.versionSelected !== ''
+          ? this.formFields.length > 0
+            ? this.formFields.map((f) => ({ name: f, value: f }))
+            : []
+          : [];
     },
     async csvFormats(value) {
       if (value === 'singleRowCSVExport') {
@@ -117,8 +118,8 @@ export default {
       }
     },
   },
-  mounted() {
-    this.fetchForm(this.formId);
+  async mounted() {
+    await this.fetchForm(this.formId);
   },
   methods: {
     ...mapActions(useFormStore, ['fetchForm', 'fetchFormCSVExportFields']),
@@ -142,7 +143,7 @@ export default {
           version: version,
           singleRow: singleRow,
         });
-        this.selected = this.FILTER_HEADERS;
+        this.selected = this.items;
       }
     },
     async callExport() {
@@ -375,7 +376,7 @@ export default {
                     >
                       {{ selected.length }}
                       {{ $t('trans.exportSubmissions.of') }}
-                      {{ FILTER_HEADERS.length }}
+                      {{ items.length }}
                       {{ $t('trans.exportSubmissions.selectedForExports') }}
                     </span>
 
@@ -387,7 +388,7 @@ export default {
                       show-select
                       hide-default-footer
                       disable-sort
-                      :items="FILTER_HEADERS"
+                      :items="items"
                       item-value="name"
                       height="300px"
                       mobile

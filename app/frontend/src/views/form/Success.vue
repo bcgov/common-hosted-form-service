@@ -1,33 +1,26 @@
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
 
 import FormViewer from '~/components/designer/FormViewer.vue';
 import RequestReceipt from '~/components/forms/RequestReceipt.vue';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 
-export default {
-  components: {
-    FormViewer,
-    RequestReceipt,
+defineProps({
+  s: {
+    type: String,
+    required: true,
   },
-  props: {
-    s: {
-      type: String,
-      required: true,
-    },
-  },
-  computed: {
-    ...mapState(useAuthStore, ['email']),
-    ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
-  },
-};
+});
+
+const { email } = storeToRefs(useAuthStore());
+const { form, isRTL, lang } = storeToRefs(useFormStore());
 </script>
 
 <template>
   <div>
     <FormViewer :submission-id="s" :read-only="true" display-title>
-      <template #alert="{ form }">
+      <template #alert>
         <div class="mb-5" :class="{ 'dir-rtl': isRTL }">
           <h1 class="mb-5" :lang="lang">
             <v-icon
