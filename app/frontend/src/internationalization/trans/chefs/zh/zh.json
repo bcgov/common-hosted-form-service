@@ -68,7 +68,22 @@
     "status": "地位",
     "update": "更新",
     "cancel": "取消",
-    "eventSubscription": "E活动订阅"
+    "eventSubscription": "E活动订阅",
+    "cdogsTemplate": "CDOGS 模板"
+  },
+  "documentTemplate": {
+    "uploadTemplate": "上传CDOGS模板",
+    "uploadTemplateFile": "上传模板文件",
+    "upload": "上传",
+    "delete": "删除",
+    "download": "下载",
+    "invalidFileMessage": "模板必须使用以下扩展名之一：.txt, .docx, .html, .odt, .pptx, .xlsx, .pdf",
+    "uploadSuccess": "模板上传成功。",
+    "uploadError": "上传模板时发生错误。",
+    "deleteSuccess": "模板删除成功。",
+    "deleteError": "删除模板时发生错误。",
+    "fetchError": "获取模板时发生错误。",
+    "info": "上传模板以使用公共文档生成服务（CDOGS）"
   },
   "formSettings": {
     "pressToAddMultiEmail": "按<kbd>Enter</kbd>或<kbd>,</kbd>或<kbd>空格键</kbd>添加多个电子邮件地址",
@@ -676,7 +691,15 @@
     "docGrnSucess": "文档生成成功",
     "failedDocGenErrMsg": "生成文档失败",
     "failedDocGenConsErrMsg": "提交模板时出错：{error}",
-    "cDogsTemplate": "CDOGS 模板"
+    "cDogsTemplate": "CDOGS 模板",
+    "uploadCdogsTemplate": "上传CDOGS模板",
+    "printOptions": "打印选项",
+    "expandtextFields": "扩展文本字段",
+    "moreInfo": "更多信息",
+    "defaultCdogsTemplate": "使用默认CDOGS模板",
+    "fileName": "文件名",
+    "uploadDate": "上传日期",
+    "upload": "上传"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "组件信息链接",
