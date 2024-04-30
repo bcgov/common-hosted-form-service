@@ -1,48 +1,50 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
 import { i18n } from '~/internationalization';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
-import { useNotificationStore } from '~/store/notification';
 
-export default {
-  props: {
-    text: {
-      default: 'trans.error.somethingWentWrong',
-      type: String,
-    },
-    translate: {
-      default: true,
-      type: Boolean,
-    },
+const properties = defineProps({
+  text: {
+    type: String,
+    default: 'trans.error.somethingWentWrong',
   },
-  computed: {
-    ...mapState(useAuthStore, ['authenticated', 'ready']),
-    ...mapState(useFormStore, ['lang']),
-    TEXT() {
-      let text = this.text;
-      try {
-        text = JSON.parse(text);
-        text = i18n.t(text.text, text.options);
-      } catch {
-        // Can't parse JSON so it's probably already a locale
-        text = this.translate ? i18n.t(text) : text;
-      }
-      return text;
-    },
+  translate: {
+    type: Boolean,
+    default: true,
   },
-  methods: {
-    ...mapActions(useAuthStore, ['logout']),
-    ...mapActions(useNotificationStore, ['addNotification']),
-  },
-};
+});
+
+const authStore = useAuthStore();
+const formStore = useFormStore();
+
+const { authenticated, ready } = storeToRefs(authStore);
+const { lang } = storeToRefs(formStore);
+
+const TEXT = computed(() => {
+  let text = properties.text;
+  try {
+    text = JSON.parse(text);
+    text = i18n.t(text.text, text.options);
+  } catch {
+    // Can't parse JSON so it's probably already a locale
+    text = properties.translate ? i18n.t(text) : text;
+  }
+  return text;
+});
 </script>
 
 <template>
   <v-container class="text-center">
     <h1 class="my-6">{{ TEXT }}</h1>
     <div v-if="ready" class="d-print-none">
-      <v-btn v-if="authenticated" color="primary" size="large" @click="logout">
+      <v-btn
+        v-if="authenticated"
+        color="primary"
+        size="large"
+        @click="authStore.logout"
+      >
         <span :lang="lang">{{ $t('trans.error.logout') }}</span>
       </v-btn>
     </div>

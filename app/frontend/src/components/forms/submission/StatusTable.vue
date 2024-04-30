@@ -75,11 +75,11 @@ export default {
       :lang="lang"
     >
       <template #item.createdAt="{ item }">
-        <span>{{ $filters.formatDate(item.columns.createdAt) }}</span>
+        <span>{{ $filters.formatDate(item.createdAt) }}</span>
       </template>
 
       <template #item.user="{ item }">{{
-        item.columns.user ? item.columns.user.fullName : ''
+        item.user ? item.user.fullName : ''
       }}</template>
     </v-data-table>
   </v-container>

@@ -1,35 +1,28 @@
-<script>
-import BaseSecure from '~/components/base/BaseSecure.vue';
+<script setup>
+import { computed, provide } from 'vue';
 import ManageLayout from '~/components/forms/manage/ManageLayout.vue';
 import { AppPermissions } from '~/utils/constants';
 
-export default {
-  components: { BaseSecure, ManageLayout },
-  provide() {
-    return {
-      formDesigner: JSON.parse(this.fd),
-      draftId: this.d,
-      formId: this.f,
-    };
+const properties = defineProps({
+  f: {
+    type: String,
+    required: true,
   },
-  props: {
-    f: {
-      type: String,
-      required: true,
-    },
-    d: {
-      type: String,
-      default: null,
-    },
-    fd: {
-      type: Boolean,
-      default: false,
-    },
+  d: {
+    type: String,
+    default: null,
   },
-  computed: {
-    APP_PERMS: () => AppPermissions,
+  fd: {
+    type: Boolean,
+    default: false,
   },
-};
+});
+
+provide('formDesigner', JSON.parse(properties.fd));
+provide('draftId', properties.d);
+provide('formId', properties.f);
+
+const APP_PERMS = computed(() => AppPermissions);
 </script>
 
 <template>
