@@ -34,7 +34,7 @@ jobs:
        if: failure()
        with:
           name: cypress-screenshots
-          path: cypress/screenshots
+          path: functional/screenshots
           # mkdir artifacts
           # cp -r cypress/screenshots artifacts/screenshots
     # -  name: Archive Cypress report

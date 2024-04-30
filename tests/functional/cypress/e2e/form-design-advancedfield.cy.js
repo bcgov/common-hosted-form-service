@@ -206,7 +206,7 @@ describe('Form Designer', () => {
     });
 
     it('Checks the simplebcaddress', () => {
-      cy.viewport(1000, 1100);
+      cy.viewport(1000, 1800);
       cy.waitForLoad();
       cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
