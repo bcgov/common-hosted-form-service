@@ -63,7 +63,7 @@ function onFormLoad() {
 </script>
 
 <template>
-  <BaseSecure :permission="[APP_PERMS.VIEWS_FORM_STEPPER]">
+  <BaseSecure :permission="APP_PERMS.VIEWS_FORM_STEPPER">
     <v-stepper
       :model-value="1"
       hide-actions

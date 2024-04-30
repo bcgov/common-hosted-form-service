@@ -49,7 +49,7 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <BaseSecure :permission="[APP_PERMS.VIEWS_FORM_STEPPER]">
+  <BaseSecure :permission="APP_PERMS.VIEWS_FORM_STEPPER">
     <v-stepper
       :model-value="2"
       hide-actions
