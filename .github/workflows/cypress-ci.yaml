@@ -30,12 +30,15 @@ jobs:
 
             
 
-     - name: Copy test execution screenshots
-       run: |
-           mkdir artifacts
-           cp -r cypress/screenshots artifacts/screenshots
-     -  name: Archive Cypress report
-        uses: actions/upload-artifact@v2
-        with:
-         name: cypress-report
-         path: artifacts
+     - uses: actions/upload-artifact@v3
+       if: failure()
+       with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+          # mkdir artifacts
+          # cp -r cypress/screenshots artifacts/screenshots
+    # -  name: Archive Cypress report
+        #uses: actions/upload-artifact@v2
+        #with:
+         #name: cypress-report
+         #path: artifacts
