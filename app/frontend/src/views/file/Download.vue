@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, onUnmounted, watch } from 'vue';
+import { computed, onMounted, onUnmounted } from 'vue';
 
 import { useFormStore } from '~/store/form';
 import { getDisposition } from '~/utils/transformUtils';
@@ -26,7 +26,8 @@ const isFileDownloaded = computed(
   () => downloadedFile.value && downloadedFile.value.headers
 );
 
-watch(downloadedFile, () => {
+async function getFile(fileId) {
+  await formStore.downloadFile(fileId);
   if (downloadedFile.value && downloadedFile.value.headers) {
     const data = downloadedFile.value.headers['content-type'].includes(
       'application/json'
@@ -51,10 +52,10 @@ watch(downloadedFile, () => {
       URL.revokeObjectURL(a.href);
     });
   }
-});
+}
 
 onMounted(async () => {
-  await formStore.downloadFile(properties.id);
+  await getFile(properties.id);
 });
 
 onUnmounted(() => {
@@ -82,7 +83,7 @@ onUnmounted(() => {
       >
         <v-icon class="mb-2" size="90" icon="mdi:mdi-file-download" /><br />
         If your file does not automatically download
-        <a href="#" :hreflang="lang" @click="formStore.downloadFile(id)">{{
+        <a href="#" :hreflang="lang" @click="getFile(id)">{{
           $t('trans.download.downloadInfoB')
         }}</a>
       </div>
