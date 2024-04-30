@@ -107,7 +107,7 @@ export default {
       <span :lang="lang">
         {{
           $t('trans.adminVersions.version', {
-            versionNo: item.raw.version,
+            versionNo: item.version,
           })
         }}
       </span>
@@ -116,7 +116,7 @@ export default {
     <!-- Status  -->
     <template #item.status="{ item }">
       <label :lang="lang">{{
-        item.raw.published
+        item.published
           ? $t('trans.adminVersions.published')
           : $t('trans.adminVersions.unpublished')
       }}</label>
@@ -124,12 +124,12 @@ export default {
 
     <!-- Created date  -->
     <template #item.createdAt="{ item }">
-      {{ $filters.formatDateLong(item.raw.createdAt) }}
+      {{ $filters.formatDateLong(item.createdAt) }}
     </template>
 
     <!-- Updated at  -->
     <template #item.updatedAt="{ item }">
-      {{ $filters.formatDateLong(item.raw.updatedAt) }}
+      {{ $filters.formatDateLong(item.updatedAt) }}
     </template>
 
     <!-- Actions -->
@@ -143,7 +143,7 @@ export default {
               class="mx-1"
               icon
               v-bind="props"
-              @click="onExportClick(item.raw.id, item.raw.isDraft)"
+              @click="onExportClick(item.id, item.isDraft)"
             >
               <v-icon icon="mdi:mdi-download"></v-icon>
             </v-btn>

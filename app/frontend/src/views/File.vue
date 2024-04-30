@@ -7,9 +7,3 @@
     </RouterView>
   </v-container>
 </template>
-
-<script>
-export default {
-  name: 'File',
-};
-</script>

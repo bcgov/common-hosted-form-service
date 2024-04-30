@@ -284,14 +284,14 @@ export default {
       <template #item.version="{ item }">
         <router-link
           :to="
-            item.raw.isDraft
+            item.isDraft
               ? {
                   name: 'FormPreview',
-                  query: { f: item.raw.formId, d: item.raw.id },
+                  query: { f: item.formId, d: item.id },
                 }
               : {
                   name: 'FormPreview',
-                  query: { f: item.raw.formId, v: item.raw.id },
+                  query: { f: item.formId, v: item.id },
                 }
           "
           class="mx-5"
@@ -300,9 +300,9 @@ export default {
           <v-tooltip location="bottom">
             <template #activator="{ props }">
               <span v-bind="props" :lang="lang">
-                {{ $t('trans.manageVersions.version') }} {{ item.raw.version }}
+                {{ $t('trans.manageVersions.version') }} {{ item.version }}
                 <v-chip
-                  v-if="item.raw.isDraft"
+                  v-if="item.isDraft"
                   color="secondary"
                   class="mb-5 px-1"
                   x-small
@@ -323,24 +323,19 @@ export default {
       <!-- Status  -->
       <template #item.status="{ item }">
         <v-switch
-          v-model="item.raw.published"
+          v-model="item.published"
           data-cy="formPublishedSwitch"
           color="success"
           :disabled="!canPublish"
           :class="{ 'dir-ltl': isRTL }"
           @update:modelValue="
-            togglePublish(
-              $event,
-              item.raw.id,
-              item.raw.version,
-              item.raw.isDraft
-            )
+            togglePublish($event, item.id, item.version, item.isDraft)
           "
         >
           <template #label>
             <span :class="{ 'mr-2': isRTL }" :lang="lang">
               {{
-                item.raw.published
+                item.published
                   ? $t('trans.manageVersions.published')
                   : $t('trans.manageVersions.unpublished')
               }}</span
@@ -351,24 +346,24 @@ export default {
 
       <!-- Created date  -->
       <template #item.createdAt="{ item }">
-        {{ $filters.formatDateLong(item.raw.createdAt) }}
+        {{ $filters.formatDateLong(item.createdAt) }}
       </template>
 
       <!-- Created by  -->
       <template #item.createdBy="{ item }">
-        {{ item.raw.createdBy }}
+        {{ item.createdBy }}
       </template>
 
       <!-- Actions -->
       <template #item.action="{ item }">
         <!-- Edit draft version -->
-        <span v-if="item.raw.isDraft">
+        <span v-if="item.isDraft">
           <v-tooltip location="bottom">
             <template #activator="{ props }">
               <router-link
                 :to="{
                   name: 'FormDesigner',
-                  query: { d: item.raw.id, f: item.raw.formId, nf: false },
+                  query: { d: item.id, f: item.formId, nf: false },
                 }"
               >
                 <v-btn
@@ -398,7 +393,7 @@ export default {
                 icon
                 v-bind="props"
                 variant="text"
-                @click="onExportClick(item.raw.id, item.raw.isDraft)"
+                @click="onExportClick(item.id, item.isDraft)"
               >
                 <v-icon icon="mdi:mdi-download"></v-icon>
               </v-btn>
@@ -410,7 +405,7 @@ export default {
         </span>
 
         <!-- create new version -->
-        <span v-if="!item.raw.isDraft">
+        <span v-if="!item.isDraft">
           <v-tooltip location="bottom">
             <template #activator="{ props }">
               <span v-bind="props">
@@ -420,7 +415,7 @@ export default {
                   :disabled="hasDraft"
                   icon
                   variant="text"
-                  @click="createVersion(item.raw.formId, item.raw.id)"
+                  @click="createVersion(item.formId, item.id)"
                 >
                   <v-icon icon="mdi:mdi-plus"></v-icon>
                 </v-btn>
@@ -432,7 +427,7 @@ export default {
             <span v-else :lang="lang">
               {{
                 $t('trans.manageVersions.useVersionInfo', {
-                  version: item.raw.version,
+                  version: item.version,
                 })
               }}
             </span>

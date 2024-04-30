@@ -1,33 +1,24 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
 
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 
-export default {
-  props: {
-    idpHint: {
-      type: Array,
-      default: () => [],
-    },
+defineProps({
+  idpHint: {
+    type: Array,
+    default: () => [],
   },
-  computed: {
-    ...mapState(useAuthStore, ['authenticated', 'createLoginUrl', 'ready']),
-    ...mapState(useFormStore, ['lang']),
-    ...mapState(useIdpStore, ['loginButtons', 'loginIdpHints']),
-  },
-  created() {
-    // If component gets idpHint, invoke login flow via vuex
-    if (this.idpHint && this.idpHint.length === 1) {
-      const hint = this.idpHint[0];
-      if (this.loginIdpHints.includes(hint)) this.login(hint);
-    }
-  },
-  methods: {
-    ...mapActions(useAuthStore, ['login']),
-  },
-};
+});
+
+const authStore = useAuthStore();
+const formStore = useFormStore();
+const idpStore = useIdpStore();
+
+const { authenticated, ready } = storeToRefs(authStore);
+const { lang } = storeToRefs(formStore);
+const { loginButtons } = storeToRefs(idpStore);
 </script>
 
 <template>
@@ -43,7 +34,7 @@ export default {
             color="primary"
             size="large"
             :data-test="button.code"
-            @click="login(button.hint)"
+            @click="authStore.login(button.hint)"
           >
             {{ button.display }}
           </v-btn>
