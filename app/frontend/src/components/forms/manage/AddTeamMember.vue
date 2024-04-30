@@ -56,6 +56,8 @@ export default {
     },
     selectedIdp(newIdp, oldIdp) {
       if (newIdp !== oldIdp) {
+        this.selectedRoles = [];
+        this.model = null;
         this.entries = [];
         this.showError = false;
       }

@@ -1,22 +1,19 @@
-<script>
+<script setup>
 import UserDuplicateSubmission from '~/components/forms/submission/UserDuplicateSubmission.vue';
 
-export default {
-  components: {
-    UserDuplicateSubmission,
+defineProps({
+  s: {
+    type: String,
+    required: true,
   },
-  props: {
-    s: {
-      type: String,
-      required: true,
-    },
-    f: {
-      type: String,
-      required: true,
-    },
-    sv: Boolean,
+  f: {
+    type: String,
+    required: true,
   },
-};
+  sv: {
+    type: Boolean,
+  },
+});
 </script>
 
 <template>

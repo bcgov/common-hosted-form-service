@@ -1,23 +1,16 @@
-<script>
-import BaseSecure from '~/components/base/BaseSecure.vue';
+<script setup>
+import { computed } from 'vue';
 import MySubmissionsTable from '~/components/forms/submission/MySubmissionsTable.vue';
 import { AppPermissions } from '~/utils/constants';
 
-export default {
-  components: {
-    BaseSecure,
-    MySubmissionsTable,
+defineProps({
+  f: {
+    type: String,
+    required: true,
   },
-  props: {
-    f: {
-      type: String,
-      required: true,
-    },
-  },
-  computed: {
-    APP_PERMS: () => AppPermissions,
-  },
-};
+});
+
+const APP_PERMS = computed(() => AppPermissions);
 </script>
 
 <template>

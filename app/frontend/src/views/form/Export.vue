@@ -1,23 +1,16 @@
-<script>
-import BaseSecure from '~/components/base/BaseSecure.vue';
+<script setup>
+import { computed } from 'vue';
 import ExportSubmissions from '~/components/forms/ExportSubmissions.vue';
 import { AppPermissions } from '~/utils/constants';
 
-export default {
-  components: {
-    BaseSecure,
-    ExportSubmissions,
+defineProps({
+  f: {
+    type: String,
+    required: true,
   },
-  props: {
-    f: {
-      type: String,
-      required: true,
-    },
-  },
-  computed: {
-    APP_PERMS: () => AppPermissions,
-  },
-};
+});
+
+const APP_PERMS = computed(() => AppPermissions);
 </script>
 
 <template>
