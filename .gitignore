@@ -7,7 +7,6 @@ build
 coverage
 dist
 **/src/formio
-**/cypress/**/screenshots
 **/cypress/**/videos
 node_modules
 
