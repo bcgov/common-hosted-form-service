@@ -234,31 +234,18 @@ function loadKeycloak(config) {
       let expiredTokenInterval;
 
       function updateToken(seconds) {
-        try {
-          keycloak
-            .updateToken(seconds)
-            .success((refreshed) => {
-              if (refreshed) {
-                if (expiredTokenInterval) clearInterval(expiredTokenInterval);
-              }
-            })
-            .error(() => {
-              // Failed to refresh token
-              if (!expiredTokenInterval)
-                expiredTokenInterval = setInterval(() => {
-                  updateToken(60);
-                }, 10000);
-              // If we're failing to update the token, we will clear the token
-              keycloak.clearToken();
-            })
-            .catch(() => {
-              // If we're failing to update the token, we will clear the token
-              keycloak.clearToken();
-            });
-        } catch (error) {
-          // If we're failing to update the token, we will clear the token
-          keycloak.clearToken();
-        }
+        keycloak
+          .updateToken(seconds)
+          .then((refreshed) => {
+            if (refreshed) {
+              if (expiredTokenInterval) clearInterval(expiredTokenInterval);
+            } else {
+              // token is still valid
+            }
+          })
+          .catch(() => {
+            // We're failing to update the token
+          });
       }
 
       keycloak.onAuthSuccess = () => {
