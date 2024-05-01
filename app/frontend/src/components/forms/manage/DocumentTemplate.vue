@@ -148,10 +148,7 @@ export default {
     async handleDelete(item) {
       this.loading = true;
       try {
-        await formService.documentTemplateDelete(
-          this.form.id,
-          item.raw.templateId
-        );
+        await formService.documentTemplateDelete(this.form.id, item.templateId);
         this.fetchDocumentTemplates();
         this.addNotification({
           text: i18n.t('trans.documentTemplate.deleteSuccess'),
@@ -173,7 +170,7 @@ export default {
       try {
         const result = await formService.documentTemplateRead(
           this.form.id,
-          item.raw.templateId
+          item.templateId
         );
         const base64EncodedData = result.data.template.data
           .map((byte) => String.fromCharCode(byte))
@@ -186,7 +183,7 @@ export default {
           bytes[i] = binaryString.charCodeAt(i);
         }
         const blob = new Blob([bytes], {
-          type: this.getMimeType(item.raw.filename),
+          type: this.getMimeType(item.filename),
         });
         const url = window.URL.createObjectURL(blob);
 
@@ -198,7 +195,7 @@ export default {
           // Create an anchor element and trigger download
           const a = document.createElement('a');
           a.href = url;
-          a.download = item.raw.filename;
+          a.download = item.filename;
           document.body.appendChild(a);
           a.click();
           window.URL.revokeObjectURL(url);
@@ -270,12 +267,12 @@ export default {
     >
       <!-- Created date  -->
       <template #item.createdAt="{ item }">
-        {{ $filters.formatDateLong(item.raw.createdAt) }}
+        {{ $filters.formatDateLong(item.createdAt) }}
       </template>
 
       <!-- Preview/Download File -->
       <template #item.filename="{ item }">
-        <span v-if="!enablePreview">{{ item.raw.filename }}</span>
+        <span v-if="!enablePreview">{{ item.filename }}</span>
         <v-tooltip v-if="enablePreview" location="bottom">
           <template #activator="{ props }">
             <a
@@ -283,7 +280,7 @@ export default {
               v-bind="props"
               @click="handleFileAction(item, 'preview')"
             >
-              {{ item.raw.filename }}
+              {{ item.filename }}
             </a>
           </template>
           <span :lang="lang">
