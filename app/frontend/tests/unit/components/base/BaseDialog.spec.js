@@ -12,7 +12,7 @@ describe('BaseDialog.vue', () => {
   setActivePinia(pinia);
   const formStore = useFormStore();
 
-  afterEach(() => {
+  beforeEach(() => {
     formStore.$reset();
   });
 
