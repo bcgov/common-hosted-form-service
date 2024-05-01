@@ -26,10 +26,10 @@ const properties = defineProps({
   },
 });
 
-const emits = defineEmits(['copied']);
+const emit = defineEmits(['copied']);
 
 function onCopy() {
-  emits('copied');
+  emit('copied');
   const notificationStore = useNotificationStore();
   notificationStore.addNotification({
     text: properties.snackBarText,
