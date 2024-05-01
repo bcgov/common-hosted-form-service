@@ -232,6 +232,7 @@ describe('Form Designer', () => {
       //Adding another component
 
       cy.get('button').contains('Basic Fields').click();
+      cy.get('button').contains('Basic Fields').click();
       cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
         cy.get('span.btn').contains('Text Field')
