@@ -129,17 +129,19 @@ export default {
       document.documentElement.style.overflow = 'auto';
       if (this.hasDraft) {
         const idx = this.drafts.map((d) => d.id).indexOf(this.publishOpts.id);
-        if (!this.formDesigner) {
-          // if not navigating from FormDesigner
+        if (idx !== -1) {
           this.drafts[idx].published = !this.drafts[idx].published;
         }
-      } else {
+      }
+      if (this.form.versions) {
         const idx = this.form.versions
           .map((d) => d.id)
           .indexOf(this.publishOpts.id);
-        this.form.versions[idx].published = !this.form.versions[idx].published;
+        if (idx !== -1) {
+          this.form.versions[idx].published =
+            !this.form.versions[idx].published;
+        }
       }
-
       this.rerenderTable += 1;
     },
     togglePublish(value, id, version, isDraft) {
