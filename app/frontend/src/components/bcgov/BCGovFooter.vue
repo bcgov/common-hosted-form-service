@@ -1,17 +1,16 @@
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
 
 import { useFormStore } from '~/store/form';
 
-export default {
-  computed: {
-    ...mapState(useFormStore, ['lang']),
-    formSubmitMode() {
-      // don't include footer when printing form submitting pages
-      return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;
-    },
+defineProps({
+  formSubmitMode: {
+    type: Boolean,
+    default: false,
   },
-};
+});
+
+const { lang } = storeToRefs(useFormStore());
 </script>
 
 <template>

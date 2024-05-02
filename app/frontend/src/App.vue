@@ -17,6 +17,10 @@ const isWidePage = computed(() => {
   return isWideLayout.value && isValidRoute ? 'main-wide' : 'main';
 });
 
+const isFormSubmitMode = computed(() => {
+  return route && route.meta && route.meta.formSubmitMode;
+});
+
 defineExpose({ isValidRoute, isWidePage, setWideLayout, isWideLayout });
 
 provide('setWideLayout', setWideLayout);
@@ -37,7 +41,7 @@ function setWideLayout(isWide) {
           <component :is="Component" :class="isWidePage" />
         </transition>
       </RouterView>
-      <BCGovFooter />
+      <BCGovFooter :form-submit-mode="isFormSubmitMode" />
     </v-main>
   </v-layout>
 </template>
