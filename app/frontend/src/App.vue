@@ -9,16 +9,22 @@ import { useRoute } from 'vue-router';
 const isWideLayout = ref(false);
 const route = useRoute();
 
+const appTitle = computed(() => {
+  return route && route.meta && route.meta.title
+    ? route.meta.title
+    : import.meta.env.VITE_TITLE;
+});
+
+const isFormSubmitMode = computed(() => {
+  return route && route.meta && route.meta.formSubmitMode;
+});
+
 const isValidRoute = computed(() => {
   return ['FormSubmit', 'FormView', 'FormSuccess'].includes(route.name);
 });
 
 const isWidePage = computed(() => {
   return isWideLayout.value && isValidRoute ? 'main-wide' : 'main';
-});
-
-const isFormSubmitMode = computed(() => {
-  return route && route.meta && route.meta.formSubmitMode;
 });
 
 defineExpose({ isValidRoute, isWidePage, setWideLayout, isWideLayout });
@@ -34,7 +40,7 @@ function setWideLayout(isWide) {
   <v-layout ref="app" class="app">
     <v-main class="app">
       <BaseNotificationContainer />
-      <BCGovHeader />
+      <BCGovHeader :app-title="appTitle" :form-submit-mode="isFormSubmitMode" />
       <BCGovNavBar />
       <RouterView v-slot="{ Component }">
         <transition name="component-fade" mode="out-in">

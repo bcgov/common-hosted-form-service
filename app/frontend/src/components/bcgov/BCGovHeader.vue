@@ -1,36 +1,21 @@
-<script>
+<script setup>
+import { storeToRefs } from 'pinia';
 import BCLogo from '~/assets/images/bc_logo.svg';
 import PrintLogo from '~/assets/images/bc_logo_print.svg';
-import BaseAuthButton from '~/components/base/BaseAuthButton.vue';
-import BaseInternationalization from '~/components/base/BaseInternationalization.vue';
-import { mapState } from 'pinia';
 import { useFormStore } from '~/store/form';
 
-export default {
-  components: {
-    BaseAuthButton,
-    BaseInternationalization,
+defineProps({
+  formSubmitMode: {
+    type: Boolean,
+    default: false,
   },
-  data() {
-    return {
-      BCLogo: BCLogo,
-      PrintLogo: PrintLogo,
-    };
+  appTitle: {
+    type: String,
+    default: 'Common Hosted Forms',
   },
+});
 
-  computed: {
-    ...mapState(useFormStore, ['isRTL']),
-    appTitle() {
-      return this.$route && this.$route.meta && this.$route.meta.title
-        ? this.$route.meta.title
-        : import.meta.env.VITE_TITLE;
-    },
-    formSubmitMode() {
-      // hide header content on form submitter pages
-      return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;
-    },
-  },
-};
+const { isRTL } = storeToRefs(useFormStore());
 </script>
 
 <template>
