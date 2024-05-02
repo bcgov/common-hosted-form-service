@@ -41,7 +41,7 @@ function setWideLayout(isWide) {
     <v-main class="app">
       <BaseNotificationContainer />
       <BCGovHeader :app-title="appTitle" :form-submit-mode="isFormSubmitMode" />
-      <BCGovNavBar />
+      <BCGovNavBar :form-submit-mode="isFormSubmitMode" />
       <RouterView v-slot="{ Component }">
         <transition name="component-fade" mode="out-in">
           <component :is="Component" :class="isWidePage" />
