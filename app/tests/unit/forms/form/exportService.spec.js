@@ -1,4 +1,8 @@
+const { v4: uuidv4 } = require('uuid');
+
 const exportService = require('../../../../src/forms/form/exportService');
+const emailService = require('../../../../src/forms/email/emailService');
+const fileService = require('../../../../src/forms/file/service');
 const MockModel = require('../../../../src/forms/common/models/views/submissionData');
 const _ = require('lodash');
 jest.mock('../../../../src/forms/common/models/views/submissionData', () => ({
@@ -9,6 +13,187 @@ jest.mock('../../../../src/forms/common/models/views/submissionData', () => ({
   modify: jest.fn().mockReturnThis(),
   then: jest.fn().mockReturnThis(),
 }));
+
+const formId = uuidv4();
+
+const getCsvRowCount = (result) => {
+  return result.data.split('\n').length;
+};
+const getCsvRow = (result, index) => {
+  const rows = result.data.split('\n');
+  return rows[index];
+};
+
+describe('export', () => {
+  describe('csv', () => {
+    describe('type 3', () => {
+      const currentUser = {
+        usernameIdp: 'PAT_TEST',
+      };
+      const form = {
+        snake: () => {
+          'form';
+        },
+      };
+      const latestFormSchema = {
+        display: 'form',
+        type: 'form',
+        components: [
+          {
+            type: 'datagrid',
+            label: 'Data Grid',
+            components: [
+              {
+                type: 'simpletextfield',
+                label: 'Text Field',
+              },
+            ],
+          },
+        ],
+      };
+      const params = {
+        emailExport: false,
+        fields: [
+          'form.submissionId',
+          'form.confirmationId',
+          'form.formName',
+          'form.version',
+          'form.createdAt',
+          'form.fullName',
+          'form.username',
+          'form.email',
+          'dataGrid',
+          'dataGrid.simpletextfield',
+        ],
+        template: 'singleRowCSVExport',
+      };
+
+      exportService._getForm = jest.fn().mockReturnValue(form);
+      exportService._readLatestFormSchema = jest.fn().mockReturnValue(latestFormSchema);
+      emailService.submissionExportLink = jest.fn();
+      fileService.create = jest.fn().mockReturnValue({});
+
+      test('data grid one row', async () => {
+        const submission = [
+          {
+            submissionId: 'd5a40f00-ee5e-49ab-9bd7-b34f7f7b9c1b',
+            confirmationId: 'D5A40F00',
+            formName: 'form',
+            version: 1,
+            createdAt: '2024-05-03T20:56:31.270Z',
+            fullName: 'Pat Test',
+            username: 'PAT_TEST',
+            email: 'pat.test@gov.bc.ca',
+            submission: {
+              dataGrid: [
+                {
+                  simpletextfield: 'simple text field 1-1',
+                },
+              ],
+              lateEntry: false,
+            },
+          },
+        ];
+        exportService._getData = jest.fn().mockReturnValue(submission);
+
+        const result = await exportService.export(formId, params, currentUser);
+
+        expect(getCsvRowCount(result)).toBe(2);
+        expect(getCsvRow(result, 0)).toContain('dataGrid.0.simpletextfield');
+        expect(getCsvRow(result, 1)).toContain('simple text field 1-1');
+      });
+
+      test('data grid two rows', async () => {
+        const submission = [
+          {
+            submissionId: 'd5a40f00-ee5e-49ab-9bd7-b34f7f7b9c1b',
+            confirmationId: 'D5A40F00',
+            formName: 'form',
+            version: 1,
+            createdAt: '2024-05-03T20:56:31.270Z',
+            fullName: 'Pat Test',
+            username: 'PAT_TEST',
+            email: 'pat.test@gov.bc.ca',
+            submission: {
+              dataGrid: [
+                {
+                  simpletextfield: 'simple text field 1-1',
+                },
+                {
+                  simpletextfield: 'simple text field 1-2',
+                },
+              ],
+              lateEntry: false,
+            },
+          },
+        ];
+        exportService._getData = jest.fn().mockReturnValue(submission);
+
+        const result = await exportService.export(formId, params, currentUser);
+
+        expect(getCsvRowCount(result)).toBe(2);
+        expect(getCsvRow(result, 0)).toContain('dataGrid.0.simpletextfield');
+        expect(getCsvRow(result, 0)).toContain('dataGrid.1.simpletextfield');
+        expect(getCsvRow(result, 1)).toContain('simple text field 1-1');
+        expect(getCsvRow(result, 1)).toContain('simple text field 1-2');
+      });
+
+      test('data grid two submissions', async () => {
+        const submission = [
+          {
+            submissionId: 'd5a40f00-ee5e-49ab-9bd7-b34f7f7b9c1b',
+            confirmationId: 'D5A40F00',
+            formName: 'form',
+            version: 1,
+            createdAt: '2024-05-03T20:56:31.270Z',
+            fullName: 'Pat Test',
+            username: 'PAT_TEST',
+            email: 'pat.test@gov.bc.ca',
+            submission: {
+              dataGrid: [
+                {
+                  simpletextfield: 'simple text field 1-1',
+                },
+              ],
+              lateEntry: false,
+            },
+          },
+          {
+            submissionId: 'c635b4b2-83de-4830-925a-bcba51efa139',
+            confirmationId: 'C635B4B2',
+            formName: 'form',
+            version: 1,
+            createdAt: '2024-05-05T20:56:31.270Z',
+            fullName: 'Pat Test',
+            username: 'PAT_TEST',
+            email: 'pat.test@gov.bc.ca',
+            submission: {
+              dataGrid: [
+                {
+                  simpletextfield: 'simple text field 2-1',
+                },
+                {
+                  simpletextfield: 'simple text field 2-2',
+                },
+              ],
+              lateEntry: false,
+            },
+          },
+        ];
+        exportService._getData = jest.fn().mockReturnValue(submission);
+
+        const result = await exportService.export(formId, params, currentUser);
+
+        expect(getCsvRowCount(result)).toBe(3);
+        expect(getCsvRow(result, 0)).toContain('dataGrid.0.simpletextfield');
+        expect(getCsvRow(result, 0)).toContain('dataGrid.1.simpletextfield');
+        expect(getCsvRow(result, 1)).toContain('simple text field 1-1');
+        expect(getCsvRow(result, 2)).toContain('simple text field 2-1');
+        expect(getCsvRow(result, 2)).toContain('simple text field 2-2');
+      });
+    });
+  });
+});
 
 describe('_readSchemaFields', () => {
   it('should get form fields in the order they appear in the kitchen sink form', async () => {
@@ -269,7 +454,7 @@ describe('_buildCsvHeaders', () => {
     // get result columns if we need to filter out the columns
     const result = await exportService._buildCsvHeaders(form, submissionsExport, 1, fields, true);
 
-    expect(result).toHaveLength(20);
+    expect(result).toHaveLength(29);
     expect(result).toEqual(
       expect.arrayContaining([
         'form.confirmationId',
