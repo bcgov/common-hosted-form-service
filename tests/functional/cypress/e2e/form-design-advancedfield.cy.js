@@ -205,23 +205,9 @@ describe('Form Designer', () => {
 
     });
 
-    it('Checks the simplebcaddress and Verify submission', () => {
+    it('Verify submission', () => {
       cy.viewport(1000, 1800);
       cy.waitForLoad();
-      cy.get('div.formio-builder-form').then($el => {
-        const coords = $el[0].getBoundingClientRect();
-        cy.get('[data-type="simplebcaddress"]')
-        .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, +80, { force: true })
-          //.trigger('mousemove', coords.y, +100, { force: true })
-        .trigger('mouseup', { force: true });
-        cy.waitForLoad();
-        cy.get('input[name="data[label]"]').type('s');  
-        cy.get('button').contains('Save').click();
-        //cy.get('.btn-success').click();
-  
-  
-      });
       cy.waitForLoad();
       cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
       // Form saving

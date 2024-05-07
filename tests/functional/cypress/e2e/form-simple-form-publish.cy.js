@@ -37,7 +37,7 @@ describe('Form Designer', () => {
 
   });  
 // Verifying fields in the form settings page
- it('Simple form submission', () => {
+ it('Checks simplebcaddress and form submission', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     // Form design page with simple textbox components
@@ -56,6 +56,21 @@ describe('Form Designer', () => {
         cy.get('button').contains('Save').click();
       });
     }
+    cy.get('button').contains('BC Government').click();
+    cy.get('div.formio-builder-form').then($el => {
+      const coords = $el[0].getBoundingClientRect();
+      cy.get('[data-type="simplebcaddress"]')
+      .trigger('mousedown', { which: 1}, { force: true })
+      .trigger('mousemove', coords.x, -300, { force: true })
+        //.trigger('mousemove', coords.y, +100, { force: true })
+      .trigger('mouseup', { force: true });
+      cy.waitForLoad();
+      cy.get('input[name="data[label]"]').type('s');  
+      cy.get('button').contains('Save').click();
+      //cy.get('.btn-success').click();
+
+
+    });
     cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
   // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
