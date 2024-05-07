@@ -205,7 +205,7 @@ describe('Form Designer', () => {
 
     });
 
-    it('Checks the simplebcaddress', () => {
+    it('Checks the simplebcaddress and Verify submission', () => {
       cy.viewport(1000, 1800);
       cy.waitForLoad();
       cy.get('div.formio-builder-form').then($el => {
@@ -222,11 +222,6 @@ describe('Form Designer', () => {
   
   
       });
-
-    });
-
-    it('Verify form publish and submission', () => {
-      cy.viewport(1000, 1800);
       cy.waitForLoad();
       cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
       // Form saving
