@@ -27,7 +27,7 @@ export default {
       dialog: false,
       loading: false,
       templateForm: {
-        files: null,
+        files: [],
         contentFileType: null,
         outputFileName: '',
         outputFileType: null,
@@ -57,7 +57,7 @@ export default {
     },
     validationRules() {
       return [
-        this.isValidFile || i18n.t('trans.cdogsPanel.invalidFileMessage'),
+        this.isValidFile || i18n.t('trans.documentTemplate.invalidFileMessage'),
       ];
     },
   },
