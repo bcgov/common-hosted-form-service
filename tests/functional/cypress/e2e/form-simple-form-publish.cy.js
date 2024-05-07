@@ -59,7 +59,7 @@ describe('Form Designer', () => {
     cy.get('button').contains('BC Government').click();
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
-      cy.get('[data-type="simplebcaddress"]')
+      cy.get('[data-key="simplebcaddress"]')
       .trigger('mousedown', { which: 1}, { force: true })
       .trigger('mousemove', coords.x, -300, { force: true })
         //.trigger('mousemove', coords.y, +100, { force: true })
