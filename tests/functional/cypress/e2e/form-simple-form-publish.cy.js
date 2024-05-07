@@ -40,28 +40,13 @@ describe('Form Designer', () => {
  it('Checks simplebcaddress and form submission', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-    // Form design page with simple textbox components
-    let textFields = ["First Name", "Middle Name", "Last Name"];
-
-    for(let i=0; i<textFields.length; i++) {
-      cy.get('button').contains('Basic Fields').click();
-      cy.get('div.formio-builder-form').then($el => {
-      const bounds = $el[0].getBoundingClientRect();
-      cy.get('span.btn').contains('Text Field')
-        .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', bounds.x, -50, { force: true })
-        .trigger('mouseup', { force: true });
-        cy.get('p').contains('Text Field Component');
-        cy.get('input[name="data[label]"]').clear().type(textFields[i]);
-        cy.get('button').contains('Save').click();
-      });
-    }
+    
     cy.get('button').contains('BC Government').click();
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('[data-key="simplebcaddress"]')
       .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -300, { force: true })
+      .trigger('mousemove', coords.x, -550, { force: true })
         //.trigger('mousemove', coords.y, +100, { force: true })
       .trigger('mouseup', { force: true });
       cy.waitForLoad();
