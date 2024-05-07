@@ -65,7 +65,7 @@ describe('Form Designer', () => {
         //.trigger('mousemove', coords.y, +100, { force: true })
       .trigger('mouseup', { force: true });
       cy.waitForLoad();
-      cy.get('input[name="data[label]"]').type('s');  
+      //cy.get('input[name="data[label]"]').type('s');  
       cy.get('button').contains('Save').click();
       //cy.get('.btn-success').click();
 
