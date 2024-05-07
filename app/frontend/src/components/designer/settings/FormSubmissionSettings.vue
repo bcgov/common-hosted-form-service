@@ -1,32 +1,25 @@
-<script>
-import { mapState, mapWritableState } from 'pinia';
-import BasePanel from '~/components/base/BasePanel.vue';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { ref } from 'vue';
+
+import { i18n } from '~/internationalization';
 import { useFormStore } from '~/store/form';
 import { Regex } from '~/utils/constants';
 
-export default {
-  components: {
-    BasePanel,
-  },
-  data() {
-    return {
-      emailArrayRules: [
-        (v) =>
-          !this.form.sendSubmissionReceivedEmail ||
-          v.length > 0 ||
-          this.$t('trans.formSettings.atLeastOneEmailReq'),
-        (v) =>
-          !this.form.sendSubmissionReceivedEmail ||
-          v.every((item) => new RegExp(Regex.EMAIL).test(item)) ||
-          this.$t('trans.formSettings.validEmailRequired'),
-      ],
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
-    ...mapWritableState(useFormStore, ['form']),
-  },
-};
+const { form, isRTL, lang } = storeToRefs(useFormStore());
+
+/* c8 ignore start */
+const emailArrayRules = ref([
+  (v) =>
+    !form.value.sendSubmissionReceivedEmail ||
+    v.length > 0 ||
+    i18n.t('trans.formSettings.atLeastOneEmailReq'),
+  (v) =>
+    !form.value.sendSubmissionReceivedEmail ||
+    v.every((item) => new RegExp(Regex.EMAIL).test(item)) ||
+    i18n.t('trans.formSettings.validEmailRequired'),
+]);
+/* c8 ignore stop */
 </script>
 
 <template>

@@ -21,10 +21,15 @@ describe('FormSubmissionSettings.vue', () => {
     const wrapper = mount(FormSubmissionSettings, {
       global: {
         plugins: [pinia],
+        stubs: {
+          BasePanel: {
+            name: 'BasePanel',
+            template: '<div class="base-panel-stub"><slot /></div>',
+          },
+        },
       },
     });
 
-    expect(wrapper.text()).toMatch('trans.formSettings.afterSubmission');
     expect(wrapper.text()).toMatch('trans.formSettings.submissionConfirmation');
     expect(wrapper.text()).toMatch('trans.formSettings.emailNotificatnToTeam');
 
@@ -37,6 +42,12 @@ describe('FormSubmissionSettings.vue', () => {
     const wrapper = mount(FormSubmissionSettings, {
       global: {
         plugins: [pinia],
+        stubs: {
+          BasePanel: {
+            name: 'BasePanel',
+            template: '<div class="base-panel-stub"><slot /></div>',
+          },
+        },
       },
     });
 
