@@ -31,15 +31,14 @@ describe('FormSubmissionSettings.vue', () => {
     expect(formStore.form.sendSubmissionReceivedEmail).toBe(false);
     expect(formStore.form.showSubmissionConfirmation).toBe(true);
     expect(formStore.form.submissionReceivedEmails).toStrictEqual([]);
-
   });
 
   it('test click of email notification checkbox', async () => {
     const wrapper = mount(FormSubmissionSettings, {
-        global: {
-          plugins: [pinia],
-        },
-      });
+      global: {
+        plugins: [pinia],
+      },
+    });
 
     const checkBox = wrapper.findComponent('[data-test="email-test"]');
     checkBox.setValue(true);
@@ -50,8 +49,8 @@ describe('FormSubmissionSettings.vue', () => {
 
     checkBox.setValue(false);
     await nextTick;
-    expect(wrapper.text()).not.toMatch('trans.formSettings.notificationEmailAddrs');
-
+    expect(wrapper.text()).not.toMatch(
+      'trans.formSettings.notificationEmailAddrs'
+    );
   });
-
 });
