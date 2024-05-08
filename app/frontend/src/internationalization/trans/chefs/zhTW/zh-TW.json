@@ -68,7 +68,22 @@
     "status": "地位",
     "update": "更新",
     "cancel": "取消",
-    "eventSubscription": "活動訂閱"
+    "eventSubscription": "活動訂閱",
+    "cdogsTemplate": "CDOGS 模板"
+  },
+  "documentTemplate": {
+    "uploadTemplate": "上傳CDOGS範本",
+    "uploadTemplateFile": "上傳範本檔案",
+    "upload": "上傳",
+    "delete": "刪除",
+    "download": "下載",
+    "invalidFileMessage": "範本必須使用以下其中一種擴展名：.txt, .docx, .html, .odt, .pptx, .xlsx, .pdf",
+    "uploadSuccess": "範本成功上傳。",
+    "uploadError": "上傳範本時發生錯誤。",
+    "deleteSuccess": "範本成功刪除。",
+    "deleteError": "刪除範本時發生錯誤。",
+    "fetchError": "獲取範本時發生錯誤。",
+    "info": "上傳範本以使用公共文檔生成服務（CDOGS）"
   },
   "formSettings": {
     "pressToAddMultiEmail": "按<kbd>Enter</kbd>或<kbd>,</kbd>或<kbd>空格鍵</kbd>添加多個電子郵件地址",
@@ -380,7 +395,7 @@
     "401NotAuthorized": "401：未授權。 :",
     "401ErrorMsg": "您的帳戶設置不正確。<br />請聯繫",
     "403Forbidden": "403：禁止。 :",
-    "403ErrorMsg": "此頁面需要 {idp} 身份驗證。",
+    "403ErrorMsg": "此頁面需要 {permission} 身份驗證。",
     "401UnAuthorized": "401：未經授權。 :",
     "401UnAuthorizedErrMsg": "您沒有權限訪問此頁面。"
   },
@@ -676,7 +691,15 @@
     "docGrnSucess": "文檔生成成功",
     "failedDocGenErrMsg": "生成文檔失敗",
     "failedDocGenConsErrMsg": "提交模板時出錯：{error}",
-    "cDogsTemplate": "CDOGS 模板"
+    "cDogsTemplate": "CDOGS 模板",
+    "uploadCdogsTemplate": "上傳CDOGS範本",
+    "printOptions": "打印選項",
+    "expandtextFields": "擴展文字欄位",
+    "moreInfo": "更多資訊",
+    "defaultCdogsTemplate": "使用預設CDOGS範本",
+    "fileName": "檔案名稱",
+    "uploadDate": "上傳日期",
+    "upload": "上傳"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "組件信息鏈接",

@@ -68,7 +68,22 @@
     "status": "Статус",
     "update": "оновлення",
     "cancel": "Скасувати",
-    "eventSubscription": "Підписка на подію"
+    "eventSubscription": "Підписка на подію",
+    "cdogsTemplate": "Шаблон CDOGS"
+  },
+  "documentTemplate": {
+    "uploadTemplate": "Завантажити шаблон CDOGS",
+    "uploadTemplateFile": "Завантажити файл шаблону",
+    "upload": "Завантажити",
+    "delete": "Видалити",
+    "download": "Завантажити",
+    "invalidFileMessage": "Шаблон повинен використовувати одне з наступних розширень: .txt, .docx, .html, .odt, .pptx, .xlsx, .pdf",
+    "uploadSuccess": "Шаблон успішно завантажено.",
+    "uploadError": "Під час завантаження шаблону сталася помилка.",
+    "deleteSuccess": "Шаблон успішно видалено.",
+    "deleteError": "Під час видалення шаблону сталася помилка.",
+    "fetchError": "Під час отримання шаблону сталася помилка.",
+    "info": "Завантажте шаблон, щоб використовувати Спільний сервіс генерації документів (CDOGS)"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Щоб додати кілька електронних адрес, натисніть <kbd>enter</kbd> або <kbd>,</kbd> або <kbd>пробіл</kbd>",
@@ -379,7 +394,7 @@
     "401NotAuthorized": "401: не авторизовано. :",
     "401ErrorMsg": "Ваш обліковий запис налаштовано неправильно.<br /> Будь ласка зв&#39;яжіться",
     "403Forbidden": "403 Заборонено. :",
-    "403ErrorMsg": "Для цієї сторінки потрібна автентифікація {idp}.",
+    "403ErrorMsg": "Для цієї сторінки потрібна автентифікація {permission}.",
     "401UnAuthorized": "401: неавторизовано. :",
     "401UnAuthorizedErrMsg": "Ви не маєте дозволу на доступ до цієї сторінки."
   },
@@ -675,7 +690,15 @@
     "docGrnSucess": "Документ створено успішно",
     "failedDocGenErrMsg": "Не вдалося створити документ",
     "failedDocGenConsErrMsg": "Помилка надсилання шаблону: {error}",
-    "cDogsTemplate": "Шаблон CDOGS"
+    "cDogsTemplate": "Шаблон CDOGS",
+    "uploadCdogsTemplate": "Завантажити шаблон CDOGS",
+    "printOptions": "Опції друку",
+    "expandtextFields": "Розширити текстові поля",
+    "moreInfo": "Більше інформації",
+    "defaultCdogsTemplate": "Використовувати стандартний шаблон CDOGS",
+    "fileName": "Назва файлу",
+    "uploadDate": "Дата завантаження",
+    "upload": "Завантажити"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Інформаційне посилання на компонент",

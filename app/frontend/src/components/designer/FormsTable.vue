@@ -4,8 +4,8 @@ import { mapActions, mapState } from 'pinia';
 import { i18n } from '~/internationalization';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useIdpStore } from '~/store/identityProviders';
 import BaseDialog from '~/components/base/BaseDialog.vue';
-import { IdentityProviders } from '~/utils/constants';
 import { checkFormManage, checkSubmissionView } from '~/utils/permissionUtils';
 
 export default {
@@ -25,6 +25,7 @@ export default {
   computed: {
     ...mapState(useFormStore, ['formList', 'isRTL', 'lang']),
     ...mapState(useAuthStore, ['user']),
+    ...mapState(useIdpStore, ['isPrimary']),
     headers() {
       return [
         {
@@ -44,7 +45,7 @@ export default {
       ];
     },
     canCreateForm() {
-      return this.user.idp === IdentityProviders.IDIR;
+      return this.isPrimary(this.user.idp?.code);
     },
     filteredFormList() {
       return this.formList.filter(
@@ -141,16 +142,16 @@ export default {
   >
     <template #item.name="{ item }">
       <router-link
-        v-if="item.raw.published"
+        v-if="item.published"
         :to="{
           name: 'FormSubmit',
-          query: { f: item.raw.id },
+          query: { f: item.id },
         }"
         target="_blank"
       >
         <v-tooltip location="bottom">
           <template #activator="{ props }">
-            <span v-bind="props">{{ item.columns.name }}</span>
+            <span v-bind="props">{{ item.name }}</span>
           </template>
           <span :lang="lang">
             {{ $t('trans.formsTable.viewForm') }}
@@ -158,21 +159,21 @@ export default {
           </span>
         </v-tooltip>
       </router-link>
-      <span v-else>{{ item.columns.name }}</span>
+      <span v-else>{{ item.name }}</span>
       <v-icon
-        v-if="item.raw.description?.trim()"
+        v-if="item.description?.trim()"
         size="small"
         class="description-icon ml-2 mr-4"
         color="primary"
         icon="mdi:mdi-note-text"
         :aria-label="$t('trans.formsTable.description')"
-        @click="onDescriptionClick(item.raw.id, item.raw.description)"
+        @click="onDescriptionClick(item.id, item.description)"
       ></v-icon>
     </template>
     <template #item.actions="{ item }">
       <router-link
-        v-if="checkFormManage(item.raw.permissions)"
-        :to="{ name: 'FormManage', query: { f: item.raw.id } }"
+        v-if="checkFormManage(item.permissions)"
+        :to="{ name: 'FormManage', query: { f: item.id } }"
       >
         <v-btn color="primary" variant="text" size="small">
           <v-icon :class="isRTL ? 'ml-1' : 'mr-1'" icon="mdi:mdi-cog"></v-icon>
@@ -182,9 +183,9 @@ export default {
         </v-btn>
       </router-link>
       <router-link
-        v-if="checkSubmissionView(item.raw.permissions)"
+        v-if="checkSubmissionView(item.permissions)"
         data-cy="formSubmissionsLink"
-        :to="{ name: 'FormSubmissions', query: { f: item.raw.id } }"
+        :to="{ name: 'FormSubmissions', query: { f: item.id } }"
       >
         <v-btn color="primary" variant="text" size="small">
           <v-icon

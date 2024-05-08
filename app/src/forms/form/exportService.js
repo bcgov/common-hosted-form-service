@@ -176,11 +176,19 @@ const service = {
 
     if (fields) {
       return formSchemaheaders.filter((header) => {
-        if (Array.isArray(fields) && fields.includes(header)) {
+        // In the 'fields' sent from the caller we'll have something like
+        // 'datagrid.input', but in the actual submission data in the
+        // 'formSchemaheaders' we'll have things like 'datagrid.0.input',
+        // 'datagrid.1.input', etc. Remove the '.0' array index to get
+        // 'datagrid.input' and then do the comparison.
+        const flattenedHeader = header.replace(/\.\d+\./gi, '.');
+
+        if (Array.isArray(fields) && fields.includes(flattenedHeader)) {
           return header;
         }
       });
     }
+
     return formSchemaheaders;
   },
 

@@ -68,7 +68,22 @@
     "status": "ਸਥਿਤੀ",
     "update": "ਅੱਪਡੇਟ ਕਰੋ",
     "cancel": "ਰੱਦ ਕਰੋ",
-    "eventSubscription": "د پیښې ګډون"
+    "eventSubscription": "د پیښې ګډون",
+    "cdogsTemplate": "CDOGS ਟੈਂਪਲੇਟ"
+  },
+  "documentTemplate": {
+    "uploadTemplate": "CDOGS ਟੈਂਪਲੇਟ ਅੱਪਲੋਡ ਕਰੋ",
+    "uploadTemplateFile": "ਟੈਂਪਲੇਟ ਫਾਈਲ ਅੱਪਲੋਡ ਕਰੋ",
+    "upload": "ਅੱਪਲੋਡ ਕਰੋ",
+    "delete": "ਮਿਟਾਓ",
+    "download": "ਡਾਊਨਲੋਡ ਕਰੋ",
+    "invalidFileMessage": "ਟੈਂਪਲੇਟ ਵਿੱਚ ਇਹਨਾਂ ਵਿੱਚੋਂ ਕੋਈ ਇੱਕ ਐਕਸਟੈਂਸ਼ਨ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ: .txt, .docx, .html, .odt, .pptx, .xlsx, .pdf",
+    "uploadSuccess": "ਟੈਂਪਲੇਟ ਸਫਲਤਾਪੂਰਵਕ ਅੱਪਲੋਡ ਹੋ ਗਈ।",
+    "uploadError": "ਟੈਂਪਲੇਟ ਅੱਪਲੋਡ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਗਲਤੀ ਆਈ।",
+    "deleteSuccess": "ਟੈਂਪਲੇਟ ਸਫਲਤਾਪੂਰਵਕ ਮਿਟਾਈ ਗਈ।",
+    "deleteError": "ਟੈਂਪਲੇਟ ਮਿਟਾਉਣ ਸਮੇਂ ਇੱਕ ਗਲਤੀ ਆਈ।",
+    "fetchError": "ਟੈਂਪਲੇਟ ਲਿਆਉਣ ਸਮੇਂ ਇੱਕ ਗਲਤੀ ਆਈ।",
+    "info": "ਕੌਮਨ ਦਸਤਾਵੇਜ਼ ਜਨਰੇਸ਼ਨ ਸਰਵਿਸ (CDOGS) ਵਰਤਣ ਲਈ ਇੱਕ ਟੈਂਪਲੇਟ ਅੱਪਲੋਡ ਕਰੋ"
   },
   "formSettings": {
     "pressToAddMultiEmail": "ਕਈ ਈਮੇਲ ਪਤੇ ਜੋੜਨ ਲਈ <kbd>ਐਂਟਰ</kbd> <kbd>ਜਾਂ</kbd> <kbd>ਸਪੇਸ</kbd> ਦਬਾਓ",
@@ -380,7 +395,7 @@
     "401NotAuthorized": "401: ਅਧਿਕਾਰਤ ਨਹੀਂ। :",
     "401ErrorMsg": "ਤੁਹਾਡਾ ਖਾਤਾ ਸਹੀ ਢੰਗ ਨਾਲ ਸੈੱਟਅੱਪ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ।<br /> ਕਿਰਪਾ ਕਰਕੇ ਸੰਪਰਕ ਕਰੋ",
     "403Forbidden": "403: ਵਰਜਿਤ। :",
-    "403ErrorMsg": "ਇਸ ਪੰਨੇ ਨੂੰ {idp} ਪ੍ਰਮਾਣੀਕਰਨ ਦੀ ਲੋੜ ਹੈ।",
+    "403ErrorMsg": "ਇਸ ਪੰਨੇ ਨੂੰ {permission} ਪ੍ਰਮਾਣੀਕਰਨ ਦੀ ਲੋੜ ਹੈ।",
     "401UnAuthorized": "401: ਅਣਅਧਿਕਾਰਤ। :",
     "401UnAuthorizedErrMsg": "ਤੁਹਾਨੂੰ ਇਸ ਪੰਨੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ।"
   },
@@ -676,7 +691,15 @@
     "docGrnSucess": "ਦਸਤਾਵੇਜ਼ ਸਫਲਤਾਪੂਰਵਕ ਸਿਰਜਿਆ ਗਿਆ",
     "failedDocGenErrMsg": "ਦਸਤਾਵੇਜ਼ ਬਣਾਉਣ ਵਿੱਚ ਅਸਫਲ",
     "failedDocGenConsErrMsg": "ਟੈਮਪਲੇਟ ਦਰਜ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
-    "cDogsTemplate": "CDOGS ਟੈਂਪਲੇਟ"
+    "cDogsTemplate": "CDOGS ਟੈਂਪਲੇਟ",
+    "uploadCdogsTemplate": "CDOGS ਟੈਂਪਲੇਟ ਅੱਪਲੋਡ ਕਰੋ",
+    "printOptions": "ਛਾਪੇ ਦੇ ਵਿਕਲਪ",
+    "expandtextFields": "ਟੈਕਸਟ ਖੇਤਰਾਂ ਨੂੰ ਵਿਸਤਾਰ ਦਿਓ",
+    "moreInfo": "ਹੋਰ ਜਾਣਕਾਰੀ",
+    "defaultCdogsTemplate": "ਮੂਲ CDOGS ਟੈਂਪਲੇਟ ਵਰਤੋ",
+    "fileName": "ਫਾਈਲ ਦਾ ਨਾਂ",
+    "uploadDate": "ਅੱਪਲੋਡ ਮਿਤੀ",
+    "upload": "ਅੱਪਲੋਡ ਕਰੋ"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "ਕੰਪੋਨੈਂਟ ਜਾਣਕਾਰੀ ਲਿੰਕ",

@@ -1,17 +1,20 @@
 import { formService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useNotificationStore } from '~/store/notification';
+import { useIdpStore } from '~/store/identityProviders';
 import {
   FormPermissions,
   FormManagePermissions,
   IdentityMode,
-  IdentityProviders,
   NotificationTypes,
 } from '~/utils/constants';
 
 //
 // Utility Functions for determining permissions
 //
+export function isIdpEnabled(idps, type) {
+  return idps ? idps.includes(type) : false;
+}
 
 /**
  * @function checkFormSubmit
@@ -22,9 +25,8 @@ import {
 export function checkFormSubmit(userForm) {
   return (
     userForm &&
-    ((userForm.idps && userForm.idps.includes(IdentityProviders.PUBLIC)) ||
-      (userForm.permissions &&
-        userForm.permissions.includes(FormPermissions.SUBMISSION_CREATE)))
+    userForm.permissions &&
+    userForm.permissions.includes(FormPermissions.SUBMISSION_CREATE)
   );
 }
 
@@ -83,12 +85,12 @@ function getErrorMessage(options, error) {
  */
 export async function preFlightAuth(options = {}, next) {
   const notificationStore = useNotificationStore();
+  const idpStore = useIdpStore();
   // Support lambda functions (Consider making them util functions?)
   const getIdpHint = (values) => {
     return Array.isArray(values) && values.length ? values[0] : undefined;
   };
-  const isValidIdp = (value) =>
-    Object.values(IdentityProviders).includes(value);
+  const isValidIdpHint = (value) => idpStore.isValidIdpHint(value);
 
   // Determine current form or submission idpHint if available
   let idpHint = undefined;
@@ -137,7 +139,7 @@ export async function preFlightAuth(options = {}, next) {
 
     if (idpHint === IdentityMode.PUBLIC || !idpHint) {
       next(); // Permit navigation if public or team form
-    } else if (isValidIdp(idpHint) && userIdp === idpHint) {
+    } else if (isValidIdpHint(idpHint) && userIdp?.hint === idpHint) {
       next(); // Permit navigation if idps match
     } else {
       const msg = {
@@ -155,7 +157,7 @@ export async function preFlightAuth(options = {}, next) {
   } else {
     if (idpHint === IdentityMode.PUBLIC) {
       next(); // Permit navigation if public form
-    } else if (isValidIdp(idpHint)) {
+    } else if (isValidIdpHint(idpHint)) {
       authStore.login(idpHint); // Force login flow with specified idpHint
     } else {
       authStore.login(); // Force login flow with user choice

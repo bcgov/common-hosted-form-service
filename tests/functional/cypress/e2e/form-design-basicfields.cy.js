@@ -218,7 +218,7 @@ describe('Form Designer', () => {
     
     // Form Editing 
   it('Form Edit', () => {
-      cy.viewport(1000, 1800);
+      cy.viewport(1000, 1100);
       cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
       let savedButton = cy.get('[data-cy=saveButton]');
       expect(savedButton).to.not.be.null;

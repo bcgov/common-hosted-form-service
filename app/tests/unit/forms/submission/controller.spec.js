@@ -1,27 +1,28 @@
-const { getMockRes } = require('@jest-mock/express');
+const { getMockReq, getMockRes } = require('@jest-mock/express');
 
 const { Statuses } = require('../../../../src/forms/common/constants');
 const controller = require('../../../../src/forms/submission/controller');
+const formService = require('../../../../src/forms/form/service');
 const emailService = require('../../../../src/forms/email/emailService');
 const service = require('../../../../src/forms/submission/service');
 const cdogsService = require('../../../../src/components/cdogsService');
 
-const req = {
-  params: { formSubmissionId: '1' },
-  body: { code: Statuses.ASSIGNED },
-  currentUser: {},
-  headers: { referer: 'a' },
-};
-
 describe('addStatus', () => {
+  const req = {
+    params: { formSubmissionId: '1' },
+    body: { code: Statuses.ASSIGNED },
+    currentUser: {},
+    headers: { referer: 'a' },
+  };
+
   it('should not call email service if no email specified', async () => {
     service.read = jest.fn().mockReturnValue({ form: { id: '123' } });
     service.changeStatusState = jest.fn().mockReturnValue([1, 2, 3]);
     emailService.statusAssigned = jest.fn().mockReturnValue(true);
     await controller.addStatus(req, {}, jest.fn());
 
-    expect(service.changeStatusState).toHaveBeenCalledTimes(1);
-    expect(emailService.statusAssigned).toHaveBeenCalledTimes(0);
+    expect(service.changeStatusState).toBeCalledTimes(1);
+    expect(emailService.statusAssigned).toBeCalledTimes(0);
   });
 
   it('should call email service if an email specified', async () => {
@@ -32,9 +33,9 @@ describe('addStatus', () => {
     emailService.statusAssigned = jest.fn().mockReturnValue(true);
     await controller.addStatus(req, {}, jest.fn());
 
-    expect(service.changeStatusState).toHaveBeenCalledTimes(1);
-    expect(emailService.statusAssigned).toHaveBeenCalledTimes(1);
-    expect(emailService.statusAssigned).toHaveBeenCalledWith('123', 1, 'a@a.com', 'Email Content', 'a');
+    expect(service.changeStatusState).toBeCalledTimes(1);
+    expect(emailService.statusAssigned).toBeCalledTimes(1);
+    expect(emailService.statusAssigned).toBeCalledWith('123', 1, 'a@a.com', 'Email Content', 'a');
   });
 
   it('should call statusRevising if email specified', async () => {
@@ -46,9 +47,9 @@ describe('addStatus', () => {
     emailService.statusRevising = jest.fn().mockReturnValue(true);
     await controller.addStatus(req, {}, jest.fn());
 
-    expect(service.changeStatusState).toHaveBeenCalledTimes(1);
-    expect(emailService.statusRevising).toHaveBeenCalledTimes(1);
-    expect(emailService.statusRevising).toHaveBeenCalledWith('123', 1, 'a@a.com', 'Email content', 'a');
+    expect(service.changeStatusState).toBeCalledTimes(1);
+    expect(emailService.statusRevising).toBeCalledTimes(1);
+    expect(emailService.statusRevising).toBeCalledWith('123', 1, 'a@a.com', 'Email content', 'a');
   });
 
   it('should call statusCompleted if email specified', async () => {
@@ -61,58 +62,33 @@ describe('addStatus', () => {
     emailService.statusCompleted = jest.fn().mockReturnValue(true);
     await controller.addStatus(req, {}, jest.fn());
 
-    expect(service.changeStatusState).toHaveBeenCalledTimes(1);
-    expect(emailService.statusCompleted).toHaveBeenCalledTimes(1);
-    expect(emailService.statusCompleted).toHaveBeenCalledWith('123', 1, 'a@a.com', 'Email Content', 'a');
+    expect(service.changeStatusState).toBeCalledTimes(1);
+    expect(emailService.statusCompleted).toBeCalledTimes(1);
+    expect(emailService.statusCompleted).toBeCalledWith('123', 1, 'a@a.com', 'Email Content', 'a');
   });
 });
 
-describe('templateUploadAndRender', () => {
-  const confirmationId = '0763A618';
-  const content = 'SGVsbG8ge2Quc2ltcGxldGV4dGZpZWxkfSEK'; // Hello {d.simpletextfield}!
-  const contentFileType = 'txt';
-  const outputFileName = 'template_hello_world';
-  const outputFileType = 'pdf';
-  const submissionId = '0763a618-de57-454b-99cc-3a7c5e992b77';
+describe('template rendering', () => {
+  // Define some valid request and response data. The repetition here, rather
+  // than pulling data from other objects, is to improve readability.
 
-  const templateBody = {
-    body: {
-      data: {
-        chefs: {
-          confirmationId: confirmationId,
-          submissionId: submissionId,
-        },
-        simpletextfield: 'firstName lastName',
-        submit: true,
-      },
-      options: {
-        reportName: outputFileName,
-        convertTo: outputFileType,
-        overwrite: true,
-      },
-      template: {
-        content: content,
-        encodingType: 'base64',
-        fileType: contentFileType,
-      },
+  const validCdogsTemplate = {
+    options: {
+      convertTo: 'pdf',
+      overwrite: true,
+      reportName: 'template_hello_world',
+    },
+    template: {
+      content: btoa('Hello {d.simpletextfield}!'),
+      encodingType: 'base64',
+      fileType: 'txt',
     },
   };
 
-  const templateReq = { ...req, ...templateBody };
-
-  const mockCdogsResponse = {
-    data: {},
-    headers: {},
-    status: 200,
-  };
-
-  const mockTemplateReadResponse = {
-    form: {
-      id: '123',
-    },
+  const validSubmission = {
     submission: {
-      confirmationId: confirmationId,
-      id: submissionId,
+      confirmationId: '0763A618',
+      id: '0763a618-de57-454b-99cc-3a7c5e992b77',
       submission: {
         data: {
           simpletextfield: 'firstName lastName',
@@ -120,39 +96,264 @@ describe('templateUploadAndRender', () => {
         },
       },
     },
+    version: {
+      version: 1,
+    },
   };
 
-  it('should call cdogs service if a body specified', async () => {
-    service.read = jest.fn().mockReturnValue(mockTemplateReadResponse);
-    cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
-    const { res } = getMockRes();
+  const validCdogsRequest = {
+    data: {
+      chefs: {
+        confirmationId: '0763A618',
+        formVersion: 1,
+        submissionId: '0763a618-de57-454b-99cc-3a7c5e992b77',
+      },
+      simpletextfield: 'firstName lastName',
+      submit: true,
+    },
+    options: {
+      convertTo: 'pdf',
+      overwrite: true,
+      reportName: 'template_hello_world',
+    },
+    template: {
+      content: btoa('Hello {d.simpletextfield}!'),
+      encodingType: 'base64',
+      fileType: 'txt',
+    },
+  };
 
-    await controller.templateUploadAndRender(templateReq, res, jest.fn());
+  const validDocumentTemplate = {
+    filename: 'template_hello_world.txt',
+    template: 'Hello {d.simpletextfield}!',
+  };
 
-    expect(cdogsService.templateUploadAndRender).toHaveBeenCalledTimes(1);
-    expect(cdogsService.templateUploadAndRender).toHaveBeenCalledWith(templateReq.body);
-    expect(res.set).toHaveBeenCalledWith(
-      expect.objectContaining({
-        'Content-Disposition': 'attachment',
-      })
-    );
+  const mockCdogsResponse = {
+    data: {},
+    headers: {
+      'content-disposition': 'attachment; filename=template_hello_world.pdf',
+    },
+    status: 200,
+  };
+
+  describe('draftTemplateUploadAndRender', () => {
+    // A draft submission won't have an id or confirmationId.
+    const validDraftSubmission = structuredClone(validSubmission);
+    delete validDraftSubmission.submission.confirmationId;
+    delete validDraftSubmission.submission.id;
+
+    // A draft request won't have the custom "chefs" data.
+    const validDraftCdogsRequest = structuredClone(validCdogsRequest);
+    delete validDraftCdogsRequest.data.chefs;
+
+    const validRequest = {
+      body: {
+        template: {
+          ...validCdogsTemplate,
+        },
+        ...validDraftSubmission.submission,
+      },
+    };
+
+    describe('error response when', () => {
+      test('request is missing body', async () => {
+        cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
+        const req = getMockReq();
+        const { res, next } = getMockRes();
+
+        await controller.draftTemplateUploadAndRender(req, res, next);
+
+        expect(cdogsService.templateUploadAndRender).toBeCalledTimes(0);
+        expect(res.send).toBeCalledTimes(0);
+        expect(res.set).toBeCalledTimes(0);
+        expect(res.status).toBeCalledTimes(0);
+        expect(next).toBeCalledWith(expect.any(TypeError));
+      });
+    });
+
+    describe('200 response when', () => {
+      test('request is valid', async () => {
+        cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
+        const req = getMockReq(validRequest);
+        const { res, next } = getMockRes();
+
+        await controller.draftTemplateUploadAndRender(req, res, next);
+
+        expect(cdogsService.templateUploadAndRender).toBeCalledTimes(1);
+        expect(cdogsService.templateUploadAndRender).toBeCalledWith(validDraftCdogsRequest);
+        expect(res.send).toBeCalledTimes(1);
+        expect(res.set).toBeCalledWith(
+          expect.objectContaining({
+            'Content-Disposition': 'attachment; filename=template_hello_world.pdf',
+          })
+        );
+        expect(res.status).toBeCalledWith(200);
+      });
+
+      test('cdogs response has no content disposition', async () => {
+        const cdogsResponse = structuredClone(mockCdogsResponse);
+        delete cdogsResponse.headers['content-disposition'];
+        cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(cdogsResponse);
+        const req = getMockReq(validRequest);
+        const { res, next } = getMockRes();
+
+        await controller.draftTemplateUploadAndRender(req, res, next);
+
+        expect(cdogsService.templateUploadAndRender).toBeCalledTimes(1);
+        expect(cdogsService.templateUploadAndRender).toBeCalledWith(validDraftCdogsRequest);
+        expect(res.send).toBeCalledTimes(1);
+        expect(res.set).toBeCalledWith(
+          expect.objectContaining({
+            'Content-Disposition': 'attachment',
+          })
+        );
+        expect(res.status).toBeCalledWith(200);
+      });
+    });
   });
 
-  it('should use the cdogs content disposition when it exists', async () => {
-    service.read = jest.fn().mockReturnValue(mockTemplateReadResponse);
-    mockCdogsResponse.headers['content-disposition'] = 'attachment; filename=template_hello_world.pdf';
-    cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
-    const { res } = getMockRes();
+  describe('templateRender', () => {
+    const validRequest = {
+      body: {
+        ...validCdogsTemplate,
+      },
+      params: {
+        formSubmissionId: validSubmission.submission.id,
+      },
+    };
 
-    await controller.templateUploadAndRender(templateReq, res, jest.fn());
+    describe('error response when', () => {
+      test('unsuccessful service call', async () => {
+        const error = new Error();
+        service.read = jest.fn().mockRejectedValue(error);
+        cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
+        const req = getMockReq(validRequest);
+        const { res, next } = getMockRes();
 
-    expect(cdogsService.templateUploadAndRender).toHaveBeenCalledTimes(1);
-    expect(cdogsService.templateUploadAndRender).toHaveBeenCalledWith(templateReq.body);
-    expect(res.set).toHaveBeenCalledWith(
-      expect.objectContaining({
-        'Content-Disposition': 'attachment; filename=template_hello_world.pdf',
-      })
-    );
+        await controller.templateRender(req, res, next);
+
+        expect(cdogsService.templateUploadAndRender).toBeCalledTimes(0);
+        expect(res.send).toBeCalledTimes(0);
+        expect(res.set).toBeCalledTimes(0);
+        expect(res.status).toBeCalledTimes(0);
+        expect(next).toBeCalledWith(error);
+      });
+    });
+
+    describe('200 response when', () => {
+      test('request is valid', async () => {
+        service.read = jest.fn().mockReturnValue(validSubmission);
+        formService.documentTemplateRead = jest.fn().mockReturnValue(validDocumentTemplate);
+        cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
+        const req = getMockReq(validRequest);
+        const { res, next } = getMockRes();
+
+        await controller.templateRender(req, res, next);
+
+        expect(cdogsService.templateUploadAndRender).toBeCalledTimes(1);
+        expect(cdogsService.templateUploadAndRender).toBeCalledWith(validCdogsRequest);
+        expect(res.send).toBeCalledTimes(1);
+        expect(res.set).toBeCalledWith(
+          expect.objectContaining({
+            'Content-Disposition': 'attachment; filename=template_hello_world.pdf',
+          })
+        );
+        expect(res.status).toBeCalledWith(200);
+      });
+
+      test('cdogs response has no content disposition', async () => {
+        service.read = jest.fn().mockReturnValue(validSubmission);
+        formService.documentTemplateRead = jest.fn().mockReturnValue(validDocumentTemplate);
+        const cdogsResponse = structuredClone(mockCdogsResponse);
+        delete cdogsResponse.headers['content-disposition'];
+        cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(cdogsResponse);
+        const req = getMockReq(validRequest);
+        const { res, next } = getMockRes();
+
+        await controller.templateRender(req, res, next);
+
+        expect(cdogsService.templateUploadAndRender).toBeCalledTimes(1);
+        expect(cdogsService.templateUploadAndRender).toBeCalledWith(validCdogsRequest);
+        expect(res.send).toBeCalledTimes(1);
+        expect(res.set).toBeCalledWith(
+          expect.objectContaining({
+            'Content-Disposition': 'attachment',
+          })
+        );
+        expect(res.status).toBeCalledWith(200);
+      });
+    });
+  });
+
+  describe('templateUploadAndRender', () => {
+    const validRequest = {
+      body: {
+        ...validCdogsTemplate,
+      },
+      params: {
+        formSubmissionId: validSubmission.submission.id,
+      },
+    };
+
+    describe('error response when', () => {
+      test('unsuccessful service call', async () => {
+        const error = new Error();
+        service.read = jest.fn().mockRejectedValue(error);
+        cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
+        const req = getMockReq(validRequest);
+        const { res, next } = getMockRes();
+
+        await controller.templateUploadAndRender(req, res, next);
+
+        expect(cdogsService.templateUploadAndRender).toBeCalledTimes(0);
+        expect(res.send).toBeCalledTimes(0);
+        expect(res.set).toBeCalledTimes(0);
+        expect(res.status).toBeCalledTimes(0);
+        expect(next).toBeCalledWith(error);
+      });
+    });
+
+    describe('200 response when', () => {
+      test('request is valid', async () => {
+        service.read = jest.fn().mockReturnValue(validSubmission);
+        cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(mockCdogsResponse);
+        const req = getMockReq(validRequest);
+        const { res, next } = getMockRes();
+
+        await controller.templateUploadAndRender(req, res, next);
+
+        expect(cdogsService.templateUploadAndRender).toBeCalledTimes(1);
+        expect(cdogsService.templateUploadAndRender).toBeCalledWith(validCdogsRequest);
+        expect(res.send).toBeCalledTimes(1);
+        expect(res.set).toBeCalledWith(
+          expect.objectContaining({
+            'Content-Disposition': 'attachment; filename=template_hello_world.pdf',
+          })
+        );
+        expect(res.status).toBeCalledWith(200);
+      });
+
+      test('cdogs response has no content disposition', async () => {
+        service.read = jest.fn().mockReturnValue(validSubmission);
+        const cdogsResponse = structuredClone(mockCdogsResponse);
+        delete cdogsResponse.headers['content-disposition'];
+        cdogsService.templateUploadAndRender = jest.fn().mockReturnValue(cdogsResponse);
+        const req = getMockReq(validRequest);
+        const { res, next } = getMockRes();
+
+        await controller.templateUploadAndRender(req, res, next);
+
+        expect(cdogsService.templateUploadAndRender).toBeCalledTimes(1);
+        expect(cdogsService.templateUploadAndRender).toBeCalledWith(validCdogsRequest);
+        expect(res.send).toBeCalledTimes(1);
+        expect(res.set).toBeCalledWith(
+          expect.objectContaining({
+            'Content-Disposition': 'attachment',
+          })
+        );
+        expect(res.status).toBeCalledWith(200);
+      });
+    });
   });
 });
 
@@ -176,8 +377,8 @@ describe('deleteMutipleSubmissions', () => {
     service.deleteMutipleSubmissions = jest.fn().mockReturnValue(returnValue);
     await controller.deleteMutipleSubmissions(req, {}, jest.fn());
 
-    expect(service.deleteMutipleSubmissions).toHaveBeenCalledTimes(1);
-    expect(service.deleteMutipleSubmissions).toHaveBeenCalledWith(req.body.submissionIds, req.currentUser);
+    expect(service.deleteMutipleSubmissions).toBeCalledTimes(1);
+    expect(service.deleteMutipleSubmissions).toBeCalledWith(req.body.submissionIds, req.currentUser);
   });
 });
 
@@ -201,7 +402,7 @@ describe('restoreMutipleSubmissions', () => {
     service.restoreMutipleSubmissions = jest.fn().mockReturnValue(returnValue);
     await controller.restoreMutipleSubmissions(req, {}, jest.fn());
 
-    expect(service.restoreMutipleSubmissions).toHaveBeenCalledTimes(1);
-    expect(service.restoreMutipleSubmissions).toHaveBeenCalledWith(req.body.submissionIds, req.currentUser);
+    expect(service.restoreMutipleSubmissions).toBeCalledTimes(1);
+    expect(service.restoreMutipleSubmissions).toBeCalledWith(req.body.submissionIds, req.currentUser);
   });
 });

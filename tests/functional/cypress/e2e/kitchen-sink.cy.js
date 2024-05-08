@@ -45,6 +45,7 @@ const data = {
 //
 function helperTwoColumn() {
   cy.contains('span', 'Layout & Static Content').click();
+  //cy.get('[href="#2Column"]').click();
   cy.contains('span', 'Layout & Static Content').click();
   cy.get('[href="#2Column"]').click();
 

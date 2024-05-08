@@ -36,7 +36,7 @@ describe('Form Designer', () => {
     
 
   });  
-// Verifying fields in the form settings page
+// Publish a simple form with Simplebc Address component
  it('Checks simplebcaddress and form submission', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();

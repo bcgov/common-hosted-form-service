@@ -48,8 +48,12 @@
         "editor.formatOnSave": true
       }
     }
-  }
+  },
 
   // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-  //"remoteUser": "root"
+  //"remoteUser": "root",
+
+  "containerEnv": {
+    "NODE_CONFIG_DIR": "${containerWorkspaceFolder}/.devcontainer/chefs_local"
+  }
 }

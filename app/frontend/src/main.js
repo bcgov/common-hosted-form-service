@@ -17,11 +17,17 @@ import getRouter from '~/router';
 import { useAuthStore } from '~/store/auth';
 import { useAppStore } from '~/store/app';
 import { assertOptions, getConfig, sanitizeConfig } from '~/utils/keycloak';
+import { rbacService } from './services';
+import { useIdpStore } from '~/store/identityProviders';
 
 let keycloak = null;
 const pinia = createPinia();
 
 const app = createApp({
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   render: () => h(App),
 });
 
@@ -40,6 +46,7 @@ Formio.use(BcGovFormioComponents);
 
 /* import clipboard */
 import Clipboard from 'vue3-clipboard';
+import { useI18n } from 'vue-i18n';
 app.use(Clipboard, {
   autoSetContainer: true,
   appendToBody: true,
@@ -50,6 +57,32 @@ app.use(vuetify);
 
 NProgress.configure({ showSpinner: false });
 NProgress.start();
+
+// Look into a better way of importing the BaseComponents
+import BaseAuthButton from '~/components/base/BaseAuthButton.vue';
+import BaseCopyToClipboard from '~/components/base/BaseCopyToClipboard.vue';
+import BaseDialog from '~/components/base/BaseDialog.vue';
+import BaseFilter from '~/components/base/BaseFilter.vue';
+import BaseImagePopout from '~/components/base/BaseImagePopout.vue';
+import BaseInfoCard from '~/components/base/BaseInfoCard.vue';
+import BaseInternationalization from '~/components/base/BaseInternationalization.vue';
+import BaseNotificationBar from '~/components/base/BaseNotificationBar.vue';
+import BaseNotificationContainer from '~/components/base/BaseNotificationContainer.vue';
+import BasePanel from '~/components/base/BasePanel.vue';
+import BasePrintButton from '~/components/base/BasePrintButton.vue';
+import BaseSecure from '~/components/base/BaseSecure.vue';
+app.component('BaseAuthButton', BaseAuthButton);
+app.component('BaseCopyToClipboard', BaseCopyToClipboard);
+app.component('BaseDialog', BaseDialog);
+app.component('BaseFilter', BaseFilter);
+app.component('BaseImagePopout', BaseImagePopout);
+app.component('BaseInfoCard', BaseInfoCard);
+app.component('BaseInternationalization', BaseInternationalization);
+app.component('BaseNotificationBar', BaseNotificationBar);
+app.component('BaseNotificationContainer', BaseNotificationContainer);
+app.component('BasePanel', BasePanel);
+app.component('BasePrintButton', BasePrintButton);
+app.component('BaseSecure', BaseSecure);
 
 // IE11 Detection (https://stackoverflow.com/a/21825207)
 if (!!window.MSInputMethodContext && !!document.documentMode) {
@@ -87,6 +120,25 @@ function initializeApp(kcSuccess = false, basePath = '/') {
 }
 
 /**
+ * @function loadIdentityProviders
+ * Load Identity Provider configuration from API Server/database - NOT from Keycloak.
+ */
+async function loadIdentityProviders() {
+  const idpStore = useIdpStore();
+  try {
+    // Get data if it isn't already in session storage
+    if (!idpStore.providers) {
+      const { data } = await rbacService.getIdentityProviders({ active: true });
+      idpStore.providers = Object.freeze(data);
+    }
+    return true;
+  } catch (err) {
+    idpStore.providers = undefined;
+    return false;
+  }
+}
+
+/**
  * @function loadConfig
  * Acquires the configuration state from the backend server
  */
@@ -109,12 +161,17 @@ async function loadConfig() {
     const appStore = useAppStore();
     appStore.config = Object.freeze(config);
 
+    const idpsLoaded = await loadIdentityProviders();
+    if (!idpsLoaded) {
+      throw new Error('Could not load Identity Provider configuration.');
+    }
+
     if (
       !config ||
-      !config.keycloak ||
-      !config.keycloak.clientId ||
-      !config.keycloak.realm ||
-      !config.keycloak.serverUrl
+      !config.oidc ||
+      !config.oidc.clientId ||
+      !config.oidc.realm ||
+      !config.oidc.serverUrl
     ) {
       throw new Error('Keycloak is misconfigured');
     }
@@ -139,11 +196,11 @@ function loadKeycloak(config) {
   };
 
   const options = Object.assign({}, defaultParams, {
-    init: { onLoad: 'check-sso' },
+    init: { pkceMethod: 'S256', checkLoginIframe: false, onLoad: 'check-sso' },
     config: {
-      clientId: config.keycloak.clientId,
-      realm: config.keycloak.realm,
-      url: config.keycloak.serverUrl,
+      clientId: config.oidc.clientId,
+      realm: config.oidc.realm,
+      url: config.oidc.serverUrl,
     },
     onReady: () => {
       initializeApp(true, config.basePath);
@@ -162,6 +219,7 @@ function loadKeycloak(config) {
       const ctor = sanitizeConfig(cfg);
 
       const authStore = useAuthStore();
+      authStore.logoutUrl = config.oidc.logoutUrl;
 
       keycloak = new Keycloak(ctor);
       keycloak.onReady = (authenticated) => {
@@ -181,9 +239,7 @@ function loadKeycloak(config) {
         );
         authStore.logoutFn = () => {
           clearInterval(updateTokenInterval);
-          keycloak.logout(
-            options.logout || { redirectUri: config['logoutRedirectUri'] }
-          );
+          authStore.updateKeycloak(keycloak, false);
         };
       };
       keycloak.onAuthRefreshSuccess = () => {

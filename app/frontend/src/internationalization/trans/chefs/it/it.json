@@ -68,7 +68,22 @@
     "status": "Stato",
     "update": "Aggiornamento",
     "cancel": "Annulla",
-    "eventSubscription": "Abbonamento all'evento"
+    "eventSubscription": "Abbonamento all'evento",
+    "cdogsTemplate": "Modello CDOGS"
+  },
+  "documentTemplate": {
+    "uploadTemplate": "Carica template CDOGS",
+    "uploadTemplateFile": "Carica file di template",
+    "upload": "Carica",
+    "delete": "Elimina",
+    "download": "Scarica",
+    "invalidFileMessage": "Il template deve usare una delle seguenti estensioni: .txt, .docx, .html, .odt, .pptx, .xlsx, .pdf",
+    "uploadSuccess": "Template caricato con successo.",
+    "uploadError": "Si è verificato un errore durante il caricamento del template.",
+    "deleteSuccess": "Template eliminato con successo.",
+    "deleteError": "Si è verificato un errore durante l'eliminazione del template.",
+    "fetchError": "Si è verificato un errore durante il recupero del template.",
+    "info": "Carica un template per utilizzare il Servizio di Generazione Documenti Comuni (CDOGS)"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Premi <kbd>invio</kbd> o <kbd>,</kbd> o <kbd>spazio</kbd> per aggiungere più indirizzi email",
@@ -380,7 +395,7 @@
     "401NotAuthorized": "401: non autorizzato. :",
     "401ErrorMsg": "Il tuo account non è impostato correttamente.<br /> Si prega di contattare",
     "403Forbidden": "403: Proibito. :",
-    "403ErrorMsg": "Questa pagina richiede l'autenticazione {idp}.",
+    "403ErrorMsg": "Questa pagina richiede l'autenticazione {permission}.",
     "401UnAuthorized": "401: non autorizzato. :",
     "401UnAuthorizedErrMsg": "Non sei autorizzato ad accedere a questa pagina."
   },
@@ -676,7 +691,15 @@
     "docGrnSucess": "Documento generato con successo",
     "failedDocGenErrMsg": "Impossibile generare il documento",
     "failedDocGenConsErrMsg": "Errore durante l'invio del modello: {error}",
-    "cDogsTemplate": "Modello CDOGS"
+    "cDogsTemplate": "Modello CDOGS",
+    "uploadCdogsTemplate": "Carica template CDOGS",
+    "printOptions": "Opzioni di stampa",
+    "expandtextFields": "Espandi campi di testo",
+    "moreInfo": "Ulteriori informazioni",
+    "defaultCdogsTemplate": "Usa template CDOGS predefinito",
+    "fileName": "Nome del file",
+    "uploadDate": "Data di caricamento",
+    "upload": "Carica"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Collegamento alle informazioni sui componenti",
