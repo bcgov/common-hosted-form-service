@@ -9,9 +9,12 @@ import { describe, expect, it, vi } from 'vitest';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import Download from '~/views/file/Download.vue';
+import * as transformUtils from '~/utils/transformUtils';
 
 describe('Download.vue', () => {
   let pinia;
+  const getDispositionSpy = vi.spyOn(transformUtils, 'getDisposition');
+  const clearTimeoutSpy = vi.spyOn(window, 'clearTimeout');
 
   beforeEach(() => {
     // Create a new instance of Pinia for each test to ensure complete isolation
@@ -38,17 +41,16 @@ describe('Download.vue', () => {
 
   it('renders and downloads json', async () => {
     const formStore = useFormStore();
-    formStore.downloadFile = vi.fn().mockImplementation(() => {});
-    formStore.downloadedFile = {
-      data: '{}',
-      headers: {
-        'content-type': 'application/json',
-        'content-disposition': 'attachment; filename=test.csv',
-      },
-    };
-
-    const getFileSpy = vi.spyOn(Download.methods, 'getFile');
-    const getDispositionSpy = vi.spyOn(Download.methods, 'getDisposition');
+    formStore.downloadFile = vi.fn().mockImplementation((_id) => {
+      formStore.downloadedFile = {
+        data: '{}',
+        headers: {
+          'content-type': 'application/json',
+          'content-disposition': 'attachment; filename=test.csv',
+        },
+      };
+    });
+    const downloadFileSpy = vi.spyOn(formStore, 'downloadFile');
 
     const wrapper = shallowMount(Download, {
       props: {
@@ -71,37 +73,42 @@ describe('Download.vue', () => {
     });
 
     await flushPromises();
+
+    expect(downloadFileSpy).toHaveBeenCalledTimes(1);
     expect(wrapper.html()).toMatch('base-secure');
     expect(wrapper.html()).toMatch('trans.download.chefsDataExport');
     expect(wrapper.html()).not.toMatch(
       'trans.download.preparingForDownloading'
     );
     // Assertions remain the same
-    expect(getFileSpy).toHaveBeenCalledTimes(1);
     expect(getDispositionSpy).toHaveBeenCalledTimes(1);
     // Reset spy manually if needed
-    getFileSpy.mockClear();
     formStore.downloadFile.mockClear();
+
+    await wrapper.unmount();
+
+    expect(clearTimeoutSpy).toHaveBeenCalledTimes(1);
   });
 
-  /* it('renders and downloads some file', async () => {
-    const getFileSpy = vi.spyOn(Download.methods, 'getFile');
-    vi.spyOn(window.URL, 'createObjectURL').mockImplementation(() => {
-      return '#';
+  it('renders and downloads text even with no data', async () => {
+    const formStore = useFormStore();
+    formStore.downloadFile = vi.fn().mockImplementation((_id) => {
+      formStore.downloadedFile = {
+        data: null,
+        headers: {
+          'content-type': 'content/text',
+          'content-disposition': 'attachment; filename=test.csv',
+        },
+      };
     });
-    formStore.downloadFile.mockImplementation(() => {});
-    formStore.downloadedFile = {
-      data: '{}',
-      headers: {
-        'content-type': 'text/plain',
-        'content-disposition': 'attachment; filename=test.txt',
-      },
-    };
+    const downloadFileSpy = vi.spyOn(formStore, 'downloadFile');
+
     const wrapper = mount(Download, {
       props: {
         id: '1',
       },
       global: {
+        plugins: [pinia],
         stubs: {
           BaseSecure: {
             name: 'BaseSecure',
@@ -114,16 +121,29 @@ describe('Download.vue', () => {
 
     await flushPromises();
 
+    expect(downloadFileSpy).toHaveBeenCalledTimes(1);
+    // Assertions remain the same
     expect(wrapper.html()).toMatch('base-secure');
-    expect(wrapper.html()).toMatch('CHEFS Data Export');
-    expect(wrapper.html()).not.toMatch('Preparing for download...');
-    expect(getFileSpy).toHaveBeenCalledTimes(1);
-  }); */
+    expect(wrapper.html()).toMatch('trans.download.chefsDataExport');
+    expect(wrapper.html()).not.toMatch(
+      'trans.download.preparingForDownloading'
+    );
+    // Assertions remain the same
+    expect(getDispositionSpy).toHaveBeenCalledTimes(1);
+    // Reset spy manually if needed
+    formStore.downloadFile.mockClear();
+
+    await wrapper.unmount();
+
+    expect(clearTimeoutSpy).toHaveBeenCalledTimes(1);
+  });
 
   it('does not render if failed download', async () => {
     const formStore = useFormStore();
-    const getFileSpy = vi.spyOn(Download.methods, 'getFile');
-    formStore.downloadFile.mockImplementation(() => {});
+    formStore.downloadFile = vi.fn().mockImplementation((_id) => {
+      formStore.downloadedFile = {};
+    });
+    const downloadFileSpy = vi.spyOn(formStore, 'downloadFile');
     const wrapper = mount(Download, {
       props: {
         id: '1',
@@ -145,6 +165,6 @@ describe('Download.vue', () => {
     expect(wrapper.html()).toMatch('base-secure');
     expect(wrapper.html()).toMatch('trans.download.chefsDataExport');
     expect(wrapper.html()).toMatch('trans.download.preparingForDownloading');
-    expect(getFileSpy).toHaveBeenCalledTimes(1);
+    expect(downloadFileSpy).toHaveBeenCalledTimes(1);
   });
 });

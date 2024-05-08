@@ -68,7 +68,22 @@
     "status": "وضعیت",
     "update": "به روز رسانی",
     "cancel": "لغو کنید",
-    "eventSubscription": "اشتراک رویداد"
+    "eventSubscription": "اشتراک رویداد",
+    "cdogsTemplate": "قالب CDOGS"
+  },
+  "documentTemplate": {
+    "uploadTemplate": "بارگذاری قالب CDOGS",
+    "uploadTemplateFile": "بارگذاری پرونده قالب",
+    "upload": "بارگذاری",
+    "delete": "حذف",
+    "download": "دانلود",
+    "invalidFileMessage": "قالب باید یکی از پسوندهای زیر را استفاده کند: .txt، .docx، .html، .odt، .pptx، .xlsx، .pdf",
+    "uploadSuccess": "قالب با موفقیت بارگذاری شد.",
+    "uploadError": "خطایی در هنگام بارگذاری قالب رخ داد.",
+    "deleteSuccess": "قالب با موفقیت حذف شد.",
+    "deleteError": "خطایی در هنگام حذف قالب رخ داد.",
+    "fetchError": "خطایی در هنگام دریافت قالب رخ داد.",
+    "info": "قالبی را بارگذاری کنید تا از خدمات تولید سند مشترک (CDOGS) استفاده کنید"
   },
   "formSettings": {
     "pressToAddMultiEmail": "برای افزودن چندین آدرس ایمیل، <kbd>اینتر</kbd> یا <kbd>،</kbd> یا <kbd>فاصله</kbd> را فشار دهید",
@@ -380,7 +395,7 @@
     "401NotAuthorized": "401: مجاز نیست. :",
     "401ErrorMsg": "حساب شما به درستی تنظیم نشده است.<br /> لطفا تماس بگیرید",
     "403Forbidden": "403: ممنوع. :",
-    "403ErrorMsg": "این صفحه به احراز هویت {idp} نیاز دارد.",
+    "403ErrorMsg": "این صفحه به احراز هویت {permission} نیاز دارد.",
     "401UnAuthorized": "401: غیر مجاز. :",
     "401UnAuthorizedErrMsg": "شما اجازه دسترسی به این صفحه را ندارید."
   },
@@ -676,7 +691,15 @@
     "docGrnSucess": "سند با موفقیت ایجاد شد",
     "failedDocGenErrMsg": "سند ایجاد نشد",
     "failedDocGenConsErrMsg": "خطا در ارسال الگو: {error}",
-    "cDogsTemplate": "قالب CDOGS"
+    "cDogsTemplate": "قالب CDOGS",
+    "uploadCdogsTemplate": "بارگذاری قالب CDOGS",
+    "printOptions": "گزینه‌های چاپ",
+    "expandtextFields": "گسترش فیلدهای متنی",
+    "moreInfo": "اطلاعات بیشتر",
+    "defaultCdogsTemplate": "استفاده از قالب پیش‌فرض CDOGS",
+    "fileName": "نام فایل",
+    "uploadDate": "تاریخ بارگذاری",
+    "upload": "بارگذاری"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "لینک اطلاعات کامپوننت",

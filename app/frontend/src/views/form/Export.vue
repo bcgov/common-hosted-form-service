@@ -1,27 +1,20 @@
-<script>
-import BaseSecure from '~/components/base/BaseSecure.vue';
+<script setup>
+import { computed } from 'vue';
 import ExportSubmissions from '~/components/forms/ExportSubmissions.vue';
-import { IdentityProviders } from '~/utils/constants';
+import { AppPermissions } from '~/utils/constants';
 
-export default {
-  components: {
-    BaseSecure,
-    ExportSubmissions,
+defineProps({
+  f: {
+    type: String,
+    required: true,
   },
-  props: {
-    f: {
-      type: String,
-      required: true,
-    },
-  },
-  computed: {
-    IDP: () => IdentityProviders,
-  },
-};
+});
+
+const APP_PERMS = computed(() => AppPermissions);
 </script>
 
 <template>
-  <BaseSecure :idp="[IDP.IDIR, IDP.BCEIDBUSINESS]">
+  <BaseSecure :permission="APP_PERMS.VIEWS_FORM_EXPORT">
     <ExportSubmissions :form-id="f" />
   </BaseSecure>
 </template>

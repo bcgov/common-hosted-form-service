@@ -1,12 +1,13 @@
 const service = require('../../../../src/forms/auth/service');
+const idpService = require('../../../../src/components/idpService');
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('parseToken', () => {
-  it('returns a default object when an exception happens', () => {
-    const result = service.parseToken(undefined);
+  it('returns a default object when an exception happens', async () => {
+    const result = await idpService.parseToken(undefined);
     expect(result).toEqual({
       idpUserId: undefined,
       username: 'public',
@@ -44,17 +45,19 @@ describe('formAccessToForm', () => {
 describe('login', () => {
   const resultSample = {
     user: 'me',
+    idpHint: 'fake',
   };
 
   it('returns a currentUser object', async () => {
-    service.parseToken = jest.fn().mockReturnValue('userInf');
+    idpService.parseToken = jest.fn().mockReturnValue({ idp: 'fake' });
+    idpService.findByIdp = jest.fn().mockReturnValue({ idp: 'fake', code: 'fake' });
     service.getUserId = jest.fn().mockReturnValue({ user: 'me' });
     const token = 'token';
     const result = await service.login(token);
-    expect(service.parseToken).toHaveBeenCalledTimes(1);
-    expect(service.parseToken).toHaveBeenCalledWith(token);
+    expect(idpService.parseToken).toHaveBeenCalledTimes(1);
+    expect(idpService.parseToken).toHaveBeenCalledWith(token);
     expect(service.getUserId).toHaveBeenCalledTimes(1);
-    expect(service.getUserId).toHaveBeenCalledWith('userInf');
+    expect(service.getUserId).toHaveBeenCalledWith({ idp: 'fake' });
     expect(result).toBeTruthy();
     expect(result).toEqual(resultSample);
   });

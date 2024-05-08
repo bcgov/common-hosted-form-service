@@ -146,7 +146,7 @@ export default {
       <template #item.componentName="{ item }">
         <div>
           <div style="text-transform: capitalize" class="label">
-            {{ item.raw.componentName }}
+            {{ item.componentName }}
           </div>
         </div>
       </template>
@@ -158,7 +158,7 @@ export default {
               color="primary"
               size="small"
               variant="text"
-              @click="onOpenDialog(item.raw.componentName)"
+              @click="onOpenDialog(item.componentName)"
             >
               <v-icon icon="mdi:mdi-pencil-box-outline"></v-icon>
               <span
@@ -175,8 +175,8 @@ export default {
               color="primary"
               variant="text"
               size="small"
-              :disabled="canDisabled(item.raw.componentName)"
-              @click="onOpenPreviewDialog(item.raw.componentName)"
+              :disabled="canDisabled(item.componentName)"
+              @click="onOpenPreviewDialog(item.componentName)"
             >
               <v-icon icon="mdi:mdi-eye"></v-icon>
               <span
@@ -193,7 +193,7 @@ export default {
               color="primary"
               variant="text"
               size="small"
-              :disabled="canDisabled(item.raw.componentName)"
+              :disabled="canDisabled(item.componentName)"
             >
               <v-switch
                 v-model="publish[index]"
@@ -201,9 +201,7 @@ export default {
                 density="compact"
                 hide-details
                 color="success"
-                @update:model-value="
-                  onSwitchChange(item.raw.componentName, index)
-                "
+                @update:model-value="onSwitchChange(item.componentName, index)"
               ></v-switch>
               <span
                 style="width: 120px !important; font-size: 16px"

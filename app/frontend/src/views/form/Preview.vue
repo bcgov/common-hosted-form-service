@@ -1,39 +1,34 @@
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
 import BaseSecure from '~/components/base/BaseSecure.vue';
 import FormViewer from '~/components/designer/FormViewer.vue';
 
 import { useFormStore } from '~/store/form';
-import { IdentityProviders } from '~/utils/constants';
+import { AppPermissions } from '~/utils/constants';
 
-export default {
-  components: {
-    BaseSecure,
-    FormViewer,
+defineProps({
+  d: {
+    type: String,
+    default: null,
   },
-  props: {
-    d: {
-      type: String,
-      default: null,
-    },
-    f: {
-      type: String,
-      default: null,
-    },
-    v: {
-      type: String,
-      default: null,
-    },
+  f: {
+    type: String,
+    default: null,
   },
-  computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
-    IDP: () => IdentityProviders,
+  v: {
+    type: String,
+    default: null,
   },
-};
+});
+
+const { isRTL, lang } = storeToRefs(useFormStore());
+
+const APP_PERMS = computed(() => AppPermissions);
 </script>
 
 <template>
-  <BaseSecure :idp="[IDP.IDIR]">
+  <BaseSecure :permission="APP_PERMS.VIEWS_FORM_PREVIEW">
     <h1
       :class="{ 'dir-rtl': isRTL }"
       :lang="lang"

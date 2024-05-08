@@ -147,7 +147,11 @@ export default {
       </span>
 
       <span class="ml-2 d-print-none">
-        <PrintOptions :submission="submission" :submission-id="submissionId" />
+        <PrintOptions
+          :submission="submission"
+          :submission-id="submissionId"
+          :f="formId"
+        />
       </span>
 
       <!-- Save a draft -->

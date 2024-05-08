@@ -4,16 +4,6 @@ import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 import { fa as FONTAWESOME } from 'vuetify/iconsets/fa';
 import { aliases, mdi } from 'vuetify/iconsets/mdi';
-import { VDataIterator } from 'vuetify/lib/labs/components.mjs';
-import { VDataTable, VDataTableServer } from 'vuetify/labs/VDataTable';
-import { VSkeletonLoader } from 'vuetify/labs/VSkeletonLoader';
-import {
-  VStepper,
-  VStepperHeader,
-  VStepperItem,
-  VStepperWindow,
-  VStepperWindowItem,
-} from 'vuetify/labs/VStepper';
 import hi from '~/internationalization/trans/vuetify/locale/hi';
 import pa from '~/internationalization/trans/vuetify/locale/pa';
 import tl from '~/internationalization/trans/vuetify/locale/tl';
@@ -95,15 +85,6 @@ export default createVuetify({
   },
   components: {
     ...components,
-    VDataIterator,
-    VDataTable,
-    VDataTableServer,
-    VSkeletonLoader,
-    VStepper,
-    VStepperHeader,
-    VStepperItem,
-    VStepperWindow,
-    VStepperWindowItem,
   },
   directives,
 });

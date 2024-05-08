@@ -1,17 +1,12 @@
-<script>
+<script setup>
 import FormViewer from '~/components/designer/FormViewer.vue';
 
-export default {
-  components: {
-    FormViewer,
+defineProps({
+  f: {
+    type: String,
+    required: true,
   },
-  props: {
-    f: {
-      type: String,
-      required: true,
-    },
-  },
-};
+});
 </script>
 
 <template>
