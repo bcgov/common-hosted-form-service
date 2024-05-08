@@ -64,7 +64,22 @@
     "status": "Status",
     "update": "Update",
     "cancel": "Cancel",
-    "eventSubscription": "Event Subscription"
+    "eventSubscription": "Event Subscription",
+    "cdogsTemplate": "CDOGS Template"
+  },
+  "documentTemplate": {
+    "uploadTemplate": "Upload CDOGS Template",
+    "uploadTemplateFile":"Upload template file",
+    "upload": "Upload",
+    "delete": "Delete",
+    "download": "Download",
+    "invalidFileMessage": "The template must use one of the following extentions: .txt, .docx, .html, .odt, .pptx, .xlsx, .pdf",
+    "uploadSuccess": "Template uploaded successfully.",
+    "uploadError": "An error occurred while uploading the template.",
+    "deleteSuccess": "Template deleted successfully.",
+    "deleteError": "An error occurred while deleting the template.",
+    "fetchError": "An error occurred while fetching the template.",
+    "info" : "Upload a template to use the Common Document Generation Service (CDOGS)"
   },
   "formSettings": {
     "pressToAddMultiEmail": "Press <kbd>enter</kbd> or <kbd>,</kbd> or <kbd>space</kbd> to add multiple email addresses",
@@ -376,7 +391,7 @@
     "401NotAuthorized": "401: not authorized. :(",
     "401ErrorMsg": "Your account is not set up correctly.<br />Please contact",
     "403Forbidden": "403: Forbidden. :(",
-    "403ErrorMsg": "This page requires {idp} authentication.",
+    "403ErrorMsg": "This page requires {permission} permission.",
     "401UnAuthorized": "401: Unauthorized. :(",
     "401UnAuthorizedErrMsg": "You do not have permission to access this page."
   },
@@ -672,7 +687,15 @@
     "docGrnSucess": "Document generated successfully",
     "failedDocGenErrMsg": "Failed to generate Document",
     "failedDocGenConsErrMsg": "Error submitting template: {error}",
-    "cDogsTemplate": "CDOGS template"
+    "cDogsTemplate": "CDOGS template",
+    "uploadCdogsTemplate": "Upload CDOGS template",
+    "printOptions": "Print Options",
+    "expandtextFields": "Expand text fields",
+    "moreInfo": "More Info",
+    "defaultCdogsTemplate": "Use default CDOGS template",
+    "fileName": "File Name",
+    "uploadDate": "Upload Date",
+    "upload": "Upload"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Component Information Link",

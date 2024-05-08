@@ -6,13 +6,16 @@ import { nextTick } from 'vue';
 
 import { useAuthStore } from '~/store/auth';
 import Login from '~/views/Login.vue';
-import { IdentityProviders } from '~/utils/constants';
+import { useIdpStore } from '~/store/identityProviders';
 
 describe('Login.vue', () => {
   const pinia = createTestingPinia();
   setActivePinia(pinia);
 
   const authStore = useAuthStore(pinia);
+  const idpStore = useIdpStore(pinia);
+
+  idpStore.providers = require('../fixtures/identityProviders.json');
 
   beforeEach(() => {
     authStore.$reset();
@@ -66,7 +69,31 @@ describe('Login.vue', () => {
 
     await nextTick();
 
-    Object.values(IdentityProviders).forEach((idp) => {
+    Object.values(idpStore.loginButtons).forEach((idp) => {
+      const button = wrapper.find(`[data-test="${idp.code}"]`);
+      expect(button.exists()).toBeTruthy();
+    });
+  });
+
+  it('shows supplied login options', async () => {
+    const IDPs = ['idir', 'bceid-business'];
+    authStore.authenticated = false;
+    authStore.ready = true;
+    const wrapper = mount(Login, {
+      props: {
+        idpHint: IDPs,
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: true,
+        },
+      },
+    });
+
+    await nextTick();
+
+    IDPs.forEach((idp) => {
       const button = wrapper.find(`[data-test="${idp}"]`);
       expect(button.exists()).toBeTruthy();
     });

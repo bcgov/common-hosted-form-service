@@ -68,7 +68,22 @@
     "status": "상태",
     "update": "업데이트",
     "cancel": "취소",
-    "eventSubscription": "イベントのサブスクリプション"
+    "eventSubscription": "イベントのサブスクリプション",
+    "cdogsTemplate": "CDOGS 템플릿"
+  },
+  "documentTemplate": {
+    "uploadTemplate": "CDOGS 템플릿 업로드",
+    "uploadTemplateFile": "템플릿 파일 업로드",
+    "upload": "업로드",
+    "delete": "삭제",
+    "download": "다운로드",
+    "invalidFileMessage": "템플릿은 다음 확장자 중 하나를 사용해야 합니다: .txt, .docx, .html, .odt, .pptx, .xlsx, .pdf",
+    "uploadSuccess": "템플릿이 성공적으로 업로드되었습니다.",
+    "uploadError": "템플릿 업로드 중 오류가 발생했습니다.",
+    "deleteSuccess": "템플릿이 성공적으로 삭제되었습니다.",
+    "deleteError": "템플릿 삭제 중 오류가 발생했습니다.",
+    "fetchError": "템플릿 가져오기 중 오류가 발생했습니다.",
+    "info": "공통 문서 생성 서비스(CDOGS)를 사용하기 위해 템플릿을 업로드하십시오"
   },
   "formSettings": {
     "pressToAddMultiEmail": "여러 이메일 주소를 추가하려면 <kbd>enter</kbd> 또는 <kbd>,</kbd> 또는 <kbd>space를</kbd> 누르십시오.",
@@ -380,7 +395,7 @@
     "401NotAuthorized": "401: 권한이 없습니다. :",
     "401ErrorMsg": "귀하의 계정이 올바르게 설정되지 않았습니다.<br /> 연락주세요",
     "403Forbidden": "403 금지. :",
-    "403ErrorMsg": "이 페이지는 {idp} 인증이 필요합니다.",
+    "403ErrorMsg": "이 페이지는 {permission} 인증이 필요합니다.",
     "401UnAuthorized": "401: 권한이 없습니다. :",
     "401UnAuthorizedErrMsg": "이 페이지에 액세스할 수 있는 권한이 없습니다."
   },
@@ -676,7 +691,15 @@
     "docGrnSucess": "문서가 성공적으로 생성되었습니다.",
     "failedDocGenErrMsg": "문서를 생성하지 못했습니다.",
     "failedDocGenConsErrMsg": "템플릿 제출 오류: {error}",
-    "cDogsTemplate": "CDOGS 템플릿"
+    "cDogsTemplate": "CDOGS 템플릿",
+    "uploadCdogsTemplate": "CDOGS 템플릿 업로드",
+    "printOptions": "인쇄 옵션",
+    "expandtextFields": "텍스트 필드 확장",
+    "moreInfo": "더보기",
+    "defaultCdogsTemplate": "기본 CDOGS 템플릿 사용",
+    "fileName": "파일 이름",
+    "uploadDate": "업로드 날짜",
+    "upload": "업로드"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "구성품 정보 링크",

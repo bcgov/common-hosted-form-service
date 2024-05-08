@@ -1,16 +1,8 @@
-<script>
-import { mapState } from 'pinia';
-import BaseSecure from '~/components/base/BaseSecure.vue';
+<script setup>
+import { storeToRefs } from 'pinia';
 import { useFormStore } from '~/store/form';
 
-export default {
-  components: {
-    BaseSecure,
-  },
-  computed: {
-    ...mapState(useFormStore, ['lang']),
-  },
-};
+const { lang } = storeToRefs(useFormStore);
 </script>
 
 <template>

@@ -1,16 +1,9 @@
-<script>
-import { mapState } from 'pinia';
-import { useFormStore } from '~/store/form';
+<script setup>
+import { storeToRefs } from 'pinia';
 import AdminPage from '~/components/admin/AdminPage.vue';
+import { useFormStore } from '~/store/form';
 
-export default {
-  components: {
-    AdminPage,
-  },
-  computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
-  },
-};
+const { isRTL, lang } = storeToRefs(useFormStore());
 </script>
 
 <template>

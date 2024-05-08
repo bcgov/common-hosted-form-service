@@ -1,0 +1,141 @@
+[
+  {
+    "code": "idir",
+    "display": "IDIR",
+    "active": true,
+    "idp": "idir",
+    "createdBy": "migration-002",
+    "createdAt": "2024-01-24T22:35:49.703Z",
+    "updatedBy": null,
+    "updatedAt": "2024-01-24T22:35:49.703Z",
+    "primary": true,
+    "login": true,
+    "permissions": [
+      "views_form_stepper",
+      "views_admin",
+      "views_file_download",
+      "views_form_emails",
+      "views_form_export",
+      "views_form_manage",
+      "views_form_preview",
+      "views_form_submissions",
+      "views_form_teamS",
+      "views_form_view",
+      "views_user_submissions"
+    ],
+    "roles": [
+      "owner",
+      "team_manager",
+      "form_designer",
+      "submission_reviewer",
+      "form_submitter"
+    ],
+    "tokenmap": {
+      "idpUserId": "idir_user_guid",
+      "keycloakId": "idir_user_guid",
+      "username": "idir_username",
+      "firstName": "given_name",
+      "lastName": "family_name",
+      "fullName": "name",
+      "email": "email",
+      "idp": "identity_provider"
+    },
+    "extra": {}
+  },
+  {
+    "code": "bceid-basic",
+    "display": "Basic BCeID",
+    "active": true,
+    "idp": "bceidbasic",
+    "createdBy": "migration-022",
+    "createdAt": "2024-01-24T22:35:49.703Z",
+    "updatedBy": null,
+    "updatedAt": "2024-01-24T22:35:49.703Z",
+    "primary": false,
+    "login": true,
+    "permissions": ["views_user_submissions"],
+    "roles": ["form_submitter"],
+    "tokenmap": {
+      "idpUserId": "bceid_user_guid",
+      "keycloakId": "bceid_user_guid",
+      "username": "bceid_username",
+      "firstName": null,
+      "lastName": null,
+      "fullName": "name",
+      "email": "email",
+      "idp": "identity_provider"
+    },
+    "extra": {
+      "formAccessSettings": "idim",
+      "addTeamMemberSearch": {
+        "text": {
+          "message": "trans.manageSubmissionUsers.searchInputLength",
+          "minLength": 6
+        },
+        "email": {
+          "exact": true,
+          "message": "trans.manageSubmissionUsers.exactBCEIDSearch"
+        }
+      }
+    }
+  },
+  {
+    "code": "bceid-business",
+    "display": "Business BCeID",
+    "active": true,
+    "idp": "bceidbusiness",
+    "createdBy": "migration-022",
+    "createdAt": "2024-01-24T22:35:49.703Z",
+    "updatedBy": null,
+    "updatedAt": "2024-01-24T22:35:49.703Z",
+    "primary": false,
+    "login": true,
+    "permissions": [
+      "views_form_export",
+      "views_form_manage",
+      "views_form_submissions",
+      "views_form_teamS",
+      "views_form_view",
+      "views_user_submissions"
+    ],
+    "roles": ["team_manager", "submission_reviewer", "form_submitter"],
+    "tokenmap": {
+      "idpUserId": "bceid_user_guid",
+      "keycloakId": "bceid_user_guid",
+      "username": "bceid_username",
+      "firstName": null,
+      "lastName": null,
+      "fullName": "name",
+      "email": "email",
+      "idp": "identity_provider"
+    },
+    "extra": {
+      "formAccessSettings": "idim",
+      "addTeamMemberSearch": {
+        "text": {
+          "message": "trans.manageSubmissionUsers.searchInputLength",
+          "minLength": 6
+        },
+        "email": {
+          "exact": true,
+          "message": "trans.manageSubmissionUsers.exactBCEIDSearch"
+        }
+      }
+    }
+  },
+  {
+    "code": "public",
+    "display": "Public",
+    "active": true,
+    "idp": "public",
+    "createdBy": "migration-002",
+    "createdAt": "2024-01-24T22:35:49.703Z",
+    "updatedBy": null,
+    "updatedAt": "2024-01-24T22:35:49.703Z",
+    "primary": false,
+    "login": false,
+    "permissions": [],
+    "roles": null,
+    "extra": {}
+  }
+]
