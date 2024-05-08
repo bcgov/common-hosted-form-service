@@ -3,11 +3,12 @@ import { flushPromises, mount } from '@vue/test-utils';
 import { setActivePinia } from 'pinia';
 import moment from 'moment';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { nextTick, ref } from 'vue';
+import { ref } from 'vue';
 
 import { useFormStore } from '~/store/form';
 import FormScheduleSettings from '~/components/designer/settings/FormScheduleSettings.vue';
-import { IdentityMode, ScheduleType } from '~/utils/constants';
+import { ScheduleType } from '~/utils/constants';
+import { getSubmissionPeriodDates } from '~/utils/transformUtils';
 
 describe('FormScheduleSettings.vue', () => {
   const pinia = createTestingPinia();
@@ -539,5 +540,210 @@ describe('FormScheduleSettings.vue', () => {
       null
     );
     expect(formStore.form.schedule.repeatSubmission.repeatUntil).toEqual(null);
+  });
+
+  it('AVAILABLE_DATES should return the same values as the function..', async () => {
+    const TODAY = moment().format('YYYY-MM-DD HH:MM:SS');
+    const wrapper = mount(FormScheduleSettings, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          BaseInfoCard: {
+            name: 'BaseInfoCard',
+            template: '<div class="base-info-card-stub"><slot /></div>',
+          },
+          BasePanel: {
+            name: 'BasePanel',
+            template: '<div class="base-panel-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    const originalDates = await getSubmissionPeriodDates(
+      2,
+      'days',
+      moment(TODAY).format('YYYY-MM-DD HH:MM:SS'),
+      2,
+      'days',
+      // late term
+      2,
+      // late term period
+      'days',
+      moment(TODAY).add(1, 'days').format('YYYY-MM-DD HH:MM:SS')
+    );
+
+    await flushPromises();
+
+    expect(originalDates.length).toEqual(1);
+    expect(originalDates[0].startDate).toEqual(
+      moment(TODAY).format('YYYY-MM-DD HH:MM:SS')
+    );
+    expect(originalDates[0].closeDate).toEqual(
+      moment(TODAY).add(2, 'days').format('YYYY-MM-DD HH:MM:SS')
+    );
+    // we specified 2 late days after closing which is 2 days
+    expect(originalDates[0].graceDate).toEqual(
+      moment(TODAY).add(4, 'days').format('YYYY-MM-DD HH:MM:SS')
+    );
+
+    formStore.form = {
+      schedule: {
+        keepOpenForTerm: 2,
+        keepOpenForInterval: 'days',
+        openSubmissionDateTime: moment(TODAY).format('YYYY-MM-DD HH:MM:SS'),
+        repeatSubmission: {
+          everyTerm: 2,
+          everyIntervalType: 'days',
+          repeatUntil: moment(TODAY)
+            .add(2, 'days')
+            .format('YYYY-MM-DD HH:MM:SS'),
+        },
+        allowLateSubmissions: {
+          forNext: {
+            term: 2,
+            intervalType: 'days',
+          },
+        },
+        scheduleType: ScheduleType.PERIOD,
+        closeSubmissionDateTime: moment(TODAY)
+          .add(1, 'days')
+          .format('YYYY-MM-DD HH:MM:SS'),
+      },
+    };
+
+    await flushPromises();
+
+    const availableDates = wrapper.vm.AVAILABLE_DATES;
+    expect(availableDates.length).toEqual(1);
+    expect(availableDates[0].startDate).toEqual(
+      moment(TODAY).format('YYYY-MM-DD HH:MM:SS')
+    );
+    expect(availableDates[0].closeDate).toEqual(
+      moment(TODAY).add(2, 'days').format('YYYY-MM-DD HH:MM:SS')
+    );
+    // we specified 2 days
+    expect(availableDates[0].graceDate).toEqual(
+      moment(TODAY).add(4, 'days').format('YYYY-MM-DD HH:MM:SS')
+    );
+  });
+
+  it('AVAILABLE_PERIOD_OPTIONS should return the appropriate period options', async () => {
+    const START_DAY = moment();
+    const wrapper = mount(FormScheduleSettings, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          BaseInfoCard: {
+            name: 'BaseInfoCard',
+            template: '<div class="base-info-card-stub"><slot /></div>',
+          },
+          BasePanel: {
+            name: 'BasePanel',
+            template: '<div class="base-panel-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    // If the difference in days is at greater than a week but less than a month, then it should show months, quarters, years
+    formStore.form = {
+      schedule: {
+        openSubmissionDateTime: START_DAY.clone(),
+        keepOpenForTerm: 7,
+        keepOpenForInterval: 'days',
+        allowLateSubmissions: {
+          enabled: true,
+          forNext: {
+            term: 1,
+            intervalType: 'days',
+          },
+        },
+      },
+    };
+
+    expect(wrapper.vm.AVAILABLE_PERIOD_OPTIONS).toEqual([
+      'months',
+      'quarters',
+      'years',
+    ]);
+
+    // If the difference in days is at greater than a month but less than a quarter, then it should show quarters, years
+    formStore.form = {
+      schedule: {
+        openSubmissionDateTime: START_DAY.clone(),
+        keepOpenForTerm: 30,
+        keepOpenForInterval: 'days',
+        allowLateSubmissions: {
+          enabled: true,
+          forNext: {
+            term: 1,
+            intervalType: 'days',
+          },
+        },
+      },
+    };
+
+    expect(wrapper.vm.AVAILABLE_PERIOD_OPTIONS).toEqual(['quarters', 'years']);
+
+    // If the difference in days is at greater than a quarter, then it should show years
+    formStore.form = {
+      schedule: {
+        openSubmissionDateTime: START_DAY.clone(),
+        keepOpenForTerm: 91,
+        keepOpenForInterval: 'days',
+        allowLateSubmissions: {
+          enabled: true,
+          forNext: {
+            term: 1,
+            intervalType: 'days',
+          },
+        },
+      },
+    };
+
+    expect(wrapper.vm.AVAILABLE_PERIOD_OPTIONS).toEqual(['years']);
+
+    // If the difference in days is less than 7 days, then it should show weeks, months, quarters, years
+    formStore.form = {
+      schedule: {
+        openSubmissionDateTime: START_DAY.clone(),
+        keepOpenForTerm: 5,
+        keepOpenForInterval: 'days',
+        allowLateSubmissions: {
+          enabled: true,
+          forNext: {
+            term: 1,
+            intervalType: 'days',
+          },
+        },
+      },
+    };
+
+    expect(wrapper.vm.AVAILABLE_PERIOD_OPTIONS).toEqual([
+      'weeks',
+      'months',
+      'quarters',
+      'years',
+    ]);
+
+    // If the difference in days is less than 7 days, then it should show quarters, years
+    // and the late submission period interval is not in days, but something else
+    formStore.form = {
+      schedule: {
+        openSubmissionDateTime: START_DAY.clone(),
+        keepOpenForTerm: 5,
+        keepOpenForInterval: 'days',
+        allowLateSubmissions: {
+          enabled: true,
+          forNext: {
+            term: 1,
+            intervalType: 'months',
+          },
+        },
+      },
+    };
+
+    expect(wrapper.vm.AVAILABLE_PERIOD_OPTIONS).toEqual(['quarters', 'years']);
   });
 });

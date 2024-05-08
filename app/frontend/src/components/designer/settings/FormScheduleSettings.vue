@@ -8,7 +8,7 @@ import { i18n } from '~/internationalization';
 import { useFormStore } from '~/store/form';
 import { ScheduleType } from '~/utils/constants';
 import {
-  getAvailableDates,
+  getSubmissionPeriodDates,
   isDateValidForMailNotification,
 } from '~/utils/transformUtils';
 
@@ -82,7 +82,7 @@ const repeatUntilDate = ref([
 const { form, isRTL, lang } = storeToRefs(useFormStore());
 
 const AVAILABLE_DATES = computed(() => {
-  const getDates = getAvailableDates(
+  return getSubmissionPeriodDates(
     form.value.schedule.keepOpenForTerm,
     form.value.schedule.keepOpenForInterval,
     form.value.schedule.openSubmissionDateTime,
@@ -90,41 +90,42 @@ const AVAILABLE_DATES = computed(() => {
     form.value.schedule.repeatSubmission.everyIntervalType,
     form.value.schedule.allowLateSubmissions.forNext.term,
     form.value.schedule.allowLateSubmissions.forNext.intervalType,
-    form.value.schedule.repeatSubmission.repeatUntil,
-    form.value.schedule.scheduleType,
-    form.value.schedule.closeSubmissionDateTime
+    form.value.schedule.repeatSubmission.repeatUntil
   );
-  return getDates;
 });
 
 const AVAILABLE_PERIOD_OPTIONS = computed(() => {
-  let arrayOfOption = ['weeks', 'months', 'quarters', 'years'];
+  // The available period options
+  let periodOptions = ['weeks', 'months', 'quarters', 'years'];
+  // The difference in days
   let diffInDays = 0;
+  // If the form has an open submission date and a keep open period
   if (
     form.value.schedule.openSubmissionDateTime &&
     form.value.schedule.keepOpenForInterval &&
     form.value.schedule.keepOpenForTerm
   ) {
+    // Gets a length of time equivalent to the form schedule's specified keep open period as days
     diffInDays = moment
       .duration({
         [form.value.schedule.keepOpenForInterval]:
           form.value.schedule.keepOpenForTerm,
       })
-      .asDays(); // moment.duration(this.schedule.keepOpenForTerm, this.schedule.keepOpenForInterval).days();
-
+      .asDays();
+    // If late submissions are enabled
     if (
       form.value.schedule.allowLateSubmissions.enabled &&
       form.value.schedule.allowLateSubmissions.forNext.term &&
       form.value.schedule.allowLateSubmissions.forNext.intervalType
     ) {
-      let durationoflatesubInDays = 0;
+      // The length of time equivalent of the late submission period's in days
+      let durationOfLateSubmissionPeriods =
+        form.value.schedule.allowLateSubmissions.forNext.term;
+      // If the late submission period interval is not in days, convert it to days
       if (
-        form.value.schedule.allowLateSubmissions.forNext.intervalType === 'days'
+        form.value.schedule.allowLateSubmissions.forNext.intervalType !== 'days'
       ) {
-        durationoflatesubInDays =
-          form.value.schedule.allowLateSubmissions.forNext.term;
-      } else {
-        durationoflatesubInDays = moment
+        durationOfLateSubmissionPeriods = moment
           .duration({
             [form.value.schedule.allowLateSubmissions.forNext.intervalType]:
               form.value.schedule.allowLateSubmissions.forNext.term,
@@ -132,28 +133,29 @@ const AVAILABLE_PERIOD_OPTIONS = computed(() => {
           .asDays();
       }
 
-      diffInDays = Number(diffInDays) + Number(durationoflatesubInDays);
+      // The difference in days is the keep open time with the added late submission period days
+      diffInDays = Number(diffInDays) + Number(durationOfLateSubmissionPeriods);
     }
   }
 
   switch (true) {
     case diffInDays > 7 && diffInDays <= 30:
-      arrayOfOption = ['months', 'quarters', 'years'];
+      periodOptions = ['months', 'quarters', 'years'];
       break;
 
     case diffInDays > 30 && diffInDays <= 91:
-      arrayOfOption = ['quarters', 'years'];
+      periodOptions = ['quarters', 'years'];
       break;
 
     case diffInDays > 91:
-      arrayOfOption = ['years'];
+      periodOptions = ['years'];
       break;
 
     default:
-      arrayOfOption = ['weeks', 'months', 'quarters', 'years'];
+      periodOptions = ['weeks', 'months', 'quarters', 'years'];
       break;
   }
-  return arrayOfOption;
+  return periodOptions;
 });
 
 const SCHEDULE_TYPE = computed(() => ScheduleType);
