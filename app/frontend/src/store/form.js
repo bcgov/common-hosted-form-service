@@ -595,7 +595,9 @@ export const useFormStore = defineStore('form', {
           version,
           singleRow
         );
-        this.formFields = data;
+        // This should get looked into but if there are no submissions it will return data inside of the data
+        // response would look like: response.data.data
+        this.formFields = data?.data ? data.data : data;
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
