@@ -27,13 +27,20 @@ const isWidePage = computed(() => {
   return isWideLayout.value && isValidRoute ? 'main-wide' : 'main';
 });
 
-defineExpose({ isValidRoute, isWidePage, setWideLayout, isWideLayout });
-
 provide('setWideLayout', setWideLayout);
 
 function setWideLayout(isWide) {
   isWideLayout.value = isWide;
 }
+
+defineExpose({
+  appTitle,
+  isValidRoute,
+  isWidePage,
+  setWideLayout,
+  isFormSubmitMode,
+  isWideLayout,
+});
 </script>
 
 <template>
