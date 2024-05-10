@@ -11,6 +11,8 @@ const testRes = {
 const zeroUuid = '00000000-0000-0000-0000-000000000000';
 const oneUuid = '11111111-1111-1111-1111-111111111111';
 
+const bearerToken = Math.random().toString(36).substring(2);
+
 describe('currentFileRecord', () => {
   const readFileSpy = jest.spyOn(service, 'read');
 
@@ -147,7 +149,7 @@ describe('hasFileCreate', () => {
   it('403s if there is no current user on the request scope', async () => {
     const testReq = {
       headers: {
-        authorization: 'Bearer hjvds0uds',
+        authorization: 'Bearer ' + bearerToken,
       },
     };
 
