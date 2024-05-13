@@ -246,6 +246,7 @@ export default {
         this.formFields && this.formFields.length > 0
           ? this.formFields.map((ff) => ({ name: ff, value: ff }))
           : [];
+      this.selectedFormFields = this.items;
       this.loading = false;
     },
   },
