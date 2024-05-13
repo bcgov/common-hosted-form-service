@@ -25,7 +25,7 @@ const hasLogin = computed(() => useRoute()?.meta?.hasLogin);
       <span :lang="lang">{{ $t('trans.baseAuthButton.logout') }}</span>
     </v-btn>
     <v-btn
-      v-if="hasLogin"
+      v-if="!hasLogin"
       id="loginButton"
       color="white"
       variant="outlined"
