@@ -84,6 +84,7 @@ export default function getRouter(basePath = '/') {
               requiresAuth: 'primary',
               hasLogin: true,
             },
+            props: createProps,
           },
           {
             path: 'publish',
@@ -119,6 +120,7 @@ export default function getRouter(basePath = '/') {
                 ...route.params,
                 nv:
                   String(route.query.nv).toLowerCase() === 'true' ||
+                  String(route.query.newVersion) === 'true' ||
                   route.query.nv === true,
                 sv:
                   String(route.query.sv).toLowerCase() === 'true' ||

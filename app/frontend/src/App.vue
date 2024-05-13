@@ -9,6 +9,16 @@ import { useRoute } from 'vue-router';
 const isWideLayout = ref(false);
 const route = useRoute();
 
+const appTitle = computed(() => {
+  return route && route.meta && route.meta.title
+    ? route.meta.title
+    : import.meta.env.VITE_TITLE;
+});
+
+const isFormSubmitMode = computed(() => {
+  return route && route.meta && route.meta.formSubmitMode;
+});
+
 const isValidRoute = computed(() => {
   return ['FormSubmit', 'FormView', 'FormSuccess'].includes(route.name);
 });
@@ -17,27 +27,34 @@ const isWidePage = computed(() => {
   return isWideLayout.value && isValidRoute ? 'main-wide' : 'main';
 });
 
-defineExpose({ isValidRoute, isWidePage, setWideLayout, isWideLayout });
-
 provide('setWideLayout', setWideLayout);
 
 function setWideLayout(isWide) {
   isWideLayout.value = isWide;
 }
+
+defineExpose({
+  appTitle,
+  isValidRoute,
+  isWidePage,
+  setWideLayout,
+  isFormSubmitMode,
+  isWideLayout,
+});
 </script>
 
 <template>
   <v-layout ref="app" class="app">
     <v-main class="app">
       <BaseNotificationContainer />
-      <BCGovHeader />
-      <BCGovNavBar />
+      <BCGovHeader :app-title="appTitle" :form-submit-mode="isFormSubmitMode" />
+      <BCGovNavBar :form-submit-mode="isFormSubmitMode" />
       <RouterView v-slot="{ Component }">
         <transition name="component-fade" mode="out-in">
           <component :is="Component" :class="isWidePage" />
         </transition>
       </RouterView>
-      <BCGovFooter />
+      <BCGovFooter :form-submit-mode="isFormSubmitMode" />
     </v-main>
   </v-layout>
 </template>
