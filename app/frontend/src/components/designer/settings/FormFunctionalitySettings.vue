@@ -1,57 +1,59 @@
-<script>
-import { mapState, mapWritableState } from 'pinia';
-import BasePanel from '~/components/base/BasePanel.vue';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
+import { ref } from 'vue';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 import { IdentityMode } from '~/utils/constants';
 
-export default {
-  components: {
-    BasePanel,
-  },
-  data() {
-    return {
-      githubLinkBulkUpload:
-        'https://github.com/bcgov/common-hosted-form-service/wiki/Allow-multiple-draft-upload',
-      githubLinkCopyFromExistingFeature:
-        'https://github.com/bcgov/common-hosted-form-service/wiki/Copy-an-existing-submission',
-      githubLinkScheduleAndReminderFeature:
-        'https://github.com/bcgov/common-hosted-form-service/wiki/Schedule-and-Reminder-notification',
-      githubLinkEventSubscriptionFeature:
-        'https://github.com/bcgov/common-hosted-form-service/wiki/Event-Subscription',
-      githubLinkWideFormLayout:
-        'https://github.com/bcgov/common-hosted-form-service/wiki/Wide-Form-Layout',
-    };
-  },
-  computed: {
-    ...mapState(useAuthStore, ['identityProvider']),
-    ...mapState(useFormStore, ['isFormPublished', 'isRTL', 'lang']),
-    ...mapState(useIdpStore, ['isPrimary']),
-    ...mapWritableState(useFormStore, ['form']),
-    ID_MODE() {
-      return IdentityMode;
-    },
-    primaryIdpUser() {
-      return this.isPrimary(this.identityProvider?.code);
-    },
-  },
-  methods: {
-    enableSubmitterDraftChanged() {
-      if (!this.form.enableSubmitterChanged) {
-        this.form.allowSubmitterToUploadFile = false;
-      }
-    },
-    allowSubmitterToUploadFileChanged() {
-      if (
-        this.form.allowSubmitterToUploadFile &&
-        !this.form.enableSubmitterDraft
-      ) {
-        this.form.enableSubmitterDraft = true;
-      }
-    },
-  },
-};
+const githubLinkBulkUpload = ref(
+  'https://github.com/bcgov/common-hosted-form-service/wiki/Allow-multiple-draft-upload'
+);
+const githubLinkCopyFromExistingFeature = ref(
+  'https://github.com/bcgov/common-hosted-form-service/wiki/Copy-an-existing-submission'
+);
+const githubLinkScheduleAndReminderFeature = ref(
+  'https://github.com/bcgov/common-hosted-form-service/wiki/Schedule-and-Reminder-notification'
+);
+const githubLinkEventSubscriptionFeature = ref(
+  'https://github.com/bcgov/common-hosted-form-service/wiki/Event-Subscription'
+);
+const githubLinkWideFormLayout = ref(
+  'https://github.com/bcgov/common-hosted-form-service/wiki/Wide-Form-Layout'
+);
+
+const authStore = useAuthStore();
+const formStore = useFormStore();
+const idpStore = useIdpStore();
+
+const { identityProvider } = storeToRefs(authStore);
+const { form, isRTL, lang } = storeToRefs(formStore);
+
+const ID_MODE = computed(() => IdentityMode);
+const primaryIdpUser = computed(() =>
+  idpStore.isPrimary(identityProvider?.value?.code)
+);
+
+function enableSubmitterDraftChanged() {
+  if (!form.value.enableSubmitterDraft) {
+    form.value.allowSubmitterToUploadFile = false;
+  }
+}
+
+function allowSubmitterToUploadFileChanged() {
+  if (
+    form.value.allowSubmitterToUploadFile &&
+    !form.value.enableSubmitterDraft
+  ) {
+    form.value.enableSubmitterDraft = true;
+  }
+}
+
+defineExpose({
+  enableSubmitterDraftChanged,
+  allowSubmitterToUploadFileChanged,
+});
 </script>
 
 <template>
@@ -63,6 +65,7 @@ export default {
     >
     <v-checkbox
       v-model="form.enableSubmitterDraft"
+      data-test="canSaveAndEditDraftsCheckbox"
       hide-details="auto"
       class="my-0"
       :disabled="form.userType === ID_MODE.PUBLIC"
@@ -133,7 +136,7 @@ export default {
     </v-checkbox>
 
     <v-checkbox
-      v-if="!isFormPublished"
+      v-if="!formStore.isFormPublished"
       v-model="form.schedule.enabled"
       disabled
       hide-details="auto"
@@ -147,7 +150,7 @@ export default {
     </v-checkbox>
 
     <v-checkbox
-      v-if="isFormPublished"
+      v-if="formStore.isFormPublished"
       v-model="form.schedule.enabled"
       hide-details="auto"
       class="my-0"
@@ -229,7 +232,7 @@ export default {
       v-model="form.subscribe.enabled"
       hide-details="auto"
       class="my-0"
-      :disabled="primaryIdpUser === false || !isFormPublished"
+      :disabled="primaryIdpUser === false || !formStore.isFormPublished"
     >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">

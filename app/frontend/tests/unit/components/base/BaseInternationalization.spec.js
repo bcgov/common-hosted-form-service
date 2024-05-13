@@ -60,16 +60,32 @@ describe('BaseInternationalization.vue', () => {
 
     wrapper.vm.languageSelected({
       title: '繁體中文 (Traditional Chinese)',
-      keyword: 'zh-TW',
+      keyword: 'zhTW',
     });
 
-    expect(formStore.lang).toBe('zh-TW');
+    expect(formStore.lang).toBe('zhTW');
+
+    wrapper.vm.languageSelected({
+      title: '繁體中文 (Traditional Chinese)',
+      keyword: 'zhTW',
+    });
+
+    expect(formStore.lang).toBe('zhTW');
 
     wrapper.vm.languageSelected({
       title: 'UNKNOWN',
-      keyword: 'zh-CUSTOM',
+      keyword: 'zhCUSTOM',
     });
 
-    expect(formStore.lang).toBe('zh-CUSTOM');
+    expect(formStore.lang).toBe('zhCUSTOM');
+    expect(formStore.isRTL).toBeFalsy();
+
+    wrapper.vm.languageSelected({
+      title: 'عربى (Arabic)',
+      keyword: 'ar',
+    });
+
+    expect(formStore.lang).toBe('ar');
+    expect(formStore.isRTL).toBeTruthy();
   });
 });

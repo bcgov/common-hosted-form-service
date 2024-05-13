@@ -796,6 +796,7 @@ export default {
       :can-save="canSave"
       :form-id="formId"
       :draft-id="draftId"
+      :new-version="newVersion"
       :undo-enabled="undoEnabled() === 0 ? false : undoEnabled()"
       :redo-enabled="redoEnabled() === 0 ? false : redoEnabled()"
       @undo="onUndoClick"

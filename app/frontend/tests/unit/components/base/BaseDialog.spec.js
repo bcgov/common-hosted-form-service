@@ -1,19 +1,30 @@
-import { mount } from '@vue/test-utils';
-import { describe, it } from 'vitest';
+import { flushPromises, mount } from '@vue/test-utils';
+import { setActivePinia } from 'pinia';
+import { beforeEach, describe, it } from 'vitest';
 import { nextTick } from 'vue';
 import { createTestingPinia } from '@pinia/testing';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
+import { useFormStore } from '~/store/form';
 
 describe('BaseDialog.vue', () => {
+  const pinia = createTestingPinia();
+  setActivePinia(pinia);
+  const formStore = useFormStore();
+
+  beforeEach(() => {
+    formStore.$reset();
+  });
+
   it('renders with ok button', async () => {
+    formStore.isRTL = true;
     const wrapper = mount(BaseDialog, {
       props: {
         modelValue: true,
         type: 'OK',
       },
       global: {
-        plugins: [createTestingPinia()],
+        plugins: [pinia],
         stubs: {
           VDialog: {
             name: 'VDialog',
@@ -27,16 +38,18 @@ describe('BaseDialog.vue', () => {
     await nextTick();
 
     expect(wrapper.text()).toContain('trans.baseDialog.ok');
+    expect(wrapper.vm.RTL).toBe('ml-5');
   });
 
   it('renders with continue button', async () => {
+    formStore.isRTL = false;
     const wrapper = mount(BaseDialog, {
       props: {
         modelValue: true,
         type: 'CONTINUE',
       },
       global: {
-        plugins: [createTestingPinia()],
+        plugins: [pinia],
         stubs: {
           VDialog: {
             name: 'VDialog',
@@ -52,6 +65,10 @@ describe('BaseDialog.vue', () => {
     expect(continueBtn.exists()).toBeTruthy();
     await continueBtn.trigger('click');
     expect(wrapper.emitted()).toHaveProperty('continue-dialog');
+
+    await flushPromises();
+
+    expect(wrapper.vm.RTL).toBe('mr-5');
   });
 
   it('renders with the close button', async () => {
@@ -61,7 +78,7 @@ describe('BaseDialog.vue', () => {
         showCloseButton: true,
       },
       global: {
-        plugins: [createTestingPinia()],
+        plugins: [pinia],
         stubs: {
           VDialog: {
             name: 'VDialog',
@@ -81,7 +98,7 @@ describe('BaseDialog.vue', () => {
         modelValue: true,
       },
       global: {
-        plugins: [createTestingPinia()],
+        plugins: [pinia],
         stubs: {
           VDialog: {
             name: 'VDialog',
@@ -102,7 +119,7 @@ describe('BaseDialog.vue', () => {
         type: 'SAVEDDELETE',
       },
       global: {
-        plugins: [createTestingPinia()],
+        plugins: [pinia],
         stubs: {
           VDialog: {
             name: 'VDialog',
@@ -128,7 +145,7 @@ describe('BaseDialog.vue', () => {
         enableCustomButton: true,
       },
       global: {
-        plugins: [createTestingPinia()],
+        plugins: [pinia],
         stubs: {
           VDialog: {
             name: 'VDialog',

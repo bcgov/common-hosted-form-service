@@ -1,76 +1,69 @@
-<script>
-import { mapState, mapWritableState } from 'pinia';
-import { nextTick } from 'vue';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, onBeforeMount, nextTick, ref } from 'vue';
 
-import BasePanel from '~/components/base/BasePanel.vue';
-import BaseInfoCard from '~/components/base/BaseInfoCard.vue';
 import { IdentityMode } from '~/utils/constants';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
+import { i18n } from '~/internationalization';
 
-export default {
-  components: {
-    BasePanel,
-    BaseInfoCard,
+/* c8 ignore start */
+const loginRequiredRules = ref([
+  (v) => {
+    return (
+      v !== 'login' ||
+      form.value.idps.length > 0 ||
+      i18n.t('trans.formSettings.selectLoginType')
+    );
   },
-  data() {
-    return {
-      loginRequiredRules: [
-        (v) => {
-          return (
-            v !== 'login' ||
-            this.form.idps.length > 0 ||
-            this.$t('trans.formSettings.selectLoginType')
-          );
-        },
-      ],
-      idpType: null,
+]);
+/* c8 ignore stop */
+
+const idpType = ref(null);
+
+const idpStore = useIdpStore();
+
+const { form, isRTL, lang } = storeToRefs(useFormStore());
+const { loginButtons } = storeToRefs(idpStore);
+
+const ID_MODE = computed(() => IdentityMode);
+
+onBeforeMount(() => {
+  if (form?.value?.idps && form?.value?.idps.length) {
+    idpType.value = form.value.idps[0];
+  }
+});
+
+function userTypeChanged() {
+  // if they checked enable drafts then went back to public, uncheck it
+  if (form.value.userType === ID_MODE.value.PUBLIC) {
+    form.value = {
+      ...form.value,
+      enableSubmitterDraft: false,
+      enableCopyExistingSubmission: false,
     };
-  },
-  computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
-    ...mapState(useIdpStore, ['loginButtons', 'hasFormAccessSettings']),
-    ...mapWritableState(useFormStore, ['form']),
-    ID_MODE() {
-      return IdentityMode;
-    },
-  },
-  mounted() {
-    if (this.form?.idps && this.form.idps.length) {
-      this.idpType = this.form.idps[0];
-    }
-  },
-  methods: {
-    userTypeChanged() {
-      // if they checked enable drafts then went back to public, uncheck it
-      if (this.form.userType === this.ID_MODE.PUBLIC) {
-        this.form = {
-          ...this.form,
-          enableSubmitterDraft: false,
-          enableCopyExistingSubmission: false,
-        };
-      }
-      if (this.form.userType !== 'team') {
-        this.form = {
-          ...this.form,
-          reminder_enabled: false,
-        };
-      }
-    },
+  }
+  if (form.value.userType !== 'team') {
+    form.value = {
+      ...form.value,
+      reminder_enabled: false,
+    };
+  }
+}
 
-    updateLoginType() {
-      // Unable to detect nested radio group in the form.idps for validation and there's no way
-      // to manually enforce a validation rules check. So when we detect a change in the
-      // idpType, we set the form idps ourselves and then change the userType twice
-      // to re-validate the radio group that is the parent.
-      this.form.idps = [this.idpType];
-      this.form.userType = 'team';
-      nextTick(() => {
-        this.form.userType = 'login';
-      });
-    },
-  },
-};
+function updateLoginType() {
+  // Unable to detect nested radio group in the form.idps for validation and there's no way
+  // to manually enforce a validation rules check. So when we detect a change in the
+  // idpType, we set the form idps ourselves and then change the userType twice
+  // to re-validate the radio group that is the parent.
+  form.value.idps = [idpType.value];
+  form.value.userType = 'team';
+  nextTick(() => {
+    form.value.userType = 'login';
+  });
+}
+
+defineExpose({ idpType, userTypeChanged, updateLoginType });
 </script>
 
 <template>
@@ -145,7 +138,7 @@ export default {
             <!-- Mandatory BCeID process notification -->
             <v-expand-transition>
               <BaseInfoCard
-                v-if="hasFormAccessSettings(idpType, 'idim')"
+                v-if="idpStore.hasFormAccessSettings(idpType, 'idim')"
                 class="mr-4"
                 :class="{ 'dir-rtl': isRTL }"
               >
