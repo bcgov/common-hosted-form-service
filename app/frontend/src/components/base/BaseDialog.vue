@@ -1,55 +1,60 @@
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
 import { useFormStore } from '~/store/form';
 
-export default {
-  props: {
-    modelValue: {
-      default: false,
-      type: Boolean,
-    },
-    type: {
-      default: null,
-      type: String,
-    },
-    showCloseButton: {
-      default: false,
-      type: Boolean,
-    },
-    width: {
-      default: '500',
-      type: String,
-    },
-    enableCustomButton: {
-      default: false,
-      type: Boolean,
-    },
+defineProps({
+  modelValue: {
+    default: false,
+    type: Boolean,
   },
-  emits: [
-    'update:modelValue',
-    'close-dialog',
-    'continue-dialog',
-    'delete-dialog',
-    'custom-dialog',
-  ],
-  computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
+  type: {
+    default: null,
+    type: String,
   },
-  methods: {
-    closeDialog() {
-      this.$emit('close-dialog');
-    },
-    continueDialog() {
-      this.$emit('continue-dialog');
-    },
-    deleteDialog() {
-      this.$emit('delete-dialog');
-    },
-    customDialog() {
-      this.$emit('custom-dialog');
-    },
+  showCloseButton: {
+    default: false,
+    type: Boolean,
   },
-};
+  width: {
+    default: '500',
+    type: String,
+  },
+  enableCustomButton: {
+    default: false,
+    type: Boolean,
+  },
+});
+
+const emit = defineEmits([
+  'update:modelValue',
+  'close-dialog',
+  'continue-dialog',
+  'delete-dialog',
+  'custom-dialog',
+]);
+
+const { isRTL, lang } = storeToRefs(useFormStore());
+
+const RTL = computed(() => (isRTL.value ? 'ml-5' : 'mr-5'));
+
+function closeDialog() {
+  emit('close-dialog');
+}
+
+function continueDialog() {
+  emit('continue-dialog');
+}
+
+function deleteDialog() {
+  emit('delete-dialog');
+}
+
+function customDialog() {
+  emit('custom-dialog');
+}
+
+defineExpose({ RTL });
 </script>
 
 <template>
@@ -113,7 +118,7 @@ export default {
           <v-btn
             data-test="continue-btn-cancel"
             class="mb-5"
-            :class="isRTL ? 'ml-5' : 'mr-5'"
+            :class="RTL"
             variant="outlined"
             @click="closeDialog"
           >
@@ -125,7 +130,7 @@ export default {
         <div v-else-if="type === 'SAVEDDELETE'">
           <v-btn
             class="mb-5 mr-5"
-            :class="isRTL ? 'ml-5' : 'mr-5'"
+            :class="RTL"
             color="primary"
             variant="flat"
             @click="continueDialog"
