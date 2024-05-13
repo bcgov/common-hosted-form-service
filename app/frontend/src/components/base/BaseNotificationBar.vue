@@ -1,76 +1,73 @@
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { onBeforeUnmount } from 'vue';
+import { onBeforeMount } from 'vue';
 
 import { i18n } from '~/internationalization';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
-export default {
-  props: {
-    notification: {
-      type: Object,
-      default: () => {},
-    },
+const properties = defineProps({
+  notification: {
+    type: Object,
+    default: () => {},
   },
-  data() {
-    return {
-      timeout: null,
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
-  },
-  created() {
-    if (this.notification.consoleError) {
-      if (typeof this.notification.consoleError === 'string') {
-        // eslint-disable-next-line no-console
-        console.error(this.notification.consoleError);
-      } else if (this.notification.consoleError.text) {
-        if (this.notification.consoleError.options) {
-          // eslint-disable-next-line no-console
-          console.error(
-            i18n.t(
-              this.notification.consoleError.text,
-              this.notification.consoleError.options
-            )
-          );
-        } else {
-          // eslint-disable-next-line no-console
-          console.error(i18n.t(this.notification.consoleError.text));
-        }
-      }
-    }
-  },
-  mounted() {
-    if (this.notification.consoleError) {
+});
+
+let timeout = null;
+
+const { isRTL } = storeToRefs(useFormStore());
+
+function alertClosed() {
+  const notificationStore = useNotificationStore();
+  notificationStore.deleteNotification(properties.notification);
+}
+
+if (properties.notification.consoleError) {
+  if (typeof properties.notification.consoleError === 'string') {
+    // eslint-disable-next-line no-console
+    console.error(properties.notification.consoleError);
+  } else if (properties.notification.consoleError.text) {
+    if (properties.notification.consoleError.options) {
       // eslint-disable-next-line no-console
       console.error(
-        typeof this.notification.consoleError === 'string' ||
-          this.notification.consoleError instanceof String
-          ? this.notification.consoleError
-          : i18n.t(
-              this.notification.consoleError.text,
-              this.notification.consoleError.options
-            )
+        i18n.t(
+          properties.notification.consoleError.text,
+          properties.notification.consoleError.options
+        )
       );
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(i18n.t(properties.notification.consoleError.text));
     }
-    const notificationStore = useNotificationStore();
-    this.timeout = setTimeout(
-      () => notificationStore.deleteNotification(this.notification),
-      this.notification.timeout ? this.notification.timeout * 1000 : 10000
+  }
+}
+
+onBeforeMount(() => {
+  if (properties.notification.consoleError) {
+    // eslint-disable-next-line no-console
+    console.error(
+      typeof properties.notification.consoleError === 'string' ||
+        properties.notification.consoleError instanceof String
+        ? properties.notification.consoleError
+        : i18n.t(
+            properties.notification.consoleError.text,
+            properties.notification.consoleError.options
+          )
     );
-  },
-  beforeUnmount() {
-    // Prevent memory leak if component destroyed before timeout up
-    clearTimeout(this.timeout);
-  },
-  methods: {
-    alertClosed() {
-      const notificationStore = useNotificationStore();
-      notificationStore.deleteNotification(this.notification);
-    },
-  },
-};
+  }
+  const notificationStore = useNotificationStore();
+  timeout = setTimeout(
+    () => notificationStore.deleteNotification(properties.notification),
+    properties.notification.timeout
+      ? properties.notification.timeout * 1000
+      : 10000
+  );
+});
+
+onBeforeUnmount(() => {
+  clearTimeout(timeout);
+});
 </script>
 
 <template>
