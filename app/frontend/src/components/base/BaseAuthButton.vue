@@ -1,7 +1,5 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { useRoute } from 'vue-router';
-import { computed } from 'vue';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 
@@ -9,8 +7,6 @@ const authStore = useAuthStore();
 
 const { authenticated, ready } = storeToRefs(authStore);
 const { lang } = storeToRefs(useFormStore());
-
-const hasLogin = computed(() => useRoute()?.meta?.hasLogin);
 </script>
 
 <template>
@@ -25,7 +21,7 @@ const hasLogin = computed(() => useRoute()?.meta?.hasLogin);
       <span :lang="lang">{{ $t('trans.baseAuthButton.logout') }}</span>
     </v-btn>
     <v-btn
-      v-if="!hasLogin"
+      v-if="!authenticated"
       id="loginButton"
       color="white"
       variant="outlined"

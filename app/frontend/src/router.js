@@ -40,9 +40,6 @@ export default function getRouter(basePath = '/') {
         path: '/',
         name: 'About',
         component: () => import('~/views/About.vue'),
-        meta: {
-          hasLogin: true,
-        },
       },
       {
         path: '/admin',
@@ -68,7 +65,6 @@ export default function getRouter(basePath = '/') {
         ],
         meta: {
           requiresAuth: true,
-          hasLogin: true,
         },
       },
       {
@@ -82,7 +78,6 @@ export default function getRouter(basePath = '/') {
             meta: {
               breadcrumbTitle: 'Form Designer',
               requiresAuth: 'primary',
-              hasLogin: true,
             },
             props: createProps,
           },
@@ -93,7 +88,6 @@ export default function getRouter(basePath = '/') {
             meta: {
               breadcrumbTitle: 'Publish Form',
               requiresAuth: 'primary',
-              hasLogin: true,
             },
             props: (route) => {
               return {
@@ -112,7 +106,6 @@ export default function getRouter(basePath = '/') {
             meta: {
               breadcrumbTitle: 'Form Designer',
               requiresAuth: 'primary',
-              hasLogin: true,
             },
             props: (route) => {
               return {
@@ -135,7 +128,6 @@ export default function getRouter(basePath = '/') {
             meta: {
               breadcrumbTitle: 'Submissions Export',
               requiresAuth: true,
-              hasLogin: true,
             },
             props: createProps,
           },
@@ -146,7 +138,6 @@ export default function getRouter(basePath = '/') {
             meta: {
               breadcrumbTitle: 'Manage Form',
               requiresAuth: 'primary',
-              hasLogin: true,
             },
             props: createProps,
           },
@@ -158,7 +149,6 @@ export default function getRouter(basePath = '/') {
               breadcrumbTitle: 'Preview Form',
               formSubmitMode: true,
               requiresAuth: 'primary',
-              hasLogin: true,
             },
             props: createProps,
           },
@@ -169,7 +159,6 @@ export default function getRouter(basePath = '/') {
             meta: {
               breadcrumbTitle: 'Submissions',
               requiresAuth: 'primary',
-              hasLogin: true,
             },
             props: createProps,
           },
@@ -206,7 +195,6 @@ export default function getRouter(basePath = '/') {
             meta: {
               breadcrumbTitle: 'Email Management',
               requiresAuth: 'primary',
-              hasLogin: true,
             },
             props: createProps,
           },
@@ -217,7 +205,6 @@ export default function getRouter(basePath = '/') {
             meta: {
               breadcrumbTitle: 'Team Management',
               requiresAuth: 'primary',
-              hasLogin: true,
             },
             props: createProps,
           },
@@ -228,7 +215,6 @@ export default function getRouter(basePath = '/') {
             meta: {
               breadcrumbTitle: 'View Submission',
               requiresAuth: true,
-              hasLogin: true,
               formSubmitMode: true,
             },
             props: createProps,
@@ -336,7 +322,6 @@ export default function getRouter(basePath = '/') {
         component: () => import('~/components/bcgov/BCGovAlertBanner.vue'),
         meta: {
           formSubmitMode: true,
-          hasLogin: true,
         },
         props: createProps,
       },
@@ -346,7 +331,6 @@ export default function getRouter(basePath = '/') {
         component: () => import('~/views/Error.vue'),
         meta: {
           formSubmitMode: true,
-          hasLogin: true,
         },
         props: createProps,
       },
@@ -360,7 +344,6 @@ export default function getRouter(basePath = '/') {
             component: () => import('~/views/file/Download.vue'),
             meta: {
               requiresAuth: true,
-              hasLogin: true,
             },
             props: createProps,
           },
@@ -399,9 +382,6 @@ export default function getRouter(basePath = '/') {
         path: '/:pathMatch(.*)*',
         name: 'NotFound',
         component: () => import('~/views/NotFound.vue'),
-        meta: {
-          hasLogin: true,
-        },
       },
     ],
     scrollBehavior(_to, _from, savedPosition) {
