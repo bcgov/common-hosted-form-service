@@ -11,6 +11,10 @@ import { useAuthStore } from '~/store/auth';
 import { useIdpStore } from '~/store/identityProviders';
 import { useAppStore } from '~/store/app';
 
+vi.mock('vue-router', () => ({
+  useRoute: vi.fn(),
+}));
+
 describe('BaseAuthButton.vue', () => {
   const pinia = createPinia();
   setActivePinia(pinia);
@@ -33,7 +37,29 @@ describe('BaseAuthButton.vue', () => {
     };
   });
 
-  it('renders login button when not authenticated', () => {
+  it('renders nothing when not authenticated and does not hasLogin', () => {
+    useRoute.mockImplementationOnce(() => ({
+      meta: {
+        hasLogin: false,
+      },
+    }));
+    authStore.authenticated = false;
+    authStore.ready = true;
+    const wrapper = mount(BaseAuthButton, {
+      global: {
+        plugins: [pinia],
+      },
+    });
+
+    expect(wrapper.text()).toEqual('');
+  });
+
+  it('renders login when not authenticated and hasLogin', () => {
+    useRoute.mockImplementationOnce(() => ({
+      meta: {
+        hasLogin: true,
+      },
+    }));
     authStore.authenticated = false;
     authStore.ready = true;
     const wrapper = mount(BaseAuthButton, {
@@ -70,6 +96,11 @@ describe('BaseAuthButton.vue', () => {
   });
 
   it('login button redirects to login url', async () => {
+    useRoute.mockImplementationOnce(() => ({
+      meta: {
+        hasLogin: true,
+      },
+    }));
     const loginSpy = vi.spyOn(authStore, 'login');
     loginSpy.mockImplementationOnce(() => {});
     authStore.authenticated = false;
@@ -93,6 +124,11 @@ describe('BaseAuthButton.vue', () => {
   });
 
   it('logout button redirects to logout url', async () => {
+    useRoute.mockImplementationOnce(() => ({
+      meta: {
+        hasLogin: true,
+      },
+    }));
     const logoutSpy = vi.spyOn(authStore, 'logout');
     logoutSpy.mockImplementationOnce(() => {});
     authStore.authenticated = true;
