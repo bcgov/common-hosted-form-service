@@ -19,6 +19,7 @@ const Roles = {
   OWNER: 'owner',
   TEAM_MANAGER: 'team_manager',
   FORM_DESIGNER: 'form_designer',
+  SUBMISSION_APPROVER: 'submission_approver',
   SUBMISSION_REVIEWER: 'submission_reviewer',
   FORM_SUBMITTER: 'form_submitter',
 };
@@ -1032,6 +1033,16 @@ describe('hasRolePermissions', () => {
             updatedBy: '',
             updatedAt: '',
           },
+          {
+            id: '6',
+            role: Roles.SUBMISSION_APPROVER,
+            formId: formId,
+            userId: userId2,
+            createdBy: '',
+            createdAt: '',
+            updatedBy: '',
+            updatedAt: '',
+          },
         ]);
 
         const hrp = hasRolePermissions(false);
@@ -1157,6 +1168,16 @@ describe('hasRolePermissions', () => {
                 updatedBy: '',
                 updatedAt: '',
               },
+              {
+                id: '6',
+                role: Roles.SUBMISSION_APPROVER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
             ]);
 
             const hrp = hasRolePermissions(false);
@@ -1185,6 +1206,11 @@ describe('hasRolePermissions', () => {
                   formId: formId,
                   role: Roles.FORM_SUBMITTER,
                 },
+                {
+                  userId: userId2,
+                  formId: formId,
+                  role: Roles.SUBMISSION_APPROVER,
+                },
               ],
             };
 
@@ -1211,6 +1237,16 @@ describe('hasRolePermissions', () => {
               {
                 id: '3',
                 role: Roles.SUBMISSION_REVIEWER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '6',
+                role: Roles.SUBMISSION_APPROVER,
                 formId: formId,
                 userId: userId2,
                 createdBy: '',
@@ -1287,6 +1323,16 @@ describe('hasRolePermissions', () => {
                 updatedBy: '',
                 updatedAt: '',
               },
+              {
+                id: '6',
+                role: Roles.SUBMISSION_APPROVER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
             ]);
 
             const hrp = hasRolePermissions(false);
@@ -1315,6 +1361,11 @@ describe('hasRolePermissions', () => {
                   formId: formId,
                   role: Roles.FORM_SUBMITTER,
                 },
+                {
+                  userId: userId2,
+                  formId: formId,
+                  role: Roles.SUBMISSION_APPROVER,
+                },
               ],
             };
 
@@ -1339,6 +1390,16 @@ describe('hasRolePermissions', () => {
               {
                 id: '3',
                 role: Roles.SUBMISSION_REVIEWER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '6',
+                role: Roles.SUBMISSION_APPROVER,
                 formId: formId,
                 userId: userId2,
                 createdBy: '',
@@ -1415,6 +1476,16 @@ describe('hasRolePermissions', () => {
                 updatedBy: '',
                 updatedAt: '',
               },
+              {
+                id: '6',
+                role: Roles.SUBMISSION_APPROVER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
             ]);
 
             const hrp = hasRolePermissions(false);
@@ -1442,6 +1513,11 @@ describe('hasRolePermissions', () => {
                   userId: userId2,
                   formId: formId,
                   role: Roles.FORM_SUBMITTER,
+                },
+                {
+                  userId: userId2,
+                  formId: formId,
+                  role: Roles.SUBMISSION_APPROVER,
                 },
               ],
             };
@@ -1486,6 +1562,11 @@ describe('hasRolePermissions', () => {
                   formId: formId,
                   role: Roles.FORM_SUBMITTER,
                 },
+                {
+                  userId: userId2,
+                  formId: formId,
+                  role: Roles.SUBMISSION_APPROVER,
+                },
               ],
             };
 
@@ -1527,6 +1608,16 @@ describe('hasRolePermissions', () => {
                 updatedBy: '',
                 updatedAt: '',
               },
+              {
+                id: '6',
+                role: Roles.SUBMISSION_APPROVER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
             ]);
 
             const hrp = hasRolePermissions(false);
@@ -1555,6 +1646,11 @@ describe('hasRolePermissions', () => {
                   userId: userId2,
                   formId: formId,
                   role: Roles.FORM_SUBMITTER,
+                },
+                {
+                  userId: userId2,
+                  formId: formId,
+                  role: Roles.SUBMISSION_APPROVER,
                 },
               ],
             };
@@ -1590,6 +1686,16 @@ describe('hasRolePermissions', () => {
               {
                 id: '3',
                 role: Roles.SUBMISSION_REVIEWER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '6',
+                role: Roles.SUBMISSION_APPROVER,
                 formId: formId,
                 userId: userId2,
                 createdBy: '',
@@ -1667,6 +1773,16 @@ describe('hasRolePermissions', () => {
                 updatedBy: '',
                 updatedAt: '',
               },
+              {
+                id: '6',
+                role: Roles.SUBMISSION_APPROVER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
             ]);
 
             const hrp = hasRolePermissions(false);
@@ -1695,6 +1811,11 @@ describe('hasRolePermissions', () => {
                   userId: userId2,
                   formId: formId,
                   role: Roles.SUBMISSION_REVIEWER,
+                },
+                {
+                  userId: userId2,
+                  formId: formId,
+                  role: Roles.SUBMISSION_APPROVER,
                 },
               ],
             };
@@ -1730,6 +1851,16 @@ describe('hasRolePermissions', () => {
               {
                 id: '3',
                 role: Roles.SUBMISSION_REVIEWER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '6',
+                role: Roles.SUBMISSION_APPROVER,
                 formId: formId,
                 userId: userId2,
                 createdBy: '',

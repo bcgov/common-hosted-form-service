@@ -6,9 +6,7 @@ import { mount } from '@vue/test-utils';
 import { FormProfileValues } from '~/utils/constants';
 import { nextTick } from 'vue';
 
-
 describe('FormDeploymentProfile.vue', () => {
-
   const pinia = createTestingPinia();
   setActivePinia(pinia);
   const formStore = useFormStore(pinia);
@@ -22,14 +20,13 @@ describe('FormDeploymentProfile.vue', () => {
       global: {
         plugins: [pinia],
       },
-    })
+    });
 
     expect(wrapper.text()).toMatch('trans.formProfile.deploymentPrompt');
     expect(wrapper.text()).toMatch('trans.formProfile.development');
     expect(wrapper.text()).toMatch('trans.formProfile.test');
     expect(wrapper.text()).toMatch('trans.formProfile.production');
-
-  })
+  });
 
   it('check if radio buttons have proper value', async () => {
     const wrapper = mount(FormDeploymentProfile, {
@@ -49,7 +46,6 @@ describe('FormDeploymentProfile.vue', () => {
     const radioProd = wrapper.find('[data-test="deployment-prod"]');
     const inputProd = radioProd.find('input').wrapperElement._value;
     expect(inputProd).toBe(FormProfileValues.PRODUCTION);
-
   });
 
   it('test click of radio buttons', async () => {
@@ -69,5 +65,4 @@ describe('FormDeploymentProfile.vue', () => {
     await nextTick;
     expect(formStore.form.deploymentLevel).toBe(false);
   });
-
-})
+});

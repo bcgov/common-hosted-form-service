@@ -2,12 +2,21 @@ import { flushPromises, mount } from '@vue/test-utils';
 import { describe, it } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 import BaseFilter from '~/components/base/BaseFilter.vue';
+import { useFormStore } from '~/store/form';
 
 describe('BaseFilter.vue', () => {
+  const pinia = createTestingPinia();
+  const formStore = useFormStore();
+
+  beforeEach(() => {
+    formStore.$reset();
+  });
+
   it('renders', async () => {
+    formStore.isRTL = true;
     const wrapper = mount(BaseFilter, {
       global: {
-        plugins: [createTestingPinia()],
+        plugins: [pinia],
         stubs: {
           VDialog: {
             name: 'VCard',
@@ -34,9 +43,12 @@ describe('BaseFilter.vue', () => {
     expect(wrapper.html()).toContain('columnName');
     expect(wrapper.html()).toContain('exampleText');
     expect(wrapper.html()).toContain('exampleText2');
+
+    expect(wrapper.vm.RTL).toBe('ml-3');
   });
 
   it('renders with preset data', async () => {
+    formStore.isRTL = false;
     const wrapper = mount(BaseFilter, {
       props: {
         inputHeaders: [
@@ -56,7 +68,7 @@ describe('BaseFilter.vue', () => {
         inputFilterPlaceholder: 'Filter Something',
       },
       global: {
-        plugins: [createTestingPinia()],
+        plugins: [pinia],
         stubs: {
           VDialog: {
             name: 'VCard',
@@ -85,12 +97,14 @@ describe('BaseFilter.vue', () => {
     expect(wrapper.html()).toContain('TEST HEADER');
     expect(wrapper.html()).toContain('TEST NAME');
     expect(wrapper.html()).toContain('Filter Something');
+
+    expect(wrapper.vm.RTL).toBe('mr-3');
   });
 
   it('emits save', async () => {
     const wrapper = mount(BaseFilter, {
       global: {
-        plugins: [createTestingPinia()],
+        plugins: [pinia],
         stubs: {
           VDialog: {
             name: 'VCard',
@@ -123,7 +137,7 @@ describe('BaseFilter.vue', () => {
   it('emits cancel', async () => {
     const wrapper = mount(BaseFilter, {
       global: {
-        plugins: [createTestingPinia()],
+        plugins: [pinia],
         stubs: {
           VDialog: {
             name: 'VCard',
@@ -141,5 +155,36 @@ describe('BaseFilter.vue', () => {
     await btn.trigger('click');
 
     expect(wrapper.emitted()).toHaveProperty('cancel-filter-data');
+  });
+
+  it('reset columns button should reset values', async () => {
+    const RESET_DATA = ['This is an example'];
+    const wrapper = mount(BaseFilter, {
+      props: {
+        resetData: RESET_DATA,
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          VDialog: {
+            name: 'VCard',
+            template: '<div class="v-card-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    wrapper.vm.selectedData = ['SOME DATA'];
+    wrapper.vm.inputFilter = 'something';
+
+    await flushPromises();
+
+    const btn = wrapper.find('[data-test="reset-columns-btn"]');
+    expect(btn.exists()).toBeTruthy();
+
+    await btn.trigger('click');
+
+    expect(wrapper.vm.selectedData).toEqual(RESET_DATA);
+    expect(wrapper.vm.inputFilter).toEqual('');
   });
 });

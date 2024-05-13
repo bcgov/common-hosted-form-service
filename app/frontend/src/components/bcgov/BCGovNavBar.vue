@@ -1,33 +1,32 @@
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 
-export default {
-  data() {
-    return {
-      items: ['french', 'english'],
-    };
+defineProps({
+  formSubmitMode: {
+    type: Boolean,
+    default: false,
   },
-  computed: {
-    ...mapState(useAuthStore, ['authenticated', 'isAdmin', 'identityProvider']),
-    ...mapState(useFormStore, ['lang']),
-    ...mapState(useIdpStore, ['isPrimary']),
-    hideNavBar() {
-      // hide nav bar if user is on form submitter page
-      return this.$route && this.$route.meta && this.$route.meta.formSubmitMode;
-    },
-    hasPrivileges() {
-      return this.isPrimary(this.identityProvider?.code);
-    },
-  },
-};
+});
+
+const idpStore = useIdpStore();
+
+const { authenticated, isAdmin, identityProvider } = storeToRefs(
+  useAuthStore()
+);
+const { lang } = storeToRefs(useFormStore());
+
+const hasPrivileges = computed(() => {
+  return idpStore.isPrimary(identityProvider?.value?.code);
+});
 </script>
 
 <template>
   <nav
-    v-if="!hideNavBar"
+    v-if="!formSubmitMode"
     class="elevation-4 navigation-main d-print-none px-md-16 px-4"
   >
     <div class="nav-holder">

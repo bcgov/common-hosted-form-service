@@ -13,12 +13,14 @@ const form = computed(() => formStore.form);
 const lang = computed(() => formStore.lang);
 const isRTL = computed(() => formStore.isRTL);
 
+/* c8 ignore start */
 const labelRules = ref([
   (v) =>
     !v ||
     !v.some((str) => str.length > 25) ||
     i18n.t('trans.formProfile.labelSizeErr'),
 ]);
+/* c8 ignore stop */
 
 onMounted(async () => {
   try {
@@ -40,6 +42,7 @@ onMounted(async () => {
   <div class="d-flex">
     <v-combobox
       v-model="form.labels"
+      data-test="labelsComboBox"
       :items="formStore.userLabels"
       :rules="labelRules"
       chips

@@ -22,6 +22,7 @@ export const FormRoleCodes = Object.freeze({
   OWNER: 'owner',
   TEAM_MANAGER: 'team_manager',
   FORM_DESIGNER: 'form_designer',
+  SUBMISSION_APPROVER: 'submission_approver',
   SUBMISSION_REVIEWER: 'submission_reviewer',
   FORM_SUBMITTER: 'form_submitter',
 });
@@ -42,6 +43,7 @@ export const FormPermissions = Object.freeze({
 
   SUBMISSION_CREATE: 'submission_create',
   SUBMISSION_READ: 'submission_read',
+  SUBMISSION_REVIEW: 'submission_review',
   SUBMISSION_UPDATE: 'submission_update',
   SUBMISSION_DELETE: 'submission_delete',
 
