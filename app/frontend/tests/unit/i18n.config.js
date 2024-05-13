@@ -1,5 +1,6 @@
 import { config } from '@vue/test-utils';
 import { vi } from 'vitest';
+import { ref } from 'vue';
 
 const i18n = vi.fn(() => {});
 const translate = vi.fn(() => {});
@@ -29,6 +30,7 @@ vi.mock('vue-i18n', () => {
     },
     useI18n: () => ({
       t: (key, _options = {}) => key,
+      locale: ref('en'),
     }),
   };
 });
