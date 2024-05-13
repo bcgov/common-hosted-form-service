@@ -51,10 +51,6 @@ describe('Create.vue', () => {
             name: 'BasePanel',
             template: '<div class="base-panel-stub"><slot /></div>',
           },
-          BaseSecure: {
-            name: 'BaseSecure',
-            template: '<div class="base-secure-stub"><slot /></div>',
-          },
           FormDisclaimer: true,
           FormDesigner: {
             name: 'FormDesigner',
@@ -124,10 +120,6 @@ describe('Create.vue', () => {
             name: 'BasePanel',
             template: '<div class="base-panel-stub"><slot /></div>',
           },
-          BaseSecure: {
-            name: 'BaseSecure',
-            template: '<div class="base-secure-stub"><slot /></div>',
-          },
           FormDisclaimer: true,
           FormDesigner: {
             name: 'FormDesigner',
@@ -186,10 +178,6 @@ describe('Create.vue', () => {
           BasePanel: {
             name: 'BasePanel',
             template: '<div class="base-panel-stub"><slot /></div>',
-          },
-          BaseSecure: {
-            name: 'BaseSecure',
-            template: '<div class="base-secure-stub"><slot /></div>',
           },
           FormDisclaimer: true,
           FormDesigner: {
@@ -254,10 +242,6 @@ describe('Create.vue', () => {
           BasePanel: {
             name: 'BasePanel',
             template: '<div class="base-panel-stub"><slot /></div>',
-          },
-          BaseSecure: {
-            name: 'BaseSecure',
-            template: '<div class="base-secure-stub"><slot /></div>',
           },
           FormDisclaimer: true,
           FormDesigner: {
