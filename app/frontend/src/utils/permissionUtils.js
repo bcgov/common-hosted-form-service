@@ -58,6 +58,18 @@ export function checkSubmissionView(permissions) {
 }
 
 /**
+ * @function checkSubmissionUpdate
+ * Returns true if the user can update submissions of a form, false otherwise
+ * @param {Array} permissions A form's permissions array for the rbac user
+ * @returns {boolean} TRUE if they can
+ */
+export function checkSubmissionUpdate(permissions) {
+  const perms = [FormPermissions.SUBMISSION_UPDATE];
+
+  return permissions && permissions.some((p) => perms.includes(p));
+}
+
+/**
  * @function getErrorMessage
  * Gets the message to display for preflight errors. Expand this to add
  * friendlier messages for other errors.

@@ -7,6 +7,7 @@ import FormViewer from '~/components/designer/FormViewer.vue';
 import NotesPanel from '~/components/forms/submission/NotesPanel.vue';
 import StatusPanel from '~/components/forms/submission/StatusPanel.vue';
 import PrintOptions from '~/components/forms/PrintOptions.vue';
+import { checkSubmissionUpdate } from '~/utils/permissionUtils';
 
 import { useFormStore } from '~/store/form';
 import { NotificationTypes } from '~/utils/constants';
@@ -61,6 +62,7 @@ export default {
       'fetchSubmission',
       'getFormPermissionsForUser',
     ]),
+    checkSubmissionUpdate: checkSubmissionUpdate,
     onDelete() {
       this.$router.push({
         name: 'FormSubmissions',
@@ -233,7 +235,10 @@ export default {
               >
                 <span v-if="submissionReadOnly">
                   <AuditHistory :submission-id="submissionId" />
-                  <v-tooltip location="bottom">
+                  <v-tooltip
+                    v-if="checkSubmissionUpdate(permissions)"
+                    location="bottom"
+                  >
                     <template #activator="{ props }">
                       <v-btn
                         class="mx-1"
