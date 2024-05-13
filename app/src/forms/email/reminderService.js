@@ -1,4 +1,4 @@
-const { getAvailableDates, getBaseUrl } = require('../common/utils');
+const { getSubmissionPeriodDates, getBaseUrl } = require('../common/utils');
 const emailService = require('./emailService');
 const moment = require('moment');
 const { EmailTypes, ScheduleType } = require('../common/constants');
@@ -92,7 +92,7 @@ const service = {
   },
   _listDates: (schedule) => {
     if (schedule.scheduleType == ScheduleType.PERIOD) {
-      return getAvailableDates(
+      return getSubmissionPeriodDates(
         schedule.keepOpenForTerm,
         schedule.keepOpenForInterval,
         schedule.openSubmissionDateTime,
@@ -100,9 +100,7 @@ const service = {
         schedule.repeatSubmission.everyIntervalType,
         schedule.allowLateSubmissions.forNext.term,
         schedule.allowLateSubmissions.forNext.intervalType,
-        schedule.repeatSubmission.repeatUntil,
-        schedule.scheduleType,
-        schedule.closeSubmissionDateTime
+        schedule.repeatSubmission.repeatUntil
       );
     }
     if (schedule.scheduleType == ScheduleType.MANUAL) {
