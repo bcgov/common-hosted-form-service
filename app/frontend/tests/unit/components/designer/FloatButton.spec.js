@@ -200,4 +200,126 @@ describe('FloatButton.vue', () => {
     // that is tested by the vue-router team already
     expect(mockRouter.resolve).toHaveBeenCalledTimes(1);
   });
+
+  it('Publish button is enabled if it is not a new draft version and there is a form id and draft id', () => {
+    const wrapper = mount(FloatButton, {
+      props: {
+        newVersion: false,
+        formId: '1',
+        draftId: '1',
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    expect(wrapper.vm.isPublishEnabled).toBeTruthy();
+  });
+
+  it('Publish button is disabled if it is not a new draft version and there is a form id and no draft id', () => {
+    const wrapper = mount(FloatButton, {
+      props: {
+        newVersion: false,
+        formId: '1',
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    expect(wrapper.vm.isPublishEnabled).toBeFalsy();
+  });
+
+  it('Publish button is disabled if it is not a new draft version and there is no form id and no draft id', () => {
+    const wrapper = mount(FloatButton, {
+      props: {
+        newVersion: false,
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    expect(wrapper.vm.isPublishEnabled).toBeFalsy();
+  });
+
+  it('Publish button is disabled if it is a new draft version', () => {
+    const wrapper = mount(FloatButton, {
+      props: {
+        newVersion: true,
+        formId: '1',
+        draftId: '1',
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    expect(wrapper.vm.isPublishEnabled).toBeFalsy();
+  });
+
+  it('Manage button is enabled if there is a form id', () => {
+    const wrapper = mount(FloatButton, {
+      props: {
+        newVersion: true,
+        formId: '1',
+        draftId: '1',
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    expect(wrapper.vm.isManageEnabled).toBeTruthy();
+  });
+
+  it('Manage button is disabled if there is no form id', () => {
+    const wrapper = mount(FloatButton, {
+      props: {
+        newVersion: true,
+        draftId: '1',
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    expect(wrapper.vm.isManageEnabled).toBeFalsy();
+  });
 });
