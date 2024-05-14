@@ -164,6 +164,10 @@ export default {
               id: item.id,
               isDraft: item.isDraft,
             };
+            const idx = this.drafts.map((d) => d.id).indexOf(item.id);
+            if (idx !== -1) {
+              this.drafts[idx].published = true;
+            }
             document.documentElement.style.overflow = 'hidden';
             this.showPublishDialog = true;
           }
