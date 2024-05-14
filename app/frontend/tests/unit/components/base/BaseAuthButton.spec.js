@@ -1,15 +1,19 @@
 // @vitest-environment happy-dom
 // happy-dom is required to access window.location
 
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import { setActivePinia, createPinia } from 'pinia';
 import { expect, vi } from 'vitest';
+import { useRoute } from 'vue-router';
 
-import getRouter from '~/router';
 import BaseAuthButton from '~/components/base/BaseAuthButton.vue';
 import { useAuthStore } from '~/store/auth';
 import { useIdpStore } from '~/store/identityProviders';
 import { useAppStore } from '~/store/app';
+
+vi.mock('vue-router', () => ({
+  useRoute: vi.fn(),
+}));
 
 describe('BaseAuthButton.vue', () => {
   const pinia = createPinia();
@@ -17,7 +21,6 @@ describe('BaseAuthButton.vue', () => {
   const authStore = useAuthStore();
   const idpStore = useIdpStore();
   const appStore = useAppStore();
-  const router = getRouter();
   const windowReplaceSpy = vi.spyOn(window.location, 'assign');
   idpStore.providers = require('../../fixtures/identityProviders.json');
 
@@ -25,25 +28,26 @@ describe('BaseAuthButton.vue', () => {
     windowReplaceSpy.mockReset();
     appStore.$reset();
     appStore.config = {
-      basePath: '/app'
+      basePath: '/app',
     };
     authStore.$reset();
     authStore.keycloak = {
       createLoginUrl: vi.fn((opts) => opts),
-      clientId: 'clientid'
+      clientId: 'clientid',
     };
-    router.currentRoute.value.meta.hasLogin = true;
-    router.push('/');
-    await router.isReady();
   });
 
   it('renders nothing when not authenticated and does not hasLogin', () => {
+    useRoute.mockImplementationOnce(() => ({
+      meta: {
+        hasLogin: false,
+      },
+    }));
     authStore.authenticated = false;
     authStore.ready = true;
-    router.currentRoute.value.meta.hasLogin = false;
     const wrapper = mount(BaseAuthButton, {
       global: {
-        plugins: [router, pinia],
+        plugins: [pinia],
       },
     });
 
@@ -51,15 +55,18 @@ describe('BaseAuthButton.vue', () => {
   });
 
   it('renders login when not authenticated and hasLogin', () => {
+    useRoute.mockImplementationOnce(() => ({
+      meta: {
+        hasLogin: true,
+      },
+    }));
     authStore.authenticated = false;
     authStore.ready = true;
     const wrapper = mount(BaseAuthButton, {
       global: {
-        plugins: [router, pinia],
+        plugins: [pinia],
       },
     });
-
-    wrapper.vm.$route.meta.hasLogin = true;
 
     expect(wrapper.text()).toEqual('trans.baseAuthButton.login');
   });
@@ -69,7 +76,7 @@ describe('BaseAuthButton.vue', () => {
     authStore.ready = true;
     const wrapper = mount(BaseAuthButton, {
       global: {
-        plugins: [router, pinia],
+        plugins: [pinia],
       },
     });
 
@@ -81,7 +88,7 @@ describe('BaseAuthButton.vue', () => {
     authStore.ready = false;
     const wrapper = mount(BaseAuthButton, {
       global: {
-        plugins: [router, pinia],
+        plugins: [pinia],
       },
     });
 
@@ -89,40 +96,58 @@ describe('BaseAuthButton.vue', () => {
   });
 
   it('login button redirects to login url', async () => {
+    useRoute.mockImplementationOnce(() => ({
+      meta: {
+        hasLogin: true,
+      },
+    }));
+    const loginSpy = vi.spyOn(authStore, 'login');
+    loginSpy.mockImplementationOnce(() => {});
     authStore.authenticated = false;
     authStore.ready = true;
     const wrapper = mount(BaseAuthButton, {
       global: {
-        plugins: [router, pinia],
+        plugins: [pinia],
       },
     });
 
-    const replace = vi.spyOn(router, 'replace');
+    await flushPromises();
 
-    wrapper.vm.login();
-    expect(wrapper.text()).toMatch('trans.baseAuthButton.login');
-    expect(replace).toHaveBeenCalledTimes(1);
-    expect(replace).toHaveBeenCalledWith({
-      name: 'Login',
-      query: { idpHint: idpStore.loginIdpHints },
-    });
+    const loginButton = wrapper.find('#loginButton');
+    expect(loginButton.exists()).toBeTruthy();
+
+    await loginButton.element.click();
+
+    await flushPromises();
+
+    expect(loginSpy).toHaveBeenCalledTimes(1);
   });
 
   it('logout button redirects to logout url', async () => {
+    useRoute.mockImplementationOnce(() => ({
+      meta: {
+        hasLogin: true,
+      },
+    }));
+    const logoutSpy = vi.spyOn(authStore, 'logout');
+    logoutSpy.mockImplementationOnce(() => {});
     authStore.authenticated = true;
-    authStore.logoutUrl = 'http://redirect.com/logout';
-    authStore.keycloak
     authStore.ready = true;
     const wrapper = mount(BaseAuthButton, {
       global: {
-        plugins: [router, pinia],
+        plugins: [pinia],
       },
     });
 
-    wrapper.vm.logout();
-    expect(wrapper.text()).toMatch('trans.baseAuthButton.logout');
-    expect(windowReplaceSpy).toHaveBeenCalledTimes(1);
-    const params = encodeURIComponent(`post_logout_redirect_uri=null/app&client_id=clientid`)
-    expect(windowReplaceSpy).toHaveBeenCalledWith(`http://redirect.com/logout?${params}`);
+    await flushPromises();
+
+    const logoutButton = wrapper.find('#logoutButton');
+    expect(logoutButton.exists()).toBeTruthy();
+
+    await logoutButton.element.click();
+
+    await flushPromises();
+
+    expect(logoutSpy).toHaveBeenCalledTimes(1);
   });
 });

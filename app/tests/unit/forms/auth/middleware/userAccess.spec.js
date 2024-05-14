@@ -13,16 +13,19 @@ const formSubmissionId = uuid.v4();
 const userId = 'c6455376-382c-439d-a811-0381a012d695';
 const userId2 = 'c6455376-382c-439d-a811-0381a012d696';
 
+const bearerToken = Math.random().toString(36).substring(2);
+
 const Roles = {
   OWNER: 'owner',
   TEAM_MANAGER: 'team_manager',
   FORM_DESIGNER: 'form_designer',
+  SUBMISSION_APPROVER: 'submission_approver',
   SUBMISSION_REVIEWER: 'submission_reviewer',
   FORM_SUBMITTER: 'form_submitter',
 };
 
 jwtService.validateAccessToken = jest.fn().mockReturnValue(true);
-jwtService.getBearerToken = jest.fn().mockReturnValue('bearer-token-value');
+jwtService.getBearerToken = jest.fn().mockReturnValue(bearerToken);
 jwtService.getTokenPayload = jest.fn().mockReturnValue({ token: 'payload' });
 
 // Mock the service login
@@ -49,7 +52,7 @@ describe('currentUser', () => {
         formId: 2,
       },
       headers: {
-        authorization: 'Bearer hjvds0uds',
+        authorization: 'Bearer ' + bearerToken,
       },
     };
 
@@ -58,7 +61,7 @@ describe('currentUser', () => {
     await currentUser(testReq, testRes, nxt);
     expect(jwtService.validateAccessToken).toHaveBeenCalledTimes(1);
     expect(jwtService.getBearerToken).toHaveBeenCalledTimes(1);
-    expect(jwtService.validateAccessToken).toHaveBeenCalledWith('bearer-token-value');
+    expect(jwtService.validateAccessToken).toHaveBeenCalledWith(bearerToken);
     expect(service.login).toHaveBeenCalledTimes(1);
     expect(service.login).toHaveBeenCalledWith({ token: 'payload' });
     expect(testReq.currentUser).toEqual(mockUser);
@@ -75,7 +78,7 @@ describe('currentUser', () => {
         formId: 99,
       },
       headers: {
-        authorization: 'Bearer hjvds0uds',
+        authorization: 'Bearer ' + bearerToken,
       },
     };
 
@@ -91,7 +94,7 @@ describe('currentUser', () => {
         formId: 99,
       },
       headers: {
-        authorization: 'Bearer hjvds0uds',
+        authorization: 'Bearer ' + bearerToken,
       },
     };
 
@@ -104,7 +107,7 @@ describe('currentUser', () => {
   it('401s if the token is invalid', async () => {
     const testReq = {
       headers: {
-        authorization: 'Bearer hjvds0uds',
+        authorization: 'Bearer ' + bearerToken,
       },
     };
 
@@ -114,7 +117,7 @@ describe('currentUser', () => {
     await currentUser(testReq, testRes, nxt);
     expect(jwtService.getBearerToken).toHaveBeenCalledTimes(1);
     expect(jwtService.validateAccessToken).toHaveBeenCalledTimes(1);
-    expect(jwtService.validateAccessToken).toHaveBeenCalledWith('bearer-token-value');
+    expect(jwtService.validateAccessToken).toHaveBeenCalledWith(bearerToken);
     expect(service.login).toHaveBeenCalledTimes(0);
     expect(testReq.currentUser).toEqual(undefined);
     expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'Authorization token is invalid.' }));
@@ -1030,6 +1033,16 @@ describe('hasRolePermissions', () => {
             updatedBy: '',
             updatedAt: '',
           },
+          {
+            id: '6',
+            role: Roles.SUBMISSION_APPROVER,
+            formId: formId,
+            userId: userId2,
+            createdBy: '',
+            createdAt: '',
+            updatedBy: '',
+            updatedAt: '',
+          },
         ]);
 
         const hrp = hasRolePermissions(false);
@@ -1155,6 +1168,16 @@ describe('hasRolePermissions', () => {
                 updatedBy: '',
                 updatedAt: '',
               },
+              {
+                id: '6',
+                role: Roles.SUBMISSION_APPROVER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
             ]);
 
             const hrp = hasRolePermissions(false);
@@ -1183,6 +1206,11 @@ describe('hasRolePermissions', () => {
                   formId: formId,
                   role: Roles.FORM_SUBMITTER,
                 },
+                {
+                  userId: userId2,
+                  formId: formId,
+                  role: Roles.SUBMISSION_APPROVER,
+                },
               ],
             };
 
@@ -1209,6 +1237,16 @@ describe('hasRolePermissions', () => {
               {
                 id: '3',
                 role: Roles.SUBMISSION_REVIEWER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '6',
+                role: Roles.SUBMISSION_APPROVER,
                 formId: formId,
                 userId: userId2,
                 createdBy: '',
@@ -1285,6 +1323,16 @@ describe('hasRolePermissions', () => {
                 updatedBy: '',
                 updatedAt: '',
               },
+              {
+                id: '6',
+                role: Roles.SUBMISSION_APPROVER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
             ]);
 
             const hrp = hasRolePermissions(false);
@@ -1313,6 +1361,11 @@ describe('hasRolePermissions', () => {
                   formId: formId,
                   role: Roles.FORM_SUBMITTER,
                 },
+                {
+                  userId: userId2,
+                  formId: formId,
+                  role: Roles.SUBMISSION_APPROVER,
+                },
               ],
             };
 
@@ -1337,6 +1390,16 @@ describe('hasRolePermissions', () => {
               {
                 id: '3',
                 role: Roles.SUBMISSION_REVIEWER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '6',
+                role: Roles.SUBMISSION_APPROVER,
                 formId: formId,
                 userId: userId2,
                 createdBy: '',
@@ -1413,6 +1476,16 @@ describe('hasRolePermissions', () => {
                 updatedBy: '',
                 updatedAt: '',
               },
+              {
+                id: '6',
+                role: Roles.SUBMISSION_APPROVER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
             ]);
 
             const hrp = hasRolePermissions(false);
@@ -1440,6 +1513,11 @@ describe('hasRolePermissions', () => {
                   userId: userId2,
                   formId: formId,
                   role: Roles.FORM_SUBMITTER,
+                },
+                {
+                  userId: userId2,
+                  formId: formId,
+                  role: Roles.SUBMISSION_APPROVER,
                 },
               ],
             };
@@ -1484,6 +1562,11 @@ describe('hasRolePermissions', () => {
                   formId: formId,
                   role: Roles.FORM_SUBMITTER,
                 },
+                {
+                  userId: userId2,
+                  formId: formId,
+                  role: Roles.SUBMISSION_APPROVER,
+                },
               ],
             };
 
@@ -1525,6 +1608,16 @@ describe('hasRolePermissions', () => {
                 updatedBy: '',
                 updatedAt: '',
               },
+              {
+                id: '6',
+                role: Roles.SUBMISSION_APPROVER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
             ]);
 
             const hrp = hasRolePermissions(false);
@@ -1553,6 +1646,11 @@ describe('hasRolePermissions', () => {
                   userId: userId2,
                   formId: formId,
                   role: Roles.FORM_SUBMITTER,
+                },
+                {
+                  userId: userId2,
+                  formId: formId,
+                  role: Roles.SUBMISSION_APPROVER,
                 },
               ],
             };
@@ -1588,6 +1686,16 @@ describe('hasRolePermissions', () => {
               {
                 id: '3',
                 role: Roles.SUBMISSION_REVIEWER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '6',
+                role: Roles.SUBMISSION_APPROVER,
                 formId: formId,
                 userId: userId2,
                 createdBy: '',
@@ -1665,6 +1773,16 @@ describe('hasRolePermissions', () => {
                 updatedBy: '',
                 updatedAt: '',
               },
+              {
+                id: '6',
+                role: Roles.SUBMISSION_APPROVER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
             ]);
 
             const hrp = hasRolePermissions(false);
@@ -1693,6 +1811,11 @@ describe('hasRolePermissions', () => {
                   userId: userId2,
                   formId: formId,
                   role: Roles.SUBMISSION_REVIEWER,
+                },
+                {
+                  userId: userId2,
+                  formId: formId,
+                  role: Roles.SUBMISSION_APPROVER,
                 },
               ],
             };
@@ -1728,6 +1851,16 @@ describe('hasRolePermissions', () => {
               {
                 id: '3',
                 role: Roles.SUBMISSION_REVIEWER,
+                formId: formId,
+                userId: userId2,
+                createdBy: '',
+                createdAt: '',
+                updatedBy: '',
+                updatedAt: '',
+              },
+              {
+                id: '6',
+                role: Roles.SUBMISSION_APPROVER,
                 formId: formId,
                 userId: userId2,
                 createdBy: '',

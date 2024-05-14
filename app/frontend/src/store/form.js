@@ -13,23 +13,37 @@ import { generateIdps, parseIdps } from '~/utils/transformUtils';
 
 const genInitialSchedule = () => ({
   enabled: null,
+  // Manual, Schedule closing, Submission Period
   scheduleType: null,
+  // The day that submissions are open
   openSubmissionDateTime: null,
+  // The number of periods in a submission period
   keepOpenForTerm: null,
+  // The period type in a submission period (days, weeks, months, quarters, years)
   keepOpenForInterval: null,
+  // Enables or disables the closing message for a schedule or submission period
   closingMessageEnabled: null,
+  // The closing message for a schedule or submission period
   closingMessage: null,
+  // The closing date for a scheduled closing
   closeSubmissionDateTime: null,
+  // In a submission period, the repeat object
   repeatSubmission: {
     enabled: null,
+    // When to end the repeat
     repeatUntil: null,
+    // The number of periods in the repeat object
     everyTerm: null,
+    // The period type in the repeat object
     everyIntervalType: null,
   },
+  // In a schedule closing or submission period, the allow late submissions object
   allowLateSubmissions: {
     enabled: null,
     forNext: {
+      // The number of periods to allow for a late submission
       term: null,
+      // The period type
       intervalType: null,
     },
   },
@@ -595,7 +609,9 @@ export const useFormStore = defineStore('form', {
           version,
           singleRow
         );
-        this.formFields = data;
+        // This should get looked into but if there are no submissions it will return data inside of the data
+        // response would look like: response.data.data
+        this.formFields = data?.data ? data.data : data;
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
