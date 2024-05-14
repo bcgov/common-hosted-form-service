@@ -86,6 +86,7 @@ describe('Form Designer', () => {
 
     cy.get('.mdi-account-multiple').click();
     cy.get('.mdi-account-plus').click();
+    //Search for a member to add
     cy.get('.v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
     cy.get('.v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').type('NIM');
     cy.get(':nth-child(2) > .v-chip__content').should('be.visible');
@@ -96,10 +97,37 @@ describe('Form Designer', () => {
     cy.get(':nth-child(4) > .v-chip__content').click();
     cy.get(':nth-child(5) > .v-chip__content').click();
     cy.get('.v-btn--elevated > .v-btn__content > span').click();
-    cy.get('#input-86').should('have.value','true');
-    cy.get('#input-87').should('have.value','true');
-    cy.get('#input-88').should('have.value','true');
-    cy.get('#input-91').should('have.value','true');
+    // Verify member is added with proper roles
+    cy.get('#input-89').should('be.checked');
+    cy.get('#input-90').should('be.checked');
+    cy.get('#input-91').should('be.checked');
+    cy.get('#input-93').should('be.checked');
+    //Manage column views
+    cy.get('.mdi-view-column').click();
+    cy.get('#input-118').should('be.checked');
+    cy.get('#input-119').should('be.checked');
+    cy.get('#input-120').should('be.checked');
+    cy.get('#input-121').should('be.checked');
+    cy.get('#input-122').should('be.checked');
+    cy.get('#input-121').click();
+    cy.waitForLoad();
+    cy.get('#input-121').should('not.be.checked');
+    //Column view management
+    cy.get('#input-113').click();
+    cy.get('#input-113').type('Designer');
+
+    cy.get('#input-125').click();
+    cy.get('button').contains('Save').click();
+    cy.waitForLoad();
+    //Verify the roles on dashboard
+    cy.get('#input-121').should('not.exist');
+    cy.get('#input-149').should('not.be.checked');
+    
+
+
+
+
+
 
 
 
