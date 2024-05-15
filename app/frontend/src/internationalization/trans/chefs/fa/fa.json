@@ -77,7 +77,7 @@
     "upload": "بارگذاری",
     "delete": "حذف",
     "download": "دانلود",
-    "invalidFileMessage": "قالب باید یکی از پسوندهای زیر را استفاده کند: .txt، .docx، .html، .odt، .pptx، .xlsx، .pdf",
+    "invalidFileMessage": "قالب باید یکی از پسوندهای زیر را استفاده کند: .txt، .docx، .html، .odt، .pptx، .xlsx",
     "uploadSuccess": "قالب با موفقیت بارگذاری شد.",
     "uploadError": "خطایی در هنگام بارگذاری قالب رخ داد.",
     "deleteSuccess": "قالب با موفقیت حذف شد.",
