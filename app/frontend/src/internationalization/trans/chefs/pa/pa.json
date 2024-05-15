@@ -77,7 +77,7 @@
     "upload": "ਅੱਪਲੋਡ ਕਰੋ",
     "delete": "ਮਿਟਾਓ",
     "download": "ਡਾਊਨਲੋਡ ਕਰੋ",
-    "invalidFileMessage": "ਟੈਂਪਲੇਟ ਵਿੱਚ ਇਹਨਾਂ ਵਿੱਚੋਂ ਕੋਈ ਇੱਕ ਐਕਸਟੈਂਸ਼ਨ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ: .txt, .docx, .html, .odt, .pptx, .xlsx, .pdf",
+    "invalidFileMessage": "ਟੈਂਪਲੇਟ ਵਿੱਚ ਇਹਨਾਂ ਵਿੱਚੋਂ ਕੋਈ ਇੱਕ ਐਕਸਟੈਂਸ਼ਨ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ: .txt, .docx, .html, .odt, .pptx, .xlsx",
     "uploadSuccess": "ਟੈਂਪਲੇਟ ਸਫਲਤਾਪੂਰਵਕ ਅੱਪਲੋਡ ਹੋ ਗਈ।",
     "uploadError": "ਟੈਂਪਲੇਟ ਅੱਪਲੋਡ ਕਰਦੇ ਸਮੇਂ ਇੱਕ ਗਲਤੀ ਆਈ।",
     "deleteSuccess": "ਟੈਂਪਲੇਟ ਸਫਲਤਾਪੂਰਵਕ ਮਿਟਾਈ ਗਈ।",
