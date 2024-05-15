@@ -159,7 +159,7 @@ const hasSubmissionPermissions = (permissions) => {
       // but give precedence to params.
       const submissionId = req.params.formSubmissionId || req.query.formSubmissionId;
       if (!uuid.validate(submissionId)) {
-        throw new Problem(400, 'Bad formSubmissionId');
+        throw new Problem(400, { detail: 'Bad formSubmissionId' });
       }
 
       // Get the submission results so we know what form this submission is for.
@@ -190,7 +190,7 @@ const hasSubmissionPermissions = (permissions) => {
       // Deleted submissions are only accessible to users with the form
       // permissions above.
       if (submissionForm.submission.deleted) {
-        throw new Problem(401, 'You do not have access to this submission.');
+        throw new Problem(401, { detail: 'You do not have access to this submission.' });
       }
 
       // Public (anonymous) forms are publicly viewable.
@@ -204,7 +204,7 @@ const hasSubmissionPermissions = (permissions) => {
       // check against the submission level permissions assigned to the user...
       const submissionPermission = await service.checkSubmissionPermission(req.currentUser, submissionId, permissions);
       if (!submissionPermission) {
-        throw new Problem(401, 'You do not have access to this submission.');
+        throw new Problem(401, { detail: 'You do not have access to this submission.' });
       }
 
       next();
