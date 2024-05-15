@@ -126,7 +126,7 @@ const isFormExpired = (formSchedule = {}) => {
             /** Check if form is Repeat enabled - start */
             /** Check if form is Repeat enabled and alow late submition - start */
             if (formSchedule.repeatSubmission.enabled) {
-              let availableDates = getAvailableDates(
+              let availableDates = getSubmissionPeriodDates(
                 formSchedule.keepOpenForTerm,
                 formSchedule.keepOpenForInterval,
                 startDate,
@@ -246,7 +246,7 @@ const checkIsFormExpired = (formSchedule = {}) => {
             /** Check if form is Repeat enabled - start */
             /** Check if form is Repeat enabled and alow late submition - start */
             if (formSchedule.repeatSubmission.enabled) {
-              let availableDates = getAvailableDates(
+              let availableDates = getSubmissionPeriodDates(
                 formSchedule.keepOpenForTerm,
                 formSchedule.keepOpenForInterval,
                 startDate,
@@ -254,9 +254,7 @@ const checkIsFormExpired = (formSchedule = {}) => {
                 formSchedule.repeatSubmission.everyIntervalType,
                 formSchedule.allowLateSubmissions.enabled ? formSchedule.allowLateSubmissions.forNext.term : 0,
                 formSchedule.allowLateSubmissions.forNext.intervalType,
-                formSchedule.repeatSubmission.repeatUntil,
-                formSchedule.scheduleType,
-                formSchedule.closeSubmissionDateTime
+                formSchedule.repeatSubmission.repeatUntil
               );
               for (let i = 0; i < availableDates.length; i++) {
                 //Check if today is the day when a submitter can submit the form for given period of repeat submission
@@ -327,75 +325,73 @@ const isEligibleLateSubmission = (date, term, interval) => {
 };
 
 /**
- * @function getAvailableDates
- * Get All possible dates in given period with Term and Interval
+ * @function getSubmissionPeriodDates
+ * Gets all possible dates for a submission period
  *
- * @param {Integer} keepAliveFor An integer for number of days
- * @param {String} keepAliveForInterval A string of days,Weeks,months
- * @param {Object[]} subStartDate An object of Moment JS date
- * @param {Integer} term An integer of number of Days/Weeks OR Years
- * @param {String} interval A string of days,Weeks,months
- * @param {Integer} allowLateTerm An integer of number of Days/Weeks OR Years
- * @param {String} allowLateInterval A string of days,Weeks,months
- * @param {Object[]} repeatUntil An object of Moment JS date
- * @param {String} scheduleType A string one of Manual, ClosingDate OR Period
- * @param {Object[]} closeDate An object of Moment JS date
- * @returns {Object[]} An object array of Available dates in given period
+ * @param {Integer} keepOpenForTerm A submission period's number of period intervals
+ * @param {String} keepOpenForInterval A submission period's intervals which can be days, weeks, months, or years
+ * @param {Object} openSubmissionDateTime A moment object of the day the form will be open for submissions
+ * @param {Integer} repeatSubmissionTerm A submission period's number of repeat intervals
+ * @param {String} repeatSubmissionInterval A submission period's repeat intervals which can be days, weeks, months, or years
+ * @param {Integer} allowLateTerm A late submission's number of period intervals
+ * @param {String} allowLateInterval A late submission's intervals which can be days, weeks, months, or years
+ * @param {Object} repeatSubmissionUntil A moment of the day that a submission period will stop repeat intervals
+ * @returns {Object} An object array of available dates in given period
  */
-const getAvailableDates = (
-  keepAliveFor = 0,
-  keepAliveForInterval = 'days',
-  subStartDate,
-  term = null,
-  interval = null,
+const getSubmissionPeriodDates = (
+  keepOpenForTerm = 0,
+  keepOpenForInterval = 'days',
+  openSubmissionDateTime,
+  repeatSubmissionTerm = null,
+  repeatSubmissionInterval = null,
   allowLateTerm = null,
   allowLateInterval = null,
-  repeatUntil,
-  scheduleType,
-  closeDate = null
+  repeatSubmissionUntil
 ) => {
-  let substartDate = moment(subStartDate);
-  repeatUntil = moment(repeatUntil);
-  let calculatedsubcloseDate = getCalculatedCloseSubmissionDate(
-    substartDate,
-    keepAliveFor,
-    keepAliveForInterval,
-    allowLateTerm,
-    allowLateInterval,
-    term,
-    interval,
-    repeatUntil,
-    scheduleType,
-    closeDate
-  );
-  let availableDates = [];
-  if (calculatedsubcloseDate && term && interval) {
-    while (substartDate.isBefore(calculatedsubcloseDate)) {
-      let newDate = substartDate.clone();
-      if (substartDate.isBefore(repeatUntil)) {
-        availableDates.push(
-          Object({
-            startDate: substartDate.format('YYYY-MM-DD HH:MM:SS'),
-            closeDate: newDate.add(keepAliveFor, keepAliveForInterval).format('YYYY-MM-DD HH:MM:SS'),
-            graceDate: newDate.add(allowLateTerm, allowLateInterval).format('YYYY-MM-DD HH:MM:SS'),
-          })
-        );
-      }
-      substartDate.add(term, interval);
+  let submissionPeriodDates = [];
+  let openSubmissionDate = moment.isMoment(openSubmissionDateTime) ? openSubmissionDateTime.clone() : moment(openSubmissionDateTime);
+  let calculatedCloseDate = openSubmissionDate.clone();
+  repeatSubmissionUntil = moment.isMoment(repeatSubmissionUntil) ? repeatSubmissionUntil.clone() : moment(repeatSubmissionUntil);
+  let graceDate = null;
+
+  calculatedCloseDate.add(keepOpenForTerm, keepOpenForInterval);
+  if (allowLateTerm && allowLateInterval) graceDate = calculatedCloseDate.clone().add(allowLateTerm, allowLateInterval).format('YYYY-MM-DD HH:MM:SS');
+
+  // Always push through the first submission period
+  submissionPeriodDates.push({
+    startDate: openSubmissionDate.clone().format('YYYY-MM-DD HH:MM:SS'),
+    closeDate: calculatedCloseDate.format('YYYY-MM-DD HH:MM:SS'),
+    graceDate: graceDate,
+  });
+
+  // If repeat periods are enabled
+  if (repeatSubmissionTerm && repeatSubmissionInterval && repeatSubmissionUntil) {
+    // Reset the calculated closing date to the open date
+    calculatedCloseDate = openSubmissionDate.clone();
+    // This checks that we're not repeating it again if the close date is before
+    // the repeat end date.
+    while (calculatedCloseDate.clone().add(repeatSubmissionTerm, repeatSubmissionInterval).isBefore(repeatSubmissionUntil)) {
+      // Add the repeat period to the open submission date to determine the open submission date
+      openSubmissionDate.add(repeatSubmissionTerm, repeatSubmissionInterval);
+      // Calculated closing date is now the openSubmission date with the keep open period
+      calculatedCloseDate = openSubmissionDate.clone().add(keepOpenForTerm, keepOpenForInterval);
+      // If late submissions are enabled, set the grace period equal to the closing date
+      // with the addition of the late period
+      if (allowLateTerm && allowLateInterval) graceDate = calculatedCloseDate.clone().add(allowLateTerm, allowLateInterval).format('YYYY-MM-DD HH:MM:SS');
+
+      // Add the calculated dates to the submission period array
+      submissionPeriodDates.push({
+        startDate: openSubmissionDate.clone().format('YYYY-MM-DD HH:MM:SS'),
+        closeDate: calculatedCloseDate.format('YYYY-MM-DD HH:MM:SS'),
+        graceDate: graceDate,
+      });
+
+      // Set the calculated closing date equal to the open date again for the repeat submission check
+      calculatedCloseDate = openSubmissionDate.clone();
     }
   }
 
-  if (term == null && interval == null && keepAliveFor && keepAliveForInterval) {
-    let newDates = substartDate.clone();
-    availableDates.push(
-      Object({
-        startDate: substartDate.format('YYYY-MM-DD HH:MM:SS'),
-        closeDate: newDates.add(keepAliveFor, keepAliveForInterval).format('YYYY-MM-DD HH:MM:SS'),
-        graceDate: allowLateTerm && allowLateInterval ? newDates.add(allowLateTerm, allowLateInterval).format('YYYY-MM-DD HH:MM:SS') : null,
-      })
-    );
-  }
-  return availableDates;
+  return submissionPeriodDates;
 };
 
 /**
@@ -766,7 +762,7 @@ module.exports = {
   typeUtils,
   isFormExpired,
   getCalculatedCloseSubmissionDate,
-  getAvailableDates,
+  getSubmissionPeriodDates,
   isEligibleLateSubmission,
   periodType,
   checkIsFormExpired,

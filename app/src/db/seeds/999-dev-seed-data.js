@@ -251,6 +251,18 @@ exports.seed = function (knex) {
         items.push(item);
       });
 
+      // forms 0 - 5, set the submission_approver
+      [ID.users[0], ID.users[2], ID.users[1], ID.users[0], ID.users[0], ID.users[0]].forEach((u,i) => {
+        const item = {
+          id: uuidv4(),
+          createdBy: CREATED_BY,
+          formId: ID.forms[i].id,
+          role: 'submission_approver',
+          userId: u.id
+        };
+        items.push(item);
+      });
+
       // forms 0 - 5, set the submission_reviewer
       [ID.users[0], ID.users[2], ID.users[1], ID.users[0], ID.users[0], ID.users[0]].forEach((u,i) => {
         const item = {

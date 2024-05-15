@@ -6,7 +6,6 @@ import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 
 describe('FormAPIProfile.vue', () => {
-
   const pinia = createTestingPinia();
   setActivePinia(pinia);
   const formStore = useFormStore(pinia);
@@ -16,17 +15,15 @@ describe('FormAPIProfile.vue', () => {
   });
 
   it('renders properly', () => {
-
     const wrapper = mount(FormAPIProfile, {
       global: {
         plugins: [pinia],
       },
-    })
+    });
     expect(wrapper.text()).toMatch('trans.formProfile.APIPrompt');
     expect(wrapper.text()).toMatch('trans.formProfile.Y');
     expect(wrapper.text()).toMatch('trans.formProfile.N');
-
-  })
+  });
 
   it('check if radio buttons have proper value', async () => {
     const wrapper = mount(FormAPIProfile, {
@@ -42,7 +39,6 @@ describe('FormAPIProfile.vue', () => {
     const radioTrue = wrapper.find('[data-test="api-true"]');
     const inputTrue = radioTrue.find('input').wrapperElement._value;
     expect(inputTrue).toBe(true);
-
   });
 
   it('test click of radio buttons', async () => {
@@ -62,5 +58,4 @@ describe('FormAPIProfile.vue', () => {
     await nextTick;
     expect(formStore.form.apiIntegration).toBe(false);
   });
-
-})
+});
