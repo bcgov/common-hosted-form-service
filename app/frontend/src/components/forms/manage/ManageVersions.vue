@@ -127,29 +127,21 @@ export default {
     cancelPublish() {
       this.showPublishDialog = false;
       document.documentElement.style.overflow = 'auto';
-      if (this.draftId) {
-        this.$router
-          .replace({
-            name: 'FormDesigner',
-            query: {
-              f: this.formId,
-              d: this.draftId,
-              saved: true,
-            },
-          })
-          .catch(() => {});
-      }
-
       if (this.hasDraft) {
         const idx = this.drafts.map((d) => d.id).indexOf(this.publishOpts.id);
-        this.drafts[idx].published = !this.drafts[idx].published;
-      } else {
+        if (idx !== -1) {
+          this.drafts[idx].published = !this.drafts[idx].published;
+        }
+      }
+      if (this.form.versions) {
         const idx = this.form.versions
           .map((d) => d.id)
           .indexOf(this.publishOpts.id);
-        this.form.versions[idx].published = !this.form.versions[idx].published;
+        if (idx !== -1) {
+          this.form.versions[idx].published =
+            !this.form.versions[idx].published;
+        }
       }
-
       this.rerenderTable += 1;
     },
     togglePublish(value, id, version, isDraft) {
@@ -172,6 +164,11 @@ export default {
               id: item.id,
               isDraft: item.isDraft,
             };
+            // toggle switch state in data table
+            const idx = this.drafts.map((d) => d.id).indexOf(item.id);
+            if (idx !== -1) {
+              this.drafts[idx].published = true;
+            }
             document.documentElement.style.overflow = 'hidden';
             this.showPublishDialog = true;
           }
