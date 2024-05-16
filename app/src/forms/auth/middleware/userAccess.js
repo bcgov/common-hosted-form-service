@@ -10,18 +10,23 @@ const rbacService = require('../../rbac/service');
 /**
  * Checks that every permission is in the user's form permissions.
  *
- * @param {*} form the user's form metadata including permissions.
- * @param {string[]} permissions the permissions needed for access.
- * @returns true if every permissions value is in the user's form permissions.
+ * @param {string[]} formPermissions the user's form permissions.
+ * @param {string[]} requiredPermissions the permissions needed for access.
+ * @returns true if all required permissions values are in the form permissions.
  */
-const _formHasPermissions = (form, permissions) => {
+const _formHasPermissions = (formPermissions, requiredPermissions) => {
+  // If there are no form permissions then the user can't have permission.
+  if (!formPermissions) {
+    return false;
+  }
+
   // Get the intersection of the two sets of permissions. If it's the same
   // size as permissions then the user has all the needed permissions.
-  const intersection = permissions.filter((p) => {
-    return form.permissions.includes(p);
+  const intersection = requiredPermissions.filter((p) => {
+    return formPermissions.includes(p);
   });
 
-  return intersection.length === permissions.length;
+  return intersection.length === requiredPermissions.length;
 };
 
 /**
@@ -32,25 +37,25 @@ const _formHasPermissions = (form, permissions) => {
  * @param {uuid} formId the ID of the form to retrieve for the current user.
  * @param {boolean} includeDeleted if active form not found, look for a deleted
  *   form.
- * @returns the form metadata.
- * @throws Problem if the form metadata for the formId cannot be retrieved.
+ * @returns the form metadata if the currentUser has access, or undefined.
  */
 const _getForm = async (currentUser, formId, includeDeleted) => {
   if (!uuid.validate(formId)) {
     throw new Problem(400, { detail: 'Bad formId' });
   }
 
-  const forms = await service.getUserForms(currentUser, { active: true, formId: formId });
+  const forms = await service.getUserForms(currentUser, {
+    active: true,
+    formId: formId,
+  });
   let form = forms.find((f) => f.formId === formId);
 
   if (!form && includeDeleted) {
-    const deletedForms = await service.getUserForms(currentUser, { active: false, formId: formId });
+    const deletedForms = await service.getUserForms(currentUser, {
+      active: false,
+      formId: formId,
+    });
     form = deletedForms.find((f) => f.formId === formId);
-  }
-
-  // Cannot find the form: either it doesn't exist or we don't have access.
-  if (!form) {
-    throw new Problem(401, { detail: 'Current user has no access to form' });
   }
 
   return form;
@@ -119,9 +124,11 @@ const hasFormPermissions = (permissions) => {
       // precedence to params.
       const form = await _getForm(req.currentUser, req.params.formId || req.query.formId, true);
 
-      if (!_formHasPermissions(form, permissions)) {
+      // If the form doesn't exist, or its permissions don't exist, then access
+      // will be denied - otherwise check to see if permissions is a subset.
+      if (!_formHasPermissions(form?.permissions, permissions)) {
         throw new Problem(401, {
-          detail: 'Current user does not have required permission(s) on form',
+          detail: 'You do not have access to this form.',
         });
       }
 
@@ -168,22 +175,14 @@ const hasSubmissionPermissions = (permissions) => {
       // If the current user has elevated permissions on the form, they may have
       // access to all submissions for the form.
       if (req.currentUser) {
-        const forms = await service.getUserForms(req.currentUser, {
-          active: true,
-          formId: submissionForm.form.id,
-        });
-        let formFromCurrentUser = forms.find((f) => f.formId === submissionForm.form.id);
-        if (formFromCurrentUser) {
-          // Do they have the submission permissions being requested on this FORM
-          const intersection = permissions.filter((p) => {
-            return formFromCurrentUser.permissions.includes(p);
-          });
-          if (intersection.length === permissions.length) {
-            req.formIdWithDeletePermission = submissionForm.form.id;
-            next();
+        const formFromCurrentUser = await _getForm(req.currentUser, submissionForm.form.id, false);
 
-            return;
-          }
+        // Do they have the submission permissions requested on this form?
+        if (_formHasPermissions(formFromCurrentUser?.permissions, permissions)) {
+          req.formIdWithDeletePermission = submissionForm.form.id;
+          next();
+
+          return;
         }
       }
 
