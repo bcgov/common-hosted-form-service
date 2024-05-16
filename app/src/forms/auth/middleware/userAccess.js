@@ -145,7 +145,7 @@ const hasFormPermissions = (permissions) => {
  * This will fall through if everything is OK, otherwise it will call next()
  * with a Problem describing the error.
  *
- * @param {string[]} permissions the access the user needs for the submission
+ * @param {string[]} permissions the access the user needs for the submission.
  * @returns nothing
  */
 const hasSubmissionPermissions = (permissions) => {
@@ -156,10 +156,6 @@ const hasSubmissionPermissions = (permissions) => {
         next();
 
         return;
-      }
-
-      if (!Array.isArray(permissions)) {
-        permissions = [permissions];
       }
 
       // The request must include a formSubmissionId, either in params or query,
@@ -189,7 +185,9 @@ const hasSubmissionPermissions = (permissions) => {
       // Deleted submissions are only accessible to users with the form
       // permissions above.
       if (submissionForm.submission.deleted) {
-        throw new Problem(401, { detail: 'You do not have access to this submission.' });
+        throw new Problem(401, {
+          detail: 'You do not have access to this submission.',
+        });
       }
 
       // Public (anonymous) forms are publicly viewable.
@@ -203,7 +201,9 @@ const hasSubmissionPermissions = (permissions) => {
       // check against the submission level permissions assigned to the user...
       const submissionPermission = await service.checkSubmissionPermission(req.currentUser, submissionId, permissions);
       if (!submissionPermission) {
-        throw new Problem(401, { detail: 'You do not have access to this submission.' });
+        throw new Problem(401, {
+          detail: 'You do not have access to this submission.',
+        });
       }
 
       next();
@@ -444,10 +444,10 @@ const hasRolePermissions = (removingUsers = false) => {
 
 module.exports = {
   currentUser,
-  hasFormPermissions,
-  hasSubmissionPermissions,
-  hasFormRoles,
-  hasFormRole,
-  hasRolePermissions,
   filterMultipleSubmissions,
+  hasFormPermissions,
+  hasFormRole,
+  hasFormRoles,
+  hasRolePermissions,
+  hasSubmissionPermissions,
 };
