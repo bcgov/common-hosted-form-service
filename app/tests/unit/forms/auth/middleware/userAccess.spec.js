@@ -1,5 +1,4 @@
 const { getMockReq, getMockRes } = require('@jest-mock/express');
-const Problem = require('api-problem');
 const uuid = require('uuid');
 
 const { currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles, hasRolePermissions } = require('../../../../../src/forms/auth/middleware/userAccess');
@@ -14,8 +13,6 @@ const formSubmissionId = uuid.v4();
 const userId = uuid.v4();
 const userId2 = uuid.v4();
 
-const bearerToken = Math.random().toString(36).substring(2);
-
 const Roles = {
   OWNER: 'owner',
   TEAM_MANAGER: 'team_manager',
@@ -25,122 +22,111 @@ const Roles = {
   FORM_SUBMITTER: 'form_submitter',
 };
 
-jwtService.validateAccessToken = jest.fn().mockReturnValue(true);
-jwtService.getBearerToken = jest.fn().mockReturnValue(bearerToken);
-jwtService.getTokenPayload = jest.fn().mockReturnValue({ token: 'payload' });
-
-// Mock the service login
-const mockUser = { user: 'me' };
-service.login = jest.fn().mockReturnValue(mockUser);
-
-const testRes = {
-  writeHead: jest.fn(),
-  end: jest.fn(),
-};
-
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 // External dependencies used by the implementation are:
-//  - jwtService.validateAccessToken: to validate a Bearer token
+//  - jwtService.getBearerToken: to get the bearer token
+//  - jwtService.getTokenPayload to get the payload from the bearer token
+//  - jwtService.validateAccessToken: to validate a bearer token
 //  - service.login: to create the object for req.currentUser
 //
 describe('currentUser', () => {
-  it('gets the current user with valid request', async () => {
-    const testReq = {
-      params: {
-        formId: 2,
-      },
-      headers: {
-        authorization: 'Bearer ' + bearerToken,
-      },
-    };
+  // Bearer token and its authorization header.
+  const bearerToken = Math.random().toString(36).substring(2);
 
-    const nxt = jest.fn();
+  // Default mock of the token validation.
+  jwtService.getBearerToken = jest.fn().mockReturnValue(bearerToken);
+  jwtService.getTokenPayload = jest.fn().mockReturnValue({ token: 'payload' });
+  jwtService.validateAccessToken = jest.fn().mockReturnValue(true);
 
-    await currentUser(testReq, testRes, nxt);
-    expect(jwtService.validateAccessToken).toHaveBeenCalledTimes(1);
-    expect(jwtService.getBearerToken).toHaveBeenCalledTimes(1);
-    expect(jwtService.validateAccessToken).toHaveBeenCalledWith(bearerToken);
-    expect(service.login).toHaveBeenCalledTimes(1);
-    expect(service.login).toHaveBeenCalledWith({ token: 'payload' });
-    expect(testReq.currentUser).toEqual(mockUser);
-    expect(nxt).toHaveBeenCalledTimes(1);
-    expect(nxt).toHaveBeenCalledWith();
-  });
-
-  it('prioritizes the url param if both url and query are provided', async () => {
-    const testReq = {
-      params: {
-        formId: 2,
-      },
-      query: {
-        formId: 99,
-      },
-      headers: {
-        authorization: 'Bearer ' + bearerToken,
-      },
-    };
-
-    await currentUser(testReq, testRes, jest.fn());
-    expect(jwtService.getBearerToken).toHaveBeenCalledTimes(1);
-    expect(jwtService.getTokenPayload).toHaveBeenCalledTimes(1);
-    expect(service.login).toHaveBeenCalledWith({ token: 'payload' });
-  });
-
-  it('uses the query param if both if that is whats provided', async () => {
-    const testReq = {
-      query: {
-        formId: 99,
-      },
-      headers: {
-        authorization: 'Bearer ' + bearerToken,
-      },
-    };
-
-    await currentUser(testReq, testRes, jest.fn());
-    expect(jwtService.getBearerToken).toHaveBeenCalledTimes(1);
-    expect(jwtService.getTokenPayload).toHaveBeenCalledTimes(1);
-    expect(service.login).toHaveBeenCalledWith({ token: 'payload' });
-  });
+  // Default mock of the service login
+  const mockUser = { user: 'me' };
+  service.login = jest.fn().mockReturnValue(mockUser);
 
   it('401s if the token is invalid', async () => {
-    const testReq = {
-      headers: {
-        authorization: 'Bearer ' + bearerToken,
-      },
-    };
+    jwtService.validateAccessToken.mockReturnValueOnce(false);
+    const req = getMockReq();
+    const { res, next } = getMockRes();
 
-    const nxt = jest.fn();
-    jwtService.validateAccessToken = jest.fn().mockReturnValue(false);
+    await currentUser(req, res, next);
 
-    await currentUser(testReq, testRes, nxt);
     expect(jwtService.getBearerToken).toHaveBeenCalledTimes(1);
     expect(jwtService.validateAccessToken).toHaveBeenCalledTimes(1);
     expect(jwtService.validateAccessToken).toHaveBeenCalledWith(bearerToken);
     expect(service.login).toHaveBeenCalledTimes(0);
-    expect(testReq.currentUser).toEqual(undefined);
-    expect(nxt).toHaveBeenCalledWith(new Problem(401, { detail: 'Authorization token is invalid.' }));
+    expect(req.currentUser).toEqual(undefined);
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        detail: 'Authorization token is invalid.',
+        status: 401,
+      })
+    );
   });
-});
 
-describe('getToken', () => {
-  it('returns a null token if no auth bearer in the headers', async () => {
-    const testReq = {
-      params: {
-        formId: 2,
-      },
-    };
+  it('passes on the error if a service fails unexpectedly', async () => {
+    service.login.mockRejectedValueOnce(new Error());
+    const req = getMockReq();
+    const { res, next } = getMockRes();
 
-    jwtService.getBearerToken = jest.fn().mockReturnValue(null);
-    jwtService.getTokenPayload = jest.fn().mockReturnValue(null);
+    await currentUser(req, res, next);
 
-    await currentUser(testReq, testRes, jest.fn());
     expect(jwtService.getBearerToken).toHaveBeenCalledTimes(1);
-    expect(jwtService.getTokenPayload).toHaveBeenCalledTimes(1);
+    expect(jwtService.validateAccessToken).toHaveBeenCalledTimes(1);
+    expect(jwtService.validateAccessToken).toHaveBeenCalledWith(bearerToken);
+    expect(service.login).toHaveBeenCalledTimes(1);
+    expect(req.currentUser).toEqual(undefined);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith(expect.any(Error));
+  });
+
+  it('gets the current user with no bearer token', async () => {
+    jwtService.getBearerToken.mockReturnValueOnce(null);
+    jwtService.getTokenPayload.mockReturnValueOnce(null);
+    const req = getMockReq();
+    const { res, next } = getMockRes();
+
+    await currentUser(req, res, next);
+
+    expect(jwtService.validateAccessToken).toHaveBeenCalledTimes(0);
     expect(service.login).toHaveBeenCalledTimes(1);
     expect(service.login).toHaveBeenCalledWith(null);
+    expect(req.currentUser).toEqual(mockUser);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it('does not keycloak validate with no bearer token', async () => {
+    jwtService.getBearerToken.mockReturnValueOnce(null);
+    jwtService.getTokenPayload.mockReturnValueOnce(null);
+    const req = getMockReq();
+    const { res, next } = getMockRes();
+
+    await currentUser(req, res, next);
+
+    expect(jwtService.validateAccessToken).toHaveBeenCalledTimes(0);
+    expect(req.currentUser).toEqual(mockUser);
+    expect(service.login).toHaveBeenCalledTimes(1);
+    expect(service.login).toHaveBeenCalledWith(null);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it('gets the current user with valid request', async () => {
+    const req = getMockReq();
+    const { res, next } = getMockRes();
+
+    await currentUser(req, res, next);
+
+    expect(jwtService.validateAccessToken).toHaveBeenCalledTimes(1);
+    expect(jwtService.getBearerToken).toHaveBeenCalledTimes(1);
+    expect(jwtService.validateAccessToken).toHaveBeenCalledWith(bearerToken);
+    expect(service.login).toHaveBeenCalledTimes(1);
+    expect(service.login).toHaveBeenCalledWith({ token: 'payload' });
+    expect(req.currentUser).toEqual(mockUser);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalledWith();
   });
 });
 
