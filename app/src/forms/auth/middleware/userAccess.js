@@ -8,25 +8,48 @@ const service = require('../service');
 const rbacService = require('../../rbac/service');
 
 /**
- * Checks that every permission is in the user's form permissions.
+ * Checks that the user's permissions contains every required permission.
  *
- * @param {string[]} formPermissions the user's form permissions.
+ * @param {string[]} userPermissions the permissions that the user has.
  * @param {string[]} requiredPermissions the permissions needed for access.
- * @returns true if all required permissions values are in the form permissions.
+ * @returns true if all required permissions are in the user permissions.
  */
-const _formHasPermissions = (formPermissions, requiredPermissions) => {
-  // If there are no form permissions then the user can't have permission.
-  if (!formPermissions) {
+const _hasAllPermissions = (userPermissions, requiredPermissions) => {
+  // If there are no user permissions then the user can't have permission.
+  if (!userPermissions) {
     return false;
   }
 
-  // Get the intersection of the two sets of permissions. If it's the same
-  // size as permissions then the user has all the needed permissions.
+  // Get the intersection of the two sets of permissions.
   const intersection = requiredPermissions.filter((p) => {
-    return formPermissions.includes(p);
+    return userPermissions.includes(p);
   });
 
+  // If the intersection is the same size as the required permissions then the
+  // user has all the needed permissions.
   return intersection.length === requiredPermissions.length;
+};
+
+/**
+ * Checks that the user's permissions contains any of the required permissions.
+ *
+ * @param {string[]} userPermissions the permissions that the user has.
+ * @param {string[]} requiredPermissions the permissions needed for access.
+ * @returns true if any required permissions is in the user permissions.
+ */
+const _hasAnyPermission = (userPermissions, requiredPermissions) => {
+  // If there are no user permissions then the user can't have permission.
+  if (!userPermissions) {
+    return false;
+  }
+
+  // Get the intersection of the two sets of permissions.
+  const intersection = requiredPermissions.filter((p) => {
+    return userPermissions.includes(p);
+  });
+
+  // If the intersection has any values then the user has permission.
+  return intersection.length > 0;
 };
 
 /**
@@ -64,12 +87,13 @@ const _getForm = async (currentUser, formId, includeDeleted) => {
 /**
  * Express middleware that adds the user information as the res.currentUser
  * attribute so that all downstream middleware and business logic can use it.
- * This will fall through if everything is OK, otherwise it will call next()
- * with a Problem describing the error.
+ * This falls through if everything is OK, otherwise it calls next() with a
+ * Problem describing the error.
  *
  * @param {*} req the Express object representing the HTTP request.
  * @param {*} _res the Express object representing the HTTP response - unused.
  * @param {*} next the Express chaining function.
+ * @returns nothing
  */
 const currentUser = async (req, _res, next) => {
   try {
@@ -95,8 +119,8 @@ const currentUser = async (req, _res, next) => {
 
 /**
  * Express middleware to check that a user has all the given permissions for a
- * form. This will fall through if everything is OK, otherwise it will call
- * next() with a Problem describing the error.
+ * form. This falls through if everything is OK, otherwise it calls next() with
+ * a Problem describing the error.
  *
  * @param {string[]} permissions the form permissions that the user must have.
  * @returns nothing
@@ -126,7 +150,7 @@ const hasFormPermissions = (permissions) => {
 
       // If the form doesn't exist, or its permissions don't exist, then access
       // will be denied - otherwise check to see if permissions is a subset.
-      if (!_formHasPermissions(form?.permissions, permissions)) {
+      if (!_hasAllPermissions(form?.permissions, permissions)) {
         throw new Problem(401, {
           detail: 'You do not have access to this form.',
         });
@@ -142,8 +166,8 @@ const hasFormPermissions = (permissions) => {
 /**
  * Express middleware to check that the caller has the given permissions for the
  * submission identified by params.formSubmissionId or query.formSubmissionId.
- * This will fall through if everything is OK, otherwise it will call next()
- * with a Problem describing the error.
+ * This falls through if everything is OK, otherwise it calls next() with a
+ * Problem describing the error.
  *
  * @param {string[]} permissions the access the user needs for the submission.
  * @returns nothing
@@ -174,7 +198,7 @@ const hasSubmissionPermissions = (permissions) => {
         const formFromCurrentUser = await _getForm(req.currentUser, submissionForm.form.id, false);
 
         // Do they have the submission permissions requested on this form?
-        if (_formHasPermissions(formFromCurrentUser?.permissions, permissions)) {
+        if (_hasAllPermissions(formFromCurrentUser?.permissions, permissions)) {
           req.formIdWithDeletePermission = submissionForm.form.id;
           next();
 
@@ -293,51 +317,32 @@ const hasFormRole = async (formId, user, role) => {
   return hasRole;
 };
 
-const hasFormRoles = (formRoles, hasAll = false) => {
-  return async (req, res, next) => {
-    // If we invoke this middleware and the caller is acting on a specific formId, whether in a param or query (precedence to param)
-    const formId = req.params.formId || req.query.formId;
-    if (!formId) {
-      // No form provided to this route that secures based on form... that's a problem!
-      return new Problem(401, { detail: 'Form Id not found on request.' }).send(res);
-    }
+/**
+ * Express middleware to check that the caller has one of the given roles for
+ * the form identified by params.formId or query.formId. This falls through if
+ * everything is OK, otherwise it calls next() with a Problem describing the
+ * error.
+ *
+ * @param {string[]} formRoles the roles the user needs one of for the form.
+ * @returns nothing
+ */
+const hasFormRoles = (formRoles) => {
+  return async (req, _res, next) => {
+    try {
+      // The request must include a formId, either in params or query, but give
+      // precedence to params.
+      const form = await _getForm(req.currentUser, req.params.formId || req.query.formId, false);
 
-    const forms = await service.getUserForms(req.currentUser, {
-      active: true,
-      formId: formId,
-    });
-    const form = forms.find((f) => f.formId === formId);
-    if (form) {
-      for (let roleIndex = 0; roleIndex < form.roles.length; roleIndex++) {
-        let index = formRoles.indexOf(form.roles[roleIndex]);
-        // If the user has the indexed role requested by the route
-        if (index > -1) {
-          // If the route specifies all roles must exist for the form
-          if (hasAll)
-            // Remove that role from the search
-            formRoles.splice(index, 1);
-          // The user has at least one of the roles
-          else return next();
-        }
-        // The user has all of the required roles
-        if (formRoles.length == 0) break;
+      if (!_hasAnyPermission(form?.roles, formRoles)) {
+        throw new Problem(401, {
+          detail: 'You do not have permission to update this role.',
+        });
       }
-    }
 
-    if (hasAll) {
-      if (formRoles.length > 0)
-        return next(
-          new Problem(401, {
-            detail: 'You do not have permission to update this role.',
-          })
-        );
-      else return next();
+      next();
+    } catch (error) {
+      next(error);
     }
-    return next(
-      new Problem(401, {
-        detail: 'You do not have permission to update this role.',
-      })
-    );
   };
 };
 
