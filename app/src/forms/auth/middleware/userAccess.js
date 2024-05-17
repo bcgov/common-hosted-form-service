@@ -10,7 +10,7 @@ const rbacService = require('../../rbac/service');
 /**
  * Checks that the user's permissions contains every required permission.
  *
- * @param {string[]} userPermissions the permissions that the user has.
+ * @param {string[]|undefined} userPermissions the permissions the user has.
  * @param {string[]} requiredPermissions the permissions needed for access.
  * @returns true if all required permissions are in the user permissions.
  */
@@ -33,7 +33,7 @@ const _hasAllPermissions = (userPermissions, requiredPermissions) => {
 /**
  * Checks that the user's permissions contains any of the required permissions.
  *
- * @param {string[]} userPermissions the permissions that the user has.
+ * @param {string[]|undefined} userPermissions the permissions the user has.
  * @param {string[]} requiredPermissions the permissions needed for access.
  * @returns true if any required permissions is in the user permissions.
  */
@@ -353,8 +353,17 @@ const hasFormRoles = (roles) => {
   };
 };
 
+/**
+ * Express middleware to check that the calling user has one of the given roles for
+ * the form identified by params.formId or query.formId. This falls through if
+ * everything is OK, otherwise it calls next() with a Problem describing the
+ * error.
+ *
+ * @param {string[]} roles the roles the user needs one of for the form.
+ * @returns nothing
+ */
 const hasRolePermissions = (removingUsers = false) => {
-  return async (req, res, next) => {
+  return async (req, _res, next) => {
     try {
       // If we invoke this middleware and the caller is acting on a specific formId, whether in a param or query (precedence to param)
       const formId = req.params.formId || req.query.formId;
