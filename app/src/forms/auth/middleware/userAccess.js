@@ -123,6 +123,10 @@ const currentUser = async (req, _res, next) => {
 
 const filterMultipleSubmissions = async (req, _res, next) => {
   try {
+    // The request must include a formId, either in params or query, but give
+    // precedence to params.
+    const form = await _getForm(req.currentUser, req.params.formId || req.query.formId, true);
+
     // Get the provided list of submissions Id whether in a req body
     const submissionIds = req.body && req.body.submissionIds;
     if (!Array.isArray(submissionIds)) {
@@ -134,22 +138,6 @@ const filterMultipleSubmissions = async (req, _res, next) => {
 
     let formIdWithDeletePermission = req.formIdWithDeletePermission;
 
-    // Get the provided form ID whether in a param or query (precedence to param)
-    const formId = req.params.formId || req.query.formId;
-    if (!formId) {
-      // No submission provided to this route that secures based on form... that's a problem!
-      throw new Problem(401, {
-        detail: 'Form Id not found on request.',
-      });
-    }
-
-    //validate form id
-    if (!uuid.validate(formId)) {
-      throw new Problem(401, {
-        detail: 'Not a valid form id',
-      });
-    }
-
     //validate all submission ids
     const isValidSubmissionId = submissionIds.every((submissionId) => uuid.validate(submissionId));
     if (!isValidSubmissionId) {
@@ -158,11 +146,11 @@ const filterMultipleSubmissions = async (req, _res, next) => {
       });
     }
 
-    if (formIdWithDeletePermission === formId) {
+    if (formIdWithDeletePermission === form.formId) {
       // check if users has not injected submission id that does not belong to this form
       const metaData = await service.getMultipleSubmission(submissionIds);
 
-      const isForeignSubmissionId = metaData.every((SubmissionMetadata) => SubmissionMetadata.formId === formId);
+      const isForeignSubmissionId = metaData.every((SubmissionMetadata) => SubmissionMetadata.formId === form.formId);
       if (!isForeignSubmissionId || metaData.length !== submissionIds.length) {
         throw new Problem(401, {
           detail: 'Current user does not have required permission(s) for some submissions in the submissionIds list.',
