@@ -637,4 +637,14 @@ export default {
   documentTemplateList(formId) {
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/documentTemplates`);
   },
+
+  /**
+   * @function getProxyHeaders
+   * Get encrypted header for calling CHEFS proxy.
+   * @param {Object} data An object containing formId, versionId, submissionId
+   * @returns {Promise} An axios response
+   */
+  getProxyHeaders(data) {
+    return appAxios().post(`${ApiRoutes.PROXY}/headers`, data);
+  },
 };
