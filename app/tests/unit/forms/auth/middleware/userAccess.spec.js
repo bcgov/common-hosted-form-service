@@ -1106,8 +1106,8 @@ describe('hasRolePermissions', () => {
     expect(middleware).toBeInstanceOf(Function);
   });
 
-  describe('401 response when', () => {
-    const expectedStatus = { status: 401 };
+  describe('400 response when', () => {
+    const expectedStatus = { status: 400 };
 
     test('formId missing', async () => {
       const req = getMockReq({
@@ -1128,12 +1128,12 @@ describe('hasRolePermissions', () => {
       expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
       expect(next).toHaveBeenCalledWith(
         expect.objectContaining({
-          detail: 'Form Id not found on request.',
+          detail: 'Bad formId',
         })
       );
     });
 
-    test.skip('formId not a uuid', async () => {
+    test('formId not a uuid', async () => {
       const req = getMockReq({
         currentUser: {
           id: userId,
@@ -1149,16 +1149,116 @@ describe('hasRolePermissions', () => {
 
       await hasRolePermissions()(req, res, next);
 
+      expect(service.getUserForms).toHaveBeenCalledTimes(0);
+      expect(rbacService.readUserRole).toHaveBeenCalledTimes(0);
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toHaveBeenCalledWith(
+        expect.objectContaining({
+          detail: 'Bad formId',
+        })
+      );
+    });
+  });
+
+  describe('400 response when', () => {
+    const expectedStatus = { status: 400 };
+
+    test('removing and user id not a uuid', async () => {
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+          roles: [Roles.TEAM_MANAGER],
+        },
+      ]);
+      const req = getMockReq({
+        body: ['not-a-uuid'],
+        currentUser: {
+          id: userId,
+        },
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await hasRolePermissions(true)(req, res, next);
+
       expect(service.getUserForms).toHaveBeenCalledTimes(1);
       expect(rbacService.readUserRole).toHaveBeenCalledTimes(0);
       expect(next).toHaveBeenCalledTimes(1);
       expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
       expect(next).toHaveBeenCalledWith(
         expect.objectContaining({
-          detail: 'Form Id invalid UUID.', // or whatever... missing functionality.
+          detail: 'Bad userId',
         })
       );
     });
+
+    test('updating and user id missing', async () => {
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+          roles: [Roles.FORM_DESIGNER, Roles.OWNER, Roles.TEAM_MANAGER],
+        },
+      ]);
+      const req = getMockReq({
+        currentUser: {
+          id: userId,
+        },
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await hasRolePermissions()(req, res, next);
+
+      expect(service.getUserForms).toHaveBeenCalledTimes(1);
+      expect(rbacService.readUserRole).toHaveBeenCalledTimes(0);
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toHaveBeenCalledWith(
+        expect.objectContaining({
+          detail: 'Bad userId',
+        })
+      );
+    });
+
+    test('updating and user id not a uuid', async () => {
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+          roles: [Roles.FORM_DESIGNER, Roles.OWNER, Roles.TEAM_MANAGER],
+        },
+      ]);
+      const req = getMockReq({
+        currentUser: {
+          id: userId,
+        },
+        params: {
+          formId: formId,
+          userId: 'not-a-uuid',
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await hasRolePermissions()(req, res, next);
+
+      expect(service.getUserForms).toHaveBeenCalledTimes(1);
+      expect(rbacService.readUserRole).toHaveBeenCalledTimes(0);
+      expect(next).toHaveBeenCalledTimes(1);
+      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toHaveBeenCalledWith(
+        expect.objectContaining({
+          detail: 'Bad userId',
+        })
+      );
+    });
+  });
+
+  describe('401 response when', () => {
+    const expectedStatus = { status: 401 };
 
     test('removing and owner cannot remove self', async () => {
       service.getUserForms.mockReturnValueOnce([
@@ -1251,67 +1351,6 @@ describe('hasRolePermissions', () => {
       expect(next).toHaveBeenCalledWith(
         expect.objectContaining({
           detail: "You can't remove a form designer role.",
-        })
-      );
-    });
-
-    test('updating and user id missing', async () => {
-      service.getUserForms.mockReturnValueOnce([
-        {
-          formId: formId,
-          roles: [Roles.FORM_DESIGNER, Roles.OWNER, Roles.TEAM_MANAGER],
-        },
-      ]);
-      const req = getMockReq({
-        currentUser: {
-          id: userId,
-        },
-        params: {
-          formId: formId,
-        },
-      });
-      const { res, next } = getMockRes();
-
-      await hasRolePermissions()(req, res, next);
-
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(rbacService.readUserRole).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
-      expect(next).toHaveBeenCalledWith(
-        expect.objectContaining({
-          detail: 'User Id not found on request.',
-        })
-      );
-    });
-
-    test.skip('updating and user id not a uuid', async () => {
-      service.getUserForms.mockReturnValueOnce([
-        {
-          formId: formId,
-          roles: [Roles.FORM_DESIGNER, Roles.OWNER, Roles.TEAM_MANAGER],
-        },
-      ]);
-      const req = getMockReq({
-        currentUser: {
-          id: userId,
-        },
-        params: {
-          formId: formId,
-          userId: 'not-a-uuid',
-        },
-      });
-      const { res, next } = getMockRes();
-
-      await hasRolePermissions()(req, res, next);
-
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(rbacService.readUserRole).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
-      expect(next).toHaveBeenCalledWith(
-        expect.objectContaining({
-          detail: 'User Id not found on request.',
         })
       );
     });

@@ -86,27 +86,6 @@ const _hasAnyPermission = (userPermissions, requiredPermissions) => {
   return intersection.length > 0;
 };
 
-const _hasFormRole = async (formId, user, role) => {
-  let hasRole = false;
-
-  const forms = await service.getUserForms(user, {
-    active: true,
-    formId: formId,
-  });
-  const form = forms.find((f) => f.formId === formId);
-
-  if (form) {
-    for (let j = 0; j < form.roles.length; j++) {
-      if (form.roles[j] === role) {
-        hasRole = true;
-        break;
-      }
-    }
-  }
-
-  return hasRole;
-};
-
 /**
  * Express middleware that adds the user information as the res.currentUser
  * attribute so that all downstream middleware and business logic can use it.
@@ -289,41 +268,41 @@ const hasFormRoles = (roles) => {
 const hasRolePermissions = (removingUsers = false) => {
   return async (req, _res, next) => {
     try {
-      // If we invoke this middleware and the caller is acting on a specific formId, whether in a param or query (precedence to param)
-      const formId = req.params.formId || req.query.formId;
-      if (!formId) {
-        // No form provided to this route that secures based on form... that's a problem!
-        throw new Problem(401, {
-          detail: 'Form Id not found on request.',
-        });
-      }
-
       const currentUser = req.currentUser;
-      const data = req.body;
 
-      const isOwner = await _hasFormRole(formId, currentUser, Roles.OWNER);
+      // The request must include a formId, either in params or query, but give
+      // precedence to params.
+      const form = await _getForm(currentUser, req.params.formId || req.query.formId, false);
+      const isOwner = form.roles.includes(Roles.OWNER);
 
       if (removingUsers) {
-        if (data.includes(currentUser.id))
+        const userIds = req.body;
+        if (userIds.includes(currentUser.id)) {
           throw new Problem(401, {
             detail: "You can't remove yourself from this form.",
           });
+        }
 
         if (!isOwner) {
-          for (let i = 0; i < data.length; i++) {
-            let userId = data[i];
+          for (const userId of userIds) {
+            if (!uuid.validate(userId)) {
+              throw new Problem(400, {
+                detail: 'Bad userId',
+              });
+            }
 
-            const userRoles = await rbacService.readUserRole(userId, formId);
+            // Convert to an array of role strings, rather than the objects.
+            const userRoles = (await rbacService.readUserRole(userId, form.formId)).map((userRole) => userRole.role);
 
-            // Can't update another user's roles if they are an owner
-            if (userRoles.some((fru) => fru.role === Roles.OWNER) && userId !== currentUser.id) {
+            // A non-owner can't delete an owner.
+            if (userRoles.includes(Roles.OWNER) && userId !== currentUser.id) {
               throw new Problem(401, {
                 detail: "You can not update an owner's roles.",
               });
             }
 
-            // If the user is trying to remove the designer role
-            if (userRoles.some((fru) => fru.role === Roles.FORM_DESIGNER)) {
+            // A non-owner can't delete a form designer.
+            if (userRoles.includes(Roles.FORM_DESIGNER)) {
               throw new Problem(401, {
                 detail: "You can't remove a form designer role.",
               });
@@ -332,41 +311,45 @@ const hasRolePermissions = (removingUsers = false) => {
         }
       } else {
         const userId = req.params.userId || req.query.userId;
-        if (!userId || (userId && userId.length === 0)) {
-          throw new Problem(401, {
-            detail: 'User Id not found on request.',
+        if (!uuid.validate(userId)) {
+          throw new Problem(400, {
+            detail: 'Bad userId',
           });
         }
 
         if (!isOwner) {
-          const userRoles = await rbacService.readUserRole(userId, formId);
+          // Convert to arrays of role strings, rather than the objects.
+          const userRoles = (await rbacService.readUserRole(userId, form.formId)).map((userRole) => userRole.role);
+          const futureRoles = req.body.map((userRole) => userRole.role);
 
           // If the user is trying to remove the team manager role for their own userid
-          if (userRoles.some((fru) => fru.role === Roles.TEAM_MANAGER) && !data.some((role) => role.role === Roles.TEAM_MANAGER) && userId == currentUser.id) {
+          if (userRoles.includes(Roles.TEAM_MANAGER) && !futureRoles.includes(Roles.TEAM_MANAGER) && userId == currentUser.id) {
             throw new Problem(401, {
               detail: "You can't remove your own team manager role.",
             });
           }
 
           // Can't update another user's roles if they are an owner
-          if (userRoles.some((fru) => fru.role === Roles.OWNER) && userId !== currentUser.id) {
+          if (userRoles.includes(Roles.OWNER) && userId !== currentUser.id) {
             throw new Problem(401, {
               detail: "You can't update an owner's roles.",
             });
           }
-          if (!userRoles.some((fru) => fru.role === Roles.OWNER) && data.some((role) => role.role === Roles.OWNER)) {
+
+          if (!userRoles.includes(Roles.OWNER) && futureRoles.includes(Roles.OWNER)) {
             throw new Problem(401, {
               detail: "You can't add an owner role.",
             });
           }
 
           // If the user is trying to remove the designer role for another userid
-          if (userRoles.some((fru) => fru.role === Roles.FORM_DESIGNER) && !data.some((role) => role.role === Roles.FORM_DESIGNER)) {
+          if (userRoles.includes(Roles.FORM_DESIGNER) && !futureRoles.includes(Roles.FORM_DESIGNER)) {
             throw new Problem(401, {
               detail: "You can't remove a form designer role.",
             });
           }
-          if (!userRoles.some((fru) => fru.role === Roles.FORM_DESIGNER) && data.some((role) => role.role === Roles.FORM_DESIGNER)) {
+
+          if (!userRoles.includes(Roles.FORM_DESIGNER) && futureRoles.includes(Roles.FORM_DESIGNER)) {
             throw new Problem(401, {
               detail: "You can't add a form designer role.",
             });
