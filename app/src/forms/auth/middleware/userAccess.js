@@ -121,6 +121,21 @@ const currentUser = async (req, _res, next) => {
   }
 };
 
+/**
+ * Express middleware that checks that a collection of submissions belong to a
+ * given form that the user has delete permissions for. This falls through if
+ * everything is OK, otherwise it calls next() with a Problem describing the
+ * error.
+ *
+ * This could use some refactoring to move the formIdWithDeletePermission
+ * creation code into this function. That way there is no external dependency,
+ * and the code will be easier to understand.
+ *
+ * @param {*} req the Express object representing the HTTP request.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @returns nothing
+ */
 const filterMultipleSubmissions = async (req, _res, next) => {
   try {
     // The request must include a formId, either in params or query, but give
