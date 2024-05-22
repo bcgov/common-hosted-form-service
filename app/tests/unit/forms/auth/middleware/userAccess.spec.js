@@ -5,9 +5,10 @@ const {
   currentUser,
   filterMultipleSubmissions,
   hasFormPermissions,
-  hasSubmissionPermissions,
   hasFormRoles,
-  hasRolePermissions,
+  hasRoleDeletePermissions,
+  hasRoleModifyPermissions,
+  hasSubmissionPermissions,
 } = require('../../../../../src/forms/auth/middleware/userAccess');
 
 const jwtService = require('../../../../../src/components/jwtService');
@@ -1548,18 +1549,12 @@ describe('hasFormRoles', () => {
 //  - service.getUserForms: gets the forms that the user can access.
 //  - rbacService.readUserRole: gets the roles that user has on a form.
 //
-describe('hasRolePermissions', () => {
+describe('hasRoleDeletePermissions', () => {
   // Default mock value where the user has no access to forms.
   service.getUserForms = jest.fn().mockReturnValue([]);
 
   // Default mock value where the user has no roles.
   rbacService.readUserRole = jest.fn().mockReturnValue([]);
-
-  it('returns a middleware function', async () => {
-    const middleware = hasRolePermissions();
-
-    expect(middleware).toBeInstanceOf(Function);
-  });
 
   describe('400 response when', () => {
     const expectedStatus = { status: 400 };
@@ -1575,7 +1570,7 @@ describe('hasRolePermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasRolePermissions()(req, res, next);
+      await hasRoleDeletePermissions(req, res, next);
 
       expect(service.getUserForms).toBeCalledTimes(0);
       expect(rbacService.readUserRole).toBeCalledTimes(0);
@@ -1602,7 +1597,7 @@ describe('hasRolePermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasRolePermissions()(req, res, next);
+      await hasRoleDeletePermissions(req, res, next);
 
       expect(service.getUserForms).toBeCalledTimes(0);
       expect(rbacService.readUserRole).toBeCalledTimes(0);
@@ -1637,68 +1632,7 @@ describe('hasRolePermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasRolePermissions(true)(req, res, next);
-
-      expect(service.getUserForms).toBeCalledTimes(1);
-      expect(rbacService.readUserRole).toBeCalledTimes(0);
-      expect(next).toBeCalledTimes(1);
-      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
-      expect(next).toBeCalledWith(
-        expect.objectContaining({
-          detail: 'Bad userId',
-        })
-      );
-    });
-
-    test('updating and user id missing', async () => {
-      service.getUserForms.mockReturnValueOnce([
-        {
-          formId: formId,
-          roles: [Roles.FORM_DESIGNER, Roles.OWNER, Roles.TEAM_MANAGER],
-        },
-      ]);
-      const req = getMockReq({
-        currentUser: {
-          id: userId,
-        },
-        params: {
-          formId: formId,
-        },
-      });
-      const { res, next } = getMockRes();
-
-      await hasRolePermissions()(req, res, next);
-
-      expect(service.getUserForms).toBeCalledTimes(1);
-      expect(rbacService.readUserRole).toBeCalledTimes(0);
-      expect(next).toBeCalledTimes(1);
-      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
-      expect(next).toBeCalledWith(
-        expect.objectContaining({
-          detail: 'Bad userId',
-        })
-      );
-    });
-
-    test('updating and user id not a uuid', async () => {
-      service.getUserForms.mockReturnValueOnce([
-        {
-          formId: formId,
-          roles: [Roles.FORM_DESIGNER, Roles.OWNER, Roles.TEAM_MANAGER],
-        },
-      ]);
-      const req = getMockReq({
-        currentUser: {
-          id: userId,
-        },
-        params: {
-          formId: formId,
-          userId: 'not-a-uuid',
-        },
-      });
-      const { res, next } = getMockRes();
-
-      await hasRolePermissions()(req, res, next);
+      await hasRoleDeletePermissions(req, res, next);
 
       expect(service.getUserForms).toBeCalledTimes(1);
       expect(rbacService.readUserRole).toBeCalledTimes(0);
@@ -1733,7 +1667,7 @@ describe('hasRolePermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasRolePermissions(true)(req, res, next);
+      await hasRoleDeletePermissions(req, res, next);
 
       expect(service.getUserForms).toBeCalledTimes(1);
       expect(rbacService.readUserRole).toBeCalledTimes(0);
@@ -1765,7 +1699,7 @@ describe('hasRolePermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasRolePermissions(true)(req, res, next);
+      await hasRoleDeletePermissions(req, res, next);
 
       expect(service.getUserForms).toBeCalledTimes(1);
       expect(rbacService.readUserRole).toBeCalledTimes(1);
@@ -1797,7 +1731,7 @@ describe('hasRolePermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasRolePermissions(true)(req, res, next);
+      await hasRoleDeletePermissions(req, res, next);
 
       expect(service.getUserForms).toBeCalledTimes(1);
       expect(rbacService.readUserRole).toBeCalledTimes(1);
@@ -1809,6 +1743,249 @@ describe('hasRolePermissions', () => {
         })
       );
     });
+  });
+
+  describe('allows', () => {
+    test('deleting and non-owner can remove submission reviewer', async () => {
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+          roles: [Roles.TEAM_MANAGER],
+        },
+      ]);
+      rbacService.readUserRole.mockReturnValueOnce([{ role: Roles.SUBMISSION_REVIEWER }]);
+      const req = getMockReq({
+        body: [userId2],
+        currentUser: {
+          id: userId,
+        },
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await hasRoleDeletePermissions(req, res, next);
+
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
+    });
+
+    test('deleting and owner can remove an owner', async () => {
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+          roles: [Roles.OWNER],
+        },
+      ]);
+      const req = getMockReq({
+        body: [userId2],
+        currentUser: {
+          id: userId,
+        },
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await hasRoleDeletePermissions(req, res, next);
+
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
+    });
+
+    test('deleting and owner can remove a form designer', async () => {
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+          roles: [Roles.OWNER],
+        },
+      ]);
+      const req = getMockReq({
+        body: [userId2],
+        currentUser: {
+          id: userId,
+        },
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await hasRoleDeletePermissions(req, res, next);
+
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
+    });
+
+    test('deleting and owner can remove a form designer with form id in query', async () => {
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+          roles: [Roles.OWNER],
+        },
+      ]);
+      const req = getMockReq({
+        body: [userId2],
+        currentUser: {
+          id: userId,
+        },
+        query: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await hasRoleDeletePermissions(req, res, next);
+
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
+    });
+  });
+});
+
+// External dependencies used by the implementation are:
+//  - service.getUserForms: gets the forms that the user can access.
+//  - rbacService.readUserRole: gets the roles that user has on a form.
+//
+describe('hasRoleModifyPermissions', () => {
+  // Default mock value where the user has no access to forms.
+  service.getUserForms = jest.fn().mockReturnValue([]);
+
+  // Default mock value where the user has no roles.
+  rbacService.readUserRole = jest.fn().mockReturnValue([]);
+
+  describe('400 response when', () => {
+    const expectedStatus = { status: 400 };
+
+    test('formId missing', async () => {
+      const req = getMockReq({
+        params: {
+          submissionId: formSubmissionId,
+        },
+        query: {
+          otherQueryThing: 'SOMETHING',
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await hasRoleModifyPermissions(req, res, next);
+
+      expect(service.getUserForms).toBeCalledTimes(0);
+      expect(rbacService.readUserRole).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Bad formId',
+        })
+      );
+    });
+
+    test('formId not a uuid', async () => {
+      const req = getMockReq({
+        currentUser: {
+          id: userId,
+        },
+        params: {
+          formId: 'not-a-uuid',
+        },
+        query: {
+          otherQueryThing: 'SOMETHING',
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await hasRoleModifyPermissions(req, res, next);
+
+      expect(service.getUserForms).toBeCalledTimes(0);
+      expect(rbacService.readUserRole).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Bad formId',
+        })
+      );
+    });
+  });
+
+  describe('400 response when', () => {
+    const expectedStatus = { status: 400 };
+
+    test('updating and user id missing', async () => {
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+          roles: [Roles.FORM_DESIGNER, Roles.OWNER, Roles.TEAM_MANAGER],
+        },
+      ]);
+      const req = getMockReq({
+        currentUser: {
+          id: userId,
+        },
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await hasRoleModifyPermissions(req, res, next);
+
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Bad userId',
+        })
+      );
+    });
+
+    test('updating and user id not a uuid', async () => {
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+          roles: [Roles.FORM_DESIGNER, Roles.OWNER, Roles.TEAM_MANAGER],
+        },
+      ]);
+      const req = getMockReq({
+        currentUser: {
+          id: userId,
+        },
+        params: {
+          formId: formId,
+          userId: 'not-a-uuid',
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await hasRoleModifyPermissions(req, res, next);
+
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Bad userId',
+        })
+      );
+    });
+  });
+
+  describe('401 response when', () => {
+    const expectedStatus = { status: 401 };
 
     test('updating and non-owner cannot remove own team manager', async () => {
       service.getUserForms.mockReturnValueOnce([
@@ -1830,7 +2007,7 @@ describe('hasRolePermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasRolePermissions()(req, res, next);
+      await hasRoleModifyPermissions(req, res, next);
 
       expect(service.getUserForms).toBeCalledTimes(1);
       expect(rbacService.readUserRole).toBeCalledTimes(1);
@@ -1863,7 +2040,7 @@ describe('hasRolePermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasRolePermissions()(req, res, next);
+      await hasRoleModifyPermissions(req, res, next);
 
       expect(service.getUserForms).toBeCalledTimes(1);
       expect(rbacService.readUserRole).toBeCalledTimes(1);
@@ -1896,7 +2073,7 @@ describe('hasRolePermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasRolePermissions()(req, res, next);
+      await hasRoleModifyPermissions(req, res, next);
 
       expect(service.getUserForms).toBeCalledTimes(1);
       expect(rbacService.readUserRole).toBeCalledTimes(1);
@@ -1929,7 +2106,7 @@ describe('hasRolePermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasRolePermissions()(req, res, next);
+      await hasRoleModifyPermissions(req, res, next);
 
       expect(service.getUserForms).toBeCalledTimes(1);
       expect(rbacService.readUserRole).toBeCalledTimes(1);
@@ -1962,7 +2139,7 @@ describe('hasRolePermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasRolePermissions()(req, res, next);
+      await hasRoleModifyPermissions(req, res, next);
 
       expect(service.getUserForms).toBeCalledTimes(1);
       expect(rbacService.readUserRole).toBeCalledTimes(1);
@@ -1977,111 +2154,6 @@ describe('hasRolePermissions', () => {
   });
 
   describe('allows', () => {
-    test('deleting and non-owner can remove submission reviewer', async () => {
-      service.getUserForms.mockReturnValueOnce([
-        {
-          formId: formId,
-          roles: [Roles.TEAM_MANAGER],
-        },
-      ]);
-      rbacService.readUserRole.mockReturnValueOnce([{ role: Roles.SUBMISSION_REVIEWER }]);
-      const req = getMockReq({
-        body: [userId2],
-        currentUser: {
-          id: userId,
-        },
-        params: {
-          formId: formId,
-        },
-      });
-      const { res, next } = getMockRes();
-
-      await hasRolePermissions(true)(req, res, next);
-
-      expect(service.getUserForms).toBeCalledTimes(1);
-      expect(rbacService.readUserRole).toBeCalledTimes(1);
-      expect(next).toBeCalledTimes(1);
-      expect(next).toBeCalledWith();
-    });
-
-    test('deleting and owner can remove an owner', async () => {
-      service.getUserForms.mockReturnValueOnce([
-        {
-          formId: formId,
-          roles: [Roles.OWNER],
-        },
-      ]);
-      const req = getMockReq({
-        body: [userId2],
-        currentUser: {
-          id: userId,
-        },
-        params: {
-          formId: formId,
-        },
-      });
-      const { res, next } = getMockRes();
-
-      await hasRolePermissions(true)(req, res, next);
-
-      expect(service.getUserForms).toBeCalledTimes(1);
-      expect(rbacService.readUserRole).toBeCalledTimes(0);
-      expect(next).toBeCalledTimes(1);
-      expect(next).toBeCalledWith();
-    });
-
-    test('deleting and owner can remove a form designer', async () => {
-      service.getUserForms.mockReturnValueOnce([
-        {
-          formId: formId,
-          roles: [Roles.OWNER],
-        },
-      ]);
-      const req = getMockReq({
-        body: [userId2],
-        currentUser: {
-          id: userId,
-        },
-        params: {
-          formId: formId,
-        },
-      });
-      const { res, next } = getMockRes();
-
-      await hasRolePermissions(true)(req, res, next);
-
-      expect(service.getUserForms).toBeCalledTimes(1);
-      expect(rbacService.readUserRole).toBeCalledTimes(0);
-      expect(next).toBeCalledTimes(1);
-      expect(next).toBeCalledWith();
-    });
-
-    test('deleting and owner can remove a form designer with form id in query', async () => {
-      service.getUserForms.mockReturnValueOnce([
-        {
-          formId: formId,
-          roles: [Roles.OWNER],
-        },
-      ]);
-      const req = getMockReq({
-        body: [userId2],
-        currentUser: {
-          id: userId,
-        },
-        query: {
-          formId: formId,
-        },
-      });
-      const { res, next } = getMockRes();
-
-      await hasRolePermissions(true)(req, res, next);
-
-      expect(service.getUserForms).toBeCalledTimes(1);
-      expect(rbacService.readUserRole).toBeCalledTimes(0);
-      expect(next).toBeCalledTimes(1);
-      expect(next).toBeCalledWith();
-    });
-
     test('updating and non-owner can add approver', async () => {
       service.getUserForms.mockReturnValueOnce([
         {
@@ -2102,7 +2174,7 @@ describe('hasRolePermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasRolePermissions()(req, res, next);
+      await hasRoleModifyPermissions(req, res, next);
 
       expect(service.getUserForms).toBeCalledTimes(1);
       expect(rbacService.readUserRole).toBeCalledTimes(1);
@@ -2129,7 +2201,7 @@ describe('hasRolePermissions', () => {
       });
       const { res, next } = getMockRes();
 
-      await hasRolePermissions()(req, res, next);
+      await hasRoleModifyPermissions(req, res, next);
 
       expect(service.getUserForms).toBeCalledTimes(1);
       expect(rbacService.readUserRole).toBeCalledTimes(0);
