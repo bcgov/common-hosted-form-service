@@ -121,64 +121,63 @@ const currentUser = async (req, _res, next) => {
   }
 };
 
-const filterMultipleSubmissions = () => {
-  return async (req, _res, next) => {
-    try {
-      // Get the provided list of submissions Id whether in a req body
-      const submissionIds = req.body && req.body.submissionIds;
-      if (!Array.isArray(submissionIds)) {
-        // No submission provided to this route that secures based on form... that's a problem!
-        throw new Problem(401, {
-          detail: 'SubmissionIds not found on request.',
-        });
-      }
+/**
+ * Express middleware that checks that a collection of submissions belong to a
+ * given form that the user has delete permissions for. This falls through if
+ * everything is OK, otherwise it calls next() with a Problem describing the
+ * error.
+ *
+ * This could use some refactoring to move the formIdWithDeletePermission
+ * creation code into this function. That way there is no external dependency,
+ * and the code will be easier to understand.
+ *
+ * @param {*} req the Express object representing the HTTP request.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @returns nothing
+ */
+const filterMultipleSubmissions = async (req, _res, next) => {
+  try {
+    // The request must include a formId, either in params or query, but give
+    // precedence to params.
+    const form = await _getForm(req.currentUser, req.params.formId || req.query.formId, true);
 
-      let formIdWithDeletePermission = req.formIdWithDeletePermission;
-
-      // Get the provided form ID whether in a param or query (precedence to param)
-      const formId = req.params.formId || req.query.formId;
-      if (!formId) {
-        // No submission provided to this route that secures based on form... that's a problem!
-        throw new Problem(401, {
-          detail: 'Form Id not found on request.',
-        });
-      }
-
-      //validate form id
-      if (!uuid.validate(formId)) {
-        throw new Problem(401, {
-          detail: 'Not a valid form id',
-        });
-      }
-
-      //validate all submission ids
-      const isValidSubmissionId = submissionIds.every((submissionId) => uuid.validate(submissionId));
-      if (!isValidSubmissionId) {
-        throw new Problem(401, {
-          detail: 'Invalid submissionId(s) in the submissionIds list.',
-        });
-      }
-
-      if (formIdWithDeletePermission === formId) {
-        // check if users has not injected submission id that does not belong to this form
-        const metaData = await service.getMultipleSubmission(submissionIds);
-
-        const isForeignSubmissionId = metaData.every((SubmissionMetadata) => SubmissionMetadata.formId === formId);
-        if (!isForeignSubmissionId || metaData.length !== submissionIds.length) {
-          throw new Problem(401, {
-            detail: 'Current user does not have required permission(s) for some submissions in the submissionIds list.',
-          });
-        }
-        return next();
-      }
-
+    // Get the array of submission IDs from the request body.
+    const submissionIds = req.body && req.body.submissionIds;
+    if (!Array.isArray(submissionIds)) {
       throw new Problem(401, {
-        detail: 'Current user does not have required permission(s) for to delete submissions',
+        detail: 'SubmissionIds not found on request.',
       });
-    } catch (error) {
-      next(error);
     }
-  };
+
+    // Check that all submission IDs are valid UUIDs.
+    const isValidSubmissionId = submissionIds.every((submissionId) => uuid.validate(submissionId));
+    if (!isValidSubmissionId) {
+      throw new Problem(401, {
+        detail: 'Invalid submissionId(s) in the submissionIds list.',
+      });
+    }
+
+    if (req.formIdWithDeletePermission === form.formId) {
+      // check if users has not injected submission id that does not belong to this form
+      const metaData = await service.getMultipleSubmission(submissionIds);
+
+      const isForeignSubmissionId = metaData.every((SubmissionMetadata) => SubmissionMetadata.formId === form.formId);
+      if (!isForeignSubmissionId || metaData.length !== submissionIds.length) {
+        throw new Problem(401, {
+          detail: 'Current user does not have required permission(s) for some submissions in the submissionIds list.',
+        });
+      }
+
+      return next();
+    }
+
+    throw new Problem(401, {
+      detail: 'Current user does not have required permission(s) for to delete submissions',
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 /**
