@@ -205,7 +205,7 @@ describe('Form Designer', () => {
         cy.get('span.btn').contains('Date / Time')
         
         .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, -70, { force: true })
+        .trigger('mousemove', coords.x, -50, { force: true })
         .trigger('mouseup', { force: true });
         //cy.get('p').contains('Multi-line Text Component');
         cy.get('button').contains('Save').click();
@@ -283,6 +283,16 @@ describe('Form Designer', () => {
      cy.get('label').contains('Email').should('be.visible');
      //cy.get('label').contains('Number').should('be.visible');
      cy.get('label').contains('Select Gender');
+
+     //Delete form after test run
+     cy.visit(`/${depEnv}/form/design?d=${arrayValues[0]}&f=${dval[0]}`);
+     cy.waitForLoad();
+     cy.waitForLoad();
+     //cy.get('[data-cy="settingsRouterLink"] > .text').click();
+     cy.get('[data-cy="settingsRouterLink"] > .v-btn').click();
+     cy.get('.mt-6 > :nth-child(2) > div > :nth-child(5) > .v-btn').click();
+     cy.get('[data-test="continue-btn-continue"]').click();
+
 
 
 
