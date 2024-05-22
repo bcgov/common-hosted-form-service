@@ -1,7 +1,14 @@
 const { getMockReq, getMockRes } = require('@jest-mock/express');
 const uuid = require('uuid');
 
-const { currentUser, hasFormPermissions, hasSubmissionPermissions, hasFormRoles, hasRolePermissions } = require('../../../../../src/forms/auth/middleware/userAccess');
+const {
+  currentUser,
+  filterMultipleSubmissions,
+  hasFormPermissions,
+  hasSubmissionPermissions,
+  hasFormRoles,
+  hasRolePermissions,
+} = require('../../../../../src/forms/auth/middleware/userAccess');
 
 const jwtService = require('../../../../../src/components/jwtService');
 const rbacService = require('../../../../../src/forms/rbac/service');
@@ -27,10 +34,10 @@ afterEach(() => {
 });
 
 // External dependencies used by the implementation are:
-//  - jwtService.getBearerToken: to get the bearer token
-//  - jwtService.getTokenPayload to get the payload from the bearer token
-//  - jwtService.validateAccessToken: to validate a bearer token
-//  - service.login: to create the object for req.currentUser
+//  - jwtService.getBearerToken: to get the bearer token.
+//  - jwtService.getTokenPayload to get the payload from the bearer token.
+//  - jwtService.validateAccessToken: to validate a bearer token.
+//  - service.login: to create the object for req.currentUser.
 //
 describe('currentUser', () => {
   // Bearer token and its authorization header.
@@ -41,7 +48,7 @@ describe('currentUser', () => {
   jwtService.getTokenPayload = jest.fn().mockReturnValue({ token: 'payload' });
   jwtService.validateAccessToken = jest.fn().mockReturnValue(true);
 
-  // Default mock of the service login
+  // Default mock of the service login.
   const mockUser = { user: 'me' };
   service.login = jest.fn().mockReturnValue(mockUser);
 
@@ -55,13 +62,13 @@ describe('currentUser', () => {
 
       await currentUser(req, res, next);
 
-      expect(jwtService.getBearerToken).toHaveBeenCalledTimes(1);
-      expect(jwtService.validateAccessToken).toHaveBeenCalledTimes(1);
-      expect(jwtService.validateAccessToken).toHaveBeenCalledWith(bearerToken);
-      expect(service.login).toHaveBeenCalledTimes(0);
+      expect(jwtService.getBearerToken).toBeCalledTimes(1);
+      expect(jwtService.validateAccessToken).toBeCalledTimes(1);
+      expect(jwtService.validateAccessToken).toBeCalledWith(bearerToken);
+      expect(service.login).toBeCalledTimes(0);
       expect(req.currentUser).toEqual(undefined);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
-      expect(next).toHaveBeenCalledWith(
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
         expect.objectContaining({
           detail: 'Authorization token is invalid.',
         })
@@ -76,13 +83,13 @@ describe('currentUser', () => {
 
     await currentUser(req, res, next);
 
-    expect(jwtService.getBearerToken).toHaveBeenCalledTimes(1);
-    expect(jwtService.validateAccessToken).toHaveBeenCalledTimes(1);
-    expect(jwtService.validateAccessToken).toHaveBeenCalledWith(bearerToken);
-    expect(service.login).toHaveBeenCalledTimes(1);
+    expect(jwtService.getBearerToken).toBeCalledTimes(1);
+    expect(jwtService.validateAccessToken).toBeCalledTimes(1);
+    expect(jwtService.validateAccessToken).toBeCalledWith(bearerToken);
+    expect(service.login).toBeCalledTimes(1);
     expect(req.currentUser).toEqual(undefined);
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith(expect.any(Error));
+    expect(next).toBeCalledTimes(1);
+    expect(next).toBeCalledWith(expect.any(Error));
   });
 
   it('gets the current user with no bearer token', async () => {
@@ -93,12 +100,12 @@ describe('currentUser', () => {
 
     await currentUser(req, res, next);
 
-    expect(jwtService.validateAccessToken).toHaveBeenCalledTimes(0);
-    expect(service.login).toHaveBeenCalledTimes(1);
-    expect(service.login).toHaveBeenCalledWith(null);
+    expect(jwtService.validateAccessToken).toBeCalledTimes(0);
+    expect(service.login).toBeCalledTimes(1);
+    expect(service.login).toBeCalledWith(null);
     expect(req.currentUser).toEqual(mockUser);
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith();
+    expect(next).toBeCalledTimes(1);
+    expect(next).toBeCalledWith();
   });
 
   it('does not keycloak validate with no bearer token', async () => {
@@ -109,12 +116,12 @@ describe('currentUser', () => {
 
     await currentUser(req, res, next);
 
-    expect(jwtService.validateAccessToken).toHaveBeenCalledTimes(0);
+    expect(jwtService.validateAccessToken).toBeCalledTimes(0);
     expect(req.currentUser).toEqual(mockUser);
-    expect(service.login).toHaveBeenCalledTimes(1);
-    expect(service.login).toHaveBeenCalledWith(null);
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith();
+    expect(service.login).toBeCalledTimes(1);
+    expect(service.login).toBeCalledWith(null);
+    expect(next).toBeCalledTimes(1);
+    expect(next).toBeCalledWith();
   });
 
   it('gets the current user with valid request', async () => {
@@ -123,22 +130,440 @@ describe('currentUser', () => {
 
     await currentUser(req, res, next);
 
-    expect(jwtService.validateAccessToken).toHaveBeenCalledTimes(1);
-    expect(jwtService.getBearerToken).toHaveBeenCalledTimes(1);
-    expect(jwtService.validateAccessToken).toHaveBeenCalledWith(bearerToken);
-    expect(service.login).toHaveBeenCalledTimes(1);
-    expect(service.login).toHaveBeenCalledWith({ token: 'payload' });
+    expect(jwtService.validateAccessToken).toBeCalledTimes(1);
+    expect(jwtService.getBearerToken).toBeCalledTimes(1);
+    expect(jwtService.validateAccessToken).toBeCalledWith(bearerToken);
+    expect(service.login).toBeCalledTimes(1);
+    expect(service.login).toBeCalledWith({ token: 'payload' });
     expect(req.currentUser).toEqual(mockUser);
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith();
+    expect(next).toBeCalledTimes(1);
+    expect(next).toBeCalledWith();
   });
 });
 
 // External dependencies used by the implementation are:
-//  - service.getUserForms: gets the forms that the user can access
+//  - service.getMultipleSubmission: gets multiple submissions.
+//  - service.getUserForms: gets the forms that the user can access.
+//
+describe('filterMultipleSubmissions', () => {
+  // Default mock value where there are no submissions to get.
+  service.getMultipleSubmission = jest.fn().mockReturnValue([]);
+
+  // Default mock value where the user has no access to forms.
+  service.getUserForms = jest.fn().mockReturnValue([]);
+
+  describe('400 response when', () => {
+    const expectedStatus = { status: 400 };
+
+    test('the request has no formId', async () => {
+      const req = getMockReq({
+        currentUser: {},
+        params: {
+          submissionId: formSubmissionId,
+        },
+        query: {
+          otherQueryThing: 'SOMETHING',
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await filterMultipleSubmissions(req, res, next);
+
+      expect(service.getUserForms).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+    });
+
+    test('the formId is not a uuid', async () => {
+      const req = getMockReq({
+        currentUser: {},
+        params: {
+          formId: 'undefined',
+        },
+        query: {
+          otherQueryThing: 'SOMETHING',
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await filterMultipleSubmissions(req, res, next);
+
+      expect(service.getUserForms).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+    });
+  });
+
+  describe('401 response when', () => {
+    const expectedStatus = { status: 401 };
+
+    // TODO: This should be a 400, but bundle all breaking changes in a small PR.
+    test('the request does not have a body', async () => {
+      const req = getMockReq({
+        currentUser: {},
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await filterMultipleSubmissions(req, res, next);
+
+      expect(service.getUserForms).toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'SubmissionIds not found on request.',
+        })
+      );
+    });
+
+    // TODO: This should be a 400, but bundle all breaking changes in a small PR.
+    test('there is no req.body.submissionIds', async () => {
+      const req = getMockReq({
+        body: {},
+        currentUser: {},
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await filterMultipleSubmissions(req, res, next);
+
+      expect(service.getUserForms).toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'SubmissionIds not found on request.',
+        })
+      );
+    });
+
+    // TODO: This should be a 400, but bundle all breaking changes in a small PR.
+    test('the req.body.submissionIds is not an array', async () => {
+      const req = getMockReq({
+        body: {
+          submissionIds: uuid.v4(),
+        },
+        currentUser: {},
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await filterMultipleSubmissions(req, res, next);
+
+      expect(service.getUserForms).toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'SubmissionIds not found on request.',
+        })
+      );
+    });
+
+    // TODO: This should be a 400, but bundle all breaking changes in a small PR.
+    test('the req.body.submissionIds does not have a valid uuid', async () => {
+      const req = getMockReq({
+        body: {
+          submissionIds: ['not-a-uuid'],
+        },
+        currentUser: {},
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await filterMultipleSubmissions(req, res, next);
+
+      expect(service.getUserForms).toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Invalid submissionId(s) in the submissionIds list.',
+        })
+      );
+    });
+
+    // TODO: This should be a 400, but bundle all breaking changes in a small PR.
+    test('the req.body.submissionIds does not have all valid uuids', async () => {
+      const req = getMockReq({
+        body: {
+          submissionIds: [uuid.v4(), 'not-a-uuid', uuid.v4()],
+        },
+        currentUser: {},
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await filterMultipleSubmissions(req, res, next);
+
+      expect(service.getUserForms).toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Invalid submissionId(s) in the submissionIds list.',
+        })
+      );
+    });
+
+    test('the formIdWithDeletePermission does not match', async () => {
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+        },
+      ]);
+      const req = getMockReq({
+        body: {
+          submissionIds: [uuid.v4()],
+        },
+        currentUser: {},
+        formIdWithDeletePermission: uuid.v4(),
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await filterMultipleSubmissions(req, res, next);
+
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Current user does not have required permission(s) for to delete submissions',
+        })
+      );
+    });
+
+    test('the submission form id does not match', async () => {
+      service.getMultipleSubmission.mockReturnValueOnce([
+        {
+          formId: uuid.v4(),
+        },
+      ]);
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+        },
+      ]);
+      const req = getMockReq({
+        body: {
+          submissionIds: [uuid.v4()],
+        },
+        currentUser: {},
+        formIdWithDeletePermission: formId,
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await filterMultipleSubmissions(req, res, next);
+
+      expect(service.getMultipleSubmission).toBeCalledTimes(1);
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Current user does not have required permission(s) for some submissions in the submissionIds list.',
+        })
+      );
+    });
+
+    test('the submission lengths do not match', async () => {
+      service.getMultipleSubmission.mockReturnValueOnce([
+        {
+          formId: formId,
+        },
+      ]);
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+        },
+      ]);
+      const req = getMockReq({
+        body: {
+          submissionIds: [uuid.v4(), uuid.v4()],
+        },
+        currentUser: {},
+        formIdWithDeletePermission: formId,
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await filterMultipleSubmissions(req, res, next);
+
+      expect(service.getMultipleSubmission).toBeCalledTimes(1);
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Current user does not have required permission(s) for some submissions in the submissionIds list.',
+        })
+      );
+    });
+  });
+
+  describe('handles error thrown by', () => {
+    test('getMultipleSubmission', async () => {
+      const error = new Error();
+      service.getMultipleSubmission.mockRejectedValueOnce(error);
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+        },
+      ]);
+      const req = getMockReq({
+        body: { submissionIds: [] },
+        currentUser: {},
+        formIdWithDeletePermission: formId,
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await filterMultipleSubmissions(req, res, next);
+
+      expect(service.getMultipleSubmission).toBeCalledTimes(1);
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(error);
+    });
+
+    test('getUserForms', async () => {
+      const error = new Error();
+      service.getUserForms.mockRejectedValueOnce(error);
+      const req = getMockReq({
+        body: { submissionIds: [] },
+        currentUser: {},
+        formIdWithDeletePermission: formId,
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await filterMultipleSubmissions(req, res, next);
+
+      expect(service.getMultipleSubmission).toBeCalledTimes(0);
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(error);
+    });
+  });
+
+  describe('allows', () => {
+    test('an empty array of submission ids', async () => {
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+        },
+      ]);
+      const req = getMockReq({
+        body: { submissionIds: [] },
+        currentUser: {},
+        formIdWithDeletePermission: formId,
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await filterMultipleSubmissions(req, res, next);
+
+      expect(service.getUserForms).toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
+    });
+
+    test('one submission id', async () => {
+      service.getMultipleSubmission.mockReturnValueOnce([
+        {
+          formId: formId,
+        },
+      ]);
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+        },
+      ]);
+      const req = getMockReq({
+        body: { submissionIds: [uuid.v4()] },
+        currentUser: {},
+        formIdWithDeletePermission: formId,
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await filterMultipleSubmissions(req, res, next);
+
+      expect(service.getMultipleSubmission).toBeCalledTimes(1);
+      expect(service.getUserForms).toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
+    });
+
+    test('three submission ids', async () => {
+      service.getMultipleSubmission.mockReturnValueOnce([
+        {
+          formId: formId,
+        },
+        {
+          formId: formId,
+        },
+        {
+          formId: formId,
+        },
+      ]);
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+        },
+      ]);
+      const req = getMockReq({
+        body: { submissionIds: [uuid.v4(), uuid.v4(), uuid.v4()] },
+        currentUser: {},
+        formIdWithDeletePermission: formId,
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await filterMultipleSubmissions(req, res, next);
+
+      expect(service.getMultipleSubmission).toBeCalledTimes(1);
+      expect(service.getUserForms).toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
+    });
+  });
+});
+
+// External dependencies used by the implementation are:
+//  - service.getUserForms: gets the forms that the user can access.
 //
 describe('hasFormPermissions', () => {
-  // Default mock value where the user has no access to forms
+  // Default mock value where the user has no access to forms.
   service.getUserForms = jest.fn().mockReturnValue([]);
 
   it('returns a middleware function', async () => {
@@ -164,9 +589,9 @@ describe('hasFormPermissions', () => {
 
       await hasFormPermissions(['FORM_READ'])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(service.getUserForms).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
 
     test('the formId is not a uuid', async () => {
@@ -183,9 +608,9 @@ describe('hasFormPermissions', () => {
 
       await hasFormPermissions(['FORM_READ'])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(service.getUserForms).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
   });
 
@@ -204,9 +629,9 @@ describe('hasFormPermissions', () => {
 
       await hasFormPermissions(['FORM_READ'])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(service.getUserForms).toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
 
     // TODO: This should be a 403, but bundle all breaking changes in a small PR.
@@ -227,9 +652,9 @@ describe('hasFormPermissions', () => {
 
       await hasFormPermissions(['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_DELETE'])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(service.getUserForms).toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
 
     // TODO: This should be a 403, but bundle all breaking changes in a small PR.
@@ -250,9 +675,9 @@ describe('hasFormPermissions', () => {
 
       await hasFormPermissions(['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_DELETE'])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(service.getUserForms).toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
   });
 
@@ -267,9 +692,9 @@ describe('hasFormPermissions', () => {
 
       await hasFormPermissions(['FORM_READ'])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(service.getUserForms).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
   });
 
@@ -283,9 +708,9 @@ describe('hasFormPermissions', () => {
 
       await hasFormPermissions(['FORM_READ'])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.getUserForms).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('the expected permissions are included', async () => {
@@ -305,9 +730,9 @@ describe('hasFormPermissions', () => {
 
       await hasFormPermissions(['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_DELETE'])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.getUserForms).toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('the expected permissions are included with query formId', async () => {
@@ -327,9 +752,9 @@ describe('hasFormPermissions', () => {
 
       await hasFormPermissions(['DESIGN_CREATE', 'FORM_READ', 'SUBMISSION_DELETE'])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.getUserForms).toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('the user has deleted form access', async () => {
@@ -349,26 +774,26 @@ describe('hasFormPermissions', () => {
 
       await hasFormPermissions(['FORM_READ'])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.getUserForms).toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
   });
 });
 
 // External dependencies used by the implementation are:
-//  - service.checkSubmissionPermission: gets whether the user has permission
-//  - service.getSubmissionForm: gets the submission that the user can access
-//  - service.getUserForms: gets the forms that the user can access
+//  - service.checkSubmissionPermission: gets whether the user has permission.
+//  - service.getSubmissionForm: gets the submission that the user can access.
+//  - service.getUserForms: gets the forms that the user can access.
 //
 describe('hasSubmissionPermissions', () => {
-  // Default mock value where the user has no access to submission
+  // Default mock value where the user has no access to submission.
   service.checkSubmissionPermission = jest.fn().mockReturnValue(false);
 
-  // Default mock value where there is no submission
+  // Default mock value where there is no submission.
   service.getSubmissionForm = jest.fn().mockReturnValue();
 
-  // Default mock value where the user has no access to forms
+  // Default mock value where the user has no access to forms.
   service.getUserForms = jest.fn().mockReturnValue([]);
 
   it('returns a middleware function', () => {
@@ -386,11 +811,11 @@ describe('hasSubmissionPermissions', () => {
 
       await hasSubmissionPermissions(['submission_read'])(req, res, next);
 
-      expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
-      expect(service.getSubmissionForm).toHaveBeenCalledTimes(0);
-      expect(service.getUserForms).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(service.checkSubmissionPermission).toBeCalledTimes(0);
+      expect(service.getSubmissionForm).toBeCalledTimes(0);
+      expect(service.getUserForms).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
 
     test('the formSubmissionId is not a uuid', async () => {
@@ -404,11 +829,11 @@ describe('hasSubmissionPermissions', () => {
 
       await hasSubmissionPermissions(['submission_read'])(req, res, next);
 
-      expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
-      expect(service.getSubmissionForm).toHaveBeenCalledTimes(0);
-      expect(service.getUserForms).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(service.checkSubmissionPermission).toBeCalledTimes(0);
+      expect(service.getSubmissionForm).toBeCalledTimes(0);
+      expect(service.getUserForms).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
   });
 
@@ -429,11 +854,11 @@ describe('hasSubmissionPermissions', () => {
 
       await hasSubmissionPermissions(['submission_read'])(req, res, next);
 
-      expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
-      expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
-      expect(service.getUserForms).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(service.checkSubmissionPermission).toBeCalledTimes(0);
+      expect(service.getSubmissionForm).toBeCalledTimes(1);
+      expect(service.getUserForms).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
 
     test('deleted submission', async () => {
@@ -451,11 +876,11 @@ describe('hasSubmissionPermissions', () => {
 
       await hasSubmissionPermissions(['submission_read'])(req, res, next);
 
-      expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
-      expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(service.checkSubmissionPermission).toBeCalledTimes(0);
+      expect(service.getSubmissionForm).toBeCalledTimes(1);
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
 
     test('user has no forms for deleted submission', async () => {
@@ -473,11 +898,11 @@ describe('hasSubmissionPermissions', () => {
 
       await hasSubmissionPermissions(['submission_read'])(req, res, next);
 
-      expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
-      expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(service.checkSubmissionPermission).toBeCalledTimes(0);
+      expect(service.getSubmissionForm).toBeCalledTimes(1);
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
 
     test('user has no form access for deleted submission', async () => {
@@ -501,11 +926,11 @@ describe('hasSubmissionPermissions', () => {
 
       await hasSubmissionPermissions(['submission_read'])(req, res, next);
 
-      expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
-      expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(service.checkSubmissionPermission).toBeCalledTimes(0);
+      expect(service.getSubmissionForm).toBeCalledTimes(1);
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
 
     test('user only has some form access for deleted submission', async () => {
@@ -529,11 +954,11 @@ describe('hasSubmissionPermissions', () => {
 
       await hasSubmissionPermissions(['submission_read', 'submission_update'])(req, res, next);
 
-      expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
-      expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(service.checkSubmissionPermission).toBeCalledTimes(0);
+      expect(service.getSubmissionForm).toBeCalledTimes(1);
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
 
     test('public access and no read permission', async () => {
@@ -552,11 +977,11 @@ describe('hasSubmissionPermissions', () => {
 
       await hasSubmissionPermissions(['submission_delete'])(req, res, next);
 
-      expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(1);
-      expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(service.checkSubmissionPermission).toBeCalledTimes(1);
+      expect(service.getSubmissionForm).toBeCalledTimes(1);
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
 
     test('public access and more than read permission', async () => {
@@ -574,11 +999,11 @@ describe('hasSubmissionPermissions', () => {
 
       await hasSubmissionPermissions(['submission_read', 'submission_delete'])(req, res, next);
 
-      expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(1);
-      expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(service.checkSubmissionPermission).toBeCalledTimes(1);
+      expect(service.getSubmissionForm).toBeCalledTimes(1);
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
 
     test('form does not have the public idp', async () => {
@@ -599,11 +1024,11 @@ describe('hasSubmissionPermissions', () => {
 
       await hasSubmissionPermissions(['submission_read'])(req, res, next);
 
-      expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(1);
-      expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(service.checkSubmissionPermission).toBeCalledTimes(1);
+      expect(service.getSubmissionForm).toBeCalledTimes(1);
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
   });
 
@@ -621,11 +1046,11 @@ describe('hasSubmissionPermissions', () => {
 
       await hasSubmissionPermissions(['submission_read'])(req, res, next);
 
-      expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
-      expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
-      expect(service.getUserForms).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(error);
+      expect(service.checkSubmissionPermission).toBeCalledTimes(0);
+      expect(service.getSubmissionForm).toBeCalledTimes(1);
+      expect(service.getUserForms).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(error);
     });
 
     test('getUserForms', async () => {
@@ -645,11 +1070,11 @@ describe('hasSubmissionPermissions', () => {
 
       await hasSubmissionPermissions(['submission_read'])(req, res, next);
 
-      expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
-      expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(error);
+      expect(service.checkSubmissionPermission).toBeCalledTimes(0);
+      expect(service.getSubmissionForm).toBeCalledTimes(1);
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(error);
     });
   });
 
@@ -665,11 +1090,11 @@ describe('hasSubmissionPermissions', () => {
 
       await hasSubmissionPermissions(['submission_read'])(req, res, next);
 
-      expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
-      expect(service.getSubmissionForm).toHaveBeenCalledTimes(0);
-      expect(service.getUserForms).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.checkSubmissionPermission).toBeCalledTimes(0);
+      expect(service.getSubmissionForm).toBeCalledTimes(0);
+      expect(service.getUserForms).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('the user has the exact form permissions', async () => {
@@ -697,11 +1122,11 @@ describe('hasSubmissionPermissions', () => {
 
       await hasSubmissionPermissions(['submission_read', 'submission_update'])(req, res, next);
 
-      expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
-      expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.checkSubmissionPermission).toBeCalledTimes(0);
+      expect(service.getSubmissionForm).toBeCalledTimes(1);
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('the user has extra form permissions', async () => {
@@ -729,11 +1154,11 @@ describe('hasSubmissionPermissions', () => {
 
       await hasSubmissionPermissions(['submission_update'])(req, res, next);
 
-      expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
-      expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.checkSubmissionPermission).toBeCalledTimes(0);
+      expect(service.getSubmissionForm).toBeCalledTimes(1);
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('public form and read permission', async () => {
@@ -757,11 +1182,11 @@ describe('hasSubmissionPermissions', () => {
 
       await hasSubmissionPermissions(['submission_read'])(req, res, next);
 
-      expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
-      expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.checkSubmissionPermission).toBeCalledTimes(0);
+      expect(service.getSubmissionForm).toBeCalledTimes(1);
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('public form and read permission with extra idp', async () => {
@@ -788,11 +1213,11 @@ describe('hasSubmissionPermissions', () => {
 
       await hasSubmissionPermissions(['submission_read'])(req, res, next);
 
-      expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(0);
-      expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.checkSubmissionPermission).toBeCalledTimes(0);
+      expect(service.getSubmissionForm).toBeCalledTimes(1);
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('the permission check succeeds', async () => {
@@ -814,20 +1239,20 @@ describe('hasSubmissionPermissions', () => {
 
       await hasSubmissionPermissions(['submission_read'])(req, res, next);
 
-      expect(service.checkSubmissionPermission).toHaveBeenCalledTimes(1);
-      expect(service.getSubmissionForm).toHaveBeenCalledTimes(1);
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.checkSubmissionPermission).toBeCalledTimes(1);
+      expect(service.getSubmissionForm).toBeCalledTimes(1);
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
   });
 });
 
 // External dependencies used by the implementation are:
-//  - service.getUserForms: gets the forms that the user can access
+//  - service.getUserForms: gets the forms that the user can access.
 //
 describe('hasFormRoles', () => {
-  // Default mock value where the user has no access to forms
+  // Default mock value where the user has no access to forms.
   service.getUserForms = jest.fn().mockReturnValue([]);
 
   it('returns a middleware function', async () => {
@@ -852,9 +1277,9 @@ describe('hasFormRoles', () => {
 
       await hasFormRoles([Roles.OWNER])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(service.getUserForms).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
 
     test('formId not a uuid', async () => {
@@ -871,9 +1296,9 @@ describe('hasFormRoles', () => {
 
       await hasFormRoles([Roles.OWNER])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(service.getUserForms).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
   });
 
@@ -892,9 +1317,9 @@ describe('hasFormRoles', () => {
 
       await hasFormRoles([Roles.OWNER])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
 
     test('role not on form', async () => {
@@ -914,9 +1339,9 @@ describe('hasFormRoles', () => {
 
       await hasFormRoles([Roles.OWNER])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
 
     test('roles not on form', async () => {
@@ -936,9 +1361,9 @@ describe('hasFormRoles', () => {
 
       await hasFormRoles([Roles.FORM_SUBMITTER, Roles.OWNER])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
     });
   });
 
@@ -956,9 +1381,9 @@ describe('hasFormRoles', () => {
 
       await hasFormRoles([Roles.OWNER])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(error);
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(error);
     });
   });
 
@@ -980,9 +1405,9 @@ describe('hasFormRoles', () => {
 
       await hasFormRoles([Roles.OWNER])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('single role is start of subset', async () => {
@@ -1002,9 +1427,9 @@ describe('hasFormRoles', () => {
 
       await hasFormRoles([Roles.OWNER])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('single role is middle of subset', async () => {
@@ -1024,9 +1449,9 @@ describe('hasFormRoles', () => {
 
       await hasFormRoles([Roles.OWNER])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('single role is end of subset', async () => {
@@ -1046,9 +1471,9 @@ describe('hasFormRoles', () => {
 
       await hasFormRoles([Roles.OWNER])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('second role is start of subset', async () => {
@@ -1068,9 +1493,9 @@ describe('hasFormRoles', () => {
 
       await hasFormRoles([Roles.FORM_DESIGNER, Roles.OWNER])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('second role is middle of subset', async () => {
@@ -1090,9 +1515,9 @@ describe('hasFormRoles', () => {
 
       await hasFormRoles([Roles.FORM_DESIGNER, Roles.OWNER])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('second role is end of subset', async () => {
@@ -1112,22 +1537,22 @@ describe('hasFormRoles', () => {
 
       await hasFormRoles([Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER])(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
   });
 });
 
 // External dependencies used by the implementation are:
-//  - service.getUserForms: gets the forms that the user can access
-//  - rbacService.readUserRole: gets the roles that user has on a form
+//  - service.getUserForms: gets the forms that the user can access.
+//  - rbacService.readUserRole: gets the roles that user has on a form.
 //
 describe('hasRolePermissions', () => {
-  // Default mock value where the user has no access to forms
+  // Default mock value where the user has no access to forms.
   service.getUserForms = jest.fn().mockReturnValue([]);
 
-  // Default mock value where the user has no roles
+  // Default mock value where the user has no roles.
   rbacService.readUserRole = jest.fn().mockReturnValue([]);
 
   it('returns a middleware function', async () => {
@@ -1152,11 +1577,11 @@ describe('hasRolePermissions', () => {
 
       await hasRolePermissions()(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(0);
-      expect(rbacService.readUserRole).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
-      expect(next).toHaveBeenCalledWith(
+      expect(service.getUserForms).toBeCalledTimes(0);
+      expect(rbacService.readUserRole).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
         expect.objectContaining({
           detail: 'Bad formId',
         })
@@ -1179,11 +1604,11 @@ describe('hasRolePermissions', () => {
 
       await hasRolePermissions()(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(0);
-      expect(rbacService.readUserRole).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
-      expect(next).toHaveBeenCalledWith(
+      expect(service.getUserForms).toBeCalledTimes(0);
+      expect(rbacService.readUserRole).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
         expect.objectContaining({
           detail: 'Bad formId',
         })
@@ -1214,11 +1639,11 @@ describe('hasRolePermissions', () => {
 
       await hasRolePermissions(true)(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(rbacService.readUserRole).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
-      expect(next).toHaveBeenCalledWith(
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
         expect.objectContaining({
           detail: 'Bad userId',
         })
@@ -1244,11 +1669,11 @@ describe('hasRolePermissions', () => {
 
       await hasRolePermissions()(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(rbacService.readUserRole).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
-      expect(next).toHaveBeenCalledWith(
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
         expect.objectContaining({
           detail: 'Bad userId',
         })
@@ -1275,11 +1700,11 @@ describe('hasRolePermissions', () => {
 
       await hasRolePermissions()(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(rbacService.readUserRole).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
-      expect(next).toHaveBeenCalledWith(
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
         expect.objectContaining({
           detail: 'Bad userId',
         })
@@ -1310,11 +1735,11 @@ describe('hasRolePermissions', () => {
 
       await hasRolePermissions(true)(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(rbacService.readUserRole).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
-      expect(next).toHaveBeenCalledWith(
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
         expect.objectContaining({
           detail: "You can't remove yourself from this form.",
         })
@@ -1342,11 +1767,11 @@ describe('hasRolePermissions', () => {
 
       await hasRolePermissions(true)(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(rbacService.readUserRole).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
-      expect(next).toHaveBeenCalledWith(
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
         expect.objectContaining({
           detail: "You can not update an owner's roles.",
         })
@@ -1374,11 +1799,11 @@ describe('hasRolePermissions', () => {
 
       await hasRolePermissions(true)(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(rbacService.readUserRole).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
-      expect(next).toHaveBeenCalledWith(
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
         expect.objectContaining({
           detail: "You can't remove a form designer role.",
         })
@@ -1407,11 +1832,11 @@ describe('hasRolePermissions', () => {
 
       await hasRolePermissions()(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(rbacService.readUserRole).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
-      expect(next).toHaveBeenCalledWith(
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
         expect.objectContaining({
           detail: "You can't remove your own team manager role.",
         })
@@ -1440,11 +1865,11 @@ describe('hasRolePermissions', () => {
 
       await hasRolePermissions()(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(rbacService.readUserRole).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
-      expect(next).toHaveBeenCalledWith(
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
         expect.objectContaining({
           detail: "You can't update an owner's roles.",
         })
@@ -1473,11 +1898,11 @@ describe('hasRolePermissions', () => {
 
       await hasRolePermissions()(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(rbacService.readUserRole).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
-      expect(next).toHaveBeenCalledWith(
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
         expect.objectContaining({
           detail: "You can't add an owner role.",
         })
@@ -1506,11 +1931,11 @@ describe('hasRolePermissions', () => {
 
       await hasRolePermissions()(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(rbacService.readUserRole).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
-      expect(next).toHaveBeenCalledWith(
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
         expect.objectContaining({
           detail: "You can't remove a form designer role.",
         })
@@ -1539,11 +1964,11 @@ describe('hasRolePermissions', () => {
 
       await hasRolePermissions()(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(rbacService.readUserRole).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
-      expect(next).toHaveBeenCalledWith(
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
         expect.objectContaining({
           detail: "You can't add a form designer role.",
         })
@@ -1573,10 +1998,10 @@ describe('hasRolePermissions', () => {
 
       await hasRolePermissions(true)(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(rbacService.readUserRole).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('deleting and owner can remove an owner', async () => {
@@ -1599,10 +2024,10 @@ describe('hasRolePermissions', () => {
 
       await hasRolePermissions(true)(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(rbacService.readUserRole).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('deleting and owner can remove a form designer', async () => {
@@ -1625,10 +2050,10 @@ describe('hasRolePermissions', () => {
 
       await hasRolePermissions(true)(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(rbacService.readUserRole).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('deleting and owner can remove a form designer with form id in query', async () => {
@@ -1651,10 +2076,10 @@ describe('hasRolePermissions', () => {
 
       await hasRolePermissions(true)(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(rbacService.readUserRole).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('updating and non-owner can add approver', async () => {
@@ -1679,10 +2104,10 @@ describe('hasRolePermissions', () => {
 
       await hasRolePermissions()(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(rbacService.readUserRole).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('updating and owner can add owner', async () => {
@@ -1706,10 +2131,10 @@ describe('hasRolePermissions', () => {
 
       await hasRolePermissions()(req, res, next);
 
-      expect(service.getUserForms).toHaveBeenCalledTimes(1);
-      expect(rbacService.readUserRole).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
   });
 });

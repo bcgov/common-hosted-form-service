@@ -127,18 +127,15 @@ const filterMultipleSubmissions = async (req, _res, next) => {
     // precedence to params.
     const form = await _getForm(req.currentUser, req.params.formId || req.query.formId, true);
 
-    // Get the provided list of submissions Id whether in a req body
+    // Get the array of submission IDs from the request body.
     const submissionIds = req.body && req.body.submissionIds;
     if (!Array.isArray(submissionIds)) {
-      // No submission provided to this route that secures based on form... that's a problem!
       throw new Problem(401, {
         detail: 'SubmissionIds not found on request.',
       });
     }
 
-    let formIdWithDeletePermission = req.formIdWithDeletePermission;
-
-    //validate all submission ids
+    // Check that all submission IDs are valid UUIDs.
     const isValidSubmissionId = submissionIds.every((submissionId) => uuid.validate(submissionId));
     if (!isValidSubmissionId) {
       throw new Problem(401, {
@@ -146,7 +143,7 @@ const filterMultipleSubmissions = async (req, _res, next) => {
       });
     }
 
-    if (formIdWithDeletePermission === form.formId) {
+    if (req.formIdWithDeletePermission === form.formId) {
       // check if users has not injected submission id that does not belong to this form
       const metaData = await service.getMultipleSubmission(submissionIds);
 
@@ -156,6 +153,7 @@ const filterMultipleSubmissions = async (req, _res, next) => {
           detail: 'Current user does not have required permission(s) for some submissions in the submissionIds list.',
         });
       }
+
       return next();
     }
 
