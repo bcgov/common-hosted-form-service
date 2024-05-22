@@ -31,10 +31,11 @@ userAccess.hasFormRoles = jest.fn(() => {
     next();
   });
 });
-userAccess.hasRolePermissions = jest.fn(() => {
-  return jest.fn((_req, _res, next) => {
-    next();
-  });
+userAccess.hasRoleDeletePermissions = jest.fn((_req, _res, next) => {
+  next();
+});
+userAccess.hasRoleModifyPermissions = jest.fn((_req, _res, next) => {
+  next();
 });
 userAccess.hasSubmissionPermissions = jest.fn(() => {
   return jest.fn((_req, _res, next) => {
