@@ -82,6 +82,7 @@ export default {
         class="mt-0"
         variant="text"
         size="small"
+        :title="$t('trans.administerForm.restoreForm')"
         @click="showRestoreDialog = true"
       >
         <v-icon class="mr-1" icon="mdi:mdi-wrench"></v-icon>
@@ -108,6 +109,7 @@ export default {
               class="mt-6 mb-6"
               color="primary"
               :disabled="!apiKey"
+              :title="$t('trans.administerForm.deleteApiKey')"
               @click="showDeleteDialog = true"
             >
               <span :lang="lang">{{

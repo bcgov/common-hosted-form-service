@@ -137,6 +137,7 @@ export default {
                   size="x-small"
                   density="default"
                   icon="mdi:mdi-panorama-variant-outline"
+                  :title="$t('trans.formViewerActions.wideLayout')"
                   @click="toggleWideLayout"
                 />
               </template>
@@ -160,6 +161,7 @@ export default {
                     size="x-small"
                     density="default"
                     icon="mdi:mdi-list-box-outline"
+                    :title="$t('trans.formSubmission.viewAllSubmissions')"
                   />
                 </router-link>
               </template>
@@ -248,6 +250,7 @@ export default {
                         size="x-small"
                         density="default"
                         icon="mdi:mdi-pencil"
+                        :title="$t('trans.formSubmission.editThisSubmission')"
                         @click="toggleSubmissionEdit(true)"
                       />
                     </template>
@@ -260,6 +263,7 @@ export default {
                   v-else
                   variant="outlined"
                   color="textLink"
+                  :title="$t('trans.formSubmission.cancel')"
                   @click="toggleSubmissionEdit(false)"
                 >
                   <span :lang="lang">{{

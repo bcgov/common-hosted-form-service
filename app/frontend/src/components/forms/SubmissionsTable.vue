@@ -574,6 +574,7 @@ export default {
                 size="x-small"
                 density="default"
                 icon="mdi:mdi-view-column"
+                :title="$t('trans.submissionsTable.selectColumns')"
                 @click="onShowColumnDialog"
               />
             </template>
@@ -592,6 +593,7 @@ export default {
                   size="x-small"
                   density="default"
                   icon="mdi:mdi-cog"
+                  :title="$t('trans.submissionsTable.manageForm')"
                 />
               </router-link>
             </template>
@@ -611,6 +613,7 @@ export default {
                   size="x-small"
                   density="default"
                   icon="mdi:mdi-download"
+                  :title="$t('trans.submissionsTable.submissionsToFiles')"
                 />
               </router-link>
             </template>
@@ -702,6 +705,7 @@ export default {
             :disabled="selectedSubmissions.length === 0"
             icon="mdi:mdi-minus"
             size="x-small"
+            :title="$t('trans.submissionsTable.delSelectedSubmissions')"
             @click="(showDeleteDialog = true), (singleSubmissionDelete = false)"
           >
             <v-tooltip location="bottom">
@@ -719,6 +723,7 @@ export default {
             :disabled="selectedSubmissions.length === 0"
             icon
             size="x-small"
+            :title="$t('trans.submissionsTable.resSelectedSubmissions')"
             @click="
               (showRestoreDialog = true), (singleSubmissionRestore = false)
             "
@@ -767,7 +772,13 @@ export default {
                 },
               }"
             >
-              <v-btn color="primary" icon size="x-small" v-bind="props">
+              <v-btn
+                color="primary"
+                icon
+                size="x-small"
+                v-bind="props"
+                :title="$t('trans.submissionsTable.viewSubmission')"
+              >
                 <v-icon icon="mdi:mdi-eye"></v-icon>
               </v-btn>
             </router-link>
@@ -786,6 +797,7 @@ export default {
                 icon
                 size="x-small"
                 v-bind="props"
+                :title="$t('trans.submissionsTable.deleteSubmission')"
                 @click="
                   (showDeleteDialog = true),
                     (deleteItem = item),
@@ -807,6 +819,7 @@ export default {
                 icon
                 size="x-small"
                 v-bind="props"
+                :title="$t('trans.submissionsTable.restore')"
                 @click="
                   restoreItem = item;
                   showRestoreDialog = true;
