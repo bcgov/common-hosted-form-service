@@ -348,33 +348,35 @@ const hasRoleModifyPermissions = async (req, _res, next) => {
       const futureRoles = req.body.map((userRole) => userRole.role);
 
       // If the user is trying to remove the team manager role for their own userid
-      if (userRoles.includes(Roles.TEAM_MANAGER) && !futureRoles.includes(Roles.TEAM_MANAGER) && userId == currentUser.id) {
+      if (userRoles.includes(Roles.TEAM_MANAGER) && !futureRoles.includes(Roles.TEAM_MANAGER) && userId === currentUser.id) {
         throw new Problem(401, {
           detail: "You can't remove your own team manager role.",
         });
       }
 
-      // Can't update another user's roles if they are an owner
-      if (userRoles.includes(Roles.OWNER) && userId !== currentUser.id) {
-        throw new Problem(401, {
-          detail: "You can't update an owner's roles.",
-        });
-      }
-
-      if (!userRoles.includes(Roles.OWNER) && futureRoles.includes(Roles.OWNER)) {
+      if (userRoles.includes(Roles.OWNER)) {
+        // Can't remove a different user's owner role unless you are an owner.
+        if (userId !== currentUser.id) {
+          throw new Problem(401, {
+            detail: "You can't update an owner's roles.",
+          });
+        }
+      } else if (futureRoles.includes(Roles.OWNER)) {
+        // Can't add an owner role unless you are an owner.
         throw new Problem(401, {
           detail: "You can't add an owner role.",
         });
       }
 
-      // If the user is trying to remove the designer role for another userid
-      if (userRoles.includes(Roles.FORM_DESIGNER) && !futureRoles.includes(Roles.FORM_DESIGNER)) {
-        throw new Problem(401, {
-          detail: "You can't remove a form designer role.",
-        });
-      }
-
-      if (!userRoles.includes(Roles.FORM_DESIGNER) && futureRoles.includes(Roles.FORM_DESIGNER)) {
+      if (userRoles.includes(Roles.FORM_DESIGNER)) {
+        // Can't remove form designer if you are not an owner.
+        if (!futureRoles.includes(Roles.FORM_DESIGNER)) {
+          throw new Problem(401, {
+            detail: "You can't remove a form designer role.",
+          });
+        }
+      } else if (futureRoles.includes(Roles.FORM_DESIGNER)) {
+        // Can't add form designer if you are not an owner.
         throw new Problem(401, {
           detail: "You can't add a form designer role.",
         });
