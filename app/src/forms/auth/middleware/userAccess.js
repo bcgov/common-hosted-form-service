@@ -256,111 +256,137 @@ const hasFormRoles = (roles) => {
 };
 
 /**
- * Express middleware to check that the calling user has one of the given roles for
- * the form identified by params.formId or query.formId. This falls through if
- * everything is OK, otherwise it calls next() with a Problem describing the
+ * Express middleware to check that the calling user is allowed to delete roles
+ * for the form identified by params.formId or query.formId. This falls through
+ * if everything is OK, otherwise it calls next() with a Problem describing the
  * error.
  *
- * @param {string[]} roles the roles the user needs one of for the form.
+ * @param {*} req the Express object representing the HTTP request.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
  * @returns nothing
  */
-const hasRolePermissions = (removingUsers = false) => {
-  return async (req, _res, next) => {
-    try {
-      const currentUser = req.currentUser;
+const hasRoleDeletePermissions = async (req, _res, next) => {
+  try {
+    const currentUser = req.currentUser;
 
-      // The request must include a formId, either in params or query, but give
-      // precedence to params.
-      const form = await _getForm(currentUser, req.params.formId || req.query.formId, false);
-      const isOwner = form.roles.includes(Roles.OWNER);
+    // The request must include a formId, either in params or query, but give
+    // precedence to params.
+    const form = await _getForm(currentUser, req.params.formId || req.query.formId, false);
 
-      if (removingUsers) {
-        const userIds = req.body;
-        if (userIds.includes(currentUser.id)) {
-          throw new Problem(401, {
-            detail: "You can't remove yourself from this form.",
-          });
-        }
+    const userIds = req.body;
+    if (userIds.includes(currentUser.id)) {
+      throw new Problem(401, {
+        detail: "You can't remove yourself from this form.",
+      });
+    }
 
-        if (!isOwner) {
-          for (const userId of userIds) {
-            if (!uuid.validate(userId)) {
-              throw new Problem(400, {
-                detail: 'Bad userId',
-              });
-            }
-
-            // Convert to an array of role strings, rather than the objects.
-            const userRoles = (await rbacService.readUserRole(userId, form.formId)).map((userRole) => userRole.role);
-
-            // A non-owner can't delete an owner.
-            if (userRoles.includes(Roles.OWNER) && userId !== currentUser.id) {
-              throw new Problem(401, {
-                detail: "You can not update an owner's roles.",
-              });
-            }
-
-            // A non-owner can't delete a form designer.
-            if (userRoles.includes(Roles.FORM_DESIGNER)) {
-              throw new Problem(401, {
-                detail: "You can't remove a form designer role.",
-              });
-            }
-          }
-        }
-      } else {
-        const userId = req.params.userId || req.query.userId;
+    const isOwner = form.roles.includes(Roles.OWNER);
+    if (!isOwner) {
+      for (const userId of userIds) {
         if (!uuid.validate(userId)) {
           throw new Problem(400, {
             detail: 'Bad userId',
           });
         }
 
-        if (!isOwner) {
-          // Convert to arrays of role strings, rather than the objects.
-          const userRoles = (await rbacService.readUserRole(userId, form.formId)).map((userRole) => userRole.role);
-          const futureRoles = req.body.map((userRole) => userRole.role);
+        // Convert to an array of role strings, rather than the objects.
+        const userRoles = (await rbacService.readUserRole(userId, form.formId)).map((userRole) => userRole.role);
 
-          // If the user is trying to remove the team manager role for their own userid
-          if (userRoles.includes(Roles.TEAM_MANAGER) && !futureRoles.includes(Roles.TEAM_MANAGER) && userId == currentUser.id) {
-            throw new Problem(401, {
-              detail: "You can't remove your own team manager role.",
-            });
-          }
+        // A non-owner can't delete an owner.
+        if (userRoles.includes(Roles.OWNER) && userId !== currentUser.id) {
+          throw new Problem(401, {
+            detail: "You can not update an owner's roles.",
+          });
+        }
 
-          // Can't update another user's roles if they are an owner
-          if (userRoles.includes(Roles.OWNER) && userId !== currentUser.id) {
-            throw new Problem(401, {
-              detail: "You can't update an owner's roles.",
-            });
-          }
-
-          if (!userRoles.includes(Roles.OWNER) && futureRoles.includes(Roles.OWNER)) {
-            throw new Problem(401, {
-              detail: "You can't add an owner role.",
-            });
-          }
-
-          // If the user is trying to remove the designer role for another userid
-          if (userRoles.includes(Roles.FORM_DESIGNER) && !futureRoles.includes(Roles.FORM_DESIGNER)) {
-            throw new Problem(401, {
-              detail: "You can't remove a form designer role.",
-            });
-          }
-
-          if (!userRoles.includes(Roles.FORM_DESIGNER) && futureRoles.includes(Roles.FORM_DESIGNER)) {
-            throw new Problem(401, {
-              detail: "You can't add a form designer role.",
-            });
-          }
+        // A non-owner can't delete a form designer.
+        if (userRoles.includes(Roles.FORM_DESIGNER)) {
+          throw new Problem(401, {
+            detail: "You can't remove a form designer role.",
+          });
         }
       }
-
-      next();
-    } catch (error) {
-      next(error);
     }
-  };
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Express middleware to check that the calling user is allowed to modify roles
+ * for the form identified by params.formId or query.formId. This falls through
+ * if everything is OK, otherwise it calls next() with a Problem describing the
+ * error.
+ *
+ * @param {*} req the Express object representing the HTTP request.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @returns nothing
+ */
+const hasRoleModifyPermissions = async (req, _res, next) => {
+  try {
+    const currentUser = req.currentUser;
+
+    // The request must include a formId, either in params or query, but give
+    // precedence to params.
+    const form = await _getForm(currentUser, req.params.formId || req.query.formId, false);
+
+    const userId = req.params.userId || req.query.userId;
+    if (!uuid.validate(userId)) {
+      throw new Problem(400, {
+        detail: 'Bad userId',
+      });
+    }
+
+    const isOwner = form.roles.includes(Roles.OWNER);
+    if (!isOwner) {
+      // Convert to arrays of role strings, rather than the objects.
+      const userRoles = (await rbacService.readUserRole(userId, form.formId)).map((userRole) => userRole.role);
+      const futureRoles = req.body.map((userRole) => userRole.role);
+
+      // If the user is trying to remove the team manager role for their own userid
+      if (userRoles.includes(Roles.TEAM_MANAGER) && !futureRoles.includes(Roles.TEAM_MANAGER) && userId === currentUser.id) {
+        throw new Problem(401, {
+          detail: "You can't remove your own team manager role.",
+        });
+      }
+
+      if (userRoles.includes(Roles.OWNER)) {
+        // Can't remove a different user's owner role unless you are an owner.
+        if (userId !== currentUser.id) {
+          throw new Problem(401, {
+            detail: "You can't update an owner's roles.",
+          });
+        }
+      } else if (futureRoles.includes(Roles.OWNER)) {
+        // Can't add an owner role unless you are an owner.
+        throw new Problem(401, {
+          detail: "You can't add an owner role.",
+        });
+      }
+
+      if (userRoles.includes(Roles.FORM_DESIGNER)) {
+        // Can't remove form designer if you are not an owner.
+        if (!futureRoles.includes(Roles.FORM_DESIGNER)) {
+          throw new Problem(401, {
+            detail: "You can't remove a form designer role.",
+          });
+        }
+      } else if (futureRoles.includes(Roles.FORM_DESIGNER)) {
+        // Can't add form designer if you are not an owner.
+        throw new Problem(401, {
+          detail: "You can't add a form designer role.",
+        });
+      }
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
 };
 
 /**
@@ -444,6 +470,7 @@ module.exports = {
   filterMultipleSubmissions,
   hasFormPermissions,
   hasFormRoles,
-  hasRolePermissions,
+  hasRoleDeletePermissions,
+  hasRoleModifyPermissions,
   hasSubmissionPermissions,
 };
