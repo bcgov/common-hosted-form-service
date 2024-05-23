@@ -30,11 +30,15 @@ jobs:
           
           working-directory: '${{ github.workspace }}/tests/functional'
        env:
+           #PR_NUMBER: ${{ github.event.inputs.pr-number }}
            CYPRESS_keycloakUsername: ${{secrets.keycloakUsername}}
            CYPRESS_keycloakPassword: ${{secrets.keycloakPassword}}
-           if: ${{ github.event.inputs.pr-number }} != '' && success()
       
-           CYPRESS_depEnv: pr-${{ github.event.inputs.pr-number }}
+           if: ${{ github.event.inputs.pr-number }} != '' && success()
+             with:
+               CYPRESS_keycloakUsername: ${{secrets.keycloakUsername}}
+               CYPRESS_keycloakPassword: ${{secrets.keycloakPassword}}
+               CYPRESS_depEnv: pr-${{ github.event.inputs.pr-number }}
             
      - uses: actions/upload-artifact@v4
        if: failure()
