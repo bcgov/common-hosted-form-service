@@ -10,10 +10,8 @@ const userAccess = require('../../../../src/forms/auth/middleware/userAccess');
 userAccess.currentUser = jest.fn((_req, _res, next) => {
   next();
 });
-userAccess.filterMultipleSubmissions = jest.fn(() => {
-  return jest.fn((_req, _res, next) => {
-    next();
-  });
+userAccess.filterMultipleSubmissions = jest.fn((_req, _res, next) => {
+  next();
 });
 userAccess.hasSubmissionPermissions = jest.fn(() => {
   return jest.fn((_req, _res, next) => {

@@ -446,6 +446,14 @@ describe('_findFileIds', () => {
   });
 });
 
+describe('listFormSubmissions', () => {
+  it('should not error if fields has a trailing commma', async () => {
+    await service.listFormSubmissions(formId, { fields: 'x,' });
+
+    expect(MockModel.select).toBeCalledTimes(1);
+  });
+});
+
 describe('readVersionFields', () => {
   it('should not return hidden fields', async () => {
     const schema = {

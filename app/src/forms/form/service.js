@@ -358,9 +358,11 @@ const service = {
       .modify('filterVersion', params.version)
       .modify('filterformSubmissionStatusCode', params.filterformSubmissionStatusCode)
       .modify('orderDefault', params.sortBy && params.page ? true : false, params);
-    if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length == 2) {
+
+    if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length === 2) {
       query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
     }
+
     const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
 
     if (params.fields && params.fields.length) {
@@ -376,8 +378,11 @@ const service = {
       } else {
         fields = params.fields.split(',').map((s) => s.trim());
       }
-      // remove updatedAt and updatedBy from custom selected field so they won't be pulled from submission columns
-      fields = fields.filter((f) => f !== 'updatedAt' && f !== 'updatedBy');
+
+      // Remove updatedAt and updatedBy so they won't be pulled from submission
+      // columns. Also remove empty values to handle the case of trailing commas
+      // and other malformed data too.
+      fields = fields.filter((f) => f !== 'updatedAt' && f !== 'updatedBy' && f.trim() !== '');
 
       fields.push('lateEntry');
       query.select(
@@ -390,9 +395,11 @@ const service = {
         ['lateEntry'].map((f) => ref(`submission:data.${f}`).as(f.split('.').slice(-1)))
       );
     }
+
     if (params.paginationEnabled) {
       return await service.processPaginationData(query, parseInt(params.page), parseInt(params.itemsPerPage), params.totalSubmissions, params.search, params.searchEnabled);
     }
+
     return query;
   },
 
