@@ -163,7 +163,7 @@ defineExpose({ selectedData, inputFilter });
         :class="RTL"
         variant="outlined"
         :lang="lang"
-        :title="t('trans.baseFilter.cancel')"
+        :title="$t('trans.baseFilter.cancel')"
         @click="cancelFilterData"
         >{{ $t('trans.baseFilter.cancel') }}</v-btn
       >

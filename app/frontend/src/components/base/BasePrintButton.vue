@@ -11,7 +11,7 @@ function printSubmission() {
     class="mx-1 d-print-none"
     color="primary"
     icon
-    :title="trans.printOptions.print"
+    :title="$t('trans.printOptions.print')"
     @click="printSubmission"
   >
     <v-icon icon="mdi:mdi-printer"></v-icon>
