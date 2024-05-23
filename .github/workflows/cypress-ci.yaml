@@ -32,7 +32,7 @@ jobs:
        env:
            CYPRESS_keycloakUsername: ${{secrets.keycloakUsername}}
            CYPRESS_keycloakPassword: ${{secrets.keycloakPassword}}
-           if: ${{ github.event.inputs.pr-number != '' }}
+           if: ${{ github.event.inputs.pr-number }} != '' && success()
       
            CYPRESS_depEnv: pr-${{ github.event.inputs.pr-number }}
             
