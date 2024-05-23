@@ -92,21 +92,21 @@ describe(`${basePath}/:formId/documentTemplates`, () => {
   it('should have correct middleware for GET', async () => {
     await appRequest.get(path);
 
-    expect(validateParameter.validateFormId).toHaveBeenCalledTimes(1);
-    expect(apiAccess).toHaveBeenCalledTimes(1);
-    expect(rateLimiter.apiKeyRateLimiter).toHaveBeenCalledTimes(1);
-    expect(hasFormPermissionsMock).toHaveBeenCalledTimes(1);
-    expect(controller.documentTemplateList).toHaveBeenCalledTimes(1);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(apiAccess).toBeCalledTimes(1);
+    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
+    expect(hasFormPermissionsMock).toBeCalledTimes(1);
+    expect(controller.documentTemplateList).toBeCalledTimes(1);
   });
 
   it('should have correct middleware for POST', async () => {
     await appRequest.post(path);
 
-    expect(validateParameter.validateFormId).toHaveBeenCalledTimes(1);
-    expect(apiAccess).toHaveBeenCalledTimes(1);
-    expect(rateLimiter.apiKeyRateLimiter).toHaveBeenCalledTimes(1);
-    expect(hasFormPermissionsMock).toHaveBeenCalledTimes(1);
-    expect(controller.documentTemplateCreate).toHaveBeenCalledTimes(1);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(apiAccess).toBeCalledTimes(1);
+    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
+    expect(hasFormPermissionsMock).toBeCalledTimes(1);
+    expect(controller.documentTemplateCreate).toBeCalledTimes(1);
   });
 });
 
@@ -116,22 +116,22 @@ describe(`${basePath}/:formId/documentTemplates/:documentTemplateId`, () => {
   it('should have correct middleware for DELETE', async () => {
     await appRequest.delete(path);
 
-    expect(validateParameter.validateDocumentTemplateId).toHaveBeenCalledTimes(1);
-    expect(validateParameter.validateFormId).toHaveBeenCalledTimes(1);
-    expect(apiAccess).toHaveBeenCalledTimes(1);
-    expect(rateLimiter.apiKeyRateLimiter).toHaveBeenCalledTimes(1);
-    expect(hasFormPermissionsMock).toHaveBeenCalledTimes(1);
-    expect(controller.documentTemplateDelete).toHaveBeenCalledTimes(1);
+    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(apiAccess).toBeCalledTimes(1);
+    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
+    expect(hasFormPermissionsMock).toBeCalledTimes(1);
+    expect(controller.documentTemplateDelete).toBeCalledTimes(1);
   });
 
   it('should have correct middleware for GET', async () => {
     await appRequest.get(path);
 
-    expect(validateParameter.validateDocumentTemplateId).toHaveBeenCalledTimes(1);
-    expect(validateParameter.validateFormId).toHaveBeenCalledTimes(1);
-    expect(apiAccess).toHaveBeenCalledTimes(1);
-    expect(rateLimiter.apiKeyRateLimiter).toHaveBeenCalledTimes(1);
-    expect(hasFormPermissionsMock).toHaveBeenCalledTimes(1);
-    expect(controller.documentTemplateRead).toHaveBeenCalledTimes(1);
+    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(apiAccess).toBeCalledTimes(1);
+    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
+    expect(hasFormPermissionsMock).toBeCalledTimes(1);
+    expect(controller.documentTemplateRead).toBeCalledTimes(1);
   });
 });

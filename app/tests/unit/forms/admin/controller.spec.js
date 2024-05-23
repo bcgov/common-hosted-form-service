@@ -23,7 +23,7 @@ describe('form controller', () => {
     service.createFormComponentsProactiveHelp = jest.fn().mockReturnValue(formComponentsProactiveHelp);
 
     await controller.createFormComponentsProactiveHelp(req, {}, jest.fn());
-    expect(service.createFormComponentsProactiveHelp).toHaveBeenCalledTimes(1);
+    expect(service.createFormComponentsProactiveHelp).toBeCalledTimes(1);
   });
 
   it('should update proactive help component publish status', async () => {
@@ -43,13 +43,13 @@ describe('form controller', () => {
     service.updateFormComponentsProactiveHelp = jest.fn().mockReturnValue(formComponentsProactiveHelp);
 
     await controller.updateFormComponentsProactiveHelp(req, {}, jest.fn());
-    expect(service.updateFormComponentsProactiveHelp).toHaveBeenCalledTimes(1);
+    expect(service.updateFormComponentsProactiveHelp).toBeCalledTimes(1);
   });
 
   it('should get list of all proactive help components', async () => {
     service.listFormComponentsProactiveHelp = jest.fn().mockReturnValue({});
 
     await controller.listFormComponentsProactiveHelp(req, {}, jest.fn());
-    expect(service.listFormComponentsProactiveHelp).toHaveBeenCalledTimes(1);
+    expect(service.listFormComponentsProactiveHelp).toBeCalledTimes(1);
   });
 });

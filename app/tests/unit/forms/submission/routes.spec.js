@@ -77,10 +77,10 @@ describe(`${basePath}/:formSubmissionId/template/:documentTemplateId/render`, ()
   it('should have correct middleware for GET', async () => {
     await appRequest.get(path);
 
-    expect(validateParameter.validateDocumentTemplateId).toHaveBeenCalledTimes(1);
-    expect(apiAccess).toHaveBeenCalledTimes(1);
-    expect(rateLimiter.apiKeyRateLimiter).toHaveBeenCalledTimes(1);
-    expect(hasSubmissionPermissionsMock).toHaveBeenCalledTimes(1);
-    expect(controller.templateRender).toHaveBeenCalledTimes(1);
+    expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(1);
+    expect(apiAccess).toBeCalledTimes(1);
+    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
+    expect(hasSubmissionPermissionsMock).toBeCalledTimes(1);
+    expect(controller.templateRender).toBeCalledTimes(1);
   });
 });
