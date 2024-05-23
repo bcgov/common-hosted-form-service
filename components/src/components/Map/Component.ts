@@ -1,33 +1,52 @@
-/* tslint:disable */
 import { Components } from 'formiojs';
-const ParentComponent = (Components as any).components.Field;
-import editForm from './Component.form';
+//import SMK from '@bcgov/smk';
 
-import { Constants } from '../Common/Constants';
+const FieldComponent = Components.components.field;
 
+class MapComponent extends FieldComponent {
+  static schema(...extend: any[]) {
+    return FieldComponent.schema({
+      type: 'map',
+      label: 'Map',
+      key: 'map',
+      input: true,
+      ...extend,
+    });
+  }
 
-const ID = 'map';
-const DISPLAY = 'Map';
+  static get builderInfo() {
+    return {
+      title: 'Map',
+      group: 'basic',
+      icon: 'map',
+      weight: 70,
+      schema: MapComponent.schema(),
+    };
+  }
 
-export default class MapComponent extends (ParentComponent as any) {
-    static schema(...extend) {
-        return  MapComponent.schema({
-            type: ID,
-            label: DISPLAY,
-            key: ID,
-        }, ...extend);
+  render() {
+    return super.render(
+      this.renderTemplate('input', {
+        input: `<div id="map" style="width: 100%; height: 400px;">map goes here</div>`,
+      })
+    );
+  }
+
+  attach(element: HTMLElement) {
+    super.attach(element);
+    this.loadMap();
+  }
+
+  loadMap() {
+    const mapContainer = document.getElementById('map');
+    if (mapContainer) {
+      console.log('inside Map');
+      //   SMK.init({ container: 'map' }).then((smk) => {
+      //     // Additional SMK configuration goes here
+      //   });
     }
-
-    public static editForm = editForm;
-    static get builderInfo() {
-        return {
-            title: DISPLAY,
-            group: 'simple',
-            icon: 'map',
-            weight: 1,
-            documentation: Constants.DEFAULT_HELP_LINK,
-            schema: MapComponent.schema()
-        };
-    }
-    
+  }
 }
+
+Components.addComponent('map', MapComponent);
+export default MapComponent;

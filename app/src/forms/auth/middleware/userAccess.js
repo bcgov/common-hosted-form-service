@@ -86,27 +86,6 @@ const _hasAnyPermission = (userPermissions, requiredPermissions) => {
   return intersection.length > 0;
 };
 
-const _hasFormRole = async (formId, user, role) => {
-  let hasRole = false;
-
-  const forms = await service.getUserForms(user, {
-    active: true,
-    formId: formId,
-  });
-  const form = forms.find((f) => f.formId === formId);
-
-  if (form) {
-    for (let j = 0; j < form.roles.length; j++) {
-      if (form.roles[j] === role) {
-        hasRole = true;
-        break;
-      }
-    }
-  }
-
-  return hasRole;
-};
-
 /**
  * Express middleware that adds the user information as the res.currentUser
  * attribute so that all downstream middleware and business logic can use it.
@@ -142,64 +121,63 @@ const currentUser = async (req, _res, next) => {
   }
 };
 
-const filterMultipleSubmissions = () => {
-  return async (req, _res, next) => {
-    try {
-      // Get the provided list of submissions Id whether in a req body
-      const submissionIds = req.body && req.body.submissionIds;
-      if (!Array.isArray(submissionIds)) {
-        // No submission provided to this route that secures based on form... that's a problem!
-        throw new Problem(401, {
-          detail: 'SubmissionIds not found on request.',
-        });
-      }
+/**
+ * Express middleware that checks that a collection of submissions belong to a
+ * given form that the user has delete permissions for. This falls through if
+ * everything is OK, otherwise it calls next() with a Problem describing the
+ * error.
+ *
+ * This could use some refactoring to move the formIdWithDeletePermission
+ * creation code into this function. That way there is no external dependency,
+ * and the code will be easier to understand.
+ *
+ * @param {*} req the Express object representing the HTTP request.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @returns nothing
+ */
+const filterMultipleSubmissions = async (req, _res, next) => {
+  try {
+    // The request must include a formId, either in params or query, but give
+    // precedence to params.
+    const form = await _getForm(req.currentUser, req.params.formId || req.query.formId, true);
 
-      let formIdWithDeletePermission = req.formIdWithDeletePermission;
-
-      // Get the provided form ID whether in a param or query (precedence to param)
-      const formId = req.params.formId || req.query.formId;
-      if (!formId) {
-        // No submission provided to this route that secures based on form... that's a problem!
-        throw new Problem(401, {
-          detail: 'Form Id not found on request.',
-        });
-      }
-
-      //validate form id
-      if (!uuid.validate(formId)) {
-        throw new Problem(401, {
-          detail: 'Not a valid form id',
-        });
-      }
-
-      //validate all submission ids
-      const isValidSubmissionId = submissionIds.every((submissionId) => uuid.validate(submissionId));
-      if (!isValidSubmissionId) {
-        throw new Problem(401, {
-          detail: 'Invalid submissionId(s) in the submissionIds list.',
-        });
-      }
-
-      if (formIdWithDeletePermission === formId) {
-        // check if users has not injected submission id that does not belong to this form
-        const metaData = await service.getMultipleSubmission(submissionIds);
-
-        const isForeignSubmissionId = metaData.every((SubmissionMetadata) => SubmissionMetadata.formId === formId);
-        if (!isForeignSubmissionId || metaData.length !== submissionIds.length) {
-          throw new Problem(401, {
-            detail: 'Current user does not have required permission(s) for some submissions in the submissionIds list.',
-          });
-        }
-        return next();
-      }
-
+    // Get the array of submission IDs from the request body.
+    const submissionIds = req.body && req.body.submissionIds;
+    if (!Array.isArray(submissionIds)) {
       throw new Problem(401, {
-        detail: 'Current user does not have required permission(s) for to delete submissions',
+        detail: 'SubmissionIds not found on request.',
       });
-    } catch (error) {
-      next(error);
     }
-  };
+
+    // Check that all submission IDs are valid UUIDs.
+    const isValidSubmissionId = submissionIds.every((submissionId) => uuid.validate(submissionId));
+    if (!isValidSubmissionId) {
+      throw new Problem(401, {
+        detail: 'Invalid submissionId(s) in the submissionIds list.',
+      });
+    }
+
+    if (req.formIdWithDeletePermission === form.formId) {
+      // check if users has not injected submission id that does not belong to this form
+      const metaData = await service.getMultipleSubmission(submissionIds);
+
+      const isForeignSubmissionId = metaData.every((SubmissionMetadata) => SubmissionMetadata.formId === form.formId);
+      if (!isForeignSubmissionId || metaData.length !== submissionIds.length) {
+        throw new Problem(401, {
+          detail: 'Current user does not have required permission(s) for some submissions in the submissionIds list.',
+        });
+      }
+
+      return next();
+    }
+
+    throw new Problem(401, {
+      detail: 'Current user does not have required permission(s) for to delete submissions',
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 /**
@@ -278,107 +256,137 @@ const hasFormRoles = (roles) => {
 };
 
 /**
- * Express middleware to check that the calling user has one of the given roles for
- * the form identified by params.formId or query.formId. This falls through if
- * everything is OK, otherwise it calls next() with a Problem describing the
+ * Express middleware to check that the calling user is allowed to delete roles
+ * for the form identified by params.formId or query.formId. This falls through
+ * if everything is OK, otherwise it calls next() with a Problem describing the
  * error.
  *
- * @param {string[]} roles the roles the user needs one of for the form.
+ * @param {*} req the Express object representing the HTTP request.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
  * @returns nothing
  */
-const hasRolePermissions = (removingUsers = false) => {
-  return async (req, _res, next) => {
-    try {
-      // If we invoke this middleware and the caller is acting on a specific formId, whether in a param or query (precedence to param)
-      const formId = req.params.formId || req.query.formId;
-      if (!formId) {
-        // No form provided to this route that secures based on form... that's a problem!
+const hasRoleDeletePermissions = async (req, _res, next) => {
+  try {
+    const currentUser = req.currentUser;
+
+    // The request must include a formId, either in params or query, but give
+    // precedence to params.
+    const form = await _getForm(currentUser, req.params.formId || req.query.formId, false);
+
+    const userIds = req.body;
+    if (userIds.includes(currentUser.id)) {
+      throw new Problem(401, {
+        detail: "You can't remove yourself from this form.",
+      });
+    }
+
+    const isOwner = form.roles.includes(Roles.OWNER);
+    if (!isOwner) {
+      for (const userId of userIds) {
+        if (!uuid.validate(userId)) {
+          throw new Problem(400, {
+            detail: 'Bad userId',
+          });
+        }
+
+        // Convert to an array of role strings, rather than the objects.
+        const userRoles = (await rbacService.readUserRole(userId, form.formId)).map((userRole) => userRole.role);
+
+        // A non-owner can't delete an owner.
+        if (userRoles.includes(Roles.OWNER) && userId !== currentUser.id) {
+          throw new Problem(401, {
+            detail: "You can not update an owner's roles.",
+          });
+        }
+
+        // A non-owner can't delete a form designer.
+        if (userRoles.includes(Roles.FORM_DESIGNER)) {
+          throw new Problem(401, {
+            detail: "You can't remove a form designer role.",
+          });
+        }
+      }
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Express middleware to check that the calling user is allowed to modify roles
+ * for the form identified by params.formId or query.formId. This falls through
+ * if everything is OK, otherwise it calls next() with a Problem describing the
+ * error.
+ *
+ * @param {*} req the Express object representing the HTTP request.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @returns nothing
+ */
+const hasRoleModifyPermissions = async (req, _res, next) => {
+  try {
+    const currentUser = req.currentUser;
+
+    // The request must include a formId, either in params or query, but give
+    // precedence to params.
+    const form = await _getForm(currentUser, req.params.formId || req.query.formId, false);
+
+    const userId = req.params.userId || req.query.userId;
+    if (!uuid.validate(userId)) {
+      throw new Problem(400, {
+        detail: 'Bad userId',
+      });
+    }
+
+    const isOwner = form.roles.includes(Roles.OWNER);
+    if (!isOwner) {
+      // Convert to arrays of role strings, rather than the objects.
+      const userRoles = (await rbacService.readUserRole(userId, form.formId)).map((userRole) => userRole.role);
+      const futureRoles = req.body.map((userRole) => userRole.role);
+
+      // If the user is trying to remove the team manager role for their own userid
+      if (userRoles.includes(Roles.TEAM_MANAGER) && !futureRoles.includes(Roles.TEAM_MANAGER) && userId === currentUser.id) {
         throw new Problem(401, {
-          detail: 'Form Id not found on request.',
+          detail: "You can't remove your own team manager role.",
         });
       }
 
-      const currentUser = req.currentUser;
-      const data = req.body;
-
-      const isOwner = await _hasFormRole(formId, currentUser, Roles.OWNER);
-
-      if (removingUsers) {
-        if (data.includes(currentUser.id))
+      if (userRoles.includes(Roles.OWNER)) {
+        // Can't remove a different user's owner role unless you are an owner.
+        if (userId !== currentUser.id) {
           throw new Problem(401, {
-            detail: "You can't remove yourself from this form.",
-          });
-
-        if (!isOwner) {
-          for (let i = 0; i < data.length; i++) {
-            let userId = data[i];
-
-            const userRoles = await rbacService.readUserRole(userId, formId);
-
-            // Can't update another user's roles if they are an owner
-            if (userRoles.some((fru) => fru.role === Roles.OWNER) && userId !== currentUser.id) {
-              throw new Problem(401, {
-                detail: "You can not update an owner's roles.",
-              });
-            }
-
-            // If the user is trying to remove the designer role
-            if (userRoles.some((fru) => fru.role === Roles.FORM_DESIGNER)) {
-              throw new Problem(401, {
-                detail: "You can't remove a form designer role.",
-              });
-            }
-          }
-        }
-      } else {
-        const userId = req.params.userId || req.query.userId;
-        if (!userId || (userId && userId.length === 0)) {
-          throw new Problem(401, {
-            detail: 'User Id not found on request.',
+            detail: "You can't update an owner's roles.",
           });
         }
-
-        if (!isOwner) {
-          const userRoles = await rbacService.readUserRole(userId, formId);
-
-          // If the user is trying to remove the team manager role for their own userid
-          if (userRoles.some((fru) => fru.role === Roles.TEAM_MANAGER) && !data.some((role) => role.role === Roles.TEAM_MANAGER) && userId == currentUser.id) {
-            throw new Problem(401, {
-              detail: "You can't remove your own team manager role.",
-            });
-          }
-
-          // Can't update another user's roles if they are an owner
-          if (userRoles.some((fru) => fru.role === Roles.OWNER) && userId !== currentUser.id) {
-            throw new Problem(401, {
-              detail: "You can't update an owner's roles.",
-            });
-          }
-          if (!userRoles.some((fru) => fru.role === Roles.OWNER) && data.some((role) => role.role === Roles.OWNER)) {
-            throw new Problem(401, {
-              detail: "You can't add an owner role.",
-            });
-          }
-
-          // If the user is trying to remove the designer role for another userid
-          if (userRoles.some((fru) => fru.role === Roles.FORM_DESIGNER) && !data.some((role) => role.role === Roles.FORM_DESIGNER)) {
-            throw new Problem(401, {
-              detail: "You can't remove a form designer role.",
-            });
-          }
-          if (!userRoles.some((fru) => fru.role === Roles.FORM_DESIGNER) && data.some((role) => role.role === Roles.FORM_DESIGNER)) {
-            throw new Problem(401, {
-              detail: "You can't add a form designer role.",
-            });
-          }
-        }
+      } else if (futureRoles.includes(Roles.OWNER)) {
+        // Can't add an owner role unless you are an owner.
+        throw new Problem(401, {
+          detail: "You can't add an owner role.",
+        });
       }
 
-      next();
-    } catch (error) {
-      next(error);
+      if (userRoles.includes(Roles.FORM_DESIGNER)) {
+        // Can't remove form designer if you are not an owner.
+        if (!futureRoles.includes(Roles.FORM_DESIGNER)) {
+          throw new Problem(401, {
+            detail: "You can't remove a form designer role.",
+          });
+        }
+      } else if (futureRoles.includes(Roles.FORM_DESIGNER)) {
+        // Can't add form designer if you are not an owner.
+        throw new Problem(401, {
+          detail: "You can't add a form designer role.",
+        });
+      }
     }
-  };
+
+    next();
+  } catch (error) {
+    next(error);
+  }
 };
 
 /**
@@ -462,6 +470,7 @@ module.exports = {
   filterMultipleSubmissions,
   hasFormPermissions,
   hasFormRoles,
-  hasRolePermissions,
+  hasRoleDeletePermissions,
+  hasRoleModifyPermissions,
   hasSubmissionPermissions,
 };
