@@ -255,7 +255,7 @@ describe('form controller', () => {
     exportService.fieldsForCSVExport = jest.fn().mockReturnValue(formFields);
 
     await controller.readFieldsForCSVExport(req, {}, jest.fn());
-    expect(exportService.fieldsForCSVExport).toHaveBeenCalledTimes(1);
+    expect(exportService.fieldsForCSVExport).toBeCalledTimes(1);
   });
 
   it('should not continue with export if there are no submissions', async () => {
@@ -267,10 +267,10 @@ describe('form controller', () => {
     exportService._getSubmissions = jest.fn().mockReturnValue([]);
 
     await controller.export(req, {}, jest.fn());
-    expect(exportServiceSpy).toHaveBeenCalledTimes(1);
-    expect(exportService._getForm).toHaveBeenCalledTimes(1);
-    expect(exportService._getSubmissions).toHaveBeenCalledTimes(1);
-    expect(formatDataSpy).toHaveBeenCalledTimes(1);
+    expect(exportServiceSpy).toBeCalledTimes(1);
+    expect(exportService._getForm).toBeCalledTimes(1);
+    expect(exportService._getSubmissions).toBeCalledTimes(1);
+    expect(formatDataSpy).toBeCalledTimes(1);
   });
 });
 
@@ -294,9 +294,9 @@ describe('listFormSubmissions', () => {
     await controller.listFormSubmissions(req, res, next);
 
     // Assert
-    expect(service.listFormSubmissions).toHaveBeenCalled();
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(mockResponse);
+    expect(service.listFormSubmissions).toBeCalled();
+    expect(res.status).toBeCalledWith(200);
+    expect(res.json).toBeCalledWith(mockResponse);
   });
 
   it('should 400 if the formId is missing', async () => {
@@ -308,9 +308,9 @@ describe('listFormSubmissions', () => {
     await controller.listFormSubmissions(req, res, next);
 
     // Assert
-    expect(service.listFormSubmissions).toHaveBeenCalledTimes(0);
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ detail: 'Bad formId "undefined".' });
+    expect(service.listFormSubmissions).toBeCalledTimes(0);
+    expect(res.status).toBeCalledWith(400);
+    expect(res.json).toBeCalledWith({ detail: 'Bad formId "undefined".' });
   });
 
   test.each(testCases400)('should 400 if the formId is "%s"', async (formId) => {
@@ -322,9 +322,9 @@ describe('listFormSubmissions', () => {
     await controller.listFormSubmissions(req, res, next);
 
     // Assert
-    expect(service.listFormSubmissions).toHaveBeenCalledTimes(0);
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ detail: `Bad formId "${formId}".` });
+    expect(service.listFormSubmissions).toBeCalledTimes(0);
+    expect(res.status).toBeCalledWith(400);
+    expect(res.json).toBeCalledWith({ detail: `Bad formId "${formId}".` });
   });
 
   it('should forward service errors for handling elsewhere', async () => {
@@ -340,8 +340,8 @@ describe('listFormSubmissions', () => {
     await controller.listFormSubmissions(req, res, next);
 
     // Assert
-    expect(service.listFormSubmissions).toHaveBeenCalled();
-    expect(next).toHaveBeenCalledWith(error);
+    expect(service.listFormSubmissions).toBeCalled();
+    expect(next).toBeCalledWith(error);
   });
 });
 
@@ -363,9 +363,9 @@ describe('readFormOptions', () => {
     await controller.readFormOptions(req, res, next);
 
     // Assert
-    expect(service.readFormOptions).toHaveBeenCalled();
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(mockReadResponse);
+    expect(service.readFormOptions).toBeCalled();
+    expect(res.status).toBeCalledWith(200);
+    expect(res.json).toBeCalledWith(mockReadResponse);
   });
 
   it('should 400 if the formId is missing', async () => {
@@ -377,9 +377,9 @@ describe('readFormOptions', () => {
     await controller.readFormOptions(req, res, next);
 
     // Assert
-    expect(service.readFormOptions).toHaveBeenCalledTimes(0);
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ detail: 'Bad formId "undefined".' });
+    expect(service.readFormOptions).toBeCalledTimes(0);
+    expect(res.status).toBeCalledWith(400);
+    expect(res.json).toBeCalledWith({ detail: 'Bad formId "undefined".' });
   });
 
   test.each(testCases400)('should 400 if the formId is "%s"', async (formId) => {
@@ -391,9 +391,9 @@ describe('readFormOptions', () => {
     await controller.readFormOptions(req, res, next);
 
     // Assert
-    expect(service.readFormOptions).toHaveBeenCalledTimes(0);
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith({ detail: `Bad formId "${formId}".` });
+    expect(service.readFormOptions).toBeCalledTimes(0);
+    expect(res.status).toBeCalledWith(400);
+    expect(res.json).toBeCalledWith({ detail: `Bad formId "${formId}".` });
   });
 
   it('should forward service errors for handling elsewhere', async () => {
@@ -409,7 +409,7 @@ describe('readFormOptions', () => {
     await controller.readFormOptions(req, res, next);
 
     // Assert
-    expect(service.readFormOptions).toHaveBeenCalled();
-    expect(next).toHaveBeenCalledWith(error);
+    expect(service.readFormOptions).toBeCalled();
+    expect(next).toBeCalledWith(error);
   });
 });
