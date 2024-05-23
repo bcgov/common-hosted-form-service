@@ -18,7 +18,7 @@ describe('searchBCGeoAddress', () => {
     const query = { brief: true, autocomplete: true, matchAccuracy: 100, addressString: 25, url: 'test Url' };
 
     await service.searchBCGeoAddress(query).then(() => {
-      expect(geoAddressService.addressQuerySearch).toHaveBeenCalledTimes(1);
+      expect(geoAddressService.addressQuerySearch).toBeCalledTimes(1);
     });
   });
 
@@ -41,7 +41,7 @@ describe('searchBCGeoAddress', () => {
 
     const result = await service.advanceSearchBCGeoAddress(query);
 
-    expect(geoAddressService.addressQuerySearch).toHaveBeenCalledTimes(1);
+    expect(geoAddressService.addressQuerySearch).toBeCalledTimes(1);
 
     expect(result).toEqual(response);
   });

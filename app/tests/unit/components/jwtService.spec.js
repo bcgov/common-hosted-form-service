@@ -39,8 +39,8 @@ describe('jwtService', () => {
     const req = getMockReq({ headers: { authorization: 'Bearer JWT' } });
     const r = await jwtService.getTokenPayload(req);
     expect(r).toBe(payload);
-    expect(jwtService.getBearerToken).toHaveBeenCalledTimes(1);
-    expect(jwtService._verify).toHaveBeenCalledTimes(1);
+    expect(jwtService.getBearerToken).toBeCalledTimes(1);
+    expect(jwtService._verify).toBeCalledTimes(1);
   });
 
   it('should error if token not valid', async () => {
@@ -59,8 +59,8 @@ describe('jwtService', () => {
       expect(e).toBeInstanceOf(jose.errors.JWTClaimValidationFailed);
       expect(payload).toBe(undefined);
     }
-    expect(jwtService.getBearerToken).toHaveBeenCalledTimes(1);
-    expect(jwtService._verify).toHaveBeenCalledTimes(1);
+    expect(jwtService.getBearerToken).toBeCalledTimes(1);
+    expect(jwtService._verify).toBeCalledTimes(1);
   });
 
   it('should validate access token on good jwt', async () => {
@@ -71,7 +71,7 @@ describe('jwtService', () => {
     const req = getMockReq({ headers: { authorization: 'Bearer JWT' } });
     const r = await jwtService.validateAccessToken(req);
     expect(r).toBeTruthy();
-    expect(jwtService._verify).toHaveBeenCalledTimes(1);
+    expect(jwtService._verify).toBeCalledTimes(1);
   });
 
   it('should not validate access token on jwt error', async () => {
@@ -84,7 +84,7 @@ describe('jwtService', () => {
     const r = await jwtService.validateAccessToken(req);
     expect(r).toBeFalsy();
 
-    expect(jwtService._verify).toHaveBeenCalledTimes(1);
+    expect(jwtService._verify).toBeCalledTimes(1);
   });
 
   it('should throw problem when validate access token catches (non-jwt) error)', async () => {
@@ -104,7 +104,7 @@ describe('jwtService', () => {
 
     expect(e).toBeInstanceOf(Problem);
     expect(r).toBe(undefined);
-    expect(jwtService._verify).toHaveBeenCalledTimes(1);
+    expect(jwtService._verify).toBeCalledTimes(1);
   });
 
   it('should pass middleware protect with valid jwt)', async () => {
@@ -122,8 +122,8 @@ describe('jwtService', () => {
     const middleware = jwtService.protect();
 
     await middleware(req, res, next);
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith();
+    expect(next).toBeCalledTimes(1);
+    expect(next).toBeCalledWith();
   });
 
   it('should fail middleware protect with invalid jwt', async () => {
@@ -142,8 +142,8 @@ describe('jwtService', () => {
     const middleware = jwtService.protect();
 
     await middleware(req, res, next);
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
+    expect(next).toBeCalledTimes(1);
+    expect(next).toBeCalledWith(expect.objectContaining({ status: 401 }));
   });
 
   it('should pass middleware protect with valid jwt and role', async () => {
@@ -161,8 +161,8 @@ describe('jwtService', () => {
     const middleware = jwtService.protect('admin');
 
     await middleware(req, res, next);
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith();
+    expect(next).toBeCalledTimes(1);
+    expect(next).toBeCalledWith();
   });
 
   it('should fail middleware protect with valid jwt and but no role', async () => {
@@ -180,7 +180,7 @@ describe('jwtService', () => {
     const middleware = jwtService.protect('admin');
 
     await middleware(req, res, next);
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
+    expect(next).toBeCalledTimes(1);
+    expect(next).toBeCalledWith(expect.objectContaining({ status: 401 }));
   });
 });
