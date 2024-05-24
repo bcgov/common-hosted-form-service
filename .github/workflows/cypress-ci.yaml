@@ -55,7 +55,7 @@ jobs:
        env:
           CYPRESS_keycloakUsername: ${{secrets.keycloakUsername}}
           CYPRESS_keycloakPassword: ${{secrets.keycloakPassword}}
-          CYPRESS_depEnv: $PR_FINAL
+          CYPRESS_depEnv: $PR_FINAL >> "$GITHUB_OUTPUT"
 
           
      - uses: actions/upload-artifact@v4
