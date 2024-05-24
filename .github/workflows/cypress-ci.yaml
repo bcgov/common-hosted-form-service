@@ -11,7 +11,7 @@ jobs:
   cypress-run:
     runs-on: ubuntu-22.04
     outputs:
-      PR_FINAL:  ${{ steps.vars.outputs.PR_FINAL }}
+      PR_NUMBER:  ${{ steps.vars.outputs.PR_ NUMBER}}
     steps:
      - name: Checkout
        uses: actions/checkout@v4
@@ -36,11 +36,11 @@ jobs:
           
           if [[ "$PR_NUMBER" != '' ]]; then
          
-            echo "PR_FINAL=pr-$PR_NUMBER" >> "$GITHUB_OUTPUT"
+            echo "PR_NUMBER=pr-$PR_NUMBER" >> "$GITHUB_OUTPUT"
           
           else
 
-            echo "PR_FINAL=app" >> "$GITHUB_OUTPUT"
+            echo "PR_NUMBER=app" >> "$GITHUB_OUTPUT"
           fi
            
          
@@ -56,7 +56,7 @@ jobs:
        env:
           CYPRESS_keycloakUsername: ${{secrets.keycloakUsername}}
           CYPRESS_keycloakPassword: ${{secrets.keycloakPassword}}
-          CYPRESS_depEnv: ${{ steps.vars.PR_FINAL }}
+          CYPRESS_depEnv: ${{ steps.vars.PR_NUMBER }}
 
           
      - uses: actions/upload-artifact@v4
