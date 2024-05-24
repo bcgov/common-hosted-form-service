@@ -36,11 +36,11 @@ jobs:
           
           if [[ "$PR_NUMBER" != '' ]]; then
          
-            echo "PR_FINAL=pr-$PR_NUMBER" >> $GITHUB_OUTPUT
+            echo "PR_FINAL=pr-$PR_NUMBER" >> "$GITHUB_OUTPUT"
           
           else
 
-            echo "PR_FINAL=app" >> $GITHUB_OUTPUT
+            echo "PR_FINAL=app" >> "$GITHUB_OUTPUT"
           fi
            
          
