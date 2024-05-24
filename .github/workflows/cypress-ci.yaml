@@ -38,6 +38,7 @@ jobs:
           else
 
             echo "PR_FINAL=app" >> $GITHUB_ENV
+          fi
            
          
 
