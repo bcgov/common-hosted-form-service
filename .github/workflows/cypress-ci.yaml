@@ -36,7 +36,7 @@ jobs:
           
           if [[ "$PR_NUMBER" != '' ]]; then
          
-            echo "PR_FINAL=pr-${{ github.event.inputs.pr-number }}" >> $GITHUB_OUTPUT
+            echo "PR_FINAL=pr-$PR_NUMBER" >> $GITHUB_OUTPUT
           
           else
 
