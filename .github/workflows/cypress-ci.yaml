@@ -10,6 +10,8 @@ on:
 jobs:
   cypress-run:
     runs-on: ubuntu-22.04
+    outputs:
+      PR_FINAL: ${{ steps.vars.outputs.PR_FINAL }}
     steps:
      - name: Checkout
        uses: actions/checkout@v4
@@ -33,11 +35,11 @@ jobs:
           
           if [[ "$PR_NUMBER" != '' ]]; then
          
-            echo "PR_FINAL=pr-${{ github.event.inputs.pr-number }}" >> $GITHUB_ENV
+            echo "PR_FINAL=pr-${{ github.event.inputs.pr-number }}" >> $GITHUB_OUTPUT
           
           else
 
-            echo "PR_FINAL=app" >> $GITHUB_ENV
+            echo "PR_FINAL=app" >> $GITHUB_OUTPUT
           fi
            
          
