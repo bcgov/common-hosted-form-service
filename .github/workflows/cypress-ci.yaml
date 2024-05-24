@@ -26,8 +26,12 @@ jobs:
 
       
      - name: Set variables
+       env:
+         PR_NUMBER: ${{ github.event.inputs.pr-number }}
+        
        run: |
-          if [[ "${{ github.event.inputs.pr-number }}" != '' ]]; then
+          
+          if [[ "$PR_NUMBER" != '' ]]; then
          
             echo "PR_FINAL=pr-${{ github.event.inputs.pr-number }}" >> $GITHUB_ENV
           
