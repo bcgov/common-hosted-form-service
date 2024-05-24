@@ -29,10 +29,10 @@ jobs:
        run: |
           if [[ "${{ github.event.inputs.pr-number }}" != '' ]]; then
          
-            PR_FINAL: "pr-${{ github.event.inputs.pr-number }}"
+            echo "PR_FINAL: pr-${{ github.event.inputs.pr-number }}"
           else
 
-            PR_FINAL: "app "
+            echo "PR_FINAL: app "
            
          
 
