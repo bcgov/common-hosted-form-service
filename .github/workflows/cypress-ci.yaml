@@ -10,8 +10,8 @@ on:
 jobs:
   cypress-run:
     runs-on: ubuntu-22.04
-    outputs:
-      PR_NUMBER:  ${{ steps.vars.outputs.PR_ NUMBER}}
+    #outputs:
+     # PR_NUMBER:  ${{ steps.vars.outputs.PR_ NUMBER}}
     steps:
      - name: Checkout
        uses: actions/checkout@v4
@@ -36,11 +36,11 @@ jobs:
           
           if [[ "$PR_NUMBER" != '' ]]; then
          
-            echo "PR_NUMBER=pr-$PR_NUMBER" >> "$GITHUB_OUTPUT"
+             PR_NUMBER=pr-$PR_NUMBER
           
           else
 
-            echo "PR_NUMBER=app" >> "$GITHUB_OUTPUT"
+            PR_NUMBER="app"
           fi
            
          
