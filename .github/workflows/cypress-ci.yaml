@@ -50,7 +50,6 @@ jobs:
        with:
           
           working-directory: '${{ github.workspace }}/tests/functional'
-          pr_final: ${{ steps.vars.PR_FINAL }}
        
        
         
