@@ -34,13 +34,14 @@ jobs:
         
        run: |
           
-          if [[ "$PR_NUMBER" != '' ]]; then
-         
-             echo "PR_NUMBER=pr-${{ github.event.inputs.pr-number }}"
+          if [[ "$PR_NUMBER" == '' ]]; then
+             
+             
+             echo "PR_NUMBER=app"
           
           else
 
-            echo "PR_NUMBER=app"
+            echo "PR_NUMBER=pr-${{ github.event.inputs.pr-number }}"
           fi
            
          
