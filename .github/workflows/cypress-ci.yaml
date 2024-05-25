@@ -34,7 +34,7 @@ jobs:
         
        run: |
           
-          if "[[ "${{ github.event.inputs.pr-number }}" != '' ]]; then
+          if [[ "${{ github.event.inputs.pr-number }}" != '' ]]; then
          
              echo "PR_NUMBER=pr-${{ github.event.inputs.pr-number }}"
           
