@@ -37,7 +37,7 @@ jobs:
           if [[ "$PR_NUMBER" == '' ]]; then
              
              
-             echo "PR_NUMBER=app"
+             echo "PR_NUMBER=test"
           
           else
 
