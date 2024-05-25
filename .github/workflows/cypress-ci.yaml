@@ -57,7 +57,7 @@ jobs:
        env:
           CYPRESS_keycloakUsername: ${{secrets.keycloakUsername}}
           CYPRESS_keycloakPassword: ${{secrets.keycloakPassword}}
-          CYPRESS_depEnv: ${{ steps.vars.PR_NUMBER }}
+          CYPRESS_depEnv: "test"
 
           
      - uses: actions/upload-artifact@v4
