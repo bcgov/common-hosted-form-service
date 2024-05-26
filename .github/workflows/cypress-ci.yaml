@@ -34,14 +34,14 @@ jobs:
         
        run: |
           
-          if [[ "$PR_NUMBER" == '' ]]; then
+          if [[ "$env.PR_NUMBER" != '' ]]; then
              
              
-             echo "PR_NUMBER=test"
+             echo "env.PR_NUMBER=pr-${{ env.PR_NUMBER }}"
           
           else
 
-            echo "PR_NUMBER=pr-${{ github.event.inputs.pr-number }}"
+            echo "env.PR_NUMBER=app"
           fi
            
          
@@ -57,7 +57,7 @@ jobs:
        env:
           CYPRESS_keycloakUsername: ${{secrets.keycloakUsername}}
           CYPRESS_keycloakPassword: ${{secrets.keycloakPassword}}
-          CYPRESS_depEnv: "test"
+          CYPRESS_depEnv: ${{ steps.vars.env.PR_NUMBER }}
 
           
      - uses: actions/upload-artifact@v4
