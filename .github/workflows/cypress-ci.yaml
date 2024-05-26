@@ -10,8 +10,8 @@ on:
 jobs:
   cypress-run:
     runs-on: ubuntu-22.04
-    #outputs:
-     # PR_NUMBER:  ${{ steps.vars.outputs.PR_ NUMBER}}
+    outputs:
+     PR_NUMBER:  ${{ steps.vars.outputs.PR_ NUMBER}}
     steps:
      - name: Checkout
        uses: actions/checkout@v4
@@ -34,11 +34,11 @@ jobs:
         
        run: |        
         if [[ "$EXEC_ENVT" != '' ]]; then             
-         echo "INSIDE IFFFFF"          
+         echo "PR_NUMBER=$EXEC_ENVT" >> $GITHUB_OUTPUT         
         else
-         echo "EXEC_ENVT=app"         
+         echo "PR_NUMBER=app" >> $GITHUB_OUTPUT          
         fi
-        echo "Pr number is $EXEC_ENVT"
+        echo "Pr number is ${{ steps.vars.outputs.PR_NUMBER }}"
      - name: cypress install
        uses: cypress-io/github-action@v6
        with:
@@ -46,7 +46,7 @@ jobs:
        env:
           CYPRESS_keycloakUsername: ${{secrets.keycloakUsername}}
           CYPRESS_keycloakPassword: ${{secrets.keycloakPassword}}
-          CYPRESS_depEnv: ${{ steps.vars.env.PR_NUMBER }}
+          CYPRESS_depEnv: ${{ steps.vars.outputs.PR_NUMBER }}
 
           
      - uses: actions/upload-artifact@v4
