@@ -38,7 +38,7 @@ jobs:
         else
          echo "PR_NUMBER=app" >> $GITHUB_OUTPUT          
         fi
-        echo "Pr number is ${{ steps.vars.outputs.PR_NUMBER }}"
+        echo "Pr number is $PR_NUMBER"
      - name: cypress install
        uses: cypress-io/github-action@v6
        with:
