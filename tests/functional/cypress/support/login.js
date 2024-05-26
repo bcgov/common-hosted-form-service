@@ -9,8 +9,16 @@ export function formsettings(){
     const password=Cypress.env('keycloakPassword');
     
     
+    if(depEnv=="")
+    {
+        cy.visit(`/app`);
+    }
+    else
+    {
+
+        cy.visit(`/${depEnv}`);
+    }
     
-    cy.visit(`/${depEnv}`);
     cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
     cy.get('[data-test="idir"]').click();
     
