@@ -11,7 +11,7 @@ jobs:
   cypress-run:
     runs-on: ubuntu-22.04
     outputs:
-     PR_NUMBER:  ${{ steps.vars.outputs.PR_ NUMBER}}
+     PR_NUMBER:  ${{ steps.vars.outputs.PR_NUMBER}}
     steps:
      - name: Checkout
        uses: actions/checkout@v4
@@ -38,7 +38,7 @@ jobs:
         else
          echo "PR_NUMBER=app" >> $GITHUB_OUTPUT          
         fi
-        echo "Pr number is $PR_NUMBER"
+        echo "Pr number is ${{ steps.vars.outputs.PR_NUMBER}}"
      - name: cypress install
        uses: cypress-io/github-action@v6
        with:
