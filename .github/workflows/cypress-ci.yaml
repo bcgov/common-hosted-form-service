@@ -30,16 +30,15 @@ jobs:
      - name: Set variables
        id: vars
        env:
-         PR_NUMBER: ${{ github.event.inputs.pr-number }}
+         EXEC_ENVT: ${{ github.event.inputs.pr-number }}
         
-       run: |
-        echo "Pr number is $PR_NUMBER"
-        if [[ "$PR_NUMBER" != '' ]]; then             
+       run: |        
+        if [[ "$EXEC_ENVT" != '' ]]; then             
          echo "INSIDE IFFFFF"          
         else
-         echo "INSIDE ELSE"
+         echo "EXEC_ENVT=app"         
         fi
-    
+        echo "Pr number is $EXEC_ENVT"
      - name: cypress install
        uses: cypress-io/github-action@v6
        with:
