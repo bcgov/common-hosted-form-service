@@ -10,8 +10,6 @@ on:
 jobs:
   cypress-run:
     runs-on: ubuntu-22.04
-    #outputs:
-     # PR_NUMBER:  ${{ steps.vars.outputs.PR_ NUMBER}}
     steps:
      - name: Checkout
        uses: actions/checkout@v4
@@ -25,39 +23,16 @@ jobs:
        with:
             path: "tests/functional"
             key: node-modules-${{ hashFiles('tests/functional/package.json') }}
-
-     
-     - name: Set variables
-       id: vars
-       env:
-         PR_NUMBER: ${{ github.event.inputs.pr-number }}
+       
         
-       run: |
-          
-          if [[ "$PR_NUMBER" != '' ]]; then
-         
-             echo "PR_NUMBER=pr-$PR_NUMBER"
-          
-          else
-
-            echo "PR_NUMBER=app"
-          fi
-           
-         
-         
      - name: cypress install
        uses: cypress-io/github-action@v6
        with:
-          
           working-directory: '${{ github.workspace }}/tests/functional'
-       
-       
-        
        env:
           CYPRESS_keycloakUsername: ${{secrets.keycloakUsername}}
           CYPRESS_keycloakPassword: ${{secrets.keycloakPassword}}
-          CYPRESS_depEnv: ${{ steps.vars.PR_NUMBER }}
-
+          CYPRESS_depEnv: ${{ github.event.inputs.pr-number }}
           
      - uses: actions/upload-artifact@v4
        if: failure()
