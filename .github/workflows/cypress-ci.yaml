@@ -32,7 +32,7 @@ jobs:
        env:
           CYPRESS_keycloakUsername: ${{secrets.keycloakUsername}}
           CYPRESS_keycloakPassword: ${{secrets.keycloakPassword}}
-          CYPRESS_depEnv: ${{ github.event.inputs.pr-number }}
+          CYPRESS_depEnv: /pr-${{ github.event.inputs.pr-number }}
           
      - uses: actions/upload-artifact@v4
        if: failure()

@@ -13,7 +13,7 @@ describe('Application About Page', () => {
     else
     {
 
-      cy.visit(`/pr-${depEnv}`);
+      cy.visit(`${depEnv}`);
       cy.contains('h1', 'Create, publish forms, and receive submissions with the Common Hosted Forms Service.');
     }
     
