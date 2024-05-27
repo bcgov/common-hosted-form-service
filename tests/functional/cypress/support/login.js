@@ -5,7 +5,7 @@ export function formsettings(){
     const password=Cypress.env('keycloakPassword');
     
     
-    if(depEnv=="")
+    if(depEnv=="app")
     {
         cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/app`);
     }
