@@ -6,7 +6,7 @@ const baseUrl = Cypress.env('baseUrl');
 describe('Application About Page', () => {
   it('Visits the app about page', () => {
     
-    if(depEnv=="")
+    if(depEnv=="app")
     {
         
         cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/app`);
@@ -15,7 +15,8 @@ describe('Application About Page', () => {
     else
     {
       
-      cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/pr-${depEnv}`);
+      //cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/pr-${depEnv}`);
+      cy.visit(`/pr-${depEnv}`);
       cy.contains('Create, publish forms, and receive submissions with the Common Hosted Forms Service.').should('be.visible');
       
     }

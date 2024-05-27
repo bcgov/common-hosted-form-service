@@ -2,7 +2,7 @@ const { defineConfig } = require('cypress')
 
 module.exports = defineConfig({
   env: {
-    depEnv: '',
+    depEnv: 'app',
     auth_base_url: 'http://localhost:8082',
     auth_realm: 'chefs',
     auth_client_id: 'chefs-frontend',
@@ -25,8 +25,8 @@ module.exports = defineConfig({
      // return require('./plugins/index.js')(on, config)
     
     //baseUrl: 'http://localhost:5173',
-    //baseUrl:'https://chefs-dev.apps.silver.devops.gov.bc.ca',
-    baseUrl: process.env.CUSTOM_URL,
+    baseUrl:'https://chefs-dev.apps.silver.devops.gov.bc.ca',
+    //baseUrl: process.env.CUSTOM_URL,
     specPattern: 'cypress/e2e/*.cy.{js,jsx,ts,tsx}',
     testIsolation: false,
     

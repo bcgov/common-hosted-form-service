@@ -12,7 +12,8 @@ export function formsettings(){
     else
     {
 
-        cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/pr-${depEnv}`);
+        //cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/pr-${depEnv}`);
+        cy.visit(`/pr-${depEnv}`);
     }
     
     cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
