@@ -1,6 +1,6 @@
 import common from '../../Common/Simple.edit.data';
 export default [
-  ...common,
+    ...common,
     {
         weight: 200,
         type: 'radio',
@@ -16,7 +16,7 @@ export default [
             {
                 value: 'uppercase',
                 label: 'Uppercase'
-            },{
+            }, {
                 value: 'lowercase',
                 label: 'Lowercase'
             }
