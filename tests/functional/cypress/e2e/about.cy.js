@@ -8,13 +8,14 @@ describe('Application About Page', () => {
     
     if(depEnv=="")
     {
+        
         cy.visit(`/app`);
         cy.contains('Create, publish forms, and receive submissions with the Common Hosted Forms Service.').should('be.visible');
     }
     else
     {
-
-      cy.visit(`${depEnv}`);
+      
+      cy.visit(`/pr-${depEnv}`);
       cy.contains('Create, publish forms, and receive submissions with the Common Hosted Forms Service.').should('be.visible');
       
     }

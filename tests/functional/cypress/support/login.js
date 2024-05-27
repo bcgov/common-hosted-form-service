@@ -12,7 +12,7 @@ export function formsettings(){
     else
     {
 
-        cy.visit(`${depEnv}`);
+        cy.visit(`/pr-${depEnv}`);
     }
     
     cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
