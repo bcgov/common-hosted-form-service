@@ -9,13 +9,13 @@ describe('Application About Page', () => {
     if(depEnv=="")
     {
         
-        cy.visit(`/app`);
+        cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/app`);
         cy.contains('Create, publish forms, and receive submissions with the Common Hosted Forms Service.').should('be.visible');
     }
     else
     {
       
-      cy.visit(`/pr-${depEnv}`);
+      cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/pr-${depEnv}`);
       cy.contains('Create, publish forms, and receive submissions with the Common Hosted Forms Service.').should('be.visible');
       
     }

@@ -7,12 +7,12 @@ export function formsettings(){
     
     if(depEnv=="")
     {
-        cy.visit(`/app`);
+        cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/app`);
     }
     else
     {
 
-        cy.visit(`/pr-`+`${depEnv}`);
+        cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/pr-${depEnv}`);
     }
     
     cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
