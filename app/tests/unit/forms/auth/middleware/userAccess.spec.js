@@ -1614,7 +1614,7 @@ describe('hasRoleDeletePermissions', () => {
   describe('400 response when', () => {
     const expectedStatus = { status: 400 };
 
-    test('removing and user id not a uuid', async () => {
+    test('user id not a uuid', async () => {
       service.getUserForms.mockReturnValueOnce([
         {
           formId: formId,
@@ -1649,7 +1649,7 @@ describe('hasRoleDeletePermissions', () => {
   describe('401 response when', () => {
     const expectedStatus = { status: 401 };
 
-    test('removing and owner cannot remove self', async () => {
+    test('owner cannot remove self', async () => {
       service.getUserForms.mockReturnValueOnce([
         {
           formId: formId,
@@ -1680,7 +1680,7 @@ describe('hasRoleDeletePermissions', () => {
       );
     });
 
-    test('removing and non-owner cannot remove an owner', async () => {
+    test('non-owner cannot remove an owner', async () => {
       service.getUserForms.mockReturnValueOnce([
         {
           formId: formId,
@@ -1712,7 +1712,7 @@ describe('hasRoleDeletePermissions', () => {
       );
     });
 
-    test('removing and non-owner cannot remove a form designer', async () => {
+    test('non-owner cannot remove a form designer', async () => {
       service.getUserForms.mockReturnValueOnce([
         {
           formId: formId,
@@ -1746,7 +1746,7 @@ describe('hasRoleDeletePermissions', () => {
   });
 
   describe('allows', () => {
-    test('deleting and non-owner can remove submission reviewer', async () => {
+    test('non-owner can remove submission reviewer', async () => {
       service.getUserForms.mockReturnValueOnce([
         {
           formId: formId,
@@ -1773,7 +1773,7 @@ describe('hasRoleDeletePermissions', () => {
       expect(next).toBeCalledWith();
     });
 
-    test('deleting and owner can remove an owner', async () => {
+    test('owner can remove an owner', async () => {
       service.getUserForms.mockReturnValueOnce([
         {
           formId: formId,
@@ -1799,7 +1799,7 @@ describe('hasRoleDeletePermissions', () => {
       expect(next).toBeCalledWith();
     });
 
-    test('deleting and owner can remove a form designer', async () => {
+    test('owner can remove a form designer', async () => {
       service.getUserForms.mockReturnValueOnce([
         {
           formId: formId,
@@ -1825,7 +1825,7 @@ describe('hasRoleDeletePermissions', () => {
       expect(next).toBeCalledWith();
     });
 
-    test('deleting and owner can remove a form designer with form id in query', async () => {
+    test('owner can remove a form designer with form id in query', async () => {
       service.getUserForms.mockReturnValueOnce([
         {
           formId: formId,
@@ -1922,7 +1922,7 @@ describe('hasRoleModifyPermissions', () => {
   describe('400 response when', () => {
     const expectedStatus = { status: 400 };
 
-    test('updating and user id missing', async () => {
+    test('user id missing', async () => {
       service.getUserForms.mockReturnValueOnce([
         {
           formId: formId,
@@ -1952,7 +1952,7 @@ describe('hasRoleModifyPermissions', () => {
       );
     });
 
-    test('updating and user id not a uuid', async () => {
+    test('user id not a uuid', async () => {
       service.getUserForms.mockReturnValueOnce([
         {
           formId: formId,
@@ -1987,7 +1987,7 @@ describe('hasRoleModifyPermissions', () => {
   describe('401 response when', () => {
     const expectedStatus = { status: 401 };
 
-    test('updating and non-owner cannot remove own team manager', async () => {
+    test('non-owner cannot remove own team manager', async () => {
       service.getUserForms.mockReturnValueOnce([
         {
           formId: formId,
@@ -2020,7 +2020,7 @@ describe('hasRoleModifyPermissions', () => {
       );
     });
 
-    test('updating and non-owner cannot update an owner', async () => {
+    test('non-owner cannot update an owner', async () => {
       service.getUserForms.mockReturnValueOnce([
         {
           formId: formId,
@@ -2053,7 +2053,7 @@ describe('hasRoleModifyPermissions', () => {
       );
     });
 
-    test('updating and non-owner cannot add an owner', async () => {
+    test('non-owner cannot add an owner', async () => {
       service.getUserForms.mockReturnValueOnce([
         {
           formId: formId,
@@ -2086,7 +2086,7 @@ describe('hasRoleModifyPermissions', () => {
       );
     });
 
-    test('updating and non-owner cannot remove designer', async () => {
+    test('non-owner cannot remove designer', async () => {
       service.getUserForms.mockReturnValueOnce([
         {
           formId: formId,
@@ -2119,7 +2119,7 @@ describe('hasRoleModifyPermissions', () => {
       );
     });
 
-    test('updating and non-owner cannot add designer', async () => {
+    test('non-owner cannot add designer', async () => {
       service.getUserForms.mockReturnValueOnce([
         {
           formId: formId,
@@ -2154,16 +2154,20 @@ describe('hasRoleModifyPermissions', () => {
   });
 
   describe('allows', () => {
-    test('updating and non-owner can add approver', async () => {
+    test('non-owner can add approver', async () => {
       service.getUserForms.mockReturnValueOnce([
         {
           formId: formId,
           roles: [Roles.TEAM_MANAGER],
         },
       ]);
-      rbacService.readUserRole.mockReturnValueOnce([{ role: Roles.FORM_SUBMITTER }]);
+      rbacService.readUserRole.mockReturnValueOnce([]);
       const req = getMockReq({
-        body: [{ role: Roles.SUBMISSION_APPROVER }],
+        body: [
+          {
+            role: Roles.SUBMISSION_APPROVER,
+          },
+        ],
         currentUser: {
           id: userId,
         },
@@ -2182,7 +2186,42 @@ describe('hasRoleModifyPermissions', () => {
       expect(next).toBeCalledWith();
     });
 
-    test('updating and owner can add owner', async () => {
+    test('non-owner can add approver to designer', async () => {
+      service.getUserForms.mockReturnValueOnce([
+        {
+          formId: formId,
+          roles: [Roles.TEAM_MANAGER],
+        },
+      ]);
+      rbacService.readUserRole.mockReturnValueOnce([{ role: Roles.FORM_DESIGNER }]);
+      const req = getMockReq({
+        body: [
+          {
+            role: Roles.FORM_DESIGNER,
+          },
+          {
+            role: Roles.SUBMISSION_APPROVER,
+          },
+        ],
+        currentUser: {
+          id: userId,
+        },
+        params: {
+          formId: formId,
+          userId: userId2,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await hasRoleModifyPermissions(req, res, next);
+
+      expect(service.getUserForms).toBeCalledTimes(1);
+      expect(rbacService.readUserRole).toBeCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
+    });
+
+    test('owner can add owner', async () => {
       service.getUserForms.mockReturnValueOnce([
         {
           formId: formId,

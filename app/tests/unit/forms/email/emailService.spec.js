@@ -48,7 +48,7 @@ describe('_sendEmailTemplate', () => {
     const result = emailService._sendEmailTemplate('sendStatusAssigned', configData, submission, referer);
 
     expect(result).toBeTruthy();
-    expect(chesService.merge).toHaveBeenCalledTimes(1);
+    expect(chesService.merge).toBeCalledTimes(1);
   });
 
   it('should call chesService to send an email with type sendSubmissionConfirmation', () => {
@@ -58,7 +58,7 @@ describe('_sendEmailTemplate', () => {
     const result = emailService._sendEmailTemplate('sendSubmissionConfirmation', configData, submission, referer);
 
     expect(result).toBeTruthy();
-    expect(chesService.merge).toHaveBeenCalledTimes(1);
+    expect(chesService.merge).toBeCalledTimes(1);
   });
 
   it('should call chesService to send an email with type sendSubmissionReceived', () => {
@@ -68,7 +68,7 @@ describe('_sendEmailTemplate', () => {
     const result = emailService._sendEmailTemplate('sendSubmissionReceived', configData, submission, referer);
 
     expect(result).toBeTruthy();
-    expect(chesService.merge).toHaveBeenCalledTimes(1);
+    expect(chesService.merge).toBeCalledTimes(1);
   });
 });
 
@@ -149,8 +149,8 @@ describe('public methods', () => {
     ];
 
     expect(result).toEqual('ret');
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+    expect(emailService._sendEmailTemplate).toBeCalledTimes(1);
+    expect(emailService._sendEmailTemplate).toBeCalledWith(configData, contexts);
   });
 
   it('statusRevising should send a status email', async () => {
@@ -183,8 +183,8 @@ describe('public methods', () => {
     ];
 
     expect(result).toEqual('ret');
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+    expect(emailService._sendEmailTemplate).toBeCalledTimes(1);
+    expect(emailService._sendEmailTemplate).toBeCalledWith(configData, contexts);
   });
 
   it('statusCompleted should send a status email', async () => {
@@ -217,8 +217,8 @@ describe('public methods', () => {
     ];
 
     expect(result).toEqual('ret');
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+    expect(emailService._sendEmailTemplate).toBeCalledTimes(1);
+    expect(emailService._sendEmailTemplate).toBeCalledWith(configData, contexts);
   });
 
   it('submissionConfirmation should send login email for idir', async () => {
@@ -258,12 +258,12 @@ describe('public methods', () => {
     ];
 
     expect(result).toEqual('ret');
-    expect(formService.readForm).toHaveBeenCalledTimes(1);
-    expect(formService.readForm).toHaveBeenCalledWith(form_idir.id);
-    expect(formService.readSubmission).toHaveBeenCalledTimes(1);
-    expect(formService.readSubmission).toHaveBeenCalledWith(submission.id);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+    expect(formService.readForm).toBeCalledTimes(1);
+    expect(formService.readForm).toBeCalledWith(form_idir.id);
+    expect(formService.readSubmission).toBeCalledTimes(1);
+    expect(formService.readSubmission).toBeCalledWith(submission.id);
+    expect(emailService._sendEmailTemplate).toBeCalledTimes(1);
+    expect(emailService._sendEmailTemplate).toBeCalledWith(configData, contexts);
   });
 
   it('submissionConfirmation should send a low priority email', async () => {
@@ -303,12 +303,12 @@ describe('public methods', () => {
     ];
 
     expect(result).toEqual('ret');
-    expect(formService.readForm).toHaveBeenCalledTimes(1);
-    expect(formService.readForm).toHaveBeenCalledWith(form.id);
-    expect(formService.readSubmission).toHaveBeenCalledTimes(1);
-    expect(formService.readSubmission).toHaveBeenCalledWith(submission.id);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+    expect(formService.readForm).toBeCalledTimes(1);
+    expect(formService.readForm).toBeCalledWith(form.id);
+    expect(formService.readSubmission).toBeCalledTimes(1);
+    expect(formService.readSubmission).toBeCalledWith(submission.id);
+    expect(emailService._sendEmailTemplate).toBeCalledTimes(1);
+    expect(emailService._sendEmailTemplate).toBeCalledWith(configData, contexts);
   });
 
   it('submissionConfirmation should send a normal priority email', async () => {
@@ -348,12 +348,12 @@ describe('public methods', () => {
     ];
 
     expect(result).toEqual('ret');
-    expect(formService.readForm).toHaveBeenCalledTimes(1);
-    expect(formService.readForm).toHaveBeenCalledWith(form.id);
-    expect(formService.readSubmission).toHaveBeenCalledTimes(1);
-    expect(formService.readSubmission).toHaveBeenCalledWith(submission.id);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+    expect(formService.readForm).toBeCalledTimes(1);
+    expect(formService.readForm).toBeCalledWith(form.id);
+    expect(formService.readSubmission).toBeCalledTimes(1);
+    expect(formService.readSubmission).toBeCalledWith(submission.id);
+    expect(emailService._sendEmailTemplate).toBeCalledTimes(1);
+    expect(emailService._sendEmailTemplate).toBeCalledWith(configData, contexts);
   });
 
   it('submissionConfirmation should send a high priority email', async () => {
@@ -393,12 +393,12 @@ describe('public methods', () => {
     ];
 
     expect(result).toEqual('ret');
-    expect(formService.readForm).toHaveBeenCalledTimes(1);
-    expect(formService.readForm).toHaveBeenCalledWith(form.id);
-    expect(formService.readSubmission).toHaveBeenCalledTimes(1);
-    expect(formService.readSubmission).toHaveBeenCalledWith(submission.id);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+    expect(formService.readForm).toBeCalledTimes(1);
+    expect(formService.readForm).toBeCalledWith(form.id);
+    expect(formService.readSubmission).toBeCalledTimes(1);
+    expect(formService.readSubmission).toBeCalledWith(submission.id);
+    expect(emailService._sendEmailTemplate).toBeCalledTimes(1);
+    expect(emailService._sendEmailTemplate).toBeCalledWith(configData, contexts);
   });
 
   it('submissionConfirmation should send an email without submission fields', async () => {
@@ -438,12 +438,12 @@ describe('public methods', () => {
     ];
 
     expect(result).toEqual('ret');
-    expect(formService.readForm).toHaveBeenCalledTimes(1);
-    expect(formService.readForm).toHaveBeenCalledWith(form.id);
-    expect(formService.readSubmission).toHaveBeenCalledTimes(1);
-    expect(formService.readSubmission).toHaveBeenCalledWith(submission.id);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+    expect(formService.readForm).toBeCalledTimes(1);
+    expect(formService.readForm).toBeCalledWith(form.id);
+    expect(formService.readSubmission).toBeCalledTimes(1);
+    expect(formService.readSubmission).toBeCalledWith(submission.id);
+    expect(emailService._sendEmailTemplate).toBeCalledTimes(1);
+    expect(emailService._sendEmailTemplate).toBeCalledWith(configData, contexts);
   });
 
   it('submissionConfirmation should produce errors on failure', async () => {
@@ -488,13 +488,13 @@ describe('public methods', () => {
     ];
 
     expect(result).toEqual('ret');
-    expect(formService.readForm).toHaveBeenCalledTimes(1);
-    expect(formService.readForm).toHaveBeenCalledWith(form.id);
-    expect(formService.readSubmission).toHaveBeenCalledTimes(1);
-    expect(formService.readSubmission).toHaveBeenCalledWith(submission.id);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
+    expect(formService.readForm).toBeCalledTimes(1);
+    expect(formService.readForm).toBeCalledWith(form.id);
+    expect(formService.readSubmission).toBeCalledTimes(1);
+    expect(formService.readSubmission).toBeCalledWith(submission.id);
+    expect(emailService._sendEmailTemplate).toBeCalledTimes(1);
     expect(form.submissionReceivedEmails).toBeInstanceOf(Array);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+    expect(emailService._sendEmailTemplate).toBeCalledWith(configData, contexts);
   });
 
   it('submissionUnassigned should send a uninvited email', async () => {
@@ -529,10 +529,10 @@ describe('public methods', () => {
     ];
 
     expect(result).toEqual('ret');
-    expect(formService.readForm).toHaveBeenCalledTimes(1);
-    expect(formService.readForm).toHaveBeenCalledWith(form.id);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+    expect(formService.readForm).toBeCalledTimes(1);
+    expect(formService.readForm).toBeCalledWith(form.id);
+    expect(emailService._sendEmailTemplate).toBeCalledTimes(1);
+    expect(emailService._sendEmailTemplate).toBeCalledWith(configData, contexts);
   });
 
   it('submissionAssigned should send a uninvited email', async () => {
@@ -567,11 +567,11 @@ describe('public methods', () => {
     ];
 
     expect(result).toEqual('ret');
-    expect(formService.readForm).toHaveBeenCalledTimes(1);
-    expect(formService.readForm).toHaveBeenCalledWith(form.id);
-    expect(formService.readSubmission).toHaveBeenCalledTimes(1);
-    expect(formService.readSubmission).toHaveBeenCalledWith(currentStatus.formSubmissionId);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledTimes(1);
-    expect(emailService._sendEmailTemplate).toHaveBeenCalledWith(configData, contexts);
+    expect(formService.readForm).toBeCalledTimes(1);
+    expect(formService.readForm).toBeCalledWith(form.id);
+    expect(formService.readSubmission).toBeCalledTimes(1);
+    expect(formService.readSubmission).toBeCalledWith(currentStatus.formSubmissionId);
+    expect(emailService._sendEmailTemplate).toBeCalledTimes(1);
+    expect(emailService._sendEmailTemplate).toBeCalledWith(configData, contexts);
   });
 });
