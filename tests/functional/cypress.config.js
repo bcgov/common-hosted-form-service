@@ -25,8 +25,8 @@ module.exports = defineConfig({
      // return require('./plugins/index.js')(on, config)
     
     //baseUrl: 'http://localhost:5173',
-    baseUrl:'https://chefs-dev.apps.silver.devops.gov.bc.ca',
-    //baseUrl: process.env.CUSTOM_URL,
+    //baseUrl:'https://chefs-dev.apps.silver.devops.gov.bc.ca',
+    baseUrl: process.env.CUSTOM_URL,
     specPattern: 'cypress/e2e/*.cy.{js,jsx,ts,tsx}',
     testIsolation: false,
     
