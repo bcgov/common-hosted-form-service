@@ -46,7 +46,6 @@ import simplebuttonadvanced from './SimpleButtonAdvanced/Component';
 import bcaddress from './BCAddress/Component';
 import simplebcaddress from './SimpleBCAddress/Component';
 import MapComponent from './Map/Component';
-import map from './Map/Component'
 
 export default {
   orgbook,
@@ -97,6 +96,4 @@ export default {
   bcaddress,
   simplebcaddress,
   MapComponent,
-  simplebcaddress,
-  map
 };

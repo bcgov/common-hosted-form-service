@@ -26,9 +26,10 @@ class MapComponent extends FieldComponent {
 
   render() {
     return super.render(
-      this.renderTemplate('input', {
-        input: `<div id="map" style="width: 100%; height: 400px;">map goes here</div>`,
-      })
+        this
+    //   this.renderTemplate('input', {
+    //     input: `<div id="map" style="width: 100%; height: 400px;">map goes here</div>`,
+    //   })
     );
   }
 
