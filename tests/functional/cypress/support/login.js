@@ -1,16 +1,20 @@
 export function formsettings(){
 
-
-
-
-
     const depEnv = Cypress.env('depEnv');
     const username=Cypress.env('keycloakUsername');
     const password=Cypress.env('keycloakPassword');
     
     
+    if(depEnv=="")
+    {
+        cy.visit(`/app`);
+    }
+    else
+    {
+
+        cy.visit(`/pr-${depEnv}`);
+    }
     
-    cy.visit(`/${depEnv}`);
     cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
     cy.get('[data-test="idir"]').click();
     

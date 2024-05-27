@@ -1,5 +1,11 @@
 name: Cypress Tests
-on: [push]
+on:
+ workflow_dispatch:
+  inputs:
+      pr-number:
+        description: Pull request number
+        required: false
+        type: string
   
 jobs:
   cypress-run:
@@ -17,28 +23,20 @@ jobs:
        with:
             path: "tests/functional"
             key: node-modules-${{ hashFiles('tests/functional/package.json') }}
-
+       
+        
      - name: cypress install
        uses: cypress-io/github-action@v6
        with:
-          
           working-directory: '${{ github.workspace }}/tests/functional'
        env:
           CYPRESS_keycloakUsername: ${{secrets.keycloakUsername}}
           CYPRESS_keycloakPassword: ${{secrets.keycloakPassword}}
-          CYPRESS_depEnv: ${{secrets.depEnv}}
-
-            
-
+          CYPRESS_depEnv: ${{ github.event.inputs.pr-number }}
+          
      - uses: actions/upload-artifact@v4
        if: failure()
        with:
           name: cypress-screenshots
           path: '${{ github.workspace }}/tests/functional/screenshots'
-          # mkdir artifacts
-          # cp -r cypress/screenshots artifacts/screenshots
-    # -  name: Archive Cypress report
-        #uses: actions/upload-artifact@v2
-        #with:
-         #name: cypress-report
-         #path: artifacts
+          
