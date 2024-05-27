@@ -14,7 +14,8 @@ describe('Application About Page', () => {
     {
 
       cy.visit(`${depEnv}`);
-      cy.contains('h1', 'Create, publish forms, and receive submissions with the Common Hosted Forms Service.');
+      cy.contains('Create, publish forms, and receive submissions with the Common Hosted Forms Service.').should('be.visible');
+      
     }
     
   });
