@@ -88,6 +88,8 @@ const service = {
       }
 
       if (externalAPI.userInfoEncrypted) {
+        // do not send the token
+        delete proxyHeaderInfo['token'];
         const encUserInfo = encryptionService.encryptExternal(externalAPI.userInfoEncryptionAlgo, externalAPI.userInfoEncryptionKey, proxyHeaderInfo);
         result[externalAPI.userInfoHeader] = encUserInfo;
       } else {
