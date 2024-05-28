@@ -7,7 +7,6 @@ module.exports = defineConfig({
     auth_realm: 'chefs',
     auth_client_id: 'chefs-frontend',
     keycloakUrl: 'http://localhost:8082',
-    baseUrl:'https://chefs-dev.apps.silver.devops.gov.bc.ca',
     keycloakRealm: 'chefs',
     keycloakClientId: 'chefs-frontend',
     keycloakUsername: 'admin',

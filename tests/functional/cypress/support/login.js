@@ -3,7 +3,6 @@ export function formsettings(){
     const depEnv = Cypress.env('depEnv');
     const username=Cypress.env('keycloakUsername');
     const password=Cypress.env('keycloakPassword');
-    const baseUrl = Cypress.env('baseUrl');
     
     
     
@@ -16,7 +15,7 @@ export function formsettings(){
        
         //cy.visit(`/pr-${depEnv}`);
         
-        cy.visit(`${baseUrl}/pr-${depEnv}`);
+        cy.visit(`/${depEnv}`);
         
     }
     
