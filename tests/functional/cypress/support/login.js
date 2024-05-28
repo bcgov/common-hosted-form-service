@@ -6,7 +6,7 @@ export function formsettings(){
     cy.task('log','this some');
     
     
-    if(depEnv=="app")
+    if(depEnv=="")
     {
         cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/app`);
     }
@@ -15,7 +15,7 @@ export function formsettings(){
        
         //cy.visit(`/pr-${depEnv}`);
         
-        cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/pr-${depEnv}`);
+        cy.visit(`/${depEnv}`);
         
     }
     
