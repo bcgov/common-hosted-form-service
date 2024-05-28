@@ -3,8 +3,7 @@ export function formsettings(){
     const depEnv = Cypress.env('depEnv');
     const username=Cypress.env('keycloakUsername');
     const password=Cypress.env('keycloakPassword');
-    cy.log("below is url");
-    cy.log(`https://chefs-dev.apps.silver.devops.gov.bc.ca/pr-${depEnv}`);
+    cy.task('log','this some');
     
     
     if(depEnv=="app")
@@ -15,8 +14,7 @@ export function formsettings(){
     {
        
         //cy.visit(`/pr-${depEnv}`);
-        cy.log("below is url");
-        cy.log(`https://chefs-dev.apps.silver.devops.gov.bc.ca/pr-${depEnv}`);
+        
         cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/pr-${depEnv}`);
         
     }
