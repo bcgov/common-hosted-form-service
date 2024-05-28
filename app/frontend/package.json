@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@bcgov/bc-sans": "^1.0.1",
+    "@bcgov/smk": "^1.2.1",
     "@bcgov/smk-cli": "^1.2.0",
     "@formio/vue": "^5.0.0",
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
@@ -43,6 +44,8 @@
     "font-awesome": "^4.7.0",
     "formiojs": "^4.14.13",
     "keycloak-js": "^21.1.1",
+    "leaflet": "^1.9.4",
+    "leaflet-draw": "^1.0.4",
     "lodash": "^4.17.21",
     "mitt": "^3.0.0",
     "moment": "^2.29.4",
