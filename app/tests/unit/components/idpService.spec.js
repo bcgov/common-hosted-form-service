@@ -136,19 +136,19 @@ describe('idpService', () => {
   it('should return a user search', async () => {
     const s = await idpService.userSearch({ idpCode: 'idir', email: 'em@il.com' });
     expect(s).toBeFalsy();
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.modify).toHaveBeenCalledTimes(9);
-    expect(MockModel.modify).toHaveBeenCalledWith('filterIdpCode', 'idir');
-    expect(MockModel.modify).toHaveBeenCalledWith('filterEmail', 'em@il.com', false);
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.modify).toBeCalledTimes(9);
+    expect(MockModel.modify).toBeCalledWith('filterIdpCode', 'idir');
+    expect(MockModel.modify).toBeCalledWith('filterEmail', 'em@il.com', false);
   });
 
   it('should return a customized user search', async () => {
     const s = await idpService.userSearch({ idpCode: 'bceid-business', email: 'em@il.com' });
     expect(s).toBeFalsy();
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.modify).toHaveBeenCalledWith('filterIdpCode', 'bceid-business');
-    expect(MockModel.modify).toHaveBeenCalledWith('filterEmail', 'em@il.com', true);
-    expect(MockModel.modify).toHaveBeenCalledTimes(9);
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.modify).toBeCalledWith('filterIdpCode', 'bceid-business');
+    expect(MockModel.modify).toBeCalledWith('filterEmail', 'em@il.com', true);
+    expect(MockModel.modify).toBeCalledTimes(9);
   });
 
   it('should throw error when customized user search fails validation', async () => {

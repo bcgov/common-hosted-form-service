@@ -52,12 +52,12 @@ describe('apiKeyRateLimiter', () => {
 
     await apiKeyRateLimiter(req, res, next);
 
-    expect(res.setHeader).toHaveBeenCalledTimes(2);
+    expect(res.setHeader).toBeCalledTimes(2);
     // These also test that the rate limiter uses our custom config values.
     expect(res.setHeader).toHaveBeenNthCalledWith(1, rateLimitPolicyName, rateLimitPolicyValue);
     expect(res.setHeader).toHaveBeenNthCalledWith(2, rateLimitName, rateLimitValue);
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(next).toHaveBeenCalledWith();
+    expect(next).toBeCalledTimes(1);
+    expect(next).toBeCalledWith();
   });
 
   describe('skips rate limiting for', () => {
@@ -70,9 +70,9 @@ describe('apiKeyRateLimiter', () => {
 
       await apiKeyRateLimiter(req, res, next);
 
-      expect(res.setHeader).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(res.setHeader).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('no authorization header', async () => {
@@ -85,9 +85,9 @@ describe('apiKeyRateLimiter', () => {
 
       await apiKeyRateLimiter(req, res, next);
 
-      expect(res.setHeader).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(res.setHeader).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('empty authorization header', async () => {
@@ -102,9 +102,9 @@ describe('apiKeyRateLimiter', () => {
 
       await apiKeyRateLimiter(req, res, next);
 
-      expect(res.setHeader).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(res.setHeader).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('unexpected authorization type', async () => {
@@ -119,9 +119,9 @@ describe('apiKeyRateLimiter', () => {
 
       await apiKeyRateLimiter(req, res, next);
 
-      expect(res.setHeader).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(res.setHeader).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     test('bearer auth', async () => {
@@ -136,9 +136,9 @@ describe('apiKeyRateLimiter', () => {
 
       await apiKeyRateLimiter(req, res, next);
 
-      expect(res.setHeader).toHaveBeenCalledTimes(0);
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(res.setHeader).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
   });
 });
