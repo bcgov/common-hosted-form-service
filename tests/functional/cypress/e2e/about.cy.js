@@ -1,7 +1,7 @@
 
 const depEnv = Cypress.env('depEnv');
 const baseUrl = Cypress.env('baseUrl');
-cy.task('log','this some');
+
 
 describe('Application About Page', () => {
   it('Visits the app about page', () => {
