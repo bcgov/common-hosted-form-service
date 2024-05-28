@@ -387,4 +387,28 @@ module.exports = {
       next(error);
     }
   },
+  listExternalAPIs: async (req, res, next) => {
+    try {
+      const response = await service.listExternalAPIs();
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  createExternalAPI: async (req, res, next) => {
+    try {
+      const response = await service.createExternalAPI(req.params.formId, req.body, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  updateExternalAPI: async (req, res, next) => {
+    try {
+      const response = await service.updateExternalAPI(req.params.formId, req.params.externalAPIId, req.body, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
 };

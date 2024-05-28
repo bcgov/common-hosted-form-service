@@ -22,6 +22,7 @@ const {
   SubmissionMetadata,
   FormComponentsProactiveHelp,
   FormSubscription,
+  ExternalAPI,
 } = require('../common/models');
 const { falsey, queryUtils, checkIsFormExpired, validateScheduleObject, typeUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
@@ -1029,6 +1030,53 @@ const service = {
       }
 
       throw error;
+    }
+  },
+
+  // -----------------------------------------------------------------------------
+  // External API
+  // -----------------------------------------------------------------------------
+
+  listExternalAPIs: (formId) => {
+    return ExternalAPI.query().modify('filterFormId', formId);
+  },
+
+  createExternalAPI: async (formId, data, currentUser) => {
+    let trx;
+    let id = uuidv4();
+    try {
+      trx = await ExternalAPI.startTransaction();
+      await ExternalAPI.query(trx).insert({
+        id: id,
+        ...data,
+        createdBy: currentUser.usernameIdp,
+      });
+
+      await trx.commit();
+      return ExternalAPI.query().findById(id);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  updateExternalAPI: async (formId, externalAPIId, data, currentUser) => {
+    let trx;
+    try {
+      await ExternalAPI.query().modify('findByIdAndFormId', externalAPIId, formId).throwIfNotFound();
+      trx = await ExternalAPI.startTransaction();
+      await ExternalAPI.query(trx)
+        .modify('filterId', externalAPIId)
+        .update({
+          ...data,
+          updatedBy: currentUser.usernameIdp,
+        });
+
+      await trx.commit();
+      return ExternalAPI.query().findById(externalAPIId);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
     }
   },
 };

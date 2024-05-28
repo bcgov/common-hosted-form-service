@@ -50,7 +50,7 @@
       //"env": { "NODE_ENV": "test" },
       "program": "${workspaceFolder}/app/node_modules/.bin/jest",
       "args": [
-        "${fileBasenameNoExtension}",
+        "${file}",
         "--config",
         "${workspaceFolder}/app/jest.config.js",
         "--coverage=false"

@@ -1,5 +1,6 @@
 const service = require('./service');
 const jwtService = require('../../components/jwtService');
+const axios = require('axios');
 
 module.exports = {
   generateProxyHeaders: async (req, res, next) => {
@@ -12,20 +13,24 @@ module.exports = {
   },
   callExternalApi: async (req, res, next) => {
     try {
-      const headers = await service.readProxyHeaders(req.headers);
-      // read external api config
-      // prepare external api call
-      //
-      res.status(200).json([
-        {
-          name: headers['username'],
-          abbreviation: 'USER',
-        },
-        {
-          name: headers['email'],
-          abbreviation: 'EMAIL',
-        },
-      ]);
+      // read the encrypted headers and parse them...
+      const proxyHeaderInfo = await service.readProxyHeaders(req.headers);
+      // find the specified external api configuration...
+      const extAPI = await service.getExternalAPI(req.headers, proxyHeaderInfo);
+      // add path to endpoint url if included in headers...
+      const extUrl = service.createExternalAPIUrl(req.headers, extAPI.endpointUrl);
+      // build list of request headers based on configuration...
+      const extHeaders = service.createExternalAPIHeaders(extAPI, proxyHeaderInfo);
+      let axiosInstance = axios.create({
+        headers: extHeaders,
+      });
+      //for (const [key, value] of Object.entries(extHeaders)) {
+      //  axiosInstance.defaults.headers[key] = value;
+      //}
+      // call the external api
+      const { data } = await axiosInstance.get(extUrl);
+      // if all good return data
+      res.status(200).json(data);
     } catch (error) {
       next(error);
     }

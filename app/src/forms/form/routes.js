@@ -171,4 +171,16 @@ routes.put('/:formId/subscriptions', hasFormPermissions([P.FORM_READ, P.FORM_UPD
   await controller.createOrUpdateSubscriptionDetails(req, res, next);
 });
 
+routes.get('/:formId/externalAPIs', hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {
+  await controller.listExternalAPIs(req, res, next);
+});
+
+routes.post('/:formId/externalAPIs', hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {
+  await controller.createExternalAPI(req, res, next);
+});
+
+routes.put('/:formId/externalAPIs/:externalAPIId', hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {
+  await controller.updateExternalAPI(req, res, next);
+});
+
 module.exports = routes;

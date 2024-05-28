@@ -14,6 +14,7 @@ describe('Constants', () => {
       USERS: '/users',
       UTILS: '/utils',
       FILES_API_ACCESS: '/filesApiAccess',
+      PROXY: '/proxy',
     });
   });
 
