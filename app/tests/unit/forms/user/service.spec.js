@@ -33,18 +33,18 @@ describe('list', () => {
 
     await service.list(params);
 
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledWith();
-    expect(MockModel.modify).toHaveBeenCalledTimes(9);
-    expect(MockModel.modify).toHaveBeenCalledWith('filterIdpUserId', params.idpUserId);
-    expect(MockModel.modify).toHaveBeenCalledWith('filterIdpCode', params.idpCode);
-    expect(MockModel.modify).toHaveBeenCalledWith('filterUsername', params.username, false);
-    expect(MockModel.modify).toHaveBeenCalledWith('filterFullName', params.fullName);
-    expect(MockModel.modify).toHaveBeenCalledWith('filterFirstName', params.firstName);
-    expect(MockModel.modify).toHaveBeenCalledWith('filterLastName', params.lastName);
-    expect(MockModel.modify).toHaveBeenCalledWith('filterEmail', params.email, false);
-    expect(MockModel.modify).toHaveBeenCalledWith('filterSearch', params.search);
-    expect(MockModel.modify).toHaveBeenCalledWith('orderLastFirstAscending');
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledWith();
+    expect(MockModel.modify).toBeCalledTimes(9);
+    expect(MockModel.modify).toBeCalledWith('filterIdpUserId', params.idpUserId);
+    expect(MockModel.modify).toBeCalledWith('filterIdpCode', params.idpCode);
+    expect(MockModel.modify).toBeCalledWith('filterUsername', params.username, false);
+    expect(MockModel.modify).toBeCalledWith('filterFullName', params.fullName);
+    expect(MockModel.modify).toBeCalledWith('filterFirstName', params.firstName);
+    expect(MockModel.modify).toBeCalledWith('filterLastName', params.lastName);
+    expect(MockModel.modify).toBeCalledWith('filterEmail', params.email, false);
+    expect(MockModel.modify).toBeCalledWith('filterSearch', params.search);
+    expect(MockModel.modify).toBeCalledWith('orderLastFirstAscending');
   });
 });
 
@@ -52,12 +52,12 @@ describe('read', () => {
   it('should query user table by id', async () => {
     await service.read(userId);
 
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledWith();
-    expect(MockModel.findById).toHaveBeenCalledTimes(1);
-    expect(MockModel.findById).toHaveBeenCalledWith(userId);
-    expect(MockModel.throwIfNotFound).toHaveBeenCalledTimes(1);
-    expect(MockModel.throwIfNotFound).toHaveBeenCalledWith();
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledWith();
+    expect(MockModel.findById).toBeCalledTimes(1);
+    expect(MockModel.findById).toBeCalledWith(userId);
+    expect(MockModel.throwIfNotFound).toBeCalledTimes(1);
+    expect(MockModel.throwIfNotFound).toBeCalledWith();
   });
 });
 
@@ -65,14 +65,14 @@ describe('deleteUserPreferences', () => {
   it('should delete user form preference table by user id', async () => {
     await service.deleteUserPreferences({ id: userId });
 
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledWith();
-    expect(MockModel.delete).toHaveBeenCalledTimes(1);
-    expect(MockModel.delete).toHaveBeenCalledWith();
-    expect(MockModel.where).toHaveBeenCalledTimes(1);
-    expect(MockModel.where).toHaveBeenCalledWith('userId', userId);
-    expect(MockModel.throwIfNotFound).toHaveBeenCalledTimes(1);
-    expect(MockModel.throwIfNotFound).toHaveBeenCalledWith();
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledWith();
+    expect(MockModel.delete).toBeCalledTimes(1);
+    expect(MockModel.delete).toBeCalledWith();
+    expect(MockModel.where).toBeCalledTimes(1);
+    expect(MockModel.where).toBeCalledWith('userId', userId);
+    expect(MockModel.throwIfNotFound).toBeCalledTimes(1);
+    expect(MockModel.throwIfNotFound).toBeCalledWith();
   });
 });
 
@@ -80,10 +80,10 @@ describe('readUserPreferences', () => {
   it('should query user form preference table by user id', async () => {
     await service.readUserPreferences({ id: userId });
 
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledWith();
-    expect(MockModel.where).toHaveBeenCalledTimes(1);
-    expect(MockModel.where).toHaveBeenCalledWith('userId', userId);
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledWith();
+    expect(MockModel.where).toBeCalledTimes(1);
+    expect(MockModel.where).toBeCalledWith('userId', userId);
   });
 });
 
@@ -91,12 +91,12 @@ describe('deleteUserFormPreferences', () => {
   it('should delete user form preference table by user id', async () => {
     await service.deleteUserFormPreferences({ id: userId }, formId);
 
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledWith();
-    expect(MockModel.deleteById).toHaveBeenCalledTimes(1);
-    expect(MockModel.deleteById).toHaveBeenCalledWith([userId, formId]);
-    expect(MockModel.throwIfNotFound).toHaveBeenCalledTimes(1);
-    expect(MockModel.throwIfNotFound).toHaveBeenCalledWith();
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledWith();
+    expect(MockModel.deleteById).toBeCalledTimes(1);
+    expect(MockModel.deleteById).toBeCalledWith([userId, formId]);
+    expect(MockModel.throwIfNotFound).toBeCalledTimes(1);
+    expect(MockModel.throwIfNotFound).toBeCalledWith();
   });
 });
 
@@ -104,12 +104,12 @@ describe('readUserFormPreferences', () => {
   it('should query user form preference table by user id', async () => {
     await service.readUserFormPreferences({ id: userId }, formId);
 
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledWith();
-    expect(MockModel.findById).toHaveBeenCalledTimes(1);
-    expect(MockModel.findById).toHaveBeenCalledWith([userId, formId]);
-    expect(MockModel.first).toHaveBeenCalledTimes(1);
-    expect(MockModel.first).toHaveBeenCalledWith();
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledWith();
+    expect(MockModel.findById).toBeCalledTimes(1);
+    expect(MockModel.findById).toBeCalledWith([userId, formId]);
+    expect(MockModel.first).toBeCalledTimes(1);
+    expect(MockModel.first).toBeCalledWith();
   });
 });
 
@@ -117,11 +117,11 @@ describe('readUserLabels', () => {
   it('should query user labels by user id', async () => {
     await service.readUserLabels({ id: userId });
 
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledWith();
-    expect(MockModel.where).toHaveBeenCalledTimes(1);
-    expect(MockModel.where).toHaveBeenCalledWith('userId', userId);
-    expect(MockModel.select).toHaveBeenCalledWith('labelText');
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledWith();
+    expect(MockModel.where).toBeCalledTimes(1);
+    expect(MockModel.where).toBeCalledWith('userId', userId);
+    expect(MockModel.select).toBeCalledWith('labelText');
   });
 });
 
@@ -133,16 +133,16 @@ describe('updateUserLabels', () => {
 
     await service.updateUserLabels({ id: userId }, body);
 
-    expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledTimes(body.length * 2 + 1);
-    expect(MockModel.query).toHaveBeenCalledWith(expect.anything());
-    expect(MockModel.insert).toHaveBeenCalledTimes(body.length);
-    expect(MockModel.insert).toHaveBeenCalledWith({
+    expect(MockModel.startTransaction).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledTimes(body.length * 2 + 1);
+    expect(MockModel.query).toBeCalledWith(expect.anything());
+    expect(MockModel.insert).toBeCalledTimes(body.length);
+    expect(MockModel.insert).toBeCalledWith({
       id: expect.any(String),
       userId: userId,
       labelText: expect.any(String),
     });
-    expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+    expect(MockTransaction.commit).toBeCalledTimes(1);
   });
 
   it('should throw when invalid options are provided', () => {
@@ -151,17 +151,17 @@ describe('updateUserLabels', () => {
 
     expect(fn({ id: userId }, undefined)).rejects.toThrow();
     expect(fn({ id: userId }, {})).rejects.toThrow();
-    expect(MockModel.startTransaction).toHaveBeenCalledTimes(0);
-    expect(MockModel.query).toHaveBeenCalledTimes(0);
+    expect(MockModel.startTransaction).toBeCalledTimes(0);
+    expect(MockModel.query).toBeCalledTimes(0);
   });
 
   it('should handle empty label body', async () => {
     await service.updateUserLabels({ id: userId }, []);
 
-    expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.insert).not.toHaveBeenCalled();
-    expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+    expect(MockModel.startTransaction).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.insert).not.toBeCalled();
+    expect(MockTransaction.commit).toBeCalledTimes(1);
   });
 });
 
@@ -189,8 +189,8 @@ describe('updateUserPreferences', () => {
     expect(fn({ id: userId }, undefined)).rejects.toThrow();
     expect(fn({ id: userId }, {})).rejects.toThrow();
     expect(fn({ id: userId }, { forms: {} })).rejects.toThrow();
-    expect(MockModel.startTransaction).toHaveBeenCalledTimes(0);
-    expect(MockModel.query).toHaveBeenCalledTimes(0);
+    expect(MockModel.startTransaction).toBeCalledTimes(0);
+    expect(MockModel.query).toBeCalledTimes(0);
   });
 
   it('should insert preferences', async () => {
@@ -200,17 +200,17 @@ describe('updateUserPreferences', () => {
 
     await service.updateUserPreferences({ id: userId }, body);
 
-    expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledWith(expect.anything());
-    expect(MockModel.insert).toHaveBeenCalledTimes(1);
-    expect(MockModel.insert).toHaveBeenCalledWith({
+    expect(MockModel.startTransaction).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledWith(expect.anything());
+    expect(MockModel.insert).toBeCalledTimes(1);
+    expect(MockModel.insert).toBeCalledWith({
       userId: userId,
       formId: formId,
       preferences: preferences,
       createdBy: undefined,
     });
-    expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+    expect(MockTransaction.commit).toBeCalledTimes(1);
   });
 
   it('should update preferences', async () => {
@@ -220,15 +220,15 @@ describe('updateUserPreferences', () => {
 
     await service.updateUserPreferences({ id: userId }, body);
 
-    expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledWith(expect.anything());
-    expect(MockModel.patchAndFetchById).toHaveBeenCalledTimes(1);
-    expect(MockModel.patchAndFetchById).toHaveBeenCalledWith([userId, formId], {
+    expect(MockModel.startTransaction).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledWith(expect.anything());
+    expect(MockModel.patchAndFetchById).toBeCalledTimes(1);
+    expect(MockModel.patchAndFetchById).toBeCalledWith([userId, formId], {
       preferences: preferences,
       updatedBy: undefined,
     });
-    expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+    expect(MockTransaction.commit).toBeCalledTimes(1);
   });
 });
 
@@ -247,17 +247,17 @@ describe('updateUserFormPreferences', () => {
     readUserFormPreferencesSpy.mockResolvedValue(undefined);
     await service.updateUserFormPreferences({ id: userId }, formId, preferences);
 
-    expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledWith(expect.anything());
-    expect(MockModel.insertAndFetch).toHaveBeenCalledTimes(1);
-    expect(MockModel.insertAndFetch).toHaveBeenCalledWith({
+    expect(MockModel.startTransaction).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledWith(expect.anything());
+    expect(MockModel.insertAndFetch).toBeCalledTimes(1);
+    expect(MockModel.insertAndFetch).toBeCalledWith({
       userId: userId,
       formId: formId,
       preferences: preferences,
       createdBy: undefined,
     });
-    expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+    expect(MockTransaction.commit).toBeCalledTimes(1);
   });
 
   it('should update preferences', async () => {
@@ -266,15 +266,15 @@ describe('updateUserFormPreferences', () => {
 
     await service.updateUserFormPreferences({ id: userId }, formId, preferences);
 
-    expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledWith(expect.anything());
-    expect(MockModel.patchAndFetchById).toHaveBeenCalledTimes(1);
-    expect(MockModel.patchAndFetchById).toHaveBeenCalledWith([userId, formId], {
+    expect(MockModel.startTransaction).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledWith(expect.anything());
+    expect(MockModel.patchAndFetchById).toBeCalledTimes(1);
+    expect(MockModel.patchAndFetchById).toBeCalledWith([userId, formId], {
       preferences: preferences,
       updatedBy: undefined,
     });
-    expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+    expect(MockTransaction.commit).toBeCalledTimes(1);
   });
 
   it('should handle errors gracefully', async () => {
@@ -286,7 +286,7 @@ describe('updateUserFormPreferences', () => {
     const fn = () => service.updateUserFormPreferences({ id: userId }, formId, preferences);
 
     await expect(fn()).rejects.toThrow();
-    expect(MockModel.startTransaction).toHaveBeenCalledTimes(0);
-    expect(MockModel.query).toHaveBeenCalledTimes(0);
+    expect(MockModel.startTransaction).toBeCalledTimes(0);
+    expect(MockModel.query).toBeCalledTimes(0);
   });
 });

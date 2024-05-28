@@ -14,8 +14,8 @@ describe('getSubmissionUsers', () => {
     service.getSubmissionUsers = jest.fn().mockReturnValue({ form: { id: '123' } });
     await controller.getSubmissionUsers(req, {}, jest.fn());
 
-    expect(service.getSubmissionUsers).toHaveBeenCalledTimes(1);
-    expect(service.getSubmissionUsers).toHaveBeenCalledWith(req.query);
+    expect(service.getSubmissionUsers).toBeCalledTimes(1);
+    expect(service.getSubmissionUsers).toBeCalledWith(req.query);
   });
 });
 
@@ -32,7 +32,7 @@ describe('setSubmissionUserPermissions', () => {
     emailService.submissionAssigned = jest.fn().mockReturnValue({});
     await controller.setSubmissionUserPermissions(req, {}, jest.fn());
 
-    expect(service.modifySubmissionUser).toHaveBeenCalledTimes(1);
-    expect(service.modifySubmissionUser).toHaveBeenCalledWith(req.query.formSubmissionId, req.query.userId, req.body, req.currentUser);
+    expect(service.modifySubmissionUser).toBeCalledTimes(1);
+    expect(service.modifySubmissionUser).toBeCalledWith(req.query.formSubmissionId, req.query.userId, req.body, req.currentUser);
   });
 });
