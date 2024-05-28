@@ -11,7 +11,7 @@ export function formsettings(){
     }
     else
     {
-
+        cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/app`);
         cy.visit(`/pr-${depEnv}`);
         
     }
