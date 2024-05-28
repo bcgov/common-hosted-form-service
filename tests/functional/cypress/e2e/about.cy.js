@@ -16,7 +16,9 @@ describe('Application About Page', () => {
     {
       
       
-      cy.visit(`/pr-${depEnv}`);
+      cy.log("below is url");
+      cy.log(`https://chefs-dev.apps.silver.devops.gov.bc.ca/pr-${depEnv}`);
+      cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/pr-${depEnv}`);
       cy.contains('Create, publish forms, and receive submissions with the Common Hosted Forms Service.').should('be.visible');
       
     }
