@@ -1,17 +1,19 @@
 import { createTestingPinia } from '@pinia/testing';
 import { setActivePinia } from 'pinia';
 import { flushPromises, mount } from '@vue/test-utils';
-import { expect } from 'vitest';
+import { afterEach, expect, vi } from 'vitest';
 
 import AddTeamMember from '~/components/forms/manage/AddTeamMember.vue';
 import { useIdpStore } from '~/store/identityProviders';
 import { FormRoleCodes, AppPermissions } from '~/utils/constants';
+import userService from '~/services/userService';
 
 const IDIR = {
   active: true,
   login: true,
   code: 'idir',
   display: 'IDIR',
+  extra: {},
   idp: 'idir',
   permissions: [
     AppPermissions.VIEWS_FORM_STEPPER,
@@ -52,6 +54,65 @@ const BCEIDBASIC = {
   login: true,
   code: 'bceid-basic',
   display: 'Basic BCeID',
+  extra: {
+    addTeamMemberSearch: {
+      email: {
+        exact: true,
+        message: 'trans.manageSubmissionUsers.exactBCEIDSearch',
+      },
+      text: {
+        message: 'trans.manageSubmissionUsers.searchInputLength',
+        minLength: 6,
+      },
+    },
+    userSearch: {
+      detail: 'Could not retrieve BCeID users. Invalid options provided.',
+      filters: [
+        {
+          name: 'filterIdpUserId',
+          param: 'idpUserId',
+          required: 0,
+        },
+        {
+          name: 'filterIdpCode',
+          param: 'idpCode',
+          required: 0,
+        },
+        {
+          name: 'filterUsername',
+          param: 'username',
+          exact: true,
+          required: 2,
+        },
+        {
+          name: 'filterFullName',
+          param: 'fullName',
+          required: 0,
+        },
+        {
+          name: 'filterFirstName',
+          param: 'firstName',
+          required: 0,
+        },
+        {
+          name: 'filterLastName',
+          param: 'lastName',
+          required: 0,
+        },
+        {
+          name: 'filterEmail',
+          exact: true,
+          param: 'email',
+          required: 2,
+        },
+        {
+          name: 'filterSearch',
+          param: 'search',
+          required: 0,
+        },
+      ],
+    },
+  },
   idp: 'bceidbasic',
   permissions: [AppPermissions.VIEWS_USER_SUBMISSIONS],
   primary: false,
@@ -73,6 +134,66 @@ const BCEIDBUSINESS = {
   login: true,
   code: 'bceid-business',
   display: 'Business BCeID',
+  extra: {
+    addTeamMemberSearch: {
+      email: {
+        exact: true,
+        message: 'trans.manageSubmissionUsers.exactBCEIDSearch',
+      },
+      text: {
+        message: 'trans.manageSubmissionUsers.searchInputLength',
+        minLength: 6,
+      },
+    },
+    formAccessSettings: 'idim',
+    userSearch: {
+      detail: 'Could not retrieve BCeID users. Invalid options provided.',
+      filters: [
+        {
+          name: 'filterIdpUserId',
+          param: 'idpUserId',
+          required: 0,
+        },
+        {
+          name: 'filterIdpCode',
+          param: 'idpCode',
+          required: 0,
+        },
+        {
+          name: 'filterUsername',
+          param: 'username',
+          exact: true,
+          required: 2,
+        },
+        {
+          name: 'filterFullName',
+          param: 'fullName',
+          required: 0,
+        },
+        {
+          name: 'filterFirstName',
+          param: 'firstName',
+          required: 0,
+        },
+        {
+          name: 'filterLastName',
+          param: 'lastName',
+          required: 0,
+        },
+        {
+          name: 'filterEmail',
+          exact: true,
+          param: 'email',
+          required: 2,
+        },
+        {
+          name: 'filterSearch',
+          param: 'search',
+          required: 0,
+        },
+      ],
+    },
+  },
   idp: 'bceidbusiness',
   permissions: [
     AppPermissions.VIEWS_FORM_EXPORT,
@@ -106,6 +227,7 @@ const PUBLIC = {
   login: false,
   code: 'public',
   display: 'Public',
+  extra: {},
   idp: 'public',
   permissions: [],
   primary: false,
@@ -134,6 +256,15 @@ describe('AddTeamMember.vue', () => {
     fullName: 'FULL NAME',
   };
 
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+  });
+
+  afterEach(() => {
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
+  });
+
   it('shows the add new member button if the button has not been clicked', async () => {
     const pinia = createTestingPinia({ stubActions: false });
 
@@ -152,10 +283,7 @@ describe('AddTeamMember.vue', () => {
       },
     });
 
-    wrapper.setData({
-      selectedIdp: IDIR.code,
-    });
-
+    wrapper.vm.selectedIdp = IDIR.code;
     await flushPromises();
 
     expect(wrapper.text()).toContain('trans.addTeamMember.addNewMember');
@@ -179,7 +307,7 @@ describe('AddTeamMember.vue', () => {
       },
     });
 
-    wrapper.setData({ addingUsers: true });
+    wrapper.vm.addingUsers = true;
 
     await flushPromises();
 
@@ -225,7 +353,8 @@ describe('AddTeamMember.vue', () => {
       },
     });
 
-    wrapper.setData({ addingUsers: true, selectedIdp: IDIR.code });
+    wrapper.vm.addingUsers = true;
+    wrapper.vm.selectedIdp = IDIR.code;
 
     await flushPromises();
 
@@ -273,10 +402,8 @@ describe('AddTeamMember.vue', () => {
       },
     });
 
-    wrapper.setData({
-      addingUsers: true,
-      selectedIdp: BCEIDBASIC.code,
-    });
+    wrapper.vm.addingUsers = true;
+    wrapper.vm.selectedIdp = BCEIDBASIC.code;
 
     await flushPromises();
 
@@ -333,10 +460,8 @@ describe('AddTeamMember.vue', () => {
       },
     });
 
-    wrapper.setData({
-      addingUsers: true,
-      selectedIdp: BCEIDBUSINESS.code,
-    });
+    wrapper.vm.addingUsers = true;
+    wrapper.vm.selectedIdp = BCEIDBUSINESS.code;
 
     await flushPromises();
 
@@ -392,10 +517,8 @@ describe('AddTeamMember.vue', () => {
       },
     });
 
-    wrapper.setData({
-      addingUsers: true,
-      selectedIdp: IDIR.code,
-    });
+    wrapper.vm.addingUsers = true;
+    wrapper.vm.selectedIdp = IDIR.code;
 
     await flushPromises();
 
@@ -403,10 +526,8 @@ describe('AddTeamMember.vue', () => {
       expect(wrapper.text()).toContain(frc);
     });
 
-    wrapper.setData({
-      addingUsers: true,
-      selectedIdp: BCEIDBASIC.code,
-    });
+    wrapper.vm.addingUsers = true;
+    wrapper.vm.selectedIdp = BCEIDBASIC.code;
 
     await flushPromises();
 
@@ -463,10 +584,8 @@ describe('AddTeamMember.vue', () => {
       },
     });
 
-    wrapper.setData({
-      addingUsers: true,
-      selectedIdp: IDIR.code,
-    });
+    wrapper.vm.addingUsers = true;
+    wrapper.vm.selectedIdp = IDIR.code;
 
     await flushPromises();
 
@@ -474,10 +593,8 @@ describe('AddTeamMember.vue', () => {
       expect(wrapper.text()).toContain(frc);
     });
 
-    wrapper.setData({
-      addingUsers: true,
-      selectedIdp: BCEIDBUSINESS.code,
-    });
+    wrapper.vm.addingUsers = true;
+    wrapper.vm.selectedIdp = BCEIDBUSINESS.code;
 
     await flushPromises();
 
@@ -533,10 +650,8 @@ describe('AddTeamMember.vue', () => {
       },
     });
 
-    wrapper.setData({
-      addingUsers: true,
-      selectedIdp: BCEIDBASIC.code,
-    });
+    wrapper.vm.addingUsers = true;
+    wrapper.vm.selectedIdp = BCEIDBASIC.code;
 
     await flushPromises();
 
@@ -553,10 +668,8 @@ describe('AddTeamMember.vue', () => {
       expect(wrapper.text()).not.toContain(frc);
     });
 
-    wrapper.setData({
-      addingUsers: true,
-      selectedIdp: IDIR.code,
-    });
+    wrapper.vm.addingUsers = true;
+    wrapper.vm.selectedIdp = IDIR.code;
 
     await flushPromises();
 
@@ -564,10 +677,8 @@ describe('AddTeamMember.vue', () => {
       expect(wrapper.text()).toContain(frc);
     });
 
-    wrapper.setData({
-      addingUsers: true,
-      selectedIdp: BCEIDBUSINESS.code,
-    });
+    wrapper.vm.addingUsers = true;
+    wrapper.vm.selectedIdp = BCEIDBUSINESS.code;
 
     await flushPromises();
 
@@ -583,10 +694,8 @@ describe('AddTeamMember.vue', () => {
       expect(wrapper.text()).not.toContain(frc);
     });
 
-    wrapper.setData({
-      addingUsers: true,
-      selectedIdp: IDIR.code,
-    });
+    wrapper.vm.addingUsers = true;
+    wrapper.vm.selectedIdp = IDIR.code;
 
     await flushPromises();
 
@@ -634,10 +743,8 @@ describe('AddTeamMember.vue', () => {
       },
     });
 
-    wrapper.setData({
-      addingUsers: true,
-      selectedIdp: BCEIDBUSINESS.code,
-    });
+    wrapper.vm.addingUsers = true;
+    wrapper.vm.selectedIdp = BCEIDBUSINESS.code;
 
     await flushPromises();
 
@@ -653,10 +760,8 @@ describe('AddTeamMember.vue', () => {
       expect(wrapper.text()).not.toContain(frc);
     });
 
-    wrapper.setData({
-      addingUsers: true,
-      selectedIdp: BCEIDBASIC.code,
-    });
+    wrapper.vm.addingUsers = true;
+    wrapper.vm.selectedIdp = BCEIDBASIC.code;
 
     await flushPromises();
 
@@ -713,10 +818,8 @@ describe('AddTeamMember.vue', () => {
       },
     });
 
-    wrapper.setData({
-      addingUsers: true,
-      selectedIdp: BCEIDBASIC.code,
-    });
+    wrapper.vm.addingUsers = true;
+    wrapper.vm.selectedIdp = BCEIDBASIC.code;
 
     await flushPromises();
 
@@ -733,10 +836,8 @@ describe('AddTeamMember.vue', () => {
       expect(wrapper.text()).not.toContain(frc);
     });
 
-    wrapper.setData({
-      addingUsers: true,
-      selectedIdp: BCEIDBUSINESS.code,
-    });
+    wrapper.vm.addingUsers = true;
+    wrapper.vm.selectedIdp = BCEIDBUSINESS.code;
 
     await flushPromises();
 
@@ -792,24 +893,18 @@ describe('AddTeamMember.vue', () => {
       },
     });
 
-    wrapper.setData({
-      addingUsers: true,
-      selectedIdp: BCEIDBASIC.code,
-    });
+    wrapper.vm.addingUsers = true;
+    wrapper.vm.selectedIdp = BCEIDBASIC.code;
 
     await flushPromises();
 
-    wrapper.setData({
-      model: exampleUser,
-      selectedRoles: [FormRoleCodes.FORM_SUBMITTER],
-    });
+    wrapper.vm.model = exampleUser;
+    wrapper.vm.selectedRoles = [FormRoleCodes.FORM_SUBMITTER];
 
     expect(wrapper.vm.model).toEqual(exampleUser);
     expect(wrapper.vm.selectedRoles).toEqual([FormRoleCodes.FORM_SUBMITTER]);
 
-    wrapper.setData({
-      selectedIdp: BCEIDBUSINESS.code,
-    });
+    wrapper.vm.selectedIdp = BCEIDBUSINESS.code;
 
     await flushPromises();
 
@@ -856,24 +951,18 @@ describe('AddTeamMember.vue', () => {
       },
     });
 
-    wrapper.setData({
-      addingUsers: true,
-      selectedIdp: BCEIDBUSINESS.code,
-    });
+    wrapper.vm.addingUsers = true;
+    wrapper.vm.selectedIdp = BCEIDBUSINESS.code;
 
     await flushPromises();
 
-    wrapper.setData({
-      model: exampleUser,
-      selectedRoles: [FormRoleCodes.FORM_SUBMITTER],
-    });
+    wrapper.vm.model = exampleUser;
+    wrapper.vm.selectedRoles = [FormRoleCodes.FORM_SUBMITTER];
 
     expect(wrapper.vm.model).toEqual(exampleUser);
     expect(wrapper.vm.selectedRoles).toEqual([FormRoleCodes.FORM_SUBMITTER]);
 
-    wrapper.setData({
-      selectedIdp: BCEIDBASIC.code,
-    });
+    wrapper.vm.selectedIdp = BCEIDBASIC.code;
 
     await flushPromises();
 
@@ -920,24 +1009,18 @@ describe('AddTeamMember.vue', () => {
       },
     });
 
-    wrapper.setData({
-      addingUsers: true,
-      selectedIdp: BCEIDBASIC.code,
-    });
+    wrapper.vm.addingUsers = true;
+    wrapper.vm.selectedIdp = BCEIDBASIC.code;
 
     await flushPromises();
 
-    wrapper.setData({
-      model: exampleUser,
-      selectedRoles: [FormRoleCodes.FORM_SUBMITTER],
-    });
+    wrapper.vm.model = exampleUser;
+    wrapper.vm.selectedRoles = [FormRoleCodes.FORM_SUBMITTER];
 
     expect(wrapper.vm.model).toEqual(exampleUser);
     expect(wrapper.vm.selectedRoles).toEqual([FormRoleCodes.FORM_SUBMITTER]);
 
-    wrapper.setData({
-      selectedIdp: IDIR.code,
-    });
+    wrapper.vm.selectedIdp = IDIR.code;
 
     await flushPromises();
 
@@ -984,28 +1067,656 @@ describe('AddTeamMember.vue', () => {
       },
     });
 
-    wrapper.setData({
-      addingUsers: true,
-      selectedIdp: BCEIDBUSINESS.code,
-    });
+    wrapper.vm.addingUsers = true;
+    wrapper.vm.selectedIdp = BCEIDBUSINESS.code;
 
     await flushPromises();
 
-    wrapper.setData({
-      model: exampleUser,
-      selectedRoles: [FormRoleCodes.FORM_SUBMITTER],
-    });
+    wrapper.vm.model = exampleUser;
+    wrapper.vm.selectedRoles = [FormRoleCodes.FORM_SUBMITTER];
 
     expect(wrapper.vm.model).toEqual(exampleUser);
     expect(wrapper.vm.selectedRoles).toEqual([FormRoleCodes.FORM_SUBMITTER]);
 
-    wrapper.setData({
-      selectedIdp: IDIR.code,
-    });
+    wrapper.vm.addingUsers = true;
+    wrapper.vm.selectedIdp = IDIR.code;
 
     await flushPromises();
 
     expect(wrapper.vm.model).toBeNull();
     expect(wrapper.vm.selectedRoles).toEqual([]);
+  });
+
+  it('filterObject will return true if the query text exists', async () => {
+    const pinia = createTestingPinia({ stubActions: false });
+
+    setActivePinia(pinia);
+    const idpStore = useIdpStore(pinia);
+
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
+
+    const wrapper = mount(AddTeamMember, {
+      props: {
+        formId: formId,
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          VTooltip: {
+            name: 'VTooltip',
+            template: '<div class="v-tooltip-stub"><slot /></div>',
+          },
+          VBtn: {
+            name: 'VBtn',
+            template: '<div class="v-btn-stub"><slot /></div>',
+          },
+          VIcon: {
+            name: 'VIcon',
+            template: '<div class="v-icon-stub"><slot /></div>',
+          },
+          VChipGroup: {
+            name: 'VChipGroup',
+            template: '<div class="v-chip-group-stub"><slot /></div>',
+          },
+          VChip: {
+            name: 'VChip',
+            template: '<div class="v-chip-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    let filteredObject = wrapper.vm.filterObject('', 'john', {
+      full_name: 'john doe',
+      email: 'email@email.com',
+    });
+
+    expect(filteredObject).toBeTruthy();
+
+    filteredObject = wrapper.vm.filterObject('', 'test', {
+      full_name: 'john doe',
+      email: 'email@email.com',
+    });
+
+    expect(filteredObject).toBeFalsy();
+  });
+
+  it('filterObject will return true if the query text exists inside a nested object', async () => {
+    const pinia = createTestingPinia({ stubActions: false });
+
+    setActivePinia(pinia);
+    const idpStore = useIdpStore(pinia);
+
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
+
+    const wrapper = mount(AddTeamMember, {
+      props: {
+        formId: formId,
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          VTooltip: {
+            name: 'VTooltip',
+            template: '<div class="v-tooltip-stub"><slot /></div>',
+          },
+          VBtn: {
+            name: 'VBtn',
+            template: '<div class="v-btn-stub"><slot /></div>',
+          },
+          VIcon: {
+            name: 'VIcon',
+            template: '<div class="v-icon-stub"><slot /></div>',
+          },
+          VChipGroup: {
+            name: 'VChipGroup',
+            template: '<div class="v-chip-group-stub"><slot /></div>',
+          },
+          VChip: {
+            name: 'VChip',
+            template: '<div class="v-chip-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    let filteredObject = wrapper.vm.filterObject('', 'john', {
+      name: {
+        first: 'john',
+        last: 'doe',
+      },
+      email: 'email@email.com',
+    });
+
+    expect(filteredObject).toBeTruthy();
+
+    filteredObject = wrapper.vm.filterObject('', 'test', {
+      name: {
+        first: 'john',
+        last: 'doe',
+      },
+      email: 'email@email.com',
+    });
+
+    expect(filteredObject).toBeFalsy();
+  });
+
+  it('save will fail if there are no selected roles', async () => {
+    const pinia = createTestingPinia({ stubActions: false });
+
+    setActivePinia(pinia);
+    const idpStore = useIdpStore(pinia);
+
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
+
+    const wrapper = mount(AddTeamMember, {
+      props: {
+        formId: formId,
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          VTooltip: {
+            name: 'VTooltip',
+            template: '<div class="v-tooltip-stub"><slot /></div>',
+          },
+          VBtn: {
+            name: 'VBtn',
+            template: '<div class="v-btn-stub"><slot /></div>',
+          },
+          VIcon: {
+            name: 'VIcon',
+            template: '<div class="v-icon-stub"><slot /></div>',
+          },
+          VChipGroup: {
+            name: 'VChipGroup',
+            template: '<div class="v-chip-group-stub"><slot /></div>',
+          },
+          VChip: {
+            name: 'VChip',
+            template: '<div class="v-chip-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    wrapper.vm.selectedRoles = [];
+
+    wrapper.vm.save();
+
+    expect(wrapper.vm.showError).toBeTruthy();
+  });
+
+  it('save will emit the new users to add', async () => {
+    const pinia = createTestingPinia({ stubActions: false });
+
+    setActivePinia(pinia);
+    const idpStore = useIdpStore(pinia);
+
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
+
+    const wrapper = mount(AddTeamMember, {
+      props: {
+        formId: formId,
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          VTooltip: {
+            name: 'VTooltip',
+            template: '<div class="v-tooltip-stub"><slot /></div>',
+          },
+          VBtn: {
+            name: 'VBtn',
+            template: '<div class="v-btn-stub"><slot /></div>',
+          },
+          VIcon: {
+            name: 'VIcon',
+            template: '<div class="v-icon-stub"><slot /></div>',
+          },
+          VChipGroup: {
+            name: 'VChipGroup',
+            template: '<div class="v-chip-group-stub"><slot /></div>',
+          },
+          VChip: {
+            name: 'VChip',
+            template: '<div class="v-chip-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    wrapper.vm.addingUsers = true;
+    wrapper.vm.model = 'john';
+    wrapper.vm.selectedRoles = ['owner'];
+
+    expect(wrapper.vm.addingUsers).toBeTruthy();
+    wrapper.vm.save();
+    expect(wrapper.emitted()).toHaveProperty('new-users');
+    expect(wrapper.emitted()).toEqual({
+      'new-users': [[['john'], ['owner']]],
+    });
+    expect(wrapper.vm.model).toEqual(null);
+    expect(wrapper.vm.addingUsers).toBeFalsy();
+  });
+
+  it('search users will simply return if the input is the same as the model', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const pinia = createTestingPinia({ stubActions: false });
+
+    setActivePinia(pinia);
+    const idpStore = useIdpStore(pinia);
+
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
+
+    const wrapper = mount(AddTeamMember, {
+      props: {
+        formId: formId,
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          VTooltip: {
+            name: 'VTooltip',
+            template: '<div class="v-tooltip-stub"><slot /></div>',
+          },
+          VBtn: {
+            name: 'VBtn',
+            template: '<div class="v-btn-stub"><slot /></div>',
+          },
+          VIcon: {
+            name: 'VIcon',
+            template: '<div class="v-icon-stub"><slot /></div>',
+          },
+          VChipGroup: {
+            name: 'VChipGroup',
+            template: '<div class="v-chip-group-stub"><slot /></div>',
+          },
+          VChip: {
+            name: 'VChip',
+            template: '<div class="v-chip-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    wrapper.vm.model = 'johndoe';
+    wrapper.vm.selectedIdp = BCEIDBASIC.code;
+    await wrapper.vm.searchUsers('johndoe');
+    expect(wrapper.vm.entries).toEqual([]);
+  });
+
+  it('search users will set the search parameters if there is no teamMembershipConfig', async () => {
+    const getUsersSpy = vi.spyOn(userService, 'getUsers');
+
+    getUsersSpy.mockImplementation((params) => {
+      return {
+        data: [params],
+      };
+    });
+    const pinia = createTestingPinia({ stubActions: false });
+
+    setActivePinia(pinia);
+    const idpStore = useIdpStore(pinia);
+
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
+
+    const wrapper = mount(AddTeamMember, {
+      props: {
+        formId: formId,
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          VTooltip: {
+            name: 'VTooltip',
+            template: '<div class="v-tooltip-stub"><slot /></div>',
+          },
+          VBtn: {
+            name: 'VBtn',
+            template: '<div class="v-btn-stub"><slot /></div>',
+          },
+          VIcon: {
+            name: 'VIcon',
+            template: '<div class="v-icon-stub"><slot /></div>',
+          },
+          VChipGroup: {
+            name: 'VChipGroup',
+            template: '<div class="v-chip-group-stub"><slot /></div>',
+          },
+          VChip: {
+            name: 'VChip',
+            template: '<div class="v-chip-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    wrapper.vm.selectedIdp = IDIR.code;
+    await wrapper.vm.searchUsers('johndoe');
+    expect(wrapper.vm.entries[0].search).toEqual('johndoe');
+  });
+
+  it('search users should throw error if the idp config text min length is too short', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const pinia = createTestingPinia({ stubActions: false });
+
+    setActivePinia(pinia);
+    const idpStore = useIdpStore(pinia);
+
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
+
+    const wrapper = mount(AddTeamMember, {
+      props: {
+        formId: formId,
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          VTooltip: {
+            name: 'VTooltip',
+            template: '<div class="v-tooltip-stub"><slot /></div>',
+          },
+          VBtn: {
+            name: 'VBtn',
+            template: '<div class="v-btn-stub"><slot /></div>',
+          },
+          VIcon: {
+            name: 'VIcon',
+            template: '<div class="v-icon-stub"><slot /></div>',
+          },
+          VChipGroup: {
+            name: 'VChipGroup',
+            template: '<div class="v-chip-group-stub"><slot /></div>',
+          },
+          VChip: {
+            name: 'VChip',
+            template: '<div class="v-chip-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    wrapper.vm.selectedIdp = BCEIDBASIC.code;
+    await wrapper.vm.searchUsers('john');
+    // eslint-disable-next-line no-console
+    expect(console.error).toHaveBeenLastCalledWith(
+      'trans.manageSubmissionUsers.getUsersErrMsg'
+    );
+  });
+
+  it('search users should throw error there is an @ and it is a bad email but success otherwise', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const getUsersSpy = vi.spyOn(userService, 'getUsers');
+
+    getUsersSpy.mockImplementation((params) => {
+      return {
+        data: [params],
+      };
+    });
+    const pinia = createTestingPinia({ stubActions: false });
+
+    setActivePinia(pinia);
+    const idpStore = useIdpStore(pinia);
+
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
+
+    const wrapper = mount(AddTeamMember, {
+      props: {
+        formId: formId,
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          VTooltip: {
+            name: 'VTooltip',
+            template: '<div class="v-tooltip-stub"><slot /></div>',
+          },
+          VBtn: {
+            name: 'VBtn',
+            template: '<div class="v-btn-stub"><slot /></div>',
+          },
+          VIcon: {
+            name: 'VIcon',
+            template: '<div class="v-icon-stub"><slot /></div>',
+          },
+          VChipGroup: {
+            name: 'VChipGroup',
+            template: '<div class="v-chip-group-stub"><slot /></div>',
+          },
+          VChip: {
+            name: 'VChip',
+            template: '<div class="v-chip-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    wrapper.vm.selectedIdp = BCEIDBASIC.code;
+    await wrapper.vm.searchUsers('email@email');
+    // eslint-disable-next-line no-console
+    expect(console.error).toHaveBeenLastCalledWith(
+      'trans.manageSubmissionUsers.getUsersErrMsg'
+    );
+    await wrapper.vm.searchUsers('email@email.com');
+    expect(wrapper.vm.entries[0].email).toEqual('email@email.com');
+  });
+
+  it('search users should return the search value if it is valid', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const getUsersSpy = vi.spyOn(userService, 'getUsers');
+
+    getUsersSpy.mockImplementation((params) => {
+      return {
+        data: [params],
+      };
+    });
+    const pinia = createTestingPinia({ stubActions: false });
+
+    setActivePinia(pinia);
+    const idpStore = useIdpStore(pinia);
+
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
+
+    const wrapper = mount(AddTeamMember, {
+      props: {
+        formId: formId,
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          VTooltip: {
+            name: 'VTooltip',
+            template: '<div class="v-tooltip-stub"><slot /></div>',
+          },
+          VBtn: {
+            name: 'VBtn',
+            template: '<div class="v-btn-stub"><slot /></div>',
+          },
+          VIcon: {
+            name: 'VIcon',
+            template: '<div class="v-icon-stub"><slot /></div>',
+          },
+          VChipGroup: {
+            name: 'VChipGroup',
+            template: '<div class="v-chip-group-stub"><slot /></div>',
+          },
+          VChip: {
+            name: 'VChip',
+            template: '<div class="v-chip-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    wrapper.vm.selectedIdp = BCEIDBASIC.code;
+    await wrapper.vm.searchUsers('johndoe');
+    expect(wrapper.vm.entries[0].username).toEqual('johndoe');
+  });
+
+  it('search users should return nothing if there is no input', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const getUsersSpy = vi.spyOn(userService, 'getUsers');
+
+    getUsersSpy.mockImplementation((params) => {
+      return {
+        data: [params],
+      };
+    });
+    const pinia = createTestingPinia({ stubActions: false });
+
+    setActivePinia(pinia);
+    const idpStore = useIdpStore(pinia);
+
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
+
+    const wrapper = mount(AddTeamMember, {
+      props: {
+        formId: formId,
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          VTooltip: {
+            name: 'VTooltip',
+            template: '<div class="v-tooltip-stub"><slot /></div>',
+          },
+          VBtn: {
+            name: 'VBtn',
+            template: '<div class="v-btn-stub"><slot /></div>',
+          },
+          VIcon: {
+            name: 'VIcon',
+            template: '<div class="v-icon-stub"><slot /></div>',
+          },
+          VChipGroup: {
+            name: 'VChipGroup',
+            template: '<div class="v-chip-group-stub"><slot /></div>',
+          },
+          VChip: {
+            name: 'VChip',
+            template: '<div class="v-chip-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    wrapper.vm.selectedIdp = BCEIDBASIC.code;
+    await wrapper.vm.searchUsers('');
+    expect(wrapper.vm.entries).toEqual([]);
+  });
+
+  it('clears timeout when unmounted', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const getUsersSpy = vi.spyOn(userService, 'getUsers');
+
+    getUsersSpy.mockImplementation((params) => {
+      return {
+        data: [params],
+      };
+    });
+    const pinia = createTestingPinia({ stubActions: false });
+
+    setActivePinia(pinia);
+    const idpStore = useIdpStore(pinia);
+
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
+
+    const wrapper = mount(AddTeamMember, {
+      props: {
+        formId: formId,
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          VTooltip: {
+            name: 'VTooltip',
+            template: '<div class="v-tooltip-stub"><slot /></div>',
+          },
+          VBtn: {
+            name: 'VBtn',
+            template: '<div class="v-btn-stub"><slot /></div>',
+          },
+          VIcon: {
+            name: 'VIcon',
+            template: '<div class="v-icon-stub"><slot /></div>',
+          },
+          VChipGroup: {
+            name: 'VChipGroup',
+            template: '<div class="v-chip-group-stub"><slot /></div>',
+          },
+          VChip: {
+            name: 'VChip',
+            template: '<div class="v-chip-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    wrapper.unmount();
+
+    expect(wrapper.vm.debounceTimer).toBeNull();
+  });
+
+  it('clears timeout if debounce timer is already set', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const getUsersSpy = vi.spyOn(userService, 'getUsers');
+
+    getUsersSpy.mockImplementation((params) => {
+      return {
+        data: [params],
+      };
+    });
+    const pinia = createTestingPinia({ stubActions: false });
+
+    setActivePinia(pinia);
+    const idpStore = useIdpStore(pinia);
+
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
+
+    const wrapper = mount(AddTeamMember, {
+      props: {
+        formId: formId,
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          VTooltip: {
+            name: 'VTooltip',
+            template: '<div class="v-tooltip-stub"><slot /></div>',
+          },
+          VBtn: {
+            name: 'VBtn',
+            template: '<div class="v-btn-stub"><slot /></div>',
+          },
+          VIcon: {
+            name: 'VIcon',
+            template: '<div class="v-icon-stub"><slot /></div>',
+          },
+          VChipGroup: {
+            name: 'VChipGroup',
+            template: '<div class="v-chip-group-stub"><slot /></div>',
+          },
+          VChip: {
+            name: 'VChip',
+            template: '<div class="v-chip-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    wrapper.vm.selectedIdp = IDIR.code;
+
+    expect(wrapper.vm.debounceTimer).toBeNull();
+    wrapper.vm.debounceSearch('this is some user');
+    expect(wrapper.vm.debounceTimer).not.toBeNull();
+    wrapper.vm.debounceTime = 1;
+    wrapper.vm.debounceSearch('this is another user');
+    expect(wrapper.vm.debounceTimer).not.toBeNull();
+
+    vi.runAllTimersAsync();
+
+    await flushPromises();
+    expect(getUsersSpy).toBeCalledTimes(1);
   });
 });
