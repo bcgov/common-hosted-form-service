@@ -143,6 +143,7 @@ export default {
               class="mx-1"
               icon
               v-bind="props"
+              :title="$t('trans.documentTemplate.download')"
               @click="onExportClick(item.id, item.isDraft)"
             >
               <v-icon icon="mdi:mdi-download"></v-icon>

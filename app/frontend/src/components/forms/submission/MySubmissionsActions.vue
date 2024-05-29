@@ -68,6 +68,7 @@ export default {
             size="x-small"
             density="default"
             icon="mdi:mdi-eye"
+            :title="$t('trans.mySubmissionsActions.viewThisSubmission')"
           />
         </template>
         <span :lang="lang">{{
@@ -101,6 +102,7 @@ export default {
               :class="isRTL ? 'mr-1' : 'ml-1'"
               density="default"
               icon="mdi:mdi-pencil-box-multiple"
+              :title="$t('trans.mySubmissionsActions.copyThisSubmission')"
             />
           </template>
           <span :lang="lang">{{
@@ -132,6 +134,7 @@ export default {
               :class="isRTL ? 'mr-1' : 'ml-1'"
               density="default"
               icon="mdi:mdi-pencil"
+              :title="$t('trans.mySubmissionsActions.editThisDraft')"
             />
           </template>
           <span :lang="lang">{{

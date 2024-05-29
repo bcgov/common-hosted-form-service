@@ -64,6 +64,7 @@ const { lang } = storeToRefs(useFormStore());
       color="primary"
       class="login-btn"
       size="large"
+      :title="$t('trans.baseSecure.login')"
       @click="authStore.login"
     >
       <span :lang="lang">{{ $t('trans.baseSecure.login') }}</span>
