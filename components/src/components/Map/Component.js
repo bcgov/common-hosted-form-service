@@ -1,11 +1,11 @@
-import { Components } from 'formiojs';
+import { Formio, Components } from 'formiojs';
 const FieldComponent = Components.components.field;
 import L from "leaflet"
 import "leaflet-draw"
 import 'leaflet/dist/leaflet.css';
 import "leaflet-draw/dist/leaflet.draw-src.css";
 
-const CENTER = [48.41938669910753, -123.37030649185182]
+const CENTER = [48.41939025932759,-123.37029576301576]
 
 class MapComponent extends FieldComponent {
     static schema(...extend) {
@@ -30,7 +30,7 @@ class MapComponent extends FieldComponent {
     render() {
         return super.render(        
         `
-        <div id="mapContainer" style="height:400px;"></div>
+        <div id="mapContainer" style="height:400px; z-index:1;"></div>
         
         `
         )
@@ -42,36 +42,52 @@ class MapComponent extends FieldComponent {
     }
     loadMap() {
         const mapContainer = document.getElementById("mapContainer");
+        const form = document.getElementsByClassName("formio")
         if(mapContainer){
-            const map = L.map(mapContainer,{drawControl:true}).setView(CENTER, 13);
+            const map = L.map(mapContainer).setView(CENTER, 13);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-              }).addTo(map);
-            var drawnItems = new L.FeatureGroup()
-            var drawControl = new L.Control.Draw({
+                }).addTo(map);
+            
+
+
+            if(form && form[0]?.classList.contains("formbuilder")){
+                map.dragging.disable();    
+                map.scrollWheelZoom.disable();
+            }
+
+            //Initialize Draw Layer
+            let drawnItems = new L.FeatureGroup()
+            map.addLayer(drawnItems)
+            //Add Drawing Controllers
+            let drawControl = new L.Control.Draw({
+                draw:{
+                    circlemarker:false,
+                    polygon: false,
+                    polyline: false,
+                    rectangle:false,
+                },
                 edit:{
                     featureGroup: drawnItems
                 }
             })
+            //Attach Controls to map
             map.addControl(drawControl)
             
-            //event listener
+            //event listener for drawn objects
             map.on('draw:created', function(e){
-                console.log(e)
-                var type = e.layerType
-                var layer = e.layer
+                //console.log(e)
+                let type = e.layerType
+                let layer = e.layer
 
                 drawnItems.addLayer(layer)
+                console.log(drawnItems._layers)
+
             })
         }
     }
 
 }
 
-const testComponent = (data) =>{
-    const printData = (d) =>{ console.log(d)}
-    console.log(data)
-    printData(data)
-}
 Components.addComponent('map', MapComponent);
 export default MapComponent;
