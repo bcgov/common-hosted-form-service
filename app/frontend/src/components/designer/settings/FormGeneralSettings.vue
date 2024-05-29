@@ -1,21 +1,21 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useFormStore } from '~/store/form';
+
+const { t } = useI18n({ useScope: 'global' });
 
 /* c8 ignore start */
 const nameRules = ref([
-  (v) => !!v || this.$t('trans.formSettings.formTitleReq'),
-  (v) =>
-    (v && v.length <= 255) || this.$t('trans.formSettings.formTitlemaxChars'),
+  (v) => !!v || t('trans.formSettings.formTitleReq'),
+  (v) => (v && v.length <= 255) || t('trans.formSettings.formTitlemaxChars'),
 ]);
 
 const descriptionRules = ref([
   (v) => {
     if (v) {
-      return (
-        v.length <= 255 || this.$t('trans.formSettings.formDescriptnMaxChars')
-      );
+      return v.length <= 255 || t('trans.formSettings.formDescriptnMaxChars');
     } else return true;
   },
 ]);

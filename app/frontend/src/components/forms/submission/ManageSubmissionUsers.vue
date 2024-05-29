@@ -232,6 +232,7 @@ export default {
           icon
           v-bind="props"
           size="x-small"
+          :title="$t('trans.manageSubmissionUsers.manageTeamMembers')"
           @click="dialog = true"
         >
           <v-icon icon="mdi:mdi-account-multiple"></v-icon>
@@ -309,6 +310,7 @@ export default {
                 color="primary"
                 :disabled="!userSearchSelection"
                 :loading="isLoadingDropdown"
+                :title="$t('trans.manageSubmissionUsers.add')"
                 @click="addUser"
               >
                 <span :lang="lang"
@@ -366,6 +368,7 @@ export default {
                       icon
                       size="24"
                       :disabled="item.isOwner"
+                      :title="$t('trans.manageSubmissionUsers.remove')"
                       @click="removeUser(item)"
                     >
                       <v-icon icon="mdi:mdi-minus" size="16"></v-icon>
@@ -382,6 +385,7 @@ export default {
             class="mb-5 close-dlg"
             color="primary"
             variant="flat"
+            :title="$t('trans.manageSubmissionUsers.close')"
             @click="dialog = false"
           >
             <span :lang="lang">

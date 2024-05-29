@@ -141,6 +141,11 @@ export default {
                 size="x-small"
                 v-bind="props"
                 density="default"
+                :title="
+                  showSecret
+                    ? $t('trans.shareForm.hideSecret')
+                    : $t('trans.subscribeEvent.showSecret')
+                "
                 @click="showHideKey"
               />
             </template>
@@ -155,7 +160,12 @@ export default {
       </v-row>
       <v-row>
         <v-col>
-          <v-btn class="mr-5" color="primary" @click="updateSettings">
+          <v-btn
+            class="mr-5"
+            color="primary"
+            :title="$t('trans.subscribeEvent.save')"
+            @click="updateSettings"
+          >
             <span :lang="lang">{{ $t('trans.subscribeEvent.save') }}</span>
           </v-btn>
         </v-col>

@@ -20,6 +20,7 @@ const hasLogin = computed(() => useRoute()?.meta?.hasLogin);
       id="logoutButton"
       color="white"
       variant="outlined"
+      :title="$t('trans.baseAuthButton.logout')"
       @click="authStore.logout"
     >
       <span :lang="lang">{{ $t('trans.baseAuthButton.logout') }}</span>
@@ -29,6 +30,7 @@ const hasLogin = computed(() => useRoute()?.meta?.hasLogin);
       id="loginButton"
       color="white"
       variant="outlined"
+      :title="$t('trans.baseAuthButton.login')"
       @click="authStore.login"
     >
       <span :lang="lang">{{ $t('trans.baseAuthButton.login') }}</span>

@@ -8,13 +8,22 @@ const { lang } = storeToRefs(useFormStore());
 <template>
   <BaseSecure>
     <router-link :to="{ name: 'UserForms' }">
-      <v-btn color="primary" class="mr-2" data-test="my-forms-btn">
-        <span :lang="lang">{{ $t('trans.user.root.myForms') }}</span>
+      <v-btn
+        color="primary"
+        class="mr-2"
+        data-test="my-forms-btn"
+        :title="$t('trans.user.root.myForms')"
+      >
         <span :lang="lang">{{ $t('trans.user.root.myForms') }}</span>
       </v-btn>
     </router-link>
     <router-link :to="{ name: 'UserHistory' }">
-      <v-btn color="primary" class="mr-2" data-test="history-btn">
+      <v-btn
+        color="primary"
+        class="mr-2"
+        data-test="history-btn"
+        :title="$t('trans.user.root.history')"
+      >
         <span :lang="lang">{{ $t('trans.user.root.history') }}</span>
       </v-btn>
     </router-link>
