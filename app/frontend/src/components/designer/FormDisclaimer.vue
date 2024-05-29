@@ -1,12 +1,8 @@
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
 import { useFormStore } from '~/store/form';
 
-export default {
-  computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
-  },
-};
+const { isRTL, lang } = storeToRefs(useFormStore());
 </script>
 
 <template>
