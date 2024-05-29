@@ -117,6 +117,7 @@ export default {
         class="mr-5"
         color="primary"
         :disabled="!formChanged"
+        :title="$t('trans.emailTemplate.save')"
         @click="saveEmailTemplate"
       >
         <span :lang="lang">{{ $t('trans.emailTemplate.save') }}</span>

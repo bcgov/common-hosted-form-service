@@ -413,6 +413,7 @@ export default {
                 icon
                 size="x-small"
                 v-bind="props"
+                :title="$t('trans.teamManagement.selectColumns')"
                 @click="onShowColumnDialog"
               >
                 <v-icon icon="mdi:mdi-view-column"></v-icon>
@@ -432,6 +433,7 @@ export default {
                   icon
                   size="x-small"
                   v-bind="props"
+                  :title="$t('trans.teamManagement.manageForm')"
                 >
                   <v-icon icon="mdi:mdi-cog"></v-icon>
                 </v-btn>
@@ -547,6 +549,7 @@ export default {
               :disabled="updating || selectedUsers.length < 1"
               size="24"
               color="red"
+              :title="$t('trans.teamManagement.removeSelectedUsers')"
               @click="onRemoveClick(selectedUsers)"
             >
               <v-icon
@@ -630,6 +633,7 @@ export default {
               :disabled="updating"
               size="24"
               color="red"
+              :title="$t('trans.teamManagement.removeThisUser')"
               @click="onRemoveClick(item)"
             >
               <v-icon
