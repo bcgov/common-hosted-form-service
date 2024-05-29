@@ -21,8 +21,8 @@ describe('read', () => {
     const res = await service.read('abc');
 
     expect(res).toEqual({ a: 'b' });
-    expect(service._fetchSubmissionData).toHaveBeenCalledTimes(1);
-    expect(service._fetchSubmissionData).toHaveBeenCalledWith('abc');
+    expect(service._fetchSubmissionData).toBeCalledTimes(1);
+    expect(service._fetchSubmissionData).toBeCalledWith('abc');
   });
 });
 
@@ -32,8 +32,8 @@ describe('addNote', () => {
     const res = await service.addNote('abc', { data: true }, { user: 'me' });
 
     expect(res).toEqual({ a: 'b' });
-    expect(service._createNote).toHaveBeenCalledTimes(1);
-    expect(service._createNote).toHaveBeenCalledWith('abc', { data: true }, { user: 'me' });
+    expect(service._createNote).toBeCalledTimes(1);
+    expect(service._createNote).toBeCalledWith('abc', { data: true }, { user: 'me' });
   });
 });
 
@@ -44,11 +44,11 @@ describe('createStatus', () => {
     const res = await service.createStatus('abc', { data: true }, { user: 'me' }, trx);
 
     expect(res).toEqual({ a: 'b' });
-    expect(MockModel.startTransaction).toHaveBeenCalledTimes(0);
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledWith(expect.anything());
-    expect(MockModel.insert).toHaveBeenCalledTimes(1);
-    expect(MockModel.insert).toHaveBeenCalledWith(expect.anything());
+    expect(MockModel.startTransaction).toBeCalledTimes(0);
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledWith(expect.anything());
+    expect(MockModel.insert).toBeCalledTimes(1);
+    expect(MockModel.insert).toBeCalledWith(expect.anything());
   });
 });
 
@@ -71,14 +71,14 @@ describe('deleteMutipleSubmissions', () => {
     service.readSubmissionData = jest.fn().mockReturnValue(returnValue);
     const spy = jest.spyOn(service, 'readSubmissionData');
     const res = await service.deleteMutipleSubmissions(submissionIds, currentUser);
-    expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledWith(expect.anything());
-    expect(MockModel.patch).toHaveBeenCalledTimes(1);
-    expect(MockModel.patch).toHaveBeenCalledWith({ deleted: true, updatedBy: currentUser.usernameIdp });
-    expect(MockModel.whereIn).toHaveBeenCalledTimes(1);
-    expect(MockModel.whereIn).toHaveBeenCalledWith('id', submissionIds);
-    expect(spy).toHaveBeenCalledWith(submissionIds);
+    expect(MockModel.startTransaction).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledWith(expect.anything());
+    expect(MockModel.patch).toBeCalledTimes(1);
+    expect(MockModel.patch).toBeCalledWith({ deleted: true, updatedBy: currentUser.usernameIdp });
+    expect(MockModel.whereIn).toBeCalledTimes(1);
+    expect(MockModel.whereIn).toBeCalledWith('id', submissionIds);
+    expect(spy).toBeCalledWith(submissionIds);
     expect(res).toEqual(returnValue);
   });
 });
@@ -102,14 +102,14 @@ describe('restoreMutipleSubmissions', () => {
     service.readSubmissionData = jest.fn().mockReturnValue(returnValue);
     const spy = jest.spyOn(service, 'readSubmissionData');
     const res = await service.restoreMutipleSubmissions(submissionIds, currentUser);
-    expect(MockModel.startTransaction).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.query).toHaveBeenCalledWith(expect.anything());
-    expect(MockModel.patch).toHaveBeenCalledTimes(1);
-    expect(MockModel.patch).toHaveBeenCalledWith({ deleted: false, updatedBy: currentUser.usernameIdp });
-    expect(MockModel.whereIn).toHaveBeenCalledTimes(1);
-    expect(MockModel.whereIn).toHaveBeenCalledWith('id', submissionIds);
-    expect(spy).toHaveBeenCalledWith(submissionIds);
+    expect(MockModel.startTransaction).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.query).toBeCalledWith(expect.anything());
+    expect(MockModel.patch).toBeCalledTimes(1);
+    expect(MockModel.patch).toBeCalledWith({ deleted: false, updatedBy: currentUser.usernameIdp });
+    expect(MockModel.whereIn).toBeCalledTimes(1);
+    expect(MockModel.whereIn).toBeCalledWith('id', submissionIds);
+    expect(spy).toBeCalledWith(submissionIds);
     expect(res).toEqual(returnValue);
   });
 });

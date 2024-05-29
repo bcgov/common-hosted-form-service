@@ -96,6 +96,7 @@ defineExpose({ RTL });
             class="mb-5"
             color="primary"
             variant="flat"
+            :title="$t('trans.baseDialog.ok')"
             @click="closeDialog"
           >
             <slot name="button-text">
@@ -109,6 +110,7 @@ defineExpose({ RTL });
             class="mb-5"
             color="primary"
             variant="flat"
+            :title="$t('trans.baseDialog.continue')"
             @click="continueDialog"
           >
             <slot name="button-text-continue">
@@ -120,6 +122,7 @@ defineExpose({ RTL });
             class="mb-5"
             :class="RTL"
             variant="outlined"
+            :title="$t('trans.baseDialog.cancel')"
             @click="closeDialog"
           >
             <slot name="button-text-cancel">
@@ -133,6 +136,7 @@ defineExpose({ RTL });
             :class="RTL"
             color="primary"
             variant="flat"
+            :title="$t('trans.baseDialog.continue')"
             @click="continueDialog"
           >
             <slot name="button-text-continue">
@@ -143,6 +147,7 @@ defineExpose({ RTL });
             data-test="saveddelete-btn-cancel"
             class="mb-5"
             variant="outlined"
+            :title="$t('trans.baseDialog.cancel')"
             @click="deleteDialog"
           >
             <slot name="button-text-delete">
@@ -155,6 +160,7 @@ defineExpose({ RTL });
             class="mb-5 mr-5"
             color="primary"
             variant="flat"
+            :title="$t('trans.baseDialog.continue')"
             @click="continueDialog"
           >
             <slot name="button-text-continue">
@@ -167,13 +173,19 @@ defineExpose({ RTL });
             class="mb-5 mr-5"
             color="primary"
             variant="flat"
+            :title="$t('trans.baseDialog.custom')"
             @click="customDialog"
           >
             <slot name="button-text-custom">
               <span :lang="lang">{{ $t('trans.baseDialog.custom') }}</span>
             </slot>
           </v-btn>
-          <v-btn class="mb-5" variant="outlined" @click="closeDialog">
+          <v-btn
+            class="mb-5"
+            variant="outlined"
+            :title="$t('trans.baseDialog.cancel')"
+            @click="closeDialog"
+          >
             <slot name="button-text-cancel">
               <span :lang="lang">{{ $t('trans.baseDialog.cancel') }}</span>
             </slot>
