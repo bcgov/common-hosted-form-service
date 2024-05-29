@@ -36,6 +36,15 @@ describe('export', () => {
     };
     exportService._getForm = jest.fn().mockReturnValue(form);
 
+    describe('400 response when', () => {
+      test('invalid preferences json', async () => {
+        const params = { preference: '{' };
+        exportService._readLatestFormSchema = jest.fn().mockReturnValueOnce();
+
+        await expect(exportService.export(formId, params, currentUser)).rejects.toThrow('400');
+      });
+    });
+
     describe('type 1', () => {
       const params = {
         emailExport: false,
