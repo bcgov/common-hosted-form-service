@@ -54,10 +54,10 @@ describe('login', () => {
     service.getUserId = jest.fn().mockReturnValue({ user: 'me' });
     const token = 'token';
     const result = await service.login(token);
-    expect(idpService.parseToken).toHaveBeenCalledTimes(1);
-    expect(idpService.parseToken).toHaveBeenCalledWith(token);
-    expect(service.getUserId).toHaveBeenCalledTimes(1);
-    expect(service.getUserId).toHaveBeenCalledWith({ idp: 'fake' });
+    expect(idpService.parseToken).toBeCalledTimes(1);
+    expect(idpService.parseToken).toBeCalledWith(token);
+    expect(service.getUserId).toBeCalledTimes(1);
+    expect(service.getUserId).toBeCalledWith({ idp: 'fake' });
     expect(result).toBeTruthy();
     expect(result).toEqual(resultSample);
   });
