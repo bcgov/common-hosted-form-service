@@ -1,9 +1,14 @@
 <script setup>
+import { computed } from 'vue';
+import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useLocale } from 'vuetify';
 
 import { useFormStore } from '~/store/form';
 
-const items = [
+const { locale } = useI18n({ useScope: 'global' });
+
+const items = ref([
   { title: 'English', keyword: 'en' },
   { title: 'عربى (Arabic)', keyword: 'ar' },
   { title: 'German (Germany)', keyword: 'de' },
@@ -22,7 +27,7 @@ const items = [
   { title: 'Tiếng Việt (Vietnamese)', keyword: 'vi' },
   { title: '简体中文 (Simplified Chinese)', keyword: 'zh' },
   { title: '繁體中文 (Traditional Chinese)', keyword: 'zhTW' },
-];
+]);
 
 const { current } = useLocale();
 
@@ -32,6 +37,10 @@ function languageSelected(lang) {
     isRTL: lang === 'ar' || lang === 'fa' ? true : false,
   });
 }
+
+const SELECTED_LANGUAGE_TITLE = computed(
+  () => items.value.find((language) => language.keyword === locale.value).title
+);
 </script>
 
 <template>
@@ -44,7 +53,7 @@ function languageSelected(lang) {
       variant="outlined"
       density="compact"
       hide-details
-      :title="items.find((language) => language.keyword === $i18n.locale).title"
+      :title="SELECTED_LANGUAGE_TITLE"
       @update:model-value="languageSelected"
     >
       <template #selection="{ props, item }">
