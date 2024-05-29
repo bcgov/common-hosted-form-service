@@ -1,12 +1,12 @@
 <script>
 import { mapActions, mapState } from 'pinia';
-import { i18n } from '~/internationalization';
+import { useI18n } from 'vue-i18n';
+
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
 export default {
   name: 'EmailTemplate',
-
   props: {
     title: {
       required: true,
@@ -17,7 +17,11 @@ export default {
       type: String,
     },
   },
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
 
+    return { t, locale };
+  },
   data() {
     return {
       // If any field on the form changes, then enable the Save button. Note:
@@ -26,19 +30,19 @@ export default {
 
       // Validation rules.
       bodyRules: [
-        (v) => !!v || i18n.t('trans.emailTemplate.validBodyRequired'),
+        (v) => !!v || this.$t('trans.emailTemplate.validBodyRequired'),
       ],
       subjectRules: [
-        (v) => !!v || i18n.t('trans.emailTemplate.validSubjectRequired'),
+        (v) => !!v || this.$t('trans.emailTemplate.validSubjectRequired'),
       ],
       titleRules: [
-        (v) => !!v || i18n.t('trans.emailTemplate.validTitleRequired'),
+        (v) => !!v || this.$t('trans.emailTemplate.validTitleRequired'),
       ],
     };
   },
 
   computed: {
-    ...mapState(useFormStore, ['emailTemplates', 'lang']),
+    ...mapState(useFormStore, ['emailTemplates']),
 
     emailTemplate() {
       return this.emailTemplates.find((t) => t.type === this.type);
@@ -58,8 +62,8 @@ export default {
         this.formChanged = false;
       } catch (error) {
         this.addNotification({
-          text: i18n.t('trans.emailTemplate.saveEmailTemplateErrMsg'),
-          consoleError: i18n.t(
+          text: this.$t('trans.emailTemplate.saveEmailTemplateErrMsg'),
+          consoleError: this.$t(
             'trans.emailTemplate.saveEmailTemplateConsoleErrMsg',
             {
               formId: this.emailTemplate.formId,
@@ -75,7 +79,7 @@ export default {
 
 <template>
   <v-container>
-    <h1 :lang="lang">{{ title }}</h1>
+    <h1 :lang="locale">{{ title }}</h1>
     <v-form ref="emailTemplateForm" lazy-validation>
       <v-text-field
         v-if="emailTemplates.length > 0"
@@ -85,7 +89,7 @@ export default {
         variant="outlined"
         solid
         :label="$t('trans.emailTemplate.subject')"
-        :lang="lang"
+        :lang="locale"
         :rules="subjectRules"
         @update:model-value="formChanged = true"
       />
@@ -97,7 +101,7 @@ export default {
         variant="outlined"
         solid
         :label="$t('trans.emailTemplate.title')"
-        :lang="lang"
+        :lang="locale"
         :rules="titleRules"
         @update:model-value="formChanged = true"
       />
@@ -109,7 +113,7 @@ export default {
         variant="outlined"
         solid
         :label="$t('trans.emailTemplate.body')"
-        :lang="lang"
+        :lang="locale"
         :rules="bodyRules"
         @update:model-value="formChanged = true"
       />
@@ -119,7 +123,7 @@ export default {
         :disabled="!formChanged"
         @click="saveEmailTemplate"
       >
-        <span :lang="lang">{{ $t('trans.emailTemplate.save') }}</span>
+        <span :lang="locale">{{ $t('trans.emailTemplate.save') }}</span>
       </v-btn>
     </v-form>
   </v-container>

@@ -1,11 +1,16 @@
 <script>
 import { mapActions, mapState } from 'pinia';
-import { i18n } from '~/internationalization';
+import { useI18n } from 'vue-i18n';
 
 import { useAdminStore } from '~/store/admin';
 import { useFormStore } from '~/store/form';
 
 export default {
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
+
+    return { t, locale };
+  },
   data() {
     return {
       showDeleted: false,
@@ -15,7 +20,7 @@ export default {
   },
   computed: {
     ...mapState(useAdminStore, ['formList']),
-    ...mapState(useFormStore, ['isRTL', 'lang']),
+    ...mapState(useFormStore, ['isRTL']),
     calcHeaders() {
       return this.headers.filter(
         (x) => x.key !== 'updatedAt' || this.showDeleted
@@ -24,22 +29,22 @@ export default {
     headers() {
       return [
         {
-          title: i18n.t('trans.adminFormsTable.formTitle'),
+          title: this.$t('trans.adminFormsTable.formTitle'),
           align: 'start',
           key: 'name',
         },
         {
-          title: i18n.t('trans.adminFormsTable.created'),
+          title: this.$t('trans.adminFormsTable.created'),
           align: 'start',
           key: 'createdAt',
         },
         {
-          title: i18n.t('trans.adminFormsTable.deleted'),
+          title: this.$t('trans.adminFormsTable.deleted'),
           align: 'start',
           key: 'updatedAt',
         },
         {
-          title: i18n.t('trans.adminFormsTable.actions'),
+          title: this.$t('trans.adminFormsTable.actions'),
           align: 'end',
           key: 'actions',
           filterable: false,
@@ -76,11 +81,11 @@ export default {
           class="pl-3"
           data-test="checkbox-show-deleted"
           :class="isRTL ? 'float-right' : 'float-left'"
-          :label="$t('trans.adminFormsTable.showDeletedForms')"
+          :label="t('trans.adminFormsTable.showDeletedForms')"
         >
           <template #label>
-            <span :class="{ 'mr-2': isRTL }" :lang="lang">
-              {{ $t('trans.adminFormsTable.showDeletedForms') }}
+            <span :class="{ 'mr-2': isRTL }" :lang="locale">
+              {{ t('trans.adminFormsTable.showDeletedForms') }}
             </span>
           </template>
         </v-checkbox>
@@ -96,8 +101,8 @@ export default {
             v-model="search"
             density="compact"
             variant="underlined"
-            :lang="lang"
-            :label="$t('trans.adminFormsTable.search')"
+            :lang="locale"
+            :label="t('trans.adminFormsTable.search')"
             append-inner-icon="mdi-magnify"
             single-line
             hide-details
@@ -117,9 +122,9 @@ export default {
       :items="formList"
       :search="search"
       :loading="loading"
-      :lang="lang"
-      :loading-text="$t('trans.adminFormsTable.loadingText')"
-      :no-data-text="$t('trans.adminFormsTable.noDataText')"
+      :lang="locale"
+      :loading-text="t('trans.adminFormsTable.loadingText')"
+      :no-data-text="t('trans.adminFormsTable.noDataText')"
     >
       <template #item.createdAt="{ item }">
         {{ $filters.formatDateLong(item.createdAt) }} -
@@ -133,8 +138,8 @@ export default {
         <router-link :to="{ name: 'AdministerForm', query: { f: item.id } }">
           <v-btn color="primary" variant="text" size="small">
             <v-icon class="mr-1" icon="mdi:mdi-wrench"></v-icon>
-            <span class="d-none d-sm-flex" :lang="lang">{{
-              $t('trans.adminFormsTable.admin')
+            <span class="d-none d-sm-flex" :lang="locale">{{
+              t('trans.adminFormsTable.admin')
             }}</span>
           </v-btn>
         </router-link>
@@ -148,8 +153,8 @@ export default {
         >
           <v-btn color="primary" variant="text" size="small">
             <v-icon class="mr-1" icon="mdi:mdi-note-plus"></v-icon>
-            <span class="d-none d-sm-flex" :lang="lang">{{
-              $t('trans.adminFormsTable.launch')
+            <span class="d-none d-sm-flex" :lang="locale">{{
+              t('trans.adminFormsTable.launch')
             }}</span>
           </v-btn>
         </router-link>

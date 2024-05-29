@@ -1,11 +1,13 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { computed, onBeforeMount, nextTick, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { IdentityMode } from '~/utils/constants';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
-import { i18n } from '~/internationalization';
+
+const { t, locale } = useI18n({ useScope: 'global' });
 
 /* c8 ignore start */
 const loginRequiredRules = ref([
@@ -13,7 +15,7 @@ const loginRequiredRules = ref([
     return (
       v !== 'login' ||
       form.value.idps.length > 0 ||
-      i18n.t('trans.formSettings.selectLoginType')
+      t('trans.formSettings.selectLoginType')
     );
   },
 ]);
@@ -23,7 +25,7 @@ const idpType = ref(null);
 
 const idpStore = useIdpStore();
 
-const { form, isRTL, lang } = storeToRefs(useFormStore());
+const { form, isRTL } = storeToRefs(useFormStore());
 const { loginButtons } = storeToRefs(idpStore);
 
 const ID_MODE = computed(() => IdentityMode);
@@ -69,7 +71,7 @@ defineExpose({ idpType, userTypeChanged, updateLoginType });
 <template>
   <BasePanel class="fill-height">
     <template #title
-      ><span :lang="lang">{{
+      ><span :lang="locale">{{
         $t('trans.formSettings.formAccess')
       }}</span></template
     >
@@ -87,7 +89,7 @@ defineExpose({ idpType, userTypeChanged, updateLoginType });
         :value="ID_MODE.PUBLIC"
       >
         <template #label>
-          <span :class="{ 'mr-2': isRTL }" :lang="lang">
+          <span :class="{ 'mr-2': isRTL }" :lang="locale">
             {{ $t('trans.formSettings.public') }}
           </span>
         </template>
@@ -98,11 +100,11 @@ defineExpose({ idpType, userTypeChanged, updateLoginType });
           class="mr-4 mb-3"
           :class="{ 'dir-rtl': isRTL }"
         >
-          <h4 class="text-primary" :lang="lang">
+          <h4 class="text-primary" :lang="locale">
             <v-icon color="primary" icon="mdi:mdi-information" />
             {{ $t('trans.formSettings.important') }}!
           </h4>
-          <p class="mt-2 mb-0" :lang="lang">
+          <p class="mt-2 mb-0" :lang="locale">
             {{ $t('trans.formSettings.info') }}
             <a href="https://engage.gov.bc.ca/govtogetherbc/" target="_blank">
               govTogetherBC.
@@ -113,7 +115,7 @@ defineExpose({ idpType, userTypeChanged, updateLoginType });
       </v-expand-transition>
       <v-radio class="mb-4" :value="ID_MODE.LOGIN">
         <template #label>
-          <span :class="{ 'mr-2': isRTL }" :lang="lang">
+          <span :class="{ 'mr-2': isRTL }" :lang="locale">
             {{ $t('trans.formSettings.loginRequired') }}
           </span>
         </template>
@@ -142,21 +144,21 @@ defineExpose({ idpType, userTypeChanged, updateLoginType });
                 class="mr-4"
                 :class="{ 'dir-rtl': isRTL }"
               >
-                <h4 class="text-primary" :lang="lang">
+                <h4 class="text-primary" :lang="locale">
                   <v-icon color="primary" icon="mdi:mdi-information" />
                   {{ $t('trans.formSettings.important') }}!
                 </h4>
-                <p class="my-2" :lang="lang">
+                <p class="my-2" :lang="locale">
                   {{ $t('trans.formSettings.idimNotifyA') }} (<a
                     href="mailto:IDIM.Consulting@gov.bc.ca"
                     >IDIM.Consulting@gov.bc.ca</a
                   >) {{ $t('trans.formSettings.idimNotifyB') }}
                 </p>
-                <p class="mt-2 mb-0" :lang="lang">
+                <p class="mt-2 mb-0" :lang="locale">
                   {{ $t('trans.formSettings.referenceGuideA') }}
                   <a
                     href="https://github.com/bcgov/common-hosted-form-service/wiki/Accessing-forms#Notify-the-idim-team-if-you-are-using-bceid"
-                    :hreflang="lang"
+                    :lang="locale"
                     >{{ $t('trans.formSettings.referenceGuideB') }}</a
                   >
                   {{ $t('trans.formSettings.referenceGuideC') }}.
@@ -168,7 +170,7 @@ defineExpose({ idpType, userTypeChanged, updateLoginType });
       </v-expand-transition>
       <v-radio :value="ID_MODE.TEAM">
         <template #label>
-          <span :class="{ 'mr-2': isRTL }" :lang="lang">
+          <span :class="{ 'mr-2': isRTL }" :lang="locale">
             {{ $t('trans.formSettings.specificTeamMembers') }}
           </span>
         </template>

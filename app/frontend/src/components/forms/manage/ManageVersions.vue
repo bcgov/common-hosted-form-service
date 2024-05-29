@@ -1,9 +1,9 @@
 <script>
 import { mapActions, mapState } from 'pinia';
+import { useI18n } from 'vue-i18n';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import BaseInfoCard from '~/components/base/BaseInfoCard.vue';
-import { i18n } from '~/internationalization';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { formService } from '~/services';
@@ -15,31 +15,36 @@ export default {
     BaseInfoCard,
   },
   inject: ['formDesigner', 'draftId', 'formId'],
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
+
+    return { t, locale };
+  },
   data() {
     return {
       headers: [
         {
-          title: i18n.t('trans.manageVersions.version'),
+          title: this.$t('trans.manageVersions.version'),
           align: 'start',
           key: 'version',
         },
         {
-          title: i18n.t('trans.manageVersions.status'),
+          title: this.$t('trans.manageVersions.status'),
           align: 'start',
           key: 'status',
         },
         {
-          title: i18n.t('trans.manageVersions.dateCreated'),
+          title: this.$t('trans.manageVersions.dateCreated'),
           align: 'start',
           key: 'createdAt',
         },
         {
-          title: i18n.t('trans.manageVersions.createdBy'),
+          title: this.$t('trans.manageVersions.createdBy'),
           align: 'start',
           key: 'createdBy',
         },
         {
-          title: i18n.t('trans.manageVersions.actions'),
+          title: this.$t('trans.manageVersions.actions'),
           align: 'end',
           key: 'action',
           filterable: false,
@@ -64,13 +69,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, [
-      'drafts',
-      'form',
-      'permissions',
-      'isRTL',
-      'lang',
-    ]),
+    ...mapState(useFormStore, ['drafts', 'form', 'permissions', 'isRTL']),
     hasDraft() {
       return this.drafts?.length > 0;
     },
@@ -251,7 +250,7 @@ export default {
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
     <BaseInfoCard class="my-4">
-      <h4 class="text-primary" :lang="lang">
+      <h4 class="text-primary" :lang="locale">
         <v-icon
           :class="isRTL ? 'ml-1' : 'mr-1'"
           color="primary"
@@ -259,10 +258,10 @@ export default {
         ></v-icon
         >{{ $t('trans.manageVersions.important') }}!
       </h4>
-      <p :lang="lang">{{ $t('trans.manageVersions.infoA') }}</p>
+      <p :lang="locale">{{ $t('trans.manageVersions.infoA') }}</p>
     </BaseInfoCard>
 
-    <div class="mt-8 mb-5" :lang="lang">
+    <div class="mt-8 mb-5" :lang="locale">
       <v-icon
         :class="isRTL ? 'ml-1' : 'mr-1'"
         color="primary"
@@ -296,20 +295,20 @@ export default {
         >
           <v-tooltip location="bottom">
             <template #activator="{ props }">
-              <span v-bind="props" :lang="lang">
+              <span v-bind="props" :lang="locale">
                 {{ $t('trans.manageVersions.version') }} {{ item.version }}
                 <v-chip
                   v-if="item.isDraft"
                   color="secondary"
                   class="mb-5 px-1"
                   x-small
-                  :lang="lang"
+                  :lang="locale"
                 >
                   {{ $t('trans.manageVersions.draft') }}
                 </v-chip>
               </span>
             </template>
-            <span :lang="lang">
+            <span :lang="locale">
               {{ $t('trans.manageVersions.clickToPreview') }}
               <v-icon icon="mdi:mdi-open-in-new"></v-icon>
             </span>
@@ -330,7 +329,7 @@ export default {
           "
         >
           <template #label>
-            <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            <span :class="{ 'mr-2': isRTL }" :lang="locale">
               {{
                 item.published
                   ? $t('trans.manageVersions.published')
@@ -374,7 +373,7 @@ export default {
                 </v-btn>
               </router-link>
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               $t('trans.manageVersions.editVersion')
             }}</span>
           </v-tooltip>
@@ -395,7 +394,7 @@ export default {
                 <v-icon icon="mdi:mdi-download"></v-icon>
               </v-btn>
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               $t('trans.manageVersions.exportDesign')
             }}</span>
           </v-tooltip>
@@ -418,10 +417,10 @@ export default {
                 </v-btn>
               </span>
             </template>
-            <span v-if="hasDraft" :lang="lang">
+            <span v-if="hasDraft" :lang="locale">
               {{ $t('trans.manageVersions.infoC') }}
             </span>
-            <span v-else :lang="lang">
+            <span v-else :lang="locale">
               {{
                 $t('trans.manageVersions.useVersionInfo', {
                   version: item.version,
@@ -448,7 +447,7 @@ export default {
                 </v-btn>
               </span>
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               $t('trans.manageVersions.deleteVersion')
             }}</span>
           </v-tooltip>
@@ -462,12 +461,12 @@ export default {
       @close-dialog="showHasDraftsDialog = false"
     >
       <template #title
-        ><span :lang="lang">{{
+        ><span :lang="locale">{{
           $t('trans.manageVersions.draftAlreadyExists')
         }}</span></template
       >
       <template #text>
-        <span :lang="lang">
+        <span :lang="locale">
           {{ $t('trans.manageVersions.infoD') }}
         </span>
       </template>
@@ -480,24 +479,24 @@ export default {
       @close-dialog="cancelPublish"
     >
       <template #title>
-        <span v-if="publishOpts.publishing" :lang="lang">
+        <span v-if="publishOpts.publishing" :lang="locale">
           {{ $t('trans.manageVersions.publishVersion') }}
           {{ publishOpts.version }}
         </span>
-        <span v-else :lang="lang">
+        <span v-else :lang="locale">
           {{ $t('trans.manageVersions.unpublishVersion') }}
           {{ publishOpts.version }}</span
         >
       </template>
       <template #text>
-        <span v-if="publishOpts.publishing" :lang="lang">
+        <span v-if="publishOpts.publishing" :lang="locale">
           {{
             $t('trans.manageVersions.useVersionInfo', {
               version: publishOpts.version,
             })
           }}
         </span>
-        <span v-else :lang="lang">
+        <span v-else :lang="locale">
           {{ $t('trans.manageVersions.infoE') }}
         </span>
       </template>
@@ -510,17 +509,17 @@ export default {
       @continue-dialog="deleteCurrentDraft"
     >
       <template #title
-        ><span :lang="lang">{{
+        ><span :lang="locale">{{
           $t('trans.manageVersions.confirmDeletion')
         }}</span>
       </template>
       <template #text
-        ><span :lang="lang">{{
+        ><span :lang="locale">{{
           $t('trans.manageVersions.infoF')
         }}</span></template
       >
       <template #button-text-continue>
-        <span :lang="lang">{{ $t('trans.manageVersions.delete') }}</span>
+        <span :lang="locale">{{ $t('trans.manageVersions.delete') }}</span>
       </template>
     </BaseDialog>
   </div>

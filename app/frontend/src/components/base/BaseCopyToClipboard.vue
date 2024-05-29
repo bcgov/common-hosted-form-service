@@ -1,7 +1,10 @@
 <script setup>
-import { i18n } from '~/internationalization';
+import { useI18n } from 'vue-i18n';
+
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
+
+const { t } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   buttonText: {
@@ -18,21 +21,24 @@ const properties = defineProps({
   },
   snackBarText: {
     type: String,
-    default: i18n.t('trans.baseCopyToClipboard.linkToClipboard'),
+    default: undefined,
   },
   tooltipText: {
     type: String,
-    default: i18n.t('trans.baseCopyToClipboard.copyToClipboard'),
+    default: undefined,
   },
 });
 
 const emit = defineEmits(['copied']);
 
+const snackBarText =
+  properties.snackBarText || t('trans.baseCopyToClipboard.linkToClipboard');
+
 function onCopy() {
   emit('copied');
   const notificationStore = useNotificationStore();
   notificationStore.addNotification({
-    text: properties.snackBarText,
+    text: snackBarText,
     ...NotificationTypes.INFO,
   });
 }
@@ -40,7 +46,7 @@ function onCopy() {
 function onError(e) {
   const notificationStore = useNotificationStore();
   notificationStore.addNotification({
-    text: i18n.t('trans.baseCopyToClipboard.errCopyToClipboard'),
+    text: t('trans.baseCopyToClipboard.errCopyToClipboard'),
     consoleError: e,
   });
 }
@@ -64,7 +70,11 @@ function onError(e) {
           <span v-if="buttonText">{{ buttonText }}</span>
         </v-btn>
       </template>
-      <span>{{ tooltipText }}</span>
+      <span>{{
+        tooltipText
+          ? tooltipText
+          : t('trans.baseCopyToClipboard.copyToClipboard')
+      }}</span>
     </v-tooltip>
   </span>
 </template>

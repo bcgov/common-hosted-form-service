@@ -3,8 +3,8 @@ import { mount } from '@vue/test-utils';
 import { setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { nextTick } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import { i18n } from '~/internationalization';
 import { useAuthStore } from '~/store/auth';
 import Error from '~/views/Error.vue';
 
@@ -34,7 +34,6 @@ describe('Error.vue', () => {
   });
 
   it('renders with a custom error message', async () => {
-    const translateSpy = vi.spyOn(i18n, 't');
     const wrapper = mount(Error, {
       props: {
         text: 'Custom Error Message',
@@ -50,11 +49,9 @@ describe('Error.vue', () => {
     await nextTick();
 
     expect(wrapper.text()).toMatch('Custom Error Message');
-    expect(translateSpy).toHaveBeenCalledTimes(1);
   });
 
   it('renders with a custom error message without translating', async () => {
-    const translateSpy = vi.spyOn(i18n, 't');
     const wrapper = mount(Error, {
       props: {
         text: 'Custom Error Message',
@@ -72,6 +69,5 @@ describe('Error.vue', () => {
 
     // Should fail to parse the json and translate is not passed
     expect(wrapper.text()).toMatch('Custom Error Message');
-    expect(translateSpy).toHaveBeenCalledTimes(0);
   });
 });

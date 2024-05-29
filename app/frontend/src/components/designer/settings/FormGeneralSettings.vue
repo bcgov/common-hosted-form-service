@@ -1,7 +1,11 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import { useFormStore } from '~/store/form';
+
+const { locale } = useI18n({ useScope: 'global' });
 
 /* c8 ignore start */
 const nameRules = ref([
@@ -21,13 +25,13 @@ const descriptionRules = ref([
 ]);
 /* c8 ignore stop */
 
-const { form, lang } = storeToRefs(useFormStore());
+const { form } = storeToRefs(useFormStore());
 </script>
 
 <template>
   <BasePanel class="fill-height">
     <template #title
-      ><span :lang="lang">{{
+      ><span :lang="locale">{{
         $t('trans.formSettings.formTitle')
       }}</span></template
     >
@@ -39,7 +43,7 @@ const { form, lang } = storeToRefs(useFormStore());
       :label="$t('trans.formSettings.formTitle')"
       data-test="text-name"
       :rules="nameRules"
-      :lang="lang"
+      :lang="locale"
     />
 
     <v-text-field
@@ -50,7 +54,7 @@ const { form, lang } = storeToRefs(useFormStore());
       :label="$t('trans.formSettings.formDescription')"
       data-test="text-description"
       :rules="descriptionRules"
-      :lang="lang"
+      :lang="locale"
     />
   </BasePanel>
 </template>

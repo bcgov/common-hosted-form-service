@@ -1,7 +1,7 @@
 <script>
 import _ from 'lodash';
 import { mapState, mapActions } from 'pinia';
-import { i18n } from '~/internationalization';
+import { useI18n } from 'vue-i18n';
 
 import userService from '~/services/userService';
 import { useAuthStore } from '~/store/auth';
@@ -17,6 +17,11 @@ export default {
     },
   },
   emits: ['new-users', 'adding-users'],
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
+
+    return { t, locale };
+  },
   data() {
     return {
       addingUsers: false,
@@ -32,7 +37,7 @@ export default {
   },
   computed: {
     ...mapState(useAuthStore, ['identityProvider']),
-    ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
+    ...mapState(useFormStore, ['form', 'isRTL']),
     ...mapState(useIdpStore, ['loginButtons', 'primaryIdp']),
     FORM_ROLES() {
       const idpRoles = this.listRoles(this.selectedIdp);
@@ -40,8 +45,8 @@ export default {
     },
     autocompleteLabel() {
       return this.isPrimary(this.selectedIdp)
-        ? i18n.t('trans.addTeamMember.enterUsername')
-        : i18n.t('trans.addTeamMember.enterExactUsername');
+        ? this.$t('trans.addTeamMember.enterUsername')
+        : this.$t('trans.addTeamMember.enterExactUsername');
     },
   },
   watch: {
@@ -125,10 +130,10 @@ export default {
         let teamMembershipConfig = this.teamMembershipSearch(this.selectedIdp);
         if (teamMembershipConfig) {
           if (input.length < teamMembershipConfig.text.minLength)
-            throw new Error(i18n.t(teamMembershipConfig.text.message));
+            throw new Error(this.$t(teamMembershipConfig.text.message));
           if (input.includes('@')) {
             if (!new RegExp(Regex.EMAIL).test(input))
-              throw new Error(i18n.t(teamMembershipConfig.email.message));
+              throw new Error(this.$t(teamMembershipConfig.email.message));
             else params.email = input;
           } else {
             params.username = input;
@@ -142,7 +147,7 @@ export default {
         this.entries = [];
         /* eslint-disable no-console */
         console.error(
-          i18n.t('trans.manageSubmissionUsers.getUsersErrMsg', {
+          this.$t('trans.manageSubmissionUsers.getUsersErrMsg', {
             error: error,
           })
         ); // eslint-disable-line no-console
@@ -207,7 +212,7 @@ export default {
                 <div
                   class="px-2"
                   :class="{ 'text-right': isRTL }"
-                  :lang="lang"
+                  :lang="locale"
                   v-html="$t('trans.addTeamMember.cantFindChefsUsers')"
                 ></div>
               </template>
@@ -265,7 +270,7 @@ export default {
               :loading="isLoading"
               @click="save"
             >
-              <span :lang="lang">{{ $t('trans.addTeamMember.add') }}</span>
+              <span :lang="locale">{{ $t('trans.addTeamMember.add') }}</span>
             </v-btn>
             <v-btn
               variant="outlined"
@@ -275,13 +280,13 @@ export default {
                 showError = false;
               "
             >
-              <span :lang="lang">{{ $t('trans.addTeamMember.cancel') }}</span>
+              <span :lang="locale">{{ $t('trans.addTeamMember.cancel') }}</span>
             </v-btn>
           </v-col>
         </v-row>
         <v-row v-if="showError" class="px-4 my-0 py-0">
           <v-col class="text-left">
-            <span class="text-red" :lang="lang">{{
+            <span class="text-red" :lang="locale">{{
               $t('trans.addTeamMember.mustSelectAUser')
             }}</span>
           </v-col>
@@ -303,7 +308,7 @@ export default {
             <v-icon icon="mdi:mdi-account-plus"></v-icon>
           </v-btn>
         </template>
-        <span :lang="lang">{{ $t('trans.addTeamMember.addNewMember') }}</span>
+        <span :lang="locale">{{ $t('trans.addTeamMember.addNewMember') }}</span>
       </v-tooltip>
     </span>
   </span>

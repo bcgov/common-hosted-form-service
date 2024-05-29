@@ -2,11 +2,11 @@
 import { FormBuilder } from '@formio/vue';
 import { compare, applyPatch, deepClone } from 'fast-json-patch';
 import { mapActions, mapState } from 'pinia';
+import { useI18n } from 'vue-i18n';
 
 import BaseInfoCard from '~/components/base/BaseInfoCard.vue';
 import FloatButton from '~/components/designer/FloatButton.vue';
 import ProactiveHelpPreviewDialog from '~/components/infolinks/ProactiveHelpPreviewDialog.vue';
-import { i18n } from '~/internationalization';
 import formioIl8next from '~/internationalization/trans/formio/formio.json';
 import templateExtensions from '~/plugins/templateExtensions';
 import { formService } from '~/services';
@@ -50,6 +50,11 @@ export default {
       default: null,
     },
   },
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
+
+    return { t, locale };
+  },
   data() {
     return {
       canSave: false,
@@ -85,7 +90,6 @@ export default {
       'builder',
       'form',
       'isRTL',
-      'lang',
       'userLabels',
     ]),
     ...mapState(useAuthStore, ['tokenParsed', 'user']),
@@ -251,8 +255,8 @@ export default {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.formDesigner.formLoadErrMsg'),
-          consoleError: i18n.t('trans.formDesigner.formLoadConsoleErrMsg', {
+          text: this.$t('trans.formDesigner.formLoadErrMsg'),
+          consoleError: this.$t('trans.formDesigner.formLoadConsoleErrMsg', {
             formId: this.formId,
             versionId: this.versionId,
             draftId: this.draftId,
@@ -281,8 +285,8 @@ export default {
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
-          text: i18n.t('trans.formDesigner.formSchemaImportErrMsg'),
-          consoleError: i18n.t(
+          text: this.$t('trans.formDesigner.formSchemaImportErrMsg'),
+          consoleError: this.$t(
             'trans.formDesigner.formSchemaImportConsoleErrMsg',
             {
               error: error,
@@ -431,7 +435,7 @@ export default {
           modified?.components?.map((comp) => {
             if (comp.key === 'form') {
               const notificationStore = useNotificationStore();
-              const msg = i18n.t('trans.formDesigner.fieldnameError', {
+              const msg = this.$t('trans.formDesigner.fieldnameError', {
                 label: comp.label,
               });
               notificationStore.addNotification({
@@ -587,8 +591,8 @@ export default {
         this.savedStatus = 'Not Saved';
         this.isFormSaved = false;
         notificationStore.addNotification({
-          text: i18n.t('trans.formDesigner.formDesignSaveErrMsg'),
-          consoleError: i18n.t(
+          text: this.$t('trans.formDesigner.formDesignSaveErrMsg'),
+          consoleError: this.$t(
             'trans.formDesigner.formSchemaImportConsoleErrMsg',
             {
               formId: this.formId,
@@ -693,10 +697,10 @@ export default {
       class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
     >
       <!-- page title -->
-      <div :lang="lang">
+      <div :lang="locale">
         <h1>{{ $t('trans.formDesigner.formDesign') }}</h1>
         <h3 v-if="form.name">{{ form.name }}</h3>
-        <em :lang="lang"
+        <em :lang="locale"
           >{{ $t('trans.formDesigner.version') }} : {{ displayVersion }}</em
         >
       </div>
@@ -715,7 +719,9 @@ export default {
               <v-icon icon="mdi:mdi-download"></v-icon>
             </v-btn>
           </template>
-          <span :lang="lang">{{ $t('trans.formDesigner.exportDesign') }}</span>
+          <span :lang="locale">{{
+            $t('trans.formDesigner.exportDesign')
+          }}</span>
         </v-tooltip>
         <v-tooltip location="bottom">
           <template #activator="{ props }">
@@ -737,12 +743,14 @@ export default {
               />
             </v-btn>
           </template>
-          <span :lang="lang">{{ $t('trans.formDesigner.importDesign') }}</span>
+          <span :lang="locale">{{
+            $t('trans.formDesigner.importDesign')
+          }}</span>
         </v-tooltip>
       </div>
     </div>
     <BaseInfoCard class="my-6" :class="{ 'dir-rtl': isRTL }">
-      <h4 class="text-primary" :lang="lang">
+      <h4 class="text-primary" :lang="locale">
         <v-icon
           :class="isRTL ? 'ml-1' : 'mr-1'"
           color="primary"
@@ -752,12 +760,12 @@ export default {
       </h4>
       <p
         class="my-0"
-        :lang="lang"
+        :lang="locale"
         v-html="$t('trans.formDesigner.formDesignInfoA')"
       ></p>
       <p
         class="my-0"
-        :lang="lang"
+        :lang="locale"
         v-html="$t('trans.formDesigner.formDesignInfoB')"
       ></p>
     </BaseInfoCard>

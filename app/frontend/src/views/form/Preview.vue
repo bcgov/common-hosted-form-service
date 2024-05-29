@@ -1,11 +1,15 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import BaseSecure from '~/components/base/BaseSecure.vue';
 import FormViewer from '~/components/designer/FormViewer.vue';
 
 import { useFormStore } from '~/store/form';
 import { AppPermissions } from '~/utils/constants';
+
+const { locale } = useI18n({ useScope: 'global' });
 
 defineProps({
   d: {
@@ -22,7 +26,7 @@ defineProps({
   },
 });
 
-const { isRTL, lang } = storeToRefs(useFormStore());
+const { isRTL } = storeToRefs(useFormStore());
 
 const APP_PERMS = computed(() => AppPermissions);
 </script>
@@ -31,7 +35,7 @@ const APP_PERMS = computed(() => AppPermissions);
   <BaseSecure :permission="APP_PERMS.VIEWS_FORM_PREVIEW">
     <h1
       :class="{ 'dir-rtl': isRTL }"
-      :lang="lang"
+      :lang="locale"
       style="text-align: left !important"
     >
       {{ $t('trans.preview.preview') }}
@@ -44,7 +48,7 @@ const APP_PERMS = computed(() => AppPermissions);
             icon="mdi:mdi-help-circle-outline"
           />
         </template>
-        <span :lang="lang">
+        <span :lang="locale">
           {{ $t('trans.preview.previewToolTip') }}
         </span>
       </v-tooltip>

@@ -1,9 +1,9 @@
 <script>
 import { mapActions, mapState } from 'pinia';
+import { useI18n } from 'vue-i18n';
 
 import ProactiveHelpDialog from '~/components/infolinks/ProactiveHelpDialog.vue';
 import ProactiveHelpPreviewDialog from '~/components/infolinks/ProactiveHelpPreviewDialog.vue';
-import { i18n } from '~/internationalization';
 import { useFormStore } from '~/store/form';
 import { useAdminStore } from '~/store/admin';
 
@@ -26,6 +26,11 @@ export default {
       required: true,
     },
   },
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
+
+    return { t, locale };
+  },
   data() {
     return {
       component: {},
@@ -38,18 +43,18 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
+    ...mapState(useFormStore, ['isRTL']),
     ...mapState(useAdminStore, ['fcProactiveHelpImageUrl']),
     headers() {
       return [
         {
-          title: i18n.t('trans.generalLayout.formTitle'),
+          title: this.$t('trans.generalLayout.formTitle'),
           align: 'start',
           key: 'componentName',
           width: '1%',
         },
         {
-          title: i18n.t('trans.generalLayout.actions'),
+          title: this.$t('trans.generalLayout.actions'),
           align: 'end',
           key: 'actions',
           filterable: false,
@@ -141,7 +146,7 @@ export default {
       :items="layoutList"
       :loading="loading"
       :loading-text="$t('trans.generalLayout.loadingText')"
-      :lang="lang"
+      :lang="locale"
     >
       <template #item.componentName="{ item }">
         <div>
@@ -164,7 +169,7 @@ export default {
               <span
                 class="d-none d-sm-flex"
                 style="font-size: 16px"
-                :lang="lang"
+                :lang="locale"
                 >{{ $t('trans.generalLayout.edit') }}</span
               >
             </v-btn>
@@ -182,7 +187,7 @@ export default {
               <span
                 class="d-none d-sm-flex"
                 style="font-size: 16px"
-                :lang="lang"
+                :lang="locale"
                 >{{ $t('trans.generalLayout.preview') }}</span
               >
             </v-btn>
@@ -206,7 +211,7 @@ export default {
               <span
                 style="width: 120px !important; font-size: 16px"
                 class="d-none d-sm-flex"
-                :lang="lang"
+                :lang="locale"
                 >{{
                   publish[index]
                     ? $t('trans.generalLayout.published')

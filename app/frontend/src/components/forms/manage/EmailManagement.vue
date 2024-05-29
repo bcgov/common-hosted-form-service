@@ -1,34 +1,35 @@
 <script>
 import { mapActions, mapState } from 'pinia';
+import { useI18n } from 'vue-i18n';
 
 import EmailTemplate from '~/components/forms/manage/EmailTemplate.vue';
 import { useFormStore } from '~/store/form';
 
 export default {
   name: 'EmailManagement',
-
   components: {
     EmailTemplate,
   },
-
   props: {
     formId: {
       required: true,
       type: String,
     },
   },
+  setup() {
+    const { locale } = useI18n({ useScope: 'global' });
 
-  computed: {
-    ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
+    return { locale };
   },
-
+  computed: {
+    ...mapState(useFormStore, ['form', 'isRTL']),
+  },
   async created() {
     await Promise.all([
       this.fetchEmailTemplates(this.formId),
       this.fetchForm(this.formId),
     ]);
   },
-
   methods: {
     ...mapActions(useFormStore, ['fetchEmailTemplates', 'fetchForm']),
   },
@@ -41,7 +42,7 @@ export default {
       class="d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse"
     >
       <div>
-        <h1 class="mr-auto" :lang="lang">
+        <h1 class="mr-auto" :lang="locale">
           {{ $t('trans.emailManagement.emailManagement')
           }}<v-icon
             color="primary"
@@ -71,7 +72,9 @@ export default {
               </v-btn>
             </router-link>
           </template>
-          <span :lang="lang">{{ $t('trans.emailManagement.manageForm') }}</span>
+          <span :lang="locale">{{
+            $t('trans.emailManagement.manageForm')
+          }}</span>
         </v-tooltip>
       </div>
     </div>

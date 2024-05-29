@@ -1,5 +1,7 @@
 <script>
 import { mapActions, mapState } from 'pinia';
+import { useI18n } from 'vue-i18n';
+
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { useFormStore } from '~/store/form';
 
@@ -22,13 +24,18 @@ export default {
     },
   },
   emits: ['deleted'],
+  setup() {
+    const { locale } = useI18n({ useScope: 'global' });
+
+    return { locale };
+  },
   data() {
     return {
       showDeleteDialog: false,
     };
   },
   computed: {
-    ...mapState(useFormStore, ['form', 'lang', 'isRTL']),
+    ...mapState(useFormStore, ['form', 'isRTL']),
   },
   methods: {
     ...mapActions(useFormStore, ['deleteSubmission']),
@@ -56,7 +63,7 @@ export default {
           @click="showDeleteDialog = true"
         />
       </template>
-      <span :lang="lang"
+      <span :lang="locale"
         >{{ $t('trans.deleteSubmission.deleteThis') }}
         {{
           isDraft
@@ -73,12 +80,12 @@ export default {
       @continue-dialog="delSub"
     >
       <template #title>
-        <span :lang="lang">{{
+        <span :lang="locale">{{
           $t('trans.deleteSubmission.confirmDeletion')
         }}</span></template
       >
       <template #text>
-        <span :lang="lang">
+        <span :lang="locale">
           {{ $t('trans.deleteSubmission.deleteWarning') }}
           {{
             isDraft
@@ -88,7 +95,7 @@ export default {
         >
       </template>
       <template #button-text-continue>
-        <span :lang="lang">{{ $t('trans.deleteSubmission.delete') }}</span>
+        <span :lang="locale">{{ $t('trans.deleteSubmission.delete') }}</span>
       </template>
     </BaseDialog>
   </span>

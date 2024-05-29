@@ -1,9 +1,11 @@
 <script setup>
 import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
 
 import { useAuthStore } from '~/store/auth';
-import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
+
+const { locale } = useI18n({ useScope: 'global' });
 
 defineProps({
   idpHint: {
@@ -13,18 +15,16 @@ defineProps({
 });
 
 const authStore = useAuthStore();
-const formStore = useFormStore();
 const idpStore = useIdpStore();
 
 const { authenticated, ready } = storeToRefs(authStore);
-const { lang } = storeToRefs(formStore);
 const { loginButtons } = storeToRefs(idpStore);
 </script>
 
 <template>
   <v-container class="text-center">
     <div v-if="ready && !authenticated">
-      <h1 class="my-6" :lang="lang">
+      <h1 class="my-6" :lang="locale">
         {{ $t('trans.login.authenticateWith') }}
       </h1>
       <v-row v-for="button in loginButtons" :key="button.code" justify="center">
@@ -42,13 +42,13 @@ const { loginButtons } = storeToRefs(idpStore);
       </v-row>
     </div>
     <div v-else-if="ready && authenticated">
-      <h1 class="my-6" :lang="lang">
+      <h1 class="my-6" :lang="locale">
         {{ $t('trans.login.alreadyLoggedIn') }}
       </h1>
       <router-link :to="{ name: 'About' }">
-        <v-btn class="ma-2" color="primary" size="large" :lang="lang">
+        <v-btn class="ma-2" color="primary" size="large" :lang="locale">
           <v-icon start icon="mdi-home"></v-icon>
-          <span :lang="lang">{{ $t('trans.login.about') }}</span>
+          <span :lang="locale">{{ $t('trans.login.about') }}</span>
         </v-btn>
       </router-link>
     </div>

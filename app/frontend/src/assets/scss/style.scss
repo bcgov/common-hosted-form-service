@@ -134,6 +134,10 @@ a,
   }
 }
 
+.v-select {
+  
+}
+
 .v-tooltip > .v-overlay__content {
   background: rgba(97, 97, 97, 0.9) !important;
 }
@@ -556,4 +560,19 @@ a,
 
 .v-data-table, .v-data-table-server, .v-table {
   font-size: 16px !important;
+}
+
+.v-select .v-field__input {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.v-select .v-list-item--density-default {
+  min-height: 38px !important;
+}
+
+.vselect .v-label {
+  opacity: 1 !important;
 }

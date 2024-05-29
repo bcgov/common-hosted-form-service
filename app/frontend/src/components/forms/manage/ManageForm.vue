@@ -1,5 +1,6 @@
 <script>
 import { mapActions, mapState } from 'pinia';
+import { useI18n } from 'vue-i18n';
 
 import ApiKey from '~/components/forms/manage/ApiKey.vue';
 import DocumentTemplate from '~/components/forms/manage/DocumentTemplate.vue';
@@ -20,6 +21,11 @@ export default {
     Subscription,
     FormProfile,
   },
+  setup() {
+    const { locale } = useI18n({ useScope: 'global' });
+
+    return { locale };
+  },
   data() {
     return {
       apiKeyPanel: 1,
@@ -39,7 +45,6 @@ export default {
       'form',
       'permissions',
       'isRTL',
-      'lang',
       'subscriptionData',
     ]),
     canEditForm() {
@@ -145,9 +150,9 @@ export default {
       <v-expansion-panel flat>
         <!-- Form Settings -->
         <v-expansion-panel-title>
-          <div class="header" :lang="lang">
+          <div class="header" :lang="locale">
             <strong>{{ $t('trans.manageForm.formSettings') }}</strong>
-            <span :lang="lang">
+            <span :lang="locale">
               <small>
                 {{ $t('trans.manageForm.created') }}:
                 {{ $filters.formatDate(form.createdAt) }} ({{ form.createdBy }})
@@ -186,10 +191,10 @@ export default {
               color="primary"
               @click="updateSettings"
             >
-              <span :lang="lang">{{ $t('trans.manageForm.update') }}</span>
+              <span :lang="locale">{{ $t('trans.manageForm.update') }}</span>
             </v-btn>
             <v-btn variant="outlined" @click="cancelSettingsEdit">
-              <span :lang="lang">{{ $t('trans.manageForm.cancel') }}</span>
+              <span :lang="locale">{{ $t('trans.manageForm.cancel') }}</span>
             </v-btn>
           </div>
         </v-expansion-panel-text>
@@ -204,9 +209,9 @@ export default {
     >
       <v-expansion-panel flat>
         <v-expansion-panel-title>
-          <div class="header" :lang="lang">
+          <div class="header" :lang="locale">
             <strong>{{ $t('trans.manageForm.eventSubscription') }}</strong>
-            <span v-if="subscriptionData" :lang="lang">
+            <span v-if="subscriptionData" :lang="locale">
               <small v-if="subscriptionData.updatedBy">
                 {{ $t('trans.manageForm.updated') }}:
                 {{ $filters.formatDate(subscriptionData.updatedAt) }} ({{
@@ -236,9 +241,9 @@ export default {
     >
       <v-expansion-panel flat>
         <v-expansion-panel-title>
-          <div class="header" :lang="lang">
+          <div class="header" :lang="locale">
             <strong>{{ $t('trans.manageForm.apiKey') }}</strong>
-            <span v-if="apiKey" :lang="lang">
+            <span v-if="apiKey" :lang="locale">
               <small v-if="apiKey.updatedBy">
                 {{ $t('trans.manageForm.updated') }}:
                 {{ $filters.formatDate(apiKey.updatedAt) }} ({{
@@ -268,7 +273,7 @@ export default {
     >
       <v-expansion-panel flat>
         <v-expansion-panel-title>
-          <div class="header" :lang="lang">
+          <div class="header" :lang="locale">
             <strong>{{ $t('trans.manageForm.cdogsTemplate') }}</strong>
           </div>
         </v-expansion-panel-title>
@@ -282,17 +287,17 @@ export default {
     <v-expansion-panels v-model="versionsPanel" class="nrmc-expand-collapse">
       <v-expansion-panel flat>
         <v-expansion-panel-title>
-          <div class="header" :lang="lang">
+          <div class="header" :lang="locale">
             <strong style="flex: 1">{{
               $t('trans.manageForm.formDesignHistory')
             }}</strong>
             <div>
-              <span :lang="lang">
+              <span :lang="locale">
                 <strong>{{ $t('trans.manageForm.totalVersions') }}:</strong>
                 {{ combinedVersionAndDraftCount }}
               </span>
             </div>
-            <span class="ml-12 mr-2" :lang="lang">
+            <span class="ml-12 mr-2" :lang="locale">
               <strong>{{ $t('trans.manageForm.status') }}:</strong>
               {{ versionState }}
             </span>

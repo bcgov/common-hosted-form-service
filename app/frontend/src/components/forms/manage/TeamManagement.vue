@@ -1,10 +1,10 @@
 <script>
 import { mapActions, mapState } from 'pinia';
+import { useI18n } from 'vue-i18n';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import BaseFilter from '~/components/base/BaseFilter.vue';
 import AddTeamMember from '~/components/forms/manage/AddTeamMember.vue';
-import { i18n } from '~/internationalization';
 import { rbacService, roleService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
@@ -27,6 +27,11 @@ export default {
       type: String,
       required: true,
     },
+  },
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
+
+    return { t, locale };
   },
   data() {
     return {
@@ -51,7 +56,7 @@ export default {
   },
   computed: {
     ...mapState(useAuthStore, ['user']),
-    ...mapState(useFormStore, ['form', 'permissions', 'isRTL', 'lang']),
+    ...mapState(useFormStore, ['form', 'permissions', 'isRTL']),
     ...mapState(useIdpStore, ['listRoles']),
     canManageTeam() {
       return this.permissions.includes(FormPermissions.TEAM_UPDATE);
@@ -61,15 +66,15 @@ export default {
     },
     DeleteMessage() {
       return this.itemsToDelete.length > 1
-        ? i18n.t('trans.teamManagement.delSelectedMembersWarning')
-        : i18n.t('trans.teamManagement.delSelectedMemberWarning');
+        ? this.$t('trans.teamManagement.delSelectedMembersWarning')
+        : this.$t('trans.teamManagement.delSelectedMemberWarning');
     },
     DEFAULT_HEADERS() {
       const headers = [
-        { title: i18n.t('trans.teamManagement.fullName'), key: 'fullName' },
-        { title: i18n.t('trans.teamManagement.username'), key: 'username' },
+        { title: this.$t('trans.teamManagement.fullName'), key: 'fullName' },
+        { title: this.$t('trans.teamManagement.username'), key: 'username' },
         {
-          title: i18n.t('trans.teamManagement.identityProvider'),
+          title: this.$t('trans.teamManagement.identityProvider'),
           key: 'identityProvider.code',
         },
       ];
@@ -311,7 +316,7 @@ export default {
             this.addNotification({
               text:
                 `${user.username}@${user.idpCode}` +
-                i18n.t('trans.teamManagement.idpMessage'),
+                this.$t('trans.teamManagement.idpMessage'),
             });
           }
         });
@@ -341,8 +346,8 @@ export default {
 
     userError() {
       this.addNotification({
-        text: i18n.t('trans.teamManagement.formOwnerRemovalWarning'),
-        consoleError: i18n.t('trans.teamManagement.formOwnerRemovalWarning'),
+        text: this.$t('trans.teamManagement.formOwnerRemovalWarning'),
+        consoleError: this.$t('trans.teamManagement.formOwnerRemovalWarning'),
       });
     },
 
@@ -364,11 +369,14 @@ export default {
             error.response.data &&
             error.response.data.detail
               ? error.response.data.detail
-              : i18n.t('trans.teamManagement.removeUsersErrMsg'),
-          consoleError: i18n.t('trans.teamManagement.removeUserConsoleErrMsg', {
-            formId: this.formId,
-            error: error,
-          }),
+              : this.$t('trans.teamManagement.removeUsersErrMsg'),
+          consoleError: this.$t(
+            'trans.teamManagement.removeUserConsoleErrMsg',
+            {
+              formId: this.formId,
+              error: error,
+            }
+          ),
         });
       } finally {
         this.selectedUsers = [];
@@ -391,7 +399,7 @@ export default {
       class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
     >
       <div>
-        <h1 class="mr-auto" :lang="lang">
+        <h1 class="mr-auto" :lang="locale">
           {{ $t('trans.teamManagement.teamManagement') }}
         </h1>
         <h3>{{ formId ? form.name : '' }}</h3>
@@ -418,7 +426,7 @@ export default {
                 <v-icon icon="mdi:mdi-view-column"></v-icon>
               </v-btn>
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               $t('trans.teamManagement.selectColumns')
             }}</span>
           </v-tooltip>
@@ -437,7 +445,7 @@ export default {
                 </v-btn>
               </router-link>
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               $t('trans.teamManagement.manageForm')
             }}</span>
           </v-tooltip>
@@ -458,7 +466,7 @@ export default {
           :label="$t('trans.teamManagement.search')"
           single-line
           :class="{ label: isRTL }"
-          :lang="lang"
+          :lang="locale"
         />
       </v-col>
     </v-row>
@@ -481,7 +489,7 @@ export default {
       "
       :search="search"
       dense
-      :lang="lang"
+      :lang="locale"
     >
       <!-- custom header markup - add tooltip to heading that are roles -->
       <template #header.form_designer="{ column }">
@@ -556,7 +564,7 @@ export default {
               ></v-icon>
             </v-btn>
           </template>
-          <span :lang="lang">{{
+          <span :lang="locale">{{
             $t('trans.teamManagement.removeSelectedUsers')
           }}</span>
         </v-tooltip>
@@ -639,7 +647,7 @@ export default {
               ></v-icon>
             </v-btn>
           </template>
-          <span :lang="lang">{{
+          <span :lang="locale">{{
             $t('trans.teamManagement.removeThisUser')
           }}</span>
         </v-tooltip>
@@ -653,7 +661,7 @@ export default {
       @continue-dialog="removeUser"
     >
       <template #title
-        ><span :lang="lang">
+        ><span :lang="locale">
           {{ $t('trans.teamManagement.confirmRemoval') }}</span
         ></template
       >
@@ -661,7 +669,7 @@ export default {
         {{ DeleteMessage }}
       </template>
       <template #button-text-continue>
-        <span :lang="lang">{{ $t('trans.teamManagement.remove') }}</span>
+        <span :lang="locale">{{ $t('trans.teamManagement.remove') }}</span>
       </template>
     </BaseDialog>
 
@@ -679,7 +687,7 @@ export default {
         @cancel-filter-data="showColumnsDialog = false"
       >
         <template #filter-title
-          ><span :lang="lang">
+          ><span :lang="locale">
             {{ $t('trans.teamManagement.teamMebersTitle') }}</span
           ></template
         >

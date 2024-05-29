@@ -108,7 +108,6 @@ export const useFormStore = defineStore('form', {
     },
     formList: [],
     imageList: new Map(),
-    lang: 'en',
     isRTL: false,
     permissions: [],
     roles: [],
@@ -826,14 +825,6 @@ export const useFormStore = defineStore('form', {
       // Look for those in the Views for the relevant pages, look for "beforeRouteLeave" lifecycle
       if (!this.form || this.form.isDirty === isDirty) return; // don't do anything if not changing the val (or if form is blank for some reason)
       this.form.isDirty = isDirty;
-    },
-    async setMultiLanguage(lang) {
-      this.lang = lang;
-      if (lang === 'ar' || lang === 'fa') {
-        this.isRTL = true;
-      } else {
-        this.isRTL = false;
-      }
     },
     async downloadFile(fileId) {
       try {

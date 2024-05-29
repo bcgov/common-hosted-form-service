@@ -1,9 +1,16 @@
 <script>
 import { mapActions, mapState } from 'pinia';
+import { useI18n } from 'vue-i18n';
+
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
 export default {
+  setup() {
+    const { locale } = useI18n({ useScope: 'global' });
+
+    return { locale };
+  },
   data() {
     return {
       loading: false,
@@ -30,7 +37,6 @@ export default {
     ...mapState(useFormStore, [
       'apiKey',
       'form',
-      'lang',
       'permissions',
       'subscriptionData',
       'version',
@@ -81,7 +87,7 @@ export default {
 <template>
   <v-container class="px-0">
     <template #title>
-      <span :lang="lang">
+      <span :lang="locale">
         {{ $t('trans.formSettings.eventSubscription') }}
       </span>
     </template>
@@ -95,7 +101,7 @@ export default {
           <v-text-field
             v-model="subscriptionData.endpointUrl"
             :label="$t('trans.subscribeEvent.endpointUrl')"
-            :lang="lang"
+            :lang="locale"
             :placeholder="$t('trans.subscribeEvent.urlPlaceholder')"
             density="compact"
             flat
@@ -108,7 +114,7 @@ export default {
           <v-text-field
             v-model="subscriptionData.key"
             :label="$t('trans.subscribeEvent.key')"
-            :lang="lang"
+            :lang="locale"
             density="compact"
             flat
             solid
@@ -119,7 +125,7 @@ export default {
           <v-text-field
             v-model="subscriptionData.endpointToken"
             :label="$t('trans.subscribeEvent.endpointToken')"
-            :lang="lang"
+            :lang="locale"
             density="compact"
             flat
             solid
@@ -144,10 +150,10 @@ export default {
                 @click="showHideKey"
               />
             </template>
-            <span v-if="showSecret" :lang="lang">
+            <span v-if="showSecret" :lang="locale">
               {{ $t('trans.subscribeEvent.hideSecret') }}
             </span>
-            <span v-else :lang="lang">{{
+            <span v-else :lang="locale">{{
               $t('trans.subscribeEvent.showSecret')
             }}</span>
           </v-tooltip>
@@ -156,7 +162,7 @@ export default {
       <v-row>
         <v-col>
           <v-btn class="mr-5" color="primary" @click="updateSettings">
-            <span :lang="lang">{{ $t('trans.subscribeEvent.save') }}</span>
+            <span :lang="locale">{{ $t('trans.subscribeEvent.save') }}</span>
           </v-btn>
         </v-col>
       </v-row>

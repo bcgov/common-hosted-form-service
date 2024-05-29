@@ -1,7 +1,8 @@
 <script>
 import { mapState } from 'pinia';
+import { useI18n } from 'vue-i18n';
+
 import BaseDialog from '~/components/base/BaseDialog.vue';
-import { i18n } from '~/internationalization';
 import { formService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
@@ -25,6 +26,11 @@ export default {
       required: true,
     },
   },
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
+
+    return { t, locale };
+  },
   data() {
     return {
       emailRules: [(v) => !!v || 'E-mail is required'],
@@ -34,7 +40,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
+    ...mapState(useFormStore, ['isRTL']),
   },
   mounted() {
     this.resetDialog();
@@ -53,13 +59,13 @@ export default {
             to: this.to,
           });
           notificationStore.addNotification({
-            text: i18n.t('trans.requestReceipt.emailSent', { to: this.to }),
+            text: this.$t('trans.requestReceipt.emailSent', { to: this.to }),
             ...NotificationTypes.SUCCESS,
           });
         } catch (error) {
           notificationStore.addNotification({
-            text: i18n.t('trans.requestReceipt.sendingEmailErrMsg'),
-            consoleError: i18n.t(
+            text: this.$t('trans.requestReceipt.sendingEmailErrMsg'),
+            consoleError: this.$t(
               'trans.requestReceipt.sendingEmailConsErrMsg',
               {
                 to: this.to,
@@ -89,7 +95,7 @@ export default {
       @click="displayDialog"
     >
       <v-icon icon="mdi:mdi-email"></v-icon>
-      <span :lang="lang">{{ $t('trans.requestReceipt.emailReceipt') }}</span>
+      <span :lang="locale">{{ $t('trans.requestReceipt.emailReceipt') }}</span>
     </v-btn>
 
     <BaseDialog
@@ -109,7 +115,7 @@ export default {
             :label="$t('trans.requestReceipt.sendToEmailAddress')"
             :rules="emailRules"
             data-test="text-form-to"
-            :lang="lang"
+            :lang="locale"
           >
             <template #prepend>
               <v-icon
@@ -129,7 +135,7 @@ export default {
               { title: $t('trans.requestReceipt.high'), value: 'high' },
             ]"
             :label="$t('trans.requestReceipt.emailPriority')"
-            :lang="lang"
+            :lang="locale"
           >
             <template #prepend>
               <v-icon />
@@ -138,7 +144,7 @@ export default {
         </v-form>
       </template>
       <template #button-text-continue>
-        <span :lang="lang">{{ $t('trans.requestReceipt.send') }}</span>
+        <span :lang="locale">{{ $t('trans.requestReceipt.send') }}</span>
       </template>
     </BaseDialog>
   </div>

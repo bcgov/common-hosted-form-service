@@ -1,9 +1,11 @@
 <script setup>
 import { computed } from 'vue';
-import { i18n } from '~/internationalization';
+import { useI18n } from 'vue-i18n';
 
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
+
+const { t } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   id: {
@@ -44,7 +46,7 @@ const notificationType = computed(() => {
 });
 
 const TEXT = computed(() => {
-  const msg = properties.translate ? i18n.t(properties.text) : properties.text;
+  const msg = properties.translate ? t(properties.text) : properties.text;
   return msg.replace(/(<([^>]+)>)/gi, '');
 });
 

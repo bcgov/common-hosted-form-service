@@ -1,7 +1,7 @@
 <script>
 import { mapActions, mapState } from 'pinia';
+import { useI18n } from 'vue-i18n';
 
-import { i18n } from '~/internationalization';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
@@ -11,6 +11,11 @@ import { checkFormManage, checkSubmissionView } from '~/utils/permissionUtils';
 export default {
   components: {
     BaseDialog,
+  },
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
+
+    return { t, locale };
   },
   data() {
     return {
@@ -23,19 +28,19 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['formList', 'isRTL', 'lang']),
+    ...mapState(useFormStore, ['formList', 'isRTL']),
     ...mapState(useAuthStore, ['user']),
     ...mapState(useIdpStore, ['isPrimary']),
     headers() {
       return [
         {
-          title: i18n.t('trans.formsTable.formTitle'),
+          title: this.$t('trans.formsTable.formTitle'),
           align: 'start',
           key: 'name',
           width: '1%',
         },
         {
-          title: i18n.t('trans.formsTable.action'),
+          title: this.$t('trans.formsTable.action'),
           align: 'end',
           key: 'actions',
           filterable: false,
@@ -78,7 +83,7 @@ export default {
     >
       <!-- page title -->
       <div>
-        <h1 :lang="lang">{{ $t('trans.formsTable.myForms') }}</h1>
+        <h1 :lang="locale">{{ $t('trans.formsTable.myForms') }}</h1>
       </div>
       <!-- buttons -->
       <div v-if="canCreateForm">
@@ -101,7 +106,7 @@ export default {
               </v-btn>
             </router-link>
           </template>
-          <span :lang="lang">{{ $t('trans.formsTable.createNewForm') }}</span>
+          <span :lang="locale">{{ $t('trans.formsTable.createNewForm') }}</span>
         </v-tooltip>
       </div>
     </div>
@@ -120,7 +125,7 @@ export default {
             :label="$t('trans.formsTable.search')"
             class="pb-5"
             :class="{ label: isRTL }"
-            :lang="lang"
+            :lang="locale"
           />
         </div>
       </v-col>
@@ -137,7 +142,7 @@ export default {
     :loading="loading"
     :loading-text="$t('trans.formsTable.loadingText')"
     :search="search"
-    :lang="lang"
+    :lang="locale"
     :sort-by="sortBy"
   >
     <template #item.name="{ item }">
@@ -153,7 +158,7 @@ export default {
           <template #activator="{ props }">
             <span v-bind="props">{{ item.name }}</span>
           </template>
-          <span :lang="lang">
+          <span :lang="locale">
             {{ $t('trans.formsTable.viewForm') }}
             <v-icon icon="mdi:mdi-open-in-new"></v-icon>
           </span>
@@ -177,7 +182,7 @@ export default {
       >
         <v-btn color="primary" variant="text" size="small">
           <v-icon :class="isRTL ? 'ml-1' : 'mr-1'" icon="mdi:mdi-cog"></v-icon>
-          <span class="d-none d-sm-flex" :lang="lang">{{
+          <span class="d-none d-sm-flex" :lang="locale">{{
             $t('trans.formsTable.manage')
           }}</span>
         </v-btn>
@@ -192,7 +197,7 @@ export default {
             :class="isRTL ? 'ml-1' : 'mr-1'"
             icon="mdi:mdi-list-box-outline"
           ></v-icon>
-          <span class="d-none d-sm-flex" :lang="lang">{{
+          <span class="d-none d-sm-flex" :lang="locale">{{
             $t('trans.formsTable.submissions')
           }}</span>
         </v-btn>
@@ -206,7 +211,7 @@ export default {
     @close-dialog="showDescriptionDialog = false"
   >
     <template #title>
-      <span class="pl-5" :lang="lang">{{
+      <span class="pl-5" :lang="locale">{{
         $t('trans.formsTable.Description')
       }}</span>
     </template>

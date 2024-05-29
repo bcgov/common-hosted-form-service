@@ -1,12 +1,18 @@
 <script>
 import { mapState, mapWritableState, mapActions } from 'pinia';
+import { useI18n } from 'vue-i18n';
+
 import { useFormStore } from '~/store/form';
 import { formService } from '~/services';
-import { i18n } from '~/internationalization';
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
 
 export default {
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
+
+    return { t, locale };
+  },
   data() {
     return {
       loading: false,
@@ -27,11 +33,12 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
+    ...mapState(useFormStore, ['isRTL']),
     ...mapWritableState(useFormStore, ['form']),
     validationRules() {
       return [
-        this.isValidFile || i18n.t('trans.documentTemplate.invalidFileMessage'),
+        this.isValidFile ||
+          this.$t('trans.documentTemplate.invalidFileMessage'),
       ];
     },
   },
@@ -75,8 +82,8 @@ export default {
         }
       } catch (e) {
         this.addNotification({
-          text: i18n.t('trans.documentTemplate.fetchError'),
-          consoleError: i18n.t('trans.documentTemplate.fetchError', {
+          text: this.$t('trans.documentTemplate.fetchError'),
+          consoleError: this.$t('trans.documentTemplate.fetchError', {
             error: e.message,
           }),
         });
@@ -131,13 +138,13 @@ export default {
           this.$refs.fileInput.reset();
         }
         this.addNotification({
-          text: i18n.t('trans.documentTemplate.uploadSuccess'),
+          text: this.$t('trans.documentTemplate.uploadSuccess'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (e) {
         this.addNotification({
-          text: i18n.t('trans.documentTemplate.uploadError'),
-          consoleError: i18n.t('trans.documentTemplate.uploadError', {
+          text: this.$t('trans.documentTemplate.uploadError'),
+          consoleError: this.$t('trans.documentTemplate.uploadError', {
             error: e.message,
           }),
         });
@@ -151,13 +158,13 @@ export default {
         await formService.documentTemplateDelete(this.form.id, item.templateId);
         this.fetchDocumentTemplates();
         this.addNotification({
-          text: i18n.t('trans.documentTemplate.deleteSuccess'),
+          text: this.$t('trans.documentTemplate.deleteSuccess'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (e) {
         this.addNotification({
-          text: i18n.t('trans.documentTemplate.deleteError'),
-          consoleError: i18n.t('trans.documentTemplate.deleteError', {
+          text: this.$t('trans.documentTemplate.deleteError'),
+          consoleError: this.$t('trans.documentTemplate.deleteError', {
             error: e.message,
           }),
         });
@@ -203,8 +210,8 @@ export default {
         }
       } catch (e) {
         this.addNotification({
-          text: i18n.t('trans.documentTemplate.fetchError'),
-          consoleError: i18n.t('trans.documentTemplate.fetchError', {
+          text: this.$t('trans.documentTemplate.fetchError'),
+          consoleError: this.$t('trans.documentTemplate.fetchError', {
             error: e.message,
           }),
         });
@@ -248,7 +255,7 @@ export default {
               :href="techdocsLinkTemplateUpload"
               class="preview_info_link_field_white"
               target="_blank"
-              :hreflang="lang"
+              :lang="locale"
             >
               {{ $t('trans.formSettings.learnMore') }}
               <v-icon icon="mdi:mdi-arrow-top-right-bold-box-outline"></v-icon>
@@ -283,7 +290,7 @@ export default {
               {{ item.filename }}
             </a>
           </template>
-          <span :lang="lang">
+          <span :lang="locale">
             {{ $t('trans.manageVersions.clickToPreview') }}
             <v-icon icon="mdi:mdi-open-in-new"></v-icon>
           </span>
@@ -338,7 +345,7 @@ export default {
       counter
       :clearable="true"
       show-size
-      :lang="lang"
+      :lang="locale"
       prepend-icon="false"
       :disabled="documentTemplates.length >= 1"
       :rules="validationRules"
@@ -355,7 +362,7 @@ export default {
       color="primary"
       @click="handleFileUpload"
     >
-      <span :lang="lang">{{ $t('trans.documentTemplate.upload') }}</span>
+      <span :lang="locale">{{ $t('trans.documentTemplate.upload') }}</span>
     </v-btn>
   </div>
 </template>

@@ -1,5 +1,6 @@
 <script>
 import { mapActions, mapState } from 'pinia';
+import { useI18n } from 'vue-i18n';
 
 import BaseCopyToClipboard from '~/components/base/BaseCopyToClipboard.vue';
 import BaseDialog from '~/components/base/BaseDialog.vue';
@@ -11,6 +12,11 @@ export default {
     BaseCopyToClipboard,
     BaseDialog,
   },
+  setup() {
+    const { locale } = useI18n({ useScope: 'global' });
+
+    return { locale };
+  },
   data() {
     return {
       loading: false,
@@ -21,13 +27,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, [
-      'apiKey',
-      'form',
-      'permissions',
-      'isRTL',
-      'lang',
-    ]),
+    ...mapState(useFormStore, ['apiKey', 'form', 'permissions', 'isRTL']),
     canDeleteKey() {
       return (
         this.permissions.includes(FormPermissions.FORM_API_DELETE) &&
@@ -98,20 +98,20 @@ export default {
   <div :class="{ 'dir-rtl': isRTL }">
     <div v-if="!canGenerateKey" class="mt-3 mb-6">
       <v-icon class="mr-1" color="primary" icon="mdi:mdi-information"></v-icon>
-      <span :lang="lang" v-html="$t('trans.apiKey.formOwnerKeyAcess')"></span>
+      <span :lang="locale" v-html="$t('trans.apiKey.formOwnerKeyAcess')"></span>
     </div>
-    <h3 class="mt-3" :lang="lang">
+    <h3 class="mt-3" :lang="locale">
       {{ $t('trans.apiKey.disclaimer') }}
     </h3>
     <ul :class="isRTL ? 'mr-6' : null">
-      <li :lang="lang">{{ $t('trans.apiKey.infoA') }}</li>
-      <li :lang="lang">
+      <li :lang="locale">{{ $t('trans.apiKey.infoA') }}</li>
+      <li :lang="locale">
         {{ $t('trans.apiKey.infoB') }}
       </li>
-      <li :lang="lang">
+      <li :lang="locale">
         {{ $t('trans.apiKey.infoC') }}
       </li>
-      <li :lang="lang">
+      <li :lang="locale">
         {{ $t('trans.apiKey.infoD') }}
       </li>
     </ul>
@@ -125,7 +125,7 @@ export default {
             :disabled="!canGenerateKey"
             @click="showConfirmationDialog = true"
           >
-            <span :lang="lang"
+            <span :lang="locale"
               >{{
                 apiKey
                   ? $t('trans.apiKey.regenerate')
@@ -145,7 +145,7 @@ export default {
             readonly
             :type="showSecret ? 'text' : 'password'"
             :model-value="secret"
-            :lang="lang"
+            :lang="locale"
           />
         </v-col>
         <v-col cols="12" sm="3">
@@ -161,10 +161,12 @@ export default {
                 @click="showHideKey"
               />
             </template>
-            <span v-if="showSecret" :lang="lang">{{
+            <span v-if="showSecret" :lang="locale">{{
               $t('trans.apiKey.hideSecret')
             }}</span>
-            <span v-else :lang="lang">{{ $t('trans.apiKey.showSecret') }}</span>
+            <span v-else :lang="locale">{{
+              $t('trans.apiKey.showSecret')
+            }}</span>
           </v-tooltip>
 
           <BaseCopyToClipboard
@@ -173,7 +175,7 @@ export default {
             :text-to-copy="secret"
             :snack-bar-text="$t('trans.apiKey.sCTC')"
             :tooltip-text="$t('trans.apiKey.cSTC')"
-            :lang="lang"
+            :lang="locale"
           />
 
           <v-tooltip location="bottom">
@@ -188,7 +190,7 @@ export default {
                 @click="showDeleteDialog = true"
               />
             </template>
-            <span :lang="lang">{{ $t('trans.apiKey.deleteKey') }}</span>
+            <span :lang="locale">{{ $t('trans.apiKey.deleteKey') }}</span>
           </v-tooltip>
         </v-col>
       </v-row>
@@ -202,24 +204,24 @@ export default {
       @continue-dialog="createKey"
     >
       <template #title
-        ><span :lang="lang">
+        ><span :lang="locale">
           {{ $t('trans.apiKey.confirmKeyGen') }}
         </span></template
       >
       <template #text>
         <span
           v-if="!apiKey"
-          :lang="lang"
+          :lang="locale"
           v-html="$t('trans.apiKey.createAPIKey')"
         />
         <span
           v-else
-          :lang="lang"
+          :lang="locale"
           v-html="$t('trans.apiKey.regenerateAPIKey')"
         />
       </template>
       <template #button-text-continue>
-        <span :lang="lang"
+        <span :lang="locale"
           >{{
             apiKey ? $t('trans.apiKey.regenerate') : $t('trans.apiKey.generate')
           }}
@@ -236,15 +238,17 @@ export default {
       @continue-dialog="deleteKey"
     >
       <template #title
-        ><span :lang="lang"
+        ><span :lang="locale"
           >{{ $t('trans.apiKey.confirmDeletion') }}
         </span></template
       >
       <template #text
-        ><span :lang="lang">{{ $t('trans.apiKey.deleteMsg') }}</span></template
+        ><span :lang="locale">{{
+          $t('trans.apiKey.deleteMsg')
+        }}</span></template
       >
       <template #button-text-continue>
-        <span :lang="lang">{{ $t('trans.apiKey.delete') }}</span>
+        <span :lang="locale">{{ $t('trans.apiKey.delete') }}</span>
       </template>
     </BaseDialog>
   </div>

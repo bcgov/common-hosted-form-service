@@ -1,5 +1,7 @@
 <script>
 import { mapState } from 'pinia';
+import { useI18n } from 'vue-i18n';
+
 import ManageSubmissionUsers from '~/components/forms/submission/ManageSubmissionUsers.vue';
 import PrintOptions from '~/components/forms/PrintOptions.vue';
 import { FormPermissions } from '~/utils/constants';
@@ -58,13 +60,18 @@ export default {
     },
   },
   emits: ['save-draft', 'switchView', 'showdoYouWantToSaveTheDraftModal'],
+  setup() {
+    const { locale } = useI18n({ useScope: 'global' });
+
+    return { locale };
+  },
   data() {
     return {
       isWideLayout: false,
     };
   },
   computed: {
-    ...mapState(useFormStore, ['lang', 'isRTL']),
+    ...mapState(useFormStore, ['isRTL']),
     canSaveDraft() {
       return !this.readOnly;
     },
@@ -99,7 +106,7 @@ export default {
         variant="outlined"
         @click="$emit('showdoYouWantToSaveTheDraftModal')"
       >
-        <span :lang="lang">{{
+        <span :lang="locale">{{
           $t('trans.formViewerActions.viewMyDraftOrSubmissions')
         }}</span>
       </v-btn>
@@ -119,7 +126,7 @@ export default {
               <v-icon icon="mdi:mdi-repeat"></v-icon>
             </v-btn>
           </template>
-          <span :lang="lang">{{
+          <span :lang="locale">{{
             bulkFile
               ? $t('trans.formViewerActions.switchSingleSubmssn')
               : $t('trans.formViewerActions.switchMultiSubmssn')
@@ -168,7 +175,7 @@ export default {
               <v-icon icon="mdi:mdi-content-save"></v-icon>
             </v-btn>
           </template>
-          <span :lang="lang">{{
+          <span :lang="locale">{{
             $t('trans.formViewerActions.saveAsADraft')
           }}</span>
         </v-tooltip>
@@ -194,7 +201,7 @@ export default {
                 v-bind="props"
               />
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               $t('trans.formViewerActions.editThisDraft')
             }}</span>
           </v-tooltip>

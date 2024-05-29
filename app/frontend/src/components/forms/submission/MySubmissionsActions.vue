@@ -1,5 +1,6 @@
 <script>
 import { mapState } from 'pinia';
+import { useI18n } from 'vue-i18n';
 
 import DeleteSubmission from '~/components/forms/submission/DeleteSubmission.vue';
 import { useFormStore } from '~/store/form';
@@ -20,8 +21,13 @@ export default {
     },
   },
   emits: ['draft-deleted'],
+  setup() {
+    const { locale } = useI18n({ useScope: 'global' });
+
+    return { locale };
+  },
   computed: {
-    ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
+    ...mapState(useFormStore, ['form', 'isRTL']),
     isCopyFromExistingSubmissionEnabled() {
       return this.form && this.form.enableCopyExistingSubmission;
     },
@@ -70,7 +76,7 @@ export default {
             icon="mdi:mdi-eye"
           />
         </template>
-        <span :lang="lang">{{
+        <span :lang="locale">{{
           $t('trans.mySubmissionsActions.viewThisSubmission')
         }}</span>
       </v-tooltip>
@@ -103,7 +109,7 @@ export default {
               icon="mdi:mdi-pencil-box-multiple"
             />
           </template>
-          <span :lang="lang">{{
+          <span :lang="locale">{{
             $t('trans.mySubmissionsActions.copyThisSubmission')
           }}</span>
         </v-tooltip>
@@ -134,7 +140,7 @@ export default {
               icon="mdi:mdi-pencil"
             />
           </template>
-          <span :lang="lang">{{
+          <span :lang="locale">{{
             $t('trans.mySubmissionsActions.editThisDraft')
           }}</span>
         </v-tooltip>

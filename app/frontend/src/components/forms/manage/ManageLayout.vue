@@ -1,5 +1,6 @@
 <script>
 import { mapState } from 'pinia';
+import { useI18n } from 'vue-i18n';
 
 import ManageForm from '~/components/forms/manage/ManageForm.vue';
 import ManageFormActions from '~/components/forms/manage/ManageFormActions.vue';
@@ -17,13 +18,18 @@ export default {
       required: true,
     },
   },
+  setup() {
+    const { locale } = useI18n({ useScope: 'global' });
+
+    return { locale };
+  },
   data() {
     return {
       loading: true,
     };
   },
   computed: {
-    ...mapState(useFormStore, ['form', 'permissions', 'isRTL', 'lang']),
+    ...mapState(useFormStore, ['form', 'permissions', 'isRTL']),
   },
   async mounted() {
     this.loading = true;
@@ -50,7 +56,7 @@ export default {
     >
       <!-- page title -->
       <div>
-        <h1 :lang="lang">{{ $t('trans.manageLayout.manageForm') }}</h1>
+        <h1 :lang="locale">{{ $t('trans.manageLayout.manageForm') }}</h1>
         <h3>{{ form.name }}</h3>
       </div>
       <!-- buttons -->

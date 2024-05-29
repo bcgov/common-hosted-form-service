@@ -1,6 +1,8 @@
 <script>
 import QrcodeVue from 'qrcode.vue';
 import { mapState } from 'pinia';
+import { useI18n } from 'vue-i18n';
+
 import BaseCopyToClipboard from '~/components/base/BaseCopyToClipboard.vue';
 import { NotificationTypes } from '~/utils/constants';
 import { useFormStore } from '~/store/form';
@@ -20,6 +22,11 @@ export default {
       default: false,
     },
   },
+  setup() {
+    const { locale } = useI18n({ useScope: 'global' });
+
+    return { locale };
+  },
   data() {
     return {
       dialog: false,
@@ -28,7 +35,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
+    ...mapState(useFormStore, ['isRTL']),
     formLink() {
       return `${window.location.origin}${
         import.meta.env.BASE_URL
@@ -64,17 +71,17 @@ export default {
           @click="dialog = true"
         />
       </template>
-      <span :lang="lang">{{ $t('trans.shareForm.shareForm') }}</span>
+      <span :lang="locale">{{ $t('trans.shareForm.shareForm') }}</span>
     </v-tooltip>
 
     <v-dialog v-model="dialog" width="900">
       <v-card>
-        <v-card-title class="text-h5 pb-0" :lang="lang">{{
+        <v-card-title class="text-h5 pb-0" :lang="locale">{{
           $t('trans.shareForm.shareLink')
         }}</v-card-title>
         <v-card-text>
           <hr />
-          <p class="mb-5" :class="{ 'dir-rtl': isRTL }" :lang="lang">
+          <p class="mb-5" :class="{ 'dir-rtl': isRTL }" :lang="locale">
             {{ $t('trans.shareForm.copyQRCode') }}
           </p>
           <v-alert
@@ -82,7 +89,7 @@ export default {
             :class="[NOTIFICATIONS_TYPES.WARNING.class, { 'dir-rtl': isRTL }]"
             :icon="NOTIFICATIONS_TYPES.WARNING.icon"
             :text="$t('trans.shareForm.warningMessage')"
-            :lang="lang"
+            :lang="locale"
           ></v-alert>
           <v-text-field
             readonly
@@ -101,7 +108,7 @@ export default {
                 class="mt-n1 mx-2"
                 :text-to-copy="formLink"
                 :tooltip-text="$t('trans.shareForm.copyURLToClipboard')"
-                :lang="lang"
+                :lang="locale"
               />
               <v-tooltip location="bottom">
                 <template #activator="{ props }">
@@ -118,7 +125,7 @@ export default {
                     icon="mdi:mdi-open-in-new"
                   />
                 </template>
-                <span :class="{ 'dir-rtl': isRTL }" :lang="lang">{{
+                <span :class="{ 'dir-rtl': isRTL }" :lang="locale">{{
                   $t('trans.shareForm.openThisForm')
                 }}</span>
               </v-tooltip>
@@ -163,7 +170,7 @@ export default {
             variant="flat"
             @click="dialog = false"
           >
-            <span :lang="lang">{{ $t('trans.shareForm.close') }}</span>
+            <span :lang="locale">{{ $t('trans.shareForm.close') }}</span>
           </v-btn>
         </v-card-actions>
       </v-card>
