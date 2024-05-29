@@ -1,16 +1,24 @@
 export function formsettings(){
 
-
-
-
-
     const depEnv = Cypress.env('depEnv');
     const username=Cypress.env('keycloakUsername');
     const password=Cypress.env('keycloakPassword');
     
     
     
-    cy.visit(`/${depEnv}`);
+    if(depEnv=="")
+    {
+        cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/app`);
+    }
+    else
+    {
+       
+        //cy.visit(`/pr-${depEnv}`);
+        
+        cy.visit(`/${depEnv}`);
+        
+    }
+    
     cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
     cy.get('[data-test="idir"]').click();
     

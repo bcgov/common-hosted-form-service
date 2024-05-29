@@ -292,14 +292,10 @@ describe('Form Designer', () => {
      cy.get('[data-cy="settingsRouterLink"] > .v-btn').click();
      cy.get('.mt-6 > :nth-child(2) > div > :nth-child(5) > .v-btn').click();
      cy.get('[data-test="continue-btn-continue"]').click();
+     
+    });
 
 
-
-
-    
   });
-
-
-});
 
 });

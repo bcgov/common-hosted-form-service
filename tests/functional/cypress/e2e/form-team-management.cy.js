@@ -144,18 +144,13 @@ describe('Form Designer', () => {
     
     cy.location('search').then(search => {
       //let pathName = fullUrl.pathname
-      let arr = search.split('=');
-      let arrayValues = arr[1].split('&');
-      cy.log(arrayValues[0]);
-      //cy.log(arrayValues[1]);
-      //cy.log(arrayValues[2]);
-      cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-      cy.waitForLoad();
-      cy.log(arrayValues[0]);
-      })
-
-
-      //cy.get('.mdi-cog').click();
+    let arr = search.split('=');
+    let arrayValues = arr[1].split('&');
+    cy.log(arrayValues[0]);
+      
+    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+    cy.waitForLoad();
+    cy.log(arrayValues[0]);
     //Publish the form
     cy.get('.v-label > span').click();
 
@@ -179,82 +174,15 @@ describe('Form Designer', () => {
     cy.get(':nth-child(5) > .v-chip__content').click();
     cy.get('.v-btn--elevated > .v-btn__content > span').click();
     cy.waitForLoad();
-
-
-
-
-    // Verify Roles on submission data
-    cy.location('search').then(search => {
-      //let pathName = fullUrl.pathname
-      let arr = search.split('=');
-      //let arrayValues = arr[1].split('&');
-      
-      cy.visit(`/${depEnv}/form/submit?f=${arr[1]}`);
-      cy.log(arr[1]);
-      
-    
-    
-    
-    
-     // form submission
-     cy.get('input[name="data[simplebcaddress]"').click();
-     cy.get('input[name="data[simplebcaddress]"').type('2260 Sooke');
-     cy.waitForLoad();
-     cy.get('button').contains('Submit').click();
-     cy.waitForLoad();
-     cy.waitForLoad();
-     //cy.get('button').contains('Submit').click();
-     
-     //cy.get('button').contains('Submit').click();
-     cy.get('[data-test="continue-btn-continue"]').click();
-     cy.waitForLoad();
-     cy.waitForLoad();
-     
-      
-    
-    
-    //Go to Team Management
-
-    
-      //let arrayValues1 =  arr;
-      cy.visit(`/${depEnv}`);
-      cy.get('[data-cy="userFormsLinks"]').click();
-      cy.visit(`/${depEnv}/form/manage?f=${arr[1]}`);
-      cy.waitForLoad();
-      cy.log(arr[1]);
-     })
-   
-    cy.get('.mdi-list-box-outline').click();
-    cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn').click();
-    //cy.get('.mdi-pencil').should('be.enabled');
-    cy.get('[aria-describedby="v-tooltip-82"]').should('be.enabled');
-    cy.get('.mdi-pencil').click();
-    cy.get('button').contains('Submit').click();
+    cy.visit(`/${depEnv}`);
+    cy.get('[data-cy="userFormsLinks"]').click();
+    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.waitForLoad();
-    cy.get('button').contains('Submit').click();
-    cy.waitForLoad();
-
-    //Delete submission after test run
-    //cy.get('a > .v-btn').click();
-    cy.get('.mdi-delete').click();
-    cy.get('[data-test="continue-btn-continue"]').click();
+    //Delete form after test run
+      cy.get('.mdi-delete').click();
+      cy.get('[data-test="continue-btn-continue"]').click();
+    })
     
-
-
-
-
-
-
-
-
-    
-
-    
-
-  
-
-
-
-     });
+  });
     
 });

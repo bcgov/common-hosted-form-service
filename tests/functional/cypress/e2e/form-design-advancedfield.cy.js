@@ -259,29 +259,29 @@ describe('Form Designer', () => {
           //let pathName = fullUrl.pathname
           let arr = search.split('=');
           let arrayValues = arr[1].split('&');
-        cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
+          cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
           cy.waitForLoad();
-        })
-        cy.waitForLoad();
+        
+          cy.waitForLoad();
         // for print option verification
-        cy.get(':nth-child(2) > .d-print-none > :nth-child(1) > .v-btn').should('be.visible');
-        cy.get('.mdi-printer').should('be.visible');
-        cy.get('.mdi-content-save').should('be.visible');
-        cy.waitForLoad();
-        // Check registered business address
+          cy.get(':nth-child(2) > .d-print-none > :nth-child(1) > .v-btn').should('be.visible');
+          cy.get('.mdi-printer').should('be.visible');
+          cy.get('.mdi-content-save').should('be.visible');
+          cy.waitForLoad();
+          // Check registered business address
 
-        cy.waitForLoad();
-        cy.waitForLoad();
-        cy.get('.choices__inner').click();
-        cy.get('.choices__inner').type('hello');
-        //cy.get('.ui > .choices__list > .choices__item').click();
-        //cy.get('.ui').click();
-        cy.get('label').contains('Registered Business Name').click();
-        cy.waitForLoad();
-        cy.get('input[placeholder="Type to search"]').type("Thrifty Foods");
-        cy.contains('THRIFTY FOODS').click();
-        cy.get('input[name="data[bcaddress]"').click();
-        cy.get('input[name="data[bcaddress]"').type('2260 Sooke');
+          cy.waitForLoad();
+          cy.waitForLoad();
+          cy.get('.choices__inner').click();
+          cy.get('.choices__inner').type('hello');
+          //cy.get('.ui > .choices__list > .choices__item').click();
+          //cy.get('.ui').click();
+          cy.get('label').contains('Registered Business Name').click();
+          cy.waitForLoad();
+          cy.get('input[placeholder="Type to search"]').type("Thrifty Foods");
+          cy.contains('THRIFTY FOODS').click();
+          cy.get('input[name="data[bcaddress]"').click();
+          cy.get('input[name="data[bcaddress]"').type('2260 Sooke');
         //cy.contains('2260 Sooke Rd, Colwood, BC').click();
 
 
@@ -297,7 +297,18 @@ describe('Form Designer', () => {
        cy.get('button').contains('Submit').click();
        cy.waitForLoad();
        cy.get('button').contains('Submit').click();
+       
+       cy.visit(`/${depEnv}`);
+       cy.get('[data-cy="userFormsLinks"]').click();
+       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+       cy.waitForLoad();
+       //Delete form after test run
+       //cy.get('.mdi-delete').click();
+       cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
+       cy.get('[data-test="continue-btn-continue"]').click();
 
+
+      })
 
     });
 
