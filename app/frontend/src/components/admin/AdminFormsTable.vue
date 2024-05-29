@@ -136,7 +136,12 @@ export default {
       </template>
       <template #item.actions="{ item }">
         <router-link :to="{ name: 'AdministerForm', query: { f: item.id } }">
-          <v-btn color="primary" variant="text" size="small">
+          <v-btn
+            color="primary"
+            variant="text"
+            size="small"
+            :title="$t('trans.adminFormsTable.admin')"
+          >
             <v-icon class="mr-1" icon="mdi:mdi-wrench"></v-icon>
             <span class="d-none d-sm-flex" :lang="locale">{{
               t('trans.adminFormsTable.admin')
@@ -151,7 +156,12 @@ export default {
           }"
           target="_blank"
         >
-          <v-btn color="primary" variant="text" size="small">
+          <v-btn
+            color="primary"
+            variant="text"
+            size="small"
+            :title="$t('trans.adminFormsTable.launch')"
+          >
             <v-icon class="mr-1" icon="mdi:mdi-note-plus"></v-icon>
             <span class="d-none d-sm-flex" :lang="locale">{{
               t('trans.adminFormsTable.launch')

@@ -277,6 +277,7 @@ export default {
                     class="mr-4 saveButtonWrapper"
                     data-cy="more_help_info_link_save_button"
                     :lang="locale"
+                    :title="$t('trans.proactiveHelpDialog.save')"
                     @click="submit"
                   >
                     {{ $t('trans.proactiveHelpDialog.save') }}
@@ -285,6 +286,7 @@ export default {
                     class="cancelButtonWrapper"
                     data-cy="more_help_info_link_cancel_button"
                     :lang="locale"
+                    :title="$t('trans.proactiveHelpDialog.cancel')"
                     @click="onCloseDialog"
                   >
                     {{ $t('trans.proactiveHelpDialog.cancel') }}

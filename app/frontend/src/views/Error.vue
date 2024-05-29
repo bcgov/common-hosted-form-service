@@ -43,6 +43,7 @@ const TEXT = computed(() => {
         v-if="authenticated"
         color="primary"
         size="large"
+        :title="$t('trans.error.logout')"
         @click="authStore.logout"
       >
         <span :lang="locale">{{ $t('trans.error.logout') }}</span>

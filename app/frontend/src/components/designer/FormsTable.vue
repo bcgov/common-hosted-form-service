@@ -101,6 +101,7 @@ export default {
                 icon="mdi-plus"
                 role="link"
                 size="x-small"
+                :title="$t('trans.formsTable.createNewForm')"
                 @click="navigate"
               >
               </v-btn>
@@ -180,7 +181,12 @@ export default {
         v-if="checkFormManage(item.permissions)"
         :to="{ name: 'FormManage', query: { f: item.id } }"
       >
-        <v-btn color="primary" variant="text" size="small">
+        <v-btn
+          color="primary"
+          variant="text"
+          size="small"
+          :title="$t('trans.formsTable.manage')"
+        >
           <v-icon :class="isRTL ? 'ml-1' : 'mr-1'" icon="mdi:mdi-cog"></v-icon>
           <span class="d-none d-sm-flex" :lang="locale">{{
             $t('trans.formsTable.manage')
@@ -192,7 +198,12 @@ export default {
         data-cy="formSubmissionsLink"
         :to="{ name: 'FormSubmissions', query: { f: item.id } }"
       >
-        <v-btn color="primary" variant="text" size="small">
+        <v-btn
+          color="primary"
+          variant="text"
+          size="small"
+          :title="$t('trans.formsTable.submissions')"
+        >
           <v-icon
             :class="isRTL ? 'ml-1' : 'mr-1'"
             icon="mdi:mdi-list-box-outline"

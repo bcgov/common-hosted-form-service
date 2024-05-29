@@ -34,6 +34,7 @@ const { loginButtons } = storeToRefs(idpStore);
             color="primary"
             size="large"
             :data-test="button.code"
+            :title="button.display"
             @click="authStore.login(button.hint)"
           >
             {{ button.display }}
@@ -46,7 +47,13 @@ const { loginButtons } = storeToRefs(idpStore);
         {{ $t('trans.login.alreadyLoggedIn') }}
       </h1>
       <router-link :to="{ name: 'About' }">
-        <v-btn class="ma-2" color="primary" size="large" :lang="locale">
+        <v-btn
+          class="ma-2"
+          color="primary"
+          size="large"
+          :lang="locale"
+          :title="$t('trans.login.about')"
+        >
           <v-icon start icon="mdi-home"></v-icon>
           <span :lang="locale">{{ $t('trans.login.about') }}</span>
         </v-btn>

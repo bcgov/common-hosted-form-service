@@ -123,6 +123,11 @@ export default {
             block
             color="primary"
             :disabled="!canGenerateKey"
+            :title="`${
+              apiKey
+                ? $t('trans.apiKey.regenerate')
+                : $t('trans.apiKey.generate')
+            }${$t('trans.apiKey.apiKey')}`"
             @click="showConfirmationDialog = true"
           >
             <span :lang="locale"
@@ -158,6 +163,7 @@ export default {
                 size="x-small"
                 density="default"
                 :icon="showSecret ? 'mdi:mdi-eye-off' : 'mdi:mdi-eye'"
+                :title="$t('trans.apiKey.hideSecret')"
                 @click="showHideKey"
               />
             </template>
@@ -187,6 +193,7 @@ export default {
                 size="x-small"
                 density="default"
                 icon="mdi:mdi-delete"
+                :title="$t('trans.apiKey.deleteKey')"
                 @click="showDeleteDialog = true"
               />
             </template>

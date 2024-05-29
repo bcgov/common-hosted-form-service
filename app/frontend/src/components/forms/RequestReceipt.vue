@@ -92,6 +92,7 @@ export default {
       variant="text"
       size="small"
       :class="{ 'dir-rtl': isRTL }"
+      :title="$t('trans.requestReceipt.emailReceipt')"
       @click="displayDialog"
     >
       <v-icon icon="mdi:mdi-email"></v-icon>

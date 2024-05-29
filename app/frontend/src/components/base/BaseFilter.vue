@@ -125,6 +125,7 @@ defineExpose({ selectedData, inputFilter });
               class="mx-1 align-self-center mb-3"
               icon
               v-bind="props"
+              :title="$t('trans.baseFilter.resetColumns')"
               @click="onResetColumns"
             >
               <v-icon
@@ -158,6 +159,7 @@ defineExpose({ selectedData, inputFilter });
         data-test="save-btn"
         class="bg-primary mt-3"
         :lang="locale"
+        :title="inputSaveButtonText"
         @click="savingFilterData"
       >
         {{ inputSaveButtonText }}
@@ -168,6 +170,7 @@ defineExpose({ selectedData, inputFilter });
         :class="RTL"
         variant="outlined"
         :lang="locale"
+        :title="$t('trans.baseFilter.cancel')"
         @click="cancelFilterData"
         >{{ $t('trans.baseFilter.cancel') }}</v-btn
       >

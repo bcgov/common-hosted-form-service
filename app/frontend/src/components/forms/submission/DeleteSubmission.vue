@@ -60,6 +60,11 @@ export default {
           size="x-small"
           density="default"
           icon="mdi:mdi-delete"
+          :title="`${$t('trans.deleteSubmission.deleteThis')}${
+            isDraft
+              ? $t('trans.deleteSubmission.drafts')
+              : $t('trans.deleteSubmission.submission')
+          }`"
           @click="showDeleteDialog = true"
         />
       </template>

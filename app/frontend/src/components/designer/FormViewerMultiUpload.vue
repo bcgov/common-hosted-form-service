@@ -644,7 +644,11 @@ export default {
             md="12"
           >
             <span class="m-1 pull-right">
-              <v-btn color="primary" @click="resetUpload">
+              <v-btn
+                color="primary"
+                :title="$t('trans.formViewerMultiUpload.uploadNewFile')"
+                @click="resetUpload"
+              >
                 <span :lang="locale">{{
                   $t('trans.formViewerMultiUpload.uploadNewFile')
                 }}</span>

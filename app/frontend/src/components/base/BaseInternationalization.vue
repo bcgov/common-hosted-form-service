@@ -44,6 +44,7 @@ function languageSelected(lang) {
       variant="outlined"
       density="compact"
       hide-details
+      :title="items.find((language) => language.keyword === $i18n.locale).title"
       @update:model-value="languageSelected"
     >
       <template #selection="{ props, item }">

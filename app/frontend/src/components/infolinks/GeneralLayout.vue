@@ -163,6 +163,7 @@ export default {
               color="primary"
               size="small"
               variant="text"
+              :title="$t('trans.generalLayout.edit')"
               @click="onOpenDialog(item.componentName)"
             >
               <v-icon icon="mdi:mdi-pencil-box-outline"></v-icon>
@@ -181,6 +182,7 @@ export default {
               variant="text"
               size="small"
               :disabled="canDisabled(item.componentName)"
+              :title="$t('trans.generalLayout.preview')"
               @click="onOpenPreviewDialog(item.componentName)"
             >
               <v-icon icon="mdi:mdi-eye"></v-icon>
@@ -198,6 +200,11 @@ export default {
               color="primary"
               variant="text"
               size="small"
+              :title="
+                publish[index]
+                  ? $t('trans.generalLayout.published')
+                  : $t('trans.generalLayout.unpublished')
+              "
               :disabled="canDisabled(item.componentName)"
             >
               <v-switch

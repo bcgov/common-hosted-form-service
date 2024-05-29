@@ -164,6 +164,7 @@ export default {
                 icon
                 color="primary"
                 style="font-size: 14px"
+                :title="$t('trans.generalLayout.edit')"
                 @click.stop="enableSettingsEdit"
               >
                 <v-icon icon="mdi:mdi-pencil"></v-icon>
@@ -189,11 +190,16 @@ export default {
             <v-btn
               :class="isRTL ? 'ml-5' : 'mr-5'"
               color="primary"
+              :title="$t('trans.manageForm.update')"
               @click="updateSettings"
             >
               <span :lang="locale">{{ $t('trans.manageForm.update') }}</span>
             </v-btn>
-            <v-btn variant="outlined" @click="cancelSettingsEdit">
+            <v-btn
+              variant="outlined"
+              :title="$t('trans.manageForm.cancel')"
+              @click="cancelSettingsEdit"
+            >
               <span :lang="locale">{{ $t('trans.manageForm.cancel') }}</span>
             </v-btn>
           </div>

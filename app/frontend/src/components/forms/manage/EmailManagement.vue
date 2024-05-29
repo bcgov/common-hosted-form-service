@@ -67,6 +67,7 @@ export default {
                 icon
                 :disabled="!formId"
                 v-bind="props"
+                :title="$t('trans.emailManagement.manageForm')"
               >
                 <v-icon icon="mdi:mdi-cog"></v-icon>
               </v-btn>

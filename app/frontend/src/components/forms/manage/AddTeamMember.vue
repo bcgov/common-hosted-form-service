@@ -268,6 +268,7 @@ export default {
               :class="isRTL ? 'mr-3' : 'ml-3'"
               :disabled="!model"
               :loading="isLoading"
+              :title="$t('trans.addTeamMember.add')"
               @click="save"
             >
               <span :lang="locale">{{ $t('trans.addTeamMember.add') }}</span>
@@ -275,6 +276,7 @@ export default {
             <v-btn
               variant="outlined"
               :class="isRTL ? 'mr-2' : 'ml-2'"
+              :title="$t('trans.addTeamMember.cancel')"
               @click="
                 addingUsers = false;
                 showError = false;
@@ -303,6 +305,7 @@ export default {
             icon
             v-bind="props"
             size="x-small"
+            :title="$t('trans.addTeamMember.addNewMember')"
             @click="addingUsers = true"
           >
             <v-icon icon="mdi:mdi-account-plus"></v-icon>

@@ -315,7 +315,7 @@ describe(`${basePath}/forms/:formId/addUser`, () => {
 
       const response = await appRequest.put(path).query({ userId: '123' }).send({ userId: '123' });
 
-      expect(rbacService.setFormUsers).toHaveBeenCalledWith(':formId', '123', { userId: '123' }, undefined);
+      expect(rbacService.setFormUsers).toBeCalledWith(':formId', '123', { userId: '123' }, undefined);
       expect(response.statusCode).toBe(200);
       expect(response.body).toBeTruthy();
     });

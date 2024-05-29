@@ -33,6 +33,11 @@ const chefsTourVideoUrl = computed(() => import.meta.env.VITE_CHEFSTOURURL);
             class="mb-5"
             color="primary"
             data-test="create-or-login-btn"
+            :title="
+              authenticated
+                ? $t('trans.homePage.loginToStart')
+                : $t('trans.homePage.createFormLabel')
+            "
           >
             <span v-if="!authenticated" :lang="locale">{{
               $t('trans.homePage.loginToStart')
@@ -132,7 +137,16 @@ const chefsTourVideoUrl = computed(() => import.meta.env.VITE_CHEFSTOURURL);
           <p :lang="locale">
             {{ $t('trans.homePage.createOnlineTitle') }}
           </p>
-          <v-btn :to="{ name: 'FormCreate' }" class="mb-5" color="primary">
+          <v-btn
+            :to="{ name: 'FormCreate' }"
+            class="mb-5"
+            color="primary"
+            :title="
+              authenticated
+                ? $t('trans.shareForm.shareForm')
+                : $t('trans.homePage.createFormLabel')
+            "
+          >
             <span v-if="!authenticated" :lang="locale">{{
               $t('trans.homePage.logInToGetStarted')
             }}</span>

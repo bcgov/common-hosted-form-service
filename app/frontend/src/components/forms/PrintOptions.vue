@@ -329,6 +329,7 @@ export default {
           size="x-small"
           density="default"
           icon="mdi:mdi-printer"
+          :title="$t('trans.printOptions.print')"
           @click="dialog = true"
         />
       </template>
@@ -364,6 +365,7 @@ export default {
                 <v-btn
                   :class="isRTL ? 'ml-2' : 'mr-2'"
                   color="primary"
+                  :title="$t('trans.printOptions.browserPrint')"
                   @click="printBrowser"
                 >
                   <span :lang="locale">{{
@@ -374,6 +376,7 @@ export default {
                   variant="outlined"
                   color="textLink"
                   :class="isRTL ? 'ml-5' : 'mr-5'"
+                  :title="$t('trans.formSubmission.cancel')"
                   @click="dialog = false"
                 >
                   <span :lang="locale">{{
@@ -464,6 +467,7 @@ export default {
                         color="primary"
                         :loading="loading"
                         v-bind="props"
+                        :title="$t('trans.printOptions.templatePrint')"
                         @click="generate"
                       >
                         <v-icon
@@ -478,6 +482,7 @@ export default {
                         variant="outlined"
                         color="textLink"
                         :class="isRTL ? 'ml-5' : 'mr-5'"
+                        :title="$t('trans.formSubmission.cancel')"
                         @click="dialog = false"
                       >
                         <span :lang="locale">{{
@@ -490,6 +495,7 @@ export default {
                         target="_blank"
                         class="more-info-link"
                         :lang="locale"
+                        :title="$t('trans.printOptions.moreInfo')"
                       >
                         <v-icon size="small" class="mx-1"
                           >mdi-help-circle</v-icon

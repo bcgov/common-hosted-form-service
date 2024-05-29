@@ -65,6 +65,7 @@ const { authenticated, identityProvider, isAdmin, ready } =
       color="primary"
       class="login-btn"
       size="large"
+      :title="$t('trans.baseSecure.login')"
       @click="authStore.login"
     >
       <span :lang="locale">{{ $t('trans.baseSecure.login') }}</span>

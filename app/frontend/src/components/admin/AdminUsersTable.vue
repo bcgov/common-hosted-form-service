@@ -100,7 +100,12 @@ export default {
       </template>
       <template #item.actions="{ item }">
         <router-link :to="{ name: 'AdministerUser', query: { u: item.id } }">
-          <v-btn color="primary" variant="text" size="small">
+          <v-btn
+            color="primary"
+            variant="text"
+            size="small"
+            :title="$t('trans.adminUsersTable.admin')"
+          >
             <v-icon class="mr-1" icon="mdi:mdi-wrench"></v-icon>
             <span class="d-none d-sm-flex" :lang="locale">{{
               $t('trans.adminUsersTable.admin')

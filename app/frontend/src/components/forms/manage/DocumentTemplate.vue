@@ -360,6 +360,7 @@ export default {
         !isValidFile || isFileInputEmpty || documentTemplates.length >= 1
       "
       color="primary"
+      :title="$t('trans.documentTemplate.upload')"
       @click="handleFileUpload"
     >
       <span :lang="locale">{{ $t('trans.documentTemplate.upload') }}</span>

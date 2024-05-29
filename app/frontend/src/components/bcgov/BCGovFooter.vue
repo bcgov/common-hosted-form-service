@@ -21,13 +21,19 @@ defineProps({
     absolute
   >
     <v-row no-gutters>
-      <v-btn id="footer-home" variant="text" href="https://www.gov.bc.ca/">
+      <v-btn
+        id="footer-home"
+        variant="text"
+        href="https://www.gov.bc.ca/"
+        :title="$t('trans.bCGovFooter.home')"
+      >
         <span :lang="locale">{{ $t('trans.bCGovFooter.home') }}</span>
       </v-btn>
       <v-btn
         id="footer-about"
         variant="text"
         href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca"
+        :title="$t('trans.bCGovFooter.about')"
       >
         <span :lang="locale">{{ $t('trans.bCGovFooter.about') }}</span>
       </v-btn>
@@ -35,16 +41,23 @@ defineProps({
         id="footer-disclaimer"
         variant="text"
         href="http://gov.bc.ca/disclaimer"
+        :title="$t('trans.bCGovFooter.disclaimer')"
       >
         <span :lang="locale">{{ $t('trans.bCGovFooter.disclaimer') }}</span>
       </v-btn>
-      <v-btn id="footer-privacy" variant="text" href="http://gov.bc.ca/privacy">
+      <v-btn
+        id="footer-privacy"
+        variant="text"
+        href="http://gov.bc.ca/privacy"
+        :title="$t('trans.bCGovFooter.privacy')"
+      >
         <span>{{ $t('trans.bCGovFooter.privacy') }}</span>
       </v-btn>
       <v-btn
         id="footer-accessibility"
         variant="text"
         href="http://gov.bc.ca/webaccessibility"
+        :title="$t('trans.bCGovFooter.accessibility')"
       >
         <span :lang="locale">{{ $t('trans.bCGovFooter.accessibility') }}</span>
       </v-btn>
@@ -52,6 +65,7 @@ defineProps({
         id="footer-copyright"
         variant="text"
         href="http://gov.bc.ca/copyright"
+        :title="$t('trans.bCGovFooter.copyRight')"
       >
         <span :lang="locale">{{ $t('trans.bCGovFooter.copyRight') }}</span>
       </v-btn>
@@ -59,6 +73,7 @@ defineProps({
         id="footer-contact"
         variant="text"
         href="https://www2.gov.bc.ca/gov/content/home/contact-us"
+        :title="$t('trans.bCGovFooter.contactUs')"
       >
         <span :lang="locale">{{ $t('trans.bCGovFooter.contactUs') }}</span>
       </v-btn>

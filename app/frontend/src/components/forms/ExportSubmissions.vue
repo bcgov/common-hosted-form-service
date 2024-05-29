@@ -275,7 +275,13 @@ export default {
                   <router-link
                     :to="{ name: 'FormSubmissions', query: { f: form.id } }"
                   >
-                    <v-btn class="mx-1" color="primary" icon v-bind="props">
+                    <v-btn
+                      class="mx-1"
+                      color="primary"
+                      icon
+                      v-bind="props"
+                      :title="$t('trans.exportSubmissions.viewSubmissions')"
+                    >
                       <v-icon icon="mdi:mdi-list-box-outline"></v-icon>
                     </v-btn>
                   </router-link>
@@ -586,6 +592,7 @@ export default {
           "
           class="mb-5 mt-5 exportButtonStyle"
           color="primary"
+          :title="$t('trans.exportSubmissions.export')"
           @click="callExport"
         >
           <span :lang="locale">{{ $t('trans.exportSubmissions.export') }}</span>

@@ -62,7 +62,12 @@ export default {
         />
       </v-col>
       <v-col cols="3" md="2">
-        <v-btn color="primary" :disabled="!valid" @click="addOwner">
+        <v-btn
+          color="primary"
+          :disabled="!valid"
+          :title="$t('trans.addOwner.addowner')"
+          @click="addOwner"
+        >
           <span :lang="locale">{{ $t('trans.addOwner.addowner') }}</span>
         </v-btn>
       </v-col>

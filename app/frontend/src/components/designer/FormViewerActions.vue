@@ -104,6 +104,7 @@ export default {
       <v-btn
         color="primary"
         variant="outlined"
+        :title="$t('trans.formViewerActions.viewMyDraftOrSubmissions')"
         @click="$emit('showdoYouWantToSaveTheDraftModal')"
       >
         <span :lang="locale">{{
@@ -121,6 +122,11 @@ export default {
               icon
               v-bind="props"
               size="x-small"
+              :title="
+                bulkFile
+                  ? $t('trans.formViewerActions.switchSingleSubmssn')
+                  : $t('trans.formViewerActions.switchMultiSubmssn')
+              "
               @click="$emit('switchView')"
             >
               <v-icon icon="mdi:mdi-repeat"></v-icon>
@@ -146,6 +152,7 @@ export default {
               size="x-small"
               density="default"
               icon="mdi:mdi-panorama-variant-outline"
+              :title="$t('trans.formViewerActions.wideLayout')"
               @click="toggleWideLayout"
             />
           </template>
@@ -170,6 +177,7 @@ export default {
               icon
               v-bind="props"
               size="x-small"
+              :title="$t('trans.formViewerActions.saveAsADraft')"
               @click="$emit('save-draft')"
             >
               <v-icon icon="mdi:mdi-content-save"></v-icon>
@@ -199,6 +207,7 @@ export default {
                 size="x-small"
                 density="default"
                 v-bind="props"
+                :title="$t('trans.formViewerActions.editThisDraft')"
               />
             </template>
             <span :lang="locale">{{
