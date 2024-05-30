@@ -447,6 +447,18 @@ describe('_findFileIds', () => {
 });
 
 describe('listFormSubmissions', () => {
+  describe('400 response when', () => {
+    test('sort by column not in select', async () => {
+      await expect(
+        service.listFormSubmissions(formId, {
+          sortBy: {
+            column: 'x',
+          },
+        })
+      ).rejects.toThrow('400');
+    });
+  });
+
   it('should not error if fields has a trailing commma', async () => {
     await service.listFormSubmissions(formId, { fields: 'x,' });
 

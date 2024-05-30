@@ -49,7 +49,13 @@ function languageSelected(lang) {
   <div class="text-center">
     <v-menu>
       <template #activator="{ props }">
-        <v-btn variant="outlined" color="white" v-bind="props" class="ml-3">
+        <v-btn
+          variant="outlined"
+          color="white"
+          v-bind="props"
+          class="ml-3"
+          :title="language"
+        >
           <v-icon class="mr-1" icon="mdi:mdi-web" />
           {{ language }}
           <v-icon class="ml-3" icon="mdi:mdi-menu-down" />

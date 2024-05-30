@@ -70,6 +70,7 @@ export default {
               size="x-small"
               density="default"
               icon="mdi:mdi-list-box-outline"
+              :title="$t('trans.manageFormActions.viewSubmissions')"
             />
           </router-link>
         </template>
@@ -90,6 +91,7 @@ export default {
               size="x-small"
               density="default"
               icon="mdi:mdi-account-multiple"
+              :title="$t('trans.manageFormActions.teamManagement')"
             />
           </router-link>
         </template>
@@ -110,6 +112,7 @@ export default {
               size="x-small"
               density="default"
               icon="mdi:mdi-email"
+              :title="$t('trans.manageFormActions.emailManagement')"
             />
           </router-link>
         </template>
@@ -130,6 +133,7 @@ export default {
             size="x-small"
             density="default"
             icon="mdi:mdi-delete"
+            :title="$t('trans.manageFormActions.deleteForm')"
             @click="showDeleteDialog = true"
           />
         </template>

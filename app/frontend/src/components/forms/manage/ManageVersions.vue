@@ -369,6 +369,7 @@ export default {
                   icon
                   v-bind="props"
                   variant="text"
+                  :title="$t('trans.manageVersions.editVersion')"
                 >
                   <v-icon icon="mdi:mdi-pencil"></v-icon>
                 </v-btn>
@@ -390,6 +391,7 @@ export default {
                 icon
                 v-bind="props"
                 variant="text"
+                :title="$t('trans.manageVersions.exportDesign')"
                 @click="onExportClick(item.id, item.isDraft)"
               >
                 <v-icon icon="mdi:mdi-download"></v-icon>
@@ -412,6 +414,13 @@ export default {
                   :disabled="hasDraft"
                   icon
                   variant="text"
+                  :title="
+                    hasDraft
+                      ? $t('trans.manageVersions.infoC')
+                      : $t('trans.manageVersions.useVersionInfo', {
+                          version: item.version,
+                        })
+                  "
                   @click="createVersion(item.formId, item.id)"
                 >
                   <v-icon icon="mdi:mdi-plus"></v-icon>
@@ -442,6 +451,7 @@ export default {
                   :disabled="!hasVersions"
                   icon
                   variant="text"
+                  :title="$t('trans.manageVersions.deleteVersion')"
                   @click="showDeleteDraftDialog = true"
                 >
                   <v-icon icon="mdi:mdi-delete"></v-icon>

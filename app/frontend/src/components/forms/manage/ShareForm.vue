@@ -61,6 +61,7 @@ export default {
           size="x-small"
           density="default"
           icon="mdi:mdi-share-variant"
+          :title="$t('trans.shareForm.shareForm')"
           @click="dialog = true"
         />
       </template>
@@ -116,6 +117,7 @@ export default {
                     density="default"
                     data-cy="shareFormLinkButton"
                     icon="mdi:mdi-open-in-new"
+                    :title="$t('trans.shareForm.openThisForm')"
                   />
                 </template>
                 <span :class="{ 'dir-rtl': isRTL }" :lang="lang">{{
@@ -144,6 +146,7 @@ export default {
                     icon
                     v-bind="props"
                     size="x-small"
+                    :title="$t('trans.shareForm.downloadQRCode')"
                     @click="downloadQr"
                   >
                     <v-icon icon="mdi:mdi-download"></v-icon>
@@ -161,6 +164,7 @@ export default {
             class="mb-5 close-dlg"
             color="primary"
             variant="flat"
+            :title="$t('trans.shareForm.close')"
             @click="dialog = false"
           >
             <span :lang="lang">{{ $t('trans.shareForm.close') }}</span>

@@ -192,14 +192,35 @@ const service = {
     });
   },
 
-  _getSubmissions: async (form, params, version) => {
-    //let preference = params.preference ? JSON.parse(params.preference) : undefined;
-    let preference;
-    if (params.preference && _.isString(params.preference)) {
-      preference = JSON.parse(params.preference);
+  /**
+   * Parse the preferences that come in on the request.
+   *
+   * @param {any} preferences the preferences - probably a string or undefined
+   * but unsure exactly what this could be.
+   * @returns {any} the preferences. If a string was given as an argument then
+   * it's treated as JSON and an object is returned.
+   */
+  _parsePreferences: (preferences) => {
+    let parsedPreferences;
+    if (preferences && _.isString(preferences)) {
+      try {
+        parsedPreferences = JSON.parse(preferences);
+      } catch (error) {
+        throw new Problem(400, {
+          detail: 'Bad preferences: ' + error.message,
+        });
+      }
     } else {
-      preference = params.preference;
+      // What is this? How is it not a string? Is this just handling undefined?
+      parsedPreferences = preferences;
     }
+
+    return parsedPreferences;
+  },
+
+  _getSubmissions: async (form, params, version) => {
+    const preference = service._parsePreferences(params.preference);
+
     // let submissionData;
     // params for this export include minDate and maxDate (full timestamp dates).
     return SubmissionData.query()

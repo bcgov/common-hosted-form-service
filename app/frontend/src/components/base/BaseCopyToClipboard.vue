@@ -59,6 +59,7 @@ function onError(e) {
           icon
           v-bind="props"
           size="x-small"
+          :title="buttonText"
         >
           <v-icon icon="mdi:mdi-content-copy"></v-icon>
           <span v-if="buttonText">{{ buttonText }}</span>
