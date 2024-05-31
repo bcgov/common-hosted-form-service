@@ -125,7 +125,7 @@ describe('template rendering', () => {
 
   const validDocumentTemplate = {
     filename: 'template_hello_world.txt',
-    template: 'Hello {d.simpletextfield}!',
+    template: btoa('Hello {d.simpletextfield}!'),
   };
 
   const mockCdogsResponse = {
