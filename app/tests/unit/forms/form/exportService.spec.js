@@ -25,27 +25,60 @@ const getCsvRow = (result, index) => {
 };
 
 describe('export', () => {
+  const form = {
+    id: formId,
+    snake: () => {
+      'form';
+    },
+  };
+  const formSchema = {
+    display: 'form',
+    type: 'form',
+    components: [
+      {
+        type: 'datagrid',
+        label: 'Data Grid',
+        components: [
+          {
+            type: 'simpletextfield',
+            label: 'Text Field',
+          },
+        ],
+      },
+    ],
+  };
+
+  // Mock the internal functions that only do Objection calls.
+  exportService._getForm = jest.fn().mockReturnValue(form);
+  exportService._readLatestFormSchema = jest.fn().mockReturnValue(formSchema);
+
   describe('csv', () => {
     const currentUser = {
       usernameIdp: 'PAT_TEST',
     };
-    const form = {
-      snake: () => {
-        'form';
-      },
-    };
-    exportService._getForm = jest.fn().mockReturnValue(form);
 
     describe('400 response when', () => {
       test('invalid preferences json', async () => {
-        const params = { preference: '{' };
-        exportService._readLatestFormSchema = jest.fn().mockReturnValueOnce();
+        const params = {
+          preference: '{',
+        };
+
+        await expect(exportService.export(formId, params, currentUser)).rejects.toThrow('400');
+      });
+
+      test('invalid export template', async () => {
+        exportService._getData = jest.fn().mockReturnValue([]);
+        const params = {
+          format: 'csv',
+          template: 'doesntexist',
+          type: 'submissions',
+        };
 
         await expect(exportService.export(formId, params, currentUser)).rejects.toThrow('400');
       });
     });
 
-    describe('type 1', () => {
+    describe('type 1 / multiRowEmptySpacesCSVExport', () => {
       const params = {
         emailExport: false,
         fields: ['form.submissionId', 'form.confirmationId', 'form.formName', 'form.version', 'form.createdAt', 'form.fullName', 'form.username', 'form.email', 'simpletextfield'],
@@ -73,30 +106,14 @@ describe('export', () => {
             },
           },
         ];
-        exportService._getData = jest.fn().mockReturnValueOnce(submission);
-        exportService._readLatestFormSchema = jest.fn().mockReturnValueOnce();
+        exportService._getData.mockReturnValueOnce(submission);
+        exportService._readLatestFormSchema.mockReturnValueOnce();
 
         await expect(exportService.export(formId, params, currentUser)).rejects.toThrow('400');
       });
     });
 
-    describe('type 3', () => {
-      const latestFormSchema = {
-        display: 'form',
-        type: 'form',
-        components: [
-          {
-            type: 'datagrid',
-            label: 'Data Grid',
-            components: [
-              {
-                type: 'simpletextfield',
-                label: 'Text Field',
-              },
-            ],
-          },
-        ],
-      };
+    describe('type 3 / singleRowCSVExport', () => {
       const params = {
         emailExport: false,
         fields: [
@@ -139,7 +156,6 @@ describe('export', () => {
           },
         ];
         exportService._getData = jest.fn().mockReturnValue(submission);
-        exportService._readLatestFormSchema = jest.fn().mockReturnValueOnce(latestFormSchema);
 
         const result = await exportService.export(formId, params, currentUser);
 
@@ -173,7 +189,6 @@ describe('export', () => {
           },
         ];
         exportService._getData = jest.fn().mockReturnValue(submission);
-        exportService._readLatestFormSchema = jest.fn().mockReturnValueOnce(latestFormSchema);
 
         const result = await exportService.export(formId, params, currentUser);
 
@@ -227,7 +242,6 @@ describe('export', () => {
           },
         ];
         exportService._getData = jest.fn().mockReturnValue(submission);
-        exportService._readLatestFormSchema = jest.fn().mockReturnValueOnce(latestFormSchema);
 
         const result = await exportService.export(formId, params, currentUser);
 
