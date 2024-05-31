@@ -1750,6 +1750,12 @@ paths:
       parameters:
         - $ref: '#/components/parameters/formSubmissionIdParam'
         - $ref: '#/components/parameters/documentTemplateIdParam'
+        - in: query
+          name: convertTo
+          schema:
+            type: string
+          description: file type to convert to
+          example: pdf
       responses:
         '200':
           description: Returns the document template with merged variables
