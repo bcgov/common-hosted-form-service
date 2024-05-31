@@ -137,6 +137,7 @@ module.exports = {
       const template = await formService.documentTemplateRead(req.params.documentTemplateId);
       const fileName = template.filename.substring(0, template.filename.lastIndexOf('.'));
       const fileExtension = template.filename.substring(template.filename.lastIndexOf('.') + 1);
+      const convertTo = req.query.convertTo || 'pdf';
 
       const templateBody = {
         data: {
@@ -148,12 +149,12 @@ module.exports = {
           },
         },
         options: {
-          convertTo: 'pdf',
+          convertTo: convertTo,
           overwrite: true,
           reportName: fileName,
         },
         template: {
-          content: btoa(template.template),
+          content: template.template.toString(),
           encodingType: 'base64',
           fileType: fileExtension,
         },
