@@ -92,7 +92,7 @@ describe('Form Designer', () => {
         .trigger('mousemove', coords.x, -250, { force: true })
           //.trigger('mousemove', coords.y, +100, { force: true })
         .trigger('mouseup', { force: true });
-        cy.get('input[name="data[prefix]"]').type('www.');
+        cy.get('input[name="data[prefix]"]').type('https://');
         
         cy.get('input[name="data[suffix]"]').type('.com');
 
@@ -272,31 +272,48 @@ describe('Form Designer', () => {
 
         cy.waitForLoad();
         cy.waitForLoad();
+        cy.waitForLoad();
+        cy.waitForLoad();
+        cy.waitForLoad();
+        cy.waitForLoad();
+        cy.get('input[type="radio"]').click();
+        cy.get('input[type="checkbox"]').click();
+    
+        cy.get('div').find('textarea').type('some text');
+        cy.get('input[name="data[bcaddress]"').type('goldstream');
+        cy.get('input[name="data[simpleurladvanced]"').type('www.google');
         cy.get('.choices__inner').click();
         cy.get('.choices__inner').type('hello');
-        //cy.get('.ui > .choices__list > .choices__item').click();
-        //cy.get('.ui').click();
         cy.get('label').contains('Registered Business Name').click();
         cy.waitForLoad();
         cy.get('input[placeholder="Type to search"]').type("Thrifty Foods");
         cy.contains('THRIFTY FOODS').click();
         cy.get('input[name="data[bcaddress]"').click();
         cy.get('input[name="data[bcaddress]"').type('2260 Sooke');
-        //cy.contains('2260 Sooke Rd, Colwood, BC').click();
-
-
-        // file upload functionality verification in the form
+        cy.get('.browse').should('have.attr', 'ref').and('include', 'fileBrowse');
+        cy.get('.browse').should('have.attr', 'href').and('include', '#');
         cy.get('.browse').click();
         let fileUploadInputField = cy.get('input[type=file]');
-        //fileUploadInputField.should('not.to.be.null');
         cy.get('input[type=file]').should('not.to.be.null');
         fileUploadInputField.attachFile('add1.png');
+        cy.waitForLoad();
+        cy.waitForLoad();
+        //verify file uploads to object storage
 
-        // form submission
+        cy.get('.col-md-9 > a').should('have.attr', 'ref').and('include', 'fileLink');
+        cy.get('div.col-md-2').contains('61.48 kB');
 
-       cy.get('button').contains('Submit').click();
-       cy.waitForLoad();
-       cy.get('button').contains('Submit').click();
+        //form submission
+        cy.get('button').contains('Submit').click();
+        cy.waitForLoad();
+        cy.get('button').contains('Submit').click();
+       // verify the components after submission
+        cy.get('span').contains('Canadian').should('be.visible');
+        cy.get('span').contains('Eligible').should('be.visible');
+        cy.get('.choices__inner > .choices__list > .choices__item').contains('hello');
+        cy.get('.col-md-9 > a').contains('add1.png');
+        cy.get('.ui > .choices__list > .choices__item').contains('THRIFTY FOODS');
+
 
 
     });

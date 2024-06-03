@@ -6,14 +6,14 @@ export function formsettings(){
     
     
     
-    if(depEnv=="")
+    if(depEnv=="app")
     {
         cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/app`);
     }
     else
     {
        
-        //cy.visit(`/pr-${depEnv}`);
+        
         
         cy.visit(`/${depEnv}`);
         
