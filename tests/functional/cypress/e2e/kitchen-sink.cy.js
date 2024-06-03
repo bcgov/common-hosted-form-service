@@ -75,9 +75,6 @@ function helperThreeColumn() {
  
   cy.contains('Select List in Fieldset 1').click();
   
-  
-  
-  
   cy.get('[data-value="2"]').click();
 
 }
@@ -166,16 +163,13 @@ function helperFormFields() {
   cy.get('#day1-year').type('2021');
 
   // time1
- 
-  
   cy.get('[type="time"]').type('11:30');
-  
   
 }
 
-//
+
 // Tests
-//
+
 describe('Kitchen Sink Example Form', () => {
   beforeEach(() => {
     // Form Load

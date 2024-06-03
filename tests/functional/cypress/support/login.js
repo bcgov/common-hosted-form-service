@@ -12,9 +12,6 @@ export function formsettings(){
     }
     else
     {
-       
-        
-        
         cy.visit(`/${depEnv}`);
         
     }
@@ -64,9 +61,4 @@ export function formsettings(){
     cy.get('.d-flex > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').type('test label');
     cy.get('#checkbox-80').click();
     cy.get('button').contains('Continue').click();
-
-
-
-
-
 }
