@@ -171,7 +171,7 @@ const service = {
     }
     return {};
   },
-  _formatData: async (exportFormat, exportType, exportTemplate, form, data = {}, columns, version, emailExport, currentUser, referer) => {
+  _formatData: async (exportFormat, exportType, exportTemplate, form, data = {}, columns, version, emailExport, currentUser) => {
     // inverting content structure nesting to prioritize submission content clarity
     const formatted = data.map((obj) => {
       const { submission, ...form } = obj;
@@ -181,7 +181,7 @@ const service = {
     if (EXPORT_TYPES.submissions === exportType) {
       if (EXPORT_FORMATS.csv === exportFormat) {
         let formVersion = version ? parseInt(version) : 1;
-        return await service._formatSubmissionsCsv(form, formatted, exportTemplate, columns, formVersion, emailExport, currentUser, referer);
+        return await service._formatSubmissionsCsv(form, formatted, exportTemplate, columns, formVersion, emailExport, currentUser);
       }
       if (EXPORT_FORMATS.json === exportFormat) {
         return await service._formatSubmissionsJson(form, formatted);
@@ -259,27 +259,33 @@ const service = {
       },
     };
   },
-  _formatSubmissionsCsv: async (form, data, exportTemplate, fields, version, emailExport, currentUser, referer) => {
+  _formatSubmissionsCsv: async (form, data, exportTemplate, fields, version, emailExport, currentUser) => {
     try {
       switch (exportTemplate) {
         case 'multiRowEmptySpacesCSVExport':
-          return service._multiRowsCSVExport(form, data, version, true, fields, emailExport, currentUser, referer);
+          return service._multiRowsCSVExport(form, data, version, true, fields, emailExport, currentUser);
         case 'multiRowBackFilledCSVExport':
-          return service._multiRowsCSVExport(form, data, version, false, fields, emailExport, currentUser, referer);
+          return service._multiRowsCSVExport(form, data, version, false, fields, emailExport, currentUser);
         case 'singleRowCSVExport':
-          return service._singleRowCSVExport(form, data, version, fields, currentUser, emailExport, referer);
+          return service._singleRowCSVExport(form, data, version, fields, currentUser, emailExport);
         case 'unFormattedCSVExport':
-          return service._unFormattedCSVExport(form, data, emailExport, currentUser, referer);
+          return service._unFormattedCSVExport(form, data, emailExport, currentUser);
         default:
-        // code block
+          throw new Problem(400, {
+            detail: `Bad export "template" value of "${exportTemplate}"`,
+          });
       }
     } catch (e) {
+      if (e instanceof Problem) {
+        throw e;
+      }
+
       throw new Problem(500, {
         detail: `Could not make a csv export of submissions for this form. ${e.message}`,
       });
     }
   },
-  _multiRowsCSVExport: async (form, data, version, blankout, fields, emailExport, currentUser, referer) => {
+  _multiRowsCSVExport: async (form, data, version, blankout, fields, emailExport, currentUser) => {
     const pathToUnwind = await unwindPath(data);
     let headers = await service._buildCsvHeaders(form, data, version, fields);
 
@@ -288,22 +294,22 @@ const service = {
       fields: headers,
     };
 
-    return service._submissionCSVExport(opts, form, data, emailExport, currentUser, referer);
+    return service._submissionCSVExport(opts, form, data, emailExport, currentUser);
   },
-  _singleRowCSVExport: async (form, data, version, fields, currentUser, emailExport, referer) => {
+  _singleRowCSVExport: async (form, data, version, fields, currentUser, emailExport) => {
     const headers = await service._buildCsvHeaders(form, data, version, fields, true);
     const opts = {
       transforms: [flatten({ objects: true, arrays: true, separator: '.' })],
       fields: headers,
     };
 
-    return service._submissionCSVExport(opts, form, data, emailExport, currentUser, referer);
+    return service._submissionCSVExport(opts, form, data, emailExport, currentUser);
   },
-  _unFormattedCSVExport: async (form, data, emailExport, currentUser, referer) => {
-    return service._submissionCSVExport({}, form, data, emailExport, currentUser, referer);
+  _unFormattedCSVExport: async (form, data, emailExport, currentUser) => {
+    return service._submissionCSVExport({}, form, data, emailExport, currentUser);
   },
 
-  _submissionCSVExport(opts, form, data, emailExport, currentUser, referer) {
+  _submissionCSVExport(opts, form, data, emailExport, currentUser) {
     // to work with object chunk in pipe instead of Buffer
     const transformOpts = {
       objectMode: true,
@@ -345,7 +351,7 @@ const service = {
             // Uploading to Object storage
             const fileResult = await fileService.create(fileData, fileCurrentUser, 'exports');
             // Sending the email with link to uploaded export
-            emailService.submissionExportLink(form.id, null, { to: currentUser.email }, referer, fileResult.id);
+            emailService.submissionExportLink(form.id, { to: currentUser.email }, fileResult.id);
           }
         });
       });
@@ -408,7 +414,7 @@ const service = {
     return await service._buildCsvHeaders(form, formatted, params.version, undefined, params.singleRow === 'true');
   },
 
-  export: async (formId, params = {}, currentUser = null, referer) => {
+  export: async (formId, params, currentUser) => {
     // ok, let's determine what we are exporting and do it!!!!
     // what operation?
     // what output format?
@@ -417,7 +423,7 @@ const service = {
     const exportTemplate = params.template ? params.template : 'multiRowEmptySpacesCSVExport';
     const form = await service._getForm(formId);
     const data = await service._getData(exportType, params.version, form, params);
-    const result = await service._formatData(exportFormat, exportType, exportTemplate, form, data, params.fields, params.version, params.emailExport, currentUser, referer);
+    const result = await service._formatData(exportFormat, exportType, exportTemplate, form, data, params.fields, params.version, params.emailExport, currentUser);
     return { data: result.data, headers: result.headers };
   },
 };

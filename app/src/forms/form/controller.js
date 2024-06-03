@@ -73,7 +73,7 @@ module.exports = {
 
   export: async (req, res, next) => {
     try {
-      const result = await exportService.export(req.params.formId, req.query, req.currentUser, req.headers.referer);
+      const result = await exportService.export(req.params.formId, req.query, req.currentUser);
       ['Content-Disposition', 'Content-Type'].forEach((h) => {
         res.setHeader(h, result.headers[h.toLowerCase()]);
       });
@@ -85,7 +85,7 @@ module.exports = {
 
   exportWithFields: async (req, res, next) => {
     try {
-      const result = await exportService.export(req.params.formId, req.body, req.currentUser, req.headers.referer);
+      const result = await exportService.export(req.params.formId, req.body, req.currentUser);
       ['Content-Disposition', 'Content-Type'].forEach((h) => {
         res.setHeader(h, result.headers[h.toLowerCase()]);
       });
