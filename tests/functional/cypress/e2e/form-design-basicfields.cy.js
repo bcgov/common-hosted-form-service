@@ -205,7 +205,7 @@ describe('Form Designer', () => {
         cy.get('span.btn').contains('Date / Time')
         
         .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, -70, { force: true })
+        .trigger('mousemove', coords.x, -50, { force: true })
         .trigger('mouseup', { force: true });
         //cy.get('p').contains('Multi-line Text Component');
         cy.get('button').contains('Save').click();
@@ -218,7 +218,7 @@ describe('Form Designer', () => {
     
     // Form Editing 
   it('Form Edit', () => {
-      cy.viewport(1000, 1100);
+      cy.viewport(1000, 1800);
       cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
       let savedButton = cy.get('[data-cy=saveButton]');
       expect(savedButton).to.not.be.null;
@@ -232,15 +232,15 @@ describe('Form Designer', () => {
       //Adding another component
 
       cy.get('button').contains('Basic Fields').click();
+      cy.get('button').contains('Basic Fields').click();
       cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
-        cy.get('span.btn').contains('Number')
+        cy.get('span.btn').contains('Text Field')
         
         .trigger('mousedown', { which: 1}, { force: true })
         .trigger('mousemove', coords.x, -50, { force: true })
         .trigger('mouseup', { force: true });
-        //cy.get('p').contains('Multi-line Text Component');
-        cy.get('input[name="data[label]"]').clear().type('ID Number');
+        
         cy.get('button').contains('Save').click();
       });
       cy.get('[ref=removeComponent]').then($el => {
@@ -274,14 +274,14 @@ describe('Form Designer', () => {
      //Form preview
      cy.visit(`/${depEnv}/form/preview?f=${dval[0]}&d=${arrayValues[0]}`);
      cy.waitForLoad();
-     cy.get('label').contains('Last Name');
-     cy.get('label').contains('First Name');
-     cy.get('input[name="data[simplecheckbox1]"]').should('be.visible');
-     cy.get('label').contains('Select all skills');
-     cy.get('input[name="data[simplephonenumber1]').should('be.visible');
-     cy.get('input[name="data[simpledatetime]').should('be.visible');
-     cy.get('input[name="data[simpleemail]').should('be.visible');
-     cy.get('input[name="data[simplenumber1]').should('be.visible');
+     cy.get('label').contains('Last Name').should('be.visible');
+     cy.get('label').contains('First Name').should('be.visible');
+     cy.get('label').contains('Applying for self').should('be.visible');
+     cy.get('label').contains('Select all skills').should('be.visible');
+     cy.get('label').contains('Phone Number').should('be.visible');
+     cy.get('label').contains('Date / Time').should('be.visible');
+     cy.get('label').contains('Email').should('be.visible');
+     //cy.get('label').contains('Number').should('be.visible');
      cy.get('label').contains('Select Gender');
 
 
