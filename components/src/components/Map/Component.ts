@@ -1,10 +1,10 @@
 import { Components } from 'formiojs';
-const FieldComponent = Components.components.field;
+const FieldComponent = (Components as any).components.field;
 // import MapService from './services/MapService';
 
 const CENTER = [48.41939025932759,-123.37029576301576]
 
-class Component extends FieldComponent {
+class Component extends (FieldComponent as any) {
     static schema(...extend) {
         return FieldComponent.schema({
             type: 'map',
@@ -20,7 +20,7 @@ class Component extends FieldComponent {
             group: 'basic',
             icon: 'map',
             weight: 70,
-            schema: MapComponent.schema(),
+            schema: Component.schema(),
         };
     }
     
