@@ -389,7 +389,7 @@ module.exports = {
   },
   listExternalAPIs: async (req, res, next) => {
     try {
-      const response = await service.listExternalAPIs();
+      const response = await service.listExternalAPIs(req.params.formId);
       res.status(200).json(response);
     } catch (error) {
       next(error);

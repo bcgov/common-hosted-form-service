@@ -43,7 +43,7 @@ describe('callExternalApi', () => {
     const req = getMockReq({ headers: { 'X-CHEFS-PROXY-DATA': 'encrypted blob of proxy data' } });
     const { res, next } = getMockRes();
     service.readProxyHeaders = jest.fn().mockReturnValue({});
-    service.getExternalAPI = jest.fn().mockReturnValue({});
+    service.getExternalAPI = jest.fn().mockReturnValue({ code: 'APPROVED' });
     service.createExternalAPIUrl = jest.fn().mockReturnValue('http://external.api');
     service.createExternalAPIHeaders = jest.fn().mockReturnValue({ 'X-TEST-HEADERS': 'test-headers' });
 
@@ -80,7 +80,7 @@ describe('callExternalApi', () => {
     axios.get.mockRejectedValueOnce(mockResponse);
 
     service.readProxyHeaders = jest.fn().mockReturnValue({});
-    service.getExternalAPI = jest.fn().mockReturnValue({});
+    service.getExternalAPI = jest.fn().mockReturnValue({ code: 'APPROVED' });
     service.createExternalAPIUrl = jest.fn().mockReturnValue('http://external.api/private');
     service.createExternalAPIHeaders = jest.fn().mockReturnValue({ 'X-TEST-HEADERS': 'test-headers-err' });
 
@@ -108,7 +108,7 @@ describe('callExternalApi', () => {
     axios.get.mockRejectedValueOnce(mockResponse);
 
     service.readProxyHeaders = jest.fn().mockReturnValue({});
-    service.getExternalAPI = jest.fn().mockReturnValue({});
+    service.getExternalAPI = jest.fn().mockReturnValue({ code: 'APPROVED' });
     service.createExternalAPIUrl = jest.fn().mockReturnValue('http://external.api/private');
     service.createExternalAPIHeaders = jest.fn().mockReturnValue({ 'X-TEST-HEADERS': 'test-headers-err' });
 
@@ -118,6 +118,30 @@ describe('callExternalApi', () => {
     expect(service.getExternalAPI).toBeCalledTimes(1);
     expect(service.createExternalAPIUrl).toBeCalledTimes(1);
     expect(service.createExternalAPIHeaders).toBeCalledTimes(1);
+    expect(res.status).not.toHaveBeenCalled();
+    expect(next).toBeCalledTimes(1);
+  });
+
+  it('should not call external api if not approved', async () => {
+    const req = getMockReq({ headers: { 'X-CHEFS-PROXY-DATA': 'encrypted blob of proxy data' } });
+    const { res, next } = getMockRes();
+    service.readProxyHeaders = jest.fn().mockReturnValue({});
+    service.getExternalAPI = jest.fn().mockReturnValue({ code: 'SUBMITTED' });
+    service.createExternalAPIUrl = jest.fn().mockReturnValue('http://external.api');
+    service.createExternalAPIHeaders = jest.fn().mockReturnValue({ 'X-TEST-HEADERS': 'test-headers' });
+
+    const mockResponse = {
+      data: [{ name: 'a', value: 'A' }],
+      status: 200,
+    };
+    axios.get.mockResolvedValueOnce(mockResponse);
+
+    await controller.callExternalApi(req, res, next);
+
+    expect(service.readProxyHeaders).toBeCalledTimes(1);
+    expect(service.getExternalAPI).toBeCalledTimes(1);
+    expect(service.createExternalAPIUrl).not.toHaveBeenCalled();
+    expect(service.createExternalAPIHeaders).not.toHaveBeenCalled();
     expect(res.status).not.toHaveBeenCalled();
     expect(next).toBeCalledTimes(1);
   });

@@ -10,6 +10,21 @@ class ExternalAPI extends Timestamps(Model) {
     return 'external_api';
   }
 
+  static get relationMappings() {
+    const ExternalAPIStatusCode = require('./externalAPIStatusCode');
+
+    return {
+      statusCode: {
+        relation: Model.HasOneRelation,
+        modelClass: ExternalAPIStatusCode,
+        join: {
+          from: 'external_api.code',
+          to: 'external_api_status_code.code',
+        },
+      },
+    };
+  }
+
   static get modifiers() {
     return {
       filterFormId(query, value) {
@@ -63,12 +78,13 @@ class ExternalAPI extends Timestamps(Model) {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['formId', 'name', 'endpointUrl'],
+      required: ['formId', 'name', 'code', 'endpointUrl'],
       properties: {
         id: { type: 'string', pattern: Regex.UUID },
         formId: { type: 'string', pattern: Regex.UUID },
         name: { type: 'string', minLength: 1, maxLength: 255 },
         endpointUrl: { type: 'string' },
+        code: { type: 'string' },
         sendApiKey: { type: 'boolean', default: false },
         apiKeyHeader: { type: 'string' },
         apiKey: { type: 'string' },

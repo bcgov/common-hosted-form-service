@@ -135,3 +135,78 @@ describe(`${basePath}/:formId/documentTemplates/:documentTemplateId`, () => {
     expect(controller.documentTemplateRead).toBeCalledTimes(1);
   });
 });
+
+describe(`${basePath}/:formId/externalAPIs`, () => {
+  const path = `${basePath}/${formId}/externalAPIs`;
+  controller.listExternalAPIs = jest.fn((_req, _res, next) => {
+    next();
+  });
+  controller.createExternalAPI = jest.fn((_req, _res, next) => {
+    next();
+  });
+
+  it('should return 404 for DELETE', async () => {
+    const response = await appRequest.delete(path);
+
+    expect(response.statusCode).toBe(404);
+  });
+
+  it('should return 404 for PUT', async () => {
+    const response = await appRequest.put(path);
+
+    expect(response.statusCode).toBe(404);
+  });
+
+  it('should have correct middleware for GET', async () => {
+    await appRequest.get(path);
+
+    expect(apiAccess).toBeCalledTimes(0);
+    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(hasFormPermissionsMock).toBeCalledTimes(1);
+    expect(controller.listExternalAPIs).toBeCalledTimes(1);
+  });
+
+  it('should have correct middleware for POST', async () => {
+    await appRequest.post(path);
+
+    expect(apiAccess).toBeCalledTimes(0);
+    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(hasFormPermissionsMock).toBeCalledTimes(1);
+    expect(controller.createExternalAPI).toBeCalledTimes(1);
+  });
+});
+
+describe(`${basePath}/:formId/externalAPIs/:externalAPIId`, () => {
+  const externalAPIId = uuidv4();
+  const path = `${basePath}/${formId}/externalAPIs/${externalAPIId}`;
+  controller.updateExternalAPI = jest.fn((_req, _res, next) => {
+    next();
+  });
+
+  it('should return 404 for DELETE', async () => {
+    const response = await appRequest.delete(path);
+
+    expect(response.statusCode).toBe(404);
+  });
+
+  it('should return 404 for POST', async () => {
+    const response = await appRequest.post(path);
+
+    expect(response.statusCode).toBe(404);
+  });
+
+  it('should return 404 for GET', async () => {
+    const response = await appRequest.get(path);
+
+    expect(response.statusCode).toBe(404);
+  });
+
+  it('should have correct middleware for PUT', async () => {
+    await appRequest.put(path);
+
+    expect(apiAccess).toBeCalledTimes(0);
+    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(hasFormPermissionsMock).toBeCalledTimes(1);
+    expect(controller.updateExternalAPI).toBeCalledTimes(1);
+  });
+});

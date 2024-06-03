@@ -25,6 +25,7 @@ module.exports = {
   FormComponentsProactiveHelp: require('./tables/formComponentsProactiveHelp'),
   FormSubscription: require('./tables/formSubscription'),
   ExternalAPI: require('./tables/externalAPI'),
+  ExternalAPIStatusCode: require('./tables/externalAPIStatusCode'),
 
   // Views
   FormSubmissionUserPermissions: require('./views/formSubmissionUserPermissions'),

@@ -2,12 +2,14 @@ const { MockModel, MockTransaction } = require('../../../common/dbHelper');
 
 const { v4: uuidv4 } = require('uuid');
 
-const { EmailTypes } = require('../../../../src/forms/common/constants');
+const { EmailTypes, ExternalAPIStatuses } = require('../../../../src/forms/common/constants');
 const service = require('../../../../src/forms/form/service');
+const { ENCRYPTION_ALGORITHMS } = require('../../../../src/components/encryptionService');
 
 jest.mock('../../../../src/forms/common/models/tables/documentTemplate', () => MockModel);
 jest.mock('../../../../src/forms/common/models/tables/formEmailTemplate', () => MockModel);
 jest.mock('../../../../src/forms/common/models/views/submissionMetadata', () => MockModel);
+jest.mock('../../../../src/forms/common/models/tables/externalAPI', () => MockModel);
 
 const documentTemplateId = uuidv4();
 const formId = uuidv4();
@@ -788,7 +790,7 @@ describe('createOrUpdateEmailTemplates', () => {
   });
 
   it('should not rollback when an error occurs outside transaction', async () => {
-    service.readEmailTemplate = jest.fn().mockRejectedValue(new Error('SQL Error'));
+    service.readEmailTemplate = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
 
     await expect(service.createOrUpdateEmailTemplate(emailTemplate.formId, emailTemplate, user)).rejects.toThrow();
 
@@ -798,7 +800,7 @@ describe('createOrUpdateEmailTemplates', () => {
   it('should rollback when an insert error occurs inside transaction', async () => {
     service.readEmailTemplate = jest.fn().mockReturnValue(emailTemplate);
     service.readEmailTemplates = jest.fn().mockReturnValue([emailTemplate]);
-    MockModel.insert = jest.fn().mockRejectedValue(new Error('SQL Error'));
+    MockModel.insert = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
 
     await expect(service.createOrUpdateEmailTemplate(emailTemplate.formId, emailTemplate, user)).rejects.toThrow();
 
@@ -809,9 +811,188 @@ describe('createOrUpdateEmailTemplates', () => {
     const id = uuidv4();
     service.readEmailTemplate = jest.fn().mockReturnValue({ id: id, ...emailTemplate });
     service.readEmailTemplates = jest.fn().mockReturnValue([{ id: id, ...emailTemplate }]);
-    MockModel.update = jest.fn().mockRejectedValue(new Error('SQL Error'));
+    MockModel.update = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
 
     await expect(service.createOrUpdateEmailTemplate(emailTemplate.formId, emailTemplate, user)).rejects.toThrow();
+
+    expect(MockTransaction.rollback).toBeCalledTimes(1);
+  });
+});
+
+describe('validateExternalAPI', () => {
+  let validData = null;
+  beforeEach(() => {
+    validData = {
+      id: uuidv4(),
+      formId: uuidv4(),
+      name: 'test_api',
+      endpointUrl: 'http://external.api/',
+      sendApiKey: true,
+      apiKeyHeader: 'X-API-KEY',
+      apiKey: 'my-api-key',
+      sendUserToken: true,
+      userTokenHeader: 'Authorization',
+      userTokenBearer: true,
+      sendUserInfo: true,
+      userInfoHeader: 'X-API-USER',
+      userInfoEncrypted: true,
+      userInfoEncryptionKey: '0489aa2a7882dc53be7c76db43be1800e56627c31a88a0011d85ccc255b79d00',
+      userInfoEncryptionAlgo: ENCRYPTION_ALGORITHMS.AES_256_GCM,
+      code: ExternalAPIStatuses.SUBMITTED,
+    };
+  });
+  it('should not throw errors with valid data', () => {
+    service.validateExternalAPI(validData);
+  });
+
+  it('should throw 422 with no data', () => {
+    expect(() => service.validateExternalAPI(undefined)).toThrow();
+  });
+
+  it('should throw 422 when userInfo encryption options are invalid', () => {
+    validData.userInfoEncryptionKey = null;
+    expect(() => service.validateExternalAPI(undefined)).toThrow();
+  });
+
+  it('should throw 422 when userInfoEncryptionAlgo is invalid', () => {
+    validData.userInfoEncryptionAlgo = 'not valid!';
+    expect(() => service.validateExternalAPI(undefined)).toThrow();
+  });
+
+  it('should throw 422 when sendApiKey is true with no header', () => {
+    validData.apiKeyHeader = null;
+    expect(() => service.validateExternalAPI(undefined)).toThrow();
+  });
+
+  it('should throw 422 when sendApiKey is true with no key', () => {
+    validData.apiKey = null;
+    expect(() => service.validateExternalAPI(undefined)).toThrow();
+  });
+
+  it('should throw 422 when sendUserInfo (encrypted) is true with no header', () => {
+    validData.userInfoHeader = null;
+    expect(() => service.validateExternalAPI(undefined)).toThrow();
+  });
+
+  it('should throw 422 when sendUserInfo (encrypted) is true with no header', () => {
+    validData.userInfoHeader = null;
+    expect(() => service.validateExternalAPI(undefined)).toThrow();
+  });
+});
+
+describe('createExternalAPI', () => {
+  const user = { usernameIdp: 'username' };
+  let validData = null;
+
+  beforeEach(() => {
+    MockModel.mockReset();
+    MockTransaction.mockReset();
+    validData = {
+      id: uuidv4(),
+      formId: uuidv4(),
+      name: 'test_api',
+      endpointUrl: 'http://external.api/',
+      sendApiKey: true,
+      apiKeyHeader: 'X-API-KEY',
+      apiKey: 'my-api-key',
+      sendUserToken: true,
+      userTokenHeader: 'Authorization',
+      userTokenBearer: true,
+      sendUserInfo: true,
+      userInfoHeader: 'X-API-USER',
+      userInfoEncrypted: true,
+      userInfoEncryptionKey: '0489aa2a7882dc53be7c76db43be1800e56627c31a88a0011d85ccc255b79d00',
+      userInfoEncryptionAlgo: ENCRYPTION_ALGORITHMS.AES_256_GCM,
+      code: ExternalAPIStatuses.SUBMITTED,
+    };
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('should insert valid data', async () => {
+    validData.id = null;
+    validData.code = null;
+    await service.createExternalAPI(validData.formId, validData, user);
+    expect(MockModel.insert).toBeCalledTimes(1);
+    expect(MockModel.insert).toBeCalledWith({
+      createdBy: user.usernameIdp,
+      code: ExternalAPIStatuses.SUBMITTED,
+      ...validData,
+    });
+    expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+
+  it('should rollback on error', async () => {
+    MockModel.insert = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
+
+    await expect(service.createExternalAPI(validData.formId, validData, user)).rejects.toThrow();
+
+    expect(MockTransaction.rollback).toBeCalledTimes(1);
+  });
+});
+
+describe('updateExternalAPI', () => {
+  const user = { usernameIdp: 'username' };
+  let validData = null;
+
+  beforeEach(() => {
+    MockModel.mockReset();
+    MockTransaction.mockReset();
+    validData = {
+      id: uuidv4(),
+      formId: uuidv4(),
+      name: 'test_api',
+      endpointUrl: 'http://external.api/',
+      sendApiKey: true,
+      apiKeyHeader: 'X-API-KEY',
+      apiKey: 'my-api-key',
+      sendUserToken: true,
+      userTokenHeader: 'Authorization',
+      userTokenBearer: true,
+      sendUserInfo: true,
+      userInfoHeader: 'X-API-USER',
+      userInfoEncrypted: true,
+      userInfoEncryptionKey: '0489aa2a7882dc53be7c76db43be1800e56627c31a88a0011d85ccc255b79d00',
+      userInfoEncryptionAlgo: ENCRYPTION_ALGORITHMS.AES_256_GCM,
+      code: ExternalAPIStatuses.SUBMITTED,
+    };
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('should update valid data', async () => {
+    MockModel.throwIfNotFound = jest.fn().mockResolvedValueOnce(Object.assign({}, validData));
+
+    // we do not update (status) code - must stay SUBMITTED
+    validData.code = ExternalAPIStatuses.APPROVED;
+
+    await service.updateExternalAPI(validData.formId, validData.id, validData, user);
+    expect(MockModel.update).toBeCalledTimes(1);
+    expect(MockModel.update).toBeCalledWith({
+      updatedBy: user.usernameIdp,
+      code: ExternalAPIStatuses.SUBMITTED,
+      ...validData,
+    });
+    expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+
+  it('should not commit when not found', async () => {
+    MockModel.throwIfNotFound = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
+
+    await expect(service.updateExternalAPI(validData.formId, validData.id, validData, user)).rejects.toThrow();
+    // shouldn't start the transaction
+    expect(MockModel.startTransaction).toBeCalledTimes(0);
+    expect(MockTransaction.commit).toBeCalledTimes(0);
+  });
+
+  it('should rollback on error', async () => {
+    MockModel.update = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
+
+    await expect(service.updateExternalAPI(validData.formId, validData.id, validData, user)).rejects.toThrow();
 
     expect(MockTransaction.rollback).toBeCalledTimes(1);
   });
