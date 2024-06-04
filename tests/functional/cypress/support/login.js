@@ -13,7 +13,7 @@ export function formsettings(){
     else
     {
        
-        //cy.visit(`/pr-${depEnv}`);
+        
         
         cy.visit(`/${depEnv}`);
         
@@ -41,10 +41,12 @@ export function formsettings(){
     
     cy.get(':nth-child(2) > .v-card > .v-card-text > .v-input--error > :nth-child(2)').contains('Please select 1 log-in type');
     cy.get('#input-24').click();
-    cy.get('#checkbox-25').click();
-    cy.get('#checkbox-28').click();
-    cy.get('#checkbox-38').click();
-    cy.get('#checkbox-54').click();
+    cy.get('#checkbox-25').click();// Save and Edit Drafts
+    cy.get('#checkbox-28').click();//Update the status of the form
+    cy.get('#checkbox-31').should('be.enabled');//Multiple draft upload
+    cy.get('#checkbox-38').click();//Copy existing submission
+    cy.get('#checkbox-46').should('be.enabled');//Wide form Layout
+    cy.get('#checkbox-54').click();//Email notification
     cy.get('#input-91').click();
     cy.get('#input-91').type('abc@gmail.com');
     cy.get('#input-58').click();

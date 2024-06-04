@@ -37,7 +37,7 @@ describe('Form Designer', () => {
 
   });  
 // Publish a simple form with Simplebc Address component
- it('Checks team management', () => {
+ it('Checks team management before form publish', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     
@@ -130,10 +130,6 @@ describe('Form Designer', () => {
     cy.get('[data-test="continue-btn-continue"] > .v-btn__content > span').click();
     cy.waitForLoad();
     cy.contains('NIMJOHN').should('not.exist');
-    //cy.get('.v-data-table__tr > [style="width: 1rem;"] > .v-btn').click();
-    //cy.get('[data-test="continue-btn-continue"] > .v-btn__content > span').should('not.exist');
-
-
 
  });
 
