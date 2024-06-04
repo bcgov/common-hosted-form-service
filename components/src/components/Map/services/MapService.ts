@@ -1,4 +1,4 @@
-import L from "leaflet"
+import * as L from "leaflet"
 import "leaflet-draw"
 import 'leaflet/dist/leaflet.css';
 import "leaflet-draw/dist/leaflet.draw-src.css";
@@ -34,11 +34,11 @@ export default function MapService(options){
         //event listener for drawn objects
         map.on('draw:created', function(e){
             //console.log(e)
-            let type = e.layerType
+            let type = e.type
             let layer = e.layer
 
             drawnItems.addLayer(layer)
-            console.log(drawnItems._layers)
+            drawnItems.eachLayer((l) => {console.log(l)})
 
         })
     }
