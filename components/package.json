@@ -50,6 +50,7 @@
     "@bcgov/smk": "^1.2.1",
     "autocompleter": "^7.0.1",
     "formiojs": "^4.14.6",
+    "leaflet": "^1.9.4",
     "lodash": "^4.17.21",
     "native-promise-only": "^0.8.1",
     "path-browserify": "^1.0.1",
