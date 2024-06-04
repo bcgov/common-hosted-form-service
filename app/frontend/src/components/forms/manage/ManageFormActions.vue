@@ -1,5 +1,7 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import ShareForm from '~/components/forms/manage/ShareForm.vue';
@@ -7,50 +9,55 @@ import { useFormStore } from '~/store/form';
 
 import { FormPermissions } from '~/utils/constants';
 
-export default {
-  components: {
-    BaseDialog,
-    ShareForm,
-  },
-  data() {
-    return {
-      showDeleteDialog: false,
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['form', 'permissions', 'isRTL', 'lang']),
-    canDeleteForm() {
-      return this.permissions.includes(FormPermissions.FORM_DELETE);
-    },
-    canManageEmail() {
-      return this.permissions.includes(FormPermissions.EMAIL_TEMPLATE_UPDATE);
-    },
-    canManageTeam() {
-      return this.permissions.includes(FormPermissions.TEAM_UPDATE);
-    },
-    canViewSubmissions() {
-      const perms = [
-        FormPermissions.SUBMISSION_READ,
-        FormPermissions.SUBMISSION_UPDATE,
-      ];
-      return this.permissions.some((p) => perms.includes(p));
-    },
-    isPublished() {
-      return (
-        this.form?.versions?.length &&
-        this.form.versions.some((v) => v.published)
-      );
-    },
-  },
-  methods: {
-    ...mapActions(useFormStore, ['deleteCurrentForm']),
-    async deleteForm() {
-      this.showDeleteDialog = false;
-      await this.deleteCurrentForm();
-      this.$router.push({ name: 'UserForms' });
-    },
-  },
-};
+const showDeleteDialog = ref(false);
+
+const formStore = useFormStore();
+
+const { form, permissions, isRTL, lang } = storeToRefs(formStore);
+
+const router = useRouter();
+
+const canDeleteForm = computed(() =>
+  permissions.value.includes(FormPermissions.FORM_DELETE)
+);
+
+const canManageEmail = computed(() =>
+  permissions.value.includes(FormPermissions.EMAIL_TEMPLATE_UPDATE)
+);
+
+const canManageTeam = computed(() =>
+  permissions.value.includes(FormPermissions.TEAM_UPDATE)
+);
+
+const canViewSubmissions = computed(() => {
+  const perms = [
+    FormPermissions.SUBMISSION_READ,
+    FormPermissions.SUBMISSION_UPDATE,
+  ];
+  return permissions.value.some((p) => perms.includes(p));
+});
+
+const isPublished = computed(() => {
+  return (
+    form.value?.versions?.length && form.value.versions.some((v) => v.published)
+  );
+});
+
+async function deleteForm() {
+  showDeleteDialog.value = false;
+  await formStore.deleteCurrentForm();
+  router.push({ name: 'UserForms' });
+}
+
+defineExpose({
+  canDeleteForm,
+  canManageEmail,
+  canManageTeam,
+  canViewSubmissions,
+  isPublished,
+  deleteForm,
+  showDeleteDialog,
+});
 </script>
 
 <template>
