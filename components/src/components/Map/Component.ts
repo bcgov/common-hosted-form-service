@@ -23,11 +23,12 @@ export default class Component extends (FieldComponent as any) {
             schema: Component.schema(),
         };
     }
-    
+    componentID = super.elementInfo().component.id
     render() {
+        console.log(super.data);
         return super.render(        
         `
-        <div id="mapContainer" style="height:400px; z-index:1;"></div>
+        <div id="map-${this.componentID}" style="height:400px; z-index:1;"></div>
         
         `
         )
@@ -38,7 +39,7 @@ export default class Component extends (FieldComponent as any) {
         return superAttach
     }
     loadMap() {
-        const mapContainer = document.getElementById("mapContainer");
+        const mapContainer = document.getElementById(`map-${this.componentID}`);
         const form = document.getElementsByClassName("formio")
         const drawOptions = {
             circlemarker:false,
@@ -52,5 +53,4 @@ export default class Component extends (FieldComponent as any) {
 
 }
 
-//Components.addComponent('map', MapComponent);
 export {};
