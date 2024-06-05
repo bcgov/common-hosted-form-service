@@ -87,6 +87,19 @@ describe('test error handler middleware', () => {
     expect(res.end).toBeCalledWith(expect.stringContaining('429'));
   });
 
+  it('should pass through unknown objection errors', () => {
+    const error = new Objection.DBError({
+      nativeError: {
+        message: 'This base class is never actually instantiated',
+      },
+    });
+    const { res, next } = getMockRes();
+
+    middleware.errorHandler(error, {}, res, next);
+
+    expect(next).toBeCalledWith(error);
+  });
+
   it('should pass through any 500s', () => {
     const error = new Problem(500);
     const { next } = getMockRes();
