@@ -2,7 +2,8 @@ const Problem = require('api-problem');
 const Objection = require('objection');
 
 module.exports.dataErrors = async (err, _req, res, next) => {
-  let error = err;
+  let error;
+
   if (err instanceof Objection.DataError) {
     error = new Problem(422, {
       detail: 'Sorry... the database does not like the data you provided :(',
@@ -20,6 +21,14 @@ module.exports.dataErrors = async (err, _req, res, next) => {
       detail: 'Validation Error',
       errors: err.data,
     });
+  } else if (!(err instanceof Problem) && (err.status || err.statusCode)) {
+    // Express throws Errors that are not Problems, but do have an HTTP status
+    // code. For example, 400 is thrown when POST bodies are malformed JSON.
+    error = new Problem(err.status || err.statusCode, {
+      detail: err.message,
+    });
+  } else {
+    error = err;
   }
 
   if (error instanceof Problem && error.status !== 500) {
