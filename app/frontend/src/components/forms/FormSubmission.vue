@@ -7,6 +7,7 @@ import FormViewer from '~/components/designer/FormViewer.vue';
 import NotesPanel from '~/components/forms/submission/NotesPanel.vue';
 import StatusPanel from '~/components/forms/submission/StatusPanel.vue';
 import PrintOptions from '~/components/forms/PrintOptions.vue';
+import { checkSubmissionUpdate } from '~/utils/permissionUtils';
 
 import { useFormStore } from '~/store/form';
 import { NotificationTypes } from '~/utils/constants';
@@ -61,6 +62,7 @@ export default {
       'fetchSubmission',
       'getFormPermissionsForUser',
     ]),
+    checkSubmissionUpdate: checkSubmissionUpdate,
     onDelete() {
       this.$router.push({
         name: 'FormSubmissions',
@@ -135,6 +137,7 @@ export default {
                   size="x-small"
                   density="default"
                   icon="mdi:mdi-panorama-variant-outline"
+                  :title="$t('trans.formViewerActions.wideLayout')"
                   @click="toggleWideLayout"
                 />
               </template>
@@ -158,6 +161,7 @@ export default {
                     size="x-small"
                     density="default"
                     icon="mdi:mdi-list-box-outline"
+                    :title="$t('trans.formSubmission.viewAllSubmissions')"
                   />
                 </router-link>
               </template>
@@ -233,7 +237,10 @@ export default {
               >
                 <span v-if="submissionReadOnly">
                   <AuditHistory :submission-id="submissionId" />
-                  <v-tooltip location="bottom">
+                  <v-tooltip
+                    v-if="checkSubmissionUpdate(permissions)"
+                    location="bottom"
+                  >
                     <template #activator="{ props }">
                       <v-btn
                         class="mx-1"
@@ -243,6 +250,7 @@ export default {
                         size="x-small"
                         density="default"
                         icon="mdi:mdi-pencil"
+                        :title="$t('trans.formSubmission.editThisSubmission')"
                         @click="toggleSubmissionEdit(true)"
                       />
                     </template>
@@ -255,6 +263,7 @@ export default {
                   v-else
                   variant="outlined"
                   color="textLink"
+                  :title="$t('trans.formSubmission.cancel')"
                   @click="toggleSubmissionEdit(false)"
                 >
                   <span :lang="lang">{{

@@ -64,6 +64,10 @@ export default {
         return { bottom: true, right: true };
       },
     },
+    newVersion: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ['undo', 'redo', 'save'],
   data() {
@@ -81,8 +85,8 @@ export default {
 
       // fab items icons variables start
       fabItemsColor: '#1A5A96',
-      fabItemsInvertedColor: '#ffffff',
-      disabledInvertedFabItemsColor: '#ffffff',
+      fabItemsInverColor: '#ffffff',
+      disabledInvertedFabItemsColor: '#707070C1',
       disabledFabItemsColor: '#707070C1', // end
 
       savedMsg: i18n.t('trans.floatButton.save'),
@@ -115,6 +119,12 @@ export default {
       }
 
       return [baseStyles, fabItemsPosition, conditionalStyles];
+    },
+    isPublishEnabled() {
+      return this.newVersion ? false : this.formId && this.draftId;
+    },
+    isManageEnabled() {
+      return this.formId;
     },
   },
   watch: {
@@ -320,7 +330,11 @@ export default {
   <div :class="{ 'dir-rtl': isRTL }" :style="computedStyles">
     <div class="fabAction" :lang="lang" @click="onOpenFABActionItems">
       <div class="text" :lang="lang" v-text="baseFABItemName" />
-      <v-btn class="fabItemsInverColor" :size="fabItemsSize">
+      <v-btn
+        class="fabItemsInverColor"
+        :size="fabItemsSize"
+        :title="baseFABItemName"
+      >
         <v-icon
           :color="baseIconColor"
           :size="fabItemsIconsSize"
@@ -347,7 +361,7 @@ export default {
           ref="publishRouterLink"
           role="link"
           data-cy="publishRouterLink"
-          :class="{ fabAction: true, 'disabled-router': !formId }"
+          :class="{ fabAction: true, 'disabled-router': !isPublishEnabled }"
         >
           <div
             class="text"
@@ -355,13 +369,19 @@ export default {
             v-text="$t('trans.floatButton.publish')"
           />
           <v-btn
-            class="fabItemsInverColor"
+            :class="{
+              fabItemsInverColor: isPublishEnabled,
+              disabledInvertedFabItemsColor: !isPublishEnabled,
+            }"
             :size="fabItemsSize"
+            :title="$t('trans.floatButton.publish')"
             @click="navigate"
           >
             <v-icon
               :color="
-                saved ? fabItemsInvertedColor : disabledInvertedFabItemsColor
+                isPublishEnabled
+                  ? fabItemsInverColor
+                  : disabledInvertedFabItemsColor
               "
               :size="fabItemsIconsSize"
               icon="mdi:mdi-file-upload"
@@ -382,7 +402,7 @@ export default {
           ref="settingsRouterLink"
           role="link"
           data-cy="settingsRouterLink"
-          :class="{ fabAction: true, 'disabled-router': !formId }"
+          :class="{ fabAction: true, 'disabled-router': !isManageEnabled }"
         >
           <div
             class="text"
@@ -390,13 +410,19 @@ export default {
             v-text="$t('trans.floatButton.manage')"
           />
           <v-btn
-            class="fabItemsInverColor"
+            :class="{
+              fabItemsInverColor: isManageEnabled,
+              disabledInvertedFabItemsColor: !isManageEnabled,
+            }"
             :size="fabItemsSize"
+            :title="$t('trans.floatButton.manage')"
             @click="navigate"
           >
             <v-icon
               :color="
-                saved ? fabItemsInvertedColor : disabledInvertedFabItemsColor
+                isManageEnabled
+                  ? fabItemsInverColor
+                  : disabledInvertedFabItemsColor
               "
               :size="fabItemsIconsSize"
               icon="mdi:mdi-cog"
@@ -413,7 +439,12 @@ export default {
         :class="{ 'disabled-router': !redoEnabled }"
       >
         <div class="text" :lang="lang" v-text="$t('trans.floatButton.redo')" />
-        <v-btn class="fabItems" :size="fabItemsSize" @click="toParent('redo')">
+        <v-btn
+          class="fabItems"
+          :size="fabItemsSize"
+          :title="$t('trans.floatButton.redo')"
+          @click="toParent('redo')"
+        >
           <v-icon
             :color="redoEnabled ? fabItemsColor : disabledFabItemsColor"
             :size="fabItemsIconsSize"
@@ -429,7 +460,12 @@ export default {
         :class="{ 'disabled-router': !undoEnabled }"
       >
         <div class="text" :lang="lang" v-text="$t('trans.floatButton.undo')" />
-        <v-btn class="fabItems" :size="fabItemsSize" @click="toParent('undo')">
+        <v-btn
+          class="fabItems"
+          :size="fabItemsSize"
+          :title="$t('trans.floatButton.undo')"
+          @click="toParent('undo')"
+        >
           <v-icon
             :color="undoEnabled ? fabItemsColor : disabledFabItemsColor"
             :size="fabItemsIconsSize"
@@ -449,7 +485,11 @@ export default {
           :lang="lang"
           v-text="$t('trans.floatButton.preview')"
         />
-        <v-btn class="fabItems" :size="fabItemsSize">
+        <v-btn
+          class="fabItems"
+          :size="fabItemsSize"
+          :title="$t('trans.floatButton.preview')"
+        >
           <v-icon
             :color="formId ? fabItemsColor : disabledFabItemsColor"
             :size="fabItemsIconsSize"
@@ -468,6 +508,7 @@ export default {
         <v-btn
           class="fabItems"
           :size="fabItemsSize"
+          :title="savedMsg"
           @click="canSave ? toParent('save') : null"
         >
           <v-icon
@@ -492,7 +533,12 @@ export default {
       <div class="fabAction">
         <div :lang="lang">{{ scrollName }}</div>
 
-        <v-btn class="fabItems" :size="fabItemsSize" @click="onHandleScroll">
+        <v-btn
+          class="fabItems"
+          :size="fabItemsSize"
+          :title="scrollName"
+          @click="onHandleScroll"
+        >
           <v-icon
             :color="fabItemsColor"
             :size="fabItemsIconsSize"
@@ -504,7 +550,12 @@ export default {
     </div>
     <div v-if="!isFABActionsOpen" class="fabAction">
       <div :lang="lang">{{ scrollName }}</div>
-      <v-btn class="fabItems" :size="fabItemsSize" @click="onHandleScroll">
+      <v-btn
+        class="fabItems"
+        :size="fabItemsSize"
+        :title="scrollName"
+        @click="onHandleScroll"
+      >
         <v-icon
           :color="fabItemsColor"
           :size="fabItemsIconsSize"
@@ -551,6 +602,12 @@ export default {
 .fabItemsInverColor:hover {
   background: #003366 0% 0% no-repeat padding-box;
   border: none;
+}
+
+.disabledInvertedFabItemsColor {
+  border-radius: 100%;
+  box-shadow: 0px 3px 6px #00000029;
+  transition: background 1s;
 }
 
 .fabItems {

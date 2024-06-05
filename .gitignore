@@ -8,6 +8,7 @@ coverage
 dist
 **/src/formio
 **/cypress/**/videos
+screenshots
 node_modules
 
 # Ignore only top-level package-lock.json

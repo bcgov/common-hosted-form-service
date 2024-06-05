@@ -31,6 +31,7 @@ const IDIR = {
     FormRoleCodes.OWNER,
     FormRoleCodes.TEAM_MANAGER,
     FormRoleCodes.FORM_DESIGNER,
+    FormRoleCodes.SUBMISSION_APPROVER,
     FormRoleCodes.SUBMISSION_REVIEWER,
     FormRoleCodes.FORM_SUBMITTER,
   ],
@@ -86,6 +87,7 @@ const BCEIDBUSINESS = {
     FormRoleCodes.TEAM_MANAGER,
     FormRoleCodes.SUBMISSION_REVIEWER,
     FormRoleCodes.FORM_SUBMITTER,
+    FormRoleCodes.SUBMISSION_APPROVER,
   ],
   tokenmap: {
     idp: 'identity_provider',
@@ -97,6 +99,18 @@ const BCEIDBUSINESS = {
     idpUserId: 'bceid_user_guid',
     keycloakId: 'bceid_user_guid',
   },
+};
+
+const PUBLIC = {
+  active: true,
+  login: false,
+  code: 'public',
+  display: 'Public',
+  idp: 'public',
+  permissions: [],
+  primary: false,
+  roles: null,
+  tokenmap: null,
 };
 
 const STUBS = {
@@ -126,7 +140,7 @@ describe('AddTeamMember.vue', () => {
     setActivePinia(pinia);
     const idpStore = useIdpStore(pinia);
 
-    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS];
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
 
     const wrapper = mount(AddTeamMember, {
       props: {
@@ -153,7 +167,7 @@ describe('AddTeamMember.vue', () => {
     setActivePinia(pinia);
     const idpStore = useIdpStore(pinia);
 
-    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS];
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
 
     const wrapper = mount(AddTeamMember, {
       props: {
@@ -186,7 +200,7 @@ describe('AddTeamMember.vue', () => {
     setActivePinia(pinia);
     const idpStore = useIdpStore(pinia);
 
-    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS];
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
 
     const wrapper = mount(AddTeamMember, {
       props: {
@@ -207,14 +221,6 @@ describe('AddTeamMember.vue', () => {
             name: 'VIcon',
             template: '<div class="v-icon-stub"><slot /></div>',
           },
-          VChipGroup: {
-            name: 'VChipGroup',
-            template: '<div class="v-chip-group-stub"><slot /></div>',
-          },
-          VChip: {
-            name: 'VChip',
-            template: '<div class="v-chip-stub"><slot /></div>',
-          },
         },
       },
     });
@@ -234,7 +240,7 @@ describe('AddTeamMember.vue', () => {
     setActivePinia(pinia);
     const idpStore = useIdpStore(pinia);
 
-    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS];
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
 
     const wrapper = mount(AddTeamMember, {
       props: {
@@ -294,7 +300,7 @@ describe('AddTeamMember.vue', () => {
     setActivePinia(pinia);
     const idpStore = useIdpStore(pinia);
 
-    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS];
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
 
     const wrapper = mount(AddTeamMember, {
       props: {
@@ -353,7 +359,7 @@ describe('AddTeamMember.vue', () => {
     setActivePinia(pinia);
     const idpStore = useIdpStore(pinia);
 
-    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS];
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
 
     const wrapper = mount(AddTeamMember, {
       props: {
@@ -424,7 +430,7 @@ describe('AddTeamMember.vue', () => {
     setActivePinia(pinia);
     const idpStore = useIdpStore(pinia);
 
-    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS];
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
 
     const wrapper = mount(AddTeamMember, {
       props: {
@@ -494,7 +500,7 @@ describe('AddTeamMember.vue', () => {
     setActivePinia(pinia);
     const idpStore = useIdpStore(pinia);
 
-    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS];
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
 
     const wrapper = mount(AddTeamMember, {
       props: {
@@ -595,7 +601,7 @@ describe('AddTeamMember.vue', () => {
     setActivePinia(pinia);
     const idpStore = useIdpStore(pinia);
 
-    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS];
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
 
     const wrapper = mount(AddTeamMember, {
       props: {
@@ -674,7 +680,7 @@ describe('AddTeamMember.vue', () => {
     setActivePinia(pinia);
     const idpStore = useIdpStore(pinia);
 
-    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS];
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
 
     const wrapper = mount(AddTeamMember, {
       props: {
@@ -753,7 +759,7 @@ describe('AddTeamMember.vue', () => {
     setActivePinia(pinia);
     const idpStore = useIdpStore(pinia);
 
-    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS];
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
 
     const wrapper = mount(AddTeamMember, {
       props: {
@@ -817,7 +823,7 @@ describe('AddTeamMember.vue', () => {
     setActivePinia(pinia);
     const idpStore = useIdpStore(pinia);
 
-    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS];
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
 
     const wrapper = mount(AddTeamMember, {
       props: {
@@ -881,7 +887,7 @@ describe('AddTeamMember.vue', () => {
     setActivePinia(pinia);
     const idpStore = useIdpStore(pinia);
 
-    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS];
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
 
     const wrapper = mount(AddTeamMember, {
       props: {
@@ -945,7 +951,7 @@ describe('AddTeamMember.vue', () => {
     setActivePinia(pinia);
     const idpStore = useIdpStore(pinia);
 
-    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS];
+    idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
 
     const wrapper = mount(AddTeamMember, {
       props: {

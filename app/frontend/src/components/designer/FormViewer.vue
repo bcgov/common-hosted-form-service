@@ -1074,6 +1074,7 @@ export default {
             <v-btn
               color="primary"
               :class="{ 'dir-rtl': isRTL }"
+              :title="$t('trans.formViewer.createLateSubmission')"
               @click="isFormScheduleExpired = false"
             >
               <span :lang="lang">{{

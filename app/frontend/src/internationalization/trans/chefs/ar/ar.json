@@ -77,7 +77,7 @@
     "upload": "تحميل",
     "delete": "حذف",
     "download": "تنزيل",
-    "invalidFileMessage": "يجب أن يستخدم القالب أحد الامتدادات التالية: .txt، .docx، .html، .odt، .pptx، .xlsx، .pdf",
+    "invalidFileMessage": "يجب أن يستخدم القالب أحد الامتدادات التالية: .txt، .docx، .html، .odt، .pptx، .xlsx",
     "uploadSuccess": "تم تحميل القالب بنجاح.",
     "uploadError": "حدث خطأ أثناء تحميل القالب.",
     "deleteSuccess": "تم حذف القالب بنجاح.",

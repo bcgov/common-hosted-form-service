@@ -1,37 +1,27 @@
-<script>
-import { mapState, mapWritableState } from 'pinia';
-import BasePanel from '~/components/base/BasePanel.vue';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useFormStore } from '~/store/form';
 
-export default {
-  components: {
-    BasePanel,
+const { t } = useI18n({ useScope: 'global' });
+
+/* c8 ignore start */
+const nameRules = ref([
+  (v) => !!v || t('trans.formSettings.formTitleReq'),
+  (v) => (v && v.length <= 255) || t('trans.formSettings.formTitlemaxChars'),
+]);
+
+const descriptionRules = ref([
+  (v) => {
+    if (v) {
+      return v.length <= 255 || t('trans.formSettings.formDescriptnMaxChars');
+    } else return true;
   },
-  data() {
-    return {
-      nameRules: [
-        (v) => !!v || this.$t('trans.formSettings.formTitleReq'),
-        (v) =>
-          (v && v.length <= 255) ||
-          this.$t('trans.formSettings.formTitlemaxChars'),
-      ],
-      descriptionRules: [
-        (v) => {
-          if (v) {
-            return (
-              v.length <= 255 ||
-              this.$t('trans.formSettings.formDescriptnMaxChars')
-            );
-          } else return true;
-        },
-      ],
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['lang']),
-    ...mapWritableState(useFormStore, ['form']),
-  },
-};
+]);
+/* c8 ignore stop */
+
+const { form, lang } = storeToRefs(useFormStore());
 </script>
 
 <template>

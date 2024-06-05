@@ -1,58 +1,61 @@
-<script>
+<script setup>
+import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useFormStore } from '~/store/form';
+import { useLocale } from 'vuetify';
 
-export default {
-  data: () => {
-    return {
-      language: 'English',
-      lang: 'en',
-      languageIndex: 0,
-      items: [
-        { title: 'English', keyword: 'en' },
-        { title: 'عربى (Arabic)', keyword: 'ar' },
-        { title: 'German (Germany)', keyword: 'de' },
-        { title: 'Español (Spanish)', keyword: 'es' },
-        { title: 'فارسی (Farsi)', keyword: 'fa' },
-        { title: 'Français (French)', keyword: 'fr' },
-        { title: 'हिंदी (Hindi)', keyword: 'hi' },
-        { title: 'Italian (Italy)', keyword: 'it' },
-        { title: '日本語 (Japanese)', keyword: 'ja' },
-        { title: '한국어 (Korean)', keyword: 'ko' },
-        { title: 'ਪੰਜਾਬੀ (Punjabi - Gurmukhi)', keyword: 'pa' },
-        { title: 'Portuguese (Portugal)', keyword: 'pt' },
-        { title: 'Русский (Russian)', keyword: 'ru' },
-        { title: 'Tagalog (Filipino)', keyword: 'tl' },
-        { title: 'Українська (Ukrainian)', keyword: 'uk' },
-        { title: 'Tiếng Việt (Vietnamese)', keyword: 'vi' },
-        { title: '简体中文 (Simplified Chinese)', keyword: 'zh' },
-        { title: '繁體中文 (Traditional Chinese)', keyword: 'zhTW' },
-      ],
-    };
-  },
-  methods: {
-    languageSelected(lang) {
-      this.language = lang.title;
-      this.$root.$i18n.locale = lang.keyword;
-      this.$vuetify.locale.current =
-        lang.keyword == 'zh'
-          ? 'zhHans'
-          : lang.keyword == 'zhTW'
-          ? 'zhHant'
-          : lang.keyword;
-      useFormStore().$patch({
-        lang: lang.keyword,
-        isRTL: lang.keyword === 'ar' || lang.keyword === 'fa' ? true : false,
-      });
-    },
-  },
-};
+const language = ref('English');
+const items = ref([
+  { title: 'English', keyword: 'en' },
+  { title: 'عربى (Arabic)', keyword: 'ar' },
+  { title: 'German (Germany)', keyword: 'de' },
+  { title: 'Español (Spanish)', keyword: 'es' },
+  { title: 'فارسی (Farsi)', keyword: 'fa' },
+  { title: 'Français (French)', keyword: 'fr' },
+  { title: 'हिंदी (Hindi)', keyword: 'hi' },
+  { title: 'Italian (Italy)', keyword: 'it' },
+  { title: '日本語 (Japanese)', keyword: 'ja' },
+  { title: '한국어 (Korean)', keyword: 'ko' },
+  { title: 'ਪੰਜਾਬੀ (Punjabi - Gurmukhi)', keyword: 'pa' },
+  { title: 'Portuguese (Portugal)', keyword: 'pt' },
+  { title: 'Русский (Russian)', keyword: 'ru' },
+  { title: 'Tagalog (Filipino)', keyword: 'tl' },
+  { title: 'Українська (Ukrainian)', keyword: 'uk' },
+  { title: 'Tiếng Việt (Vietnamese)', keyword: 'vi' },
+  { title: '简体中文 (Simplified Chinese)', keyword: 'zh' },
+  { title: '繁體中文 (Traditional Chinese)', keyword: 'zhTW' },
+]);
+
+const { locale } = useI18n({ useScope: 'global' });
+const { current } = useLocale();
+
+function languageSelected(lang) {
+  language.value = lang.title;
+  locale.value = lang.keyword;
+  current.value =
+    lang.keyword == 'zh'
+      ? 'zhHans'
+      : lang.keyword == 'zhTW'
+      ? 'zhHant'
+      : lang.keyword;
+  useFormStore().$patch({
+    lang: lang.keyword,
+    isRTL: lang.keyword === 'ar' || lang.keyword === 'fa' ? true : false,
+  });
+}
 </script>
 
 <template>
   <div class="text-center">
     <v-menu>
       <template #activator="{ props }">
-        <v-btn variant="outlined" color="white" v-bind="props" class="ml-3">
+        <v-btn
+          variant="outlined"
+          color="white"
+          v-bind="props"
+          class="ml-3"
+          :title="language"
+        >
           <v-icon class="mr-1" icon="mdi:mdi-web" />
           {{ language }}
           <v-icon class="ml-3" icon="mdi:mdi-menu-down" />

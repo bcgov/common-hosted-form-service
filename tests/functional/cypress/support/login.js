@@ -67,8 +67,4 @@ export function formsettings(){
     cy.get('#checkbox-80').click();
     cy.get('button').contains('Continue').click();
 
-
-
-
-
 }

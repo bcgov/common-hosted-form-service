@@ -77,7 +77,7 @@
     "upload": "अपलोड करें",
     "delete": "हटाएं",
     "download": "डाउनलोड करें",
-    "invalidFileMessage": "टेम्पलेट में निम्नलिखित में से एक एक्सटेंशन का उपयोग करना चाहिए: .txt, .docx, .html, .odt, .pptx, .xlsx, .pdf",
+    "invalidFileMessage": "टेम्पलेट में निम्नलिखित में से एक एक्सटेंशन का उपयोग करना चाहिए: .txt, .docx, .html, .odt, .pptx, .xlsx",
     "uploadSuccess": "टेम्पलेट सफलतापूर्वक अपलोड हुआ।",
     "uploadError": "टेम्पलेट अपलोड करते समय एक त्रुटि हुई।",
     "deleteSuccess": "टेम्पलेट सफलतापूर्वक हटाया गया।",

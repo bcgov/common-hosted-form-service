@@ -423,6 +423,7 @@ export default {
                   size="small"
                   color="primary"
                   class="pl-0 my-0 text-end"
+                  :title="$t('trans.statusPanel.assignToMe')"
                   @click="assignToCurrentUser"
                 >
                   <v-icon class="mr-1" icon="mdi:mdi-account"></v-icon>
@@ -480,6 +481,7 @@ export default {
                     variant="outlined"
                     color="textLink"
                     v-bind="props"
+                    :title="$t('trans.statusPanel.viewHistory')"
                   >
                     <span :lang="lang">{{
                       $t('trans.statusPanel.viewHistory')
@@ -489,6 +491,7 @@ export default {
                     class="wide-button"
                     :disabled="!statusToSet"
                     color="primary"
+                    :title="statusAction"
                     @click="updateStatus"
                   >
                     <span>{{ statusAction }}</span>
@@ -514,6 +517,7 @@ export default {
                       :class="{ 'dir-rtl': isRTL }"
                       color="primary"
                       variant="flat"
+                      :title="$t('trans.statusPanel.close')"
                       @click="historyDialog = false"
                     >
                       <span :lang="lang">{{
