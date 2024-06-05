@@ -127,29 +127,21 @@ export default {
     cancelPublish() {
       this.showPublishDialog = false;
       document.documentElement.style.overflow = 'auto';
-      if (this.draftId) {
-        this.$router
-          .replace({
-            name: 'FormDesigner',
-            query: {
-              f: this.formId,
-              d: this.draftId,
-              saved: true,
-            },
-          })
-          .catch(() => {});
-      }
-
       if (this.hasDraft) {
         const idx = this.drafts.map((d) => d.id).indexOf(this.publishOpts.id);
-        this.drafts[idx].published = !this.drafts[idx].published;
-      } else {
+        if (idx !== -1) {
+          this.drafts[idx].published = !this.drafts[idx].published;
+        }
+      }
+      if (this.form.versions) {
         const idx = this.form.versions
           .map((d) => d.id)
           .indexOf(this.publishOpts.id);
-        this.form.versions[idx].published = !this.form.versions[idx].published;
+        if (idx !== -1) {
+          this.form.versions[idx].published =
+            !this.form.versions[idx].published;
+        }
       }
-
       this.rerenderTable += 1;
     },
     togglePublish(value, id, version, isDraft) {
@@ -172,6 +164,11 @@ export default {
               id: item.id,
               isDraft: item.isDraft,
             };
+            // toggle switch state in data table
+            const idx = this.drafts.map((d) => d.id).indexOf(item.id);
+            if (idx !== -1) {
+              this.drafts[idx].published = true;
+            }
             document.documentElement.style.overflow = 'hidden';
             this.showPublishDialog = true;
           }
@@ -372,6 +369,7 @@ export default {
                   icon
                   v-bind="props"
                   variant="text"
+                  :title="$t('trans.manageVersions.editVersion')"
                 >
                   <v-icon icon="mdi:mdi-pencil"></v-icon>
                 </v-btn>
@@ -393,6 +391,7 @@ export default {
                 icon
                 v-bind="props"
                 variant="text"
+                :title="$t('trans.manageVersions.exportDesign')"
                 @click="onExportClick(item.id, item.isDraft)"
               >
                 <v-icon icon="mdi:mdi-download"></v-icon>
@@ -415,6 +414,13 @@ export default {
                   :disabled="hasDraft"
                   icon
                   variant="text"
+                  :title="
+                    hasDraft
+                      ? $t('trans.manageVersions.infoC')
+                      : $t('trans.manageVersions.useVersionInfo', {
+                          version: item.version,
+                        })
+                  "
                   @click="createVersion(item.formId, item.id)"
                 >
                   <v-icon icon="mdi:mdi-plus"></v-icon>
@@ -445,6 +451,7 @@ export default {
                   :disabled="!hasVersions"
                   icon
                   variant="text"
+                  :title="$t('trans.manageVersions.deleteVersion')"
                   @click="showDeleteDraftDialog = true"
                 >
                   <v-icon icon="mdi:mdi-delete"></v-icon>

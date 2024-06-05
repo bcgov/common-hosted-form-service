@@ -25,32 +25,95 @@ const getCsvRow = (result, index) => {
 };
 
 describe('export', () => {
-  describe('csv', () => {
-    describe('type 3', () => {
-      const currentUser = {
-        usernameIdp: 'PAT_TEST',
-      };
-      const form = {
-        snake: () => {
-          'form';
-        },
-      };
-      const latestFormSchema = {
-        display: 'form',
-        type: 'form',
+  const form = {
+    id: formId,
+    snake: () => {
+      'form';
+    },
+  };
+  const formSchema = {
+    display: 'form',
+    type: 'form',
+    components: [
+      {
+        type: 'datagrid',
+        label: 'Data Grid',
         components: [
           {
-            type: 'datagrid',
-            label: 'Data Grid',
-            components: [
-              {
-                type: 'simpletextfield',
-                label: 'Text Field',
-              },
-            ],
+            type: 'simpletextfield',
+            label: 'Text Field',
           },
         ],
+      },
+    ],
+  };
+
+  // Mock the internal functions that only do Objection calls.
+  exportService._getForm = jest.fn().mockReturnValue(form);
+  exportService._readLatestFormSchema = jest.fn().mockReturnValue(formSchema);
+
+  describe('csv', () => {
+    const currentUser = {
+      usernameIdp: 'PAT_TEST',
+    };
+
+    describe('400 response when', () => {
+      test('invalid preferences json', async () => {
+        const params = {
+          preference: '{',
+        };
+
+        await expect(exportService.export(formId, params, currentUser)).rejects.toThrow('400');
+      });
+
+      test('invalid export template', async () => {
+        exportService._getData = jest.fn().mockReturnValue([]);
+        const params = {
+          format: 'csv',
+          template: 'doesntexist',
+          type: 'submissions',
+        };
+
+        await expect(exportService.export(formId, params, currentUser)).rejects.toThrow('400');
+      });
+    });
+
+    describe('type 1 / multiRowEmptySpacesCSVExport', () => {
+      const params = {
+        emailExport: false,
+        fields: ['form.submissionId', 'form.confirmationId', 'form.formName', 'form.version', 'form.createdAt', 'form.fullName', 'form.username', 'form.email', 'simpletextfield'],
+        template: 'multiRowEmptySpacesCSVExport',
       };
+
+      test('invalid form version', async () => {
+        const submission = [
+          {
+            submissionId: 'd5a40f00-ee5e-49ab-9bd7-b34f7f7b9c1b',
+            confirmationId: 'D5A40F00',
+            formName: 'form',
+            version: 1,
+            createdAt: '2024-05-03T20:56:31.270Z',
+            fullName: 'Pat Test',
+            username: 'PAT_TEST',
+            email: 'pat.test@gov.bc.ca',
+            submission: {
+              dataGrid: [
+                {
+                  simpletextfield: 'simple text field 1-1',
+                },
+              ],
+              lateEntry: false,
+            },
+          },
+        ];
+        exportService._getData.mockReturnValueOnce(submission);
+        exportService._readLatestFormSchema.mockReturnValueOnce();
+
+        await expect(exportService.export(formId, params, currentUser)).rejects.toThrow('400');
+      });
+    });
+
+    describe('type 3 / singleRowCSVExport', () => {
       const params = {
         emailExport: false,
         fields: [
@@ -68,8 +131,6 @@ describe('export', () => {
         template: 'singleRowCSVExport',
       };
 
-      exportService._getForm = jest.fn().mockReturnValue(form);
-      exportService._readLatestFormSchema = jest.fn().mockReturnValue(latestFormSchema);
       emailService.submissionExportLink = jest.fn();
       fileService.create = jest.fn().mockReturnValue({});
 
@@ -390,8 +451,8 @@ describe('_buildCsvHeaders', () => {
 
     expect(result).toHaveLength(44);
     expect(result).toEqual(expect.arrayContaining(['form.confirmationId', 'textFieldNested1', 'textFieldNested2']));
-    expect(exportService._readLatestFormSchema).toHaveBeenCalledTimes(1);
-    // expect(exportService._readLatestFormSchema).toHaveBeenCalledWith(123);
+    expect(exportService._readLatestFormSchema).toBeCalledTimes(1);
+    // expect(exportService._readLatestFormSchema).toBeCalledWith(123);
 
     // restore mocked function to it's original implementation
     exportService._readLatestFormSchema.mockRestore();
@@ -424,8 +485,8 @@ describe('_buildCsvHeaders', () => {
     expect(result).toEqual(
       expect.arrayContaining(['form.confirmationId', 'oneRowPerLake.0.closestTown', 'oneRowPerLake.0.dataGrid.0.fishType', 'oneRowPerLake.0.dataGrid.1.fishType'])
     );
-    expect(exportService._readLatestFormSchema).toHaveBeenCalledTimes(1);
-    expect(exportService._readLatestFormSchema).toHaveBeenCalledWith(123, 1);
+    expect(exportService._readLatestFormSchema).toBeCalledTimes(1);
+    expect(exportService._readLatestFormSchema).toBeCalledWith(123, 1);
 
     // restore mocked function to it's original implementation
     exportService._readLatestFormSchema.mockRestore();
@@ -473,8 +534,8 @@ describe('_buildCsvHeaders', () => {
         'lateEntry',
       ])
     );
-    expect(exportService._readLatestFormSchema).toHaveBeenCalledTimes(1);
-    expect(exportService._readLatestFormSchema).toHaveBeenCalledWith(123, 1);
+    expect(exportService._readLatestFormSchema).toBeCalledTimes(1);
+    expect(exportService._readLatestFormSchema).toBeCalledWith(123, 1);
 
     // restore mocked function to it's original implementation
     exportService._readLatestFormSchema.mockRestore();
@@ -511,8 +572,8 @@ describe('_buildCsvHeaders', () => {
     expect(result[13]).toEqual('oneRowPerLake.0.dataGrid.0.numberCaught');
     expect(result[18]).toEqual('oneRowPerLake.0.closestTown');
     expect(result[28]).toEqual('oneRowPerLake.1.numberOfDays');
-    expect(exportService._readLatestFormSchema).toHaveBeenCalledTimes(1);
-    expect(exportService._readLatestFormSchema).toHaveBeenCalledWith(123, 1);
+    expect(exportService._readLatestFormSchema).toBeCalledTimes(1);
+    expect(exportService._readLatestFormSchema).toBeCalledWith(123, 1);
 
     // restore mocked function to it's original implementation
     exportService._readLatestFormSchema.mockRestore();
@@ -543,8 +604,8 @@ describe('_buildCsvHeaders', () => {
 
     expect(result).toHaveLength(41);
     expect(result).toEqual(expect.arrayContaining(['number1', 'selectBoxes1.a', 'number']));
-    expect(exportService._readLatestFormSchema).toHaveBeenCalledTimes(1);
-    expect(exportService._readLatestFormSchema).toHaveBeenCalledWith(123, 1);
+    expect(exportService._readLatestFormSchema).toBeCalledTimes(1);
+    expect(exportService._readLatestFormSchema).toBeCalledWith(123, 1);
 
     // restore mocked function to it's original implementation
     exportService._readLatestFormSchema.mockRestore();
@@ -614,11 +675,11 @@ describe('', () => {
     // get fields
     const fields = await exportService.fieldsForCSVExport('bd4dcf26-65bd-429b-967f-125500bfd8a4', params);
 
-    expect(exportService._getForm).toHaveBeenCalledWith('bd4dcf26-65bd-429b-967f-125500bfd8a4');
-    expect(exportService._getData).toHaveBeenCalledWith(params.type, params.version, form, params);
-    expect(exportService._getForm).toHaveBeenCalledTimes(1);
-    expect(exportService._getData).toHaveBeenCalledTimes(1);
-    expect(exportService._buildCsvHeaders).toHaveBeenCalledTimes(1);
+    expect(exportService._getForm).toBeCalledWith('bd4dcf26-65bd-429b-967f-125500bfd8a4');
+    expect(exportService._getData).toBeCalledWith(params.type, params.version, form, params);
+    expect(exportService._getForm).toBeCalledTimes(1);
+    expect(exportService._getData).toBeCalledTimes(1);
+    expect(exportService._buildCsvHeaders).toBeCalledTimes(1);
     // test cases
     expect(fields.length).toEqual(19);
   });
@@ -759,9 +820,9 @@ describe('_getSubmissions', () => {
       preference = params.preference;
     }
     exportService._getSubmissions(form, params, params.version);
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.modify).toHaveBeenCalledTimes(7);
-    expect(MockModel.modify).toHaveBeenCalledWith('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate);
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.modify).toBeCalledTimes(7);
+    expect(MockModel.modify).toBeCalledWith('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate);
   });
 
   it('Should pass this test without preference passed to _getSubmissions and without calling updatedAt modifier', async () => {
@@ -775,8 +836,8 @@ describe('_getSubmissions', () => {
     MockModel.query.mockImplementation(() => MockModel);
     exportService._submissionsColumns = jest.fn().mockReturnThis();
     exportService._getSubmissions(form, params, params.version);
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.modify).toHaveBeenCalledTimes(7);
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.modify).toBeCalledTimes(7);
   });
 
   it('Should pass this test with preference passed to _getSubmissions', async () => {
@@ -801,8 +862,8 @@ describe('_getSubmissions', () => {
       preference = params.preference;
     }
     exportService._getSubmissions(form, params, params.version);
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.modify).toHaveBeenCalledTimes(7);
-    expect(MockModel.modify).toHaveBeenCalledWith('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate);
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.modify).toBeCalledTimes(7);
+    expect(MockModel.modify).toBeCalledWith('filterUpdatedAt', preference && preference.updatedMinDate, preference && preference.updatedMaxDate);
   });
 });

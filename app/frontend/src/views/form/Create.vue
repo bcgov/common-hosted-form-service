@@ -103,6 +103,7 @@ formStore.resetForm();
             :disabled="!settingsFormValid"
             color="primary"
             data-test="continue-btn"
+            :title="$t('trans.create.continue')"
             @click="stepper.next()"
           >
             {{ $t('trans.create.continue') }}
@@ -113,6 +114,7 @@ formStore.resetForm();
           <v-btn
             variant="outlined"
             data-test="back-btn"
+            :title="$t('trans.create.back')"
             @click="stepper.prev()"
           >
             <span :lang="lang">{{ $t('trans.create.back') }}</span>

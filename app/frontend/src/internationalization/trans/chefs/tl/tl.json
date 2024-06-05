@@ -77,7 +77,7 @@
     "upload": "I-upload",
     "delete": "Tanggalin",
     "download": "I-download",
-    "invalidFileMessage": "Ang template ay dapat gumamit ng isa sa mga sumusunod na extension: .txt, .docx, .html, .odt, .pptx, .xlsx, .pdf",
+    "invalidFileMessage": "Ang template ay dapat gumamit ng isa sa mga sumusunod na extension: .txt, .docx, .html, .odt, .pptx, .xlsx",
     "uploadSuccess": "Matagumpay na na-upload ang template.",
     "uploadError": "Nagkaroon ng error habang ina-upload ang template.",
     "deleteSuccess": "Matagumpay na natanggal ang template.",

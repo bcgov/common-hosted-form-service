@@ -1,22 +1,22 @@
 export function formsettings(){
 
-
-
-
-
     const depEnv = Cypress.env('depEnv');
     const username=Cypress.env('keycloakUsername');
     const password=Cypress.env('keycloakPassword');
     
     
-    if(depEnv=="")
+    
+    if(depEnv=="app")
     {
-        cy.visit(`/app`);
+        cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/app`);
     }
     else
     {
-
-        cy.visit(`/pr-${depEnv}`);
+       
+        
+        
+        cy.visit(`/${depEnv}`);
+        
     }
     
     cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
@@ -41,10 +41,12 @@ export function formsettings(){
     
     cy.get(':nth-child(2) > .v-card > .v-card-text > .v-input--error > :nth-child(2)').contains('Please select 1 log-in type');
     cy.get('#input-24').click();
-    cy.get('#checkbox-25').click();
-    cy.get('#checkbox-28').click();
-    cy.get('#checkbox-38').click();
-    cy.get('#checkbox-54').click();
+    cy.get('#checkbox-25').click();// Save and Edit Drafts
+    cy.get('#checkbox-28').click();//Update the status of the form
+    cy.get('#checkbox-31').should('be.enabled');//Multiple draft upload
+    cy.get('#checkbox-38').click();//Copy existing submission
+    cy.get('#checkbox-46').should('be.enabled');//Wide form Layout
+    cy.get('#checkbox-54').click();//Email notification
     cy.get('#input-91').click();
     cy.get('#input-91').type('abc@gmail.com');
     cy.get('#input-58').click();
@@ -64,9 +66,5 @@ export function formsettings(){
     cy.get('.d-flex > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').type('test label');
     cy.get('#checkbox-80').click();
     cy.get('button').contains('Continue').click();
-
-
-
-
 
 }

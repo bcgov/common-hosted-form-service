@@ -282,6 +282,10 @@ export default {
                 Array.isArray(roles) && roles.length
                   ? roles.includes(FormRoleCodes.FORM_DESIGNER)
                   : false,
+              submission_approver:
+                Array.isArray(roles) && roles.length
+                  ? roles.includes(FormRoleCodes.SUBMISSION_APPROVER)
+                  : false,
               submission_reviewer:
                 Array.isArray(roles) && roles.length
                   ? roles.includes(FormRoleCodes.SUBMISSION_REVIEWER)
@@ -409,6 +413,7 @@ export default {
                 icon
                 size="x-small"
                 v-bind="props"
+                :title="$t('trans.teamManagement.selectColumns')"
                 @click="onShowColumnDialog"
               >
                 <v-icon icon="mdi:mdi-view-column"></v-icon>
@@ -428,6 +433,7 @@ export default {
                   icon
                   size="x-small"
                   v-bind="props"
+                  :title="$t('trans.teamManagement.manageForm')"
                 >
                   <v-icon icon="mdi:mdi-cog"></v-icon>
                 </v-btn>
@@ -498,6 +504,15 @@ export default {
         </v-tooltip>
         <span v-else>{{ column.title }}</span>
       </template>
+      <template #header.submission_approver="{ column }">
+        <v-tooltip v-if="roleOrder.includes(column.key)" location="bottom">
+          <template #activator="{ props }">
+            <span v-bind="props">{{ column.title }}</span>
+          </template>
+          <span>{{ column.description }}</span>
+        </v-tooltip>
+        <span v-else>{{ column.title }}</span>
+      </template>
       <template #header.submission_reviewer="{ column }">
         <v-tooltip v-if="roleOrder.includes(column.key)" location="bottom">
           <template #activator="{ props }">
@@ -534,6 +549,7 @@ export default {
               :disabled="updating || selectedUsers.length < 1"
               size="24"
               color="red"
+              :title="$t('trans.teamManagement.removeSelectedUsers')"
               @click="onRemoveClick(selectedUsers)"
             >
               <v-icon
@@ -563,6 +579,16 @@ export default {
           v-if="!disableRole('owner', item, form.userType)"
           key="owner"
           v-model="item.owner"
+          v-ripple
+          :disabled="updating"
+          @update:modelValue="toggleRole(item)"
+        ></v-checkbox-btn>
+      </template>
+      <template #item.submission_approver="{ item }">
+        <v-checkbox-btn
+          v-if="!disableRole('submission_approver', item, form.userType)"
+          key="submission_approver"
+          v-model="item.submission_approver"
           v-ripple
           :disabled="updating"
           @update:modelValue="toggleRole(item)"
@@ -607,6 +633,7 @@ export default {
               :disabled="updating"
               size="24"
               color="red"
+              :title="$t('trans.teamManagement.removeThisUser')"
               @click="onRemoveClick(item)"
             >
               <v-icon

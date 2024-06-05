@@ -18,7 +18,7 @@ describe('search BCGEO Address', () => {
       ],
     });
     await controller.searchBCGeoAddress(req, res, next);
-    expect(service.searchBCGeoAddress).toHaveBeenCalledTimes(1);
+    expect(service.searchBCGeoAddress).toBeCalledTimes(1);
   });
 });
 describe('search BCGEO Address', () => {
@@ -37,6 +37,6 @@ describe('search BCGEO Address', () => {
       ],
     });
     await controller.searchBCGeoAddress(req, res, next);
-    expect(service.searchBCGeoAddress).toHaveBeenCalledTimes(1);
+    expect(service.searchBCGeoAddress).toBeCalledTimes(1);
   });
 });

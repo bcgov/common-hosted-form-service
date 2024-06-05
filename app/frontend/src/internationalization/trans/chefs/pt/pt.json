@@ -77,7 +77,7 @@
     "upload": "Carregar",
     "delete": "Excluir",
     "download": "Baixar",
-    "invalidFileMessage": "O modelo deve usar uma das seguintes extensões: .txt, .docx, .html, .odt, .pptx, .xlsx, .pdf",
+    "invalidFileMessage": "O modelo deve usar uma das seguintes extensões: .txt, .docx, .html, .odt, .pptx, .xlsx",
     "uploadSuccess": "Modelo carregado com sucesso.",
     "uploadError": "Ocorreu um erro ao carregar o modelo.",
     "deleteSuccess": "Modelo excluído com sucesso.",

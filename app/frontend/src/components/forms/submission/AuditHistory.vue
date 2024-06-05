@@ -67,6 +67,7 @@ export default {
           size="x-small"
           density="default"
           icon="mdi:mdi-history"
+          :title="$t('trans.auditHistory.viewEditHistory')"
           @click="loadHistory"
         />
       </template>
@@ -110,6 +111,7 @@ export default {
             class="mb-5 close-dlg"
             color="primary"
             variant="flat"
+            :title="$t('trans.auditHistory.close')"
             @click="dialog = false"
           >
             <span :lang="lang">{{ $t('trans.auditHistory.close') }}</span>

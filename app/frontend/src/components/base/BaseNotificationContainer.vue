@@ -1,18 +1,10 @@
-<script>
-import { mapState } from 'pinia';
-import BaseNotificationBar from '~/components/base//BaseNotificationBar.vue';
+<script setup>
+import { storeToRefs } from 'pinia';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
-export default {
-  components: {
-    BaseNotificationBar,
-  },
-  computed: {
-    ...mapState(useNotificationStore, ['notifications']),
-    ...mapState(useFormStore, ['isRTL']),
-  },
-};
+const { notifications } = storeToRefs(useNotificationStore());
+const { isRTL } = storeToRefs(useFormStore());
 </script>
 
 <template>

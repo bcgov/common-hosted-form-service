@@ -10,10 +10,8 @@ const userAccess = require('../../../../src/forms/auth/middleware/userAccess');
 userAccess.currentUser = jest.fn((_req, _res, next) => {
   next();
 });
-userAccess.filterMultipleSubmissions = jest.fn(() => {
-  return jest.fn((_req, _res, next) => {
-    next();
-  });
+userAccess.filterMultipleSubmissions = jest.fn((_req, _res, next) => {
+  next();
 });
 userAccess.hasSubmissionPermissions = jest.fn(() => {
   return jest.fn((_req, _res, next) => {
@@ -547,7 +545,7 @@ describe(`${basePath}/:formSubmissionId/status`, () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toBeTruthy();
-      expect(emailService.statusAssigned).toHaveBeenCalledTimes(0);
+      expect(emailService.statusAssigned).toBeCalledTimes(0);
     });
 
     it('should handle 401', async () => {

@@ -205,7 +205,7 @@ describe('Form Designer', () => {
         cy.get('span.btn').contains('Date / Time')
         
         .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, -70, { force: true })
+        .trigger('mousemove', coords.x, -50, { force: true })
         .trigger('mouseup', { force: true });
         //cy.get('p').contains('Multi-line Text Component');
         cy.get('button').contains('Save').click();
@@ -218,7 +218,7 @@ describe('Form Designer', () => {
     
     // Form Editing 
   it('Form Edit', () => {
-      cy.viewport(1000, 1100);
+      cy.viewport(1000, 1800);
       cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
       let savedButton = cy.get('[data-cy=saveButton]');
       expect(savedButton).to.not.be.null;

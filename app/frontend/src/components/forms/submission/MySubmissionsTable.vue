@@ -321,6 +321,7 @@ export default {
                 size="x-small"
                 density="default"
                 icon="mdi:mdi-view-column"
+                :title="$t('trans.mySubmissionsTable.selectColumns')"
                 @click="onShowColumnDialog"
               />
             </template>
@@ -343,6 +344,7 @@ export default {
                   size="x-small"
                   density="default"
                   icon="mdi:mdi-plus"
+                  :title="$t('trans.mySubmissionsTable.createNewSubmission')"
                 />
               </router-link>
             </template>

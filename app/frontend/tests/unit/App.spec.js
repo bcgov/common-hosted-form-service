@@ -182,4 +182,45 @@ describe('App.vue', () => {
     expect(wrapper.vm.isWideLayout).toBeTruthy();
     expect(wrapper.vm.isValidRoute).toBeTruthy();
   });
+
+  it('isFormSubmitMode should return formSubmitMode from the router if it exists', () => {
+    useRoute.mockReturnValue({
+      meta: {
+        formSubmitMode: true,
+      },
+    });
+    const wrapper = shallowMount(App, {
+      global: {
+        stubs: {
+          RouterView: {
+            name: 'RouterView',
+            template: '<div class="v-router-view-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    expect(wrapper.vm.isFormSubmitMode).toBeTruthy();
+  });
+
+  it('appTitle should be retrieved from the route otherwise from the environment variable', () => {
+    const TITLE = 'THIS IS AN APP TITLE';
+    useRoute.mockReturnValue({
+      meta: {
+        title: TITLE,
+      },
+    });
+    const wrapper = shallowMount(App, {
+      global: {
+        stubs: {
+          RouterView: {
+            name: 'RouterView',
+            template: '<div class="v-router-view-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    expect(wrapper.vm.appTitle).toEqual(TITLE);
+  });
 });

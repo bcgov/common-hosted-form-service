@@ -8,13 +8,16 @@ describe('Application About Page', () => {
     
     if(depEnv=="")
     {
+        
         cy.visit(`/app`);
+        cy.contains('Create, publish forms, and receive submissions with the Common Hosted Forms Service.').should('be.visible');
     }
     else
     {
-
-      cy.visit(`/pr-${depEnv}`);
-      cy.contains('h1', 'Create, publish forms, and receive submissions with the Common Hosted Forms Service.');
+      
+      cy.visit(`/${depEnv}`);
+      cy.contains('Create, publish forms, and receive submissions with the Common Hosted Forms Service.').should('be.visible');
+      cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
     }
     
   });

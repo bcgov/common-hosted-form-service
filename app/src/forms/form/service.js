@@ -25,7 +25,7 @@ const {
 } = require('../common/models');
 const { falsey, queryUtils, checkIsFormExpired, validateScheduleObject, typeUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
-const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER];
+const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER, Roles.SUBMISSION_APPROVER];
 
 const service = {
   _findFileIds: (schema, data) => {
@@ -358,13 +358,15 @@ const service = {
       .modify('filterVersion', params.version)
       .modify('filterformSubmissionStatusCode', params.filterformSubmissionStatusCode)
       .modify('orderDefault', params.sortBy && params.page ? true : false, params);
-    if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length == 2) {
+
+    if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length === 2) {
       query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
     }
+
     const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
 
+    let fields = [];
     if (params.fields && params.fields.length) {
-      let fields = [];
       if (typeof params.fields !== 'string' && params.fields.includes('updatedAt')) {
         selection.push('updatedAt');
       }
@@ -376,23 +378,30 @@ const service = {
       } else {
         fields = params.fields.split(',').map((s) => s.trim());
       }
-      // remove updatedAt and updatedBy from custom selected field so they won't be pulled from submission columns
-      fields = fields.filter((f) => f !== 'updatedAt' && f !== 'updatedBy');
 
-      fields.push('lateEntry');
-      query.select(
-        selection,
-        fields.map((f) => ref(`submission:data.${f}`).as(f.split('.').slice(-1)))
-      );
-    } else {
-      query.select(
-        selection,
-        ['lateEntry'].map((f) => ref(`submission:data.${f}`).as(f.split('.').slice(-1)))
-      );
+      // Remove updatedAt and updatedBy so they won't be pulled from submission
+      // columns. Also remove empty values to handle the case of trailing commas
+      // and other malformed data too.
+      fields = fields.filter((f) => f !== 'updatedAt' && f !== 'updatedBy' && f.trim() !== '');
     }
+
+    fields.push('lateEntry');
+
+    if (params.sortBy?.column && !selection.includes(params.sortBy.column) && !fields.includes(params.sortBy.column)) {
+      throw new Problem(400, {
+        details: `orderBy column '${params.sortBy.column}' not in selected columns`,
+      });
+    }
+
+    query.select(
+      selection,
+      fields.map((f) => ref(`submission:data.${f}`).as(f.split('.').slice(-1)))
+    );
+
     if (params.paginationEnabled) {
       return await service.processPaginationData(query, parseInt(params.page), parseInt(params.itemsPerPage), params.totalSubmissions, params.search, params.searchEnabled);
     }
+
     return query;
   },
 
