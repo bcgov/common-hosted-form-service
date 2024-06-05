@@ -314,11 +314,5 @@ describe('Form Designer', () => {
         cy.get('.col-md-9 > a').contains('add1.png');
         cy.get('.ui > .choices__list > .choices__item').contains('THRIFTY FOODS');
 
-
-
     });
-
-
-
-
 });

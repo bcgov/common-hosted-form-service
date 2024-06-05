@@ -2,15 +2,15 @@ const { defineConfig } = require('cypress')
 
 module.exports = defineConfig({
   env: {
-    depEnv: '',
+    depEnv: 'app',
     auth_base_url: 'http://localhost:8082',
     auth_realm: 'chefs',
     auth_client_id: 'chefs-frontend',
     keycloakUrl: 'http://localhost:8082',
     keycloakRealm: 'chefs',
     keycloakClientId: 'chefs-frontend',
-    keycloakUsername: 'test',
-    keycloakPassword: 'test',
+    keycloakUsername: 'admin',
+    keycloakPassword: 'admin',
   },
   chromeWebSecurity: false,
   video: false,
