@@ -75,7 +75,7 @@ apiRouter.get('/api', (_req, res) => {
 // Host API endpoints
 apiRouter.use(config.get('server.apiPath'), v1Router);
 app.use(config.get('server.basePath'), apiRouter);
-app.use(middleware.dataErrors);
+app.use(middleware.errorHandler);
 
 // Host the static frontend assets
 const staticFilesPath = config.get('frontend.basePath');
