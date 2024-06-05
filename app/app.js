@@ -24,7 +24,7 @@ let probeId;
 const app = express();
 app.use(compression());
 app.use(express.json({ limit: config.get('server.bodyLimit') }));
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true }));
 
 // Express needs to know about the OpenShift proxy. With this setting Express
 // pulls the IP address from the headers, rather than use the proxy IP address.
