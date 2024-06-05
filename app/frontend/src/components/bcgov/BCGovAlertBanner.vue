@@ -1,60 +1,57 @@
-<script>
-import { mapActions } from 'pinia';
+<script setup>
+import { computed } from 'vue';
 import { i18n } from '~/internationalization';
 
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
 
-export default {
-  props: {
-    id: {
-      type: Number,
-      default: 0,
-    },
-    title: {
-      type: String,
-      default: null,
-    },
-    text: {
-      type: String,
-      default: 'trans.bcGovAlertBanner.defaultErrMsg',
-    },
-    type: {
-      type: String,
-      default: NotificationTypes.ERROR.type,
-    },
-    translate: {
-      default: true,
-      type: Boolean,
-    },
+const properties = defineProps({
+  id: {
+    type: Number,
+    default: 0,
   },
-  computed: {
-    notificationType() {
-      switch (this.type) {
-        case NotificationTypes.ERROR.type:
-          return NotificationTypes.ERROR;
-        case NotificationTypes.INFO.type:
-          return NotificationTypes.INFO;
-        case NotificationTypes.SUCCESS.type:
-          return NotificationTypes.SUCCESS;
-        case NotificationTypes.WARNING.type:
-          return NotificationTypes.WARNING;
-        default:
-          return NotificationTypes.ERROR;
-      }
-    },
-    TEXT() {
-      const msg = this.translate ? i18n.t(this.text) : this.text;
-      return msg.replace(/(<([^>]+)>)/gi, '');
-    },
+  title: {
+    type: String,
+    default: null,
   },
-  methods: {
-    ...mapActions(useNotificationStore, ['deleteNotification']),
-    onClose() {
-      this.deleteNotification({ id: this.id });
-    },
+  text: {
+    type: String,
+    default: 'trans.bcGovAlertBanner.defaultErrMsg',
   },
-};
+  type: {
+    type: String,
+    default: NotificationTypes.ERROR.type,
+  },
+  translate: {
+    default: true,
+    type: Boolean,
+  },
+});
+
+const notificationType = computed(() => {
+  switch (properties.type) {
+    case NotificationTypes.ERROR.type:
+      return NotificationTypes.ERROR;
+    case NotificationTypes.INFO.type:
+      return NotificationTypes.INFO;
+    case NotificationTypes.SUCCESS.type:
+      return NotificationTypes.SUCCESS;
+    case NotificationTypes.WARNING.type:
+      return NotificationTypes.WARNING;
+    default:
+      return NotificationTypes.ERROR;
+  }
+});
+
+const TEXT = computed(() => {
+  const msg = properties.translate ? i18n.t(properties.text) : properties.text;
+  return msg.replace(/(<([^>]+)>)/gi, '');
+});
+
+function onClose() {
+  const notificationStore = useNotificationStore();
+  notificationStore.deleteNotification({ id: properties.id });
+}
 </script>
 
 <template>

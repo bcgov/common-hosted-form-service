@@ -1,10 +1,11 @@
 import { flushPromises, mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { h } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
-
 import { VApp } from 'vuetify/components';
+
+import { i18n } from '~/internationalization';
 import BCGovAlertBanner from '~/components/bcgov/BCGovAlertBanner.vue';
 import getRouter from '~/router';
 import { useAuthStore } from '~/store/auth';
@@ -202,5 +203,30 @@ describe('BCGovAlertBanner.vue', () => {
     wrapper.vm.onClose();
 
     expect(notificationStore.notifications.length).toBe(0);
+  });
+
+  it('renders without a translated message', async () => {
+    const tSpy = vi.spyOn(i18n, 't');
+    const message = 'untranslated message';
+    const authStore = useAuthStore(pinia);
+    authStore.authenticated = true;
+    authStore.ready = true;
+
+    const wrapper = mount(BCGovAlertBanner, {
+      props: {
+        text: message,
+        type: 'info',
+        translate: false,
+      },
+      global: {
+        plugins: [router],
+      },
+    });
+
+    await flushPromises();
+
+    expect(wrapper.html()).toContain(NotificationTypes.INFO.type);
+    expect(wrapper.text()).toMatch(message);
+    expect(tSpy).toHaveBeenCalledTimes(0);
   });
 });

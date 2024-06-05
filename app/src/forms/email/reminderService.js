@@ -1,4 +1,4 @@
-const { getAvailableDates, getBaseUrl } = require('../common/utils');
+const { getSubmissionPeriodDates, getBaseUrl } = require('../common/utils');
 const emailService = require('./emailService');
 const moment = require('moment');
 const { EmailTypes, ScheduleType } = require('../common/constants');
@@ -92,7 +92,7 @@ const service = {
   },
   _listDates: (schedule) => {
     if (schedule.scheduleType == ScheduleType.PERIOD) {
-      return getAvailableDates(
+      return getSubmissionPeriodDates(
         schedule.keepOpenForTerm,
         schedule.keepOpenForInterval,
         schedule.openSubmissionDateTime,
@@ -100,9 +100,7 @@ const service = {
         schedule.repeatSubmission.everyIntervalType,
         schedule.allowLateSubmissions.forNext.term,
         schedule.allowLateSubmissions.forNext.intervalType,
-        schedule.repeatSubmission.repeatUntil,
-        schedule.scheduleType,
-        schedule.closeSubmissionDateTime
+        schedule.repeatSubmission.repeatUntil
       );
     }
     if (schedule.scheduleType == ScheduleType.MANUAL) {
@@ -215,6 +213,8 @@ const service = {
     await UserFormAccess.query()
       .select('formVersionId', 'formName', 'userId', 'firstName', 'lastName', 'email')
       .where('formId', obj.form.id)
+      .whereNot('email', '')
+      .whereNotNull('email')
       .modify('filterActive', true)
       .modify('filterByAccess', undefined, Roles.FORM_SUBMITTER, undefined)
       .modify('orderDefault')
@@ -226,6 +226,8 @@ const service = {
       await SubmissionData.query()
         .select('confirmationId', 'createdAt', 'submissionId', 'formVersionId', 'userId', 'firstName', 'lastName', 'email')
         .where('formId', obj.form.id)
+        .whereNot('email', '')
+        .whereNotNull('email')
         .modify('filterDrafts', false)
         .modify('filterDeleted', false)
         .modify('filterCreatedAt', obj.report.dates.startDate, obj.report.dates.graceDate)

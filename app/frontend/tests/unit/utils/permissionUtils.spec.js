@@ -96,6 +96,30 @@ describe('checkSubmissionView', () => {
   });
 });
 
+describe('checkSubmissionUpdate', () => {
+  it('should be false when permissions is undefined', () => {
+    expect(permissionUtils.checkSubmissionUpdate(undefined)).toBeFalsy();
+  });
+
+  it('should be false when permissions is empty', () => {
+    expect(permissionUtils.checkSubmissionUpdate([])).toBeFalsy();
+  });
+
+  it('should be false when no appropriate permission exists', () => {
+    let permissions = new Array(FormPermissions)
+      .filter((p) => p !== FormPermissions.SUBMISSION_READ)
+      .filter((p) => p !== FormPermissions.SUBMISSION_REVIEW);
+
+    expect(permissionUtils.checkSubmissionUpdate(permissions)).not.toBeTruthy();
+  });
+
+  it('should be true when at least one appropriate permission exists', () => {
+    expect(
+      permissionUtils.checkSubmissionUpdate([FormPermissions.SUBMISSION_UPDATE])
+    ).toBeTruthy();
+  });
+});
+
 describe('preFlightAuth', () => {
   setActivePinia(createPinia());
   const authStore = useAuthStore();

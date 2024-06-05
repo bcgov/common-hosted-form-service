@@ -114,6 +114,7 @@ export default {
               icon
               size="x-small"
               v-bind="props"
+              :title="$t('trans.notesPanel.addNewNote')"
               @click.stop="showNoteField = true"
               @click="showNotesContent = true"
             >
@@ -143,6 +144,7 @@ export default {
               class="wide-button"
               color="primary"
               variant="outlined"
+              :title="$t('trans.notesPanel.cancel')"
               @click="showNoteField = false"
             >
               <span :lang="lang">{{ $t('trans.notesPanel.cancel') }}</span>
@@ -152,6 +154,7 @@ export default {
               color="primary"
               data-test="btn-add-note"
               :disabled="!newNote"
+              :title="$t('trans.notesPanel.addNote')"
               @click="addNote"
             >
               <span :lang="lang">{{ $t('trans.notesPanel.addNote') }}</span>

@@ -1,50 +1,49 @@
-<script>
+<script setup>
 import { i18n } from '~/internationalization';
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
 
-export default {
-  props: {
-    buttonText: {
-      type: String,
-      default: '',
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    textToCopy: {
-      type: String,
-      default: undefined,
-    },
-    snackBarText: {
-      type: String,
-      default: i18n.t('trans.baseCopyToClipboard.linkToClipboard'),
-    },
-    tooltipText: {
-      type: String,
-      default: i18n.t('trans.baseCopyToClipboard.copyToClipboard'),
-    },
+const properties = defineProps({
+  buttonText: {
+    type: String,
+    default: '',
   },
-  emits: ['copied'],
-  methods: {
-    onCopy() {
-      this.$emit('copied');
-      const notificationStore = useNotificationStore();
-      notificationStore.addNotification({
-        text: this.snackBarText,
-        ...NotificationTypes.INFO,
-      });
-    },
-    onError(e) {
-      const notificationStore = useNotificationStore();
-      notificationStore.addNotification({
-        text: i18n.t('trans.baseCopyToClipboard.errCopyToClipboard'),
-        consoleError: e,
-      });
-    },
+  disabled: {
+    type: Boolean,
+    default: false,
   },
-};
+  textToCopy: {
+    type: String,
+    default: undefined,
+  },
+  snackBarText: {
+    type: String,
+    default: i18n.t('trans.baseCopyToClipboard.linkToClipboard'),
+  },
+  tooltipText: {
+    type: String,
+    default: i18n.t('trans.baseCopyToClipboard.copyToClipboard'),
+  },
+});
+
+const emit = defineEmits(['copied']);
+
+function onCopy() {
+  emit('copied');
+  const notificationStore = useNotificationStore();
+  notificationStore.addNotification({
+    text: properties.snackBarText,
+    ...NotificationTypes.INFO,
+  });
+}
+
+function onError(e) {
+  const notificationStore = useNotificationStore();
+  notificationStore.addNotification({
+    text: i18n.t('trans.baseCopyToClipboard.errCopyToClipboard'),
+    consoleError: e,
+  });
+}
 </script>
 
 <template>
@@ -60,6 +59,7 @@ export default {
           icon
           v-bind="props"
           size="x-small"
+          :title="buttonText"
         >
           <v-icon icon="mdi:mdi-content-copy"></v-icon>
           <span v-if="buttonText">{{ buttonText }}</span>

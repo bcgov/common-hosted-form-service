@@ -1344,8 +1344,8 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions`, () => {
 
       const response = await appRequest.post(path).set('Authorization', bearerAuth);
 
-      expect(emailService.submissionReceived).toHaveBeenCalledTimes(1);
-      expect(fileService.moveSubmissionFiles).toHaveBeenCalledTimes(1);
+      expect(emailService.submissionReceived).toBeCalledTimes(1);
+      expect(fileService.moveSubmissionFiles).toBeCalledTimes(1);
       expect(response.statusCode).toBe(201);
       expect(response.body).toBeTruthy();
     });
@@ -1358,8 +1358,8 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions`, () => {
 
       const response = await appRequest.post(path).send({ draft: true }).set('Authorization', bearerAuth);
 
-      expect(emailService.submissionReceived).toHaveBeenCalledTimes(0);
-      expect(fileService.moveSubmissionFiles).toHaveBeenCalledTimes(1);
+      expect(emailService.submissionReceived).toBeCalledTimes(0);
+      expect(fileService.moveSubmissionFiles).toBeCalledTimes(1);
       expect(response.statusCode).toBe(201);
       expect(response.body).toBeTruthy();
     });
@@ -1372,8 +1372,8 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions`, () => {
 
       const response = await appRequest.post(path).send({ draft: false }).set('Authorization', bearerAuth);
 
-      expect(emailService.submissionReceived).toHaveBeenCalledTimes(1);
-      expect(fileService.moveSubmissionFiles).toHaveBeenCalledTimes(1);
+      expect(emailService.submissionReceived).toBeCalledTimes(1);
+      expect(fileService.moveSubmissionFiles).toBeCalledTimes(1);
       expect(response.statusCode).toBe(201);
       expect(response.body).toBeTruthy();
     });

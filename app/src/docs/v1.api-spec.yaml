@@ -615,28 +615,28 @@ paths:
           name: preference
           schema:
             type: object
-          example: '{ minDate=2020-12-17T08:00:00Z, maxDate=2020-12-17T08:00:00Z, updatedMinDate=2020-12-17T08:00:00Z, updatedMaxDate=2020-12-17T08:00:00Z }'
+          example: '{minDate=2020-12-17T08:00:00Z,maxDate=2020-12-18T08:00:00Z,updatedMinDate=2020-12-17T08:00:00Z,updatedMaxDate=2020-12-18T08:00:00Z}'
           description: form submissions export preferences
         - in: query
           name: deleted
           schema:
             type: boolean
-          description: (optional) This optional parameter should be set to true if deleted records (submissions) need to be fetched
+          description: Set to true to return deleted submissions
           example: false
         - in: query
           name: drafts
           schema:
             type: boolean
-          description: (optional) This optional parameter should be set to true if draft records (submissions) need to be fetched
+          description: Set to true to return draft submissions
           example: false
         - in: query
           name: columns
           schema:
             type: array
-          description: (optional) List of form level columns (Only Allowed draft, deleted, updatedAt columns) to be include. Other then allowed columns will be ignored
+          description: List of form level columns (Only Allowed `deleted`, `draft`, `updatedAt`) to be included, others will be ignored
           example:
-            - draft,
             - deleted,
+            - draft,
             - updatedAt
         - in: query
           name: status
@@ -1750,6 +1750,12 @@ paths:
       parameters:
         - $ref: '#/components/parameters/formSubmissionIdParam'
         - $ref: '#/components/parameters/documentTemplateIdParam'
+        - in: query
+          name: convertTo
+          schema:
+            type: string
+          description: file type to convert to
+          example: pdf
       responses:
         '200':
           description: Returns the document template with merged variables
@@ -4844,6 +4850,7 @@ components:
             - submission_read
             - submission_delete
             - submission_update
+            - submission_review
           items:
             type: string
         submissionStatus:

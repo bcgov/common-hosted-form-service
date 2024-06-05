@@ -1,44 +1,27 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 
-export default {
-  props: {
-    admin: {
-      type: Boolean,
-      default: false,
-    },
-    permission: {
-      type: String,
-      default: undefined,
-    },
+defineProps({
+  admin: {
+    type: Boolean,
+    default: false,
   },
-  computed: {
-    ...mapState(useAuthStore, [
-      'authenticated',
-      'identityProvider',
-      'isAdmin',
-      'ready',
-    ]),
-    ...mapState(useFormStore, ['lang']),
-    ...mapState(useIdpStore, ['hasPermission']),
-    mailToLink() {
-      return `mailto:${
-        import.meta.env.VITE_CONTACT
-      }?subject=CHEFS%20Account%20Issue&body=Error%20accessing%20${encodeURIComponent(
-        location
-      )}.`;
-    },
-    contactInfo() {
-      return import.meta.env.VITE_CONTACT;
-    },
+  permission: {
+    type: String,
+    default: undefined,
   },
-  methods: {
-    ...mapActions(useAuthStore, ['login']),
-  },
-};
+});
+
+const authStore = useAuthStore();
+const idpStore = useIdpStore();
+
+const { authenticated, identityProvider, isAdmin, ready } =
+  storeToRefs(authStore);
+
+const { lang } = storeToRefs(useFormStore());
 </script>
 
 <template>
@@ -53,7 +36,8 @@ export default {
     </div>
     <div
       v-else-if="
-        permission && !hasPermission(identityProvider?.code, permission)
+        permission &&
+        !idpStore.hasPermission(identityProvider?.code, permission)
       "
       class="text-center"
     >
@@ -80,7 +64,8 @@ export default {
       color="primary"
       class="login-btn"
       size="large"
-      @click="login"
+      :title="$t('trans.baseSecure.login')"
+      @click="authStore.login"
     >
       <span :lang="lang">{{ $t('trans.baseSecure.login') }}</span>
     </v-btn>

@@ -37,10 +37,10 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(0);
-      expect(res.status).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(mockReadApiKey).toBeCalledTimes(0);
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     it('should pass through with bearer authorization', async () => {
@@ -50,10 +50,10 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(0);
-      expect(res.status).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(mockReadApiKey).toBeCalledTimes(0);
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     it('should be unauthorized with no uuid in the params', async () => {
@@ -63,10 +63,10 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(0);
-      expect(res.status).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
+      expect(mockReadApiKey).toBeCalledTimes(0);
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 401 }));
     });
   });
 
@@ -81,10 +81,10 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(0);
-      expect(res.status).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 400 }));
+      expect(mockReadApiKey).toBeCalledTimes(0);
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 400 }));
     });
 
     it('should be unauthorized when db api key result is missing', async () => {
@@ -98,10 +98,10 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(1);
-      expect(res.status).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
+      expect(mockReadApiKey).toBeCalledTimes(1);
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 401 }));
     });
 
     it('should be unauthorized when db api key result is empty', async () => {
@@ -115,10 +115,10 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(1);
-      expect(res.status).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
+      expect(mockReadApiKey).toBeCalledTimes(1);
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 401 }));
     });
 
     it('should be unauthorized when db api key does not match', async () => {
@@ -132,9 +132,9 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(1);
-      expect(res.status).toHaveBeenCalledWith(401);
-      expect(next).toHaveBeenCalledTimes(0);
+      expect(mockReadApiKey).toBeCalledTimes(1);
+      expect(res.status).toBeCalledWith(401);
+      expect(next).toBeCalledTimes(0);
     });
 
     it('should flag apiUser as true with valid form id and credentials', async () => {
@@ -148,10 +148,10 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeTruthy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(1);
-      expect(res.status).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(mockReadApiKey).toBeCalledTimes(1);
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
   });
 
@@ -166,10 +166,10 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(0);
-      expect(res.status).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 400 }));
+      expect(mockReadApiKey).toBeCalledTimes(0);
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 400 }));
     });
 
     it('should pass exceptions through when form submission does not exist', async () => {
@@ -183,10 +183,10 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(0);
-      expect(res.status).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.any(Error));
+      expect(mockReadApiKey).toBeCalledTimes(0);
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.any(Error));
     });
 
     it('should be unauthorized when form submission is empty', async () => {
@@ -200,10 +200,10 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(0);
-      expect(res.status).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
+      expect(mockReadApiKey).toBeCalledTimes(0);
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 401 }));
     });
 
     it('should be unauthorized when form submission has no form id', async () => {
@@ -217,10 +217,10 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(0);
-      expect(res.status).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
+      expect(mockReadApiKey).toBeCalledTimes(0);
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 401 }));
     });
 
     it('should be unauthorized when db api key does not match', async () => {
@@ -235,9 +235,9 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(1);
-      expect(res.status).toHaveBeenCalledWith(401);
-      expect(next).toHaveBeenCalledTimes(0);
+      expect(mockReadApiKey).toBeCalledTimes(1);
+      expect(res.status).toBeCalledWith(401);
+      expect(next).toBeCalledTimes(0);
     });
 
     it('should flag apiUser as true with valid form submission id and credentials', async () => {
@@ -252,10 +252,10 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeTruthy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(1);
-      expect(res.status).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(mockReadApiKey).toBeCalledTimes(1);
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
   });
 
@@ -270,10 +270,10 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(0);
-      expect(res.status).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 400 }));
+      expect(mockReadApiKey).toBeCalledTimes(0);
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 400 }));
     });
 
     it('should pass exceptions through when file does not exist', async () => {
@@ -287,10 +287,10 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(0);
-      expect(res.status).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.any(Error));
+      expect(mockReadApiKey).toBeCalledTimes(0);
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.any(Error));
     });
 
     it('should be unauthorized when file is empty', async () => {
@@ -304,10 +304,10 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(0);
-      expect(res.status).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 500 }));
+      expect(mockReadApiKey).toBeCalledTimes(0);
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 500 }));
     });
 
     it('should be unauthorized when file has no form submission id', async () => {
@@ -321,10 +321,10 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(0);
-      expect(res.status).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 500 }));
+      expect(mockReadApiKey).toBeCalledTimes(0);
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 500 }));
     });
 
     it('should be unauthorized when form submission does not exist', async () => {
@@ -339,10 +339,10 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(0);
-      expect(res.status).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
+      expect(mockReadApiKey).toBeCalledTimes(0);
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 401 }));
     });
 
     it('should be unauthorized when form submission is empty', async () => {
@@ -357,10 +357,10 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(0);
-      expect(res.status).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
+      expect(mockReadApiKey).toBeCalledTimes(0);
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 401 }));
     });
 
     it('should be unauthorized when form submission has no form id', async () => {
@@ -375,10 +375,10 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(0);
-      expect(res.status).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 401 }));
+      expect(mockReadApiKey).toBeCalledTimes(0);
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 401 }));
     });
 
     it('should be unauthorized when db api key does not match', async () => {
@@ -394,9 +394,9 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeFalsy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(1);
-      expect(res.status).toHaveBeenCalledWith(401);
-      expect(next).toHaveBeenCalledTimes(0);
+      expect(mockReadApiKey).toBeCalledTimes(1);
+      expect(res.status).toBeCalledWith(401);
+      expect(next).toBeCalledTimes(0);
     });
 
     it('should flag apiUser as true with valid file id and credentials', async () => {
@@ -412,10 +412,10 @@ describe('apiAccess', () => {
       await apiAccess(req, res, next);
 
       expect(req.apiUser).toBeTruthy();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(1);
-      expect(res.status).not.toHaveBeenCalled();
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith();
+      expect(mockReadApiKey).toBeCalledTimes(1);
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
     });
 
     it('should be forbidden if filesApiAccess is false', async () => {
@@ -430,11 +430,11 @@ describe('apiAccess', () => {
 
       await apiAccess(req, res, next);
 
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 403 }));
-      expect(res.status).not.toHaveBeenCalled();
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 403 }));
+      expect(res.status).not.toBeCalled();
       expect(req.apiUser).toBeUndefined();
-      expect(mockReadApiKey).toHaveBeenCalledTimes(1);
+      expect(mockReadApiKey).toBeCalledTimes(1);
     });
 
     it('should allow access to files if filesAPIAccess is true', async () => {
@@ -447,8 +447,8 @@ describe('apiAccess', () => {
 
       await apiAccess(req, res, next);
 
-      expect(next).toHaveBeenCalledTimes(1);
-      expect(mockReadApiKey).toHaveBeenCalledTimes(1);
+      expect(next).toBeCalledTimes(1);
+      expect(mockReadApiKey).toBeCalledTimes(1);
       expect(req.apiUser).toBeTruthy();
     });
   });

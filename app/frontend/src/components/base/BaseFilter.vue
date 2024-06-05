@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia';
 
 import { useFormStore } from '~/store/form';
 import { ref } from 'vue';
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 
 const properties = defineProps({
   inputHeaders: {
@@ -60,6 +60,8 @@ const inputFilter = ref('');
 
 const { isRTL, lang } = storeToRefs(useFormStore());
 
+const RTL = computed(() => (isRTL.value ? 'ml-3' : 'mr-3'));
+
 function savingFilterData() {
   inputFilter.value = '';
   emit('saving-filter-data', selectedData.value);
@@ -77,6 +79,8 @@ function cancelFilterData() {
 onMounted(() => {
   selectedData.value = Object.freeze(properties.preselectedData);
 });
+
+defineExpose({ selectedData, inputFilter });
 </script>
 
 <template>
@@ -109,10 +113,12 @@ onMounted(() => {
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <v-btn
+              data-test="reset-columns-btn"
               color="primary"
               class="mx-1 align-self-center mb-3"
               icon
               v-bind="props"
+              :title="$t('trans.baseFilter.resetColumns')"
               @click="onResetColumns"
             >
               <v-icon
@@ -146,6 +152,7 @@ onMounted(() => {
         data-test="save-btn"
         class="bg-primary mt-3"
         :lang="lang"
+        :title="inputSaveButtonText"
         @click="savingFilterData"
       >
         {{ inputSaveButtonText }}
@@ -153,9 +160,10 @@ onMounted(() => {
       <v-btn
         data-test="cancel-btn"
         class="mt-3 text-primary"
-        :class="isRTL ? 'mr-3' : 'ml-3'"
+        :class="RTL"
         variant="outlined"
         :lang="lang"
+        :title="$t('trans.baseFilter.cancel')"
         @click="cancelFilterData"
         >{{ $t('trans.baseFilter.cancel') }}</v-btn
       >
