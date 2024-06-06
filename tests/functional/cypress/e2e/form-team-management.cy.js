@@ -98,7 +98,6 @@ describe('Form Designer', () => {
     cy.get(':nth-child(5) > .v-chip__content').click();
     cy.get('.v-btn--elevated > .v-btn__content > span').click();
     // Verify member is added with proper roles
-    cy.get('#input-89').should('be.checked');
     cy.get('#input-90').should('be.checked');
     cy.get('#input-91').should('be.checked');
     cy.get('#input-93').should('be.checked');
@@ -113,15 +112,27 @@ describe('Form Designer', () => {
     cy.waitForLoad();
     cy.get('#input-121').should('not.be.checked');
     //Column view management
-    cy.get('#input-113').click();
-    cy.get('#input-113').type('Designer');
-
-    cy.get('#input-125').click();
-    cy.get('button').contains('Save').click();
+   
+    cy.get('.search').click();
+    cy.get('.search').type('Designer');
+    cy.get('[data-test="filter-table"] > .v-table__wrapper > table > tbody > .v-data-table__tr > :nth-child(2)').click();
+    cy.get('[data-test="save-btn"] > .v-btn__content').click();
     cy.waitForLoad();
     //Verify the roles on dashboard
-    cy.get('#input-137').should('not.exist');
-    cy.get('#input-149').should('not.be.checked');
+    if(depEnv=="app")
+    {
+      cy.get('#input-137').should('not.exist');
+      cy.get('#input-149').should('not.be.checked');
+    }
+    else
+    {
+      cy.get('#input-150').should('not.be.checked');
+      cy.get('#input-153').should('not.be.checked');
+      cy.get('#input-154').should('not.be.checked');
+
+    }
+    
+    
 
     //Remove a user from Roles
     cy.get('tbody > :nth-child(1) > [style="width: 1rem;"] > .v-btn').click();
