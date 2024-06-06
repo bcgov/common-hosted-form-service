@@ -1084,19 +1084,18 @@ const service = {
     service.validateExternalAPI(data);
 
     let trx;
-    let id = uuidv4();
     try {
       trx = await ExternalAPI.startTransaction();
+      data.id = uuidv4();
       // set status to SUBMITTED
       data.code = ExternalAPIStatuses.SUBMITTED;
       await ExternalAPI.query(trx).insert({
-        id: id,
         ...data,
         createdBy: currentUser.usernameIdp,
       });
 
       await trx.commit();
-      return ExternalAPI.query().findById(id);
+      return ExternalAPI.query().findById(data.id);
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;
@@ -1108,13 +1107,13 @@ const service = {
 
     let trx;
     try {
-      const existing = await ExternalAPI.query().modify('findByIdAndFormId', externalAPIId, formId).throwIfNotFound();
+      const existing = await ExternalAPI.query().modify('findByIdAndFormId', externalAPIId, formId).first().throwIfNotFound();
       trx = await ExternalAPI.startTransaction();
       // let's use a different method for the administrators to update status code.
       // this method should not change the status code.
       data.code = existing.code;
       await ExternalAPI.query(trx)
-        .modify('filterId', externalAPIId)
+        .modify('findByIdAndFormId', externalAPIId, formId)
         .update({
           ...data,
           updatedBy: currentUser.usernameIdp,
@@ -1122,6 +1121,19 @@ const service = {
 
       await trx.commit();
       return ExternalAPI.query().findById(externalAPIId);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  deleteExternalAPI: async (formId, externalAPIId) => {
+    let trx;
+    try {
+      await ExternalAPI.query().modify('findByIdAndFormId', externalAPIId, formId).first().throwIfNotFound();
+      trx = await ExternalAPI.startTransaction();
+      await ExternalAPI.query().deleteById(externalAPIId);
+      await trx.commit();
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;

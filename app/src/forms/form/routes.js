@@ -183,4 +183,8 @@ routes.put('/:formId/externalAPIs/:externalAPIId', hasFormPermissions([P.FORM_RE
   await controller.updateExternalAPI(req, res, next);
 });
 
+routes.delete('/:formId/externalAPIs/:externalAPIId', hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {
+  await controller.deleteExternalAPI(req, res, next);
+});
+
 module.exports = routes;

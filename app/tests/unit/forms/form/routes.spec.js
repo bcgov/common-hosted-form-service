@@ -182,11 +182,8 @@ describe(`${basePath}/:formId/externalAPIs/:externalAPIId`, () => {
   controller.updateExternalAPI = jest.fn((_req, _res, next) => {
     next();
   });
-
-  it('should return 404 for DELETE', async () => {
-    const response = await appRequest.delete(path);
-
-    expect(response.statusCode).toBe(404);
+  controller.deleteExternalAPI = jest.fn((_req, _res, next) => {
+    next();
   });
 
   it('should return 404 for POST', async () => {
@@ -208,5 +205,14 @@ describe(`${basePath}/:formId/externalAPIs/:externalAPIId`, () => {
     expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(controller.updateExternalAPI).toBeCalledTimes(1);
+  });
+
+  it('hould have correct middleware for DELETE', async () => {
+    await appRequest.delete(path);
+
+    expect(apiAccess).toBeCalledTimes(0);
+    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(hasFormPermissionsMock).toBeCalledTimes(1);
+    expect(controller.deleteExternalAPI).toBeCalledTimes(1);
   });
 });
