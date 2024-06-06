@@ -84,75 +84,49 @@ it('Checks the Container component', () => {
     
     var pretty=JSON.stringify({
       "label": "Applicant Details",
-          "customClass": "bg-primary",
-          "reorder": false,
-          "addAnotherPosition": "bottom",
-          "layoutFixed": false,
-          "enableRowGroups": false,
-          "initEmpty": false,
-          "tableView": false,
-          "key": "dataGrid",
-          "type": "datagrid",
-          "input": true,
-          "components": [
+      "key": "dataGrid",
+      "type": "datagrid",
+      "input": true,
+      "components": [
           {
             "label": "Children",
             "key": "children",
             "type": "datagrid",
             "input": true,
-            "validate": {
-              "minLength": 3,
-              "maxLength": 6
-            },
+            
+          
             "components": [
-                {
-                  "label": "First Name",
-                  "key": "firstName",
-                  "type": "textfield",
-                  "input": true,
-                  "tableView": true,
+              {
+                "label": "First Name",
+                "key": "firstName",
+                "type": "textfield",
+                "input": true,
+                "tableView": true
               },
-              
-                {
-                  "label": "Last Name",
-                  "key": "lastName",
-                  "type": "textfield",
-                  "input": true,
-                  "tableView": true
-                },
-                {
-                  "label": "Gender",
-                  "key": "gender",
-                  "type": "select",
-                  "input": true,
-                  data: {
-                    values: [
-                      {
-                        "value": "male",
-                        "label": "Male"
-                      },
-                      {
-                        "value": "female",
-                        "label": "Female"
-                      },
-                      {
-                        "value": "other",
-                        "label": "Other"
-                      }
-                    ]
+              {
+              "label": "Gender",
+              "key": "gender",
+              "type": "select",
+              "input": true,
+                data: {
+                values: [
+                  {
+                    "value": "male",
+                    "label": "Male"
                   },
-                  
-                }
-      
+                  {
+                    "value": "female",
+                    "label": "Female"
+                  }
+                ]
+               },
+               
+              } 
             ]
-    
-          }
-    
-        ]
-      
-      
-      
-      })
+        }
+     ]
+       
+})
       
     cy.get('div.ace_content').type(pretty,{ parseSpecialCharSequences: false });
     cy.get('button').contains('Save').click();

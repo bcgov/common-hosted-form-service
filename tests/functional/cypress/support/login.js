@@ -1,16 +1,21 @@
 export function formsettings(){
 
-
-
-
-
     const depEnv = Cypress.env('depEnv');
     const username=Cypress.env('keycloakUsername');
     const password=Cypress.env('keycloakPassword');
     
     
     
-    cy.visit(`/${depEnv}`);
+    if(depEnv=="app")
+    {
+        cy.visit(`https://chefs-dev.apps.silver.devops.gov.bc.ca/app`);
+    }
+    else
+    {
+        cy.visit(`/${depEnv}`);
+        
+    }
+    
     cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
     cy.get('[data-test="idir"]').click();
     
@@ -37,8 +42,8 @@ export function formsettings(){
     cy.get('#checkbox-28').click();
     cy.get('#checkbox-38').click();
     cy.get('#checkbox-54').click();
-    cy.get('#input-92').click();
-    cy.get('#input-92').type('abc@gmail.com');
+    cy.get('#input-91').click();
+    cy.get('#input-91').type('abc@gmail.com');
     cy.get('#input-58').click();
     cy.contains("Citizens' Services (CITZ)").click();
     cy.get('#input-62').click();
@@ -56,9 +61,4 @@ export function formsettings(){
     cy.get('.d-flex > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').type('test label');
     cy.get('#checkbox-80').click();
     cy.get('button').contains('Continue').click();
-
-
-
-
-
 }
