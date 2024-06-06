@@ -1,52 +1,49 @@
-<script>
+<script setup>
+import { storeToRefs } from 'pinia';
 import QrcodeVue from 'qrcode.vue';
-import { mapState } from 'pinia';
+import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
+
 import BaseCopyToClipboard from '~/components/base/BaseCopyToClipboard.vue';
 import { NotificationTypes } from '~/utils/constants';
 import { useFormStore } from '~/store/form';
 
-export default {
-  components: {
-    BaseCopyToClipboard,
-    QrcodeVue,
+const router = useRouter();
+
+const properties = defineProps({
+  formId: {
+    type: String,
+    required: true,
   },
-  props: {
-    formId: {
-      type: String,
-      required: true,
-    },
-    warning: {
-      type: Boolean,
-      default: false,
-    },
+  warning: {
+    type: Boolean,
+    default: false,
   },
-  data() {
-    return {
-      dialog: false,
-      qrLevel: 'M',
-      qrSize: 900,
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
-    formLink() {
-      return `${window.location.origin}${
-        import.meta.env.BASE_URL
-      }/form/submit?f=${this.formId}`;
-    },
-    NOTIFICATIONS_TYPES() {
-      return NotificationTypes;
-    },
-  },
-  methods: {
-    downloadQr() {
-      let link = document.createElement('a');
-      link.download = 'qrcode.png';
-      link.href = document.querySelector('.qrCodeContainer canvas').toDataURL();
-      link.click();
-    },
-  },
-};
+});
+
+const dialog = ref(false);
+const qrLevel = ref('M');
+const qrSize = ref(900);
+
+const { isRTL, lang } = storeToRefs(useFormStore());
+
+const formLink = computed(() => {
+  const url = router.resolve({
+    name: 'FormSubmit',
+    query: { f: properties.formId },
+  });
+  return url.href;
+});
+const NOTIFICATIONS_TYPES = computed(() => NotificationTypes);
+
+function downloadQr() {
+  let link = document.createElement('a');
+  link.download = 'qrcode.png';
+  link.href = document.querySelector('.qrCodeContainer canvas').toDataURL();
+  link.click();
+}
+
+defineExpose({ dialog, formLink, downloadQr });
 </script>
 
 <template>
@@ -68,7 +65,7 @@ export default {
       <span :lang="lang">{{ $t('trans.shareForm.shareForm') }}</span>
     </v-tooltip>
 
-    <v-dialog v-model="dialog" width="900">
+    <v-dialog v-model="dialog" width="900" data-cy="shareFormDialog">
       <v-card>
         <v-card-title class="text-h5 pb-0" :lang="lang">{{
           $t('trans.shareForm.shareLink')
