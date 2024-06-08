@@ -1,4 +1,4 @@
-const { Form, FormVersion, User, UserFormAccess, FormComponentsProactiveHelp } = require('../common/models');
+const { Form, FormVersion, User, UserFormAccess, FormComponentsProactiveHelp, AdminExternalAPI, ExternalAPI, ExternalAPIStatusCode } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 const { v4: uuidv4 } = require('uuid');
 
@@ -114,6 +114,48 @@ const service = {
           roles: fa.roles,
         }))
     );
+  },
+
+  //
+  // APIs
+  //
+
+  /**
+   * @function getExternalAPIs
+   * Search for External APIs
+   * @param {Object} params The query parameters
+   * @returns {Promise} An objection query promise
+   */
+  getExternalAPIs: async (params) => {
+    return AdminExternalAPI.query()
+      .modify('filterMinistry', params.ministry)
+      .modify('filterFormName', params.formName)
+      .modify('filterName', params.name)
+      .modify('filterDisplay', params.display)
+      .modify('orderDefault');
+  },
+  updateExternalAPI: async (id, data) => {
+    let trx;
+    try {
+      await ExternalAPI.query().findById(id).throwIfNotFound();
+      trx = await ExternalAPI.startTransaction();
+      // admins only change the status code.
+      const upd = {
+        code: data.code,
+        updatedBy: 'ADMIN',
+      };
+
+      await ExternalAPI.query(trx).patchAndFetchById(id, upd);
+
+      await trx.commit();
+      return ExternalAPI.query().findById(id);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+  getExternalAPIStatusCodes: async () => {
+    return ExternalAPIStatusCode.query();
   },
 
   /**

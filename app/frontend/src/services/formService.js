@@ -655,7 +655,9 @@ export default {
    * @returns {Promise} An axios response
    */
   externalAPIList(formId) {
-    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/externalAPIs`);
+    return appAxios().get(
+      `${ApiRoutes.FORMS}/${formId}${ApiRoutes.EXTERNAL_APIS}`
+    );
   },
 
   /**
@@ -666,7 +668,10 @@ export default {
    * @returns {Promise} An axios response
    */
   externalAPICreate(formId, data) {
-    return appAxios().post(`${ApiRoutes.FORMS}/${formId}/externalAPIs`, data);
+    return appAxios().post(
+      `${ApiRoutes.FORMS}/${formId}${ApiRoutes.EXTERNAL_APIS}`,
+      data
+    );
   },
 
   /**
@@ -679,7 +684,7 @@ export default {
    */
   externalAPIUpdate(formId, id, data) {
     return appAxios().put(
-      `${ApiRoutes.FORMS}/${formId}/externalAPIs/${id}`,
+      `${ApiRoutes.FORMS}/${formId}${ApiRoutes.EXTERNAL_APIS}/${id}`,
       data
     );
   },
@@ -692,6 +697,30 @@ export default {
    * @returns {Promise} An axios response
    */
   externalAPIDelete(formId, id) {
-    return appAxios().delete(`${ApiRoutes.FORMS}/${formId}/externalAPIs/${id}`);
+    return appAxios().delete(
+      `${ApiRoutes.FORMS}/${formId}${ApiRoutes.EXTERNAL_APIS}/${id}`
+    );
+  },
+  /**
+   * @function externalAPIAlgorithmList
+   * List all external API configurations
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  externalAPIAlgorithmList(formId) {
+    return appAxios().get(
+      `${ApiRoutes.FORMS}/${formId}${ApiRoutes.EXTERNAL_APIS}/algorithms`
+    );
+  },
+  /**
+   * @function externalAPIStatusCodes
+   * List all external API status codes
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  externalAPIStatusCodes(formId) {
+    return appAxios().get(
+      `${ApiRoutes.FORMS}/${formId}${ApiRoutes.EXTERNAL_APIS}/statusCodes`
+    );
   },
 };

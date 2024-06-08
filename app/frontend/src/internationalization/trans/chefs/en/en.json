@@ -97,6 +97,8 @@
     "editTitle": "Edit External API Configuration",
     "fetchError": "An error occurred while fetching the External API.",
     "fetchListError": "An error occurred while fetching the External API list.",
+    "fetchAlgoListError": "An error occurred while fetching the External API Encryption Algorithm list.",
+    "fetchStatusListError": "An error occurred while fetching the External API Status Code list.",
     "save": "Save",
     "formName": "Name",
     "formEndpointUrl": "Endpoint URL",
@@ -370,9 +372,22 @@
   "adminPage": {
     "forms": "Forms",
     "users": "Users",
+    "apis": "APIs",
     "developer": "Developer",
     "infoLinks": "Info Links",
     "metrics": "Metrics"
+  },
+  "adminAPIsTable": {
+    "search": "Search",
+    "loadingText": "Loading... Please wait",
+    "ministry": "Ministry",
+    "formName": "Form",
+    "name": "API Name",
+    "endpointUrl": "Endpoint URL",
+    "display": "Status",
+    "actions": "Actions",
+    "edit": "Edit",
+    "editTitle": "Update External API Status"
   },
   "adminUsersTable": {
     "search": "Search",
@@ -993,7 +1008,13 @@
       "updatingFCStatusErrMsg": "An error occurred while updating publish status",
       "updatingFCStatusConsErrMsg": "Error updating publish status: {error}",
       "fecthingFormBuilderCompsErrMsg": "An error occurred while fetching form builder components",
-      "fecthingFormBuilderCompsConsErrMsg": "Error getting form builder components: {error}"
+      "fecthingFormBuilderCompsConsErrMsg": "Error getting form builder components: {error}",
+      "getAPIsErrMsg": "An error occurred while fetching External APIs list.",
+      "getAPIsConsErrMsg": "Error fetching External APIs list: {error}",
+      "updateAPIsErrMsg": "Error updating External API.",
+      "updateAPIsConsErrMsg": "Error updating External API: {error}",
+      "getAPICodesErrMsg": "Error fetching External API Status Codes list.",
+      "getAPICodesConsErrMsg": "Error fetching External API Status Codes list: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Error loading email templates for {formId}: {error}",

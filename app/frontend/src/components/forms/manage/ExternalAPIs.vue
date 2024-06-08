@@ -21,6 +21,8 @@ export default {
         { title: 'Status', key: 'code' },
         { title: 'Actions', key: 'actions', align: 'end' },
       ],
+      externalAPIAlgorithmList: [],
+      externalAPIStatusCodes: [],
       items: [],
       techdocsLink:
         'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/CDOGS-Template-Upload/',
@@ -92,15 +94,11 @@ export default {
   computed: {
     ...mapState(useFormStore, ['isRTL', 'lang']),
     ...mapWritableState(useFormStore, ['form']),
-    validationRules() {
-      return [];
-    },
-    algorithmsList() {
-      return ['aes-256-gcm'];
-    },
   },
-  mounted() {
-    this.fetchExternalAPIs();
+  async mounted() {
+    await this.getExternalAPIAlgorithmList();
+    await this.getExternalAPIStatusCodes();
+    await this.fetchExternalAPIs();
   },
   methods: {
     ...mapActions(useNotificationStore, ['addNotification']),
@@ -125,6 +123,32 @@ export default {
         });
       } finally {
         this.loading = false;
+      }
+    },
+    async getExternalAPIAlgorithmList() {
+      try {
+        const result = await formService.externalAPIAlgorithmList(this.form.id);
+        this.externalAPIAlgorithmList = result.data;
+      } catch (e) {
+        this.addNotification({
+          text: i18n.t('trans.externalAPI.fetchAlgoListError'),
+          consoleError: i18n.t('trans.externalAPI.fetchAlgoListError', {
+            error: e.message,
+          }),
+        });
+      }
+    },
+    async getExternalAPIStatusCodes() {
+      try {
+        const result = await formService.externalAPIStatusCodes(this.form.id);
+        this.externalAPIStatusCodes = result.data;
+      } catch (e) {
+        this.addNotification({
+          text: i18n.t('trans.externalAPI.fetchStatusListError'),
+          consoleError: i18n.t('trans.externalAPI.fetchStatusListError', {
+            error: e.message,
+          }),
+        });
       }
     },
     resetEditDialog() {
@@ -459,7 +483,9 @@ export default {
 
         <v-select
           v-model="editDialog.item.userInfoEncryptionAlgo"
-          :items="algorithmsList"
+          :items="externalAPIAlgorithmList"
+          item-title="display"
+          item-value="code"
           :label="$t('trans.externalAPI.formUserInfoEncryptionAlgo')"
           density="compact"
           solid
@@ -479,9 +505,12 @@ export default {
           :rules="userInfoHeaderRules"
         />
 
-        <v-text-field
+        <v-select
           v-if="editDialog.item.id"
           v-model="editDialog.item.code"
+          :items="externalAPIStatusCodes"
+          item-title="display"
+          item-value="code"
           aria-readonly="true"
           :readonly="true"
           density="compact"

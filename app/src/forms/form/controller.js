@@ -395,6 +395,22 @@ module.exports = {
       next(error);
     }
   },
+  listExternalAPIAlgorithms: async (req, res, next) => {
+    try {
+      const response = await service.listExternalAPIAlgorithms();
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  listExternalAPIStatusCodes: async (req, res, next) => {
+    try {
+      const response = await service.listExternalAPIStatusCodes();
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
   createExternalAPI: async (req, res, next) => {
     try {
       const response = await service.createExternalAPI(req.params.formId, req.body, req.currentUser);

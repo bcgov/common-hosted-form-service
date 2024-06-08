@@ -179,6 +179,14 @@ routes.post('/:formId/externalAPIs', hasFormPermissions([P.FORM_READ, P.FORM_UPD
   await controller.createExternalAPI(req, res, next);
 });
 
+routes.get('/:formId/externalAPIs/algorithms', hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {
+  await controller.listExternalAPIAlgorithms(req, res, next);
+});
+
+routes.get('/:formId/externalAPIs/statusCodes', hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {
+  await controller.listExternalAPIStatusCodes(req, res, next);
+});
+
 routes.put('/:formId/externalAPIs/:externalAPIId', hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {
   await controller.updateExternalAPI(req, res, next);
 });

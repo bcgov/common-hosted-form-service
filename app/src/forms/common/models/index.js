@@ -34,4 +34,5 @@ module.exports = {
   SubmissionMetadata: require('./views/submissionMetadata'),
   UserFormAccess: require('./views/userFormAccess'),
   UserSubmissions: require('./views/userSubmissions'),
+  AdminExternalAPI: require('./views/adminExternalAPI'),
 };

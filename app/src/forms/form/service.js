@@ -23,6 +23,7 @@ const {
   FormComponentsProactiveHelp,
   FormSubscription,
   ExternalAPI,
+  ExternalAPIStatusCode,
 } = require('../common/models');
 const { falsey, queryUtils, checkIsFormExpired, validateScheduleObject, typeUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
@@ -1049,6 +1050,17 @@ const service = {
 
   listExternalAPIs: (formId) => {
     return ExternalAPI.query().modify('filterFormId', formId);
+  },
+
+  listExternalAPIAlgorithms: () => {
+    return Object.values(ENCRYPTION_ALGORITHMS).map((x) => ({
+      code: x,
+      display: x,
+    }));
+  },
+
+  listExternalAPIStatusCodes: () => {
+    return ExternalAPIStatusCode.query();
   },
 
   validateExternalAPI: (data) => {
