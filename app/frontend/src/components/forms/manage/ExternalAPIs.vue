@@ -312,7 +312,9 @@ export default {
       <!-- Preview/Download File -->
       <template #item.name="{ item }">{{ item.name }}</template>
       <template #item.endpointUrl="{ item }">{{ item.endpointUrl }}</template>
-      <template #item.code="{ item }">{{ item.code }}</template>
+      <template #item.code="{ item }">{{
+        externalAPIStatusCodes.find((x) => x.code === item.code)['display']
+      }}</template>
       <!-- Actions -->
       <template #item.actions="{ item }">
         <span>
@@ -371,155 +373,200 @@ export default {
     ><template #title>{{ editDialog.title }}</template>
     <template #text>
       <v-form ref="form" @submit="saveItem()" @submit.prevent>
-        <v-text-field
-          v-model="editDialog.item.name"
-          autofocus
-          density="compact"
-          solid
-          variant="outlined"
-          :label="$t('trans.externalAPI.formName')"
-          data-test="text-name"
-          :rules="nameRules"
-          :lang="lang"
-        />
-
-        <v-text-field
-          v-model="editDialog.item.endpointUrl"
-          density="compact"
-          solid
-          variant="outlined"
-          :label="$t('trans.externalAPI.formEndpointUrl')"
-          data-test="text-endpointUrl"
-          :rules="endpointUrlRules"
-          :lang="lang"
-        />
-
-        <v-checkbox v-model="editDialog.item.sendApiKey" class="my-0 pt-0">
-          <template #label>
-            <span :class="{ 'mr-2': isRTL }" :lang="lang">
-              {{ $t('trans.externalAPI.formSendApiKey') }}
-            </span>
-          </template>
-        </v-checkbox>
-
-        <v-text-field
-          v-model="editDialog.item.apiKeyHeader"
-          density="compact"
-          solid
-          variant="outlined"
-          :label="$t('trans.externalAPI.formApiKeyHeader')"
-          data-test="text-apiKeyHeader"
-          :lang="lang"
-          :rules="apiKeyHeaderRules"
-        />
-
-        <v-text-field
-          v-model="editDialog.item.apiKey"
-          density="compact"
-          solid
-          variant="outlined"
-          :label="$t('trans.externalAPI.formApiKey')"
-          data-test="text-apiKey"
-          :lang="lang"
-          :rules="apiKeyHeaderRules"
-        />
-
-        <v-checkbox v-model="editDialog.item.sendUserToken" class="my-0 pt-0">
-          <template #label>
-            <span :class="{ 'mr-2': isRTL }" :lang="lang">
-              {{ $t('trans.externalAPI.formSendUserToken') }}
-            </span>
-          </template>
-        </v-checkbox>
-
-        <v-text-field
-          v-model="editDialog.item.userTokenHeader"
-          density="compact"
-          solid
-          variant="outlined"
-          :label="$t('trans.externalAPI.formUserTokenHeader')"
-          data-test="text-userTokenHeader"
-          :lang="lang"
-          :rules="userTokenHeaderRules"
-        />
-
-        <v-checkbox v-model="editDialog.item.userTokenBearer" class="my-0 pt-0">
-          <template #label>
-            <span :class="{ 'mr-2': isRTL }" :lang="lang">
-              {{ $t('trans.externalAPI.formUserTokenBearer') }}
-            </span>
-          </template>
-        </v-checkbox>
-
-        <v-checkbox v-model="editDialog.item.sendUserInfo" class="my-0 pt-0">
-          <template #label>
-            <span :class="{ 'mr-2': isRTL }" :lang="lang">
-              {{ $t('trans.externalAPI.formSendUserInfo') }}
-            </span>
-          </template>
-        </v-checkbox>
-
-        <v-checkbox
-          v-model="editDialog.item.userInfoEncrypted"
-          class="my-0 pt-0"
-        >
-          <template #label>
-            <span :class="{ 'mr-2': isRTL }" :lang="lang">
-              {{ $t('trans.externalAPI.formUserInfoEncrypted') }}
-            </span>
-          </template>
-        </v-checkbox>
-
-        <v-text-field
-          v-model="editDialog.item.userInfoHeader"
-          density="compact"
-          solid
-          variant="outlined"
-          :label="$t('trans.externalAPI.formUserInfoHeader')"
-          data-test="text-userInfoHeader"
-          :lang="lang"
-          :rules="userInfoHeaderRules"
-        />
-
-        <v-select
-          v-model="editDialog.item.userInfoEncryptionAlgo"
-          :items="externalAPIAlgorithmList"
-          item-title="display"
-          item-value="code"
-          :label="$t('trans.externalAPI.formUserInfoEncryptionAlgo')"
-          density="compact"
-          solid
-          variant="outlined"
-          :rules="userInfoHeaderRules"
-          :lang="lang"
-        ></v-select>
-
-        <v-text-field
-          v-model="editDialog.item.userInfoEncryptionKey"
-          density="compact"
-          solid
-          variant="outlined"
-          :label="$t('trans.externalAPI.formUserInfoEncryptionKey')"
-          data-test="text-userInfoEncryptionKey"
-          :lang="lang"
-          :rules="userInfoHeaderRules"
-        />
-
-        <v-select
-          v-if="editDialog.item.id"
-          v-model="editDialog.item.code"
-          :items="externalAPIStatusCodes"
-          item-title="display"
-          item-value="code"
-          aria-readonly="true"
-          :readonly="true"
-          density="compact"
-          solid
-          variant="outlined"
-          :label="$t('trans.externalAPI.formStatus')"
-          data-test="text-code"
-          :lang="lang"
-        />
+        <v-row class="mt-4">
+          <v-col cols="4">
+            <v-text-field
+              v-model="editDialog.item.name"
+              autofocus
+              density="compact"
+              solid
+              variant="outlined"
+              :label="$t('trans.externalAPI.formName')"
+              data-test="text-name"
+              :rules="nameRules"
+              :lang="lang"
+            />
+          </v-col>
+          <v-col cols="8">
+            <v-text-field
+              v-model="editDialog.item.endpointUrl"
+              density="compact"
+              solid
+              variant="outlined"
+              :label="$t('trans.externalAPI.formEndpointUrl')"
+              data-test="text-endpointUrl"
+              :rules="endpointUrlRules"
+              :lang="lang"
+            />
+          </v-col>
+        </v-row>
+        <v-row v-if="editDialog.item.id" class="mt-0">
+          <v-col cols="4"></v-col>
+          <v-col cols="8">
+            <v-select
+              v-if="editDialog.item.id"
+              v-model="editDialog.item.code"
+              :items="externalAPIStatusCodes"
+              item-title="display"
+              item-value="code"
+              aria-readonly="true"
+              :readonly="true"
+              density="compact"
+              solid
+              variant="outlined"
+              :label="$t('trans.externalAPI.formStatus')"
+              data-test="text-code"
+              :lang="lang"
+          /></v-col>
+        </v-row>
+        <!-- API Key -->
+        <hr />
+        <v-row>
+          <v-col cols="12" class="pb-0"
+            ><v-checkbox v-model="editDialog.item.sendApiKey" class="my-0 pt-0">
+              <template #label>
+                <span :class="{ 'mr-2': isRTL }" :lang="lang">
+                  {{ $t('trans.externalAPI.formSendApiKey') }}
+                </span>
+              </template>
+            </v-checkbox></v-col
+          >
+        </v-row>
+        <v-row class="mt-0">
+          <v-col cols="4"
+            ><v-text-field
+              v-model="editDialog.item.apiKeyHeader"
+              density="compact"
+              solid
+              variant="outlined"
+              :label="$t('trans.externalAPI.formApiKeyHeader')"
+              data-test="text-apiKeyHeader"
+              :lang="lang"
+              :rules="apiKeyHeaderRules"
+          /></v-col>
+          <v-col cols="8">
+            <v-text-field
+              v-model="editDialog.item.apiKey"
+              density="compact"
+              solid
+              variant="outlined"
+              :label="$t('trans.externalAPI.formApiKey')"
+              data-test="text-apiKey"
+              :lang="lang"
+              :rules="apiKeyHeaderRules"
+          /></v-col>
+        </v-row>
+        <!-- User Token -->
+        <hr />
+        <v-row>
+          <v-col cols="4" class="pb-0">
+            <v-checkbox
+              v-model="editDialog.item.sendUserToken"
+              class="my-0 pt-0"
+            >
+              <template #label>
+                <span :class="{ 'mr-2': isRTL }" :lang="lang">
+                  {{ $t('trans.externalAPI.formSendUserToken') }}
+                </span>
+              </template>
+            </v-checkbox></v-col
+          >
+          <v-col cols="8" class="pb-0">
+            <v-checkbox
+              v-model="editDialog.item.userTokenBearer"
+              class="my-0 pt-0"
+            >
+              <template #label>
+                <span :class="{ 'mr-2': isRTL }" :lang="lang">
+                  {{ $t('trans.externalAPI.formUserTokenBearer') }}
+                </span>
+              </template>
+            </v-checkbox></v-col
+          >
+        </v-row>
+        <v-row class="mt-0">
+          <v-col cols="4"></v-col>
+          <v-col cols="8">
+            <v-text-field
+              v-model="editDialog.item.userTokenHeader"
+              density="compact"
+              solid
+              variant="outlined"
+              :label="$t('trans.externalAPI.formUserTokenHeader')"
+              data-test="text-userTokenHeader"
+              :lang="lang"
+              :rules="userTokenHeaderRules"
+          /></v-col>
+        </v-row>
+        <!-- User Information -->
+        <hr />
+        <v-row>
+          <v-col cols="4" class="pb-0"
+            ><v-checkbox
+              v-model="editDialog.item.sendUserInfo"
+              class="my-0 pt-0"
+            >
+              <template #label>
+                <span :class="{ 'mr-2': isRTL }" :lang="lang">
+                  {{ $t('trans.externalAPI.formSendUserInfo') }}
+                </span>
+              </template>
+            </v-checkbox></v-col
+          >
+          <v-col cols="4" class="pb-0"
+            ><v-checkbox
+              v-model="editDialog.item.userInfoEncrypted"
+              class="my-0 pt-0"
+            >
+              <template #label>
+                <span :class="{ 'mr-2': isRTL }" :lang="lang">
+                  {{ $t('trans.externalAPI.formUserInfoEncrypted') }}
+                </span>
+              </template>
+            </v-checkbox></v-col
+          >
+        </v-row>
+        <v-row class="mt-0">
+          <v-col cols="4"></v-col>
+          <v-col cols="8"
+            ><v-text-field
+              v-model="editDialog.item.userInfoHeader"
+              density="compact"
+              solid
+              variant="outlined"
+              :label="$t('trans.externalAPI.formUserInfoHeader')"
+              data-test="text-userInfoHeader"
+              :lang="lang"
+              :rules="userInfoHeaderRules"
+          /></v-col>
+        </v-row>
+        <v-row class="mt-0">
+          <v-col cols="4">
+            <v-select
+              v-model="editDialog.item.userInfoEncryptionAlgo"
+              :items="externalAPIAlgorithmList"
+              item-title="display"
+              item-value="code"
+              :label="$t('trans.externalAPI.formUserInfoEncryptionAlgo')"
+              density="compact"
+              solid
+              variant="outlined"
+              :rules="userInfoHeaderRules"
+              :lang="lang"
+            ></v-select
+          ></v-col>
+          <v-col cols="8">
+            <v-text-field
+              v-model="editDialog.item.userInfoEncryptionKey"
+              density="compact"
+              solid
+              variant="outlined"
+              :label="$t('trans.externalAPI.formUserInfoEncryptionKey')"
+              data-test="text-userInfoEncryptionKey"
+              :lang="lang"
+              :rules="userInfoHeaderRules"
+          /></v-col>
+        </v-row>
       </v-form>
     </template>
     <template #button-text-continue>

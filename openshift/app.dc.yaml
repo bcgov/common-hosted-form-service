@@ -234,6 +234,16 @@ objects:
                     secretKeyRef:
                       key: password
                       name: "${APP_NAME}-objectstorage-secret"
+                - name: SERVER_ENCRYPTION_DB
+                  valueFrom:
+                    secretKeyRef:
+                      key: db
+                      name: "${APP_NAME}-encryption-keys"
+                - name: SERVER_ENCRYPTION_PROXY
+                  valueFrom:
+                    secretKeyRef:
+                      key: proxy
+                      name: "${APP_NAME}-encryption-keys"
                 - name: APITOKEN
                   valueFrom:
                     secretKeyRef:
