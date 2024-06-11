@@ -103,6 +103,7 @@ export const useIdpStore = defineStore('idps', {
       return result;
     },
     listRoles(code) {
+      console.log(code);
       if (code && this.providers) {
         const idp = this.providers.find((x) => x.code === code);
         if (idp) {
