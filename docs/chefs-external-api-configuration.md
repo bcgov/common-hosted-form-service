@@ -4,7 +4,7 @@ A CHEFS feature request allows Form Designers to call an External API in a secur
 
 A proof of concept was implemented allowing the Form Designer to place the current user's (the Form Submitter) token in the request headers. This also allowed a Form Designer to execute Javascript to call any API programmatically. This opens a security backdoor for the Form Designer to surreptitiously access data and execute functions with the current user's token without their (or CHEFS) knowledge or consent.
 
-The solution documented here allows a Form Designer to specify an External API outside of a form component and have that API called with the current user's (and form) context. There will be an approval process (**TBD**) so the CHEFS team (and submitters) have an assurance that the External API performs no malicious activities.
+The solution documented here allows a Form Designer to specify an External API outside of a form component and have that API called with the current user's (and form) context. There will be an approval process so the CHEFS team (and submitters) have an assurance that the External API performs no malicious activities.
 
 To achieve this, Form Designers will configure their External API, get approval from CHEFS and configure their form components to call a CHEFS proxy that forwards the call to the External API.
 
@@ -14,9 +14,18 @@ This External API is associated with a single form, but as other hierarchies are
 
 ## External API Configuration
 
-**NOTE**: there is currently no UX for this feature. We want the documentation out before we implement the UX.
+### Manage Form
 
-### Configure an External API
+When a form is saved, External APIs can be managed on the Manage Form screen. See the External APIs section.
+
+This will list all External APIs associated with this form (with Edit and Delete actions), a button (+) to add a new External API.
+In the table you will see the Name, the API Endpoint URL and the current status of the API. APIs will only work when status is `Approved`; however, form components can be configured to use the API in any state.
+
+Edit and Create will open a dialog where you can enter and submit your configuration. New External APIs are always created with status of `Submitted` - in the abscence of automated notifications please reach out to the CHEFS Admin team when you want your API reviewed for approval.
+
+See the following table for description of the External API form fields.
+
+### Configure an External API (Technical)
 
 `POST /forms/{{formId}}/externalAPIs`
 
@@ -39,22 +48,22 @@ This External API is associated with a single form, but as other hierarchies are
 }
 ```
 
-| Attribute              | Purpose                                                                  |
-| ---------------------- | ------------------------------------------------------------------------ |
-| formId                 | CHEFS form id                                                            |
-| name                   | Name should be unique per form and should easily identify this API       |
-| endpointUrl            | Endpoint URL for the API (could be a full path or just a base path)      |
-| sendApiKey             | boolean - send an API Key in a header                                    |
-| apiKeyHeader           | the name for the API Key header                                          |
-| apiKey                 | The value for the API Key, stored encrypted in the db.                   |
-| sendUserToken          | boolean - send the user token in a header                                |
-| userTokenHeader        | the name for the user token header                                       |
-| userTokenBearer        | boolean - whether to prefix the user token with "Bearer "                |
-| sendUserInfo           | boolean - send current user information in headers                       |
-| userInfoEncrypted      | boolean - whether we encrypt the current user information                |
-| userInfoHeader         | when userInfoEncrypted = true, this is the name for the user info header |
-| userInfoEncryptionKey  | encryption key supplied by Form Designer, stored encrypted in the db.    |
-| userInfoEncryptionAlgo | A CHEFS supported encryption algorithm.                                  |
+| Attribute              | Form Field                            | Purpose                                                                  |
+| ---------------------- | ------------------------------------- | ------------------------------------------------------------------------ |
+| formId                 | formId                                | CHEFS form id                                                            |
+| name                   | Name                                  | Name should be unique per form and should easily identify this API       |
+| endpointUrl            | Endpoint URL                          | Endpoint URL for the API (could be a full path or just a base path)      |
+| sendApiKey             | Send API Key                          | boolean - send an API Key in a header                                    |
+| apiKeyHeader           | API Key Header Name                   | the name for the API Key header                                          |
+| apiKey                 | API Key Value                         | The value for the API Key, stored encrypted in the db.                   |
+| sendUserToken          | Send User Token                       | boolean - send the user token in a header                                |
+| userTokenHeader        | User Token Header Name                | the name for the user token header                                       |
+| userTokenBearer        | User Token as Bearer                  | boolean - whether to prefix the user token with "Bearer "                |
+| sendUserInfo           | Send User Information                 | boolean - send current user information in headers                       |
+| userInfoEncrypted      | Encrypt User Information              | boolean - whether we encrypt the current user information                |
+| userInfoHeader         | Encrypt User Information Header Name  | when userInfoEncrypted = true, this is the name for the user info header |
+| userInfoEncryptionKey  | User Information Encryption Key       | encryption key supplied by Form Designer, stored encrypted in the db.    |
+| userInfoEncryptionAlgo | User Information Encryption Algorithm | A CHEFS supported encryption algorithm.                                  |
 
 **Recommendation** - secure the External API with an API Key and send user information in plain text.
 

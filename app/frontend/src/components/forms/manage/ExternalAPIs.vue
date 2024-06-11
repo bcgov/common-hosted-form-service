@@ -25,7 +25,7 @@ export default {
       externalAPIStatusCodes: [],
       items: [],
       techdocsLink:
-        'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/CDOGS-Template-Upload/',
+        'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities',
       editDialog: {
         title: '',
         item: {
