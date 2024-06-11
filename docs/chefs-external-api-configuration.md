@@ -50,7 +50,7 @@ See the following table for description of the External API form fields.
 
 | Attribute              | Form Field                            | Purpose                                                                  |
 | ---------------------- | ------------------------------------- | ------------------------------------------------------------------------ |
-| formId                 | formId                                | CHEFS form id                                                            |
+| formId                 | N/A                                   | CHEFS form id                                                            |
 | name                   | Name                                  | Name should be unique per form and should easily identify this API       |
 | endpointUrl            | Endpoint URL                          | Endpoint URL for the API (could be a full path or just a base path)      |
 | sendApiKey             | Send API Key                          | boolean - send an API Key in a header                                    |
