@@ -1,6 +1,7 @@
 import { Components } from 'formiojs';
 const FieldComponent = (Components as any).components.field;
 import MapService from './services/MapService';
+import { circle } from 'leaflet';
 
 const CENTER = [48.41939025932759,-123.37029576301576]
 
@@ -45,7 +46,8 @@ export default class Component extends (FieldComponent as any) {
             circlemarker:false,
             polygon: false,
             polyline: false,
-            rectangle:false
+            rectangle:false,
+            circle: false
         }
         MapService({mapContainer, drawOptions, center:CENTER, form})
 
