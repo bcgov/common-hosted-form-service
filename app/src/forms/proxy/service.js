@@ -18,7 +18,7 @@ const trimTrailingSlashes = (str) => str.replace(/\/+$/g, '');
 
 const service = {
   generateProxyHeaders: async (payload, currentUser, token) => {
-    if (!payload || !currentUser || !currentUser.idpUserId) {
+    if (!payload || !currentUser || !currentUser.idp) {
       throw new Error('Cannot generate proxy headers with missing or incomplete parameters');
     }
 
@@ -82,9 +82,9 @@ const service = {
       result[externalAPI.userTokenHeader] = val;
     }
     if (externalAPI.sendUserInfo) {
-      if (!proxyHeaderInfo || !proxyHeaderInfo.email) {
-        // just assume that if there is no email than it isn't a userInfo object
-        throw new Error('Cannot create user headers for External API without populated  proxy header info object.');
+      if (!proxyHeaderInfo || !proxyHeaderInfo.idp) {
+        // just assume that if there is no idp than it isn't a userInfo object
+        throw new Error('Cannot create user headers for External API without populated proxy header info object.');
       }
 
       if (externalAPI.userInfoEncrypted) {

@@ -29,9 +29,6 @@ module.exports = {
       let axiosInstance = axios.create({
         headers: extHeaders,
       });
-      //for (const [key, value] of Object.entries(extHeaders)) {
-      //  axiosInstance.defaults.headers[key] = value;
-      //}
       // call the external api
       const { data } = await axiosInstance.get(extUrl);
       // if all good return data
