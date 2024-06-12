@@ -6,8 +6,12 @@ import { i18n } from '~/internationalization';
 import { useAdminStore } from '~/store/admin';
 import { useFormStore } from '~/store/form';
 import { Ministries } from '~/utils/constants';
+import BaseDialog from '~/components/base/BaseDialog.vue';
 
 export default {
+  components: {
+    BaseDialog,
+  },
   data() {
     return {
       loading: true,
