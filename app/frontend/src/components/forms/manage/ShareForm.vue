@@ -32,7 +32,7 @@ const formLink = computed(() => {
     name: 'FormSubmit',
     query: { f: properties.formId },
   });
-  return url.href;
+  return `${window.location.origin}${url.href}`;
 });
 const NOTIFICATIONS_TYPES = computed(() => NotificationTypes);
 

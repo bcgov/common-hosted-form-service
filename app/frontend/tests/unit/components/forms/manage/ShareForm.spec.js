@@ -47,10 +47,12 @@ describe('ShareForm.vue', () => {
   });
 
   it('formLink resolves a URL and returns the href', async () => {
+    delete window.location;
+    window.location = new URL('https://submit.digital.gov.bc.ca/');
     const resolve = vi.fn();
     resolve.mockImplementation(() => {
       return {
-        href: '#',
+        href: '/#',
       };
     });
     useRouter.mockImplementationOnce(() => ({
@@ -75,7 +77,7 @@ describe('ShareForm.vue', () => {
     await flushPromises();
 
     const formLink = wrapper.vm.formLink;
-    expect(formLink).toEqual('#');
+    expect(formLink).toEqual('https://submit.digital.gov.bc.ca/#');
     expect(resolve).toHaveBeenCalledTimes(1);
   });
 
