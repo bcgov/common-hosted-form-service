@@ -145,7 +145,7 @@ export default {
       <v-expansion-panel flat>
         <!-- Form Settings -->
         <v-expansion-panel-title>
-          <div class="header" :lang="lang">
+          <div class="header" :lang="lang" data-test="canExpandFormSettingsPanel">
             <strong>{{ $t('trans.manageForm.formSettings') }}</strong>
             <span :lang="lang">
               <small>
@@ -187,7 +187,7 @@ export default {
               :class="isRTL ? 'ml-5' : 'mr-5'"
               color="primary"
               :title="$t('trans.manageForm.update')"
-              data-test="canExpandFormSettingsPanel"
+              data-test="canEditForm"
               @click="updateSettings"
             >
               <span :lang="lang">{{ $t('trans.manageForm.update') }}</span>
@@ -195,6 +195,7 @@ export default {
             <v-btn
               variant="outlined"
               :title="$t('trans.manageForm.cancel')"
+              data-test="canCancelEdit"
               @click="cancelSettingsEdit"
             >
               <span :lang="lang">{{ $t('trans.manageForm.cancel') }}</span>

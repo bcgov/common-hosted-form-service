@@ -85,6 +85,7 @@ export default {
   >
     <div
       class="d-flex flex-md-row justify-space-between"
+      data-test="showNotesPanel"
       @click="showNotesContent = !showNotesContent"
     >
       <div cols="12" sm="6">
@@ -115,6 +116,7 @@ export default {
               size="x-small"
               v-bind="props"
               :title="$t('trans.notesPanel.addNewNote')"
+              data-test="canAddNewNote"
               @click.stop="showNoteField = true"
               @click="showNotesContent = true"
             >
@@ -135,6 +137,7 @@ export default {
           auto-grow
           density="compact"
           variant="outlined"
+          data-test="canAddNotes"
           solid
           :lang="lang"
         />
@@ -145,6 +148,7 @@ export default {
               color="primary"
               variant="outlined"
               :title="$t('trans.notesPanel.cancel')"
+              data-test="canCancelNote"
               @click="showNoteField = false"
             >
               <span :lang="lang">{{ $t('trans.notesPanel.cancel') }}</span>
