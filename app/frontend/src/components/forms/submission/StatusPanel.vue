@@ -294,6 +294,9 @@ export default {
         });
       }
     },
+    updateSubmissionUserEmail(selectedUser){
+      this.submissionUserEmail = selectedUser ? selectedUser.raw.email : '';
+    }
   },
 };
 </script>
@@ -455,6 +458,7 @@ export default {
                 :no-data-text="$t('trans.statusPanel.noDataText')"
                 variant="outlined"
                 return-object
+                @change="updateSubmissionUserEmail"
                 :rules="[
                   (v) => !!v || $t('trans.statusPanel.recipientIsRequired'),
                 ]"
