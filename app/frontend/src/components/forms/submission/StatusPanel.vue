@@ -42,6 +42,7 @@ export default {
       valid: false,
       showSendConfirmEmail: false,
       showStatusContent: false,
+      selectedUser: null,
     };
   },
   computed: {
@@ -294,9 +295,9 @@ export default {
         });
       }
     },
-    updateSubmissionUserEmail(selectedUser){
-      this.submissionUserEmail = selectedUser ? selectedUser.raw.email : '';
-    }
+    updateSubmissionUserEmail(selectedUser) {
+      this.submissionUserEmail = selectedUser ? selectedUser.email : '';
+    },
   },
 };
 </script>
@@ -447,7 +448,7 @@ export default {
               /> -->
               <label>Recipient Email</label>
               <v-autocomplete
-                v-model="submissionUserEmail"
+                v-model="selectedUser"
                 :class="{ 'dir-rtl': isRTL }"
                 autocomplete="autocomplete_off"
                 clearable
@@ -458,11 +459,11 @@ export default {
                 :no-data-text="$t('trans.statusPanel.noDataText')"
                 variant="outlined"
                 return-object
-                @change="updateSubmissionUserEmail"
                 :rules="[
                   (v) => !!v || $t('trans.statusPanel.recipientIsRequired'),
                 ]"
                 :lang="lang"
+                @update:model-value="updateSubmissionUserEmail"
               >
                 <!-- selected user -->
                 <template #chip="{ props, item }">
