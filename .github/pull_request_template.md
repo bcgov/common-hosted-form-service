@@ -21,7 +21,9 @@
 <!-- style (change to code style/formatting) -->
 <!-- test (add missing tests or correct existing tests) -->
 
-[ ] breaking change
+<!--
+This is a breaking change because ...
+-->
 
 ## Checklist
 
