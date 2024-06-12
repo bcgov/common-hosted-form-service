@@ -218,6 +218,15 @@ it('Checks the Container component', () => {
      cy.get('.list-group-item').should('be.visible');
      cy.get('[ref="datagrid-dataGrid"]').should('be.visible');
      cy.get('.col-md-1').should('be.visible');
+
+     cy.visit(`/${depEnv}`);
+     cy.get('[data-cy="userFormsLinks"]').click();
+     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+     cy.waitForLoad();
+    //Delete form after test run
+      //cy.get('.mdi-delete').click();
+      cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
+      cy.get('[data-test="continue-btn-continue"]').click();
      
    })
     
