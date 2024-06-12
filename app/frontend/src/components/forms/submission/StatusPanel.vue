@@ -434,14 +434,46 @@ export default {
               </div>
             </div>
             <div v-show="statusFields" v-if="showRevising">
-              <v-text-field
+              <!-- <v-text-field
                 v-model="submissionUserEmail"
                 :label="$t('trans.statusPanel.recipientEmail')"
                 variant="outlined"
                 density="compact"
                 :class="{ 'dir-rtl': isRTL }"
                 :lang="lang"
-              />
+              /> -->
+              <label>Recipient Email</label>
+              <v-autocomplete
+                v-model="submissionUserEmail"
+                :class="{ 'dir-rtl': isRTL }"
+                autocomplete="autocomplete_off"
+                clearable
+                :custom-filter="autoCompleteFilter"
+                :items="formReviewers"
+                item-title="fullName"
+                :loading="loading"
+                :no-data-text="$t('trans.statusPanel.noDataText')"
+                variant="outlined"
+                return-object
+                :rules="[
+                  (v) => !!v || $t('trans.statusPanel.recipientIsRequired'),
+                ]"
+                :lang="lang"
+              >
+                <!-- selected user -->
+                <template #chip="{ props, item }">
+                  <v-chip v-bind="props" :text="item?.raw?.fullName" />
+                </template>
+                <!-- users found in dropdown -->
+                <template #item="{ props, item }">
+                  <v-list-item
+                    v-bind="props"
+                    :title="`${item?.raw?.fullName} (${item?.raw?.email})`"
+                    :subtitle="`${item?.raw?.username} (${item?.raw?.user_idpCode})`"
+                  >
+                  </v-list-item>
+                </template>
+              </v-autocomplete>
             </div>
 
             <div v-if="showRevising || showAssignee || showCompleted">
