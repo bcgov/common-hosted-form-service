@@ -438,14 +438,6 @@ export default {
               </div>
             </div>
             <div v-show="statusFields" v-if="showRevising">
-              <!-- <v-text-field
-                v-model="submissionUserEmail"
-                :label="$t('trans.statusPanel.recipientEmail')"
-                variant="outlined"
-                density="compact"
-                :class="{ 'dir-rtl': isRTL }"
-                :lang="lang"
-              /> -->
               <label>Recipient Email</label>
               <v-autocomplete
                 v-model="selectedUser"
