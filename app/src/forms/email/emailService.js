@@ -449,13 +449,11 @@ const service = {
    * @function submissionExportLink
    * Email with the link to the Form submissions export file
    * @param {string} formId
-   * @param {string} submissionId
    * @param {object} body
-   * @param {string} referer
    * @param {string} fileId
    * @returns The result of the email merge operation
    */
-  submissionExportLink: async (formId, submissionId, body, referer, fileId) => {
+  submissionExportLink: async (formId, body, fileId) => {
     try {
       const form = await formService.readForm(formId);
       const contextToVal = [body.to];
@@ -487,7 +485,6 @@ const service = {
         function: EmailTypes.SUBMISSION_EXPORT,
         formId: formId,
         body: body,
-        referer: referer,
       });
       throw e;
     }
