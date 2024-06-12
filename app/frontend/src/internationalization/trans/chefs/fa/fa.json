@@ -614,6 +614,7 @@
     "assigneeIsRequired": "کارمند مورد نیاز است",
     "assignToMe": "به من اختصاص دهید",
     "recipientEmail": "ایمیل گیرنده",
+    "recipientIsRequired": "دریافت کننده الزامی است",
     "attachCommentToEmail": "نظر را به ایمیل ضمیمه کنید",
     "emailComment": "نظر ایمیل",
     "maxChars": "حداکثر 4000 کاراکتر",

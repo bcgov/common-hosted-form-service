@@ -614,6 +614,7 @@
     "assigneeIsRequired": "مطلوب الوكيل",
     "assignToMe": "تعيين لي",
     "recipientEmail": "البريد الإلكتروني المستلم",
+    "recipientIsRequired": "المستلم مطلوب",
     "attachCommentToEmail": "إرفاق تعليق بالبريد الإلكتروني",
     "emailComment": "التعليق بالبريد الإلكتروني",
     "maxChars": "4000 حرف كحد أقصى",

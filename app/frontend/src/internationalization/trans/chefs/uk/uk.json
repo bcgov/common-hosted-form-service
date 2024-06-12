@@ -613,6 +613,7 @@
     "assigneeIsRequired": "Потрібен правонаступник",
     "assignToMe": "ПРИЗНАЧИ МЕНІ",
     "recipientEmail": "Електронна адреса одержувача",
+    "recipientIsRequired": "Одержувач обов'язковий",
     "attachCommentToEmail": "Додайте коментар до електронного листа",
     "emailComment": "Коментар електронною поштою",
     "maxChars": "Макс. 4000 символів",

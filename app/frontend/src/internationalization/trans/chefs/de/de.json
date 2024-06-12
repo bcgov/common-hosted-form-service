@@ -615,6 +615,7 @@
     "assigneeIsRequired": "Bevollmächtigter ist erforderlich",
     "assignToMe": "MIR ZUWEISEN",
     "recipientEmail": "Empfänger E-Mail",
+    "recipientIsRequired": "Empfänger ist erforderlich",
     "attachCommentToEmail": "Kommentar an E-Mail anhängen",
     "emailComment": "E-Mail-Kommentar",
     "maxChars": "Maximal 4000 Zeichen",

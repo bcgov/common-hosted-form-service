@@ -614,6 +614,7 @@
     "assigneeIsRequired": "Kinakailangan ang assignee",
     "assignToMe": "ASSIGN TO ME",
     "recipientEmail": "Email ng Tatanggap",
+    "recipientIsRequired": "Kinakailangan ang tatanggap",
     "attachCommentToEmail": "Maglakip ng Komento sa Email",
     "emailComment": "Komento sa Email",
     "maxChars": "Max na 4000 character",

@@ -614,6 +614,7 @@
     "assigneeIsRequired": "受讓人為必填項",
     "assignToMe": "分配給我",
     "recipientEmail": "收件人電子郵件",
+    "recipientIsRequired": "需要收件人",
     "attachCommentToEmail": "將評論附加到電子郵件",
     "emailComment": "電子郵件評論",
     "maxChars": "最多 4000 個字符",

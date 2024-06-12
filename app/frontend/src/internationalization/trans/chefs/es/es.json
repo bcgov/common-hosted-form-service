@@ -614,6 +614,7 @@
     "assigneeIsRequired": "Se requiere cesionario",
     "assignToMe": "ASIGNARME",
     "recipientEmail": "Receptor de E-mail",
+    "recipientIsRequired": "Se requiere destinatario",
     "attachCommentToEmail": "Adjuntar comentario al correo electrónico",
     "emailComment": "Comentario de correo electrónico",
     "maxChars": "4000 caracteres como máximo",

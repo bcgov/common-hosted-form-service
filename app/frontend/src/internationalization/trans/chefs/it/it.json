@@ -614,6 +614,7 @@
     "assigneeIsRequired": "L'assegnatario è obbligatorio",
     "assignToMe": "ASSEGNAMI",
     "recipientEmail": "Destinatario dell'email",
+    "recipientIsRequired": "Il destinatario è richiesto",
     "attachCommentToEmail": "Allega commento all'e-mail",
     "emailComment": "E-mail Commento",
     "maxChars": "Massimo 4000 caratteri",
