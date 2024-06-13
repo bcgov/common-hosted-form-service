@@ -265,8 +265,8 @@ export default {
         v-model="filesApiAccess"
         :disabled="!apiKey"
         :label="$t('trans.apiKey.filesAPIAccess')"
-        @update:model-value="updateKey"
         data-test="canAllowFileAccess"
+        @update:model-value="updateKey"
       ></v-checkbox>
     </v-col>
   </v-row>

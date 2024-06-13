@@ -569,10 +569,10 @@ export default {
           v-if="!disableRole('form_designer', item, form.userType)"
           key="form_designer"
           v-model="item.form_designer"
-          data-test="FormDesignerRoleCheckbox"
           v-ripple
           :disabled="updating"
           @update:modelValue="toggleRole(item)"
+          data-test="FormDesignerRoleCheckbox"
         ></v-checkbox-btn>
       </template>
       <template #item.owner="{ item }">
@@ -580,10 +580,10 @@ export default {
           v-if="!disableRole('owner', item, form.userType)"
           key="owner"
           v-model="item.owner"
-          data-test="OwnerRoleCheckbox"
           v-ripple
           :disabled="updating"
           @update:modelValue="toggleRole(item)"
+          data-test="OwnerRoleCheckbox"
         ></v-checkbox-btn>
       </template>
       <template #item.submission_approver="{ item }">
@@ -591,10 +591,10 @@ export default {
           v-if="!disableRole('submission_approver', item, form.userType)"
           key="submission_approver"
           v-model="item.submission_approver"
-          data-test="ApproverRoleCheckbox"
           v-ripple
           :disabled="updating"
           @update:modelValue="toggleRole(item)"
+          data-test="ApproverRoleCheckbox"
         ></v-checkbox-btn>
       </template>
       <template #item.submission_reviewer="{ item }">
@@ -602,10 +602,10 @@ export default {
           v-if="!disableRole('submission_reviewer', item, form.userType)"
           key="submission_reviewer"
           v-model="item.submission_reviewer"
-          data-test="ReviewerRoleCheckbox"
           v-ripple
           :disabled="updating"
           @update:modelValue="toggleRole(item)"
+          data-test="ReviewerRoleCheckbox"
         ></v-checkbox-btn>
       </template>
       <template #item.form_submitter="{ item }">
@@ -613,10 +613,10 @@ export default {
           v-if="!disableRole('form_submitter', item, form.userType)"
           key="form_submitter"
           v-model="item.form_submitter"
-          data-test="SubmitterRoleCheckbox"
           v-ripple
           :disabled="updating"
           @update:modelValue="toggleRole(item)"
+          data-test="SubmitterRoleCheckbox"
         ></v-checkbox-btn>
       </template>
       <template #item.team_manager="{ item }">
@@ -624,10 +624,10 @@ export default {
           v-if="!disableRole('team_manager', item, form.userType)"
           key="team_manager"
           v-model="item.team_manager"
-          data-test="TeamManagerRoleCheckbox"
           v-ripple
           :disabled="updating"
           @update:modelValue="toggleRole(item)"
+          data-test="TeamManagerRoleCheckbox"
         ></v-checkbox-btn>
       </template>
       <template #item.actions="{ item }">

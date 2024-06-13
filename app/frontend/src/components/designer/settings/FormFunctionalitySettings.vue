@@ -274,7 +274,9 @@ defineExpose({
         </div>
       </template>
     </v-checkbox>
-    <v-checkbox v-model="form.wideFormLayout" hide-details="auto" data-test="canAllowWideFormLayoutCheckbox" class="my-0">
+    <v-checkbox v-model="form.wideFormLayout" hide-details="auto"
+      data-test="canAllowWideFormLayoutCheckbox"
+      class="my-0">
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
           <span

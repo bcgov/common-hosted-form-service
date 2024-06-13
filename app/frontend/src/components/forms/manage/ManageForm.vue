@@ -145,7 +145,9 @@ export default {
       <v-expansion-panel flat>
         <!-- Form Settings -->
         <v-expansion-panel-title>
-          <div class="header" :lang="lang" data-test="canExpandFormSettingsPanel">
+          <div class="header"
+            :lang="lang" 
+            data-test="canExpandFormSettingsPanel">
             <strong>{{ $t('trans.manageForm.formSettings') }}</strong>
             <span :lang="lang">
               <small>
@@ -245,7 +247,9 @@ export default {
     >
       <v-expansion-panel flat>
         <v-expansion-panel-title>
-          <div class="header" :lang="lang" data-test="canExpandApiKeySettingsPanel">
+          <div class="header"
+            :lang="lang"
+            data-test="canExpandApiKeySettingsPanel">
             <strong>{{ $t('trans.manageForm.apiKey') }}</strong>
             <span v-if="apiKey" :lang="lang">
               <small v-if="apiKey.updatedBy">
@@ -277,7 +281,9 @@ export default {
     >
       <v-expansion-panel flat>
         <v-expansion-panel-title>
-          <div class="header" :lang="lang" data-test="canExpandCDOGSPanel">
+          <div class="header"
+            :lang="lang" 
+            data-test="canExpandCDOGSPanel">
             <strong>{{ $t('trans.manageForm.cdogsTemplate') }}</strong>
           </div>
         </v-expansion-panel-title>
@@ -291,7 +297,9 @@ export default {
     <v-expansion-panels v-model="versionsPanel" class="nrmc-expand-collapse">
       <v-expansion-panel flat>
         <v-expansion-panel-title>
-          <div class="header" :lang="lang" data-test="canExpandFormDesignHistoryPanel">
+          <div class="header"
+            :lang="lang" 
+            data-test="canExpandFormDesignHistoryPanel">
             <strong style="flex: 1">{{
               $t('trans.manageForm.formDesignHistory')
             }}</strong>
