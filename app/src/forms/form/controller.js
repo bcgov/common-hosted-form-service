@@ -414,7 +414,7 @@ module.exports = {
   createExternalAPI: async (req, res, next) => {
     try {
       const response = await service.createExternalAPI(req.params.formId, req.body, req.currentUser);
-      res.status(200).json(response);
+      res.status(201).json(response);
     } catch (error) {
       next(error);
     }
