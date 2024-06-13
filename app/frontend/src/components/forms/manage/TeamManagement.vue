@@ -571,8 +571,8 @@ export default {
           v-model="item.form_designer"
           v-ripple
           :disabled="updating"
-          @update:modelValue="toggleRole(item)"
           data-test="FormDesignerRoleCheckbox"
+          @update:modelValue="toggleRole(item)"
         ></v-checkbox-btn>
       </template>
       <template #item.owner="{ item }">
@@ -582,8 +582,8 @@ export default {
           v-model="item.owner"
           v-ripple
           :disabled="updating"
-          @update:modelValue="toggleRole(item)"
           data-test="OwnerRoleCheckbox"
+          @update:modelValue="toggleRole(item)"
         ></v-checkbox-btn>
       </template>
       <template #item.submission_approver="{ item }">
@@ -615,8 +615,8 @@ export default {
           v-model="item.form_submitter"
           v-ripple
           :disabled="updating"
-          @update:modelValue="toggleRole(item)"
           data-test="SubmitterRoleCheckbox"
+          @update:modelValue="toggleRole(item)"
         ></v-checkbox-btn>
       </template>
       <template #item.team_manager="{ item }">
@@ -626,8 +626,8 @@ export default {
           v-model="item.team_manager"
           v-ripple
           :disabled="updating"
-          @update:modelValue="toggleRole(item)"
           data-test="TeamManagerRoleCheckbox"
+          @update:modelValue="toggleRole(item)"
         ></v-checkbox-btn>
       </template>
       <template #item.actions="{ item }">

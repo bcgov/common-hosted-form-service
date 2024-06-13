@@ -300,10 +300,12 @@ export default {
 
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
-    <div class="flex-container"
-     data-test="showStatusPanel" 
-     @click="showStatusContent = !showStatusContent">
-     <h2 class="status-heading" :class="{ 'dir-rtl': isRTL }" :lang="lang">
+    <div
+      class="flex-container"
+      data-test="showStatusPanel"
+      @click="showStatusContent = !showStatusContent"
+    >
+      <h2 class="status-heading" :class="{ 'dir-rtl': isRTL }" :lang="lang">
         {{ $t('trans.formSubmission.status') }}
         <v-icon>{{
           showStatusContent
@@ -323,8 +325,7 @@ export default {
         <span :class="isRTL ? 'status-details-rtl' : 'status-details'">
           <strong>{{ $t('trans.statusPanel.assignedTo') }}</strong>
           {{ currentStatus.user ? currentStatus.user.fullName : 'N/A' }}
-          <span v-if="currentStatus.user"
-            data-test="showAssigneeEmail">
+          <span v-if="currentStatus.user" data-test="showAssigneeEmail">
             ({{ currentStatus.user.email }})
           </span>
         </span>
@@ -343,8 +344,8 @@ export default {
           <br />
           <strong>{{ $t('trans.statusPanel.assignedTo') }}</strong>
           {{ currentStatus.user ? currentStatus.user.fullName : 'N/A' }}
-          <span v-if="currentStatus.user"
-            data-test="showAssigneeEmail">({{ currentStatus.user.email }})</span
+          <span v-if="currentStatus.user" data-test="showAssigneeEmail"
+            >({{ currentStatus.user.email }})</span
           >
         </p>
         <v-form
