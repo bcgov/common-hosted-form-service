@@ -429,8 +429,8 @@ module.exports = {
   },
   deleteExternalAPI: async (req, res, next) => {
     try {
-      const response = await service.deleteExternalAPI(req.params.formId, req.params.externalAPIId);
-      res.status(200).json(response);
+      await service.deleteExternalAPI(req.params.formId, req.params.externalAPIId);
+      res.status(204).send();
     } catch (error) {
       next(error);
     }
