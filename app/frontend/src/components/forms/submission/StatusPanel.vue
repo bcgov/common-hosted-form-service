@@ -532,7 +532,7 @@ export default {
                       variant="flat"
                       :title="$t('trans.statusPanel.close')"
                       data-test="canCloseStatusPanel"
-                      @click="historyDialog = false"              
+                      @click="historyDialog = false"
                     >
                       <span :lang="lang">{{
                         $t('trans.statusPanel.close')
