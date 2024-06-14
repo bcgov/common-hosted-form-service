@@ -4,14 +4,14 @@ const Objection = require('objection');
 
 const middleware = require('../../../../../src/forms/common/middleware');
 
-describe('test data errors middleware', () => {
+describe('test error handler middleware', () => {
   it('should handle an objection data error', () => {
     const error = new Objection.DataError({
       nativeError: { message: 'This is a DataError' },
     });
     const { res, next } = getMockRes();
 
-    middleware.dataErrors(error, {}, res, next);
+    middleware.errorHandler(error, {}, res, next);
 
     expect(next).not.toBeCalled();
     expect(res.end).toBeCalledWith(expect.stringContaining('422'));
@@ -23,7 +23,7 @@ describe('test data errors middleware', () => {
     });
     const { res, next } = getMockRes();
 
-    middleware.dataErrors(error, {}, res, next);
+    middleware.errorHandler(error, {}, res, next);
 
     expect(next).not.toBeCalled();
     expect(res.end).toBeCalledWith(expect.stringContaining('404'));
@@ -35,7 +35,7 @@ describe('test data errors middleware', () => {
     });
     const { res, next } = getMockRes();
 
-    middleware.dataErrors(error, {}, res, next);
+    middleware.errorHandler(error, {}, res, next);
 
     expect(next).not.toBeCalled();
     expect(res.end).toBeCalledWith(expect.stringContaining('422'));
@@ -47,7 +47,7 @@ describe('test data errors middleware', () => {
     });
     const { res, next } = getMockRes();
 
-    middleware.dataErrors(error, {}, res, next);
+    middleware.errorHandler(error, {}, res, next);
 
     expect(next).not.toBeCalled();
     expect(res.end).toBeCalledWith(expect.stringContaining('422'));
@@ -58,7 +58,7 @@ describe('test data errors middleware', () => {
     error.status = 400;
     const { res, next } = getMockRes();
 
-    middleware.dataErrors(error, {}, res, next);
+    middleware.errorHandler(error, {}, res, next);
 
     expect(next).not.toBeCalled();
     expect(res.end).toBeCalledWith(expect.stringContaining('400'));
@@ -70,7 +70,7 @@ describe('test data errors middleware', () => {
     error.statusCode = 400;
     const { res, next } = getMockRes();
 
-    middleware.dataErrors(error, {}, res, next);
+    middleware.errorHandler(error, {}, res, next);
 
     expect(next).not.toBeCalled();
     expect(res.end).toBeCalledWith(expect.stringContaining('400'));
@@ -81,26 +81,39 @@ describe('test data errors middleware', () => {
     const error = new Problem(429);
     const { res, next } = getMockRes();
 
-    middleware.dataErrors(error, {}, res, next);
+    middleware.errorHandler(error, {}, res, next);
 
     expect(next).not.toBeCalled();
     expect(res.end).toBeCalledWith(expect.stringContaining('429'));
+  });
+
+  it('should pass through unknown objection errors', () => {
+    const error = new Objection.DBError({
+      nativeError: {
+        message: 'This base class is never actually instantiated',
+      },
+    });
+    const { res, next } = getMockRes();
+
+    middleware.errorHandler(error, {}, res, next);
+
+    expect(next).toBeCalledWith(error);
   });
 
   it('should pass through any 500s', () => {
     const error = new Problem(500);
     const { next } = getMockRes();
 
-    middleware.dataErrors(error, {}, {}, next);
+    middleware.errorHandler(error, {}, {}, next);
 
     expect(next).toBeCalledWith(error);
   });
 
-  it('should pass through any Errors', () => {
+  it('should pass through any Errors without statuses', () => {
     const error = new Error();
     const { next } = getMockRes();
 
-    middleware.dataErrors(error, {}, {}, next);
+    middleware.errorHandler(error, {}, {}, next);
 
     expect(next).toBeCalledWith(error);
   });

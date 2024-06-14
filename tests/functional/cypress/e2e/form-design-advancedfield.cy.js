@@ -257,11 +257,11 @@ describe('Form Designer', () => {
         });
         cy.location('search').then(search => {
           //let pathName = fullUrl.pathname
-          let arr = search.split('=');
-          let arrayValues = arr[1].split('&');
+        let arr = search.split('=');
+        let arrayValues = arr[1].split('&');
         cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
-          cy.waitForLoad();
-        })
+        cy.waitForLoad();
+       
         cy.waitForLoad();
         // for print option verification
         cy.get(':nth-child(2) > .d-print-none > :nth-child(1) > .v-btn').should('be.visible');
@@ -313,6 +313,15 @@ describe('Form Designer', () => {
         cy.get('.choices__inner > .choices__list > .choices__item').contains('hello');
         cy.get('.col-md-9 > a').contains('add1.png');
         cy.get('.ui > .choices__list > .choices__item').contains('THRIFTY FOODS');
+
+        //Delete form after test run
+        cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+        cy.waitForLoad();
+        cy.waitForLoad();
+        cy.get('.mdi-delete').click();
+        cy.get('[data-test="continue-btn-continue"]').click();
+        
+        })
 
     });
 });
