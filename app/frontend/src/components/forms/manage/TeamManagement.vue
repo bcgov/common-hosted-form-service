@@ -590,7 +590,7 @@ export default {
         <v-checkbox-btn
           v-if="!disableRole('submission_approver', item, form.userType)"
           key="submission_approver"
-          v-model="item.submission_approver"          
+          v-model="item.submission_approver"       
           v-ripple
           :disabled="updating"
           data-test="ApproverRoleCheckbox"
@@ -601,7 +601,7 @@ export default {
         <v-checkbox-btn
           v-if="!disableRole('submission_reviewer', item, form.userType)"
           key="submission_reviewer"
-          v-model="item.submission_reviewer"          
+          v-model="item.submission_reviewer"   
           v-ripple
           :disabled="updating"
           data-test="ReviewerRoleCheckbox"
