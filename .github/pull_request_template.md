@@ -30,7 +30,7 @@ This is a breaking change because ...
 <!-- Go over all the following points, and put an `x` in all the boxes that apply. -->
 <!-- If you're unsure about any of these, don't hesitate to ask. We're here to help! -->
 
-- [ ] I have read the [CONTRIBUTING](../CONTRIBUTING.md) doc
+- [ ] I have read the [CONTRIBUTING](/bcgov/common-hosted-form-service/blob/main/CONTRIBUTING.md) doc
 - [ ] I have checked that unit tests pass locally with my changes
 - [ ] I have run the npm script lint on the frontend and backend
 - [ ] I have added tests that prove my fix is effective or that my feature works
