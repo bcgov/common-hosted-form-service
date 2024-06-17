@@ -1,7 +1,7 @@
 import { Components } from 'formiojs';
 const FieldComponent = (Components as any).components.field;
 import MapService from './services/MapService';
-import { circle } from 'leaflet';
+import baseEditForm from './Component.form';
 
 const CENTER = [48.41939025932759,-123.37029576301576]
 
@@ -24,6 +24,8 @@ export default class Component extends (FieldComponent as any) {
             schema: Component.schema(),
         };
     }
+    static editForm = baseEditForm;
+    
     componentID = super.elementInfo().component.id
     render() {
         console.log(super.data);

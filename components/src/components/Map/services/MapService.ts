@@ -6,15 +6,17 @@ import "leaflet-draw/dist/leaflet.draw-src.css";
 const DEFAULT_MAP_LAYER_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 const DEFAULT_LAYER_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 const DECIMALS_LATLNG = 5//the number of decimals of latitude and longitude to be displayed in the marker popup 
+const SET_MAX_MARKERS = 1;
 
 export default function MapService(options){
     if(options.mapContainer){
         const {map,drawnItems} = initializeMap(options)
-        
+        map.invalidateSize();
         //event listener for drawn objects
         map.on('draw:created', function (e) {
             //console.log(e)
             let marker = e.layer;
+            console.log(marker)
             if(drawnItems.getLayers().length){
                 console.log(drawnItems.getLayers())
                 console.log("too many markers")
@@ -23,7 +25,9 @@ export default function MapService(options){
             }else{
                 drawnItems.addLayer(marker);
             }
-            marker.bindPopup(`<p>(${marker._latlng.lat.toFixed(5)},${marker._latlng.lng.toFixed(5)})</p>`).openPopup();
+            marker.bindPopup(`
+                <p>(${marker._latlng.lat.toFixed(DECIMALS_LATLNG)},${marker._latlng.lng.toFixed(DECIMALS_LATLNG)})</p>`
+                ).openPopup();
             //drawnItems.eachLayer((l) => { console.log(l); });
         });
     }
