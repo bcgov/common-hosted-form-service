@@ -163,6 +163,7 @@ export default {
           sendApiKey: false,
           apiKeyHeader: null,
           apiKey: null,
+          allowSendUserToken: false,
           sendUserToken: false,
           userTokenHeader: null,
           userTokenBearer: false,
@@ -456,48 +457,6 @@ export default {
               :rules="apiKeyHeaderRules"
           /></v-col>
         </v-row>
-        <!-- User Token -->
-        <hr />
-        <v-row>
-          <v-col cols="4" class="pb-0">
-            <v-checkbox
-              v-model="editDialog.item.sendUserToken"
-              class="my-0 pt-0"
-            >
-              <template #label>
-                <span :class="{ 'mr-2': isRTL }" :lang="lang">
-                  {{ $t('trans.externalAPI.formSendUserToken') }}
-                </span>
-              </template>
-            </v-checkbox></v-col
-          >
-          <v-col cols="8" class="pb-0">
-            <v-checkbox
-              v-model="editDialog.item.userTokenBearer"
-              class="my-0 pt-0"
-            >
-              <template #label>
-                <span :class="{ 'mr-2': isRTL }" :lang="lang">
-                  {{ $t('trans.externalAPI.formUserTokenBearer') }}
-                </span>
-              </template>
-            </v-checkbox></v-col
-          >
-        </v-row>
-        <v-row class="mt-0">
-          <v-col cols="4"></v-col>
-          <v-col cols="8">
-            <v-text-field
-              v-model="editDialog.item.userTokenHeader"
-              density="compact"
-              solid
-              variant="outlined"
-              :label="$t('trans.externalAPI.formUserTokenHeader')"
-              data-test="text-userTokenHeader"
-              :lang="lang"
-              :rules="userTokenHeaderRules"
-          /></v-col>
-        </v-row>
         <!-- User Information -->
         <hr />
         <v-row>
@@ -565,6 +524,48 @@ export default {
               data-test="text-userInfoEncryptionKey"
               :lang="lang"
               :rules="userInfoHeaderRules"
+          /></v-col>
+        </v-row>
+        <!-- User Token -->
+        <hr v-if="editDialog.item.allowSendUserToken" />
+        <v-row v-if="editDialog.item.allowSendUserToken">
+          <v-col cols="4" class="pb-0">
+            <v-checkbox
+              v-model="editDialog.item.sendUserToken"
+              class="my-0 pt-0"
+            >
+              <template #label>
+                <span :class="{ 'mr-2': isRTL }" :lang="lang">
+                  {{ $t('trans.externalAPI.formSendUserToken') }}
+                </span>
+              </template>
+            </v-checkbox></v-col
+          >
+          <v-col cols="8" class="pb-0">
+            <v-checkbox
+              v-model="editDialog.item.userTokenBearer"
+              class="my-0 pt-0"
+            >
+              <template #label>
+                <span :class="{ 'mr-2': isRTL }" :lang="lang">
+                  {{ $t('trans.externalAPI.formUserTokenBearer') }}
+                </span>
+              </template>
+            </v-checkbox></v-col
+          >
+        </v-row>
+        <v-row v-if="editDialog.item.allowSendUserToken" class="mt-0">
+          <v-col cols="4"></v-col>
+          <v-col cols="8">
+            <v-text-field
+              v-model="editDialog.item.userTokenHeader"
+              density="compact"
+              solid
+              variant="outlined"
+              :label="$t('trans.externalAPI.formUserTokenHeader')"
+              data-test="text-userTokenHeader"
+              :lang="lang"
+              :rules="userTokenHeaderRules"
           /></v-col>
         </v-row>
       </v-form>

@@ -37,33 +37,29 @@ See the following table for description of the External API form fields.
     "sendApiKey": true,
     "apiKeyHeader": "X-API-KEY",
     "apiKey": "<some longish key value>",
-    "sendUserToken": false,
-    "userTokenHeader": "Authorization",
-    "userTokenBearer": true,
     "sendUserInfo": true,
     "userInfoEncrypted": false,
     "userInfoHeader": "X-USER-INFO",
     "userInfoEncryptionKey": "999999999",
-    "userInfoEncryptionAlgo": "aes-256-gcm"
+    "userInfoEncryptionAlgo": "aes-256-gcm",
+    "code": "Submitted"
 }
 ```
 
-| Attribute              | Form Field                            | Purpose                                                                  |
-| ---------------------- | ------------------------------------- | ------------------------------------------------------------------------ |
-| formId                 | N/A                                   | CHEFS form id                                                            |
-| name                   | Name                                  | Name should be unique per form and should easily identify this API       |
-| endpointUrl            | Endpoint URL                          | Endpoint URL for the API (could be a full path or just a base path)      |
-| sendApiKey             | Send API Key                          | boolean - send an API Key in a header                                    |
-| apiKeyHeader           | API Key Header Name                   | the name for the API Key header                                          |
-| apiKey                 | API Key Value                         | The value for the API Key, stored encrypted in the db.                   |
-| sendUserToken          | Send User Token                       | boolean - send the user token in a header                                |
-| userTokenHeader        | User Token Header Name                | the name for the user token header                                       |
-| userTokenBearer        | User Token as Bearer                  | boolean - whether to prefix the user token with "Bearer "                |
-| sendUserInfo           | Send User Information                 | boolean - send current user information in headers                       |
-| userInfoEncrypted      | Encrypt User Information              | boolean - whether we encrypt the current user information                |
-| userInfoHeader         | Encrypt User Information Header Name  | when userInfoEncrypted = true, this is the name for the user info header |
-| userInfoEncryptionKey  | User Information Encryption Key       | encryption key supplied by Form Designer, stored encrypted in the db.    |
-| userInfoEncryptionAlgo | User Information Encryption Algorithm | A CHEFS supported encryption algorithm.                                  |
+| Attribute              | Form Field                            | Purpose                                                                                   |
+| ---------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------- |
+| formId                 | N/A                                   | CHEFS form id                                                                             |
+| name                   | Name                                  | Name should be unique per form and should easily identify this API                        |
+| endpointUrl            | Endpoint URL                          | Endpoint URL for the API (could be a full path or just a base path)                       |
+| sendApiKey             | Send API Key                          | boolean - send an API Key in a header                                                     |
+| apiKeyHeader           | API Key Header Name                   | the name for the API Key header                                                           |
+| apiKey                 | API Key Value                         | The value for the API Key, stored encrypted in the db.                                    |
+| sendUserInfo           | Send User Information                 | boolean - send current user information in headers                                        |
+| userInfoEncrypted      | Encrypt User Information              | boolean - whether we encrypt the current user information                                 |
+| userInfoHeader         | Encrypt User Information Header Name  | when userInfoEncrypted = true, this is the name for the user info header                  |
+| userInfoEncryptionKey  | User Information Encryption Key       | encryption key supplied by Form Designer, stored encrypted in the db.                     |
+| userInfoEncryptionAlgo | User Information Encryption Algorithm | A CHEFS supported encryption algorithm.                                                   |
+| code                   | N/A                                   | Status Code. Only CHEFS Admin users can change this value. Used for the approval process. |
 
 **Recommendation** - secure the External API with an API Key and send user information in plain text.
 

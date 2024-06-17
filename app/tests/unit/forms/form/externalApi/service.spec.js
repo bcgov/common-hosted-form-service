@@ -17,6 +17,50 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
+describe('checkAllowSendUserToken', () => {
+  let validData = null;
+  beforeEach(() => {
+    validData = {
+      id: uuidv4(),
+      formId: uuidv4(),
+      name: 'test_api',
+      endpointUrl: 'http://external.api/',
+      sendApiKey: true,
+      apiKeyHeader: 'X-API-KEY',
+      apiKey: 'my-api-key',
+      sendUserToken: true,
+      userTokenHeader: 'Authorization',
+      userTokenBearer: true,
+      sendUserInfo: true,
+      userInfoHeader: 'X-API-USER',
+      userInfoEncrypted: true,
+      userInfoEncryptionKey: '0489aa2a7882dc53be7c76db43be1800e56627c31a88a0011d85ccc255b79d00',
+      userInfoEncryptionAlgo: ENCRYPTION_ALGORITHMS.AES_256_GCM,
+      code: ExternalAPIStatuses.SUBMITTED,
+    };
+  });
+
+  it('should not throw errors with valid data', () => {
+    service.checkAllowSendUserToken(validData, true);
+  });
+
+  it('should throw 422 with no data', () => {
+    expect(() => service.checkAllowSendUserToken(undefined, true)).toThrow();
+  });
+
+  it('should throw 422 when sendUserToken = true but not allowed', () => {
+    expect(() => service.checkAllowSendUserToken(validData, false)).toThrow();
+  });
+
+  it('should blank out user token fields when not allowed', () => {
+    validData.sendUserToken = false;
+    service.checkAllowSendUserToken(validData, false);
+    expect(validData.sendUserToken).toBe(false);
+    expect(validData.userTokenHeader).toBe(null);
+    expect(validData.userTokenBearer).toBe(false);
+  });
+});
+
 describe('validateExternalAPI', () => {
   let validData = null;
   beforeEach(() => {
@@ -93,9 +137,10 @@ describe('createExternalAPI', () => {
       sendApiKey: true,
       apiKeyHeader: 'X-API-KEY',
       apiKey: 'my-api-key',
-      sendUserToken: true,
-      userTokenHeader: 'Authorization',
-      userTokenBearer: true,
+      allowSendUserToken: false,
+      sendUserToken: false,
+      userTokenHeader: null,
+      userTokenBearer: false,
       sendUserInfo: true,
       userInfoHeader: 'X-API-USER',
       userInfoEncrypted: true,
@@ -146,9 +191,10 @@ describe('updateExternalAPI', () => {
       sendApiKey: true,
       apiKeyHeader: 'X-API-KEY',
       apiKey: 'my-api-key',
-      sendUserToken: true,
-      userTokenHeader: 'Authorization',
-      userTokenBearer: true,
+      allowSendUserToken: false,
+      sendUserToken: false,
+      userTokenHeader: null,
+      userTokenBearer: false,
       sendUserInfo: true,
       userInfoHeader: 'X-API-USER',
       userInfoEncrypted: true,
@@ -173,6 +219,45 @@ describe('updateExternalAPI', () => {
     expect(MockModel.update).toBeCalledWith({
       updatedBy: user.usernameIdp,
       code: ExternalAPIStatuses.SUBMITTED,
+      ...validData,
+    });
+    expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+
+  it('should update user token fields when allowed', async () => {
+    // mark as allowed by admin, and set some user token config values...
+    validData.allowSendUserToken = true;
+    validData.sendUserToken = true;
+    validData.userTokenHeader = 'Authorization';
+    validData.userTokenBearer = true;
+    MockModel.throwIfNotFound = jest.fn().mockResolvedValueOnce(Object.assign({}, validData));
+
+    await service.updateExternalAPI(validData.formId, validData.id, validData, user);
+    expect(MockModel.update).toBeCalledTimes(1);
+    expect(MockModel.update).toBeCalledWith({
+      updatedBy: user.usernameIdp,
+      code: ExternalAPIStatuses.SUBMITTED,
+      ...validData,
+    });
+    expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+
+  it('should blank out user token fields when not allowed', async () => {
+    // mark as allowed by admin, and set some user token config values...
+    validData.allowSendUserToken = true;
+    validData.sendUserToken = false; // don't want to throw a 422...
+    validData.userTokenHeader = 'Authorization';
+    validData.userTokenBearer = true;
+    MockModel.throwIfNotFound = jest.fn().mockResolvedValueOnce(Object.assign({}, validData));
+
+    await service.updateExternalAPI(validData.formId, validData.id, validData, user);
+    expect(MockModel.update).toBeCalledTimes(1);
+    expect(MockModel.update).toBeCalledWith({
+      updatedBy: user.usernameIdp,
+      code: ExternalAPIStatuses.SUBMITTED,
+      sendUserToken: false,
+      userTokenHeader: null,
+      userTokenBearer: false,
       ...validData,
     });
     expect(MockTransaction.commit).toBeCalledTimes(1);

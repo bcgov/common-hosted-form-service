@@ -38,6 +38,7 @@ exports.up = function (knex) {
           table.string('apiKeyHeader');
           table.string('apiKey');
 
+          table.boolean('allowSendUserToken').defaultTo(false);
           table.boolean('sendUserToken').defaultTo(false);
           table.string('userTokenHeader');
           table.boolean('userTokenBearer').defaultTo(true);
@@ -54,7 +55,7 @@ exports.up = function (knex) {
         knex.schema.raw(
           `create or replace view external_api_vw as 
               select e.id, e."formId", f.ministry, f.name as "formName", e.name, e."endpointUrl",
-                    e.code, easc.display from external_api e 
+                    e.code, easc.display, e."allowSendUserToken" from external_api e 
               inner join external_api_status_code easc on e.code = easc.code 
               inner join form f on e."formId" = f.id 
               order by f.ministry, "formName", e.name;`

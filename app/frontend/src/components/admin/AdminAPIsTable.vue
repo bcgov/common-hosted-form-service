@@ -26,6 +26,7 @@ export default {
           name: null,
           endpointUrl: null,
           code: null,
+          allowSendUserToken: false,
         },
         show: false,
       },
@@ -98,6 +99,7 @@ export default {
           name: null,
           endpointUrl: null,
           code: null,
+          allowSendUserToken: false,
         },
         show: false,
       };
@@ -271,6 +273,16 @@ export default {
           variant="outlined"
           :lang="lang"
         ></v-select>
+        <v-checkbox
+          v-model="editDialog.item.allowSendUserToken"
+          class="my-0 pt-0"
+        >
+          <template #label>
+            <span :class="{ 'mr-2': isRTL }" :lang="lang">
+              {{ $t('trans.adminAPIsTable.allowSendUserToken') }}
+            </span>
+          </template>
+        </v-checkbox>
       </v-form>
     </template>
     <template #button-text-continue>

@@ -139,11 +139,18 @@ const service = {
     try {
       await ExternalAPI.query().findById(id).throwIfNotFound();
       trx = await ExternalAPI.startTransaction();
-      // admins only change the status code.
+      // admins only change the status code and allow send user token
       const upd = {
         code: data.code,
+        allowSendUserToken: data.allowSendUserToken,
         updatedBy: 'ADMIN',
       };
+      // if we are not allowing sending user token, ensure any user token fields are cleared out
+      if (!data.allowSendUserToken) {
+        upd['sendUserToken'] = false;
+        upd['userTokenHeader'] = null;
+        upd['userTokenBearer'] = false;
+      }
 
       await ExternalAPI.query(trx).patchAndFetchById(id, upd);
 

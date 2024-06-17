@@ -56,6 +56,23 @@ const service = {
     }
   },
 
+  checkAllowSendUserToken: (data, allowSendUserToken) => {
+    if (!data) {
+      throw new Problem(422, `'externalAPI record' cannot be empty.`);
+    }
+
+    if (data.sendUserToken && !allowSendUserToken) {
+      throw new Problem(422, 'Sending User Token has not been authorized for this External API.');
+    }
+    if (!allowSendUserToken) {
+      // make sure all user token fields are cleared out...
+      data.allowSendUserToken = false;
+      data.sendUserToken = false;
+      data.userTokenHeader = null;
+      data.userTokenBearer = false;
+    }
+  },
+
   createExternalAPI: async (formId, data, currentUser) => {
     service.validateExternalAPI(data);
 
@@ -65,6 +82,8 @@ const service = {
       data.id = uuidv4();
       // set status to SUBMITTED
       data.code = ExternalAPIStatuses.SUBMITTED;
+      // ensure that new records don't send user tokens.
+      service.checkAllowSendUserToken(data, false);
       await ExternalAPI.query(trx).insert({
         ...data,
         createdBy: currentUser.usernameIdp,
@@ -85,9 +104,10 @@ const service = {
     try {
       const existing = await ExternalAPI.query().modify('findByIdAndFormId', externalAPIId, formId).first().throwIfNotFound();
       trx = await ExternalAPI.startTransaction();
-      // let's use a different method for the administrators to update status code.
+      // let's use a different method for the administrators to update status code and allow send user token
       // this method should not change the status code.
       data.code = existing.code;
+      service.checkAllowSendUserToken(data, existing.allowSendUserToken);
       await ExternalAPI.query(trx)
         .modify('findByIdAndFormId', externalAPIId, formId)
         .update({

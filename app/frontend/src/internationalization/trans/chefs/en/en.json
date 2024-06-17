@@ -387,7 +387,8 @@
     "display": "Status",
     "actions": "Actions",
     "edit": "Edit",
-    "editTitle": "Update External API Status"
+    "editTitle": "Update External API Status",
+    "allowSendUserToken": "Allow 'Send User Token'"
   },
   "adminUsersTable": {
     "search": "Search",

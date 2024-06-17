@@ -88,6 +88,7 @@ class ExternalAPI extends Timestamps(Model) {
         sendApiKey: { type: 'boolean', default: false },
         apiKeyHeader: { type: ['string', 'null'] },
         apiKey: { type: ['string', 'null'] },
+        allowSendUserToken: { type: 'boolean', default: false },
         sendUserToken: { type: 'boolean', default: false },
         userTokenHeader: { type: ['string', 'null'] },
         userTokenBearer: { type: 'boolean', default: true },
