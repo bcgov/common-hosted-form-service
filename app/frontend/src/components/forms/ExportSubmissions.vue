@@ -197,7 +197,10 @@ export default {
         );
 
         if (response && response.data && !emailExport) {
-          const blob = new Blob([response.data], {
+          // Create a UTF-8 Byte Order Mark to handle BC Sans in Excel.
+          const BOM = new Uint8Array([0xef, 0xbb, 0xbf]);
+
+          const blob = new Blob([BOM, response.data], {
             type: response.headers['content-type'],
           });
           const url = window.URL.createObjectURL(blob);
