@@ -13,7 +13,7 @@ const multerImpl = {
 };
 multer.mockImplementation(() => multerImpl);
 
-// This module has global variables so it need to be re-loaded for each test.
+// This module has global variables so it needs to be re-loaded for each test.
 var fileUpload;
 
 beforeEach(() => {
