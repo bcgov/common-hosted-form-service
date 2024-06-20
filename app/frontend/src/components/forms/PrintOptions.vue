@@ -184,7 +184,7 @@ export default {
     async generate() {
       try {
         this.loading = true;
-        const outputFileType = 'pdf';
+        const outputFileType = 'xlsx';
         let content = '';
         let contentFileType = '';
         let outputFileName = '';
