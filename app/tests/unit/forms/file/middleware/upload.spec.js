@@ -314,7 +314,6 @@ describe('fileUpload.upload', () => {
   describe('500 response when', () => {
     const expectedStatus = { status: 500 };
 
-    // Skip this until the error is corrected - it's setting title not detail.
     test('init not called', async () => {
       const req = getMockReq();
       const { res, next } = getMockRes();
