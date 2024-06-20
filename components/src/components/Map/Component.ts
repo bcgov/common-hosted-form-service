@@ -2,6 +2,7 @@ import { Components } from 'formiojs';
 const FieldComponent = (Components as any).components.field;
 import MapService from './services/MapService';
 import baseEditForm from './Component.form';
+import { marker, rectangle } from 'leaflet';
 
 const CENTER = [48.41939025932759,-123.37029576301576]
 
@@ -28,7 +29,6 @@ export default class Component extends (FieldComponent as any) {
     
     componentID = super.elementInfo().component.id
     render() {
-        console.log(super.data);
         return super.render(        
         `
         <div id="map-${this.componentID}" style="height:400px; z-index:1;"></div>
@@ -44,14 +44,23 @@ export default class Component extends (FieldComponent as any) {
     loadMap() {
         const mapContainer = document.getElementById(`map-${this.componentID}`);
         const form = document.getElementsByClassName("formio")
-        const drawOptions = {
+        let drawOptions = {
+            marker:false,
             circlemarker:false,
             polygon: false,
             polyline: false,
-            rectangle:false,
-            circle: false
+            circle: false,
+            rectangle:null
         }
-        MapService({mapContainer, drawOptions, center:CENTER, form})
+        if(this.component.markerType == "rectangle"){
+            drawOptions.rectangle = {showArea:false}//fixes a bug in Leaflet.Draw 
+        }else{
+            drawOptions.rectangle = false
+        }
+        console.log(drawOptions)
+        //drawOptions[this.component.markerType] = true;//set marker type from user choice
+        const numPoints = this.component.numPoints;
+        MapService({mapContainer, drawOptions, center:CENTER, form, numPoints})
 
     }
 

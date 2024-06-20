@@ -12,12 +12,14 @@ export default function MapService(options){
     if(options.mapContainer){
         const {map,drawnItems} = initializeMap(options)
         map.invalidateSize();
+
+
         //event listener for drawn objects
         map.on('draw:created', function (e) {
             //console.log(e)
             let marker = e.layer;
             console.log(marker)
-            if(drawnItems.getLayers().length){
+            if(drawnItems.getLayers().length && e?.type == "marker"){
                 console.log(drawnItems.getLayers())
                 console.log("too many markers")
                 L.popup().setLatLng(marker._latlng).setContent("<p>Only one marker for submission</p>").openOn(map)
@@ -33,8 +35,10 @@ export default function MapService(options){
     }
 }
 const initializeMap = (options) =>{
-    const {mapContainer, center, drawOptions, form } = options;
-
+    let {mapContainer, center, drawOptions, form } = options;
+    if(drawOptions.rectangle){
+        drawOptions.rectangle.showArea = false;
+    }
     const map = L.map(mapContainer).setView(center, 13);
         L.tileLayer(DEFAULT_MAP_LAYER_URL, {
             attribution:DEFAULT_LAYER_ATTRIBUTION ,
