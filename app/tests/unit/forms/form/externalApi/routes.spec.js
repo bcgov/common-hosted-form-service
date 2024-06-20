@@ -63,13 +63,12 @@ userAccess.hasFormPermissions = jest.fn(() => {
   return hasFormPermissionsMock;
 });
 
-validateParameter.validateDocumentTemplateId = jest.fn((_req, _res, next) => {
-  next();
-});
 validateParameter.validateFormId = jest.fn((_req, _res, next) => {
   next();
 });
-
+validateParameter.validateExternalAPIId = jest.fn((_req, _res, next) => {
+  next();
+});
 const formId = uuidv4();
 
 //
@@ -112,6 +111,7 @@ describe(`${basePath}/:formId/externalAPIs`, () => {
     expect(apiAccess).toBeCalledTimes(0);
     expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(controller.listExternalAPIs).toBeCalledTimes(1);
   });
 
@@ -121,6 +121,7 @@ describe(`${basePath}/:formId/externalAPIs`, () => {
     expect(apiAccess).toBeCalledTimes(0);
     expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(controller.createExternalAPI).toBeCalledTimes(1);
   });
 });
@@ -152,6 +153,8 @@ describe(`${basePath}/:formId/externalAPIs/:externalAPIId`, () => {
 
     expect(apiAccess).toBeCalledTimes(0);
     expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(controller.updateExternalAPI).toBeCalledTimes(1);
   });
@@ -161,6 +164,8 @@ describe(`${basePath}/:formId/externalAPIs/:externalAPIId`, () => {
 
     expect(apiAccess).toBeCalledTimes(0);
     expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(controller.deleteExternalAPI).toBeCalledTimes(1);
   });

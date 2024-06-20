@@ -8,6 +8,7 @@ const controller = require('./controller');
 routes.use(currentUser);
 
 routes.param('formId', validateParameter.validateFormId);
+routes.param('externalAPIId', validateParameter.validateExternalAPIId);
 
 routes.get('/:formId/externalAPIs', hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {
   await controller.listExternalAPIs(req, res, next);
