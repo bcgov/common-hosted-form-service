@@ -9,32 +9,24 @@ jest.mock('fs-extra');
 jest.mock('multer');
 jest.mock('os');
 
-// const multerImpl = {
-//   array: jest.fn(),
-//   single: jest.fn(),
-// };
-
-const multerInner = jest.fn();
-
 const multerImpl = {
-  array: jest.fn().mockImplementation(multerInner),
-  single: jest.fn().mockImplementation(multerInner),
+  array: jest.fn(),
+  single: jest.fn(),
 };
+multer.mockImplementation(() => multerImpl);
 
+// This module has global variables so it need to be re-loaded for each test.
 var fileUpload;
 
 beforeEach(() => {
+  // Clear out all the environment variables set during testing.
   delete process.env.FILE_UPLOADS_DIR;
   delete process.env.FILE_UPLOADS_MAX_FILE_COUNT;
   delete process.env.FILE_UPLOADS_MAX_FILE_SIZE;
 
-  jest.clearAllMocks();
-
   jest.isolateModules(() => {
     fileUpload = require('../../../../../src/forms/file/middleware/upload').fileUpload;
   });
-
-  multer.mockImplementation(() => multerImpl);
 });
 
 // This is very tightly tied to the implementation - is there a better way?
