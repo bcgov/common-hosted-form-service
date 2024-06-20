@@ -113,7 +113,7 @@
     "formUserInfoEncrypted": "Encrypt User Information",
     "formUserInfoHeader": "Encrypt User Information Header Name",
     "formUserInfoEncryptionKey": "User Information Encryption Key",
-    "formUserInfoEncryptionAlgo": "User Information Encryption Alogrithm",
+    "formUserInfoEncryptionAlgo": "User Information Encryption Algorithm",
     "formNameReq": "Name is required.",
     "formNameMaxChars": "Name must be 255 characters or less",
     "validEndpointRequired": "Please enter a valid endpoint starting with http:// or https://",
