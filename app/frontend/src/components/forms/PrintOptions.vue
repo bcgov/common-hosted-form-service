@@ -45,6 +45,8 @@ export default {
       displayTemplatePrintButton: false,
       isValidFile: true,
       validFileExtensions: ['txt', 'docx', 'html', 'odt', 'pptx', 'xlsx'],
+      defaultExportFileTypes: ['pdf'],
+      uploadExportFileTypes: ['pdf'],
     };
   },
   computed: {
@@ -81,6 +83,9 @@ export default {
           this.templateForm.outputFileName = name;
         }
         this.templateForm.contentFileType = extension;
+        if (!this.uploadExportFileTypes.includes(extension)) {
+          this.uploadExportFileTypes.push(extension);
+        }
       }
     },
     selectedOption() {
@@ -184,7 +189,7 @@ export default {
     async generate() {
       try {
         this.loading = true;
-        const outputFileType = 'xlsx';
+        let outputFileType = this.templateForm.outputFileType || 'pdf';
         let content = '';
         let contentFileType = '';
         let outputFileName = '';
@@ -283,6 +288,10 @@ export default {
           this.defaultTemplateExtension = extension;
           this.defaultReportname = name;
           this.defaultTemplateDate = response2.data.createdAt.split('T')[0];
+
+          if (!this.defaultExportFileTypes.includes(extension)) {
+            this.defaultExportFileTypes.push(extension);
+          }
         }
       } catch (e) {
         this.addNotification({
@@ -304,6 +313,13 @@ export default {
           this.isValidFile = false;
         }
       } else {
+        // Remove the file extension from uploadExportFileTypes when the file input is cleared
+        const fileExtension = this.templateForm.contentFileType;
+        if (fileExtension && fileExtension !== 'pdf') {
+          this.uploadExportFileTypes = this.uploadExportFileTypes.filter(
+            (type) => type !== fileExtension
+          );
+        }
         this.isValidFile = true;
       }
     },
@@ -423,6 +439,17 @@ export default {
                       </tr>
                     </tbody>
                   </v-table>
+                  <!-- dropdown list -->
+                  <v-select
+                    v-if="selectedOption === 'default'"
+                    v-model="templateForm.outputFileType"
+                    variant="outlined"
+                    :items="defaultExportFileTypes"
+                    label="Select export filetype"
+                    style="width: 220px"
+                    class="mx-10"
+                  >
+                  </v-select>
                 </v-skeleton-loader>
 
                 <!-- Radio 2 -->
@@ -447,6 +474,16 @@ export default {
                   :disabled="selectedOption !== 'upload'"
                   @update:model-value="validateFileExtension($event)"
                 />
+                <v-select
+                  v-if="selectedOption === 'upload'"
+                  v-model="templateForm.outputFileType"
+                  variant="outlined"
+                  :items="uploadExportFileTypes"
+                  label="Select export filetype"
+                  style="width: 220px"
+                  class="mx-10"
+                >
+                </v-select>
               </v-radio-group>
               <v-card-actions>
                 <v-tooltip location="top">
