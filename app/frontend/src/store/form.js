@@ -835,10 +835,10 @@ export const useFormStore = defineStore('form', {
         this.isRTL = false;
       }
     },
-    async downloadFile(fileId) {
+    async downloadFile(fileId, options = {}) {
       try {
         this.downloadedFile = {};
-        const response = await fileService.getFile(fileId);
+        const response = await fileService.getFile(fileId, options);
         this.downloadedFile.data = response.data;
         this.downloadedFile.headers = response.headers;
       } catch (error) {
