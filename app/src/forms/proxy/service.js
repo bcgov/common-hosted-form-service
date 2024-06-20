@@ -1,4 +1,6 @@
 const { encryptionService } = require('../../components/encryptionService');
+const jwtService = require('../../components/jwtService');
+
 const { ExternalAPI } = require('../../forms/common/models');
 
 const headerValue = (headers, key) => {
@@ -68,7 +70,7 @@ const service = {
     }
     return endpointUrl;
   },
-  createExternalAPIHeaders: (externalAPI, proxyHeaderInfo) => {
+  createExternalAPIHeaders: async (externalAPI, proxyHeaderInfo) => {
     const result = {};
     if (externalAPI.sendApiKey) {
       result[externalAPI.apiKeyHeader] = externalAPI.apiKey;
@@ -87,26 +89,30 @@ const service = {
         throw new Error('Cannot create user headers for External API without populated proxy header info object.');
       }
 
-      if (externalAPI.userInfoEncrypted) {
-        // do not send the token
-        delete proxyHeaderInfo['token'];
-        const encUserInfo = encryptionService.encryptExternal(externalAPI.userInfoEncryptionAlgo, externalAPI.userInfoEncryptionKey, proxyHeaderInfo);
-        result[externalAPI.userInfoHeader] = encUserInfo;
-      } else {
-        // user information (no token)
-        let prefix = 'X-CHEFS-USER';
-        let fields = ['userId', 'username', 'firstName', 'lastName', 'fullName', 'email', 'idp'];
+      // user information (no token)
+      let prefix = 'X-CHEFS-USER';
+      let fields = ['userId', 'username', 'firstName', 'lastName', 'fullName', 'email', 'idp'];
+      fields.forEach((field) => {
+        if (proxyHeaderInfo[field]) {
+          result[`${prefix}-${field}`.toUpperCase()] = proxyHeaderInfo[field];
+        }
+      });
+      // form information...
+      prefix = 'X-CHEFS-FORM';
+      fields = ['formId', 'versionId', 'submissionId'];
+      fields.forEach((field) => {
+        if (proxyHeaderInfo[field]) {
+          result[`${prefix}-${field}`.toUpperCase()] = proxyHeaderInfo[field];
+        }
+      });
+      // grab raw token values...
+      const payload = await jwtService.getUnverifiedPayload(proxyHeaderInfo['token']);
+      if (payload) {
+        prefix = 'X-CHEFS-TOKEN';
+        fields = ['sub', 'iat', 'exp'];
         fields.forEach((field) => {
-          if (proxyHeaderInfo[field]) {
-            result[`${prefix}-${field}`.toUpperCase()] = proxyHeaderInfo[field];
-          }
-        });
-        // form information...
-        prefix = 'X-CHEFS-FORM';
-        fields = ['formId', 'versionId', 'submissionId'];
-        fields.forEach((field) => {
-          if (proxyHeaderInfo[field]) {
-            result[`${prefix}-${field}`.toUpperCase()] = proxyHeaderInfo[field];
+          if (payload[field]) {
+            result[`${prefix}-${field}`.toUpperCase()] = payload[field];
           }
         });
       }

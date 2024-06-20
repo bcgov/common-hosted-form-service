@@ -41,9 +41,6 @@ export default {
           userTokenHeader: null,
           userTokenBearer: false,
           sendUserInfo: false,
-          userInfoHeader: null,
-          userInfoEncrypted: false,
-          userInfoEncryptionKey: null,
         },
         show: false,
       },
@@ -78,17 +75,6 @@ export default {
           return true;
         },
       ]),
-      userInfoHeaderRules: ref([
-        (v) => {
-          if (
-            this.editDialog.item.sendUserInfo &&
-            this.editDialog.item.userInfoEncrypted
-          ) {
-            return !!v || this.$t('trans.externalAPI.userInfoFieldRequired');
-          }
-          return true;
-        },
-      ]),
     };
   },
   computed: {
@@ -96,7 +82,6 @@ export default {
     ...mapWritableState(useFormStore, ['form']),
   },
   async mounted() {
-    await this.getExternalAPIAlgorithmList();
     await this.getExternalAPIStatusCodes();
     await this.fetchExternalAPIs();
   },
@@ -123,19 +108,6 @@ export default {
         });
       } finally {
         this.loading = false;
-      }
-    },
-    async getExternalAPIAlgorithmList() {
-      try {
-        const result = await formService.externalAPIAlgorithmList(this.form.id);
-        this.externalAPIAlgorithmList = result.data;
-      } catch (e) {
-        this.addNotification({
-          text: i18n.t('trans.externalAPI.fetchAlgoListError'),
-          consoleError: i18n.t('trans.externalAPI.fetchAlgoListError', {
-            error: e.message,
-          }),
-        });
       }
     },
     async getExternalAPIStatusCodes() {
@@ -168,10 +140,6 @@ export default {
           userTokenHeader: null,
           userTokenBearer: false,
           sendUserInfo: false,
-          userInfoHeader: null,
-          userInfoEncrypted: false,
-          userInfoEncryptionKey: null,
-          userInfoEncryptionAlgo: null,
         },
         show: false,
       };
@@ -472,59 +440,6 @@ export default {
               </template>
             </v-checkbox></v-col
           >
-          <v-col cols="4" class="pb-0"
-            ><v-checkbox
-              v-model="editDialog.item.userInfoEncrypted"
-              class="my-0 pt-0"
-            >
-              <template #label>
-                <span :class="{ 'mr-2': isRTL }" :lang="lang">
-                  {{ $t('trans.externalAPI.formUserInfoEncrypted') }}
-                </span>
-              </template>
-            </v-checkbox></v-col
-          >
-        </v-row>
-        <v-row class="mt-0">
-          <v-col cols="4"></v-col>
-          <v-col cols="8"
-            ><v-text-field
-              v-model="editDialog.item.userInfoHeader"
-              density="compact"
-              solid
-              variant="outlined"
-              :label="$t('trans.externalAPI.formUserInfoHeader')"
-              data-test="text-userInfoHeader"
-              :lang="lang"
-              :rules="userInfoHeaderRules"
-          /></v-col>
-        </v-row>
-        <v-row class="mt-0">
-          <v-col cols="4">
-            <v-select
-              v-model="editDialog.item.userInfoEncryptionAlgo"
-              :items="externalAPIAlgorithmList"
-              item-title="display"
-              item-value="code"
-              :label="$t('trans.externalAPI.formUserInfoEncryptionAlgo')"
-              density="compact"
-              solid
-              variant="outlined"
-              :rules="userInfoHeaderRules"
-              :lang="lang"
-            ></v-select
-          ></v-col>
-          <v-col cols="8">
-            <v-text-field
-              v-model="editDialog.item.userInfoEncryptionKey"
-              density="compact"
-              solid
-              variant="outlined"
-              :label="$t('trans.externalAPI.formUserInfoEncryptionKey')"
-              data-test="text-userInfoEncryptionKey"
-              :lang="lang"
-              :rules="userInfoHeaderRules"
-          /></v-col>
         </v-row>
         <!-- User Token -->
         <hr v-if="editDialog.item.allowSendUserToken" />

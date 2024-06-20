@@ -41,19 +41,6 @@ const service = {
         throw new Problem(422, `'userTokenHeader' is required when 'sendUserToken' is true.`);
       }
     }
-    if (data.sendUserInfo) {
-      if (data.userInfoEncrypted && !data.userInfoHeader) {
-        throw new Problem(422, `'userInfoHeader' is required when 'sendUserInfo' and 'userInfoEncrypted' are true.`);
-      }
-      if (data.userInfoEncrypted) {
-        if (!Object.values(ENCRYPTION_ALGORITHMS).includes(data.userInfoEncryptionAlgo)) {
-          throw new Problem(422, `'${data.userInfoEncryptionAlgo}' is not a valid Encryption Algorithm.`);
-        }
-        if (!data.userInfoEncryptionKey) {
-          throw new Problem(422, `'userInfoEncryptionKey' is required when 'userInfoEncrypted' is true.`);
-        }
-      }
-    }
   },
 
   checkAllowSendUserToken: (data, allowSendUserToken) => {

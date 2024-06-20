@@ -198,24 +198,24 @@ describe('Proxy Service', () => {
     it('should throw error with no headers', async () => {
       const externalAPI = undefined;
       const proxyHeaderInfo = goodProxyHeaderInfo;
-      expect(() => service.createExternalAPIHeaders(externalAPI, proxyHeaderInfo)).toThrow();
+      await expect(service.createExternalAPIHeaders(externalAPI, proxyHeaderInfo)).rejects.toThrow();
     });
     it('should throw error with no current user and sending user information', async () => {
       const externalAPI = goodExternalApi;
       const proxyHeaderInfo = undefined;
-      expect(() => service.createExternalAPIHeaders(externalAPI, proxyHeaderInfo)).toThrow();
+      await expect(service.createExternalAPIHeaders(externalAPI, proxyHeaderInfo)).rejects.toThrow();
     });
     it('should throw error with invalid current user and sending user information', async () => {
       const externalAPI = goodExternalApi;
       const proxyHeaderInfo = {};
-      expect(() => service.createExternalAPIHeaders(externalAPI, proxyHeaderInfo)).toThrow();
+      await expect(service.createExternalAPIHeaders(externalAPI, proxyHeaderInfo)).rejects.toThrow();
     });
     it('should NOT throw error with no current user and not sending user information', async () => {
       const externalAPI = Object.assign({}, goodExternalApi);
       externalAPI.sendUserToken = false;
       externalAPI.sendUserInfo = false;
       const proxyHeaderInfo = undefined;
-      const result = service.createExternalAPIHeaders(externalAPI, proxyHeaderInfo);
+      const result = await service.createExternalAPIHeaders(externalAPI, proxyHeaderInfo);
       expect(result).toBeTruthy();
     });
     it('should NOT throw error with invalid current user and not sending user information', async () => {
@@ -223,25 +223,21 @@ describe('Proxy Service', () => {
       externalAPI.sendUserToken = false;
       externalAPI.sendUserInfo = false;
       const proxyHeaderInfo = {};
-      const result = service.createExternalAPIHeaders(externalAPI, proxyHeaderInfo);
+      const result = await service.createExternalAPIHeaders(externalAPI, proxyHeaderInfo);
       expect(result).toBeTruthy();
     });
     it('should return populated headers', async () => {
       const externalAPI = Object.assign({}, goodExternalApi);
       const proxyHeaderInfo = Object.assign({}, goodProxyHeaderInfo);
-      const result = service.createExternalAPIHeaders(externalAPI, proxyHeaderInfo);
+      const result = await service.createExternalAPIHeaders(externalAPI, proxyHeaderInfo);
       expect(result).toBeTruthy();
       // with the defaul external API config we should have headers for...
       // api key
       expect(result[externalAPI.apiKeyHeader]).toBe(externalAPI.apiKey);
       // user token (with Bearer)
       expect(result[externalAPI.userTokenHeader]).toBe(`Bearer ${token}`);
-      // user info (encrypted)
-      expect(result[externalAPI.userInfoHeader]).toBeTruthy();
-      const decrypted = encryptionService.decryptExternal(externalAPI.userInfoEncryptionAlgo, externalAPI.userInfoEncryptionKey, result[externalAPI.userInfoHeader]);
-      expect(JSON.parse(decrypted)).toMatchObject(proxyHeaderInfo);
-      // but no unencrypted user info headers
-      expect(result['X-CHEFS-USER-EMAIL']).toBeFalsy();
+      // use r
+      expect(result['X-CHEFS-USER-EMAIL']).toBeTruthy();
     });
     it('should return only api key headers', async () => {
       const externalAPI = Object.assign({}, goodExternalApi);
@@ -249,7 +245,7 @@ describe('Proxy Service', () => {
       externalAPI.sendUserToken = false;
       externalAPI.sendUserInfo = false;
       const proxyHeaderInfo = Object.assign({}, goodProxyHeaderInfo);
-      const result = service.createExternalAPIHeaders(externalAPI, proxyHeaderInfo);
+      const result = await service.createExternalAPIHeaders(externalAPI, proxyHeaderInfo);
       expect(result).toBeTruthy();
       // api key
       expect(result[externalAPI.apiKeyHeader]).toBe(externalAPI.apiKey);
@@ -267,7 +263,7 @@ describe('Proxy Service', () => {
       externalAPI.sendUserInfo = false;
       externalAPI.userTokenBearer = false;
       const userInfo = Object.assign({}, goodProxyHeaderInfo);
-      const result = service.createExternalAPIHeaders(externalAPI, userInfo);
+      const result = await service.createExternalAPIHeaders(externalAPI, userInfo);
       expect(result).toBeTruthy();
       // no api key
       expect(result[externalAPI.apiKeyHeader]).toBeFalsy();
@@ -275,7 +271,7 @@ describe('Proxy Service', () => {
       expect(result[externalAPI.userTokenHeader]).toBe(token);
       // no user info (encrypted)
       expect(result[externalAPI.userInfoHeader]).toBeFalsy();
-      // no unencrypted user info headers
+      // no user info headers
       expect(result['X-CHEFS-USER-EMAIL']).toBeFalsy();
     });
     it('should return only unencrypted user info headers', async () => {
@@ -283,18 +279,15 @@ describe('Proxy Service', () => {
       externalAPI.sendApiKey = false;
       externalAPI.sendUserToken = false;
       externalAPI.sendUserInfo = true;
-      externalAPI.userInfoEncrypted = false;
       const userInfo = Object.assign({}, goodProxyHeaderInfo);
-      const result = service.createExternalAPIHeaders(externalAPI, userInfo);
+      const result = await service.createExternalAPIHeaders(externalAPI, userInfo);
       expect(result).toBeTruthy();
       // with the defaul external API config we should have headers for...
       // no api key
       expect(result[externalAPI.apiKeyHeader]).toBeFalsy();
       // no user token (with Bearer)
       expect(result[externalAPI.userTokenHeader]).toBeFalsy();
-      // no user info (encrypted)
-      expect(result[externalAPI.userInfoHeader]).toBeFalsy();
-      // unencrypted user info headers
+      //  user info headers
       expect(result['X-CHEFS-USER-EMAIL']).toBe(userInfo.email);
       expect(result['X-CHEFS-FORM-FORMID']).toBe(userInfo.formId);
     });

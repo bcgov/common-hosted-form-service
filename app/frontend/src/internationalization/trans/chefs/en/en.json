@@ -97,7 +97,6 @@
     "editTitle": "Edit External API Configuration",
     "fetchError": "An error occurred while fetching the External API.",
     "fetchListError": "An error occurred while fetching the External API list.",
-    "fetchAlgoListError": "An error occurred while fetching the External API Encryption Algorithm list.",
     "fetchStatusListError": "An error occurred while fetching the External API Status Code list.",
     "save": "Save",
     "formName": "Name",
@@ -110,16 +109,11 @@
     "formUserTokenHeader": "User Token Header Name",
     "formUserTokenBearer": "User Token as Bearer Token",
     "formSendUserInfo": "Send User Information",
-    "formUserInfoEncrypted": "Encrypt User Information",
-    "formUserInfoHeader": "Encrypt User Information Header Name",
-    "formUserInfoEncryptionKey": "User Information Encryption Key",
-    "formUserInfoEncryptionAlgo": "User Information Encryption Algorithm",
     "formNameReq": "Name is required.",
     "formNameMaxChars": "Name must be 255 characters or less",
     "validEndpointRequired": "Please enter a valid endpoint starting with http:// or https://",
     "apiKeyFieldRequired": "Required when 'Send API Key' selected.",
-    "userTokenFieldRequired": "Required when 'Send User Token' selected.",
-    "userInfoFieldRequired": "Required when 'Send User Information' & 'Encrypt User Information' selected."
+    "userTokenFieldRequired": "Required when 'Send User Token' selected."
   },
   "formSettings": {
     "pressToAddMultiEmail": "Press <kbd>enter</kbd> or <kbd>,</kbd> or <kbd>space</kbd> to add multiple email addresses",

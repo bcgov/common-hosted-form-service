@@ -25,7 +25,7 @@ module.exports = {
       // add path to endpoint url if included in headers...
       const extUrl = service.createExternalAPIUrl(req.headers, extAPI.endpointUrl);
       // build list of request headers based on configuration...
-      const extHeaders = service.createExternalAPIHeaders(extAPI, proxyHeaderInfo);
+      const extHeaders = await service.createExternalAPIHeaders(extAPI, proxyHeaderInfo);
       let axiosInstance = axios.create({
         headers: extHeaders,
       });

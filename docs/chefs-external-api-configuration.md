@@ -38,34 +38,26 @@ See the following table for description of the External API form fields.
     "apiKeyHeader": "X-API-KEY",
     "apiKey": "<some longish key value>",
     "sendUserInfo": true,
-    "userInfoEncrypted": false,
-    "userInfoHeader": "X-USER-INFO",
-    "userInfoEncryptionKey": "999999999",
-    "userInfoEncryptionAlgo": "aes-256-gcm",
     "code": "Submitted"
 }
 ```
 
-| Attribute              | Form Field                            | Purpose                                                                                   |
-| ---------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------- |
-| formId                 | N/A                                   | CHEFS form id                                                                             |
-| name                   | Name                                  | Name should be unique per form and should easily identify this API                        |
-| endpointUrl            | Endpoint URL                          | Endpoint URL for the API (could be a full path or just a base path)                       |
-| sendApiKey             | Send API Key                          | boolean - send an API Key in a header                                                     |
-| apiKeyHeader           | API Key Header Name                   | the name for the API Key header                                                           |
-| apiKey                 | API Key Value                         | The value for the API Key, stored encrypted in the db.                                    |
-| sendUserInfo           | Send User Information                 | boolean - send current user information in headers                                        |
-| userInfoEncrypted      | Encrypt User Information              | boolean - whether we encrypt the current user information                                 |
-| userInfoHeader         | Encrypt User Information Header Name  | when userInfoEncrypted = true, this is the name for the user info header                  |
-| userInfoEncryptionKey  | User Information Encryption Key       | encryption key supplied by Form Designer, stored encrypted in the db.                     |
-| userInfoEncryptionAlgo | User Information Encryption Algorithm | A CHEFS supported encryption algorithm.                                                   |
-| code                   | N/A                                   | Status Code. Only CHEFS Admin users can change this value. Used for the approval process. |
+| Attribute    | Form Field            | Purpose                                                                                   |
+| ------------ | --------------------- | ----------------------------------------------------------------------------------------- |
+| formId       | N/A                   | CHEFS form id                                                                             |
+| name         | Name                  | Name should be unique per form and should easily identify this API                        |
+| endpointUrl  | Endpoint URL          | Endpoint URL for the API (could be a full path or just a base path)                       |
+| sendApiKey   | Send API Key          | boolean - send an API Key in a header                                                     |
+| apiKeyHeader | API Key Header Name   | the name for the API Key header                                                           |
+| apiKey       | API Key Value         | The value for the API Key, stored encrypted in the db.                                    |
+| sendUserInfo | Send User Information | boolean - send current user information in headers                                        |
+| code         | N/A                   | Status Code. Only CHEFS Admin users can change this value. Used for the approval process. |
 
 **Recommendation** - secure the External API with an API Key and send user information in plain text.
 
 ### User Info Object
 
-User (and form) context is provided to the External API in headers. This information can be encrypted and passed as a single header (the receiving API will decrypt) or plain text in multiple headers.
+User (and form) context is provided to the External API in headers. This information is passed as plain text in multiple headers.
 The user information initially comes from the user's token, as such the values for each attribute may differ depending on which Identity Provider authenticated them.
 
 | Attribute    | Header                    | Purpose                                                            |
@@ -80,20 +72,11 @@ The user information initially comes from the user's token, as such the values f
 | fullName     | X-CHEFS-USER-FULLNAME     | user's Full name (ex. Smitty, Alex CITZ:EX)                        |
 | email        | X-CHEFS-USER-EMAIL        | user's email (ex. alex.smitty@gov.bc.ca)                           |
 | idp          | X-CHEFS-USER-IDP          | the Identity Provider code (ex. 'idir')                            |
+| sub          | X-CHEFS-TOKEN-SUB         | the `Subject` attribute from the user token                        |
+| iat          | X-CHEFS-TOKEN-IAT         | the `Issued At` timestamp from the user token                      |
+| exp          | X-CHEFS-TOKEN-EXP         | the `Expired` timestamp attribute from the user token              |
 
 **Note** - Although the current user (the form submitter) token is available, there is no guarantee that it has not timed out. It will be stored upon entry/load of the form and is not refreshed.
-
-#### User Info Encryption
-
-The Form Designer will provide the encryption key for the selected encryption algorithm. This algorithm and key will encrypt the User Info into an encrypted value and passed in a single header (with header name = `userInfoHeader` value).
-
-The receiving api will have the same encryption key and algorithm and will decrypt on their end. They can then parse the decrypted user info object.
-
-The `userInfoEncryptionKey` is stored in the CHEFS database in an encrypted format. Only CHEFS can read and write the encrypted value. Decrypting the value is done only on demand when creating the header payload.
-
-Currently there is only one algorithm: `AES-256-gcm`. A node implementation can be found in the CHEFS source code (see [encryptionService/Aes256Gcm](../app/src/components/encryptionService.js)). It is up to the owner of the External API to provide their own implementation.
-
-Keys for `aes-256-gcm` should be sha256 hashes: 256 bits/32 bytes/64 characters.
 
 ## Configuring Form Component
 

@@ -44,10 +44,6 @@ exports.up = function (knex) {
           table.boolean('userTokenBearer').defaultTo(true);
 
           table.boolean('sendUserInfo').defaultTo(false);
-          table.string('userInfoHeader');
-          table.boolean('userInfoEncrypted').defaultTo(false);
-          table.string('userInfoEncryptionKey');
-          table.string('userInfoEncryptionAlgo');
           stamps(knex, table);
         })
       )
