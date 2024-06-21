@@ -63,64 +63,41 @@ const service = {
   createExternalAPI: async (formId, data, currentUser) => {
     service.validateExternalAPI(data);
 
-    let trx;
-    try {
-      trx = await ExternalAPI.startTransaction();
-      data.id = uuidv4();
-      // set status to SUBMITTED
-      data.code = ExternalAPIStatuses.SUBMITTED;
-      // ensure that new records don't send user tokens.
-      service.checkAllowSendUserToken(data, false);
-      await ExternalAPI.query(trx).insert({
-        ...data,
-        createdBy: currentUser.usernameIdp,
-      });
+    data.id = uuidv4();
+    // set status to SUBMITTED
+    data.code = ExternalAPIStatuses.SUBMITTED;
+    // ensure that new records don't send user tokens.
+    service.checkAllowSendUserToken(data, false);
+    await ExternalAPI.query().insert({
+      ...data,
+      createdBy: currentUser.usernameIdp,
+    });
 
-      await trx.commit();
-      return ExternalAPI.query().findById(data.id);
-    } catch (err) {
-      if (trx) await trx.rollback();
-      throw err;
-    }
+    return ExternalAPI.query().findById(data.id);
   },
 
   updateExternalAPI: async (formId, externalAPIId, data, currentUser) => {
     service.validateExternalAPI(data);
 
-    let trx;
-    try {
-      const existing = await ExternalAPI.query().modify('findByIdAndFormId', externalAPIId, formId).first().throwIfNotFound();
-      trx = await ExternalAPI.startTransaction();
-      // let's use a different method for the administrators to update status code and allow send user token
-      // this method should not change the status code.
-      data.code = existing.code;
-      service.checkAllowSendUserToken(data, existing.allowSendUserToken);
-      await ExternalAPI.query(trx)
-        .modify('findByIdAndFormId', externalAPIId, formId)
-        .update({
-          ...data,
-          updatedBy: currentUser.usernameIdp,
-        });
+    const existing = await ExternalAPI.query().modify('findByIdAndFormId', externalAPIId, formId).first().throwIfNotFound();
 
-      await trx.commit();
-      return ExternalAPI.query().findById(externalAPIId);
-    } catch (err) {
-      if (trx) await trx.rollback();
-      throw err;
-    }
+    // let's use a different method for the administrators to update status code and allow send user token
+    // this method should not change the status code.
+    data.code = existing.code;
+    service.checkAllowSendUserToken(data, existing.allowSendUserToken);
+    await ExternalAPI.query()
+      .modify('findByIdAndFormId', externalAPIId, formId)
+      .update({
+        ...data,
+        updatedBy: currentUser.usernameIdp,
+      });
+
+    return ExternalAPI.query().findById(externalAPIId);
   },
 
   deleteExternalAPI: async (formId, externalAPIId) => {
-    let trx;
-    try {
-      await ExternalAPI.query().modify('findByIdAndFormId', externalAPIId, formId).first().throwIfNotFound();
-      trx = await ExternalAPI.startTransaction();
-      await ExternalAPI.query().deleteById(externalAPIId);
-      await trx.commit();
-    } catch (err) {
-      if (trx) await trx.rollback();
-      throw err;
-    }
+    await ExternalAPI.query().modify('findByIdAndFormId', externalAPIId, formId).first().throwIfNotFound();
+    await ExternalAPI.query().deleteById(externalAPIId);
   },
 };
 

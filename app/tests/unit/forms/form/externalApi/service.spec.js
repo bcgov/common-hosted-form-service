@@ -164,15 +164,11 @@ describe('createExternalAPI', () => {
       code: ExternalAPIStatuses.SUBMITTED,
       ...validData,
     });
-    expect(MockTransaction.commit).toBeCalledTimes(1);
   });
 
-  it('should rollback on error', async () => {
+  it('should raise errors', async () => {
     MockModel.insert = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
-
     await expect(service.createExternalAPI(validData.formId, validData, user)).rejects.toThrow();
-
-    expect(MockTransaction.rollback).toBeCalledTimes(1);
   });
 });
 
@@ -221,7 +217,6 @@ describe('updateExternalAPI', () => {
       code: ExternalAPIStatuses.SUBMITTED,
       ...validData,
     });
-    expect(MockTransaction.commit).toBeCalledTimes(1);
   });
 
   it('should update user token fields when allowed', async () => {
@@ -239,7 +234,6 @@ describe('updateExternalAPI', () => {
       code: ExternalAPIStatuses.SUBMITTED,
       ...validData,
     });
-    expect(MockTransaction.commit).toBeCalledTimes(1);
   });
 
   it('should blank out user token fields when not allowed', async () => {
@@ -260,23 +254,15 @@ describe('updateExternalAPI', () => {
       userTokenBearer: false,
       ...validData,
     });
-    expect(MockTransaction.commit).toBeCalledTimes(1);
   });
 
-  it('should not commit when not found', async () => {
+  it('should throw error when not found', async () => {
     MockModel.throwIfNotFound = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
-
     await expect(service.updateExternalAPI(validData.formId, validData.id, validData, user)).rejects.toThrow();
-    // shouldn't start the transaction
-    expect(MockModel.startTransaction).toBeCalledTimes(0);
-    expect(MockTransaction.commit).toBeCalledTimes(0);
   });
 
-  it('should rollback on error', async () => {
+  it('should raise errors', async () => {
     MockModel.update = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
-
     await expect(service.updateExternalAPI(validData.formId, validData.id, validData, user)).rejects.toThrow();
-
-    expect(MockTransaction.rollback).toBeCalledTimes(1);
   });
 });

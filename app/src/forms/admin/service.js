@@ -135,31 +135,23 @@ const service = {
       .modify('orderDefault');
   },
   updateExternalAPI: async (id, data) => {
-    let trx;
-    try {
-      await ExternalAPI.query().findById(id).throwIfNotFound();
-      trx = await ExternalAPI.startTransaction();
-      // admins only change the status code and allow send user token
-      const upd = {
-        code: data.code,
-        allowSendUserToken: data.allowSendUserToken,
-        updatedBy: 'ADMIN',
-      };
-      // if we are not allowing sending user token, ensure any user token fields are cleared out
-      if (!data.allowSendUserToken) {
-        upd['sendUserToken'] = false;
-        upd['userTokenHeader'] = null;
-        upd['userTokenBearer'] = false;
-      }
-
-      await ExternalAPI.query(trx).patchAndFetchById(id, upd);
-
-      await trx.commit();
-      return ExternalAPI.query().findById(id);
-    } catch (err) {
-      if (trx) await trx.rollback();
-      throw err;
+    await ExternalAPI.query().findById(id).throwIfNotFound();
+    // admins only change the status code and allow send user token
+    const upd = {
+      code: data.code,
+      allowSendUserToken: data.allowSendUserToken,
+      updatedBy: 'ADMIN',
+    };
+    // if we are not allowing sending user token, ensure any user token fields are cleared out
+    if (!data.allowSendUserToken) {
+      upd['sendUserToken'] = false;
+      upd['userTokenHeader'] = null;
+      upd['userTokenBearer'] = false;
     }
+
+    await ExternalAPI.query().patchAndFetchById(id, upd);
+
+    return ExternalAPI.query().findById(id);
   },
   getExternalAPIStatusCodes: async () => {
     return ExternalAPIStatusCode.query();
