@@ -11,8 +11,6 @@ jwtService.validateAccessToken = jest.fn().mockReturnValue(true);
 jwtService.getBearerToken = jest.fn().mockReturnValue(bearerToken);
 jwtService.getTokenPayload = jest.fn().mockReturnValue({ token: 'payload' });
 
-//const mockInstance = axios.create();
-//const mockAxios = new MockAdapter(mockInstance);
 // Replace any instances with the mocked instance (a new mock could be used here instead):
 jest.mock('axios');
 axios.create.mockImplementation(() => axios);
