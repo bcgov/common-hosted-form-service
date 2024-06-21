@@ -102,7 +102,8 @@ describe('Proxy Service', () => {
     });
 
     it('should throw error if payload uses non-proxy encryption', async () => {
-      const data = encryptionService.encryptDb(goodProxyHeaderInfo);
+      const externalKey = 'e9eb43121581f1877e2b8135c8d9079b91c04aab6c717799196630a685b2c6c0';
+      const data = encryptionService.encryptExternal(ENCRYPTION_ALGORITHMS.AES_256_GCM, externalKey, goodProxyHeaderInfo);
       await expect(service.readProxyHeaders({ 'X-CHEFS-PROXY-DATA': data })).rejects.toThrow();
     });
 

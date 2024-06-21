@@ -58,8 +58,7 @@
       }
     },
     "encryption": {
-      "proxy": "352f7c24819086bf3df5a38c1a40586045f73e0007440c9d27d59ee8560e3fe7",
-      "db": "728160b156ad4fd97f8fe6c5c2d23d8b543acc9d04e5002ae652a10285ff9fe4"
+      "proxy": "352f7c24819086bf3df5a38c1a40586045f73e0007440c9d27d59ee8560e3fe7"
     }
   },
   "serviceClient": {

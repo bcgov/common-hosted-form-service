@@ -55,8 +55,7 @@
     "logLevel": "SERVER_LOGLEVEL",
     "port": "SERVER_PORT",
     "encryption": {
-      "proxy": "SERVER_ENCRYPTION_PROXY",
-      "db": "SERVER_ENCRYPTION_DB"
+      "proxy": "SERVER_ENCRYPTION_PROXY"
     }
   },
   "serviceClient": {

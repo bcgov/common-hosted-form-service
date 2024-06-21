@@ -1,5 +1,5 @@
 const config = require('config');
-const crypto = require('crypto');
+const Cryptr = require('cryptr');
 
 const SERVICE = 'EncryptionService';
 
@@ -30,52 +30,14 @@ class Aes256Gcm extends Encryption {
   // crypto.createHash('sha256').update("sometext").digest('hex');
   //
   encrypt(payload, masterkey) {
-    // random initialization vector
-    const iv = crypto.randomBytes(16);
-
-    // random salt
-    const salt = crypto.randomBytes(64);
-
-    // derive encryption key: 32 byte key length
-    // in assumption the masterkey is a cryptographic and NOT a password there is no need for
-    // a large number of iterations. It may can replaced by HKDF
-    // the value of 2145 is randomly chosen!
-    const key = crypto.pbkdf2Sync(masterkey, salt, 2145, 32, 'sha512');
-
-    // AES 256 GCM Mode
-    const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
-
+    const cryptr = new Cryptr(masterkey);
     // encrypt the given text/json
-    const strPayload = typeof payload === 'string' || payload instanceof String ? payload : JSON.stringify(payload);
-    const encrypted = Buffer.concat([cipher.update(strPayload, 'utf8'), cipher.final()]);
-
-    // extract the auth tag
-    const tag = cipher.getAuthTag();
-
-    // generate output
-    return Buffer.concat([salt, iv, tag, encrypted]).toString('base64');
+    const strPayload = typeof payload === 'string' || payload instanceof String ? payload : JSON.stringify(payload); // random initialization vector
+    return cryptr.encrypt(strPayload);
   }
   decrypt(encdata, masterkey) {
-    // base64 decoding
-    const bData = Buffer.from(encdata, 'base64');
-
-    // convert data to buffers
-    const salt = bData.subarray(0, 64);
-    const iv = bData.subarray(64, 80);
-    const tag = bData.subarray(80, 96);
-    const payload = bData.subarray(96);
-
-    // derive key using; 32 byte key length
-    const key = crypto.pbkdf2Sync(masterkey, salt, 2145, 32, 'sha512');
-
-    // AES 256 GCM Mode
-    const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
-    decipher.setAuthTag(tag);
-
-    // encrypt the given text
-    const decrypted = decipher.update(payload, 'binary', 'utf8') + decipher.final('utf8');
-
-    return decrypted;
+    const cryptr = new Cryptr(masterkey);
+    return cryptr.decrypt(encdata);
   }
 }
 
@@ -138,20 +100,11 @@ class EncryptionService {
   decryptProxy(payload) {
     return this.decrypt(ENCRYPTION_ALGORITHMS.AES_256_GCM, ENCRYPTION_KEYS.PROXY, payload);
   }
-
-  encryptDb(payload) {
-    return this.encrypt(ENCRYPTION_ALGORITHMS.AES_256_GCM, ENCRYPTION_KEYS.DATABASE, payload);
-  }
-
-  decryptDb(payload) {
-    return this.decrypt(ENCRYPTION_ALGORITHMS.AES_256_GCM, ENCRYPTION_KEYS.DATABASE, payload);
-  }
 }
 
 const proxy = config.get('server.encryption.proxy');
-const db = config.get('server.encryption.db');
 
-const keys = { proxy: proxy, db: db };
+const keys = { proxy: proxy };
 const algorithms = { 'aes-256-gcm': new Aes256Gcm() };
 
 let encryptionService = new EncryptionService({

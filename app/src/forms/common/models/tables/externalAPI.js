@@ -3,8 +3,6 @@ const { Timestamps } = require('../mixins');
 const { Regex } = require('../../constants');
 const stamps = require('../jsonSchema').stamps;
 
-const { encryptionService } = require('../../../../components/encryptionService');
-
 class ExternalAPI extends Timestamps(Model) {
   static get tableName() {
     return 'external_api';
@@ -43,36 +41,6 @@ class ExternalAPI extends Timestamps(Model) {
         }
       },
     };
-  }
-
-  async $beforeInsert(context) {
-    await super.$beforeInsert(context);
-    if (this.apiKey) {
-      this.apiKey = encryptionService.encryptDb(this.apiKey);
-    }
-    if (this.userInfoEncryptionKey) {
-      this.userInfoEncryptionKey = encryptionService.encryptDb(this.userInfoEncryptionKey);
-    }
-  }
-
-  async $beforeUpdate(context) {
-    await super.$beforeUpdate(context);
-    if (this.apiKey) {
-      this.apiKey = encryptionService.encryptDb(this.apiKey);
-    }
-    if (this.userInfoEncryptionKey) {
-      this.userInfoEncryptionKey = encryptionService.encryptDb(this.userInfoEncryptionKey);
-    }
-  }
-
-  async $afterFind(context) {
-    await super.$afterFind(context);
-    if (this.apiKey) {
-      this.apiKey = encryptionService.decryptDb(this.apiKey);
-    }
-    if (this.userInfoEncryptionKey) {
-      this.userInfoEncryptionKey = encryptionService.decryptDb(this.userInfoEncryptionKey);
-    }
   }
 
   static get jsonSchema() {

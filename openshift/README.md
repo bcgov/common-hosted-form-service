@@ -144,19 +144,17 @@ oc create -n $NAMESPACE secret generic $APP_NAME-objectstorage-secret \
   --from-literal=password=$password
 ```
 
-We need to store encryption keys as secrets. These keys are used to handle communication between the frontend and external APIS (proxy) and storing key data in the database (db). In both cases we will be using `aes-256-gcm` for the encryption and keys for `aes-256-gcm` should be sha256 hashes: 256 bits/32 bytes/64 characters.
+We need to store encryption keys as secrets. These keys are used to handle communication between the frontend and external APIS (proxy). We will be using `aes-256-gcm` for the encryption and keys for `aes-256-gcm` should be sha256 hashes: 256 bits/32 bytes/64 characters.
 
 Using `node.js` you can generate keys: `crypto.createHash('sha256').update("some seed text").digest('hex');`
 
 ```sh
 
 export proxy_key=<proxy generated hash value>
-export db_key=<db generated hash value>
 
 oc create -n $NAMESPACE secret generic $APP_NAME-encryption-keys \
   --type=Opaque \
-  --from-literal=proxy=$proxy_key \
-  --from-literal=db=$db_key
+  --from-literal=proxy=$proxy_key
 ```
 
 ## Deployment

@@ -2,7 +2,7 @@ const { MockModel } = require('../../common/dbHelper');
 const { encryptionService, ENCRYPTION_ALGORITHMS, ENCRYPTION_KEYS } = require('../../../src/components/encryptionService');
 
 // change these as appropriate after adding new default keys/algos...
-const KEY_COUNT = 2;
+const KEY_COUNT = 1;
 const ALGO_COUNT = 1;
 
 beforeEach(() => {
@@ -42,30 +42,13 @@ describe('encryptionService', () => {
     expect(data).toEqual(dec);
   });
 
-  it('should encrypt/decrypt db data (object)', () => {
-    const data = { username: 'unittest', email: 'email@mail.com' };
-    const enc = encryptionService.encryptDb(data);
-    expect(enc).toBeTruthy();
-    const dec = encryptionService.decryptDb(enc);
-    expect(dec).toBeTruthy();
-    expect(data).toMatchObject(JSON.parse(dec));
-  });
-
-  it('should encrypt/decrypt db data (string)', () => {
-    const data = 'this is my string value';
-    const enc = encryptionService.encryptDb(data);
-    expect(enc).toBeTruthy();
-    const dec = encryptionService.decryptDb(enc);
-    expect(dec).toBeTruthy();
-    expect(data).toEqual(dec);
-  });
-
-  it('should not decrypt a proxy encryption with db key', () => {
+  it('should not decrypt a proxy encryption with external key', () => {
+    const externalKey = 'e9eb43121581f1877e2b8135c8d9079b91c04aab6c717799196630a685b2c6c0';
     const data = 'this is my string value';
     const enc = encryptionService.encryptProxy(data);
     expect(enc).toBeTruthy();
     expect(() => {
-      encryptionService.decryptDb(enc);
+      encryptionService.decryptExternal(ENCRYPTION_ALGORITHMS.AES_256_GCM, externalKey, enc);
     }).toThrowError();
   });
 
