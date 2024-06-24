@@ -34,11 +34,11 @@ export default function MapService(options){
     }
 }
 const initializeMap = (options) =>{
-    let {mapContainer, center, drawOptions, form } = options;
+    let {mapContainer, center, drawOptions, form, defaultZoom } = options;
     if(drawOptions.rectangle){
         drawOptions.rectangle.showArea = false;
     }
-    const map = L.map(mapContainer).setView(center, DEFAULT_MAP_ZOOM );
+    const map = L.map(mapContainer).setView(center, defaultZoom );
         L.tileLayer(DEFAULT_MAP_LAYER_URL, {
             attribution:DEFAULT_LAYER_ATTRIBUTION ,
             }).addTo(map);
