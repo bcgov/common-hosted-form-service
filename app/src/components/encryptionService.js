@@ -5,8 +5,8 @@ const SERVICE = 'EncryptionService';
 
 const ENCRYPTION_KEYS = {
   PROXY: 'proxy',
-  DATABASE: 'db',
 };
+
 const ENCRYPTION_ALGORITHMS = {
   AES_256_GCM: 'aes-256-gcm',
 };
