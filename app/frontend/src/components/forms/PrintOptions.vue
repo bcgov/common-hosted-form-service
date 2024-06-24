@@ -314,6 +314,8 @@ export default {
           .join('.');
         // reset uploadExportFileTypes when a new file is uploaded
         this.uploadExportFileTypes = ['pdf'];
+        // reset the v-select value
+        this.templateForm.outputFileType = null;
         if (this.validFileExtensions.includes(fileExtension)) {
           this.isValidFile = true;
         } else {
