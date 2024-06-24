@@ -49,6 +49,16 @@ class JwtService {
     return payload;
   }
 
+  async getUnverifiedPayload(token) {
+    // no verification, this is just to read fields
+    try {
+      const { payload } = await jose.jwtVerify(token, JWKS, {});
+      return payload;
+    } catch (e) {
+      return null;
+    }
+  }
+
   async validateAccessToken(token) {
     try {
       await this._verify(token);
