@@ -2,7 +2,6 @@ import { Components } from 'formiojs';
 const FieldComponent = (Components as any).components.field;
 import MapService from './services/MapService';
 import baseEditForm from './Component.form';
-import { marker, rectangle } from 'leaflet';
 
 const CENTER = [48.41939025932759,-123.37029576301576]
 
