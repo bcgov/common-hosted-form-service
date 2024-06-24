@@ -32,6 +32,7 @@ const emailArrayRules = ref([
     <v-checkbox
       v-model="form.showSubmissionConfirmation"
       hide-details="auto"
+      data-test="canAllowSubmissionConfirmationCheckbox"
       class="my-0"
       :class="{ 'dir-rtl': isRTL }"
     >
