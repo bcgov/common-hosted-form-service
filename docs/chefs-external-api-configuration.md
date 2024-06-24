@@ -8,8 +8,6 @@ The solution documented here allows a Form Designer to specify an External API o
 
 To achieve this, Form Designers will configure their External API, get approval from CHEFS and configure their form components to call a CHEFS proxy that forwards the call to the External API.
 
-Any private data required in the configuration (i.e. API Key) will be stored as encrypted data in the CHEFS database. It will not be a part of the form schema.
-
 This External API is associated with a single form, but as other hierarchies are introduced in CHEFS (form bundles, tenants, etc), we can associate them with those items and prevent redundancy.
 
 ## External API Configuration
