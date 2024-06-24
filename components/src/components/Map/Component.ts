@@ -56,10 +56,9 @@ export default class Component extends (FieldComponent as any) {
             drawOptions.rectangle = {showArea:false}//fixes a bug in Leaflet.Draw 
         }else{
             drawOptions.rectangle = false
+            drawOptions[this.component.markerType] = true;//set marker type from user choice
         }
-        console.log(drawOptions)
-        //drawOptions[this.component.markerType] = true;//set marker type from user choice
-        const numPoints = this.component.numPoints;
+        const {numPoints, defaultZoom} = this.component;
         MapService({mapContainer, drawOptions, center:CENTER, form, numPoints})
 
     }

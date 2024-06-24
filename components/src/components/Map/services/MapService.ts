@@ -5,6 +5,7 @@ import "leaflet-draw/dist/leaflet.draw-src.css";
 
 const DEFAULT_MAP_LAYER_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 const DEFAULT_LAYER_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+const DEFAULT_MAP_ZOOM = 13;
 const DECIMALS_LATLNG = 5//the number of decimals of latitude and longitude to be displayed in the marker popup 
 const SET_MAX_MARKERS = 1;
 
@@ -16,10 +17,8 @@ export default function MapService(options){
 
         //event listener for drawn objects
         map.on('draw:created', function (e) {
-            //console.log(e)
             let marker = e.layer;
-            console.log(marker)
-            if(drawnItems.getLayers().length && e?.type == "marker"){
+            if(drawnItems.getLayers().length === options.numPoints && e?.type === "marker"){
                 console.log(drawnItems.getLayers())
                 console.log("too many markers")
                 L.popup().setLatLng(marker._latlng).setContent("<p>Only one marker for submission</p>").openOn(map)
@@ -39,7 +38,7 @@ const initializeMap = (options) =>{
     if(drawOptions.rectangle){
         drawOptions.rectangle.showArea = false;
     }
-    const map = L.map(mapContainer).setView(center, 13);
+    const map = L.map(mapContainer).setView(center, DEFAULT_MAP_ZOOM );
         L.tileLayer(DEFAULT_MAP_LAYER_URL, {
             attribution:DEFAULT_LAYER_ATTRIBUTION ,
             }).addTo(map);
