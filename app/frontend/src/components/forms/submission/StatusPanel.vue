@@ -319,8 +319,7 @@ export default {
       <p class="hide-on-narrow" :lang="lang">
         <span :class="isRTL ? 'status-details-rtl' : 'status-details'">
           <strong>{{ $t('trans.statusPanel.currentStatus') }}</strong>
-          {{ currentStatus.code }}
-          data-test="showCurrentStatus"
+          {{ currentStatus.code }}          
         </span>
         <span :class="isRTL ? 'status-details-rtl' : 'status-details'">
           <strong>{{ $t('trans.statusPanel.assignedTo') }}</strong>
