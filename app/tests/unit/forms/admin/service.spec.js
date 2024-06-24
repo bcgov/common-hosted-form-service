@@ -1,4 +1,18 @@
+const { MockModel, MockTransaction } = require('../../../common/dbHelper');
 const service = require('../../../../src/forms/admin/service');
+
+jest.mock('../../../../src/forms/common/models/tables/externalAPI', () => MockModel);
+jest.mock('../../../../src/forms/common/models/tables/externalAPIStatusCode', () => MockModel);
+jest.mock('../../../../src/forms/common/models/views/adminExternalAPI', () => MockModel);
+
+beforeEach(() => {
+  MockModel.mockReset();
+  MockTransaction.mockReset();
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe('Admin service', () => {
   it('createFormComponentsProactiveHelp()', async () => {
@@ -115,5 +129,41 @@ describe('Admin service', () => {
     const fields = await service.readFormComponentsProactiveHelp();
     // test cases
     expect(fields).toEqual(formComponentsHelpInfo[1]);
+  });
+
+  it('getExternalAPIs should fetch data', async () => {
+    await service.getExternalAPIs({});
+    expect(MockModel.query).toBeCalledTimes(1);
+  });
+
+  it('updateExternalAPI should patch and fetch', async () => {
+    await service.updateExternalAPI('id', { code: 'APPROVED', allowSendUserToken: true });
+    expect(MockModel.query).toBeCalledTimes(3);
+    expect(MockModel.patchAndFetchById).toBeCalledTimes(1);
+    expect(MockModel.patchAndFetchById).toBeCalledWith('id', {
+      updatedBy: 'ADMIN',
+      code: 'APPROVED',
+      allowSendUserToken: true,
+    });
+  });
+
+  it('updateExternalAPI should patch and fetch and update user token fields', async () => {
+    await service.updateExternalAPI('id', { code: 'APPROVED', allowSendUserToken: false });
+    expect(MockModel.query).toBeCalledTimes(3);
+    expect(MockModel.patchAndFetchById).toBeCalledTimes(1);
+    // should also update user token fields...
+    expect(MockModel.patchAndFetchById).toBeCalledWith('id', {
+      updatedBy: 'ADMIN',
+      code: 'APPROVED',
+      allowSendUserToken: false,
+      sendUserToken: false,
+      userTokenHeader: null,
+      userTokenBearer: false,
+    });
+  });
+
+  it('getExternalAPIStatusCodes should fetch data', async () => {
+    await service.getExternalAPIStatusCodes();
+    expect(MockModel.query).toBeCalledTimes(1);
   });
 });

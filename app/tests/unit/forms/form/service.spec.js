@@ -788,7 +788,7 @@ describe('createOrUpdateEmailTemplates', () => {
   });
 
   it('should not rollback when an error occurs outside transaction', async () => {
-    service.readEmailTemplate = jest.fn().mockRejectedValue(new Error('SQL Error'));
+    service.readEmailTemplate = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
 
     await expect(service.createOrUpdateEmailTemplate(emailTemplate.formId, emailTemplate, user)).rejects.toThrow();
 
@@ -798,7 +798,7 @@ describe('createOrUpdateEmailTemplates', () => {
   it('should rollback when an insert error occurs inside transaction', async () => {
     service.readEmailTemplate = jest.fn().mockReturnValue(emailTemplate);
     service.readEmailTemplates = jest.fn().mockReturnValue([emailTemplate]);
-    MockModel.insert = jest.fn().mockRejectedValue(new Error('SQL Error'));
+    MockModel.insert = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
 
     await expect(service.createOrUpdateEmailTemplate(emailTemplate.formId, emailTemplate, user)).rejects.toThrow();
 
@@ -809,7 +809,7 @@ describe('createOrUpdateEmailTemplates', () => {
     const id = uuidv4();
     service.readEmailTemplate = jest.fn().mockReturnValue({ id: id, ...emailTemplate });
     service.readEmailTemplates = jest.fn().mockReturnValue([{ id: id, ...emailTemplate }]);
-    MockModel.update = jest.fn().mockRejectedValue(new Error('SQL Error'));
+    MockModel.update = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
 
     await expect(service.createOrUpdateEmailTemplate(emailTemplate.formId, emailTemplate, user)).rejects.toThrow();
 
