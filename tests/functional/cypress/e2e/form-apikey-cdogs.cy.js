@@ -80,8 +80,30 @@ describe('Form Designer', () => {
 
   })
   it('checks Cdogs Upload', () => {
+    cy.viewport(1000, 1100);
+    cy.waitForLoad();
+    cy.get(':nth-child(3) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
+    let fileUploadInputField = cy.get('input[type=file]');
+    cy.get('input[type=file]').should('not.to.be.null');
+    fileUploadInputField.attachFile('add1.png');
 
+    // Checking file type functionality
+    cy.get('div').contains('The template must use one of the following extentions: .txt, .docx, .html, .odt, .pptx, .xlsx').should('be.visible');
+    cy.get('.mdi-close-circle').click();
+    cy.get('input[type=file]').should('not.to.be.null');
+    fileUploadInputField.attachFile('SamplePPTx.pptx');
+    cy.get('div').contains('The template must use one of the following extentions: .txt, .docx, .html, .odt, .pptx, .xlsx').should('not.exist');
+    
+    cy.waitForLoad();
+    cy.waitForLoad();
+    cy.get('button[title="Upload"]').click();
+    //cy.get('.v-expansion-panel-text__wrapper > :nth-child(1) > .v-btn > .v-btn__content > span').click();
 
+    
+      //Delete form after test run
+    
+    cy.get('[data-test="canRemoveForm"]').click();
+    cy.get('[data-test="continue-btn-continue"]').click();
 
   })
 
