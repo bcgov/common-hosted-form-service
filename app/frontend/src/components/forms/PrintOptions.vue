@@ -308,7 +308,10 @@ export default {
       if (event.length > 0) {
         const fileExtension = event[0].name.split('.').pop();
         // reset the outputFileName when a new file is uploaded
-        this.templateForm.outputFileName = event[0].name.split('.').slice(0, -1).join('.');
+        this.templateForm.outputFileName = event[0].name
+          .split('.')
+          .slice(0, -1)
+          .join('.');
         // reset uploadExportFileTypes when a new file is uploaded
         this.uploadExportFileTypes = ['pdf'];
         if (this.validFileExtensions.includes(fileExtension)) {
