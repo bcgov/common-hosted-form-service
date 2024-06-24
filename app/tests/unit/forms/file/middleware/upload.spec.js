@@ -13,7 +13,7 @@ const multerImpl = {
 };
 multer.mockImplementation(() => multerImpl);
 
-// This module has global variables so it need to be re-loaded for each test.
+// This module has global variables so it needs to be re-loaded for each test.
 var fileUpload;
 
 beforeEach(() => {
@@ -147,8 +147,7 @@ describe('fileUpload.init', () => {
       );
     });
 
-    // TODO: implementation is broken, bytes.parse does not throw exceptions.
-    test.skip('uses the config but fails on conversion', async () => {
+    test('uses the config but fails on conversion', async () => {
       expect(() =>
         fileUpload.init({
           maxFileSize: 'qwerty',
@@ -271,7 +270,6 @@ describe('fileUpload.upload', () => {
       expect(next).toHaveBeenCalledWith(
         expect.objectContaining({
           detail: detail,
-          title: 'Upload file error',
         })
       );
     });
@@ -291,7 +289,6 @@ describe('fileUpload.upload', () => {
       expect(next).toHaveBeenCalledWith(
         expect.objectContaining({
           detail: 'error message',
-          title: 'Unknown upload file error',
         })
       );
     });
@@ -322,8 +319,11 @@ describe('fileUpload.upload', () => {
 
       expect(next).toHaveBeenCalledTimes(1);
       expect(next).toHaveBeenCalledWith(expect.objectContaining(expectedStatus));
-      // TODO: the 500 should be setting the detail, not the title.
-      expect(next).toHaveBeenCalledWith(expect.objectContaining({ title: 'File Upload middleware has not been configured.' }));
+      expect(next).toHaveBeenCalledWith(
+        expect.objectContaining({
+          detail: 'File Upload middleware has not been configured.',
+        })
+      );
     });
   });
 });
