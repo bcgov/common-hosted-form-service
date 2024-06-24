@@ -82,6 +82,7 @@ defineExpose({
 
     <v-checkbox
       v-model="form.enableStatusUpdates"
+      data-test="canUpdateStatusOfFormCheckbox"
       hide-details="auto"
       class="my-0"
     >
@@ -96,6 +97,7 @@ defineExpose({
 
     <v-checkbox
       v-model="form.allowSubmitterToUploadFile"
+      data-test="canUploadDraftCheckbox"
       hide-details="auto"
       class="my-0"
       :disabled="form.userType === ID_MODE.PUBLIC"
@@ -140,6 +142,7 @@ defineExpose({
       v-model="form.schedule.enabled"
       disabled
       hide-details="auto"
+      data-test="canScheduleFormSubmissionCheckbox"
       class="my-0"
     >
       <template #label>
@@ -153,6 +156,7 @@ defineExpose({
       v-if="formStore.isFormPublished"
       v-model="form.schedule.enabled"
       hide-details="auto"
+      data-test="canScheduleFormSubmissionCheckbox"
       class="my-0"
     >
       <template #label>
@@ -191,6 +195,7 @@ defineExpose({
     <v-checkbox
       v-model="form.enableCopyExistingSubmission"
       hide-details="auto"
+      data-test="canCopyExistingSubmissionCheckbox"
       class="my-0"
       :disabled="form.userType === ID_MODE.PUBLIC"
     >
@@ -231,6 +236,7 @@ defineExpose({
     <v-checkbox
       v-model="form.subscribe.enabled"
       hide-details="auto"
+      data-test="canAllowEventSubscriptionCheckbox"
       class="my-0"
       :disabled="primaryIdpUser === false || !formStore.isFormPublished"
     >
@@ -268,7 +274,12 @@ defineExpose({
         </div>
       </template>
     </v-checkbox>
-    <v-checkbox v-model="form.wideFormLayout" hide-details="auto" class="my-0">
+    <v-checkbox
+      v-model="form.wideFormLayout"
+      hide-details="auto"
+      data-test="canAllowWideFormLayoutCheckbox"
+      class="my-0"
+    >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
           <span

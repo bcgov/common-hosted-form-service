@@ -48,7 +48,7 @@
       "issuer": "https://dev.loginproxy.gov.bc.ca/auth/realms/standard",
       "audience": "chefs-frontend-localhost-5300",
       "maxTokenAge": "300"
-  },
+    },
     "logLevel": "http",
     "port": "8080",
     "rateLimit": {
@@ -56,6 +56,9 @@
         "windowMs": "60000",
         "max": "120"
       }
+    },
+    "encryption": {
+      "proxy": "352f7c24819086bf3df5a38c1a40586045f73e0007440c9d27d59ee8560e3fe7"
     }
   },
   "serviceClient": {

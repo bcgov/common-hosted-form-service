@@ -53,7 +53,10 @@
     },
     "logFile": "SERVER_LOGFILE",
     "logLevel": "SERVER_LOGLEVEL",
-    "port": "SERVER_PORT"
+    "port": "SERVER_PORT",
+    "encryption": {
+      "proxy": "SERVER_ENCRYPTION_PROXY"
+    }
   },
   "serviceClient": {
     "commonServices": {
