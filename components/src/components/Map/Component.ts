@@ -1,13 +1,13 @@
 import { Components } from 'formiojs';
-const FieldComponent = (Components as any).components.field;
+const BaseComponent = (Components as any).components.base;
 import MapService from './services/MapService';
 import baseEditForm from './Component.form';
 
 const CENTER = [48.41939025932759,-123.37029576301576]
 
-export default class Component extends (FieldComponent as any) {
+export default class Component extends (BaseComponent as any) {
     static schema(...extend) {
-        return FieldComponent.schema({
+        return BaseComponent.schema({
             type: 'map',
             label: 'Map',
             key: 'map',
@@ -58,7 +58,7 @@ export default class Component extends (FieldComponent as any) {
             drawOptions[this.component.markerType] = true;//set marker type from user choice
         }
         const {numPoints, defaultZoom} = this.component;
-        MapService({mapContainer, drawOptions, center:CENTER, form, numPoints})
+        MapService({mapContainer, drawOptions, center:CENTER, form, numPoints, defaultZoom})
 
     }
 
