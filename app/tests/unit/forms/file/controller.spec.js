@@ -167,10 +167,7 @@ describe('read', () => {
       await controller.read(req, res, next);
 
       expect(storageService.read).toBeCalledWith(fileStorage);
-      // expect(mockReadable.pipe).toBeCalledWith(res);
-      // expect(res.json).toBeCalledWith(fileStorage);
-      // expect(res.status).toBeCalledWith(200);
-      // expect(next).not.toBeCalled();
+      expect(next).not.toBeCalled();
     });
   });
 });
