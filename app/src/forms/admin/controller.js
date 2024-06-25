@@ -88,6 +88,34 @@ module.exports = {
   },
 
   //
+  // APIs
+  //
+  getExternalAPIs: async (req, res, next) => {
+    try {
+      const response = await service.getExternalAPIs(req.query);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  updateExternalAPI: async (req, res, next) => {
+    try {
+      const response = await service.updateExternalAPI(req.params.id, req.body);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  getExternalAPIStatusCodes: async (req, res, next) => {
+    try {
+      const response = await service.getExternalAPIStatusCodes();
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  //
   // Form Components Help Information
   //
   createFormComponentsProactiveHelp: async (req, res, next) => {

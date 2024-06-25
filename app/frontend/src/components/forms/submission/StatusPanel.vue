@@ -306,7 +306,11 @@ export default {
 
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
-    <div class="flex-container" @click="showStatusContent = !showStatusContent">
+    <div
+      class="flex-container"
+      data-test="showStatusPanel"
+      @click="showStatusContent = !showStatusContent"
+    >
       <h2 class="status-heading" :class="{ 'dir-rtl': isRTL }" :lang="locale">
         {{ $t('trans.formSubmission.status') }}
         <v-icon>{{
@@ -326,9 +330,9 @@ export default {
         <span :class="isRTL ? 'status-details-rtl' : 'status-details'">
           <strong>{{ $t('trans.statusPanel.assignedTo') }}</strong>
           {{ currentStatus.user ? currentStatus.user.fullName : 'N/A' }}
-          <span v-if="currentStatus.user"
-            >({{ currentStatus.user.email }})</span
-          >
+          <span v-if="currentStatus.user" data-test="showAssigneeEmail">
+            ({{ currentStatus.user.email }})
+          </span>
         </span>
       </p>
     </div>
@@ -345,7 +349,7 @@ export default {
           <br />
           <strong>{{ $t('trans.statusPanel.assignedTo') }}</strong>
           {{ currentStatus.user ? currentStatus.user.fullName : 'N/A' }}
-          <span v-if="currentStatus.user"
+          <span v-if="currentStatus.user" data-test="showAssigneeEmail"
             >({{ currentStatus.user.email }})</span
           >
         </p>
@@ -363,6 +367,7 @@ export default {
             variant="outlined"
             :items="items"
             item-title="display"
+            data-test="showStatusList"
             item-value="code"
             style="width: 100% !important; padding: 0px !important"
             :rules="[(v) => !!v || $t('trans.statusPanel.statusIsRequired')]"
@@ -394,6 +399,7 @@ export default {
                 v-model="assignee"
                 :class="{ 'dir-rtl': isRTL }"
                 autocomplete="autocomplete_off"
+                data-test="showAssigneeList"
                 clearable
                 :custom-filter="autoCompleteFilter"
                 :items="formReviewers"
@@ -429,6 +435,7 @@ export default {
                   size="small"
                   color="primary"
                   class="pl-0 my-0 text-end"
+                  data-test="canAssignToMe"
                   :title="$t('trans.statusPanel.assignToMe')"
                   @click="assignToCurrentUser"
                 >
@@ -447,6 +454,7 @@ export default {
                 density="compact"
                 :class="{ 'dir-rtl': isRTL }"
                 :lang="locale"
+                data-test="showRecipientEmail"
               />
             </div>
 
@@ -455,6 +463,7 @@ export default {
                 v-model="addComment"
                 :label="$t('trans.statusPanel.attachCommentToEmail')"
                 :lang="locale"
+                data-test="canAttachCommentToEmail"
               />
               <div v-if="addComment">
                 <label :lang="locale">{{
@@ -471,6 +480,7 @@ export default {
                   auto-grow
                   density="compact"
                   variant="outlined"
+                  data-test="canAddComment"
                   solid
                 />
               </div>
@@ -488,6 +498,7 @@ export default {
                     color="textLink"
                     v-bind="props"
                     :title="$t('trans.statusPanel.viewHistory')"
+                    data-test="viewHistoryButton"
                   >
                     <span :lang="locale">{{
                       $t('trans.statusPanel.viewHistory')
@@ -498,6 +509,7 @@ export default {
                     :disabled="!statusToSet"
                     color="primary"
                     :title="statusAction"
+                    data-test="updateStatusToNew"
                     @click="updateStatus"
                   >
                     <span>{{ statusAction }}</span>
@@ -524,6 +536,7 @@ export default {
                       color="primary"
                       variant="flat"
                       :title="$t('trans.statusPanel.close')"
+                      data-test="canCloseStatusPanel"
                       @click="historyDialog = false"
                     >
                       <span :lang="locale">{{

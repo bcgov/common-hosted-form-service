@@ -218,7 +218,10 @@ export default {
       Promise.all([this.fetchForm(this.formId), this.getFormSchema()]);
     }
   },
-  mounted() {
+  async mounted() {
+    // load up headers for any External API calls
+    // from components (component makes calls during design phase).
+    await this.setProxyHeaders();
     if (!this.formId) {
       // We are creating a new form, so we obtain the original schema here.
       this.patch.originalSchema = deepClone(this.formSchema);
@@ -231,7 +234,21 @@ export default {
       'setDirtyFlag',
       'getFCProactiveHelpImageUrl',
     ]),
-
+    async setProxyHeaders() {
+      try {
+        let response = await formService.getProxyHeaders({
+          formId: this.formId,
+          versionId: this.versionId,
+        });
+        // error checking for response
+        sessionStorage.setItem(
+          'X-CHEFS-PROXY-DATA',
+          response.data['X-CHEFS-PROXY-DATA']
+        );
+      } catch (error) {
+        // need error handling
+      }
+    },
     async getFormSchema() {
       try {
         let res;

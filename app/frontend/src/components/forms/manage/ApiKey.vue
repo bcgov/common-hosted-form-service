@@ -128,6 +128,7 @@ export default {
                 ? $t('trans.apiKey.regenerate')
                 : $t('trans.apiKey.generate')
             }${$t('trans.apiKey.apiKey')}`"
+            data-test="canGenerateAPIKey"
             @click="showConfirmationDialog = true"
           >
             <span :lang="locale"
@@ -163,6 +164,7 @@ export default {
                 size="x-small"
                 density="default"
                 :icon="showSecret ? 'mdi:mdi-eye-off' : 'mdi:mdi-eye'"
+                data-test="canReadAPIKey"
                 :title="$t('trans.apiKey.hideSecret')"
                 @click="showHideKey"
               />
@@ -177,6 +179,7 @@ export default {
 
           <BaseCopyToClipboard
             :disabled="!canReadSecret || !showSecret"
+            data-test="canAllowCopyAPIKey"
             class="mx-2"
             :text-to-copy="secret"
             :snack-bar-text="$t('trans.apiKey.sCTC')"
@@ -193,6 +196,7 @@ export default {
                 size="x-small"
                 density="default"
                 icon="mdi:mdi-delete"
+                data-test="canDeleteApiKey"
                 :title="$t('trans.apiKey.deleteKey')"
                 @click="showDeleteDialog = true"
               />
@@ -265,6 +269,7 @@ export default {
         v-model="filesApiAccess"
         :disabled="!apiKey"
         :label="$t('trans.apiKey.filesAPIAccess')"
+        data-test="canAllowFileAccess"
         @update:model-value="updateKey"
       ></v-checkbox>
     </v-col>

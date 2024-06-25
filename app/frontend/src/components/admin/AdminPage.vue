@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n';
 
 import AdminFormsTable from '~/components/admin/AdminFormsTable.vue';
 import AdminUsersTable from '~/components/admin/AdminUsersTable.vue';
+import AdminAPIsTable from '~/components/admin/AdminAPIsTable.vue';
 import Dashboard from '~/components/admin/Dashboard.vue';
 import Developer from '~/components/admin/Developer.vue';
 import FormComponentsProactiveHelp from '~/components/admin/FormComponentsProactiveHelp.vue';
@@ -15,6 +16,7 @@ export default {
   components: {
     AdminFormsTable,
     AdminUsersTable,
+    AdminAPIsTable,
     Dashboard,
     Developer,
     FormComponentsProactiveHelp,
@@ -52,6 +54,7 @@ export default {
     <v-tab value="users" :lang="locale">{{
       $t('trans.adminPage.users')
     }}</v-tab>
+    <v-tab value="apis" :lang="locale">{{ $t('trans.adminPage.apis') }}</v-tab>
     <v-tab value="developer" :lang="locale">{{
       $t('trans.adminPage.developer')
     }}</v-tab>
@@ -70,6 +73,9 @@ export default {
       </v-window-item>
       <v-window-item value="users">
         <AdminUsersTable />
+      </v-window-item>
+      <v-window-item value="apis">
+        <AdminAPIsTable />
       </v-window-item>
       <v-window-item value="developer">
         <Developer />
