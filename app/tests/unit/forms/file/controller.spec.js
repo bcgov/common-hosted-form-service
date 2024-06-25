@@ -31,21 +31,6 @@ service.delete = jest.fn().mockReturnValue();
 
 storageService.read = jest.fn().mockReturnValue(fileStorage);
 
-// const req = {
-//   params: { formId: 'bd4dcf26-65bd-429b-967f-125500bfd8a4' },
-//   query: {
-//     type: 'submissions',
-//     draft: false,
-//     deleted: false,
-//     version: 1,
-//   },
-//   body: {},
-//   currentUser: {},
-//   headers: {
-//     referer: '',
-//   },
-// };
-
 afterEach(() => {
   jest.restoreAllMocks();
 });
