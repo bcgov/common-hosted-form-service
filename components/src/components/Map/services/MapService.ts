@@ -26,6 +26,7 @@ class MapService {
   drawnItems: L.FeatureGroup;
 
   constructor(options: MapServiceOptions) {
+    console.log('Initializing MapService with options:', options);
     this.options = options;
     if (options.mapContainer) {
       const { map, drawnItems } = this.initializeMap(options);
@@ -35,6 +36,7 @@ class MapService {
 
       // Event listener for drawn objects
       map.on('draw:created', (e: any) => {
+        console.log('Drawing created:', e);
         let layer = e.layer;
         if (
           drawnItems.getLayers().length === options.numPoints &&
@@ -47,19 +49,14 @@ class MapService {
         } else {
           drawnItems.addLayer(layer);
         }
-        layer
-          .bindPopup(
-            `<p>(${layer._latlng.lat.toFixed(
-              DECIMALS_LATLNG
-            )},${layer._latlng.lng.toFixed(DECIMALS_LATLNG)})</p>`
-          )
-          .openPopup();
+        this.bindPopupToLayer(layer);
         options.onDrawnItemsChange(drawnItems.getLayers());
       });
     }
   }
 
   initializeMap(options: MapServiceOptions) {
+    console.log('Initializing map with options:', options);
     let { mapContainer, center, drawOptions, form, defaultZoom } = options;
     if (drawOptions.rectangle) {
       drawOptions.rectangle.showArea = false;
@@ -94,8 +91,47 @@ class MapService {
     return { map, drawnItems };
   }
 
+  bindPopupToLayer(layer: L.Layer) {
+    console.log('Binding popup to layer:', layer);
+    if (layer instanceof L.Marker) {
+      layer
+        .bindPopup(
+          `<p>(${layer.getLatLng().lat.toFixed(DECIMALS_LATLNG)},${layer
+            .getLatLng()
+            .lng.toFixed(DECIMALS_LATLNG)})</p>`
+        )
+        .openPopup();
+    } else if (layer instanceof L.Circle) {
+      layer
+        .bindPopup(
+          `<p>(${layer.getLatLng().lat.toFixed(DECIMALS_LATLNG)},${layer
+            .getLatLng()
+            .lng.toFixed(DECIMALS_LATLNG)})</p>`
+        )
+        .openPopup();
+    } else if (layer instanceof L.Rectangle || layer instanceof L.Polygon) {
+      const bounds = layer.getBounds();
+      const center = bounds.getCenter();
+      layer
+        .bindPopup(
+          `<p>(${center.lat.toFixed(DECIMALS_LATLNG)},${center.lng.toFixed(
+            DECIMALS_LATLNG
+          )})</p>`
+        )
+        .openPopup();
+    }
+  }
+
   loadDrawnItems(items: any) {
+    console.log('Loading drawn items:', items);
     const { drawnItems } = this;
+
+    // Ensure drawnItems is defined before attempting to clear layers
+    if (!drawnItems) {
+      console.error('drawnItems is undefined');
+      return;
+    }
+
     drawnItems.clearLayers();
 
     // Check if items is an array
@@ -104,21 +140,23 @@ class MapService {
     }
 
     items.forEach((item) => {
+      console.log('Processing item:', item);
       let layer;
       if (item.type === 'marker') {
         layer = L.marker(item.latlng);
+      } else if (item.type === 'rectangle') {
+        layer = L.rectangle(item.bounds);
+      } else if (item.type === 'circle') {
+        layer = L.circle(item.latlng, { radius: item.radius });
+      } else if (item.type === 'polygon') {
+        layer = L.polygon(item.latlngs);
+      } else if (item.type === 'polyline') {
+        layer = L.polyline(item.latlngs);
       }
-      // Handle other types (e.g., rectangles) here if needed
 
       if (layer) {
         drawnItems.addLayer(layer);
-        layer
-          .bindPopup(
-            `<p>(${item.latlng.lat.toFixed(
-              DECIMALS_LATLNG
-            )},${item.latlng.lng.toFixed(DECIMALS_LATLNG)})</p>`
-          )
-          .openPopup();
+        this.bindPopupToLayer(layer);
       }
     });
   }

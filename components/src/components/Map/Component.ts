@@ -16,6 +16,7 @@ export default class Component extends (FieldComponent as any) {
       ...extend,
     });
   }
+
   static get builderInfo() {
     return {
       title: 'Map',
@@ -25,6 +26,7 @@ export default class Component extends (FieldComponent as any) {
       schema: Component.schema(),
     };
   }
+
   static editForm = baseEditForm;
 
   componentID: string;
@@ -36,18 +38,21 @@ export default class Component extends (FieldComponent as any) {
   }
 
   render() {
+    console.log('Rendering component');
     return super.render(
       `<div id="map-${this.componentID}" style="height:400px; z-index:1;"></div>`
     );
   }
 
   attach(element) {
+    console.log('Attaching component to element');
     const superAttach = super.attach(element);
     this.loadMap();
     return superAttach;
   }
 
   loadMap() {
+    console.log('Loading map');
     const mapContainer = document.getElementById(`map-${this.componentID}`);
     const form = document.getElementsByClassName('formio');
     let drawOptions = {
@@ -58,12 +63,15 @@ export default class Component extends (FieldComponent as any) {
       circle: false,
       rectangle: null,
     };
+
+    // Set drawing options based on markerType
     if (this.component.markerType === 'rectangle') {
       drawOptions.rectangle = { showArea: false }; // fixes a bug in Leaflet.Draw
     } else {
       drawOptions.rectangle = false;
       drawOptions[this.component.markerType] = true; // set marker type from user choice
     }
+
     const { numPoints, defaultZoom } = this.component;
     this.mapService = new MapService({
       mapContainer,
@@ -75,6 +83,9 @@ export default class Component extends (FieldComponent as any) {
       onDrawnItemsChange: this.saveDrawnItems.bind(this),
     });
 
+    console.log('Current data value:', this.dataValue);
+    console.log('GetValue result:', this.getValue());
+
     // Load existing data if available
     if (this.dataValue) {
       this.mapService.loadDrawnItems(JSON.parse(this.dataValue));
@@ -82,33 +93,66 @@ export default class Component extends (FieldComponent as any) {
   }
 
   saveDrawnItems(drawnItems: L.Layer[]) {
+    console.log('Saving drawn items:', drawnItems);
     const value = drawnItems.map((layer: any) => {
+      console.log('Processing layer:', layer);
       if (layer instanceof L.Marker) {
         return {
           type: 'marker',
           latlng: layer.getLatLng(),
         };
+      } else if (layer instanceof L.Rectangle) {
+        return {
+          type: 'rectangle',
+          bounds: layer.getBounds(),
+        };
+      } else if (layer instanceof L.Circle) {
+        return {
+          type: 'circle',
+          latlng: layer.getLatLng(),
+          radius: layer.getRadius(),
+        };
+      } else if (layer instanceof L.Polygon) {
+        return {
+          type: 'polygon',
+          latlngs: layer.getLatLngs(),
+        };
+      } else if (layer instanceof L.Polyline) {
+        return {
+          type: 'polyline',
+          latlngs: layer.getLatLngs(),
+        };
       }
-      // Handle other types (e.g., rectangles) here if needed
     });
+
+    console.log('Converted value:', value);
 
     // Convert to JSON string
     const jsonValue =
       this.component.numPoints === 1
         ? JSON.stringify(value[0])
         : JSON.stringify(value);
+    console.log('JSON value to set:', jsonValue);
     this.setValue(jsonValue);
   }
 
   setValue(value) {
+    console.log('Setting value:', value);
     super.setValue(value);
+
     // Additional logic to render the saved data on the map if necessary
-    if (this.mapService) {
-      this.mapService.loadDrawnItems(JSON.parse(value));
+    if (this.mapService && value) {
+      try {
+        const parsedValue = JSON.parse(value);
+        this.mapService.loadDrawnItems(parsedValue);
+      } catch (error) {
+        console.error('Failed to parse value:', error);
+      }
     }
   }
 
   getValue() {
+    console.log('Getting value:', this.dataValue);
     return this.dataValue;
   }
 }
