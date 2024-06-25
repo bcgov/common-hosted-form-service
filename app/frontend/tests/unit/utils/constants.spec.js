@@ -6,6 +6,7 @@ describe('Constants', () => {
     expect(constants.ApiRoutes).toEqual({
       ADMIN: '/admin',
       APIKEY: '/apiKey',
+      EXTERNAL_APIS: '/externalAPIs',
       FILES: '/files',
       FORMS: '/forms',
       RBAC: '/rbac',
@@ -14,6 +15,7 @@ describe('Constants', () => {
       USERS: '/users',
       UTILS: '/utils',
       FILES_API_ACCESS: '/filesApiAccess',
+      PROXY: '/proxy',
     });
   });
 

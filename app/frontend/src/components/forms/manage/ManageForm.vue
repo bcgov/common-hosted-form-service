@@ -4,6 +4,7 @@ import { computed, onMounted, ref } from 'vue';
 
 import ApiKey from '~/components/forms/manage/ApiKey.vue';
 import DocumentTemplate from '~/components/forms/manage/DocumentTemplate.vue';
+import ExternalAPIs from '~/components/forms/manage/ExternalAPIs.vue';
 import FormSettings from '~/components/designer/FormSettings.vue';
 import ManageVersions from '~/components/forms/manage/ManageVersions.vue';
 import Subscription from '~/components/forms/manage/Subscription.vue';
@@ -14,6 +15,7 @@ import FormProfile from '~/components/designer/FormProfile.vue';
 
 const apiKeyPanel = ref(1);
 const cdogsPanel = ref(1);
+const externalAPIsPanel = ref(1);
 const formSettingsDisabled = ref(true);
 const settingsForm = ref(null);
 const settingsPanel = ref(1);
@@ -138,7 +140,11 @@ defineExpose({
       <v-expansion-panel flat>
         <!-- Form Settings -->
         <v-expansion-panel-title>
-          <div class="header" :lang="lang">
+          <div
+            class="header"
+            :lang="lang"
+            data-test="canExpandFormSettingsPanel"
+          >
             <strong>{{ $t('trans.manageForm.formSettings') }}</strong>
             <span :lang="lang">
               <small>
@@ -153,6 +159,7 @@ defineExpose({
                 color="primary"
                 style="font-size: 14px"
                 :title="$t('trans.generalLayout.edit')"
+                data-test="canAllowEditFormSettings"
                 @click.stop="enableSettingsEdit"
               >
                 <v-icon icon="mdi:mdi-pencil"></v-icon>
@@ -178,6 +185,7 @@ defineExpose({
               :class="isRTL ? 'ml-5' : 'mr-5'"
               color="primary"
               :title="$t('trans.manageForm.update')"
+              data-test="canEditForm"
               @click="updateSettings"
             >
               <span :lang="lang">{{ $t('trans.manageForm.update') }}</span>
@@ -185,6 +193,7 @@ defineExpose({
             <v-btn
               variant="outlined"
               :title="$t('trans.manageForm.cancel')"
+              data-test="canCancelEdit"
               @click="cancelSettingsEdit"
             >
               <span :lang="lang">{{ $t('trans.manageForm.cancel') }}</span>
@@ -234,7 +243,11 @@ defineExpose({
     >
       <v-expansion-panel flat>
         <v-expansion-panel-title>
-          <div class="header" :lang="lang">
+          <div
+            class="header"
+            :lang="lang"
+            data-test="canExpandApiKeySettingsPanel"
+          >
             <strong>{{ $t('trans.manageForm.apiKey') }}</strong>
             <span v-if="apiKey" :lang="lang">
               <small v-if="apiKey.updatedBy">
@@ -266,7 +279,7 @@ defineExpose({
     >
       <v-expansion-panel flat>
         <v-expansion-panel-title>
-          <div class="header" :lang="lang">
+          <div class="header" :lang="lang" data-test="canExpandCDOGSPanel">
             <strong>{{ $t('trans.manageForm.cdogsTemplate') }}</strong>
           </div>
         </v-expansion-panel-title>
@@ -276,11 +289,33 @@ defineExpose({
       </v-expansion-panel>
     </v-expansion-panels>
 
+    <!-- External APIs -->
+    <v-expansion-panels
+      v-if="canEditForm"
+      v-model="externalAPIsPanel"
+      class="nrmc-expand-collapse"
+    >
+      <v-expansion-panel flat>
+        <v-expansion-panel-title>
+          <div class="header" :lang="lang">
+            <strong>{{ $t('trans.manageForm.externalAPIs') }}</strong>
+          </div>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
+          <ExternalAPIs />
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
+
     <!-- Form Design -->
     <v-expansion-panels v-model="versionsPanel" class="nrmc-expand-collapse">
       <v-expansion-panel flat>
         <v-expansion-panel-title>
-          <div class="header" :lang="lang">
+          <div
+            class="header"
+            :lang="lang"
+            data-test="canExpandFormDesignHistoryPanel"
+          >
             <strong style="flex: 1">{{
               $t('trans.manageForm.formDesignHistory')
             }}</strong>

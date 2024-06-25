@@ -36,7 +36,7 @@ describe('Form Designer', () => {
     
 
   });  
-// Verifying fields in the form settings page
+// Publish a simple form with Simplebc Address component
  it('Checks simplebcaddress and form submission', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
@@ -80,7 +80,7 @@ describe('Form Designer', () => {
       //cy.log(arrayValues[2]);
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
       cy.waitForLoad();
-      })
+      
    
     //Publish the form
     cy.get('.v-label > span').click();
@@ -98,11 +98,18 @@ describe('Form Designer', () => {
       expect(shareFormLinkButton).to.not.be.null;
       shareFormLinkButton.trigger('click');
       cy.get('.mx-2 > .v-btn').click();
+    })
+      cy.visit(`/${depEnv}`);
+      cy.get('[data-cy="userFormsLinks"]').click();
+      cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+      cy.waitForLoad();
+      //Delete form after test run
+      //cy.get('.mdi-delete').click();
+      cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
+      cy.get('[data-test="continue-btn-continue"]').click();
+   
+
     });
-
-  
-
-
 
   });
     

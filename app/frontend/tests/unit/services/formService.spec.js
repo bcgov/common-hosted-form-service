@@ -518,4 +518,72 @@ describe('Form Service', () => {
       expect(mockAxios.history.get).toHaveLength(1);
     });
   });
+
+  describe('Forms/{formId}/externalAPIs', () => {
+    const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}${ApiRoutes.EXTERNAL_APIS}`;
+
+    it('calls list endpoint', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+
+      const result = await formService.externalAPIList(zeroUuid);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+    });
+
+    it('calls create on endpoint', async () => {
+      const data = { test: 'testdata' };
+      mockAxios.onPost(endpoint).reply(200, data);
+
+      const result = await formService.externalAPICreate(zeroUuid, data);
+      expect(result).toBeTruthy();
+      expect(result.data).toEqual(data);
+      expect(mockAxios.history.post).toHaveLength(1);
+    });
+  });
+
+  describe('Forms/{formId}/externalAPIs/{id}', () => {
+    const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}${ApiRoutes.EXTERNAL_APIS}/${zeroUuid}`;
+
+    it('calls update on endpoint', async () => {
+      const data = { test: 'testdata' };
+      mockAxios.onPut(endpoint).reply(200, data);
+
+      const result = await formService.externalAPIUpdate(
+        zeroUuid,
+        zeroUuid,
+        data
+      );
+      expect(result).toBeTruthy();
+      expect(result.data).toEqual(data);
+      expect(mockAxios.history.put).toHaveLength(1);
+    });
+
+    it('calls delete on endpoint', async () => {
+      mockAxios.onDelete(endpoint).reply(200);
+
+      const result = await formService.externalAPIDelete(zeroUuid, zeroUuid);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.delete).toHaveLength(1);
+    });
+  });
+
+  describe('Forms/{formId}/externalAPIs lists', () => {
+    const endpoint = `${ApiRoutes.FORMS}/${zeroUuid}${ApiRoutes.EXTERNAL_APIS}`;
+
+    it('calls algorithms list endpoint', async () => {
+      mockAxios.onGet(`${endpoint}/algorithms`).reply(200);
+
+      const result = await formService.externalAPIAlgorithmList(zeroUuid);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+    });
+
+    it('calls statusCodes list endpoint', async () => {
+      mockAxios.onGet(`${endpoint}/statusCodes`).reply(200);
+
+      const result = await formService.externalAPIStatusCodes(zeroUuid);
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+    });
+  });
 });

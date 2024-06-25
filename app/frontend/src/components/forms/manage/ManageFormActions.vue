@@ -77,6 +77,7 @@ defineExpose({
               size="x-small"
               density="default"
               icon="mdi:mdi-list-box-outline"
+              data-test="canViewFormSubmissions"
               :title="$t('trans.manageFormActions.viewSubmissions')"
             />
           </router-link>
@@ -98,6 +99,7 @@ defineExpose({
               size="x-small"
               density="default"
               icon="mdi:mdi-account-multiple"
+              data-test="canManageTeammembers"
               :title="$t('trans.manageFormActions.teamManagement')"
             />
           </router-link>
@@ -119,6 +121,7 @@ defineExpose({
               size="x-small"
               density="default"
               icon="mdi:mdi-email"
+              data-test="canUpdateEmail"
               :title="$t('trans.manageFormActions.emailManagement')"
             />
           </router-link>
@@ -140,6 +143,7 @@ defineExpose({
             size="x-small"
             density="default"
             icon="mdi:mdi-delete"
+            data-test="canRemoveForm"
             :title="$t('trans.manageFormActions.deleteForm')"
             @click="showDeleteDialog = true"
           />

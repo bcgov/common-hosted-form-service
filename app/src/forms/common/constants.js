@@ -104,4 +104,10 @@ module.exports = Object.freeze({
     VIEWS_FORM_VIEW: 'views_form_view',
     VIEWS_USER_SUBMISSIONS: 'views_user_submissions',
   },
+  ExternalAPIStatuses: {
+    SUBMITTED: 'SUBMITTED',
+    PENDING: 'PENDING',
+    APPROVED: 'APPROVED',
+    DENIED: 'DENIED',
+  },
 });
