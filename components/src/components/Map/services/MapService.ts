@@ -7,7 +7,6 @@ const DEFAULT_MAP_LAYER_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.pn
 const DEFAULT_LAYER_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 const DEFAULT_MAP_ZOOM = 13;
 const DECIMALS_LATLNG = 5//the number of decimals of latitude and longitude to be displayed in the marker popup 
-const SET_MAX_MARKERS = 1;
 
 export default function MapService(options){
     if(options.mapContainer){
