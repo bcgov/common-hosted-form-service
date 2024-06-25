@@ -171,6 +171,9 @@ export default {
     },
   },
   async mounted() {
+    // load up headers for any External API calls
+    // from components.
+    await this.setProxyHeaders();
     if (this.submissionId && this.isDuplicate) {
       // Run when make new submission from existing one called. Get the
       // published version of form, and then get the submission data.
@@ -315,6 +318,22 @@ export default {
         });
       } finally {
         this.loadingSubmission = false;
+      }
+    },
+    async setProxyHeaders() {
+      try {
+        let response = await formService.getProxyHeaders({
+          formId: this.formId,
+          versionId: this.versionId,
+          submissionId: this.submissionId,
+        });
+        // error checking for response
+        sessionStorage.setItem(
+          'X-CHEFS-PROXY-DATA',
+          response.data['X-CHEFS-PROXY-DATA']
+        );
+      } catch (error) {
+        // need error handling
       }
     },
     // Get the form definition/schema

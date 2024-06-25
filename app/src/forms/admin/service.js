@@ -1,4 +1,4 @@
-const { Form, FormVersion, User, UserFormAccess, FormComponentsProactiveHelp } = require('../common/models');
+const { Form, FormVersion, User, UserFormAccess, FormComponentsProactiveHelp, AdminExternalAPI, ExternalAPI, ExternalAPIStatusCode } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 const { v4: uuidv4 } = require('uuid');
 
@@ -114,6 +114,47 @@ const service = {
           roles: fa.roles,
         }))
     );
+  },
+
+  //
+  // APIs
+  //
+
+  /**
+   * @function getExternalAPIs
+   * Search for External APIs
+   * @param {Object} params The query parameters
+   * @returns {Promise} An objection query promise
+   */
+  getExternalAPIs: async (params) => {
+    return AdminExternalAPI.query()
+      .modify('filterMinistry', params.ministry)
+      .modify('filterFormName', params.formName)
+      .modify('filterName', params.name)
+      .modify('filterDisplay', params.display)
+      .modify('orderDefault');
+  },
+  updateExternalAPI: async (id, data) => {
+    await ExternalAPI.query().findById(id).throwIfNotFound();
+    // admins only change the status code and allow send user token
+    const upd = {
+      code: data.code,
+      allowSendUserToken: data.allowSendUserToken,
+      updatedBy: 'ADMIN',
+    };
+    // if we are not allowing sending user token, ensure any user token fields are cleared out
+    if (!data.allowSendUserToken) {
+      upd['sendUserToken'] = false;
+      upd['userTokenHeader'] = null;
+      upd['userTokenBearer'] = false;
+    }
+
+    await ExternalAPI.query().patchAndFetchById(id, upd);
+
+    return ExternalAPI.query().findById(id);
+  },
+  getExternalAPIStatusCodes: async () => {
+    return ExternalAPIStatusCode.query();
   },
 
   /**

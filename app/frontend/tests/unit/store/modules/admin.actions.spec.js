@@ -249,5 +249,68 @@ describe('admin actions', () => {
         text: 'trans.store.admin.updatingFCStatusErrMsg',
       });
     });
+
+    it('getExternalAPIs should commit to SET_EXTERNAL_API_LIST', async () => {
+      mockStore.externalAPIList = undefined;
+      adminService.listExternalAPIs.mockResolvedValue({
+        data: [{ name: 'a' }, { name: 'b' }],
+      });
+      await mockStore.getExternalAPIs();
+
+      expect(mockStore.externalAPIList).toEqual([{ name: 'a' }, { name: 'b' }]);
+    });
+
+    it('getExternalAPIs should dispatch to notifications/addNotification', async () => {
+      adminService.listExternalAPIs.mockRejectedValue('');
+      await mockStore.getExternalAPIs();
+
+      expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+      expect(addNotificationSpy).toHaveBeenCalledWith({
+        consoleError: 'trans.store.admin.getAPIsConsErrMsg',
+        text: 'trans.store.admin.getAPIsErrMsg',
+      });
+    });
+
+    it('getExternalAPIStatusCodes should commit to SET_EXTERNAL_API_LIST', async () => {
+      mockStore.externalAPIStatusCodes = undefined;
+      adminService.listExternalAPIStatusCodes.mockResolvedValue({
+        data: [{ code: 'a' }, { code: 'b' }],
+      });
+      await mockStore.getExternalAPIStatusCodes();
+
+      expect(mockStore.externalAPIStatusCodes).toEqual([
+        { code: 'a' },
+        { code: 'b' },
+      ]);
+    });
+
+    it('getExternalAPIStatusCodes should dispatch to notifications/addNotification', async () => {
+      adminService.listExternalAPIStatusCodes.mockRejectedValue('');
+      await mockStore.getExternalAPIStatusCodes();
+
+      expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+      expect(addNotificationSpy).toHaveBeenCalledWith({
+        consoleError: 'trans.store.admin.getAPICodesConsErrMsg',
+        text: 'trans.store.admin.getAPICodesErrMsg',
+      });
+    });
+
+    it('updateExternalAPI should do nothing on success', async () => {
+      adminService.updateExternalAPI.mockResolvedValue({});
+      await mockStore.updateExternalAPI('id', {});
+
+      expect(addNotificationSpy).toHaveBeenCalledTimes(0);
+    });
+
+    it('updateExternalAPI should dispatch to notifications/addNotification', async () => {
+      adminService.updateExternalAPI.mockRejectedValue('');
+      await mockStore.updateExternalAPI('id', {});
+
+      expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+      expect(addNotificationSpy).toHaveBeenCalledWith({
+        consoleError: 'trans.store.admin.updateAPIsConsErrMsg',
+        text: 'trans.store.admin.updateAPIsErrMsg',
+      });
+    });
   });
 });
