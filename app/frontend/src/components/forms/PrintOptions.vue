@@ -91,6 +91,8 @@ export default {
     selectedOption() {
       if (this.selectedOption === 'default') {
         this.displayTemplatePrintButton = true;
+      } else if (this.selectedOption === 'upload') {
+        this.displayTemplatePrintButton = this.templateForm.files.length > 0;
       } else {
         this.displayTemplatePrintButton = false;
       }
