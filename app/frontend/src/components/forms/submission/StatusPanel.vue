@@ -42,7 +42,7 @@ export default {
       valid: false,
       showSendConfirmEmail: false,
       showStatusContent: false,
-      selectedUser: null,
+      selectedUsers: [], // array to hold multiple users for REVISING status
     };
   },
   computed: {
@@ -232,57 +232,77 @@ export default {
             throw new Error(i18n.t('trans.statusPanel.status'));
           }
 
-          const statusBody = {
+          const baseStatusBody = {
             code: this.statusToSet,
-            submissionUserEmail: this.submissionUserEmail,
             revisionNotificationEmailContent: this.emailComment,
           };
-          if (this.showAssignee) {
-            if (this.assignee) {
-              statusBody.assignedToUserId = this.assignee.userId;
-              statusBody.assignmentNotificationEmail = this.assignee.email;
-            }
-          }
-          const statusResponse = await formService.updateSubmissionStatus(
-            this.submissionId,
-            statusBody
-          );
-          if (!statusResponse.data) {
-            throw new Error(
-              i18n.t('trans.statusPanel.updtSubmissionsStatusErr')
-            );
+
+          if (this.showAssignee && this.assignee) {
+            baseStatusBody.assignedToUserId = this.assignee.userId;
+            baseStatusBody.assignmentNotificationEmail = this.assignee.email;
           }
 
-          if (this.emailComment) {
-            let formattedComment;
-            if (this.statusToSet === 'ASSIGNED') {
-              formattedComment = `Email to ${this.assignee.email}: ${this.emailComment}`;
-            } else if (
-              this.statusToSet === 'REVISING' ||
-              this.statusToSet === 'COMPLETED'
-            ) {
-              formattedComment = `Email to ${this.submissionUserEmail}: ${this.emailComment}`;
-            }
+          if (this.statusToSet === 'REVISING') {
+            // Handle multiple emails for REVISING
+            for (const user of this.selectedUsers) {
+              const statusBody = {
+                ...baseStatusBody,
+                submissionUserEmail: user.email,
+              };
+              const statusResponse = await formService.updateSubmissionStatus(
+                this.submissionId,
+                statusBody
+              );
 
-            const submissionStatusId =
-              statusResponse.data[0].submissionStatusId;
-            const user = await rbacService.getCurrentUser();
-            const noteBody = {
-              submissionId: this.submissionId,
-              submissionStatusId: submissionStatusId,
-              note: formattedComment,
-              userId: user.data.id,
+              if (!statusResponse.data) {
+                throw new Error(
+                  i18n.t('trans.statusPanel.updtSubmissionsStatusErr')
+                );
+              }
+
+              if (this.emailComment) {
+                const formattedComment = `Email to ${user.email}: ${this.emailComment}`;
+                await this.sendEmailWithComment(
+                  formattedComment,
+                  statusResponse.data[0].submissionStatusId
+                );
+              }
+            }
+          } else {
+            // Handle single email for other statuses
+            const statusBody = {
+              ...baseStatusBody,
+              submissionUserEmail: this.submissionUserEmail,
             };
-            const response = await formService.addNote(
+            const statusResponse = await formService.updateSubmissionStatus(
               this.submissionId,
-              noteBody
+              statusBody
             );
-            if (!response.data) {
-              throw new Error(i18n.t('trans.statusPanel.addNoteNoReponserErr'));
+
+            if (!statusResponse.data) {
+              throw new Error(
+                i18n.t('trans.statusPanel.updtSubmissionsStatusErr')
+              );
             }
-            // Update the parent if the note was updated
-            this.$emit('note-updated');
+
+            if (this.emailComment) {
+              let formattedComment;
+              if (this.statusToSet === 'ASSIGNED') {
+                formattedComment = `Email to ${this.assignee.email}: ${this.emailComment}`;
+              } else if (this.statusToSet === 'COMPLETED') {
+                formattedComment = `Email to ${this.submissionUserEmail}: ${this.emailComment}`;
+              }
+
+              await this.sendEmailWithComment(
+                formattedComment,
+                statusResponse.data[0].submissionStatusId
+              );
+            }
           }
+
+          // Update the parent if the note was updated
+          this.$emit('note-updated');
+
           this.resetForm();
           this.getStatus();
         }
@@ -295,8 +315,23 @@ export default {
         });
       }
     },
-    updateSubmissionUserEmail(selectedUser) {
-      this.submissionUserEmail = selectedUser ? selectedUser.email : '';
+
+    async sendEmailWithComment(comment, submissionStatusId) {
+      const user = await rbacService.getCurrentUser();
+      const noteBody = {
+        submissionId: this.submissionId,
+        submissionStatusId: submissionStatusId,
+        note: comment,
+        userId: user.data.id,
+      };
+      const response = await formService.addNote(this.submissionId, noteBody);
+      if (!response.data) {
+        throw new Error(i18n.t('trans.statusPanel.addNoteNoReponserErr'));
+      }
+    },
+
+    updateSubmissionUserEmail(selectedUsers) {
+      this.selectedUsers = selectedUsers;
     },
   },
 };
@@ -447,7 +482,7 @@ export default {
             <div v-show="statusFields" v-if="showRevising">
               <label>Recipient Email</label>
               <v-autocomplete
-                v-model="selectedUser"
+                v-model="selectedUsers"
                 :class="{ 'dir-rtl': isRTL }"
                 autocomplete="autocomplete_off"
                 data-test="showRecipientEmail"
@@ -463,6 +498,7 @@ export default {
                   (v) => !!v || $t('trans.statusPanel.recipientIsRequired'),
                 ]"
                 :lang="lang"
+                multiple
                 @update:model-value="updateSubmissionUserEmail"
               >
                 <!-- selected user -->
