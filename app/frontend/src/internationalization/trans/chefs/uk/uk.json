@@ -698,7 +698,8 @@
     "defaultCdogsTemplate": "Використовувати стандартний шаблон CDOGS",
     "fileName": "Назва файлу",
     "uploadDate": "Дата завантаження",
-    "upload": "Завантажити"
+    "upload": "Завантажити",
+    "selectExportFileType": "Виберіть тип файлу для експорту"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Інформаційне посилання на компонент",

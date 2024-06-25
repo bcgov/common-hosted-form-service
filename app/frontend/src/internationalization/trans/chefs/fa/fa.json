@@ -699,7 +699,8 @@
     "defaultCdogsTemplate": "استفاده از قالب پیش‌فرض CDOGS",
     "fileName": "نام فایل",
     "uploadDate": "تاریخ بارگذاری",
-    "upload": "بارگذاری"
+    "upload": "بارگذاری",
+    "selectExportFileType": "نوع فایل صادرات را انتخاب کنید"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "لینک اطلاعات کامپوننت",

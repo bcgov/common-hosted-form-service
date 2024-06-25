@@ -454,11 +454,10 @@ export default {
                     v-model="templateForm.outputFileType"
                     variant="outlined"
                     :items="defaultExportFileTypes"
-                    label="Select export filetype"
+                    :label="$t('trans.printOptions.selectExportFileType')"
                     style="width: 220px"
                     class="mx-10"
-                  >
-                  </v-select>
+                  />
                 </v-skeleton-loader>
 
                 <!-- Radio 2 -->

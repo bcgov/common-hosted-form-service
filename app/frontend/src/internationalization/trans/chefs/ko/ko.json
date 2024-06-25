@@ -699,7 +699,8 @@
     "defaultCdogsTemplate": "기본 CDOGS 템플릿 사용",
     "fileName": "파일 이름",
     "uploadDate": "업로드 날짜",
-    "upload": "업로드"
+    "upload": "업로드",
+    "selectExportFileType": "내보낼 파일 유형 선택"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "구성품 정보 링크",

@@ -699,7 +699,8 @@
     "defaultCdogsTemplate": "Usar plantilla CDOGS predeterminada",
     "fileName": "Nombre del archivo",
     "uploadDate": "Fecha de subida",
-    "upload": "Subir"
+    "upload": "Subir",
+    "selectExportFileType": "Seleccionar tipo de archivo de exportación"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Enlace de información del componente",
