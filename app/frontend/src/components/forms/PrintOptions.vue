@@ -51,6 +51,8 @@ export default {
       displayTemplatePrintButton: false,
       isValidFile: true,
       validFileExtensions: ['txt', 'docx', 'html', 'odt', 'pptx', 'xlsx'],
+      defaultExportFileTypes: ['pdf'],
+      uploadExportFileTypes: ['pdf'],
     };
   },
   computed: {
@@ -88,11 +90,16 @@ export default {
           this.templateForm.outputFileName = name;
         }
         this.templateForm.contentFileType = extension;
+        if (!this.uploadExportFileTypes.includes(extension)) {
+          this.uploadExportFileTypes.push(extension);
+        }
       }
     },
     selectedOption() {
       if (this.selectedOption === 'default') {
         this.displayTemplatePrintButton = true;
+      } else if (this.selectedOption === 'upload') {
+        this.displayTemplatePrintButton = this.templateForm.files.length > 0;
       } else {
         this.displayTemplatePrintButton = false;
       }
@@ -191,7 +198,7 @@ export default {
     async generate() {
       try {
         this.loading = true;
-        const outputFileType = 'pdf';
+        let outputFileType = this.templateForm.outputFileType || 'pdf';
         let content = '';
         let contentFileType = '';
         let outputFileName = '';
@@ -290,6 +297,10 @@ export default {
           this.defaultTemplateExtension = extension;
           this.defaultReportname = name;
           this.defaultTemplateDate = response2.data.createdAt.split('T')[0];
+
+          if (!this.defaultExportFileTypes.includes(extension)) {
+            this.defaultExportFileTypes.push(extension);
+          }
         }
       } catch (e) {
         this.addNotification({
@@ -305,12 +316,28 @@ export default {
     validateFileExtension(event) {
       if (event.length > 0) {
         const fileExtension = event[0].name.split('.').pop();
+        // reset the outputFileName when a new file is uploaded
+        this.templateForm.outputFileName = event[0].name
+          .split('.')
+          .slice(0, -1)
+          .join('.');
+        // reset uploadExportFileTypes when a new file is uploaded
+        this.uploadExportFileTypes = ['pdf'];
+        // reset the v-select value
+        this.templateForm.outputFileType = null;
         if (this.validFileExtensions.includes(fileExtension)) {
           this.isValidFile = true;
         } else {
           this.isValidFile = false;
         }
       } else {
+        // Remove the file extension from uploadExportFileTypes when the file input is cleared
+        const fileExtension = this.templateForm.contentFileType;
+        if (fileExtension && fileExtension !== 'pdf') {
+          this.uploadExportFileTypes = this.uploadExportFileTypes.filter(
+            (type) => type !== fileExtension
+          );
+        }
         this.isValidFile = true;
       }
     },
@@ -430,6 +457,16 @@ export default {
                       </tr>
                     </tbody>
                   </v-table>
+                  <!-- dropdown list -->
+                  <v-select
+                    v-if="selectedOption === 'default'"
+                    v-model="templateForm.outputFileType"
+                    variant="outlined"
+                    :items="defaultExportFileTypes"
+                    :label="$t('trans.printOptions.selectExportFileType')"
+                    style="width: 220px"
+                    class="mx-10"
+                  />
                 </v-skeleton-loader>
 
                 <!-- Radio 2 -->
@@ -454,6 +491,16 @@ export default {
                   :disabled="selectedOption !== 'upload'"
                   @update:model-value="validateFileExtension($event)"
                 />
+                <v-select
+                  v-if="selectedOption === 'upload'"
+                  v-model="templateForm.outputFileType"
+                  variant="outlined"
+                  :items="uploadExportFileTypes"
+                  label="Select export filetype"
+                  style="width: 220px"
+                  class="mx-10"
+                >
+                </v-select>
               </v-radio-group>
               <v-card-actions>
                 <v-tooltip location="top">
