@@ -745,7 +745,8 @@
     "defaultCdogsTemplate": "Use default CDOGS template",
     "fileName": "File Name",
     "uploadDate": "Upload Date",
-    "upload": "Upload"
+    "upload": "Upload",
+    "selectExportFileType": "Select export filetype"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Component Information Link",

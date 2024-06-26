@@ -701,7 +701,8 @@
     "defaultCdogsTemplate": "Utiliser le modèle CDOGS par défaut",
     "fileName": "Nom de fichier",
     "uploadDate": "Date de téléchargement",
-    "upload": "Télécharger"
+    "upload": "Télécharger",
+    "selectExportFileType": "Sélectionner le type de fichier à exporter"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Lien d'informations sur les composants",

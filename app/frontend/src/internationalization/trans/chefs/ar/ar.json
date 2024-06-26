@@ -701,7 +701,8 @@
     "defaultCdogsTemplate": "استخدام قالب CDOGS الافتراضي",
     "fileName": "اسم الملف",
     "uploadDate": "تاريخ التحميل",
-    "upload": "تحميل"
+    "upload": "تحميل",
+    "selectExportFileType": "اختر نوع ملف التصدير"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "رابط معلومات المكون",

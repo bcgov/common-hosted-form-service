@@ -701,7 +701,8 @@
     "defaultCdogsTemplate": "ਮੂਲ CDOGS ਟੈਂਪਲੇਟ ਵਰਤੋ",
     "fileName": "ਫਾਈਲ ਦਾ ਨਾਂ",
     "uploadDate": "ਅੱਪਲੋਡ ਮਿਤੀ",
-    "upload": "ਅੱਪਲੋਡ ਕਰੋ"
+    "upload": "ਅੱਪਲੋਡ ਕਰੋ",
+    "selectExportFileType": "ਨਿਰਯਾਤ ਫਾਈਲ ਦੀ ਕਿਸਮ ਚੁਣੋ"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "ਕੰਪੋਨੈਂਟ ਜਾਣਕਾਰੀ ਲਿੰਕ",
