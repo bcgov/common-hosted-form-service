@@ -1,6 +1,6 @@
 <script>
 import { mapActions, mapState } from 'pinia';
-import { i18n } from '~/internationalization';
+import { useI18n } from 'vue-i18n';
 
 import StatusTable from '~/components/forms/submission/StatusTable.vue';
 import { formService, rbacService } from '~/services';
@@ -24,6 +24,11 @@ export default {
     },
   },
   emits: ['draft-enabled', 'note-updated'],
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
+
+    return { t, locale };
+  },
   data() {
     return {
       assignee: null,
@@ -52,7 +57,6 @@ export default {
       'formSubmission',
       'submissionUsers',
       'isRTL',
-      'lang',
     ]),
     // State Machine
     showActionDate() {
@@ -91,16 +95,16 @@ export default {
       let actionStatus = '';
       switch (action) {
         case 'ASSIGN':
-          actionStatus = i18n.t('trans.statusPanel.assign');
+          actionStatus = this.$t('trans.statusPanel.assign');
           break;
         case 'COMPLETE':
-          actionStatus = i18n.t('trans.statusPanel.complete');
+          actionStatus = this.$t('trans.statusPanel.complete');
           break;
         case 'REVISE':
-          actionStatus = i18n.t('trans.statusPanel.revise');
+          actionStatus = this.$t('trans.statusPanel.revise');
           break;
         case 'UPDATE':
-          actionStatus = i18n.t('trans.statusPanel.update');
+          actionStatus = this.$t('trans.statusPanel.update');
           break;
         default:
         // code block
@@ -136,9 +140,9 @@ export default {
           }
         } catch (error) {
           this.addNotification({
-            text: i18n.t('trans.statusPanel.fetchSubmissionUsersErr'),
+            text: this.$t('trans.statusPanel.fetchSubmissionUsersErr'),
             consoleError:
-              i18n.t('trans.statusPanel.fetchSubmissionUsersConsErr') +
+              this.$t('trans.statusPanel.fetchSubmissionUsersConsErr') +
               `${this.submissionId}: ${error}`,
           });
         }
@@ -183,7 +187,7 @@ export default {
 
         this.statusHistory = statuses.data;
         if (!this.statusHistory.length || !this.statusHistory[0]) {
-          throw new Error(i18n.t('trans.statusPanel.noStatusesFound'));
+          throw new Error(this.$t('trans.statusPanel.noStatusesFound'));
         } else {
           // Statuses are returned in date precedence, the 0th item in the array is the current status
           this.currentStatus = this.statusHistory[0];
@@ -192,7 +196,7 @@ export default {
           const scRes = await formService.getStatusCodes(this.formId);
           const statusCodes = scRes.data;
           if (!statusCodes.length) {
-            throw new Error(i18n.t('trans.statusPanel.statusCodesErr'));
+            throw new Error(this.$t('trans.statusPanel.statusCodesErr'));
           }
           // For the CURRENT status, add the code details (display name, next codes etc)
           this.currentStatus.statusCodeDetail = statusCodes.find(
@@ -205,9 +209,9 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          text: i18n.t('trans.statusPanel.notifyErrorCode'),
+          text: this.$t('trans.statusPanel.notifyErrorCode'),
           consoleError:
-            i18n.t('trans.statusPanel.notifyConsoleErrorCode') +
+            this.$t('trans.statusPanel.notifyConsoleErrorCode') +
             `${error.message}`,
         });
       } finally {
@@ -229,7 +233,7 @@ export default {
       try {
         if (this.$refs.statusPanelForm.validate()) {
           if (!this.statusToSet) {
-            throw new Error(i18n.t('trans.statusPanel.status'));
+            throw new Error(this.$t('trans.statusPanel.status'));
           }
 
           const baseStatusBody = {
@@ -308,8 +312,8 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          text: i18n.t('trans.statusPanel.addNoteErrMsg'),
-          consoleError: i18n.t('trans.statusPanel.addNoteConsoleErrMsg', {
+          text: this.$t('trans.statusPanel.addNoteErrMsg'),
+          consoleError: this.$t('trans.statusPanel.addNoteConsoleErrMsg', {
             error: error,
           }),
         });
@@ -344,7 +348,7 @@ export default {
       data-test="showStatusPanel"
       @click="showStatusContent = !showStatusContent"
     >
-      <h2 class="status-heading" :class="{ 'dir-rtl': isRTL }" :lang="lang">
+      <h2 class="status-heading" :class="{ 'dir-rtl': isRTL }" :lang="locale">
         {{ $t('trans.formSubmission.status') }}
         <v-icon>{{
           showStatusContent
@@ -355,7 +359,7 @@ export default {
         }}</v-icon>
       </h2>
       <!-- Show <p> here for screens greater than 959px  -->
-      <p class="hide-on-narrow" :lang="lang">
+      <p class="hide-on-narrow" :lang="locale">
         <span :class="isRTL ? 'status-details-rtl' : 'status-details'">
           <strong>{{ $t('trans.statusPanel.currentStatus') }}</strong>
           {{ currentStatus.code }}
@@ -376,7 +380,7 @@ export default {
     >
       <div v-if="showStatusContent" class="d-flex flex-column flex-1-1-100">
         <!-- Show <p> here for screens less than 960px  -->
-        <p class="hide-on-wide" :lang="lang">
+        <p class="hide-on-wide" :lang="locale">
           <strong>{{ $t('trans.statusPanel.currentStatus') }}</strong>
           {{ currentStatus.code }}
           <br />
@@ -392,7 +396,7 @@ export default {
           lazy-validation
           style="width: inherit"
         >
-          <label :lang="lang">{{
+          <label :lang="locale">{{
             $t('trans.statusPanel.assignOrUpdateStatus')
           }}</label>
           <v-select
@@ -420,7 +424,7 @@ export default {
                     ></v-icon>
                   </template>
                   <span
-                    :lang="lang"
+                    :lang="locale"
                     v-html="
                       $t('trans.statusPanel.assignSubmissnToFormReviewer')
                     "
@@ -444,7 +448,7 @@ export default {
                 :rules="[
                   (v) => !!v || $t('trans.statusPanel.assigneeIsRequired'),
                 ]"
-                :lang="lang"
+                :lang="locale"
               >
                 <!-- selected user -->
                 <template #chip="{ props, item }">
@@ -473,7 +477,7 @@ export default {
                   @click="assignToCurrentUser"
                 >
                   <v-icon class="mr-1" icon="mdi:mdi-account"></v-icon>
-                  <span :lang="lang">{{
+                  <span :lang="locale">{{
                     $t('trans.statusPanel.assignToMe')
                   }}</span>
                 </v-btn>
@@ -497,7 +501,7 @@ export default {
                 :rules="[
                   (v) => !!v || $t('trans.statusPanel.recipientIsRequired'),
                 ]"
-                :lang="lang"
+                :lang="locale"
                 multiple
                 @update:model-value="updateSubmissionUserEmail"
               >
@@ -521,11 +525,11 @@ export default {
               <v-checkbox
                 v-model="addComment"
                 :label="$t('trans.statusPanel.attachCommentToEmail')"
-                :lang="lang"
+                :lang="locale"
                 data-test="canAttachCommentToEmail"
               />
               <div v-if="addComment">
-                <label :lang="lang">{{
+                <label :lang="locale">{{
                   $t('trans.statusPanel.emailComment')
                 }}</label>
                 <v-textarea
@@ -559,7 +563,7 @@ export default {
                     :title="$t('trans.statusPanel.viewHistory')"
                     data-test="viewHistoryButton"
                   >
-                    <span :lang="lang">{{
+                    <span :lang="locale">{{
                       $t('trans.statusPanel.viewHistory')
                     }}</span>
                   </v-btn>
@@ -579,7 +583,7 @@ export default {
                   <v-card-title
                     class="text-h5 pb-0"
                     :class="{ 'dir-rtl': isRTL }"
-                    :lang="lang"
+                    :lang="locale"
                     >{{ $t('trans.statusPanel.statusHistory') }}</v-card-title
                   >
 
@@ -598,7 +602,7 @@ export default {
                       data-test="canCloseStatusPanel"
                       @click="historyDialog = false"
                     >
-                      <span :lang="lang">{{
+                      <span :lang="locale">{{
                         $t('trans.statusPanel.close')
                       }}</span>
                     </v-btn>

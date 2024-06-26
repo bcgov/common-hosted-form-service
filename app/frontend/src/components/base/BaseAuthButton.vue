@@ -2,13 +2,15 @@
 import { storeToRefs } from 'pinia';
 import { useRoute } from 'vue-router';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import { useAuthStore } from '~/store/auth';
-import { useFormStore } from '~/store/form';
+
+const { locale } = useI18n({ useScope: 'global' });
 
 const authStore = useAuthStore();
 
 const { authenticated, ready } = storeToRefs(authStore);
-const { lang } = storeToRefs(useFormStore());
 
 const hasLogin = computed(() => useRoute()?.meta?.hasLogin);
 </script>
@@ -23,17 +25,24 @@ const hasLogin = computed(() => useRoute()?.meta?.hasLogin);
       :title="$t('trans.baseAuthButton.logout')"
       @click="authStore.logout"
     >
-      <span :lang="lang">{{ $t('trans.baseAuthButton.logout') }}</span>
+      <span :lang="locale">{{ $t('trans.baseAuthButton.logout') }}</span>
     </v-btn>
     <v-btn
       v-else-if="hasLogin"
       id="loginButton"
       color="white"
+      density="default"
       variant="outlined"
       :title="$t('trans.baseAuthButton.login')"
       @click="authStore.login"
     >
-      <span :lang="lang">{{ $t('trans.baseAuthButton.login') }}</span>
+      <span :lang="locale">{{ $t('trans.baseAuthButton.login') }}</span>
     </v-btn>
   </div>
 </template>
+
+<style scoped>
+.v-btn {
+  height: 40px;
+}
+</style>
