@@ -1,14 +1,14 @@
 import { Components } from 'formiojs';
-const BaseComponent = (Components as any).components.base;
+const FieldComponent = (Components as any).components.field;
 import MapService from './services/MapService';
 import baseEditForm from './Component.form';
 import * as L from 'leaflet';
 
 const CENTER: [number, number] = [48.41939025932759, -123.37029576301576]; // Ensure CENTER is a tuple with exactly two elements
 
-export default class Component extends (BaseComponent as any) {
+export default class Component extends (FieldComponent as any) {
   static schema(...extend) {
-    return BaseComponent.schema({
+    return FieldComponent.schema({
       type: 'map',
       label: 'Map',
       key: 'map',
