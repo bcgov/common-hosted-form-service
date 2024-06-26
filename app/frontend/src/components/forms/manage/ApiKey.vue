@@ -1,10 +1,12 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed } from 'vue';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { useFormStore } from '~/store/form';
 import { FormPermissions } from '~/utils/constants';
+
+const { locale } = useI18n({ useScope: 'global' });
 
 const loading = ref(false);
 const showConfirmationDialog = ref(false);
@@ -14,7 +16,7 @@ const filesApiAccess = ref(false);
 
 const formStore = useFormStore();
 
-const { apiKey, form, permissions, isRTL, lang } = storeToRefs(formStore);
+const { apiKey, form, permissions, isRTL } = storeToRefs(formStore);
 
 const canDeleteKey = computed(() => {
   return (
@@ -84,20 +86,20 @@ defineExpose({
   <div :class="{ 'dir-rtl': isRTL }">
     <div v-if="!canGenerateKey" class="mt-3 mb-6">
       <v-icon class="mr-1" color="primary" icon="mdi:mdi-information"></v-icon>
-      <span :lang="lang" v-html="$t('trans.apiKey.formOwnerKeyAcess')"></span>
+      <span :lang="locale" v-html="$t('trans.apiKey.formOwnerKeyAcess')"></span>
     </div>
-    <h3 class="mt-3" :lang="lang">
+    <h3 class="mt-3" :lang="locale">
       {{ $t('trans.apiKey.disclaimer') }}
     </h3>
     <ul :class="isRTL ? 'mr-6' : null">
-      <li :lang="lang">{{ $t('trans.apiKey.infoA') }}</li>
-      <li :lang="lang">
+      <li :lang="locale">{{ $t('trans.apiKey.infoA') }}</li>
+      <li :lang="locale">
         {{ $t('trans.apiKey.infoB') }}
       </li>
-      <li :lang="lang">
+      <li :lang="locale">
         {{ $t('trans.apiKey.infoC') }}
       </li>
-      <li :lang="lang">
+      <li :lang="locale">
         {{ $t('trans.apiKey.infoD') }}
       </li>
     </ul>
@@ -117,7 +119,7 @@ defineExpose({
             data-test="canGenerateAPIKey"
             @click="showConfirmationDialog = true"
           >
-            <span :lang="lang"
+            <span :lang="locale"
               >{{
                 apiKey
                   ? $t('trans.apiKey.regenerate')
@@ -137,7 +139,7 @@ defineExpose({
             readonly
             :type="showSecret ? 'text' : 'password'"
             :model-value="secret"
-            :lang="lang"
+            :lang="locale"
           />
         </v-col>
         <v-col cols="12" sm="3">
@@ -159,7 +161,7 @@ defineExpose({
                 @click="showSecret = !showSecret"
               />
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               showSecret
                 ? $t('trans.apiKey.hideSecret')
                 : $t('trans.apiKey.showSecret')
@@ -173,7 +175,7 @@ defineExpose({
             :text-to-copy="secret"
             :snack-bar-text="$t('trans.apiKey.sCTC')"
             :tooltip-text="$t('trans.apiKey.cSTC')"
-            :lang="lang"
+            :lang="locale"
           />
 
           <v-tooltip location="bottom">
@@ -190,7 +192,7 @@ defineExpose({
                 @click="showDeleteDialog = true"
               />
             </template>
-            <span :lang="lang">{{ $t('trans.apiKey.deleteKey') }}</span>
+            <span :lang="locale">{{ $t('trans.apiKey.deleteKey') }}</span>
           </v-tooltip>
         </v-col>
       </v-row>
@@ -204,24 +206,24 @@ defineExpose({
       @continue-dialog="createKey"
     >
       <template #title
-        ><span :lang="lang">
+        ><span :lang="locale">
           {{ $t('trans.apiKey.confirmKeyGen') }}
         </span></template
       >
       <template #text>
         <span
           v-if="!apiKey"
-          :lang="lang"
+          :lang="locale"
           v-html="$t('trans.apiKey.createAPIKey')"
         />
         <span
           v-else
-          :lang="lang"
+          :lang="locale"
           v-html="$t('trans.apiKey.regenerateAPIKey')"
         />
       </template>
       <template #button-text-continue>
-        <span :lang="lang"
+        <span :lang="locale"
           >{{
             apiKey ? $t('trans.apiKey.regenerate') : $t('trans.apiKey.generate')
           }}
@@ -238,15 +240,17 @@ defineExpose({
       @continue-dialog="deleteKey"
     >
       <template #title
-        ><span :lang="lang"
+        ><span :lang="locale"
           >{{ $t('trans.apiKey.confirmDeletion') }}
         </span></template
       >
       <template #text
-        ><span :lang="lang">{{ $t('trans.apiKey.deleteMsg') }}</span></template
+        ><span :lang="locale">{{
+          $t('trans.apiKey.deleteMsg')
+        }}</span></template
       >
       <template #button-text-continue>
-        <span :lang="lang">{{ $t('trans.apiKey.delete') }}</span>
+        <span :lang="locale">{{ $t('trans.apiKey.delete') }}</span>
       </template>
     </BaseDialog>
   </div>

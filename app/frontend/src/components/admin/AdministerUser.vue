@@ -1,9 +1,9 @@
 <script>
 import { mapActions, mapState } from 'pinia';
+import { useI18n } from 'vue-i18n';
 
 import { useAppStore } from '~/store/app';
 import { useAdminStore } from '~/store/admin';
-import { useFormStore } from '~/store/form';
 
 export default {
   props: {
@@ -12,10 +12,14 @@ export default {
       required: true,
     },
   },
+  setup() {
+    const { locale } = useI18n({ useScope: 'global' });
+
+    return { locale };
+  },
   computed: {
     ...mapState(useAppStore, ['config']),
     ...mapState(useAdminStore, ['user']),
-    ...mapState(useFormStore, ['lang']),
   },
   async mounted() {
     await this.readUser(this.userId);
@@ -29,7 +33,7 @@ export default {
 <template>
   <div>
     <h3>{{ user.fullName }}</h3>
-    <h4 :lang="lang">{{ $t('trans.administerUser.userDetails') }}</h4>
+    <h4 :lang="locale">{{ $t('trans.administerUser.userDetails') }}</h4>
     <pre>{{ user }}</pre>
   </div>
 </template>

@@ -3,10 +3,13 @@ import { storeToRefs } from 'pinia';
 import QrcodeVue from 'qrcode.vue';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 import BaseCopyToClipboard from '~/components/base/BaseCopyToClipboard.vue';
 import { NotificationTypes } from '~/utils/constants';
 import { useFormStore } from '~/store/form';
+
+const { locale } = useI18n({ useScope: 'global' });
 
 const router = useRouter();
 
@@ -25,7 +28,7 @@ const dialog = ref(false);
 const qrLevel = ref('M');
 const qrSize = ref(900);
 
-const { isRTL, lang } = storeToRefs(useFormStore());
+const { isRTL } = storeToRefs(useFormStore());
 
 const formLink = computed(() => {
   const url = router.resolve({
@@ -62,17 +65,17 @@ defineExpose({ dialog, formLink, downloadQr });
           @click="dialog = true"
         />
       </template>
-      <span :lang="lang">{{ $t('trans.shareForm.shareForm') }}</span>
+      <span :lang="locale">{{ $t('trans.shareForm.shareForm') }}</span>
     </v-tooltip>
 
     <v-dialog v-model="dialog" width="900" data-cy="shareFormDialog">
       <v-card>
-        <v-card-title class="text-h5 pb-0" :lang="lang">{{
+        <v-card-title class="text-h5 pb-0" :lang="locale">{{
           $t('trans.shareForm.shareLink')
         }}</v-card-title>
         <v-card-text>
           <hr />
-          <p class="mb-5" :class="{ 'dir-rtl': isRTL }" :lang="lang">
+          <p class="mb-5" :class="{ 'dir-rtl': isRTL }" :lang="locale">
             {{ $t('trans.shareForm.copyQRCode') }}
           </p>
           <v-alert
@@ -80,7 +83,7 @@ defineExpose({ dialog, formLink, downloadQr });
             :class="[NOTIFICATIONS_TYPES.WARNING.class, { 'dir-rtl': isRTL }]"
             :icon="NOTIFICATIONS_TYPES.WARNING.icon"
             :text="$t('trans.shareForm.warningMessage')"
-            :lang="lang"
+            :lang="locale"
           ></v-alert>
           <v-text-field
             readonly
@@ -99,7 +102,7 @@ defineExpose({ dialog, formLink, downloadQr });
                 class="mt-n1 mx-2"
                 :text-to-copy="formLink"
                 :tooltip-text="$t('trans.shareForm.copyURLToClipboard')"
-                :lang="lang"
+                :lang="locale"
               />
               <v-tooltip location="bottom">
                 <template #activator="{ props }">
@@ -117,7 +120,7 @@ defineExpose({ dialog, formLink, downloadQr });
                     :title="$t('trans.shareForm.openThisForm')"
                   />
                 </template>
-                <span :class="{ 'dir-rtl': isRTL }" :lang="lang">{{
+                <span :class="{ 'dir-rtl': isRTL }" :lang="locale">{{
                   $t('trans.shareForm.openThisForm')
                 }}</span>
               </v-tooltip>
@@ -164,7 +167,7 @@ defineExpose({ dialog, formLink, downloadQr });
             :title="$t('trans.shareForm.close')"
             @click="dialog = false"
           >
-            <span :lang="lang">{{ $t('trans.shareForm.close') }}</span>
+            <span :lang="locale">{{ $t('trans.shareForm.close') }}</span>
           </v-btn>
         </v-card-actions>
       </v-card>

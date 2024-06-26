@@ -4,6 +4,26 @@ import { ref } from 'vue';
 
 const i18n = vi.fn(() => {});
 const translate = vi.fn(() => {});
+const locales = [
+  'ar',
+  'de',
+  'en',
+  'es',
+  'fa',
+  'fr',
+  'hi',
+  'it',
+  'ja',
+  'ko',
+  'pa',
+  'pt',
+  'ru',
+  'tl',
+  'uk',
+  'vi',
+  'zh',
+  'zhTW',
+];
 
 translate.mockImplementation((key, options = {}) => {
   return {
@@ -14,7 +34,7 @@ translate.mockImplementation((key, options = {}) => {
 
 i18n.mockImplementation(() => {
   return {
-    locale: 'en',
+    locale: ref('en'),
     t: translate,
   };
 });
@@ -26,6 +46,7 @@ vi.mock('vue-i18n', () => {
         global: {
           t: (key, _options = {}) => key,
         },
+        locale: ref('en'),
       };
     },
     useI18n: () => ({
@@ -38,8 +59,9 @@ vi.mock('vue-i18n', () => {
 config.global.mocks = {
   $i18n: () => ({
     locale: 'en',
+    availableLocales: locales,
   }),
-  $t: (tKey) => tKey,
+  $t: (key, _options = {}) => key,
 };
 
 beforeEach(() => {

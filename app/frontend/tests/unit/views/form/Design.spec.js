@@ -36,6 +36,10 @@ describe('Design.vue', () => {
       global: {
         plugins: [pinia],
         stubs: {
+          BaseSecure: {
+            name: 'BaseSecure',
+            template: '<div class="base-secure-stub"><slot /></div>',
+          },
           FormDesigner: {
             name: 'FormDesigner',
             methods: {

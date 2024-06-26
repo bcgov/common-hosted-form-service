@@ -1,12 +1,14 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { onMounted } from 'vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import ManageForm from '~/components/forms/manage/ManageForm.vue';
 import ManageFormActions from '~/components/forms/manage/ManageFormActions.vue';
 import { useFormStore } from '~/store/form';
 import { FormPermissions } from '~/utils/constants';
+
+const { locale } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   f: {
@@ -17,7 +19,7 @@ const properties = defineProps({
 
 const loading = ref(true);
 
-const { form, permissions, isRTL, lang } = storeToRefs(useFormStore());
+const { form, permissions, isRTL } = storeToRefs(useFormStore());
 
 onMounted(async () => {
   loading.value = true;
@@ -43,7 +45,7 @@ onMounted(async () => {
     >
       <!-- page title -->
       <div>
-        <h1 :lang="lang">{{ $t('trans.manageLayout.manageForm') }}</h1>
+        <h1 :lang="locale">{{ $t('trans.manageLayout.manageForm') }}</h1>
         <h3>{{ form.name }}</h3>
       </div>
       <!-- buttons -->

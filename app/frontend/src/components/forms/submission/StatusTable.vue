@@ -1,6 +1,6 @@
 <script>
 import { mapState, mapActions } from 'pinia';
-import { i18n } from '~/internationalization';
+import { useI18n } from 'vue-i18n';
 
 import { formService } from '~/services';
 import { useFormStore } from '~/store/form';
@@ -13,6 +13,11 @@ export default {
       type: String,
     },
   },
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
+
+    return { t, locale };
+  },
   data() {
     return {
       loading: true,
@@ -20,17 +25,17 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
+    ...mapState(useFormStore, ['isRTL']),
     headers() {
       return [
-        { title: i18n.t('trans.statusTable.status'), key: 'code' },
+        { title: this.$t('trans.statusTable.status'), key: 'code' },
         {
-          title: i18n.t('trans.statusTable.dateStatusChanged'),
+          title: this.$t('trans.statusTable.dateStatusChanged'),
           align: 'start',
           key: 'createdAt',
         },
-        { title: i18n.t('trans.statusTable.assignee'), key: 'user' },
-        { title: i18n.t('trans.statusTable.updatedBy'), key: 'createdBy' },
+        { title: this.$t('trans.statusTable.assignee'), key: 'user' },
+        { title: this.$t('trans.statusTable.updatedBy'), key: 'createdBy' },
       ];
     },
   },
@@ -48,9 +53,10 @@ export default {
         this.statuses = response.data;
       } catch (error) {
         this.addNotification({
-          text: i18n.t('trans.statusTable.getSubmissionStatusErr'),
+          text: this.$t('trans.statusTable.getSubmissionStatusErr'),
           consoleError:
-            i18n.t('trans.statusTable.getSubmissionStatusConsErr') + `${error}`,
+            this.$t('trans.statusTable.getSubmissionStatusConsErr') +
+            `${error}`,
         });
       } finally {
         this.loading = false;
@@ -72,7 +78,7 @@ export default {
       :loading-text="$t('trans.statusTable.loadingText')"
       item-key="statusId"
       class="status-table"
-      :lang="lang"
+      :lang="locale"
     >
       <template #item.createdAt="{ item }">
         <span>{{ $filters.formatDate(item.createdAt) }}</span>

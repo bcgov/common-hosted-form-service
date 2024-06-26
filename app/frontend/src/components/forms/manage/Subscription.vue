@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
-const { t } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
 
 const showSecret = ref(false);
 const subscriptionForm = ref(null);
@@ -28,7 +28,7 @@ const endpointTokenRules = ref([
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
 
-const { form, lang, subscriptionData } = storeToRefs(formStore);
+const { form, subscriptionData } = storeToRefs(formStore);
 
 async function updateSettings() {
   try {
@@ -66,7 +66,7 @@ defineExpose({ showHideKey, showSecret, updateSettings });
 <template>
   <v-container class="px-0">
     <template #title>
-      <span :lang="lang">
+      <span :lang="locale">
         {{ $t('trans.formSettings.eventSubscription') }}
       </span>
     </template>
@@ -80,7 +80,7 @@ defineExpose({ showHideKey, showSecret, updateSettings });
           <v-text-field
             v-model="subscriptionData.endpointUrl"
             :label="$t('trans.subscribeEvent.endpointUrl')"
-            :lang="lang"
+            :lang="locale"
             :placeholder="$t('trans.subscribeEvent.urlPlaceholder')"
             density="compact"
             flat
@@ -93,7 +93,7 @@ defineExpose({ showHideKey, showSecret, updateSettings });
           <v-text-field
             v-model="subscriptionData.key"
             :label="$t('trans.subscribeEvent.key')"
-            :lang="lang"
+            :lang="locale"
             density="compact"
             flat
             solid
@@ -104,7 +104,7 @@ defineExpose({ showHideKey, showSecret, updateSettings });
           <v-text-field
             v-model="subscriptionData.endpointToken"
             :label="$t('trans.subscribeEvent.endpointToken')"
-            :lang="lang"
+            :lang="locale"
             density="compact"
             flat
             solid
@@ -134,10 +134,10 @@ defineExpose({ showHideKey, showSecret, updateSettings });
                 @click="showHideKey"
               />
             </template>
-            <span v-if="showSecret" :lang="lang">
+            <span v-if="showSecret" :lang="locale">
               {{ $t('trans.subscribeEvent.hideSecret') }}
             </span>
-            <span v-else :lang="lang">{{
+            <span v-else :lang="locale">{{
               $t('trans.subscribeEvent.showSecret')
             }}</span>
           </v-tooltip>
@@ -151,7 +151,7 @@ defineExpose({ showHideKey, showSecret, updateSettings });
             :title="$t('trans.subscribeEvent.save')"
             @click="updateSettings"
           >
-            <span :lang="lang">{{ $t('trans.subscribeEvent.save') }}</span>
+            <span :lang="locale">{{ $t('trans.subscribeEvent.save') }}</span>
           </v-btn>
         </v-col>
       </v-row>

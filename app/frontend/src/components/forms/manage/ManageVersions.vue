@@ -13,7 +13,7 @@ import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { FormPermissions } from '~/utils/constants';
 
-const { t } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
 
 const router = useRouter();
 
@@ -23,7 +23,7 @@ const draftId = inject('draftId');
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
 
-const { drafts, form, permissions, isRTL, lang } = storeToRefs(formStore);
+const { drafts, form, permissions, isRTL } = storeToRefs(formStore);
 
 const headers = ref([
   {
@@ -234,7 +234,7 @@ defineExpose({
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
     <BaseInfoCard class="my-4">
-      <h4 class="text-primary" :lang="lang">
+      <h4 class="text-primary" :lang="locale">
         <v-icon
           :class="isRTL ? 'ml-1' : 'mr-1'"
           color="primary"
@@ -242,10 +242,10 @@ defineExpose({
         ></v-icon
         >{{ $t('trans.manageVersions.important') }}!
       </h4>
-      <p :lang="lang">{{ $t('trans.manageVersions.infoA') }}</p>
+      <p :lang="locale">{{ $t('trans.manageVersions.infoA') }}</p>
     </BaseInfoCard>
 
-    <div class="mt-8 mb-5" :lang="lang">
+    <div class="mt-8 mb-5" :lang="locale">
       <v-icon
         :class="isRTL ? 'ml-1' : 'mr-1'"
         color="primary"
@@ -281,20 +281,20 @@ defineExpose({
         >
           <v-tooltip location="bottom">
             <template #activator="{ props }">
-              <span v-bind="props" :lang="lang">
+              <span v-bind="props" :lang="locale">
                 {{ $t('trans.manageVersions.version') }} {{ item.version }}
                 <v-chip
                   v-if="item.isDraft"
                   color="secondary"
                   class="mb-5 px-1"
                   x-small
-                  :lang="lang"
+                  :lang="locale"
                 >
                   {{ $t('trans.manageVersions.draft') }}
                 </v-chip>
               </span>
             </template>
-            <span :lang="lang">
+            <span :lang="locale">
               {{ $t('trans.manageVersions.clickToPreview') }}
               <v-icon icon="mdi:mdi-open-in-new"></v-icon>
             </span>
@@ -315,7 +315,7 @@ defineExpose({
           "
         >
           <template #label>
-            <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            <span :class="{ 'mr-2': isRTL }" :lang="locale">
               {{
                 item.published
                   ? $t('trans.manageVersions.published')
@@ -359,7 +359,7 @@ defineExpose({
                 </v-btn>
               </router-link>
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               $t('trans.manageVersions.editVersion')
             }}</span>
           </v-tooltip>
@@ -381,7 +381,7 @@ defineExpose({
                 <v-icon icon="mdi:mdi-download"></v-icon>
               </v-btn>
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               $t('trans.manageVersions.exportDesign')
             }}</span>
           </v-tooltip>
@@ -411,10 +411,10 @@ defineExpose({
                 </v-btn>
               </span>
             </template>
-            <span v-if="hasDraft" :lang="lang">
+            <span v-if="hasDraft" :lang="locale">
               {{ $t('trans.manageVersions.infoC') }}
             </span>
-            <span v-else :lang="lang">
+            <span v-else :lang="locale">
               {{
                 $t('trans.manageVersions.useVersionInfo', {
                   version: item.version,
@@ -442,7 +442,7 @@ defineExpose({
                 </v-btn>
               </span>
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               $t('trans.manageVersions.deleteVersion')
             }}</span>
           </v-tooltip>
@@ -456,12 +456,12 @@ defineExpose({
       @close-dialog="showHasDraftsDialog = false"
     >
       <template #title
-        ><span :lang="lang">{{
+        ><span :lang="locale">{{
           $t('trans.manageVersions.draftAlreadyExists')
         }}</span></template
       >
       <template #text>
-        <span :lang="lang">
+        <span :lang="locale">
           {{ $t('trans.manageVersions.infoD') }}
         </span>
       </template>
@@ -474,24 +474,24 @@ defineExpose({
       @close-dialog="cancelPublish"
     >
       <template #title>
-        <span v-if="publishOpts.publishing" :lang="lang">
+        <span v-if="publishOpts.publishing" :lang="locale">
           {{ $t('trans.manageVersions.publishVersion') }}
           {{ publishOpts.version }}
         </span>
-        <span v-else :lang="lang">
+        <span v-else :lang="locale">
           {{ $t('trans.manageVersions.unpublishVersion') }}
           {{ publishOpts.version }}</span
         >
       </template>
       <template #text>
-        <span v-if="publishOpts.publishing" :lang="lang">
+        <span v-if="publishOpts.publishing" :lang="locale">
           {{
             $t('trans.manageVersions.useVersionInfo', {
               version: publishOpts.version,
             })
           }}
         </span>
-        <span v-else :lang="lang">
+        <span v-else :lang="locale">
           {{ $t('trans.manageVersions.infoE') }}
         </span>
       </template>
@@ -504,17 +504,17 @@ defineExpose({
       @continue-dialog="deleteCurrentDraft"
     >
       <template #title
-        ><span :lang="lang">{{
+        ><span :lang="locale">{{
           $t('trans.manageVersions.confirmDeletion')
         }}</span>
       </template>
       <template #text
-        ><span :lang="lang">{{
+        ><span :lang="locale">{{
           $t('trans.manageVersions.infoF')
         }}</span></template
       >
       <template #button-text-continue>
-        <span :lang="lang">{{ $t('trans.manageVersions.delete') }}</span>
+        <span :lang="locale">{{ $t('trans.manageVersions.delete') }}</span>
       </template>
     </BaseDialog>
   </div>

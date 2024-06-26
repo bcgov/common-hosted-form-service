@@ -1,7 +1,7 @@
 <script setup>
-import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
 
-import { useFormStore } from '~/store/form';
+const { locale } = useI18n({ useScope: 'global' });
 
 defineProps({
   formSubmitMode: {
@@ -9,8 +9,6 @@ defineProps({
     default: false,
   },
 });
-
-const { lang } = storeToRefs(useFormStore());
 </script>
 
 <template>
@@ -29,7 +27,7 @@ const { lang } = storeToRefs(useFormStore());
         href="https://www.gov.bc.ca/"
         :title="$t('trans.bCGovFooter.home')"
       >
-        <span :lang="lang">{{ $t('trans.bCGovFooter.home') }}</span>
+        <span :lang="locale">{{ $t('trans.bCGovFooter.home') }}</span>
       </v-btn>
       <v-btn
         id="footer-about"
@@ -37,7 +35,7 @@ const { lang } = storeToRefs(useFormStore());
         href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca"
         :title="$t('trans.bCGovFooter.about')"
       >
-        <span :lang="lang">{{ $t('trans.bCGovFooter.about') }}</span>
+        <span :lang="locale">{{ $t('trans.bCGovFooter.about') }}</span>
       </v-btn>
       <v-btn
         id="footer-disclaimer"
@@ -45,7 +43,7 @@ const { lang } = storeToRefs(useFormStore());
         href="http://gov.bc.ca/disclaimer"
         :title="$t('trans.bCGovFooter.disclaimer')"
       >
-        <span :lang="lang">{{ $t('trans.bCGovFooter.disclaimer') }}</span>
+        <span :lang="locale">{{ $t('trans.bCGovFooter.disclaimer') }}</span>
       </v-btn>
       <v-btn
         id="footer-privacy"
@@ -61,7 +59,7 @@ const { lang } = storeToRefs(useFormStore());
         href="http://gov.bc.ca/webaccessibility"
         :title="$t('trans.bCGovFooter.accessibility')"
       >
-        <span :lang="lang">{{ $t('trans.bCGovFooter.accessibility') }}</span>
+        <span :lang="locale">{{ $t('trans.bCGovFooter.accessibility') }}</span>
       </v-btn>
       <v-btn
         id="footer-copyright"
@@ -69,7 +67,7 @@ const { lang } = storeToRefs(useFormStore());
         href="http://gov.bc.ca/copyright"
         :title="$t('trans.bCGovFooter.copyRight')"
       >
-        <span :lang="lang">{{ $t('trans.bCGovFooter.copyRight') }}</span>
+        <span :lang="locale">{{ $t('trans.bCGovFooter.copyRight') }}</span>
       </v-btn>
       <v-btn
         id="footer-contact"
@@ -77,7 +75,7 @@ const { lang } = storeToRefs(useFormStore());
         href="https://www2.gov.bc.ca/gov/content/home/contact-us"
         :title="$t('trans.bCGovFooter.contactUs')"
       >
-        <span :lang="lang">{{ $t('trans.bCGovFooter.contactUs') }}</span>
+        <span :lang="locale">{{ $t('trans.bCGovFooter.contactUs') }}</span>
       </v-btn>
     </v-row>
   </v-footer>
