@@ -659,6 +659,7 @@
     "assigneeIsRequired": "Assignee is required",
     "assignToMe": "ASSIGN TO ME",
     "recipientEmail": "Recipient Email",
+    "recipientIsRequired": "Recipient is required",
     "attachCommentToEmail": "Attach Comment to Email",
     "emailComment": "Email Comment",
     "maxChars": "Max 4000 characters",
