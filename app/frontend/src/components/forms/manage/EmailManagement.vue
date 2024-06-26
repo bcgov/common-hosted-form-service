@@ -1,38 +1,23 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
 
 import EmailTemplate from '~/components/forms/manage/EmailTemplate.vue';
 import { useFormStore } from '~/store/form';
 
-export default {
-  name: 'EmailManagement',
-
-  components: {
-    EmailTemplate,
+const properties = defineProps({
+  formId: {
+    required: true,
+    type: String,
   },
+});
 
-  props: {
-    formId: {
-      required: true,
-      type: String,
-    },
-  },
+const formStore = useFormStore();
+const { form, isRTL, lang } = storeToRefs(formStore);
 
-  computed: {
-    ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
-  },
-
-  async created() {
-    await Promise.all([
-      this.fetchEmailTemplates(this.formId),
-      this.fetchForm(this.formId),
-    ]);
-  },
-
-  methods: {
-    ...mapActions(useFormStore, ['fetchEmailTemplates', 'fetchForm']),
-  },
-};
+Promise.all([
+  formStore.fetchEmailTemplates(properties.formId),
+  formStore.fetchForm(properties.formId),
+]);
 </script>
 
 <template>

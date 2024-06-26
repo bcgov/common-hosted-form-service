@@ -1,251 +1,234 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { onMounted } from 'vue';
+import { computed, inject, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import BaseInfoCard from '~/components/base/BaseInfoCard.vue';
-import { i18n } from '~/internationalization';
+import { exportFormSchema } from '~/composables/form';
+import { formService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
-import { formService } from '~/services';
 import { FormPermissions } from '~/utils/constants';
 
-export default {
-  components: {
-    BaseDialog,
-    BaseInfoCard,
-  },
-  inject: ['formDesigner', 'draftId', 'formId'],
-  data() {
-    return {
-      headers: [
-        {
-          title: i18n.t('trans.manageVersions.version'),
-          align: 'start',
-          key: 'version',
-        },
-        {
-          title: i18n.t('trans.manageVersions.status'),
-          align: 'start',
-          key: 'status',
-        },
-        {
-          title: i18n.t('trans.manageVersions.dateCreated'),
-          align: 'start',
-          key: 'createdAt',
-        },
-        {
-          title: i18n.t('trans.manageVersions.createdBy'),
-          align: 'start',
-          key: 'createdBy',
-        },
-        {
-          title: i18n.t('trans.manageVersions.actions'),
-          align: 'end',
-          key: 'action',
-          filterable: false,
-          sortable: false,
-          width: 200,
-        },
-      ],
-      formSchema: {
-        display: 'form',
-        type: 'form',
-        components: [],
-      },
-      publishOpts: {
-        publishing: true,
-        version: '',
-        id: '',
-      },
-      showHasDraftsDialog: false,
-      showPublishDialog: false,
-      showDeleteDraftDialog: false,
-      rerenderTable: 0,
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, [
-      'drafts',
-      'form',
-      'permissions',
-      'isRTL',
-      'lang',
-    ]),
-    hasDraft() {
-      return this.drafts?.length > 0;
-    },
-    hasVersions() {
-      return this.form?.versions?.length;
-    },
-    versionList() {
-      if (this.hasDraft) {
-        // reformat draft object and then join with versions array
-        const reDraft = this.drafts.map((obj, idx) => {
-          obj.published = false;
-          obj.version = this.form.versions.length + this.drafts.length - idx;
-          obj.isDraft = true;
-          delete obj.formVersionId;
-          delete obj.schema;
+const { t } = useI18n({ useScope: 'global' });
 
-          return obj;
-        });
-        const merged = reDraft.concat(this.form.versions);
-        return this.form ? merged : [];
-      } else {
-        return this.form ? this.form.versions : [];
-      }
-    },
-    canPublish() {
-      return this.permissions.includes(FormPermissions.FORM_UPDATE);
-    },
+const router = useRouter();
+
+const formDesigner = inject('formDesigner');
+const draftId = inject('draftId');
+
+const formStore = useFormStore();
+const notificationStore = useNotificationStore();
+
+const { drafts, form, permissions, isRTL, lang } = storeToRefs(formStore);
+
+const headers = ref([
+  {
+    title: t('trans.manageVersions.version'),
+    align: 'start',
+    key: 'version',
   },
-  async created() {
-    if (this.formDesigner) {
-      await this.turnOnPublish();
+  {
+    title: t('trans.manageVersions.status'),
+    align: 'start',
+    key: 'status',
+  },
+  {
+    title: t('trans.manageVersions.dateCreated'),
+    align: 'start',
+    key: 'createdAt',
+  },
+  {
+    title: t('trans.manageVersions.createdBy'),
+    align: 'start',
+    key: 'createdBy',
+  },
+  {
+    title: t('trans.manageVersions.actions'),
+    align: 'end',
+    key: 'action',
+    filterable: false,
+    sortable: false,
+    width: 200,
+  },
+]);
+
+const rerenderTable = ref(0);
+const showDeleteDraftDialog = ref(false);
+const showHasDraftsDialog = ref(false);
+const showPublishDialog = ref(false);
+
+let formSchema = ref({
+  display: 'form',
+  type: 'form',
+  components: [],
+});
+
+const publishOpts = ref({
+  publishing: true,
+  version: '',
+  id: '',
+});
+
+const hasDraft = computed(() => drafts.value?.length > 0);
+const hasVersions = computed(() => form.value?.versions?.length);
+const versionList = computed(() => {
+  if (hasDraft.value) {
+    // If there are existing drafts
+    const formattedDrafts = drafts.value.map((draft, idx) => {
+      draft.version = form.value.versions.length + drafts.value.length - idx;
+      draft.published = draft.published ? draft.published : false;
+      draft.isDraft = true;
+      delete draft.formVersionId;
+      return draft;
+    });
+    return formattedDrafts.concat(form.value.versions);
+  } else {
+    return form.value ? form.value.versions : [];
+  }
+});
+const canPublish = computed(() =>
+  permissions.value.includes(FormPermissions.FORM_UPDATE)
+);
+
+async function deleteCurrentDraft() {
+  showDeleteDraftDialog.value = false;
+  await formStore.deleteDraft({
+    formId: form.value.id,
+    draftId: drafts.value[0].id,
+  });
+  await formStore.fetchDrafts(form.value.id);
+}
+
+async function onExportClick(formVersionId, isDraft) {
+  await getFormSchema(formVersionId, isDraft);
+  exportFormSchema(form.value.name, formSchema.value, form.value.snake);
+}
+
+async function getFormSchema(id, isDraft = false) {
+  try {
+    let res = !isDraft
+      ? await formService.readVersion(form.value.id, id)
+      : await formService.readDraft(form.value.id, id);
+    formSchema.value = { ...formSchema.value, ...res.data.schema };
+  } catch (error) {
+    notificationStore.addNotification({
+      text: 'An error occurred while loading the form design.',
+      consoleError: `Error loading form ${form.value.id} schema (version / draft: ${id}): ${error}`,
+    });
+  }
+}
+
+function createVersion(formId, versionId) {
+  if (hasDraft.value) {
+    showHasDraftsDialog.value = true;
+  } else {
+    router.push({
+      name: 'FormDesigner',
+      query: { f: formId, v: versionId, newVersion: true },
+    });
+  }
+}
+
+function cancelPublish() {
+  showPublishDialog.value = false;
+  document.documentElement.style.overflow = 'auto';
+  if (hasDraft.value) {
+    const idx = drafts.value.map((d) => d.id).indexOf(publishOpts.value.id);
+    if (idx !== -1) {
+      drafts.value[idx].published = !drafts.value[idx].published;
     }
-  },
-  methods: {
-    ...mapActions(useNotificationStore, ['addNotification']),
-    ...mapActions(useFormStore, [
-      'deleteDraft',
-      'fetchDrafts',
-      'fetchForm',
-      'publishDraft',
-      'toggleVersionPublish',
-    ]),
-    createVersion(formId, versionId) {
-      if (this.hasDraft) {
-        this.showHasDraftsDialog = true;
-      } else {
-        this.$router.push({
-          name: 'FormDesigner',
-          query: { f: formId, v: versionId, newVersion: true },
-        });
-      }
-    },
+  }
+  if (form.value.versions) {
+    const idx = form.value.versions
+      .map((d) => d.id)
+      .indexOf(publishOpts.value.id);
+    if (idx !== -1) {
+      form.value.versions[idx].published = !form.value.versions[idx].published;
+    }
+  }
+  rerenderTable.value += 1;
+}
 
-    cancelPublish() {
-      this.showPublishDialog = false;
-      document.documentElement.style.overflow = 'auto';
-      if (this.hasDraft) {
-        const idx = this.drafts.map((d) => d.id).indexOf(this.publishOpts.id);
+async function updatePublish() {
+  showPublishDialog.value = false;
+  document.documentElement.style.overflow = 'auto';
+  // if publishing a draft version
+  if (publishOpts.value.isDraft) {
+    await formStore.publishDraft({
+      formId: form.value.id,
+      draftId: publishOpts.value.id,
+    });
+    // Refresh draft in form version list
+    formStore.fetchDrafts(form.value.id);
+  }
+  // else, we toggle status of a version
+  else {
+    await formStore.toggleVersionPublish({
+      formId: form.value.id,
+      versionId: publishOpts.value.id,
+      publish: publishOpts.value.publishing,
+    });
+  }
+  // Refresh form version list
+  formStore.fetchForm(form.value.id);
+}
+
+function togglePublish(value, id, version, isDraft) {
+  publishOpts.value = {
+    publishing: value,
+    version: version,
+    id: id,
+    isDraft: isDraft,
+  };
+  showPublishDialog.value = true;
+}
+
+function turnOnPublish() {
+  if (versionList.value) {
+    for (const item of versionList.value) {
+      if (item.id === draftId) {
+        publishOpts.value = {
+          publishing: true,
+          version: item.version,
+          id: item.id,
+          isDraft: item.isDraft,
+        };
+        // toggle switch state in data table
+        const idx = drafts.value.map((d) => d.id).indexOf(item.id);
         if (idx !== -1) {
-          this.drafts[idx].published = !this.drafts[idx].published;
+          drafts.value[idx].published = true;
         }
+        document.documentElement.style.overflow = 'hidden';
+        showPublishDialog.value = true;
       }
-      if (this.form.versions) {
-        const idx = this.form.versions
-          .map((d) => d.id)
-          .indexOf(this.publishOpts.id);
-        if (idx !== -1) {
-          this.form.versions[idx].published =
-            !this.form.versions[idx].published;
-        }
-      }
-      this.rerenderTable += 1;
-    },
-    togglePublish(value, id, version, isDraft) {
-      this.publishOpts = {
-        publishing: value,
-        version: version,
-        id: id,
-        isDraft: isDraft,
-      };
-      this.showPublishDialog = true;
-    },
+    }
+  }
+}
 
-    turnOnPublish() {
-      if (this.versionList) {
-        for (const item of this.versionList) {
-          if (item.id === this.draftId) {
-            this.publishOpts = {
-              publishing: true,
-              version: item.version,
-              id: item.id,
-              isDraft: item.isDraft,
-            };
-            // toggle switch state in data table
-            const idx = this.drafts.map((d) => d.id).indexOf(item.id);
-            if (idx !== -1) {
-              this.drafts[idx].published = true;
-            }
-            document.documentElement.style.overflow = 'hidden';
-            this.showPublishDialog = true;
-          }
-        }
-      }
-    },
+onMounted(() => {
+  if (formDesigner) {
+    turnOnPublish();
+  }
+});
 
-    async updatePublish() {
-      this.showPublishDialog = false;
-      document.documentElement.style.overflow = 'auto';
-      // if publishing a draft version
-      if (this.publishOpts.isDraft) {
-        await this.publishDraft({
-          formId: this.form.id,
-          draftId: this.publishOpts.id,
-        });
-        // Refresh draft in form version list
-        this.fetchDrafts(this.form.id);
-      }
-      // else, we toggle status of a version
-      else {
-        await this.toggleVersionPublish({
-          formId: this.form.id,
-          versionId: this.publishOpts.id,
-          publish: this.publishOpts.publishing,
-        });
-      }
-      // Refresh form version list
-      this.fetchForm(this.form.id);
-    },
-
-    async deleteCurrentDraft() {
-      this.showDeleteDraftDialog = false;
-      await this.deleteDraft({
-        formId: this.form.id,
-        draftId: this.drafts[0].id,
-      });
-      this.fetchDrafts(this.form.id);
-    },
-
-    async onExportClick(id, isDraft) {
-      await this.getFormSchema(id, isDraft);
-      let snek = this.form.snake;
-      if (!this.form.snake) {
-        snek = this.form.name
-          .replace(/\s+/g, '_')
-          .replace(/[^-_0-9a-z]/gi, '')
-          .toLowerCase();
-      }
-
-      const a = document.createElement('a');
-      a.href = `data:application/json;charset=utf-8,${encodeURIComponent(
-        JSON.stringify(this.formSchema)
-      )}`;
-      a.download = `${snek}_schema.json`;
-      a.style.display = 'none';
-      a.classList.add('hiddenDownloadTextElement');
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    },
-
-    async getFormSchema(id, isDraft = false) {
-      try {
-        let res = !isDraft
-          ? await formService.readVersion(this.form.id, id)
-          : await formService.readDraft(this.form.id, id);
-        this.formSchema = { ...this.formSchema, ...res.data.schema };
-      } catch (error) {
-        this.addNotification({
-          text: 'An error occurred while loading the form design.',
-          consoleError: `Error loading form ${this.form.id} schema (version / draft: ${id}): ${error}`,
-        });
-      }
-    },
-  },
-};
+defineExpose({
+  createVersion,
+  deleteCurrentDraft,
+  formSchema,
+  onExportClick,
+  publishOpts,
+  rerenderTable,
+  showDeleteDraftDialog,
+  showHasDraftsDialog,
+  showPublishDialog,
+  togglePublish,
+  updatePublish,
+  versionList,
+});
 </script>
 
 <template>
@@ -270,6 +253,8 @@ export default {
       ></v-icon
       >{{ $t('trans.manageVersions.infoB') }}
     </div>
+
+    <!-- Actions -->
     <v-data-table
       :key="rerenderTable"
       hover
@@ -351,7 +336,6 @@ export default {
         {{ item.createdBy }}
       </template>
 
-      <!-- Actions -->
       <template #item.action="{ item }">
         <!-- Edit draft version -->
         <span v-if="item.isDraft">
@@ -381,7 +365,7 @@ export default {
           </v-tooltip>
         </span>
 
-        <!-- export -->
+        <!-- Export version -->
         <span>
           <v-tooltip location="bottom">
             <template #activator="{ props }">
@@ -403,7 +387,7 @@ export default {
           </v-tooltip>
         </span>
 
-        <!-- create new version -->
+        <!-- Create draft from version -->
         <span v-if="!item.isDraft">
           <v-tooltip location="bottom">
             <template #activator="{ props }">
@@ -440,7 +424,7 @@ export default {
           </v-tooltip>
         </span>
 
-        <!-- delete draft version -->
+        <!-- Delete version -->
         <span v-else>
           <v-tooltip location="bottom">
             <template #activator="{ props }">
