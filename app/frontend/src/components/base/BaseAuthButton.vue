@@ -40,3 +40,9 @@ const hasLogin = computed(() => useRoute()?.meta?.hasLogin);
     </v-btn>
   </div>
 </template>
+
+<style scoped>
+.v-btn {
+  height: 40px;
+}
+</style>
