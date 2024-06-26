@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import ShareForm from '~/components/forms/manage/ShareForm.vue';
@@ -9,11 +10,13 @@ import { useFormStore } from '~/store/form';
 
 import { FormPermissions } from '~/utils/constants';
 
+const { locale } = useI18n({ useScope: 'global' });
+
 const showDeleteDialog = ref(false);
 
 const formStore = useFormStore();
 
-const { form, permissions, isRTL, lang } = storeToRefs(formStore);
+const { form, permissions, isRTL } = storeToRefs(formStore);
 
 const router = useRouter();
 
@@ -82,7 +85,7 @@ defineExpose({
             />
           </router-link>
         </template>
-        <span :lang="lang">{{
+        <span :lang="locale">{{
           $t('trans.manageFormActions.viewSubmissions')
         }}</span>
       </v-tooltip>
@@ -104,7 +107,7 @@ defineExpose({
             />
           </router-link>
         </template>
-        <span :lang="lang">{{
+        <span :lang="locale">{{
           $t('trans.manageFormActions.teamManagement')
         }}</span>
       </v-tooltip>
@@ -126,7 +129,7 @@ defineExpose({
             />
           </router-link>
         </template>
-        <span :lang="lang">
+        <span :lang="locale">
           {{ $t('trans.manageFormActions.emailManagement') }}
           <v-icon icon="mdi:mdi-flask" size="small" />
         </span>
@@ -149,7 +152,7 @@ defineExpose({
           />
         </template>
         <span
-          ><span :lang="lang">{{
+          ><span :lang="locale">{{
             $t('trans.manageFormActions.deleteForm')
           }}</span></span
         >
@@ -162,19 +165,19 @@ defineExpose({
         @continue-dialog="deleteForm"
       >
         <template #title
-          ><span :lang="lang">
+          ><span :lang="locale">
             {{ $t('trans.manageFormActions.confirmDeletion') }}
           </span></template
         >
         <template #text>
-          <span :lang="lang"
+          <span :lang="locale"
             >{{ $t('trans.manageFormActions.deleteMessageA') }}
             <strong>{{ form.name }}</strong
             >? {{ $t('trans.manageFormActions.deleteMessageB') }}
           </span>
         </template>
         <template #button-text-continue>
-          <span :lang="lang">{{
+          <span :lang="locale">{{
             $t('trans.manageFormActions.deleteForm')
           }}</span>
         </template>

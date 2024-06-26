@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
-const { t } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   title: {
@@ -35,7 +35,7 @@ const titleRules = ref([
 
 const formStore = useFormStore();
 
-const { emailTemplates, lang } = storeToRefs(formStore);
+const { emailTemplates } = storeToRefs(formStore);
 
 const emailTemplate = computed(() =>
   emailTemplates.value.find((t) => t.type === properties.type)
@@ -65,7 +65,7 @@ defineExpose({ saveEmailTemplate });
 
 <template>
   <v-container>
-    <h1 :lang="lang">{{ title }}</h1>
+    <h1 :lang="locale">{{ title }}</h1>
     <v-form ref="emailTemplateForm" lazy-validation>
       <v-text-field
         v-if="emailTemplates.length > 0"
@@ -75,7 +75,7 @@ defineExpose({ saveEmailTemplate });
         variant="outlined"
         solid
         :label="$t('trans.emailTemplate.subject')"
-        :lang="lang"
+        :lang="locale"
         :rules="subjectRules"
         @update:model-value="formChanged = true"
       />
@@ -87,7 +87,7 @@ defineExpose({ saveEmailTemplate });
         variant="outlined"
         solid
         :label="$t('trans.emailTemplate.title')"
-        :lang="lang"
+        :lang="locale"
         :rules="titleRules"
         @update:model-value="formChanged = true"
       />
@@ -99,7 +99,7 @@ defineExpose({ saveEmailTemplate });
         variant="outlined"
         solid
         :label="$t('trans.emailTemplate.body')"
-        :lang="lang"
+        :lang="locale"
         :rules="bodyRules"
         @update:model-value="formChanged = true"
       />
@@ -110,7 +110,7 @@ defineExpose({ saveEmailTemplate });
         :title="$t('trans.emailTemplate.save')"
         @click="saveEmailTemplate"
       >
-        <span :lang="lang">{{ $t('trans.emailTemplate.save') }}</span>
+        <span :lang="locale">{{ $t('trans.emailTemplate.save') }}</span>
       </v-btn>
     </v-form>
   </v-container>

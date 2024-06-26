@@ -1,6 +1,7 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import ApiKey from '~/components/forms/manage/ApiKey.vue';
 import DocumentTemplate from '~/components/forms/manage/DocumentTemplate.vue';
@@ -12,6 +13,8 @@ import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { FormPermissions, NotificationTypes } from '~/utils/constants';
 import FormProfile from '~/components/designer/FormProfile.vue';
+
+const { locale } = useI18n({ useScope: 'global' });
 
 const apiKeyPanel = ref(1);
 const cdogsPanel = ref(1);
@@ -26,7 +29,7 @@ const versionsPanel = ref(0);
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
 
-const { apiKey, drafts, form, permissions, isRTL, lang, subscriptionData } =
+const { apiKey, drafts, form, permissions, isRTL, subscriptionData } =
   storeToRefs(formStore);
 
 const canEditForm = computed(() =>
@@ -142,11 +145,11 @@ defineExpose({
         <v-expansion-panel-title>
           <div
             class="header"
-            :lang="lang"
+            :lang="locale"
             data-test="canExpandFormSettingsPanel"
           >
             <strong>{{ $t('trans.manageForm.formSettings') }}</strong>
-            <span :lang="lang">
+            <span :lang="locale">
               <small>
                 {{ $t('trans.manageForm.created') }}:
                 {{ $filters.formatDate(form.createdAt) }} ({{ form.createdBy }})
@@ -188,7 +191,7 @@ defineExpose({
               data-test="canEditForm"
               @click="updateSettings"
             >
-              <span :lang="lang">{{ $t('trans.manageForm.update') }}</span>
+              <span :lang="locale">{{ $t('trans.manageForm.update') }}</span>
             </v-btn>
             <v-btn
               variant="outlined"
@@ -196,7 +199,7 @@ defineExpose({
               data-test="canCancelEdit"
               @click="cancelSettingsEdit"
             >
-              <span :lang="lang">{{ $t('trans.manageForm.cancel') }}</span>
+              <span :lang="locale">{{ $t('trans.manageForm.cancel') }}</span>
             </v-btn>
           </div>
         </v-expansion-panel-text>
@@ -211,9 +214,9 @@ defineExpose({
     >
       <v-expansion-panel flat>
         <v-expansion-panel-title>
-          <div class="header" :lang="lang">
+          <div class="header" :lang="locale">
             <strong>{{ $t('trans.manageForm.eventSubscription') }}</strong>
-            <span v-if="subscriptionData" :lang="lang">
+            <span v-if="subscriptionData" :lang="locale">
               <small v-if="subscriptionData.updatedBy">
                 {{ $t('trans.manageForm.updated') }}:
                 {{ $filters.formatDate(subscriptionData.updatedAt) }} ({{
@@ -245,11 +248,11 @@ defineExpose({
         <v-expansion-panel-title>
           <div
             class="header"
-            :lang="lang"
+            :lang="locale"
             data-test="canExpandApiKeySettingsPanel"
           >
             <strong>{{ $t('trans.manageForm.apiKey') }}</strong>
-            <span v-if="apiKey" :lang="lang">
+            <span v-if="apiKey" :lang="locale">
               <small v-if="apiKey.updatedBy">
                 {{ $t('trans.manageForm.updated') }}:
                 {{ $filters.formatDate(apiKey.updatedAt) }} ({{
@@ -279,7 +282,7 @@ defineExpose({
     >
       <v-expansion-panel flat>
         <v-expansion-panel-title>
-          <div class="header" :lang="lang" data-test="canExpandCDOGSPanel">
+          <div class="header" :lang="locale" data-test="canExpandCDOGSPanel">
             <strong>{{ $t('trans.manageForm.cdogsTemplate') }}</strong>
           </div>
         </v-expansion-panel-title>
@@ -297,7 +300,7 @@ defineExpose({
     >
       <v-expansion-panel flat>
         <v-expansion-panel-title>
-          <div class="header" :lang="lang">
+          <div class="header" :lang="locale">
             <strong>{{ $t('trans.manageForm.externalAPIs') }}</strong>
           </div>
         </v-expansion-panel-title>
@@ -313,19 +316,19 @@ defineExpose({
         <v-expansion-panel-title>
           <div
             class="header"
-            :lang="lang"
+            :lang="locale"
             data-test="canExpandFormDesignHistoryPanel"
           >
             <strong style="flex: 1">{{
               $t('trans.manageForm.formDesignHistory')
             }}</strong>
             <div>
-              <span :lang="lang">
+              <span :lang="locale">
                 <strong>{{ $t('trans.manageForm.totalVersions') }}:</strong>
                 {{ combinedVersionAndDraftCount }}
               </span>
             </div>
-            <span class="ml-12 mr-2" :lang="lang">
+            <span class="ml-12 mr-2" :lang="locale">
               <strong>{{ $t('trans.manageForm.status') }}:</strong>
               {{ versionState }}
             </span>

@@ -16,7 +16,7 @@ import {
   IdentityMode,
 } from '~/utils/constants';
 
-const { t } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   formId: {
@@ -47,7 +47,7 @@ const formStore = useFormStore();
 const idpStore = useIdpStore();
 const notificationStore = useNotificationStore();
 
-const { form, permissions, isRTL, lang } = storeToRefs(formStore);
+const { form, permissions, isRTL } = storeToRefs(formStore);
 
 const canManageTeam = computed(() =>
   permissions.value.includes(FormPermissions.TEAM_UPDATE)
@@ -402,7 +402,7 @@ defineExpose({
       class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
     >
       <div>
-        <h1 class="mr-auto" :lang="lang">
+        <h1 class="mr-auto" :lang="locale">
           {{ $t('trans.teamManagement.teamManagement') }}
         </h1>
         <h3>{{ form.name }}</h3>
@@ -430,7 +430,7 @@ defineExpose({
                 <v-icon icon="mdi:mdi-view-column"></v-icon>
               </v-btn>
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               $t('trans.teamManagement.selectColumns')
             }}</span>
           </v-tooltip>
@@ -450,7 +450,7 @@ defineExpose({
                 </v-btn>
               </router-link>
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               $t('trans.teamManagement.manageForm')
             }}</span>
           </v-tooltip>
@@ -471,7 +471,7 @@ defineExpose({
           :label="$t('trans.teamManagement.search')"
           single-line
           :class="{ label: isRTL }"
-          :lang="lang"
+          :lang="locale"
         />
       </v-col>
     </v-row>
@@ -494,7 +494,7 @@ defineExpose({
       "
       :search="search"
       dense
-      :lang="lang"
+      :lang="locale"
     >
       <!-- custom header markup - add tooltip to heading that are roles -->
       <template #header.form_designer="{ column }">
@@ -570,7 +570,7 @@ defineExpose({
               ></v-icon>
             </v-btn>
           </template>
-          <span :lang="lang">{{
+          <span :lang="locale">{{
             $t('trans.teamManagement.removeSelectedUsers')
           }}</span>
         </v-tooltip>
@@ -660,7 +660,7 @@ defineExpose({
               ></v-icon>
             </v-btn>
           </template>
-          <span :lang="lang">{{
+          <span :lang="locale">{{
             $t('trans.teamManagement.removeThisUser')
           }}</span>
         </v-tooltip>
@@ -674,7 +674,7 @@ defineExpose({
       @continue-dialog="removeUser"
     >
       <template #title
-        ><span :lang="lang">
+        ><span :lang="locale">
           {{ $t('trans.teamManagement.confirmRemoval') }}</span
         ></template
       >
@@ -682,7 +682,7 @@ defineExpose({
         {{ DeleteMessage }}
       </template>
       <template #button-text-continue>
-        <span :lang="lang">{{ $t('trans.teamManagement.remove') }}</span>
+        <span :lang="locale">{{ $t('trans.teamManagement.remove') }}</span>
       </template>
     </BaseDialog>
 
@@ -700,7 +700,7 @@ defineExpose({
         @cancel-filter-data="showColumnsDialog = false"
       >
         <template #filter-title
-          ><span :lang="lang">
+          ><span :lang="locale">
             {{ $t('trans.teamManagement.teamMebersTitle') }}</span
           ></template
         >

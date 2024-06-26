@@ -1,13 +1,17 @@
 <script>
 import { mapActions, mapState } from 'pinia';
+import { useI18n } from 'vue-i18n';
 
-import { i18n } from '~/internationalization';
 import adminService from '~/services/adminService';
 import { useAdminStore } from '~/store/admin';
-import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
 export default {
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
+
+    return { t, locale };
+  },
   data() {
     return {
       formSchema: {
@@ -19,31 +23,30 @@ export default {
   },
   computed: {
     ...mapState(useAdminStore, ['form']),
-    ...mapState(useFormStore, ['lang']),
     headers() {
       return [
         {
-          title: i18n.t('trans.adminVersions.versions'),
+          title: this.$t('trans.adminVersions.versions'),
           align: 'start',
           key: 'version',
         },
         {
-          title: i18n.t('trans.adminVersions.status'),
+          title: this.$t('trans.adminVersions.status'),
           align: 'start',
           key: 'status',
         },
         {
-          title: i18n.t('trans.adminVersions.created'),
+          title: this.$t('trans.adminVersions.created'),
           align: 'start',
           key: 'createdAt',
         },
         {
-          title: i18n.t('trans.adminVersions.lastUpdated'),
+          title: this.$t('trans.adminVersions.lastUpdated'),
           align: 'start',
           key: 'updatedAt',
         },
         {
-          title: i18n.t('trans.adminVersions.actions'),
+          title: this.$t('trans.adminVersions.actions'),
           align: 'end',
           key: 'action',
           filterable: false,
@@ -86,7 +89,7 @@ export default {
         this.formSchema = { ...this.formSchema, ...res.data.schema };
       } catch (error) {
         this.addNotification({
-          text: i18n.t('trans.adminVersions.notificationMsg'),
+          text: this.$t('trans.adminVersions.notificationMsg'),
         });
       }
     },
@@ -100,11 +103,11 @@ export default {
     hover
     :headers="headers"
     :items="versionList"
-    :lang="lang"
+    :lang="locale"
   >
     <!-- Version  -->
     <template #item.version="{ item }">
-      <span :lang="lang">
+      <span :lang="locale">
         {{
           $t('trans.adminVersions.version', {
             versionNo: item.version,
@@ -115,7 +118,7 @@ export default {
 
     <!-- Status  -->
     <template #item.status="{ item }">
-      <label :lang="lang">{{
+      <label :lang="locale">{{
         item.published
           ? $t('trans.adminVersions.published')
           : $t('trans.adminVersions.unpublished')
@@ -149,7 +152,7 @@ export default {
               <v-icon icon="mdi:mdi-download"></v-icon>
             </v-btn>
           </template>
-          <span :lang="lang"
+          <span :lang="locale"
             >{{ $t('trans.adminVersions.exportDesign') }}
           </span>
         </v-tooltip>

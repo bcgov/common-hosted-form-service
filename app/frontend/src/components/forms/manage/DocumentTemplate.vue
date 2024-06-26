@@ -1,19 +1,19 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import {
   fetchDocumentTemplates,
   getDocumentTemplate,
-  /* getMimeType, */
   readFile,
 } from '~/composables/documentTemplate';
 import { useFormStore } from '~/store/form';
 import { formService } from '~/services';
-import { i18n } from '~/internationalization';
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
-import { onMounted } from 'vue';
+
+const { t, locale } = useI18n({ useScope: 'global' });
 
 let cdogsTemplate = ref(null);
 const documentTemplates = ref([]);
@@ -35,10 +35,10 @@ const validFileExtensions = ['txt', 'docx', 'html', 'odt', 'pptx', 'xlsx'];
 
 const notificationStore = useNotificationStore();
 
-const { form, isRTL, lang } = storeToRefs(useFormStore());
+const { form, isRTL } = storeToRefs(useFormStore());
 
 const validationRules = computed(() => [
-  isValidFile.value || i18n.t('trans.documentTemplate.invalidFileMessage'),
+  isValidFile.value || t('trans.documentTemplate.invalidFileMessage'),
 ]);
 
 onMounted(async () => {
@@ -69,8 +69,8 @@ async function fetchTemplates() {
     }
   } catch (e) {
     notificationStore.addNotification({
-      text: i18n.t('trans.documentTemplate.fetchError'),
-      consoleError: i18n.t('trans.documentTemplate.fetchError', {
+      text: t('trans.documentTemplate.fetchError'),
+      consoleError: t('trans.documentTemplate.fetchError', {
         error: e.message,
       }),
     });
@@ -116,13 +116,13 @@ async function handleFileUpload() {
       fileInput.value.reset();
     }
     notificationStore.addNotification({
-      text: i18n.t('trans.documentTemplate.uploadSuccess'),
+      text: t('trans.documentTemplate.uploadSuccess'),
       ...NotificationTypes.SUCCESS,
     });
   } catch (e) {
     notificationStore.addNotification({
-      text: i18n.t('trans.documentTemplate.uploadError'),
-      consoleError: i18n.t('trans.documentTemplate.uploadError', {
+      text: t('trans.documentTemplate.uploadError'),
+      consoleError: t('trans.documentTemplate.uploadError', {
         error: e.message,
       }),
     });
@@ -137,13 +137,13 @@ async function handleDelete(item) {
     await formService.documentTemplateDelete(form.value.id, item.templateId);
     await fetchTemplates();
     notificationStore.addNotification({
-      text: i18n.t('trans.documentTemplate.deleteSuccess'),
+      text: t('trans.documentTemplate.deleteSuccess'),
       ...NotificationTypes.SUCCESS,
     });
   } catch (e) {
     notificationStore.addNotification({
-      text: i18n.t('trans.documentTemplate.deleteError'),
-      consoleError: i18n.t('trans.documentTemplate.deleteError', {
+      text: t('trans.documentTemplate.deleteError'),
+      consoleError: t('trans.documentTemplate.deleteError', {
         error: e.message,
       }),
     });
@@ -177,8 +177,8 @@ async function handleFileAction(item, action) {
     }
   } catch (e) {
     notificationStore.addNotification({
-      text: i18n.t('trans.documentTemplate.fetchError'),
-      consoleError: i18n.t('trans.documentTemplate.fetchError', {
+      text: t('trans.documentTemplate.fetchError'),
+      consoleError: t('trans.documentTemplate.fetchError', {
         error: e.message,
       }),
     });
@@ -220,7 +220,7 @@ defineExpose({
               :href="techdocsLinkTemplateUpload"
               class="preview_info_link_field_white"
               target="_blank"
-              :hreflang="lang"
+              :lang="locale"
             >
               {{ $t('trans.formSettings.learnMore') }}
               <v-icon icon="mdi:mdi-arrow-top-right-bold-box-outline"></v-icon>
@@ -255,7 +255,7 @@ defineExpose({
               {{ item.filename }}
             </a>
           </template>
-          <span :lang="lang">
+          <span :lang="locale">
             {{ $t('trans.manageVersions.clickToPreview') }}
             <v-icon icon="mdi:mdi-open-in-new"></v-icon>
           </span>
@@ -310,7 +310,7 @@ defineExpose({
       counter
       :clearable="true"
       show-size
-      :lang="lang"
+      :lang="locale"
       prepend-icon="false"
       :disabled="documentTemplates.length >= 1"
       :rules="validationRules"
@@ -328,7 +328,7 @@ defineExpose({
       :title="$t('trans.documentTemplate.upload')"
       @click="handleFileUpload"
     >
-      <span :lang="lang">{{ $t('trans.documentTemplate.upload') }}</span>
+      <span :lang="locale">{{ $t('trans.documentTemplate.upload') }}</span>
     </v-btn>
   </div>
 </template>

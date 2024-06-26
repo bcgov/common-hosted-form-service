@@ -1,15 +1,14 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { onBeforeUnmount } from 'vue';
-import { watch } from 'vue';
-import { computed } from 'vue';
-import { ref } from 'vue';
-import { i18n } from '~/internationalization';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import userService from '~/services/userService';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 import { Regex } from '~/utils/constants';
+
+const { t, locale } = useI18n({ useScope: 'global' });
 
 defineProps({
   disabled: {
@@ -33,7 +32,7 @@ const selectedRoles = ref([]);
 const showError = ref(false);
 const entries = ref([]);
 
-const { isRTL, lang } = storeToRefs(useFormStore());
+const { isRTL } = storeToRefs(useFormStore());
 const { loginButtons, primaryIdp } = storeToRefs(idpStore);
 
 const FORM_ROLES = computed(() => {
@@ -43,8 +42,8 @@ const FORM_ROLES = computed(() => {
 
 const autocompleteLabel = computed(() => {
   return idpStore.isPrimary(selectedIdp.value)
-    ? i18n.t('trans.addTeamMember.enterUsername')
-    : i18n.t('trans.addTeamMember.enterExactUsername');
+    ? t('trans.addTeamMember.enterUsername')
+    : t('trans.addTeamMember.enterExactUsername');
 });
 
 watch(selectedIdp, (newIdp, oldIdp) => {
@@ -131,10 +130,10 @@ async function searchUsers(input) {
     let teamMembershipConfig = idpStore.teamMembershipSearch(selectedIdp.value);
     if (teamMembershipConfig) {
       if (input.length < teamMembershipConfig.text.minLength)
-        throw new Error(i18n.t(teamMembershipConfig.text.message));
+        throw new Error(t(teamMembershipConfig.text.message));
       if (input.includes('@')) {
         if (!new RegExp(Regex.EMAIL).test(input))
-          throw new Error(i18n.t(teamMembershipConfig.email.message));
+          throw new Error(t(teamMembershipConfig.email.message));
         else params.email = input;
       } else {
         params.username = input;
@@ -148,7 +147,7 @@ async function searchUsers(input) {
     entries.value = [];
     /* eslint-disable no-console */
     console.error(
-      i18n.t('trans.manageSubmissionUsers.getUsersErrMsg', {
+      t('trans.manageSubmissionUsers.getUsersErrMsg', {
         error: error,
       })
     );
@@ -229,7 +228,7 @@ defineExpose({
                 <div
                   class="px-2"
                   :class="{ 'text-right': isRTL }"
-                  :lang="lang"
+                  :lang="locale"
                   v-html="$t('trans.addTeamMember.cantFindChefsUsers')"
                 ></div>
               </template>
@@ -288,7 +287,7 @@ defineExpose({
               :title="$t('trans.addTeamMember.add')"
               @click="save"
             >
-              <span :lang="lang">{{ $t('trans.addTeamMember.add') }}</span>
+              <span :lang="locale">{{ $t('trans.addTeamMember.add') }}</span>
             </v-btn>
             <v-btn
               variant="outlined"
@@ -299,13 +298,13 @@ defineExpose({
                 showError = false;
               "
             >
-              <span :lang="lang">{{ $t('trans.addTeamMember.cancel') }}</span>
+              <span :lang="locale">{{ $t('trans.addTeamMember.cancel') }}</span>
             </v-btn>
           </v-col>
         </v-row>
         <v-row v-if="showError" class="px-4 my-0 py-0">
           <v-col class="text-left">
-            <span class="text-red" :lang="lang">{{
+            <span class="text-red" :lang="locale">{{
               $t('trans.addTeamMember.mustSelectAUser')
             }}</span>
           </v-col>
@@ -328,7 +327,7 @@ defineExpose({
             <v-icon icon="mdi:mdi-account-plus"></v-icon>
           </v-btn>
         </template>
-        <span :lang="lang">{{ $t('trans.addTeamMember.addNewMember') }}</span>
+        <span :lang="locale">{{ $t('trans.addTeamMember.addNewMember') }}</span>
       </v-tooltip>
     </span>
   </span>
