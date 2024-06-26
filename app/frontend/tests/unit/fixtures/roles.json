@@ -1,0 +1,504 @@
+[
+  {
+    "code": "submission_approver",
+    "display": "Approver",
+    "active": true,
+    "description": "Can review all form submissions but can't edit the submission.",
+    "createdBy": "migration-045",
+    "createdAt": "2024-04-30T21:06:09.175Z",
+    "updatedBy": null,
+    "updatedAt": "2024-04-30T21:06:09.175Z",
+    "permissions": [
+      {
+        "code": "form_read",
+        "display": "Form Read",
+        "active": true,
+        "description": "Can view the form (read-only)",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "submission_read",
+        "display": "Submission Read",
+        "active": true,
+        "description": "Can view (all) form submissions (read-only)",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "submission_review",
+        "display": "Submission Review",
+        "active": true,
+        "description": "Can add/read notes and update the status of a submission.",
+        "createdBy": "migration-045",
+        "createdAt": "2024-04-30T21:06:09.175Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T21:06:09.175Z"
+      },
+      {
+        "code": "team_read",
+        "display": "Team Read",
+        "active": true,
+        "description": "Can view the team members (read-only)",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      }
+    ]
+  },
+  {
+    "code": "form_designer",
+    "display": "Form Designer",
+    "active": true,
+    "description": "Designs the form",
+    "createdBy": "migration-002",
+    "createdAt": "2024-04-30T04:43:03.647Z",
+    "updatedBy": null,
+    "updatedAt": "2024-04-30T04:43:03.647Z",
+    "permissions": [
+      {
+        "code": "design_create",
+        "display": "Design Create",
+        "active": true,
+        "description": "Can create a form design",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "design_delete",
+        "display": "Design Delete",
+        "active": true,
+        "description": "Can delete the form design",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "design_read",
+        "display": "Design Read",
+        "active": true,
+        "description": "Can view the form design (read-only)",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "design_update",
+        "display": "Design Update",
+        "active": true,
+        "description": "Can edit/update the form design",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "form_read",
+        "display": "Form Read",
+        "active": true,
+        "description": "Can view the form (read-only)",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      }
+    ]
+  },
+  {
+    "code": "owner",
+    "display": "Owner",
+    "active": true,
+    "description": "Owns the form",
+    "createdBy": "migration-002",
+    "createdAt": "2024-04-30T04:43:03.647Z",
+    "updatedBy": null,
+    "updatedAt": "2024-04-30T04:43:03.647Z",
+    "permissions": [
+      {
+        "code": "form_api_create",
+        "display": "API Key Create",
+        "active": true,
+        "description": "Can create an api key for a form",
+        "createdBy": "migration-019",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "form_api_delete",
+        "display": "API Key Delete",
+        "active": true,
+        "description": "Can remove the API key from a form",
+        "createdBy": "migration-019",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "form_api_read",
+        "display": "API Key Read",
+        "active": true,
+        "description": "Can view the API key for a form (unencrypted)",
+        "createdBy": "migration-019",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "form_api_update",
+        "display": "API Key Update",
+        "active": true,
+        "description": "Can update the API key for a form",
+        "createdBy": "migration-019",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "design_create",
+        "display": "Design Create",
+        "active": true,
+        "description": "Can create a form design",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "design_delete",
+        "display": "Design Delete",
+        "active": true,
+        "description": "Can delete the form design",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "design_read",
+        "display": "Design Read",
+        "active": true,
+        "description": "Can view the form design (read-only)",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "design_update",
+        "display": "Design Update",
+        "active": true,
+        "description": "Can edit/update the form design",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "document_template_create",
+        "display": "Document Template Create",
+        "active": true,
+        "description": "Can create document templates for a form",
+        "createdBy": "migration-044",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "document_template_delete",
+        "display": "Document Template Delete",
+        "active": true,
+        "description": "Can delete document templates for a form",
+        "createdBy": "migration-044",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "document_template_read",
+        "display": "Document Template Read",
+        "active": true,
+        "description": "Can view document templates for a form",
+        "createdBy": "migration-044",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "email_template_read",
+        "display": "Email Template Read",
+        "active": true,
+        "description": "Can view the email templates for a form",
+        "createdBy": "migration-036",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "email_template_update",
+        "display": "Email Template Update",
+        "active": true,
+        "description": "Can update the email templates for a form",
+        "createdBy": "migration-036",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "form_delete",
+        "display": "Form Delete",
+        "active": true,
+        "description": "Can delete the form",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "form_read",
+        "display": "Form Read",
+        "active": true,
+        "description": "Can view the form (read-only)",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "form_update",
+        "display": "Form Update",
+        "active": true,
+        "description": "Can edit/update the basic form metadata (not the design)",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "submission_create",
+        "display": "Submission Create",
+        "active": true,
+        "description": "Can fill out and submit this form",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "submission_delete",
+        "display": "Submission Delete",
+        "active": true,
+        "description": "Can delete form submissions",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "submission_read",
+        "display": "Submission Read",
+        "active": true,
+        "description": "Can view (all) form submissions (read-only)",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "submission_review",
+        "display": "Submission Review",
+        "active": true,
+        "description": "Can add/read notes and update the status of a submission.",
+        "createdBy": "migration-045",
+        "createdAt": "2024-04-30T21:06:09.175Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T21:06:09.175Z"
+      },
+      {
+        "code": "submission_update",
+        "display": "Submission Update",
+        "active": true,
+        "description": "Can edit/update form submissions",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "team_read",
+        "display": "Team Read",
+        "active": true,
+        "description": "Can view the team members (read-only)",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "team_update",
+        "display": "Team Update",
+        "active": true,
+        "description": "Can update the team members (add, remove)",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      }
+    ]
+  },
+  {
+    "code": "submission_reviewer",
+    "display": "Reviewer",
+    "active": true,
+    "description": "Can review and manage all form submissions",
+    "createdBy": "migration-002",
+    "createdAt": "2024-04-30T04:43:03.647Z",
+    "updatedBy": null,
+    "updatedAt": "2024-04-30T04:43:03.647Z",
+    "permissions": [
+      {
+        "code": "form_read",
+        "display": "Form Read",
+        "active": true,
+        "description": "Can view the form (read-only)",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "submission_delete",
+        "display": "Submission Delete",
+        "active": true,
+        "description": "Can delete form submissions",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "submission_read",
+        "display": "Submission Read",
+        "active": true,
+        "description": "Can view (all) form submissions (read-only)",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "submission_review",
+        "display": "Submission Review",
+        "active": true,
+        "description": "Can add/read notes and update the status of a submission.",
+        "createdBy": "migration-045",
+        "createdAt": "2024-04-30T21:06:09.175Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T21:06:09.175Z"
+      },
+      {
+        "code": "submission_update",
+        "display": "Submission Update",
+        "active": true,
+        "description": "Can edit/update form submissions",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "team_read",
+        "display": "Team Read",
+        "active": true,
+        "description": "Can view the team members (read-only)",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      }
+    ]
+  },
+  {
+    "code": "form_submitter",
+    "display": "Submitter",
+    "active": true,
+    "description": "Can fill out and submit the form",
+    "createdBy": "migration-002",
+    "createdAt": "2024-04-30T04:43:03.647Z",
+    "updatedBy": null,
+    "updatedAt": "2024-04-30T04:43:03.647Z",
+    "permissions": [
+      {
+        "code": "form_read",
+        "display": "Form Read",
+        "active": true,
+        "description": "Can view the form (read-only)",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "submission_create",
+        "display": "Submission Create",
+        "active": true,
+        "description": "Can fill out and submit this form",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      }
+    ]
+  },
+  {
+    "code": "team_manager",
+    "display": "Team Manager",
+    "active": true,
+    "description": "Manages Team members for the form",
+    "createdBy": "migration-002",
+    "createdAt": "2024-04-30T04:43:03.647Z",
+    "updatedBy": null,
+    "updatedAt": "2024-04-30T04:43:03.647Z",
+    "permissions": [
+      {
+        "code": "form_read",
+        "display": "Form Read",
+        "active": true,
+        "description": "Can view the form (read-only)",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "team_read",
+        "display": "Team Read",
+        "active": true,
+        "description": "Can view the team members (read-only)",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      },
+      {
+        "code": "team_update",
+        "display": "Team Update",
+        "active": true,
+        "description": "Can update the team members (add, remove)",
+        "createdBy": "migration-002",
+        "createdAt": "2024-04-30T04:43:03.647Z",
+        "updatedBy": null,
+        "updatedAt": "2024-04-30T04:43:03.647Z"
+      }
+    ]
+  }
+]

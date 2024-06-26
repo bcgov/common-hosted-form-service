@@ -393,7 +393,7 @@ export default {
       <router-link
         v-slot="{ navigate }"
         :to="{
-          name: 'PublishForm',
+          name: 'FormManage',
           query: { f: formId, fd: false, d: draftId },
         }"
         custom
