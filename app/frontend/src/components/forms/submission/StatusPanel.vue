@@ -95,16 +95,16 @@ export default {
       let actionStatus = '';
       switch (action) {
         case 'ASSIGN':
-          actionStatus = this.$t('trans.statusPanel.assign');
+          actionStatus = this.t('trans.statusPanel.assign');
           break;
         case 'COMPLETE':
-          actionStatus = this.$t('trans.statusPanel.complete');
+          actionStatus = this.t('trans.statusPanel.complete');
           break;
         case 'REVISE':
-          actionStatus = this.$t('trans.statusPanel.revise');
+          actionStatus = this.t('trans.statusPanel.revise');
           break;
         case 'UPDATE':
-          actionStatus = this.$t('trans.statusPanel.update');
+          actionStatus = this.t('trans.statusPanel.update');
           break;
         default:
         // code block
@@ -140,9 +140,9 @@ export default {
           }
         } catch (error) {
           this.addNotification({
-            text: this.$t('trans.statusPanel.fetchSubmissionUsersErr'),
+            text: this.t('trans.statusPanel.fetchSubmissionUsersErr'),
             consoleError:
-              this.$t('trans.statusPanel.fetchSubmissionUsersConsErr') +
+              this.t('trans.statusPanel.fetchSubmissionUsersConsErr') +
               `${this.submissionId}: ${error}`,
           });
         }
@@ -187,7 +187,7 @@ export default {
 
         this.statusHistory = statuses.data;
         if (!this.statusHistory.length || !this.statusHistory[0]) {
-          throw new Error(this.$t('trans.statusPanel.noStatusesFound'));
+          throw new Error(this.t('trans.statusPanel.noStatusesFound'));
         } else {
           // Statuses are returned in date precedence, the 0th item in the array is the current status
           this.currentStatus = this.statusHistory[0];
@@ -196,7 +196,7 @@ export default {
           const scRes = await formService.getStatusCodes(this.formId);
           const statusCodes = scRes.data;
           if (!statusCodes.length) {
-            throw new Error(this.$t('trans.statusPanel.statusCodesErr'));
+            throw new Error(this.t('trans.statusPanel.statusCodesErr'));
           }
           // For the CURRENT status, add the code details (display name, next codes etc)
           this.currentStatus.statusCodeDetail = statusCodes.find(
@@ -209,9 +209,9 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          text: this.$t('trans.statusPanel.notifyErrorCode'),
+          text: this.t('trans.statusPanel.notifyErrorCode'),
           consoleError:
-            this.$t('trans.statusPanel.notifyConsoleErrorCode') +
+            this.t('trans.statusPanel.notifyConsoleErrorCode') +
             `${error.message}`,
         });
       } finally {
@@ -233,7 +233,7 @@ export default {
       try {
         if (this.$refs.statusPanelForm.validate()) {
           if (!this.statusToSet) {
-            throw new Error(this.$t('trans.statusPanel.status'));
+            throw new Error(this.t('trans.statusPanel.status'));
           }
 
           const baseStatusBody = {
@@ -260,7 +260,7 @@ export default {
 
               if (!statusResponse.data) {
                 throw new Error(
-                  i18n.t('trans.statusPanel.updtSubmissionsStatusErr')
+                  this.t('trans.statusPanel.updtSubmissionsStatusErr')
                 );
               }
 
@@ -285,7 +285,7 @@ export default {
 
             if (!statusResponse.data) {
               throw new Error(
-                i18n.t('trans.statusPanel.updtSubmissionsStatusErr')
+                this.t('trans.statusPanel.updtSubmissionsStatusErr')
               );
             }
 
@@ -312,8 +312,8 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          text: this.$t('trans.statusPanel.addNoteErrMsg'),
-          consoleError: this.$t('trans.statusPanel.addNoteConsoleErrMsg', {
+          text: this.t('trans.statusPanel.addNoteErrMsg'),
+          consoleError: this.t('trans.statusPanel.addNoteConsoleErrMsg', {
             error: error,
           }),
         });
@@ -330,7 +330,7 @@ export default {
       };
       const response = await formService.addNote(this.submissionId, noteBody);
       if (!response.data) {
-        throw new Error(i18n.t('trans.statusPanel.addNoteNoReponserErr'));
+        throw new Error(this.t('trans.statusPanel.addNoteNoReponserErr'));
       }
     },
 
