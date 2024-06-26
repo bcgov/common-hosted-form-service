@@ -1,6 +1,7 @@
 <script>
 import { mapState, mapActions } from 'pinia';
-import { i18n } from '~/internationalization';
+import { useI18n } from 'vue-i18n';
+
 import { useAdminStore } from '~/store/admin';
 import { useFormStore } from '~/store/form';
 
@@ -12,6 +13,11 @@ export default {
     groupName: { type: String, required: true },
   },
   emits: ['close-dialog'],
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
+
+    return { t, locale };
+  },
   data() {
     return {
       componentId: this?.component?.id ? this.component.id : undefined,
@@ -42,14 +48,14 @@ export default {
             !value ||
             !value.length ||
             value[0].size < 500000 ||
-            i18n.t('trans.proactiveHelpDialog.largeImgTxt')
+            this.$t('trans.proactiveHelpDialog.largeImgTxt')
           );
         },
       ],
     };
   },
   computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
+    ...mapState(useFormStore, ['isRTL']),
   },
   watch: {
     showDialog(value) {
@@ -134,7 +140,7 @@ export default {
         <v-container>
           <v-row>
             <v-col>
-              <span class="text-h5" style="font-weight: bold" :lang="lang">{{
+              <span class="text-h5" style="font-weight: bold" :lang="locale">{{
                 $t('trans.proactiveHelpDialog.componentInfoLink')
               }}</span>
             </v-col>
@@ -145,7 +151,7 @@ export default {
                 style="margin: 0px; padding: 0px"
                 class="text-red"
                 :v-text="$t('trans.proactiveHelpDialog.learnMoreLinkTxt')"
-                :lang="lang"
+                :lang="locale"
               />
             </v-col>
           </v-row>
@@ -155,7 +161,7 @@ export default {
                 style="margin: 0px; padding: 0px"
                 class="text-red"
                 :v-text="$t('trans.proactiveHelpDialog.largeImgTxt')"
-                :lang="lang"
+                :lang="locale"
               />
             </v-col>
           </v-row>
@@ -163,7 +169,7 @@ export default {
           <v-row class="mt-5" no-gutters>
             <span
               class="text-decoration-underline mr-2 blackColorWrapper"
-              :lang="lang"
+              :lang="locale"
             >
               {{ $t('trans.proactiveHelpDialog.componentName') }}
             </span>
@@ -174,7 +180,7 @@ export default {
               <div class="d-flex flex-row align-center">
                 <p
                   class="mr-2 mt-2 text-decoration-underline blueColorWrapper"
-                  :lang="lang"
+                  :lang="locale"
                 >
                   {{ $t('trans.proactiveHelpDialog.learnMoreLink') }}
                 </p>
@@ -195,7 +201,7 @@ export default {
                 </v-col>
                 <v-checkbox v-model="isLinkEnabled" class="checkbox_data_cy">
                   <template #label>
-                    <span class="v-label" :lang="lang">{{
+                    <span class="v-label" :lang="locale">{{
                       !isLinkEnabled
                         ? $t('trans.proactiveHelpDialog.clickToEnableLink')
                         : $t('trans.proactiveHelpDialog.clickToDisableLink')
@@ -214,7 +220,7 @@ export default {
               class="mb-2 blackColorWrapper"
               :class="{ 'dir-rtl': isRTL }"
             >
-              <span :lang="lang">
+              <span :lang="locale">
                 {{ $t('trans.proactiveHelpDialog.description') }}</span
               >
             </v-col>
@@ -256,7 +262,7 @@ export default {
                         : $t('trans.proactiveHelpDialog.imageUpload')
                     "
                     class="file_upload_data-cy"
-                    :lang="lang"
+                    :lang="locale"
                     @update:model-value="selectImage"
                   ></v-file-input>
                 </v-col>
@@ -270,7 +276,7 @@ export default {
                   <v-btn
                     class="mr-4 saveButtonWrapper"
                     data-cy="more_help_info_link_save_button"
-                    :lang="lang"
+                    :lang="locale"
                     :title="$t('trans.proactiveHelpDialog.save')"
                     @click="submit"
                   >
@@ -279,7 +285,7 @@ export default {
                   <v-btn
                     class="cancelButtonWrapper"
                     data-cy="more_help_info_link_cancel_button"
-                    :lang="lang"
+                    :lang="locale"
                     :title="$t('trans.proactiveHelpDialog.cancel')"
                     @click="onCloseDialog"
                   >

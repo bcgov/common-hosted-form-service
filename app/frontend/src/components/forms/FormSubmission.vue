@@ -1,5 +1,6 @@
 <script>
 import { mapActions, mapState } from 'pinia';
+import { useI18n } from 'vue-i18n';
 
 import AuditHistory from '~/components/forms/submission/AuditHistory.vue';
 import DeleteSubmission from '~/components/forms/submission/DeleteSubmission.vue';
@@ -28,6 +29,11 @@ export default {
       required: true,
     },
   },
+  setup() {
+    const { locale } = useI18n({ useScope: 'global' });
+
+    return { locale };
+  },
   data() {
     return {
       isDraft: true,
@@ -43,7 +49,6 @@ export default {
       'formSubmission',
       'permissions',
       'isRTL',
-      'lang',
     ]),
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
@@ -105,7 +110,7 @@ export default {
         <!-- page title -->
         <div>
           <h1>{{ form.name }}</h1>
-          <p :lang="lang">
+          <p :lang="locale">
             <strong>{{ $t('trans.formSubmission.submitted') }}</strong>
             {{ $filters.formatDateLong(formSubmission.createdAt) }}
             <br />
@@ -165,7 +170,7 @@ export default {
                   />
                 </router-link>
               </template>
-              <span :lang="lang"
+              <span :lang="locale"
                 >{{ $t('trans.formSubmission.viewAllSubmissions') }}
               </span>
             </v-tooltip>
@@ -216,7 +221,7 @@ export default {
               { 'dir-rtl': isRTL },
             ]"
             :icon="NOTIFICATIONS_TYPES.INFO.icon"
-            :lang="lang"
+            :lang="locale"
             >{{ $t('trans.formSubmission.alertInfo') }}</v-alert
           >
         </transition>
@@ -224,7 +229,7 @@ export default {
           <div :class="{ 'dir-rtl': isRTL }">
             <v-row no-gutters>
               <v-col cols="10">
-                <h2 class="review-heading" :lang="lang">
+                <h2 class="review-heading" :lang="locale">
                   {{ $t('trans.formSubmission.submission') }}
                 </h2>
               </v-col>
@@ -254,7 +259,7 @@ export default {
                         @click="toggleSubmissionEdit(true)"
                       />
                     </template>
-                    <span :lang="lang">{{
+                    <span :lang="locale">{{
                       $t('trans.formSubmission.editThisSubmission')
                     }}</span>
                   </v-tooltip>
@@ -266,7 +271,7 @@ export default {
                   :title="$t('trans.formSubmission.cancel')"
                   @click="toggleSubmissionEdit(false)"
                 >
-                  <span :lang="lang">{{
+                  <span :lang="locale">{{
                     $t('trans.formSubmission.cancel')
                   }}</span>
                 </v-btn>

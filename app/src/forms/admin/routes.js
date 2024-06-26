@@ -61,6 +61,20 @@ routes.get('/users/:userId', async (req, res, next) => {
 });
 
 //
+// APIs
+//
+routes.get('/externalAPIs', async (req, res, next) => {
+  await controller.getExternalAPIs(req, res, next);
+});
+
+routes.put('/externalAPIs/:id', async (req, res, next) => {
+  await controller.updateExternalAPI(req, res, next);
+});
+
+routes.get('/externalAPIs/statusCodes', async (req, res, next) => {
+  await controller.getExternalAPIStatusCodes(req, res, next);
+});
+//
 //Form componets help info
 //
 

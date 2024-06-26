@@ -1,31 +1,33 @@
 <script setup>
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import { useFormStore } from '~/store/form';
 import { FormProfileValues } from '~/utils/constants';
-import { i18n } from '~/internationalization';
+
+const { t, locale } = useI18n({ useScope: 'global' });
 
 const formStore = useFormStore();
 
 const useCaseRules = ref([
   (v) => {
-    return !!v || i18n.t('trans.formProfile.selectUseCaseErr');
+    return !!v || t('trans.formProfile.selectUseCaseErr');
   },
 ]);
 
 const form = computed(() => formStore.form);
-const lang = computed(() => formStore.lang);
 const isRTL = computed(() => formStore.isRTL);
 
 const useCase = computed(() => {
   return FormProfileValues.USE_CASE.map((useCase) => ({
     id: useCase.id,
-    text: i18n.t(`trans.formProfile.${useCase.id}`),
+    text: t(`trans.formProfile.${useCase.id}`),
   }));
 });
 </script>
 
 <template>
-  <div class="ml-1 mb-4" :lang="lang">
+  <div class="ml-1 mb-4" :lang="locale">
     <span v-if="!form.useCase" class="text-danger"><strong>*</strong></span>
     {{ $t('trans.formProfile.useCasePrompt') }}
     <v-tooltip location="bottom">
@@ -39,7 +41,7 @@ const useCase = computed(() => {
         />
       </template>
       <span>
-        <span :lang="lang">{{ $t('trans.formProfile.useCaseToolTip') }}</span>
+        <span :lang="locale">{{ $t('trans.formProfile.useCaseToolTip') }}</span>
       </span>
     </v-tooltip>
   </div>

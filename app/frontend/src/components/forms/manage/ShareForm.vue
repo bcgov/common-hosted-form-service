@@ -1,52 +1,52 @@
-<script>
+<script setup>
+import { storeToRefs } from 'pinia';
 import QrcodeVue from 'qrcode.vue';
-import { mapState } from 'pinia';
+import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+
 import BaseCopyToClipboard from '~/components/base/BaseCopyToClipboard.vue';
 import { NotificationTypes } from '~/utils/constants';
 import { useFormStore } from '~/store/form';
 
-export default {
-  components: {
-    BaseCopyToClipboard,
-    QrcodeVue,
+const { locale } = useI18n({ useScope: 'global' });
+
+const router = useRouter();
+
+const properties = defineProps({
+  formId: {
+    type: String,
+    required: true,
   },
-  props: {
-    formId: {
-      type: String,
-      required: true,
-    },
-    warning: {
-      type: Boolean,
-      default: false,
-    },
+  warning: {
+    type: Boolean,
+    default: false,
   },
-  data() {
-    return {
-      dialog: false,
-      qrLevel: 'M',
-      qrSize: 900,
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
-    formLink() {
-      return `${window.location.origin}${
-        import.meta.env.BASE_URL
-      }/form/submit?f=${this.formId}`;
-    },
-    NOTIFICATIONS_TYPES() {
-      return NotificationTypes;
-    },
-  },
-  methods: {
-    downloadQr() {
-      let link = document.createElement('a');
-      link.download = 'qrcode.png';
-      link.href = document.querySelector('.qrCodeContainer canvas').toDataURL();
-      link.click();
-    },
-  },
-};
+});
+
+const dialog = ref(false);
+const qrLevel = ref('M');
+const qrSize = ref(900);
+
+const { isRTL } = storeToRefs(useFormStore());
+
+const formLink = computed(() => {
+  const url = router.resolve({
+    name: 'FormSubmit',
+    query: { f: properties.formId },
+  });
+  return `${window.location.origin}${url.href}`;
+});
+const NOTIFICATIONS_TYPES = computed(() => NotificationTypes);
+
+function downloadQr() {
+  let link = document.createElement('a');
+  link.download = 'qrcode.png';
+  link.href = document.querySelector('.qrCodeContainer canvas').toDataURL();
+  link.click();
+}
+
+defineExpose({ dialog, formLink, downloadQr });
 </script>
 
 <template>
@@ -65,17 +65,17 @@ export default {
           @click="dialog = true"
         />
       </template>
-      <span :lang="lang">{{ $t('trans.shareForm.shareForm') }}</span>
+      <span :lang="locale">{{ $t('trans.shareForm.shareForm') }}</span>
     </v-tooltip>
 
-    <v-dialog v-model="dialog" width="900">
+    <v-dialog v-model="dialog" width="900" data-cy="shareFormDialog">
       <v-card>
-        <v-card-title class="text-h5 pb-0" :lang="lang">{{
+        <v-card-title class="text-h5 pb-0" :lang="locale">{{
           $t('trans.shareForm.shareLink')
         }}</v-card-title>
         <v-card-text>
           <hr />
-          <p class="mb-5" :class="{ 'dir-rtl': isRTL }" :lang="lang">
+          <p class="mb-5" :class="{ 'dir-rtl': isRTL }" :lang="locale">
             {{ $t('trans.shareForm.copyQRCode') }}
           </p>
           <v-alert
@@ -83,7 +83,7 @@ export default {
             :class="[NOTIFICATIONS_TYPES.WARNING.class, { 'dir-rtl': isRTL }]"
             :icon="NOTIFICATIONS_TYPES.WARNING.icon"
             :text="$t('trans.shareForm.warningMessage')"
-            :lang="lang"
+            :lang="locale"
           ></v-alert>
           <v-text-field
             readonly
@@ -102,7 +102,7 @@ export default {
                 class="mt-n1 mx-2"
                 :text-to-copy="formLink"
                 :tooltip-text="$t('trans.shareForm.copyURLToClipboard')"
-                :lang="lang"
+                :lang="locale"
               />
               <v-tooltip location="bottom">
                 <template #activator="{ props }">
@@ -120,7 +120,7 @@ export default {
                     :title="$t('trans.shareForm.openThisForm')"
                   />
                 </template>
-                <span :class="{ 'dir-rtl': isRTL }" :lang="lang">{{
+                <span :class="{ 'dir-rtl': isRTL }" :lang="locale">{{
                   $t('trans.shareForm.openThisForm')
                 }}</span>
               </v-tooltip>
@@ -167,7 +167,7 @@ export default {
             :title="$t('trans.shareForm.close')"
             @click="dialog = false"
           >
-            <span :lang="lang">{{ $t('trans.shareForm.close') }}</span>
+            <span :lang="locale">{{ $t('trans.shareForm.close') }}</span>
           </v-btn>
         </v-card-actions>
       </v-card>

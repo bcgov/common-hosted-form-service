@@ -1,4 +1,5 @@
 {
+  "open": "Open",
   "date": {
     "date": "yyyy-mm-dd"
   },
@@ -65,11 +66,12 @@
     "update": "Update",
     "cancel": "Cancel",
     "eventSubscription": "Event Subscription",
-    "cdogsTemplate": "CDOGS Template"
+    "cdogsTemplate": "CDOGS Template",
+    "externalAPIs": "External APIs"
   },
   "documentTemplate": {
     "uploadTemplate": "Upload CDOGS Template",
-    "uploadTemplateFile":"Upload template file",
+    "uploadTemplateFile": "Upload template file",
     "upload": "Upload",
     "delete": "Delete",
     "download": "Download",
@@ -79,7 +81,40 @@
     "deleteSuccess": "Template deleted successfully.",
     "deleteError": "An error occurred while deleting the template.",
     "fetchError": "An error occurred while fetching the template.",
-    "info" : "Upload a template to use the Common Document Generation Service (CDOGS)"
+    "info": "Upload a template to use the Common Document Generation Service (CDOGS)"
+  },
+  "externalAPI": {
+    "info": "Configure External APIs for use in your form.",
+    "create": "Create new External API.",
+    "createError": "External API could not be created.",
+    "createSuccess": "External API created successfully.",
+    "createTitle": "New External API Configuration",
+    "delete": "Delete",
+    "deleteSuccess": "External API deleted successfully.",
+    "deleteError": "An error occurred while deleting the External API.",
+    "edit": "Edit",
+    "editError": "External API could not be updated.",
+    "editSuccess": "External API updated successfully.",
+    "editTitle": "Edit External API Configuration",
+    "fetchError": "An error occurred while fetching the External API.",
+    "fetchListError": "An error occurred while fetching the External API list.",
+    "fetchStatusListError": "An error occurred while fetching the External API Status Code list.",
+    "save": "Save",
+    "formName": "Name",
+    "formEndpointUrl": "Endpoint URL",
+    "formStatus": "Status",
+    "formSendApiKey": "Send API Key",
+    "formApiKeyHeader": "API Key Header Name",
+    "formApiKey": "API Key Value",
+    "formSendUserToken": "Send User Token",
+    "formUserTokenHeader": "User Token Header Name",
+    "formUserTokenBearer": "User Token as Bearer Token",
+    "formSendUserInfo": "Send User Information",
+    "formNameReq": "Name is required.",
+    "formNameMaxChars": "Name must be 255 characters or less",
+    "validEndpointRequired": "Please enter a valid endpoint starting with http:// or https://",
+    "apiKeyFieldRequired": "Required when 'Send API Key' selected.",
+    "userTokenFieldRequired": "Required when 'Send User Token' selected."
   },
   "formSettings": {
     "pressToAddMultiEmail": "Press <kbd>enter</kbd> or <kbd>,</kbd> or <kbd>space</kbd> to add multiple email addresses",
@@ -332,9 +367,23 @@
   "adminPage": {
     "forms": "Forms",
     "users": "Users",
+    "apis": "APIs",
     "developer": "Developer",
     "infoLinks": "Info Links",
     "metrics": "Metrics"
+  },
+  "adminAPIsTable": {
+    "search": "Search",
+    "loadingText": "Loading... Please wait",
+    "ministry": "Ministry",
+    "formName": "Form",
+    "name": "API Name",
+    "endpointUrl": "Endpoint URL",
+    "display": "Status",
+    "actions": "Actions",
+    "edit": "Edit",
+    "editTitle": "Update External API Status",
+    "allowSendUserToken": "Allow 'Send User Token'"
   },
   "adminUsersTable": {
     "search": "Search",
@@ -956,7 +1005,13 @@
       "updatingFCStatusErrMsg": "An error occurred while updating publish status",
       "updatingFCStatusConsErrMsg": "Error updating publish status: {error}",
       "fecthingFormBuilderCompsErrMsg": "An error occurred while fetching form builder components",
-      "fecthingFormBuilderCompsConsErrMsg": "Error getting form builder components: {error}"
+      "fecthingFormBuilderCompsConsErrMsg": "Error getting form builder components: {error}",
+      "getAPIsErrMsg": "An error occurred while fetching External APIs list.",
+      "getAPIsConsErrMsg": "Error fetching External APIs list: {error}",
+      "updateAPIsErrMsg": "Error updating External API.",
+      "updateAPIsConsErrMsg": "Error updating External API: {error}",
+      "getAPICodesErrMsg": "Error fetching External API Status Codes list.",
+      "getAPICodesConsErrMsg": "Error fetching External API Status Codes list: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Error loading email templates for {formId}: {error}",
