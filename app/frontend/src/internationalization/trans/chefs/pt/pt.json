@@ -1,4 +1,5 @@
 {
+  "open": "Abrir",
   "date": {
     "date": "aaaa-mm-dd"
   },
@@ -614,6 +615,7 @@
     "assigneeIsRequired": "O cessionário é obrigatório",
     "assignToMe": "ATRIBUIR PARA MIM",
     "recipientEmail": "E-mail do destinatário",
+    "recipientIsRequired": "Destinatário é necessário",
     "attachCommentToEmail": "Anexar comentário ao e-mail",
     "emailComment": "Comentário de e-mail",
     "maxChars": "Máximo de 4.000 caracteres",

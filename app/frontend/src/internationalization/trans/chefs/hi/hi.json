@@ -1,4 +1,5 @@
 {
+  "open": "खुला",
   "date": {
     "date": "yyyy-mm-dd"
   },
@@ -614,6 +615,7 @@
     "assigneeIsRequired": "समनुदेशिती आवश्यक है",
     "assignToMe": "मेरे लिए आवंटित",
     "recipientEmail": "प्राप्तकर्ता का ई - मेल",
+    "recipientIsRequired": "प्राप्तकर्ता आवश्यक है",
     "attachCommentToEmail": "ईमेल पर टिप्पणी संलग्न करें",
     "emailComment": "ईमेल टिप्पणी",
     "maxChars": "अधिकतम 4000 अक्षर",

@@ -1,4 +1,5 @@
 {
+  "open": "mở",
   "date": {
     "date": "yyyy-mm-dd"
   },
@@ -614,6 +615,7 @@
     "assigneeIsRequired": "Người được ủy quyền là bắt buộc",
     "assignToMe": "GIAO CHO TÔI",
     "recipientEmail": "Người nhận E-mail",
+    "recipientIsRequired": "Người nhận là bắt buộc",
     "attachCommentToEmail": "Đính kèm Nhận xét vào Email",
     "emailComment": "Nhận xét email",
     "maxChars": "Tối đa 4000 ký tự",

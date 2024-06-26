@@ -1,6 +1,7 @@
 <script>
 import { mapState, mapActions } from 'pinia';
-import { i18n } from '~/internationalization';
+import { useI18n } from 'vue-i18n';
+
 import { formService, utilsService } from '~/services';
 import { NotificationTypes } from '~/utils/constants';
 
@@ -21,6 +22,11 @@ export default {
       type: String,
       default: '',
     },
+  },
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
+
+    return { t, locale };
   },
   data() {
     return {
@@ -48,7 +54,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang', 'form', 'getInitialForm']),
+    ...mapState(useFormStore, ['isRTL', 'form', 'getInitialForm']),
     files() {
       return this.templateForm.files;
     },
@@ -57,7 +63,8 @@ export default {
     },
     validationRules() {
       return [
-        this.isValidFile || i18n.t('trans.documentTemplate.invalidFileMessage'),
+        this.isValidFile ||
+          this.$t('trans.documentTemplate.invalidFileMessage'),
       ];
     },
   },
@@ -228,13 +235,13 @@ export default {
         // Generate Temporary Download Link
         this.createDownload(blob, filename);
         this.addNotification({
-          text: i18n.t('trans.printOptions.docGrnSucess'),
+          text: this.$t('trans.printOptions.docGrnSucess'),
           ...NotificationTypes.SUCCESS,
         });
       } catch (e) {
         this.addNotification({
-          text: i18n.t('trans.printOptions.failedDocGenErrMsg'),
-          consoleError: i18n.t('trans.printOptions.failedDocGenErrMsg', {
+          text: this.$t('trans.printOptions.failedDocGenErrMsg'),
+          consoleError: this.$t('trans.printOptions.failedDocGenErrMsg', {
             error: e.message,
           }),
         });
@@ -286,8 +293,8 @@ export default {
         }
       } catch (e) {
         this.addNotification({
-          text: i18n.t('trans.documentTemplate.fetchError'),
-          consoleError: i18n.t('trans.documentTemplate.fetchError', {
+          text: this.$t('trans.documentTemplate.fetchError'),
+          consoleError: this.$t('trans.documentTemplate.fetchError', {
             error: e.message,
           }),
         });
@@ -326,7 +333,7 @@ export default {
           @click="dialog = true"
         />
       </template>
-      <span :lang="lang">{{ $t('trans.printOptions.print') }}</span>
+      <span :lang="locale">{{ $t('trans.printOptions.print') }}</span>
     </v-tooltip>
 
     <v-dialog
@@ -335,7 +342,7 @@ export default {
       content-class="export-submissions-dlg"
     >
       <v-card :class="{ 'dir-rtl': isRTL }">
-        <v-card-title class="text-h5 pb-0 mt-2" :lang="lang">{{
+        <v-card-title class="text-h5 pb-0 mt-2" :lang="locale">{{
           $t('trans.printOptions.printOptions')
         }}</v-card-title>
         <v-card-text>
@@ -361,7 +368,7 @@ export default {
                   :title="$t('trans.printOptions.browserPrint')"
                   @click="printBrowser"
                 >
-                  <span :lang="lang">{{
+                  <span :lang="locale">{{
                     $t('trans.printOptions.browserPrint')
                   }}</span>
                 </v-btn>
@@ -372,7 +379,7 @@ export default {
                   :title="$t('trans.formSubmission.cancel')"
                   @click="dialog = false"
                 >
-                  <span :lang="lang">{{
+                  <span :lang="locale">{{
                     $t('trans.formSubmission.cancel')
                   }}</span>
                 </v-btn>
@@ -381,7 +388,7 @@ export default {
                   href="https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/Printing-from-a-browser/"
                   target="_blank"
                   class="more-info-link"
-                  :lang="lang"
+                  :lang="locale"
                 >
                   <v-icon size="small" class="mx-1">mdi-help-circle</v-icon>
                   {{ $t('trans.printOptions.moreInfo') }}
@@ -442,7 +449,7 @@ export default {
                   mandatory
                   show-size
                   prepend-icon="false"
-                  :lang="lang"
+                  :lang="locale"
                   :rules="validationRules"
                   :disabled="selectedOption !== 'upload'"
                   @update:model-value="validateFileExtension($event)"
@@ -467,7 +474,7 @@ export default {
                           :start="$vuetify.display.smAndUp"
                           icon="mdi:mdi-content-save"
                         />
-                        <span :lang="lang">{{
+                        <span :lang="locale">{{
                           $t('trans.printOptions.templatePrint')
                         }}</span>
                       </v-btn>
@@ -478,7 +485,7 @@ export default {
                         :title="$t('trans.formSubmission.cancel')"
                         @click="dialog = false"
                       >
-                        <span :lang="lang">{{
+                        <span :lang="locale">{{
                           $t('trans.formSubmission.cancel')
                         }}</span>
                       </v-btn>
@@ -487,7 +494,7 @@ export default {
                         href="https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/CDOGS-Template-Upload/"
                         target="_blank"
                         class="more-info-link"
-                        :lang="lang"
+                        :lang="locale"
                         :title="$t('trans.printOptions.moreInfo')"
                       >
                         <v-icon size="small" class="mx-1"
@@ -497,7 +504,7 @@ export default {
                       </a>
                     </div>
                   </template>
-                  <span :lang="lang">{{
+                  <span :lang="locale">{{
                     $t('trans.printOptions.submitButtonTxt')
                   }}</span>
                 </v-tooltip>

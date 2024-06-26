@@ -50,7 +50,7 @@
       //"env": { "NODE_ENV": "test" },
       "program": "${workspaceFolder}/app/node_modules/.bin/jest",
       "args": [
-        "${fileBasenameNoExtension}",
+        "${file}",
         "--config",
         "${workspaceFolder}/app/jest.config.js",
         "--coverage=false"
@@ -59,6 +59,23 @@
       "windows": {
         "program": "${workspaceFolder}/app/node_modules/jest/bin/jest"
       }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "VITest: current file",
+      "autoAttachChildProcesses": true,
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+      "program": "${workspaceFolder}/app/frontend/node_modules/vitest/vitest.mjs",
+      "args": [
+        "run",
+        "${relativeFile}",
+        "-r",
+        "${workspaceFolder}/app/frontend",
+        "--coverage=false"
+      ],
+      "smartStep": true,
+      "console": "integratedTerminal"
     }
   ],
   "version": "0.2.0"

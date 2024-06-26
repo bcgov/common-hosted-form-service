@@ -15,6 +15,7 @@ const user = require('../forms/user');
 const submission = require('../forms/submission');
 const utils = require('../forms/utils');
 const index = require('../forms/public');
+const proxy = require('../forms/proxy');
 
 admin.mount(router);
 const bcaddress = bcgeoaddress.mount(router);
@@ -27,6 +28,7 @@ const userPath = user.mount(router);
 const submissionPath = submission.mount(router);
 const utilsPath = utils.mount(router);
 const publicPath = index.mount(router);
+const proxyPath = proxy.mount(router);
 
 const getSpec = () => {
   const rawSpec = fs.readFileSync(path.join(__dirname, '../docs/v1.api-spec.yaml'), 'utf8');
@@ -39,7 +41,7 @@ const getSpec = () => {
 // Base v1 Responder
 router.get('/', (_req, res) => {
   res.status(200).json({
-    endpoints: ['/docs', filePath, formPath, permissionPath, rbacPath, rolePath, submissionPath, userPath, bcaddress, publicPath, utilsPath],
+    endpoints: ['/docs', proxyPath, filePath, formPath, permissionPath, rbacPath, rolePath, submissionPath, userPath, bcaddress, publicPath, utilsPath],
   });
 });
 

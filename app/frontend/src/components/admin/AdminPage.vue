@@ -1,7 +1,10 @@
 <script>
 import { mapState } from 'pinia';
+import { useI18n } from 'vue-i18n';
+
 import AdminFormsTable from '~/components/admin/AdminFormsTable.vue';
 import AdminUsersTable from '~/components/admin/AdminUsersTable.vue';
+import AdminAPIsTable from '~/components/admin/AdminAPIsTable.vue';
 import Dashboard from '~/components/admin/Dashboard.vue';
 import Developer from '~/components/admin/Developer.vue';
 import FormComponentsProactiveHelp from '~/components/admin/FormComponentsProactiveHelp.vue';
@@ -13,9 +16,15 @@ export default {
   components: {
     AdminFormsTable,
     AdminUsersTable,
+    AdminAPIsTable,
     Dashboard,
     Developer,
     FormComponentsProactiveHelp,
+  },
+  setup() {
+    const { locale } = useI18n({ useScope: 'global' });
+
+    return { locale };
   },
   data() {
     return {
@@ -24,7 +33,7 @@ export default {
   },
   computed: {
     ...mapState(useAppStore, ['config']),
-    ...mapState(useFormStore, ['isRTL', 'lang']),
+    ...mapState(useFormStore, ['isRTL']),
     adminDashboardUrl() {
       return this.config.adminDashboardUrl;
     },
@@ -39,15 +48,20 @@ export default {
 
 <template>
   <v-tabs v-model="tab" :class="{ 'dir-rtl': isRTL }">
-    <v-tab value="forms" :lang="lang">{{ $t('trans.adminPage.forms') }}</v-tab>
-    <v-tab value="users" :lang="lang">{{ $t('trans.adminPage.users') }}</v-tab>
-    <v-tab value="developer" :lang="lang">{{
+    <v-tab value="forms" :lang="locale">{{
+      $t('trans.adminPage.forms')
+    }}</v-tab>
+    <v-tab value="users" :lang="locale">{{
+      $t('trans.adminPage.users')
+    }}</v-tab>
+    <v-tab value="apis" :lang="locale">{{ $t('trans.adminPage.apis') }}</v-tab>
+    <v-tab value="developer" :lang="locale">{{
       $t('trans.adminPage.developer')
     }}</v-tab>
-    <v-tab value="infoLinks" :lang="lang">{{
+    <v-tab value="infoLinks" :lang="locale">{{
       $t('trans.adminPage.infoLinks')
     }}</v-tab>
-    <v-tab v-if="adminDashboardUrl" value="dashboard" :lang="lang">{{
+    <v-tab v-if="adminDashboardUrl" value="dashboard" :lang="locale">{{
       $t('trans.adminPage.metrics')
     }}</v-tab>
   </v-tabs>
@@ -59,6 +73,9 @@ export default {
       </v-window-item>
       <v-window-item value="users">
         <AdminUsersTable />
+      </v-window-item>
+      <v-window-item value="apis">
+        <AdminAPIsTable />
       </v-window-item>
       <v-window-item value="developer">
         <Developer />
