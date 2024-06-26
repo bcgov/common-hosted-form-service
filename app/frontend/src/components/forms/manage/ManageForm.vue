@@ -1,6 +1,7 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import ApiKey from '~/components/forms/manage/ApiKey.vue';
 import DocumentTemplate from '~/components/forms/manage/DocumentTemplate.vue';
@@ -12,6 +13,8 @@ import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { FormPermissions, NotificationTypes } from '~/utils/constants';
 import FormProfile from '~/components/designer/FormProfile.vue';
+
+const { locale } = useI18n({ useScope: 'global' });
 
 const apiKeyPanel = ref(1);
 const cdogsPanel = ref(1);
