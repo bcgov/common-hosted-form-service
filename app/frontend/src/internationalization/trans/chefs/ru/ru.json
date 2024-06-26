@@ -615,6 +615,7 @@
     "assigneeIsRequired": "Требуется правопреемник",
     "assignToMe": "НАЗНАЧИТЬ МНЕ",
     "recipientEmail": "Электронная почта получателя",
+    "recipientIsRequired": "Получатель обязателен",
     "attachCommentToEmail": "Прикрепить комментарий к электронной почте",
     "emailComment": "Комментарий по электронной почте",
     "maxChars": "Максимум 4000 символов",
