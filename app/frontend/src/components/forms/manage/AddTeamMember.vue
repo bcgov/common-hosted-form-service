@@ -1,164 +1,179 @@
-<script>
-import _ from 'lodash';
-import { mapState, mapActions } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import userService from '~/services/userService';
-import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 import { Regex } from '~/utils/constants';
 
-export default {
-  props: {
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  emits: ['new-users', 'adding-users'],
-  setup() {
-    const { t, locale } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
 
-    return { t, locale };
+defineProps({
+  disabled: {
+    type: Boolean,
+    default: false,
   },
-  data() {
-    return {
-      addingUsers: false,
-      isLoading: false,
-      model: null,
-      search: null,
-      selectedIdp: null,
-      selectedRoles: [],
-      showError: false,
-      entries: [],
-      debounceSearch: _.debounce(this.searchUsers, 250),
-    };
-  },
-  computed: {
-    ...mapState(useAuthStore, ['identityProvider']),
-    ...mapState(useFormStore, ['form', 'isRTL']),
-    ...mapState(useIdpStore, ['loginButtons', 'primaryIdp']),
-    FORM_ROLES() {
-      const idpRoles = this.listRoles(this.selectedIdp);
-      return Object.values(idpRoles).sort();
-    },
-    autocompleteLabel() {
-      return this.isPrimary(this.selectedIdp)
-        ? this.$t('trans.addTeamMember.enterUsername')
-        : this.$t('trans.addTeamMember.enterExactUsername');
-    },
-  },
-  watch: {
-    search(val) {
-      if (val && val !== this.model) {
-        this.debounceSearch(val);
-      }
+});
 
-      if (!val) {
-        this.entries = [];
-      }
-    },
-    selectedIdp(newIdp, oldIdp) {
-      if (newIdp !== oldIdp) {
-        this.selectedRoles = [];
-        this.model = null;
-        this.entries = [];
-        this.showError = false;
-      }
-    },
-    selectedRoles(newRoles, oldRoles) {
-      if (newRoles !== oldRoles) {
-        this.entries = [];
-        this.showError = false;
-      }
-    },
+const emit = defineEmits(['new-users', 'adding-users']);
 
-    addingUsers() {
-      this.$emit('adding-users', this.addingUsers);
-    },
-  },
-  created() {
-    this.initializeSelectedIdp();
-  },
-  methods: {
-    ...mapActions(useIdpStore, [
-      'isPrimary',
-      'listRoles',
-      'teamMembershipSearch',
-    ]),
-    // workaround so we can use computed value (primaryIdp) in created()
-    initializeSelectedIdp() {
-      this.selectedIdp = this.primaryIdp?.code;
-    },
-    // show users in dropdown that have a text match on multiple properties
-    filterObject(_itemTitle, queryText, item) {
-      return Object.values(item)
-        .filter((v) => v)
-        .some((v) => {
-          if (typeof v === 'string')
-            return v.toLowerCase().includes(queryText.toLowerCase());
-          else {
-            return Object.values(v).some(
-              (nestedValue) =>
-                typeof nestedValue === 'string' &&
-                nestedValue.toLowerCase().includes(queryText.toLowerCase())
-            );
-          }
-        });
-    },
+const idpStore = useIdpStore();
 
-    save() {
-      if (this.selectedRoles.length === 0) {
-        this.showError = true;
-        return;
-      }
-      this.showError = false;
-      // emit user (object) to the parent component
-      this.$emit('new-users', [this.model], this.selectedRoles);
-      // reset search field
-      this.model = null;
-      this.addingUsers = false;
-    },
+const debounceTime = 250;
+let debounceTimer = null;
+const addingUsers = ref(false);
+const isLoading = ref(false);
+const model = ref(null);
+const search = ref(null);
+const selectedIdp = ref(null);
+const selectedRoles = ref([]);
+const showError = ref(false);
+const entries = ref([]);
 
-    async searchUsers(input) {
-      if (!input) return;
-      this.isLoading = true;
-      try {
-        let params = {};
-        params.idpCode = this.selectedIdp;
-        let teamMembershipConfig = this.teamMembershipSearch(this.selectedIdp);
-        if (teamMembershipConfig) {
-          if (input.length < teamMembershipConfig.text.minLength)
-            throw new Error(this.$t(teamMembershipConfig.text.message));
-          if (input.includes('@')) {
-            if (!new RegExp(Regex.EMAIL).test(input))
-              throw new Error(this.$t(teamMembershipConfig.email.message));
-            else params.email = input;
-          } else {
-            params.username = input;
-          }
-        } else {
-          params.search = input;
-        }
-        const response = await userService.getUsers(params);
-        this.entries = response.data;
-      } catch (error) {
-        this.entries = [];
-        /* eslint-disable no-console */
-        console.error(
-          this.$t('trans.manageSubmissionUsers.getUsersErrMsg', {
-            error: error,
-          })
-        ); // eslint-disable-line no-console
-      } finally {
-        this.isLoading = false;
+const { isRTL } = storeToRefs(useFormStore());
+const { loginButtons, primaryIdp } = storeToRefs(idpStore);
+
+const FORM_ROLES = computed(() => {
+  const idpRoles = idpStore.listRoles(selectedIdp.value);
+  return Object.values(idpRoles).sort();
+});
+
+const autocompleteLabel = computed(() => {
+  return idpStore.isPrimary(selectedIdp.value)
+    ? t('trans.addTeamMember.enterUsername')
+    : t('trans.addTeamMember.enterExactUsername');
+});
+
+watch(selectedIdp, (newIdp, oldIdp) => {
+  if (newIdp !== oldIdp) {
+    selectedRoles.value = [];
+    model.value = null;
+    entries.value = [];
+    showError.value = false;
+  }
+});
+
+watch(selectedRoles, (newRoles, oldRoles) => {
+  if (newRoles !== oldRoles) {
+    entries.value = [];
+    showError.value = false;
+  }
+});
+
+watch(addingUsers, () => {
+  emit('adding-users', addingUsers.value);
+});
+
+initializeSelectedIdp();
+
+onBeforeUnmount(() => {
+  clearTimeout(debounceTimer);
+});
+
+// workaround so we can use computed value (primaryIdp) in created()
+function initializeSelectedIdp() {
+  selectedIdp.value = primaryIdp.value?.code;
+}
+
+// show users in dropdown that have a text match on multiple properties
+function filterObject(_itemTitle, queryText, item) {
+  return Object.values(item)
+    .filter((v) => v)
+    .some((v) => {
+      if (typeof v === 'string')
+        return v.toLowerCase().includes(queryText.toLowerCase());
+      else {
+        return Object.values(v).some(
+          (nestedValue) =>
+            typeof nestedValue === 'string' &&
+            nestedValue.toLowerCase().includes(queryText.toLowerCase())
+        );
       }
-    },
-  },
-};
+    });
+}
+
+function save() {
+  if (selectedRoles.value.length === 0) {
+    showError.value = true;
+    return;
+  }
+  showError.value = false;
+  // emit user (object) to the parent component
+  emit('new-users', [model.value], selectedRoles.value);
+  // reset search field
+  model.value = null;
+  addingUsers.value = false;
+}
+
+function debounceSearch(input) {
+  if (debounceTimer) clearTimeout(debounceTimer);
+
+  debounceTimer = setTimeout(() => {
+    searchUsers(input);
+  }, debounceTime);
+}
+
+async function searchUsers(input) {
+  if (!input) {
+    entries.value = [];
+    return;
+  }
+  if (input === model.value) {
+    return;
+  }
+  isLoading.value = true;
+  try {
+    let params = {};
+    params.idpCode = selectedIdp.value;
+    let teamMembershipConfig = idpStore.teamMembershipSearch(selectedIdp.value);
+    if (teamMembershipConfig) {
+      if (input.length < teamMembershipConfig.text.minLength)
+        throw new Error(t(teamMembershipConfig.text.message));
+      if (input.includes('@')) {
+        if (!new RegExp(Regex.EMAIL).test(input))
+          throw new Error(t(teamMembershipConfig.email.message));
+        else params.email = input;
+      } else {
+        params.username = input;
+      }
+    } else {
+      params.search = input;
+    }
+    const response = await userService.getUsers(params);
+    entries.value = response.data;
+  } catch (error) {
+    entries.value = [];
+    /* eslint-disable no-console */
+    console.error(
+      t('trans.manageSubmissionUsers.getUsersErrMsg', {
+        error: error,
+      })
+    );
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+defineExpose({
+  addingUsers,
+  debounceSearch,
+  debounceTime,
+  debounceTimer,
+  emit,
+  filterObject,
+  model,
+  save,
+  search,
+  searchUsers,
+  selectedIdp,
+  selectedRoles,
+  showError,
+});
 </script>
 
+/* c8 ignore start */
 <template>
   <span :class="{ 'dir-rtl': isRTL }">
     <span v-if="addingUsers" style="margin-right: 656px" elevation="1">
@@ -206,6 +221,7 @@ export default {
               :loading="isLoading"
               return-object
               :class="{ label: isRTL }"
+              @update:search="debounceSearch"
             >
               <!-- no data -->
               <template #no-data>
@@ -275,7 +291,7 @@ export default {
             </v-btn>
             <v-btn
               variant="outlined"
-              :class="isRTL ? 'mr-2' : 'ml-2'"
+              :class="isRTL ? 'mr-3' : 'ml-3'"
               :title="$t('trans.addTeamMember.cancel')"
               @click="
                 addingUsers = false;
@@ -316,6 +332,7 @@ export default {
     </span>
   </span>
 </template>
+/* c8 ignore end */
 
 <style scoped>
 .v-radio :deep(label),

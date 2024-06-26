@@ -1,99 +1,87 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import BaseCopyToClipboard from '~/components/base/BaseCopyToClipboard.vue';
-import BaseDialog from '~/components/base/BaseDialog.vue';
 import { useFormStore } from '~/store/form';
 import { FormPermissions } from '~/utils/constants';
 
-export default {
-  components: {
-    BaseCopyToClipboard,
-    BaseDialog,
-  },
-  setup() {
-    const { locale } = useI18n({ useScope: 'global' });
+const { locale } = useI18n({ useScope: 'global' });
 
-    return { locale };
-  },
-  data() {
-    return {
-      loading: false,
-      showConfirmationDialog: false,
-      showDeleteDialog: false,
-      showSecret: false,
-      filesApiAccess: false,
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['apiKey', 'form', 'permissions', 'isRTL']),
-    canDeleteKey() {
-      return (
-        this.permissions.includes(FormPermissions.FORM_API_DELETE) &&
-        this.apiKey
-      );
-    },
-    canGenerateKey() {
-      return this.permissions.includes(FormPermissions.FORM_API_CREATE);
-    },
-    canReadSecret() {
-      return (
-        this.permissions.includes(FormPermissions.FORM_API_READ) && this.apiKey
-      );
-    },
-    secret() {
-      return this.apiKey?.secret ? this.apiKey.secret : '';
-    },
-  },
-  created() {
-    if (this.canGenerateKey) {
-      this.readKey();
-    }
-  },
-  methods: {
-    ...mapActions(useFormStore, [
-      'deleteApiKey',
-      'generateApiKey',
-      'readApiKey',
-      'filesApiKeyAccess',
-    ]),
-    async createKey() {
-      this.loading = true;
-      await this.generateApiKey(this.form.id);
-      this.showSecret = false;
-      this.loading = false;
-      this.showConfirmationDialog = false;
-    },
+const loading = ref(false);
+const showConfirmationDialog = ref(false);
+const showDeleteDialog = ref(false);
+const showSecret = ref(false);
+const filesApiAccess = ref(false);
 
-    async deleteKey() {
-      this.loading = true;
-      await this.deleteApiKey(this.form.id);
-      this.filesApiAccess = false;
-      this.loading = false;
-      this.showDeleteDialog = false;
-    },
+const formStore = useFormStore();
 
-    async readKey() {
-      this.loading = true;
-      await this.readApiKey(this.form.id);
-      this.filesApiAccess = this.apiKey?.filesApiAccess;
-      this.loading = false;
-    },
+const { apiKey, form, permissions, isRTL } = storeToRefs(formStore);
 
-    async updateKey() {
-      this.loading = true;
-      await this.filesApiKeyAccess(this.form.id, this.filesApiAccess);
-      this.loading = false;
-    },
+const canDeleteKey = computed(() => {
+  return (
+    permissions.value.includes(FormPermissions.FORM_API_DELETE) && apiKey.value
+  );
+});
 
-    showHideKey() {
-      this.showSecret = !this.showSecret;
-    },
-  },
-};
+const canGenerateKey = computed(() => {
+  return permissions.value.includes(FormPermissions.FORM_API_CREATE);
+});
+
+const canReadSecret = computed(() => {
+  return (
+    permissions.value.includes(FormPermissions.FORM_API_READ) && apiKey.value
+  );
+});
+
+const secret = computed(() =>
+  apiKey.value?.secret ? apiKey.value.secret : ''
+);
+
+if (canGenerateKey.value) {
+  readKey();
+}
+
+async function createKey() {
+  loading.value = true;
+  await formStore.generateApiKey(form.value.id);
+  showSecret.value = false;
+  loading.value = false;
+  showConfirmationDialog.value = false;
+}
+
+async function deleteKey() {
+  loading.value = true;
+  await formStore.deleteApiKey(form.value.id);
+  filesApiAccess.value = false;
+  loading.value = false;
+  showDeleteDialog.value = false;
+}
+
+async function readKey() {
+  loading.value = true;
+  await formStore.readApiKey(form.value.id);
+  filesApiAccess.value = apiKey.value?.filesApiAccess;
+  loading.value = false;
+}
+
+async function updateKey() {
+  loading.value = true;
+  await formStore.filesApiKeyAccess(form.value.id, filesApiAccess.value);
+  loading.value = false;
+}
+
+defineExpose({
+  canDeleteKey,
+  canGenerateKey,
+  canReadSecret,
+  createKey,
+  deleteKey,
+  readKey,
+});
 </script>
 
+/* c8 ignore start */
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
     <div v-if="!canGenerateKey" class="mt-3 mb-6">
@@ -165,15 +153,18 @@ export default {
                 density="default"
                 :icon="showSecret ? 'mdi:mdi-eye-off' : 'mdi:mdi-eye'"
                 data-test="canReadAPIKey"
-                :title="$t('trans.apiKey.hideSecret')"
-                @click="showHideKey"
+                :title="
+                  showSecret
+                    ? $t('trans.apiKey.hideSecret')
+                    : $t('trans.apiKey.showSecret')
+                "
+                @click="showSecret = !showSecret"
               />
             </template>
-            <span v-if="showSecret" :lang="locale">{{
-              $t('trans.apiKey.hideSecret')
-            }}</span>
-            <span v-else :lang="locale">{{
-              $t('trans.apiKey.showSecret')
+            <span :lang="locale">{{
+              showSecret
+                ? $t('trans.apiKey.hideSecret')
+                : $t('trans.apiKey.showSecret')
             }}</span>
           </v-tooltip>
 
@@ -275,3 +266,4 @@ export default {
     </v-col>
   </v-row>
 </template>
+/* c8 ignore end */

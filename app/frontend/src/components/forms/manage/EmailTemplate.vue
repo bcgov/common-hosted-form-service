@@ -1,80 +1,66 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
-export default {
-  name: 'EmailTemplate',
-  props: {
-    title: {
-      required: true,
-      type: String,
-    },
-    type: {
-      required: true,
-      type: String,
-    },
+const { t, locale } = useI18n({ useScope: 'global' });
+
+const properties = defineProps({
+  title: {
+    required: true,
+    type: String,
   },
-  setup() {
-    const { t, locale } = useI18n({ useScope: 'global' });
-
-    return { t, locale };
+  type: {
+    required: true,
+    type: String,
   },
-  data() {
-    return {
-      // If any field on the form changes, then enable the Save button. Note:
-      // Will stay enabled if the field is changed back to its original value.
-      formChanged: false,
+});
 
-      // Validation rules.
-      bodyRules: [
-        (v) => !!v || this.$t('trans.emailTemplate.validBodyRequired'),
-      ],
-      subjectRules: [
-        (v) => !!v || this.$t('trans.emailTemplate.validSubjectRequired'),
-      ],
-      titleRules: [
-        (v) => !!v || this.$t('trans.emailTemplate.validTitleRequired'),
-      ],
-    };
-  },
+const emailTemplateForm = ref(null);
+const formChanged = ref(false);
+/* c8 ignore start */
+const bodyRules = ref([
+  (v) => !!v || t('trans.emailTemplate.validBodyRequired'),
+]);
+const subjectRules = ref([
+  (v) => !!v || t('trans.emailTemplate.validSubjectRequired'),
+]);
+const titleRules = ref([
+  (v) => !!v || t('trans.emailTemplate.validTitleRequired'),
+]);
+/* c8 ignore end */
 
-  computed: {
-    ...mapState(useFormStore, ['emailTemplates']),
+const formStore = useFormStore();
 
-    emailTemplate() {
-      return this.emailTemplates.find((t) => t.type === this.type);
-    },
-  },
+const { emailTemplates } = storeToRefs(formStore);
 
-  methods: {
-    ...mapActions(useFormStore, ['updateEmailTemplate']),
-    ...mapActions(useNotificationStore, ['addNotification']),
+const emailTemplate = computed(() =>
+  emailTemplates.value.find((t) => t.type === properties.type)
+);
 
-    async saveEmailTemplate() {
-      try {
-        if (this.$refs.emailTemplateForm.validate()) {
-          await this.updateEmailTemplate(this.emailTemplate);
-        }
+async function saveEmailTemplate() {
+  try {
+    if (emailTemplateForm.value.validate()) {
+      await formStore.updateEmailTemplate(emailTemplate.value);
+    }
 
-        this.formChanged = false;
-      } catch (error) {
-        this.addNotification({
-          text: this.$t('trans.emailTemplate.saveEmailTemplateErrMsg'),
-          consoleError: this.$t(
-            'trans.emailTemplate.saveEmailTemplateConsoleErrMsg',
-            {
-              formId: this.emailTemplate.formId,
-              error: error,
-            }
-          ),
-        });
-      }
-    },
-  },
-};
+    formChanged.value = false;
+  } catch (error) {
+    const notificationStore = useNotificationStore();
+    notificationStore.addNotification({
+      text: t('trans.emailTemplate.saveEmailTemplateErrMsg'),
+      consoleError: t('trans.emailTemplate.saveEmailTemplateConsoleErrMsg', {
+        formId: emailTemplate.value.formId,
+        error: error,
+      }),
+    });
+  }
+}
+
+defineExpose({ saveEmailTemplate });
 </script>
 
 <template>

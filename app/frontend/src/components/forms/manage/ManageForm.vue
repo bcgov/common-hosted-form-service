@@ -1,6 +1,6 @@
-<script>
-import { mapActions, mapState } from 'pinia';
-import { useI18n } from 'vue-i18n';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, ref } from 'vue';
 
 import ApiKey from '~/components/forms/manage/ApiKey.vue';
 import DocumentTemplate from '~/components/forms/manage/DocumentTemplate.vue';
@@ -13,134 +13,121 @@ import { useNotificationStore } from '~/store/notification';
 import { FormPermissions, NotificationTypes } from '~/utils/constants';
 import FormProfile from '~/components/designer/FormProfile.vue';
 
-export default {
-  components: {
-    ApiKey,
-    DocumentTemplate,
-    ExternalAPIs,
-    FormSettings,
-    ManageVersions,
-    Subscription,
-    FormProfile,
-  },
-  setup() {
-    const { locale } = useI18n({ useScope: 'global' });
+const apiKeyPanel = ref(1);
+const cdogsPanel = ref(1);
+const externalAPIsPanel = ref(1);
+const formSettingsDisabled = ref(true);
+const settingsForm = ref(null);
+const settingsPanel = ref(1);
+const subscription = ref(false);
+const subscriptionsPanel = ref(0);
+const versionsPanel = ref(0);
 
-    return { locale };
-  },
-  data() {
-    return {
-      apiKeyPanel: 1,
-      cdogsPanel: 1,
-      externalAPIsPanel: 1,
-      formSettingsDisabled: true,
-      settingsFormValid: false,
-      settingsPanel: 1,
-      versionsPanel: 0,
-      subscriptionsPanel: 0,
-      subscription: false,
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, [
-      'apiKey',
-      'drafts',
-      'form',
-      'permissions',
-      'isRTL',
-      'subscriptionData',
-    ]),
-    canEditForm() {
-      return this.permissions.includes(FormPermissions.FORM_UPDATE);
-    },
-    combinedVersionAndDraftCount() {
-      return (
-        (this.form?.versions ? this.form.versions.length : 0) +
-        (this.drafts && Array.isArray(this.drafts) ? this.drafts.length : 0)
-      );
-    },
-    currentVersion() {
-      let cv = 'N/A';
-      if (this.form?.versions && this.form.versions.length) {
-        const vers = this.form.versions.find((v) => v.published);
-        if (vers) {
-          cv = vers.version;
-        }
-      }
-      return cv;
-    },
-    versionState() {
-      if (this.form?.versions && this.form.versions.some((v) => v.published)) {
-        return `Published (ver ${this.currentVersion})`;
-      } else {
-        return 'Unpublished';
-      }
-    },
-    canManageAPI() {
-      return this.permissions.some((p) =>
-        [
-          FormPermissions.FORM_API_CREATE,
-          FormPermissions.FORM_API_READ,
-          FormPermissions.FORM_API_UPDATE,
-          FormPermissions.FORM_API_DELETE,
-        ].includes(p)
-      );
-    },
-    isSubscribed() {
-      if (this.form && this.form.subscribe && this.form.subscribe.enabled) {
-        return true;
-      } else {
-        return false;
-      }
-    },
-  },
-  async mounted() {
-    if (this.canEditForm) {
-      await this.readFormSubscriptionData(this.form.id);
+const formStore = useFormStore();
+const notificationStore = useNotificationStore();
+
+const { apiKey, drafts, form, permissions, isRTL, subscriptionData } =
+  storeToRefs(formStore);
+
+const canEditForm = computed(() =>
+  permissions.value.includes(FormPermissions.FORM_UPDATE)
+);
+
+const combinedVersionAndDraftCount = computed(() => {
+  return (
+    (form.value?.versions ? form.value.versions.length : 0) +
+    (drafts.value && Array.isArray(drafts.value) ? drafts.value.length : 0)
+  );
+});
+
+const currentVersion = computed(() => {
+  let cv = 'N/A';
+  if (form.value?.versions && form.value.versions.length) {
+    const vers = form.value.versions.find((v) => v.published);
+    if (vers) {
+      cv = vers.version;
     }
-  },
-  methods: {
-    ...mapActions(useFormStore, [
-      'fetchForm',
-      'updateForm',
-      'readFormSubscriptionData',
-    ]),
-    ...mapActions(useNotificationStore, ['addNotification']),
-    cancelSettingsEdit() {
-      this.formSettingsDisabled = true;
-      this.fetchForm(this.form.id);
-    },
+  }
+  return cv;
+});
 
-    enableSettingsEdit() {
-      this.settingsPanel = 0;
-      this.formSettingsDisabled = false;
-    },
+const versionState = computed(() => {
+  if (form.value?.versions && form.value.versions.some((v) => v.published)) {
+    return `Published (ver ${currentVersion.value})`;
+  } else {
+    return 'Unpublished';
+  }
+});
 
-    async updateSettings() {
-      try {
-        const { valid } = await this.$refs.settingsForm.validate();
+const canManageAPI = computed(() => {
+  return permissions.value.some((p) =>
+    [
+      FormPermissions.FORM_API_CREATE,
+      FormPermissions.FORM_API_READ,
+      FormPermissions.FORM_API_UPDATE,
+      FormPermissions.FORM_API_DELETE,
+    ].includes(p)
+  );
+});
 
-        if (valid) {
-          await this.updateForm();
-          this.formSettingsDisabled = true;
-          this.addNotification({
-            text: 'Your form settings have been updated successfully.',
-            ...NotificationTypes.SUCCESS,
-          });
-          this.fetchForm(this.form.id);
-        }
-      } catch (error) {
-        this.addNotification({
-          text: 'An error occurred while attempting to update the settings for this form.',
-          consoleError: `Error updating settings for ${this.form.id}: ${error}`,
-        });
-      }
-    },
-    onSubscription(value) {
-      this.subscriptionsPanel = value;
-    },
-  },
-};
+const isSubscribed = computed(() => {
+  if (form.value && form.value.subscribe && form.value.subscribe.enabled) {
+    return true;
+  } else {
+    return false;
+  }
+});
+
+onMounted(async () => {
+  if (canEditForm.value) {
+    await formStore.readFormSubscriptionData(form.value.id);
+  }
+});
+
+async function cancelSettingsEdit() {
+  formSettingsDisabled.value = true;
+  await formStore.fetchForm(form.value.id);
+}
+
+function enableSettingsEdit() {
+  settingsPanel.value = 0;
+  formSettingsDisabled.value = false;
+}
+
+async function updateSettings() {
+  try {
+    if (settingsForm.value.validate()) {
+      await formStore.updateForm();
+      formSettingsDisabled.value = true;
+      notificationStore.addNotification({
+        text: 'Your form settings have been updated successfully.',
+        ...NotificationTypes.SUCCESS,
+      });
+      await formStore.fetchForm(form.value.id);
+    }
+  } catch (error) {
+    notificationStore.addNotification({
+      text: 'An error occurred while attempting to update the settings for this form.',
+      consoleError: `Error updating settings for ${form.value.id}: ${error}`,
+    });
+  }
+}
+
+function onSubscription(value) {
+  subscriptionsPanel.value = value;
+}
+
+defineExpose({
+  currentVersion,
+  cancelSettingsEdit,
+  enableSettingsEdit,
+  formSettingsDisabled,
+  isSubscribed,
+  onSubscription,
+  settingsPanel,
+  subscriptionsPanel,
+  updateSettings,
+});
 </script>
 
 <template>
@@ -183,7 +170,6 @@ export default {
         <v-expansion-panel-text>
           <v-form
             ref="settingsForm"
-            v-model="settingsFormValid"
             :disabled="formSettingsDisabled"
             lazy-validation
           >
@@ -311,7 +297,7 @@ export default {
     >
       <v-expansion-panel flat>
         <v-expansion-panel-title>
-          <div class="header" :lang="lang">
+          <div class="header" :lang="locale">
             <strong>{{ $t('trans.manageForm.externalAPIs') }}</strong>
           </div>
         </v-expansion-panel-title>

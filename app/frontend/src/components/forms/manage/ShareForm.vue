@@ -1,59 +1,52 @@
-<script>
+<script setup>
+import { storeToRefs } from 'pinia';
 import QrcodeVue from 'qrcode.vue';
-import { mapState } from 'pinia';
+import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 
 import BaseCopyToClipboard from '~/components/base/BaseCopyToClipboard.vue';
 import { NotificationTypes } from '~/utils/constants';
 import { useFormStore } from '~/store/form';
 
-export default {
-  components: {
-    BaseCopyToClipboard,
-    QrcodeVue,
-  },
-  props: {
-    formId: {
-      type: String,
-      required: true,
-    },
-    warning: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  setup() {
-    const { locale } = useI18n({ useScope: 'global' });
+const { locale } = useI18n({ useScope: 'global' });
 
-    return { locale };
+const router = useRouter();
+
+const properties = defineProps({
+  formId: {
+    type: String,
+    required: true,
   },
-  data() {
-    return {
-      dialog: false,
-      qrLevel: 'M',
-      qrSize: 900,
-    };
+  warning: {
+    type: Boolean,
+    default: false,
   },
-  computed: {
-    ...mapState(useFormStore, ['isRTL']),
-    formLink() {
-      return `${window.location.origin}${
-        import.meta.env.BASE_URL
-      }/form/submit?f=${this.formId}`;
-    },
-    NOTIFICATIONS_TYPES() {
-      return NotificationTypes;
-    },
-  },
-  methods: {
-    downloadQr() {
-      let link = document.createElement('a');
-      link.download = 'qrcode.png';
-      link.href = document.querySelector('.qrCodeContainer canvas').toDataURL();
-      link.click();
-    },
-  },
-};
+});
+
+const dialog = ref(false);
+const qrLevel = ref('M');
+const qrSize = ref(900);
+
+const { isRTL } = storeToRefs(useFormStore());
+
+const formLink = computed(() => {
+  const url = router.resolve({
+    name: 'FormSubmit',
+    query: { f: properties.formId },
+  });
+  return `${window.location.origin}${url.href}`;
+});
+const NOTIFICATIONS_TYPES = computed(() => NotificationTypes);
+
+function downloadQr() {
+  let link = document.createElement('a');
+  link.download = 'qrcode.png';
+  link.href = document.querySelector('.qrCodeContainer canvas').toDataURL();
+  link.click();
+}
+
+defineExpose({ dialog, formLink, downloadQr });
 </script>
 
 <template>
@@ -75,7 +68,7 @@ export default {
       <span :lang="locale">{{ $t('trans.shareForm.shareForm') }}</span>
     </v-tooltip>
 
-    <v-dialog v-model="dialog" width="900">
+    <v-dialog v-model="dialog" width="900" data-cy="shareFormDialog">
       <v-card>
         <v-card-title class="text-h5 pb-0" :lang="locale">{{
           $t('trans.shareForm.shareLink')

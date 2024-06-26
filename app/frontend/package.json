@@ -76,6 +76,7 @@
     "vite": "^5.2.6",
     "vite-plugin-eslint": "^1.8.1",
     "vite-plugin-vuetify": "^2.0.3",
-    "vitest": "^0.32.2"
+    "vitest": "^0.32.2",
+    "vitest-canvas-mock": "^0.3.3"
   }
 }
