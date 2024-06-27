@@ -1,6 +1,6 @@
 <script>
 import { mapState, mapActions } from 'pinia';
-import { i18n } from '~/internationalization';
+import { useI18n } from 'vue-i18n';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { rbacService, userService } from '~/services';
@@ -23,6 +23,11 @@ export default {
       required: true,
     },
   },
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
+
+    return { t, locale };
+  },
   data() {
     return {
       dialog: false,
@@ -39,12 +44,12 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
+    ...mapState(useFormStore, ['form', 'isRTL']),
     ...mapState(useIdpStore, ['loginButtons', 'primaryIdp']),
     autocompleteLabel() {
       return this.isPrimary(this.selectedIdp)
-        ? i18n.t('trans.manageSubmissionUsers.requiredFiled')
-        : i18n.t('trans.manageSubmissionUsers.exactEmailOrUsername');
+        ? this.$t('trans.manageSubmissionUsers.requiredFiled')
+        : this.$t('trans.manageSubmissionUsers.exactEmailOrUsername');
     },
   },
   watch: {
@@ -64,10 +69,10 @@ export default {
         let teamMembershipConfig = this.teamMembershipSearch(this.selectedIdp);
         if (teamMembershipConfig) {
           if (input.length < teamMembershipConfig.text.minLength)
-            throw new Error(i18n.t(teamMembershipConfig.text.message));
+            throw new Error(this.$t(teamMembershipConfig.text.message));
           if (input.includes('@')) {
             if (!new RegExp(Regex.EMAIL).test(input))
-              throw new Error(i18n.t(teamMembershipConfig.email.message));
+              throw new Error(this.$t(teamMembershipConfig.email.message));
             else params.email = input;
           } else {
             params.username = input;
@@ -81,7 +86,7 @@ export default {
         // this.userSearchResults = [];
         /* eslint-disable no-console */
         console.error(
-          i18n.t('trans.manageSubmissionUsers.getUsersErrMsg', {
+          this.$t('trans.manageSubmissionUsers.getUsersErrMsg', {
             error: error,
           })
         ); // eslint-disable-line no-console
@@ -108,7 +113,7 @@ export default {
         if (this.userTableList.some((u) => u.id === id)) {
           this.addNotification({
             ...NotificationTypes.WARNING,
-            text: i18n.t('trans.manageSubmissionUsers.remove', {
+            text: this.$t('trans.manageSubmissionUsers.remove', {
               username: this.userSearchSelection.username,
             }),
           });
@@ -150,8 +155,8 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          text: i18n.t('trans.manageSubmissionUsers.getSubmissionUsersErr'),
-          consoleError: i18n.t(
+          text: this.$t('trans.manageSubmissionUsers.getSubmissionUsersErr'),
+          consoleError: this.$t(
             'trans.manageSubmissionUsers.getSubmissionUsersConsoleErr',
             { submissionId: this.submissionId, error: error }
           ),
@@ -181,20 +186,23 @@ export default {
           this.addNotification({
             ...NotificationTypes.SUCCESS,
             text: permissions.length
-              ? i18n.t('trans.manageSubmissionUsers.sentInviteEmailTo') +
+              ? this.$t('trans.manageSubmissionUsers.sentInviteEmailTo') +
                 `${selectedEmail}`
-              : i18n.t('trans.manageSubmissionUsers.sentUninvitedEmailTo') +
+              : this.$t('trans.manageSubmissionUsers.sentUninvitedEmailTo') +
                 `${selectedEmail}`,
           });
         }
       } catch (error) {
         this.addNotification({
-          text: i18n.t('trans.manageSubmissionUsers.updateUserErrMsg'),
-          consoleError: i18n.t('trans.manageSubmissionUsers.updateUserErrMsg', {
-            submissionId: this.submissionId,
-            userId: userId,
-            error: error,
-          }),
+          text: this.$t('trans.manageSubmissionUsers.updateUserErrMsg'),
+          consoleError: this.$t(
+            'trans.manageSubmissionUsers.updateUserErrMsg',
+            {
+              submissionId: this.submissionId,
+              userId: userId,
+              error: error,
+            }
+          ),
         });
       } finally {
         this.isLoadingTable = false;
@@ -238,13 +246,13 @@ export default {
           <v-icon icon="mdi:mdi-account-multiple"></v-icon>
         </v-btn>
       </template>
-      <span :lang="lang">{{
+      <span :lang="locale">{{
         $t('trans.manageSubmissionUsers.manageTeamMembers')
       }}</span>
     </v-tooltip>
     <v-dialog v-model="dialog" width="600">
       <v-card :class="{ 'dir-rtl': isRTL }">
-        <v-card-title class="text-h5 pb-0" :lang="lang">
+        <v-card-title class="text-h5 pb-0" :lang="locale">
           {{ $t('trans.manageSubmissionUsers.manageTeamMembers') }}
         </v-card-title>
         <v-card-subtitle>
@@ -283,7 +291,7 @@ export default {
                   <template #no-data>
                     <div
                       class="px-2"
-                      :lang="lang"
+                      :lang="locale"
                       v-html="
                         $t('trans.manageSubmissionUsers.userNotFoundErrMsg')
                       "
@@ -313,17 +321,17 @@ export default {
                 :title="$t('trans.manageSubmissionUsers.add')"
                 @click="addUser"
               >
-                <span :lang="lang"
+                <span :lang="locale"
                   >{{ $t('trans.manageSubmissionUsers.add') }}
                 </span>
               </v-btn>
             </v-col>
           </v-row>
-          <div v-else :lang="lang">
+          <div v-else :lang="locale">
             {{ $t('trans.manageSubmissionUsers.draftFormInvite') }}
           </div>
 
-          <p class="mt-5" :lang="lang">
+          <p class="mt-5" :lang="locale">
             <strong
               >{{
                 $t('trans.manageSubmissionUsers.submissionTeamMembers')
@@ -339,19 +347,28 @@ export default {
             <v-table dense>
               <thead>
                 <tr>
-                  <th :class="isRTL ? 'text-right' : 'text-left'" :lang="lang">
+                  <th
+                    :class="isRTL ? 'text-right' : 'text-left'"
+                    :lang="locale"
+                  >
                     {{ $t('trans.manageSubmissionUsers.name') }}
                   </th>
-                  <th :class="isRTL ? 'text-right' : 'text-left'" :lang="lang">
+                  <th
+                    :class="isRTL ? 'text-right' : 'text-left'"
+                    :lang="locale"
+                  >
                     {{ $t('trans.manageSubmissionUsers.username') }}
                   </th>
-                  <th :class="isRTL ? 'text-right' : 'text-left'" :lang="lang">
+                  <th
+                    :class="isRTL ? 'text-right' : 'text-left'"
+                    :lang="locale"
+                  >
                     {{ $t('trans.manageSubmissionUsers.email') }}
                   </th>
                   <th
                     v-if="isDraft"
                     :class="isRTL ? 'text-right' : 'text-left'"
-                    :lang="lang"
+                    :lang="locale"
                   >
                     {{ $t('trans.manageSubmissionUsers.actions') }}
                   </th>
@@ -388,7 +405,7 @@ export default {
             :title="$t('trans.manageSubmissionUsers.close')"
             @click="dialog = false"
           >
-            <span :lang="lang">
+            <span :lang="locale">
               {{ $t('trans.manageSubmissionUsers.close') }}</span
             >
           </v-btn>
@@ -409,14 +426,14 @@ export default {
           ><span>Remove {{ userToDelete.username }}</span></template
         >
         <template #text>
-          <span :lang="lang">
+          <span :lang="locale">
             {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg1') }}
             <strong>{{ userToDelete.username }}</strong
             >? {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg2') }}
           </span>
         </template>
         <template #button-text-continue>
-          <span :lang="lang">{{
+          <span :lang="locale">{{
             $t('trans.manageSubmissionUsers.remove')
           }}</span>
         </template>

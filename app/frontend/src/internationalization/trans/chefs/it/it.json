@@ -1,4 +1,5 @@
 {
+  "open": "Aprire",
   "date": {
     "date": "aaaa-mm-gg"
   },
@@ -614,6 +615,7 @@
     "assigneeIsRequired": "L'assegnatario è obbligatorio",
     "assignToMe": "ASSEGNAMI",
     "recipientEmail": "Destinatario dell'email",
+    "recipientIsRequired": "Il destinatario è richiesto",
     "attachCommentToEmail": "Allega commento all'e-mail",
     "emailComment": "E-mail Commento",
     "maxChars": "Massimo 4000 caratteri",
@@ -699,7 +701,8 @@
     "defaultCdogsTemplate": "Usa template CDOGS predefinito",
     "fileName": "Nome del file",
     "uploadDate": "Data di caricamento",
-    "upload": "Carica"
+    "upload": "Carica",
+    "selectExportFileType": "Seleziona il tipo di file di esportazione"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Collegamento alle informazioni sui componenti",

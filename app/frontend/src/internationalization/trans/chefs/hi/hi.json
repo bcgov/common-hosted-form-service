@@ -1,4 +1,5 @@
 {
+  "open": "खुला",
   "date": {
     "date": "yyyy-mm-dd"
   },
@@ -614,6 +615,7 @@
     "assigneeIsRequired": "समनुदेशिती आवश्यक है",
     "assignToMe": "मेरे लिए आवंटित",
     "recipientEmail": "प्राप्तकर्ता का ई - मेल",
+    "recipientIsRequired": "प्राप्तकर्ता आवश्यक है",
     "attachCommentToEmail": "ईमेल पर टिप्पणी संलग्न करें",
     "emailComment": "ईमेल टिप्पणी",
     "maxChars": "अधिकतम 4000 अक्षर",
@@ -699,7 +701,8 @@
     "defaultCdogsTemplate": "डिफ़ॉल्ट CDOGS टेम्पलेट का प्रयोग करें",
     "fileName": "फ़ाइल का नाम",
     "uploadDate": "अपलोड दिनांक",
-    "upload": "अपलोड करें"
+    "upload": "अपलोड करें",
+    "selectExportFileType": "निर्यात फ़ाइल प्रकार चुनें"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "घटक सूचना लिंक",

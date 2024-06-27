@@ -1,3 +1,5 @@
+import 'vitest-canvas-mock';
+
 class ResizeObserverStub {
   observe() {}
   unobserve() {}

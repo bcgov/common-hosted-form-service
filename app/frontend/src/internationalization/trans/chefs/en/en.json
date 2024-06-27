@@ -1,4 +1,5 @@
 {
+  "open": "Open",
   "date": {
     "date": "yyyy-mm-dd"
   },
@@ -658,6 +659,7 @@
     "assigneeIsRequired": "Assignee is required",
     "assignToMe": "ASSIGN TO ME",
     "recipientEmail": "Recipient Email",
+    "recipientIsRequired": "Recipient is required",
     "attachCommentToEmail": "Attach Comment to Email",
     "emailComment": "Email Comment",
     "maxChars": "Max 4000 characters",
@@ -743,7 +745,8 @@
     "defaultCdogsTemplate": "Use default CDOGS template",
     "fileName": "File Name",
     "uploadDate": "Upload Date",
-    "upload": "Upload"
+    "upload": "Upload",
+    "selectExportFileType": "Select export filetype"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Component Information Link",

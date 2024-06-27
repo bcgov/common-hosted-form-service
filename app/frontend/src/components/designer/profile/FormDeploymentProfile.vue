@@ -1,24 +1,26 @@
 <script setup>
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import { useFormStore } from '~/store/form';
-import { i18n } from '~/internationalization';
 import { FormProfileValues } from '~/utils/constants';
+
+const { t, locale } = useI18n({ useScope: 'global' });
 
 const formStore = useFormStore();
 const form = computed(() => formStore.form);
-const lang = computed(() => formStore.lang);
 const isRTL = computed(() => formStore.isRTL);
 const FORM_PROFILE = computed(() => FormProfileValues);
 
 const deploymentRules = ref([
   (v) => {
-    return !!v || i18n.t('trans.formProfile.selectDeploymentErr');
+    return !!v || t('trans.formProfile.selectDeploymentErr');
   },
 ]);
 </script>
 
 <template>
-  <div class="ml-1 mb-2" :lang="lang">
+  <div class="ml-1 mb-2" :lang="locale">
     <span v-if="!form.deploymentLevel" class="text-danger"
       ><strong>*</strong></span
     >
@@ -36,7 +38,7 @@ const deploymentRules = ref([
       :value="FORM_PROFILE.DEVELOPMENT"
       data-test="deployment-development"
       ><template #label>
-        <span :class="{ 'mr-2': isRTL }" :lang="lang">
+        <span :class="{ 'mr-2': isRTL }" :lang="locale">
           {{ $t('trans.formProfile.development') }}
         </span>
       </template></v-radio
@@ -48,7 +50,7 @@ const deploymentRules = ref([
       data-test="deployment-test"
     >
       <template #label>
-        <span :class="{ 'mr-2': isRTL }" :lang="lang">
+        <span :class="{ 'mr-2': isRTL }" :lang="locale">
           {{ $t('trans.formProfile.test') }}
         </span>
       </template>
@@ -60,7 +62,7 @@ const deploymentRules = ref([
       data-test="deployment-prod"
     >
       <template #label>
-        <span :class="{ 'mr-2': isRTL }" :lang="lang">
+        <span :class="{ 'mr-2': isRTL }" :lang="locale">
           {{ $t('trans.formProfile.production') }}
         </span>
       </template>
