@@ -826,10 +826,10 @@ export const useFormStore = defineStore('form', {
       if (!this.form || this.form.isDirty === isDirty) return; // don't do anything if not changing the val (or if form is blank for some reason)
       this.form.isDirty = isDirty;
     },
-    async downloadFile(fileId) {
+    async downloadFile(fileId, options = {}) {
       try {
         this.downloadedFile = {};
-        const response = await fileService.getFile(fileId);
+        const response = await fileService.getFile(fileId, options);
         this.downloadedFile.data = response.data;
         this.downloadedFile.headers = response.headers;
       } catch (error) {
