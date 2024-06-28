@@ -26,7 +26,6 @@ class MapService {
   drawnItems: L.FeatureGroup;
 
   constructor(options: MapServiceOptions) {
-    console.log('Initializing MapService with options:', options);
     this.options = options;
     if (options.mapContainer) {
       const { map, drawnItems } = this.initializeMap(options);
@@ -36,7 +35,6 @@ class MapService {
 
       // Event listener for drawn objects
       map.on('draw:created', (e: any) => {
-        console.log('Drawing created:', e);
         let layer = e.layer;
         if (drawnItems.getLayers().length === options.numPoints) {
           L.popup()
@@ -53,7 +51,6 @@ class MapService {
   }
 
   initializeMap(options: MapServiceOptions) {
-    console.log('Initializing map with options:', options);
     let { mapContainer, center, drawOptions, form, defaultZoom } = options;
     if (drawOptions.rectangle) {
       drawOptions.rectangle.showArea = false;
@@ -89,7 +86,6 @@ class MapService {
   }
 
   bindPopupToLayer(layer: L.Layer) {
-    console.log('Binding popup to layer:', layer);
     if (layer instanceof L.Marker) {
       layer
         .bindPopup(
@@ -120,7 +116,6 @@ class MapService {
   }
 
   loadDrawnItems(items: any) {
-    console.log('Loading drawn items:', items);
     const { drawnItems } = this;
 
     // Ensure drawnItems is defined before attempting to clear layers
@@ -137,7 +132,6 @@ class MapService {
     }
 
     items.forEach((item) => {
-      console.log('Processing item:', item);
       let layer;
       if (item.type === 'marker') {
         layer = L.marker(item.latlng);

@@ -38,21 +38,18 @@ export default class Component extends (FieldComponent as any) {
   }
 
   render() {
-    console.log('Rendering component');
     return super.render(
       `<div id="map-${this.componentID}" style="height:400px; z-index:1;"></div>`
     );
   }
 
   attach(element) {
-    console.log('Attaching component to element');
     const superAttach = super.attach(element);
     this.loadMap();
     return superAttach;
   }
 
   loadMap() {
-    console.log('Loading map');
     const mapContainer = document.getElementById(`map-${this.componentID}`);
     const form = document.getElementsByClassName('formio');
     let drawOptions = {
@@ -83,8 +80,7 @@ export default class Component extends (FieldComponent as any) {
       onDrawnItemsChange: this.saveDrawnItems.bind(this),
     });
 
-    console.log('Current data value:', this.dataValue);
-    console.log('GetValue result:', this.getValue());
+
 
     // Load existing data if available
     if (this.dataValue) {
@@ -93,9 +89,7 @@ export default class Component extends (FieldComponent as any) {
   }
 
   saveDrawnItems(drawnItems: L.Layer[]) {
-    console.log('Saving drawn items:', drawnItems);
     const value = drawnItems.map((layer: any) => {
-      console.log('Processing layer:', layer);
       if (layer instanceof L.Marker) {
         return {
           type: 'marker',
@@ -125,19 +119,16 @@ export default class Component extends (FieldComponent as any) {
       }
     });
 
-    console.log('Converted value:', value);
 
     // Convert to JSON string
     const jsonValue =
       this.component.numPoints === 1
         ? JSON.stringify(value[0])
         : JSON.stringify(value);
-    console.log('JSON value to set:', jsonValue);
     this.setValue(jsonValue);
   }
 
   setValue(value) {
-    console.log('Setting value:', value);
     super.setValue(value);
 
     // Additional logic to render the saved data on the map if necessary
@@ -152,7 +143,6 @@ export default class Component extends (FieldComponent as any) {
   }
 
   getValue() {
-    console.log('Getting value:', this.dataValue);
     return this.dataValue;
   }
 }
