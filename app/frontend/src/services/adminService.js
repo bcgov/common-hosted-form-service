@@ -131,6 +131,40 @@ export default {
     return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.USERS}/${userId}`);
   },
 
+  //
+  // External API calls
+  //
+  /**
+   * @function listExternalAPIs
+   * Read all the external apis in the DB
+   * @returns {Promise} An axios response
+   */
+  listExternalAPIs() {
+    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.EXTERNAL_APIS}`);
+  },
+  /**
+   * @function updateExternalAPI
+   * Update an External API record (status code only)
+   * @param {string} id The external API uuid
+   * @param {Object} data An object containing an External API record
+   * @returns {Promise} An axios response
+   */
+  updateExternalAPI(id, data) {
+    return appAxios().put(
+      `${ApiRoutes.ADMIN}${ApiRoutes.EXTERNAL_APIS}/${id}`,
+      data
+    );
+  },
+  /**
+   * @function listExternalAPIStatusCodes
+   * Return list of External API Status Codes
+   * @returns {Promise} An axios response
+   */
+  listExternalAPIStatusCodes() {
+    return appAxios().get(
+      `${ApiRoutes.ADMIN}${ApiRoutes.EXTERNAL_APIS}/statusCodes`
+    );
+  },
   /**
    * addFormComponentsProactiveHelp
    * @function addFCProactiveHelp

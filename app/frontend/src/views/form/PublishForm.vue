@@ -1,11 +1,14 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { computed, onBeforeMount, provide, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import ManageForm from '~/components/forms/manage/ManageForm.vue';
 import ManageFormActions from '~/components/forms/manage/ManageFormActions.vue';
 import { AppPermissions, FormPermissions } from '~/utils/constants';
 import { useFormStore } from '~/store/form';
+
+const { locale } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   f: {
@@ -29,7 +32,7 @@ const loading = ref(true);
 const showManageForm = ref(false);
 
 const formStore = useFormStore();
-const { permissions, form, lang } = storeToRefs(formStore);
+const { permissions, form } = storeToRefs(formStore);
 
 const APP_PERMS = computed(() => AppPermissions);
 
@@ -80,7 +83,7 @@ onBeforeMount(async () => {
           >
             <!-- page title -->
             <div>
-              <h1 :lang="lang">{{ $t('trans.manageLayout.manageForm') }}</h1>
+              <h1 :lang="locale">{{ $t('trans.manageLayout.manageForm') }}</h1>
               <h3>{{ form.name }}</h3>
             </div>
             <div>

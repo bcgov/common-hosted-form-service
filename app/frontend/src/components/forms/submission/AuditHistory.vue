@@ -1,6 +1,7 @@
 <script>
 import { mapActions, mapState } from 'pinia';
-import { i18n } from '~/internationalization';
+import { useI18n } from 'vue-i18n';
+
 import formService from '~/services/formService.js';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
@@ -12,6 +13,11 @@ export default {
       required: true,
     },
   },
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
+
+    return { t, locale };
+  },
   data() {
     return {
       dialog: false,
@@ -20,14 +26,14 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
+    ...mapState(useFormStore, ['isRTL']),
     headers() {
       return [
         {
-          title: i18n.t('trans.auditHistory.userName'),
+          title: this.$t('trans.auditHistory.userName'),
           key: 'updatedByUsername',
         },
-        { title: i18n.t('trans.auditHistory.date'), key: 'actionTimestamp' },
+        { title: this.$t('trans.auditHistory.date'), key: 'actionTimestamp' },
       ];
     },
   },
@@ -43,9 +49,9 @@ export default {
         this.history = response.data;
       } catch (error) {
         this.addNotification({
-          text: i18n.t('trans.auditHistory.errorMsg'),
+          text: this.$t('trans.auditHistory.errorMsg'),
           consoleError:
-            i18n.t('trans.auditHistory.consoleErrMsg') +
+            this.$t('trans.auditHistory.consoleErrMsg') +
             `${this.submissionId}: ${error}`,
         });
       } finally {
@@ -71,7 +77,7 @@ export default {
           @click="loadHistory"
         />
       </template>
-      <span :class="{ 'dir-rtl': isRTL }" :lang="lang">{{
+      <span :class="{ 'dir-rtl': isRTL }" :lang="locale">{{
         $t('trans.auditHistory.viewEditHistory')
       }}</span>
     </v-tooltip>
@@ -81,12 +87,12 @@ export default {
         <v-card-title
           class="text-h5 pb-0"
           :class="{ 'dir-rtl': isRTL }"
-          :lang="lang"
+          :lang="locale"
           >{{ $t('trans.auditHistory.editHistory') }}</v-card-title
         >
         <v-card-text>
           <hr />
-          <p :class="{ 'dir-rtl': isRTL }" :lang="lang">
+          <p :class="{ 'dir-rtl': isRTL }" :lang="locale">
             {{ $t('trans.auditHistory.auditLogMsg') }}
           </p>
 
@@ -98,7 +104,7 @@ export default {
             :loading-text="$t('trans.auditHistory.loadingText')"
             item-key="id"
             class="status-table"
-            :lang="lang"
+            :lang="locale"
           >
             <template #[`item.actionTimestamp`]="{ item }">
               {{ $filters.formatDateLong(item.actionTimestamp) }}
@@ -114,7 +120,7 @@ export default {
             :title="$t('trans.auditHistory.close')"
             @click="dialog = false"
           >
-            <span :lang="lang">{{ $t('trans.auditHistory.close') }}</span>
+            <span :lang="locale">{{ $t('trans.auditHistory.close') }}</span>
           </v-btn>
         </v-card-actions>
       </v-card>

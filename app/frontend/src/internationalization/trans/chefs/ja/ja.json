@@ -1,4 +1,5 @@
 {
+  "open": "開ける",
   "date": {
     "date": "yyyy-mm-dd"
   },
@@ -614,6 +615,7 @@
     "assigneeIsRequired": "譲受人は必須です",
     "assignToMe": "私に割り当ててください",
     "recipientEmail": "受信者のEメール",
+    "recipientIsRequired": "受取人が必要です",
     "attachCommentToEmail": "メールにコメントを添付",
     "emailComment": "メールでのコメント",
     "maxChars": "最大4000文字",
@@ -699,7 +701,8 @@
     "defaultCdogsTemplate": "デフォルトのCDOGSテンプレートを使用する",
     "fileName": "ファイル名",
     "uploadDate": "アップロード日",
-    "upload": "アップロード"
+    "upload": "アップロード",
+    "selectExportFileType": "エクスポートファイルタイプを選択"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "コンポーネント情報リンク",

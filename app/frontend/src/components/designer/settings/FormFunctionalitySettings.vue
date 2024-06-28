@@ -2,10 +2,14 @@
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 import { IdentityMode } from '~/utils/constants';
+
+const { locale } = useI18n({ useScope: 'global' });
 
 const githubLinkBulkUpload = ref(
   'https://github.com/bcgov/common-hosted-form-service/wiki/Allow-multiple-draft-upload'
@@ -28,7 +32,7 @@ const formStore = useFormStore();
 const idpStore = useIdpStore();
 
 const { identityProvider } = storeToRefs(authStore);
-const { form, isRTL, lang } = storeToRefs(formStore);
+const { form, isRTL } = storeToRefs(formStore);
 
 const ID_MODE = computed(() => IdentityMode);
 const primaryIdpUser = computed(() =>
@@ -59,7 +63,7 @@ defineExpose({
 <template>
   <BasePanel class="fill-height">
     <template #title
-      ><span :lang="lang">{{
+      ><span :lang="locale">{{
         $t('trans.formSettings.formFunctionality')
       }}</span></template
     >
@@ -74,7 +78,7 @@ defineExpose({
       <template #label>
         <span
           :class="{ 'mr-2': isRTL }"
-          :lang="lang"
+          :lang="locale"
           v-html="$t('trans.formSettings.canSaveAndEditDraftLabel')"
         ></span>
       </template>
@@ -82,13 +86,14 @@ defineExpose({
 
     <v-checkbox
       v-model="form.enableStatusUpdates"
+      data-test="canUpdateStatusOfFormCheckbox"
       hide-details="auto"
       class="my-0"
     >
       <template #label>
         <span
           :class="{ 'mr-2': isRTL }"
-          :lang="lang"
+          :lang="locale"
           v-html="$t('trans.formSettings.canUpdateStatusAsReviewer')"
         ></span>
       </template>
@@ -96,6 +101,7 @@ defineExpose({
 
     <v-checkbox
       v-model="form.allowSubmitterToUploadFile"
+      data-test="canUploadDraftCheckbox"
       hide-details="auto"
       class="my-0"
       :disabled="form.userType === ID_MODE.PUBLIC"
@@ -104,7 +110,7 @@ defineExpose({
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
           <span
-            :lang="lang"
+            :lang="locale"
             v-html="$t('trans.formSettings.allowMultiDraft')"
           />
           <v-tooltip location="bottom" close-delay="2500">
@@ -117,13 +123,13 @@ defineExpose({
                 icon="mdi:mdi-flask"
               />
             </template>
-            <span :lang="lang"
+            <span :lang="locale"
               >{{ $t('trans.formSettings.experimental') }}
               <a
                 :href="githubLinkBulkUpload"
                 class="preview_info_link_field_white"
                 :target="'_blank'"
-                :hreflang="lang"
+                :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
                 <v-icon
@@ -140,10 +146,11 @@ defineExpose({
       v-model="form.schedule.enabled"
       disabled
       hide-details="auto"
+      data-test="canScheduleFormSubmissionCheckbox"
       class="my-0"
     >
       <template #label>
-        <span :class="{ 'mr-2': isRTL }" :lang="lang"
+        <span :class="{ 'mr-2': isRTL }" :lang="locale"
           >{{ $t('trans.formSettings.formSubmissinScheduleMsg') }}
         </span>
       </template>
@@ -153,11 +160,12 @@ defineExpose({
       v-if="formStore.isFormPublished"
       v-model="form.schedule.enabled"
       hide-details="auto"
+      data-test="canScheduleFormSubmissionCheckbox"
       class="my-0"
     >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
-          <span :lang="lang">{{
+          <span :lang="locale">{{
             $t('trans.formSettings.formSubmissionsSchedule')
           }}</span>
           <v-tooltip location="bottom" close-delay="2500">
@@ -170,13 +178,13 @@ defineExpose({
                 icon="mdi:mdi-flask"
               ></v-icon>
             </template>
-            <span :lang="lang"
+            <span :lang="locale"
               >{{ $t('trans.formSettings.experimental') }}
               <a
                 :href="githubLinkScheduleAndReminderFeature"
                 class="preview_info_link_field_white"
                 :target="'_blank'"
-                :hreflang="lang"
+                :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
                 <v-icon
@@ -191,6 +199,7 @@ defineExpose({
     <v-checkbox
       v-model="form.enableCopyExistingSubmission"
       hide-details="auto"
+      data-test="canCopyExistingSubmissionCheckbox"
       class="my-0"
       :disabled="form.userType === ID_MODE.PUBLIC"
     >
@@ -198,7 +207,7 @@ defineExpose({
         <div :class="{ 'mr-2': isRTL }">
           <span
             style="max-width: 80%"
-            :lang="lang"
+            :lang="locale"
             v-html="$t('trans.formSettings.submitterCanCopyExistingSubmissn')"
           />
           <v-tooltip location="bottom" close-delay="2500">
@@ -211,13 +220,13 @@ defineExpose({
                 icon="mdi:mdi-flask"
               ></v-icon>
             </template>
-            <span :lang="lang"
+            <span :lang="locale"
               >{{ $t('trans.formSettings.experimental') }}
               <a
                 :href="githubLinkCopyFromExistingFeature"
                 class="preview_info_link_field_white"
                 :target="'_blank'"
-                :hreflang="lang"
+                :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
                 <v-icon
@@ -231,6 +240,7 @@ defineExpose({
     <v-checkbox
       v-model="form.subscribe.enabled"
       hide-details="auto"
+      data-test="canAllowEventSubscriptionCheckbox"
       class="my-0"
       :disabled="primaryIdpUser === false || !formStore.isFormPublished"
     >
@@ -238,7 +248,7 @@ defineExpose({
         <div :class="{ 'mr-2': isRTL }">
           <span
             style="max-width: 80%"
-            :lang="lang"
+            :lang="locale"
             v-html="$t('trans.formSettings.allowEventSubscription')"
           />
           <v-tooltip location="bottom" close-delay="2500">
@@ -251,13 +261,13 @@ defineExpose({
                 icon="mdi:mdi-flask"
               ></v-icon>
             </template>
-            <span :lang="lang"
+            <span :lang="locale"
               >{{ $t('trans.formSettings.experimental') }}
               <a
                 :href="githubLinkEventSubscriptionFeature"
                 class="preview_info_link_field_white"
                 :target="'_blank'"
-                :hreflang="lang"
+                :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
                 <v-icon
@@ -268,12 +278,17 @@ defineExpose({
         </div>
       </template>
     </v-checkbox>
-    <v-checkbox v-model="form.wideFormLayout" hide-details="auto" class="my-0">
+    <v-checkbox
+      v-model="form.wideFormLayout"
+      hide-details="auto"
+      data-test="canAllowWideFormLayoutCheckbox"
+      class="my-0"
+    >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
           <span
             style="max-width: 80%"
-            :lang="lang"
+            :lang="locale"
             v-html="$t('trans.formSettings.wideFormLayout')"
           />
           <v-tooltip location="bottom" close-delay="2500">
@@ -286,13 +301,13 @@ defineExpose({
                 icon="mdi:mdi-flask"
               ></v-icon>
             </template>
-            <span :lang="lang"
+            <span :lang="locale"
               >{{ $t('trans.formSettings.experimental') }}
               <a
                 :href="githubLinkWideFormLayout"
                 class="preview_info_link_field_white"
                 :target="'_blank'"
-                :hreflang="lang"
+                :lang="locale"
               >
                 {{ $t('trans.formSettings.learnMore') }}
                 <v-icon

@@ -1,16 +1,18 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { i18n } from '~/internationalization';
+import { useI18n } from 'vue-i18n';
+
 import { useFormStore } from '~/store/form';
 import userService from '~/services/userService';
 import { useNotificationStore } from '~/store/notification';
+
+const { t, locale } = useI18n({ useScope: 'global' });
 
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
 const loading = ref(true);
 
 const form = computed(() => formStore.form);
-const lang = computed(() => formStore.lang);
 const isRTL = computed(() => formStore.isRTL);
 
 /* c8 ignore start */
@@ -18,7 +20,7 @@ const labelRules = ref([
   (v) =>
     !v ||
     !v.some((str) => str.length > 25) ||
-    i18n.t('trans.formProfile.labelSizeErr'),
+    t('trans.formProfile.labelSizeErr'),
 ]);
 /* c8 ignore stop */
 
@@ -29,8 +31,8 @@ onMounted(async () => {
     formStore.userLabels = result.data;
   } catch (error) {
     notificationStore.addNotification({
-      text: i18n.t('trans.formProfile.getLabelErr'),
-      consoleError: i18n.t('trans.formProfile.getLabelConsErr') + `${error}`,
+      text: t('trans.formProfile.getLabelErr'),
+      consoleError: t('trans.formProfile.getLabelConsErr') + `${error}`,
     });
   } finally {
     loading.value = false;
@@ -66,7 +68,7 @@ onMounted(async () => {
           />
         </template>
         <span>
-          <span :lang="lang">{{ $t('trans.formProfile.labelPrompt') }}</span>
+          <span :lang="locale">{{ $t('trans.formProfile.labelPrompt') }}</span>
         </span>
       </v-tooltip>
     </div>

@@ -1,4 +1,5 @@
 {
+  "open": "открыть",
   "date": {
     "date": "гггг-мм-дд"
   },
@@ -614,6 +615,7 @@
     "assigneeIsRequired": "Требуется правопреемник",
     "assignToMe": "НАЗНАЧИТЬ МНЕ",
     "recipientEmail": "Электронная почта получателя",
+    "recipientIsRequired": "Получатель обязателен",
     "attachCommentToEmail": "Прикрепить комментарий к электронной почте",
     "emailComment": "Комментарий по электронной почте",
     "maxChars": "Максимум 4000 символов",
@@ -699,7 +701,8 @@
     "defaultCdogsTemplate": "Использовать стандартный шаблон CDOGS",
     "fileName": "Имя файла",
     "uploadDate": "Дата загрузки",
-    "upload": "Загрузить"
+    "upload": "Загрузить",
+    "selectExportFileType": "Выберите тип файла экспорта"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Ссылка на информацию о компоненте",

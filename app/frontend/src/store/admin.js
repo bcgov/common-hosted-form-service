@@ -13,6 +13,8 @@ export const useAdminStore = defineStore('admin', {
     roles: [],
     user: {},
     userList: [],
+    externalAPIList: [],
+    externalAPIStatusCodes: [],
     fcProactiveHelp: {}, // Form Component Proactive Help
     fcProactiveHelpImageUrl: '',
     fcProactiveHelpGroupList: [],
@@ -190,6 +192,53 @@ export const useAdminStore = defineStore('admin', {
       }
     },
 
+    //
+    // External APIs
+    //
+    async getExternalAPIs() {
+      try {
+        // Get all external apis
+        this.externalAPIList = [];
+        const response = await adminService.listExternalAPIs();
+        this.externalAPIList = response.data;
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.admin.getAPIsErrMsg'),
+          consoleError: i18n.t('trans.store.admin.getAPIsConsErrMsg', {
+            error: error,
+          }),
+        });
+      }
+    },
+    async updateExternalAPI(id, data) {
+      try {
+        await adminService.updateExternalAPI(id, data);
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.admin.updateAPIsErrMsg'),
+          consoleError: i18n.t('trans.store.admin.updateAPIsConsErrMsg', {
+            error: error,
+          }),
+        });
+      }
+    },
+    async getExternalAPIStatusCodes() {
+      try {
+        this.externalAPIStatusCodes = [];
+        const response = await adminService.listExternalAPIStatusCodes();
+        this.externalAPIStatusCodes = response.data;
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.admin.getAPICodesErrMsg'),
+          consoleError: i18n.t('trans.store.admin.getAPICodesConsErrMsg', {
+            error: error,
+          }),
+        });
+      }
+    },
     //addFormComponentsProactiveHelp
     async addFCProactiveHelp(data) {
       try {

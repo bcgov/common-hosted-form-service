@@ -1,46 +1,41 @@
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import ManageForm from '~/components/forms/manage/ManageForm.vue';
 import ManageFormActions from '~/components/forms/manage/ManageFormActions.vue';
 import { useFormStore } from '~/store/form';
 import { FormPermissions } from '~/utils/constants';
 
-export default {
-  components: {
-    ManageForm,
-    ManageFormActions,
-  },
-  props: {
-    f: {
-      type: String,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      loading: true,
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['form', 'permissions', 'isRTL', 'lang']),
-  },
-  async mounted() {
-    this.loading = true;
+const { locale } = useI18n({ useScope: 'global' });
 
-    const formStore = useFormStore();
-
-    await Promise.all([
-      formStore.fetchForm(this.f),
-      formStore.getFormPermissionsForUser(this.f),
-    ]);
-
-    if (this.permissions.includes(FormPermissions.DESIGN_READ))
-      await formStore.fetchDrafts(this.f);
-
-    this.loading = false;
+const properties = defineProps({
+  f: {
+    type: String,
+    required: true,
   },
-};
+});
+
+const loading = ref(true);
+
+const { form, permissions, isRTL } = storeToRefs(useFormStore());
+
+onMounted(async () => {
+  loading.value = true;
+
+  const formStore = useFormStore();
+
+  await Promise.all([
+    formStore.fetchForm(properties.f),
+    formStore.getFormPermissionsForUser(properties.f),
+  ]);
+
+  if (permissions.value.includes(FormPermissions.DESIGN_READ))
+    await formStore.fetchDrafts(properties.f);
+
+  loading.value = false;
+});
 </script>
 
 <template>
@@ -50,7 +45,7 @@ export default {
     >
       <!-- page title -->
       <div>
-        <h1 :lang="lang">{{ $t('trans.manageLayout.manageForm') }}</h1>
+        <h1 :lang="locale">{{ $t('trans.manageLayout.manageForm') }}</h1>
         <h3>{{ form.name }}</h3>
       </div>
       <!-- buttons -->

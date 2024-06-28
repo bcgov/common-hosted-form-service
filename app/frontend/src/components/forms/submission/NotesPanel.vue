@@ -1,7 +1,7 @@
 <script>
 import { mapState, mapActions } from 'pinia';
+import { useI18n } from 'vue-i18n';
 
-import { i18n } from '~/internationalization';
 import { formService, rbacService } from '~/services';
 
 import { useFormStore } from '~/store/form';
@@ -13,6 +13,11 @@ export default {
       type: String,
       required: true,
     },
+  },
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
+
+    return { t, locale };
   },
   data() {
     return {
@@ -26,7 +31,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
+    ...mapState(useFormStore, ['isRTL']),
   },
   mounted() {
     this.getNotes();
@@ -42,15 +47,15 @@ export default {
         };
         const response = await formService.addNote(this.submissionId, body);
         if (!response.data) {
-          throw new Error(i18n.t('trans.notesPanel.noResponseErr'));
+          throw new Error(this.$t('trans.notesPanel.noResponseErr'));
         }
         this.showNoteField = false;
         this.newNote = '';
         this.getNotes();
       } catch (error) {
         this.addNotification({
-          text: i18n.t('trans.notesPanel.errorMesg'),
-          consoleError: i18n.t('trans.notesPanel.consoleErrMsg') + `${error}`,
+          text: this.$t('trans.notesPanel.errorMesg'),
+          consoleError: this.$t('trans.notesPanel.consoleErrMsg') + `${error}`,
         });
       }
     },
@@ -64,9 +69,9 @@ export default {
         this.notes = response.data;
       } catch (error) {
         this.addNotification({
-          text: i18n.t('trans.notesPanel.errorMesg'),
+          text: this.$t('trans.notesPanel.errorMesg'),
           consoleError:
-            i18n.t('trans.notesPanel.fetchConsoleErrMsg') +
+            this.$t('trans.notesPanel.fetchConsoleErrMsg') +
             `${this.submissionId}: ${error}`,
         });
       } finally {
@@ -85,10 +90,11 @@ export default {
   >
     <div
       class="d-flex flex-md-row justify-space-between"
+      data-test="showNotesPanel"
       @click="showNotesContent = !showNotesContent"
     >
       <div cols="12" sm="6">
-        <h2 class="note-heading" :lang="lang">
+        <h2 class="note-heading" :lang="locale">
           {{ $t('trans.notesPanel.notes') }}
           <v-icon>{{
             showNotesContent
@@ -102,7 +108,7 @@ export default {
 
       <div :class="[{ 'text-left': isRTL }, 'd-flex', 'align-items-center']">
         <!-- Text for number of notes -->
-        <span class="notes-text" :lang="lang">
+        <span class="notes-text" :lang="locale">
           <strong>{{ $t('trans.notesPanel.totalNotes') }}</strong>
           {{ notes.length }}
         </span>
@@ -115,13 +121,14 @@ export default {
               size="x-small"
               v-bind="props"
               :title="$t('trans.notesPanel.addNewNote')"
+              data-test="canAddNewNote"
               @click.stop="showNoteField = true"
               @click="showNotesContent = true"
             >
               <v-icon icon="mdi:mdi-plus"></v-icon>
             </v-btn>
           </template>
-          <span :lang="lang">{{ $t('trans.notesPanel.addNewNote') }}</span>
+          <span :lang="locale">{{ $t('trans.notesPanel.addNewNote') }}</span>
         </v-tooltip>
       </div>
     </div>
@@ -135,8 +142,9 @@ export default {
           auto-grow
           density="compact"
           variant="outlined"
+          data-test="canAddNotes"
           solid
-          :lang="lang"
+          :lang="locale"
         />
         <v-row>
           <v-col>
@@ -145,9 +153,10 @@ export default {
               color="primary"
               variant="outlined"
               :title="$t('trans.notesPanel.cancel')"
+              data-test="canCancelNote"
               @click="showNoteField = false"
             >
-              <span :lang="lang">{{ $t('trans.notesPanel.cancel') }}</span>
+              <span :lang="locale">{{ $t('trans.notesPanel.cancel') }}</span>
             </v-btn>
             <v-btn
               class="wide-button"
@@ -157,7 +166,7 @@ export default {
               :title="$t('trans.notesPanel.addNote')"
               @click="addNote"
             >
-              <span :lang="lang">{{ $t('trans.notesPanel.addNote') }}</span>
+              <span :lang="locale">{{ $t('trans.notesPanel.addNote') }}</span>
             </v-btn>
           </v-col>
         </v-row>

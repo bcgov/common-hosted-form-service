@@ -1,117 +1,105 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import BaseCopyToClipboard from '~/components/base/BaseCopyToClipboard.vue';
-import BaseDialog from '~/components/base/BaseDialog.vue';
 import { useFormStore } from '~/store/form';
 import { FormPermissions } from '~/utils/constants';
 
-export default {
-  components: {
-    BaseCopyToClipboard,
-    BaseDialog,
-  },
-  data() {
-    return {
-      loading: false,
-      showConfirmationDialog: false,
-      showDeleteDialog: false,
-      showSecret: false,
-      filesApiAccess: false,
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, [
-      'apiKey',
-      'form',
-      'permissions',
-      'isRTL',
-      'lang',
-    ]),
-    canDeleteKey() {
-      return (
-        this.permissions.includes(FormPermissions.FORM_API_DELETE) &&
-        this.apiKey
-      );
-    },
-    canGenerateKey() {
-      return this.permissions.includes(FormPermissions.FORM_API_CREATE);
-    },
-    canReadSecret() {
-      return (
-        this.permissions.includes(FormPermissions.FORM_API_READ) && this.apiKey
-      );
-    },
-    secret() {
-      return this.apiKey?.secret ? this.apiKey.secret : '';
-    },
-  },
-  created() {
-    if (this.canGenerateKey) {
-      this.readKey();
-    }
-  },
-  methods: {
-    ...mapActions(useFormStore, [
-      'deleteApiKey',
-      'generateApiKey',
-      'readApiKey',
-      'filesApiKeyAccess',
-    ]),
-    async createKey() {
-      this.loading = true;
-      await this.generateApiKey(this.form.id);
-      this.showSecret = false;
-      this.loading = false;
-      this.showConfirmationDialog = false;
-    },
+const { locale } = useI18n({ useScope: 'global' });
 
-    async deleteKey() {
-      this.loading = true;
-      await this.deleteApiKey(this.form.id);
-      this.filesApiAccess = false;
-      this.loading = false;
-      this.showDeleteDialog = false;
-    },
+const loading = ref(false);
+const showConfirmationDialog = ref(false);
+const showDeleteDialog = ref(false);
+const showSecret = ref(false);
+const filesApiAccess = ref(false);
 
-    async readKey() {
-      this.loading = true;
-      await this.readApiKey(this.form.id);
-      this.filesApiAccess = this.apiKey?.filesApiAccess;
-      this.loading = false;
-    },
+const formStore = useFormStore();
 
-    async updateKey() {
-      this.loading = true;
-      await this.filesApiKeyAccess(this.form.id, this.filesApiAccess);
-      this.loading = false;
-    },
+const { apiKey, form, permissions, isRTL } = storeToRefs(formStore);
 
-    showHideKey() {
-      this.showSecret = !this.showSecret;
-    },
-  },
-};
+const canDeleteKey = computed(() => {
+  return (
+    permissions.value.includes(FormPermissions.FORM_API_DELETE) && apiKey.value
+  );
+});
+
+const canGenerateKey = computed(() => {
+  return permissions.value.includes(FormPermissions.FORM_API_CREATE);
+});
+
+const canReadSecret = computed(() => {
+  return (
+    permissions.value.includes(FormPermissions.FORM_API_READ) && apiKey.value
+  );
+});
+
+const secret = computed(() =>
+  apiKey.value?.secret ? apiKey.value.secret : ''
+);
+
+if (canGenerateKey.value) {
+  readKey();
+}
+
+async function createKey() {
+  loading.value = true;
+  await formStore.generateApiKey(form.value.id);
+  showSecret.value = false;
+  loading.value = false;
+  showConfirmationDialog.value = false;
+}
+
+async function deleteKey() {
+  loading.value = true;
+  await formStore.deleteApiKey(form.value.id);
+  filesApiAccess.value = false;
+  loading.value = false;
+  showDeleteDialog.value = false;
+}
+
+async function readKey() {
+  loading.value = true;
+  await formStore.readApiKey(form.value.id);
+  filesApiAccess.value = apiKey.value?.filesApiAccess;
+  loading.value = false;
+}
+
+async function updateKey() {
+  loading.value = true;
+  await formStore.filesApiKeyAccess(form.value.id, filesApiAccess.value);
+  loading.value = false;
+}
+
+defineExpose({
+  canDeleteKey,
+  canGenerateKey,
+  canReadSecret,
+  createKey,
+  deleteKey,
+  readKey,
+});
 </script>
 
+/* c8 ignore start */
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
     <div v-if="!canGenerateKey" class="mt-3 mb-6">
       <v-icon class="mr-1" color="primary" icon="mdi:mdi-information"></v-icon>
-      <span :lang="lang" v-html="$t('trans.apiKey.formOwnerKeyAcess')"></span>
+      <span :lang="locale" v-html="$t('trans.apiKey.formOwnerKeyAcess')"></span>
     </div>
-    <h3 class="mt-3" :lang="lang">
+    <h3 class="mt-3" :lang="locale">
       {{ $t('trans.apiKey.disclaimer') }}
     </h3>
     <ul :class="isRTL ? 'mr-6' : null">
-      <li :lang="lang">{{ $t('trans.apiKey.infoA') }}</li>
-      <li :lang="lang">
+      <li :lang="locale">{{ $t('trans.apiKey.infoA') }}</li>
+      <li :lang="locale">
         {{ $t('trans.apiKey.infoB') }}
       </li>
-      <li :lang="lang">
+      <li :lang="locale">
         {{ $t('trans.apiKey.infoC') }}
       </li>
-      <li :lang="lang">
+      <li :lang="locale">
         {{ $t('trans.apiKey.infoD') }}
       </li>
     </ul>
@@ -128,9 +116,10 @@ export default {
                 ? $t('trans.apiKey.regenerate')
                 : $t('trans.apiKey.generate')
             }${$t('trans.apiKey.apiKey')}`"
+            data-test="canGenerateAPIKey"
             @click="showConfirmationDialog = true"
           >
-            <span :lang="lang"
+            <span :lang="locale"
               >{{
                 apiKey
                   ? $t('trans.apiKey.regenerate')
@@ -150,7 +139,7 @@ export default {
             readonly
             :type="showSecret ? 'text' : 'password'"
             :model-value="secret"
-            :lang="lang"
+            :lang="locale"
           />
         </v-col>
         <v-col cols="12" sm="3">
@@ -163,23 +152,30 @@ export default {
                 size="x-small"
                 density="default"
                 :icon="showSecret ? 'mdi:mdi-eye-off' : 'mdi:mdi-eye'"
-                :title="$t('trans.apiKey.hideSecret')"
-                @click="showHideKey"
+                data-test="canReadAPIKey"
+                :title="
+                  showSecret
+                    ? $t('trans.apiKey.hideSecret')
+                    : $t('trans.apiKey.showSecret')
+                "
+                @click="showSecret = !showSecret"
               />
             </template>
-            <span v-if="showSecret" :lang="lang">{{
-              $t('trans.apiKey.hideSecret')
+            <span :lang="locale">{{
+              showSecret
+                ? $t('trans.apiKey.hideSecret')
+                : $t('trans.apiKey.showSecret')
             }}</span>
-            <span v-else :lang="lang">{{ $t('trans.apiKey.showSecret') }}</span>
           </v-tooltip>
 
           <BaseCopyToClipboard
             :disabled="!canReadSecret || !showSecret"
+            data-test="canAllowCopyAPIKey"
             class="mx-2"
             :text-to-copy="secret"
             :snack-bar-text="$t('trans.apiKey.sCTC')"
             :tooltip-text="$t('trans.apiKey.cSTC')"
-            :lang="lang"
+            :lang="locale"
           />
 
           <v-tooltip location="bottom">
@@ -191,11 +187,12 @@ export default {
                 size="x-small"
                 density="default"
                 icon="mdi:mdi-delete"
+                data-test="canDeleteApiKey"
                 :title="$t('trans.apiKey.deleteKey')"
                 @click="showDeleteDialog = true"
               />
             </template>
-            <span :lang="lang">{{ $t('trans.apiKey.deleteKey') }}</span>
+            <span :lang="locale">{{ $t('trans.apiKey.deleteKey') }}</span>
           </v-tooltip>
         </v-col>
       </v-row>
@@ -209,24 +206,24 @@ export default {
       @continue-dialog="createKey"
     >
       <template #title
-        ><span :lang="lang">
+        ><span :lang="locale">
           {{ $t('trans.apiKey.confirmKeyGen') }}
         </span></template
       >
       <template #text>
         <span
           v-if="!apiKey"
-          :lang="lang"
+          :lang="locale"
           v-html="$t('trans.apiKey.createAPIKey')"
         />
         <span
           v-else
-          :lang="lang"
+          :lang="locale"
           v-html="$t('trans.apiKey.regenerateAPIKey')"
         />
       </template>
       <template #button-text-continue>
-        <span :lang="lang"
+        <span :lang="locale"
           >{{
             apiKey ? $t('trans.apiKey.regenerate') : $t('trans.apiKey.generate')
           }}
@@ -243,15 +240,17 @@ export default {
       @continue-dialog="deleteKey"
     >
       <template #title
-        ><span :lang="lang"
+        ><span :lang="locale"
           >{{ $t('trans.apiKey.confirmDeletion') }}
         </span></template
       >
       <template #text
-        ><span :lang="lang">{{ $t('trans.apiKey.deleteMsg') }}</span></template
+        ><span :lang="locale">{{
+          $t('trans.apiKey.deleteMsg')
+        }}</span></template
       >
       <template #button-text-continue>
-        <span :lang="lang">{{ $t('trans.apiKey.delete') }}</span>
+        <span :lang="locale">{{ $t('trans.apiKey.delete') }}</span>
       </template>
     </BaseDialog>
   </div>
@@ -261,8 +260,10 @@ export default {
         v-model="filesApiAccess"
         :disabled="!apiKey"
         :label="$t('trans.apiKey.filesAPIAccess')"
+        data-test="canAllowFileAccess"
         @update:model-value="updateKey"
       ></v-checkbox>
     </v-col>
   </v-row>
 </template>
+/* c8 ignore end */

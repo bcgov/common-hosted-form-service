@@ -1,7 +1,11 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import { useFormStore } from '~/store/form';
+
+const { locale } = useI18n({ useScope: 'global' });
 
 defineProps({
   modelValue: {
@@ -34,7 +38,7 @@ const emit = defineEmits([
   'custom-dialog',
 ]);
 
-const { isRTL, lang } = storeToRefs(useFormStore());
+const { isRTL } = storeToRefs(useFormStore());
 
 const RTL = computed(() => (isRTL.value ? 'ml-5' : 'mr-5'));
 
@@ -85,7 +89,7 @@ defineExpose({ RTL });
               <v-icon size="medium">default-icon</v-icon>
             </slot>
           </div>
-          <div class="dialog-text" :lang="lang">
+          <div class="dialog-text" :lang="locale">
             <slot name="text">{{ $t('trans.baseDialog.defaultText') }}</slot>
           </div>
         </v-card-text>
@@ -100,7 +104,7 @@ defineExpose({ RTL });
             @click="closeDialog"
           >
             <slot name="button-text">
-              <span :lang="lang">{{ $t('trans.baseDialog.ok') }}</span>
+              <span :lang="locale">{{ $t('trans.baseDialog.ok') }}</span>
             </slot>
           </v-btn>
         </div>
@@ -114,7 +118,7 @@ defineExpose({ RTL });
             @click="continueDialog"
           >
             <slot name="button-text-continue">
-              <span :lang="lang">{{ $t('trans.baseDialog.continue') }}</span>
+              <span :lang="locale">{{ $t('trans.baseDialog.continue') }}</span>
             </slot>
           </v-btn>
           <v-btn
@@ -126,7 +130,7 @@ defineExpose({ RTL });
             @click="closeDialog"
           >
             <slot name="button-text-cancel">
-              <span :lang="lang">{{ $t('trans.baseDialog.cancel') }}</span>
+              <span :lang="locale">{{ $t('trans.baseDialog.cancel') }}</span>
             </slot>
           </v-btn>
         </div>
@@ -140,7 +144,7 @@ defineExpose({ RTL });
             @click="continueDialog"
           >
             <slot name="button-text-continue">
-              <span :lang="lang">{{ $t('trans.baseDialog.continue') }}</span>
+              <span :lang="locale">{{ $t('trans.baseDialog.continue') }}</span>
             </slot>
           </v-btn>
           <v-btn
@@ -151,7 +155,7 @@ defineExpose({ RTL });
             @click="deleteDialog"
           >
             <slot name="button-text-delete">
-              <span :lang="lang">{{ $t('trans.baseDialog.cancel') }}</span>
+              <span :lang="locale">{{ $t('trans.baseDialog.cancel') }}</span>
             </slot>
           </v-btn>
         </div>
@@ -164,7 +168,7 @@ defineExpose({ RTL });
             @click="continueDialog"
           >
             <slot name="button-text-continue">
-              <span :lang="lang">{{ $t('trans.baseDialog.continue') }}</span>
+              <span :lang="locale">{{ $t('trans.baseDialog.continue') }}</span>
             </slot>
           </v-btn>
           <v-btn
@@ -177,7 +181,7 @@ defineExpose({ RTL });
             @click="customDialog"
           >
             <slot name="button-text-custom">
-              <span :lang="lang">{{ $t('trans.baseDialog.custom') }}</span>
+              <span :lang="locale">{{ $t('trans.baseDialog.custom') }}</span>
             </slot>
           </v-btn>
           <v-btn
@@ -187,7 +191,7 @@ defineExpose({ RTL });
             @click="closeDialog"
           >
             <slot name="button-text-cancel">
-              <span :lang="lang">{{ $t('trans.baseDialog.cancel') }}</span>
+              <span :lang="locale">{{ $t('trans.baseDialog.cancel') }}</span>
             </slot>
           </v-btn>
         </div>
