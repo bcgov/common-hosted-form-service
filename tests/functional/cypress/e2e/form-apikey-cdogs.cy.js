@@ -48,10 +48,9 @@ describe('Form Designer', () => {
       .trigger('mousemove', coords.x, -550, { force: true })
         //.trigger('mousemove', coords.y, +100, { force: true })
       .trigger('mouseup', { force: true });
-      cy.waitForLoad();
-      //cy.get('input[name="data[label]"]').type('s');  
+      cy.waitForLoad();  
       cy.get('button').contains('Save').click();
-      //cy.get('.btn-success').click();
+      
 
 
     });
@@ -69,7 +68,6 @@ describe('Form Designer', () => {
     cy.get('[data-test="canGenerateAPIKey"]').click();
     cy.get('[data-test="continue-btn-continue"]').click();
     cy.get('[data-test="continue-btn-cancel"]').should('be.enabled');
-    //cy.get('.mx-2').click();
     cy.get('[data-test="canAllowCopyAPIKey"]').click();
     //Verify checkbox checked for access submitted files
     cy.contains('Allow this API key to access submitted files').click();
@@ -97,10 +95,22 @@ describe('Form Designer', () => {
     cy.waitForLoad();
     cy.waitForLoad();
     cy.get('button[title="Upload"]').click();
-    //cy.get('.v-expansion-panel-text__wrapper > :nth-child(1) > .v-btn > .v-btn__content > span').click();
-
     
-      //Delete form after test run
+    cy.get('.mdi-minus-circle').click();
+    cy.get('input[type=file]').should('not.to.be.null');
+    fileUploadInputField.attachFile('file_example_XLSX_50.xlsx');
+    cy.waitForLoad();
+    cy.get('button[title="Upload"]').click();
+    cy.get('.mdi-minus-circle').click();
+    cy.get('input[type=file]').should('not.to.be.null');
+    fileUploadInputField.attachFile('Testing_files.txt');
+    cy.get('button[title="Upload"]').click();
+    cy.get('.mdi-minus-circle').click();
+    cy.get('input[type=file]').should('not.to.be.null');
+    fileUploadInputField.attachFile('test.docx');
+    cy.get('button[title="Upload"]').click();
+
+    //Delete form after test run
     
     cy.get('[data-test="canRemoveForm"]').click();
     cy.get('[data-test="continue-btn-continue"]').click();
