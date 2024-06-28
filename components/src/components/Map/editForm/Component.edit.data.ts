@@ -12,32 +12,17 @@ export default
                         value: "marker"
                     },
                     {
-                        label: "Circle Marker",
-                        value: "circlemarker",
-                    },
-                    {
-                        label: "Polygon",
-                        value: "polygon",
-                    },
-                    {
-                        label: "Polyline",
-                        value: "polyline",
-                    },
-                    {
-                        label: "Rectangle",
-                        value: "rectangle",
-                    },
-                    {
                         label: "Circle",
                         value: "circle",
                     }
                 ],
+                defaultValue:"marker",
                 key: "markerType",
                 type: "simpleradios",
                 input: true,
             },
             {
-                label: "How many Points per Submission? (Only for Point Markers)",
+                label: "How many Points per Submission?",
                 key: "numPoints",
                 type: "simplenumber",
                 defaultValue: 1,

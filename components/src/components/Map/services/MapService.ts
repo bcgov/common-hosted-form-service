@@ -38,10 +38,7 @@ class MapService {
       map.on('draw:created', (e: any) => {
         console.log('Drawing created:', e);
         let layer = e.layer;
-        if (
-          drawnItems.getLayers().length === options.numPoints &&
-          e?.type === 'marker'
-        ) {
+        if (drawnItems.getLayers().length === options.numPoints) {
           L.popup()
             .setLatLng(layer._latlng)
             .setContent('<p>Only one marker for submission</p>')
