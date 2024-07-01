@@ -138,8 +138,10 @@ describe('callExternalApi', () => {
 
     expect(service.readProxyHeaders).toBeCalledTimes(1);
     expect(service.getExternalAPI).toBeCalledTimes(1);
-    expect(service.createExternalAPIUrl).not.toHaveBeenCalled();
-    expect(service.createExternalAPIHeaders).not.toHaveBeenCalled();
+    expect(service.createExternalAPIUrl).toBeCalledTimes(1);
+    expect(service.createExternalAPIHeaders).toBeCalledTimes(1);
+    // this is the point where we check the status code for external api
+    expect(axios.get).not.toHaveBeenCalled();
     expect(res.status).not.toHaveBeenCalled();
     expect(next).toBeCalledTimes(1);
   });
