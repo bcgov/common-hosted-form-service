@@ -110,7 +110,7 @@ The following table will help you understand the HTTP statuses returned when cal
 
 | Http Status | Meaning                                                                                                                                                                    |
 | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 299         | Generally, the formio component has not been completely configured (missing headers) or the External API has not been configured.                                          |
+| 400         | Generally, the formio component has not been completely configured (missing headers) or the External API has not been configured.                                          |
 | 407         | The External API is configured and exists but has not been approved.                                                                                                       |
 | 502         | Call has gone through the CHEFS proxy but failed on the external server (ie 404 not found on your server). Check the message for information on the underlying HTTP Error. |
 | 500         | Unexpected CHEFS server error.                                                                                                                                             |

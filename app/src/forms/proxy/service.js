@@ -54,13 +54,17 @@ const service = {
         throw new ProxyServiceError(`Could not decrypt proxy headers: ${error.message}`);
       }
     } else {
-      throw new ProxyServiceError('Proxy headers not found');
+      throw new ProxyServiceError('X-CHEFS-PROXY-DATA headers not found or empty.');
     }
   },
   getExternalAPI: async (headers, proxyHeaderInfo) => {
     const externalApiName = headerValue(headers, 'X-CHEFS-EXTERNAL-API-NAME');
-    const externalAPI = await ExternalAPI.query().modify('findByFormIdAndName', proxyHeaderInfo['formId'], externalApiName).first().throwIfNotFound();
-    return externalAPI;
+    if (externalApiName) {
+      const externalAPI = await ExternalAPI.query().modify('findByFormIdAndName', proxyHeaderInfo['formId'], externalApiName).first().throwIfNotFound();
+      return externalAPI;
+    } else {
+      throw new ProxyServiceError('X-CHEFS-EXTERNAL-API-NAME header not found or empty.');
+    }
   },
   createExternalAPIUrl: (headers, endpointUrl) => {
     //check incoming request headers for path to add to the endpoint url

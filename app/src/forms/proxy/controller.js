@@ -59,13 +59,13 @@ module.exports = {
         // formio components will call as soon as the URL is entered while designing.
         // calls will fire before the designer has added the headers.
         log.warn(error.message);
-        // send an empty result back with status 299 Miscellaneous Persistent Warning
-        res.status(299).json([]);
+        // send back status 400 Bad Request
+        res.sendStatus(400);
       } else if (error instanceof NotFoundError) {
         // may have created formio component before adding the External API config.
         log.warn('External API configuration does not exist.');
-        // send an empty result back with status 299 Miscellaneous Persistent Warning
-        res.status(299).json([]);
+        // send back status 400 Bad Request
+        res.sendStatus(400);
       } else {
         next(error);
       }
