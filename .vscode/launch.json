@@ -21,11 +21,12 @@
     {
       "cwd": "${workspaceFolder}/app/frontend",
       "env": {
-        "VITE_TITLE": "Common Hosted Forms - Local",
+        "VITE_CHEFS_ADVANCE_GEO_ADDRESS_APIURL": "http://localhost:8080/app/api/v1/bcgeoaddress/address",
+        "VITE_CHEFSTOURURL": "https://www.youtube.com/embed/obOhyYusMjM",
         "VITE_CONTACT": "submit.digital@gov.bc.ca",
         "VITE_FRONTEND_BASEPATH": "/app",
-        "VITE_CHEFSTOURURL": "https://www.youtube.com/embed/obOhyYusMjM",
-        "VITE_HOWTOURL": "https://www.youtube.com/playlist?list=PL9CV_8JBQHirsQAShw45PZeU1CkU88Q53"
+        "VITE_HOWTOURL": "https://www.youtube.com/playlist?list=PL9CV_8JBQHirsQAShw45PZeU1CkU88Q53",
+        "VITE_TITLE": "Common Hosted Forms - Local"
       },
       "name": "CHEFS Frontend",
       "outputCapture": "std",
