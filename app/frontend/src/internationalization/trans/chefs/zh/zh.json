@@ -701,7 +701,8 @@
     "defaultCdogsTemplate": "使用默认CDOGS模板",
     "fileName": "文件名",
     "uploadDate": "上传日期",
-    "upload": "上传"
+    "upload": "上传",
+    "selectExportFileType": "选择导出文件类型"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "组件信息链接",

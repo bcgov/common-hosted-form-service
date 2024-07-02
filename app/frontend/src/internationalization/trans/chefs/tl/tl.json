@@ -701,7 +701,8 @@
     "defaultCdogsTemplate": "Gamitin ang default na Template ng CDOGS",
     "fileName": "Pangalan ng File",
     "uploadDate": "Petsa ng Pag-upload",
-    "upload": "I-upload"
+    "upload": "I-upload",
+    "selectExportFileType": "Piliin ang uri ng file na i-export"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Link ng Impormasyon ng Bahagi",

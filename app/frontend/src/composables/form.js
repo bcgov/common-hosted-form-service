@@ -9,7 +9,7 @@ export function exportFormSchema(formName, formSchema, snake) {
 
   const a = document.createElement('a');
   a.href = `data:application/json;charset=utf-8,${encodeURIComponent(
-    JSON.stringify(formSchema.value)
+    JSON.stringify(formSchema)
   )}`;
   a.download = `${snek}_schema.json`;
   a.style.display = 'none';

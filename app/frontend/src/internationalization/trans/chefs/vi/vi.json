@@ -701,7 +701,8 @@
     "defaultCdogsTemplate": "Sử dụng mẫu CDOGS mặc định",
     "fileName": "Tên tệp",
     "uploadDate": "Ngày tải lên",
-    "upload": "Tải lên"
+    "upload": "Tải lên",
+    "selectExportFileType": "Chọn loại file xuất"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Liên kết thông tin thành phần",

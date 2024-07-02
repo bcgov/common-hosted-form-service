@@ -702,7 +702,8 @@
     "defaultCdogsTemplate": "Standard-CDOGS-Vorlage verwenden",
     "fileName": "Dateiname",
     "uploadDate": "Hochladedatum",
-    "upload": "Hochladen"
+    "upload": "Hochladen",
+    "selectExportFileType": "Exportdateityp auswählen"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Link zu Komponenteninformationen",
