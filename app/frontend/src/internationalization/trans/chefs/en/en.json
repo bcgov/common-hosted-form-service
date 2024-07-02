@@ -546,7 +546,7 @@
     "exactBCEIDSearch": "Email searches for BCeID must be exact.",
     "getUsersErrMsg": "Error getting users: {error}",
     "exactEmailOrUsername": "Enter an exact email or username.",
-    "requiredFiled": "Enter a name, email, or username"
+    "requiredField": "Enter a name, email, or username"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "View This Submission",

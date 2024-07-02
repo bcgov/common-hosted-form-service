@@ -550,7 +550,7 @@
     "exactBCEIDSearch": "बीसीईआईडी के लिए ईमेल खोजें सटीक होनी चाहिए।",
     "getUsersErrMsg": "उपयोगकर्ता प्राप्त करने में त्रुटि: {error}",
     "exactEmailOrUsername": "सटीक ई-मेल या उपयोगकर्ता नाम दर्ज करें.",
-    "requiredFiled": "एक नाम, ई-मेल या उपयोगकर्ता नाम दर्ज करें"
+    "requiredField": "एक नाम, ई-मेल या उपयोगकर्ता नाम दर्ज करें"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "यह सबमिशन देखें",

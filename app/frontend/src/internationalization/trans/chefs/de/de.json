@@ -550,7 +550,7 @@
     "exactBCEIDSearch": "E-Mail-Suchen nach BCeID müssen genau sein.",
     "getUsersErrMsg": "Fehler beim Abrufen von Benutzern: {error}",
     "exactEmailOrUsername": "Geben Sie eine genaue E-Mail-Adresse oder einen Benutzernamen ein.",
-    "requiredFiled": "Geben Sie einen Namen, eine E-Mail-Adresse oder einen Benutzernamen ein"
+    "requiredField": "Geben Sie einen Namen, eine E-Mail-Adresse oder einen Benutzernamen ein"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "Diesen Beitrag ansehen",

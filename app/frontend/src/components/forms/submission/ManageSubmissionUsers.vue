@@ -9,6 +9,7 @@ import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { useIdpStore } from '~/store/identityProviders';
 import { FormPermissions, NotificationTypes, Regex } from '~/utils/constants';
+import { filterObject } from '~/utils/transformUtils';
 
 const { t } = useI18n({ useScope: 'global' });
 
@@ -24,14 +25,14 @@ const properties = defineProps({
 });
 
 const dialog = ref(false);
-const findUsers = ref(null);
+const formSubmissionUsers = ref([]); // the users added to the team for this submission
 const isLoadingDropdown = ref(false);
 const isLoadingTable = ref(true);
 const selectedIdp = ref(null);
 const showDeleteDialog = ref(false);
+const userSearchInput = ref(null); // the search filter
 const userSearchResults = ref([]);
-const userSearchSelection = ref(null);
-const userTableList = ref([]);
+const userSearchSelection = ref(null); // the selected user
 const userToDelete = ref({});
 
 const formStore = useFormStore();
@@ -42,17 +43,28 @@ const { isRTL, lang } = storeToRefs(formStore);
 
 const autocompleteLabel = computed(() => {
   return idpStore.isPrimary(selectedIdp.value)
-    ? t('trans.manageSubmissionUsers.requiredFiled')
+    ? t('trans.manageSubmissionUsers.requiredField')
     : t('trans.manageSubmissionUsers.exactEmailOrUsername');
 });
 
 watch(selectedIdp, (newIdp, oldIdp) => {
+  onChangeSelectedIdp(newIdp, oldIdp);
+});
+
+watch(userSearchInput, async (input) => {
+  await onChangeUserSearchInput(input);
+});
+
+initializeSelectedIdp();
+getSubmissionUsers();
+
+function onChangeSelectedIdp(newIdp, oldIdp) {
   if (newIdp !== oldIdp) {
     userSearchResults.value = [];
   }
-});
+}
 
-watch(findUsers, async (input) => {
+async function onChangeUserSearchInput(input) {
   if (!input) return;
   isLoadingDropdown.value = true;
   try {
@@ -86,10 +98,7 @@ watch(findUsers, async (input) => {
   } finally {
     isLoadingDropdown.value = false;
   }
-});
-
-initializeSelectedIdp();
-getSubmissionUsers();
+}
 
 // workaround so we can use computed value (primaryIdp) in created()
 function initializeSelectedIdp() {
@@ -97,18 +106,22 @@ function initializeSelectedIdp() {
 }
 
 // show users in dropdown that have a text match on multiple properties
-function addUser() {
+async function addUser() {
+  // If the end user selected a user
   if (userSearchSelection.value) {
     const id = userSearchSelection.value.id;
-    if (userTableList.value.some((u) => u.id === id)) {
+    // If a selected user is already on the team
+    if (formSubmissionUsers.value.some((u) => u.id === id)) {
       notificationStore.addNotification({
         ...NotificationTypes.WARNING,
         text: t('trans.manageSubmissionUsers.remove', {
           username: userSearchSelection.value.username,
         }),
       });
-    } else {
-      modifyPermissions(id, [
+    }
+    // Add a new user to the team
+    else {
+      await modifyPermissions(id, [
         FormPermissions.SUBMISSION_UPDATE,
         FormPermissions.SUBMISSION_READ,
       ]);
@@ -118,22 +131,6 @@ function addUser() {
   userSearchSelection.value = null;
 }
 
-function filterObject(_itemTitle, queryText, item) {
-  return Object.values(item)
-    .filter((v) => v)
-    .some((v) => {
-      if (typeof v === 'string')
-        return v.toLowerCase().includes(queryText.toLowerCase());
-      else {
-        return Object.values(v).some(
-          (nestedValue) =>
-            typeof nestedValue === 'string' &&
-            nestedValue.toLowerCase().includes(queryText.toLowerCase())
-        );
-      }
-    });
-}
-
 async function getSubmissionUsers() {
   isLoadingTable.value = true;
   try {
@@ -141,7 +138,7 @@ async function getSubmissionUsers() {
       formSubmissionId: properties.submissionId,
     });
     if (response.data) {
-      userTableList.value = transformResponseToTable(response.data);
+      formSubmissionUsers.value = transformResponseToTable(response.data);
     }
   } catch (error) {
     notificationStore.addNotification({
@@ -172,7 +169,7 @@ async function modifyPermissions(userId, permissions) {
       }
     );
     if (response.data) {
-      userTableList.value = transformResponseToTable(response.data);
+      formSubmissionUsers.value = transformResponseToTable(response.data);
       notificationStore.addNotification({
         ...NotificationTypes.SUCCESS,
         text: permissions.length
@@ -214,6 +211,21 @@ function transformResponseToTable(responseData) {
     })
     .sort((a, b) => b.isOwner - a.isOwner);
 }
+
+defineExpose({
+  addUser,
+  autocompleteLabel,
+  formSubmissionUsers,
+  modifyPermissions,
+  onChangeSelectedIdp,
+  onChangeUserSearchInput,
+  removeUser,
+  selectedIdp,
+  showDeleteDialog,
+  userSearchResults,
+  userSearchSelection,
+  userToDelete,
+});
 </script>
 
 <template>
@@ -257,7 +269,7 @@ function transformResponseToTable(responseData) {
               <form autocomplete="off">
                 <v-autocomplete
                   v-model="userSearchSelection"
-                  v-model:search="findUsers"
+                  v-model:search="userSearchInput"
                   :class="{ label: isRTL }"
                   autocomplete="autocomplete_off"
                   :items="userSearchResults"
@@ -351,7 +363,7 @@ function transformResponseToTable(responseData) {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="item in userTableList" :key="item.userId">
+                <tr v-for="item in formSubmissionUsers" :key="item.userId">
                   <td>{{ item.fullName }}</td>
                   <td>{{ item.username }}</td>
                   <td>{{ item.email }}</td>

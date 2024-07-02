@@ -550,7 +550,7 @@
     "exactBCEIDSearch": "Tìm kiếm email cho BCeID phải chính xác.",
     "getUsersErrMsg": "Lỗi nhận người dùng: {error}",
     "exactEmailOrUsername": "Nhập một e-mail hoặc tên người dùng chính xác.",
-    "requiredFiled": "Nhập tên, e-mail hoặc tên người dùng"
+    "requiredField": "Nhập tên, e-mail hoặc tên người dùng"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "Xem bài nộp này",

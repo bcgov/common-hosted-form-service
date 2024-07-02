@@ -550,7 +550,7 @@
     "exactBCEIDSearch": "BCeID ਲਈ ਈਮੇਲ ਖੋਜਾਂ ਸਟੀਕ ਹੋਣੀਆਂ ਚਾਹੀਦੀਆਂ ਹਨ।",
     "getUsersErrMsg": "ਉਪਭੋਗਤਾਵਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
     "exactEmailOrUsername": "ਇੱਕ ਸਹੀ ਈ-ਮੇਲ ਜਾਂ ਉਪਭੋਗਤਾ ਨਾਮ ਦਰਜ ਕਰੋ।",
-    "requiredFiled": "ਇੱਕ ਨਾਮ, ਈ-ਮੇਲ, ਜਾਂ ਉਪਭੋਗਤਾ ਨਾਮ ਦਰਜ ਕਰੋ"
+    "requiredField": "ਇੱਕ ਨਾਮ, ਈ-ਮੇਲ, ਜਾਂ ਉਪਭੋਗਤਾ ਨਾਮ ਦਰਜ ਕਰੋ"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "ਇਸ ਸਬਮਿਸ਼ਨ ਨੂੰ ਦੇਖੋ",
