@@ -1,6 +1,6 @@
 const { encryptionService } = require('../../components/encryptionService');
 const jwtService = require('../../components/jwtService');
-
+const ProxyServiceError = require('./error');
 const { ExternalAPI } = require('../../forms/common/models');
 
 const headerValue = (headers, key) => {
@@ -21,7 +21,7 @@ const trimTrailingSlashes = (str) => str.replace(/\/+$/g, '');
 const service = {
   generateProxyHeaders: async (payload, currentUser, token) => {
     if (!payload || !currentUser || !currentUser.idp) {
-      throw new Error('Cannot generate proxy headers with missing or incomplete parameters');
+      throw new ProxyServiceError('Cannot generate proxy headers with missing or incomplete parameters');
     }
 
     const headerData = {
@@ -51,16 +51,20 @@ const service = {
         const data = JSON.parse(decryptedHeaderData);
         return data;
       } catch (error) {
-        throw new Error(`Could not decrypt proxy headers: ${error.message}`);
+        throw new ProxyServiceError(`Could not decrypt proxy headers: ${error.message}`);
       }
     } else {
-      throw new Error('Proxy headers not found');
+      throw new ProxyServiceError('X-CHEFS-PROXY-DATA headers not found or empty.');
     }
   },
   getExternalAPI: async (headers, proxyHeaderInfo) => {
     const externalApiName = headerValue(headers, 'X-CHEFS-EXTERNAL-API-NAME');
-    const externalAPI = await ExternalAPI.query().modify('findByFormIdAndName', proxyHeaderInfo['formId'], externalApiName).first().throwIfNotFound();
-    return externalAPI;
+    if (externalApiName) {
+      const externalAPI = await ExternalAPI.query().modify('findByFormIdAndName', proxyHeaderInfo['formId'], externalApiName).first().throwIfNotFound();
+      return externalAPI;
+    } else {
+      throw new ProxyServiceError('X-CHEFS-EXTERNAL-API-NAME header not found or empty.');
+    }
   },
   createExternalAPIUrl: (headers, endpointUrl) => {
     //check incoming request headers for path to add to the endpoint url
@@ -78,7 +82,7 @@ const service = {
     if (externalAPI.sendUserToken) {
       if (!proxyHeaderInfo || !proxyHeaderInfo.token) {
         // just assume that if there is no idpUserId than it isn't a userInfo object
-        throw new Error('Cannot create user token headers for External API without populated proxy header info token.');
+        throw new ProxyServiceError('Cannot create user token headers for External API without populated proxy header info token.');
       }
       const val = externalAPI.userTokenBearer ? `Bearer ${proxyHeaderInfo['token']}` : proxyHeaderInfo['token'];
       result[externalAPI.userTokenHeader] = val;
@@ -86,7 +90,7 @@ const service = {
     if (externalAPI.sendUserInfo) {
       if (!proxyHeaderInfo || !proxyHeaderInfo.idp) {
         // just assume that if there is no idp than it isn't a userInfo object
-        throw new Error('Cannot create user headers for External API without populated proxy header info object.');
+        throw new ProxyServiceError('Cannot create user headers for External API without populated proxy header info object.');
       }
 
       // user information (no token)
