@@ -76,8 +76,6 @@ describe('Form Designer', () => {
       let arr = search.split('=');
       let arrayValues = arr[1].split('&');
       cy.log(arrayValues[0]);
-      //cy.log(arrayValues[1]);
-      //cy.log(arrayValues[2]);
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
       cy.waitForLoad();
       
