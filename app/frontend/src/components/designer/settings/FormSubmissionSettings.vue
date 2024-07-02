@@ -1,23 +1,25 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import { i18n } from '~/internationalization';
 import { useFormStore } from '~/store/form';
 import { Regex } from '~/utils/constants';
 
-const { form, isRTL, lang } = storeToRefs(useFormStore());
+const { t, locale } = useI18n({ useScope: 'global' });
+
+const { form, isRTL } = storeToRefs(useFormStore());
 
 /* c8 ignore start */
 const emailArrayRules = ref([
   (v) =>
     !form.value.sendSubmissionReceivedEmail ||
     v.length > 0 ||
-    i18n.t('trans.formSettings.atLeastOneEmailReq'),
+    t('trans.formSettings.atLeastOneEmailReq'),
   (v) =>
     !form.value.sendSubmissionReceivedEmail ||
     v.every((item) => new RegExp(Regex.EMAIL).test(item)) ||
-    i18n.t('trans.formSettings.validEmailRequired'),
+    t('trans.formSettings.validEmailRequired'),
 ]);
 /* c8 ignore stop */
 </script>
@@ -25,19 +27,20 @@ const emailArrayRules = ref([
 <template>
   <BasePanel class="fill-height">
     <template #title
-      ><span :lang="lang">
+      ><span :lang="locale">
         {{ $t('trans.formSettings.afterSubmission') }}
       </span></template
     >
     <v-checkbox
       v-model="form.showSubmissionConfirmation"
       hide-details="auto"
+      data-test="canAllowSubmissionConfirmationCheckbox"
       class="my-0"
       :class="{ 'dir-rtl': isRTL }"
     >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
-          <span :lang="lang">
+          <span :lang="locale">
             {{ $t('trans.formSettings.submissionConfirmation') }}</span
           >
           <v-tooltip location="bottom">
@@ -52,14 +55,14 @@ const emailArrayRules = ref([
             </template>
             <span>
               <span
-                :lang="lang"
+                :lang="locale"
                 v-html="$t('trans.formSettings.submissionConfirmationToolTip')"
               />
               <ul>
-                <li :lang="lang">
+                <li :lang="locale">
                   {{ $t('trans.formSettings.theConfirmationID') }}
                 </li>
-                <li :lang="lang">
+                <li :lang="locale">
                   {{ $t('trans.formSettings.infoB') }}
                 </li>
               </ul>
@@ -77,7 +80,7 @@ const emailArrayRules = ref([
     >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
-          <span :lang="lang">
+          <span :lang="locale">
             {{ $t('trans.formSettings.emailNotificatnToTeam') }}</span
           >
           <v-tooltip location="bottom">
@@ -90,7 +93,7 @@ const emailArrayRules = ref([
                 icon="mdi:mdi-help-circle-outline"
               />
             </template>
-            <span :lang="lang">
+            <span :lang="locale">
               {{ $t('trans.formSettings.emailNotificatnToTeamToolTip') }}
             </span>
           </v-tooltip>
@@ -114,13 +117,13 @@ const emailArrayRules = ref([
       closable-chips
       :delimiters="[' ', ',']"
       append-icon=""
-      :lang="lang"
+      :lang="locale"
     >
       <template #no-data>
         <v-list-item>
           <v-list-item-title>
             <span
-              :lang="lang"
+              :lang="locale"
               v-html="$t('trans.formSettings.pressToAddMultiEmail')"
             />
           </v-list-item-title>

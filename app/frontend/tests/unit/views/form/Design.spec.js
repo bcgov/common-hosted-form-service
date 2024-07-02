@@ -5,7 +5,6 @@ import { createTestingPinia } from '@pinia/testing';
 import { mount } from '@vue/test-utils';
 import { setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { ref } from 'vue';
 
 import { useFormStore } from '~/store/form';
 import Design from '~/views/form/Design.vue';
@@ -37,12 +36,20 @@ describe('Design.vue', () => {
       global: {
         plugins: [pinia],
         stubs: {
+          BaseSecure: {
+            name: 'BaseSecure',
+            template: '<div class="base-secure-stub"><slot /></div>',
+          },
           FormDesigner: {
             name: 'FormDesigner',
             methods: {
               onFormLoad,
             },
             template: '<div class="form-designer-stub"><slot /></div>',
+          },
+          BaseSecure: {
+            name: 'BaseSecure',
+            template: '<div class="base-secure-stub"><slot /></div>',
           },
         },
       },

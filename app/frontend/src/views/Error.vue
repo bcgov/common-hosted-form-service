@@ -1,9 +1,11 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
-import { i18n } from '~/internationalization';
+import { useI18n } from 'vue-i18n';
+
 import { useAuthStore } from '~/store/auth';
-import { useFormStore } from '~/store/form';
+
+const { t, locale } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   text: {
@@ -17,19 +19,17 @@ const properties = defineProps({
 });
 
 const authStore = useAuthStore();
-const formStore = useFormStore();
 
 const { authenticated, ready } = storeToRefs(authStore);
-const { lang } = storeToRefs(formStore);
 
 const TEXT = computed(() => {
   let text = properties.text;
   try {
     text = JSON.parse(text);
-    text = i18n.t(text.text, text.options);
+    text = t(text.text, text.options);
   } catch {
     // Can't parse JSON so it's probably already a locale
-    text = properties.translate ? i18n.t(text) : text;
+    text = properties.translate ? t(text) : text;
   }
   return text;
 });
@@ -46,7 +46,7 @@ const TEXT = computed(() => {
         :title="$t('trans.error.logout')"
         @click="authStore.logout"
       >
-        <span :lang="lang">{{ $t('trans.error.logout') }}</span>
+        <span :lang="locale">{{ $t('trans.error.logout') }}</span>
       </v-btn>
     </div>
   </v-container>

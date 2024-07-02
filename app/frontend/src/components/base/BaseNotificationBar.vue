@@ -1,11 +1,12 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { onBeforeUnmount } from 'vue';
-import { onBeforeMount } from 'vue';
+import { onBeforeMount, onBeforeUnmount } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import { i18n } from '~/internationalization';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
+
+const { t } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   notification: {
@@ -31,14 +32,14 @@ if (properties.notification.consoleError) {
     if (properties.notification.consoleError.options) {
       // eslint-disable-next-line no-console
       console.error(
-        i18n.t(
+        t(
           properties.notification.consoleError.text,
           properties.notification.consoleError.options
         )
       );
     } else {
       // eslint-disable-next-line no-console
-      console.error(i18n.t(properties.notification.consoleError.text));
+      console.error(t(properties.notification.consoleError.text));
     }
   }
 }
@@ -50,7 +51,7 @@ onBeforeMount(() => {
       typeof properties.notification.consoleError === 'string' ||
         properties.notification.consoleError instanceof String
         ? properties.notification.consoleError
-        : i18n.t(
+        : t(
             properties.notification.consoleError.text,
             properties.notification.consoleError.options
           )

@@ -56,6 +56,9 @@
         "windowMs": "900000",
         "max": "100"
       }
+    },
+    "encryption": {
+      "proxy": "5fb2054478353fd8d514056d1745b3a9eef066deadda4b90967af7ca65ce6505"
     }
   },
   "serviceClient": {
