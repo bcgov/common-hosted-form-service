@@ -78,7 +78,7 @@ The user information initially comes from the user's token, as such the values f
 
 ## Configuring Form Component
 
-For this example, we assume populating a drop down/select component...
+For this example, we assume populating a drop-down/select component...
 
 **Data Source Type** = URL
 
@@ -92,7 +92,7 @@ For this example, we assume populating a drop down/select component...
 | X-CHEFS-EXTERNAL-API-NAME | example-api - External API.name                       |
 | X-CHEFS-EXTERNAL-API-PATH | optional - add this value to External API.endpointUrl |
 
-**Value Property**, **Item Template** and all other configuration is up to the Form Designer.
+**Value Property**, **Item Template** and all other configurations are up to the Form Designer.
 
 `sessionStorage.getItem('X-CHEFS-PROXY-DATA')` is the User Info object in encrypted form that only CHEFS can decrypt. This is generated and stored on the form load. A call is made to the CHEFS backend using the current user's token (similar to fetching the form schema for rendering the form) and CHEFS encrypts the information. This prevents malicious form designers from having access to the user token but allows the form designer to provide context for their External API.
 
@@ -101,3 +101,18 @@ The `sessionStorage` is cleared when the user navigates away from the form.
 The component will call the CHEFS proxy `{chefs host}/app/api/v1/proxy/external` with the headers, the proxy can decrypt the `X-CHEFS-PROXY-DATA` and formulate the call according to the External API configuration.
 
 It is expected that the External API endpoint is a `GET`.
+
+## HTTP Responses and errors
+
+Since formio components will make calls during the form design and configuration of the formio components (ie when the Datasource is URL and the URL has been populated), there will be many failed attempts calling the proxy. The most common failures will happen when the headers have not been added to the component configuration, or the `X-CHEFS-EXTERNAL-API-NAME` header has been set but the External API has not been configured.
+
+The following table will help you understand the HTTP statuses returned when calling `/api/v1/proxy/external`.
+
+| Http Status | Meaning                                                                                                                                                                    |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 400         | Generally, the formio component has not been completely configured (missing headers) or the External API has not been configured.                                          |
+| 407         | The External API is configured and exists but has not been approved.                                                                                                       |
+| 502         | Call has gone through the CHEFS proxy but failed on the external server (ie 404 not found on your server). Check the message for information on the underlying HTTP Error. |
+| 500         | Unexpected CHEFS server error.                                                                                                                                             |
+
+A successful call through the CHEFS proxy to your External API will return the status code from your External API.
