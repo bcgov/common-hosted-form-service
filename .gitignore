@@ -69,3 +69,5 @@ build
 !app/frontend/.env
 !local-infrastructure/.env
 .history
+realm-export.json
+chefs_build

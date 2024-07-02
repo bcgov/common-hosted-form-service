@@ -188,6 +188,7 @@ export default {
               simplefile: this.form.userType !== this.ID_MODE.PUBLIC,
               bcaddress: true,
               simplebcaddress: true,
+              map: true,
             },
           },
         },
