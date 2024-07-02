@@ -62,7 +62,7 @@
     "@types/sinon": "^10.0.12",
     "chai": "^4.3.6",
     "glob-parent": "^6.0.2",
-    "gulp": "^4.0.2",
+    "gulp": "^5.0.0",
     "gulp-insert": "^0.5.0",
     "gulp-rename": "^2.0.0",
     "gulp-template": "^5.0.0",
