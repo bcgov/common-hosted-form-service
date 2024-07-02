@@ -108,8 +108,13 @@ describe('Form Designer', () => {
     cy.get('.mdi-minus-circle').click();
     cy.get('input[type=file]').should('not.to.be.null');
     fileUploadInputField.attachFile('test.docx');
+    cy.contains('div','test.docx (11.9 kB)').should('be.visible');
     cy.get('button[title="Upload"]').click();
+    cy.contains('span','test.docx').should('be.visible');
+    cy.contains('div','test.docx (11.9 kB)').should('not.exist');
 
+    // Verify cdogs template uplaod success message
+    cy.get('.v-alert__content').contains('div','Template uploaded successfully.').should('be.visible');
     //Delete form after test run
     
     cy.get('[data-test="canRemoveForm"]').click();
