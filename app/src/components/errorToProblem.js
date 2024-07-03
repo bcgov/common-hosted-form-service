@@ -25,7 +25,7 @@ module.exports = function (service, error) {
   if (error.response) {
     const data = _parseResponseData(error.response.data);
 
-    log.error(`Error from ${service}: status = ${error.response.status}, data : ${JSON.stringify(data)}`, error);
+    log.error(`Error from ${service}: status = ${error.response.status}, data: ${JSON.stringify(data)}`, error);
 
     // Validation Error
     if (error.response.status === 422) {
