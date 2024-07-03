@@ -16,7 +16,7 @@ export default
                         value: "circle",
                     }
                 ],
-                defaultValue:"marker",
+                defaultValue: "marker",
                 key: "markerType",
                 type: "simpleradios",
                 input: true,
@@ -43,6 +43,14 @@ export default
                 key: "defaultZoom",
                 type: "simplenumber",
                 input: true,
+            },
+            {
+                label: "Read Only Map",
+                description: "This allows for the user to view and scroll the map, but not add any input",
+                key: "readOnlyMap",
+                type: "simplecheckbox",
+                input: true,
+
             }
         ]
     }

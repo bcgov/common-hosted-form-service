@@ -20,6 +20,7 @@ interface MapServiceOptions {
   form: HTMLCollectionOf<Element>;
   numPoints: number;
   defaultZoom?: number;
+  readOnlyMap?: boolean
   onDrawnItemsChange: (items: any) => void; // Support both single and multiple items
 }
 
@@ -54,7 +55,7 @@ class MapService {
   }
 
   initializeMap(options: MapServiceOptions) {
-    let { mapContainer, center, drawOptions, form, defaultZoom } = options;
+    let { mapContainer, center, drawOptions, form, defaultZoom, readOnlyMap } = options;
     if (drawOptions.rectangle) {
       drawOptions.rectangle.showArea = false;
     }
@@ -71,12 +72,16 @@ class MapService {
     map.addLayer(drawnItems);
 
     // Add Drawing Controllers
-    let drawControl = new L.Control.Draw({
-      draw: drawOptions,
-      edit: {
-        featureGroup: drawnItems,
-      },
-    });
+    if(!readOnlyMap){
+      let drawControl = new L.Control.Draw({
+        draw: drawOptions,
+        edit: {
+          featureGroup: drawnItems,
+        },
+      });
+      map.addControl(drawControl);
+    }
+
     //Checking to see if the map should be interactable
     const componentEditNode = document.getElementsByClassName(COMPONENT_EDIT_CLASS)
     if (form) {
@@ -91,7 +96,6 @@ class MapService {
   }
 
     // Attach Controls to map
-    map.addControl(drawControl);
     return { map, drawnItems };
   }
 
@@ -166,7 +170,7 @@ class MapService {
     if (parent === targetNode) {
       return true;
     }
-    for (let i = 0; i < parent.childNodes?.length; i++) {
+    for (let i = 0; i < parent?.childNodes?.length; i++) {
       if (this.hasChildNode(parent.childNodes[i], targetNode)) {
         return true
       }
