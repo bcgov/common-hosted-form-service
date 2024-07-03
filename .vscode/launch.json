@@ -21,7 +21,7 @@
     {
       "cwd": "${workspaceFolder}/app/frontend",
       "env": {
-        "VITE_CHEFS_GEO_ADDRESS_APIURL": "http://localhost:8080/app/api/v1/bcgeoaddress/address",
+        "VITE_CHEFS_GEO_ADDRESS_APIURL": "http://localhost:8080/app/api/v1/bcgeoaddress/advance/address",
         "VITE_CHEFSTOURURL": "https://www.youtube.com/embed/obOhyYusMjM",
         "VITE_CONTACT": "submit.digital@gov.bc.ca",
         "VITE_FRONTEND_BASEPATH": "/app",
