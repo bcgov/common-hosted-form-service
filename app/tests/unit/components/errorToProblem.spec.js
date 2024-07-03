@@ -6,6 +6,7 @@ describe('errorToProblem', () => {
   it('should throw a 404', () => {
     const error = {
       response: {
+        data: { detail: 'detail' },
         status: 404,
       },
     };
