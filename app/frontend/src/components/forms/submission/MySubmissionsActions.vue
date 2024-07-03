@@ -1,52 +1,57 @@
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
 
 import DeleteSubmission from '~/components/forms/submission/DeleteSubmission.vue';
 import { useFormStore } from '~/store/form';
 import { FormPermissions } from '~/utils/constants';
 
-export default {
-  components: {
-    DeleteSubmission,
+const properties = defineProps({
+  submission: {
+    type: Object,
+    required: true,
   },
-  props: {
-    submission: {
-      type: Object,
-      required: true,
-    },
-    formId: {
-      type: String,
-      required: true,
-    },
+  formId: {
+    type: String,
+    required: true,
   },
-  emits: ['draft-deleted'],
-  computed: {
-    ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
-    isCopyFromExistingSubmissionEnabled() {
-      return this.form && this.form.enableCopyExistingSubmission;
-    },
-    hasDeletePermission() {
-      return this.submission?.permissions?.includes(
-        FormPermissions.SUBMISSION_CREATE
-      );
-    },
-    hasEditPermission() {
-      return this.submission?.permissions?.includes(
-        FormPermissions.SUBMISSION_UPDATE
-      );
-    },
-    hasViewPermission() {
-      return this.submission?.permissions?.includes(
-        FormPermissions.SUBMISSION_READ
-      );
-    },
-  },
-  methods: {
-    draftDeleted() {
-      this.$emit('draft-deleted');
-    },
-  },
-};
+});
+
+const emit = defineEmits(['draft-deleted']);
+
+const { form, isRTL, lang } = storeToRefs(useFormStore());
+
+const hasDeletePermission = computed(() =>
+  properties.submission?.permissions?.includes(
+    FormPermissions.SUBMISSION_CREATE
+  )
+);
+
+const hasEditPermission = computed(() =>
+  properties.submission?.permissions?.includes(
+    FormPermissions.SUBMISSION_UPDATE
+  )
+);
+
+const hasViewPermission = computed(() =>
+  properties.submission?.permissions?.includes(FormPermissions.SUBMISSION_READ)
+);
+
+const isCopyFromExistingSubmissionEnabled = computed(
+  () => form.value && form.value.enableCopyExistingSubmission
+);
+
+function draftDeleted() {
+  emit('draft-deleted');
+}
+
+defineExpose({
+  draftDeleted,
+  hasDeletePermission,
+  hasEditPermission,
+  hasViewPermission,
+  isCopyFromExistingSubmissionEnabled,
+});
 </script>
 
 <template>
