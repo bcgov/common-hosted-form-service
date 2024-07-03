@@ -9,6 +9,9 @@ const DEFAULT_LAYER_ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 const DEFAULT_MAP_ZOOM = 13;
 const DECIMALS_LATLNG = 5; // the number of decimals of latitude and longitude to be displayed in the marker popup
+const COMPONENT_EDIT_CLASS = "component-edit-tabs";
+
+
 
 interface MapServiceOptions {
   mapContainer: HTMLElement;
@@ -74,11 +77,18 @@ class MapService {
         featureGroup: drawnItems,
       },
     });
-
-    if (form && form[0]?.classList.contains('formbuilder')) {
-      map.dragging.disable();
-      map.scrollWheelZoom.disable();
-    }
+    //Checking to see if the map should be interactable
+    const componentEditNode = document.getElementsByClassName(COMPONENT_EDIT_CLASS)
+    if (form) {
+      if (form[0]?.classList.contains('formbuilder')) {
+          map.dragging.disable();
+          map.scrollWheelZoom.disable();
+          if (this.hasChildNode(componentEditNode[0], mapContainer)) {
+              map.dragging.enable();
+              map.scrollWheelZoom.enable();
+          }
+      }
+  }
 
     // Attach Controls to map
     map.addControl(drawControl);
@@ -151,6 +161,19 @@ class MapService {
       }
     });
   }
+
+  hasChildNode(parent: any, targetNode: any) {
+    if (parent === targetNode) {
+      return true;
+    }
+    for (let i = 0; i < parent.childNodes?.length; i++) {
+      if (this.hasChildNode(parent.childNodes[i], targetNode)) {
+        return true
+      }
+    }
+    return false;
+  }
+
 }
 
 export default MapService;
