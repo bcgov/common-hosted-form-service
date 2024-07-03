@@ -1,8 +1,7 @@
 <script setup>
-import { storeToRefs } from 'pinia';
-import { useFormStore } from '~/store/form';
+import { useI18n } from 'vue-i18n';
 
-const { lang } = storeToRefs(useFormStore());
+const { locale } = useI18n({ useScope: 'global' });
 </script>
 
 <template>
@@ -14,7 +13,8 @@ const { lang } = storeToRefs(useFormStore());
         data-test="my-forms-btn"
         :title="$t('trans.user.root.myForms')"
       >
-        <span :lang="lang">{{ $t('trans.user.root.myForms') }}</span>
+        <span :lang="locale">{{ $t('trans.user.root.myForms') }}</span>
+        <span :lang="locale">{{ $t('trans.user.root.myForms') }}</span>
       </v-btn>
     </router-link>
     <router-link :to="{ name: 'UserHistory' }">
@@ -24,10 +24,10 @@ const { lang } = storeToRefs(useFormStore());
         data-test="history-btn"
         :title="$t('trans.user.root.history')"
       >
-        <span :lang="lang">{{ $t('trans.user.root.history') }}</span>
+        <span :lang="locale">{{ $t('trans.user.root.history') }}</span>
       </v-btn>
     </router-link>
-    <h1 class="text-center" :lang="lang">
+    <h1 class="text-center" :lang="locale">
       {{ $t('trans.user.root.user') }}
     </h1>
   </BaseSecure>

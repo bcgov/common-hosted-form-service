@@ -637,4 +637,90 @@ export default {
   documentTemplateList(formId) {
     return appAxios().get(`${ApiRoutes.FORMS}/${formId}/documentTemplates`);
   },
+
+  /**
+   * @function getProxyHeaders
+   * Get encrypted header for calling CHEFS proxy.
+   * @param {Object} data An object containing formId, versionId, submissionId
+   * @returns {Promise} An axios response
+   */
+  getProxyHeaders(data) {
+    return appAxios().post(`${ApiRoutes.PROXY}/headers`, data);
+  },
+
+  /**
+   * @function externalAPIList
+   * List all external API configurations for a form
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  externalAPIList(formId) {
+    return appAxios().get(
+      `${ApiRoutes.FORMS}/${formId}${ApiRoutes.EXTERNAL_APIS}`
+    );
+  },
+
+  /**
+   * @function externalAPICreate
+   * Create a new External API record
+   * @param {string} formId The form uuid
+   * @param {Object} data An object containing an External API record
+   * @returns {Promise} An axios response
+   */
+  externalAPICreate(formId, data) {
+    return appAxios().post(
+      `${ApiRoutes.FORMS}/${formId}${ApiRoutes.EXTERNAL_APIS}`,
+      data
+    );
+  },
+
+  /**
+   * @function externalAPIUpdate
+   * Update an External API record
+   * @param {string} formId The form uuid
+   * @param {string} id The external API uuid
+   * @param {Object} data An object containing an External API record
+   * @returns {Promise} An axios response
+   */
+  externalAPIUpdate(formId, id, data) {
+    return appAxios().put(
+      `${ApiRoutes.FORMS}/${formId}${ApiRoutes.EXTERNAL_APIS}/${id}`,
+      data
+    );
+  },
+
+  /**
+   * @function externalAPIDelete
+   * Delete a document template for a form
+   * @param {string} formId The form uuid
+   * @param {string} id The external API uuid
+   * @returns {Promise} An axios response
+   */
+  externalAPIDelete(formId, id) {
+    return appAxios().delete(
+      `${ApiRoutes.FORMS}/${formId}${ApiRoutes.EXTERNAL_APIS}/${id}`
+    );
+  },
+  /**
+   * @function externalAPIAlgorithmList
+   * List all external API configurations
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  externalAPIAlgorithmList(formId) {
+    return appAxios().get(
+      `${ApiRoutes.FORMS}/${formId}${ApiRoutes.EXTERNAL_APIS}/algorithms`
+    );
+  },
+  /**
+   * @function externalAPIStatusCodes
+   * List all external API status codes
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  externalAPIStatusCodes(formId) {
+    return appAxios().get(
+      `${ApiRoutes.FORMS}/${formId}${ApiRoutes.EXTERNAL_APIS}/statusCodes`
+    );
+  },
 };

@@ -3,6 +3,7 @@ import { resolve } from 'path';
 import { defineConfig, loadEnv } from 'vite';
 import eslint from 'vite-plugin-eslint';
 import vuetify from 'vite-plugin-vuetify';
+import { defineConfig as vitestDefineConfig } from 'vitest/config';
 
 const proxyObject = {
   target: 'http://localhost:8080',
@@ -59,11 +60,14 @@ export default defineConfig(({ command, mode }) => {
       ],
       environmentOptions: {
         url: 'http://localhost/',
+        jsdom: {
+          resources: 'usable',
+        },
       },
       globals: true,
       environment: 'jsdom',
       deps: {
-        inline: ['vuetify', 'i18n'],
+        inline: ['vuetify', 'i18n', 'vitest-canvas-mock'],
       },
     },
   };

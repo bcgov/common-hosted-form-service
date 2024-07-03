@@ -1,38 +1,26 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
 
 import EmailTemplate from '~/components/forms/manage/EmailTemplate.vue';
 import { useFormStore } from '~/store/form';
 
-export default {
-  name: 'EmailManagement',
+const { locale } = useI18n({ useScope: 'global' });
 
-  components: {
-    EmailTemplate,
+const properties = defineProps({
+  formId: {
+    required: true,
+    type: String,
   },
+});
 
-  props: {
-    formId: {
-      required: true,
-      type: String,
-    },
-  },
+const formStore = useFormStore();
+const { form, isRTL } = storeToRefs(formStore);
 
-  computed: {
-    ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
-  },
-
-  async created() {
-    await Promise.all([
-      this.fetchEmailTemplates(this.formId),
-      this.fetchForm(this.formId),
-    ]);
-  },
-
-  methods: {
-    ...mapActions(useFormStore, ['fetchEmailTemplates', 'fetchForm']),
-  },
-};
+Promise.all([
+  formStore.fetchEmailTemplates(properties.formId),
+  formStore.fetchForm(properties.formId),
+]);
 </script>
 
 <template>
@@ -41,7 +29,7 @@ export default {
       class="d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse"
     >
       <div>
-        <h1 class="mr-auto" :lang="lang">
+        <h1 class="mr-auto" :lang="locale">
           {{ $t('trans.emailManagement.emailManagement')
           }}<v-icon
             color="primary"
@@ -72,7 +60,9 @@ export default {
               </v-btn>
             </router-link>
           </template>
-          <span :lang="lang">{{ $t('trans.emailManagement.manageForm') }}</span>
+          <span :lang="locale">{{
+            $t('trans.emailManagement.manageForm')
+          }}</span>
         </v-tooltip>
       </div>
     </div>

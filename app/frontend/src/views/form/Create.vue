@@ -2,14 +2,16 @@
 import { storeToRefs } from 'pinia';
 import { onBeforeRouteLeave } from 'vue-router';
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import FormDesigner from '~/components/designer/FormDesigner.vue';
 import FormDisclaimer from '~/components/designer/FormDisclaimer.vue';
 import FormSettings from '~/components/designer/FormSettings.vue';
 import FormProfile from '~/components/designer/FormProfile.vue';
-import { i18n } from '~/internationalization';
 import { useFormStore } from '~/store/form';
 import { AppPermissions, IdentityMode } from '~/utils/constants';
+
+const { t, locale } = useI18n({ useScope: 'global' });
 
 const formDesigner = ref(null);
 const settingsForm = ref(null);
@@ -17,11 +19,11 @@ const settingsFormValid = ref(false);
 const step = ref(0);
 const stepper = ref(null);
 const disclaimerCheckbox = ref(false);
-const disclaimerRules = [(v) => !!v || i18n.t('trans.create.agreementErrMsg')];
+const disclaimerRules = [(v) => !!v || t('trans.create.agreementErrMsg')];
 
 const formStore = useFormStore();
 
-const { form, isRTL, lang } = storeToRefs(formStore);
+const { form, isRTL } = storeToRefs(formStore);
 const APP_PERMS = computed(() => AppPermissions);
 
 watch(form, () => {
@@ -31,7 +33,7 @@ watch(form, () => {
 
 onBeforeRouteLeave((_to, _from, next) => {
   form.value.isDirty
-    ? next(window.confirm(i18n.t('trans.create.confirmPageNav')))
+    ? next(window.confirm(t('trans.create.confirmPageNav')))
     : next();
 });
 
@@ -71,7 +73,7 @@ formStore.resetForm();
       <v-stepper-window>
         <v-stepper-window-item value="1">
           <v-form ref="settingsForm" v-model="settingsFormValid">
-            <h1 :lang="lang">
+            <h1 :lang="locale">
               {{ $t('trans.create.formSettings') }}
             </h1>
             <FormSettings />
@@ -80,7 +82,7 @@ formStore.resetForm();
 
             <BasePanel class="my-6">
               <template #title
-                ><span :lang="lang">{{
+                ><span :lang="locale">{{
                   $t('trans.create.disclaimer')
                 }}</span></template
               >
@@ -92,7 +94,7 @@ formStore.resetForm();
                 required="true"
               >
                 <template #label>
-                  <span :class="{ 'mr-2': isRTL }" :lang="lang">{{
+                  <span :class="{ 'mr-2': isRTL }" :lang="locale">{{
                     $t('trans.create.disclaimerStmt')
                   }}</span>
                 </template>
@@ -117,7 +119,7 @@ formStore.resetForm();
             :title="$t('trans.create.back')"
             @click="stepper.prev()"
           >
-            <span :lang="lang">{{ $t('trans.create.back') }}</span>
+            <span :lang="locale">{{ $t('trans.create.back') }}</span>
           </v-btn>
         </v-stepper-window-item>
       </v-stepper-window>

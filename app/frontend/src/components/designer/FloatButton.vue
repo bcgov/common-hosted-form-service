@@ -1,6 +1,6 @@
 <script>
 import { mapState } from 'pinia';
-import { i18n } from '~/internationalization';
+import { useI18n } from 'vue-i18n';
 
 import { useFormStore } from '~/store/form';
 
@@ -70,6 +70,11 @@ export default {
     },
   },
   emits: ['undo', 'redo', 'save'],
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
+
+    return { t, locale };
+  },
   data() {
     return {
       fabItemsDirection: 'column-reverse',
@@ -79,7 +84,7 @@ export default {
       fabItemsIconsSize: 31,
 
       //base fab item variable start
-      baseFABItemName: i18n.t('trans.floatButton.collapse'),
+      baseFABItemName: this.$t('trans.floatButton.collapse'),
       baseIconName: 'mdi:mdi-close',
       baseIconColor: '#ffffff', //end
 
@@ -89,13 +94,13 @@ export default {
       disabledInvertedFabItemsColor: '#707070C1',
       disabledFabItemsColor: '#707070C1', // end
 
-      savedMsg: i18n.t('trans.floatButton.save'),
+      savedMsg: this.$t('trans.floatButton.save'),
       scrollIconName: 'mdi:mdi-arrow-down',
-      scrollName: i18n.t('trans.floatButton.bottom'),
+      scrollName: this.$t('trans.floatButton.bottom'),
     };
   },
   computed: {
-    ...mapState(useFormStore, ['lang', 'isRTL']),
+    ...mapState(useFormStore, ['isRTL']),
     computedStyles() {
       let baseStyles = {
         display: 'flex',
@@ -134,36 +139,17 @@ export default {
     savedStatus(value) {
       switch (value) {
         case 'Saved':
-          this.savedMsg = i18n.t('trans.floatButton.saved');
+          this.savedMsg = this.$t('trans.floatButton.saved');
           break;
         case 'Save':
-          this.savedMsg = i18n.t('trans.floatButton.save');
+          this.savedMsg = this.$t('trans.floatButton.save');
           break;
         case 'Saving':
-          this.savedMsg = i18n.t('trans.floatButton.saving');
+          this.savedMsg = this.$t('trans.floatButton.saving');
           break;
         case 'Not Saved':
-          this.savedMsg = i18n.t('trans.floatButton.notSaved');
+          this.savedMsg = this.$t('trans.floatButton.notSaved');
           break;
-      }
-    },
-    lang() {
-      this.scrollName = i18n.t('trans.floatButton.bottom');
-
-      if (this.isFABActionsOpen) {
-        this.baseFABItemName = i18n.t('trans.floatButton.actions');
-      } else {
-        this.baseFABItemName = i18n.t('trans.floatButton.collapse');
-      }
-
-      if (this.savedStatus === 'Saved') {
-        this.savedMsg = i18n.t('trans.floatButton.saved');
-      } else if (this.savedStatus === 'Save') {
-        this.savedMsg = i18n.t('trans.floatButton.save');
-      } else if (this.savedStatus === 'Saving') {
-        this.savedMsg = i18n.t('trans.floatButton.saving');
-      } else if (this.savedStatus === 'Not Saved') {
-        this.savedMsg = i18n.t('trans.floatButton.notSaved');
       }
     },
   },
@@ -186,11 +172,11 @@ export default {
       if (this.isFABActionsOpen) {
         this.baseIconName = 'mdi:mdi-menu';
         this.isFABActionsOpen = false;
-        this.baseFABItemName = i18n.t('trans.floatButton.actions');
+        this.baseFABItemName = this.$t('trans.floatButton.actions');
       } else {
         this.baseIconName = 'mdi:mdi-close';
         this.isFABActionsOpen = true;
-        this.baseFABItemName = i18n.t('trans.floatButton.collapse');
+        this.baseFABItemName = this.$t('trans.floatButton.collapse');
       }
     },
 
@@ -280,13 +266,13 @@ export default {
     handleScroll() {
       if (window.scrollY === 0) {
         this.scrollIconName = 'mdi:mdi-arrow-down';
-        this.scrollName = i18n.t('trans.floatButton.bottom');
+        this.scrollName = this.$t('trans.floatButton.bottom');
       } else if (
         window.pageYOffset + window.innerHeight >=
         document.documentElement.scrollHeight - 50
       ) {
         this.scrollIconName = 'mdi:mdi-arrow-up';
-        this.scrollName = i18n.t('trans.floatButton.top');
+        this.scrollName = this.$t('trans.floatButton.top');
       }
     },
 
@@ -295,12 +281,12 @@ export default {
       if (window.scrollY === 0) {
         this.bottomScroll();
       } else if (
-        this.scrollName === i18n.t('trans.floatButton.bottom') &&
+        this.scrollName === this.$t('trans.floatButton.bottom') &&
         window.scrollY > 0
       ) {
         this.bottomScroll();
       } else if (
-        this.scrollName === i18n.t('trans.floatButton.top') &&
+        this.scrollName === this.$t('trans.floatButton.top') &&
         window.scrollY > 0
       ) {
         this.topScroll();
@@ -311,7 +297,7 @@ export default {
     topScroll() {
       window.scrollTo(0, 0);
       this.scrollIconName = 'mdi:mdi-arrow-down';
-      this.scrollName = i18n.t('trans.floatButton.bottom');
+      this.scrollName = this.$t('trans.floatButton.bottom');
     },
     bottomScroll() {
       window.scrollTo({
@@ -320,7 +306,7 @@ export default {
         behavior: 'smooth',
       });
       this.scrollIconName = 'mdi:mdi-arrow-up';
-      this.scrollName = i18n.t('trans.floatButton.top');
+      this.scrollName = this.$t('trans.floatButton.top');
     },
   },
 };
@@ -328,8 +314,8 @@ export default {
 
 <template>
   <div :class="{ 'dir-rtl': isRTL }" :style="computedStyles">
-    <div class="fabAction" :lang="lang" @click="onOpenFABActionItems">
-      <div class="text" :lang="lang" v-text="baseFABItemName" />
+    <div class="fabAction" :lang="locale" @click="onOpenFABActionItems">
+      <div class="text" :lang="locale" v-text="baseFABItemName" />
       <v-btn
         class="fabItemsInverColor"
         :size="fabItemsSize"
@@ -365,7 +351,7 @@ export default {
         >
           <div
             class="text"
-            :lang="lang"
+            :lang="locale"
             v-text="$t('trans.floatButton.publish')"
           />
           <v-btn
@@ -393,7 +379,7 @@ export default {
       <router-link
         v-slot="{ navigate }"
         :to="{
-          name: 'PublishForm',
+          name: 'FormManage',
           query: { f: formId, fd: false, d: draftId },
         }"
         custom
@@ -406,7 +392,7 @@ export default {
         >
           <div
             class="text"
-            :lang="lang"
+            :lang="locale"
             v-text="$t('trans.floatButton.manage')"
           />
           <v-btn
@@ -438,7 +424,11 @@ export default {
         data-cy="redoButton"
         :class="{ 'disabled-router': !redoEnabled }"
       >
-        <div class="text" :lang="lang" v-text="$t('trans.floatButton.redo')" />
+        <div
+          class="text"
+          :lang="locale"
+          v-text="$t('trans.floatButton.redo')"
+        />
         <v-btn
           class="fabItems"
           :size="fabItemsSize"
@@ -459,7 +449,11 @@ export default {
         data-cy="undoButton"
         :class="{ 'disabled-router': !undoEnabled }"
       >
-        <div class="text" :lang="lang" v-text="$t('trans.floatButton.undo')" />
+        <div
+          class="text"
+          :lang="locale"
+          v-text="$t('trans.floatButton.undo')"
+        />
         <v-btn
           class="fabItems"
           :size="fabItemsSize"
@@ -482,7 +476,7 @@ export default {
       >
         <div
           class="text"
-          :lang="lang"
+          :lang="locale"
           v-text="$t('trans.floatButton.preview')"
         />
         <v-btn
@@ -504,7 +498,7 @@ export default {
         data-cy="saveButton"
         :class="{ 'disabled-router': isFormSaved && !canSave }"
       >
-        <div class="text" :lang="lang">{{ savedMsg }}</div>
+        <div class="text" :lang="locale">{{ savedMsg }}</div>
         <v-btn
           class="fabItems"
           :size="fabItemsSize"
@@ -531,7 +525,7 @@ export default {
         </v-btn>
       </div>
       <div class="fabAction">
-        <div :lang="lang">{{ scrollName }}</div>
+        <div :lang="locale">{{ scrollName }}</div>
 
         <v-btn
           class="fabItems"
@@ -549,7 +543,7 @@ export default {
       </div>
     </div>
     <div v-if="!isFABActionsOpen" class="fabAction">
-      <div :lang="lang">{{ scrollName }}</div>
+      <div :lang="locale">{{ scrollName }}</div>
       <v-btn
         class="fabItems"
         :size="fabItemsSize"

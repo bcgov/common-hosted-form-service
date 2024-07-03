@@ -1,81 +1,71 @@
-<script>
-import { mapActions, mapState } from 'pinia';
-import { i18n } from '~/internationalization';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
-export default {
-  name: 'EmailTemplate',
+const { t, locale } = useI18n({ useScope: 'global' });
 
-  props: {
-    title: {
-      required: true,
-      type: String,
-    },
-    type: {
-      required: true,
-      type: String,
-    },
+const properties = defineProps({
+  title: {
+    required: true,
+    type: String,
   },
-
-  data() {
-    return {
-      // If any field on the form changes, then enable the Save button. Note:
-      // Will stay enabled if the field is changed back to its original value.
-      formChanged: false,
-
-      // Validation rules.
-      bodyRules: [
-        (v) => !!v || i18n.t('trans.emailTemplate.validBodyRequired'),
-      ],
-      subjectRules: [
-        (v) => !!v || i18n.t('trans.emailTemplate.validSubjectRequired'),
-      ],
-      titleRules: [
-        (v) => !!v || i18n.t('trans.emailTemplate.validTitleRequired'),
-      ],
-    };
+  type: {
+    required: true,
+    type: String,
   },
+});
 
-  computed: {
-    ...mapState(useFormStore, ['emailTemplates', 'lang']),
+const emailTemplateForm = ref(null);
+const formChanged = ref(false);
+/* c8 ignore start */
+const bodyRules = ref([
+  (v) => !!v || t('trans.emailTemplate.validBodyRequired'),
+]);
+const subjectRules = ref([
+  (v) => !!v || t('trans.emailTemplate.validSubjectRequired'),
+]);
+const titleRules = ref([
+  (v) => !!v || t('trans.emailTemplate.validTitleRequired'),
+]);
+/* c8 ignore end */
 
-    emailTemplate() {
-      return this.emailTemplates.find((t) => t.type === this.type);
-    },
-  },
+const formStore = useFormStore();
 
-  methods: {
-    ...mapActions(useFormStore, ['updateEmailTemplate']),
-    ...mapActions(useNotificationStore, ['addNotification']),
+const { emailTemplates } = storeToRefs(formStore);
 
-    async saveEmailTemplate() {
-      try {
-        if (this.$refs.emailTemplateForm.validate()) {
-          await this.updateEmailTemplate(this.emailTemplate);
-        }
+const emailTemplate = computed(() =>
+  emailTemplates.value.find((t) => t.type === properties.type)
+);
 
-        this.formChanged = false;
-      } catch (error) {
-        this.addNotification({
-          text: i18n.t('trans.emailTemplate.saveEmailTemplateErrMsg'),
-          consoleError: i18n.t(
-            'trans.emailTemplate.saveEmailTemplateConsoleErrMsg',
-            {
-              formId: this.emailTemplate.formId,
-              error: error,
-            }
-          ),
-        });
-      }
-    },
-  },
-};
+async function saveEmailTemplate() {
+  try {
+    if (emailTemplateForm.value.validate()) {
+      await formStore.updateEmailTemplate(emailTemplate.value);
+    }
+
+    formChanged.value = false;
+  } catch (error) {
+    const notificationStore = useNotificationStore();
+    notificationStore.addNotification({
+      text: t('trans.emailTemplate.saveEmailTemplateErrMsg'),
+      consoleError: t('trans.emailTemplate.saveEmailTemplateConsoleErrMsg', {
+        formId: emailTemplate.value.formId,
+        error: error,
+      }),
+    });
+  }
+}
+
+defineExpose({ saveEmailTemplate });
 </script>
 
 <template>
   <v-container>
-    <h1 :lang="lang">{{ title }}</h1>
+    <h1 :lang="locale">{{ title }}</h1>
     <v-form ref="emailTemplateForm" lazy-validation>
       <v-text-field
         v-if="emailTemplates.length > 0"
@@ -85,7 +75,7 @@ export default {
         variant="outlined"
         solid
         :label="$t('trans.emailTemplate.subject')"
-        :lang="lang"
+        :lang="locale"
         :rules="subjectRules"
         @update:model-value="formChanged = true"
       />
@@ -97,7 +87,7 @@ export default {
         variant="outlined"
         solid
         :label="$t('trans.emailTemplate.title')"
-        :lang="lang"
+        :lang="locale"
         :rules="titleRules"
         @update:model-value="formChanged = true"
       />
@@ -109,7 +99,7 @@ export default {
         variant="outlined"
         solid
         :label="$t('trans.emailTemplate.body')"
-        :lang="lang"
+        :lang="locale"
         :rules="bodyRules"
         @update:model-value="formChanged = true"
       />
@@ -120,7 +110,7 @@ export default {
         :title="$t('trans.emailTemplate.save')"
         @click="saveEmailTemplate"
       >
-        <span :lang="lang">{{ $t('trans.emailTemplate.save') }}</span>
+        <span :lang="locale">{{ $t('trans.emailTemplate.save') }}</span>
       </v-btn>
     </v-form>
   </v-container>
