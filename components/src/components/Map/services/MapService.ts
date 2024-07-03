@@ -9,6 +9,9 @@ const DEFAULT_LAYER_ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 const DEFAULT_MAP_ZOOM = 13;
 const DECIMALS_LATLNG = 5; // the number of decimals of latitude and longitude to be displayed in the marker popup
+const COMPONENT_EDIT_CLASS = "component-edit-tabs";
+
+
 
 interface MapServiceOptions {
   mapContainer: HTMLElement;
@@ -17,6 +20,7 @@ interface MapServiceOptions {
   form: HTMLCollectionOf<Element>;
   numPoints: number;
   defaultZoom?: number;
+  readOnlyMap?: boolean
   onDrawnItemsChange: (items: any) => void; // Support both single and multiple items
 }
 
@@ -51,7 +55,7 @@ class MapService {
   }
 
   initializeMap(options: MapServiceOptions) {
-    let { mapContainer, center, drawOptions, form, defaultZoom } = options;
+    let { mapContainer, center, drawOptions, form, defaultZoom, readOnlyMap } = options;
     if (drawOptions.rectangle) {
       drawOptions.rectangle.showArea = false;
     }
@@ -68,20 +72,30 @@ class MapService {
     map.addLayer(drawnItems);
 
     // Add Drawing Controllers
-    let drawControl = new L.Control.Draw({
-      draw: drawOptions,
-      edit: {
-        featureGroup: drawnItems,
-      },
-    });
-
-    if (form && form[0]?.classList.contains('formbuilder')) {
-      map.dragging.disable();
-      map.scrollWheelZoom.disable();
+    if(!readOnlyMap){
+      let drawControl = new L.Control.Draw({
+        draw: drawOptions,
+        edit: {
+          featureGroup: drawnItems,
+        },
+      });
+      map.addControl(drawControl);
     }
 
+    //Checking to see if the map should be interactable
+    const componentEditNode = document.getElementsByClassName(COMPONENT_EDIT_CLASS)
+    if (form) {
+      if (form[0]?.classList.contains('formbuilder')) {
+          map.dragging.disable();
+          map.scrollWheelZoom.disable();
+          if (this.hasChildNode(componentEditNode[0], mapContainer)) {
+              map.dragging.enable();
+              map.scrollWheelZoom.enable();
+          }
+      }
+  }
+
     // Attach Controls to map
-    map.addControl(drawControl);
     return { map, drawnItems };
   }
 
@@ -151,6 +165,19 @@ class MapService {
       }
     });
   }
+
+  hasChildNode(parent: any, targetNode: any) {
+    if (parent === targetNode) {
+      return true;
+    }
+    for (let i = 0; i < parent?.childNodes?.length; i++) {
+      if (this.hasChildNode(parent.childNodes[i], targetNode)) {
+        return true
+      }
+    }
+    return false;
+  }
+
 }
 
 export default MapService;

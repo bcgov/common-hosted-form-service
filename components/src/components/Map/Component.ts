@@ -69,7 +69,7 @@ export default class Component extends (FieldComponent as any) {
       drawOptions[this.component.markerType] = true; // set marker type from user choice
     }
 
-    const { numPoints, defaultZoom } = this.component;
+    const { numPoints, defaultZoom, readOnlyMap } = this.component;
     this.mapService = new MapService({
       mapContainer,
       drawOptions,
@@ -77,6 +77,7 @@ export default class Component extends (FieldComponent as any) {
       form,
       numPoints,
       defaultZoom,
+      readOnlyMap,
       onDrawnItemsChange: this.saveDrawnItems.bind(this),
     });
 
