@@ -2,28 +2,46 @@ const Problem = require('api-problem');
 
 const log = require('./log')(module.filename);
 
-module.exports = function (service, e) {
-  if (e.response) {
-    // Handle raw data
-    let data;
-    if (typeof e.response.data === 'string' || e.response.data instanceof String) {
-      data = JSON.parse(e.response.data);
-    } else {
-      data = e.response.data;
-    }
+/**
+ * Try to convert response data to JSON, but failing that just return it as-is.
+ *
+ * @param {*} data the data to attempt to parse into JSON.
+ * @returns an object if data is JSON, otherwise data itself
+ */
+const _parseResponseData = (data) => {
+  let parsedData;
 
-    log.error(`Error from ${service}: status = ${e.response.status}, data : ${JSON.stringify(data)}`, e);
+  try {
+    parsedData = JSON.parse(data);
+  } catch (error) {
+    // Syntax Error: It's not valid JSON.
+    parsedData = data;
+  }
+
+  return parsedData;
+};
+
+module.exports = function (service, error) {
+  if (error.response) {
+    const data = _parseResponseData(error.response.data);
+
+    log.error(`Error from ${service}: status = ${error.response.status}, data: ${JSON.stringify(data)}`, error);
+
     // Validation Error
-    if (e.response.status === 422) {
-      throw new Problem(e.response.status, {
+    if (error.response.status === 422) {
+      throw new Problem(error.response.status, {
         detail: data.detail,
         errors: data.errors,
       });
     }
+
     // Something else happened but there's a response
-    throw new Problem(e.response.status, { detail: e.response.data.toString() });
+    throw new Problem(error.response.status, { detail: error.response.data.toString() });
   } else {
-    log.error(`Unknown error calling ${service}: ${e.message}`, e);
-    throw new Problem(502, `Unknown ${service} Error`, { detail: e.message });
+    log.error(`Unknown error calling ${service}: ${error.message}`, error);
+
+    throw new Problem(502, `Unknown ${service} Error`, {
+      detail: error.message,
+    });
   }
 };
