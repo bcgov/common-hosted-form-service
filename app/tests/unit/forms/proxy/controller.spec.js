@@ -4,6 +4,7 @@ const { getMockReq, getMockRes } = require('@jest-mock/express');
 const controller = require('../../../../src/forms/proxy/controller');
 const service = require('../../../../src/forms/proxy/service');
 const jwtService = require('../../../../src/components/jwtService');
+const { NotFoundError } = require('objection');
 
 const bearerToken = Math.random().toString(36).substring(2);
 
@@ -138,9 +139,30 @@ describe('callExternalApi', () => {
 
     expect(service.readProxyHeaders).toBeCalledTimes(1);
     expect(service.getExternalAPI).toBeCalledTimes(1);
-    expect(service.createExternalAPIUrl).not.toHaveBeenCalled();
-    expect(service.createExternalAPIHeaders).not.toHaveBeenCalled();
+    expect(service.createExternalAPIUrl).toBeCalledTimes(1);
+    expect(service.createExternalAPIHeaders).toBeCalledTimes(1);
+    // this is the point where we check the status code for external api
+    expect(axios.get).not.toHaveBeenCalled();
     expect(res.status).not.toHaveBeenCalled();
     expect(next).toBeCalledTimes(1);
+  });
+
+  it('should return 400 when headers missing', async () => {
+    const req = getMockReq({ headers: { 'X-CHEFS-PROXY-DATA': 'encrypted blob of proxy data' } });
+    const { res, next } = getMockRes();
+
+    service.readProxyHeaders = jest.fn().mockReturnValue({});
+    service.getExternalAPI = jest.fn().mockRejectedValueOnce(new NotFoundError());
+    service.createExternalAPIUrl = jest.fn().mockReturnValue('http://external.api/private');
+    service.createExternalAPIHeaders = jest.fn().mockReturnValue({ 'X-TEST-HEADERS': 'test-headers-err' });
+
+    await controller.callExternalApi(req, res, next);
+
+    expect(service.readProxyHeaders).toBeCalledTimes(1);
+    expect(service.getExternalAPI).toBeCalledTimes(1);
+    expect(service.createExternalAPIUrl).not.toHaveBeenCalled();
+    expect(service.createExternalAPIHeaders).not.toHaveBeenCalled();
+    expect(res.sendStatus).toBeCalledWith(400);
+    expect(next).not.toHaveBeenCalled();
   });
 });
