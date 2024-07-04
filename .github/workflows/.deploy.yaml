@@ -123,3 +123,10 @@ jobs:
           message: |
             Release ${{ github.sha }} deployed at <https://${{ env.ACRONYM }}-dev.apps.silver.devops.gov.bc.ca/pr-${{ github.event.inputs.pr-number }}>
           number: ${{ github.event.inputs.pr-number }}
+
+  scan:
+    name: Scan
+    needs: [deploy, set-vars]
+    uses: ./.github/workflows/reusable-owasp-zap.yaml
+    with:
+      url: ${{ needs.set-vars.outputs.URL }}
