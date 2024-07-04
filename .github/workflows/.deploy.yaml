@@ -1,4 +1,5 @@
-name: Deploy
+name: Deploy PR
+run-name: Deploy PR-${{ github.event.inputs.pr-number }}
 
 env:
   ACRONYM: chefs
