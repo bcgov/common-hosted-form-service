@@ -18,11 +18,12 @@ export default {
       label: 'Marker Type ',
       values: [
         {
-          label: 'Point Marker',
+          label: 'Add a point marker (drop a pin)',
           value: 'marker',
         },
         {
-          label: 'Circle',
+          label:
+            'Add circular area of interest through a point and custom radius',
           value: 'circle',
         },
       ],
