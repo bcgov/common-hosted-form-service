@@ -15,6 +15,7 @@ export default class Component extends (ParentComponent as any) {
             type: ID,
             label: DISPLAY,
             key: ID,
+            storage: 'chefs',
             url: '/files',
             fileKey: 'files',
             fileNameTemplate: '{{fileName}}',
