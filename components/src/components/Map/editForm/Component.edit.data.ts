@@ -57,6 +57,19 @@ export default {
       input: true,
     },
     {
+      key: 'center',
+      type: 'map',
+      input: true,
+      label: 'Default Center',
+      numPoints: 1,
+      tableView: false,
+      markerType: 'marker',
+      defaultZoom: 13,
+      readOnlyMap: false,
+      description:
+        'Please select the desired default center using a single marker',
+    },
+    {
       label: 'Read Only Map',
       description:
         'This allows for the user to view and scroll the map, but not add any input',
