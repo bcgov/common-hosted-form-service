@@ -4,7 +4,9 @@ import MapService from './services/MapService';
 import baseEditForm from './Component.form';
 import * as L from 'leaflet';
 
-const CENTER: [number, number] = [48.41939025932759, -123.37029576301576]; // Ensure CENTER is a tuple with exactly two elements
+const DEFAULT_CENTER: [number, number] = [
+  48.41939025932759, -123.37029576301576,
+]; // Ensure CENTER is a tuple with exactly two elements
 
 export default class Component extends (FieldComponent as any) {
   static schema(...extend) {
@@ -69,11 +71,17 @@ export default class Component extends (FieldComponent as any) {
       drawOptions[this.component.markerType] = true; // set marker type from user choice
     }
 
-    const { numPoints, defaultZoom, readOnlyMap } = this.component;
+    const { numPoints, defaultZoom, readOnlyMap, center } = this.component;
+
+    let parsedCenter;
+    if (center) {
+      parsedCenter = JSON.parse(center).latlng;
+    }
+
     this.mapService = new MapService({
       mapContainer,
       drawOptions,
-      center: CENTER,
+      center: center ? parsedCenter : DEFAULT_CENTER,
       form,
       numPoints,
       defaultZoom,
