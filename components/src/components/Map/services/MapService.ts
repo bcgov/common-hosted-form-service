@@ -9,9 +9,7 @@ const DEFAULT_LAYER_ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 const DEFAULT_MAP_ZOOM = 13;
 const DECIMALS_LATLNG = 5; // the number of decimals of latitude and longitude to be displayed in the marker popup
-const COMPONENT_EDIT_CLASS = "component-edit-tabs";
-
-
+const COMPONENT_EDIT_CLASS = 'component-edit-tabs';
 
 interface MapServiceOptions {
   mapContainer: HTMLElement;
@@ -20,7 +18,7 @@ interface MapServiceOptions {
   form: HTMLCollectionOf<Element>;
   numPoints: number;
   defaultZoom?: number;
-  readOnlyMap?: boolean
+  readOnlyMap?: boolean;
   onDrawnItemsChange: (items: any) => void; // Support both single and multiple items
 }
 
@@ -42,7 +40,7 @@ class MapService {
         let layer = e.layer;
         if (drawnItems.getLayers().length === options.numPoints) {
           L.popup()
-            .setLatLng(layer._latlng)
+            .setLatLng(layer.getLatLng())
             .setContent('<p>Only one marker for submission</p>')
             .openOn(map);
         } else {
@@ -55,7 +53,8 @@ class MapService {
   }
 
   initializeMap(options: MapServiceOptions) {
-    let { mapContainer, center, drawOptions, form, defaultZoom, readOnlyMap } = options;
+    let { mapContainer, center, drawOptions, form, defaultZoom, readOnlyMap } =
+      options;
     if (drawOptions.rectangle) {
       drawOptions.rectangle.showArea = false;
     }
@@ -72,7 +71,7 @@ class MapService {
     map.addLayer(drawnItems);
 
     // Add Drawing Controllers
-    if(!readOnlyMap){
+    if (!readOnlyMap) {
       let drawControl = new L.Control.Draw({
         draw: drawOptions,
         edit: {
@@ -82,20 +81,20 @@ class MapService {
       map.addControl(drawControl);
     }
 
-    //Checking to see if the map should be interactable
-    const componentEditNode = document.getElementsByClassName(COMPONENT_EDIT_CLASS)
+    // Checking to see if the map should be interactable
+    const componentEditNode =
+      document.getElementsByClassName(COMPONENT_EDIT_CLASS);
     if (form) {
       if (form[0]?.classList.contains('formbuilder')) {
-          map.dragging.disable();
-          map.scrollWheelZoom.disable();
-          if (this.hasChildNode(componentEditNode[0], mapContainer)) {
-              map.dragging.enable();
-              map.scrollWheelZoom.enable();
-          }
+        map.dragging.disable();
+        map.scrollWheelZoom.disable();
+        if (this.hasChildNode(componentEditNode[0], mapContainer)) {
+          map.dragging.enable();
+          map.scrollWheelZoom.enable();
+        }
       }
-  }
+    }
 
-    // Attach Controls to map
     return { map, drawnItems };
   }
 
@@ -132,7 +131,6 @@ class MapService {
   loadDrawnItems(items: any) {
     const { drawnItems } = this;
 
-    // Ensure drawnItems is defined before attempting to clear layers
     if (!drawnItems) {
       console.error('drawnItems is undefined');
       return;
@@ -140,7 +138,6 @@ class MapService {
 
     drawnItems.clearLayers();
 
-    // Check if items is an array
     if (!Array.isArray(items)) {
       items = [items];
     }
@@ -172,12 +169,11 @@ class MapService {
     }
     for (let i = 0; i < parent?.childNodes?.length; i++) {
       if (this.hasChildNode(parent.childNodes[i], targetNode)) {
-        return true
+        return true;
       }
     }
     return false;
   }
-
 }
 
 export default MapService;

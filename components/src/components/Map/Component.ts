@@ -81,11 +81,14 @@ export default class Component extends (FieldComponent as any) {
       onDrawnItemsChange: this.saveDrawnItems.bind(this),
     });
 
-
-
     // Load existing data if available
     if (this.dataValue) {
-      this.mapService.loadDrawnItems(JSON.parse(this.dataValue));
+      try {
+        const parsedValue = JSON.parse(this.dataValue);
+        this.mapService.loadDrawnItems(parsedValue);
+      } catch (error) {
+        console.error('Failed to parse dataValue:', error);
+      }
     }
   }
 
@@ -119,7 +122,6 @@ export default class Component extends (FieldComponent as any) {
         };
       }
     });
-
 
     // Convert to JSON string
     const jsonValue =

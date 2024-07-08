@@ -1,17 +1,29 @@
 import common from '../../Common/Simple.edit.data';
 export default {
-  key: 'data',
+  key: 'customData',
+  label: 'Data',
+  weight: 20,
   components: [
-    ...common,
+    {
+      type: 'map',
+      label: 'Default Value',
+      key: 'defaultValue',
+      weight: 5,
+      placeholder: 'Default Value',
+      tooltip:
+        'This will be the value for this field, before user interaction.',
+      input: true,
+    },
     {
       label: 'Marker Type ',
       values: [
         {
-          label: 'Point Marker',
+          label: 'Add a point marker (drop a pin)',
           value: 'marker',
         },
         {
-          label: 'Circle',
+          label:
+            'Add circular area of interest through a point and custom radius',
           value: 'circle',
         },
       ],
@@ -21,18 +33,7 @@ export default {
       input: true,
     },
     {
-      label: 'Set Default Center',
-      tableView: false,
-      markerType: 'marker',
-      numPoints: 1,
-      defaultZoom: 5,
-      readOnlyMap: false,
-      key: 'map',
-      type: 'map',
-      input: true,
-    },
-    {
-      label: 'How many Points per Submission?',
+      label: 'How many Markers per Submission?',
       key: 'numPoints',
       type: 'simplenumber',
       defaultValue: 1,
