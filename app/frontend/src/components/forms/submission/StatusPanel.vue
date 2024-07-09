@@ -47,7 +47,6 @@ export default {
       valid: false,
       showSendConfirmEmail: false,
       showStatusContent: false,
-      selectedUsers: [], // array to hold multiple users for REVISING status
     };
   },
   computed: {
@@ -110,24 +109,6 @@ export default {
         // code block
       }
       return actionStatus;
-    },
-    combinedReviewers() {
-      if (this.submissionUserEmail) {
-        // Check if the submissionUserEmail is already in formReviewers to avoid duplication
-        const isEmailIncluded = this.formReviewers.some(
-          (reviewer) => reviewer.email === this.submissionUserEmail
-        );
-        if (!isEmailIncluded) {
-          return [
-            {
-              fullName: this.submissionUserEmail,
-              email: this.submissionUserEmail,
-            },
-            ...this.formReviewers,
-          ];
-        }
-      }
-      return this.formReviewers;
     },
   },
   created() {
@@ -254,77 +235,59 @@ export default {
             throw new Error(this.$t('trans.statusPanel.status'));
           }
 
-          const baseStatusBody = {
+          const statusBody = {
             code: this.statusToSet,
+            submissionUserEmail: this.submissionUserEmail,
             revisionNotificationEmailContent: this.emailComment,
           };
-
-          if (this.showAssignee && this.assignee) {
-            baseStatusBody.assignedToUserId = this.assignee.userId;
-            baseStatusBody.assignmentNotificationEmail = this.assignee.email;
-          }
-
-          if (this.statusToSet === 'REVISING') {
-            // Handle multiple emails for REVISING
-            for (const user of this.selectedUsers) {
-              const statusBody = {
-                ...baseStatusBody,
-                submissionUserEmail: user.email,
-              };
-              const statusResponse = await formService.updateSubmissionStatus(
-                this.submissionId,
-                statusBody
-              );
-
-              if (!statusResponse.data) {
-                throw new Error(
-                  this.$t('trans.statusPanel.updtSubmissionsStatusErr')
-                );
-              }
-
-              if (this.emailComment) {
-                const formattedComment = `Email to ${user.email}: ${this.emailComment}`;
-                await this.sendEmailWithComment(
-                  formattedComment,
-                  statusResponse.data[0].submissionStatusId
-                );
-              }
+          if (this.showAssignee) {
+            if (this.assignee) {
+              statusBody.assignedToUserId = this.assignee.userId;
+              statusBody.assignmentNotificationEmail = this.assignee.email;
             }
-          } else {
-            // Handle single email for other statuses
-            const statusBody = {
-              ...baseStatusBody,
-              submissionUserEmail: this.submissionUserEmail,
-            };
-            const statusResponse = await formService.updateSubmissionStatus(
-              this.submissionId,
-              statusBody
+          }
+          const statusResponse = await formService.updateSubmissionStatus(
+            this.submissionId,
+            statusBody
+          );
+          if (!statusResponse.data) {
+            throw new Error(
+              this.$t('trans.statusPanel.updtSubmissionsStatusErr')
             );
-
-            if (!statusResponse.data) {
-              throw new Error(
-                this.$t('trans.statusPanel.updtSubmissionsStatusErr')
-              );
-            }
-
-            if (this.emailComment) {
-              let formattedComment;
-              if (this.statusToSet === 'ASSIGNED') {
-                formattedComment = `Email to ${this.assignee.email}: ${this.emailComment}`;
-              } else if (this.statusToSet === 'COMPLETED') {
-                formattedComment = `Email to ${this.submissionUserEmail}: ${this.emailComment}`;
-              }
-
-              await this.sendEmailWithComment(
-                formattedComment,
-                statusResponse.data[0].submissionStatusId
-              );
-            }
           }
 
-          // Update the parent if the note was updated
-          this.$emit('note-updated');
+          if (this.emailComment) {
+            let formattedComment;
+            if (this.statusToSet === 'ASSIGNED') {
+              formattedComment = `Email to ${this.assignee.email}: ${this.emailComment}`;
+            } else if (
+              this.statusToSet === 'REVISING' ||
+              this.statusToSet === 'COMPLETED'
+            ) {
+              formattedComment = `Email to ${this.submissionUserEmail}: ${this.emailComment}`;
+            }
 
+            const submissionStatusId =
+              statusResponse.data[0].submissionStatusId;
+            const user = await rbacService.getCurrentUser();
+            const noteBody = {
+              submissionId: this.submissionId,
+              submissionStatusId: submissionStatusId,
+              note: formattedComment,
+              userId: user.data.id,
+            };
+            const response = await formService.addNote(
+              this.submissionId,
+              noteBody
+            );
+            if (!response.data) {
+              throw new Error(
+                this.$t('trans.statusPanel.addNoteNoReponserErr')
+              );
+            }
+            // Update the parent if the note was updated
+            this.$emit('note-updated');
+          }
           this.resetForm();
           this.getStatus();
         }
@@ -336,24 +299,6 @@ export default {
           }),
         });
       }
-    },
-
-    async sendEmailWithComment(comment, submissionStatusId) {
-      const user = await rbacService.getCurrentUser();
-      const noteBody = {
-        submissionId: this.submissionId,
-        submissionStatusId: submissionStatusId,
-        note: comment,
-        userId: user.data.id,
-      };
-      const response = await formService.addNote(this.submissionId, noteBody);
-      if (!response.data) {
-        throw new Error(this.$t('trans.statusPanel.addNoteNoReponserErr'));
-      }
-    },
-
-    updateSubmissionUserEmail(selectedUsers) {
-      this.selectedUsers = selectedUsers;
     },
   },
 };
@@ -502,41 +447,15 @@ export default {
               </div>
             </div>
             <div v-show="statusFields" v-if="showRevising">
-              <label>Recipient Email</label>
-              <v-autocomplete
-                v-model="selectedUsers"
-                :class="{ 'dir-rtl': isRTL }"
-                autocomplete="autocomplete_off"
-                data-test="showRecipientEmail"
-                clearable
-                :custom-filter="autoCompleteFilter"
-                :items="combinedReviewers"
-                item-title="fullName"
-                :loading="loading"
-                :no-data-text="$t('trans.statusPanel.noDataText')"
+              <v-text-field
+                v-model="submissionUserEmail"
+                :label="$t('trans.statusPanel.recipientEmail')"
                 variant="outlined"
-                return-object
-                :rules="[
-                  (v) => !!v || $t('trans.statusPanel.recipientIsRequired'),
-                ]"
+                density="compact"
+                :class="{ 'dir-rtl': isRTL }"
                 :lang="locale"
-                multiple
-                @update:model-value="updateSubmissionUserEmail"
-              >
-                <!-- selected user -->
-                <template #chip="{ props, item }">
-                  <v-chip v-bind="props" :text="item?.raw?.fullName" />
-                </template>
-                <!-- users found in dropdown -->
-                <template #item="{ props, item }">
-                  <v-list-item
-                    v-bind="props"
-                    :title="`${item?.raw?.fullName} (${item?.raw?.email})`"
-                    :subtitle="`${item?.raw?.username} (${item?.raw?.user_idpCode})`"
-                  >
-                  </v-list-item>
-                </template>
-              </v-autocomplete>
+                data-test="showRecipientEmail"
+              />
             </div>
 
             <div v-if="showRevising || showAssignee || showCompleted">
