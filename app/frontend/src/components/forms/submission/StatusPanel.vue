@@ -111,6 +111,21 @@ export default {
       }
       return actionStatus;
     },
+    combinedReviewers() {
+      if (this.submissionUserEmail) {
+        // Check if the submissionUserEmail is already in formReviewers to avoid duplication
+        const isEmailIncluded = this.formReviewers.some(
+          (reviewer) => reviewer.email === this.submissionUserEmail
+        );
+        if (!isEmailIncluded) {
+          return [
+            { fullName: this.submissionUserEmail, email: this.submissionUserEmail },
+            ...this.formReviewers,
+          ];
+        }
+      }
+      return this.formReviewers;
+    },
   },
   created() {
     this.getStatus();
@@ -492,7 +507,7 @@ export default {
                 data-test="showRecipientEmail"
                 clearable
                 :custom-filter="autoCompleteFilter"
-                :items="formReviewers"
+                :items="combinedReviewers"
                 item-title="fullName"
                 :loading="loading"
                 :no-data-text="$t('trans.statusPanel.noDataText')"
