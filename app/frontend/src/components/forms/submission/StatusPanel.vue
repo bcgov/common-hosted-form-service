@@ -119,7 +119,10 @@ export default {
         );
         if (!isEmailIncluded) {
           return [
-            { fullName: this.submissionUserEmail, email: this.submissionUserEmail },
+            {
+              fullName: this.submissionUserEmail,
+              email: this.submissionUserEmail,
+            },
             ...this.formReviewers,
           ];
         }
