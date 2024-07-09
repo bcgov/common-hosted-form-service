@@ -55,7 +55,7 @@ describe('Form Designer', () => {
  
 
     });
-    it('Verify submission', () => {
+    it('Form Submission and Updation', () => {
         cy.viewport(1000, 1100);
         cy.waitForLoad();
         cy.waitForLoad();
@@ -112,6 +112,8 @@ describe('Form Designer', () => {
         cy.waitForLoad();
         cy.waitForLoad();
         cy.get('button').contains('Submit').should('be.visible');
+        cy.waitForLoad();
+        cy.waitForLoad();
         cy.get('input[name="data[simpletextfield1]"').click();
         cy.get('input[name="data[simpletextfield1]"').type('Alex');
         cy.get('input[name="data[simpletextfield2]"').click();
@@ -122,6 +124,8 @@ describe('Form Designer', () => {
         cy.waitForLoad();
         cy.get('button').contains('Submit').click();
         cy.get('button').contains('Submit').click();
+        cy.waitForLoad();
+        cy.waitForLoad();
         cy.get('label').contains('First Name').should('be.visible');
         cy.get('label').contains('Last Name').should('be.visible');
         cy.get('label').contains('Applying for self').should('be.visible');
@@ -154,7 +158,7 @@ describe('Form Designer', () => {
         
         cy.get('.mdi-list-box-outline').click();
         cy.waitForLoad();
-        cy.get('.mdi-eye').click();
+        cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn > .v-btn__content > .mdi-eye').click();
         //Edit submission
         cy.get('.mdi-pencil').click();
         //check visibility of cancel button
@@ -174,12 +178,26 @@ describe('Form Designer', () => {
         cy.waitForLoad();
         cy.get('label').contains('First Name').should('be.visible');
         cy.get('label').contains('Last Name').should('be.visible');
+        //Adding notes to submission
+        cy.get('.mdi-plus').click();
+        cy.get('div').find('textarea').then($el => {
+
+          const rem=$el[0];
+          rem.click();
+          cy.get(rem).type('some notes');
+          
+          
+          });
+        cy.get('[data-test="canCancelNote"]').should('be.visible');
+        cy.get('[data-test="btn-add-note"]').click();
+        cy.get('.notes-text').contains('1');
         //Delete form after test run
         cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
         cy.waitForLoad();
         cy.waitForLoad();
         cy.get('.mdi-delete').click();
         cy.get('[data-test="continue-btn-continue"]').click();
+        cy.get('#logoutButton > .v-btn__content > span').click();
         
         
         })
