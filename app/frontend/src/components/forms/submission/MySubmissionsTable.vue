@@ -306,7 +306,6 @@ defineExpose({
 
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
-    {{ filterData }}
     <v-skeleton-loader :loading="loading" type="heading">
       <div
         class="mt-6 d-flex flex-md-row flex-1-1-100 justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
