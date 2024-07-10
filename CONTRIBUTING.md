@@ -20,4 +20,4 @@ Government employees, public and members of the private sector are encouraged to
 
 All contributors retain the original copyright to their stuff, but by contributing to this project, you grant a world-wide, royalty-free, perpetual, irrevocable, non-exclusive, transferable license to all users **under the terms of the [license](./LICENSE) under which this project is distributed**.
 
-To set up CHEFS on your workstation, visit the [Developer](https://github.com/bcgov/common-hosted-form-service/wiki/Developer) Wiki page.
+To set up CHEFS on your workstation, visit the [Developer](https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Developer/) Wiki page.
