@@ -72,6 +72,7 @@ export default class Component extends (FieldComponent as any) {
     }
 
     const { numPoints, defaultZoom, readOnlyMap, center } = this.component;
+    const { readOnly: viewMode } = this.options;
 
     let parsedCenter;
     if (center) {
@@ -87,6 +88,7 @@ export default class Component extends (FieldComponent as any) {
       defaultZoom,
       readOnlyMap,
       onDrawnItemsChange: this.saveDrawnItems.bind(this),
+      viewMode,
     });
 
     // Load existing data if available
