@@ -123,7 +123,9 @@ describe('Form Designer', () => {
         cy.get('button').contains('Submit').click();
         cy.waitForLoad();
         cy.get('button').contains('Submit').click();
+        cy.waitForLoad();
         cy.get('button').contains('Submit').click();
+        cy.waitForLoad();
         cy.waitForLoad();
         cy.waitForLoad();
         cy.get('label').contains('First Name').should('be.visible');
