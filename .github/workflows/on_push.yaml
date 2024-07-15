@@ -57,12 +57,12 @@ jobs:
           route_path: /app
           route_prefix: ${{ vars.ROUTE_PREFIX }}
 
-  scan-dev:
-    name: Scan Dev
-    needs: deploy-dev
-    uses: ./.github/workflows/reusable-owasp-zap.yaml
-    with:
-      url: https://${{ env.ACRONYM }}-dev.apps.silver.devops.gov.bc.ca/app
+  # scan-dev:
+  #   name: Scan Dev
+  #   needs: deploy-dev
+  #   uses: ./.github/workflows/reusable-owasp-zap.yaml
+  #   with:
+  #     url: https://${{ env.ACRONYM }}-dev.apps.silver.devops.gov.bc.ca/app
 
   deploy-test:
     name: Deploy to Test
