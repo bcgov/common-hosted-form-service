@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Build & Push
         uses: ./.github/actions/build-push-container
         with:
@@ -41,7 +41,7 @@ jobs:
     timeout-minutes: 12
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Deploy to Dev
         uses: ./.github/actions/deploy-to-environment
         with:
@@ -57,6 +57,13 @@ jobs:
           route_path: /app
           route_prefix: ${{ vars.ROUTE_PREFIX }}
 
+  scan-dev:
+    name: Scan Dev
+    needs: deploy-dev
+    uses: ./.github/workflows/reusable-owasp-zap.yaml
+    with:
+      url: https://${{ env.ACRONYM }}-dev.apps.silver.devops.gov.bc.ca/app
+
   deploy-test:
     name: Deploy to Test
     environment:
@@ -69,7 +76,7 @@ jobs:
     timeout-minutes: 12
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Deploy to Test
         uses: ./.github/actions/deploy-to-environment
         with:
@@ -98,7 +105,7 @@ jobs:
     timeout-minutes: 12
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Deploy to Prod
         uses: ./.github/actions/deploy-to-environment
         with:
