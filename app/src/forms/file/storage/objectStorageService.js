@@ -69,9 +69,12 @@ class ObjectStorageService {
    * @throws an Error if the filename is not within the allowed directory.
    */
   _readLocalFile(filename) {
-    const fileUploadsDir = fileUpload.getFileUploadsDir();
+    let fileUploadsDir = fileUpload.getFileUploadsDir();
+    if (!fileUploadsDir.endsWith('/')) {
+      fileUploadsDir += '/';
+    }
     console.log('-----------------------------> fileUploadsDir', fileUploadsDir);
-    const resolvedFilename = fs.realpathSync(path.resolve(fileUploadsDir + '/', filename));
+    const resolvedFilename = fs.realpathSync(path.resolve(fileUploadsDir, filename));
     console.log('-----------------------------> resolvedFilename', resolvedFilename);
     if (!resolvedFilename.startsWith(fileUploadsDir)) {
       throw new Error(`Invalid path '${filename}'`);
