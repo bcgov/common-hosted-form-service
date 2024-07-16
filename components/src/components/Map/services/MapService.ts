@@ -9,13 +9,26 @@ const DEFAULT_LAYER_ATTRIBUTION =
 const DEFAULT_MAP_ZOOM = 13;
 const DECIMALS_LATLNG = 5; // the number of decimals of latitude and longitude to be displayed in the marker popup
 const COMPONENT_EDIT_CLASS = 'component-edit-tabs';
-const FORM_REVIEW_CLASS = 'review-form';
+
+interface MapServiceOptions {
+  mapContainer: HTMLElement;
+  center: [number, number]; // Ensure center is a tuple with exactly two elements
+  drawOptions: any;
+  form: HTMLCollectionOf<Element>;
+  numPoints: number;
+  defaultZoom?: number;
+  readOnlyMap?: boolean;
+  onDrawnItemsChange: (items: any) => void; // Support both single and multiple items
+  viewMode?: boolean;
+}
+
 class MapService {
   options;
   map;
   drawnItems;
   constructor(options) {
     this.options = options;
+
     if (options.mapContainer) {
       const { map, drawnItems } = this.initializeMap(options);
       this.map = map;
@@ -37,9 +50,19 @@ class MapService {
       });
     }
   }
-  initializeMap(options) {
-    let { mapContainer, center, drawOptions, form, defaultZoom, readOnlyMap } =
-      options;
+
+  initializeMap(options: MapServiceOptions) {
+    let {
+      mapContainer,
+      center,
+      drawOptions,
+      form,
+      defaultZoom,
+      readOnlyMap,
+      viewMode,
+    } = options;
+
+
     if (drawOptions.rectangle) {
       drawOptions.rectangle.showArea = false;
     }
@@ -54,18 +77,17 @@ class MapService {
     let drawnItems = new L.FeatureGroup();
     map.addLayer(drawnItems);
     // Add Drawing Controllers
-    const formReviewNode = document.getElementsByClassName(FORM_REVIEW_CLASS);
-    if (
-      !readOnlyMap ||
-      !(formReviewNode && this.hasChildNode(formReviewNode[0], mapContainer))
-    ) {
-      let drawControl = new L.Control.Draw({
-        draw: drawOptions,
-        edit: {
-          featureGroup: drawnItems,
-        },
-      });
-      map.addControl(drawControl);
+
+    if (!readOnlyMap) {
+      if (!viewMode) {
+        let drawControl = new L.Control.Draw({
+          draw: drawOptions,
+          edit: {
+            featureGroup: drawnItems,
+          },
+        });
+        map.addControl(drawControl);
+      }
     }
     // Checking to see if the map should be interactable
     const componentEditNode =
@@ -77,7 +99,6 @@ class MapService {
         if (this.hasChildNode(componentEditNode[0], mapContainer)) {
           map.dragging.enable();
           map.scrollWheelZoom.enable();
-          console.log(map);
           map.invalidateSize(true);
         }
       }
@@ -126,15 +147,15 @@ class MapService {
     items.forEach((item) => {
       let layer;
       if (item.type === 'marker') {
-        layer = L.marker(item.latlng);
+        layer = L.marker(item.coordinates);
       } else if (item.type === 'rectangle') {
         layer = L.rectangle(item.bounds);
       } else if (item.type === 'circle') {
-        layer = L.circle(item.latlng, { radius: item.radius });
+        layer = L.circle(item.coordinates, { radius: item.radius });
       } else if (item.type === 'polygon') {
-        layer = L.polygon(item.latlngs);
+        layer = L.polygon(item.coordinates);
       } else if (item.type === 'polyline') {
-        layer = L.polyline(item.latlngs);
+        layer = L.polyline(item.coordinates);
       }
       if (layer) {
         drawnItems.addLayer(layer);
