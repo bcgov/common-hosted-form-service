@@ -5,7 +5,7 @@ import baseEditForm from './Component.form';
 import * as L from 'leaflet';
 
 const DEFAULT_CENTER: [number, number] = [
-  48.41939025932759, -123.37029576301576,
+  53.96717190097409, -123.98320425388914,
 ]; // Ensure CENTER is a tuple with exactly two elements
 
 export default class Component extends (FieldComponent as any) {

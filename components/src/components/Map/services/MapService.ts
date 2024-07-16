@@ -2,7 +2,6 @@ import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw-src.css';
-
 const DEFAULT_MAP_LAYER_URL =
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const DEFAULT_LAYER_ATTRIBUTION =
@@ -24,11 +23,10 @@ interface MapServiceOptions {
 }
 
 class MapService {
-  options: MapServiceOptions;
-  map: L.Map;
-  drawnItems: L.FeatureGroup;
-
-  constructor(options: MapServiceOptions) {
+  options;
+  map;
+  drawnItems;
+  constructor(options) {
     this.options = options;
 
     if (options.mapContainer) {
@@ -36,9 +34,8 @@ class MapService {
       this.map = map;
       this.drawnItems = drawnItems;
       map.invalidateSize();
-
       // Event listener for drawn objects
-      map.on('draw:created', (e: any) => {
+      map.on('draw:created', (e) => {
         let layer = e.layer;
         if (drawnItems.getLayers().length === options.numPoints) {
           L.popup()
@@ -65,6 +62,7 @@ class MapService {
       viewMode,
     } = options;
 
+
     if (drawOptions.rectangle) {
       drawOptions.rectangle.showArea = false;
     }
@@ -75,12 +73,11 @@ class MapService {
     L.tileLayer(DEFAULT_MAP_LAYER_URL, {
       attribution: DEFAULT_LAYER_ATTRIBUTION,
     }).addTo(map);
-
     // Initialize Draw Layer
     let drawnItems = new L.FeatureGroup();
     map.addLayer(drawnItems);
-
     // Add Drawing Controllers
+
     if (!readOnlyMap) {
       if (!viewMode) {
         let drawControl = new L.Control.Draw({
@@ -92,7 +89,6 @@ class MapService {
         map.addControl(drawControl);
       }
     }
-
     // Checking to see if the map should be interactable
     const componentEditNode =
       document.getElementsByClassName(COMPONENT_EDIT_CLASS);
@@ -103,14 +99,13 @@ class MapService {
         if (this.hasChildNode(componentEditNode[0], mapContainer)) {
           map.dragging.enable();
           map.scrollWheelZoom.enable();
+          map.invalidateSize(true);
         }
       }
     }
-
     return { map, drawnItems };
   }
-
-  bindPopupToLayer(layer: L.Layer) {
+  bindPopupToLayer(layer) {
     if (layer instanceof L.Marker) {
       layer
         .bindPopup(
@@ -139,21 +134,16 @@ class MapService {
         .openPopup();
     }
   }
-
-  loadDrawnItems(items: any) {
+  loadDrawnItems(items) {
     const { drawnItems } = this;
-
     if (!drawnItems) {
       console.error('drawnItems is undefined');
       return;
     }
-
     drawnItems.clearLayers();
-
     if (!Array.isArray(items)) {
       items = [items];
     }
-
     items.forEach((item) => {
       let layer;
       if (item.type === 'marker') {
@@ -167,15 +157,13 @@ class MapService {
       } else if (item.type === 'polyline') {
         layer = L.polyline(item.coordinates);
       }
-
       if (layer) {
         drawnItems.addLayer(layer);
         this.bindPopupToLayer(layer);
       }
     });
   }
-
-  hasChildNode(parent: any, targetNode: any) {
+  hasChildNode(parent, targetNode) {
     if (parent === targetNode) {
       return true;
     }
@@ -187,5 +175,4 @@ class MapService {
     return false;
   }
 }
-
 export default MapService;
