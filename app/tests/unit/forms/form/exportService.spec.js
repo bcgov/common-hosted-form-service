@@ -126,7 +126,8 @@ describe('export', () => {
           'form.username',
           'form.email',
           'dataGrid',
-          'dataGrid.simpletextfield',
+          'dataGrid.0.simpletextfield',
+          'dataGrid.1.simpletextfield',
         ],
         template: 'singleRowCSVExport',
       };
@@ -515,7 +516,7 @@ describe('_buildCsvHeaders', () => {
     // get result columns if we need to filter out the columns
     const result = await exportService._buildCsvHeaders(form, submissionsExport, 1, fields, true);
 
-    expect(result).toHaveLength(29);
+    expect(result).toHaveLength(20);
     expect(result).toEqual(
       expect.arrayContaining([
         'form.confirmationId',
