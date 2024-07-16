@@ -1,4 +1,3 @@
-import common from '../../Common/Simple.edit.data';
 export default {
   key: 'customData',
   label: 'Data',
@@ -44,7 +43,7 @@ export default {
       label: 'Default Zoom Level',
       description:
         'Zoom Levels are from 0 (Most zoomed out) to 18 (most zoomed in).',
-      defaultValue: 13,
+      defaultValue: 5,
       delimiter: false,
       requireDecimal: false,
       validate: {
