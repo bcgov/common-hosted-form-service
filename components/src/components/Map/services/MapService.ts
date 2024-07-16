@@ -20,6 +20,7 @@ interface MapServiceOptions {
   defaultZoom?: number;
   readOnlyMap?: boolean;
   onDrawnItemsChange: (items: any) => void; // Support both single and multiple items
+  viewMode?: boolean;
 }
 
 class MapService {
@@ -29,6 +30,7 @@ class MapService {
 
   constructor(options: MapServiceOptions) {
     this.options = options;
+
     if (options.mapContainer) {
       const { map, drawnItems } = this.initializeMap(options);
       this.map = map;
@@ -53,8 +55,16 @@ class MapService {
   }
 
   initializeMap(options: MapServiceOptions) {
-    let { mapContainer, center, drawOptions, form, defaultZoom, readOnlyMap } =
-      options;
+    let {
+      mapContainer,
+      center,
+      drawOptions,
+      form,
+      defaultZoom,
+      readOnlyMap,
+      viewMode,
+    } = options;
+
     if (drawOptions.rectangle) {
       drawOptions.rectangle.showArea = false;
     }
@@ -72,13 +82,15 @@ class MapService {
 
     // Add Drawing Controllers
     if (!readOnlyMap) {
-      let drawControl = new L.Control.Draw({
-        draw: drawOptions,
-        edit: {
-          featureGroup: drawnItems,
-        },
-      });
-      map.addControl(drawControl);
+      if (!viewMode) {
+        let drawControl = new L.Control.Draw({
+          draw: drawOptions,
+          edit: {
+            featureGroup: drawnItems,
+          },
+        });
+        map.addControl(drawControl);
+      }
     }
 
     // Checking to see if the map should be interactable
@@ -145,15 +157,15 @@ class MapService {
     items.forEach((item) => {
       let layer;
       if (item.type === 'marker') {
-        layer = L.marker(item.latlng);
+        layer = L.marker(item.coordinates);
       } else if (item.type === 'rectangle') {
         layer = L.rectangle(item.bounds);
       } else if (item.type === 'circle') {
-        layer = L.circle(item.latlng, { radius: item.radius });
+        layer = L.circle(item.coordinates, { radius: item.radius });
       } else if (item.type === 'polygon') {
-        layer = L.polygon(item.latlngs);
+        layer = L.polygon(item.coordinates);
       } else if (item.type === 'polyline') {
-        layer = L.polyline(item.latlngs);
+        layer = L.polyline(item.coordinates);
       }
 
       if (layer) {
