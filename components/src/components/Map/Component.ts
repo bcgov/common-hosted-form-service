@@ -15,6 +15,7 @@ export default class Component extends (FieldComponent as any) {
       label: 'Map',
       key: 'map',
       input: true,
+      defaultvalue: { features: [] },
       ...extend,
     });
   }
@@ -74,15 +75,15 @@ export default class Component extends (FieldComponent as any) {
     const { numPoints, defaultZoom, readOnlyMap, center } = this.component;
     const { readOnly: viewMode } = this.options;
 
-    let parsedCenter;
-    if (center) {
-      parsedCenter = JSON.parse(center).latlng;
+    let initialCenter;
+    if (center && center.features && center.features[0]) {
+      initialCenter = center.features[0].coordinates;
     }
 
     this.mapService = new MapService({
       mapContainer,
       drawOptions,
-      center: center ? parsedCenter : DEFAULT_CENTER,
+      center: center ? initialCenter : DEFAULT_CENTER,
       form,
       numPoints,
       defaultZoom,
@@ -92,10 +93,9 @@ export default class Component extends (FieldComponent as any) {
     });
 
     // Load existing data if available
-    if (this.dataValue) {
+    if (this.dataValue && this.dataValue.features) {
       try {
-        const parsedValue = JSON.parse(this.dataValue);
-        this.mapService.loadDrawnItems(parsedValue);
+        this.mapService.loadDrawnItems(this.dataValue.features);
       } catch (error) {
         console.error('Failed to parse dataValue:', error);
       }
@@ -103,11 +103,11 @@ export default class Component extends (FieldComponent as any) {
   }
 
   saveDrawnItems(drawnItems: L.Layer[]) {
-    const value = drawnItems.map((layer: any) => {
+    const features = drawnItems.map((layer: any) => {
       if (layer instanceof L.Marker) {
         return {
           type: 'marker',
-          latlng: layer.getLatLng(),
+          coordinates: layer.getLatLng(),
         };
       } else if (layer instanceof L.Rectangle) {
         return {
@@ -117,38 +117,34 @@ export default class Component extends (FieldComponent as any) {
       } else if (layer instanceof L.Circle) {
         return {
           type: 'circle',
-          latlng: layer.getLatLng(),
+          coordinates: layer.getLatLng(),
           radius: layer.getRadius(),
         };
       } else if (layer instanceof L.Polygon) {
         return {
           type: 'polygon',
-          latlngs: layer.getLatLngs(),
+          coordinates: layer.getLatLngs(),
         };
       } else if (layer instanceof L.Polyline) {
         return {
           type: 'polyline',
-          latlngs: layer.getLatLngs(),
+          coordinates: layer.getLatLngs(),
         };
       }
     });
 
-    // Convert to JSON string
-    const jsonValue =
-      this.component.numPoints === 1
-        ? JSON.stringify(value[0])
-        : JSON.stringify(value);
-    this.setValue(jsonValue);
+    this.setValue({ features });
   }
 
   setValue(value) {
     super.setValue(value);
 
     // Additional logic to render the saved data on the map if necessary
-    if (this.mapService && value) {
+    if (this.mapService && value && value.features) {
       try {
-        const parsedValue = JSON.parse(value);
-        this.mapService.loadDrawnItems(parsedValue);
+        //const parsedValue = JSON.parse(value);
+
+        this.mapService.loadDrawnItems(value.features);
       } catch (error) {
         console.error('Failed to parse value:', error);
       }

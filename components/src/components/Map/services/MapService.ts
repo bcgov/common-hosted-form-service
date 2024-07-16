@@ -157,15 +157,15 @@ class MapService {
     items.forEach((item) => {
       let layer;
       if (item.type === 'marker') {
-        layer = L.marker(item.latlng);
+        layer = L.marker(item.coordinates);
       } else if (item.type === 'rectangle') {
         layer = L.rectangle(item.bounds);
       } else if (item.type === 'circle') {
-        layer = L.circle(item.latlng, { radius: item.radius });
+        layer = L.circle(item.coordinates, { radius: item.radius });
       } else if (item.type === 'polygon') {
-        layer = L.polygon(item.latlngs);
+        layer = L.polygon(item.coordinates);
       } else if (item.type === 'polyline') {
-        layer = L.polyline(item.latlngs);
+        layer = L.polyline(item.coordinates);
       }
 
       if (layer) {
