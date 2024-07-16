@@ -73,9 +73,8 @@ class ObjectStorageService {
     if (!fileUploadsDir.endsWith('/')) {
       fileUploadsDir += '/';
     }
-    console.log('-----------------------------> fileUploadsDir', fileUploadsDir);
+
     const resolvedFilename = fs.realpathSync(path.resolve(fileUploadsDir, filename));
-    console.log('-----------------------------> resolvedFilename', resolvedFilename);
     if (!resolvedFilename.startsWith(fileUploadsDir)) {
       throw new Error(`Invalid path '${filename}'`);
     }
