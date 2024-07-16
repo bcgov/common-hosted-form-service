@@ -5,13 +5,15 @@ const os = require('os');
 
 const Problem = require('api-problem');
 
-let uploader = undefined;
-let storage = undefined;
+let fileUploadsDir = os.tmpdir();
 let maxFileSize = bytes.parse('25MB');
 let maxFileCount = 1;
 
+let storage = undefined;
+let uploader = undefined;
+
 const fileSetup = (options) => {
-  const fileUploadsDir = (options && options.dir) || process.env.FILE_UPLOADS_DIR || fs.realpathSync(os.tmpdir());
+  fileUploadsDir = (options && options.dir) || process.env.FILE_UPLOADS_DIR || fs.realpathSync(os.tmpdir());
   try {
     fs.ensureDirSync(fileUploadsDir);
   } catch (error) {
@@ -59,6 +61,15 @@ module.exports.fileUpload = {
         limits: { fileSize: maxFileSize, files: maxFileCount },
       }).single(formFieldName);
     }
+  },
+
+  /**
+   * Gets the directory where the files are uploaded to.
+   *
+   * @returns the file uploads directory.
+   */
+  getFileUploadsDir() {
+    return fileUploadsDir;
   },
 
   async upload(req, res, next) {
