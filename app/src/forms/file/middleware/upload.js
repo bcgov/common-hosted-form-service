@@ -9,8 +9,8 @@ let fileUploadsDir = os.tmpdir();
 let maxFileSize = bytes.parse('25MB');
 let maxFileCount = 1;
 
-let storage = undefined;
-let uploader = undefined;
+let storage;
+let uploader;
 
 const fileSetup = (options) => {
   fileUploadsDir = (options && options.dir) || process.env.FILE_UPLOADS_DIR || fs.realpathSync(os.tmpdir());
