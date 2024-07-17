@@ -236,6 +236,20 @@ describe('fileUpload.init', () => {
   });
 });
 
+describe('fileUpload.getFileUploadsDir', () => {
+  const mockOs = '/mock_os_tmpdir';
+
+  test('uses os.tmpdir when there is no config or environment variable', async () => {
+    fs.realpathSync.mockReturnValueOnce(mockOs);
+    os.tmpdir.mockReturnValueOnce(mockOs);
+    fileUpload.init();
+
+    const result = fileUpload.getFileUploadsDir();
+
+    expect(result).toBe(mockOs);
+  });
+});
+
 describe('fileUpload.upload', () => {
   // These are for the sake of completeness but there isn't much value here.
   describe('400 response when', () => {
