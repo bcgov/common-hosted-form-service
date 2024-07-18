@@ -100,6 +100,7 @@
     "referenceGuideB": "hướng dẫn sử dụng",
     "referenceGuideC": "để biết thêm chi tiết",
     "specificTeamMembers": "Thành viên nhóm cụ thể",
+    "teamMemberTooltip": "Thêm thành viên nhóm từ cài đặt Quản lý Nhóm sau khi tạo mẫu này.",
     "formFunctionality": "Chức năng biểu mẫu",
     "formSubmissinScheduleMsg": "Lịch gửi biểu mẫu sẽ có sẵn trong Cài đặt biểu mẫu sau khi biểu mẫu được xuất bản.",
     "formSubmissionsSchedule": "Lịch gửi biểu mẫu",
@@ -829,7 +830,8 @@
     "errorSavingFile": "Lỗi khi lưu tệp. Tên tệp: {fileName}. Lỗi: {error}",
     "submittingDraftErrMsg": "Đã xảy ra lỗi khi lưu bản nháp",
     "submittingDraftConsErrMsg": "Lỗi khi lưu bản nháp. Đệ trìnhId: {submissionId}. Lỗi: {error}",
-    "formDraftAccessErrMsg": "Yêu cầu gửi đã được gửi, chuyển hướng đến Xem trang"
+    "formDraftAccessErrMsg": "Yêu cầu gửi đã được gửi, chuyển hướng đến Xem trang",
+    "formUnauthorizedMessage": "Bạn không được phép xem mẫu này, vui lòng liên hệ với chủ sở hữu mẫu để được truy cập."
   },
   "bCGovFooter": {
     "home": "Trang chủ",

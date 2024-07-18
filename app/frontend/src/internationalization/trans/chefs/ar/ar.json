@@ -100,6 +100,7 @@
     "referenceGuideB": "دليل المستخدم",
     "referenceGuideC": "لمزيد من التفاصيل",
     "specificTeamMembers": "أعضاء الفريق المحدد",
+    "teamMemberTooltip": "أضف أعضاء الفريق من إعدادات إدارة الفريق بعد إنشاء هذا النموذج.",
     "formFunctionality": "وظيفة الشكل",
     "formSubmissinScheduleMsg": "سيكون جدول تقديم النموذج متاحًا في \"إعدادات النموذج\" بعد نشر النموذج.",
     "formSubmissionsSchedule": "جدول تقديم النموذج",
@@ -829,7 +830,8 @@
     "errorSavingFile": "خطأ في حفظ الملفات. اسم الملف: {fileName}. خطأ: {error}",
     "submittingDraftErrMsg": "حدث خطأ أثناء حفظ المسودة",
     "submittingDraftConsErrMsg": "خطأ في حفظ المسودة. معرف التقديم: {submitId}. خطأ: {error}",
-    "formDraftAccessErrMsg": "تم إرسال طلب التقديم بالفعل ، مع إعادة التوجيه إلى صفحة العرض"
+    "formDraftAccessErrMsg": "تم إرسال طلب التقديم بالفعل ، مع إعادة التوجيه إلى صفحة العرض",
+    "formUnauthorizedMessage": "غير مخول لك مشاهدة هذا النموذج، يرجى الاتصال بمالك النموذج للحصول على الوصول."
   },
   "bCGovFooter": {
     "home": "بيت",

@@ -100,6 +100,7 @@
     "referenceGuideB": "guida utente",
     "referenceGuideC": "per ulteriori dettagli",
     "specificTeamMembers": "Membri specifici del team",
+    "teamMemberTooltip": "Aggiungi membri del team dalle impostazioni di Gestione del Team dopo aver creato questo modulo.",
     "formFunctionality": "Funzionalità della forma",
     "formSubmissinScheduleMsg": "Il programma di invio del modulo sarà disponibile nelle Impostazioni del modulo dopo la pubblicazione del modulo.",
     "formSubmissionsSchedule": "Programma di invio dei moduli",
@@ -829,7 +830,8 @@
     "errorSavingFile": "Errore durante il salvataggio dei file. nome file: {fileName}. Errore: {error}",
     "submittingDraftErrMsg": "Si è verificato un errore durante il salvataggio di una bozza",
     "submittingDraftConsErrMsg": "Errore durante il salvataggio della bozza. SubmissionId: {submissionId}. Errore: {error}",
-    "formDraftAccessErrMsg": "L'invio richiesto è già stato inviato, reindirizzamento alla pagina Visualizza"
+    "formDraftAccessErrMsg": "L'invio richiesto è già stato inviato, reindirizzamento alla pagina Visualizza",
+    "formUnauthorizedMessage": "Non sei autorizzato a visualizzare questo modulo, si prega di contattare il proprietario del modulo per l'accesso."
   },
   "bCGovFooter": {
     "home": "Casa",

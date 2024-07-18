@@ -100,6 +100,7 @@
     "referenceGuideB": "керівництво користувача",
     "referenceGuideC": "для більш детальної інформації",
     "specificTeamMembers": "Конкретні члени команди",
+    "teamMemberTooltip": "Додайте членів команди з налаштувань управління командою після створення цієї форми.",
     "formFunctionality": "Функціональність форми",
     "formSubmissinScheduleMsg": "Розклад подання форми буде доступний у налаштуваннях форми після публікації форми.",
     "formSubmissionsSchedule": "Графік подання форм",
@@ -828,7 +829,8 @@
     "errorSavingFile": "Помилка збереження файлів. Ім'я файлу: {fileName}. Помилка: {error}",
     "submittingDraftErrMsg": "Під час збереження чернетки сталася помилка",
     "submittingDraftConsErrMsg": "Помилка збереження чернетки. SubmissionId: {submissionId}. Помилка: {error}",
-    "formDraftAccessErrMsg": "Запитане подання вже подано, переспрямовує на сторінку перегляду"
+    "formDraftAccessErrMsg": "Запитане подання вже подано, переспрямовує на сторінку перегляду",
+    "formUnauthorizedMessage": "Ви не маєте права переглядати цю форму, будь ласка, зв'яжіться з власником форми для доступу."
   },
   "bCGovFooter": {
     "home": "додому",

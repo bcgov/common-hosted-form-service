@@ -100,6 +100,7 @@
     "referenceGuideB": "guia de usuario",
     "referenceGuideC": "para mais detalhes",
     "specificTeamMembers": "Membros Específicos da Equipe",
+    "teamMemberTooltip": "Adicione membros da equipe a partir das configurações de Gestão de Equipe após criar este formulário.",
     "formFunctionality": "Funcionalidade do formulário",
     "formSubmissinScheduleMsg": "A Agenda de envios de formulários estará disponível nas Configurações de formulários após a publicação do formulário.",
     "formSubmissionsSchedule": "Cronograma de Envios de Formulários",
@@ -829,7 +830,8 @@
     "errorSavingFile": "Erro ao salvar arquivos. Nome do arquivo: {fileName}. Erro: {error}",
     "submittingDraftErrMsg": "Ocorreu um erro ao salvar um rascunho",
     "submittingDraftConsErrMsg": "Erro ao salvar rascunho. SubmissãoId: {submissionId}. Erro: {error}",
-    "formDraftAccessErrMsg": "O envio solicitado já foi enviado, redirecionando para a página Exibir"
+    "formDraftAccessErrMsg": "O envio solicitado já foi enviado, redirecionando para a página Exibir",
+    "formUnauthorizedMessage": "Você não está autorizado a visualizar este formulário, por favor, contate o proprietário do formulário para acesso."
   },
   "bCGovFooter": {
     "home": "Lar",

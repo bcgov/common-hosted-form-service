@@ -100,6 +100,7 @@
     "referenceGuideB": "用戶指南",
     "referenceGuideC": "更多細節",
     "specificTeamMembers": "具體團隊成員",
+    "teamMemberTooltip": "在創建此表單後，從團隊管理設置中添加團隊成員。",
     "formFunctionality": "表單功能",
     "formSubmissinScheduleMsg": "表單發布後，表單提交計劃將在表單設置中可用。",
     "formSubmissionsSchedule": "表格提交時間表",
@@ -829,7 +830,8 @@
     "errorSavingFile": "保存文件時出錯。文件名：{fileName}。錯誤：{error}",
     "submittingDraftErrMsg": "保存草稿時出錯",
     "submittingDraftConsErrMsg": "保存草稿時出錯。提交 ID：{submissionId}。錯誤：{error}",
-    "formDraftAccessErrMsg": "請求的提交已提交，正在重定向到查看頁面"
+    "formDraftAccessErrMsg": "請求的提交已提交，正在重定向到查看頁面",
+    "formUnauthorizedMessage": "您無權查看此表單，請聯繫表單所有者以獲取訪問權限。"
   },
   "bCGovFooter": {
     "home": "家",

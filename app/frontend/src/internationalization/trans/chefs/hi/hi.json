@@ -100,6 +100,7 @@
     "referenceGuideB": "उपयोगकर्ता गाइड",
     "referenceGuideC": "अधिक जानकारी के लिए",
     "specificTeamMembers": "विशिष्ट टीम के सदस्य",
+    "teamMemberTooltip": "इस फॉर्म को बनाने के बाद टीम प्रबंधन सेटिंग्स से टीम के सदस्यों को जोड़ें।",
     "formFunctionality": "फॉर्म की कार्यक्षमता",
     "formSubmissinScheduleMsg": "फॉर्म सबमिशन शेड्यूल फॉर्म प्रकाशित होने के बाद फॉर्म सेटिंग्स में उपलब्ध होगा।",
     "formSubmissionsSchedule": "फॉर्म जमा करने की अनुसूची",
@@ -829,7 +830,8 @@
     "errorSavingFile": "फ़ाइलें सहेजने में त्रुटि. फ़ाइल का नाम: {fileName}. त्रुटि: {error}",
     "submittingDraftErrMsg": "ड्राफ्ट सहेजते समय एक त्रुटि उत्पन्न हुई",
     "submittingDraftConsErrMsg": "ड्राफ्ट सहेजने में त्रुटि. सबमिशनआईडी: {submissionId}। त्रुटि: {error}",
-    "formDraftAccessErrMsg": "अनुरोधित सबमिशन पहले ही सबमिट किया जा चुका है, व्यू पेज पर रीडायरेक्ट किया जा रहा है"
+    "formDraftAccessErrMsg": "अनुरोधित सबमिशन पहले ही सबमिट किया जा चुका है, व्यू पेज पर रीडायरेक्ट किया जा रहा है",
+    "formUnauthorizedMessage": "आप इस फॉर्म को देखने के लिए अधिकृत नहीं हैं, कृपया पहुँच प्राप्त करने के लिए फॉर्म के मालिक से संपर्क करें।"
   },
   "bCGovFooter": {
     "home": "घर",
