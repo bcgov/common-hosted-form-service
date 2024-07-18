@@ -1,6 +1,6 @@
 import { createTestingPinia } from '@pinia/testing';
 import { setActivePinia } from 'pinia';
-import { flushPromises, mount } from '@vue/test-utils';
+import { flushPromises, mount, shallowMount } from '@vue/test-utils';
 import { beforeEach, vi } from 'vitest';
 
 import { formService } from '~/services';
@@ -59,7 +59,8 @@ describe('StatusTable.vue', () => {
     });
     const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
     addNotificationSpy.mockImplementationOnce(() => {});
-    const wrapper = mount(StatusTable, {
+
+    shallowMount(StatusTable, {
       props: {
         submissionId: submissionId,
       },
