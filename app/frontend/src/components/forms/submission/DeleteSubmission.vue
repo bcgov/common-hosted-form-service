@@ -1,8 +1,12 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { useFormStore } from '~/store/form';
+
+const { locale } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   disabled: {
@@ -25,7 +29,7 @@ const showDeleteDialog = ref(false);
 
 const formStore = useFormStore();
 
-const { lang, isRTL } = storeToRefs(formStore);
+const { isRTL } = storeToRefs(formStore);
 
 async function delSub() {
   await formStore.deleteSubmission(properties.submissionId);
@@ -56,7 +60,7 @@ defineExpose({ emit, delSub });
           @click="showDeleteDialog = true"
         />
       </template>
-      <span :lang="lang"
+      <span :lang="locale"
         >{{ $t('trans.deleteSubmission.deleteThis') }}
         {{
           isDraft
@@ -73,12 +77,12 @@ defineExpose({ emit, delSub });
       @continue-dialog="delSub"
     >
       <template #title>
-        <span :lang="lang">{{
+        <span :lang="locale">{{
           $t('trans.deleteSubmission.confirmDeletion')
         }}</span></template
       >
       <template #text>
-        <span :lang="lang">
+        <span :lang="locale">
           {{ $t('trans.deleteSubmission.deleteWarning') }}
           {{
             isDraft
@@ -88,7 +92,7 @@ defineExpose({ emit, delSub });
         >
       </template>
       <template #button-text-continue>
-        <span :lang="lang">{{ $t('trans.deleteSubmission.delete') }}</span>
+        <span :lang="locale">{{ $t('trans.deleteSubmission.delete') }}</span>
       </template>
     </BaseDialog>
   </span>

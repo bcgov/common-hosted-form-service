@@ -3,9 +3,10 @@ import _ from 'lodash';
 import moment from 'moment';
 import { mapActions, mapState } from 'pinia';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import BaseFilter from '~/components/base/BaseFilter.vue';
-import { i18n } from '~/internationalization';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { checkFormManage, checkSubmissionView } from '~/utils/permissionUtils';
@@ -20,6 +21,11 @@ export default {
       type: String,
       required: true,
     },
+  },
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
+
+    return { t, locale };
   },
   data() {
     return {
@@ -70,7 +76,6 @@ export default {
       'form',
       'formFields',
       'isRTL',
-      'lang',
       'permissions',
       'roles',
       'submissionList',
@@ -79,16 +84,16 @@ export default {
     ]),
     ...mapState(useAuthStore, ['user']),
     multiDeleteMessage() {
-      return i18n.t('trans.submissionsTable.multiDelWarning');
+      return this.$t('trans.submissionsTable.multiDelWarning');
     },
     singleDeleteMessage() {
-      return i18n.t('trans.submissionsTable.singleDelWarning');
+      return this.$t('trans.submissionsTable.singleDelWarning');
     },
     multiRestoreMessage() {
-      return i18n.t('trans.submissionsTable.multiRestoreWarning');
+      return this.$t('trans.submissionsTable.multiRestoreWarning');
     },
     singleRestoreMessage() {
-      return i18n.t('trans.submissionsTable.singleRestoreWarning');
+      return this.$t('trans.submissionsTable.singleRestoreWarning');
     },
     showStatus() {
       return this.form && this.form.enableStatusUpdates;
@@ -559,7 +564,7 @@ export default {
     >
       <!-- page title -->
       <div>
-        <h1 :lang="lang">{{ $t('trans.formsTable.submissions') }}</h1>
+        <h1 :lang="locale">{{ $t('trans.formsTable.submissions') }}</h1>
         <h3>{{ formId ? form.name : 'All Forms' }}</h3>
       </div>
       <!-- buttons -->
@@ -578,7 +583,7 @@ export default {
                 @click="onShowColumnDialog"
               />
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               $t('trans.submissionsTable.selectColumns')
             }}</span>
           </v-tooltip>
@@ -597,7 +602,7 @@ export default {
                 />
               </router-link>
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               $t('trans.submissionsTable.manageForm')
             }}</span>
           </v-tooltip>
@@ -617,7 +622,7 @@ export default {
                 />
               </router-link>
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               $t('trans.submissionsTable.submissionsToFiles')
             }}</span>
           </v-tooltip>
@@ -635,7 +640,7 @@ export default {
           @click="refreshSubmissions"
         >
           <template #label>
-            <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            <span :class="{ 'mr-2': isRTL }" :lang="locale">
               {{ $t('trans.submissionsTable.showDeletedSubmissions') }}
             </span>
           </template>
@@ -649,7 +654,7 @@ export default {
           @click="refreshSubmissions"
         >
           <template #label>
-            <span :class="{ 'mr-2': isRTL }" :lang="lang">
+            <span :class="{ 'mr-2': isRTL }" :lang="locale">
               {{ $t('trans.submissionsTable.showMySubmissions') }}
             </span>
           </template>
@@ -668,7 +673,7 @@ export default {
             hide-details
             class="pb-5"
             :class="{ label: isRTL }"
-            :lang="lang"
+            :lang="locale"
             @update:modelValue="handleSearch"
           ></v-text-field>
         </div>
@@ -694,7 +699,7 @@ export default {
           ? $t('trans.submissionsTable.noMatchingRecordText')
           : $t('trans.submissionsTable.noDataText')
       "
-      :lang="lang"
+      :lang="locale"
       return-object
       @update:options="updateTableOptions"
     >
@@ -712,7 +717,7 @@ export default {
               <template #activator="{ props }">
                 <v-icon color="white" dark v-bind="props" />
               </template>
-              <span :lang="lang">{{
+              <span :lang="locale">{{
                 $t('trans.submissionsTable.delSelectedSubmissions')
               }}</span>
             </v-tooltip>
@@ -738,7 +743,7 @@ export default {
                   size="24"
                 />
               </template>
-              <span :lang="lang">{{
+              <span :lang="locale">{{
                 $t('trans.submissionsTable.resSelectedSubmissions')
               }}</span>
             </v-tooltip>
@@ -753,7 +758,7 @@ export default {
         {{ item.status }}
       </template>
       <template #item.lateEntry="{ item }">
-        <span :lang="lang">
+        <span :lang="locale">
           {{
             item.lateEntry === true
               ? $t('trans.submissionsTable.yes')
@@ -783,7 +788,7 @@ export default {
               </v-btn>
             </router-link>
           </template>
-          <span :lang="lang">{{
+          <span :lang="locale">{{
             $t('trans.submissionsTable.viewSubmission')
           }}</span>
         </v-tooltip>
@@ -807,7 +812,7 @@ export default {
                 <v-icon icon="mdi:mdi-minus" color="white"></v-icon>
               </v-btn>
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               $t('trans.submissionsTable.deleteSubmission')
             }}</span>
           </v-tooltip>
@@ -829,7 +834,9 @@ export default {
                 <v-icon color="green" icon="mdi:mdi-delete-restore" size="24" />
               </v-btn>
             </template>
-            <span :lang="lang">{{ $t('trans.submissionsTable.restore') }}</span>
+            <span :lang="locale">{{
+              $t('trans.submissionsTable.restore')
+            }}</span>
           </v-tooltip>
         </span>
       </template>
@@ -848,7 +855,7 @@ export default {
         {{ singleSubmissionDelete ? singleDeleteMessage : multiDeleteMessage }}
       </template>
       <template #button-text-continue>
-        <span :lang="lang">{{ $t('trans.submissionsTable.delete') }}</span>
+        <span :lang="locale">{{ $t('trans.submissionsTable.delete') }}</span>
       </template>
     </BaseDialog>
     <BaseDialog
@@ -858,7 +865,7 @@ export default {
       @continue-dialog="restoreSub"
     >
       <template #title
-        ><span :lang="lang">
+        ><span :lang="locale">
           {{ $t('trans.submissionsTable.confirmRestoration') }}</span
         ></template
       >
@@ -868,7 +875,7 @@ export default {
         }}
       </template>
       <template #button-text-continue>
-        <span :lang="lang">{{ $t('trans.submissionsTable.restore') }}</span>
+        <span :lang="locale">{{ $t('trans.submissionsTable.restore') }}</span>
       </template>
     </BaseDialog>
 
@@ -885,7 +892,7 @@ export default {
         @cancel-filter-data="showColumnsDialog = false"
       >
         <template #filter-title
-          ><span :lang="lang">
+          ><span :lang="locale">
             {{ $t('trans.submissionsTable.searchTitle') }}
           </span></template
         >

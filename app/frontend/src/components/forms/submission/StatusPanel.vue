@@ -10,7 +10,7 @@ import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { FormPermissions } from '~/utils/constants';
 
-const { t } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   formId: {
@@ -47,8 +47,7 @@ const formStore = useFormStore();
 const notificationStore = useNotificationStore();
 
 const { user } = storeToRefs(useAuthStore());
-const { form, formSubmission, submissionUsers, isRTL, lang } =
-  storeToRefs(formStore);
+const { form, formSubmission, submissionUsers, isRTL } = storeToRefs(formStore);
 
 // State Machine
 const showAssignee = computed(() => ['ASSIGNED'].includes(statusToSet.value));
@@ -288,8 +287,12 @@ defineExpose({
 
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
-    <div class="flex-container" @click="showStatusContent = !showStatusContent">
-      <h2 class="status-heading" :class="{ 'dir-rtl': isRTL }" :lang="lang">
+    <div
+      class="flex-container"
+      data-test="showStatusPanel"
+      @click="showStatusContent = !showStatusContent"
+    >
+      <h2 class="status-heading" :class="{ 'dir-rtl': isRTL }" :lang="locale">
         {{ $t('trans.formSubmission.status') }}
         <v-icon>{{
           showStatusContent
@@ -300,7 +303,7 @@ defineExpose({
         }}</v-icon>
       </h2>
       <!-- Show <p> here for screens greater than 959px  -->
-      <p class="hide-on-narrow" :lang="lang">
+      <p class="hide-on-narrow" :lang="locale">
         <span :class="isRTL ? 'status-details-rtl' : 'status-details'">
           <strong>{{ $t('trans.statusPanel.currentStatus') }}</strong>
           {{ currentStatus.code }}
@@ -308,9 +311,9 @@ defineExpose({
         <span :class="isRTL ? 'status-details-rtl' : 'status-details'">
           <strong>{{ $t('trans.statusPanel.assignedTo') }}</strong>
           {{ currentStatus.user ? currentStatus.user.fullName : 'N/A' }}
-          <span v-if="currentStatus.user"
-            >({{ currentStatus.user.email }})</span
-          >
+          <span v-if="currentStatus.user" data-test="showAssigneeEmail">
+            ({{ currentStatus.user.email }})
+          </span>
         </span>
       </p>
     </div>
@@ -321,13 +324,13 @@ defineExpose({
     >
       <div v-if="showStatusContent" class="d-flex flex-column flex-1-1-100">
         <!-- Show <p> here for screens less than 960px  -->
-        <p class="hide-on-wide" :lang="lang">
+        <p class="hide-on-wide" :lang="locale">
           <strong>{{ $t('trans.statusPanel.currentStatus') }}</strong>
           {{ currentStatus.code }}
           <br />
           <strong>{{ $t('trans.statusPanel.assignedTo') }}</strong>
           {{ currentStatus.user ? currentStatus.user.fullName : 'N/A' }}
-          <span v-if="currentStatus.user"
+          <span v-if="currentStatus.user" data-test="showAssigneeEmail"
             >({{ currentStatus.user.email }})</span
           >
         </p>
@@ -337,7 +340,7 @@ defineExpose({
           lazy-validation
           style="width: inherit"
         >
-          <label :lang="lang">{{
+          <label :lang="locale">{{
             $t('trans.statusPanel.assignOrUpdateStatus')
           }}</label>
           <v-select
@@ -345,6 +348,7 @@ defineExpose({
             variant="outlined"
             :items="items"
             item-title="display"
+            data-test="showStatusList"
             item-value="code"
             style="width: 100% !important; padding: 0px !important"
             :rules="[(v) => !!v || $t('trans.statusPanel.statusIsRequired')]"
@@ -364,7 +368,7 @@ defineExpose({
                     ></v-icon>
                   </template>
                   <span
-                    :lang="lang"
+                    :lang="locale"
                     v-html="
                       $t('trans.statusPanel.assignSubmissnToFormReviewer')
                     "
@@ -376,6 +380,7 @@ defineExpose({
                 v-model="assignee"
                 :class="{ 'dir-rtl': isRTL }"
                 autocomplete="autocomplete_off"
+                data-test="showAssigneeList"
                 clearable
                 :custom-filter="autoCompleteFilter"
                 :items="formReviewers"
@@ -387,7 +392,7 @@ defineExpose({
                 :rules="[
                   (v) => !!v || $t('trans.statusPanel.assigneeIsRequired'),
                 ]"
-                :lang="lang"
+                :lang="locale"
               >
                 <!-- selected user -->
                 <template #chip="{ props, item }">
@@ -411,11 +416,12 @@ defineExpose({
                   size="small"
                   color="primary"
                   class="pl-0 my-0 text-end"
+                  data-test="canAssignToMe"
                   :title="$t('trans.statusPanel.assignToMe')"
                   @click="assignToCurrentUser"
                 >
                   <v-icon class="mr-1" icon="mdi:mdi-account"></v-icon>
-                  <span :lang="lang">{{
+                  <span :lang="locale">{{
                     $t('trans.statusPanel.assignToMe')
                   }}</span>
                 </v-btn>
@@ -428,7 +434,8 @@ defineExpose({
                 variant="outlined"
                 density="compact"
                 :class="{ 'dir-rtl': isRTL }"
-                :lang="lang"
+                :lang="locale"
+                data-test="showRecipientEmail"
               />
             </div>
 
@@ -436,10 +443,11 @@ defineExpose({
               <v-checkbox
                 v-model="addComment"
                 :label="$t('trans.statusPanel.attachCommentToEmail')"
-                :lang="lang"
+                :lang="locale"
+                data-test="canAttachCommentToEmail"
               />
               <div v-if="addComment">
-                <label :lang="lang">{{
+                <label :lang="locale">{{
                   $t('trans.statusPanel.emailComment')
                 }}</label>
                 <v-textarea
@@ -453,6 +461,7 @@ defineExpose({
                   auto-grow
                   density="compact"
                   variant="outlined"
+                  data-test="canAddComment"
                   solid
                 />
               </div>
@@ -470,8 +479,9 @@ defineExpose({
                     color="textLink"
                     v-bind="props"
                     :title="$t('trans.statusPanel.viewHistory')"
+                    data-test="viewHistoryButton"
                   >
-                    <span :lang="lang">{{
+                    <span :lang="locale">{{
                       $t('trans.statusPanel.viewHistory')
                     }}</span>
                   </v-btn>
@@ -480,6 +490,7 @@ defineExpose({
                     :disabled="!statusToSet"
                     color="primary"
                     :title="statusAction"
+                    data-test="updateStatusToNew"
                     @click="updateStatus"
                   >
                     <span>{{ statusAction }}</span>
@@ -490,7 +501,7 @@ defineExpose({
                   <v-card-title
                     class="text-h5 pb-0"
                     :class="{ 'dir-rtl': isRTL }"
-                    :lang="lang"
+                    :lang="locale"
                     >{{ $t('trans.statusPanel.statusHistory') }}</v-card-title
                   >
 
@@ -506,9 +517,10 @@ defineExpose({
                       color="primary"
                       variant="flat"
                       :title="$t('trans.statusPanel.close')"
+                      data-test="canCloseStatusPanel"
                       @click="historyDialog = false"
                     >
-                      <span :lang="lang">{{
+                      <span :lang="locale">{{
                         $t('trans.statusPanel.close')
                       }}</span>
                     </v-btn>

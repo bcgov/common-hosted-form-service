@@ -7,7 +7,7 @@ import { formService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
-const { t } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   submissionId: {
@@ -21,7 +21,7 @@ const statuses = ref([]);
 
 const notificationStore = useNotificationStore();
 
-const { isRTL, lang } = storeToRefs(useFormStore());
+const { isRTL } = storeToRefs(useFormStore());
 
 const headers = computed(() => {
   return [
@@ -71,7 +71,7 @@ async function getData() {
       :loading-text="$t('trans.statusTable.loadingText')"
       item-key="statusId"
       class="status-table"
-      :lang="lang"
+      :lang="locale"
     >
       <template #item.createdAt="{ item }">
         <span>{{ $filters.formatDate(item.createdAt) }}</span>

@@ -1,4 +1,5 @@
 {
+  "open": "باز کن",
   "date": {
     "date": "yyyy-mm-dd"
   },
@@ -614,6 +615,7 @@
     "assigneeIsRequired": "کارمند مورد نیاز است",
     "assignToMe": "به من اختصاص دهید",
     "recipientEmail": "ایمیل گیرنده",
+    "recipientIsRequired": "دریافت کننده الزامی است",
     "attachCommentToEmail": "نظر را به ایمیل ضمیمه کنید",
     "emailComment": "نظر ایمیل",
     "maxChars": "حداکثر 4000 کاراکتر",
@@ -699,7 +701,8 @@
     "defaultCdogsTemplate": "استفاده از قالب پیش‌فرض CDOGS",
     "fileName": "نام فایل",
     "uploadDate": "تاریخ بارگذاری",
-    "upload": "بارگذاری"
+    "upload": "بارگذاری",
+    "selectExportFileType": "نوع فایل صادرات را انتخاب کنید"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "لینک اطلاعات کامپوننت",

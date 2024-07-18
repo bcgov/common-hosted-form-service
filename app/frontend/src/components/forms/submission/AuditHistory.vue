@@ -7,7 +7,7 @@ import formService from '~/services/formService.js';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
-const { t } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   submissionId: {
@@ -22,7 +22,7 @@ const editHistoryDialog = ref(false);
 const loading = ref(true);
 const history = ref([]);
 
-const { isRTL, lang } = storeToRefs(useFormStore());
+const { isRTL } = storeToRefs(useFormStore());
 
 /* c8 ignore start */
 const headers = computed(() => {
@@ -74,7 +74,7 @@ defineExpose({ loadHistory });
           @click="loadHistory"
         />
       </template>
-      <span :class="{ 'dir-rtl': isRTL }" :lang="lang">{{
+      <span :class="{ 'dir-rtl': isRTL }" :lang="locale">{{
         $t('trans.auditHistory.viewEditHistory')
       }}</span>
     </v-tooltip>
@@ -84,12 +84,12 @@ defineExpose({ loadHistory });
         <v-card-title
           class="text-h5 pb-0"
           :class="{ 'dir-rtl': isRTL }"
-          :lang="lang"
+          :lang="locale"
           >{{ $t('trans.auditHistory.editHistory') }}</v-card-title
         >
         <v-card-text>
           <hr />
-          <p :class="{ 'dir-rtl': isRTL }" :lang="lang">
+          <p :class="{ 'dir-rtl': isRTL }" :lang="locale">
             {{ $t('trans.auditHistory.auditLogMsg') }}
           </p>
 
@@ -101,7 +101,7 @@ defineExpose({ loadHistory });
             :loading-text="$t('trans.auditHistory.loadingText')"
             item-key="id"
             class="status-table"
-            :lang="lang"
+            :lang="locale"
           >
             <template #[`item.actionTimestamp`]="{ item }">
               {{ $filters.formatDateLong(item.actionTimestamp) }}
@@ -117,7 +117,7 @@ defineExpose({ loadHistory });
             :title="$t('trans.auditHistory.close')"
             @click="editHistoryDialog = false"
           >
-            <span :lang="lang">{{ $t('trans.auditHistory.close') }}</span>
+            <span :lang="locale">{{ $t('trans.auditHistory.close') }}</span>
           </v-btn>
         </v-card-actions>
       </v-card>

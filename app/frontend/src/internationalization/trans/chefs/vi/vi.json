@@ -1,4 +1,5 @@
 {
+  "open": "mở",
   "date": {
     "date": "yyyy-mm-dd"
   },
@@ -614,6 +615,7 @@
     "assigneeIsRequired": "Người được ủy quyền là bắt buộc",
     "assignToMe": "GIAO CHO TÔI",
     "recipientEmail": "Người nhận E-mail",
+    "recipientIsRequired": "Người nhận là bắt buộc",
     "attachCommentToEmail": "Đính kèm Nhận xét vào Email",
     "emailComment": "Nhận xét email",
     "maxChars": "Tối đa 4000 ký tự",
@@ -699,7 +701,8 @@
     "defaultCdogsTemplate": "Sử dụng mẫu CDOGS mặc định",
     "fileName": "Tên tệp",
     "uploadDate": "Ngày tải lên",
-    "upload": "Tải lên"
+    "upload": "Tải lên",
+    "selectExportFileType": "Chọn loại file xuất"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Liên kết thông tin thành phần",

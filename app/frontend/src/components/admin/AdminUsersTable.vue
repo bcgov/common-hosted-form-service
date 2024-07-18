@@ -1,12 +1,16 @@
 <script>
 import { mapActions, mapState } from 'pinia';
-
-import { i18n } from '~/internationalization';
+import { useI18n } from 'vue-i18n';
 
 import { useAdminStore } from '~/store/admin';
 import { useFormStore } from '~/store/form';
 
 export default {
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
+
+    return { t, locale };
+  },
   data() {
     return {
       loading: true,
@@ -15,26 +19,26 @@ export default {
   },
   computed: {
     ...mapState(useAdminStore, ['userList']),
-    ...mapState(useFormStore, ['isRTL', 'lang']),
+    ...mapState(useFormStore, ['isRTL']),
     headers() {
       return [
         {
-          title: i18n.t('trans.adminUsersTable.fullName'),
+          title: this.$t('trans.adminUsersTable.fullName'),
           align: 'start',
           key: 'fullName',
         },
         {
-          title: i18n.t('trans.adminUsersTable.userID'),
+          title: this.$t('trans.adminUsersTable.userID'),
           align: 'start',
           key: 'username',
         },
         {
-          title: i18n.t('trans.adminUsersTable.created'),
+          title: this.$t('trans.adminUsersTable.created'),
           align: 'start',
           key: 'created',
         },
         {
-          title: i18n.t('trans.adminUsersTable.actions'),
+          title: this.$t('trans.adminUsersTable.actions'),
           align: 'end',
           key: 'actions',
           filterable: false,
@@ -73,7 +77,7 @@ export default {
             hide-details
             class="pb-5"
             :class="{ 'dir-rtl': isRTL, label: isRTL }"
-            :lang="lang"
+            :lang="locale"
           />
         </div>
       </v-col>
@@ -89,7 +93,7 @@ export default {
       :search="search"
       :loading="loading"
       :loading-text="$t('trans.adminUsersTable.loadingText')"
-      :lang="lang"
+      :lang="locale"
     >
       <template #item.created="{ item }">
         {{ $filters.formatDate(item.createdAt) }}
@@ -103,7 +107,7 @@ export default {
             :title="$t('trans.adminUsersTable.admin')"
           >
             <v-icon class="mr-1" icon="mdi:mdi-wrench"></v-icon>
-            <span class="d-none d-sm-flex" :lang="lang">{{
+            <span class="d-none d-sm-flex" :lang="locale">{{
               $t('trans.adminUsersTable.admin')
             }}</span>
           </v-btn>

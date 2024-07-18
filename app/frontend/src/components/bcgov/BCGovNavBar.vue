@@ -1,9 +1,12 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import { useAuthStore } from '~/store/auth';
-import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
+
+const { locale } = useI18n({ useScope: 'global' });
 
 defineProps({
   formSubmitMode: {
@@ -17,7 +20,6 @@ const idpStore = useIdpStore();
 const { authenticated, isAdmin, identityProvider } = storeToRefs(
   useAuthStore()
 );
-const { lang } = storeToRefs(useFormStore());
 
 const hasPrivileges = computed(() => {
   return idpStore.isPrimary(identityProvider?.value?.code);
@@ -35,7 +37,7 @@ const hasPrivileges = computed(() => {
           <router-link
             data-cy="aboutLinks"
             :to="{ name: 'About' }"
-            :lang="lang"
+            :lang="locale"
             >{{ $t('trans.bCGovNavBar.about') }}</router-link
           >
         </li>
@@ -43,7 +45,7 @@ const hasPrivileges = computed(() => {
           <router-link
             data-cy="userFormsLinks"
             :to="{ name: 'UserForms' }"
-            :lang="lang"
+            :lang="locale"
             >{{ $t('trans.bCGovNavBar.myForms') }}</router-link
           >
         </li>
@@ -51,7 +53,7 @@ const hasPrivileges = computed(() => {
           <router-link
             data-cy="createNewForm"
             :to="{ name: 'FormCreate' }"
-            :lang="lang"
+            :lang="locale"
             >{{ $t('trans.bCGovNavBar.createNewForm') }}</router-link
           >
         </li>
@@ -60,7 +62,7 @@ const hasPrivileges = computed(() => {
             data-cy="help"
             href="https://github.com/bcgov/common-hosted-form-service/wiki"
             target="_blank"
-            :hreflang="lang"
+            :lang="locale"
             >{{ $t('trans.bCGovNavBar.help') }}</a
           >
         </li>
@@ -69,7 +71,7 @@ const hasPrivileges = computed(() => {
             data-cy="feedback"
             href="https://chefs-fider.apps.silver.devops.gov.bc.ca/"
             target="_blank"
-            :hreflang="lang"
+            :lang="locale"
             >{{ $t('trans.bCGovNavBar.feedback') }}</a
           >
         </li>
@@ -77,7 +79,7 @@ const hasPrivileges = computed(() => {
           <router-link :to="{ name: 'User' }">User (TBD)</router-link>
         </li> -->
         <li v-if="isAdmin">
-          <router-link data-cy="admin" :to="{ name: 'Admin' }" :lang="lang">{{
+          <router-link data-cy="admin" :to="{ name: 'Admin' }" :lang="locale">{{
             $t('trans.bCGovNavBar.admin')
           }}</router-link>
         </li>

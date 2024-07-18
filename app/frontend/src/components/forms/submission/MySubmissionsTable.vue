@@ -3,12 +3,11 @@ import { storeToRefs } from 'pinia';
 import { computed, onBeforeMount, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { i18n } from '~/internationalization';
 import BaseFilter from '~/components/base/BaseFilter.vue';
 import MySubmissionsActions from '~/components/forms/submission/MySubmissionsActions.vue';
 import { useFormStore } from '~/store/form';
 
-const { t } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   formId: {
@@ -33,8 +32,7 @@ const showColumnsDialog = ref(false);
 
 const formStore = useFormStore();
 
-const { form, formFields, submissionList, isRTL, lang } =
-  storeToRefs(formStore);
+const { form, formFields, submissionList, isRTL } = storeToRefs(formStore);
 
 //------------------------ TABLE HEADERS
 // These are headers that will be available by default for the
@@ -42,28 +40,28 @@ const { form, formFields, submissionList, isRTL, lang } =
 const BASE_HEADERS = computed(() => {
   let headers = [
     {
-      title: i18n.t('trans.mySubmissionsTable.confirmationId'),
+      title: t('trans.mySubmissionsTable.confirmationId'),
       align: 'start',
       key: 'confirmationId',
       sortable: true,
     },
     {
-      title: i18n.t('trans.mySubmissionsTable.createdBy'),
+      title: t('trans.mySubmissionsTable.createdBy'),
       key: 'createdBy',
       sortable: true,
     },
     {
-      title: i18n.t('trans.mySubmissionsTable.statusUpdatedBy'),
+      title: t('trans.mySubmissionsTable.statusUpdatedBy'),
       key: 'username',
       sortable: true,
     },
     {
-      title: i18n.t('trans.mySubmissionsTable.status'),
+      title: t('trans.mySubmissionsTable.status'),
       key: 'status',
       sortable: true,
     },
     {
-      title: i18n.t('trans.mySubmissionsTable.submissionDate'),
+      title: t('trans.mySubmissionsTable.submissionDate'),
       key: 'submittedDate',
       sortable: true,
     },
@@ -71,13 +69,13 @@ const BASE_HEADERS = computed(() => {
 
   if (showDraftLastEdited.value) {
     headers.splice(headers.length - 1, 0, {
-      title: i18n.t('trans.mySubmissionsTable.draftUpdatedBy'),
+      title: t('trans.mySubmissionsTable.draftUpdatedBy'),
       align: 'start',
       key: 'updatedBy',
       sortable: true,
     });
     headers.splice(headers.length - 1, 0, {
-      title: i18n.t('trans.mySubmissionsTable.draftLastEdited'),
+      title: t('trans.mySubmissionsTable.draftLastEdited'),
       align: 'start',
       key: 'lastEdited',
       sortable: true,
@@ -312,7 +310,7 @@ defineExpose({
       >
         <!-- page title -->
         <div>
-          <h1 :lang="lang">
+          <h1 :lang="locale">
             {{ $t('trans.mySubmissionsTable.previousSubmissions') }}
           </h1>
           <h3>{{ formId ? form.name : 'All Forms' }}</h3>
@@ -332,7 +330,7 @@ defineExpose({
                 @click="onShowColumnDialog"
               />
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               $t('trans.mySubmissionsTable.selectColumns')
             }}</span>
           </v-tooltip>
@@ -355,7 +353,7 @@ defineExpose({
                 />
               </router-link>
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               $t('trans.mySubmissionsTable.createNewSubmission')
             }}</span>
           </v-tooltip>
@@ -378,7 +376,7 @@ defineExpose({
         hide-details
         class="pb-5"
         :class="{ label: isRTL }"
-        :lang="lang"
+        :lang="locale"
       />
     </div>
 
@@ -397,7 +395,7 @@ defineExpose({
           ? $t('trans.mySubmissionsTable.noMatchingRecordText')
           : $t('trans.mySubmissionsTable.noDataText')
       "
-      :lang="lang"
+      :lang="locale"
     >
       <template #item.lastEdited="{ item }">
         {{ $filters.formatDateLong(item.lastEdited) }}
@@ -432,7 +430,7 @@ defineExpose({
         @cancel-filter-data="showColumnsDialog = false"
       >
         <template #filter-title
-          ><span :lang="lang">{{
+          ><span :lang="locale">{{
             $t('trans.mySubmissionsTable.filterTitle')
           }}</span></template
         >

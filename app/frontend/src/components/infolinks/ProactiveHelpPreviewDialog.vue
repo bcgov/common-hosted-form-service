@@ -1,5 +1,7 @@
 <script>
 import { mapState } from 'pinia';
+import { useI18n } from 'vue-i18n';
+
 import { useFormStore } from '~/store/form';
 
 export default {
@@ -9,13 +11,18 @@ export default {
     fcProactiveHelpImageUrl: undefined,
   },
   emits: ['close-dialog'],
+  setup() {
+    const { locale } = useI18n({ useScope: 'global' });
+
+    return { locale };
+  },
   data() {
     return {
       dialog: this.showDialog,
     };
   },
   computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
+    ...mapState(useFormStore, ['isRTL']),
   },
   watch: {
     showDialog(value) {
@@ -89,7 +96,7 @@ export default {
                   disabledLink: component && component.moreHelpInfoLink === '',
                 }"
               >
-                <div class="mr-1 cursor" :lang="lang">
+                <div class="mr-1 cursor" :lang="locale">
                   {{ $t('trans.proactiveHelpPreviewDialog.learnMore') }}
                   <v-icon icon="mdi:mdi-arrow-top-right-bold-box" /></div
               ></a>

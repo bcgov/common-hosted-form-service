@@ -1,4 +1,5 @@
 {
+  "open": "열려 있는",
   "date": {
     "date": "yyyy-mm-dd"
   },
@@ -614,6 +615,7 @@
     "assigneeIsRequired": "담당자는 필수 항목입니다.",
     "assignToMe": "나에게 할당",
     "recipientEmail": "이메일 수령인",
+    "recipientIsRequired": "수령인이 필요합니다",
     "attachCommentToEmail": "이메일에 댓글 첨부",
     "emailComment": "이메일 댓글",
     "maxChars": "최대 4000자",
@@ -699,7 +701,8 @@
     "defaultCdogsTemplate": "기본 CDOGS 템플릿 사용",
     "fileName": "파일 이름",
     "uploadDate": "업로드 날짜",
-    "upload": "업로드"
+    "upload": "업로드",
+    "selectExportFileType": "내보낼 파일 유형 선택"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "구성품 정보 링크",

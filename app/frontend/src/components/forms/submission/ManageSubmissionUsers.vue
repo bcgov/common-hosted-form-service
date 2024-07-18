@@ -11,7 +11,7 @@ import { useIdpStore } from '~/store/identityProviders';
 import { FormPermissions, NotificationTypes, Regex } from '~/utils/constants';
 import { filterObject } from '~/utils/transformUtils';
 
-const { t } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   isDraft: {
@@ -39,7 +39,7 @@ const formStore = useFormStore();
 const idpStore = useIdpStore();
 const notificationStore = useNotificationStore();
 
-const { isRTL, lang } = storeToRefs(formStore);
+const { isRTL } = storeToRefs(formStore);
 
 const autocompleteLabel = computed(() => {
   return idpStore.isPrimary(selectedIdp.value)
@@ -243,13 +243,13 @@ defineExpose({
           <v-icon icon="mdi:mdi-account-multiple"></v-icon>
         </v-btn>
       </template>
-      <span :lang="lang">{{
+      <span :lang="locale">{{
         $t('trans.manageSubmissionUsers.manageTeamMembers')
       }}</span>
     </v-tooltip>
     <v-dialog v-model="dialog" width="600">
       <v-card :class="{ 'dir-rtl': isRTL }">
-        <v-card-title class="text-h5 pb-0" :lang="lang">
+        <v-card-title class="text-h5 pb-0" :lang="locale">
           {{ $t('trans.manageSubmissionUsers.manageTeamMembers') }}
         </v-card-title>
         <v-card-subtitle>
@@ -288,7 +288,7 @@ defineExpose({
                   <template #no-data>
                     <div
                       class="px-2"
-                      :lang="lang"
+                      :lang="locale"
                       v-html="
                         $t('trans.manageSubmissionUsers.userNotFoundErrMsg')
                       "
@@ -318,17 +318,17 @@ defineExpose({
                 :title="$t('trans.manageSubmissionUsers.add')"
                 @click="addUser"
               >
-                <span :lang="lang"
+                <span :lang="locale"
                   >{{ $t('trans.manageSubmissionUsers.add') }}
                 </span>
               </v-btn>
             </v-col>
           </v-row>
-          <div v-else :lang="lang">
+          <div v-else :lang="locale">
             {{ $t('trans.manageSubmissionUsers.draftFormInvite') }}
           </div>
 
-          <p class="mt-5" :lang="lang">
+          <p class="mt-5" :lang="locale">
             <strong
               >{{
                 $t('trans.manageSubmissionUsers.submissionTeamMembers')
@@ -344,19 +344,28 @@ defineExpose({
             <v-table dense>
               <thead>
                 <tr>
-                  <th :class="isRTL ? 'text-right' : 'text-left'" :lang="lang">
+                  <th
+                    :class="isRTL ? 'text-right' : 'text-left'"
+                    :lang="locale"
+                  >
                     {{ $t('trans.manageSubmissionUsers.name') }}
                   </th>
-                  <th :class="isRTL ? 'text-right' : 'text-left'" :lang="lang">
+                  <th
+                    :class="isRTL ? 'text-right' : 'text-left'"
+                    :lang="locale"
+                  >
                     {{ $t('trans.manageSubmissionUsers.username') }}
                   </th>
-                  <th :class="isRTL ? 'text-right' : 'text-left'" :lang="lang">
+                  <th
+                    :class="isRTL ? 'text-right' : 'text-left'"
+                    :lang="locale"
+                  >
                     {{ $t('trans.manageSubmissionUsers.email') }}
                   </th>
                   <th
                     v-if="isDraft"
                     :class="isRTL ? 'text-right' : 'text-left'"
-                    :lang="lang"
+                    :lang="locale"
                   >
                     {{ $t('trans.manageSubmissionUsers.actions') }}
                   </th>
@@ -393,7 +402,7 @@ defineExpose({
             :title="$t('trans.manageSubmissionUsers.close')"
             @click="dialog = false"
           >
-            <span :lang="lang">
+            <span :lang="locale">
               {{ $t('trans.manageSubmissionUsers.close') }}</span
             >
           </v-btn>
@@ -414,14 +423,14 @@ defineExpose({
           ><span>Remove {{ userToDelete.username }}</span></template
         >
         <template #text>
-          <span :lang="lang">
+          <span :lang="locale">
             {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg1') }}
             <strong>{{ userToDelete.username }}</strong
             >? {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg2') }}
           </span>
         </template>
         <template #button-text-continue>
-          <span :lang="lang">{{
+          <span :lang="locale">{{
             $t('trans.manageSubmissionUsers.remove')
           }}</span>
         </template>

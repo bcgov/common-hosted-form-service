@@ -1,12 +1,12 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import BaseFilter from '~/components/base/BaseFilter.vue';
 import AddTeamMember from '~/components/forms/manage/AddTeamMember.vue';
-import { i18n } from '~/internationalization';
 import { rbacService, roleService } from '~/services';
-import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 import { useNotificationStore } from '~/store/notification';
@@ -16,373 +16,384 @@ import {
   IdentityMode,
 } from '~/utils/constants';
 
-export default {
-  components: {
-    BaseDialog,
-    BaseFilter,
-    AddTeamMember,
+const { t, locale } = useI18n({ useScope: 'global' });
+
+const properties = defineProps({
+  formId: {
+    type: String,
+    required: true,
   },
-  props: {
-    formId: {
-      type: String,
-      required: true,
-    },
+});
+
+const filterData = ref([]);
+const filterIgnore = ref([
+  {
+    key: 'actions',
   },
-  data() {
-    return {
-      filterData: [],
-      filterIgnore: [
-        {
-          key: 'actions',
-        },
-      ],
-      formUsers: [],
-      isAddingUsers: false,
-      itemsToDelete: [],
-      loading: true,
-      roleList: [],
-      search: '',
-      selectedUsers: [],
-      showColumnsDialog: false,
-      showDeleteDialog: false,
-      tableData: [],
-      updating: false,
-    };
-  },
-  computed: {
-    ...mapState(useAuthStore, ['user']),
-    ...mapState(useFormStore, ['form', 'permissions', 'isRTL', 'lang']),
-    ...mapState(useIdpStore, ['listRoles']),
-    canManageTeam() {
-      return this.permissions.includes(FormPermissions.TEAM_UPDATE);
+]);
+const formUsers = ref([]);
+const isAddingUsers = ref(false);
+const itemsToDelete = ref([]);
+const loading = ref(true);
+const roleList = ref([]);
+const search = ref('');
+const selectedUsers = ref([]);
+const showColumnsDialog = ref(false);
+const showDeleteDialog = ref(false);
+const tableData = ref([]);
+const updating = ref(false);
+
+const formStore = useFormStore();
+const idpStore = useIdpStore();
+const notificationStore = useNotificationStore();
+
+const { form, permissions, isRTL } = storeToRefs(formStore);
+
+const canManageTeam = computed(() =>
+  permissions.value.includes(FormPermissions.TEAM_UPDATE)
+);
+const roleOrder = computed(() => Object.values(FormRoleCodes));
+const DeleteMessage = computed(() => {
+  return itemsToDelete.value.length > 1
+    ? t('trans.teamManagement.delSelectedMembersWarning')
+    : t('trans.teamManagement.delSelectedMemberWarning');
+});
+const DEFAULT_HEADERS = computed(() => {
+  const headers = [
+    { title: t('trans.teamManagement.fullName'), key: 'fullName' },
+    { title: t('trans.teamManagement.username'), key: 'username' },
+    {
+      title: t('trans.teamManagement.identityProvider'),
+      key: 'identityProvider.code',
     },
-    roleOrder() {
-      return Object.values(FormRoleCodes);
-    },
-    DeleteMessage() {
-      return this.itemsToDelete.length > 1
-        ? i18n.t('trans.teamManagement.delSelectedMembersWarning')
-        : i18n.t('trans.teamManagement.delSelectedMemberWarning');
-    },
-    DEFAULT_HEADERS() {
-      const headers = [
-        { title: i18n.t('trans.teamManagement.fullName'), key: 'fullName' },
-        { title: i18n.t('trans.teamManagement.username'), key: 'username' },
-        {
-          title: i18n.t('trans.teamManagement.identityProvider'),
-          key: 'identityProvider.code',
-        },
-      ];
-      return headers
-        .concat(
-          this.roleList
-            .filter(
-              (role) =>
-                this.form.userType === IdentityMode.TEAM ||
-                role.code !== FormRoleCodes.FORM_SUBMITTER
-            )
-            .map((role) => ({
-              filterable: false,
-              title: role.display,
-              key: role.code,
-              description: role.description,
-            }))
-            .sort((a, b) =>
-              this.roleOrder.indexOf(a.value) > this.roleOrder.indexOf(b.value)
-                ? 1
-                : -1
-            )
+  ];
+  return headers
+    .concat(
+      roleList.value
+        .filter(
+          (role) =>
+            form.value.userType === IdentityMode.TEAM ||
+            role.code !== FormRoleCodes.FORM_SUBMITTER
         )
-        .concat({ title: '', key: 'actions', width: '1rem', sortable: false });
-    },
-    FILTER_HEADERS() {
-      return this.DEFAULT_HEADERS.filter(
-        (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
-      );
-    },
-    HEADERS() {
-      let headers = this.DEFAULT_HEADERS;
-      if (this.filterData.length > 0) {
-        headers = headers.filter(
-          (h) =>
-            this.filterData.some((fd) => fd === h.key) ||
-            this.filterIgnore.some((ign) => ign.key === h.key)
-        );
-      }
-      return headers;
-    },
-    PRESELECTED_DATA() {
-      return this.filterData.length === 0
-        ? this.FILTER_HEADERS.map((fd) => fd.key)
-        : this.filterData;
-    },
-  },
-  mounted() {
-    this.loadItems();
-  },
-  methods: {
-    ...mapActions(useFormStore, ['fetchForm', 'getFormPermissionsForUser']),
-    ...mapActions(useNotificationStore, ['addNotification']),
-    ...mapActions(useIdpStore, ['findByCode']),
-    async loadItems() {
-      this.loading = true;
-
-      await Promise.all([
-        await this.fetchForm(this.formId),
-        await this.getFormPermissionsForUser(this.formId),
-        await this.getRolesList(),
-        await this.getFormUsers(),
-      ]);
-
-      this.loading = false;
-    },
-
-    async getRolesList() {
-      try {
-        const response = await roleService.list();
-        this.roleList = response.data;
-      } catch (error) {
-        this.addNotification({
-          text: error.message,
-          consoleError:
-            this.$t('trans.teamManagement.getRolesErrMsg') + `${error}`,
-        });
-        this.roleList = [];
-      }
-    },
-
-    async getFormUsers() {
-      try {
-        if (!this.canManageTeam) {
-          throw new Error(
-            this.$t('trans.teamManagement.insufficientPermissnMsg')
-          );
-        }
-        const formUsersResponse = await rbacService.getFormUsers({
-          formId: this.formId,
-          roles: '*',
-        });
-        this.formUsers = formUsersResponse?.data?.map((user) => {
-          user.idp = this.findByCode(user.user_idpCode);
-          return user;
-        });
-      } catch (error) {
-        this.addNotification({
-          text: error.message,
-          consoleError:
-            this.$t('trans.teamManagement.getUserErrMsg') + `${error}`,
-        });
-        this.formUsers = [];
-      } finally {
-        this.createTableData(); // Force refresh table based on latest API response
-      }
-    },
-
-    createTableData() {
-      this.tableData = this.formUsers.map((user) => {
-        const row = {
-          id: user.userId,
-          formId: this.formId,
-          fullName: user.fullName,
-          userId: user.userId,
-          username: user.username,
-          identityProvider: user.idp,
-        };
-        this.roleList
-          .map((role) => role.code)
-          .forEach((role) => (row[role] = user.roles.includes(role)));
-        return row;
-      });
-    },
-
-    disableRole(header, user, userType) {
-      if (
-        header === FormRoleCodes.FORM_SUBMITTER &&
-        userType !== IdentityMode.TEAM
-      )
-        return true;
-      // if the header isn't in the IDPs roles, then disable
-      const idpRoles = this.listRoles(user.identityProvider?.code);
-      return idpRoles && !idpRoles.includes(header);
-    },
-
-    async toggleRole(user) {
-      await this.setUserForms(user.id, {
-        formId: user.formId,
-        ...user,
-        userId: user.id,
-      });
-      this.selectedUsers = [];
-    },
-
-    /**
-     * @ setUserForms
-     * Sets `userId`'s roles for the form
-     * @param {String} userId The userId to be updated
-     */
-    async setUserForms(userId, user) {
-      try {
-        this.updating = true;
-        const userRoles = this.generateFormRoleUsers(user);
-        await rbacService.setUserForms(userRoles, {
-          formId: this.formId,
-          userId: userId,
-        });
-      } catch (error) {
-        this.addNotification({
-          text:
-            error &&
-            error.response &&
-            error.response.data &&
-            error.response.data.detail
-              ? error.response.data.detail
-              : this.$t('trans.teamManagement.setUserFormsErrMsg'),
-          consoleError: this.$t(
-            'trans.teamManagement.setUserFormsConsoleErrMsg',
-            {
-              formId: this.formId,
-              error: error,
-            }
-          ),
-        });
-      } finally {
-        await this.getFormPermissionsForUser(this.formId);
-        await this.getFormUsers();
-        this.updating = false;
-      }
-    },
-
-    generateFormRoleUsers(user) {
-      return Object.keys(user)
-        .filter((role) => this.roleOrder.includes(role) && user[role])
         .map((role) => ({
-          formId: user.formId,
-          role: role,
-          userId: user.userId,
-        }));
-    },
+          filterable: false,
+          title: role.display,
+          key: role.code,
+          description: role.description,
+        }))
+        .sort((a, b) => {
+          return roleOrder.value.indexOf(a.key) > roleOrder.value.indexOf(b.key)
+            ? 1
+            : -1;
+        })
+    )
+    .concat({ title: '', key: 'actions', width: '1rem', sortable: false });
+});
 
-    addingUsers(adding) {
-      this.isAddingUsers = adding;
-    },
+const FILTER_HEADERS = computed(() => {
+  return DEFAULT_HEADERS.value.filter(
+    (h) => !filterIgnore.value.some((fd) => fd.key === h.key)
+  );
+});
 
-    addNewUsers(users, roles) {
-      if (Array.isArray(users) && users.length) {
-        users.forEach((user) => {
-          // if user isnt already in the table
-          if (!this.tableData.some((obj) => obj.userId === user.id)) {
-            const u = {
-              formId: this.formId,
-              userId: user.id,
-              form_submitter:
-                Array.isArray(roles) && roles.length
-                  ? roles.includes(FormRoleCodes.FORM_SUBMITTER)
-                  : false,
-              form_designer:
-                Array.isArray(roles) && roles.length
-                  ? roles.includes(FormRoleCodes.FORM_DESIGNER)
-                  : false,
-              submission_approver:
-                Array.isArray(roles) && roles.length
-                  ? roles.includes(FormRoleCodes.SUBMISSION_APPROVER)
-                  : false,
-              submission_reviewer:
-                Array.isArray(roles) && roles.length
-                  ? roles.includes(FormRoleCodes.SUBMISSION_REVIEWER)
-                  : false,
-              team_manager:
-                Array.isArray(roles) && roles.length
-                  ? roles.includes(FormRoleCodes.TEAM_MANAGER)
-                  : false,
-              owner:
-                Array.isArray(roles) && roles.length
-                  ? roles.includes(FormRoleCodes.OWNER)
-                  : false,
-              fullName: user.fullName,
-              username: user.username,
-            };
+const HEADERS = computed(() => {
+  let headers = DEFAULT_HEADERS.value;
+  if (filterData.value.length > 0) {
+    headers = headers.filter(
+      (h) =>
+        filterData.value.some((fd) => fd === h.key) ||
+        filterIgnore.value.some((ign) => ign.key === h.key)
+    );
+  }
+  return headers;
+});
 
-            // create new object for table row
-            this.tableData.push(u);
+const PRESELECTED_DATA = computed(() => {
+  return filterData.value.length === 0
+    ? FILTER_HEADERS.value.map((fd) => fd.key)
+    : filterData.value;
+});
 
-            if (Array.isArray(roles) && roles.length)
-              this.setUserForms(user.id, u);
-          } else {
-            this.addNotification({
-              text:
-                `${user.username}@${user.idpCode}` +
-                i18n.t('trans.teamManagement.idpMessage'),
-            });
-          }
-        });
-      }
-    },
-    onShowColumnDialog() {
-      this.FILTER_HEADERS.sort(
-        (a, b) =>
-          this.PRESELECTED_DATA.findIndex((x) => x.text === b.text) -
-          this.PRESELECTED_DATA.findIndex((x) => x.text === a.text)
-      );
-      this.showColumnsDialog = true;
-    },
+onMounted(() => {
+  loadItems();
+});
 
-    onRemoveClick(item = null) {
-      if (this.tableData.length === 1) {
-        this.userError();
-        return;
-      }
-      if (item) {
-        this.itemsToDelete = Array.isArray(item)
-          ? this.tableData.filter((td) => item.includes(td.id))
-          : [item];
-      }
-      this.showDeleteDialog = true;
-    },
+async function loadItems() {
+  loading.value = true;
 
-    userError() {
-      this.addNotification({
-        text: i18n.t('trans.teamManagement.formOwnerRemovalWarning'),
-        consoleError: i18n.t('trans.teamManagement.formOwnerRemovalWarning'),
-      });
-    },
+  await Promise.all([
+    await formStore.fetchForm(properties.formId),
+    await formStore.getFormPermissionsForUser(properties.formId),
+    await getRolesList(),
+    await getFormUsers(),
+  ]);
 
-    async removeUser() {
-      this.showDeleteDialog = false;
-      try {
-        this.updating = true;
-        let ids = this.itemsToDelete.map((item) => item.id);
-        await rbacService.removeMultiUsers(ids, {
-          formId: this.formId,
-        });
-        await this.getFormPermissionsForUser(this.formId);
-        await this.getFormUsers();
-      } catch (error) {
-        this.addNotification({
+  loading.value = false;
+}
+
+async function getRolesList() {
+  try {
+    const response = await roleService.list();
+    roleList.value = response.data;
+  } catch (error) {
+    notificationStore.addNotification({
+      text: error.message,
+      consoleError: t('trans.teamManagement.getRolesErrMsg') + `${error}`,
+    });
+    roleList.value = [];
+  }
+}
+
+async function getFormUsers() {
+  try {
+    if (!canManageTeam.value) {
+      throw new Error(t('trans.teamManagement.insufficientPermissnMsg'));
+    }
+    const formUsersResponse = await rbacService.getFormUsers({
+      formId: properties.formId,
+      roles: '*',
+    });
+
+    formUsers.value = formUsersResponse?.data?.map((user) => {
+      user.idp = idpStore.findByCode(user.user_idpCode);
+      return user;
+    });
+  } catch (error) {
+    notificationStore.addNotification({
+      text: error.message,
+      consoleError: t('trans.teamManagement.getUserErrMsg') + `${error}`,
+    });
+    formUsers.value = [];
+  } finally {
+    createTableData(); // Force refresh table based on latest API response
+  }
+}
+
+function createTableData() {
+  tableData.value = formUsers.value.map((user) => {
+    const row = {
+      id: user.userId,
+      formId: properties.formId,
+      fullName: user.fullName,
+      userId: user.userId,
+      username: user.username,
+      identityProvider: user.idp,
+    };
+    roleList.value
+      .map((role) => role.code)
+      .forEach((role) => (row[role] = user.roles.includes(role)));
+    return row;
+  });
+}
+
+function disableRole(header, user, userType) {
+  if (header === FormRoleCodes.FORM_SUBMITTER && userType !== IdentityMode.TEAM)
+    return true;
+  // if the header isn't in the IDPs roles, then disable
+  const idpRoles = idpStore.listRoles(user.identityProvider?.code);
+  return idpRoles && !idpRoles.includes(header);
+}
+
+async function toggleRole(user) {
+  await setUserForms(user.id, {
+    formId: user.formId,
+    ...user,
+    userId: user.id,
+  });
+  selectedUsers.value = [];
+}
+
+/**
+ * @ setUserForms
+ * Sets `userId`'s roles for the form
+ * @param {String} userId The userId to be updated
+ */
+async function setUserForms(userId, user) {
+  try {
+    updating.value = true;
+    const userRoles = generateFormRoleUsers(user);
+    await rbacService.setUserForms(userRoles, {
+      formId: properties.formId,
+      userId: userId,
+    });
+  } catch (error) {
+    notificationStore.addNotification({
+      text:
+        error &&
+        error.response &&
+        error.response.data &&
+        error.response.data.detail
+          ? error.response.data.detail
+          : t('trans.teamManagement.setUserFormsErrMsg'),
+      consoleError: t('trans.teamManagement.setUserFormsConsoleErrMsg', {
+        formId: properties.formId,
+        error: error,
+      }),
+    });
+  } finally {
+    await formStore.getFormPermissionsForUser(properties.formId);
+    await getFormUsers();
+    updating.value = false;
+  }
+}
+
+function generateFormRoleUsers(user) {
+  return Object.keys(user)
+    .filter((role) => roleOrder.value.includes(role) && user[role])
+    .map((role) => ({
+      formId: user.formId,
+      role: role,
+      userId: user.userId,
+    }));
+}
+
+function addingUsers(adding) {
+  isAddingUsers.value = adding;
+}
+
+function addNewUsers(users, roles) {
+  if (Array.isArray(users) && users.length) {
+    users.forEach((user) => {
+      // if user isnt already in the table
+      if (!tableData.value.some((obj) => obj.userId === user.id)) {
+        const u = {
+          formId: properties.formId,
+          userId: user.id,
+          form_submitter:
+            Array.isArray(roles) && roles.length
+              ? roles.includes(FormRoleCodes.FORM_SUBMITTER)
+              : false,
+          form_designer:
+            Array.isArray(roles) && roles.length
+              ? roles.includes(FormRoleCodes.FORM_DESIGNER)
+              : false,
+          submission_approver:
+            Array.isArray(roles) && roles.length
+              ? roles.includes(FormRoleCodes.SUBMISSION_APPROVER)
+              : false,
+          submission_reviewer:
+            Array.isArray(roles) && roles.length
+              ? roles.includes(FormRoleCodes.SUBMISSION_REVIEWER)
+              : false,
+          team_manager:
+            Array.isArray(roles) && roles.length
+              ? roles.includes(FormRoleCodes.TEAM_MANAGER)
+              : false,
+          owner:
+            Array.isArray(roles) && roles.length
+              ? roles.includes(FormRoleCodes.OWNER)
+              : false,
+          fullName: user.fullName,
+          username: user.username,
+        };
+
+        // create new object for table row
+        tableData.value.push(u);
+
+        if (Array.isArray(roles) && roles.length) setUserForms(user.id, u);
+      } else {
+        notificationStore.addNotification({
           text:
-            error &&
-            error.response &&
-            error.response.data &&
-            error.response.data.detail
-              ? error.response.data.detail
-              : i18n.t('trans.teamManagement.removeUsersErrMsg'),
-          consoleError: i18n.t('trans.teamManagement.removeUserConsoleErrMsg', {
-            formId: this.formId,
-            error: error,
-          }),
+            `${user.username}@${user.idpCode}` +
+            t('trans.teamManagement.idpMessage'),
         });
-      } finally {
-        this.selectedUsers = [];
-        this.itemsToDelete = [];
-        this.updating = false;
       }
-    },
+    });
+  }
+}
 
-    updateFilter(data) {
-      this.filterData = data ? data : [];
-      this.showColumnsDialog = false;
-    },
-  },
-};
+function onShowColumnDialog() {
+  FILTER_HEADERS.value.sort(
+    (a, b) =>
+      PRESELECTED_DATA.value.findIndex((x) => x === b.key) -
+      PRESELECTED_DATA.value.findIndex((x) => x === a.key)
+  );
+  showColumnsDialog.value = true;
+}
+
+function onRemoveClick(item = null) {
+  if (tableData.value.length === 1) {
+    userError();
+    return;
+  }
+  if (item) {
+    itemsToDelete.value = Array.isArray(item)
+      ? tableData.value.filter((td) => item.includes(td.id))
+      : [item];
+  }
+  showDeleteDialog.value = true;
+}
+
+function userError() {
+  notificationStore.addNotification({
+    text: t('trans.teamManagement.formOwnerRemovalWarning'),
+    consoleError: t('trans.teamManagement.formOwnerRemovalWarning'),
+  });
+}
+
+async function removeUser() {
+  showDeleteDialog.value = false;
+  try {
+    updating.value = true;
+    let ids = itemsToDelete.value.map((item) => item.id);
+    await rbacService.removeMultiUsers(ids, {
+      formId: properties.formId,
+    });
+    await formStore.getFormPermissionsForUser(properties.formId);
+    await getFormUsers();
+  } catch (error) {
+    notificationStore.addNotification({
+      text:
+        error &&
+        error.response &&
+        error.response.data &&
+        error.response.data.detail
+          ? error.response.data.detail
+          : t('trans.teamManagement.removeUsersErrMsg'),
+      consoleError: t('trans.teamManagement.removeUserConsoleErrMsg', {
+        formId: properties.formId,
+        error: error,
+      }),
+    });
+  } finally {
+    selectedUsers.value = [];
+    itemsToDelete.value = [];
+    updating.value = false;
+  }
+}
+
+function updateFilter(data) {
+  filterData.value = data ? data : [];
+  showColumnsDialog.value = false;
+}
+
+defineExpose({
+  addingUsers,
+  addNewUsers,
+  canManageTeam,
+  createTableData,
+  DEFAULT_HEADERS,
+  DeleteMessage,
+  disableRole,
+  FILTER_HEADERS,
+  filterData,
+  filterIgnore,
+  formUsers,
+  generateFormRoleUsers,
+  getFormUsers,
+  HEADERS,
+  isAddingUsers,
+  itemsToDelete,
+  onRemoveClick,
+  onShowColumnDialog,
+  PRESELECTED_DATA,
+  removeUser,
+  selectedUsers,
+  setUserForms,
+  showColumnsDialog,
+  toggleRole,
+  updateFilter,
+});
 </script>
 
 <template>
@@ -391,10 +402,10 @@ export default {
       class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
     >
       <div>
-        <h1 class="mr-auto" :lang="lang">
+        <h1 class="mr-auto" :lang="locale">
           {{ $t('trans.teamManagement.teamManagement') }}
         </h1>
-        <h3>{{ formId ? form.name : '' }}</h3>
+        <h3>{{ form.name }}</h3>
       </div>
       <div style="z-index: 50">
         <span>
@@ -419,7 +430,7 @@ export default {
                 <v-icon icon="mdi:mdi-view-column"></v-icon>
               </v-btn>
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               $t('trans.teamManagement.selectColumns')
             }}</span>
           </v-tooltip>
@@ -439,7 +450,7 @@ export default {
                 </v-btn>
               </router-link>
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               $t('trans.teamManagement.manageForm')
             }}</span>
           </v-tooltip>
@@ -460,7 +471,7 @@ export default {
           :label="$t('trans.teamManagement.search')"
           single-line
           :class="{ label: isRTL }"
-          :lang="lang"
+          :lang="locale"
         />
       </v-col>
     </v-row>
@@ -483,7 +494,7 @@ export default {
       "
       :search="search"
       dense
-      :lang="lang"
+      :lang="locale"
     >
       <!-- custom header markup - add tooltip to heading that are roles -->
       <template #header.form_designer="{ column }">
@@ -559,7 +570,7 @@ export default {
               ></v-icon>
             </v-btn>
           </template>
-          <span :lang="lang">{{
+          <span :lang="locale">{{
             $t('trans.teamManagement.removeSelectedUsers')
           }}</span>
         </v-tooltip>
@@ -571,6 +582,7 @@ export default {
           v-model="item.form_designer"
           v-ripple
           :disabled="updating"
+          data-test="FormDesignerRoleCheckbox"
           @update:modelValue="toggleRole(item)"
         ></v-checkbox-btn>
       </template>
@@ -581,6 +593,7 @@ export default {
           v-model="item.owner"
           v-ripple
           :disabled="updating"
+          data-test="OwnerRoleCheckbox"
           @update:modelValue="toggleRole(item)"
         ></v-checkbox-btn>
       </template>
@@ -591,6 +604,7 @@ export default {
           v-model="item.submission_approver"
           v-ripple
           :disabled="updating"
+          data-test="ApproverRoleCheckbox"
           @update:modelValue="toggleRole(item)"
         ></v-checkbox-btn>
       </template>
@@ -601,6 +615,7 @@ export default {
           v-model="item.submission_reviewer"
           v-ripple
           :disabled="updating"
+          data-test="ReviewerRoleCheckbox"
           @update:modelValue="toggleRole(item)"
         ></v-checkbox-btn>
       </template>
@@ -611,6 +626,7 @@ export default {
           v-model="item.form_submitter"
           v-ripple
           :disabled="updating"
+          data-test="SubmitterRoleCheckbox"
           @update:modelValue="toggleRole(item)"
         ></v-checkbox-btn>
       </template>
@@ -621,6 +637,7 @@ export default {
           v-model="item.team_manager"
           v-ripple
           :disabled="updating"
+          data-test="TeamManagerRoleCheckbox"
           @update:modelValue="toggleRole(item)"
         ></v-checkbox-btn>
       </template>
@@ -643,7 +660,7 @@ export default {
               ></v-icon>
             </v-btn>
           </template>
-          <span :lang="lang">{{
+          <span :lang="locale">{{
             $t('trans.teamManagement.removeThisUser')
           }}</span>
         </v-tooltip>
@@ -657,7 +674,7 @@ export default {
       @continue-dialog="removeUser"
     >
       <template #title
-        ><span :lang="lang">
+        ><span :lang="locale">
           {{ $t('trans.teamManagement.confirmRemoval') }}</span
         ></template
       >
@@ -665,7 +682,7 @@ export default {
         {{ DeleteMessage }}
       </template>
       <template #button-text-continue>
-        <span :lang="lang">{{ $t('trans.teamManagement.remove') }}</span>
+        <span :lang="locale">{{ $t('trans.teamManagement.remove') }}</span>
       </template>
     </BaseDialog>
 
@@ -683,7 +700,7 @@ export default {
         @cancel-filter-data="showColumnsDialog = false"
       >
         <template #filter-title
-          ><span :lang="lang">
+          ><span :lang="locale">
             {{ $t('trans.teamManagement.teamMebersTitle') }}</span
           ></template
         >

@@ -1,10 +1,13 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import DeleteSubmission from '~/components/forms/submission/DeleteSubmission.vue';
 import { useFormStore } from '~/store/form';
 import { FormPermissions } from '~/utils/constants';
+
+const { locale } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   submission: {
@@ -19,7 +22,7 @@ const properties = defineProps({
 
 const emit = defineEmits(['draft-deleted']);
 
-const { form, isRTL, lang } = storeToRefs(useFormStore());
+const { form, isRTL } = storeToRefs(useFormStore());
 
 const hasDeletePermission = computed(() =>
   properties.submission?.permissions?.includes(
@@ -76,7 +79,7 @@ defineExpose({
             :title="$t('trans.mySubmissionsActions.viewThisSubmission')"
           />
         </template>
-        <span :lang="lang">{{
+        <span :lang="locale">{{
           $t('trans.mySubmissionsActions.viewThisSubmission')
         }}</span>
       </v-tooltip>
@@ -110,7 +113,7 @@ defineExpose({
               :title="$t('trans.mySubmissionsActions.copyThisSubmission')"
             />
           </template>
-          <span :lang="lang">{{
+          <span :lang="locale">{{
             $t('trans.mySubmissionsActions.copyThisSubmission')
           }}</span>
         </v-tooltip>
@@ -142,7 +145,7 @@ defineExpose({
               :title="$t('trans.mySubmissionsActions.editThisDraft')"
             />
           </template>
-          <span :lang="lang">{{
+          <span :lang="locale">{{
             $t('trans.mySubmissionsActions.editThisDraft')
           }}</span>
         </v-tooltip>

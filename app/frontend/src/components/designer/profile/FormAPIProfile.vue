@@ -1,19 +1,19 @@
 <script setup>
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import { useFormStore } from '~/store/form';
-import { i18n } from '~/internationalization';
+
+const { t, locale } = useI18n({ useScope: 'global' });
 
 const formStore = useFormStore();
-const apiRules = ref([
-  (v) => v != null || i18n.t('trans.formProfile.selectAPIErr'),
-]);
+const apiRules = ref([(v) => v != null || t('trans.formProfile.selectAPIErr')]);
 const form = computed(() => formStore.form);
-const lang = computed(() => formStore.lang);
 const isRTL = computed(() => formStore.isRTL);
 </script>
 
 <template>
-  <div class="ml-1 mb-4" :lang="lang">
+  <div class="ml-1 mb-4" :lang="locale">
     <span v-if="form.apiIntegration == null" class="text-danger"
       ><strong>*</strong></span
     >
@@ -31,7 +31,7 @@ const isRTL = computed(() => formStore.isRTL);
       data-test="api-true"
     >
       <template #label>
-        <span :class="{ 'mr-2': isRTL }" :lang="lang">
+        <span :class="{ 'mr-2': isRTL }" :lang="locale">
           {{ $t('trans.formProfile.Y') }}
         </span>
       </template></v-radio
@@ -43,7 +43,7 @@ const isRTL = computed(() => formStore.isRTL);
       data-test="api-false"
     >
       <template #label>
-        <span :class="{ 'mr-2': isRTL }" :lang="lang">
+        <span :class="{ 'mr-2': isRTL }" :lang="locale">
           {{ $t('trans.formProfile.N') }}
         </span>
       </template></v-radio

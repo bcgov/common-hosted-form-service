@@ -1,12 +1,14 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import { i18n } from '~/internationalization';
 import { formService, rbacService } from '~/services';
 
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
+
+const { t, locale } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   submissionId: {
@@ -25,7 +27,7 @@ const showNotesContent = ref(false);
 
 const notificationStore = useNotificationStore();
 
-const { isRTL, lang } = storeToRefs(useFormStore());
+const { isRTL } = storeToRefs(useFormStore());
 
 onMounted(async () => {
   await getNotes();
@@ -40,15 +42,15 @@ async function addNote() {
     };
     const response = await formService.addNote(properties.submissionId, body);
     if (!response.data) {
-      throw new Error(i18n.t('trans.notesPanel.noResponseErr'));
+      throw new Error(t('trans.notesPanel.noResponseErr'));
     }
     showNoteField.value = false;
     newNote.value = '';
     getNotes();
   } catch (error) {
     notificationStore.addNotification({
-      text: i18n.t('trans.notesPanel.errorMesg'),
-      consoleError: i18n.t('trans.notesPanel.consoleErrMsg') + `${error}`,
+      text: t('trans.notesPanel.errorMesg'),
+      consoleError: t('trans.notesPanel.consoleErrMsg') + `${error}`,
     });
   }
 }
@@ -62,9 +64,9 @@ async function getNotes() {
     notes.value = response.data;
   } catch (error) {
     notificationStore.addNotification({
-      text: i18n.t('trans.notesPanel.errorMesg'),
+      text: t('trans.notesPanel.errorMesg'),
       consoleError:
-        i18n.t('trans.notesPanel.fetchConsoleErrMsg') +
+        t('trans.notesPanel.fetchConsoleErrMsg') +
         `${properties.submissionId}: ${error}`,
     });
   } finally {
@@ -83,10 +85,11 @@ defineExpose({ addNote, getNotes, loading, newNote, notes, showNoteField });
   >
     <div
       class="d-flex flex-md-row justify-space-between"
+      data-test="showNotesPanel"
       @click="showNotesContent = !showNotesContent"
     >
       <div cols="12" sm="6">
-        <h2 class="note-heading" :lang="lang">
+        <h2 class="note-heading" :lang="locale">
           {{ $t('trans.notesPanel.notes') }}
           <v-icon>{{
             showNotesContent
@@ -100,7 +103,7 @@ defineExpose({ addNote, getNotes, loading, newNote, notes, showNoteField });
 
       <div :class="[{ 'text-left': isRTL }, 'd-flex', 'align-items-center']">
         <!-- Text for number of notes -->
-        <span class="notes-text" :lang="lang">
+        <span class="notes-text" :lang="locale">
           <strong>{{ $t('trans.notesPanel.totalNotes') }}</strong>
           {{ notes.length }}
         </span>
@@ -113,13 +116,14 @@ defineExpose({ addNote, getNotes, loading, newNote, notes, showNoteField });
               size="x-small"
               v-bind="props"
               :title="$t('trans.notesPanel.addNewNote')"
+              data-test="canAddNewNote"
               @click.stop="showNoteField = true"
               @click="showNotesContent = true"
             >
               <v-icon icon="mdi:mdi-plus"></v-icon>
             </v-btn>
           </template>
-          <span :lang="lang">{{ $t('trans.notesPanel.addNewNote') }}</span>
+          <span :lang="locale">{{ $t('trans.notesPanel.addNewNote') }}</span>
         </v-tooltip>
       </div>
     </div>
@@ -133,8 +137,9 @@ defineExpose({ addNote, getNotes, loading, newNote, notes, showNoteField });
           auto-grow
           density="compact"
           variant="outlined"
+          data-test="canAddNotes"
           solid
-          :lang="lang"
+          :lang="locale"
         />
         <v-row>
           <v-col>
@@ -143,9 +148,10 @@ defineExpose({ addNote, getNotes, loading, newNote, notes, showNoteField });
               color="primary"
               variant="outlined"
               :title="$t('trans.notesPanel.cancel')"
+              data-test="canCancelNote"
               @click="showNoteField = false"
             >
-              <span :lang="lang">{{ $t('trans.notesPanel.cancel') }}</span>
+              <span :lang="locale">{{ $t('trans.notesPanel.cancel') }}</span>
             </v-btn>
             <v-btn
               class="wide-button"
@@ -155,7 +161,7 @@ defineExpose({ addNote, getNotes, loading, newNote, notes, showNoteField });
               :title="$t('trans.notesPanel.addNote')"
               @click="addNote"
             >
-              <span :lang="lang">{{ $t('trans.notesPanel.addNote') }}</span>
+              <span :lang="locale">{{ $t('trans.notesPanel.addNote') }}</span>
             </v-btn>
           </v-col>
         </v-row>

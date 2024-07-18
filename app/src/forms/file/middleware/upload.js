@@ -5,30 +5,30 @@ const os = require('os');
 
 const Problem = require('api-problem');
 
-let uploader = undefined;
-let storage = undefined;
+let fileUploadsDir = os.tmpdir();
 let maxFileSize = bytes.parse('25MB');
 let maxFileCount = 1;
 
+let storage;
+let uploader;
+
 const fileSetup = (options) => {
-  const fileUploadsDir = (options && options.dir) || process.env.FILE_UPLOADS_DIR || fs.realpathSync(os.tmpdir());
+  fileUploadsDir = (options && options.dir) || process.env.FILE_UPLOADS_DIR || fs.realpathSync(os.tmpdir());
   try {
     fs.ensureDirSync(fileUploadsDir);
-  } catch (e) {
+  } catch (error) {
     throw new Error(`Could not create file uploads directory '${fileUploadsDir}'.`);
   }
 
   maxFileSize = (options && options.maxFileSize) || process.env.FILE_UPLOADS_MAX_FILE_SIZE || '25MB';
-  try {
-    maxFileSize = bytes.parse(maxFileSize);
-  } catch (e) {
+  maxFileSize = bytes.parse(maxFileSize);
+  if (maxFileSize === null) {
     throw new Error('Could not determine max file size (bytes) for file uploads.');
   }
 
   maxFileCount = (options && options.maxFileCount) || process.env.FILE_UPLOADS_MAX_FILE_COUNT || '1';
-  try {
-    maxFileCount = parseInt(maxFileCount);
-  } catch (e) {
+  maxFileCount = parseInt(maxFileCount);
+  if (isNaN(maxFileCount)) {
     maxFileCount = 1;
   }
 
@@ -42,19 +42,19 @@ module.exports.fileUpload = {
     const formFieldName = (options && options.fieldName) || process.env.FILE_UPLOADS_FIELD_NAME || 'files';
 
     storage = multer.diskStorage({
-      destination: function (req, file, cb) {
-        cb(null, fileUploadsDir);
+      destination: function (_req, _file, callback) {
+        callback(null, fileUploadsDir);
       },
     });
 
-    // set up the multer
+    // Set up the multer, either array for multiple upload, or single for one.
     if (maxFileCount > 1) {
       uploader = multer({
         storage: storage,
         limits: { fileSize: maxFileSize, files: maxFileCount },
       }).array(formFieldName);
     } else {
-      // just in case we set a negative number...
+      // Just in case we set a negative number.
       maxFileCount = 1;
       uploader = multer({
         storage: storage,
@@ -63,46 +63,82 @@ module.exports.fileUpload = {
     }
   },
 
+  /**
+   * Gets the directory where the files are uploaded to.
+   *
+   * @returns the file uploads directory.
+   */
+  getFileUploadsDir() {
+    return fileUploadsDir;
+  },
+
   async upload(req, res, next) {
-    if (!uploader) {
-      return next(new Problem(500, 'File Upload middleware has not been configured.'));
-    }
-    uploader(req, res, (err) => {
-      // detect multer errors, send back nicer through the middleware stack...
-      if (err instanceof multer.MulterError) {
-        switch (err.code) {
-          case 'LIMIT_FILE_SIZE':
-            next(new Problem(400, 'Upload file error', { detail: `Upload file size is limited to ${maxFileSize} bytes` }));
-            break;
-          case 'LIMIT_FILE_COUNT':
-            next(new Problem(400, 'Upload file error', { detail: `Upload is limited to ${maxFileCount} files` }));
-            break;
-          case 'LIMIT_UNEXPECTED_FILE':
-            next(new Problem(400, 'Upload file error', { detail: 'Upload encountered an unexpected file' }));
-            break;
-          // we don't expect that we will encounter these in our api/app, but here for completeness
-          case 'LIMIT_PART_COUNT':
-            next(new Problem(400, 'Upload file error', { detail: 'Upload rejected: upload form has too many parts' }));
-            break;
-          case 'LIMIT_FIELD_KEY':
-            next(new Problem(400, 'Upload file error', { detail: 'Upload rejected: upload field name for the files is too long' }));
-            break;
-          case 'LIMIT_FIELD_VALUE':
-            next(new Problem(400, 'Upload file error', { detail: 'Upload rejected: upload field is too long' }));
-            break;
-          case 'LIMIT_FIELD_COUNT':
-            next(new Problem(400, 'Upload file error', { detail: 'Upload rejected: too many fields' }));
-            break;
-          default:
-            next(new Problem(400, 'Upload file error', { detail: `Upload failed with the following error: ${err.message}` }));
-        }
-      } else if (err) {
-        // send this error to express...
-        next(new Problem(400, 'Unknown upload file error', { detail: err.message }));
-      } else {
-        // all good, carry on.
-        next();
+    try {
+      if (!uploader) {
+        throw new Problem(500, {
+          detail: 'File Upload middleware has not been configured.',
+        });
       }
-    });
+
+      uploader(req, res, (error) => {
+        // Detect multer errors, send back nicer through the middleware stack.
+        if (error instanceof multer.MulterError) {
+          switch (error.code) {
+            case 'LIMIT_FILE_SIZE':
+              throw new Problem(400, {
+                detail: `Upload file size is limited to ${maxFileSize} bytes`,
+              });
+
+            case 'LIMIT_FILE_COUNT':
+              throw new Problem(400, {
+                detail: `Upload is limited to ${maxFileCount} files`,
+              });
+
+            case 'LIMIT_UNEXPECTED_FILE':
+              throw new Problem(400, {
+                detail: 'Upload encountered an unexpected file',
+              });
+
+            // We don't expect that we will encounter these in our api/app, but
+            // here for completeness.
+
+            case 'LIMIT_PART_COUNT':
+              throw new Problem(400, {
+                detail: 'Upload rejected: upload form has too many parts',
+              });
+
+            case 'LIMIT_FIELD_KEY':
+              throw new Problem(400, {
+                detail: 'Upload rejected: upload field name for the files is too long',
+              });
+
+            case 'LIMIT_FIELD_VALUE':
+              throw new Problem(400, {
+                detail: 'Upload rejected: upload field is too long',
+              });
+
+            case 'LIMIT_FIELD_COUNT':
+              throw new Problem(400, {
+                detail: 'Upload rejected: too many fields',
+              });
+
+            default:
+              throw new Problem(400, {
+                detail: `Upload failed with the following error: ${error.message}`,
+              });
+          }
+        }
+
+        if (error) {
+          throw new Problem(400, {
+            detail: error.message,
+          });
+        }
+
+        next();
+      });
+    } catch (error) {
+      next(error);
+    }
   },
 };
