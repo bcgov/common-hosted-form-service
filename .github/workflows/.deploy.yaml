@@ -85,7 +85,7 @@ jobs:
           pr_number: ${{ github.event.inputs.pr-number }}
 
   deploy:
-    name: Deploys to selected environment
+    name: Deploy
     environment:
       name: pr
       url: ${{ needs.set-vars.outputs.URL }}
