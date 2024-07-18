@@ -257,6 +257,7 @@ it('Checks the Table', () => {
       //cy.get('.mdi-delete').click();
       cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
       cy.get('[data-test="continue-btn-continue"]').click();
+      cy.get('#logoutButton > .v-btn__content > span').click();
 
      })
 
