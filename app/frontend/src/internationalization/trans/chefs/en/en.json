@@ -130,6 +130,7 @@
     "referenceGuideB": "user guide",
     "referenceGuideC": "for more details",
     "specificTeamMembers": "Specific Team Members",
+    "teamMemberTooltip": "Configure specific team members after creating this form under Team Management",
     "formFunctionality": "Form Functionality",
     "formSubmissinScheduleMsg": "The Form Submissions Schedule will be available in the Form Settings after the form is published.",
     "formSubmissionsSchedule": "Form Submissions Schedule",

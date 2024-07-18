@@ -183,7 +183,6 @@ export default {
       this.showModal = true;
       await this.getFormSchema();
     }
-
     window.addEventListener('beforeunload', this.beforeWindowUnload);
 
     this.reRenderFormIo += 1;
@@ -335,11 +334,14 @@ export default {
     // Get the form definition/schema
     async getFormSchema() {
       try {
+        console.log('in getFormSchema()');
         let response = undefined;
         if (this.versionId) {
           this.versionIdToSubmitTo = this.versionId;
           // If getting for a specific older version of the form
+          console.log('calling formService.readVersion()');
           response = await formService.readVersion(this.formId, this.versionId);
+          console.log('call successful formService.readVersion()');
           if (!response.data || !response.data.schema) {
             throw new Error(
               this.$t('trans.formViewer.readVersionErrMsg', {
@@ -352,7 +354,9 @@ export default {
           this.formSchema = response.data.schema;
         } else if (this.draftId) {
           // If getting for a specific draft version of the form for preview
+          console.log('calling formService.readDraft()');
           response = await formService.readDraft(this.formId, this.draftId);
+          console.log('call successful formService.readDraft()');
           if (!response.data || !response.data.schema) {
             throw new Error(
               this.$t('trans.formViewer.readDraftErrMsg', {
@@ -364,7 +368,9 @@ export default {
           this.formSchema = response.data.schema;
         } else {
           // If getting the HEAD form version (IE making a new submission)
+          console.log('calling formService.readPublished()');
           response = await formService.readPublished(this.formId);
+          console.log('call successful formService.readPublished()');
           if (
             !response.data ||
             !response.data.versions ||
@@ -394,9 +400,14 @@ export default {
         }
       } catch (error) {
         if (this.authenticated) {
-          this.isFormScheduleExpired = true;
-          this.isLateSubmissionAllowed = false;
+          // this.isFormScheduleExpired = true;
+          // this.isLateSubmissionAllowed = false;
           this.formScheduleExpireMessage = error.message;
+          console.log(
+            'this.formScheduleExpireMessage:',
+            this.formScheduleExpireMessage
+          ); // eslint-disable-line no-console
+          console.log('error message:', error.message); // eslint-disable-line no-console
           this.addNotification({
             text: this.$t('trans.formViewer.fecthingFormErrMsg'),
             consoleError: this.$t(
