@@ -41,11 +41,12 @@ export default {
       note: '',
       emailComment: '',
       submissionUserEmail: '',
+      formSubmitters: [],
       statusHistory: {},
       statusFields: false,
       statusToSet: '',
       valid: false,
-      showSendConfirmEmail: false,
+      showSendConfirmEmail: false, // this is not being used, can be removed
       showStatusContent: false,
     };
   },
@@ -123,6 +124,17 @@ export default {
       if (status === 'REVISING' || status === 'COMPLETED') {
         try {
           await this.fetchSubmissionUsers(this.submissionId);
+          // add all the submission users emails to the formSubmitters array
+          this.formSubmitters = this.submissionUsers.data.map((data) => {
+            const username = data.user.idpCode
+              ? `${data.user.username} (${data.user.idpCode})`
+              : data.user.username;
+            return {
+              value: data.user.email,
+              title: `${data.user.fullName} (${data.user.email})`,
+              subtitle: `${username}`,
+            };
+          });
 
           const submitterData = this.submissionUsers.data.find((data) => {
             const username = data.user.idpCode
@@ -447,15 +459,40 @@ export default {
               </div>
             </div>
             <div v-show="statusFields" v-if="showRevising">
-              <v-text-field
+              <span :lang="locale">{{
+                $t('trans.statusPanel.recipientEmail')
+              }}</span>
+              <v-autocomplete
                 v-model="submissionUserEmail"
-                :label="$t('trans.statusPanel.recipientEmail')"
-                variant="outlined"
-                density="compact"
                 :class="{ 'dir-rtl': isRTL }"
-                :lang="locale"
+                autocomplete="autocomplete_off"
                 data-test="showRecipientEmail"
-              />
+                clearable
+                :items="formSubmitters"
+                item-value="value"
+                item-title="display"
+                :loading="loading"
+                :no-data-text="$t('trans.statusPanel.noDataText')"
+                variant="outlined"
+                :rules="[
+                  (v) => !!v || $t('trans.statusPanel.recipientIsRequired'),
+                ]"
+                :lang="locale"
+              >
+                <!-- selected user -->
+                <template #chip="{ props, item }">
+                  <v-chip v-bind="props" :text="item?.raw?.value" />
+                </template>
+                <!-- users found in dropdown -->
+                <template #item="{ props, item }">
+                  <v-list-item
+                    v-bind="props"
+                    :title="`${item?.raw?.title}`"
+                    :subtitle="`${item?.raw?.subtitle}`"
+                  >
+                  </v-list-item>
+                </template>
+              </v-autocomplete>
             </div>
 
             <div v-if="showRevising || showAssignee || showCompleted">
