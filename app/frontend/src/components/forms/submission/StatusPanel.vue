@@ -177,6 +177,15 @@ export default {
       );
     },
 
+    revisingFilter(_itemTitle, queryText, item) {
+      return (
+        item.value
+          .toLocaleLowerCase()
+          .includes(queryText.toLocaleLowerCase()) ||
+        item.title.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
+      );
+    },
+
     async getStatus() {
       this.loading = true;
       try {
@@ -468,6 +477,7 @@ export default {
                 autocomplete="autocomplete_off"
                 data-test="showRecipientEmail"
                 clearable
+                :custom-filter="revisingFilter"
                 :items="formSubmitters"
                 item-value="value"
                 item-title="display"
