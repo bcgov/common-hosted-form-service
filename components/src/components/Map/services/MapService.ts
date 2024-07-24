@@ -6,7 +6,7 @@ const DEFAULT_MAP_LAYER_URL =
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const DEFAULT_LAYER_ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
-const DEFAULT_MAP_ZOOM = 13;
+const DEFAULT_MAP_ZOOM = 5;
 const DECIMALS_LATLNG = 5; // the number of decimals of latitude and longitude to be displayed in the marker popup
 const COMPONENT_EDIT_CLASS = 'component-edit-tabs';
 const FORM_REVIEW_CLASS = 'review-form';
@@ -33,6 +33,12 @@ class MapService {
           drawnItems.addLayer(layer);
         }
         this.bindPopupToLayer(layer);
+        options.onDrawnItemsChange(drawnItems.getLayers());
+      });
+      map.on(L.Draw.Event.DELETED, (e) => {
+        options.onDrawnItemsChange(drawnItems.getLayers());
+      });
+      map.on(L.Draw.Event.EDITED, (e) => {
         options.onDrawnItemsChange(drawnItems.getLayers());
       });
     }
@@ -72,13 +78,12 @@ class MapService {
       document.getElementsByClassName(COMPONENT_EDIT_CLASS);
     if (form) {
       if (form[0]?.classList.contains('formbuilder')) {
+        map.invalidateSize();
         map.dragging.disable();
         map.scrollWheelZoom.disable();
         if (this.hasChildNode(componentEditNode[0], mapContainer)) {
           map.dragging.enable();
           map.scrollWheelZoom.enable();
-          console.log(map);
-          map.invalidateSize(true);
         }
       }
     }

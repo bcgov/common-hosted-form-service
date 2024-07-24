@@ -71,8 +71,9 @@ export default class Component extends (FieldComponent as any) {
       drawOptions[this.component.markerType] = true; // set marker type from user choice
     }
 
-    const { numPoints, defaultZoom, readOnlyMap, center } = this.component;
-
+    const { numPoints, defaultZoom, readOnlyMap, center, defaultValue } =
+      this.component;
+    console.log(defaultValue);
     let parsedCenter;
     if (center) {
       parsedCenter = JSON.parse(center).latlng;
@@ -86,6 +87,7 @@ export default class Component extends (FieldComponent as any) {
       numPoints,
       defaultZoom,
       readOnlyMap,
+      defaultValue,
       onDrawnItemsChange: this.saveDrawnItems.bind(this),
     });
 
