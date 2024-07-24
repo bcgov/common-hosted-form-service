@@ -1,4 +1,5 @@
-name: Deploy
+name: Deploy PR
+run-name: Deploy PR-${{ github.event.inputs.pr-number }}
 
 env:
   ACRONYM: chefs
@@ -84,7 +85,7 @@ jobs:
           pr_number: ${{ github.event.inputs.pr-number }}
 
   deploy:
-    name: Deploys to selected environment
+    name: Deploy
     environment:
       name: pr
       url: ${{ needs.set-vars.outputs.URL }}
@@ -123,3 +124,10 @@ jobs:
           message: |
             Release ${{ github.sha }} deployed at <https://${{ env.ACRONYM }}-dev.apps.silver.devops.gov.bc.ca/pr-${{ github.event.inputs.pr-number }}>
           number: ${{ github.event.inputs.pr-number }}
+
+  scan:
+    name: Scan
+    needs: [deploy, set-vars]
+    uses: ./.github/workflows/reusable-owasp-zap.yaml
+    with:
+      url: ${{ needs.set-vars.outputs.URL }}
