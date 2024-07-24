@@ -75,12 +75,8 @@ export default class Component extends (ParentComponent as any) {
 
     deleteFile(fileInfo) {
         const { options = {} } = this.component;
-        const Provider = Formio.Providers.getProvider('storage', this.component.storage);
-        if (Provider) {
-            const provider = new Provider(this);
-            if (fileInfo && provider && typeof provider.deleteFile === 'function') {
-                provider.deleteFile(fileInfo, options)
-            }
+        if (fileInfo) {
+            options.deleteFile(fileInfo);
         }
     }
 
@@ -89,9 +85,9 @@ export default class Component extends (ParentComponent as any) {
         if (!this.component.multiple) {
             files = Array.prototype.slice.call(files, 0, 1);
         }
-        if (this.component.storage && files && files.length) {
+        if (this.component && files && files.length) {
             // files is not really an array and does not have a forEach method, so fake it.
-            Array.prototype.forEach.call(files, (file) => {
+            Array.prototype.forEach.call(files, async (file) => {
                 const fileName = uniqueName(file.name, this.component.fileNameTemplate, this.evalContext());
                 const fileUpload = {
                     originalName: file.name,
@@ -140,7 +136,7 @@ export default class Component extends (ParentComponent as any) {
                     if (this.component.privateDownload) {
                         file.private = true;
                     }
-                    const { storage, options = {} } = this.component;
+                    const { options = {} } = this.component;
                     const url = this.interpolate(this.component.url);
                     let groupKey = null;
                     let groupPermissions = null;
@@ -162,19 +158,48 @@ export default class Component extends (ParentComponent as any) {
                     });
 
                     const fileKey = this.component.fileKey || 'file';
-                    const groupResourceId = groupKey ? this.currentForm.submission.data[groupKey]._id : null;
-                    fileService.uploadFile(storage, file, fileName, dir, (evt) => {
-                        fileUpload.status = 'progress';
-                        // @ts-ignore
-                        fileUpload.progress = parseInt(100.0 * evt.loaded / evt.total);
-                        delete fileUpload.message;
-                        this.redraw();
-                    }, url, options, fileKey, groupPermissions, groupResourceId)
-                        .then((fileInfo) => {
+
+                    const blob = new Blob([file], { type: file.type });
+                    const fileFromBlob = new File([blob], file.name, {
+                        type: file.type,
+                        lastModified: file.lastModified,
+                    });
+                    const formData = new FormData();
+                    const data = {
+                        [fileKey]: fileFromBlob,
+                        fileName,
+                        dir,
+                    };
+                    for (const key in data) {
+                        formData.append(key, data[key]);
+                    }
+                    options.uploadFile(formData, {
+                        onUploadProgress: (evt) => {
+                            fileUpload.status = 'progress';
+                            // @ts-ignore
+                            fileUpload.progress = parseInt(100.0 * evt.loaded / evt.total);
+                            delete fileUpload.message;
+                            this.redraw();
+                        },
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    })
+                        .then((response) => {
+                            response.data = response.data || {};
                             const index = this.statuses.indexOf(fileUpload);
                             if (index !== -1) {
                                 this.statuses.splice(index, 1);
                             }
+                            let fileInfo = {
+                                storage: 'chefs',
+                                name: response.data.originalname,
+                                originalName: '',
+                                url: `${url}/${response.data.id}`,
+                                size: response.data.size,
+                                type: response.data.mimetype,
+                                data: { id: response.data.id },
+                            };
                             fileInfo.originalName = file.name;
                             if (!this.hasValue()) {
                                 this.dataValue = [];
@@ -190,19 +215,16 @@ export default class Component extends (ParentComponent as any) {
                             // @ts-ignore
                             delete fileUpload.progress;
                             this.redraw();
-                        });
+                        })
                 }
             });
         }
     }
 
     getFile(fileInfo) {
+        const fileId = fileInfo?.data?.id ? fileInfo.data.id : fileInfo.id;
         const { options = {} } = this.component;
-        const { fileService } = this;
-        if (!fileService) {
-            return alert('File Service not provided');
-        }
-        fileService.downloadFile(fileInfo, options)
+        options.getFile(fileId, { responseType: 'blob' })
         .catch((response) => {
             // Is alert the best way to do this?
             // User is expecting an immediate notification due to attempting to download a file.
