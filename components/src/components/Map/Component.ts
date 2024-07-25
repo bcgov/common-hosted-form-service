@@ -72,7 +72,10 @@ export default class Component extends (FieldComponent as any) {
       drawOptions[this.component.markerType] = true; // set marker type from user choice
     }
 
-    const { numPoints, defaultZoom, readOnlyMap, center } = this.component;
+    const { numPoints, defaultZoom, readOnlyMap, center, defaultValue } =
+      this.component;
+
+
     const { readOnly: viewMode } = this.options;
 
     let initialCenter;
@@ -88,6 +91,7 @@ export default class Component extends (FieldComponent as any) {
       numPoints,
       defaultZoom,
       readOnlyMap,
+      defaultValue,
       onDrawnItemsChange: this.saveDrawnItems.bind(this),
       viewMode,
     });

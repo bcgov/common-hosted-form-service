@@ -63,7 +63,7 @@ export default {
       numPoints: 1,
       tableView: false,
       markerType: 'marker',
-      defaultZoom: 13,
+      defaultZoom: 5,
       readOnlyMap: false,
       description:
         'Please select the desired default center using a single marker',
