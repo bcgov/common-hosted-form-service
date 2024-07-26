@@ -8,14 +8,17 @@ import BaseDialog from '~/components/base/BaseDialog.vue';
 import FormViewerActions from '~/components/designer/FormViewerActions.vue';
 import FormViewerMultiUpload from '~/components/designer/FormViewerMultiUpload.vue';
 import templateExtensions from '~/plugins/templateExtensions';
-import { formService, rbacService } from '~/services';
+import { fileService, formService, rbacService } from '~/services';
 import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
 import { isFormPublic } from '~/utils/permissionUtils';
-import { attachAttributesToLinks } from '~/utils/transformUtils';
+import {
+  attachAttributesToLinks,
+  getDisposition,
+} from '~/utils/transformUtils';
 import { FormPermissions, NotificationTypes } from '~/utils/constants';
 
 export default {
@@ -77,6 +80,7 @@ export default {
       bulkFile: false,
       confirmSubmit: false,
       currentForm: {},
+      downloadTimeout: null,
       doYouWantToSaveTheDraft: false,
       forceNewTabLinks: true,
       form: {},
@@ -121,7 +125,7 @@ export default {
       'tokenParsed',
       'user',
     ]),
-    ...mapState(useFormStore, ['isRTL']),
+    ...mapState(useFormStore, ['downloadedFile', 'isRTL']),
 
     formScheduleExpireMessage() {
       return this.$t('trans.formViewer.formScheduleExpireMessage');
@@ -148,6 +152,9 @@ export default {
           simplefile: {
             config: this.config,
             chefsToken: this.getCurrentAuthHeader,
+            deleteFile: this.deleteFile,
+            getFile: this.getFile,
+            uploadFile: this.uploadFile,
           },
         },
         evalContext: {
@@ -190,6 +197,7 @@ export default {
   },
   beforeUnmount() {
     window.removeEventListener('beforeunload', this.beforeWindowUnload);
+    clearTimeout(this.downloadTimeout);
   },
   beforeUpdate() {
     if (this.forceNewTabLinks) {
@@ -197,6 +205,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(useFormStore, ['downloadFile']),
     ...mapActions(useNotificationStore, ['addNotification']),
     isFormPublic: isFormPublic,
     getCurrentAuthHeader() {
@@ -1078,6 +1087,50 @@ export default {
         e.preventDefault();
         e.returnValue = '';
       }
+    },
+    async deleteFile(file) {
+      return fileService.deleteFile(file.id);
+    },
+    async getFile(fileId, options = {}) {
+      await this.downloadFile(fileId, options);
+      if (this.downloadedFile && this.downloadedFile.headers) {
+        let data;
+
+        if (
+          this.downloadedFile.headers['content-type'].includes(
+            'application/json'
+          )
+        ) {
+          data = JSON.stringify(this.downloadedFile.data);
+        } else {
+          data = this.downloadedFile.data;
+        }
+
+        if (typeof data === 'string') {
+          data = new Blob([data], {
+            type: this.downloadedFile.headers['content-type'],
+          });
+        }
+
+        // don't need to blob because it's already a blob
+        const url = window.URL.createObjectURL(data);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = getDisposition(
+          this.downloadedFile.headers['content-disposition']
+        );
+        a.style.display = 'none';
+        a.classList.add('hiddenDownloadTextElement');
+        document.body.appendChild(a);
+        a.click();
+        this.downloadTimeout = setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(a.href);
+        });
+      }
+    },
+    async uploadFile(file, config = {}) {
+      return fileService.uploadFile(file, config);
     },
   },
 };
