@@ -75,18 +75,19 @@ export default class Component extends (FieldComponent as any) {
     const { numPoints, defaultZoom, readOnlyMap, center, defaultValue } =
       this.component;
 
-
     const { readOnly: viewMode } = this.options;
 
     let initialCenter;
     if (center && center.features && center.features[0]) {
       initialCenter = center.features[0].coordinates;
+    } else {
+      initialCenter = DEFAULT_CENTER;
     }
 
     this.mapService = new MapService({
       mapContainer,
       drawOptions,
-      center: center ? initialCenter : DEFAULT_CENTER,
+      center: initialCenter,
       form,
       numPoints,
       defaultZoom,
