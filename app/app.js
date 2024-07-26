@@ -39,6 +39,8 @@ app.use(express.urlencoded({ extended: true }));
 // See https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
 app.set('trust proxy', 1);
 
+app.set('x-powered-by', false);
+
 // Skip if running tests
 if (process.env.NODE_ENV !== 'test') {
   // Initialize connections and exit if unsuccessful

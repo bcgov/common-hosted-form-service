@@ -9,6 +9,8 @@ const StorageTypes = require('../../common/constants').StorageTypes;
 const errorToProblem = require('../../../components/errorToProblem');
 const log = require('../../../components/log')(module.filename);
 
+const fileUpload = require('../middleware/upload').fileUpload;
+
 const SERVICE = 'ObjectStorage';
 const TEMP_DIR = 'uploads';
 const Delimiter = '/';
@@ -58,9 +60,31 @@ class ObjectStorageService {
     return '';
   }
 
+  /**
+   * Gets the contents of a file from the local filesystem. Will error if the
+   * requested file is not in the allowed file uploads directory.
+   *
+   * @param {string} filename the filename of the file to be read.
+   * @returns a Buffer containing the file contents.
+   * @throws an Error if the filename is not within the allowed directory.
+   */
+  _readLocalFile(filename) {
+    let fileUploadsDir = fileUpload.getFileUploadsDir();
+    if (!fileUploadsDir.endsWith('/')) {
+      fileUploadsDir += '/';
+    }
+
+    const resolvedFilename = fs.realpathSync(path.resolve(fileUploadsDir, filename));
+    if (!resolvedFilename.startsWith(fileUploadsDir)) {
+      throw new Error(`Invalid path '${filename}'`);
+    }
+
+    return fs.readFileSync(resolvedFilename);
+  }
+
   async uploadFile(fileStorage) {
     try {
-      const fileContent = fs.readFileSync(fileStorage.path);
+      const fileContent = this._readLocalFile(fileStorage.path);
 
       // uploads can go to a 'holding' area, we can shuffle it later if we want to.
       const key = this._join(this._key, TEMP_DIR, fileStorage.id);
