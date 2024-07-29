@@ -1089,7 +1089,12 @@ export default {
       }
     },
     async deleteFile(file) {
-      return fileService.deleteFile(file.id);
+      const fileId = file?.data?.id
+        ? file.data.id
+        : file?.id
+        ? file.id
+        : undefined;
+      return fileService.deleteFile(fileId);
     },
     async getFile(fileId, options = {}) {
       await this.downloadFile(fileId, options);
