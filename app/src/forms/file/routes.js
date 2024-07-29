@@ -14,11 +14,11 @@ routes.post('/', hasFileCreate, fileUpload.upload, async (req, res, next) => {
   await controller.create(req, res, next);
 });
 
-routes.get('/:id', rateLimiter, apiAccess, currentFileRecord, hasFilePermissions([P.SUBMISSION_READ]), async (req, res, next) => {
+routes.get('/:fileId', rateLimiter, apiAccess, currentFileRecord, hasFilePermissions([P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.read(req, res, next);
 });
 
-routes.delete('/:id', currentFileRecord, hasFilePermissions([P.SUBMISSION_UPDATE]), async (req, res, next) => {
+routes.delete('/:fileId', currentFileRecord, hasFilePermissions([P.SUBMISSION_UPDATE]), async (req, res, next) => {
   await controller.delete(req, res, next);
 });
 
