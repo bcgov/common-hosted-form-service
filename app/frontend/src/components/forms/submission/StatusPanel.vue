@@ -36,6 +36,8 @@ const note = ref('');
 const emailComment = ref('');
 const submissionUserEmail = ref('');
 const formSubmitters = ref([]);
+const selectAllSubmitters = ref(false);
+const selectedSubmissionUsers = ref([]);
 const statusHistory = ref({});
 const statusFields = ref(false);
 const statusPanelForm = ref(null);
@@ -120,6 +122,9 @@ async function onStatusChange(status) {
           ? submitterData.user.email
           : undefined;
         showSendConfirmEmail.value = status === 'COMPLETED';
+
+        // add the submissionUserEmail to the selectedSubmissionUsers array
+        selectedSubmissionUsers.value = [submissionUserEmail.value];
       }
     } catch (error) {
       notificationStore.addNotification({
@@ -213,6 +218,9 @@ function resetForm() {
   statusFields.value = false;
   statusPanelForm.value.resetValidation();
   submissionUserEmail.value = '';
+  selectAllSubmitters.value = false;
+  formReviewers.value = [];
+  selectedSubmissionUsers.value = [];
   statusToSet.value = '';
   note.value = '';
 }
@@ -224,10 +232,16 @@ async function updateStatus() {
         throw new Error(t('trans.statusPanel.status'));
       }
 
+      // array of selected submission users minus the submissionUserEmail
+      const notifyUsers = selectedSubmissionUsers.value.filter(
+        (user) => user !== submissionUserEmail.value
+      );
+
       const statusBody = {
         code: statusToSet.value,
         submissionUserEmail: submissionUserEmail.value,
         revisionNotificationEmailContent: emailComment.value,
+        notifyUsers: notifyUsers,
       };
       if (showAssignee.value) {
         if (assignee.value) {
@@ -302,6 +316,7 @@ defineExpose({
   statusToSet,
   submissionUserEmail,
   formSubmitters,
+  selectAllSubmitters,
   updateStatus,
 });
 </script>
@@ -453,11 +468,12 @@ defineExpose({
                 $t('trans.statusPanel.recipientEmail')
               }}</span>
               <v-autocomplete
-                v-model="submissionUserEmail"
+                v-model="selectedSubmissionUsers"
                 :class="{ 'dir-rtl': isRTL }"
                 autocomplete="autocomplete_off"
                 data-test="showRecipientEmail"
                 clearable
+                multiple
                 :custom-filter="revisingFilter"
                 :items="formSubmitters"
                 item-value="value"
@@ -484,6 +500,10 @@ defineExpose({
                   </v-list-item>
                 </template>
               </v-autocomplete>
+              <v-checkbox
+                v-model="selectAllSubmitters"
+                label="Notify all submitters"
+              />
             </div>
 
             <div v-if="showRevising || showAssignee || showCompleted">
