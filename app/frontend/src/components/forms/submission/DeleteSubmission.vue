@@ -1,51 +1,43 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { useFormStore } from '~/store/form';
 
-export default {
-  components: {
-    BaseDialog,
-  },
-  props: {
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    isDraft: {
-      type: Boolean,
-      default: false,
-    },
-    submissionId: {
-      type: String,
-      required: true,
-    },
-  },
-  emits: ['deleted'],
-  setup() {
-    const { locale } = useI18n({ useScope: 'global' });
+const { locale } = useI18n({ useScope: 'global' });
 
-    return { locale };
+const properties = defineProps({
+  disabled: {
+    type: Boolean,
+    default: false,
   },
-  data() {
-    return {
-      showDeleteDialog: false,
-    };
+  isDraft: {
+    type: Boolean,
+    default: false,
   },
-  computed: {
-    ...mapState(useFormStore, ['form', 'isRTL']),
+  submissionId: {
+    type: String,
+    required: true,
   },
-  methods: {
-    ...mapActions(useFormStore, ['deleteSubmission']),
-    async delSub() {
-      await this.deleteSubmission(this.submissionId);
-      this.showDeleteDialog = false;
-      this.$emit('deleted');
-    },
-  },
-};
+});
+
+const emit = defineEmits(['deleted']);
+
+const showDeleteDialog = ref(false);
+
+const formStore = useFormStore();
+
+const { isRTL } = storeToRefs(formStore);
+
+async function delSub() {
+  await formStore.deleteSubmission(properties.submissionId);
+  showDeleteDialog.value = false;
+  emit('deleted');
+}
+
+defineExpose({ emit, delSub });
 </script>
 
 <template>

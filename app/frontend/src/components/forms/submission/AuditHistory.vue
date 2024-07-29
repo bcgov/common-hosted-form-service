@@ -1,65 +1,62 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import formService from '~/services/formService.js';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
-export default {
-  props: {
-    submissionId: {
-      type: String,
-      required: true,
-    },
-  },
-  setup() {
-    const { t, locale } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
 
-    return { t, locale };
+const properties = defineProps({
+  submissionId: {
+    type: String,
+    required: true,
   },
-  data() {
-    return {
-      dialog: false,
-      loading: true,
-      history: [],
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['isRTL']),
-    headers() {
-      return [
-        {
-          title: this.$t('trans.auditHistory.userName'),
-          key: 'updatedByUsername',
-        },
-        { title: this.$t('trans.auditHistory.date'), key: 'actionTimestamp' },
-      ];
+});
+
+const notificationStore = useNotificationStore();
+
+const editHistoryDialog = ref(false);
+const loading = ref(true);
+const history = ref([]);
+
+const { isRTL } = storeToRefs(useFormStore());
+
+/* c8 ignore start */
+const headers = computed(() => {
+  return [
+    {
+      title: t('trans.auditHistory.userName'),
+      key: 'updatedByUsername',
     },
-  },
-  methods: {
-    ...mapActions(useNotificationStore, ['addNotification']),
-    async loadHistory() {
-      this.loading = true;
-      this.dialog = true;
-      try {
-        const response = await formService.listSubmissionEdits(
-          this.submissionId
-        );
-        this.history = response.data;
-      } catch (error) {
-        this.addNotification({
-          text: this.$t('trans.auditHistory.errorMsg'),
-          consoleError:
-            this.$t('trans.auditHistory.consoleErrMsg') +
-            `${this.submissionId}: ${error}`,
-        });
-      } finally {
-        this.loading = false;
-      }
-    },
-  },
-};
+    { title: t('trans.auditHistory.date'), key: 'actionTimestamp' },
+  ];
+});
+/* c8 ignore end */
+
+async function loadHistory() {
+  loading.value = true;
+  editHistoryDialog.value = true;
+  try {
+    const response = await formService.listSubmissionEdits(
+      properties.submissionId
+    );
+    history.value = response.data;
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.auditHistory.errorMsg'),
+      consoleError:
+        t('trans.auditHistory.consoleErrMsg') +
+        `${properties.submissionId}: ${error}`,
+    });
+  } finally {
+    loading.value = false;
+  }
+}
+
+defineExpose({ loadHistory });
 </script>
 
 <template>
@@ -82,7 +79,7 @@ export default {
       }}</span>
     </v-tooltip>
 
-    <v-dialog v-model="dialog" width="900">
+    <v-dialog v-model="editHistoryDialog" width="900">
       <v-card>
         <v-card-title
           class="text-h5 pb-0"
@@ -118,7 +115,7 @@ export default {
             color="primary"
             variant="flat"
             :title="$t('trans.auditHistory.close')"
-            @click="dialog = false"
+            @click="editHistoryDialog = false"
           >
             <span :lang="locale">{{ $t('trans.auditHistory.close') }}</span>
           </v-btn>
