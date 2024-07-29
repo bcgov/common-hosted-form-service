@@ -20,7 +20,6 @@ const properties = defineProps({
   submissionId: {
     type: String,
     required: true,
-
   },
 });
 
@@ -36,7 +35,7 @@ const loading = ref(true);
 const note = ref('');
 const emailComment = ref('');
 const submissionUserEmail = ref('');
-const formSubmitters: ref([]);
+const formSubmitters = ref([]);
 const statusHistory = ref({});
 const statusFields = ref(false);
 const statusPanelForm = ref(null);
@@ -96,7 +95,7 @@ async function onStatusChange(status) {
   if (status === 'REVISING' || status === 'COMPLETED') {
     try {
       await formStore.fetchSubmissionUsers(properties.submissionId);
-      
+
       // add all the submission users emails to the formSubmitters array
       formSubmitters.value = submissionUsers.value.data.map((data) => {
         const username = data.user.idpCode
@@ -152,12 +151,10 @@ function autoCompleteFilter(_itemTitle, queryText, item) {
 
 function revisingFilter(_itemTitle, queryText, item) {
   return (
-    item.value
-      .toLocaleLowerCase()
-      .includes(queryText.toLocaleLowerCase()) ||
+    item.value.toLocaleLowerCase().includes(queryText.toLocaleLowerCase()) ||
     item.title.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
   );
-},
+}
 
 async function getStatus() {
   loading.value = true;
@@ -304,6 +301,7 @@ defineExpose({
   statusFields,
   statusToSet,
   submissionUserEmail,
+  formSubmitters,
   updateStatus,
 });
 </script>
