@@ -9,6 +9,7 @@ const DEFAULT_LAYER_ATTRIBUTION =
 const DEFAULT_MAP_ZOOM = 5;
 const DECIMALS_LATLNG = 5; // the number of decimals of latitude and longitude to be displayed in the marker popup
 const COMPONENT_EDIT_CLASS = 'component-edit-tabs';
+const CUSTOM_MARKER_URI = '../Common/marker-icon.png/';
 
 interface MapServiceOptions {
   mapContainer: HTMLElement;
@@ -43,6 +44,8 @@ class MapService {
             .setContent('<p>Only one marker for submission</p>')
             .openOn(map);
         } else {
+          console.log(layer);
+          layer.icon({ iconUrl: CUSTOM_MARKER_URI });
           drawnItems.addLayer(layer);
         }
         this.bindPopupToLayer(layer);
@@ -68,7 +71,6 @@ class MapService {
       viewMode,
     } = options;
 
-
     if (drawOptions.rectangle) {
       drawOptions.rectangle.showArea = false;
     }
@@ -81,6 +83,8 @@ class MapService {
     }).addTo(map);
     // Initialize Draw Layer
     let drawnItems = new L.FeatureGroup();
+    //({ iconUrl: '../common/marker-icon.png/' });
+
     map.addLayer(drawnItems);
     // Add Drawing Controllers
 
