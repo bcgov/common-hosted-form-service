@@ -10,6 +10,7 @@ The stability of the CHEFS application is of highest importance.
 - Please bring your change ideas to the team before starting work
 - Contributors must follow the [Code of Conduct](CODE-OF-CONDUCT.md)
 - Changes must include test coverage, documentation, and comments
+- If changes to the code alter the functionality of CHEFS, please update the [documentation](https://developer.gov.bc.ca/docs/default/component/chefs-techdocs) by raising a pull request in the CHEFS tech docs [repository](https://github.com/bcgov/common-hosted-form-service-techdocs).
 - The repository guardians review all changes and may ask for revisions
 
 ## Contributing code
@@ -20,4 +21,4 @@ Government employees, public and members of the private sector are encouraged to
 
 All contributors retain the original copyright to their stuff, but by contributing to this project, you grant a world-wide, royalty-free, perpetual, irrevocable, non-exclusive, transferable license to all users **under the terms of the [license](./LICENSE) under which this project is distributed**.
 
-To set up CHEFS on your workstation, visit the [Developer](https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Developer/) Wiki page.
+To set up CHEFS on your workstation, visit the [developer documentation](https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Developer/).

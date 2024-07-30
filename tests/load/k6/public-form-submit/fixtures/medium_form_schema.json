@@ -39,7 +39,7 @@
               "suffix": "",
               "unique": false,
               "widget": null,
-              "content": "<p>Showing how to do mathmatical calculations using values from rows in the Data Grid component.<br />\nThere are more form examples on our <a href=\"https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Components/Examples\">wiki</a>.</p>\n<h3>Timesheet</h3>",
+              "content": "<p>Showing how to do mathmatical calculations using values from rows in the Data Grid component.<br />\nThere are more form examples on our <a href=\"https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Components/Examples\">CHEFS documentation</a>.</p>\n<h3>Timesheet</h3>",
               "dbIndex": false,
               "overlay": {
                 "top": "",

@@ -157,7 +157,7 @@ defineExpose({ idpType, userTypeChanged, updateLoginType });
                 <p class="mt-2 mb-0" :lang="locale">
                   {{ $t('trans.formSettings.referenceGuideA') }}
                   <a
-                    href="https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Form-Management/Accessing-forms/"
+                    href="https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Form-Management/Accessing-forms/#to-use-log-in-required-with-bceid"
                     :lang="locale"
                     >{{ $t('trans.formSettings.referenceGuideB') }}</a
                   >
