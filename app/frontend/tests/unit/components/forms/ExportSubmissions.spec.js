@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 // happy-dom is required to access window.URL
 import { createTestingPinia } from '@pinia/testing';
+import moment from 'moment';
 import { setActivePinia } from 'pinia';
 import { flushPromises, mount } from '@vue/test-utils';
 import { createRouter, createWebHistory } from 'vue-router';
@@ -12,8 +13,7 @@ import { formService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
-import moment from 'moment';
-import { ExportLargeData } from '../../../../src/utils/constants';
+import { ExportLargeData } from '~/utils/constants';
 
 describe('ExportSubmissions.vue', () => {
   const formId = '123-456';
