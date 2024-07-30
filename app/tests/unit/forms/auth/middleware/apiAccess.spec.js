@@ -263,7 +263,7 @@ describe('apiAccess', () => {
     it('should be bad request with non-uuid file id', async () => {
       const req = getMockReq({
         headers: { authorization: authHeader },
-        params: { id: 'invalidFileId' },
+        params: { fileId: 'invalidFileId' },
       });
       const { res, next } = getMockRes();
 
@@ -280,7 +280,7 @@ describe('apiAccess', () => {
       fileService.read = jest.fn().mockRejectedValue(new NotFoundError());
       const req = getMockReq({
         headers: { authorization: authHeader },
-        params: { id: fileId },
+        params: { fileId: fileId },
       });
       const { res, next } = getMockRes();
 
@@ -297,7 +297,7 @@ describe('apiAccess', () => {
       fileService.read = jest.fn().mockReturnValue({});
       const req = getMockReq({
         headers: { authorization: authHeader },
-        params: { id: fileId },
+        params: { fileId: fileId },
       });
       const { res, next } = getMockRes();
 
@@ -314,7 +314,7 @@ describe('apiAccess', () => {
       fileService.read = jest.fn().mockReturnValue({ formSubmissionId: undefined });
       const req = getMockReq({
         headers: { authorization: authHeader },
-        params: { id: fileId },
+        params: { fileId: fileId },
       });
       const { res, next } = getMockRes();
 
@@ -332,7 +332,7 @@ describe('apiAccess', () => {
       submissionService.read = jest.fn().mockReturnValue();
       const req = getMockReq({
         headers: { authorization: authHeader },
-        params: { id: fileId },
+        params: { fileId: fileId },
       });
       const { res, next } = getMockRes();
 
@@ -350,7 +350,7 @@ describe('apiAccess', () => {
       submissionService.read = jest.fn().mockReturnValue({});
       const req = getMockReq({
         headers: { authorization: authHeader },
-        params: { id: fileId },
+        params: { fileId: fileId },
       });
       const { res, next } = getMockRes();
 
@@ -368,7 +368,7 @@ describe('apiAccess', () => {
       submissionService.read = jest.fn().mockReturnValue({ form: {} });
       const req = getMockReq({
         headers: { authorization: authHeader },
-        params: { id: fileId },
+        params: { fileId: fileId },
       });
       const { res, next } = getMockRes();
 
@@ -387,7 +387,7 @@ describe('apiAccess', () => {
       submissionService.read = jest.fn().mockReturnValue({ form: { id: formId } });
       const req = getMockReq({
         headers: { authorization: authHeader },
-        params: { id: fileId },
+        params: { fileId: fileId },
       });
       const { res, next } = getMockRes();
 
@@ -405,7 +405,7 @@ describe('apiAccess', () => {
       submissionService.read = jest.fn().mockReturnValue({ form: { id: formId } });
       const req = getMockReq({
         headers: { authorization: authHeader },
-        params: { id: fileId },
+        params: { fileId: fileId },
       });
       const { res, next } = getMockRes();
 
@@ -424,7 +424,7 @@ describe('apiAccess', () => {
       submissionService.read = jest.fn().mockResolvedValue({ form: { id: formId } });
       const req = {
         headers: { authorization: authHeader },
-        params: { id: fileId },
+        params: { fileId: fileId },
       };
       const { res, next } = getMockRes();
 

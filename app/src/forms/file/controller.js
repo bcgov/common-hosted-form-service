@@ -55,7 +55,7 @@ module.exports = {
     try {
       // Permissions checked on this at the route level with middleware
       // ok, let's remove the file...
-      await service.delete(req.params.id);
+      await service.delete(req.params.fileId);
       res.sendStatus(202);
     } catch (error) {
       next(error);
