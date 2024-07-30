@@ -552,7 +552,7 @@
     "exactBCEIDSearch": "BCeID에 대한 이메일 검색은 정확해야 합니다.",
     "getUsersErrMsg": "사용자 가져오기 오류: {error}",
     "exactEmailOrUsername": "정확한 이메일 또는 사용자 이름을 입력하세요.",
-    "requiredFiled": "이름, 이메일 또는 사용자 이름을 입력하세요."
+    "requiredField": "이름, 이메일 또는 사용자 이름을 입력하세요."
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "이 제출물 보기",

@@ -552,7 +552,7 @@
     "exactBCEIDSearch": "BCeID 的電子郵件搜索必須準確。",
     "getUsersErrMsg": "獲取用戶時出錯：{error}",
     "exactEmailOrUsername": "輸入準確的電子郵件或用戶名。",
-    "requiredFiled": "輸入姓名、電子郵件或用戶名"
+    "requiredField": "輸入姓名、電子郵件或用戶名"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "查看此提交內容",

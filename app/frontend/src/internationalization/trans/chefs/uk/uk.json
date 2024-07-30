@@ -551,7 +551,7 @@
     "exactBCEIDSearch": "Пошук електронної пошти для BCeID має бути точним.",
     "getUsersErrMsg": "Помилка отримання користувачів: {error}",
     "exactEmailOrUsername": "Введіть точний e-mail або ім'я користувача.",
-    "requiredFiled": "Введіть ім'я, адресу електронної пошти або ім'я користувача"
+    "requiredField": "Введіть ім'я, адресу електронної пошти або ім'я користувача"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "Переглянути цю заявку",

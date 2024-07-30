@@ -552,7 +552,7 @@
     "exactBCEIDSearch": "Le ricerche e-mail per BCeID devono essere esatte.",
     "getUsersErrMsg": "Errore durante il recupero degli utenti: {error}",
     "exactEmailOrUsername": "Inserisci un'e-mail o un nome utente esatti.",
-    "requiredFiled": "Inserisci un nome, un'e-mail o un nome utente"
+    "requiredField": "Inserisci un nome, un'e-mail o un nome utente"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "Visualizza questa presentazione",

@@ -552,7 +552,7 @@
     "exactBCEIDSearch": "جستجوی ایمیل برای BCeID باید دقیق باشد.",
     "getUsersErrMsg": "خطا در دریافت کاربران: {error}",
     "exactEmailOrUsername": "یک ایمیل یا نام کاربری دقیق وارد کنید.",
-    "requiredFiled": "یک نام، ایمیل یا نام کاربری وارد کنید"
+    "requiredField": "یک نام، ایمیل یا نام کاربری وارد کنید"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "مشاهده این ارسال",

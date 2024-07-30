@@ -552,7 +552,7 @@
     "exactBCEIDSearch": "Dapat na eksakto ang mga paghahanap sa email para sa BceID.",
     "getUsersErrMsg": "Error sa pagkuha ng mga user: {error}",
     "exactEmailOrUsername": "Maglagay ng eksaktong e-mail o username.",
-    "requiredFiled": "Maglagay ng pangalan, e-mail, o username"
+    "requiredField": "Maglagay ng pangalan, e-mail, o username"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "Tingnan ang Pagsusumite na Ito",
