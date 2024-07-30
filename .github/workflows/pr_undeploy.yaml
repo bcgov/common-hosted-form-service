@@ -1,4 +1,5 @@
-name: Close pull request deployment
+name: PR Undeploy
+run-name: Undeploy PR-${{ github.event.inputs.pr-number }}
 
 env:
   ACRONYM: chefs
@@ -7,19 +8,9 @@ on:
   workflow_dispatch:
     inputs:
       pr-number:
-        description: Pull request number, leave blank for dev/test/prod deployment
-        required: false
-        type: string
-      environment:
-        description: Environment name; choose dev for PR
+        description: Pull request number
         required: true
-        type: choice
-        options:
-        - dev
-        - test
-        - prod
-        default: dev
-
+        type: string
 
 jobs:
   remove-pr-dev:
