@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import StatusTable from '~/components/forms/submission/StatusTable.vue';
@@ -87,6 +87,25 @@ const statusAction = computed(() => {
     // code block
   }
   return actionStatus;
+});
+
+watch(selectAllSubmitters, (newValue) => {
+  if (newValue) {
+    selectedSubmissionUsers.value = formSubmitters.value.map(
+      (user) => user.value
+    );
+  } else {
+    // selectAllSubmitters is false, disable the checkbox if the array contains all the submitters
+    if (selectedSubmissionUsers.value.length === formSubmitters.value.length) {
+      selectAllSubmitters.value = true;
+    }
+  }
+});
+
+watch(selectedSubmissionUsers, (newValue) => {
+  if (newValue.length !== formSubmitters.value.length) {
+    selectAllSubmitters.value = false;
+  }
 });
 
 getStatus();
@@ -482,7 +501,8 @@ defineExpose({
                 :no-data-text="$t('trans.statusPanel.noDataText')"
                 variant="outlined"
                 :rules="[
-                  (v) => !!v || $t('trans.statusPanel.recipientIsRequired'),
+                  (v) =>
+                    !!v.length || $t('trans.statusPanel.recipientIsRequired'),
                 ]"
                 :lang="locale"
               >
