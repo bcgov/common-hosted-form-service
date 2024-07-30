@@ -38,22 +38,22 @@ inputs:
   ref:
     description: The checkout ref id
     required: false
-    default: ''
+    default: ""
 
 runs:
   using: composite
   steps:
     - name: Checkout repository from pull request
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         ref: ${{ inputs.ref }}
       if: ${{ inputs.ref != '' }}
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       if: ${{ inputs.ref == '' }}
 
     - name: Login to OpenShift Cluster
-      uses: jasonchung1871/oc-login@v1.1.2
+      uses: redhat-actions/oc-login@v1
 
       with:
         openshift_server_url: ${{ inputs.openshift_server }}
