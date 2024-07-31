@@ -63,10 +63,10 @@ const validateDocumentTemplateId = async (req, _res, next, documentTemplateId) =
 /**
  * Validates that the :fileId route parameter exists and is a UUID.
  *
- * @param {*} req the Express object representing the HTTP request.
+ * @param {*} _req the Express object representing the HTTP request - unused.
  * @param {*} _res the Express object representing the HTTP response - unused.
  * @param {*} next the Express chaining function.
- * @param {*} externalAPIId the :fileId value from the route.
+ * @param {*} fileId the :fileId value from the route.
  */
 const validateFileId = async (_req, _res, next, fileId) => {
   try {
