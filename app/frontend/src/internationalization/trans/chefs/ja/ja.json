@@ -551,7 +551,7 @@
     "exactBCEIDSearch": "BCeID の電子メール検索は正確である必要があります。",
     "getUsersErrMsg": "ユーザー取得エラー: {error}",
     "exactEmailOrUsername": "正確な電子メールまたはユーザー名を入力します。",
-    "requiredFiled": "名前、電子メール、またはユーザー名を入力してください"
+    "requiredField": "名前、電子メール、またはユーザー名を入力してください"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "この提出物を見る",

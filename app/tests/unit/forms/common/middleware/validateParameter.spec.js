@@ -5,6 +5,7 @@ const validateParameter = require('../../../../../src/forms/common/middleware/va
 const formService = require('../../../../../src/forms/form/service');
 const submissionService = require('../../../../../src/forms/submission/service');
 
+const fileId = uuidv4();
 const formId = uuidv4();
 const formSubmissionId = uuidv4();
 
@@ -192,6 +193,49 @@ describe('validateDocumentTemplateId', () => {
 
       expect(formService.documentTemplateRead).toBeCalledTimes(1);
       expect(submissionService.read).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
+    });
+  });
+});
+
+describe('validateFileId', () => {
+  describe('400 response when', () => {
+    const expectedStatus = { status: 400 };
+
+    test('fileId is missing', async () => {
+      const req = getMockReq({
+        params: {},
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateFileId(req, res, next);
+
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+    });
+
+    test.each(invalidUuids)('fileId is "%s"', async (eachFileId) => {
+      const req = getMockReq({
+        params: { fileId: eachFileId },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateFileId(req, res, next, eachFileId);
+
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+    });
+  });
+
+  describe('allows', () => {
+    test('uuid for fileId', async () => {
+      const req = getMockReq({
+        params: {
+          fileId: fileId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateFileId(req, res, next, fileId);
+
       expect(next).toBeCalledWith();
     });
   });

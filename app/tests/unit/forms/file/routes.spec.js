@@ -81,6 +81,7 @@ describe(`${basePath}`, () => {
   it('should have correct middleware for POST', async () => {
     await appRequest.post(path);
 
+    expect(validateParameter.validateFileId).toBeCalledTimes(0);
     expect(apiAccess).toBeCalledTimes(0);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(0);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(1);
@@ -99,7 +100,7 @@ describe(`${basePath}/:id`, () => {
   it('should have correct middleware for DELETE', async () => {
     await appRequest.delete(path);
 
-    // expect(validateParameter.validateFileId).toBeCalledTimes(1);
+    expect(validateParameter.validateFileId).toBeCalledTimes(1);
     expect(apiAccess).toBeCalledTimes(0);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
@@ -113,7 +114,7 @@ describe(`${basePath}/:id`, () => {
   it('should have correct middleware for GET', async () => {
     await appRequest.get(path);
 
-    // expect(validateParameter.validateFileId).toBeCalledTimes(1);
+    expect(validateParameter.validateFileId).toBeCalledTimes(1);
     expect(apiAccess).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
