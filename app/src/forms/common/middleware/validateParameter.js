@@ -25,10 +25,10 @@ const _validateUuid = (parameter, parameterName) => {
  * This validator requires that either the :formId or :formSubmissionId route
  * parameter also exists.
  *
- * @param {*} req the Express object representing the HTTP request
- * @param {*} _res the Express object representing the HTTP response - unused
- * @param {*} next the Express chaining function
- * @param {*} documentTemplateId the :documentTemplateId value from the route
+ * @param {*} req the Express object representing the HTTP request.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @param {*} documentTemplateId the :documentTemplateId value from the route.
  */
 const validateDocumentTemplateId = async (req, _res, next, documentTemplateId) => {
   try {
@@ -61,12 +61,30 @@ const validateDocumentTemplateId = async (req, _res, next, documentTemplateId) =
 };
 
 /**
+ * Validates that the :fileId route parameter exists and is a UUID.
+ *
+ * @param {*} req the Express object representing the HTTP request.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @param {*} externalAPIId the :externalAPIId value from the route.
+ */
+const validateFileId = async (_req, _res, next, formId) => {
+  try {
+    _validateUuid(formId, 'formId');
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Validates that the :formId route parameter exists and is a UUID.
  *
- * @param {*} _req the Express object representing the HTTP request - unused
- * @param {*} _res the Express object representing the HTTP response - unused
- * @param {*} next the Express chaining function
- * @param {*} formId the :formId value from the route
+ * @param {*} _req the Express object representing the HTTP request - unused.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @param {*} formId the :formId value from the route.
  */
 const validateFormId = async (_req, _res, next, formId) => {
   try {
@@ -82,10 +100,10 @@ const validateFormId = async (_req, _res, next, formId) => {
  * Validates that the :formVersionDraftId route parameter exists and is a UUID.
  * This validator requires that the :formId route parameter also exists.
  *
- * @param {*} req the Express object representing the HTTP request
- * @param {*} _res the Express object representing the HTTP response - unused
- * @param {*} next the Express chaining function
- * @param {*} formVersionDraftId the :formVersionDraftId value from the route
+ * @param {*} req the Express object representing the HTTP request.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @param {*} formVersionDraftId the :formVersionDraftId value from the route.
  */
 const validateFormVersionDraftId = async (req, _res, next, formVersionDraftId) => {
   try {
@@ -108,10 +126,10 @@ const validateFormVersionDraftId = async (req, _res, next, formVersionDraftId) =
  * Validates that the :formVersionId route parameter exists and is a UUID. This
  * validator requires that the :formId route parameter also exists.
  *
- * @param {*} req the Express object representing the HTTP request
- * @param {*} _res the Express object representing the HTTP response - unused
- * @param {*} next the Express chaining function
- * @param {*} formVersionId the :formVersionId value from the route
+ * @param {*} req the Express object representing the HTTP request.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @param {*} formVersionId the :formVersionId value from the route.
  */
 const validateFormVersionId = async (req, _res, next, formVersionId) => {
   try {
@@ -134,10 +152,10 @@ const validateFormVersionId = async (req, _res, next, formVersionId) => {
  * Validates that the :externalApiId route parameter exists and is a UUID. This
  * validator requires that the :formId route parameter also exists.
  *
- * @param {*} req the Express object representing the HTTP request
- * @param {*} _res the Express object representing the HTTP response - unused
- * @param {*} next the Express chaining function
- * @param {*} externalAPIId the :externalAPIId value from the route
+ * @param {*} req the Express object representing the HTTP request.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @param {*} externalAPIId the :externalAPIId value from the route.
  */
 const validateExternalAPIId = async (req, _res, next, externalAPIId) => {
   try {
@@ -158,6 +176,7 @@ const validateExternalAPIId = async (req, _res, next, externalAPIId) => {
 
 module.exports = {
   validateDocumentTemplateId,
+  validateFileId,
   validateFormId,
   validateFormVersionId,
   validateFormVersionDraftId,
