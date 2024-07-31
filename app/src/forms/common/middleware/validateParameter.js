@@ -66,11 +66,11 @@ const validateDocumentTemplateId = async (req, _res, next, documentTemplateId) =
  * @param {*} req the Express object representing the HTTP request.
  * @param {*} _res the Express object representing the HTTP response - unused.
  * @param {*} next the Express chaining function.
- * @param {*} externalAPIId the :externalAPIId value from the route.
+ * @param {*} externalAPIId the :fileId value from the route.
  */
-const validateFileId = async (_req, _res, next, formId) => {
+const validateFileId = async (_req, _res, next, fileId) => {
   try {
-    _validateUuid(formId, 'formId');
+    _validateUuid(fileId, 'fileId');
 
     next();
   } catch (error) {
