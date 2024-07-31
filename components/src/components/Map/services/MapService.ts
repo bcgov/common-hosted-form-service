@@ -9,7 +9,8 @@ const DEFAULT_LAYER_ATTRIBUTION =
 const DEFAULT_MAP_ZOOM = 5;
 const DECIMALS_LATLNG = 5; // the number of decimals of latitude and longitude to be displayed in the marker popup
 const COMPONENT_EDIT_CLASS = 'component-edit-tabs';
-const CUSTOM_MARKER_URI = '../Common/marker-icon.png/';
+const CUSTOM_MARKER_PATH =
+  'http://leafletjs.com/examples/custom-icons/leaf-green.png';
 
 interface MapServiceOptions {
   mapContainer: HTMLElement;
@@ -45,7 +46,10 @@ class MapService {
             .openOn(map);
         } else {
           console.log(layer);
-          layer.icon({ iconUrl: CUSTOM_MARKER_URI });
+          if (layer.type === 'marker') {
+            layer.setIcon(this.customMarker);
+            console.log('Adding marker' + layer);
+          }
           drawnItems.addLayer(layer);
         }
         this.bindPopupToLayer(layer);
@@ -157,7 +161,8 @@ class MapService {
     items.forEach((item) => {
       let layer;
       if (item.type === 'marker') {
-        layer = L.marker(item.coordinates);
+        layer = L.marker(item.coordinates).setIcon(this.customMarker); //layer.setIcon(this.customMarker);
+        console.log('Loading Marker' + layer);
       } else if (item.type === 'rectangle') {
         layer = L.rectangle(item.bounds);
       } else if (item.type === 'circle') {
@@ -184,5 +189,10 @@ class MapService {
     }
     return false;
   }
+  customMarker = L.icon({
+    iconUrl: CUSTOM_MARKER_PATH,
+    iconSize: [25, 41],
+    iconAnchor: [12, 20],
+  });
 }
 export default MapService;
