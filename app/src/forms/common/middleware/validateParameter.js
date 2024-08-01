@@ -61,6 +61,32 @@ const validateDocumentTemplateId = async (req, _res, next, documentTemplateId) =
 };
 
 /**
+ * Validates that the :externalApiId route parameter exists and is a UUID. This
+ * validator requires that the :formId route parameter also exists.
+ *
+ * @param {*} req the Express object representing the HTTP request.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @param {*} externalAPIId the :externalAPIId value from the route.
+ */
+const validateExternalAPIId = async (req, _res, next, externalAPIId) => {
+  try {
+    _validateUuid(externalAPIId, 'externalAPIId');
+
+    const externalApi = await externalApiService.readExternalAPI(externalAPIId);
+    if (!externalApi || externalApi.formId !== req.params.formId) {
+      throw new Problem(404, {
+        detail: 'externalAPIId does not exist on this form',
+      });
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Validates that the :fileId route parameter exists and is a UUID.
  *
  * @param {*} _req the Express object representing the HTTP request - unused.
@@ -148,37 +174,11 @@ const validateFormVersionId = async (req, _res, next, formVersionId) => {
   }
 };
 
-/**
- * Validates that the :externalApiId route parameter exists and is a UUID. This
- * validator requires that the :formId route parameter also exists.
- *
- * @param {*} req the Express object representing the HTTP request.
- * @param {*} _res the Express object representing the HTTP response - unused.
- * @param {*} next the Express chaining function.
- * @param {*} externalAPIId the :externalAPIId value from the route.
- */
-const validateExternalAPIId = async (req, _res, next, externalAPIId) => {
-  try {
-    _validateUuid(externalAPIId, 'externalAPIId');
-
-    const externalApi = await externalApiService.readExternalAPI(externalAPIId);
-    if (!externalApi || externalApi.formId !== req.params.formId) {
-      throw new Problem(404, {
-        detail: 'externalAPIId does not exist on this form',
-      });
-    }
-
-    next();
-  } catch (error) {
-    next(error);
-  }
-};
-
 module.exports = {
   validateDocumentTemplateId,
+  validateExternalAPIId,
   validateFileId,
   validateFormId,
-  validateFormVersionId,
   validateFormVersionDraftId,
-  validateExternalAPIId,
+  validateFormVersionId,
 };
