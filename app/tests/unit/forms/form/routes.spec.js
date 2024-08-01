@@ -13,9 +13,6 @@ const controller = require('../../../../src/forms/form/controller');
 // Mock out all the middleware - we're testing that the routes are set up
 // correctly, not the functionality of the middleware.
 //
-//
-// mock middleware
-//
 const jwtService = require('../../../../src/components/jwtService');
 
 //
