@@ -1,4 +1,4 @@
-name: Deploy PR
+name: PR Deploy
 run-name: Deploy PR-${{ github.event.inputs.pr-number }}
 
 env:
@@ -9,7 +9,7 @@ on:
     inputs:
       pr-number:
         description: Pull request number
-        required: false
+        required: true
         type: string
 
 concurrency:
@@ -37,6 +37,7 @@ jobs:
           echo "JOB_NAME=master" >> "$GITHUB_OUTPUT"
           echo "ROUTE_PATH=/app" >> "$GITHUB_OUTPUT"
           echo "URL=https://$ACRONYM-dev.apps.silver.devops.gov.bc.ca" >> "$GITHUB_OUTPUT"
+
       - name: Final variables
         id: vars
         env:
@@ -45,17 +46,10 @@ jobs:
           REF=refs/pull/$PR_NUMBER/head
           echo REF:$REF
           echo "ref=$REF" >> $GITHUB_OUTPUT
-          if [[ "$PR_NUMBER" != '' ]]; then
-            echo "APP_TITLE=${{ steps.default-vars.outputs.APP_TITLE }} - PR-$PR_NUMBER" >> "$GITHUB_OUTPUT"
-            echo "JOB_NAME=pr-$PR_NUMBER" >> "$GITHUB_OUTPUT"
-            echo "ROUTE_PATH=/pr-$PR_NUMBER" >> "$GITHUB_OUTPUT"
-            echo "URL=${{ steps.default-vars.outputs.URL }}/pr-$PR_NUMBER" >> "$GITHUB_OUTPUT"
-          else
-            echo "APP_TITLE=${{ steps.default-vars.outputs.APP_TITLE }}" >> "$GITHUB_OUTPUT"
-            echo "JOB_NAME=${{ steps.default-vars.outputs.JOB_NAME }}" >> "$GITHUB_OUTPUT"
-            echo "ROUTE_PATH=${{ steps.default-vars.outputs.ROUTE_PATH }}" >> "$GITHUB_OUTPUT"
-            echo "URL=${{ steps.default-vars.outputs.URL }}/app" >> "$GITHUB_OUTPUT"
-          fi
+          echo "APP_TITLE=${{ steps.default-vars.outputs.APP_TITLE }} - PR-$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "JOB_NAME=pr-$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "ROUTE_PATH=/pr-$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "URL=${{ steps.default-vars.outputs.URL }}/pr-$PR_NUMBER" >> "$GITHUB_OUTPUT"
 
   build:
     name: Build & Push
@@ -67,10 +61,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ needs.set-vars.outputs.ref }}
-        if: ${{ needs.set-vars.outputs.ref != '' }}
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        if: ${{ needs.set-vars.outputs.ref == '' }}
       - name: Build & Push
         uses: ./.github/actions/build-push-container
         with:
@@ -97,10 +87,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ needs.set-vars.outputs.ref }}
-        if: ${{ needs.set-vars.outputs.ref != '' }}
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        if: ${{ needs.set-vars.outputs.ref == '' }}
       - name: Deploy to environment
         uses: ./.github/actions/deploy-to-environment
         with:
@@ -118,9 +104,11 @@ jobs:
           ref: ${{ needs.set-vars.outputs.ref }}
       - name: Release Comment on PR
         uses: marocchino/sticky-pull-request-comment@v2
-        if: ${{ github.event.inputs.pr-number }} != '' && success()
+        if: success()
         with:
           header: release
+          hide_and_recreate: true
+          hide_classify: "OUTDATED"
           message: |
             Release ${{ github.sha }} deployed at <https://${{ env.ACRONYM }}-dev.apps.silver.devops.gov.bc.ca/pr-${{ github.event.inputs.pr-number }}>
           number: ${{ github.event.inputs.pr-number }}
