@@ -45,10 +45,8 @@ class MapService {
             .setContent('<p>Only one marker for submission</p>')
             .openOn(map);
         } else {
-          console.log(layer);
           if (layer.type === 'marker') {
             layer.setIcon(this.customMarker);
-            console.log('Adding marker' + layer);
           }
           drawnItems.addLayer(layer);
         }
@@ -162,7 +160,6 @@ class MapService {
       let layer;
       if (item.type === 'marker') {
         layer = L.marker(item.coordinates).setIcon(this.customMarker); //layer.setIcon(this.customMarker);
-        console.log('Loading Marker' + layer);
       } else if (item.type === 'rectangle') {
         layer = L.rectangle(item.bounds);
       } else if (item.type === 'circle') {
