@@ -107,14 +107,6 @@ module.exports = {
         emailService.statusCompleted(submission.form.id, response[0], req.body.submissionUserEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => {});
       } else if (req.body.code === Statuses.REVISING && req.body.submissionUserEmail) {
         emailService.statusRevising(submission.form.id, response[0], req.body.submissionUserEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => {});
-        // send email to all users in the array
-        if (req.body.notifyUsers && req.body.notifyUsers.length > 0) {
-          await Promise.all(
-            req.body.notifyUsers.map((email) => {
-              emailService.statusRevising(submission.form.id, response[0], email, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => {});
-            })
-          );
-        }
       }
       res.status(200).json(response);
     } catch (error) {

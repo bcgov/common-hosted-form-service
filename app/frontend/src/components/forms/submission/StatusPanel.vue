@@ -251,16 +251,15 @@ async function updateStatus() {
         throw new Error(t('trans.statusPanel.status'));
       }
 
-      // array of selected submission users minus the submissionUserEmail
-      const notifyUsers = selectedSubmissionUsers.value.filter(
-        (user) => user !== submissionUserEmail.value
-      );
+      // // array of selected submission users minus the submissionUserEmail
+      // const selectedSubmitters = selectedSubmissionUsers.value.filter(
+      //   (user) => user !== submissionUserEmail.value
+      // );
 
       const statusBody = {
         code: statusToSet.value,
         submissionUserEmail: submissionUserEmail.value,
         revisionNotificationEmailContent: emailComment.value,
-        notifyUsers: notifyUsers,
       };
       if (showAssignee.value) {
         if (assignee.value) {
@@ -268,43 +267,89 @@ async function updateStatus() {
           statusBody.assignmentNotificationEmail = assignee.value.email;
         }
       }
-      const statusResponse = await formService.updateSubmissionStatus(
-        properties.submissionId,
-        statusBody
-      );
-      if (!statusResponse.data) {
-        throw new Error(t('trans.statusPanel.updtSubmissionsStatusErr'));
-      }
 
-      if (emailComment.value) {
-        let formattedComment;
-        if (statusToSet.value === 'ASSIGNED') {
-          formattedComment = `Email to ${assignee.value.email}: ${emailComment.value}`;
-        } else if (
-          statusToSet.value === 'REVISING' ||
-          statusToSet.value === 'COMPLETED'
-        ) {
-          formattedComment = `Email to ${submissionUserEmail.value}: ${emailComment.value}`;
+      if (selectedSubmissionUsers.value.length > 0) {
+        // for every item in selectedSubmissionUsers, add it to the statusBody as the submissionUserEmail and
+        // update the submission status
+        for (const user of selectedSubmissionUsers.value) {
+          statusBody.submissionUserEmail = user;
+          const statusResponse = await formService.updateSubmissionStatus(
+            properties.submissionId,
+            statusBody
+          );
+          if (!statusResponse.data) {
+            throw new Error(t('trans.statusPanel.updtSubmissionsStatusErr'));
+          }
+          if (emailComment.value) {
+            let formattedComment;
+            if (statusToSet.value === 'ASSIGNED') {
+              formattedComment = `Email to ${assignee.value.email}: ${emailComment.value}`;
+            } else if (
+              statusToSet.value === 'REVISING' ||
+              statusToSet.value === 'COMPLETED'
+            ) {
+              formattedComment = `Email to ${user}: ${emailComment.value}`;
+            }
+
+            const submissionStatusId =
+              statusResponse.data[0].submissionStatusId;
+            const currentUser = await rbacService.getCurrentUser();
+            const noteBody = {
+              submissionId: properties.submissionId,
+              submissionStatusId: submissionStatusId,
+              note: formattedComment,
+              userId: currentUser.data.id,
+            };
+            const response = await formService.addNote(
+              properties.submissionId,
+              noteBody
+            );
+            if (!response.data) {
+              throw new Error(t('trans.statusPanel.addNoteNoReponserErr'));
+            }
+            // Update the parent if the note was updated
+            emit('note-updated');
+          }
         }
-
-        const submissionStatusId = statusResponse.data[0].submissionStatusId;
-        const user = await rbacService.getCurrentUser();
-        const noteBody = {
-          submissionId: properties.submissionId,
-          submissionStatusId: submissionStatusId,
-          note: formattedComment,
-          userId: user.data.id,
-        };
-        const response = await formService.addNote(
+      } else {
+        const statusResponse = await formService.updateSubmissionStatus(
           properties.submissionId,
-          noteBody
+          statusBody
         );
-        if (!response.data) {
-          throw new Error(t('trans.statusPanel.addNoteNoReponserErr'));
+        if (!statusResponse.data) {
+          throw new Error(t('trans.statusPanel.updtSubmissionsStatusErr'));
         }
-        // Update the parent if the note was updated
-        emit('note-updated');
+        if (emailComment.value) {
+          let formattedComment;
+          if (statusToSet.value === 'ASSIGNED') {
+            formattedComment = `Email to ${assignee.value.email}: ${emailComment.value}`;
+          } else if (
+            statusToSet.value === 'REVISING' ||
+            statusToSet.value === 'COMPLETED'
+          ) {
+            formattedComment = `Email to ${submissionUserEmail.value}: ${emailComment.value}`;
+          }
+
+          const submissionStatusId = statusResponse.data[0].submissionStatusId;
+          const user = await rbacService.getCurrentUser();
+          const noteBody = {
+            submissionId: properties.submissionId,
+            submissionStatusId: submissionStatusId,
+            note: formattedComment,
+            userId: user.data.id,
+          };
+          const response = await formService.addNote(
+            properties.submissionId,
+            noteBody
+          );
+          if (!response.data) {
+            throw new Error(t('trans.statusPanel.addNoteNoReponserErr'));
+          }
+          // Update the parent if the note was updated
+          emit('note-updated');
+        }
       }
+
       resetForm();
       await getStatus();
     }
