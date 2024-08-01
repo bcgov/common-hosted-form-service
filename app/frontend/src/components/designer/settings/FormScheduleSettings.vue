@@ -15,7 +15,7 @@ const { t, locale } = useI18n({ useScope: 'global' });
 
 const enableReminderDraw = ref(true);
 const githubLinkScheduleAndReminderFeature = ref(
-  'https://github.com/bcgov/common-hosted-form-service/wiki/Schedule-and-Reminder-notification'
+  'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/Schedule-and-Reminder-notification/'
 );
 /* c8 ignore start */
 const intervalType = ref([(v) => !!v || t('trans.formSettings.fieldRequired')]);

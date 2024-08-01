@@ -1,4 +1,4 @@
-name: Deploy PR
+name: PR Deploy
 run-name: Deploy PR-${{ github.event.inputs.pr-number }}
 
 env:
@@ -106,8 +106,9 @@ jobs:
         uses: marocchino/sticky-pull-request-comment@v2
         if: success()
         with:
-          append: true
           header: release
+          hide_and_recreate: true
+          hide_classify: "OUTDATED"
           message: |
             Release ${{ github.sha }} deployed at <https://${{ env.ACRONYM }}-dev.apps.silver.devops.gov.bc.ca/pr-${{ github.event.inputs.pr-number }}>
           number: ${{ github.event.inputs.pr-number }}
