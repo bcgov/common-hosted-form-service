@@ -10,7 +10,7 @@ const DEFAULT_MAP_ZOOM = 5;
 const DECIMALS_LATLNG = 5; // the number of decimals of latitude and longitude to be displayed in the marker popup
 const COMPONENT_EDIT_CLASS = 'component-edit-tabs';
 const CUSTOM_MARKER_PATH =
-  'http://leafletjs.com/examples/custom-icons/leaf-green.png';
+  'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png';
 
 interface MapServiceOptions {
   mapContainer: HTMLElement;
@@ -192,7 +192,7 @@ class MapService {
   customMarker = L.icon({
     iconUrl: CUSTOM_MARKER_PATH,
     iconSize: [25, 41],
-    iconAnchor: [12, 20],
+    iconAnchor: [12, 41],
   });
 }
 export default MapService;
