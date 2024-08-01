@@ -9,6 +9,8 @@ const DEFAULT_LAYER_ATTRIBUTION =
 const DEFAULT_MAP_ZOOM = 5;
 const DECIMALS_LATLNG = 5; // the number of decimals of latitude and longitude to be displayed in the marker popup
 const COMPONENT_EDIT_CLASS = 'component-edit-tabs';
+const CUSTOM_MARKER_PATH =
+  'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png';
 
 interface MapServiceOptions {
   mapContainer: HTMLElement;
@@ -47,6 +49,9 @@ class MapService {
             .setContent('<p>Only one marker for submission</p>')
             .openOn(map);
         } else {
+          if (layer.type === 'marker') {
+            layer.setIcon(this.customMarker);
+          }
           drawnItems.addLayer(layer);
         }
         this.bindPopupToLayer(layer);
@@ -90,6 +95,8 @@ class MapService {
 
     // Initialize Draw Layer
     let drawnItems = new L.FeatureGroup();
+    //({ iconUrl: '../common/marker-icon.png/' });
+
     map.addLayer(drawnItems);
 
     // Add Drawing Controllers
@@ -165,7 +172,7 @@ class MapService {
     items.forEach((item) => {
       let layer;
       if (item.type === 'marker') {
-        layer = L.marker(item.coordinates);
+        layer = L.marker(item.coordinates).setIcon(this.customMarker); //layer.setIcon(this.customMarker);
       } else if (item.type === 'rectangle') {
         layer = L.rectangle(item.bounds);
       } else if (item.type === 'circle') {
@@ -193,5 +200,10 @@ class MapService {
     }
     return false;
   }
+  customMarker = L.icon({
+    iconUrl: CUSTOM_MARKER_PATH,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+  });
 }
 export default MapService;
