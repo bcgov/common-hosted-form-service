@@ -1,5 +1,5 @@
 const { getMockReq, getMockRes } = require('@jest-mock/express');
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 
 const controller = require('../../../../src/forms/file/controller');
 const service = require('../../../../src/forms/file/service');
@@ -12,7 +12,7 @@ const currentUser = {
 const fileStorage = {
   createdAt: '2024-06-25T13:53:01-0700',
   createdBy: currentUser.usernameIdp,
-  id: uuidv4(),
+  id: uuid.v4(),
   mimeType: 'text/plain',
   originalName: 'testfile.txt',
   path: '/some/path',

@@ -1,5 +1,5 @@
 const { MockModel, MockTransaction } = require('../../../common/dbHelper');
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 
 jest.mock('../../../../src/forms/common/models/tables/formSubmissionStatus', () => MockModel);
 jest.mock('../../../../src/forms/common/models/tables/formSubmission', () => MockModel);
@@ -54,8 +54,8 @@ describe('createStatus', () => {
 
 describe('deleteMutipleSubmissions', () => {
   it('should delete the selected submissions', async () => {
-    let submissionId1 = uuidv4();
-    let submissionId2 = uuidv4();
+    let submissionId1 = uuid.v4();
+    let submissionId2 = uuid.v4();
     const submissionIds = [submissionId1, submissionId2];
 
     const returnValue = {
@@ -85,8 +85,8 @@ describe('deleteMutipleSubmissions', () => {
 
 describe('restoreMutipleSubmissions', () => {
   it('should delete the selected submissions', async () => {
-    let submissionId1 = uuidv4();
-    let submissionId2 = uuidv4();
+    let submissionId1 = uuid.v4();
+    let submissionId2 = uuid.v4();
     const submissionIds = [submissionId1, submissionId2];
 
     const returnValue = {

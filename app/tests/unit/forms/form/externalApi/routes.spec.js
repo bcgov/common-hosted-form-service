@@ -1,5 +1,5 @@
 const request = require('supertest');
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 
 const { expressHelper } = require('../../../../common/helper');
 
@@ -69,7 +69,7 @@ validateParameter.validateFormId = jest.fn((_req, _res, next) => {
 validateParameter.validateExternalAPIId = jest.fn((_req, _res, next) => {
   next();
 });
-const formId = uuidv4();
+const formId = uuid.v4();
 
 //
 // Create the router and a simple Express server.
@@ -127,7 +127,7 @@ describe(`${basePath}/:formId/externalAPIs`, () => {
 });
 
 describe(`${basePath}/:formId/externalAPIs/:externalAPIId`, () => {
-  const externalAPIId = uuidv4();
+  const externalAPIId = uuid.v4();
   const path = `${basePath}/${formId}/externalAPIs/${externalAPIId}`;
   controller.updateExternalAPI = jest.fn((_req, _res, next) => {
     next();
