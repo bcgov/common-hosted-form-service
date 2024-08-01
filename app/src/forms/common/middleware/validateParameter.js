@@ -1,9 +1,9 @@
 const Problem = require('api-problem');
 const uuid = require('uuid');
 
+const externalApiService = require('../../form/externalApi/service');
 const formService = require('../../form/service');
 const submissionService = require('../../submission/service');
-const { ExternalAPI } = require('../models');
 
 /**
  * Throws a 400 problem if the parameter is not a valid UUID.
@@ -161,7 +161,7 @@ const validateExternalAPIId = async (req, _res, next, externalAPIId) => {
   try {
     _validateUuid(externalAPIId, 'externalAPIId');
 
-    const externalApi = await ExternalAPI.query().findById(externalAPIId);
+    const externalApi = await externalApiService.readExternalAPI(externalAPIId);
     if (!externalApi || externalApi.formId !== req.params.formId) {
       throw new Problem(404, {
         detail: 'externalAPIId does not exist on this form',
