@@ -1,5 +1,5 @@
 const request = require('supertest');
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 
 const { expressHelper } = require('../../../common/helper');
 
@@ -55,8 +55,8 @@ validateParameter.validateDocumentTemplateId = jest.fn((_req, _res, next) => {
   next();
 });
 
-const documentTemplateId = uuidv4();
-const formSubmissionId = uuidv4();
+const documentTemplateId = uuid.v4();
+const formSubmissionId = uuid.v4();
 
 //
 // Create the router and a simple Express server.
