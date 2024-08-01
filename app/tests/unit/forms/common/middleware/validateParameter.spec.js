@@ -2,6 +2,7 @@ const { getMockReq, getMockRes } = require('@jest-mock/express');
 const { v4: uuidv4 } = require('uuid');
 
 const validateParameter = require('../../../../../src/forms/common/middleware/validateParameter');
+const externalApiService = require('../../../../../src/forms/form/externalApi/service');
 const formService = require('../../../../../src/forms/form/service');
 const submissionService = require('../../../../../src/forms/submission/service');
 
@@ -193,6 +194,123 @@ describe('validateDocumentTemplateId', () => {
 
       expect(formService.documentTemplateRead).toBeCalledTimes(1);
       expect(submissionService.read).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
+    });
+  });
+});
+
+describe('validateExternalApiId', () => {
+  const externalApiId = uuidv4();
+
+  const mockReadExternalApiResponse = {
+    formId: formId,
+    id: externalApiId,
+  };
+
+  externalApiService.readExternalAPI = jest.fn().mockReturnValue(mockReadExternalApiResponse);
+
+  describe('400 response when', () => {
+    const expectedStatus = { status: 400 };
+
+    test('externalAPIId is missing', async () => {
+      const req = getMockReq({
+        params: {
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateExternalAPIId(req, res, next);
+
+      expect(externalApiService.readExternalAPI).toBeCalledTimes(0);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+    });
+
+    test.each(invalidUuids)('externalAPIId is "%s"', async (eachExternalApiId) => {
+      const req = getMockReq({
+        params: {
+          formId: formId,
+          externalAPIId: eachExternalApiId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateExternalAPIId(req, res, next, eachExternalApiId);
+
+      expect(externalApiService.readExternalAPI).toBeCalledTimes(0);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+    });
+  });
+
+  describe('404 response when', () => {
+    const expectedStatus = { status: 404 };
+
+    test('formId is missing', async () => {
+      const req = getMockReq({
+        params: {
+          externalAPIId: externalApiId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateExternalAPIId(req, res, next, externalApiId);
+
+      expect(externalApiService.readExternalAPI).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+    });
+
+    test('formId does not match', async () => {
+      externalApiService.readExternalAPI.mockReturnValueOnce({
+        formId: uuidv4(),
+        id: externalApiId,
+      });
+      const req = getMockReq({
+        params: {
+          externalAPIId: externalApiId,
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateExternalAPIId(req, res, next, externalApiId);
+
+      expect(externalApiService.readExternalAPI).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+    });
+  });
+
+  describe('handles error thrown by', () => {
+    test('readVersion', async () => {
+      const error = new Error();
+      externalApiService.readExternalAPI.mockRejectedValueOnce(error);
+      const req = getMockReq({
+        params: {
+          externalAPIId: externalApiId,
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateExternalAPIId(req, res, next, externalApiId);
+
+      expect(externalApiService.readExternalAPI).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(error);
+    });
+  });
+
+  describe('allows', () => {
+    test('external api with matching form id', async () => {
+      const req = getMockReq({
+        params: {
+          externalAPIId: externalApiId,
+          formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateExternalAPIId(req, res, next, externalApiId);
+
+      expect(externalApiService.readExternalAPI).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
     });
   });

@@ -356,15 +356,9 @@ const hasRoleModifyPermissions = async (req, _res, next) => {
 
       if (userRoles.includes(Roles.OWNER)) {
         // Can't remove a different user's owner role unless you are an owner.
-        //
-        // TODO: Remove this if statement and just throw the exception. It's not
-        // possible for userId === currentUser.id since we're in an if that we
-        // are !isOwner but also that userRoles.includes(Roles.OWNER).
-        if (userId !== currentUser.id) {
-          throw new Problem(401, {
-            detail: "You can't update an owner's roles.",
-          });
-        }
+        throw new Problem(401, {
+          detail: "You can't update an owner's roles.",
+        });
       } else if (futureRoles.includes(Roles.OWNER)) {
         // Can't add an owner role unless you are an owner.
         throw new Problem(401, {
