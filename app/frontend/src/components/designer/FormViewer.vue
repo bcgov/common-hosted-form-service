@@ -1178,7 +1178,7 @@ export default {
         </div>
       </div>
 
-      <div v-if="!isAuthorized">
+      <div v-else-if="!isAuthorized">
         <v-alert
           :text="formUnauthorizedMessage"
           prominent
