@@ -67,7 +67,8 @@
     "cancel": "Cancel",
     "eventSubscription": "Event Subscription",
     "cdogsTemplate": "CDOGS Template",
-    "externalAPIs": "External APIs"
+    "externalAPIs": "External APIs",
+    "eventStreamConfig": "Event Stream Configuration"
   },
   "documentTemplate": {
     "uploadTemplate": "Upload CDOGS Template",
@@ -82,6 +83,39 @@
     "deleteError": "An error occurred while deleting the template.",
     "fetchError": "An error occurred while fetching the template.",
     "info": "Upload a template to use the Common Document Generation Service (CDOGS)"
+  },
+  "eventStreamConfig": {
+    "info": "Configure Event Stream for your form.",
+    "create": "Create new Event Stream Configuration",
+    "createError": "Event Stream Configuration could not be created.",
+    "createSuccess": "Event Stream Configuration created successfully.",
+    "createTitle": "New Event Stream Configuration",
+    "delete": "Delete",
+    "deleteSuccess": "Event Stream Configuration deleted successfully.",
+    "deleteError": "An error occurred while deleting the Event Stream Configuration.",
+    "edit": "Edit",
+    "editError": "Event Stream Configuration could not be updated.",
+    "editSuccess": "Event Stream Configuration updated successfully.",
+    "editTitle": "Edit Event Stream Configuration",
+    "fetchError": "An error occurred while fetching the Event Stream Configuration.",
+    "save": "Save"
+  },
+  "encryptionKey": {
+    "info": "Configure Encryption Keys for your form.",
+    "create": "Create new Encryption Key",
+    "createError": "Encryption Key could not be created.",
+    "createSuccess": "Encryption Key created successfully.",
+    "createTitle": "New Encryption Key Configuration",
+    "delete": "Delete",
+    "deleteSuccess": "Encryption Key deleted successfully.",
+    "deleteError": "An error occurred while deleting the Encryption Key.",
+    "edit": "Edit",
+    "editError": "Encryption Key could not be updated.",
+    "editSuccess": "Encryption Key updated successfully.",
+    "editTitle": "Edit Encryption Key",
+    "fetchError": "An error occurred while fetching the Encryption Key.",
+    "fetchListError": "An error occurred while fetching the Encryption Key list.",
+    "save": "Save"
   },
   "externalAPI": {
     "info": "Configure External APIs for use in your form.",
