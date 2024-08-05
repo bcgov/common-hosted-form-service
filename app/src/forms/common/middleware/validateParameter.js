@@ -1,6 +1,7 @@
 const Problem = require('api-problem');
 const uuid = require('uuid');
 
+const encryptionKeyService = require('../../form/encryptionKey/service');
 const externalApiService = require('../../form/externalApi/service');
 const formService = require('../../form/service');
 const submissionService = require('../../submission/service');
@@ -174,6 +175,32 @@ const validateFormVersionId = async (req, _res, next, formVersionId) => {
   }
 };
 
+/**
+ * Validates that the :formEncryptionKeyId route parameter exists and is a UUID. This
+ * validator requires that the :formId route parameter also exists.
+ *
+ * @param {*} req the Express object representing the HTTP request.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @param {*} formEncryptionKeyId the :formEncryptionKeyId value from the route.
+ */
+const validateFormEncryptionKeyId = async (req, _res, next, formEncryptionKeyId) => {
+  try {
+    _validateUuid(formEncryptionKeyId, 'formEncryptionKeyId');
+
+    const rec = await encryptionKeyService.readEncryptionKey(formEncryptionKeyId);
+    if (!rec || rec.formId !== req.params.formId) {
+      throw new Problem(404, {
+        detail: 'formEncryptionKeyId does not exist on this form',
+      });
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   validateDocumentTemplateId,
   validateExternalAPIId,
@@ -181,4 +208,5 @@ module.exports = {
   validateFormId,
   validateFormVersionDraftId,
   validateFormVersionId,
+  validateFormEncryptionKeyId,
 };

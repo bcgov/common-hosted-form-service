@@ -26,6 +26,8 @@ module.exports = {
   FormSubscription: require('./tables/formSubscription'),
   ExternalAPI: require('./tables/externalAPI'),
   ExternalAPIStatusCode: require('./tables/externalAPIStatusCode'),
+  FormEncryptionKey: require('./tables/formEncryptionKey'),
+  FormEventStreamConfig: require('./tables/formEventStreamConfig'),
 
   // Views
   FormSubmissionUserPermissions: require('./views/formSubmissionUserPermissions'),

@@ -5,10 +5,12 @@ import { useI18n } from 'vue-i18n';
 
 import ApiKey from '~/components/forms/manage/ApiKey.vue';
 import DocumentTemplate from '~/components/forms/manage/DocumentTemplate.vue';
+import EventStreamConfig from '~/components/forms/manage/EventStreamConfig.vue';
 import ExternalAPIs from '~/components/forms/manage/ExternalAPIs.vue';
 import FormSettings from '~/components/designer/FormSettings.vue';
 import ManageVersions from '~/components/forms/manage/ManageVersions.vue';
 import Subscription from '~/components/forms/manage/Subscription.vue';
+import { useAppStore } from '~/store/app';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { FormPermissions, NotificationTypes } from '~/utils/constants';
@@ -18,6 +20,7 @@ const { locale } = useI18n({ useScope: 'global' });
 
 const apiKeyPanel = ref(1);
 const cdogsPanel = ref(1);
+const eventStreamConfigPanel = ref(1);
 const externalAPIsPanel = ref(1);
 const formSettingsDisabled = ref(true);
 const settingsForm = ref(null);
@@ -26,6 +29,7 @@ const subscription = ref(false);
 const subscriptionsPanel = ref(0);
 const versionsPanel = ref(0);
 
+const appStore = useAppStore();
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
 
@@ -306,6 +310,24 @@ defineExpose({
         </v-expansion-panel-title>
         <v-expansion-panel-text>
           <ExternalAPIs />
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
+
+    <!-- Event Stream Config -->
+    <v-expansion-panels
+      v-if="canEditForm && appStore.config.features.eventStreamService"
+      v-model="eventStreamConfigPanel"
+      class="nrmc-expand-collapse"
+    >
+      <v-expansion-panel flat>
+        <v-expansion-panel-title>
+          <div class="header" :lang="locale">
+            <strong>{{ $t('trans.manageForm.eventStreamConfig') }}</strong>
+          </div>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
+          <EventStreamConfig />
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
