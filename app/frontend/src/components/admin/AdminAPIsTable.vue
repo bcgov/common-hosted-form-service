@@ -5,7 +5,6 @@ import { i18n } from '~/internationalization';
 
 import { useAdminStore } from '~/store/admin';
 import { useFormStore } from '~/store/form';
-import { Ministries } from '~/utils/constants';
 import BaseDialog from '~/components/base/BaseDialog.vue';
 
 export default {
@@ -35,12 +34,6 @@ export default {
   computed: {
     ...mapState(useAdminStore, ['externalAPIList', 'externalAPIStatusCodes']),
     ...mapState(useFormStore, ['isRTL', 'lang']),
-    ministryList() {
-      return Ministries.map((ministry) => ({
-        id: ministry.id,
-        text: i18n.t(`trans.ministries.${ministry.id}`),
-      }));
-    },
     headers() {
       return [
         {
@@ -49,19 +42,32 @@ export default {
           key: 'ministry',
         },
         {
+          title: i18n.t('trans.adminAPIsTable.ministryName'),
+          align: 'start',
+          key: 'ministryName',
+          // we don't want to see this (too long)
+          // but we need it for searching, so it needs to be in the DOM
+          headerProps: {
+            class: 'hidden',
+          },
+          cellProps: {
+            class: 'hidden',
+          },
+        },
+        {
           title: i18n.t('trans.adminAPIsTable.formName'),
           align: 'start',
           key: 'formName',
         },
         {
+          title: i18n.t('trans.adminAPIsTable.formId'),
+          align: 'start',
+          key: 'formId',
+        },
+        {
           title: i18n.t('trans.adminAPIsTable.name'),
           align: 'start',
           key: 'name',
-        },
-        {
-          title: i18n.t('trans.adminAPIsTable.endpointUrl'),
-          align: 'start',
-          key: 'endpointUrl',
         },
         {
           title: i18n.t('trans.adminAPIsTable.display'),
@@ -77,6 +83,13 @@ export default {
         },
       ];
     },
+    items() {
+      // add ministry name to objects so we can search on them
+      return this.externalAPIList.map((x) => ({
+        ...x,
+        ministryName: this.getMinistryName(x),
+      }));
+    },
   },
   async mounted() {
     await this.getExternalAPIStatusCodes();
@@ -89,6 +102,9 @@ export default {
       'updateExternalAPI',
       'getExternalAPIStatusCodes',
     ]),
+    getMinistryName(item) {
+      return item.ministry ? i18n.t(`trans.ministries.${item.ministry}`) : '';
+    },
     resetEditDialog() {
       this.editDialog = {
         title: '',
@@ -107,9 +123,7 @@ export default {
     handleEdit(item) {
       this.resetEditDialog();
       this.editDialog.item = { ...item };
-      this.editDialog.item.ministryText = this.ministryList.find(
-        (x) => x.id === item.ministry
-      )['text'];
+      this.editDialog.item.ministryText = this.getMinistryName(item);
       this.editDialog.title = i18n.t('trans.adminAPIsTable.editTitle');
       this.editDialog.show = true;
     },
@@ -162,23 +176,26 @@ export default {
       hover
       :headers="headers"
       item-key="title"
-      :items="externalAPIList"
+      :items="items"
       :search="search"
       :loading="loading"
       :loading-text="$t('trans.adminAPIsTable.loadingText')"
       :lang="lang"
     >
       <template #item.ministry="{ item }">
-        {{ ministryList.find((x) => x.id === item.ministry)['text'] }}
+        {{ item.ministry }}
+      </template>
+      <template #item.ministryName="{ item }">
+        {{ getMinistryName(item) }}
       </template>
       <template #item.formName="{ item }">
         {{ item.formName }}
       </template>
+      <template #item.endpointUrl="{ item }">
+        {{ item.formId }}
+      </template>
       <template #item.name="{ item }">
         {{ item.name }}
-      </template>
-      <template #item.endpointUrl="{ item }">
-        {{ item.endpointUrl }}
       </template>
       <template #item.display="{ item }">
         {{ item.display }}
