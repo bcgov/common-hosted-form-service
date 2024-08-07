@@ -64,8 +64,12 @@ class MapService {
         options.onDrawnItemsChange(drawnItems.getLayers());
       });
 
+      map.on(L.Draw.Event.DRAWSTART, (e) => {
+        e.layer.setIcon(this.customMarker);
+      }
       map.on('resize', () => {
         map.invalidateSize();
+
       });
     }
   }
@@ -95,7 +99,6 @@ class MapService {
 
     // Initialize Draw Layer
     let drawnItems = new L.FeatureGroup();
-    //({ iconUrl: '../common/marker-icon.png/' });
 
     map.addLayer(drawnItems);
 
@@ -172,7 +175,7 @@ class MapService {
     items.forEach((item) => {
       let layer;
       if (item.type === 'marker') {
-        layer = L.marker(item.coordinates).setIcon(this.customMarker); //layer.setIcon(this.customMarker);
+        layer = L.marker(item.coordinates).setIcon(this.customMarker);
       } else if (item.type === 'rectangle') {
         layer = L.rectangle(item.bounds);
       } else if (item.type === 'circle') {
