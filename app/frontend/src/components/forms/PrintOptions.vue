@@ -351,7 +351,7 @@ export default {
     handleFileUpload(event) {
       this.fileInputKey += 1;
       this.templateForm.files = event;
-      this.validFileExtension(event);
+      this.validateFileExtension(event);
     },
   },
 };
