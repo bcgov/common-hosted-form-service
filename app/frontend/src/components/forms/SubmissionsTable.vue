@@ -23,6 +23,7 @@ const properties = defineProps({
 // Show only items for the current logged in user
 const currentUserOnly = ref(false);
 const debounceInput = ref(null);
+const debounceTime = ref(300);
 const deleteItem = ref({});
 // Show only deleted items
 const deletedOnly = ref(false);
@@ -103,6 +104,7 @@ const userColumns = computed(() => {
     userFormPreferences.value.preferences &&
     userFormPreferences.value.preferences.columns
   ) {
+    // if we have any objects inside o
     // Compare saved user prefs against the current form versions component names and remove any discrepancies
     return userFormPreferences.value.preferences.columns.filter(
       (x) => formFields.value.indexOf(x) !== -1
@@ -290,7 +292,7 @@ const PRESELECTED_DATA = computed(() => {
 onMounted(async () => {
   debounceInput.value = _.debounce(async () => {
     forceTableRefresh.value += 1;
-  }, 300);
+  }, debounceTime.value);
   refreshSubmissions();
 });
 
@@ -348,22 +350,22 @@ async function getSubmissionData() {
         userFormPreferences.value.preferences.filter
           ? moment(
               userFormPreferences.value.preferences.filter[0],
-              'YYYY-MM-DD hh:mm:ss'
+              'YYYY-MM-DD'
             )
               .utc()
               .format()
-          : moment().subtract(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Min Date)
+          : moment().subtract(50, 'years').utc().format('YYYY-MM-DD'), //Get User filter Criteria (Min Date)
       maxDate:
         userFormPreferences.value &&
         userFormPreferences.value.preferences &&
         userFormPreferences.value.preferences.filter
           ? moment(
               userFormPreferences.value.preferences.filter[1],
-              'YYYY-MM-DD hh:mm:ss'
+              'YYYY-MM-DD'
             )
               .utc()
               .format()
-          : moment().add(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Max Date)
+          : moment().add(50, 'years').utc().format('YYYY-MM-DD'), //Get User filter Criteria (Max Date)
     }),
     deletedOnly: deletedOnly.value,
     createdBy: currentUserOnly.value
@@ -448,11 +450,15 @@ async function refreshSubmissions() {
 }
 
 async function delSub() {
-  singleSubmissionDelete.value ? deleteSingleSubs() : deleteMultiSubs();
+  singleSubmissionDelete.value
+    ? await deleteSingleSubs()
+    : await deleteMultiSubs();
 }
 
 async function restoreSub() {
-  singleSubmissionRestore.value ? restoreSingleSub() : restoreMultipleSubs();
+  singleSubmissionRestore.value
+    ? await restoreSingleSub()
+    : await restoreMultipleSubs();
 }
 
 async function deleteSingleSubs() {
@@ -520,6 +526,39 @@ async function handleSearch(value) {
     debounceInput.value();
   }
 }
+
+defineExpose({
+  BASE_FILTER_HEADERS,
+  BASE_HEADERS,
+  debounceInput,
+  debounceTime,
+  delSub,
+  filterIgnore,
+  firstDataLoad,
+  forceTableRefresh,
+  getSubmissionData,
+  handleSearch,
+  HEADERS,
+  itemsPerPage,
+  multiDeleteMessage,
+  multiRestoreMessage,
+  onShowColumnDialog,
+  page,
+  restoreSub,
+  serverItems,
+  showColumnsDialog,
+  showFormManage,
+  showSelectColumns,
+  showSubmissionsExport,
+  singleDeleteMessage,
+  singleRestoreMessage,
+  singleSubmissionDelete,
+  singleSubmissionRestore,
+  sortBy,
+  updateFilter,
+  userColumns,
+  USER_PREFERENCES,
+});
 </script>
 
 <template>
