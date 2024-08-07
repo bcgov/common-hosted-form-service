@@ -66,10 +66,9 @@ class MapService {
 
       map.on(L.Draw.Event.DRAWSTART, (e) => {
         e.layer.setIcon(this.customMarker);
-      }
+      });
       map.on('resize', () => {
         map.invalidateSize();
-
       });
     }
   }
