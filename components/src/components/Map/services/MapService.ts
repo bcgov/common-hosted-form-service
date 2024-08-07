@@ -1,4 +1,5 @@
 import * as L from 'leaflet';
+import { toRaw, markRaw } from 'vue';
 import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw-src.css';
@@ -34,6 +35,7 @@ class MapService {
 
     if (options.mapContainer) {
       const { map, drawnItems } = this.initializeMap(options);
+
       this.map = map;
       this.drawnItems = drawnItems;
 
