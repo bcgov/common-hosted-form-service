@@ -9,16 +9,16 @@ const service = require('../service');
  * Get the DB record for this file being accessed and store in request for use further down the chain
  * @returns {Function} a middleware function
  */
-const currentFileRecord = async (req, res, next) => {
-  let fileRecord = undefined;
+const currentFileRecord = async (req, _res, next) => {
+  let fileRecord;
   try {
     // Check if authed, can expand for API key access if needed
-    if (req.params.id && (req.currentUser || req.apiUser)) {
+    if (req.params.fileId && (req.currentUser || req.apiUser)) {
       // expanded for api user
-      fileRecord = await service.read(req.params.id);
+      fileRecord = await service.read(req.params.fileId);
     }
   } catch (error) {
-    log.error(`Failed to find file record for id ${req.params.id}. Error ${error}`);
+    log.error(`Failed to find file record for id ${req.params.fileId}. Error ${error}`);
   }
 
   if (!fileRecord) {

@@ -1,10 +1,13 @@
 # Common Hosted Form Service [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) [![img](https://img.shields.io/badge/Lifecycle-Stable-97ca00)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
 
+[Common Hosted Form Service](https://submit.digital.gov.bc.ca/app) is a web-based application designed for creating web forms and managing collected data. It is a free service available to all B.C. government employees and contractors with an IDIR account. For more information, visit the [CHEFS documentation](https://developer.gov.bc.ca/docs/default/component/chefs-techdocs).
+
+[Watch a series of short videos](https://www.youtube.com/playlist?list=PL9CV_8JBQHirsQAShw45PZeU1CkU88Q53) to learn how to build your first form.
+
+
 ![Tests](https://github.com/bcgov/common-hosted-form-service/workflows/Tests/badge.svg)
 [![Maintainability](https://api.codeclimate.com/v1/badges/950b1d6c61567a1da227/maintainability)](https://codeclimate.com/github/bcgov/common-hosted-form-service/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/950b1d6c61567a1da227/test_coverage)](https://codeclimate.com/github/bcgov/common-hosted-form-service/test_coverage)
-
-Create, edit and publish forms.
 
 ## Directory Structure
 
@@ -42,11 +45,9 @@ Create, edit and publish forms.
 - [CHEFS Load Test Readme](tests/load/load-test/README.md)
 - [Devops Tools Setup](https://github.com/bcgov/nr-showcase-devops-tools)
 - [Security Reporting](SECURITY.md)
-- [Product Roadmap](https://github.com/bcgov/common-hosted-form-service/wiki/Product-Roadmap)
+- [Product Roadmap](https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Product-Roadmap/)
 
 ## Help, Problems, and Feature Requests
-
-Visit the [CHEFS Wiki](https://github.com/bcgov/common-hosted-form-service/wiki/) for help on using CHEFS.
 
 To report a problem with CHEFS please create a [GitHub Issue](https://github.com/bcgov/common-hosted-form-service/issues).
 

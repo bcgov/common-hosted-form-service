@@ -81,7 +81,7 @@ describe('create', () => {
 describe('delete', () => {
   const validRequest = {
     params: {
-      id: fileStorage.id,
+      fileId: fileStorage.id,
     },
   };
 
@@ -93,7 +93,7 @@ describe('delete', () => {
 
       await controller.delete(req, res, next);
 
-      expect(service.delete).toBeCalledWith(validRequest.params.id);
+      expect(service.delete).toBeCalledWith(validRequest.params.fileId);
       expect(res.json).not.toBeCalled();
       expect(res.status).not.toBeCalled();
       expect(next).toBeCalledWith(error);
@@ -108,7 +108,7 @@ describe('delete', () => {
 
       await controller.delete(req, res, next);
 
-      expect(service.delete).toBeCalledWith(validRequest.params.id);
+      expect(service.delete).toBeCalledWith(validRequest.params.fileId);
       expect(res.json).not.toBeCalled();
       expect(res.send).not.toBeCalled();
       expect(res.sendStatus).toBeCalledWith(202);
