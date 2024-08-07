@@ -28,6 +28,7 @@ class MapService {
   options;
   map;
   drawnItems;
+
   constructor(options) {
     this.options = options;
 
@@ -35,7 +36,10 @@ class MapService {
       const { map, drawnItems } = this.initializeMap(options);
       this.map = map;
       this.drawnItems = drawnItems;
+
       map.invalidateSize();
+      // Triggering a resize event after map initialization
+      setTimeout(() => window.dispatchEvent(new Event('resize')), 0);
       // Event listener for drawn objects
       map.on('draw:created', (e) => {
         let layer = e.layer;
@@ -59,8 +63,13 @@ class MapService {
       map.on(L.Draw.Event.EDITED, (e) => {
         options.onDrawnItemsChange(drawnItems.getLayers());
       });
+
       map.on(L.Draw.Event.DRAWSTART, (e) => {
         e.layer.setIcon(this.customMarker);
+      }
+      map.on('resize', () => {
+        map.invalidateSize();
+
       });
     }
   }
@@ -79,6 +88,7 @@ class MapService {
     if (drawOptions.rectangle) {
       drawOptions.rectangle.showArea = false;
     }
+
     const map = L.map(mapContainer).setView(
       center,
       defaultZoom || DEFAULT_MAP_ZOOM
@@ -86,12 +96,13 @@ class MapService {
     L.tileLayer(DEFAULT_MAP_LAYER_URL, {
       attribution: DEFAULT_LAYER_ATTRIBUTION,
     }).addTo(map);
+
     // Initialize Draw Layer
     let drawnItems = new L.FeatureGroup();
 
     map.addLayer(drawnItems);
-    // Add Drawing Controllers
 
+    // Add Drawing Controllers
     if (!readOnlyMap) {
       if (!viewMode) {
         let drawControl = new L.Control.Draw({
@@ -103,6 +114,7 @@ class MapService {
         map.addControl(drawControl);
       }
     }
+
     // Checking to see if the map should be interactable
     const componentEditNode =
       document.getElementsByClassName(COMPONENT_EDIT_CLASS);
@@ -119,6 +131,7 @@ class MapService {
     }
     return { map, drawnItems };
   }
+
   bindPopupToLayer(layer) {
     if (layer instanceof L.Marker) {
       layer
@@ -148,6 +161,7 @@ class MapService {
         .openPopup();
     }
   }
+
   loadDrawnItems(items) {
     const { drawnItems } = this;
     if (!drawnItems) {
@@ -177,6 +191,7 @@ class MapService {
       }
     });
   }
+
   hasChildNode(parent, targetNode) {
     if (parent === targetNode) {
       return true;
