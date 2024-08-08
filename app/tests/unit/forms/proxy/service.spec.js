@@ -1,6 +1,6 @@
 const { MockModel, MockTransaction } = require('../../../common/dbHelper');
 
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 
 const { encryptionService, ENCRYPTION_ALGORITHMS } = require('../../../../src/components/encryptionService');
 const service = require('../../../../src/forms/proxy/service');
@@ -33,8 +33,8 @@ const goodProxyHeaderInfo = {
 delete goodProxyHeaderInfo.idpUserId;
 
 const goodExternalApi = {
-  id: uuidv4(),
-  formId: uuidv4(),
+  id: uuid.v4(),
+  formId: uuid.v4(),
   name: 'test_api',
   endpointUrl: 'http://external.api/',
   sendApiKey: true,

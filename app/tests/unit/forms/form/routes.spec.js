@@ -1,5 +1,5 @@
 const request = require('supertest');
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 
 const { expressHelper } = require('../../../common/helper');
 
@@ -12,9 +12,6 @@ const controller = require('../../../../src/forms/form/controller');
 //
 // Mock out all the middleware - we're testing that the routes are set up
 // correctly, not the functionality of the middleware.
-//
-//
-// mock middleware
 //
 const jwtService = require('../../../../src/components/jwtService');
 
@@ -70,8 +67,8 @@ validateParameter.validateFormId = jest.fn((_req, _res, next) => {
   next();
 });
 
-const documentTemplateId = uuidv4();
-const formId = uuidv4();
+const documentTemplateId = uuid.v4();
+const formId = uuid.v4();
 
 //
 // Create the router and a simple Express server.

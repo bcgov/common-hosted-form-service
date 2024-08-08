@@ -1,6 +1,6 @@
 const request = require('supertest');
 const Problem = require('api-problem');
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 
 const { expressHelper } = require('../../../common/helper');
 
@@ -28,9 +28,9 @@ userAccess.hasFormPermissions = jest.fn(() => {
   });
 });
 
-const formId = uuidv4();
-const formVersionDraftId = uuidv4();
-const formVersionId = uuidv4();
+const formId = uuid.v4();
+const formVersionDraftId = uuid.v4();
+const formVersionId = uuid.v4();
 
 //
 // we will mock the underlying data service calls...

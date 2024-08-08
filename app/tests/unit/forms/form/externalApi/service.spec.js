@@ -1,6 +1,6 @@
 const { MockModel, MockTransaction } = require('../../../../common/dbHelper');
 
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 
 const { ExternalAPIStatuses } = require('../../../../../src/forms/common/constants');
 const service = require('../../../../../src/forms/form/externalApi/service');
@@ -21,8 +21,8 @@ describe('checkAllowSendUserToken', () => {
   let validData = null;
   beforeEach(() => {
     validData = {
-      id: uuidv4(),
-      formId: uuidv4(),
+      id: uuid.v4(),
+      formId: uuid.v4(),
       name: 'test_api',
       endpointUrl: 'http://external.api/',
       sendApiKey: true,
@@ -65,8 +65,8 @@ describe('validateExternalAPI', () => {
   let validData = null;
   beforeEach(() => {
     validData = {
-      id: uuidv4(),
-      formId: uuidv4(),
+      id: uuid.v4(),
+      formId: uuid.v4(),
       name: 'test_api',
       endpointUrl: 'http://external.api/',
       sendApiKey: true,
@@ -130,8 +130,8 @@ describe('createExternalAPI', () => {
     MockModel.mockReset();
     MockTransaction.mockReset();
     validData = {
-      id: uuidv4(),
-      formId: uuidv4(),
+      id: uuid.v4(),
+      formId: uuid.v4(),
       name: 'test_api',
       endpointUrl: 'http://external.api/',
       sendApiKey: true,
@@ -180,8 +180,8 @@ describe('updateExternalAPI', () => {
     MockModel.mockReset();
     MockTransaction.mockReset();
     validData = {
-      id: uuidv4(),
-      formId: uuidv4(),
+      id: uuid.v4(),
+      formId: uuid.v4(),
       name: 'test_api',
       endpointUrl: 'http://external.api/',
       sendApiKey: true,
