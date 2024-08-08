@@ -100,6 +100,7 @@
     "referenceGuideB": "guía del usuario",
     "referenceGuideC": "para más detalles",
     "specificTeamMembers": "Miembros del equipo específicos",
+    "teamMemberTooltip": "Añade miembros del equipo desde la configuración de Gestión de Equipos después de crear este formulario.",
     "formFunctionality": "Funcionalidad de formulario",
     "formSubmissinScheduleMsg": "El programa de envío de formularios estará disponible en la configuración del formulario después de que se publique el formulario.",
     "formSubmissionsSchedule": "Calendario de envío de formularios",
@@ -829,7 +830,8 @@
     "errorSavingFile": "Error al guardar archivos. Nombre de archivo: {fileName}. Error: {error}",
     "submittingDraftErrMsg": "Se produjo un error al guardar un borrador",
     "submittingDraftConsErrMsg": "Error al guardar el borrador. Id de envío: {submissionId}. Error: {error}",
-    "formDraftAccessErrMsg": "El envío solicitado ya se envió, redirigiendo a la página Ver"
+    "formDraftAccessErrMsg": "El envío solicitado ya se envió, redirigiendo a la página Ver",
+    "formUnauthorizedMessage": "No tienes autorización para ver este formulario, por favor contacta al propietario del formulario para acceder."
   },
   "bCGovFooter": {
     "home": "Hogar",
