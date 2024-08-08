@@ -1,0 +1,87 @@
+{
+  "id": "12345678-1234-1234-1234-123456789013",
+  "name": "Test form",
+  "description": "",
+  "active": true,
+  "labels": [],
+  "createdBy": "TEST@idir",
+  "createdAt": "2024-05-09T18:34:15.078Z",
+  "updatedBy": "TEST@idir",
+  "updatedAt": "2024-05-22T07:14:19.575Z",
+  "showSubmissionConfirmation": true,
+  "submissionReceivedEmails": [],
+  "enableStatusUpdates": true,
+  "enableSubmitterDraft": true,
+  "schedule": {
+    "enabled": null,
+    "scheduleType": null,
+    "openSubmissionDateTime": null,
+    "keepOpenForTerm": null,
+    "keepOpenForInterval": null,
+    "closingMessageEnabled": null,
+    "closingMessage": null,
+    "closeSubmissionDateTime": null,
+    "repeatSubmission": {
+      "enabled": null,
+      "repeatUntil": null,
+      "everyTerm": null,
+      "everyIntervalType": null
+    },
+    "allowLateSubmissions": {
+      "enabled": null,
+      "forNext": {
+        "term": null,
+        "intervalType": null
+      }
+    }
+  },
+  "reminder_enabled": false,
+  "enableCopyExistingSubmission": true,
+  "allowSubmitterToUploadFile": true,
+  "subscribe": {
+    "enabled": null
+  },
+  "deploymentLevel": "development",
+  "ministry": "CITZ",
+  "apiIntegration": true,
+  "useCase": "application",
+  "sendSubmissionReceivedEmail": false,
+  "wideFormLayout": true,
+  "enableDocumentTemplates": false,
+  "identityProviders": [],
+  "versions": [
+    {
+      "id": "33f93f2a-a8cb-4c73-8525-cd48325d35d1",
+      "formId": "12345678-1234-1234-1234-123456789013",
+      "version": 3,
+      "published": true,
+      "createdBy": "TEST@idir",
+      "createdAt": "2024-05-30T20:40:13.491Z",
+      "updatedBy": "TEST@idir",
+      "updatedAt": "2024-06-04T21:08:01.524Z"
+    },
+    {
+      "id": "df68b447-0996-4e97-ad4d-a5fae002d1f4",
+      "formId": "12345678-1234-1234-1234-123456789013",
+      "version": 2,
+      "published": false,
+      "createdBy": "TEST@idir",
+      "createdAt": "2024-05-09T18:40:06.755Z",
+      "updatedBy": "TEST@idir",
+      "updatedAt": "2024-06-04T19:36:52.131Z"
+    },
+    {
+      "id": "cee2bf7b-19c3-4a84-8b25-3ec7312b3441",
+      "formId": "12345678-1234-1234-1234-123456789013",
+      "version": 1,
+      "published": false,
+      "createdBy": "TEST@idir",
+      "createdAt": "2024-05-09T18:34:22.931Z",
+      "updatedBy": "TEST@idir",
+      "updatedAt": "2024-06-04T19:36:52.131Z"
+    }
+  ],
+  "snake": "test-form",
+  "idps": [],
+  "userType": "team"
+}

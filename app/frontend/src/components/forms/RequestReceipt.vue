@@ -1,6 +1,7 @@
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
+import { onMounted, ref } from 'vue';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { formService } from '~/services';
@@ -8,81 +9,67 @@ import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
 
-export default {
-  components: {
-    BaseDialog,
-  },
-  props: {
-    email: {
-      type: String,
-      required: true,
-    },
-    formName: {
-      type: String,
-      required: true,
-    },
-    submissionId: {
-      type: String,
-      required: true,
-    },
-  },
-  setup() {
-    const { t, locale } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
 
-    return { t, locale };
+const properties = defineProps({
+  email: {
+    type: String,
+    required: true,
   },
-  data() {
-    return {
-      emailRules: [(v) => !!v || 'E-mail is required'],
-      priority: 'normal',
-      showDialog: false,
-      to: '',
-    };
+  submissionId: {
+    type: String,
+    required: true,
   },
-  computed: {
-    ...mapState(useFormStore, ['isRTL']),
-  },
-  mounted() {
-    this.resetDialog();
-  },
-  methods: {
-    displayDialog() {
-      this.showDialog = true;
-    },
-    async requestReceipt() {
-      const { valid } = await this.$refs.form.validate();
-      if (valid) {
-        const notificationStore = useNotificationStore();
-        try {
-          await formService.requestReceiptEmail(this.submissionId, {
-            priority: this.priority,
-            to: this.to,
-          });
-          notificationStore.addNotification({
-            text: this.$t('trans.requestReceipt.emailSent', { to: this.to }),
-            ...NotificationTypes.SUCCESS,
-          });
-        } catch (error) {
-          notificationStore.addNotification({
-            text: this.$t('trans.requestReceipt.sendingEmailErrMsg'),
-            consoleError: this.$t(
-              'trans.requestReceipt.sendingEmailConsErrMsg',
-              {
-                to: this.to,
-                error: error,
-              }
-            ),
-          });
-        } finally {
-          this.showDialog = false;
-        }
-      }
-    },
-    resetDialog() {
-      this.to = this.email;
-    },
-  },
-};
+});
+
+const emailRules = ref([(v) => !!v || 'E-mail is required']);
+const form = ref(null);
+const priority = ref('normal');
+const showDialog = ref(false);
+const to = ref('');
+
+const { isRTL } = storeToRefs(useFormStore());
+
+onMounted(() => {
+  resetDialog();
+});
+
+function displayDialog() {
+  showDialog.value = true;
+}
+
+async function requestReceipt() {
+  const { valid } = await form.value.validate();
+  if (valid) {
+    const notificationStore = useNotificationStore();
+    try {
+      await formService.requestReceiptEmail(properties.submissionId, {
+        priority: priority.value,
+        to: to.value,
+      });
+      notificationStore.addNotification({
+        text: t('trans.requestReceipt.emailSent', { to: to.value }),
+        ...NotificationTypes.SUCCESS,
+      });
+    } catch (error) {
+      notificationStore.addNotification({
+        text: t('trans.requestReceipt.sendingEmailErrMsg'),
+        consoleError: t('trans.requestReceipt.sendingEmailConsErrMsg', {
+          to: to.value,
+          error: error,
+        }),
+      });
+    } finally {
+      showDialog.value = false;
+    }
+  }
+}
+
+function resetDialog() {
+  to.value = properties.email;
+}
+
+defineExpose({ displayDialog, form, showDialog });
 </script>
 
 <template>
