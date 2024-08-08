@@ -409,17 +409,19 @@ export default {
           // if 401 error, the user is not authorized to view the form
           if (error.response && error.response.status === 401) {
             this.isAuthorized = false;
+          } else {
+            // throw a generic error message
+            this.addNotification({
+              text: this.$t('trans.formViewer.fecthingFormErrMsg'),
+              consoleError: this.$t(
+                'trans.formViewer.fecthingFormConsoleErrMsg',
+                {
+                  versionId: this.versionId,
+                  error: error,
+                }
+              ),
+            });
           }
-          this.addNotification({
-            text: this.$t('trans.formViewer.fecthingFormErrMsg'),
-            consoleError: this.$t(
-              'trans.formViewer.fecthingFormConsoleErrMsg',
-              {
-                versionId: this.versionId,
-                error: error,
-              }
-            ),
-          });
         }
       }
     },
