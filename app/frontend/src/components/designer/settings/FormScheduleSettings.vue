@@ -581,7 +581,7 @@ defineExpose({
           form.schedule.allowLateSubmissions.enabled &&
           form.schedule.allowLateSubmissions.forNext.intervalType &&
           form.schedule.allowLateSubmissions.forNext.term
-            ? $t('trans.formSettings.allowLateSubmissnInterval') +
+            ? ' ' + $t('trans.formSettings.allowLateSubmissnInterval') + ' ' +
               form.schedule.allowLateSubmissions.forNext.term +
               ' ' +
               form.schedule.allowLateSubmissions.forNext.intervalType +
