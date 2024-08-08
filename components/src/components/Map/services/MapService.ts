@@ -1,5 +1,4 @@
 import * as L from 'leaflet';
-import { toRaw, markRaw } from 'vue';
 import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw-src.css';
@@ -67,7 +66,11 @@ class MapService {
       });
 
       map.on(L.Draw.Event.DRAWSTART, (e) => {
-        e.layer.setIcon(this.customMarker);
+        console.log(e.target);
+        console.log(e.layer);
+        console.log(e.sourceTarget);
+        console.log(e.propagatedFrom);
+        //.setIcon(this.customMarker);
       });
       map.on('resize', () => {
         map.invalidateSize();
