@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import StatusTable from '~/components/forms/submission/StatusTable.vue';
@@ -35,6 +35,9 @@ const loading = ref(true);
 const note = ref('');
 const emailComment = ref('');
 const submissionUserEmail = ref('');
+const formSubmitters = ref([]);
+const selectAllSubmitters = ref(false);
+const selectedSubmissionUsers = ref([]);
 const statusHistory = ref({});
 const statusFields = ref(false);
 const statusPanelForm = ref(null);
@@ -86,6 +89,25 @@ const statusAction = computed(() => {
   return actionStatus;
 });
 
+watch(selectAllSubmitters, (newValue) => {
+  if (newValue) {
+    selectedSubmissionUsers.value = formSubmitters.value.map(
+      (user) => user.value
+    );
+  } else {
+    // selectAllSubmitters is false, disable the checkbox if the array contains all the submitters
+    if (selectedSubmissionUsers.value.length === formSubmitters.value.length) {
+      selectAllSubmitters.value = true;
+    }
+  }
+});
+
+watch(selectedSubmissionUsers, (newValue) => {
+  if (newValue.length !== formSubmitters.value.length) {
+    selectAllSubmitters.value = false;
+  }
+});
+
 getStatus();
 
 async function onStatusChange(status) {
@@ -94,6 +116,18 @@ async function onStatusChange(status) {
   if (status === 'REVISING' || status === 'COMPLETED') {
     try {
       await formStore.fetchSubmissionUsers(properties.submissionId);
+
+      // add all the submission users emails to the formSubmitters array
+      formSubmitters.value = submissionUsers.value.data.map((data) => {
+        const username = data.user.idpCode
+          ? `${data.user.username} (${data.user.idpCode})`
+          : data.user.username;
+        return {
+          value: data.user.email,
+          title: `${data.user.fullName} (${data.user.email})`,
+          subtitle: `${username}`,
+        };
+      });
 
       const submitterData = submissionUsers.value.data.find((data) => {
         const username = data.user.idpCode
@@ -107,6 +141,9 @@ async function onStatusChange(status) {
           ? submitterData.user.email
           : undefined;
         showSendConfirmEmail.value = status === 'COMPLETED';
+
+        // add the submissionUserEmail to the selectedSubmissionUsers array
+        selectedSubmissionUsers.value = [submissionUserEmail.value];
       }
     } catch (error) {
       notificationStore.addNotification({
@@ -133,6 +170,13 @@ function autoCompleteFilter(_itemTitle, queryText, item) {
     item.value.username
       .toLocaleLowerCase()
       .includes(queryText.toLocaleLowerCase())
+  );
+}
+
+function revisingFilter(_itemTitle, queryText, item) {
+  return (
+    item.value.toLocaleLowerCase().includes(queryText.toLocaleLowerCase()) ||
+    item.title.toLocaleLowerCase().includes(queryText.toLocaleLowerCase())
   );
 }
 
@@ -193,6 +237,9 @@ function resetForm() {
   statusFields.value = false;
   statusPanelForm.value.resetValidation();
   submissionUserEmail.value = '';
+  selectAllSubmitters.value = false;
+  formReviewers.value = [];
+  selectedSubmissionUsers.value = [];
   statusToSet.value = '';
   note.value = '';
 }
@@ -203,6 +250,11 @@ async function updateStatus() {
       if (!statusToSet.value) {
         throw new Error(t('trans.statusPanel.status'));
       }
+
+      // // array of selected submission users minus the submissionUserEmail
+      // const selectedSubmitters = selectedSubmissionUsers.value.filter(
+      //   (user) => user !== submissionUserEmail.value
+      // );
 
       const statusBody = {
         code: statusToSet.value,
@@ -215,43 +267,89 @@ async function updateStatus() {
           statusBody.assignmentNotificationEmail = assignee.value.email;
         }
       }
-      const statusResponse = await formService.updateSubmissionStatus(
-        properties.submissionId,
-        statusBody
-      );
-      if (!statusResponse.data) {
-        throw new Error(t('trans.statusPanel.updtSubmissionsStatusErr'));
-      }
 
-      if (emailComment.value) {
-        let formattedComment;
-        if (statusToSet.value === 'ASSIGNED') {
-          formattedComment = `Email to ${assignee.value.email}: ${emailComment.value}`;
-        } else if (
-          statusToSet.value === 'REVISING' ||
-          statusToSet.value === 'COMPLETED'
-        ) {
-          formattedComment = `Email to ${submissionUserEmail.value}: ${emailComment.value}`;
+      if (selectedSubmissionUsers.value.length > 0) {
+        // for every item in selectedSubmissionUsers, add it to the statusBody as the submissionUserEmail and
+        // update the submission status
+        for (const user of selectedSubmissionUsers.value) {
+          statusBody.submissionUserEmail = user;
+          const statusResponse = await formService.updateSubmissionStatus(
+            properties.submissionId,
+            statusBody
+          );
+          if (!statusResponse.data) {
+            throw new Error(t('trans.statusPanel.updtSubmissionsStatusErr'));
+          }
+          if (emailComment.value) {
+            let formattedComment;
+            if (statusToSet.value === 'ASSIGNED') {
+              formattedComment = `Email to ${assignee.value.email}: ${emailComment.value}`;
+            } else if (
+              statusToSet.value === 'REVISING' ||
+              statusToSet.value === 'COMPLETED'
+            ) {
+              formattedComment = `Email to ${user}: ${emailComment.value}`;
+            }
+
+            const submissionStatusId =
+              statusResponse.data[0].submissionStatusId;
+            const currentUser = await rbacService.getCurrentUser();
+            const noteBody = {
+              submissionId: properties.submissionId,
+              submissionStatusId: submissionStatusId,
+              note: formattedComment,
+              userId: currentUser.data.id,
+            };
+            const response = await formService.addNote(
+              properties.submissionId,
+              noteBody
+            );
+            if (!response.data) {
+              throw new Error(t('trans.statusPanel.addNoteNoReponserErr'));
+            }
+            // Update the parent if the note was updated
+            emit('note-updated');
+          }
         }
-
-        const submissionStatusId = statusResponse.data[0].submissionStatusId;
-        const user = await rbacService.getCurrentUser();
-        const noteBody = {
-          submissionId: properties.submissionId,
-          submissionStatusId: submissionStatusId,
-          note: formattedComment,
-          userId: user.data.id,
-        };
-        const response = await formService.addNote(
+      } else {
+        const statusResponse = await formService.updateSubmissionStatus(
           properties.submissionId,
-          noteBody
+          statusBody
         );
-        if (!response.data) {
-          throw new Error(t('trans.statusPanel.addNoteNoReponserErr'));
+        if (!statusResponse.data) {
+          throw new Error(t('trans.statusPanel.updtSubmissionsStatusErr'));
         }
-        // Update the parent if the note was updated
-        emit('note-updated');
+        if (emailComment.value) {
+          let formattedComment;
+          if (statusToSet.value === 'ASSIGNED') {
+            formattedComment = `Email to ${assignee.value.email}: ${emailComment.value}`;
+          } else if (
+            statusToSet.value === 'REVISING' ||
+            statusToSet.value === 'COMPLETED'
+          ) {
+            formattedComment = `Email to ${submissionUserEmail.value}: ${emailComment.value}`;
+          }
+
+          const submissionStatusId = statusResponse.data[0].submissionStatusId;
+          const user = await rbacService.getCurrentUser();
+          const noteBody = {
+            submissionId: properties.submissionId,
+            submissionStatusId: submissionStatusId,
+            note: formattedComment,
+            userId: user.data.id,
+          };
+          const response = await formService.addNote(
+            properties.submissionId,
+            noteBody
+          );
+          if (!response.data) {
+            throw new Error(t('trans.statusPanel.addNoteNoReponserErr'));
+          }
+          // Update the parent if the note was updated
+          emit('note-updated');
+        }
       }
+
       resetForm();
       await getStatus();
     }
@@ -281,6 +379,8 @@ defineExpose({
   statusFields,
   statusToSet,
   submissionUserEmail,
+  formSubmitters,
+  selectAllSubmitters,
   updateStatus,
 });
 </script>
@@ -428,14 +528,46 @@ defineExpose({
               </div>
             </div>
             <div v-show="statusFields" v-if="showRevising">
-              <v-text-field
-                v-model="submissionUserEmail"
-                :label="$t('trans.statusPanel.recipientEmail')"
-                variant="outlined"
-                density="compact"
+              <span :lang="locale">{{
+                $t('trans.statusPanel.recipientEmail')
+              }}</span>
+              <v-autocomplete
+                v-model="selectedSubmissionUsers"
                 :class="{ 'dir-rtl': isRTL }"
-                :lang="locale"
+                autocomplete="autocomplete_off"
                 data-test="showRecipientEmail"
+                clearable
+                multiple
+                :custom-filter="revisingFilter"
+                :items="formSubmitters"
+                item-value="value"
+                item-title="display"
+                :loading="loading"
+                :no-data-text="$t('trans.statusPanel.noDataText')"
+                variant="outlined"
+                :rules="[
+                  (v) =>
+                    !!v.length || $t('trans.statusPanel.recipientIsRequired'),
+                ]"
+                :lang="locale"
+              >
+                <!-- selected user -->
+                <template #chip="{ props, item }">
+                  <v-chip v-bind="props" :text="item?.raw?.value" />
+                </template>
+                <!-- users found in dropdown -->
+                <template #item="{ props, item }">
+                  <v-list-item
+                    v-bind="props"
+                    :title="`${item?.raw?.title}`"
+                    :subtitle="`${item?.raw?.subtitle}`"
+                  >
+                  </v-list-item>
+                </template>
+              </v-autocomplete>
+              <v-checkbox
+                v-model="selectAllSubmitters"
+                label="Notify all submitters"
               />
             </div>
 
