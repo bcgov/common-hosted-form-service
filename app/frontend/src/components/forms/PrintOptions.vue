@@ -50,6 +50,7 @@ export default {
       defaultReportname: '',
       displayTemplatePrintButton: false,
       isValidFile: true,
+      fileInputKey: 0,
       validFileExtensions: ['txt', 'docx', 'html', 'odt', 'pptx', 'xlsx'],
       defaultExportFileTypes: ['pdf'],
       uploadExportFileTypes: ['pdf'],
@@ -184,6 +185,7 @@ export default {
         ? disposition.substring(disposition.indexOf('filename=') + 9)
         : undefined;
     },
+
     createDownload(blob, filename = undefined) {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -256,6 +258,7 @@ export default {
         this.loading = false;
       }
     },
+
     createBody(content, contentFileType, outputFileName, outputFileType) {
       return {
         options: {
@@ -270,6 +273,7 @@ export default {
         },
       };
     },
+
     async fetchDefaultTemplate() {
       // Calling the API to check whether the form has any uploaded document templates
       this.loading = true;
@@ -313,6 +317,7 @@ export default {
         this.loading = false;
       }
     },
+
     validateFileExtension(event) {
       if (event.length > 0) {
         const fileExtension = event[0].name.split('.').pop();
@@ -325,6 +330,7 @@ export default {
         this.uploadExportFileTypes = ['pdf'];
         // reset the v-select value
         this.templateForm.outputFileType = null;
+
         if (this.validFileExtensions.includes(fileExtension)) {
           this.isValidFile = true;
         } else {
@@ -340,6 +346,12 @@ export default {
         }
         this.isValidFile = true;
       }
+    },
+
+    handleFileUpload(event) {
+      this.fileInputKey += 1;
+      this.templateForm.files = event;
+      this.validateFileExtension(event);
     },
   },
 };
@@ -475,6 +487,7 @@ export default {
                   value="upload"
                 ></v-radio>
                 <v-file-input
+                  :key="fileInputKey"
                   v-model="templateForm.files"
                   :class="{ label: isRTL }"
                   :style="isRTL ? { gap: '10px' } : null"
@@ -489,7 +502,7 @@ export default {
                   :lang="locale"
                   :rules="validationRules"
                   :disabled="selectedOption !== 'upload'"
-                  @update:model-value="validateFileExtension($event)"
+                  @update:model-value="handleFileUpload"
                 />
                 <v-select
                   v-if="selectedOption === 'upload'"
