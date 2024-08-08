@@ -100,6 +100,7 @@
     "referenceGuideB": "ユーザーガイド",
     "referenceGuideC": "詳細については",
     "specificTeamMembers": "特定のチームメンバー",
+    "teamMemberTooltip": "このフォームを作成した後、チーム管理設定からチームメンバーを追加してください。",
     "formFunctionality": "フォーム機能",
     "formSubmissinScheduleMsg": "フォーム送信スケジュールは、フォームが公開された後、フォーム設定で利用できるようになります。",
     "formSubmissionsSchedule": "フォーム送信スケジュール",
@@ -829,7 +830,8 @@
     "errorSavingFile": "ファイルの保存中にエラーが発生しました。ファイル名: {fileName}。エラー: {error}",
     "submittingDraftErrMsg": "下書きの保存中にエラーが発生しました",
     "submittingDraftConsErrMsg": "下書きの保存中にエラーが発生しました。送信 ID: {submissionId}。エラー: {error}",
-    "formDraftAccessErrMsg": "リクエストされた送信はすでに送信されており、[表示] ページにリダイレクトされます。"
+    "formDraftAccessErrMsg": "リクエストされた送信はすでに送信されており、[表示] ページにリダイレクトされます。",
+    "formUnauthorizedMessage": "このフォームを表示する権限がありません。アクセスするにはフォームの所有者に連絡してください。"
   },
   "bCGovFooter": {
     "home": "家",
