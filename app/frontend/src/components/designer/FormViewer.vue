@@ -1148,7 +1148,18 @@ export default {
 <template>
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
     <v-container fluid>
-      <div v-if="isFormScheduleExpired">
+      <div v-if="!isAuthorized">
+        <v-alert
+          :text="formUnauthorizedMessage"
+          prominent
+          type="error"
+          :class="{ 'dir-rtl': isRTL }"
+          :lang="locale"
+        >
+        </v-alert>
+      </div>
+
+      <div v-else-if="isFormScheduleExpired">
         <v-alert
           :text="
             isLateSubmissionAllowed
@@ -1163,7 +1174,7 @@ export default {
         </v-alert>
 
         <div v-if="isLateSubmissionAllowed">
-          <v-col cols="3" md="2">
+          <v-col cols="12" md="6">
             <v-btn
               color="primary"
               :class="{ 'dir-rtl': isRTL }"
@@ -1176,17 +1187,6 @@ export default {
             </v-btn>
           </v-col>
         </div>
-      </div>
-
-      <div v-else-if="!isAuthorized">
-        <v-alert
-          :text="formUnauthorizedMessage"
-          prominent
-          type="error"
-          :class="{ 'dir-rtl': isRTL }"
-          :lang="locale"
-        >
-        </v-alert>
       </div>
 
       <div v-else>
