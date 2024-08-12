@@ -40,7 +40,7 @@ controller.addStatus = jest.fn((_req, _res, next) => {
 controller.delete = jest.fn((_req, _res, next) => {
   next();
 });
-controller.deleteMutipleSubmissions = jest.fn((_req, _res, next) => {
+controller.deleteMultipleSubmissions = jest.fn((_req, _res, next) => {
   next();
 });
 controller.email = jest.fn((_req, _res, next) => {
@@ -64,7 +64,7 @@ controller.readOptions = jest.fn((_req, _res, next) => {
 controller.restore = jest.fn((_req, _res, next) => {
   next();
 });
-controller.restoreMutipleSubmissions = jest.fn((_req, _res, next) => {
+controller.restoreMultipleSubmissions = jest.fn((_req, _res, next) => {
   next();
 });
 controller.templateRender = jest.fn((_req, _res, next) => {
@@ -182,7 +182,7 @@ describe(`${basePath}/:formSubmissionId/:formId/submissions`, () => {
     expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
     expect(hasSubmissionPermissionsMock).toBeCalledTimes(1);
     expect(userAccess.filterMultipleSubmissions).toBeCalledTimes(1);
-    expect(controller.deleteMutipleSubmissions).toBeCalledTimes(1);
+    expect(controller.deleteMultipleSubmissions).toBeCalledTimes(1);
   });
 });
 
@@ -200,7 +200,7 @@ describe(`${basePath}/:formSubmissionId/:formId/submissions/restore`, () => {
     expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
     expect(hasSubmissionPermissionsMock).toBeCalledTimes(1);
     expect(userAccess.filterMultipleSubmissions).toBeCalledTimes(1);
-    expect(controller.restoreMutipleSubmissions).toBeCalledTimes(1);
+    expect(controller.restoreMultipleSubmissions).toBeCalledTimes(1);
   });
 });
 

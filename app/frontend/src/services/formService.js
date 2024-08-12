@@ -320,12 +320,12 @@ export default {
   },
 
   /**
-   * @function restoreMutipleSubmissions
+   * @function restoreMultipleSubmissions
    * Restores an existing submission
    * @param {string} submissionId The form uuid
    * @returns {Promise} An axios response
    */
-  restoreMutipleSubmissions(submissionId, formId, requestBody) {
+  restoreMultipleSubmissions(submissionId, formId, requestBody) {
     return appAxios().put(
       `${ApiRoutes.SUBMISSION}/${submissionId}/${formId}/submissions/restore`,
       requestBody
