@@ -1,5 +1,5 @@
 const request = require('supertest');
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 
 const { expressHelper } = require('../../../common/helper');
 
@@ -94,7 +94,7 @@ describe(`${basePath}`, () => {
 });
 
 describe(`${basePath}/:id`, () => {
-  const fileId = uuidv4();
+  const fileId = uuid.v4();
   const path = `${basePath}/${fileId}`;
 
   it('should have correct middleware for DELETE', async () => {

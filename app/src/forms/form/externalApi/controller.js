@@ -44,7 +44,7 @@ module.exports = {
   deleteExternalAPI: async (req, res, next) => {
     try {
       await service.deleteExternalAPI(req.params.formId, req.params.externalAPIId);
-      res.status(204).send();
+      res.sendStatus(204);
     } catch (error) {
       next(error);
     }
