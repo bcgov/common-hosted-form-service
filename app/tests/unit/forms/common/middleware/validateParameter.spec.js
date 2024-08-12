@@ -1,24 +1,24 @@
 const { getMockReq, getMockRes } = require('@jest-mock/express');
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 
 const validateParameter = require('../../../../../src/forms/common/middleware/validateParameter');
 const externalApiService = require('../../../../../src/forms/form/externalApi/service');
 const formService = require('../../../../../src/forms/form/service');
 const submissionService = require('../../../../../src/forms/submission/service');
 
-const fileId = uuidv4();
-const formId = uuidv4();
-const formSubmissionId = uuidv4();
+const fileId = uuid.v4();
+const formId = uuid.v4();
+const formSubmissionId = uuid.v4();
 
 // Various types of invalid UUIDs that we see in API calls.
-const invalidUuids = [[''], ['undefined'], ['{{id}}'], ['${id}'], [uuidv4() + '.'], [' ' + uuidv4() + ' ']];
+const invalidUuids = [[''], ['undefined'], ['{{id}}'], ['${id}'], [uuid.v4() + '.'], [' ' + uuid.v4() + ' ']];
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('validateDocumentTemplateId', () => {
-  const documentTemplateId = uuidv4();
+  const documentTemplateId = uuid.v4();
 
   const mockReadDocumentTemplateResponse = {
     formId: formId,
@@ -86,7 +86,7 @@ describe('validateDocumentTemplateId', () => {
 
     test('formId does not match', async () => {
       formService.documentTemplateRead.mockReturnValueOnce({
-        formId: uuidv4(),
+        formId: uuid.v4(),
         id: documentTemplateId,
       });
       const req = getMockReq({
@@ -107,7 +107,7 @@ describe('validateDocumentTemplateId', () => {
     test('submission formId does not match', async () => {
       submissionService.read.mockReturnValueOnce({
         form: {
-          id: uuidv4(),
+          id: uuid.v4(),
         },
       });
       const req = getMockReq({
@@ -200,7 +200,7 @@ describe('validateDocumentTemplateId', () => {
 });
 
 describe('validateExternalApiId', () => {
-  const externalApiId = uuidv4();
+  const externalApiId = uuid.v4();
 
   const mockReadExternalApiResponse = {
     formId: formId,
@@ -261,7 +261,7 @@ describe('validateExternalApiId', () => {
 
     test('formId does not match', async () => {
       externalApiService.readExternalAPI.mockReturnValueOnce({
-        formId: uuidv4(),
+        formId: uuid.v4(),
         id: externalApiId,
       });
       const req = getMockReq({
@@ -402,8 +402,51 @@ describe('validateFormId', () => {
   });
 });
 
+describe('validateFormSubmissionId', () => {
+  describe('400 response when', () => {
+    const expectedStatus = { status: 400 };
+
+    test('formSubmissionId is missing', async () => {
+      const req = getMockReq({
+        params: {},
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateFormSubmissionId(req, res, next);
+
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+    });
+
+    test.each(invalidUuids)('formSubmissionId is "%s"', async (eachFormSubmissionId) => {
+      const req = getMockReq({
+        params: { formSubmissionId: eachFormSubmissionId },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateFormSubmissionId(req, res, next, eachFormSubmissionId);
+
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+    });
+  });
+
+  describe('allows', () => {
+    test('uuid for formSubmissionId', async () => {
+      const req = getMockReq({
+        params: {
+          formSubmissionId: formSubmissionId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateFormSubmissionId(req, res, next, formSubmissionId);
+
+      expect(next).toBeCalledWith();
+    });
+  });
+});
+
 describe('validateFormVersionDraftId', () => {
-  const formVersionDraftId = uuidv4();
+  const formVersionDraftId = uuid.v4();
 
   const mockReadDraftResponse = {
     formId: formId,
@@ -461,7 +504,7 @@ describe('validateFormVersionDraftId', () => {
 
     test('formId does not match', async () => {
       formService.readDraft.mockReturnValueOnce({
-        formId: uuidv4(),
+        formId: uuid.v4(),
         id: formVersionDraftId,
       });
       const req = getMockReq({
@@ -517,7 +560,7 @@ describe('validateFormVersionDraftId', () => {
 });
 
 describe('validateFormVersionId', () => {
-  const formVersionId = uuidv4();
+  const formVersionId = uuid.v4();
 
   const mockReadVersionResponse = {
     formId: formId,
@@ -575,7 +618,7 @@ describe('validateFormVersionId', () => {
 
     test('formId does not match', async () => {
       formService.readVersion.mockReturnValueOnce({
-        formId: uuidv4(),
+        formId: uuid.v4(),
         id: formVersionId,
       });
       const req = getMockReq({
