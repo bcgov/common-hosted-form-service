@@ -52,7 +52,7 @@ describe('createStatus', () => {
   });
 });
 
-describe('deleteMutipleSubmissions', () => {
+describe('deleteMultipleSubmissions', () => {
   it('should delete the selected submissions', async () => {
     let submissionId1 = uuid.v4();
     let submissionId2 = uuid.v4();
@@ -70,7 +70,7 @@ describe('deleteMutipleSubmissions', () => {
     const currentUser = { usernameIdp: 'TEST@idir' };
     service.readSubmissionData = jest.fn().mockReturnValue(returnValue);
     const spy = jest.spyOn(service, 'readSubmissionData');
-    const res = await service.deleteMutipleSubmissions(submissionIds, currentUser);
+    const res = await service.deleteMultipleSubmissions(submissionIds, currentUser);
     expect(MockModel.startTransaction).toBeCalledTimes(1);
     expect(MockModel.query).toBeCalledTimes(1);
     expect(MockModel.query).toBeCalledWith(expect.anything());
@@ -83,7 +83,7 @@ describe('deleteMutipleSubmissions', () => {
   });
 });
 
-describe('restoreMutipleSubmissions', () => {
+describe('restoreMultipleSubmissions', () => {
   it('should delete the selected submissions', async () => {
     let submissionId1 = uuid.v4();
     let submissionId2 = uuid.v4();
@@ -101,7 +101,7 @@ describe('restoreMutipleSubmissions', () => {
     const currentUser = { usernameIdp: 'TEST@idir' };
     service.readSubmissionData = jest.fn().mockReturnValue(returnValue);
     const spy = jest.spyOn(service, 'readSubmissionData');
-    const res = await service.restoreMutipleSubmissions(submissionIds, currentUser);
+    const res = await service.restoreMultipleSubmissions(submissionIds, currentUser);
     expect(MockModel.startTransaction).toBeCalledTimes(1);
     expect(MockModel.query).toBeCalledTimes(1);
     expect(MockModel.query).toBeCalledWith(expect.anything());
