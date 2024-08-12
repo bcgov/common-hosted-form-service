@@ -513,7 +513,7 @@ export const useFormStore = defineStore('form', {
       const notificationStore = useNotificationStore();
       try {
         // Get this submission
-        await formService.restoreMutipleSubmissions(submissionIds[0], formId, {
+        await formService.restoreMultipleSubmissions(submissionIds[0], formId, {
           submissionIds: submissionIds,
         });
         notificationStore.addNotification({

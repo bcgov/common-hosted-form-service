@@ -268,7 +268,7 @@ describe(`${basePath}/:formSubmissionId/:formId/submissions`, () => {
   describe('DELETE', () => {
     it('should return 200', async () => {
       // mock a success return value...
-      service.deleteMutipleSubmissions = jest.fn().mockReturnValue({});
+      service.deleteMultipleSubmissions = jest.fn().mockReturnValue({});
 
       const response = await appRequest.delete(path);
 
@@ -278,7 +278,7 @@ describe(`${basePath}/:formSubmissionId/:formId/submissions`, () => {
 
     it('should handle 401', async () => {
       // mock an authentication/permission issue...
-      service.deleteMutipleSubmissions = jest.fn(() => {
+      service.deleteMultipleSubmissions = jest.fn(() => {
         throw new Problem(401);
       });
 
@@ -290,7 +290,7 @@ describe(`${basePath}/:formSubmissionId/:formId/submissions`, () => {
 
     it('should handle 500', async () => {
       // mock an unexpected error...
-      service.deleteMutipleSubmissions = jest.fn(() => {
+      service.deleteMultipleSubmissions = jest.fn(() => {
         throw new Error();
       });
 
@@ -308,7 +308,7 @@ describe(`${basePath}/:formSubmissionId/:formId/submissions/restore`, () => {
   describe('PUT', () => {
     it('should return 200', async () => {
       // mock a success return value...
-      service.restoreMutipleSubmissions = jest.fn().mockReturnValue({});
+      service.restoreMultipleSubmissions = jest.fn().mockReturnValue({});
 
       const response = await appRequest.put(path);
 
@@ -318,7 +318,7 @@ describe(`${basePath}/:formSubmissionId/:formId/submissions/restore`, () => {
 
     it('should handle 401', async () => {
       // mock an authentication/permission issue...
-      service.restoreMutipleSubmissions = jest.fn(() => {
+      service.restoreMultipleSubmissions = jest.fn(() => {
         throw new Problem(401);
       });
 
@@ -330,7 +330,7 @@ describe(`${basePath}/:formSubmissionId/:formId/submissions/restore`, () => {
 
     it('should handle 500', async () => {
       // mock an unexpected error...
-      service.restoreMutipleSubmissions = jest.fn(() => {
+      service.restoreMultipleSubmissions = jest.fn(() => {
         throw new Error();
       });
 
