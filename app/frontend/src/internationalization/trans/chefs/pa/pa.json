@@ -100,6 +100,7 @@
     "referenceGuideB": "ਉਪਭੋਗਤਾ ਗਾਈਡ",
     "referenceGuideC": "ਹੋਰ ਵੇਰਵਿਆਂ ਲਈ",
     "specificTeamMembers": "ਖਾਸ ਟੀਮ ਦੇ ਮੈਂਬਰ",
+    "teamMemberTooltip": "ਇਸ ਫਾਰਮ ਨੂੰ ਬਣਾਉਣ ਤੋਂ ਬਾਅਦ ਟੀਮ ਪ੍ਰਬੰਧਨ ਸੈਟਿੰਗਾਂ ਤੋਂ ਟੀਮ ਦੇ ਮੈਂਬਰ ਨੂੰ ਜੋੜੋ।",
     "formFunctionality": "ਫਾਰਮ ਕਾਰਜਕੁਸ਼ਲਤਾ",
     "formSubmissinScheduleMsg": "ਫਾਰਮ ਪ੍ਰਕਾਸ਼ਿਤ ਹੋਣ ਤੋਂ ਬਾਅਦ ਫਾਰਮ ਸਬਮਿਸ਼ਨ ਅਨੁਸੂਚੀ ਫਾਰਮ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਉਪਲਬਧ ਹੋਵੇਗੀ।",
     "formSubmissionsSchedule": "ਫਾਰਮ ਸਬਮਿਸ਼ਨ ਅਨੁਸੂਚੀ",
@@ -829,7 +830,8 @@
     "errorSavingFile": "ਫ਼ਾਈਲਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋਈ। ਫ਼ਾਈਲ ਦਾ ਨਾਮ: {fileName}। ਗਲਤੀ: {error}",
     "submittingDraftErrMsg": "ਡਰਾਫਟ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
     "submittingDraftConsErrMsg": "ਡਰਾਫਟ ਸੁਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ। SubmissionId: {submissionId}। ਗਲਤੀ: {error}",
-    "formDraftAccessErrMsg": "ਬੇਨਤੀ ਕੀਤੀ ਸਪੁਰਦਗੀ ਪਹਿਲਾਂ ਹੀ ਸਪੁਰਦ ਕੀਤੀ ਗਈ ਹੈ, ਵੇਖੋ ਪੰਨੇ 'ਤੇ ਰੀਡਾਇਰੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
+    "formDraftAccessErrMsg": "ਬੇਨਤੀ ਕੀਤੀ ਸਪੁਰਦਗੀ ਪਹਿਲਾਂ ਹੀ ਸਪੁਰਦ ਕੀਤੀ ਗਈ ਹੈ, ਵੇਖੋ ਪੰਨੇ 'ਤੇ ਰੀਡਾਇਰੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ",
+    "formUnauthorizedMessage": "ਤੁਹਾਨੂੰ ਇਸ ਫਾਰਮ ਨੂੰ ਵੇਖਣ ਦੀ ਅਧਿਕਾਰਤਾ ਨਹੀਂ ਹੈ, ਕਿਰਪਾ ਕਰਕੇ ਪਹੁੰਚ ਲਈ ਫਾਰਮ ਦੇ ਮਾਲਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।"
   },
   "bCGovFooter": {
     "home": "ਘਰ",
