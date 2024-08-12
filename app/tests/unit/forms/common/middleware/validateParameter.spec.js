@@ -9,6 +9,7 @@ const submissionService = require('../../../../../src/forms/submission/service')
 const fileId = uuid.v4();
 const formId = uuid.v4();
 const formSubmissionId = uuid.v4();
+const userId = uuid.v4();
 
 // Various types of invalid UUIDs that we see in API calls.
 const invalidUuids = [[''], ['undefined'], ['{{id}}'], ['${id}'], [uuid.v4() + '.'], [' ' + uuid.v4() + ' ']];
@@ -668,6 +669,49 @@ describe('validateFormVersionId', () => {
       await validateParameter.validateFormVersionId(req, res, next, formVersionId);
 
       expect(formService.readVersion).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
+    });
+  });
+});
+
+describe('validateUserId', () => {
+  describe('400 response when', () => {
+    const expectedStatus = { status: 400 };
+
+    test('userId is missing', async () => {
+      const req = getMockReq({
+        params: {},
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateUserId(req, res, next);
+
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+    });
+
+    test.each(invalidUuids)('userId is "%s"', async (eachUserId) => {
+      const req = getMockReq({
+        params: { userId: eachUserId },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateUserId(req, res, next, eachUserId);
+
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+    });
+  });
+
+  describe('allows', () => {
+    test('uuid for userId', async () => {
+      const req = getMockReq({
+        params: {
+          userId: userId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateUserId(req, res, next, userId);
+
       expect(next).toBeCalledWith();
     });
   });
