@@ -337,7 +337,8 @@ describe('deleteExternalAPI', () => {
       await controller.deleteExternalAPI(req, res, next);
 
       expect(service.deleteExternalAPI).toBeCalledWith(validRequest.params.formId, validRequest.params.externalAPIId);
-      expect(res.status).toBeCalledWith(204);
+      expect(res.json).not.toBeCalled();
+      expect(res.sendStatus).toBeCalledWith(204);
       expect(next).not.toBeCalled();
     });
   });

@@ -152,7 +152,7 @@ describe('documentTemplateDelete', () => {
 
       expect(service.documentTemplateDelete).toBeCalledWith(validRequest.params.documentTemplateId, validRequest.currentUser.usernameIdp);
       expect(res.json).not.toBeCalled();
-      expect(res.status).toBeCalledWith(204);
+      expect(res.sendStatus).toBeCalledWith(204);
       expect(next).not.toBeCalled();
     });
   });

@@ -57,7 +57,7 @@ module.exports = {
   deleteUserPreferences: async (req, res, next) => {
     try {
       await service.deleteUserPreferences(req.currentUser);
-      res.status(204).send();
+      res.sendStatus(204);
     } catch (error) {
       next(error);
     }
@@ -93,7 +93,7 @@ module.exports = {
   deleteUserFormPreferences: async (req, res, next) => {
     try {
       await service.deleteUserFormPreferences(req.currentUser, req.params.formId);
-      res.status(204).send();
+      res.sendStatus(204);
     } catch (error) {
       next(error);
     }
