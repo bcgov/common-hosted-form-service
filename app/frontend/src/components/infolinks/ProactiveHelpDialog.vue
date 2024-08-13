@@ -104,11 +104,11 @@ async function selectImage() {
   }
 }
 
-function submit() {
+async function submit() {
   if (!validateLinkUrl()) {
     imageName.value = image.value !== '' ? imageName.value : '';
     moreHelpInfoLink.value = !isLinkEnabled.value ? '' : moreHelpInfoLink.value;
-    adminStore.addFCProactiveHelp({
+    await adminStore.addFCProactiveHelp({
       componentId: componentId.value,
       componentName: componentName.value,
       image: image.value,
