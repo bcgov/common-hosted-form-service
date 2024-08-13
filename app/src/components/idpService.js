@@ -159,9 +159,10 @@ class IdpService {
             const filterName = f.name;
             const paramName = f.param;
             const value = params[paramName];
-            if ('exact' in f) {
+            if ('exact' in f || 'caseSensitive' in f) {
               const exact = f.exact;
-              q.modify(filterName, value, exact);
+              const caseSensitive = f.caseSensitive;
+              q.modify(filterName, value, exact, caseSensitive);
             } else {
               q.modify(filterName, value);
             }
@@ -198,11 +199,11 @@ class IdpService {
     return User.query()
       .modify('filterIdpUserId', params.idpUserId)
       .modify('filterIdpCode', params.idpCode)
-      .modify('filterUsername', params.username, false)
+      .modify('filterUsername', params.username, false, false)
       .modify('filterFullName', params.fullName)
       .modify('filterFirstName', params.firstName)
       .modify('filterLastName', params.lastName)
-      .modify('filterEmail', params.email, false)
+      .modify('filterEmail', params.email, false, false)
       .modify('filterSearch', params.search)
       .modify('orderLastFirstAscending');
   }

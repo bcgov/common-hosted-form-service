@@ -77,7 +77,8 @@
             "name": "filterUsername",
             "exact": true,
             "param": "username",
-            "required": 2
+            "required": 2,
+            "caseSensitive": false
           },
           {
             "name": "filterFullName",
@@ -98,7 +99,8 @@
             "name": "filterEmail",
             "exact": true,
             "param": "email",
-            "required": 2
+            "required": 2,
+            "caseSensitive": false
           },
           {
             "name": "filterSearch",
@@ -161,7 +163,8 @@
             "name": "filterUsername",
             "exact": true,
             "param": "username",
-            "required": 2
+            "required": 2,
+            "caseSensitive": false
           },
           {
             "name": "filterFullName",
@@ -182,7 +185,8 @@
             "name": "filterEmail",
             "exact": true,
             "param": "email",
-            "required": 2
+            "required": 2,
+            "caseSensitive": false
           },
           {
             "name": "filterSearch",

@@ -139,7 +139,7 @@ describe('idpService', () => {
     expect(MockModel.query).toBeCalledTimes(1);
     expect(MockModel.modify).toBeCalledTimes(9);
     expect(MockModel.modify).toBeCalledWith('filterIdpCode', 'idir');
-    expect(MockModel.modify).toBeCalledWith('filterEmail', 'em@il.com', false);
+    expect(MockModel.modify).toBeCalledWith('filterEmail', 'em@il.com', false, false);
   });
 
   it('should return a customized user search', async () => {
@@ -147,7 +147,7 @@ describe('idpService', () => {
     expect(s).toBeFalsy();
     expect(MockModel.query).toBeCalledTimes(1);
     expect(MockModel.modify).toBeCalledWith('filterIdpCode', 'bceid-business');
-    expect(MockModel.modify).toBeCalledWith('filterEmail', 'em@il.com', true);
+    expect(MockModel.modify).toBeCalledWith('filterEmail', 'em@il.com', true, false);
     expect(MockModel.modify).toBeCalledTimes(9);
   });
 
