@@ -170,9 +170,21 @@ defineExpose({ idpType, userTypeChanged, updateLoginType });
       </v-expand-transition>
       <v-radio :value="ID_MODE.TEAM">
         <template #label>
-          <span :class="{ 'mr-2': isRTL }" :lang="locale">
-            {{ $t('trans.formSettings.specificTeamMembers') }}
-          </span>
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <span :class="{ 'mr-2': isRTL }" :lang="locale">
+                {{ $t('trans.formSettings.specificTeamMembers') }}
+              </span>
+              <v-icon
+                color="primary"
+                class="ml-3"
+                :class="{ 'mr-2': isRTL }"
+                v-bind="props"
+                icon="mdi:mdi-help-circle-outline"
+              />
+            </template>
+            <span>{{ $t('trans.formSettings.teamMemberTooltip') }}</span>
+          </v-tooltip>
         </template>
       </v-radio>
     </v-radio-group>
