@@ -174,9 +174,11 @@ async function modifyPermissions(userId, permissions) {
         ...NotificationTypes.SUCCESS,
         text: permissions.length
           ? t('trans.manageSubmissionUsers.sentInviteEmailTo') +
-            ` ${selectedEmail}`
+            ' ' +
+            `${selectedEmail}`
           : t('trans.manageSubmissionUsers.sentUninvitedEmailTo') +
-            ` ${selectedEmail}`,
+            ' ' +
+            `${selectedEmail}`,
       });
     }
   } catch (error) {
