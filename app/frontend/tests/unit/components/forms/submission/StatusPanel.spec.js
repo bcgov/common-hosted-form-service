@@ -473,6 +473,88 @@ describe('StatusPanel', () => {
     ).toBeFalsy();
   });
 
+  it('revisingFilter will return the fullName or username if it is in the queryText', async () => {
+    getFormUsersSpy.mockImplementationOnce(() => {
+      return {
+        data: [],
+      };
+    });
+    getStatusCodesSpy.mockImplementationOnce(() => {
+      return {
+        data: [
+          {
+            code: 'SUBMITTED',
+            statusCode: {
+              code: 'SUBMITTED',
+              display: 'Submitted',
+              nextCodes: ['ASSIGNED', 'COMPLETED', 'REVISING'],
+            },
+          },
+        ],
+      };
+    });
+    const getSubmissionStatusesSpy = vi.spyOn(
+      formService,
+      'getSubmissionStatuses'
+    );
+    getSubmissionStatusesSpy.mockImplementationOnce(() => {
+      return {
+        data: [
+          {
+            code: 'SUBMITTED',
+          },
+        ],
+      };
+    });
+    const wrapper = shallowMount(StatusPanel, {
+      props: {
+        formId: FORM_ID,
+        submissionId: SUBMISSION_ID,
+      },
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    wrapper.vm.showStatusContent = true;
+
+    await flushPromises();
+
+    expect(
+      wrapper.vm.revisingFilter(
+        '',
+        'test',
+        {
+          value: 'TEST LASTNAME',
+          title: 'MY_USERNAME',
+        }
+      )
+    ).toBeTruthy();
+
+    expect(
+      wrapper.vm.revisingFilter(
+        '',
+        'test',
+        {
+          value: 'FIRSTNAME LASTNAME',
+          title: 'TEST_USERNAME',
+        }
+      )
+    ).toBeTruthy();
+
+    expect(
+      wrapper.vm.revisingFilter(
+        '',
+        'test',
+        {
+          value: 'FIRSTNAME LASTNAME',
+          title: 'MY_USERNAME',
+        }
+      )
+    ).toBeFalsy();
+  });
+
   it('getStatus will throw an error if there is no statusHistory', async () => {
     getFormUsersSpy.mockImplementationOnce(() => {
       return {
@@ -783,7 +865,134 @@ describe('StatusPanel', () => {
     expect(getStatusCodesSpy).toBeCalledTimes(1);
     expect(addNotificationSpy).toBeCalledTimes(0);
   });
-
+  
+  it('updateStatus will run through successfully with multiple emails', async () => {
+    getFormUsersSpy.mockImplementationOnce(() => {
+      return {
+        data: [],
+      };
+    });
+    getStatusCodesSpy.mockImplementationOnce(() => {
+      return {
+        data: [
+          {
+            code: 'SUBMITTED',
+            statusCode: {
+              code: 'SUBMITTED',
+              display: 'Submitted',
+              nextCodes: ['ASSIGNED', 'COMPLETED', 'REVISING'],
+            },
+          },
+        ],
+      };
+    });
+    const getSubmissionStatusesSpy = vi.spyOn(formService, 'getSubmissionStatuses');
+    getSubmissionStatusesSpy.mockImplementationOnce(() => {
+      return {
+        data: [
+          {
+            code: 'SUBMITTED',
+          },
+        ],
+      };
+    });
+    const wrapper = shallowMount(StatusPanel, {
+      props: {
+        formId: FORM_ID,
+        submissionId: SUBMISSION_ID,
+      },
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+  
+    wrapper.vm.statusPanelForm = {
+      resetValidation: vi.fn(),
+      validate: vi.fn().mockImplementationOnce(() => true),
+    };
+  
+    await flushPromises();
+  
+    getFormUsersSpy.mockReset();
+    getStatusCodesSpy.mockReset();
+    getSubmissionStatusesSpy.mockReset();
+    addNotificationSpy.mockReset();
+  
+    wrapper.vm.assignee = {
+      email: 'test@test.com',
+      userId: USER_ID,
+    };
+    wrapper.vm.emailComment = 'Hello World';
+    wrapper.vm.statusToSet = 'REVISING';
+    wrapper.vm.selectedSubmissionUsers = ['email1@email.com', 'email2@email.com'];
+  
+    getFormUsersSpy.mockImplementationOnce(() => {
+      return {
+        data: [],
+      };
+    });
+    getStatusCodesSpy.mockImplementationOnce(() => {
+      return {
+        data: [
+          {
+            code: 'SUBMITTED',
+            statusCode: {
+              code: 'SUBMITTED',
+              display: 'Submitted',
+              nextCodes: ['ASSIGNED', 'COMPLETED', 'REVISING'],
+            },
+          },
+        ],
+      };
+    });
+    getSubmissionStatusesSpy.mockImplementationOnce(() => {
+      return {
+        data: [
+          {
+            code: 'SUBMITTED',
+          },
+        ],
+      };
+    });
+  
+    const updateSubmissionStatusSpy = vi.spyOn(formService, 'updateSubmissionStatus');
+    updateSubmissionStatusSpy.mockImplementation(() => {
+      return {
+        data: [
+          {
+            submissionStatusId: '1',
+          },
+        ],
+      };
+    });
+    const getCurrentUserSpy = vi.spyOn(rbacService, 'getCurrentUser');
+    getCurrentUserSpy.mockImplementation(() => {
+      return {
+        data: {
+          id: USER_ID,
+        },
+      };
+    });
+    const addNoteSpy = vi.spyOn(formService, 'addNote');
+    addNoteSpy.mockImplementation(() => {
+      return {
+        data: {},
+      };
+    });
+  
+    await wrapper.vm.updateStatus();
+  
+    expect(updateSubmissionStatusSpy).toBeCalledTimes(2);
+    expect(getCurrentUserSpy).toBeCalledTimes(2);
+    expect(addNoteSpy).toBeCalledTimes(2);
+    expect(getFormUsersSpy).toBeCalledTimes(1);
+    expect(getSubmissionStatusesSpy).toBeCalledTimes(1);
+    expect(getStatusCodesSpy).toBeCalledTimes(1);
+    expect(addNotificationSpy).toBeCalledTimes(0);
+  });
+  
+  
   it('updateStatus will run through successfully when status is COMPLETED', async () => {
     getFormUsersSpy.mockImplementationOnce(() => {
       return {
