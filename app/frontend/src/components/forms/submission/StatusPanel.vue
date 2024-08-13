@@ -330,6 +330,7 @@ defineExpose({
   addComment,
   assignee,
   autoCompleteFilter,
+  revisingFilter,
   emailComment,
   formReviewers,
   getStatus,
@@ -345,6 +346,7 @@ defineExpose({
   formSubmitters,
   selectAllSubmitters,
   updateStatus,
+  updateStatusAndAddNote,
 });
 </script>
 
