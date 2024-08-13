@@ -650,13 +650,12 @@ defineExpose({
   margin: 0;
 }
 
-@media (max-width: 959px) {
+@media (max-width: 1279px) {
   .hide-on-narrow {
     display: none;
   }
 }
-
-@media (min-width: 960px) {
+@media (min-width: 1280px) {
   .hide-on-wide {
     display: none;
   }
