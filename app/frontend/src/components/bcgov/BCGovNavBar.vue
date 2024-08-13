@@ -60,7 +60,7 @@ const hasPrivileges = computed(() => {
         <li v-if="hasPrivileges">
           <a
             data-cy="help"
-            href="https://github.com/bcgov/common-hosted-form-service/wiki"
+            href="https://developer.gov.bc.ca/docs/default/component/chefs-techdocs"
             target="_blank"
             :lang="locale"
             >{{ $t('trans.bCGovNavBar.help') }}</a

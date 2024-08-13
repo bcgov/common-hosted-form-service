@@ -551,7 +551,7 @@
     "exactBCEIDSearch": "BCeID 的电子邮件搜索必须准确。",
     "getUsersErrMsg": "获取用户时出错：{error}",
     "exactEmailOrUsername": "输入准确的电子邮件或用户名。",
-    "requiredFiled": "输入姓名、电子邮件或用户名"
+    "requiredField": "输入姓名、电子邮件或用户名"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "查看此提交内容",

@@ -99,6 +99,10 @@ const service = {
     await ExternalAPI.query().modify('findByIdAndFormId', externalAPIId, formId).first().throwIfNotFound();
     await ExternalAPI.query().deleteById(externalAPIId);
   },
+
+  readExternalAPI: (externalAPIId) => {
+    return ExternalAPI.query().findById(externalAPIId);
+  },
 };
 
 module.exports = service;

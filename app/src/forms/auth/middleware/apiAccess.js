@@ -28,8 +28,8 @@ const _getFormId = async (params) => {
     }
   } else if (params.formSubmissionId) {
     formId = await _getFormIdFromSubmissionId(params.formSubmissionId);
-  } else if (params.id) {
-    formId = await _getFormIdFromFileId(params.id);
+  } else if (params.fileId) {
+    formId = await _getFormIdFromFileId(params.fileId);
   }
 
   return formId;
@@ -94,7 +94,7 @@ module.exports = async (req, res, next) => {
         throw new Problem(401, { detail: HTTP_401_DETAIL });
       }
 
-      if (params.id && apiKey.filesApiAccess === false) {
+      if (params.fileId && apiKey.filesApiAccess === false) {
         throw new Problem(403, { detail: HTTP_403_DETAIL });
       }
 

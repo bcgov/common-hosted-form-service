@@ -595,7 +595,7 @@
     "exactBCEIDSearch": "Email searches for BCeID must be exact.",
     "getUsersErrMsg": "Error getting users: {error}",
     "exactEmailOrUsername": "Enter an exact email or username.",
-    "requiredFiled": "Enter a name, email, or username"
+    "requiredField": "Enter a name, email, or username"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "View This Submission",
@@ -614,7 +614,7 @@
     "save": "Save",
     "filterTitle": "Search and select columns to show under your dashboard",
     "confirmationId": "Confirmation Id",
-    "actions": "actions",
+    "actions": "Actions",
     "createdBy": "Created By",
     "statusUpdatedBy": "Status Updated By",
     "status": "Status",
