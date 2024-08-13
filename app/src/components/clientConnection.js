@@ -6,18 +6,18 @@ const log = require('./log')(module.filename);
 
 // axios-oauth-client removed the "interceptor" in v2.2.0. Replicate it here.
 
-const _getMaxAge = (res) => {
+const getMaxAge = (res) => {
   return res.expires_in * 1e3;
 };
 
-const _headerFormatter = (res) => {
+const headerFormatter = (res) => {
   return 'Bearer ' + res.access_token;
 };
 
-const _interceptor = (tokenProvider, authenticate) => {
-  const getToken = tokenProvider.tokenCache(authenticate, { _getMaxAge });
+const interceptor = (tokenProvider, authenticate) => {
+  const getToken = tokenProvider.tokenCache(authenticate, { getMaxAge });
 
-  return tokenProvider({ getToken, _headerFormatter });
+  return tokenProvider({ getToken, headerFormatter });
 };
 
 class ClientConnection {
@@ -35,7 +35,7 @@ class ClientConnection {
       // Wraps axios-token-interceptor with oauth-specific configuration,
       // fetches the token using the desired claim method, and caches
       // until the token expires
-      _interceptor(tokenProvider, oauth.clientCredentials(axios.create(), tokenUrl, clientId, clientSecret))
+      interceptor(tokenProvider, oauth.clientCredentials(axios.create(), tokenUrl, clientId, clientSecret))
     );
   }
 }
