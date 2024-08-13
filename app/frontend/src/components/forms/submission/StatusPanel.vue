@@ -253,6 +253,7 @@ async function updateStatus() {
 
       if (selectedSubmissionUsers.value.length > 0) {
         for (const user of selectedSubmissionUsers.value) {
+          console.log('updating status for user:', user);
           await updateStatusAndAddNote(user);
         }
       } else {
@@ -346,7 +347,6 @@ defineExpose({
   formSubmitters,
   selectAllSubmitters,
   updateStatus,
-  updateStatusAndAddNote,
 });
 </script>
 
