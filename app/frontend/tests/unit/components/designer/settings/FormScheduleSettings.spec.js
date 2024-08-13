@@ -786,8 +786,6 @@ describe('FormScheduleSettings.vue', () => {
     };
   
     await flushPromises();
-
-    console.log(wrapper.html());
   
     // Check submission schedule text
     const submissionScheduleText = wrapper.find('[data-test="submission-schedule-text"]');
