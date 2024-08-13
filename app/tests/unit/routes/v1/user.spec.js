@@ -1,5 +1,6 @@
-const request = require('supertest');
 const Problem = require('api-problem');
+const request = require('supertest');
+const uuid = require('uuid');
 
 const { expressHelper } = require('../../../common/helper');
 
@@ -26,6 +27,9 @@ userAccess.currentUser = jest.fn((_req, _res, next) => {
 // we will mock the underlying data service calls...
 //
 const service = require('../../../../src/forms/user/service');
+
+const formId = uuid.v4();
+const userId = uuid.v4();
 
 //
 // mocks are in place, create the router
@@ -82,7 +86,7 @@ describe(`${basePath}`, () => {
 });
 
 describe(`${basePath}/:userId`, () => {
-  const path = `${basePath}/:userId`;
+  const path = `${basePath}/${userId}`;
 
   describe('GET', () => {
     it('should return 200', async () => {
@@ -234,7 +238,7 @@ describe(`${basePath}/preferences`, () => {
 });
 
 describe(`${basePath}/preferences/forms/:formId`, () => {
-  const path = `${basePath}/preferences/forms/:formId`;
+  const path = `${basePath}/preferences/forms/${formId}`;
 
   describe('DELETE', () => {
     it('should return 204', async () => {
