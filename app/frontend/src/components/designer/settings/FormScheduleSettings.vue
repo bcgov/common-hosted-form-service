@@ -555,7 +555,7 @@ defineExpose({
         cols="12"
         md="12"
       >
-        <span :lang="locale">
+        <span :lang="locale" data-test="submission-schedule-text">
           {{ $t('trans.formSettings.submissionsOpenDateRange') }}
           <b>{{ form.schedule.openSubmissionDateTime }}</b>
           {{ $t('trans.formSettings.to') }}
@@ -577,7 +577,7 @@ defineExpose({
           </b>
         </span>
 
-        <span :lang="locale">{{
+        <span :lang="locale" data-test="late-submission-text">{{
           form.schedule.allowLateSubmissions.enabled &&
           form.schedule.allowLateSubmissions.forNext.intervalType &&
           form.schedule.allowLateSubmissions.forNext.term
