@@ -100,6 +100,7 @@
     "referenceGuideB": "用户指南",
     "referenceGuideC": "更多细节",
     "specificTeamMembers": "具体团队成员",
+    "teamMemberTooltip": "在创建此表单后，从团队管理设置中添加团队成员。",
     "formFunctionality": "表单功能",
     "formSubmissinScheduleMsg": "表单发布后，表单提交计划将在表单设置中可用。",
     "formSubmissionsSchedule": "表格提交时间表",
@@ -829,7 +830,8 @@
     "errorSavingFile": "保存文件时出错。文件名：{fileName}。错误：{error}",
     "submittingDraftErrMsg": "保存草稿时出错",
     "submittingDraftConsErrMsg": "保存草稿时出错。提交 ID：{submissionId}。错误：{error}",
-    "formDraftAccessErrMsg": "请求的提交已提交，正在重定向到查看页面"
+    "formDraftAccessErrMsg": "请求的提交已提交，正在重定向到查看页面",
+    "formUnauthorizedMessage": "您无权查看此表单，请联系表单所有者以获取访问权限。"
   },
   "bCGovFooter": {
     "home": "家",
