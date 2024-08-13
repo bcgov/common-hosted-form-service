@@ -1,8 +1,8 @@
 import * as L from 'leaflet';
-import { toRaw, markRaw } from 'vue';
 import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw-src.css';
+
 const DEFAULT_MAP_LAYER_URL =
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const DEFAULT_LAYER_ATTRIBUTION =
@@ -10,8 +10,14 @@ const DEFAULT_LAYER_ATTRIBUTION =
 const DEFAULT_MAP_ZOOM = 5;
 const DECIMALS_LATLNG = 5; // the number of decimals of latitude and longitude to be displayed in the marker popup
 const COMPONENT_EDIT_CLASS = 'component-edit-tabs';
-const CUSTOM_MARKER_PATH =
-  'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png';
+const CUSTOM_MARKER_PATH = 'https://unpkg.com/leaflet@1.9.4/dist/images/';
+// const CUSTOM_MARKER = L.icon({
+//   iconUrl: CUSTOM_MARKER_PATH,
+//   iconSize: [25, 41],
+//   iconAnchor: [12, 41],
+// });
+
+L.Icon.Default.imagePath = CUSTOM_MARKER_PATH;
 
 interface MapServiceOptions {
   mapContainer: HTMLElement;
@@ -51,9 +57,9 @@ class MapService {
             .setContent('<p>Only one marker for submission</p>')
             .openOn(map);
         } else {
-          if (layer.type === 'marker') {
-            layer.setIcon(this.customMarker);
-          }
+          // if (layer.type === 'marker') {
+          //   layer.setIcon(this.customMarker);
+          // }
           drawnItems.addLayer(layer);
         }
         this.bindPopupToLayer(layer);
@@ -67,11 +73,14 @@ class MapService {
       });
 
       map.on(L.Draw.Event.DRAWSTART, (e) => {
-        e.layer.setIcon(this.customMarker);
-      }
+        // L.Marker.prototype.options.icon = CUTSOM_MARKER;
+        // console.log(e.target);
+        // console.log(e.sourceTarget);
+        // console.log(e);
+        // e.layer.setIcon(this.customMarker);
+      });
       map.on('resize', () => {
         map.invalidateSize();
-
       });
     }
   }
@@ -90,7 +99,7 @@ class MapService {
     if (drawOptions.rectangle) {
       drawOptions.rectangle.showArea = false;
     }
-
+    //L.Marker.prototype.options.icon = CUSTOM_MARKER;
     const map = L.map(mapContainer).setView(
       center,
       defaultZoom || DEFAULT_MAP_ZOOM
@@ -177,7 +186,7 @@ class MapService {
     items.forEach((item) => {
       let layer;
       if (item.type === 'marker') {
-        layer = L.marker(item.coordinates).setIcon(this.customMarker);
+        layer = L.marker(item.coordinates);
       } else if (item.type === 'rectangle') {
         layer = L.rectangle(item.bounds);
       } else if (item.type === 'circle') {
@@ -205,10 +214,5 @@ class MapService {
     }
     return false;
   }
-  customMarker = L.icon({
-    iconUrl: CUSTOM_MARKER_PATH,
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-  });
 }
 export default MapService;
