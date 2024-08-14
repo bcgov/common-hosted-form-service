@@ -79,8 +79,8 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-describe(`${basePath}/`, () => {
-  const path = `${basePath}/`;
+describe(`${basePath}`, () => {
+  const path = `${basePath}`;
 
   it('should have correct middleware for GET', async () => {
     await appRequest.get(path);
