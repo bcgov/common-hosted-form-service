@@ -8,25 +8,18 @@ jest.mock('cors', () =>
 
 const request = require('supertest');
 const Problem = require('api-problem');
+
 const { expressHelper } = require('../../../common/helper');
+
+const jwtService = require('../../../../src/components/jwtService');
 const apiAccess = require('../../../../src/forms/auth/middleware/apiAccess');
-const userAccess = require('../../../../src/forms/auth/middleware/userAccess');
 const rateLimiter = require('../../../../src/forms/common/middleware/rateLimiter');
+const userAccess = require('../../../../src/forms/auth/middleware/userAccess');
 
 //
 // Mock out all the middleware - we're testing that the routes are set up
 // correctly, not the functionality of the middleware.
 //
-const jwtService = require('../../../../src/components/jwtService');
-
-//
-// test assumes that caller has appropriate token, we are not testing middleware here...
-//
-jwtService.protect = jest.fn(() => {
-  return jest.fn((_req, _res, next) => {
-    next();
-  });
-});
 
 jest.mock('../../../../src/forms/auth/middleware/apiAccess');
 apiAccess.mockImplementation(
@@ -34,6 +27,12 @@ apiAccess.mockImplementation(
     next();
   })
 );
+
+jwtService.protect = jest.fn(() => {
+  return jest.fn((_req, _res, next) => {
+    next();
+  });
+});
 
 rateLimiter.apiKeyRateLimiter = jest.fn((_req, _res, next) => {
   next();
