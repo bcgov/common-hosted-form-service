@@ -15,18 +15,18 @@ const controller = require('../../../../../src/forms/form/externalApi/controller
 // correctly, not the functionality of the middleware.
 //
 
-jwtService.protect = jest.fn(() => {
-  return jest.fn((_req, _res, next) => {
-    next();
-  });
-});
-
 jest.mock('../../../../../src/forms/auth/middleware/apiAccess');
 apiAccess.mockImplementation(
   jest.fn((_req, _res, next) => {
     next();
   })
 );
+
+jwtService.protect = jest.fn(() => {
+  return jest.fn((_req, _res, next) => {
+    next();
+  });
+});
 
 rateLimiter.apiKeyRateLimiter = jest.fn((_req, _res, next) => {
   next();
@@ -79,12 +79,12 @@ describe(`${basePath}/:formId/externalAPIs`, () => {
 
     await appRequest.get(path);
 
-    expect(validateParameter.validateFormId).toBeCalledTimes(1);
-    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
     expect(apiAccess).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
-    expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(controller.listExternalAPIs).toBeCalledTimes(1);
+    expect(hasFormPermissionsMock).toBeCalledTimes(1);
+    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
   });
 
   it('should have correct middleware for POST', async () => {
@@ -94,12 +94,12 @@ describe(`${basePath}/:formId/externalAPIs`, () => {
 
     await appRequest.post(path);
 
-    expect(validateParameter.validateFormId).toBeCalledTimes(1);
-    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
     expect(apiAccess).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
-    expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(controller.createExternalAPI).toBeCalledTimes(1);
+    expect(hasFormPermissionsMock).toBeCalledTimes(1);
+    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
   });
 
   it('should return 404 for PUT', async () => {
@@ -121,12 +121,12 @@ describe(`${basePath}/:formId/externalAPIs/:externalAPIId`, () => {
 
     await appRequest.delete(path);
 
-    expect(validateParameter.validateFormId).toBeCalledTimes(1);
-    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(1);
     expect(apiAccess).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
-    expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(controller.deleteExternalAPI).toBeCalledTimes(1);
+    expect(hasFormPermissionsMock).toBeCalledTimes(1);
+    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
   });
 
   it('should return 404 for GET', async () => {
@@ -148,12 +148,12 @@ describe(`${basePath}/:formId/externalAPIs/:externalAPIId`, () => {
 
     await appRequest.put(path);
 
-    expect(validateParameter.validateFormId).toBeCalledTimes(1);
-    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(1);
     expect(apiAccess).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
-    expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(controller.updateExternalAPI).toBeCalledTimes(1);
+    expect(hasFormPermissionsMock).toBeCalledTimes(1);
+    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
   });
 });
 
@@ -215,12 +215,12 @@ describe(`${basePath}/:formId/externalAPIs/statusCodes`, () => {
 
     await appRequest.get(path);
 
-    expect(validateParameter.validateFormId).toBeCalledTimes(1);
-    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
     expect(apiAccess).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
-    expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(controller.listExternalAPIStatusCodes).toBeCalledTimes(1);
+    expect(hasFormPermissionsMock).toBeCalledTimes(1);
+    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
   });
 
   it('should return 404 for POST', async () => {
