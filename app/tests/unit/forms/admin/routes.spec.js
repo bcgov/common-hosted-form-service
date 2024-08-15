@@ -27,64 +27,6 @@ userAccess.currentUser = jest.fn((_req, _res, next) => {
   next();
 });
 
-controller.createFormComponentsProactiveHelp = jest.fn((_req, res) => {
-  res.sendStatus(200);
-});
-controller.deleteApiKey = jest.fn((_req, res) => {
-  res.sendStatus(200);
-});
-controller.getExternalAPIStatusCodes = jest.fn((_req, res) => {
-  res.sendStatus(200);
-});
-controller.getExternalAPIs = jest.fn((_req, res) => {
-  res.sendStatus(200);
-});
-controller.getFCProactiveHelpImageUrl = jest.fn((_req, res) => {
-  res.sendStatus(200);
-});
-controller.getFormUserRoles = jest.fn((_req, res) => {
-  res.sendStatus(200);
-});
-controller.getUsers = jest.fn((_req, res) => {
-  res.sendStatus(200);
-});
-controller.listFormComponentsProactiveHelp = jest.fn((_req, res) => {
-  res.sendStatus(200);
-});
-controller.listForms = jest.fn((_req, res) => {
-  res.sendStatus(200);
-});
-controller.readApiDetails = jest.fn((_req, res) => {
-  res.sendStatus(200);
-});
-controller.readForm = jest.fn((_req, res) => {
-  res.sendStatus(200);
-});
-controller.readVersion = jest.fn((_req, res) => {
-  res.sendStatus(200);
-});
-controller.restoreForm = jest.fn((_req, res) => {
-  res.sendStatus(200);
-});
-controller.setFormUserRoles = jest.fn((_req, res) => {
-  res.sendStatus(200);
-});
-controller.updateExternalAPI = jest.fn((_req, res) => {
-  res.sendStatus(200);
-});
-controller.updateFormComponentsProactiveHelp = jest.fn((_req, res) => {
-  res.sendStatus(200);
-});
-userController.read = jest.fn((_req, res) => {
-  res.sendStatus(200);
-});
-
-const componentId = uuid.v4();
-const externalApiId = uuid.v4();
-const formId = uuid.v4();
-const formVersionId = uuid.v4();
-const userId = uuid.v4();
-
 //
 // Create the router and a simple Express server.
 //
@@ -102,6 +44,10 @@ describe(`${basePath}/externalAPIs`, () => {
   const path = `${basePath}/externalAPIs`;
 
   it('should have correct middleware for GET', async () => {
+    controller.getExternalAPIs = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.get(path);
 
     expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
@@ -111,9 +57,14 @@ describe(`${basePath}/externalAPIs`, () => {
 });
 
 describe(`${basePath}/externalAPIs/:externalApiId`, () => {
+  const externalApiId = uuid.v4();
   const path = `${basePath}/externalAPIs/${externalApiId}`;
 
   it('should have correct middleware for PUT', async () => {
+    controller.updateExternalAPI = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.put(path);
 
     expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
@@ -126,6 +77,10 @@ describe(`${basePath}/externalAPIs/statusCodes`, () => {
   const path = `${basePath}/externalAPIs/statusCodes`;
 
   it('should have correct middleware for GET', async () => {
+    controller.getExternalAPIStatusCodes = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.get(path);
 
     expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
@@ -135,9 +90,14 @@ describe(`${basePath}/externalAPIs/statusCodes`, () => {
 });
 
 describe(`${basePath}/formcomponents/proactivehelp/:publishStatus/:componentId`, () => {
+  const componentId = uuid.v4();
   const path = `${basePath}/formcomponents/proactivehelp/:publishStatus/${componentId}`;
 
   it('should have correct middleware for PUT', async () => {
+    controller.updateFormComponentsProactiveHelp = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.put(path);
 
     expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
@@ -147,9 +107,14 @@ describe(`${basePath}/formcomponents/proactivehelp/:publishStatus/:componentId`,
 });
 
 describe(`${basePath}/formcomponents/proactivehelp/imageUrl/:componentId`, () => {
+  const componentId = uuid.v4();
   const path = `${basePath}/formcomponents/proactivehelp/imageUrl/${componentId}`;
 
   it('should have correct middleware for GET', async () => {
+    controller.getFCProactiveHelpImageUrl = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.get(path);
 
     expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
@@ -162,6 +127,10 @@ describe(`${basePath}/formcomponents/proactivehelp/list`, () => {
   const path = `${basePath}/formcomponents/proactivehelp/list`;
 
   it('should have correct middleware for GET', async () => {
+    controller.listFormComponentsProactiveHelp = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.get(path);
 
     expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
@@ -174,6 +143,10 @@ describe(`${basePath}/formcomponents/proactivehelp/object`, () => {
   const path = `${basePath}/formcomponents/proactivehelp/object`;
 
   it('should have correct middleware for POST', async () => {
+    controller.createFormComponentsProactiveHelp = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.post(path);
 
     expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
@@ -186,6 +159,10 @@ describe(`${basePath}/forms`, () => {
   const path = `${basePath}/forms`;
 
   it('should have correct middleware for GET', async () => {
+    controller.listForms = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.get(path);
 
     expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
@@ -195,9 +172,14 @@ describe(`${basePath}/forms`, () => {
 });
 
 describe(`${basePath}/forms/:formId`, () => {
+  const formId = uuid.v4();
   const path = `${basePath}/forms/${formId}`;
 
   it('should have correct middleware for GET', async () => {
+    controller.readForm = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.get(path);
 
     expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
@@ -207,9 +189,14 @@ describe(`${basePath}/forms/:formId`, () => {
 });
 
 describe(`${basePath}/forms/:formId/addUser`, () => {
+  const formId = uuid.v4();
   const path = `${basePath}/forms/${formId}/addUser`;
 
   it('should have correct middleware for PUT', async () => {
+    controller.setFormUserRoles = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.put(path);
 
     expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
@@ -219,9 +206,14 @@ describe(`${basePath}/forms/:formId/addUser`, () => {
 });
 
 describe(`${basePath}/forms/:formId/apiKey`, () => {
+  const formId = uuid.v4();
   const path = `${basePath}/forms/${formId}/apiKey`;
 
   it('should have correct middleware for DELETE', async () => {
+    controller.deleteApiKey = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.delete(path);
 
     expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
@@ -230,6 +222,10 @@ describe(`${basePath}/forms/:formId/apiKey`, () => {
   });
 
   it('should have correct middleware for GET', async () => {
+    controller.readApiDetails = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.get(path);
 
     expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
@@ -239,9 +235,14 @@ describe(`${basePath}/forms/:formId/apiKey`, () => {
 });
 
 describe(`${basePath}/forms/:formId/formUsers`, () => {
+  const formId = uuid.v4();
   const path = `${basePath}/forms/${formId}/formUsers`;
 
   it('should have correct middleware for GET', async () => {
+    controller.getFormUserRoles = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.get(path);
 
     expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
@@ -251,9 +252,14 @@ describe(`${basePath}/forms/:formId/formUsers`, () => {
 });
 
 describe(`${basePath}/forms/:formId/restore`, () => {
+  const formId = uuid.v4();
   const path = `${basePath}/forms/${formId}/restore`;
 
   it('should have correct middleware for PUT', async () => {
+    controller.restoreForm = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.put(path);
 
     expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
@@ -263,9 +269,15 @@ describe(`${basePath}/forms/:formId/restore`, () => {
 });
 
 describe(`${basePath}/forms/:formId/versions/:formVersionId`, () => {
+  const formId = uuid.v4();
+  const formVersionId = uuid.v4();
   const path = `${basePath}/forms/${formId}/versions/${formVersionId}`;
 
   it('should have correct middleware for GET', async () => {
+    controller.readVersion = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.get(path);
 
     expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
@@ -278,6 +290,10 @@ describe(`${basePath}/users`, () => {
   const path = `${basePath}/users`;
 
   it('should have correct middleware for GET', async () => {
+    controller.getUsers = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.get(path);
 
     expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
@@ -287,9 +303,14 @@ describe(`${basePath}/users`, () => {
 });
 
 describe(`${basePath}/users/:userId`, () => {
+  const userId = uuid.v4();
   const path = `${basePath}/users/${userId}`;
 
   it('should have correct middleware for GET', async () => {
+    userController.read = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.get(path);
 
     expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
