@@ -33,34 +33,34 @@ validateParameter.validateUserId = jest.fn((_req, _res, next) => {
 // Mock the controller functions with happy path results.
 
 controller.deleteUserFormPreferences = jest.fn((_req, res) => {
-  res.sendStatus(204);
+  res.sendStatus(200);
 });
 controller.deleteUserPreferences = jest.fn((_req, res) => {
-  res.sendStatus(204);
+  res.sendStatus(200);
 });
 controller.list = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 controller.read = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 controller.readUserFormPreferences = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 controller.readUserLabels = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 controller.readUserPreferences = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 controller.updateUserFormPreferences = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 controller.updateUserLabels = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 controller.updateUserPreferences = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 
 const formId = uuid.v4();
@@ -79,8 +79,8 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-describe(`${basePath}/`, () => {
-  const path = `${basePath}/`;
+describe(`${basePath}`, () => {
+  const path = `${basePath}`;
 
   it('should have correct middleware for GET', async () => {
     await appRequest.get(path);
