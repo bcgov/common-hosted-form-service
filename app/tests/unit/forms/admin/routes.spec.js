@@ -28,55 +28,55 @@ userAccess.currentUser = jest.fn((_req, _res, next) => {
 });
 
 controller.createFormComponentsProactiveHelp = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 controller.deleteApiKey = jest.fn((_req, res) => {
-  res.sendStatus(204);
-});
-controller.getFormUserRoles = jest.fn((_req, res) => {
-  res.status(200).json({});
-});
-controller.getExternalAPIs = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 controller.getExternalAPIStatusCodes = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
+});
+controller.getExternalAPIs = jest.fn((_req, res) => {
+  res.sendStatus(200);
 });
 controller.getFCProactiveHelpImageUrl = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
+});
+controller.getFormUserRoles = jest.fn((_req, res) => {
+  res.sendStatus(200);
 });
 controller.getUsers = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 controller.listFormComponentsProactiveHelp = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 controller.listForms = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 controller.readApiDetails = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 controller.readForm = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 controller.readVersion = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 controller.restoreForm = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 controller.setFormUserRoles = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 controller.updateExternalAPI = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 controller.updateFormComponentsProactiveHelp = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 userController.read = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 
 const componentId = uuid.v4();
