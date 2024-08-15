@@ -83,6 +83,7 @@ describe(`${basePath}/:formId/externalAPIs`, () => {
     expect(controller.listExternalAPIs).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
   });
@@ -98,6 +99,7 @@ describe(`${basePath}/:formId/externalAPIs`, () => {
     expect(controller.createExternalAPI).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
   });
@@ -125,6 +127,7 @@ describe(`${basePath}/:formId/externalAPIs/:externalAPIId`, () => {
     expect(controller.deleteExternalAPI).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateExternalAPIId).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
   });
@@ -152,6 +155,7 @@ describe(`${basePath}/:formId/externalAPIs/:externalAPIId`, () => {
     expect(controller.updateExternalAPI).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateExternalAPIId).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
   });
@@ -219,6 +223,7 @@ describe(`${basePath}/:formId/externalAPIs/statusCodes`, () => {
     expect(controller.listExternalAPIStatusCodes).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
   });
