@@ -8,7 +8,7 @@ const { ExternalAPI } = require('../../../../src/forms/common/models');
 
 const goodPayload = {
   formId: '123',
-  submissionId: '456',
+  submissionId: null,
   versionId: '789',
 };
 
@@ -61,8 +61,6 @@ afterEach(() => {
 
 describe('Proxy Service', () => {
   describe('generateProxyHeaders', () => {
-    beforeEach(() => {});
-
     it('should throw error with no payload', async () => {
       await expect(service.generateProxyHeaders(undefined, goodCurrentUser, token)).rejects.toThrow();
     });
@@ -85,10 +83,27 @@ describe('Proxy Service', () => {
       const decrypted = encryptionService.decryptProxy(result['X-CHEFS-PROXY-DATA']);
       expect(JSON.parse(decrypted)).toMatchObject(goodProxyHeaderInfo);
     });
+    it('should find formId and versionId when given submissionId', async () => {
+      const submissionPayload = { submissionId: '456' };
+      const idsPaylad = { ...goodPayload, ...submissionPayload };
+      service._getIds = jest.fn().mockResolvedValueOnce(idsPaylad);
+      const submissionProxyHeaderInfo = {
+        ...idsPaylad,
+        ...goodCurrentUser,
+        userId: goodCurrentUser.idpUserId,
+        token: token,
+      };
+      delete submissionProxyHeaderInfo.idpUserId;
+
+      const result = await service.generateProxyHeaders(submissionPayload, goodCurrentUser, token);
+      expect(result).toBeTruthy();
+      expect(result['X-CHEFS-PROXY-DATA']).toBeTruthy();
+      // check the encryption...
+      const decrypted = encryptionService.decryptProxy(result['X-CHEFS-PROXY-DATA']);
+      expect(JSON.parse(decrypted)).toMatchObject(submissionProxyHeaderInfo);
+    });
   });
   describe('readProxyHeaders', () => {
-    beforeEach(() => {});
-
     it('should throw error with no headers', async () => {
       await expect(service.readProxyHeaders(undefined)).rejects.toThrow();
     });
@@ -108,6 +123,8 @@ describe('Proxy Service', () => {
     });
 
     it('should return decrypted header data', async () => {
+      service._getIds = jest.fn().mockResolvedValueOnce({ ...goodPayload, submissionId: null });
+
       const headers = await service.generateProxyHeaders(goodPayload, goodCurrentUser, token);
       const decrypted = await service.readProxyHeaders(headers);
       expect(decrypted).toBeTruthy();
@@ -194,8 +211,6 @@ describe('Proxy Service', () => {
     });
   });
   describe('createExternalAPIHeaders', () => {
-    beforeEach(() => {});
-
     it('should throw error with no headers', async () => {
       const externalAPI = undefined;
       const proxyHeaderInfo = goodProxyHeaderInfo;

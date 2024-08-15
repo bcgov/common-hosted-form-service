@@ -1,7 +1,7 @@
 const { encryptionService } = require('../../components/encryptionService');
 const jwtService = require('../../components/jwtService');
 const ProxyServiceError = require('./error');
-const { ExternalAPI } = require('../../forms/common/models');
+const { ExternalAPI, SubmissionMetadata } = require('../../forms/common/models');
 
 const headerValue = (headers, key) => {
   if (headers && key) {
@@ -19,15 +19,38 @@ const trimLeadingSlashes = (str) => str.replace(/^\/+|\$/g, '');
 const trimTrailingSlashes = (str) => str.replace(/\/+$/g, '');
 
 const service = {
+  _getIds: async (payload) => {
+    let formId = payload['formId'];
+    let versionId = payload['versionId'];
+    let submissionId = payload['submissionId'];
+    // when we are provided with a submission id (ex. submitting a draft submission)
+    // we need to fetch the related form and version id (if not provided)
+    if (submissionId) {
+      const meta = await SubmissionMetadata.query().where('submissionId', submissionId).first();
+      if (meta) {
+        formId = meta.submissionId;
+        versionId = meta.formVersionId;
+        submissionId = meta.submissionId;
+      }
+    }
+    return {
+      formId: formId,
+      versionId: versionId,
+      submissionId: submissionId,
+    };
+  },
+
   generateProxyHeaders: async (payload, currentUser, token) => {
     if (!payload || !currentUser || !currentUser.idp) {
       throw new ProxyServiceError('Cannot generate proxy headers with missing or incomplete parameters');
     }
 
+    const { formId, versionId, submissionId } = await service._getIds(payload);
+
     const headerData = {
-      formId: payload['formId'],
-      versionId: payload['versionId'],
-      submissionId: payload['submissionId'],
+      formId: formId,
+      versionId: versionId,
+      submissionId: submissionId,
       userId: currentUser.idpUserId,
       username: currentUser.username,
       firstName: currentUser.firstName,
