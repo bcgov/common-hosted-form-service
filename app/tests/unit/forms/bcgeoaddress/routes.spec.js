@@ -27,7 +27,7 @@ describe(`${basePath}/address`, () => {
 
     await appRequest.get(path);
 
-    expect(controller.searchBCGeoAddress).toHaveBeenCalledTimes(1);
+    expect(controller.searchBCGeoAddress).toBeCalledTimes(1);
   });
 });
 
@@ -41,6 +41,6 @@ describe(`${basePath}/advance/address`, () => {
 
     await appRequest.get(path);
 
-    expect(controller.advanceSearchBCGeoAddress).toHaveBeenCalledTimes(1);
+    expect(controller.advanceSearchBCGeoAddress).toBeCalledTimes(1);
   });
 });
