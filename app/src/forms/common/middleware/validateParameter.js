@@ -209,8 +209,8 @@ const validateUserId = async (_req, _res, next, userId) => {
     next(error);
   }
 };
-           
-/**           
+
+/**
  * Validates that the :formEncryptionKeyId route parameter exists and is a UUID. This
  * validator requires that the :formId route parameter also exists.
  *
