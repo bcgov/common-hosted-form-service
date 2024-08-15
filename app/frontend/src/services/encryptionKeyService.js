@@ -5,12 +5,11 @@ export default {
   /**
    * @function listEncryptionAlgorithms
    * Get the Encryption Key Algortithms supported
-   * @param {string} formId The form uuid
    * @returns {Promise} An axios response
    */
-  listEncryptionAlgorithms(formId, params = {}) {
+  listEncryptionAlgorithms(params = {}) {
     return appAxios().get(
-      `${ApiRoutes.FORMS}/${formId}${ApiRoutes.ENCRYPTION_KEY}/algorithms`,
+      `${ApiRoutes.FORMS}/${ApiRoutes.ENCRYPTION_KEY}/algorithms`,
       { params }
     );
   },

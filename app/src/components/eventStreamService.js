@@ -2,9 +2,10 @@ const config = require('config');
 const nats = require('nats');
 const log = require('./log')(module.filename);
 
-const { FormVersion, Form } = require('../forms/common/models');
+const { FormVersion, Form, FormEventStreamConfig } = require('../forms/common/models');
 
 const { featureFlags } = require('./featureFlags');
+const { encryptionService } = require('./encryptionService');
 
 const SERVICE = 'EventStreamService';
 
@@ -46,13 +47,14 @@ class DummyEventStreamService {
 }
 
 class EventStreamService {
-  constructor({ servers, streamName, domain, username, password }) {
-    if (!servers || !streamName || !domain || !username || !password) {
+  constructor({ servers, streamName, source, domain, username, password }) {
+    if (!servers || !streamName || !source || !domain || !username || !password) {
       throw new Error('EventStreamService is not configured. Check configuration.');
     }
 
     this.servers = servers;
     this.streamName = streamName;
+    this.source = source;
     this.domain = domain;
     this.username = username;
     this.password = password;
@@ -169,34 +171,42 @@ class EventStreamService {
         form['versions'] = [formVersion];
 
         // need to fetch the encryption key...
+        const evntStrmCfg = await FormEventStreamConfig.query().modify('filterFormId', formId).allowGraph('[encryptionKey]').withGraphFetched('encryptionKey').first();
 
-        const sub = `schema.${eventType}.${formId}`;
-        const publicSubj = `${this.publicSubject}.${sub}`;
-        const privateSubj = `${this.privateSubject}.${sub}`;
-        const meta = {
-          source: 'chefs',
-          domain: 'forms',
-          class: 'schema',
-          type: eventType,
-          formId: formId,
-          formVersionId: formVersionId,
-        };
-        const privMsg = {
-          meta: meta,
-          payload: {
-            data: form, // we will encrypt for private
-          },
-        };
-        const pubMsg = {
-          meta: meta,
-          payload: {},
-        };
-
-        // this will need to change when/if we allow configuration for sending public and/or private (or none!)
-        await Promise.all([this.js.publish(privateSubj, JSON.stringify(privMsg)), this.js.publish(publicSubj, JSON.stringify(pubMsg))]).then((values) => {
-          log.info(`form ${eventType} event (private) - formId: ${formId}, version: ${formVersion.version}, seq: ${values[0].seq}`, { function: 'onPublish' });
-          log.info(`form ${eventType} event (public) - formId: ${formId}, version: ${formVersion.version}, seq: ${values[1].seq}`, { function: 'onPublish' });
-        });
+        if (evntStrmCfg) {
+          const sub = `schema.${eventType}.${formId}`;
+          const publicSubj = `${this.publicSubject}.${sub}`;
+          const privateSubj = `${this.privateSubject}.${sub}`;
+          const meta = {
+            source: this.source,
+            domain: this.domain,
+            class: 'schema',
+            type: eventType,
+            formId: formId,
+            formVersionId: formVersionId,
+          };
+          if (evntStrmCfg.enablePrivateStream) {
+            const encPayload = encryptionService.encryptExternal(evntStrmCfg.encryptionKey.algorithm, evntStrmCfg.encryptionKey.key, form);
+            const privMsg = {
+              meta: meta,
+              payload: {
+                data: encPayload,
+              },
+            };
+            const ack = await this.js.publish(privateSubj, JSON.stringify(privMsg));
+            log.info(`form ${eventType} event (private) - formId: ${formId}, version: ${formVersion.version}, seq: ${ack.seq}`, { function: 'onPublish' });
+          }
+          if (evntStrmCfg.enablePublicStream) {
+            const pubMsg = {
+              meta: meta,
+              payload: {},
+            };
+            const ack = await this.js.publish(publicSubj, JSON.stringify(pubMsg));
+            log.info(`form ${eventType} event (public) - formId: ${formId}, version: ${formVersion.version}, seq: ${ack.seq}`, { function: 'onPublish' });
+          }
+        } else {
+          log.info(`formId '${formId}' has no event stream configuration; will not publish events.`);
+        }
       } else {
         // warn, error???
         log.warn(`${SERVICE} is not connected. Cannot publish (form) event. [event: form.'${eventType}', formId: ${formId}, versionId: ${formVersionId}]`, {
@@ -216,46 +226,49 @@ class EventStreamService {
         const formVersion = await FormVersion.query().findById(submission.formVersionId).throwIfNotFound();
 
         // need to fetch the encryption key...
+        const evntStrmCfg = await FormEventStreamConfig.query().modify('filterFormId', formVersion.formId).allowGraph('[encryptionKey]').withGraphFetched('encryptionKey').first();
 
-        const sub = `submission.${eventType}.${formVersion.formId}`;
-        const publicSubj = `${this.publicSubject}.${sub}`;
-        const privateSubj = `${this.privateSubject}.${sub}`;
-        const meta = {
-          source: 'chefs',
-          domain: 'forms',
-          class: 'submission',
-          type: eventType,
-          formId: formVersion.formId,
-          formVersionId: submission.formVersionId,
-          submissionId: submission.id,
-          draft: draft,
-        };
-        const privMsg = {
-          meta: meta,
-          payload: {
-            data: submission, // we will encrypt for private
-          },
-        };
-        const pubMsg = {
-          meta: meta,
-          payload: {},
-        };
+        if (evntStrmCfg) {
+          const sub = `submission.${eventType}.${formVersion.formId}`;
+          const publicSubj = `${this.publicSubject}.${sub}`;
+          const privateSubj = `${this.privateSubject}.${sub}`;
+          const meta = {
+            source: this.source,
+            domain: this.domain,
+            class: 'submission',
+            type: eventType,
+            formId: formVersion.formId,
+            formVersionId: submission.formVersionId,
+            submissionId: submission.id,
+            draft: draft,
+          };
 
-        // this will need to change when/if we allow configuration for sending public and/or private (or none!)
-        await Promise.all([this.js.publish(privateSubj, JSON.stringify(privMsg)), this.js.publish(publicSubj, JSON.stringify(pubMsg))]).then((values) => {
-          log.info(
-            `submission ${eventType} event (private) - formId: ${formVersion.formId}, version: ${formVersion.version}, submissionId: ${submission.id}, seq: ${values[0].seq}`,
-            {
+          if (evntStrmCfg.enablePrivateStream) {
+            const encPayload = encryptionService.encryptExternal(evntStrmCfg.encryptionKey.algorithm, evntStrmCfg.encryptionKey.key, submission);
+            const privMsg = {
+              meta: meta,
+              payload: {
+                data: encPayload,
+              },
+            };
+            const ack = await this.js.publish(privateSubj, JSON.stringify(privMsg));
+            log.info(`submission ${eventType} event (private) - formId: ${formVersion.formId}, version: ${formVersion.version}, submissionId: ${submission.id}, seq: ${ack.seq}`, {
               function: 'onSubmit',
-            }
-          );
-          log.info(
-            `submission ${eventType} event (public) - formId: ${formVersion.formId}, version: ${formVersion.version}, submissionId: ${submission.id}, seq: ${values[1].seq}`,
-            {
+            });
+          }
+          if (evntStrmCfg.enablePublicStream) {
+            const pubMsg = {
+              meta: meta,
+              payload: {},
+            };
+            const ack = await this.js.publish(publicSubj, JSON.stringify(pubMsg));
+            log.info(`submission ${eventType} event (public) - formId: ${formVersion.formId}, version: ${formVersion.version}, submissionId: ${submission.id}, seq: ${ack.seq}`, {
               function: 'onSubmit',
-            }
-          );
-        });
+            });
+          }
+        } else {
+          log.info(`formId '${formVersion.formId}' has no event stream configuration; will not publish events.`);
+        }
       } else {
         // warn, error???
         log.warn(`${SERVICE} is not connected. Cannot publish (submission) event. [submission.event: '${eventType}', submissionId: ${submissionId}]`, {

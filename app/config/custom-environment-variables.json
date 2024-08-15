@@ -64,6 +64,7 @@
   "eventStreamService": {
     "servers": "EVENTSTREAMSERVICE_SERVERS",
     "streamName": "EVENTSTREAMSERVICE_STREAMNAME",
+    "source": "EVENTSTREAMSERVICE_SOURCE",
     "domain": "EVENTSTREAMSERVICE_DOMAIN",
     "username": "EVENTSTREAMSERVICE_USERNAME",
     "password": "EVENTSTREAMSERVICE_PASSWORD"

@@ -67,6 +67,14 @@ apiRouter.use('/config', (_req, res, next) => {
     const uploads = config.get('files.uploads');
     const features = config.get('features');
     const feConfig = { ...frontend, uploads: uploads, features: features };
+    if (featureFlags.eventStreamService) {
+      let ess = config.util.cloneDeep(config.get('eventStreamService'));
+      delete ess['username'];
+      delete ess['password'];
+      feConfig['eventStreamService'] = {
+        ...ess,
+      };
+    }
     res.status(200).json(feConfig);
   } catch (err) {
     next(err);

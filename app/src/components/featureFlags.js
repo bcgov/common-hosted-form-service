@@ -7,9 +7,7 @@ const FEATURES = {
 };
 
 class FeatureFlags {
-  constructor() {
-    this._eventStreamService = this.enabled(FEATURES.EVENT_STREAM_SERVICE);
-  }
+  constructor() {}
 
   // generic flag check
   enabled(feature) {
@@ -24,36 +22,43 @@ class FeatureFlags {
 
   // just add direct access helper functions
   get eventStreamService() {
-    return this._eventStreamService;
+    return this.enabled(FEATURES.EVENT_STREAM_SERVICE);
   }
 
-  // middleware, so we can short-circuit any api calls
-  async featureEnabled(_req, _res, next, feature) {
-    try {
-      const flag = this.enabled(feature);
-      if (flag) {
-        next(); // all good, feature enabled...
-      } else {
-        throw new Problem(400, {
-          detail: `Feature '${feature}' is not enabled.`,
-        });
+  featureEnabled(feature) {
+    // actual middleware
+    return async (req, res, next) => {
+      try {
+        const flag = this.enabled(feature);
+        if (flag) {
+          next(); // all good, feature enabled...
+        } else {
+          throw new Problem(400, {
+            detail: `Feature '${feature}' is not enabled.`,
+          });
+        }
+      } catch (error) {
+        next(error);
       }
-    } catch (error) {
-      next(error);
-    }
+    };
   }
-  async eventStreamServiceEnabled(_req, _res, next) {
-    try {
-      if (this._eventStreamService) {
-        next(); // all good, feature enabled...
-      } else {
-        throw new Problem(400, {
-          detail: `Feature '${FEATURES.EVENT_STREAM_SERVICE}' is not enabled.`,
-        });
+
+  eventStreamServiceEnabled() {
+    // actual middleware
+    return async (req, res, next) => {
+      try {
+        const flag = this.enabled(FEATURES.EVENT_STREAM_SERVICE);
+        if (flag) {
+          next(); // all good, feature enabled...
+        } else {
+          throw new Problem(400, {
+            detail: `Feature '${FEATURES.EVENT_STREAM_SERVICE}' is not enabled.`,
+          });
+        }
+      } catch (error) {
+        next(error);
       }
-    } catch (error) {
-      next(error);
-    }
+    };
   }
 }
 

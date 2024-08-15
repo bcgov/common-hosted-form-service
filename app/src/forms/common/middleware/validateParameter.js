@@ -188,8 +188,8 @@ const validateFormEncryptionKeyId = async (req, _res, next, formEncryptionKeyId)
   try {
     _validateUuid(formEncryptionKeyId, 'formEncryptionKeyId');
 
-    const rec = await encryptionKeyService.readEncryptionKey(formEncryptionKeyId);
-    if (!rec || rec.formId !== req.params.formId) {
+    const rec = await encryptionKeyService.readEncryptionKey(req.params.formId, formEncryptionKeyId);
+    if (!rec) {
       throw new Problem(404, {
         detail: 'formEncryptionKeyId does not exist on this form',
       });

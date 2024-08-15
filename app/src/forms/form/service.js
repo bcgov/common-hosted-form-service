@@ -26,6 +26,7 @@ const {
 const { falsey, queryUtils, checkIsFormExpired, validateScheduleObject, typeUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
+const eventStreamConfigService = require('./eventStreamConfig/service');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER, Roles.SUBMISSION_APPROVER];
 
 const service = {
@@ -134,6 +135,8 @@ const service = {
       }));
       await FormStatusCode.query(trx).insert(defaultStatuses);
 
+      await eventStreamConfigService.upsert(obj.id, data.eventStreamConfig, currentUser, trx);
+
       await trx.commit();
       const result = await service.readForm(obj.id);
       result.draft = draft;
@@ -189,6 +192,8 @@ const service = {
         createdBy: currentUser.usernameIdp,
       }));
       if (fIdps && fIdps.length) await FormIdentityProvider.query(trx).insert(fIdps);
+
+      await eventStreamConfigService.upsert(obj.id, data.eventStreamConfig, currentUser, trx);
 
       await trx.commit();
       return await service.readForm(obj.id);
