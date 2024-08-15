@@ -8,6 +8,7 @@ import getRouter from '~/router';
 import ExportSubmissions from '~/components/forms/ExportSubmissions.vue';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useAppStore } from '~/store/app';
 
 describe('ExportSubmissions.vue', () => {
   const formId = '123-456';
@@ -22,10 +23,12 @@ describe('ExportSubmissions.vue', () => {
   setActivePinia(pinia);
   const authStore = useAuthStore(pinia);
   const formStore = useFormStore(pinia);
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     authStore.$reset();
     formStore.$reset();
+    appStore.$reset();
   });
 
   it('renders', () => {

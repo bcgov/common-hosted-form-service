@@ -8,6 +8,7 @@ import { rbacService } from '~/services';
 import getRouter from '~/router';
 import ProactiveHelpPreviewDialog from '~/components/infolinks/ProactiveHelpPreviewDialog.vue';
 import { useFormStore } from '~/store/form';
+import { useAppStore } from '~/store/app';
 
 describe('ProactiveHelpPreviewDialog.vue', () => {
   const getSubmissionUsersSpy = vi.spyOn(rbacService, 'getSubmissionUsers');
@@ -19,10 +20,12 @@ describe('ProactiveHelpPreviewDialog.vue', () => {
 
   setActivePinia(pinia);
   const formStore = useFormStore(pinia);
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     getSubmissionUsersSpy.mockReset();
     formStore.$reset();
+    appStore.$reset();
   });
 
   afterAll(() => {

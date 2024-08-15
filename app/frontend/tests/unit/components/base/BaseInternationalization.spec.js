@@ -4,14 +4,17 @@ import { beforeEach, describe, it } from 'vitest';
 
 import BaseInternationalization from '~/components/base/BaseInternationalization.vue';
 import { useFormStore } from '~/store/form';
+import { useAppStore } from '~/store/app';
 
 describe('BaseInternationalization.vue', () => {
   const pinia = createPinia();
   setActivePinia(pinia);
   const formStore = useFormStore(pinia);
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     formStore.$reset();
+    appStore.$reset();
 
     formStore.isRTL = false;
   });
