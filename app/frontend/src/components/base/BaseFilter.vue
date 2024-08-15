@@ -62,7 +62,7 @@ const inputFilter = ref('');
 const inputFilterPlaceholder =
   properties.inputFilterPlaceholder || t('trans.baseFilter.exampleText2');
 const inputSaveButtonText =
-  properties.inputFilterPlaceholder || t('trans.baseFilter.filter');
+  properties.inputSaveButtonText || t('trans.baseFilter.filter');
 const selectedData = ref([]);
 
 const { isRTL } = storeToRefs(useFormStore());

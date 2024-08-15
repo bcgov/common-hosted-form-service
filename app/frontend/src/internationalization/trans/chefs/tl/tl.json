@@ -100,6 +100,7 @@
     "referenceGuideB": "gabay sa gumagamit",
     "referenceGuideC": "para sa karagdagang detalye",
     "specificTeamMembers": "Mga Partikular na Miyembro ng Koponan",
+    "teamMemberTooltip": "Idagdag ang mga miyembro ng team mula sa Mga Setting ng Pamamahala ng Team matapos likhain ang form na ito.",
     "formFunctionality": "Pag-andar ng Form",
     "formSubmissinScheduleMsg": "Ang Iskedyul ng Pagsusumite ng Form ay magiging available sa Mga Setting ng Form pagkatapos mailathala ang form.",
     "formSubmissionsSchedule": "Iskedyul ng Pagsusumite ng Form",
@@ -829,7 +830,8 @@
     "errorSavingFile": "Error sa pag-save ng mga file. Filename: {fileName}. Error: {error}",
     "submittingDraftErrMsg": "Nagkaroon ng error habang nagse-save ng draft",
     "submittingDraftConsErrMsg": "Error sa pag-save ng draft. SubmissionId: {submissionId}. Error: {error}",
-    "formDraftAccessErrMsg": "Ang hiniling na pagsusumite ay naisumite na, nagre-redirect sa View page"
+    "formDraftAccessErrMsg": "Ang hiniling na pagsusumite ay naisumite na, nagre-redirect sa View page",
+    "formUnauthorizedMessage": "Hindi ka awtorisadong tingnan ang form na ito, mangyaring makipag-ugnayan sa may-ari ng form para sa access."
   },
   "bCGovFooter": {
     "home": "Bahay",

@@ -262,7 +262,7 @@ describe('form actions', () => {
     });
 
     it('restoreMultiSubmissions should dispatch to notifications/addNotification', async () => {
-      formService.restoreMutipleSubmissions.mockRejectedValue('');
+      formService.restoreMultipleSubmissions.mockRejectedValue('');
       await mockStore.restoreMultiSubmissions(['sId']);
 
       expect(addNotificationSpy).toHaveBeenCalledTimes(1);

@@ -100,6 +100,7 @@
     "referenceGuideB": "راهنمای کاربر",
     "referenceGuideC": "برای جزئیات بیشتر",
     "specificTeamMembers": "اعضای تیم خاص",
+    "teamMemberTooltip": "پس از ایجاد این فرم، اعضای تیم را از تنظیمات مدیریت تیم اضافه کنید.",
     "formFunctionality": "عملکرد فرم",
     "formSubmissinScheduleMsg": "پس از انتشار فرم، برنامه ارسال فرم در تنظیمات فرم در دسترس خواهد بود.",
     "formSubmissionsSchedule": "جدول ارسال فرم ها",
@@ -829,7 +830,8 @@
     "errorSavingFile": "خطا در ذخیره فایل ها. نام فایل: {fileName}. خطا: {error}",
     "submittingDraftErrMsg": "هنگام ذخیره پیش نویس خطایی روی داد",
     "submittingDraftConsErrMsg": "خطا در ذخیره پیش نویس. SubmissionId: {submissionId}. خطا: {error}",
-    "formDraftAccessErrMsg": "ارسال درخواستی قبلا ارسال شده است، به صفحه مشاهده هدایت می شود"
+    "formDraftAccessErrMsg": "ارسال درخواستی قبلا ارسال شده است، به صفحه مشاهده هدایت می شود",
+    "formUnauthorizedMessage": "شما مجاز به مشاهده این فرم نیستید، لطفاً برای دسترسی با مالک فرم تماس بگیرید."
   },
   "bCGovFooter": {
     "home": "صفحه اصلی",

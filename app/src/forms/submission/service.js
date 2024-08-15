@@ -197,7 +197,7 @@ const service = {
     }
   },
 
-  deleteMutipleSubmissions: async (submissionIds, currentUser) => {
+  deleteMultipleSubmissions: async (submissionIds, currentUser) => {
     let trx;
     try {
       trx = await FormSubmission.startTransaction();
@@ -210,7 +210,7 @@ const service = {
     }
   },
 
-  restoreMutipleSubmissions: async (submissionIds, currentUser) => {
+  restoreMultipleSubmissions: async (submissionIds, currentUser) => {
     let trx;
     try {
       trx = await FormSubmission.startTransaction();

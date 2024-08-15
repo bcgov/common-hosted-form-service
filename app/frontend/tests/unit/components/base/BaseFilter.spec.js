@@ -69,6 +69,7 @@ describe('BaseFilter.vue', () => {
           },
         ],
         inputFilterPlaceholder: 'Filter Something',
+        inputSaveButtonText: 'Save Text',
       },
       global: {
         plugins: [pinia],
@@ -100,6 +101,7 @@ describe('BaseFilter.vue', () => {
     expect(wrapper.html()).toContain('TEST HEADER');
     expect(wrapper.html()).toContain('TEST NAME');
     expect(wrapper.html()).toContain('Filter Something');
+    expect(wrapper.html()).toContain('Save Text');
 
     expect(wrapper.vm.RTL).toBe('mr-3');
   });

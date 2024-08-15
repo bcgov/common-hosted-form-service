@@ -115,6 +115,7 @@ export default {
       submissionRecord: {},
       version: 0,
       versionIdToSubmitTo: this.versionId,
+      isAuthorized: true,
     };
   },
   computed: {
@@ -129,6 +130,9 @@ export default {
 
     formScheduleExpireMessage() {
       return this.$t('trans.formViewer.formScheduleExpireMessage');
+    },
+    formUnauthorizedMessage() {
+      return this.$t('trans.formViewer.formUnauthorizedMessage');
     },
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
@@ -190,7 +194,6 @@ export default {
       this.showModal = true;
       await this.getFormSchema();
     }
-
     window.addEventListener('beforeunload', this.beforeWindowUnload);
 
     this.reRenderFormIo += 1;
@@ -403,19 +406,22 @@ export default {
         }
       } catch (error) {
         if (this.authenticated) {
-          this.isFormScheduleExpired = true;
-          this.isLateSubmissionAllowed = false;
-          this.formScheduleExpireMessage = error.message;
-          this.addNotification({
-            text: this.$t('trans.formViewer.fecthingFormErrMsg'),
-            consoleError: this.$t(
-              'trans.formViewer.fecthingFormConsoleErrMsg',
-              {
-                versionId: this.versionId,
-                error: error,
-              }
-            ),
-          });
+          // if 401 error, the user is not authorized to view the form
+          if (error.response && error.response.status === 401) {
+            this.isAuthorized = false;
+          } else {
+            // throw a generic error message
+            this.addNotification({
+              text: this.$t('trans.formViewer.fecthingFormErrMsg'),
+              consoleError: this.$t(
+                'trans.formViewer.fecthingFormConsoleErrMsg',
+                {
+                  versionId: this.versionId,
+                  error: error,
+                }
+              ),
+            });
+          }
         }
       }
     },
@@ -1144,7 +1150,18 @@ export default {
 <template>
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
     <v-container fluid>
-      <div v-if="isFormScheduleExpired">
+      <div v-if="!isAuthorized">
+        <v-alert
+          :text="formUnauthorizedMessage"
+          prominent
+          type="error"
+          :class="{ 'dir-rtl': isRTL }"
+          :lang="locale"
+        >
+        </v-alert>
+      </div>
+
+      <div v-else-if="isFormScheduleExpired">
         <v-alert
           :text="
             isLateSubmissionAllowed
@@ -1159,7 +1176,7 @@ export default {
         </v-alert>
 
         <div v-if="isLateSubmissionAllowed">
-          <v-col cols="3" md="2">
+          <v-col cols="12" md="6">
             <v-btn
               color="primary"
               :class="{ 'dir-rtl': isRTL }"

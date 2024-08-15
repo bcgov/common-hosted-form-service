@@ -491,7 +491,7 @@ describe('Form Service', () => {
         '0715b1ac-4069-4778-a868-b4f71fdea18d',
       ];
 
-      const result = await formService.restoreMutipleSubmissions(
+      const result = await formService.restoreMultipleSubmissions(
         submissionId,
         formId,
         { submissionIds }
