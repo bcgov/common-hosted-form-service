@@ -52,16 +52,6 @@ validateParameter.validateFileId = jest.fn((_req, _res, next) => {
   next();
 });
 
-controller.create = jest.fn((_req, _res, next) => {
-  next();
-});
-controller.delete = jest.fn((_req, _res, next) => {
-  next();
-});
-controller.read = jest.fn((_req, _res, next) => {
-  next();
-});
-
 //
 // Create the router and a simple Express server.
 //
@@ -79,6 +69,10 @@ describe(`${basePath}`, () => {
   const path = `${basePath}`;
 
   it('should have correct middleware for POST', async () => {
+    controller.create = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.post(path);
 
     expect(validateParameter.validateFileId).toBeCalledTimes(0);
@@ -98,6 +92,10 @@ describe(`${basePath}/:id`, () => {
   const path = `${basePath}/${fileId}`;
 
   it('should have correct middleware for DELETE', async () => {
+    controller.delete = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.delete(path);
 
     expect(validateParameter.validateFileId).toBeCalledTimes(1);
@@ -112,6 +110,10 @@ describe(`${basePath}/:id`, () => {
   });
 
   it('should have correct middleware for GET', async () => {
+    controller.read = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.get(path);
 
     expect(validateParameter.validateFileId).toBeCalledTimes(1);
