@@ -10,10 +10,10 @@ const controller = require('../../../../src/forms/bcgeoaddress/controller');
 //
 
 controller.advanceSearchBCGeoAddress = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 controller.searchBCGeoAddress = jest.fn((_req, res) => {
-  res.status(200).json({});
+  res.sendStatus(200);
 });
 
 //
