@@ -64,6 +64,13 @@ The testing strategy for the backend unit tests can be broken down into the diff
 - test the interface, not the implementation
 - test the unit under test, not its dependencies
 
+### Middleware Testing
+
+The tests for the middleware files should:
+
+- mock all services calls used by the middleware, including both exception and minimal valid results
+- test all response codes produced by the middleware
+
 ### Route Testing
 
 The tests for the `route.js` files should:
