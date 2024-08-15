@@ -347,6 +347,7 @@ defineExpose({
   formSubmitters,
   selectAllSubmitters,
   updateStatus,
+  updateStatusAndAddNote,
 });
 </script>
 
