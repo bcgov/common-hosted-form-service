@@ -599,7 +599,7 @@ defineExpose({
             AVAILABLE_DATES[1]
           "
           :lang="locale"
-          >{{ $t('trans.formSettings.scheduleRepetition') }}
+          >{{ ' ' + $t('trans.formSettings.scheduleRepetition') }}
           <b>
             {{ form.schedule.repeatSubmission.everyTerm }}
             {{ form.schedule.repeatSubmission.everyIntervalType }}
