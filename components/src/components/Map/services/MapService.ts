@@ -60,7 +60,7 @@ class MapService {
       map.on(L.Draw.Event.DELETED, (e) => {
         options.onDrawnItemsChange(drawnItems.getLayers());
       });
-      map.on(L.Draw.Event.EDITED, (e) => {
+      map.on(L.Draw.Event.EDITSTOP, (e) => {
         options.onDrawnItemsChange(drawnItems.getLayers());
       });
 
