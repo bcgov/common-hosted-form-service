@@ -6,6 +6,8 @@ const { encryptionService, ENCRYPTION_ALGORITHMS } = require('../../../../src/co
 const service = require('../../../../src/forms/proxy/service');
 const { ExternalAPI } = require('../../../../src/forms/common/models');
 
+jest.mock('../../../../src/forms/common/models/views/submissionMetadata', () => MockModel);
+
 const goodPayload = {
   formId: '123',
   submissionId: null,
@@ -60,6 +62,41 @@ afterEach(() => {
 });
 
 describe('Proxy Service', () => {
+  describe('_getIds', () => {
+    beforeEach(() => {
+      MockModel.mockReset();
+    });
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+    it('should return all ids', async () => {
+      const payload = { formId: null, versionId: null, submissionId: '1' };
+      const meta = { formId: '2', formVersionId: '3', submissionId: '1' }; // meta query result
+      const ids = { formId: '2', versionId: '3', submissionId: '1' }; // _getIds result
+      MockModel.mockResolvedValue(meta);
+      const result = await service._getIds(payload);
+      await expect(result).toStrictEqual(ids);
+      expect(MockModel.query).toBeCalledTimes(1); // submission id means we query
+      expect(MockModel.first).toBeCalledTimes(1);
+    });
+    it('should return form and version id', async () => {
+      const payload = { formId: '2', versionId: '3', submissionId: null };
+      const ids = { formId: '2', versionId: '3', submissionId: null }; // _getIds result
+      const result = await service._getIds(payload);
+      await expect(result).toStrictEqual(ids);
+      expect(MockModel.query).toBeCalledTimes(0); // no submission id, no query
+    });
+    it('should return form and version id when submission id not found', async () => {
+      const payload = { formId: null, versionId: null, submissionId: '1' };
+      const meta = null; // meta query result
+      const ids = { formId: null, versionId: null, submissionId: '1' }; // _getIds result
+      MockModel.mockResolvedValue(meta);
+      const result = await service._getIds(payload);
+      await expect(result).toStrictEqual(ids);
+      expect(MockModel.query).toBeCalledTimes(1); // submission id means we query
+      expect(MockModel.first).toBeCalledTimes(1);
+    });
+  });
   describe('generateProxyHeaders', () => {
     it('should throw error with no payload', async () => {
       await expect(service.generateProxyHeaders(undefined, goodCurrentUser, token)).rejects.toThrow();
@@ -107,7 +144,9 @@ describe('Proxy Service', () => {
     it('should throw error with no headers', async () => {
       await expect(service.readProxyHeaders(undefined)).rejects.toThrow();
     });
-
+    it('should throw error with bad headers', async () => {
+      await expect(service.readProxyHeaders('string-not-object')).rejects.toThrow();
+    });
     it('should throw error with wrong header name', async () => {
       await expect(service.readProxyHeaders({ 'X-CHEFS-WRONG_HEADER_NAME': 'headers' })).rejects.toThrow();
     });
@@ -151,6 +190,12 @@ describe('Proxy Service', () => {
     it('should throw error with no headers', async () => {
       // set the external api name...
       const headers = undefined;
+      await expect(service.getExternalAPI(headers, goodProxyHeaderInfo)).rejects.toThrow();
+    });
+
+    it('should throw error with bad header', async () => {
+      // set the external api name...
+      const headers = 'string-not-object';
       await expect(service.getExternalAPI(headers, goodProxyHeaderInfo)).rejects.toThrow();
     });
 

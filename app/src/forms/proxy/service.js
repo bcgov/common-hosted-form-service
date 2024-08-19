@@ -28,7 +28,7 @@ const service = {
     if (submissionId) {
       const meta = await SubmissionMetadata.query().where('submissionId', submissionId).first();
       if (meta) {
-        formId = meta.submissionId;
+        formId = meta.formId;
         versionId = meta.formVersionId;
         submissionId = meta.submissionId;
       }
