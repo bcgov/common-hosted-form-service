@@ -567,9 +567,7 @@ defineExpose({
                   AVAILABLE_DATES[0]['closeDate'] &&
                   AVAILABLE_DATES[0]['closeDate'].split(' ')[0]
                 : ''
-            }}
-
-            {{
+            }}{{
               form.schedule.scheduleType === SCHEDULE_TYPE.CLOSINGDATE
                 ? form.schedule.closeSubmissionDateTime
                 : ''
@@ -602,8 +600,10 @@ defineExpose({
           "
           :lang="locale"
           >{{ $t('trans.formSettings.scheduleRepetition') }}
-          <b>{{ form.schedule.repeatSubmission.everyTerm }} </b>
-          <b>{{ form.schedule.repeatSubmission.everyIntervalType }}</b>
+          <b>
+            {{ form.schedule.repeatSubmission.everyTerm }}
+            {{ form.schedule.repeatSubmission.everyIntervalType }}
+          </b>
           {{ $t('trans.formSettings.until') }}
           <b>{{ form.schedule.repeatSubmission.repeatUntil }}</b
           >.
