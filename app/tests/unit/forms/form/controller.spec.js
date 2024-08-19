@@ -1,5 +1,5 @@
 const { getMockReq, getMockRes } = require('@jest-mock/express');
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 
 const controller = require('../../../../src/forms/form/controller');
 const exportService = require('../../../../src/forms/form/exportService');
@@ -11,15 +11,15 @@ const currentUser = {
 
 const documentTemplate = {
   filename: 'cdogs_template.txt',
-  formId: uuidv4(),
-  id: uuidv4(),
+  formId: uuid.v4(),
+  id: uuid.v4(),
   template: 'My Template',
 };
 
 const error = new Error('error');
 
 // Various strings that should produce 400 errors when used as UUIDs.
-const testCases400 = [[''], ['undefined'], ['{{oops}}'], [uuidv4() + '.']];
+const testCases400 = [[''], ['undefined'], ['{{oops}}'], [uuid.v4() + '.']];
 
 //
 // Mock out all happy-path service calls.
@@ -152,7 +152,7 @@ describe('documentTemplateDelete', () => {
 
       expect(service.documentTemplateDelete).toBeCalledWith(validRequest.params.documentTemplateId, validRequest.currentUser.usernameIdp);
       expect(res.json).not.toBeCalled();
-      expect(res.status).toBeCalledWith(204);
+      expect(res.sendStatus).toBeCalledWith(204);
       expect(next).not.toBeCalled();
     });
   });
@@ -275,7 +275,7 @@ describe('form controller', () => {
 });
 
 describe('listFormSubmissions', () => {
-  const uuid = uuidv4();
+  const formId = uuid.v4();
   const mockResponse = {
     results: [
       {
@@ -287,7 +287,7 @@ describe('listFormSubmissions', () => {
   it('should 200 if the formId is valid', async () => {
     // Arrange
     service.listFormSubmissions = jest.fn().mockReturnValue(mockResponse);
-    const req = getMockReq({ params: { formId: uuid } });
+    const req = getMockReq({ params: { formId: formId } });
     const { res, next } = getMockRes();
 
     // Act
@@ -313,9 +313,9 @@ describe('listFormSubmissions', () => {
     expect(res.json).toBeCalledWith({ detail: 'Bad formId "undefined".' });
   });
 
-  test.each(testCases400)('should 400 if the formId is "%s"', async (formId) => {
+  test.each(testCases400)('should 400 if the formId is "%s"', async (eachFormId) => {
     // Arrange
-    const req = getMockReq({ params: { formId: formId } });
+    const req = getMockReq({ params: { formId: eachFormId } });
     const { res, next } = getMockRes();
 
     // Act
@@ -324,7 +324,7 @@ describe('listFormSubmissions', () => {
     // Assert
     expect(service.listFormSubmissions).toBeCalledTimes(0);
     expect(res.status).toBeCalledWith(400);
-    expect(res.json).toBeCalledWith({ detail: `Bad formId "${formId}".` });
+    expect(res.json).toBeCalledWith({ detail: `Bad formId "${eachFormId}".` });
   });
 
   it('should forward service errors for handling elsewhere', async () => {
@@ -333,7 +333,7 @@ describe('listFormSubmissions', () => {
     service.listFormSubmissions = jest.fn(() => {
       throw error;
     });
-    const req = getMockReq({ params: { formId: uuid } });
+    const req = getMockReq({ params: { formId: formId } });
     const { res, next } = getMockRes();
 
     // Act
@@ -346,17 +346,17 @@ describe('listFormSubmissions', () => {
 });
 
 describe('readFormOptions', () => {
-  const uuid = uuidv4();
+  const formId = uuid.v4();
   const mockReadResponse = {
     form: {
-      id: uuid,
+      id: formId,
     },
   };
 
   it('should 200 if the formId is valid', async () => {
     // Arrange
     service.readFormOptions = jest.fn().mockReturnValue(mockReadResponse);
-    const req = getMockReq({ params: { formId: uuid } });
+    const req = getMockReq({ params: { formId: formId } });
     const { res, next } = getMockRes();
 
     // Act
@@ -382,9 +382,9 @@ describe('readFormOptions', () => {
     expect(res.json).toBeCalledWith({ detail: 'Bad formId "undefined".' });
   });
 
-  test.each(testCases400)('should 400 if the formId is "%s"', async (formId) => {
+  test.each(testCases400)('should 400 if the formId is "%s"', async (eachFormId) => {
     // Arrange
-    const req = getMockReq({ params: { formId: formId } });
+    const req = getMockReq({ params: { formId: eachFormId } });
     const { res, next } = getMockRes();
 
     // Act
@@ -393,7 +393,7 @@ describe('readFormOptions', () => {
     // Assert
     expect(service.readFormOptions).toBeCalledTimes(0);
     expect(res.status).toBeCalledWith(400);
-    expect(res.json).toBeCalledWith({ detail: `Bad formId "${formId}".` });
+    expect(res.json).toBeCalledWith({ detail: `Bad formId "${eachFormId}".` });
   });
 
   it('should forward service errors for handling elsewhere', async () => {
@@ -402,7 +402,7 @@ describe('readFormOptions', () => {
     service.readFormOptions = jest.fn(() => {
       throw error;
     });
-    const req = getMockReq({ params: { formId: uuid } });
+    const req = getMockReq({ params: { formId: formId } });
     const { res, next } = getMockRes();
 
     // Act

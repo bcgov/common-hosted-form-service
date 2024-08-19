@@ -1,5 +1,5 @@
 const { MockModel, MockTransaction } = require('../../../common/dbHelper');
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 
 jest.mock('../../../../src/forms/common/models/tables/formSubmissionStatus', () => MockModel);
 jest.mock('../../../../src/forms/common/models/tables/formSubmission', () => MockModel);
@@ -52,10 +52,10 @@ describe('createStatus', () => {
   });
 });
 
-describe('deleteMutipleSubmissions', () => {
+describe('deleteMultipleSubmissions', () => {
   it('should delete the selected submissions', async () => {
-    let submissionId1 = uuidv4();
-    let submissionId2 = uuidv4();
+    let submissionId1 = uuid.v4();
+    let submissionId2 = uuid.v4();
     const submissionIds = [submissionId1, submissionId2];
 
     const returnValue = {
@@ -70,7 +70,7 @@ describe('deleteMutipleSubmissions', () => {
     const currentUser = { usernameIdp: 'TEST@idir' };
     service.readSubmissionData = jest.fn().mockReturnValue(returnValue);
     const spy = jest.spyOn(service, 'readSubmissionData');
-    const res = await service.deleteMutipleSubmissions(submissionIds, currentUser);
+    const res = await service.deleteMultipleSubmissions(submissionIds, currentUser);
     expect(MockModel.startTransaction).toBeCalledTimes(1);
     expect(MockModel.query).toBeCalledTimes(1);
     expect(MockModel.query).toBeCalledWith(expect.anything());
@@ -83,10 +83,10 @@ describe('deleteMutipleSubmissions', () => {
   });
 });
 
-describe('restoreMutipleSubmissions', () => {
+describe('restoreMultipleSubmissions', () => {
   it('should delete the selected submissions', async () => {
-    let submissionId1 = uuidv4();
-    let submissionId2 = uuidv4();
+    let submissionId1 = uuid.v4();
+    let submissionId2 = uuid.v4();
     const submissionIds = [submissionId1, submissionId2];
 
     const returnValue = {
@@ -101,7 +101,7 @@ describe('restoreMutipleSubmissions', () => {
     const currentUser = { usernameIdp: 'TEST@idir' };
     service.readSubmissionData = jest.fn().mockReturnValue(returnValue);
     const spy = jest.spyOn(service, 'readSubmissionData');
-    const res = await service.restoreMutipleSubmissions(submissionIds, currentUser);
+    const res = await service.restoreMultipleSubmissions(submissionIds, currentUser);
     expect(MockModel.startTransaction).toBeCalledTimes(1);
     expect(MockModel.query).toBeCalledTimes(1);
     expect(MockModel.query).toBeCalledWith(expect.anything());

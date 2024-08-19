@@ -1,5 +1,5 @@
 const { getMockReq, getMockRes } = require('@jest-mock/express');
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 
 const { ENCRYPTION_ALGORITHMS } = require('../../../../../src/components/encryptionService');
 
@@ -96,9 +96,9 @@ describe('createExternalAPI', () => {
     });
   });
 
-  const formId = uuidv4();
+  const formId = uuid.v4();
   const externalApi = {
-    id: uuidv4(),
+    id: uuid.v4(),
     formId: formId,
     name: 'test_api',
     endpointUrl: 'http://external.api/',
@@ -192,8 +192,8 @@ describe('updateExternalAPI', () => {
     });
   });
 
-  const formId = uuidv4();
-  const externalAPIId = uuidv4();
+  const formId = uuid.v4();
+  const externalAPIId = uuid.v4();
   const externalApi = {
     id: externalAPIId,
     formId: formId,
@@ -289,8 +289,8 @@ describe('deleteExternalAPI', () => {
     });
   });
 
-  const formId = uuidv4();
-  const externalAPIId = uuidv4();
+  const formId = uuid.v4();
+  const externalAPIId = uuid.v4();
 
   const validRequest = {
     currentUser: currentUser,
@@ -337,7 +337,8 @@ describe('deleteExternalAPI', () => {
       await controller.deleteExternalAPI(req, res, next);
 
       expect(service.deleteExternalAPI).toBeCalledWith(validRequest.params.formId, validRequest.params.externalAPIId);
-      expect(res.status).toBeCalledWith(204);
+      expect(res.json).not.toBeCalled();
+      expect(res.sendStatus).toBeCalledWith(204);
       expect(next).not.toBeCalled();
     });
   });

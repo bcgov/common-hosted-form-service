@@ -36,19 +36,19 @@ module.exports = {
       next(error);
     }
   },
-  deleteMutipleSubmissions: async (req, res, next) => {
+  deleteMultipleSubmissions: async (req, res, next) => {
     try {
       let submissionIds = req.body && req.body.submissionIds ? req.body.submissionIds : [];
-      const response = await service.deleteMutipleSubmissions(submissionIds, req.currentUser);
+      const response = await service.deleteMultipleSubmissions(submissionIds, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);
     }
   },
-  restoreMutipleSubmissions: async (req, res, next) => {
+  restoreMultipleSubmissions: async (req, res, next) => {
     try {
       let submissionIds = req.body && req.body.submissionIds ? req.body.submissionIds : [];
-      const response = await service.restoreMutipleSubmissions(submissionIds, req.currentUser);
+      const response = await service.restoreMultipleSubmissions(submissionIds, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);
