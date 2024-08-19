@@ -54,6 +54,7 @@ describe(`${basePath}`, () => {
     await appRequest.get(path);
 
     expect(controller.list).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
     expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
@@ -71,6 +72,7 @@ describe(`${basePath}/:userId`, () => {
     await appRequest.get(path);
 
     expect(controller.read).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
     expect(validateParameter.validateUserId).toBeCalledTimes(1);
   });
@@ -87,6 +89,7 @@ describe(`${basePath}/labels`, () => {
     await appRequest.get(path);
 
     expect(controller.readUserLabels).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
     expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
@@ -99,6 +102,7 @@ describe(`${basePath}/labels`, () => {
     await appRequest.put(path);
 
     expect(controller.updateUserLabels).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
     expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
@@ -115,6 +119,7 @@ describe(`${basePath}/preferences`, () => {
     await appRequest.delete(path);
 
     expect(controller.deleteUserPreferences).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
     expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
@@ -127,6 +132,7 @@ describe(`${basePath}/preferences`, () => {
     await appRequest.get(path);
 
     expect(controller.readUserPreferences).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
     expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
@@ -139,6 +145,7 @@ describe(`${basePath}/preferences`, () => {
     await appRequest.put(path);
 
     expect(controller.updateUserPreferences).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
     expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
@@ -156,6 +163,7 @@ describe(`${basePath}/preferences/forms/:formId`, () => {
     await appRequest.delete(path);
 
     expect(controller.deleteUserFormPreferences).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
@@ -168,6 +176,7 @@ describe(`${basePath}/preferences/forms/:formId`, () => {
     await appRequest.get(path);
 
     expect(controller.readUserFormPreferences).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
@@ -180,6 +189,7 @@ describe(`${basePath}/preferences/forms/:formId`, () => {
     await appRequest.put(path);
 
     expect(controller.updateUserFormPreferences).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });

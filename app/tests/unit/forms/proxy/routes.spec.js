@@ -6,15 +6,15 @@ jest.mock('cors', () =>
   })
 );
 
-const request = require('supertest');
 const Problem = require('api-problem');
+const request = require('supertest');
 
 const { expressHelper } = require('../../../common/helper');
 
 const jwtService = require('../../../../src/components/jwtService');
 const apiAccess = require('../../../../src/forms/auth/middleware/apiAccess');
-const rateLimiter = require('../../../../src/forms/common/middleware/rateLimiter');
 const userAccess = require('../../../../src/forms/auth/middleware/userAccess');
+const rateLimiter = require('../../../../src/forms/common/middleware/rateLimiter');
 
 //
 // Mock out all the middleware - we're testing that the routes are set up
@@ -49,7 +49,6 @@ const service = require('../../../../src/forms/proxy/service');
 //
 
 const router = require('../../../../src/forms/proxy/routes');
-
 const basePath = '/proxy';
 const app = expressHelper(basePath, router);
 const appRequest = request(app);
