@@ -1,6 +1,6 @@
 # Unit Tests
 
-The backend unit tests can be run in VSCode by going to `Terminal` -> `Run Task...` -> `Unit Tests - API`.
+The backend unit tests are run in VSCode by going to `Terminal` -> `Run Task...` -> `Unit Tests - API`. Once the tests complete, the backend code coverage report is in `/app/coverage/lcov-report/index.html`.
 
 ## Running on the Command Line
 
@@ -84,5 +84,6 @@ The tests for the `route.js` files should:
 
 Note:
 
-- Some middleware is called when the `routes.js` is loaded, not when the route is called. For example, the parameters to `userAccess.hasFormPermissions` cannot be tested by calling the route using it. Even if we reload the `routes.js` for each route test, it would be hard to tell which call to `hasFormPermissions` was the call for the route under test
+- The order that middleware is called is very important, but we are not testing this. Perhaps integration tests are the best solution for this
+- Some middleware takes parameters and is created when a route is created. This means that, for example, the parameters to `jwtService.protect` or `userAccess.hasFormPermissions` cannot be tested by calling the route using it. Even if we reload the `routes.js` for each route test, it would be hard to tell which call to create the middleware was the call for the route under test
 - Maybe we should refactor and create a set of standard middleware mocks that live outside the `routes.spec.js` files
