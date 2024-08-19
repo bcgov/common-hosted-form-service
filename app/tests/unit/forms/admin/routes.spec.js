@@ -6,6 +6,7 @@ const { expressHelper } = require('../../../common/helper');
 const jwtService = require('../../../../src/components/jwtService');
 const userAccess = require('../../../../src/forms/auth/middleware/userAccess');
 const controller = require('../../../../src/forms/admin/controller');
+const validateParameter = require('../../../../src/forms/common/middleware/validateParameter');
 const userController = require('../../../../src/forms/user/controller');
 
 //
@@ -21,6 +22,22 @@ jwtService.protect = jest.fn(() => {
 });
 
 userAccess.currentUser = jest.fn((_req, _res, next) => {
+  next();
+});
+
+validateParameter.validateComponentId = jest.fn((_req, _res, next) => {
+  next();
+});
+validateParameter.validateExternalAPIId = jest.fn((_req, _res, next) => {
+  next();
+});
+validateParameter.validateFormId = jest.fn((_req, _res, next) => {
+  next();
+});
+validateParameter.validateFormVersionId = jest.fn((_req, _res, next) => {
+  next();
+});
+validateParameter.validateUserId = jest.fn((_req, _res, next) => {
   next();
 });
 
@@ -69,6 +86,11 @@ describe(`${basePath}/externalAPIs`, () => {
     expect(controller.getExternalAPIs).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -86,6 +108,11 @@ describe(`${basePath}/externalAPIs/:externalApiId`, () => {
     expect(controller.updateExternalAPI).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -102,6 +129,11 @@ describe(`${basePath}/externalAPIs/statusCodes`, () => {
     expect(controller.getExternalAPIStatusCodes).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -119,6 +151,11 @@ describe(`${basePath}/formcomponents/proactivehelp/:publishStatus/:componentId`,
     expect(controller.updateFormComponentsProactiveHelp).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(1);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -136,6 +173,11 @@ describe(`${basePath}/formcomponents/proactivehelp/imageUrl/:componentId`, () =>
     expect(controller.getFCProactiveHelpImageUrl).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(1);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -152,6 +194,11 @@ describe(`${basePath}/formcomponents/proactivehelp/list`, () => {
     expect(controller.listFormComponentsProactiveHelp).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -168,6 +215,11 @@ describe(`${basePath}/formcomponents/proactivehelp/object`, () => {
     expect(controller.createFormComponentsProactiveHelp).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -184,6 +236,11 @@ describe(`${basePath}/forms`, () => {
     expect(controller.listForms).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -201,6 +258,11 @@ describe(`${basePath}/forms/:formId`, () => {
     expect(controller.readForm).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -218,6 +280,11 @@ describe(`${basePath}/forms/:formId/addUser`, () => {
     expect(controller.setFormUserRoles).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -235,6 +302,11 @@ describe(`${basePath}/forms/:formId/apiKey`, () => {
     expect(controller.deleteApiKey).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 
   it('should have correct middleware for GET', async () => {
@@ -247,6 +319,11 @@ describe(`${basePath}/forms/:formId/apiKey`, () => {
     expect(controller.readApiDetails).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -264,6 +341,11 @@ describe(`${basePath}/forms/:formId/formUsers`, () => {
     expect(controller.getFormUserRoles).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -281,6 +363,11 @@ describe(`${basePath}/forms/:formId/restore`, () => {
     expect(controller.restoreForm).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -299,6 +386,11 @@ describe(`${basePath}/forms/:formId/versions/:formVersionId`, () => {
     expect(controller.readVersion).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(1);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -315,6 +407,11 @@ describe(`${basePath}/users`, () => {
     expect(controller.getUsers).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -332,5 +429,10 @@ describe(`${basePath}/users/:userId`, () => {
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(userController.read).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(1);
   });
 });
