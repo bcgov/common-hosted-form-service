@@ -1,4 +1,5 @@
 const routes = require('express').Router();
+
 const controller = require('./controller');
 
 routes.use('/reminder', (req, res, next) => {

@@ -1,7 +1,7 @@
 const routes = require('express').Router();
 
-const controller = require('../submission/controller');
 const { currentUser } = require('../auth/middleware/userAccess');
+const controller = require('../submission/controller');
 
 routes.use(currentUser);
 
