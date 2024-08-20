@@ -1,5 +1,5 @@
-const request = require('supertest');
 const Problem = require('api-problem');
+const request = require('supertest');
 const uuid = require('uuid');
 
 const { expressHelper } = require('../../../common/helper');
