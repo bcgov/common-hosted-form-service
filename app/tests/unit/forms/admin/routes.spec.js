@@ -13,9 +13,6 @@ const userController = require('../../../../src/forms/user/controller');
 // correctly, not the functionality of the middleware.
 //
 
-// TODO: Add a test the confirms that jwtService.protect is called with "admin"
-// when the file is loaded.
-
 const mockJwtServiceProtect = jest.fn((_req, _res, next) => {
   next();
 });
@@ -38,6 +35,25 @@ const appRequest = request(app);
 
 afterEach(() => {
   jest.clearAllMocks();
+});
+
+// jwtService.protect is tricky to test. This test is fragile as the file could
+// change and have routes that need admin and others that don't. This test only
+// works when we use(protect) at the file level, not individually in the routes.
+// However, this does test that we don't accidentally turn off the protection.
+describe('jwtService.protect', () => {
+  it('should be called with admin', () => {
+    jest.resetModules();
+    const jwtService = require('../../../../src/components/jwtService');
+    jwtService.protect = jest.fn(() => {
+      return jest.fn((_req, _res, next) => {
+        next();
+      });
+    });
+    require('../../../../src/forms/admin/routes');
+
+    expect(jwtService.protect).toBeCalledWith('admin');
+  });
 });
 
 describe(`${basePath}/externalAPIs`, () => {
