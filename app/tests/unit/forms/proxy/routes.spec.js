@@ -11,7 +11,6 @@ const request = require('supertest');
 
 const { expressHelper } = require('../../../common/helper');
 
-const jwtService = require('../../../../src/components/jwtService');
 const apiAccess = require('../../../../src/forms/auth/middleware/apiAccess');
 const userAccess = require('../../../../src/forms/auth/middleware/userAccess');
 const rateLimiter = require('../../../../src/forms/common/middleware/rateLimiter');
@@ -27,12 +26,6 @@ apiAccess.mockImplementation(
     next();
   })
 );
-
-jwtService.protect = jest.fn(() => {
-  return jest.fn((_req, _res, next) => {
-    next();
-  });
-});
 
 rateLimiter.apiKeyRateLimiter = jest.fn((_req, _res, next) => {
   next();

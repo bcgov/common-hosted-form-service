@@ -21,6 +21,24 @@ const _validateUuid = (parameter, parameterName) => {
 };
 
 /**
+ * Validates that the :componentId route parameter exists and is a UUID.
+ *
+ * @param {*} _req the Express object representing the HTTP request - unused.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @param {*} componentId the :componentId value from the route.
+ */
+const validateComponentId = async (_req, _res, next, componentId) => {
+  try {
+    _validateUuid(componentId, 'componentId');
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Validates that the :documentTemplateId route parameter exists and is a UUID.
  * This validator requires that either the :formId or :formSubmissionId route
  * parameter also exists.
@@ -211,6 +229,7 @@ const validateUserId = async (_req, _res, next, userId) => {
 };
 
 module.exports = {
+  validateComponentId,
   validateDocumentTemplateId,
   validateExternalAPIId,
   validateFileId,

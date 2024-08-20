@@ -1,16 +1,16 @@
-const request = require('supertest');
 const Problem = require('api-problem');
+const request = require('supertest');
+const uuid = require('uuid');
 
 const { expressHelper } = require('../../../common/helper');
+
+const jwtService = require('../../../../src/components/jwtService');
+const validateParameter = require('../../../../src/forms/common/middleware/validateParameter');
 
 //
 // mock middleware
 //
-const jwtService = require('../../../../src/components/jwtService');
 
-//
-// test assumes that caller has appropriate token, we are not testing middleware here...
-//
 jwtService.protect = jest.fn(() => {
   return jest.fn((_req, _res, next) => {
     next();
@@ -19,6 +19,10 @@ jwtService.protect = jest.fn(() => {
 
 const userAccess = require('../../../../src/forms/auth/middleware/userAccess');
 userAccess.currentUser = jest.fn((_req, _res, next) => {
+  next();
+});
+
+validateParameter.validateFormVersionId = jest.fn((_req, _res, next) => {
   next();
 });
 
@@ -46,7 +50,8 @@ afterEach(() => {
 });
 
 describe(`${basePath}/formcomponents/proactivehelp/imageUrl/:componentId`, () => {
-  const path = `${basePath}/formcomponents/proactivehelp/imageUrl/:componentId`;
+  const componentId = uuid.v4();
+  const path = `${basePath}/formcomponents/proactivehelp/imageUrl/${componentId}`;
 
   describe('GET', () => {
     it('should return 200', async () => {
@@ -176,7 +181,8 @@ describe(`${basePath}/formcomponents/proactivehelp/object`, () => {
 });
 
 describe(`${basePath}/formcomponents/proactivehelp/:publishStatus/:componentId`, () => {
-  const path = `${basePath}/formcomponents/proactivehelp/:publishStatus/:componentId`;
+  const componentId = uuid.v4();
+  const path = `${basePath}/formcomponents/proactivehelp/:publishStatus/${componentId}`;
 
   describe('PUT', () => {
     it('should return 200', async () => {
@@ -266,7 +272,8 @@ describe(`${basePath}/forms`, () => {
 });
 
 describe(`${basePath}/forms/:formId`, () => {
-  const path = `${basePath}/forms/:formId`;
+  const formId = uuid.v4();
+  const path = `${basePath}/forms/${formId}`;
 
   describe('GET', () => {
     it('should return 200', async () => {
@@ -306,7 +313,8 @@ describe(`${basePath}/forms/:formId`, () => {
 });
 
 describe(`${basePath}/forms/:formId/addUser`, () => {
-  const path = `${basePath}/forms/:formId/addUser`;
+  const formId = uuid.v4();
+  const path = `${basePath}/forms/${formId}/addUser`;
 
   describe('PUT', () => {
     it('should return 200', async () => {
@@ -315,7 +323,7 @@ describe(`${basePath}/forms/:formId/addUser`, () => {
 
       const response = await appRequest.put(path).query({ userId: '123' }).send({ userId: '123' });
 
-      expect(rbacService.setFormUsers).toBeCalledWith(':formId', '123', { userId: '123' }, undefined);
+      expect(rbacService.setFormUsers).toBeCalledWith(formId, '123', { userId: '123' }, undefined);
       expect(response.statusCode).toBe(200);
       expect(response.body).toBeTruthy();
     });
@@ -357,7 +365,8 @@ describe(`${basePath}/forms/:formId/addUser`, () => {
 });
 
 describe(`${basePath}/forms/:formId/apiKey`, () => {
-  const path = `${basePath}/forms/:formId/apiKey`;
+  const formId = uuid.v4();
+  const path = `${basePath}/forms/${formId}/apiKey`;
 
   describe('DELETE', () => {
     it('should return 204', async () => {
@@ -433,7 +442,8 @@ describe(`${basePath}/forms/:formId/apiKey`, () => {
 });
 
 describe(`${basePath}/forms/:formId/formUsers`, () => {
-  const path = `${basePath}/forms/:formId/formUsers`;
+  const formId = uuid.v4();
+  const path = `${basePath}/forms/${formId}/formUsers`;
 
   describe('GET', () => {
     it('should return 200', async () => {
@@ -473,7 +483,8 @@ describe(`${basePath}/forms/:formId/formUsers`, () => {
 });
 
 describe(`${basePath}/forms/:formId/restore`, () => {
-  const path = `${basePath}/forms/:formId/restore`;
+  const formId = uuid.v4();
+  const path = `${basePath}/forms/${formId}/restore`;
 
   describe('PUT', () => {
     it('should return 200', async () => {
@@ -513,7 +524,9 @@ describe(`${basePath}/forms/:formId/restore`, () => {
 });
 
 describe(`${basePath}/forms/:formId/versions/:formVersionId`, () => {
-  const path = `${basePath}/forms/:formId/versions/:formVersionId`;
+  const formId = uuid.v4();
+  const formVersionId = uuid.v4();
+  const path = `${basePath}/forms/${formId}/versions/${formVersionId}`;
 
   describe('GET', () => {
     it('should return 200', async () => {
@@ -593,7 +606,8 @@ describe(`${basePath}/users`, () => {
 });
 
 describe(`${basePath}/users/:userId`, () => {
-  const path = `${basePath}/users/:userId`;
+  const userId = uuid.v4();
+  const path = `${basePath}/users/${userId}`;
 
   describe('GET', () => {
     it('should return 200', async () => {
