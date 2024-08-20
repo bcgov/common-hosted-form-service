@@ -21,6 +21,24 @@ const _validateUuid = (parameter, parameterName) => {
 };
 
 /**
+ * Validates that the :componentId route parameter exists and is a UUID.
+ *
+ * @param {*} _req the Express object representing the HTTP request - unused.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @param {*} componentId the :componentId value from the route.
+ */
+const validateComponentId = async (_req, _res, next, componentId) => {
+  try {
+    _validateUuid(componentId, 'componentId');
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Validates that the :documentTemplateId route parameter exists and is a UUID.
  * This validator requires that either the :formId or :formSubmissionId route
  * parameter also exists.
@@ -123,6 +141,24 @@ const validateFormId = async (_req, _res, next, formId) => {
 };
 
 /**
+ * Validates that the :formSubmissionId route parameter exists and is a UUID.
+ *
+ * @param {*} _req the Express object representing the HTTP request - unused.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @param {*} formSubmissionId the :formSubmissionId value from the route.
+ */
+const validateFormSubmissionId = async (_req, _res, next, formSubmissionId) => {
+  try {
+    _validateUuid(formSubmissionId, 'formSubmissionId');
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Validates that the :formVersionDraftId route parameter exists and is a UUID.
  * This validator requires that the :formId route parameter also exists.
  *
@@ -174,11 +210,32 @@ const validateFormVersionId = async (req, _res, next, formVersionId) => {
   }
 };
 
+/**
+ * Validates that the :userId route parameter exists and is a UUID.
+ *
+ * @param {*} _req the Express object representing the HTTP request - unused.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @param {*} userId the :userId value from the route.
+ */
+const validateUserId = async (_req, _res, next, userId) => {
+  try {
+    _validateUuid(userId, 'userId');
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
+  validateComponentId,
   validateDocumentTemplateId,
   validateExternalAPIId,
   validateFileId,
   validateFormId,
+  validateFormSubmissionId,
   validateFormVersionDraftId,
   validateFormVersionId,
+  validateUserId,
 };

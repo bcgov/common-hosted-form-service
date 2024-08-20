@@ -1,4 +1,4 @@
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 
 const exportService = require('../../../../src/forms/form/exportService');
 const emailService = require('../../../../src/forms/email/emailService');
@@ -14,7 +14,7 @@ jest.mock('../../../../src/forms/common/models/views/submissionData', () => ({
   then: jest.fn().mockReturnThis(),
 }));
 
-const formId = uuidv4();
+const formId = uuid.v4();
 
 const getCsvRowCount = (result) => {
   return result.data.split('\n').length;
