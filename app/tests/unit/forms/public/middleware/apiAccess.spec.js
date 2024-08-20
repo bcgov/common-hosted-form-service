@@ -48,8 +48,8 @@ describe('checkApiKey', () => {
     });
   });
 
-  describe('401 response when', () => {
-    test('the APITOKEN matches apiKey', async () => {
+  describe('allows', () => {
+    test('matching APITOKEN and apikey', async () => {
       const req = getMockReq({
         headers: {
           apikey: process.env.APITOKEN,
