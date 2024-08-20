@@ -4,6 +4,7 @@ const { expressHelper } = require('../../../common/helper');
 
 const jwtService = require('../../../../src/components/jwtService');
 const userAccess = require('../../../../src/forms/auth/middleware/userAccess');
+const validateParameter = require('../../../../src/forms/common/middleware/validateParameter');
 const controller = require('../../../../src/forms/role/controller');
 
 //
@@ -19,6 +20,10 @@ jwtService.protect = jest.fn(() => {
 });
 
 userAccess.currentUser = jest.fn((_req, _res, next) => {
+  next();
+});
+
+validateParameter.validateRoleCode = jest.fn((_req, _res, next) => {
   next();
 });
 
@@ -67,6 +72,7 @@ describe(`${basePath}`, () => {
     expect(controller.list).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateRoleCode).toBeCalledTimes(0);
   });
 
   it('should have correct middleware for POST', async () => {
@@ -79,6 +85,7 @@ describe(`${basePath}`, () => {
     expect(controller.create).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateRoleCode).toBeCalledTimes(0);
   });
 });
 
@@ -95,6 +102,7 @@ describe(`${basePath}/:code`, () => {
     expect(controller.read).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateRoleCode).toBeCalledTimes(1);
   });
 
   it('should have correct middleware for PUT', async () => {
@@ -107,5 +115,6 @@ describe(`${basePath}/:code`, () => {
     expect(controller.update).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateRoleCode).toBeCalledTimes(1);
   });
 });
