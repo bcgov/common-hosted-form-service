@@ -1,7 +1,7 @@
 const Problem = require('api-problem');
 
 /**
- * Checks that the apiKey in the request headers matches the API Key in the
+ * Checks that the API Key in the request headers matches the API Key in the
  * process environment variables.
  *
  * @param {*} req the Express object representing the HTTP request.
