@@ -130,6 +130,7 @@
     "referenceGuideB": "user guide",
     "referenceGuideC": "for more details",
     "specificTeamMembers": "Specific Team Members",
+    "teamMemberTooltip": "Add team members from the Team Management settings after creating this form.",
     "formFunctionality": "Form Functionality",
     "formSubmissinScheduleMsg": "The Form Submissions Schedule will be available in the Form Settings after the form is published.",
     "formSubmissionsSchedule": "Form Submissions Schedule",
@@ -376,7 +377,9 @@
     "search": "Search",
     "loadingText": "Loading... Please wait",
     "ministry": "Ministry",
+    "ministryName": "Ministry Name",
     "formName": "Form",
+    "formId": "Form ID",
     "name": "API Name",
     "endpointUrl": "Endpoint URL",
     "display": "Status",
@@ -595,7 +598,7 @@
     "exactBCEIDSearch": "Email searches for BCeID must be exact.",
     "getUsersErrMsg": "Error getting users: {error}",
     "exactEmailOrUsername": "Enter an exact email or username.",
-    "requiredFiled": "Enter a name, email, or username"
+    "requiredField": "Enter a name, email, or username"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "View This Submission",
@@ -614,7 +617,7 @@
     "save": "Save",
     "filterTitle": "Search and select columns to show under your dashboard",
     "confirmationId": "Confirmation Id",
-    "actions": "actions",
+    "actions": "Actions",
     "createdBy": "Created By",
     "statusUpdatedBy": "Status Updated By",
     "status": "Status",
@@ -880,7 +883,8 @@
     "errorSavingFile": "Error saving files. Filename: {fileName}. Error: {error}",
     "submittingDraftErrMsg": "An error occurred while saving a draft",
     "submittingDraftConsErrMsg": "Error saving draft. SubmissionId: {submissionId}. Error: {error}",
-    "formDraftAccessErrMsg": "Requested submission is already submitted, redirecting to View page"
+    "formDraftAccessErrMsg": "Requested submission is already submitted, redirecting to View page",
+    "formUnauthorizedMessage": "You are not authorized to view this form, please contact the form owner for access."
   },
   "bCGovFooter": {
     "home": "Home",

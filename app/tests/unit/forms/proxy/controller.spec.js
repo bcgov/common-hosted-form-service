@@ -4,6 +4,7 @@ const { getMockReq, getMockRes } = require('@jest-mock/express');
 const controller = require('../../../../src/forms/proxy/controller');
 const service = require('../../../../src/forms/proxy/service');
 const jwtService = require('../../../../src/components/jwtService');
+
 const { NotFoundError } = require('objection');
 
 const bearerToken = Math.random().toString(36).substring(2);
@@ -29,6 +30,7 @@ describe('generateProxyHeaders', () => {
   };
 
   it('should generate headers', async () => {
+    service._getIds = jest.fn().mockReturnValue({ formId: '1234', versionId: '5678', submissionId: null });
     service.generateProxyHeaders = jest.fn().mockReturnValue({});
 
     await controller.generateProxyHeaders(req, {}, jest.fn());

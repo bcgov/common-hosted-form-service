@@ -1,5 +1,5 @@
 const request = require('supertest');
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 
 const { expressHelper } = require('../../../common/helper');
 
@@ -52,16 +52,6 @@ validateParameter.validateFileId = jest.fn((_req, _res, next) => {
   next();
 });
 
-controller.create = jest.fn((_req, _res, next) => {
-  next();
-});
-controller.delete = jest.fn((_req, _res, next) => {
-  next();
-});
-controller.read = jest.fn((_req, _res, next) => {
-  next();
-});
-
 //
 // Create the router and a simple Express server.
 //
@@ -79,48 +69,61 @@ describe(`${basePath}`, () => {
   const path = `${basePath}`;
 
   it('should have correct middleware for POST', async () => {
+    controller.create = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.post(path);
 
     expect(apiAccess).toBeCalledTimes(0);
+    expect(controller.create).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(0);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(1);
     expect(hasFilePermissionsMock).toBeCalledTimes(0);
     expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
     expect(upload.fileUpload.upload).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(controller.create).toBeCalledTimes(1);
+    expect(validateParameter.validateFileId).toBeCalledTimes(0);
   });
 });
 
 describe(`${basePath}/:id`, () => {
-  const fileId = uuidv4();
+  const fileId = uuid.v4();
   const path = `${basePath}/${fileId}`;
 
   it('should have correct middleware for DELETE', async () => {
+    controller.delete = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.delete(path);
 
-    // expect(validateParameter.validateFileId).toBeCalledTimes(1);
     expect(apiAccess).toBeCalledTimes(0);
+    expect(controller.delete).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
     expect(hasFilePermissionsMock).toBeCalledTimes(1);
     expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
     expect(upload.fileUpload.upload).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(controller.delete).toBeCalledTimes(1);
+    expect(validateParameter.validateFileId).toBeCalledTimes(1);
   });
 
   it('should have correct middleware for GET', async () => {
+    controller.read = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
     await appRequest.get(path);
 
-    // expect(validateParameter.validateFileId).toBeCalledTimes(1);
     expect(apiAccess).toBeCalledTimes(1);
+    expect(controller.read).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
     expect(hasFilePermissionsMock).toBeCalledTimes(1);
     expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(upload.fileUpload.upload).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(controller.read).toBeCalledTimes(1);
+    expect(validateParameter.validateFileId).toBeCalledTimes(1);
   });
 });

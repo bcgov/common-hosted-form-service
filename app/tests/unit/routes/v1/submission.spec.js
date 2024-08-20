@@ -1,7 +1,11 @@
-const request = require('supertest');
 const Problem = require('api-problem');
+const request = require('supertest');
+const uuid = require('uuid');
 
 const { expressHelper } = require('../../../common/helper');
+
+const formId = uuid.v4();
+const formSubmissionId = uuid.v4();
 
 //
 // mock middleware
@@ -49,7 +53,7 @@ afterEach(() => {
 });
 
 describe(`${basePath}/:formSubmissionId`, () => {
-  const path = `${basePath}/:formSubmissionId`;
+  const path = `${basePath}/${formSubmissionId}`;
 
   describe('DELETE', () => {
     it('should return 200', async () => {
@@ -161,7 +165,7 @@ describe(`${basePath}/:formSubmissionId`, () => {
 });
 
 describe(`${basePath}/:formSubmissionId/edits`, () => {
-  const path = `${basePath}/:formSubmissionId/edits`;
+  const path = `${basePath}/${formSubmissionId}/edits`;
 
   describe('GET', () => {
     it('should return 200', async () => {
@@ -201,7 +205,7 @@ describe(`${basePath}/:formSubmissionId/edits`, () => {
 });
 
 describe(`${basePath}/:formSubmissionId/email`, () => {
-  const path = `${basePath}/:formSubmissionId/email`;
+  const path = `${basePath}/${formSubmissionId}/email`;
 
   describe('POST', () => {
     const submissionResult = { form: { id: '' }, submission: { id: '' }, version: { id: '' } };
@@ -259,12 +263,12 @@ describe(`${basePath}/:formSubmissionId/email`, () => {
 });
 
 describe(`${basePath}/:formSubmissionId/:formId/submissions`, () => {
-  const path = `${basePath}/:formSubmissionId/:formId/submissions`;
+  const path = `${basePath}/${formSubmissionId}/${formId}/submissions`;
 
   describe('DELETE', () => {
     it('should return 200', async () => {
       // mock a success return value...
-      service.deleteMutipleSubmissions = jest.fn().mockReturnValue({});
+      service.deleteMultipleSubmissions = jest.fn().mockReturnValue({});
 
       const response = await appRequest.delete(path);
 
@@ -274,7 +278,7 @@ describe(`${basePath}/:formSubmissionId/:formId/submissions`, () => {
 
     it('should handle 401', async () => {
       // mock an authentication/permission issue...
-      service.deleteMutipleSubmissions = jest.fn(() => {
+      service.deleteMultipleSubmissions = jest.fn(() => {
         throw new Problem(401);
       });
 
@@ -286,7 +290,7 @@ describe(`${basePath}/:formSubmissionId/:formId/submissions`, () => {
 
     it('should handle 500', async () => {
       // mock an unexpected error...
-      service.deleteMutipleSubmissions = jest.fn(() => {
+      service.deleteMultipleSubmissions = jest.fn(() => {
         throw new Error();
       });
 
@@ -299,12 +303,12 @@ describe(`${basePath}/:formSubmissionId/:formId/submissions`, () => {
 });
 
 describe(`${basePath}/:formSubmissionId/:formId/submissions/restore`, () => {
-  const path = `${basePath}/:formSubmissionId/:formId/submissions/restore`;
+  const path = `${basePath}/${formSubmissionId}/${formId}/submissions/restore`;
 
   describe('PUT', () => {
     it('should return 200', async () => {
       // mock a success return value...
-      service.restoreMutipleSubmissions = jest.fn().mockReturnValue({});
+      service.restoreMultipleSubmissions = jest.fn().mockReturnValue({});
 
       const response = await appRequest.put(path);
 
@@ -314,7 +318,7 @@ describe(`${basePath}/:formSubmissionId/:formId/submissions/restore`, () => {
 
     it('should handle 401', async () => {
       // mock an authentication/permission issue...
-      service.restoreMutipleSubmissions = jest.fn(() => {
+      service.restoreMultipleSubmissions = jest.fn(() => {
         throw new Problem(401);
       });
 
@@ -326,7 +330,7 @@ describe(`${basePath}/:formSubmissionId/:formId/submissions/restore`, () => {
 
     it('should handle 500', async () => {
       // mock an unexpected error...
-      service.restoreMutipleSubmissions = jest.fn(() => {
+      service.restoreMultipleSubmissions = jest.fn(() => {
         throw new Error();
       });
 
@@ -339,7 +343,7 @@ describe(`${basePath}/:formSubmissionId/:formId/submissions/restore`, () => {
 });
 
 describe(`${basePath}/:formSubmissionId/notes`, () => {
-  const path = `${basePath}/:formSubmissionId/notes`;
+  const path = `${basePath}/${formSubmissionId}/notes`;
 
   describe('GET', () => {
     it('should return 200', async () => {
@@ -416,7 +420,7 @@ describe(`${basePath}/:formSubmissionId/notes`, () => {
 });
 
 describe(`${basePath}/:formSubmissionId/options`, () => {
-  const path = `${basePath}/:formSubmissionId/options`;
+  const path = `${basePath}/${formSubmissionId}/options`;
 
   describe('GET', () => {
     it('should return 200', async () => {
@@ -456,7 +460,7 @@ describe(`${basePath}/:formSubmissionId/options`, () => {
 });
 
 describe(`${basePath}/:formSubmissionId/restore`, () => {
-  const path = `${basePath}/:formSubmissionId/restore`;
+  const path = `${basePath}/${formSubmissionId}/restore`;
 
   describe('PUT', () => {
     it('should return 200', async () => {
@@ -496,7 +500,7 @@ describe(`${basePath}/:formSubmissionId/restore`, () => {
 });
 
 describe(`${basePath}/:formSubmissionId/status`, () => {
-  const path = `${basePath}/:formSubmissionId/status`;
+  const path = `${basePath}/${formSubmissionId}/status`;
 
   describe('GET', () => {
     it('should return 200', async () => {
@@ -577,7 +581,7 @@ describe(`${basePath}/:formSubmissionId/status`, () => {
 });
 
 describe(`${basePath}/:formSubmissionId/template/render`, () => {
-  const path = `${basePath}/:formSubmissionId/template/render`;
+  const path = `${basePath}/${formSubmissionId}/template/render`;
 
   describe('POST', () => {
     it('should return 200', async () => {

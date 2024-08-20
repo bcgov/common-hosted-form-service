@@ -357,7 +357,7 @@ describe('template rendering', () => {
   });
 });
 
-describe('deleteMutipleSubmissions', () => {
+describe('deleteMultipleSubmissions', () => {
   const returnValue = {
     submission: [
       { id: 'ac4ef441-43b1-414a-a0d4-1e2f67c2a745', formVersionId: '8d8e24ce-326f-4536-9100-a0844c27d5a0', confirmationId: 'AC4EF441', draft: false, deleted: true },
@@ -373,16 +373,16 @@ describe('deleteMutipleSubmissions', () => {
     currentUser: {},
     headers: {},
   };
-  it('should call deleteMutipleSubmissions service in controller', async () => {
-    service.deleteMutipleSubmissions = jest.fn().mockReturnValue(returnValue);
-    await controller.deleteMutipleSubmissions(req, {}, jest.fn());
+  it('should call deleteMultipleSubmissions service in controller', async () => {
+    service.deleteMultipleSubmissions = jest.fn().mockReturnValue(returnValue);
+    await controller.deleteMultipleSubmissions(req, {}, jest.fn());
 
-    expect(service.deleteMutipleSubmissions).toBeCalledTimes(1);
-    expect(service.deleteMutipleSubmissions).toBeCalledWith(req.body.submissionIds, req.currentUser);
+    expect(service.deleteMultipleSubmissions).toBeCalledTimes(1);
+    expect(service.deleteMultipleSubmissions).toBeCalledWith(req.body.submissionIds, req.currentUser);
   });
 });
 
-describe('restoreMutipleSubmissions', () => {
+describe('restoreMultipleSubmissions', () => {
   const returnValue = {
     submission: [
       { id: 'ac4ef441-43b1-414a-a0d4-1e2f67c2a745', formVersionId: '8d8e24ce-326f-4536-9100-a0844c27d5a0', confirmationId: 'AC4EF441', draft: false, deleted: false },
@@ -398,11 +398,11 @@ describe('restoreMutipleSubmissions', () => {
     currentUser: {},
     headers: {},
   };
-  it('should call restoreMutipleSubmissions service in controller', async () => {
-    service.restoreMutipleSubmissions = jest.fn().mockReturnValue(returnValue);
-    await controller.restoreMutipleSubmissions(req, {}, jest.fn());
+  it('should call restoreMultipleSubmissions service in controller', async () => {
+    service.restoreMultipleSubmissions = jest.fn().mockReturnValue(returnValue);
+    await controller.restoreMultipleSubmissions(req, {}, jest.fn());
 
-    expect(service.restoreMutipleSubmissions).toBeCalledTimes(1);
-    expect(service.restoreMutipleSubmissions).toBeCalledWith(req.body.submissionIds, req.currentUser);
+    expect(service.restoreMultipleSubmissions).toBeCalledTimes(1);
+    expect(service.restoreMultipleSubmissions).toBeCalledWith(req.body.submissionIds, req.currentUser);
   });
 });

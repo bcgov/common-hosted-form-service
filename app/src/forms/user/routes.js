@@ -1,11 +1,15 @@
 const routes = require('express').Router();
-const controller = require('./controller');
 
-const currentUser = require('../auth/middleware/userAccess').currentUser;
 const jwtService = require('../../components/jwtService');
+const currentUser = require('../auth/middleware/userAccess').currentUser;
+const validateParameter = require('../common/middleware/validateParameter');
+const controller = require('./controller');
 
 routes.use(jwtService.protect());
 routes.use(currentUser);
+
+routes.param('formId', validateParameter.validateFormId);
+routes.param('userId', validateParameter.validateUserId);
 
 //
 // User Preferences

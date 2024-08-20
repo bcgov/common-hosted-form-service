@@ -1,4 +1,4 @@
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 
 const exportService = require('../../../../src/forms/form/exportService');
 const emailService = require('../../../../src/forms/email/emailService');
@@ -14,7 +14,7 @@ jest.mock('../../../../src/forms/common/models/views/submissionData', () => ({
   then: jest.fn().mockReturnThis(),
 }));
 
-const formId = uuidv4();
+const formId = uuid.v4();
 
 const getCsvRowCount = (result) => {
   return result.data.split('\n').length;
@@ -126,7 +126,8 @@ describe('export', () => {
           'form.username',
           'form.email',
           'dataGrid',
-          'dataGrid.simpletextfield',
+          'dataGrid.0.simpletextfield',
+          'dataGrid.1.simpletextfield',
         ],
         template: 'singleRowCSVExport',
       };
@@ -515,7 +516,7 @@ describe('_buildCsvHeaders', () => {
     // get result columns if we need to filter out the columns
     const result = await exportService._buildCsvHeaders(form, submissionsExport, 1, fields, true);
 
-    expect(result).toHaveLength(29);
+    expect(result).toHaveLength(20);
     expect(result).toEqual(
       expect.arrayContaining([
         'form.confirmationId',
