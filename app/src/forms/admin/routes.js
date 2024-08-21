@@ -1,22 +1,28 @@
 const routes = require('express').Router();
 
-const currentUser = require('../auth/middleware/userAccess').currentUser;
-
-const controller = require('./controller');
-const userController = require('../user/controller');
 const jwtService = require('../../components/jwtService');
+const currentUser = require('../auth/middleware/userAccess').currentUser;
+const validateParameter = require('../common/middleware/validateParameter');
+const userController = require('../user/controller');
+const controller = require('./controller');
 
-// Always have this applied to all routes here
+// Routes under /admin fetch data without doing form permission checks. All
+// routes in this file should remain under the "admin" role check, with the
+// "admin" role only given to people who have permission to read all data.
 routes.use(jwtService.protect('admin'));
+
 routes.use(currentUser);
 
-// Routes under the /admin pathing will fetch data without doing Form permission checks in the database
-// As such, this should ALWAYS remain under the :admin role check and that KC role should not be given out
-// other than to people who have permission to read all data
+routes.param('componentId', validateParameter.validateComponentId);
+routes.param('externalApiId', validateParameter.validateExternalAPIId);
+routes.param('formId', validateParameter.validateFormId);
+routes.param('formVersionId', validateParameter.validateFormVersionId);
+routes.param('userId', validateParameter.validateUserId);
 
 //
 // Forms
 //
+
 routes.get('/forms', async (req, res, next) => {
   await controller.listForms(req, res, next);
 });
@@ -52,6 +58,7 @@ routes.put('/forms/:formId/addUser', async (req, res, next) => {
 //
 // Users
 //
+
 routes.get('/users', async (req, res, next) => {
   await controller.getUsers(req, res, next);
 });
@@ -61,21 +68,23 @@ routes.get('/users/:userId', async (req, res, next) => {
 });
 
 //
-// APIs
+// External APIs
 //
+
 routes.get('/externalAPIs', async (req, res, next) => {
   await controller.getExternalAPIs(req, res, next);
 });
 
-routes.put('/externalAPIs/:id', async (req, res, next) => {
+routes.put('/externalAPIs/:externalApiId', async (req, res, next) => {
   await controller.updateExternalAPI(req, res, next);
 });
 
 routes.get('/externalAPIs/statusCodes', async (req, res, next) => {
   await controller.getExternalAPIStatusCodes(req, res, next);
 });
+
 //
-//Form componets help info
+// Form Components Help
 //
 
 routes.post('/formcomponents/proactivehelp/object', async (req, res, next) => {
