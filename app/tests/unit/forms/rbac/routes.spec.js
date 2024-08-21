@@ -11,10 +11,11 @@ const controller = require('../../../../src/forms/rbac/controller');
 // correctly, not the functionality of the middleware.
 //
 
+const mockJwtServiceProtect = jest.fn((_req, _res, next) => {
+  next();
+});
 jwtService.protect = jest.fn(() => {
-  return jest.fn((_req, _res, next) => {
-    next();
-  });
+  return mockJwtServiceProtect;
 });
 
 const hasFormPermissionsMock = jest.fn((_req, _res, next) => {
@@ -75,6 +76,7 @@ describe(`${basePath}/current`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(0);
     expect(hasFormRolesMock).toBeCalledTimes(0);
     expect(hasSubmissionPermissionsMock).toBeCalledTimes(0);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(userAccess.hasRoleDeletePermissions).toBeCalledTimes(0);
     expect(userAccess.hasRoleModifyPermissions).toBeCalledTimes(0);
@@ -95,6 +97,7 @@ describe(`${basePath}/current/submissions`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(0);
     expect(hasFormRolesMock).toBeCalledTimes(0);
     expect(hasSubmissionPermissionsMock).toBeCalledTimes(0);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(userAccess.hasRoleDeletePermissions).toBeCalledTimes(0);
     expect(userAccess.hasRoleModifyPermissions).toBeCalledTimes(0);
@@ -115,6 +118,7 @@ describe(`${basePath}/forms`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(hasFormRolesMock).toBeCalledTimes(0);
     expect(hasSubmissionPermissionsMock).toBeCalledTimes(0);
+    expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(userAccess.hasRoleDeletePermissions).toBeCalledTimes(0);
     expect(userAccess.hasRoleModifyPermissions).toBeCalledTimes(0);
@@ -131,6 +135,7 @@ describe(`${basePath}/forms`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(hasFormRolesMock).toBeCalledTimes(0);
     expect(hasSubmissionPermissionsMock).toBeCalledTimes(0);
+    expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(userAccess.hasRoleDeletePermissions).toBeCalledTimes(0);
     expect(userAccess.hasRoleModifyPermissions).toBeCalledTimes(0);
@@ -151,6 +156,7 @@ describe(`${basePath}/idps`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(0);
     expect(hasFormRolesMock).toBeCalledTimes(0);
     expect(hasSubmissionPermissionsMock).toBeCalledTimes(0);
+    expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(userAccess.hasRoleDeletePermissions).toBeCalledTimes(0);
     expect(userAccess.hasRoleModifyPermissions).toBeCalledTimes(0);
@@ -171,6 +177,7 @@ describe(`${basePath}/submissions`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(0);
     expect(hasFormRolesMock).toBeCalledTimes(0);
     expect(hasSubmissionPermissionsMock).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(userAccess.hasRoleDeletePermissions).toBeCalledTimes(0);
     expect(userAccess.hasRoleModifyPermissions).toBeCalledTimes(0);
@@ -187,6 +194,7 @@ describe(`${basePath}/submissions`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(0);
     expect(hasFormRolesMock).toBeCalledTimes(0);
     expect(hasSubmissionPermissionsMock).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(userAccess.hasRoleDeletePermissions).toBeCalledTimes(0);
     expect(userAccess.hasRoleModifyPermissions).toBeCalledTimes(0);
@@ -207,6 +215,7 @@ describe(`${basePath}/users`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(hasFormRolesMock).toBeCalledTimes(1);
     expect(hasSubmissionPermissionsMock).toBeCalledTimes(0);
+    expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(userAccess.hasRoleDeletePermissions).toBeCalledTimes(1);
     expect(userAccess.hasRoleModifyPermissions).toBeCalledTimes(0);
@@ -223,6 +232,7 @@ describe(`${basePath}/users`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(0);
     expect(hasFormRolesMock).toBeCalledTimes(0);
     expect(hasSubmissionPermissionsMock).toBeCalledTimes(0);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(userAccess.hasRoleDeletePermissions).toBeCalledTimes(0);
     expect(userAccess.hasRoleModifyPermissions).toBeCalledTimes(0);
@@ -239,6 +249,7 @@ describe(`${basePath}/users`, () => {
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(hasFormRolesMock).toBeCalledTimes(1);
     expect(hasSubmissionPermissionsMock).toBeCalledTimes(0);
+    expect(mockJwtServiceProtect).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(userAccess.hasRoleDeletePermissions).toBeCalledTimes(0);
     expect(userAccess.hasRoleModifyPermissions).toBeCalledTimes(1);

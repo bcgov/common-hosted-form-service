@@ -5,7 +5,6 @@ const { currentUser, hasSubmissionPermissions, filterMultipleSubmissions } = req
 const P = require('../common/constants').Permissions;
 const rateLimiter = require('../common/middleware').apiKeyRateLimiter;
 const validateParameter = require('../common/middleware/validateParameter');
-
 const controller = require('./controller');
 
 routes.use(currentUser);
