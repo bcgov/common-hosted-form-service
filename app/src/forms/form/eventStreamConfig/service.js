@@ -24,6 +24,7 @@ const service = {
       // let's deal with encryption key
       const encKey = await encryptionKeyService.upsertForEventStreamConfig(formId, data.encryptionKey, currentUser, transaction);
       data.encryptionKeyId = encKey && data.enablePrivateStream ? encKey.id : null;
+      data.encryptionKey = null; // only want the id for config upsert
 
       if (existing) {
         // do we need to update?

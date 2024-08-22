@@ -30,6 +30,7 @@ const service = {
     // special case for forms. they have only one event stream configuration
     // that requires an encryption key if it has private streams.
     // NOTE: event stream config will remove this key if it is unneeded!
+
     const externalTrx = transaction != undefined;
     let trx;
     let id;
@@ -51,6 +52,7 @@ const service = {
         }
       } else {
         // add a new configuration.
+        if (data && !data.algorithm && !data.key) return; // no encryption key to insert
         id = uuidv4();
         data.id = id;
         data.formId = formId;

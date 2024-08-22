@@ -238,7 +238,7 @@ defineExpose({
     </v-expand-transition>
     <v-row class="pl-6 m-0">
       <v-col cols="12" class="pl-0 pr-0 pb-0">
-        <span>
+        <span v-if="form.eventStreamConfig.updatedBy">
           <span :lang="locale" class="font-weight-bold"
             >{{ $t('trans.formSettings.eventStreamUpdatedBy') }}:
           </span>

@@ -1,4 +1,5 @@
 const { AckPolicy, connect } = require("nats");
+const Cryptr = require("cryptr");
 
 // connection info
 const servers = ["localhost:4222", "localhost:4223", "localhost:4224"];
@@ -13,6 +14,7 @@ const STREAM_NAME = "CHEFS";
 const FILTER_SUBJECTS = ["PUBLIC.forms.>", "PRIVATE.forms.>"];
 const MAX_MESSAGES = 2;
 const DURABLE_NAME = "pullConsumer";
+const ENCRYPTION_KEY = "";
 
 const printMsg = (m) => {
   // illustrate grabbing the sequence and timestamp from the nats message...
@@ -22,7 +24,17 @@ const printMsg = (m) => {
       `msg seq: ${m.seq}, subject: ${m.subject}, timestamp: ${ts}, streamSequence: ${m.info.streamSequence}, deliverySequence: ${m.info.deliverySequence}`
     );
     // illustrate (one way of) grabbing message content as json
-    console.log(JSON.stringify(m.json(), null, 2));
+    const data = m.json();
+    console.log(JSON.stringify(data, null, 2));
+    try {
+      if (data && data["payload"] && data["payload"]["data"]) {
+        const cryptr = new Cryptr(ENCRYPTION_KEY);
+        const d = cryptr.decrypt(data["payload"]["data"]);
+        console.log(JSON.stringify(d, null, 2));
+      }
+    } catch (err) {
+      console.error("Error decrypting payload.data");
+    }
   } catch (e) {
     console.error(`Error printing message: ${e.message}`);
   }
