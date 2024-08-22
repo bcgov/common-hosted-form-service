@@ -6,15 +6,13 @@ const { expressHelper } = require('../../../common/helper');
 const jwtService = require('../../../../src/components/jwtService');
 const userAccess = require('../../../../src/forms/auth/middleware/userAccess');
 const controller = require('../../../../src/forms/admin/controller');
+const validateParameter = require('../../../../src/forms/common/middleware/validateParameter');
 const userController = require('../../../../src/forms/user/controller');
 
 //
 // Mock out all the middleware - we're testing that the routes are set up
 // correctly, not the functionality of the middleware.
 //
-
-// TODO: Add a test the confirms that jwtService.protect is called with "admin"
-// when the file is loaded.
 
 const mockJwtServiceProtect = jest.fn((_req, _res, next) => {
   next();
@@ -24,6 +22,22 @@ jwtService.protect = jest.fn(() => {
 });
 
 userAccess.currentUser = jest.fn((_req, _res, next) => {
+  next();
+});
+
+validateParameter.validateComponentId = jest.fn((_req, _res, next) => {
+  next();
+});
+validateParameter.validateExternalAPIId = jest.fn((_req, _res, next) => {
+  next();
+});
+validateParameter.validateFormId = jest.fn((_req, _res, next) => {
+  next();
+});
+validateParameter.validateFormVersionId = jest.fn((_req, _res, next) => {
+  next();
+});
+validateParameter.validateUserId = jest.fn((_req, _res, next) => {
   next();
 });
 
@@ -40,6 +54,25 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
+// jwtService.protect is tricky to test. This test is fragile as the file could
+// change and have routes that need admin and others that don't. This test only
+// works when we use(protect) at the file level, not individually in the routes.
+// However, this does test that we don't accidentally turn off the protection.
+describe('jwtService.protect', () => {
+  it('should be called with admin', () => {
+    jest.resetModules();
+    const jwtService = require('../../../../src/components/jwtService');
+    jwtService.protect = jest.fn(() => {
+      return jest.fn((_req, _res, next) => {
+        next();
+      });
+    });
+    require('../../../../src/forms/admin/routes');
+
+    expect(jwtService.protect).toBeCalledWith('admin');
+  });
+});
+
 describe(`${basePath}/externalAPIs`, () => {
   const path = `${basePath}/externalAPIs`;
 
@@ -50,9 +83,14 @@ describe(`${basePath}/externalAPIs`, () => {
 
     await appRequest.get(path);
 
-    expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
-    expect(userAccess.currentUser).toHaveBeenCalledTimes(1);
-    expect(controller.getExternalAPIs).toHaveBeenCalledTimes(1);
+    expect(controller.getExternalAPIs).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -67,9 +105,14 @@ describe(`${basePath}/externalAPIs/:externalApiId`, () => {
 
     await appRequest.put(path);
 
-    expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
-    expect(userAccess.currentUser).toHaveBeenCalledTimes(1);
-    expect(controller.updateExternalAPI).toHaveBeenCalledTimes(1);
+    expect(controller.updateExternalAPI).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -83,9 +126,14 @@ describe(`${basePath}/externalAPIs/statusCodes`, () => {
 
     await appRequest.get(path);
 
-    expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
-    expect(userAccess.currentUser).toHaveBeenCalledTimes(1);
-    expect(controller.getExternalAPIStatusCodes).toHaveBeenCalledTimes(1);
+    expect(controller.getExternalAPIStatusCodes).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -100,9 +148,14 @@ describe(`${basePath}/formcomponents/proactivehelp/:publishStatus/:componentId`,
 
     await appRequest.put(path);
 
-    expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
-    expect(userAccess.currentUser).toHaveBeenCalledTimes(1);
-    expect(controller.updateFormComponentsProactiveHelp).toHaveBeenCalledTimes(1);
+    expect(controller.updateFormComponentsProactiveHelp).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(1);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -117,9 +170,14 @@ describe(`${basePath}/formcomponents/proactivehelp/imageUrl/:componentId`, () =>
 
     await appRequest.get(path);
 
-    expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
-    expect(userAccess.currentUser).toHaveBeenCalledTimes(1);
-    expect(controller.getFCProactiveHelpImageUrl).toHaveBeenCalledTimes(1);
+    expect(controller.getFCProactiveHelpImageUrl).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(1);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -133,9 +191,14 @@ describe(`${basePath}/formcomponents/proactivehelp/list`, () => {
 
     await appRequest.get(path);
 
-    expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
-    expect(userAccess.currentUser).toHaveBeenCalledTimes(1);
-    expect(controller.listFormComponentsProactiveHelp).toHaveBeenCalledTimes(1);
+    expect(controller.listFormComponentsProactiveHelp).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -149,9 +212,14 @@ describe(`${basePath}/formcomponents/proactivehelp/object`, () => {
 
     await appRequest.post(path);
 
-    expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
-    expect(userAccess.currentUser).toHaveBeenCalledTimes(1);
-    expect(controller.createFormComponentsProactiveHelp).toHaveBeenCalledTimes(1);
+    expect(controller.createFormComponentsProactiveHelp).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -165,9 +233,14 @@ describe(`${basePath}/forms`, () => {
 
     await appRequest.get(path);
 
-    expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
-    expect(userAccess.currentUser).toHaveBeenCalledTimes(1);
-    expect(controller.listForms).toHaveBeenCalledTimes(1);
+    expect(controller.listForms).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -182,9 +255,14 @@ describe(`${basePath}/forms/:formId`, () => {
 
     await appRequest.get(path);
 
-    expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
-    expect(userAccess.currentUser).toHaveBeenCalledTimes(1);
-    expect(controller.readForm).toHaveBeenCalledTimes(1);
+    expect(controller.readForm).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -199,9 +277,14 @@ describe(`${basePath}/forms/:formId/addUser`, () => {
 
     await appRequest.put(path);
 
-    expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
-    expect(userAccess.currentUser).toHaveBeenCalledTimes(1);
-    expect(controller.setFormUserRoles).toHaveBeenCalledTimes(1);
+    expect(controller.setFormUserRoles).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -216,9 +299,14 @@ describe(`${basePath}/forms/:formId/apiKey`, () => {
 
     await appRequest.delete(path);
 
-    expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
-    expect(userAccess.currentUser).toHaveBeenCalledTimes(1);
-    expect(controller.deleteApiKey).toHaveBeenCalledTimes(1);
+    expect(controller.deleteApiKey).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 
   it('should have correct middleware for GET', async () => {
@@ -228,9 +316,14 @@ describe(`${basePath}/forms/:formId/apiKey`, () => {
 
     await appRequest.get(path);
 
-    expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
-    expect(userAccess.currentUser).toHaveBeenCalledTimes(1);
-    expect(controller.readApiDetails).toHaveBeenCalledTimes(1);
+    expect(controller.readApiDetails).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -245,9 +338,14 @@ describe(`${basePath}/forms/:formId/formUsers`, () => {
 
     await appRequest.get(path);
 
-    expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
-    expect(userAccess.currentUser).toHaveBeenCalledTimes(1);
-    expect(controller.getFormUserRoles).toHaveBeenCalledTimes(1);
+    expect(controller.getFormUserRoles).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -262,9 +360,14 @@ describe(`${basePath}/forms/:formId/restore`, () => {
 
     await appRequest.put(path);
 
-    expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
-    expect(userAccess.currentUser).toHaveBeenCalledTimes(1);
-    expect(controller.restoreForm).toHaveBeenCalledTimes(1);
+    expect(controller.restoreForm).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -280,9 +383,14 @@ describe(`${basePath}/forms/:formId/versions/:formVersionId`, () => {
 
     await appRequest.get(path);
 
-    expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
-    expect(userAccess.currentUser).toHaveBeenCalledTimes(1);
-    expect(controller.readVersion).toHaveBeenCalledTimes(1);
+    expect(controller.readVersion).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(1);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(1);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -296,9 +404,14 @@ describe(`${basePath}/users`, () => {
 
     await appRequest.get(path);
 
-    expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
-    expect(userAccess.currentUser).toHaveBeenCalledTimes(1);
-    expect(controller.getUsers).toHaveBeenCalledTimes(1);
+    expect(controller.getUsers).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(0);
   });
 });
 
@@ -313,8 +426,13 @@ describe(`${basePath}/users/:userId`, () => {
 
     await appRequest.get(path);
 
-    expect(mockJwtServiceProtect).toHaveBeenCalledTimes(1);
-    expect(userAccess.currentUser).toHaveBeenCalledTimes(1);
-    expect(userController.read).toHaveBeenCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(userController.read).toBeCalledTimes(1);
+    expect(validateParameter.validateComponentId).toBeCalledTimes(0);
+    expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormId).toBeCalledTimes(0);
+    expect(validateParameter.validateFormVersionId).toBeCalledTimes(0);
+    expect(validateParameter.validateUserId).toBeCalledTimes(1);
   });
 });
