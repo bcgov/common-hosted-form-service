@@ -294,7 +294,7 @@ describe('ManageSubmissionUsers.vue', () => {
     expect(addNotificationSpy).toHaveBeenCalledWith({
       color: 'success',
       icon: 'mdi:mdi-check-circle',
-      text: 'trans.manageSubmissionUsers.sentInviteEmailTojohn@email.com',
+      text: 'trans.manageSubmissionUsers.sentInviteEmailTo john@email.com',
       type: 'success',
     });
   });

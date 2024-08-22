@@ -295,6 +295,7 @@ function addNewUsers(users, roles) {
         notificationStore.addNotification({
           text:
             `${user.username}@${user.idpCode}` +
+            ' ' +
             t('trans.teamManagement.idpMessage'),
         });
       }

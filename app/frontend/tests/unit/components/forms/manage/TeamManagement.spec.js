@@ -902,7 +902,7 @@ describe('TeamManagement.vue', () => {
 
     expect(addNotificationSpy).toBeCalledTimes(1);
     expect(addNotificationSpy).toBeCalledWith({
-      text: `${IDIR_USER.username}@${IDIR_USER.idpCode}trans.teamManagement.idpMessage`,
+      text: `${IDIR_USER.username}@${IDIR_USER.idpCode} trans.teamManagement.idpMessage`,
     });
   });
 
