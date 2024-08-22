@@ -142,5 +142,5 @@ jobs:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
           coverageLocations: |
-            ${{ github.workspace }}/**/lcov.info:lcov
+            ${{ github.workspace }}/**/clover.xml:clover
           prefix: ${{ github.workplace }}
