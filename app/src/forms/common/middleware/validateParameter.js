@@ -93,12 +93,19 @@ const validateExternalAPIId = async (req, _res, next, externalAPIId) => {
     _validateUuid(externalAPIId, 'externalAPIId');
 
     const externalApi = await externalApiService.readExternalAPI(externalAPIId);
-    if (!externalApi || externalApi.formId !== req.params.formId) {
+    if (!externalApi) {
       throw new Problem(404, {
-        detail: 'externalAPIId does not exist on this form',
+        detail: 'externalAPIId does not exist',
       });
     }
-
+    // perform this check only if there is a formId (admin routes don't have form id)
+    if (req.params.formId) {
+      if (!externalApi || externalApi.formId !== req.params.formId) {
+        throw new Problem(404, {
+          detail: 'externalAPIId does not exist on this form',
+        });
+      }
+    }
     next();
   } catch (error) {
     next(error);
