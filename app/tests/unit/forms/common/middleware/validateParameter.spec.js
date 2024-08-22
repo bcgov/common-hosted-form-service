@@ -290,7 +290,8 @@ describe('validateExternalApiId', () => {
   describe('404 response when', () => {
     const expectedStatus = { status: 404 };
 
-    test('formId is missing', async () => {
+    test('externalApiId not found', async () => {
+      externalApiService.readExternalAPI.mockReturnValueOnce(null);
       const req = getMockReq({
         params: {
           externalAPIId: externalApiId,
@@ -349,6 +350,20 @@ describe('validateExternalApiId', () => {
         params: {
           externalAPIId: externalApiId,
           formId: formId,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      await validateParameter.validateExternalAPIId(req, res, next, externalApiId);
+
+      expect(externalApiService.readExternalAPI).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
+    });
+
+    test('external api id only', async () => {
+      const req = getMockReq({
+        params: {
+          externalAPIId: externalApiId,
         },
       });
       const { res, next } = getMockRes();
