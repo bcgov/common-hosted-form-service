@@ -50,6 +50,7 @@ export default {
       defaultReportname: '',
       displayTemplatePrintButton: false,
       isValidFile: true,
+      isValidSize: true,
       fileInputKey: 0,
       validFileExtensions: ['txt', 'docx', 'html', 'odt', 'pptx', 'xlsx'],
       defaultExportFileTypes: ['pdf'],
@@ -66,6 +67,7 @@ export default {
     },
     validationRules() {
       return [
+        this.isValidSize || this.$t('trans.documentTemplate.fileSizeError'),
         this.isValidFile ||
           this.$t('trans.documentTemplate.invalidFileMessage'),
       ];
@@ -318,8 +320,16 @@ export default {
       }
     },
 
-    validateFileExtension(event) {
+    validateFile(event) {
       if (event.length > 0) {
+        // validate file size
+        if (event[0].size > 25000000) {
+          this.isValidSize = false;
+        } else {
+          this.isValidSize = true;
+        }
+
+        // validate file extension
         const fileExtension = event[0].name.split('.').pop();
         // reset the outputFileName when a new file is uploaded
         this.templateForm.outputFileName = event[0].name
@@ -345,13 +355,19 @@ export default {
           );
         }
         this.isValidFile = true;
+        this.isValidSize = true;
       }
     },
 
     handleFileUpload(event) {
       this.fileInputKey += 1;
       this.templateForm.files = event;
-      this.validateFileExtension(event);
+      this.validateFile(event);
+
+      // need to force immediate validation as the v-file-input is bound to the :key
+      this.$nextTick(() => {
+        this.$refs.fileInput.validate();
+      });
     },
   },
 };
@@ -487,6 +503,7 @@ export default {
                   value="upload"
                 ></v-radio>
                 <v-file-input
+                  ref="fileInput"
                   :key="fileInputKey"
                   v-model="templateForm.files"
                   :class="{ label: isRTL }"
@@ -523,7 +540,11 @@ export default {
                         id="file-input-submit"
                         variant="flat"
                         class="btn-file-input-submit px-4"
-                        :disabled="!displayTemplatePrintButton || !isValidFile"
+                        :disabled="
+                          !displayTemplatePrintButton ||
+                          !isValidFile ||
+                          !isValidSize
+                        "
                         color="primary"
                         :loading="loading"
                         v-bind="props"

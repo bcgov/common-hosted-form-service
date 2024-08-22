@@ -84,7 +84,8 @@
     "deleteSuccess": "Xóa mẫu thành công.",
     "deleteError": "Có lỗi xảy ra khi xóa mẫu.",
     "fetchError": "Có lỗi xảy ra khi lấy mẫu.",
-    "info": "Tải lên một mẫu để sử dụng Dịch vụ Tạo Tài liệu Chung (CDOGS)"
+    "info": "Tải lên một mẫu để sử dụng Dịch vụ Tạo Tài liệu Chung (CDOGS)",
+    "fileSizeError": "Kích thước tệp phải nhỏ hơn 25MB."
   },
   "formSettings": {
     "pressToAddMultiEmail": "Nhấn <kbd>enter</kbd> hoặc <kbd>,</kbd> hoặc <kbd>dấu cách</kbd> để thêm nhiều địa chỉ email",
