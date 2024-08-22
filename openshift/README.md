@@ -255,6 +255,6 @@ oc process -f backup-cronjob-verify.yaml \
     -p JOB_NAME=backup-postgres-verify \
     -p JOB_PERSISTENT_STORAGE_NAME=$PVC \
     -p SCHEDULE="0 9 * * *" \
-    -p TAG_NAME=2.6.1 \
+    -p TAG_NAME=2.8.0 \
     | oc -n $NAMESPACE apply -f -
 ```

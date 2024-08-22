@@ -100,7 +100,7 @@ module.exports = {
   },
   updateExternalAPI: async (req, res, next) => {
     try {
-      const response = await service.updateExternalAPI(req.params.id, req.body);
+      const response = await service.updateExternalAPI(req.params.externalApiId, req.body);
       res.status(200).json(response);
     } catch (error) {
       next(error);
