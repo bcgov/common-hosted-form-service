@@ -1,16 +1,14 @@
 const request = require('supertest');
 const Problem = require('api-problem');
 
+const jwtService = require('../../../../src/components/jwtService');
 const { expressHelper } = require('../../../common/helper');
+const constants = require('../../../../src/forms/common/constants');
 
 //
 // mock middleware
 //
-const jwtService = require('../../../../src/components/jwtService');
 
-//
-// test assumes that caller has appropriate token, we are not testing middleware here...
-//
 jwtService.protect = jest.fn(() => {
   return jest.fn((_req, _res, next) => {
     next();
@@ -117,8 +115,8 @@ describe(`${basePath}`, () => {
   });
 });
 
-describe(`${basePath}/role`, () => {
-  const path = `${basePath}/role`;
+describe(`${basePath}/:code`, () => {
+  const path = `${basePath}/${constants.Roles.FORM_DESIGNER}`;
 
   describe('GET', () => {
     it('should return 200', async () => {

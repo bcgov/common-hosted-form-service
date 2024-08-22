@@ -13,10 +13,11 @@ const controller = require('../../../../src/forms/user/controller');
 // correctly, not the functionality of the middleware.
 //
 
+const mockJwtServiceProtect = jest.fn((_req, _res, next) => {
+  next();
+});
 jwtService.protect = jest.fn(() => {
-  return jest.fn((_req, _res, next) => {
-    next();
-  });
+  return mockJwtServiceProtect;
 });
 
 userAccess.currentUser = jest.fn((_req, _res, next) => {
@@ -43,6 +44,25 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
+// jwtService.protect is tricky to test. This test is fragile as the file could
+// change and have routes that need admin and others that don't. This test only
+// works when we use(protect) at the file level, not individually in the routes.
+// However, this does test that we don't accidentally turn off the protection.
+describe('jwtService.protect', () => {
+  it('should be called with no argument', () => {
+    jest.resetModules();
+    const jwtService = require('../../../../src/components/jwtService');
+    jwtService.protect = jest.fn(() => {
+      return jest.fn((_req, _res, next) => {
+        next();
+      });
+    });
+    require('../../../../src/forms/user/routes');
+
+    expect(jwtService.protect).toBeCalledWith();
+  });
+});
+
 describe(`${basePath}`, () => {
   const path = `${basePath}`;
 
@@ -54,6 +74,7 @@ describe(`${basePath}`, () => {
     await appRequest.get(path);
 
     expect(controller.list).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
     expect(validateParameter.validateUserId).toBeCalledTimes(0);
@@ -72,6 +93,7 @@ describe(`${basePath}/:userId`, () => {
     await appRequest.get(path);
 
     expect(controller.read).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
     expect(validateParameter.validateUserId).toBeCalledTimes(1);
@@ -89,6 +111,7 @@ describe(`${basePath}/labels`, () => {
     await appRequest.get(path);
 
     expect(controller.readUserLabels).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
     expect(validateParameter.validateUserId).toBeCalledTimes(0);
@@ -102,6 +125,7 @@ describe(`${basePath}/labels`, () => {
     await appRequest.put(path);
 
     expect(controller.updateUserLabels).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
     expect(validateParameter.validateUserId).toBeCalledTimes(0);
@@ -119,6 +143,7 @@ describe(`${basePath}/preferences`, () => {
     await appRequest.delete(path);
 
     expect(controller.deleteUserPreferences).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
     expect(validateParameter.validateUserId).toBeCalledTimes(0);
@@ -132,6 +157,7 @@ describe(`${basePath}/preferences`, () => {
     await appRequest.get(path);
 
     expect(controller.readUserPreferences).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
     expect(validateParameter.validateUserId).toBeCalledTimes(0);
@@ -145,6 +171,7 @@ describe(`${basePath}/preferences`, () => {
     await appRequest.put(path);
 
     expect(controller.updateUserPreferences).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
     expect(validateParameter.validateUserId).toBeCalledTimes(0);
@@ -163,6 +190,7 @@ describe(`${basePath}/preferences/forms/:formId`, () => {
     await appRequest.delete(path);
 
     expect(controller.deleteUserFormPreferences).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateUserId).toBeCalledTimes(0);
@@ -176,6 +204,7 @@ describe(`${basePath}/preferences/forms/:formId`, () => {
     await appRequest.get(path);
 
     expect(controller.readUserFormPreferences).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateUserId).toBeCalledTimes(0);
@@ -189,6 +218,7 @@ describe(`${basePath}/preferences/forms/:formId`, () => {
     await appRequest.put(path);
 
     expect(controller.updateUserFormPreferences).toBeCalledTimes(1);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateUserId).toBeCalledTimes(0);
