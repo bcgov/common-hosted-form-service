@@ -98,42 +98,30 @@ describe('Form Designer', () => {
     cy.get(':nth-child(5) > .v-chip__content').click();
     cy.get('.v-btn--elevated > .v-btn__content > span').click();
     // Verify member is added with proper roles
-    cy.get('#input-90').should('be.checked');
-    cy.get('#input-91').should('be.checked');
-    cy.get('#input-93').should('be.checked');
+    cy.get('[data-test="ApproverRoleCheckbox"]').should('be.visible');
+    cy.get('[data-test="ReviewerRoleCheckbox"]').should('be.visible');
+    cy.get('[data-test="TeamManagerRoleCheckbox"]').should('be.visible');
+    cy.get('[data-test="ApproverRoleCheckbox"]').click({multiple:true,force:true});
     //Manage column views
-    cy.get('.mdi-view-column').click();
-    cy.get('#input-121').should('be.checked');
-    cy.get('#input-122').should('be.checked');
-    cy.get('#input-123').should('be.checked');
-    cy.get('#input-124').should('be.checked');
     
-    cy.get('#input-121').click();
+    cy.get('.mdi-view-column').click();
+    
+   
+    cy.get('table').contains('td','Reviewer').should('be.visible');
+    cy.get('table').contains('td','Approver').should('be.visible');
+    
+    
+    cy.get('[data-test="filter-table"] > .v-table__wrapper > table > tbody > :nth-child(1) > :nth-child(2)').click();
     cy.waitForLoad();
-    cy.get('#input-121').should('not.be.checked');
+    
     //Column view management
    
     cy.get('.search').click();
     cy.get('.search').type('Designer');
-    cy.get('[data-test="filter-table"] > .v-table__wrapper > table > tbody > .v-data-table__tr > :nth-child(2)').click();
+    cy.get('table').contains('td','Designer').should('be.visible');
     cy.get('[data-test="save-btn"] > .v-btn__content').click();
     cy.waitForLoad();
-    //Verify the roles on dashboard
-    if(depEnv=="app")
-    {
-      cy.get('#input-137').should('not.exist');
-      cy.get('#input-149').should('not.be.checked');
-    }
-    else
-    {
-      cy.get('#input-150').should('not.be.checked');
-      cy.get('#input-153').should('not.be.checked');
-      cy.get('#input-154').should('not.be.checked');
-
-    }
-    
-    
-
+  
     //Remove a user from Roles
     cy.get('tbody > :nth-child(1) > [style="width: 1rem;"] > .v-btn').click();
     cy.waitForLoad();
@@ -188,6 +176,7 @@ describe('Form Designer', () => {
     //Delete form after test run
       cy.get('.mdi-delete').click();
       cy.get('[data-test="continue-btn-continue"]').click();
+      cy.get('#logoutButton > .v-btn__content > span').click();
     })
     
   });

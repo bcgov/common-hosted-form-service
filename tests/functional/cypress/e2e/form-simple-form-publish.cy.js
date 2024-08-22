@@ -76,8 +76,6 @@ describe('Form Designer', () => {
       let arr = search.split('=');
       let arrayValues = arr[1].split('&');
       cy.log(arrayValues[0]);
-      //cy.log(arrayValues[1]);
-      //cy.log(arrayValues[2]);
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
       cy.waitForLoad();
       
@@ -107,6 +105,7 @@ describe('Form Designer', () => {
       //cy.get('.mdi-delete').click();
       cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
       cy.get('[data-test="continue-btn-continue"]').click();
+      cy.get('#logoutButton > .v-btn__content > span').click();
    
 
     });
