@@ -1,6 +1,8 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
+import { computed, inject, onMounted, ref } from 'vue';
 
 import AuditHistory from '~/components/forms/submission/AuditHistory.vue';
 import DeleteSubmission from '~/components/forms/submission/DeleteSubmission.vue';
@@ -13,87 +15,77 @@ import { checkSubmissionUpdate } from '~/utils/permissionUtils';
 import { useFormStore } from '~/store/form';
 import { NotificationTypes } from '~/utils/constants';
 
-export default {
-  components: {
-    AuditHistory,
-    DeleteSubmission,
-    FormViewer,
-    NotesPanel,
-    StatusPanel,
-    PrintOptions,
-  },
-  inject: ['setWideLayout'],
-  props: {
-    submissionId: {
-      type: String,
-      required: true,
-    },
-  },
-  setup() {
-    const { locale } = useI18n({ useScope: 'global' });
+const { locale } = useI18n({ useScope: 'global' });
+const router = useRouter();
 
-    return { locale };
-  },
-  data() {
-    return {
-      isDraft: true,
-      loading: true,
-      reRenderSubmission: 0,
-      submissionReadOnly: true,
-      isWideLayout: false,
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, [
-      'form',
-      'formSubmission',
-      'permissions',
-      'isRTL',
-    ]),
-    NOTIFICATIONS_TYPES() {
-      return NotificationTypes;
-    },
-  },
-  async mounted() {
-    await this.fetchSubmission({ submissionId: this.submissionId });
-    // get current user's permissions on associated form
-    await this.getFormPermissionsForUser(this.form.id);
-    this.loading = false;
-    // set wide layout
-    this.setWideLayout(this.isWideLayout);
-  },
-  methods: {
-    ...mapActions(useFormStore, [
-      'fetchSubmission',
-      'getFormPermissionsForUser',
-    ]),
-    checkSubmissionUpdate: checkSubmissionUpdate,
-    onDelete() {
-      this.$router.push({
-        name: 'FormSubmissions',
-        query: {
-          f: this.form.id,
-        },
-      });
-    },
-    refreshNotes() {
-      this.$refs.notesPanel.getNotes();
-    },
+const setWideLayout = inject('setWideLayout');
 
-    setDraft(status) {
-      this.isDraft = status === 'REVISING';
-    },
-    async toggleWideLayout() {
-      this.isWideLayout = !this.isWideLayout;
-      this.setWideLayout(this.isWideLayout);
-    },
-    async toggleSubmissionEdit(editing) {
-      this.submissionReadOnly = !editing;
-      this.reRenderSubmission += 1;
-      await this.fetchSubmission({ submissionId: this.submissionId });
-    },
+const properties = defineProps({
+  submissionId: {
+    type: String,
+    required: true,
   },
-};
+});
+
+const isDraft = ref(true);
+const loading = ref(true);
+const notesPanel = ref(null);
+const reRenderSubmission = ref(0);
+const submissionReadOnly = ref(true);
+const isWideLayout = ref(false);
+
+const formStore = useFormStore();
+
+const { form, formSubmission, permissions, isRTL } = storeToRefs(formStore);
+
+const NOTIFICATIONS_TYPES = computed(() => NotificationTypes);
+
+onMounted(async () => {
+  await formStore.fetchSubmission({ submissionId: properties.submissionId });
+  // get current user's permissions on associated form
+  await formStore.getFormPermissionsForUser(form.value.id);
+  loading.value = false;
+  // set wide layout
+  setWideLayout(isWideLayout.value);
+});
+
+function onDelete() {
+  router.push({
+    name: 'FormSubmissions',
+    query: {
+      f: form.value.id,
+    },
+  });
+}
+
+// TODO: This should be updated to an emit so we can test it
+function refreshNotes() {
+  notesPanel.value.getNotes();
+}
+
+function setDraft(status) {
+  isDraft.value = status === 'REVISING';
+}
+
+function toggleWideLayout() {
+  isWideLayout.value = !isWideLayout.value;
+  setWideLayout(isWideLayout.value);
+}
+
+async function toggleSubmissionEdit(editing) {
+  submissionReadOnly.value = !editing;
+  reRenderSubmission.value += 1;
+  await formStore.fetchSubmission({ submissionId: properties.submissionId });
+}
+
+defineExpose({
+  isDraft,
+  onDelete,
+  refreshNotes,
+  setDraft,
+  submissionReadOnly,
+  toggleSubmissionEdit,
+});
 </script>
 
 <template>
