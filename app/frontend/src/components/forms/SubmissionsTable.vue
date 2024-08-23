@@ -41,9 +41,9 @@ const filterIgnore = ref([
   },
 ]);
 const forceTableRefresh = ref(0);
-const itemsPerPage = ref(10);
+const itemsPP = ref(10);
 const loading = ref(true);
-const page = ref(1);
+const currentPage = ref(1);
 const restoreItem = ref({});
 const selectedSubmissions = ref([]);
 const serverItems = ref([]);
@@ -52,7 +52,7 @@ const showDeleteDialog = ref(false);
 const showRestoreDialog = ref(false);
 const singleSubmissionDelete = ref(false);
 const singleSubmissionRestore = ref(false);
-const sortBy = ref({});
+const sort = ref({});
 const firstDataLoad = ref(true);
 // When filtering, this data will not be preselected when clicking reset
 const tableFilterIgnore = ref([
@@ -306,26 +306,26 @@ function onShowColumnDialog() {
   showColumnsDialog.value = true;
 }
 
-async function updateTableOptions({ pg, itemsPP, sort }) {
-  if (pg) {
-    page.value = pg;
+async function updateTableOptions({ page, itemsPerPage, sortBy }) {
+  if (page) {
+    currentPage.value = page;
   }
-  if (sort?.length > 0) {
-    if (sort[0].key === 'date') {
-      sortBy.value.column = 'createdAt';
-    } else if (sort[0].key === 'submitter') {
-      sortBy.value.column = 'createdBy';
-    } else if (sort[0].key === 'status') {
-      sortBy.value.column = 'formSubmissionStatusCode';
+  if (sortBy?.length > 0) {
+    if (sortBy[0].key === 'date') {
+      sort.value.column = 'createdAt';
+    } else if (sortBy[0].key === 'submitter') {
+      sort.value.column = 'createdBy';
+    } else if (sortBy[0].key === 'status') {
+      sort.value.column = 'formSubmissionStatusCode';
     } else {
-      sortBy.value.column = sort[0].key;
+      sort.value.column = sortBy[0].key;
     }
-    sortBy.value.order = sort[0].order;
+    sort.value.order = sortBy[0].order;
   } else {
-    sortBy.value = {};
+    sort.value = {};
   }
-  if (itemsPP) {
-    itemsPerPage.value = itemsPP;
+  if (itemsPerPage) {
+    itemsPP.value = itemsPerPage;
   }
   if (!firstDataLoad.value) {
     await refreshSubmissions();
@@ -336,11 +336,11 @@ async function updateTableOptions({ pg, itemsPP, sort }) {
 async function getSubmissionData() {
   let criteria = {
     formId: properties.formId,
-    itemsPerPage: itemsPerPage.value,
-    page: page.value - 1,
+    itemsPerPage: itemsPP.value,
+    page: currentPage.value - 1,
     filterformSubmissionStatusCode: true,
     paginationEnabled: true,
-    sortBy: sortBy.value,
+    sortBy: sort.value,
     search: search.value,
     searchEnabled: search.value.length > 0 ? true : false,
     createdAt: Object.values({
@@ -539,11 +539,11 @@ defineExpose({
   getSubmissionData,
   handleSearch,
   HEADERS,
-  itemsPerPage,
+  itemsPP,
   multiDeleteMessage,
   multiRestoreMessage,
   onShowColumnDialog,
-  page,
+  currentPage,
   restoreSub,
   serverItems,
   showColumnsDialog,
@@ -554,7 +554,7 @@ defineExpose({
   singleRestoreMessage,
   singleSubmissionDelete,
   singleSubmissionRestore,
-  sortBy,
+  sort,
   updateFilter,
   userColumns,
   USER_PREFERENCES,
@@ -691,7 +691,7 @@ defineExpose({
       hover
       :items-length="totalSubmissions"
       class="submissions-table"
-      :items-per-page="itemsPerPage"
+      :items-per-page="itemsPP"
       :headers="HEADERS"
       item-value="submissionId"
       :items="serverItems"
