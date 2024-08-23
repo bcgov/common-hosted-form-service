@@ -84,7 +84,8 @@
     "deleteSuccess": "模板删除成功。",
     "deleteError": "删除模板时发生错误。",
     "fetchError": "获取模板时发生错误。",
-    "info": "上传模板以使用公共文档生成服务（CDOGS）"
+    "info": "上传模板以使用公共文档生成服务（CDOGS）",
+    "fileSizeError": "文件大小必须小于25MB。"
   },
   "formSettings": {
     "pressToAddMultiEmail": "按<kbd>Enter</kbd>或<kbd>,</kbd>或<kbd>空格键</kbd>添加多个电子邮件地址",

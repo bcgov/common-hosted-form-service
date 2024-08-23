@@ -84,7 +84,8 @@
     "deleteSuccess": "Modelo excluído com sucesso.",
     "deleteError": "Ocorreu um erro ao excluir o modelo.",
     "fetchError": "Ocorreu um erro ao buscar o modelo.",
-    "info": "Carregue um modelo para usar o Serviço de Geração de Documentos Comuns (CDOGS)"
+    "info": "Carregue um modelo para usar o Serviço de Geração de Documentos Comuns (CDOGS)",
+    "fileSizeError": "O tamanho do arquivo deve ser menor que 25 MB."
   },
   "formSettings": {
     "pressToAddMultiEmail": "Pressione <kbd>enter</kbd> ou <kbd>,</kbd> ou <kbd>espaço</kbd> para adicionar vários endereços de e-mail",
