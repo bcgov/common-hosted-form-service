@@ -84,7 +84,8 @@
     "deleteSuccess": "템플릿이 성공적으로 삭제되었습니다.",
     "deleteError": "템플릿 삭제 중 오류가 발생했습니다.",
     "fetchError": "템플릿 가져오기 중 오류가 발생했습니다.",
-    "info": "공통 문서 생성 서비스(CDOGS)를 사용하기 위해 템플릿을 업로드하십시오"
+    "info": "공통 문서 생성 서비스(CDOGS)를 사용하기 위해 템플릿을 업로드하십시오",
+    "fileSizeError": "파일 크기는 25MB 이하여야 합니다."
   },
   "formSettings": {
     "pressToAddMultiEmail": "여러 이메일 주소를 추가하려면 <kbd>enter</kbd> 또는 <kbd>,</kbd> 또는 <kbd>space를</kbd> 누르십시오.",
