@@ -1,9 +1,11 @@
 <!--
 The above Title for the Pull Request should use the format:
-    type: FORMS-ABCD describe the change
+    type: FORMS-ABCD your change description
 
 For example:
-    feat: FORMS-1234 add a new trajectory diverter
+```
+feat: FORMS-1234 add Assigned To column to submission table
+```
 -->
 
 # Description
