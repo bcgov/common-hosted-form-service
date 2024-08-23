@@ -51,6 +51,7 @@ const defaultTemplateFilename = ref('');
 const defaultTemplateExtension = ref('');
 const displayTemplatePrintButton = ref(false);
 const isValidFile = ref(true);
+const fileInputKey = ref(0);
 const validFileExtensions = ref(['txt', 'docx', 'html', 'odt', 'pptx', 'xlsx']);
 const defaultExportFileTypes = ref(['pdf']);
 const uploadExportFileTypes = ref(['pdf']);
@@ -296,6 +297,12 @@ function validateFileExtension(event) {
   }
 }
 
+function handleFileUpload(event) {
+  fileInputKey.value += 1;
+  templateForm.value.files = event;
+  validateFileExtension(event);
+}
+
 defineExpose({
   createBody,
   createDownload,
@@ -439,6 +446,7 @@ defineExpose({
                   value="upload"
                 ></v-radio>
                 <v-file-input
+                  :key="fileInputKey"
                   v-model="templateForm.files"
                   :class="{ label: isRTL }"
                   :style="isRTL ? { gap: '10px' } : null"
@@ -453,7 +461,7 @@ defineExpose({
                   :lang="locale"
                   :rules="validationRules"
                   :disabled="selectedOption !== 'upload'"
-                  @update:model-value="validateFileExtension($event)"
+                  @update:model-value="handleFileUpload"
                 />
                 <v-select
                   v-if="selectedOption === 'upload'"

@@ -4,6 +4,8 @@ import { setActivePinia } from 'pinia';
 import moment from 'moment';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n({ useScope: 'global' });
 
 import { useFormStore } from '~/store/form';
 import FormScheduleSettings from '~/components/designer/settings/FormScheduleSettings.vue';
@@ -746,4 +748,76 @@ describe('FormScheduleSettings.vue', () => {
 
     expect(wrapper.vm.AVAILABLE_PERIOD_OPTIONS).toEqual(['quarters', 'years']);
   });
+
+  it('renders submission schedule and late submission text with correct spacing', async () => {
+    const TODAY = moment().format('YYYY-MM-DD HH:MM:SS');
+    const wrapper = mount(FormScheduleSettings, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          BaseInfoCard: {
+            name: 'BaseInfoCard',
+            template: '<div class="base-info-card-stub"><slot /></div>',
+          },
+          BasePanel: {
+            name: 'BasePanel',
+            template: '<div class="base-panel-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+  
+    // Set up the form store with necessary data
+    const formStore = useFormStore();
+    formStore.form = {
+      schedule: {
+        enabled: true,
+        openSubmissionDateTime: TODAY,
+        closeSubmissionDateTime: moment(TODAY).add(2, 'days').format('YYYY-MM-DD HH:MM:SS'),
+        scheduleType: ScheduleType.CLOSINGDATE,
+        allowLateSubmissions: {
+          enabled: true,
+          forNext: {
+            term: 2,
+            intervalType: 'days'
+          }
+        }
+      }
+    };
+  
+    await flushPromises();
+  
+    // Check submission schedule text
+    const submissionScheduleText = wrapper.find('[data-test="submission-schedule-text"]');
+    expect(submissionScheduleText.exists()).toBe(true);
+    
+    const scheduleTextContent = submissionScheduleText.text();
+    expect(scheduleTextContent).toContain(t('trans.formSettings.submissionsOpenDateRange'));
+    expect(scheduleTextContent).toContain(TODAY);
+    expect(scheduleTextContent).toContain(t('trans.formSettings.to'));
+    expect(scheduleTextContent).toContain(formStore.form.schedule.closeSubmissionDateTime);
+  
+    // Check that there's exactly one space before and after the "to" text
+    const toIndex = scheduleTextContent.indexOf(t('trans.formSettings.to'));
+    expect(scheduleTextContent[toIndex - 1]).toBe(' ');
+    expect(scheduleTextContent[toIndex + t('trans.formSettings.to').length]).toBe(' ');
+  
+    // Check late submission text
+    const lateSubmissionText = wrapper.find('[data-test="late-submission-text"]');
+    expect(lateSubmissionText.exists()).toBe(true);
+  
+    const lateTextContent = lateSubmissionText.text();
+    const expectedLateText = `${t('trans.formSettings.allowLateSubmissnInterval')} 2 days.`;
+    expect(lateTextContent).toBe(expectedLateText);
+  
+    // Check that there's exactly one space before and after the term and interval type
+    const termIndex = lateTextContent.indexOf('2');
+    expect(lateTextContent[termIndex - 1]).toBe(' ');
+    expect(lateTextContent[termIndex + 1]).toBe(' ');
+  
+    const intervalTypeIndex = lateTextContent.indexOf('days');
+    expect(lateTextContent[intervalTypeIndex - 1]).toBe(' ');
+    expect(lateTextContent[intervalTypeIndex + 4]).toBe('.');
+  });
+  
 });

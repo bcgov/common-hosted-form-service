@@ -100,6 +100,7 @@
     "referenceGuideB": "Benutzerhandbuch",
     "referenceGuideC": "für mehr Details",
     "specificTeamMembers": "Spezifische Teammitglieder",
+    "teamMemberTooltip": "Fügen Sie Teammitglieder aus den Teamverwaltungseinstellungen hinzu, nachdem Sie dieses Formular erstellt haben.",
     "formFunctionality": "Formularfunktionalität",
     "formSubmissinScheduleMsg": "Der Formulareinreichungsplan ist in den Formulareinstellungen verfügbar, nachdem das Formular veröffentlicht wurde.",
     "formSubmissionsSchedule": "Zeitplan für Formulareinreichungen",
@@ -830,7 +831,8 @@
     "errorSavingFile": "Fehler beim Speichern der Dateien. Dateiname: {fileName}. Fehler: {error}",
     "submittingDraftErrMsg": "Beim Speichern eines Entwurfs ist ein Fehler aufgetreten",
     "submittingDraftConsErrMsg": "Fehler beim Speichern des Entwurfs. Einreichungs-ID: {submissionId}. Fehler: {error}",
-    "formDraftAccessErrMsg": "Die angeforderte Übermittlung wurde bereits übermittelt und wird zur Ansichtsseite weitergeleitet"
+    "formDraftAccessErrMsg": "Die angeforderte Übermittlung wurde bereits übermittelt und wird zur Ansichtsseite weitergeleitet",
+    "formUnauthorizedMessage": "Sie sind nicht berechtigt, dieses Formular anzusehen. Bitte kontaktieren Sie den Formulareigentümer für den Zugang."
   },
   "bCGovFooter": {
     "home": "Heim",

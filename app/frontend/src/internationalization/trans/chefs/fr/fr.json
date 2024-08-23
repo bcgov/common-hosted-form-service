@@ -100,6 +100,7 @@
     "referenceGuideB": "mode d'emploi",
     "referenceGuideC": "pour plus de détails",
     "specificTeamMembers": "Membres spécifiques de l'équipe",
+    "teamMemberTooltip": "Ajoutez des membres de l'équipe depuis les paramètres de Gestion d'Équipe après avoir créé ce formulaire.",
     "formFunctionality": "Fonctionnalité du formulaire",
     "formSubmissinScheduleMsg": "Le calendrier de soumission des formulaires sera disponible dans les paramètres du formulaire après la publication du formulaire.",
     "formSubmissionsSchedule": "Calendrier de soumission des formulaires",
@@ -829,7 +830,8 @@
     "errorSavingFile": "Erreur lors de l'enregistrement des fichiers. Nom de fichier : {fileName}. Erreur : {error}",
     "submittingDraftErrMsg": "Une erreur s'est produite lors de l'enregistrement d'un brouillon",
     "submittingDraftConsErrMsg": "Erreur lors de l'enregistrement du brouillon. ID de soumission : {submissionId}. Erreur : {error}",
-    "formDraftAccessErrMsg": "La soumission demandée est déjà soumise, redirigeant vers la page Afficher"
+    "formDraftAccessErrMsg": "La soumission demandée est déjà soumise, redirigeant vers la page Afficher",
+    "formUnauthorizedMessage": "Vous n'êtes pas autorisé à voir ce formulaire, veuillez contacter le propriétaire du formulaire pour accéder."
   },
   "bCGovFooter": {
     "home": "Maison",
