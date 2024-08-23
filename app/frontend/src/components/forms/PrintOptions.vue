@@ -1,7 +1,7 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
-import { onBeforeUnmount, computed, ref, watch } from 'vue';
+import { onBeforeUnmount, computed, ref, watch, nextTick } from 'vue';
 
 import { createDownload } from '~/composables/printOptions';
 import { formService, utilsService } from '~/services';
@@ -52,6 +52,7 @@ const defaultTemplateExtension = ref('');
 const displayTemplatePrintButton = ref(false);
 const isValidFile = ref(true);
 const isValidSize = ref(true);
+const fileInput = ref(null);
 const fileInputKey = ref(0);
 const validFileExtensions = ref(['txt', 'docx', 'html', 'odt', 'pptx', 'xlsx']);
 const defaultExportFileTypes = ref(['pdf']);
@@ -272,14 +273,13 @@ async function fetchDefaultTemplate() {
 
 function validateFile(event) {
   if (event.length > 0) {
-  
     // validate file size
     if (event[0].size > 25000000) {
       isValidSize.value = false;
     } else {
       isValidSize.value = true;
     }
-    
+
     // validate file extension
     const fileExtension = event[0].name.split('.').pop();
     // reset the outputFileName when a new file is uploaded
@@ -305,6 +305,7 @@ function validateFile(event) {
       );
     }
     isValidFile.value = true;
+    isValidSize.value = true;
   }
 }
 
@@ -312,6 +313,13 @@ function handleFileUpload(event) {
   fileInputKey.value += 1;
   templateForm.value.files = event;
   validateFile(event);
+
+  //force immediate validation as the v-file-input is bound to the :key
+  nextTick(() => {
+    if (fileInput.value) {
+      fileInput.value.validate();
+    }
+  });
 }
 
 defineExpose({
