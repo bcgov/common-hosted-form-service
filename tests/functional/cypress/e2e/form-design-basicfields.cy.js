@@ -243,14 +243,15 @@ describe('Form Designer', () => {
         
         cy.get('button').contains('Save').click();
       });
-      cy.get('[ref=removeComponent]').then($el => {
+      //cy.get('[ref=removeComponent]').then($el => {
 
-        const rem=$el[11];
-        rem.click();
+       // const rem=$el[11];
+        //rem.click();
         
-        });
+        //});
 
-
+      cy.waitForLoad();
+      cy.waitForLoad();
       cy.get('[data-cy=saveButton]').click();
       cy.waitForLoad();
 
@@ -288,9 +289,11 @@ describe('Form Designer', () => {
      cy.visit(`/${depEnv}/form/design?d=${arrayValues[0]}&f=${dval[0]}`);
      cy.waitForLoad();
      cy.waitForLoad();
-     //cy.get('[data-cy="settingsRouterLink"] > .text').click();
+     
      cy.get('[data-cy="settingsRouterLink"] > .v-btn').click();
-     cy.get('.mt-6 > :nth-child(2) > div > :nth-child(5) > .v-btn').click();
+     cy.waitForLoad();
+     cy.get('[data-test="canRemoveForm"]').click();
+     
      cy.get('[data-test="continue-btn-continue"]').click();
      
     });

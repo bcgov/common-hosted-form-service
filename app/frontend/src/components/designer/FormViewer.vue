@@ -8,14 +8,17 @@ import BaseDialog from '~/components/base/BaseDialog.vue';
 import FormViewerActions from '~/components/designer/FormViewerActions.vue';
 import FormViewerMultiUpload from '~/components/designer/FormViewerMultiUpload.vue';
 import templateExtensions from '~/plugins/templateExtensions';
-import { formService, rbacService } from '~/services';
+import { fileService, formService, rbacService } from '~/services';
 import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
 import { isFormPublic } from '~/utils/permissionUtils';
-import { attachAttributesToLinks } from '~/utils/transformUtils';
+import {
+  attachAttributesToLinks,
+  getDisposition,
+} from '~/utils/transformUtils';
 import { FormPermissions, NotificationTypes } from '~/utils/constants';
 
 export default {
@@ -77,6 +80,7 @@ export default {
       bulkFile: false,
       confirmSubmit: false,
       currentForm: {},
+      downloadTimeout: null,
       doYouWantToSaveTheDraft: false,
       forceNewTabLinks: true,
       form: {},
@@ -111,6 +115,7 @@ export default {
       submissionRecord: {},
       version: 0,
       versionIdToSubmitTo: this.versionId,
+      isAuthorized: true,
     };
   },
   computed: {
@@ -121,10 +126,13 @@ export default {
       'tokenParsed',
       'user',
     ]),
-    ...mapState(useFormStore, ['isRTL']),
+    ...mapState(useFormStore, ['downloadedFile', 'isRTL']),
 
     formScheduleExpireMessage() {
       return this.$t('trans.formViewer.formScheduleExpireMessage');
+    },
+    formUnauthorizedMessage() {
+      return this.$t('trans.formViewer.formUnauthorizedMessage');
     },
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
@@ -148,6 +156,9 @@ export default {
           simplefile: {
             config: this.config,
             chefsToken: this.getCurrentAuthHeader,
+            deleteFile: this.deleteFile,
+            getFile: this.getFile,
+            uploadFile: this.uploadFile,
           },
         },
         evalContext: {
@@ -183,13 +194,13 @@ export default {
       this.showModal = true;
       await this.getFormSchema();
     }
-
     window.addEventListener('beforeunload', this.beforeWindowUnload);
 
     this.reRenderFormIo += 1;
   },
   beforeUnmount() {
     window.removeEventListener('beforeunload', this.beforeWindowUnload);
+    clearTimeout(this.downloadTimeout);
   },
   beforeUpdate() {
     if (this.forceNewTabLinks) {
@@ -197,6 +208,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(useFormStore, ['downloadFile']),
     ...mapActions(useNotificationStore, ['addNotification']),
     isFormPublic: isFormPublic,
     getCurrentAuthHeader() {
@@ -394,19 +406,22 @@ export default {
         }
       } catch (error) {
         if (this.authenticated) {
-          this.isFormScheduleExpired = true;
-          this.isLateSubmissionAllowed = false;
-          this.formScheduleExpireMessage = error.message;
-          this.addNotification({
-            text: this.$t('trans.formViewer.fecthingFormErrMsg'),
-            consoleError: this.$t(
-              'trans.formViewer.fecthingFormConsoleErrMsg',
-              {
-                versionId: this.versionId,
-                error: error,
-              }
-            ),
-          });
+          // if 401 error, the user is not authorized to view the form
+          if (error.response && error.response.status === 401) {
+            this.isAuthorized = false;
+          } else {
+            // throw a generic error message
+            this.addNotification({
+              text: this.$t('trans.formViewer.fecthingFormErrMsg'),
+              consoleError: this.$t(
+                'trans.formViewer.fecthingFormConsoleErrMsg',
+                {
+                  versionId: this.versionId,
+                  error: error,
+                }
+              ),
+            });
+          }
         }
       }
     },
@@ -1079,6 +1094,55 @@ export default {
         e.returnValue = '';
       }
     },
+    async deleteFile(file) {
+      const fileId = file?.data?.id
+        ? file.data.id
+        : file?.id
+        ? file.id
+        : undefined;
+      return fileService.deleteFile(fileId);
+    },
+    async getFile(fileId, options = {}) {
+      await this.downloadFile(fileId, options);
+      if (this.downloadedFile && this.downloadedFile.headers) {
+        let data;
+
+        if (
+          this.downloadedFile.headers['content-type'].includes(
+            'application/json'
+          )
+        ) {
+          data = JSON.stringify(this.downloadedFile.data);
+        } else {
+          data = this.downloadedFile.data;
+        }
+
+        if (typeof data === 'string') {
+          data = new Blob([data], {
+            type: this.downloadedFile.headers['content-type'],
+          });
+        }
+
+        // don't need to blob because it's already a blob
+        const url = window.URL.createObjectURL(data);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = getDisposition(
+          this.downloadedFile.headers['content-disposition']
+        );
+        a.style.display = 'none';
+        a.classList.add('hiddenDownloadTextElement');
+        document.body.appendChild(a);
+        a.click();
+        this.downloadTimeout = setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(a.href);
+        });
+      }
+    },
+    async uploadFile(file, config = {}) {
+      return fileService.uploadFile(file, config);
+    },
   },
 };
 </script>
@@ -1086,7 +1150,18 @@ export default {
 <template>
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
     <v-container fluid>
-      <div v-if="isFormScheduleExpired">
+      <div v-if="!isAuthorized">
+        <v-alert
+          :text="formUnauthorizedMessage"
+          prominent
+          type="error"
+          :class="{ 'dir-rtl': isRTL }"
+          :lang="locale"
+        >
+        </v-alert>
+      </div>
+
+      <div v-else-if="isFormScheduleExpired">
         <v-alert
           :text="
             isLateSubmissionAllowed
@@ -1101,7 +1176,7 @@ export default {
         </v-alert>
 
         <div v-if="isLateSubmissionAllowed">
-          <v-col cols="3" md="2">
+          <v-col cols="12" md="6">
             <v-btn
               color="primary"
               :class="{ 'dir-rtl': isRTL }"
