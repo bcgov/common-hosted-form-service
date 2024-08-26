@@ -103,10 +103,10 @@ module.exports = {
         emailService
           .statusAssigned(submission.form.id, response[0], req.body.assignmentNotificationEmail, req.body.revisionNotificationEmailContent, req.headers.referer)
           .catch(() => {});
-      } else if (req.body.code === Statuses.COMPLETED && req.body.submissionUserEmail) {
-        emailService.statusCompleted(submission.form.id, response[0], req.body.submissionUserEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => {});
-      } else if (req.body.code === Statuses.REVISING && req.body.submissionUserEmail) {
-        emailService.statusRevising(submission.form.id, response[0], req.body.submissionUserEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => {});
+      } else if (req.body.code === Statuses.COMPLETED && req.body.submissionUserEmails) {
+        emailService.statusCompleted(submission.form.id, response[0], req.body.submissionUserEmails, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => {});
+      } else if (req.body.code === Statuses.REVISING && req.body.submissionUserEmails) {
+        emailService.statusRevising(submission.form.id, response[0], req.body.submissionUserEmails, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => {});
       }
       res.status(200).json(response);
     } catch (error) {

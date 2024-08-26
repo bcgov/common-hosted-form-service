@@ -983,9 +983,9 @@ describe('StatusPanel', () => {
   
     await wrapper.vm.updateStatus();
   
-    expect(updateSubmissionStatusSpy).toBeCalledTimes(2);
-    expect(getCurrentUserSpy).toBeCalledTimes(2);
-    expect(addNoteSpy).toBeCalledTimes(2);
+    expect(updateSubmissionStatusSpy).toBeCalledTimes(1);
+    expect(getCurrentUserSpy).toBeCalledTimes(1);
+    expect(addNoteSpy).toBeCalledTimes(1);
     expect(getFormUsersSpy).toBeCalledTimes(1);
     expect(getSubmissionStatusesSpy).toBeCalledTimes(1);
     expect(getStatusCodesSpy).toBeCalledTimes(1);

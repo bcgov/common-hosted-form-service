@@ -251,15 +251,55 @@ async function updateStatus() {
         throw new Error(t('trans.statusPanel.status'));
       }
 
-      if (selectedSubmissionUsers.value.length > 0) {
-        for (const user of selectedSubmissionUsers.value) {
-          console.log('updating status for user:', user);
-          await updateStatusAndAddNote(user);
+      const statusBody = {
+        code: statusToSet.value,
+        submissionUserEmails: selectedSubmissionUsers.value, //array of emails used for the COMPLETED and REVISING status
+        revisionNotificationEmailContent: emailComment.value,
+      };
+      if (showAssignee.value) {
+        if (assignee.value) {
+          statusBody.assignedToUserId = assignee.value.userId;
+          statusBody.assignmentNotificationEmail = assignee.value.email;
         }
-      } else {
-        await updateStatusAndAddNote(submissionUserEmail.value);
+      }
+      const statusResponse = await formService.updateSubmissionStatus(
+        properties.submissionId,
+        statusBody
+      );
+      if (!statusResponse.data) {
+        throw new Error(t('trans.statusPanel.updtSubmissionsStatusErr'));
       }
 
+      if (emailComment.value) {
+        let formattedComment;
+        if (statusToSet.value === 'ASSIGNED') {
+          formattedComment = `Email to ${assignee.value.email}: ${emailComment.value}`;
+        } else if (
+          statusToSet.value === 'REVISING' ||
+          statusToSet.value === 'COMPLETED'
+        ) {
+          const emailList = selectedSubmissionUsers.value.join(', ');
+          formattedComment = `Email to ${emailList}: ${emailComment.value}`;
+        }
+
+        const submissionStatusId = statusResponse.data[0].submissionStatusId;
+        const user = await rbacService.getCurrentUser();
+        const noteBody = {
+          submissionId: properties.submissionId,
+          submissionStatusId: submissionStatusId,
+          note: formattedComment,
+          userId: user.data.id,
+        };
+        const response = await formService.addNote(
+          properties.submissionId,
+          noteBody
+        );
+        if (!response.data) {
+          throw new Error(t('trans.statusPanel.addNoteNoReponserErr'));
+        }
+        // Update the parent if the note was updated
+        emit('note-updated');
+      }
       resetForm();
       await getStatus();
     }
@@ -270,60 +310,6 @@ async function updateStatus() {
         error: error,
       }),
     });
-  }
-}
-
-async function updateStatusAndAddNote(user) {
-  const statusBody = {
-    code: statusToSet.value,
-    submissionUserEmail: user,
-    revisionNotificationEmailContent: emailComment.value,
-  };
-
-  if (showAssignee.value && assignee.value) {
-    statusBody.assignedToUserId = assignee.value.userId;
-    statusBody.assignmentNotificationEmail = assignee.value.email;
-  }
-
-  const statusResponse = await formService.updateSubmissionStatus(
-    properties.submissionId,
-    statusBody
-  );
-
-  if (!statusResponse.data) {
-    throw new Error(t('trans.statusPanel.updtSubmissionsStatusErr'));
-  }
-
-  if (emailComment.value) {
-    let formattedComment;
-    if (statusToSet.value === 'ASSIGNED') {
-      formattedComment = `Email to ${assignee.value.email}: ${emailComment.value}`;
-    } else if (
-      statusToSet.value === 'REVISING' ||
-      statusToSet.value === 'COMPLETED'
-    ) {
-      formattedComment = `Email to ${user}: ${emailComment.value}`;
-    }
-
-    const submissionStatusId = statusResponse.data[0].submissionStatusId;
-    const currentUser = await rbacService.getCurrentUser();
-    const noteBody = {
-      submissionId: properties.submissionId,
-      submissionStatusId: submissionStatusId,
-      note: formattedComment,
-      userId: currentUser.data.id,
-    };
-
-    const response = await formService.addNote(
-      properties.submissionId,
-      noteBody
-    );
-
-    if (!response.data) {
-      throw new Error(t('trans.statusPanel.addNoteNoReponserErr'));
-    }
-
-    emit('note-updated');
   }
 }
 
@@ -347,7 +333,6 @@ defineExpose({
   formSubmitters,
   selectAllSubmitters,
   updateStatus,
-  updateStatusAndAddNote,
 });
 </script>
 
