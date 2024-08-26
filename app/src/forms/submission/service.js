@@ -393,6 +393,40 @@ const service = {
       throw err;
     }
   },
+
+  /**
+   * @function getEmailRecipients
+   * Get email recipients that were selected when the status was set to REVISING
+   * @param {string} submissionId The submission id
+   * @returns The email recipients
+   */
+  getEmailRecipients: (submissionId) => {
+    return FormSubmissionStatus.query().findById(submissionId).select('emailRecipients');
+  },
+
+  /**
+   * @function addEmailRecipients
+   * Add email recipients of the REVISING status to the database
+   * @param {string} submissionId The submission id
+   * @param {string[]} emailRecipients The email recipients
+   * @returns confirmation of the email recipients being added
+   */
+  addEmailRecipients: async (submissionId, emailRecipients) => {
+    await FormSubmissionStatus.query().findById(submissionId).patch({ emailRecipients: emailRecipients });
+    return service.getEmailRecipients(submissionId);
+  },
+
+  /**
+   * @function deleteEmailRecipients
+   * Delete email recipients when the status is changed
+   * @param {string} submissionId The submission id
+   * @returns confirmation of the email recipients being deleted
+   */
+  deleteEmailRecipients: async (submissionId) => {
+    await FormSubmissionStatus.query().findById(submissionId).patch({ emailRecipients: null });
+    return service.getEmailRecipients(submissionId);
+  },
+
   // -------------------------------------------------------------------------------------------------/Notes
 };
 

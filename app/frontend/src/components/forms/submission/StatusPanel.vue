@@ -45,6 +45,7 @@ const statusToSet = ref('');
 const valid = ref(false);
 const showSendConfirmEmail = ref(false);
 const showStatusContent = ref(false);
+const emailRecipients = ref([]);
 
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
@@ -89,6 +90,18 @@ const statusAction = computed(() => {
   return actionStatus;
 });
 
+async function getEmailRecipients() {
+  try {
+    const response = await formService.getEmailRecipients(properties.submissionId);
+    emailRecipients.value = response.data;
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.statusPanel.fetchSubmissionUsersErr'),
+      consoleError: t('trans.statusPanel.fetchSubmissionUsersErr', { error: error.message }),
+    });
+  }
+}
+
 watch(selectAllSubmitters, (newValue) => {
   if (newValue) {
     selectedSubmissionUsers.value = formSubmitters.value.map(
@@ -109,6 +122,7 @@ watch(selectedSubmissionUsers, (newValue) => {
 });
 
 getStatus();
+getEmailRecipients();
 
 async function onStatusChange(status) {
   statusFields.value = true;
@@ -116,6 +130,11 @@ async function onStatusChange(status) {
   if (status === 'REVISING' || status === 'COMPLETED') {
     try {
       await formStore.fetchSubmissionUsers(properties.submissionId);
+      
+      if(status === 'COMPLETED') {
+        await getEmailRecipients();
+        selectedSubmissionUsers.value = emailRecipients.value.map(recipient => recipient.email);
+      }
 
       // add all the submission users emails to the formSubmitters array
       formSubmitters.value = submissionUsers.value.data.map((data) => {
@@ -242,6 +261,7 @@ function resetForm() {
   selectedSubmissionUsers.value = [];
   statusToSet.value = '';
   note.value = '';
+  emailRecipients.value = [];
 }
 
 async function updateStatus() {
@@ -262,6 +282,13 @@ async function updateStatus() {
           statusBody.assignmentNotificationEmail = assignee.value.email;
         }
       }
+
+      if (statusToSet.value === 'REVISING') {
+        await formService.addEmailRecipients(properties.submissionId, { emails: selectedSubmissionUsers.value });
+      } else if (statusToSet.value === 'ASSIGNED') {
+        await formService.deleteEmailRecipients(properties.submissionId);
+      }
+
       const statusResponse = await formService.updateSubmissionStatus(
         properties.submissionId,
         statusBody
@@ -300,8 +327,14 @@ async function updateStatus() {
         // Update the parent if the note was updated
         emit('note-updated');
       }
+
+      if (statusToSet.value === 'COMPLETED') {
+        await formService.deleteEmailRecipients(properties.submissionId);
+      }
+
       resetForm();
       await getStatus();
+      await getEmailRecipients();
     }
   } catch (error) {
     notificationStore.addNotification({
@@ -333,6 +366,7 @@ defineExpose({
   formSubmitters,
   selectAllSubmitters,
   updateStatus,
+  getEmailRecipients
 });
 </script>
 

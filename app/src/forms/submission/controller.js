@@ -124,6 +124,30 @@ module.exports = {
       next(error);
     }
   },
+  getEmailRecipients: async (req, res, next) => {
+    try {
+      const response = await service.getEmailRecipients(req.params.formSubmissionId);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  addEmailRecipients: async (req, res, next) => {
+    try {
+      const response = await service.addEmailRecipients(req.params.formSubmissionId, req.body.emailRecipients);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  deleteEmailRecipients: async (req, res, next) => {
+    try {
+      const response = await service.deleteEmailRecipients(req.params.formSubmissionId);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
 
   /**
    * Takes a document template ID and a form submission ID and renders the
