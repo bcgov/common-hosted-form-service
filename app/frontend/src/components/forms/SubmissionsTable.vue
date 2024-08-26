@@ -1,8 +1,8 @@
-<script>
+<script setup>
 import _ from 'lodash';
 import moment from 'moment';
-import { mapActions, mapState } from 'pinia';
-import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
@@ -11,550 +11,554 @@ import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { checkFormManage, checkSubmissionView } from '~/utils/permissionUtils';
 
-export default {
-  components: {
-    BaseDialog,
-    BaseFilter,
-  },
-  props: {
-    formId: {
-      type: String,
-      required: true,
-    },
-  },
-  setup() {
-    const { t, locale } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
 
-    return { t, locale };
+const properties = defineProps({
+  formId: {
+    type: String,
+    required: true,
   },
-  data() {
-    return {
-      // Show only items for the current logged in user
-      currentUserOnly: false,
-      debounceInput: null,
-      deleteItem: {},
-      // Show only deleted items
-      deletedOnly: false,
-      filterData: [],
-      search: '',
-      filterIgnore: [
-        {
-          key: 'confirmationId',
-        },
-        {
-          key: 'actions',
-        },
-        {
-          key: 'event',
-        },
-      ],
-      forceTableRefresh: ref(0),
-      itemsPerPage: 10,
-      loading: true,
-      page: 1,
-      restoreItem: {},
-      selectedSubmissions: [],
-      serverItems: [],
-      showColumnsDialog: false,
-      showDeleteDialog: false,
-      showRestoreDialog: false,
-      singleSubmissionDelete: false,
-      singleSubmissionRestore: false,
-      sortBy: {},
-      firstDataLoad: true,
-      // When filtering, this data will not be preselected when clicking reset
-      tableFilterIgnore: [
-        { key: 'updatedAt' },
-        { key: 'updatedBy' },
-        { key: 'lateEntry' },
-      ],
-    };
+});
+
+// Show only items for the current logged in user
+const currentUserOnly = ref(false);
+const debounceInput = ref(null);
+const debounceTime = ref(300);
+const deleteItem = ref({});
+// Show only deleted items
+const deletedOnly = ref(false);
+const filterData = ref([]);
+const search = ref('');
+const filterIgnore = ref([
+  {
+    key: 'confirmationId',
   },
-  computed: {
-    ...mapState(useFormStore, [
-      'deletedSubmissions',
-      'form',
-      'formFields',
-      'isRTL',
-      'permissions',
-      'roles',
-      'submissionList',
-      'totalSubmissions',
-      'userFormPreferences',
-    ]),
-    ...mapState(useAuthStore, ['user']),
-    multiDeleteMessage() {
-      return this.$t('trans.submissionsTable.multiDelWarning');
+  {
+    key: 'actions',
+  },
+  {
+    key: 'event',
+  },
+]);
+const forceTableRefresh = ref(0);
+const itemsPP = ref(10);
+const loading = ref(true);
+const currentPage = ref(1);
+const restoreItem = ref({});
+const selectedSubmissions = ref([]);
+const serverItems = ref([]);
+const showColumnsDialog = ref(false);
+const showDeleteDialog = ref(false);
+const showRestoreDialog = ref(false);
+const singleSubmissionDelete = ref(false);
+const singleSubmissionRestore = ref(false);
+const sort = ref({});
+const firstDataLoad = ref(true);
+// When filtering, this data will not be preselected when clicking reset
+const tableFilterIgnore = ref([
+  { key: 'updatedAt' },
+  { key: 'updatedBy' },
+  { key: 'lateEntry' },
+]);
+
+const authStore = useAuthStore();
+const formStore = useFormStore();
+
+const { user } = storeToRefs(authStore);
+
+const {
+  form,
+  formFields,
+  isRTL,
+  permissions,
+  submissionList,
+  totalSubmissions,
+  userFormPreferences,
+} = storeToRefs(formStore);
+
+const multiDeleteMessage = computed(() =>
+  t('trans.submissionsTable.multiDelWarning')
+);
+const singleDeleteMessage = computed(() =>
+  t('trans.submissionsTable.singleDelWarning')
+);
+const multiRestoreMessage = computed(() =>
+  t('trans.submissionsTable.multiRestoreWarning')
+);
+const singleRestoreMessage = computed(() =>
+  t('trans.submissionsTable.singleRestoreWarning')
+);
+const showFormManage = computed(() => checkFormManage(permissions.value));
+const showSelectColumns = computed(
+  () =>
+    checkFormManage(permissions.value) || checkSubmissionView(permissions.value)
+);
+const showSubmissionsExport = computed(() =>
+  // For now use form management to indicate that the user can export
+  // submissions. In the future it should be its own set of permissions.
+  checkFormManage(permissions.value)
+);
+const userColumns = computed(() => {
+  if (
+    userFormPreferences.value &&
+    userFormPreferences.value.preferences &&
+    userFormPreferences.value.preferences.columns
+  ) {
+    // if we have any objects inside o
+    // Compare saved user prefs against the current form versions component names and remove any discrepancies
+    return userFormPreferences.value.preferences.columns.filter(
+      (x) => formFields.value.indexOf(x) !== -1
+    );
+  } else {
+    return [];
+  }
+});
+
+//------------------------ TABLE HEADERS
+// These are headers that will be available by default for the
+// table in this view
+const BASE_HEADERS = computed(() => {
+  let headers = [
+    {
+      title: t('trans.submissionsTable.confirmationID'),
+      align: 'start',
+      key: 'confirmationId',
     },
-    singleDeleteMessage() {
-      return this.$t('trans.submissionsTable.singleDelWarning');
+    {
+      title: t('trans.submissionsTable.submissionDate'),
+      align: 'start',
+      key: 'date',
     },
-    multiRestoreMessage() {
-      return this.$t('trans.submissionsTable.multiRestoreWarning');
+    {
+      title: t('trans.submissionsTable.submitter'),
+      align: 'start',
+      key: 'submitter',
     },
-    singleRestoreMessage() {
-      return this.$t('trans.submissionsTable.singleRestoreWarning');
+    {
+      title: t('trans.submissionsTable.status'),
+      align: 'start',
+      key: 'status',
     },
-    showStatus() {
-      return this.form && this.form.enableStatusUpdates;
+  ];
+
+  if (form.value && form.value.schedule && form.value.schedule.enabled) {
+    //push new header for late submission if Form is setup for scheduling
+    headers = [
+      ...headers,
+      {
+        title: t('trans.submissionsTable.lateSubmission'),
+        align: 'start',
+        key: 'lateEntry',
+      },
+    ];
+  }
+
+  // We add the modified columns so a form reviewer can see
+  // which user last modified a submission and when
+  headers = headers.concat([
+    {
+      title: t('trans.formSubmission.updatedAt'),
+      align: 'start',
+      key: 'updatedAt',
     },
-    showFormManage() {
-      return this.checkFormManage(this.permissions);
+    {
+      title: t('trans.formSubmission.updatedBy'),
+      align: 'start',
+      key: 'updatedBy',
     },
-    showSelectColumns() {
+  ]);
+
+  // Add the form fields to the headers
+  headers = headers.concat(
+    formFields.value.map((ff) => {
+      return {
+        title: ff,
+        align: 'start',
+        key: ff,
+      };
+    })
+  );
+
+  return headers;
+});
+
+// The headers are based on the base headers but are modified
+// by the following order:
+// Add CRUD options to headers
+// Remove columns that aren't saved in the user preferences
+const HEADERS = computed(() => {
+  let headers = BASE_HEADERS.value;
+  // If the user selected columns previously, then we remove
+  // all columns they don't want to see, barring the columns
+  // that are in filterIgnore as they should always be available
+  if (USER_PREFERENCES.value.length > 0) {
+    headers = headers.filter(
+      (h) =>
+        // It must be in the user preferences
+        USER_PREFERENCES.value.some((up) => up === h.key) ||
+        // except if it's in the filter ignore
+        filterIgnore.value.some((fd) => fd.key === h.key)
+    );
+  } else {
+    // Remove the form fields because this is the default view
+    // we don't need all the form fields
+    headers = headers.filter((header) => {
+      // we want columns that aren't form fields
       return (
-        this.checkFormManage(this.permissions) ||
-        this.checkSubmissionView(this.permissions)
+        !formFields.value.includes(header.key) &&
+        // or that aren't updatedAt
+        header.key !== 'updatedAt' &&
+        // or aren't updatedBy
+        header.key !== 'updatedBy'
       );
-    },
-    showSubmissionsExport() {
-      // For now use form management to indicate that the user can export
-      // submissions. In the future it should be its own set of permissions.
-      return this.checkFormManage(this.permissions);
-    },
-    userColumns() {
-      if (
-        this.userFormPreferences &&
-        this.userFormPreferences.preferences &&
-        this.userFormPreferences.preferences.columns
-      ) {
-        // Compare saved user prefs against the current form versions component names and remove any discrepancies
-        return this.userFormPreferences.preferences.columns.filter(
-          (x) => this.formFields.indexOf(x) !== -1
-        );
-      } else {
-        return [];
-      }
-    },
-    userFilter() {
-      if (
-        this.userFormPreferences &&
-        this.userFormPreferences.preferences &&
-        this.userFormPreferences.preferences.filter &&
-        this.userFormPreferences.preferences.filter.length
-      ) {
-        // Compare saved user prefs against the current form versions component names and remove any discrepancies
-        return this.userFormPreferences.preferences.filter;
-      } else {
-        return [];
-      }
-    },
+    });
+  }
 
-    //------------------------ TABLE HEADERS
-    // These are headers that will be available by default for the
-    // table in this view
-    BASE_HEADERS() {
-      let headers = [
-        {
-          title: this.$t('trans.submissionsTable.confirmationID'),
-          align: 'start',
-          key: 'confirmationId',
-        },
-        {
-          title: this.$t('trans.submissionsTable.submissionDate'),
-          align: 'start',
-          key: 'date',
-        },
-        {
-          title: this.$t('trans.submissionsTable.submitter'),
-          align: 'start',
-          key: 'submitter',
-        },
-        {
-          title: this.$t('trans.submissionsTable.status'),
-          align: 'start',
-          key: 'status',
-        },
-      ];
+  // Actions column at the end
+  headers.push({
+    title: t('trans.submissionsTable.view'),
+    align: 'end',
+    key: 'actions',
+    filterable: false,
+    sortable: false,
+    width: '40px',
+  });
 
-      if (this.form && this.form.schedule && this.form.schedule.enabled) {
-        //push new header for late submission if Form is setup for scheduling
-        headers = [
-          ...headers,
-          {
-            title: this.$t('trans.submissionsTable.lateSubmission'),
-            align: 'start',
-            key: 'lateEntry',
-          },
-        ];
-      }
+  // Actions column at the end
+  headers.push({
+    title: t('trans.submissionsTable.event'),
+    align: 'end',
+    key: 'event',
+    filterable: false,
+    sortable: false,
+    width: '40px',
+  });
+  return headers;
+});
 
-      // We add the modified columns so a form reviewer can see
-      // which user last modified a submission and when
-      headers = headers.concat([
-        {
-          title: this.$t('trans.formSubmission.updatedAt'),
-          align: 'start',
-          key: 'updatedAt',
-        },
-        {
-          title: this.$t('trans.formSubmission.updatedBy'),
-          align: 'start',
-          key: 'updatedBy',
-        },
-      ]);
+// These are columns that the user has previously selected
+// through the select columns dialog. These are columns
+// that they wish to see in the table in this view.
+const USER_PREFERENCES = computed(() => {
+  let preselectedData = [];
+  if (userFormPreferences.value?.preferences?.columns) {
+    preselectedData = userFormPreferences.value.preferences.columns;
+  }
+  return preselectedData;
+});
+//------------------------ END TABLE HEADERS
 
-      // Add the form fields to the headers
-      headers = headers.concat(
-        this.formFields.map((ff) => {
-          return {
-            title: ff,
-            align: 'start',
-            key: ff,
-          };
-        })
+//------------------------ FILTER COLUMNS
+// The base filter headers that will be available by default for the
+// base filter. These are all the base headers in the table in this view
+// with specific fields ignored because we always want specific fields
+// to be available in the table in this view. For this reason, we don't
+// add them to the table in the filter.
+const BASE_FILTER_HEADERS = computed(() => {
+  let headers = BASE_HEADERS.value.filter(
+    (h) => !filterIgnore.value.some((fd) => fd.key === h.key)
+  );
+  return headers;
+});
+
+// When clicking reset on the base filter, these will be the default
+// preselected values
+const RESET_HEADERS = computed(() => {
+  let headers = BASE_FILTER_HEADERS.value;
+  // Remove the form fields because this is the default view
+  // we don't need all the form fields
+  headers = headers
+    .filter((header) => {
+      // we want columns that aren't form fields
+      return (
+        !formFields.value.includes(header.key) &&
+        // These values won't be preselected
+        !tableFilterIgnore.value.some((fi) => fi.key === header.key)
       );
+    })
+    .map((h) => h.key);
+  return headers;
+});
 
-      return headers;
-    },
-    // The headers are based on the base headers but are modified
-    // by the following order:
-    // Add CRUD options to headers
-    // Remove columns that aren't saved in the user preferences
-    HEADERS() {
-      let headers = this.BASE_HEADERS;
-      // If the user selected columns previously, then we remove
-      // all columns they don't want to see, barring the columns
-      // that are in filterIgnore as they should always be available
-      if (this.USER_PREFERENCES.length > 0) {
-        headers = headers.filter(
-          (h) =>
-            // It must be in the user preferences
-            this.USER_PREFERENCES.some((up) => up === h.key) ||
-            // except if it's in the filter ignore
-            this.filterIgnore.some((fd) => fd.key === h.key)
-        );
-      } else {
-        // Remove the form fields because this is the default view
-        // we don't need all the form fields
-        headers = headers.filter((header) => {
-          // we want columns that aren't form fields
-          return (
-            !this.formFields.includes(header.key) &&
-            // or that aren't updatedAt
-            header.key !== 'updatedAt' &&
-            // or aren't updatedBy
-            header.key !== 'updatedBy'
-          );
-        });
-      }
+// These are the columns that will be selected by default when the
+// select columns dialog is opened
+const PRESELECTED_DATA = computed(() => {
+  return HEADERS.value.filter(
+    (h) => !filterIgnore.value.some((fd) => fd.key === h.key)
+  );
+});
+//------------------------ END FILTER COLUMNS
 
-      // Actions column at the end
-      headers.push({
-        title: this.$t('trans.submissionsTable.view'),
-        align: 'end',
-        key: 'actions',
-        filterable: false,
-        sortable: false,
-        width: '40px',
-      });
+onMounted(async () => {
+  debounceInput.value = _.debounce(async () => {
+    forceTableRefresh.value += 1;
+  }, debounceTime.value);
+  refreshSubmissions();
+});
 
-      // Actions column at the end
-      headers.push({
-        title: this.$t('trans.submissionsTable.event'),
-        align: 'end',
-        key: 'event',
-        filterable: false,
-        sortable: false,
-        width: '40px',
-      });
-      return headers;
-    },
-    // These are columns that the user has previously selected
-    // through the select columns dialog. These are columns
-    // that they wish to see in the table in this view.
-    USER_PREFERENCES() {
-      let preselectedData = [];
-      if (this.userFormPreferences?.preferences?.columns) {
-        preselectedData = this.userFormPreferences.preferences.columns;
-      }
-      return preselectedData;
-    },
-    //------------------------ END TABLE HEADERS
+function onShowColumnDialog() {
+  BASE_FILTER_HEADERS.value.sort(
+    (a, b) =>
+      PRESELECTED_DATA.value.findIndex((x) => x.title === b.title) -
+      PRESELECTED_DATA.value.findIndex((x) => x.title === a.title)
+  );
 
-    //------------------------ FILTER COLUMNS
-    // The base filter headers that will be available by default for the
-    // base filter. These are all the base headers in the table in this view
-    // with specific fields ignored because we always want specific fields
-    // to be available in the table in this view. For this reason, we don't
-    // add them to the table in the filter.
-    BASE_FILTER_HEADERS() {
-      let headers = this.BASE_HEADERS.filter(
-        (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
-      );
-      return headers;
-    },
-    // When clicking reset on the base filter, these will be the default
-    // preselected values
-    RESET_HEADERS() {
-      let headers = this.BASE_FILTER_HEADERS;
-      // Remove the form fields because this is the default view
-      // we don't need all the form fields
-      headers = headers
-        .filter((header) => {
-          // we want columns that aren't form fields
-          return (
-            !this.formFields.includes(header.key) &&
-            // These values won't be preselected
-            !this.tableFilterIgnore.some((fi) => fi.key === header.key)
-          );
-        })
-        .map((h) => h.key);
-      return headers;
-    },
-    // These are the columns that will be selected by default when the
-    // select columns dialog is opened
-    PRESELECTED_DATA() {
-      return this.HEADERS.filter(
-        (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
-      );
-    },
-    //------------------------ END FILTER COLUMNS
-  },
-  async mounted() {
-    this.debounceInput = _.debounce(async () => {
-      this.forceTableRefresh += 1;
-    }, 300);
-    this.refreshSubmissions();
-  },
-  methods: {
-    ...mapActions(useFormStore, [
-      'deleteMultiSubmissions',
-      'deleteSubmission',
-      'fetchForm',
-      'fetchFormFields',
-      'fetchSubmissions',
-      'getFormPermissionsForUser',
-      'getFormPreferencesForCurrentUser',
-      'getFormRolesForUser',
-      'restoreSubmission',
-      'restoreMultiSubmissions',
-      'updateFormPreferencesForCurrentUser',
-    ]),
-    ...mapActions('notifications', ['addNotification']),
+  showColumnsDialog.value = true;
+}
 
-    checkFormManage: checkFormManage,
-    checkSubmissionView: checkSubmissionView,
+async function updateTableOptions({ page, itemsPerPage, sortBy }) {
+  if (page) {
+    currentPage.value = page;
+  }
+  if (sortBy?.length > 0) {
+    if (sortBy[0].key === 'date') {
+      sort.value.column = 'createdAt';
+    } else if (sortBy[0].key === 'submitter') {
+      sort.value.column = 'createdBy';
+    } else if (sortBy[0].key === 'status') {
+      sort.value.column = 'formSubmissionStatusCode';
+    } else {
+      sort.value.column = sortBy[0].key;
+    }
+    sort.value.order = sortBy[0].order;
+  } else {
+    sort.value = {};
+  }
+  if (itemsPerPage) {
+    itemsPP.value = itemsPerPage;
+  }
+  if (!firstDataLoad.value) {
+    await refreshSubmissions();
+  }
+  firstDataLoad.value = false;
+}
 
-    onShowColumnDialog() {
-      this.BASE_FILTER_HEADERS.sort(
-        (a, b) =>
-          this.PRESELECTED_DATA.findIndex((x) => x.title === b.title) -
-          this.PRESELECTED_DATA.findIndex((x) => x.title === a.title)
-      );
-
-      this.showColumnsDialog = true;
-    },
-    async updateTableOptions({ page, itemsPerPage, sortBy }) {
-      this.page = page;
-      if (sortBy?.length > 0) {
-        if (sortBy[0].key === 'date') {
-          this.sortBy.column = 'createdAt';
-        } else if (sortBy[0].key === 'submitter') {
-          this.sortBy.column = 'createdBy';
-        } else if (sortBy[0].key === 'status') {
-          this.sortBy.column = 'formSubmissionStatusCode';
-        } else {
-          this.sortBy.column = sortBy[0].key;
+async function getSubmissionData() {
+  let criteria = {
+    formId: properties.formId,
+    itemsPerPage: itemsPP.value,
+    page: currentPage.value - 1,
+    filterformSubmissionStatusCode: true,
+    paginationEnabled: true,
+    sortBy: sort.value,
+    search: search.value,
+    searchEnabled: search.value.length > 0 ? true : false,
+    createdAt: Object.values({
+      minDate:
+        userFormPreferences.value &&
+        userFormPreferences.value.preferences &&
+        userFormPreferences.value.preferences.filter
+          ? moment(
+              userFormPreferences.value.preferences.filter[0],
+              'YYYY-MM-DD'
+            )
+              .utc()
+              .format()
+          : moment().subtract(50, 'years').utc().format('YYYY-MM-DD'), //Get User filter Criteria (Min Date)
+      maxDate:
+        userFormPreferences.value &&
+        userFormPreferences.value.preferences &&
+        userFormPreferences.value.preferences.filter
+          ? moment(
+              userFormPreferences.value.preferences.filter[1],
+              'YYYY-MM-DD'
+            )
+              .utc()
+              .format()
+          : moment().add(50, 'years').utc().format('YYYY-MM-DD'), //Get User filter Criteria (Max Date)
+    }),
+    deletedOnly: deletedOnly.value,
+    createdBy: currentUserOnly.value
+      ? `${user.value.username}@${user.value.idp?.code}`
+      : '',
+  };
+  await formStore.fetchSubmissions(criteria);
+  if (submissionList.value) {
+    const tableRows = submissionList.value.map((s) => {
+      const fields = {
+        confirmationId: s.confirmationId,
+        date: s.createdAt,
+        updatedAt: s.updatedBy ? s.updatedAt : null,
+        updatedBy: s.updatedBy,
+        formId: s.formId,
+        status: s.formSubmissionStatusCode,
+        submissionId: s.submissionId,
+        submitter: s.createdBy,
+        versionId: s.formVersionId,
+        deleted: s.deleted,
+        lateEntry: s.lateEntry,
+      };
+      // Add any custom columns
+      userColumns.value.forEach((col) => {
+        let colData = s[col];
+        if (!(typeof colData === 'string' || typeof colData === 'number')) {
+          // The data isn't a string or number, so we should turn it into a string
+          colData = JSON.stringify(colData);
         }
-        this.sortBy.order = sortBy[0].order;
-      } else {
-        this.sortBy = {};
-      }
-      this.itemsPerPage = itemsPerPage;
-      if (!this.firstDataLoad) {
-        await this.refreshSubmissions();
-      }
-      this.firstDataLoad = false;
-    },
-    async getSubmissionData() {
-      let criteria = {
-        formId: this.formId,
-        itemsPerPage: this.itemsPerPage,
-        page: this.page - 1,
-        filterformSubmissionStatusCode: true,
-        paginationEnabled: true,
-        sortBy: this.sortBy,
-        search: this.search,
-        searchEnabled: this.search.length > 0 ? true : false,
-        createdAt: Object.values({
-          minDate:
-            this.userFormPreferences &&
-            this.userFormPreferences.preferences &&
-            this.userFormPreferences.preferences.filter
-              ? moment(
-                  this.userFormPreferences.preferences.filter[0],
-                  'YYYY-MM-DD hh:mm:ss'
-                )
-                  .utc()
-                  .format()
-              : moment()
-                  .subtract(50, 'years')
-                  .utc()
-                  .format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Min Date)
-          maxDate:
-            this.userFormPreferences &&
-            this.userFormPreferences.preferences &&
-            this.userFormPreferences.preferences.filter
-              ? moment(
-                  this.userFormPreferences.preferences.filter[1],
-                  'YYYY-MM-DD hh:mm:ss'
-                )
-                  .utc()
-                  .format()
-              : moment().add(50, 'years').utc().format('YYYY-MM-DD hh:mm:ss'), //Get User filter Criteria (Max Date)
-        }),
-        deletedOnly: this.deletedOnly,
-        createdBy: this.currentUserOnly
-          ? `${this.user.username}@${this.user.idp?.code}`
-          : '',
-      };
-      await this.fetchSubmissions(criteria);
-      if (this.submissionList) {
-        const tableRows = this.submissionList.map((s) => {
-          const fields = {
-            confirmationId: s.confirmationId,
-            date: s.createdAt,
-            updatedAt: s.updatedBy ? s.updatedAt : null,
-            updatedBy: s.updatedBy,
-            formId: s.formId,
-            status: s.formSubmissionStatusCode,
-            submissionId: s.submissionId,
-            submitter: s.createdBy,
-            versionId: s.formVersionId,
-            deleted: s.deleted,
-            lateEntry: s.lateEntry,
-          };
-          // Add any custom columns
-          this.userColumns.forEach((col) => {
-            let colData = s[col];
-            if (!(typeof colData === 'string' || typeof colData === 'number')) {
-              // The data isn't a string or number, so we should turn it into a string
-              colData = JSON.stringify(colData);
-            }
-            if (Object.keys(fields).includes(col)) {
-              let suffixNum = 1;
-              while (Object.keys(fields).includes(col + '_' + suffixNum)) {
-                suffixNum++;
-              }
-              fields[`${col}_${suffixNum}`] = colData;
-            } else {
-              fields[col] = colData;
-            }
-          });
-          return fields;
-        });
-        this.serverItems = tableRows;
-      }
-    },
-    async populateSubmissionsTable() {
-      try {
-        this.loading = true;
-        // Get user prefs for this form
-        await this.getFormPreferencesForCurrentUser(this.formId);
-        // Get the submissions for this form
-        await this.getSubmissionData();
-        // Build up the list of forms for the table
-      } catch (error) {
-        // Handled in state fetchSubmissions
-      } finally {
-        this.loading = false;
-      }
-    },
-    async refreshSubmissions() {
-      this.loading = true;
-      Promise.all([
-        this.getFormRolesForUser(this.formId),
-        this.getFormPermissionsForUser(this.formId),
-        this.fetchForm(this.formId).then(async () => {
-          if (this.form.versions?.length > 0) {
-            await this.fetchFormFields({
-              formId: this.formId,
-              formVersionId: this.form.versions[0].id,
-            });
+        if (Object.keys(fields).includes(col)) {
+          let suffixNum = 1;
+          while (Object.keys(fields).includes(col + '_' + suffixNum)) {
+            suffixNum++;
           }
-        }),
-      ])
-        .then(async () => {
-          await this.populateSubmissionsTable();
-          this.loading = false;
-        })
-        .finally(() => {
-          this.selectedSubmissions = [];
-        });
-    },
-    async delSub() {
-      this.singleSubmissionDelete
-        ? this.deleteSingleSubs()
-        : this.deleteMultiSubs();
-    },
-    async restoreSub() {
-      this.singleSubmissionRestore
-        ? this.restoreSingleSub()
-        : this.restoreMultipleSubs();
-    },
-    async deleteSingleSubs() {
-      this.showDeleteDialog = false;
-      await this.deleteSubmission(this.deleteItem.submissionId);
-      this.refreshSubmissions();
-    },
-    async deleteMultiSubs() {
-      let submissionIdsToDelete = this.selectedSubmissions.map(
-        (submission) => submission.submissionId
-      );
-      this.showDeleteDialog = false;
-      await this.deleteMultiSubmissions({
-        submissionIds: submissionIdsToDelete,
-        formId: this.formId,
+          fields[`${col}_${suffixNum}`] = colData;
+        } else {
+          fields[col] = colData;
+        }
       });
-      this.refreshSubmissions();
-    },
-    async restoreSingleSub() {
-      await this.restoreSubmission({
-        submissionId: this.restoreItem.submissionId,
-        deleted: false,
-      });
-      this.showRestoreDialog = false;
-      this.refreshSubmissions();
-    },
-    async restoreMultipleSubs() {
-      let submissionIdsToRestore = this.selectedSubmissions.map(
-        (submission) => submission.submissionId
-      );
-      this.showRestoreDialog = false;
-      await this.restoreMultiSubmissions({
-        submissionIds: submissionIdsToRestore,
-        formId: this.formId,
-      });
-      this.refreshSubmissions();
-      this.selectedSubmissions = [];
-    },
-    async updateFilter(data) {
-      this.showColumnsDialog = false;
-      this.filterData = data;
-      let preferences = {
-        columns: [],
-      };
-      data.forEach((d) => {
-        preferences.columns.push(d);
-      });
+      return fields;
+    });
+    serverItems.value = tableRows;
+  }
+}
 
-      await this.updateFormPreferencesForCurrentUser({
-        formId: this.form.id,
-        preferences: preferences,
-      });
-      await this.populateSubmissionsTable();
-    },
-    async handleSearch(value) {
-      this.search = value;
-      if (value === '') {
-        await this.refreshSubmissions();
-      } else {
-        this.debounceInput();
+async function populateSubmissionsTable() {
+  try {
+    loading.value = true;
+    // Get user prefs for this form
+    await formStore.getFormPreferencesForCurrentUser(properties.formId);
+    // Get the submissions for this form
+    await getSubmissionData();
+    // Build up the list of forms for the table
+  } catch (error) {
+    // Handled in state fetchSubmissions
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function refreshSubmissions() {
+  loading.value = true;
+  Promise.all([
+    formStore.getFormRolesForUser(properties.formId),
+    formStore.getFormPermissionsForUser(properties.formId),
+    formStore.fetchForm(properties.formId).then(async () => {
+      if (form.value.versions?.length > 0) {
+        await formStore.fetchFormFields({
+          formId: properties.formId,
+          formVersionId: form.value.versions[0].id,
+        });
       }
-    },
-  },
-};
+    }),
+  ])
+    .then(async () => {
+      await populateSubmissionsTable();
+      loading.value = false;
+    })
+    .finally(() => {
+      selectedSubmissions.value = [];
+    });
+}
+
+async function delSub() {
+  singleSubmissionDelete.value
+    ? await deleteSingleSubs()
+    : await deleteMultiSubs();
+}
+
+async function restoreSub() {
+  singleSubmissionRestore.value
+    ? await restoreSingleSub()
+    : await restoreMultipleSubs();
+}
+
+async function deleteSingleSubs() {
+  showDeleteDialog.value = false;
+  await formStore.deleteSubmission(deleteItem.value.submissionId);
+  refreshSubmissions();
+}
+
+async function deleteMultiSubs() {
+  let submissionIdsToDelete = selectedSubmissions.value.map(
+    (submission) => submission.submissionId
+  );
+  showDeleteDialog.value = false;
+  await formStore.deleteMultiSubmissions({
+    submissionIds: submissionIdsToDelete,
+    formId: properties.formId,
+  });
+  refreshSubmissions();
+}
+
+async function restoreSingleSub() {
+  await formStore.restoreSubmission({
+    submissionId: restoreItem.value.submissionId,
+    deleted: false,
+  });
+  showRestoreDialog.value = false;
+  refreshSubmissions();
+}
+
+async function restoreMultipleSubs() {
+  let submissionIdsToRestore = selectedSubmissions.value.map(
+    (submission) => submission.submissionId
+  );
+  showRestoreDialog.value = false;
+  await formStore.restoreMultiSubmissions({
+    submissionIds: submissionIdsToRestore,
+    formId: properties.formId,
+  });
+  refreshSubmissions();
+  selectedSubmissions.value = [];
+}
+
+async function updateFilter(data) {
+  showColumnsDialog.value = false;
+  filterData.value = data;
+  let preferences = {
+    columns: [],
+  };
+  data.forEach((d) => {
+    preferences.columns.push(d);
+  });
+
+  await formStore.updateFormPreferencesForCurrentUser({
+    formId: form.value.id,
+    preferences: preferences,
+  });
+  await populateSubmissionsTable();
+}
+
+async function handleSearch(value) {
+  search.value = value;
+  if (value === '') {
+    await refreshSubmissions();
+  } else {
+    debounceInput.value();
+  }
+}
+
+defineExpose({
+  BASE_FILTER_HEADERS,
+  BASE_HEADERS,
+  debounceInput,
+  debounceTime,
+  delSub,
+  filterIgnore,
+  firstDataLoad,
+  forceTableRefresh,
+  getSubmissionData,
+  handleSearch,
+  HEADERS,
+  itemsPP,
+  multiDeleteMessage,
+  multiRestoreMessage,
+  onShowColumnDialog,
+  currentPage,
+  restoreSub,
+  serverItems,
+  showColumnsDialog,
+  showFormManage,
+  showSelectColumns,
+  showSubmissionsExport,
+  singleDeleteMessage,
+  singleRestoreMessage,
+  singleSubmissionDelete,
+  singleSubmissionRestore,
+  sort,
+  updateFilter,
+  userColumns,
+  USER_PREFERENCES,
+});
 </script>
 
 <template>
@@ -687,7 +691,7 @@ export default {
       hover
       :items-length="totalSubmissions"
       class="submissions-table"
-      :items-per-page="itemsPerPage"
+      :items-per-page="itemsPP"
       :headers="HEADERS"
       item-value="submissionId"
       :items="serverItems"
