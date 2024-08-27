@@ -42,7 +42,7 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
       form,
     };
   } else if (emailType === EmailTypes.STATUS_COMPLETED) {
-    contextToVal = additionalProperties.submissionUserEmails; //array
+    contextToVal = [additionalProperties.submissionUserEmails];
     userTypePath = 'user/view';
     configData = {
       bodyTemplate: 'submission-completed.html',
@@ -75,7 +75,7 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
       form,
     };
   } else if (emailType === EmailTypes.STATUS_REVISING) {
-    contextToVal = additionalProperties.submissionUserEmails; //array
+    contextToVal = [additionalProperties.submissionUserEmails];
     userTypePath = 'user/view';
     configData = {
       bodyTemplate: 'send-status-revising-email-body.html',

@@ -92,12 +92,16 @@ const statusAction = computed(() => {
 
 async function getEmailRecipients() {
   try {
-    const response = await formService.getEmailRecipients(properties.submissionId);
+    const response = await formService.getEmailRecipients(
+      properties.submissionId
+    );
     emailRecipients.value = response.data;
   } catch (error) {
     notificationStore.addNotification({
       text: t('trans.statusPanel.fetchSubmissionUsersErr'),
-      consoleError: t('trans.statusPanel.fetchSubmissionUsersErr', { error: error.message }),
+      consoleError: t('trans.statusPanel.fetchSubmissionUsersErr', {
+        error: error.message,
+      }),
     });
   }
 }
@@ -130,10 +134,12 @@ async function onStatusChange(status) {
   if (status === 'REVISING' || status === 'COMPLETED') {
     try {
       await formStore.fetchSubmissionUsers(properties.submissionId);
-      
-      if(status === 'COMPLETED') {
+
+      if (status === 'COMPLETED') {
         await getEmailRecipients();
-        selectedSubmissionUsers.value = emailRecipients.value.map(recipient => recipient.email);
+        selectedSubmissionUsers.value = emailRecipients.value.map(
+          (recipient) => recipient.email
+        );
       }
 
       // add all the submission users emails to the formSubmitters array
@@ -284,7 +290,10 @@ async function updateStatus() {
       }
 
       if (statusToSet.value === 'REVISING') {
-        await formService.addEmailRecipients(properties.submissionId, { emails: selectedSubmissionUsers.value });
+        console.log('calling addEmailRecipients with', selectedSubmissionUsers.value);
+        await formService.addEmailRecipients(properties.submissionId, {
+          emails: selectedSubmissionUsers.value,
+        });
       } else if (statusToSet.value === 'ASSIGNED') {
         await formService.deleteEmailRecipients(properties.submissionId);
       }
@@ -366,7 +375,7 @@ defineExpose({
   formSubmitters,
   selectAllSubmitters,
   updateStatus,
-  getEmailRecipients
+  getEmailRecipients,
 });
 </script>
 
