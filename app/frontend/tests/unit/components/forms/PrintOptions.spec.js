@@ -275,7 +275,7 @@ describe('PrintOptions.vue', () => {
     expect(addNotificationSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('validateFileExtension should remove the file extension from uploadExportFileTypes when the file input is cleared', async () => {
+  it('validateFile should remove the file extension from uploadExportFileTypes when the file input is cleared', async () => {
     let submission = undefined;
     formStore.form = {
       id: 0,
@@ -302,11 +302,11 @@ describe('PrintOptions.vue', () => {
     };
     // Since this isn't in uploadExportFileTypes then it should be removed from uploadExportFileTypes
     wrapper.vm.uploadExportFileTypes = ['pdf', 'txt'];
-    wrapper.vm.validateFileExtension([]);
+    wrapper.vm.validateFile([]);
     expect(wrapper.vm.uploadExportFileTypes).toEqual(['pdf']);
   });
 
-  it('validateFileExtension should set the output filename and set isValidFile to true if the file extension is valid', async () => {
+  it('validateFile should set the output filename and set isValidFile to true if the file extension is valid', async () => {
     let submission = undefined;
     formStore.form = {
       id: 0,
@@ -332,7 +332,7 @@ describe('PrintOptions.vue', () => {
       files: [],
     };
     wrapper.vm.uploadExportFileTypes = ['pdf'];
-    wrapper.vm.validateFileExtension([
+    wrapper.vm.validateFile([
       {
         name: 'filename.txt',
       },
@@ -341,7 +341,7 @@ describe('PrintOptions.vue', () => {
     expect(wrapper.vm.isValidFile).toBeTruthy();
   });
 
-  it('validateFileExtension should set the output filename and set isValidFile to false if the file extension is invalid', async () => {
+  it('validateFile should set the output filename and set isValidFile to false if the file extension is invalid', async () => {
     let submission = undefined;
     formStore.form = {
       id: 0,
@@ -367,7 +367,7 @@ describe('PrintOptions.vue', () => {
       files: [],
     };
     wrapper.vm.uploadExportFileTypes = ['pdf'];
-    wrapper.vm.validateFileExtension([
+    wrapper.vm.validateFile([
       {
         name: 'filename.zip',
       },
