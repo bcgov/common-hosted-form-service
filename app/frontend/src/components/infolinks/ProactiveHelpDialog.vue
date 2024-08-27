@@ -1,131 +1,154 @@
-<script>
-import { mapState, mapActions } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
+import { ref, watch } from 'vue';
 
 import { useAdminStore } from '~/store/admin';
 import { useFormStore } from '~/store/form';
 
-export default {
-  props: {
-    showDialog: { type: Boolean, required: true },
-    component: { type: Object, default: () => {} },
-    componentName: { type: String, require: true, default: '' },
-    groupName: { type: String, required: true },
-  },
-  emits: ['close-dialog'],
-  setup() {
-    const { t, locale } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
 
-    return { t, locale };
+const properties = defineProps({
+  showDialog: { type: Boolean, required: true },
+  component: { type: Object, default: () => {} },
+  componentName: { type: String, require: true, default: '' },
+  groupName: { type: String, required: true },
+});
+
+const emit = defineEmits(['close-dialog']);
+
+const adminStore = useAdminStore();
+const formStore = useFormStore();
+
+const { isRTL } = storeToRefs(formStore);
+
+const componentId = ref(
+  properties.component?.id ? properties.component.id : undefined
+);
+const componentName = ref(
+  properties.component?.componentName
+    ? properties.component.componentName
+    : properties.componentName
+);
+const description = ref(
+  properties.component?.description ? properties.component.description : ''
+);
+const dialog = ref(properties.showDialog);
+const files = ref([]);
+const isLinkEnabled = ref(
+  properties.component?.isLinkEnabled ? properties.component.isLinkEnabled : ''
+);
+const image = ref('');
+const imageSizeError = ref(false);
+const imageName = ref(
+  properties.component?.imageName ? properties.component.imageName : ''
+);
+const imagePlaceholder = ref(
+  properties.component?.imageName ? properties.component.imageName : undefined
+);
+const linkError = ref(false);
+const moreHelpInfoLink = ref(
+  properties.component?.externalLink ? properties.component.externalLink : ''
+);
+const rules = ref([
+  (value) => {
+    return (
+      !value ||
+      !value.length ||
+      value[0].size < 500000 ||
+      t('trans.proactiveHelpDialog.largeImgTxt')
+    );
   },
-  data() {
-    return {
-      componentId: this?.component?.id ? this.component.id : undefined,
-      componentName_: this?.component?.componentName
-        ? this.component.componentName
-        : this.componentName,
-      description: this?.component?.description
-        ? this.component.description
-        : '',
-      dialog: this.showDialog,
-      files: [],
-      isLinkEnabled: this?.component?.isLinkEnabled
-        ? this.component.isLinkEnabled
-        : '',
-      image: '',
-      imageSizeError: false,
-      imageName: this?.component?.imageName ? this.component.imageName : '',
-      imagePlaceholder: this?.component?.imageName
-        ? this.component.imageName
-        : undefined,
-      linkError: false,
-      moreHelpInfoLink: this?.component?.externalLink
-        ? this.component.externalLink
-        : '',
-      rules: [
-        (value) => {
-          return (
-            !value ||
-            !value.length ||
-            value[0].size < 500000 ||
-            this.$t('trans.proactiveHelpDialog.largeImgTxt')
-          );
-        },
-      ],
+]);
+
+watch(
+  () => properties.showDialog,
+  (value) => {
+    dialog.value = value;
+  }
+);
+
+watch(componentName, (value) => {
+  componentName.value = value;
+});
+
+function onCloseDialog() {
+  resetDialog();
+  emit('close-dialog');
+}
+
+function validateLinkUrl() {
+  let error = false;
+  linkError.value = false;
+  if (isLinkEnabled.value && moreHelpInfoLink.value === '') {
+    error = true;
+    linkError.value = true;
+  }
+  return error;
+}
+
+async function selectImage() {
+  imageSizeError.value = false;
+  const img = files.value[0];
+  if (img.size > 500000) {
+    imageSizeError.value = true;
+  } else {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      image.value = e.target.result;
+      imageName.value = img.name;
     };
-  },
-  computed: {
-    ...mapState(useFormStore, ['isRTL']),
-  },
-  watch: {
-    showDialog(value) {
-      this.dialog = value;
-    },
-    componentName_(value) {
-      this.componentName_ = value;
-    },
-  },
-  methods: {
-    ...mapActions(useAdminStore, ['addFCProactiveHelp']),
-    onCloseDialog() {
-      this.resetDialog();
-      this.$emit('close-dialog');
-    },
-    validateLinkUrl() {
-      let error = false;
-      this.linkError = false;
-      if (this.isLinkEnabled && this.moreHelpInfoLink === '') {
-        error = true;
-        this.linkError = true;
-      }
-      return error;
-    },
-    async selectImage() {
-      const img = this.files[0];
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        this.image = e.target.result;
-        this.imageName = img.name;
-      };
-      if (img) {
-        await reader.readAsDataURL(img);
-      }
-    },
-    submit() {
-      if (!this.validateLinkUrl()) {
-        this.imageName = this.image !== '' ? this.imageName : '';
-        this.moreHelpInfoLink = !this.isLinkEnabled
-          ? ''
-          : this.moreHelpInfoLink;
-        this.addFCProactiveHelp({
-          componentId: this.componentId,
-          componentName: this.componentName_,
-          image: this.image,
-          externalLink: this.moreHelpInfoLink,
-          groupName: this.groupName,
-          description: this.description,
-          status:
-            this.component && this.component.status
-              ? this.component.status
-              : false,
-          isLinkEnabled: this.isLinkEnabled,
-          imageName: this.imageName,
-        });
-        this.onCloseDialog();
-      }
-    },
-    resetDialog() {
-      this.componentName_ = '';
-      this.moreHelpInfoLink = '';
-      this.isLinkEnabled = false;
-      this.image = '';
-      this.imageName = '';
-      this.imagePlaceholder = undefined;
-      this.linkError = false;
-      this.description = '';
-    },
-  },
-};
+    if (img) {
+      await reader.readAsDataURL(img);
+    }
+  }
+}
+
+async function submit() {
+  if (!validateLinkUrl()) {
+    imageName.value = image.value !== '' ? imageName.value : '';
+    moreHelpInfoLink.value = !isLinkEnabled.value ? '' : moreHelpInfoLink.value;
+    await adminStore.addFCProactiveHelp({
+      componentId: componentId.value,
+      componentName: componentName.value,
+      image: image.value,
+      externalLink: moreHelpInfoLink.value,
+      groupName: properties.groupName,
+      description: description.value,
+      status:
+        properties.component && properties.component.status
+          ? properties.component.status
+          : false,
+      isLinkEnabled: isLinkEnabled.value,
+      imageName: imageName.value,
+    });
+    onCloseDialog();
+  }
+}
+
+function resetDialog() {
+  componentName.value = '';
+  moreHelpInfoLink.value = '';
+  isLinkEnabled.value = false;
+  image.value = '';
+  imageName.value = '';
+  imagePlaceholder.value = undefined;
+  linkError.value = false;
+  description.value = '';
+}
+
+defineExpose({
+  files,
+  imageSizeError,
+  isLinkEnabled,
+  linkError,
+  moreHelpInfoLink,
+  onCloseDialog,
+  resetDialog,
+  rules,
+  selectImage,
+  validateLinkUrl,
+});
 </script>
 
 <template>
@@ -173,7 +196,7 @@ export default {
             >
               {{ $t('trans.proactiveHelpDialog.componentName') }}
             </span>
-            <span class="blueColorWrapper" v-text="componentName_" />
+            <span class="blueColorWrapper" v-text="componentName" />
           </v-row>
           <v-row class="mt-1" no-gutters>
             <v-col>
