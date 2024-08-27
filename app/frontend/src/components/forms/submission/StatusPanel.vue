@@ -290,7 +290,6 @@ async function updateStatus() {
       }
 
       if (statusToSet.value === 'REVISING') {
-        console.log('calling addEmailRecipients with', selectedSubmissionUsers.value);
         await formService.addEmailRecipients(properties.submissionId, {
           emails: selectedSubmissionUsers.value,
         });
