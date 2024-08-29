@@ -191,7 +191,7 @@ export default {
             },
           },
         },
-        language: this.lang ? this.lang : 'en',
+        language: this.locale ? this.locale : 'en',
         i18n: formioIl8next,
         templates: templateExtensions,
         evalContext: {
@@ -207,7 +207,7 @@ export default {
         this.reRenderFormIo += 1;
       }
     },
-    lang(value) {
+    locale(value) {
       if (value) {
         this.reRenderFormIo += 1;
       }
@@ -809,21 +809,16 @@ export default {
       @close-dialog="onShowClosePreviewDialog"
     />
     <FloatButton
-      placement="bottom-right"
-      :base-f-a-b-items-b-g-color="'#ffffff'"
-      :base-f-a-b-icon-color="'#1976D2'"
-      :base-f-a-b-border-color="'#C0C0C0'"
-      :fab-z-index="1"
-      :size="'small'"
-      fab-items-gap="7px"
-      :saving="saving"
+      class="position-fixed bottom-0"
+      style="right: 0"
       :saved-status="savedStatus"
-      :saved="saved"
       :is-form-saved="isFormSaved"
+      :new-version="newVersion"
+      :is-saving="saving"
+      :saved="saved"
       :can-save="canSave"
       :form-id="formId"
       :draft-id="draftId"
-      :new-version="newVersion"
       :undo-enabled="undoEnabled() === 0 ? false : undoEnabled()"
       :redo-enabled="redoEnabled() === 0 ? false : redoEnabled()"
       @undo="onUndoClick"
