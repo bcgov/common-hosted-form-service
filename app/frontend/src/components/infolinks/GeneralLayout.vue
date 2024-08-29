@@ -114,9 +114,21 @@ function setComponent(key, compName) {
     component.value = properties.formComponentData.find((obj) => {
       return obj.componentName === compName;
     });
-    if (component.value) {
-      componentKey.value = key;
+    if (!component.value) {
+      // Proactive help doesn't exist for this component
+      component.value = {
+        key: key,
+        componentName: compName,
+        externalLink: '',
+        image: null,
+        imageName: '',
+        groupName: properties.groupName,
+        isLinkEnabled: false,
+        description: '',
+        status: false,
+      };
     }
+    componentKey.value = key;
   }
 }
 
