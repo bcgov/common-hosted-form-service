@@ -1,231 +1,225 @@
-<script>
-import { mapState, mapWritableState, mapActions } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import {
+  fetchDocumentTemplates,
+  getDocumentTemplate,
+  readFile,
+} from '~/composables/documentTemplate';
 import { useFormStore } from '~/store/form';
 import { formService } from '~/services';
-import { i18n } from '~/internationalization';
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
 
-export default {
-  data() {
-    return {
-      loading: false,
-      validFileExtensions: ['txt', 'docx', 'html', 'odt', 'pptx', 'xlsx'],
-      isValidFile: true,
-      isFileInputEmpty: true,
-      uploadedFile: null, // File uploaded into the File Input
-      cdogsTemplate: null, // File content as base64 (retrieved from backend)
-      headers: [
-        { title: 'File Name', key: 'filename' },
-        { title: 'Date Created', key: 'createdAt' },
-        { title: 'Actions', key: 'actions', align: 'end' },
-      ],
-      documentTemplates: [],
-      enablePreview: false,
-      techdocsLinkTemplateUpload:
-        'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/CDOGS-Template-Upload/',
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
-    ...mapWritableState(useFormStore, ['form']),
-    validationRules() {
-      return [
-        this.isValidFile || i18n.t('trans.documentTemplate.invalidFileMessage'),
-      ];
-    },
-  },
-  mounted() {
-    this.fetchDocumentTemplates();
-  },
-  methods: {
-    ...mapActions(useNotificationStore, ['addNotification']),
-    async fetchDocumentTemplates() {
-      this.loading = true;
-      try {
-        const result = await formService.documentTemplateList(this.form.id);
-        // Clear existing templates before adding new ones
-        this.documentTemplates = [];
+const { t, locale } = useI18n({ useScope: 'global' });
 
-        // Iterate through each document in the result
-        result.data.forEach((doc) => {
-          this.documentTemplates.push({
-            filename: doc.filename,
-            createdAt: doc.createdAt,
-            templateId: doc.id,
-            actions: '',
-          });
-        });
-        // disable preview for microsoft docs
-        if (this.documentTemplates.length > 0) {
-          // get file extension
-          const fileExtension = this.documentTemplates[0].filename
-            .split('.')
-            .pop();
-          if (
-            fileExtension === 'docx' ||
-            fileExtension === 'pptx' ||
-            fileExtension === 'xlsx' ||
-            fileExtension === 'odt'
-          ) {
-            this.enablePreview = false;
-          } else {
-            this.enablePreview = true;
-          }
-        }
-      } catch (e) {
-        this.addNotification({
-          text: i18n.t('trans.documentTemplate.fetchError'),
-          consoleError: i18n.t('trans.documentTemplate.fetchError', {
-            error: e.message,
-          }),
-        });
-      } finally {
-        this.loading = false;
-      }
-    },
+let cdogsTemplate = ref(null);
+const documentTemplates = ref([]);
+const enablePreview = ref(false);
+const fileInput = ref(null);
+const headers = ref([
+  { title: 'File Name', key: 'filename' },
+  { title: 'Date Created', key: 'createdAt' },
+  { title: 'Actions', key: 'actions', align: 'end' },
+]);
+const loading = ref(true);
+const isFileInputEmpty = ref(true);
+const isValidFile = ref(true);
+const isValidSize = ref(true);
+const techdocsLinkTemplateUpload = ref(
+  'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/CDOGS-Template-Upload/'
+);
+let uploadedFile = null; // File uploaded into the File Input
+const validFileExtensions = ['txt', 'docx', 'html', 'odt', 'pptx', 'xlsx'];
 
-    handleFileInput(event) {
-      if (event && event.length > 0) {
-        this.isFileInputEmpty = false;
-        this.uploadedFile = event[0];
-        const fileExtension = event[0].name.split('.').pop();
-        if (this.validFileExtensions.includes(fileExtension)) {
-          this.isValidFile = true;
-        } else {
-          this.isValidFile = false;
-        }
+const notificationStore = useNotificationStore();
+
+const { form, isRTL } = storeToRefs(useFormStore());
+
+const validationRules = computed(() => [
+  isValidSize.value || t('trans.documentTemplate.fileSizeError'),
+  isValidFile.value || t('trans.documentTemplate.invalidFileMessage'),
+]);
+
+onMounted(async () => {
+  await fetchTemplates();
+});
+
+async function fetchTemplates() {
+  loading.value = true;
+  try {
+    documentTemplates.value = [];
+    documentTemplates.value = await fetchDocumentTemplates(form.value.id);
+    // disable preview for microsoft docs
+    if (documentTemplates.value.length > 0) {
+      // get file extension
+      const fileExtension = documentTemplates.value[0].filename
+        .split('.')
+        .pop();
+      if (
+        fileExtension === 'docx' ||
+        fileExtension === 'pptx' ||
+        fileExtension === 'xlsx' ||
+        fileExtension === 'odt'
+      ) {
+        enablePreview.value = false;
       } else {
-        this.isFileInputEmpty = true;
-        this.isValidFile = true;
+        enablePreview.value = true;
       }
-    },
-    async handleFileUpload() {
-      this.loading = true;
-      const fileContentAsBase64 = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(this.uploadedFile);
-        reader.onload = () => {
-          // Strip the Data URL scheme part (everything up to, and including, the comma)
-          const base64Content = reader.result.split(',')[1];
-          resolve(base64Content);
-        };
-        reader.onerror = (error) => {
-          reject(error);
-        };
+    }
+  } catch (e) {
+    notificationStore.addNotification({
+      text: t('trans.documentTemplate.fetchError'),
+      consoleError: t('trans.documentTemplate.fetchError', {
+        error: e.message,
+      }),
+    });
+  } finally {
+    loading.value = false;
+  }
+}
+
+function handleFileInput(event) {
+  if (event && event.length > 0) {
+    isFileInputEmpty.value = false;
+    uploadedFile = event[0];
+
+    // validate file size
+    if (uploadedFile.size > 25000000) {
+      isValidSize.value = false;
+    } else {
+      isValidSize.value = true;
+    }
+
+    // validate file extension
+    const fileExtension = event[0].name.split('.').pop();
+    if (validFileExtensions.includes(fileExtension)) {
+      isValidFile.value = true;
+    } else {
+      isValidFile.value = false;
+    }
+  } else {
+    isFileInputEmpty.value = true;
+    isValidFile.value = true;
+    isValidSize.value = true;
+  }
+}
+
+async function handleFileUpload() {
+  loading.value = true;
+  const fileContentAsBase64 = await readFile(uploadedFile);
+  const data = {
+    filename: uploadedFile.name,
+    template: fileContentAsBase64,
+  };
+  try {
+    const result = await formService.documentTemplateCreate(
+      form.value.id,
+      data
+    );
+    cdogsTemplate.value = result.data;
+
+    await fetchTemplates();
+
+    // Reset the file input
+    if (fileInput.value) {
+      fileInput.value.reset();
+    }
+    notificationStore.addNotification({
+      text: t('trans.documentTemplate.uploadSuccess'),
+      ...NotificationTypes.SUCCESS,
+    });
+  } catch (e) {
+    if (e.response.status === 413) {
+      notificationStore.addNotification({
+        text: t('trans.documentTemplate.fileSizeError'),
+        consoleError: t('trans.documentTemplate.fileSizeError', {
+          error: e.message,
+        }),
       });
-      const data = {
-        filename: this.uploadedFile.name,
-        template: fileContentAsBase64,
-      };
-      try {
-        const result = await formService.documentTemplateCreate(
-          this.form.id,
-          data
-        );
-        this.cdogsTemplate = result.data;
-        this.fetchDocumentTemplates();
+    } else {
+      notificationStore.addNotification({
+        text: t('trans.documentTemplate.uploadError'),
+        consoleError: t('trans.documentTemplate.uploadError', {
+          error: e.message,
+        }),
+      });
+    }
+  } finally {
+    loading.value = false;
+  }
+}
 
-        // Reset the file input
-        if (this.$refs.fileInput) {
-          this.$refs.fileInput.reset();
-        }
-        this.addNotification({
-          text: i18n.t('trans.documentTemplate.uploadSuccess'),
-          ...NotificationTypes.SUCCESS,
-        });
-      } catch (e) {
-        this.addNotification({
-          text: i18n.t('trans.documentTemplate.uploadError'),
-          consoleError: i18n.t('trans.documentTemplate.uploadError', {
-            error: e.message,
-          }),
-        });
-      } finally {
-        this.loading = false;
-      }
-    },
-    async handleDelete(item) {
-      this.loading = true;
-      try {
-        await formService.documentTemplateDelete(this.form.id, item.templateId);
-        this.fetchDocumentTemplates();
-        this.addNotification({
-          text: i18n.t('trans.documentTemplate.deleteSuccess'),
-          ...NotificationTypes.SUCCESS,
-        });
-      } catch (e) {
-        this.addNotification({
-          text: i18n.t('trans.documentTemplate.deleteError'),
-          consoleError: i18n.t('trans.documentTemplate.deleteError', {
-            error: e.message,
-          }),
-        });
-      } finally {
-        this.loading = false;
-      }
-    },
-    async handleFileAction(item, action) {
-      this.loading = true;
-      try {
-        const result = await formService.documentTemplateRead(
-          this.form.id,
-          item.templateId
-        );
-        const base64EncodedData = result.data.template.data
-          .map((byte) => String.fromCharCode(byte))
-          .join('');
-        // Decode the base64 string to binary data
-        const binaryString = atob(base64EncodedData);
-        const len = binaryString.length;
-        const bytes = new Uint8Array(len);
-        for (let i = 0; i < len; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
-        }
-        const blob = new Blob([bytes], {
-          type: this.getMimeType(item.filename),
-        });
-        const url = window.URL.createObjectURL(blob);
+async function handleDelete(item) {
+  loading.value = true;
+  try {
+    await formService.documentTemplateDelete(form.value.id, item.templateId);
+    await fetchTemplates();
+    notificationStore.addNotification({
+      text: t('trans.documentTemplate.deleteSuccess'),
+      ...NotificationTypes.SUCCESS,
+    });
+  } catch (e) {
+    notificationStore.addNotification({
+      text: t('trans.documentTemplate.deleteError'),
+      consoleError: t('trans.documentTemplate.deleteError', {
+        error: e.message,
+      }),
+    });
+  } finally {
+    loading.value = false;
+  }
+}
 
-        if (action === 'preview') {
-          // Open the file in a new tab
-          window.open(url, '_blank');
-          window.URL.revokeObjectURL(url);
-        } else if (action === 'download') {
-          // Create an anchor element and trigger download
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = item.filename;
-          document.body.appendChild(a);
-          a.click();
-          window.URL.revokeObjectURL(url);
-          a.remove();
-        }
-      } catch (e) {
-        this.addNotification({
-          text: i18n.t('trans.documentTemplate.fetchError'),
-          consoleError: i18n.t('trans.documentTemplate.fetchError', {
-            error: e.message,
-          }),
-        });
-      } finally {
-        this.loading = false;
-      }
-    },
-    getMimeType(filename) {
-      const extension = filename.slice(filename.lastIndexOf('.') + 1);
-      const mimeTypes = {
-        txt: 'text/plain',
-        docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        html: 'text/html',
-        odt: 'application/vnd.oasis.opendocument.text',
-        pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-        xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      };
-      return mimeTypes[extension];
-    },
-  },
-};
+async function handleFileAction(item, action) {
+  loading.value = true;
+  try {
+    const url = await getDocumentTemplate(
+      form.value.id,
+      item.templateId,
+      item.filename
+    );
+
+    if (action === 'preview') {
+      // Open the file in a new tab
+      window.open(url, '_blank');
+      window.URL.revokeObjectURL(url);
+    } else if (action === 'download') {
+      // Create an anchor element and trigger download
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = item.filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+    }
+  } catch (e) {
+    notificationStore.addNotification({
+      text: t('trans.documentTemplate.fetchError'),
+      consoleError: t('trans.documentTemplate.fetchError', {
+        error: e.message,
+      }),
+    });
+  } finally {
+    loading.value = false;
+  }
+}
+
+defineExpose({
+  cdogsTemplate,
+  enablePreview,
+  fileInput,
+  handleDelete,
+  handleFileAction,
+  handleFileInput,
+  isFileInputEmpty,
+  isValidFile,
+  isValidSize,
+  uploadedFile,
+});
 </script>
 
 <template>
@@ -248,7 +242,7 @@ export default {
               :href="techdocsLinkTemplateUpload"
               class="preview_info_link_field_white"
               target="_blank"
-              :hreflang="lang"
+              :lang="locale"
             >
               {{ $t('trans.formSettings.learnMore') }}
               <v-icon icon="mdi:mdi-arrow-top-right-bold-box-outline"></v-icon>
@@ -283,7 +277,7 @@ export default {
               {{ item.filename }}
             </a>
           </template>
-          <span :lang="lang">
+          <span :lang="locale">
             {{ $t('trans.manageVersions.clickToPreview') }}
             <v-icon icon="mdi:mdi-open-in-new"></v-icon>
           </span>
@@ -338,7 +332,7 @@ export default {
       counter
       :clearable="true"
       show-size
-      :lang="lang"
+      :lang="locale"
       prepend-icon="false"
       :disabled="documentTemplates.length >= 1"
       :rules="validationRules"
@@ -350,13 +344,16 @@ export default {
     </v-file-input>
     <v-btn
       :disabled="
-        !isValidFile || isFileInputEmpty || documentTemplates.length >= 1
+        !isValidFile ||
+        !isValidSize ||
+        isFileInputEmpty ||
+        documentTemplates.length >= 1
       "
       color="primary"
       :title="$t('trans.documentTemplate.upload')"
       @click="handleFileUpload"
     >
-      <span :lang="lang">{{ $t('trans.documentTemplate.upload') }}</span>
+      <span :lang="locale">{{ $t('trans.documentTemplate.upload') }}</span>
     </v-btn>
   </div>
 </template>

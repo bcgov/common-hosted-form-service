@@ -1,13 +1,14 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed, onMounted } from 'vue';
-import { ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import { i18n } from '~/internationalization';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 import { checkFormManage, checkSubmissionView } from '~/utils/permissionUtils';
+
+const { locale, t } = useI18n({ useScope: 'global' });
 
 const formId = ref(null);
 const showDescriptionDialog = ref(false);
@@ -19,18 +20,18 @@ const sortBy = ref([{ key: 'name', order: 'asc' }]);
 const formStore = useFormStore();
 const idpStore = useIdpStore();
 
-const { formList, isRTL, lang } = storeToRefs(formStore);
+const { formList, isRTL } = storeToRefs(formStore);
 const { user } = storeToRefs(useAuthStore());
 
 const headers = computed(() => [
   {
-    title: i18n.t('trans.formsTable.formTitle'),
+    title: t('trans.formsTable.formTitle'),
     align: 'start',
     key: 'name',
     width: '1%',
   },
   {
-    title: i18n.t('trans.formsTable.action'),
+    title: t('trans.formsTable.action'),
     align: 'end',
     key: 'actions',
     filterable: false,
@@ -75,7 +76,7 @@ defineExpose({
     >
       <!-- page title -->
       <div>
-        <h1 :lang="lang">{{ $t('trans.formsTable.myForms') }}</h1>
+        <h1 :lang="locale">{{ $t('trans.formsTable.myForms') }}</h1>
       </div>
       <!-- buttons -->
       <div v-if="canCreateForm">
@@ -99,7 +100,7 @@ defineExpose({
               </v-btn>
             </router-link>
           </template>
-          <span :lang="lang">{{ $t('trans.formsTable.createNewForm') }}</span>
+          <span :lang="locale">{{ $t('trans.formsTable.createNewForm') }}</span>
         </v-tooltip>
       </div>
     </div>
@@ -118,7 +119,7 @@ defineExpose({
             :label="$t('trans.formsTable.search')"
             class="pb-5"
             :class="{ label: isRTL }"
-            :lang="lang"
+            :lang="locale"
           />
         </div>
       </v-col>
@@ -135,7 +136,7 @@ defineExpose({
     :loading="loading"
     :loading-text="$t('trans.formsTable.loadingText')"
     :search="search"
-    :lang="lang"
+    :lang="locale"
     :sort-by="sortBy"
   >
     <template #item.name="{ item }">
@@ -151,7 +152,7 @@ defineExpose({
           <template #activator="{ props }">
             <span v-bind="props">{{ item.name }}</span>
           </template>
-          <span :lang="lang">
+          <span :lang="locale">
             {{ $t('trans.formsTable.viewForm') }}
             <v-icon icon="mdi:mdi-open-in-new"></v-icon>
           </span>
@@ -180,7 +181,7 @@ defineExpose({
           :title="$t('trans.formsTable.manage')"
         >
           <v-icon :class="isRTL ? 'ml-1' : 'mr-1'" icon="mdi:mdi-cog"></v-icon>
-          <span class="d-none d-sm-flex" :lang="lang">{{
+          <span class="d-none d-sm-flex" :lang="locale">{{
             $t('trans.formsTable.manage')
           }}</span>
         </v-btn>
@@ -200,7 +201,7 @@ defineExpose({
             :class="isRTL ? 'ml-1' : 'mr-1'"
             icon="mdi:mdi-list-box-outline"
           ></v-icon>
-          <span class="d-none d-sm-flex" :lang="lang">{{
+          <span class="d-none d-sm-flex" :lang="locale">{{
             $t('trans.formsTable.submissions')
           }}</span>
         </v-btn>
@@ -214,7 +215,7 @@ defineExpose({
     @close-dialog="showDescriptionDialog = false"
   >
     <template #title>
-      <span class="pl-5" :lang="lang">{{
+      <span class="pl-5" :lang="locale">{{
         $t('trans.formsTable.Description')
       }}</span>
     </template>

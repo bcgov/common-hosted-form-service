@@ -1,10 +1,9 @@
 <script setup>
 import moment from 'moment';
 import { storeToRefs } from 'pinia';
-import { computed } from 'vue';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import { i18n } from '~/internationalization';
 import { useFormStore } from '~/store/form';
 import { ScheduleType } from '~/utils/constants';
 import {
@@ -12,74 +11,72 @@ import {
   isDateValidForMailNotification,
 } from '~/utils/transformUtils';
 
+const { t, locale } = useI18n({ useScope: 'global' });
+
 const enableReminderDraw = ref(true);
 const githubLinkScheduleAndReminderFeature = ref(
-  'https://github.com/bcgov/common-hosted-form-service/wiki/Schedule-and-Reminder-notification'
+  'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/Schedule-and-Reminder-notification/'
 );
 /* c8 ignore start */
-const intervalType = ref([
-  (v) => !!v || i18n.t('trans.formSettings.fieldRequired'),
-]);
+const intervalType = ref([(v) => !!v || t('trans.formSettings.fieldRequired')]);
 const scheduleOpenDate = ref([
-  (v) => !!v || i18n.t('trans.formSettings.fieldRequired'),
+  (v) => !!v || t('trans.formSettings.fieldRequired'),
   (v) =>
     (v &&
       new RegExp(
         /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
       ).test(v)) ||
-    i18n.t('trans.formSettings.correctDateFormat'),
+    t('trans.formSettings.correctDateFormat'),
 ]);
 const scheduleCloseDate = ref([
-  (v) => !!v || i18n.t('trans.formSettings.fieldRequired'),
+  (v) => !!v || t('trans.formSettings.fieldRequired'),
   (v) =>
     (v &&
       new RegExp(
         /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
       ).test(v)) ||
-    i18n.t('trans.formSettings.correctDateFormat'),
+    t('trans.formSettings.correctDateFormat'),
   (v) =>
     moment(v).isAfter(form.value.schedule.openSubmissionDateTime, 'day') ||
-    i18n.t('trans.formSettings.dateDiffMsg'),
+    t('trans.formSettings.dateDiffMsg'),
 ]);
 const roundNumber = ref([
-  (v) => !!v || i18n.t('trans.formSettings.fieldRequired'),
+  (v) => !!v || t('trans.formSettings.fieldRequired'),
   (v) =>
     (v && new RegExp(/^[1-9]\d{0,5}(?:\.\d{1,2})?$/g).test(v)) ||
-    i18n.t('trans.formSettings.valueMustBeNumber'),
+    t('trans.formSettings.valueMustBeNumber'),
 ]);
 const repeatTerm = ref([
-  (v) => !!v || i18n.t('trans.formSettings.fieldRequired'),
+  (v) => !!v || t('trans.formSettings.fieldRequired'),
   (v) =>
     (v && new RegExp(/^[1-9]\d{0,5}(?:\.\d{1,2})?$/g).test(v)) ||
-    i18n.t('trans.formSettings.valueMustBeNumber'),
+    t('trans.formSettings.valueMustBeNumber'),
 ]);
 const scheduleTypedRules = ref([
-  (v) => !!v || i18n.t('trans.formSettings.selectAnOptions'),
+  (v) => !!v || t('trans.formSettings.selectAnOptions'),
 ]);
 const repeatIntervalType = ref([
-  (v) => !!v || i18n.t('trans.formSettings.fieldRequired'),
+  (v) => !!v || t('trans.formSettings.fieldRequired'),
   (v) =>
     AVAILABLE_PERIOD_OPTIONS.value.includes(v) ||
-    i18n.t('trans.formSettings.validInterval'),
+    t('trans.formSettings.validInterval'),
 ]);
-const closeMessage = ref([
-  (v) => !!v || i18n.t('trans.formSettings.fieldRequired'),
-]);
+const closeMessage = ref([(v) => !!v || t('trans.formSettings.fieldRequired')]);
 const repeatUntilDate = ref([
-  (v) => !!v || i18n.t('trans.formSettings.fieldRequired'),
+  (v) => !!v || t('trans.formSettings.fieldRequired'),
   (v) =>
     (v &&
       new RegExp(
         /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
       ).test(v)) ||
-    i18n.t('trans.formSettings.correctDateFormat'),
+    t('trans.formSettings.correctDateFormat'),
   (v) =>
     moment(v).isAfter(form.value.schedule.openSubmissionDateTime, 'day') ||
-    i18n.t('trans.formSettings.dateGrtOpenSubmissnDate'),
+    t('trans.formSettings.dateGrtOpenSubmissnDate'),
 ]);
 /* c8 ignore stop */
 
-const { form, isRTL, lang } = storeToRefs(useFormStore());
+const { form, isRTL } = storeToRefs(useFormStore());
 
 const AVAILABLE_DATES = computed(() => {
   return getSubmissionPeriodDates(
@@ -246,7 +243,7 @@ defineExpose({
 <template>
   <BasePanel class="fill-height">
     <template #title
-      ><span :lang="lang">
+      ><span :lang="locale">
         {{ $t('trans.formSettings.formScheduleSettings') }}</span
       ></template
     >
@@ -260,7 +257,7 @@ defineExpose({
           density="compact"
           variant="outlined"
           :rules="scheduleOpenDate"
-          :lang="lang"
+          :lang="locale"
           @change="openDateTypeChanged"
         >
           <template v-if="isRTL" #prepend-inner>
@@ -273,7 +270,7 @@ defineExpose({
       </v-col>
 
       <v-col cols="12" md="12" class="p-0">
-        <p class="font-weight-black" :lang="lang">
+        <p class="font-weight-black" :lang="locale">
           {{ $t('trans.formSettings.submissionsDeadline') }}
         </p>
         <v-expand-transition>
@@ -290,7 +287,7 @@ defineExpose({
                 :value="SCHEDULE_TYPE.MANUAL"
               >
                 <template #label>
-                  <span :class="{ 'mr-2': isRTL }" :lang="lang"
+                  <span :class="{ 'mr-2': isRTL }" :lang="locale"
                     >{{ $t('trans.formSettings.keepSubmissnOpenTilUnplished') }}
                   </span>
                 </template>
@@ -301,7 +298,7 @@ defineExpose({
                 :value="SCHEDULE_TYPE.CLOSINGDATE"
               >
                 <template #label>
-                  <span :class="{ 'mr-2': isRTL }" :lang="lang"
+                  <span :class="{ 'mr-2': isRTL }" :lang="locale"
                     >{{ $t('trans.formSettings.submissionsClosingDate') }}
                   </span>
                 </template>
@@ -312,7 +309,7 @@ defineExpose({
                 :value="SCHEDULE_TYPE.PERIOD"
               >
                 <template #label>
-                  <span :class="{ 'mr-2': isRTL }" :lang="lang"
+                  <span :class="{ 'mr-2': isRTL }" :lang="locale"
                     >{{ $t('trans.formSettings.submissionPeriod') }}
                   </span>
                 </template>
@@ -362,7 +359,7 @@ defineExpose({
           variant="outlined"
           class="m-0 p-0"
           :class="{ 'dir-rtl': isRTL }"
-          :lang="lang"
+          :lang="locale"
           :rules="roundNumber"
         ></v-text-field>
       </v-col>
@@ -382,7 +379,7 @@ defineExpose({
           variant="outlined"
           class="mr-2 pl-2"
           :rules="intervalType"
-          :lang="lang"
+          :lang="locale"
         ></v-select>
       </v-col>
     </v-row>
@@ -398,7 +395,7 @@ defineExpose({
     >
       <template #label>
         <div :class="{ 'mr-2': isRTL }">
-          <span :lang="lang">
+          <span :lang="locale">
             {{ $t('trans.formSettings.allowLateSubmissions') }}
           </span>
           <v-tooltip location="bottom">
@@ -412,7 +409,7 @@ defineExpose({
               >
               </v-icon>
             </template>
-            <span :lang="lang">
+            <span :lang="locale">
               {{ $t('trans.formSettings.allowLateSubmissionsInfoTip') }}
             </span>
           </v-tooltip>
@@ -441,7 +438,7 @@ defineExpose({
             variant="outlined"
             class="m-0 p-0"
             :class="{ 'dir-rtl': isRTL }"
-            :lang="lang"
+            :lang="locale"
             :rules="roundNumber"
           >
           </v-text-field>
@@ -456,7 +453,7 @@ defineExpose({
             variant="outlined"
             class="mr-1 pl-2"
             :rules="intervalType"
-            :lang="lang"
+            :lang="locale"
           ></v-select>
         </v-col>
       </v-row>
@@ -469,7 +466,7 @@ defineExpose({
       @update:modelValue="repeatSubmissionChanged"
     >
       <template #label>
-        <span :class="{ 'mr-2': isRTL }" :lang="lang">
+        <span :class="{ 'mr-2': isRTL }" :lang="locale">
           {{ $t('trans.formSettings.repeatPeriod') }}
         </span>
       </template>
@@ -492,7 +489,7 @@ defineExpose({
             variant="outlined"
             class="m-0 p-0"
             :class="{ 'dir-rtl': isRTL, label: isRTL }"
-            :lang="lang"
+            :lang="locale"
             :rules="repeatTerm"
           ></v-text-field>
         </v-col>
@@ -507,7 +504,7 @@ defineExpose({
             variant="outlined"
             class="mr-2 pl-2"
             :rules="repeatIntervalType"
-            :lang="lang"
+            :lang="locale"
           ></v-select>
         </v-col>
 
@@ -522,7 +519,7 @@ defineExpose({
             variant="outlined"
             :rules="repeatUntilDate"
             :class="{ 'dir-rtl': isRTL, label: isRTL }"
-            :lang="lang"
+            :lang="locale"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -544,7 +541,7 @@ defineExpose({
       class="p-0 m-0"
     >
       <v-col class="p-0 m-0" cols="12" md="12">
-        <p class="font-weight-black m-0" :lang="lang">
+        <p class="font-weight-black m-0" :lang="locale">
           {{ $t('trans.formSettings.summary') }}
         </p>
       </v-col>
@@ -558,7 +555,7 @@ defineExpose({
         cols="12"
         md="12"
       >
-        <span :lang="lang">
+        <span :lang="locale" data-test="submission-schedule-text">
           {{ $t('trans.formSettings.submissionsOpenDateRange') }}
           <b>{{ form.schedule.openSubmissionDateTime }}</b>
           {{ $t('trans.formSettings.to') }}
@@ -570,9 +567,7 @@ defineExpose({
                   AVAILABLE_DATES[0]['closeDate'] &&
                   AVAILABLE_DATES[0]['closeDate'].split(' ')[0]
                 : ''
-            }}
-
-            {{
+            }}{{
               form.schedule.scheduleType === SCHEDULE_TYPE.CLOSINGDATE
                 ? form.schedule.closeSubmissionDateTime
                 : ''
@@ -580,11 +575,13 @@ defineExpose({
           </b>
         </span>
 
-        <span :lang="lang">{{
+        <span :lang="locale" data-test="late-submission-text">{{
           form.schedule.allowLateSubmissions.enabled &&
           form.schedule.allowLateSubmissions.forNext.intervalType &&
           form.schedule.allowLateSubmissions.forNext.term
-            ? $t('trans.formSettings.allowLateSubmissnInterval') +
+            ? ' ' +
+              $t('trans.formSettings.allowLateSubmissnInterval') +
+              ' ' +
               form.schedule.allowLateSubmissions.forNext.term +
               ' ' +
               form.schedule.allowLateSubmissions.forNext.intervalType +
@@ -601,10 +598,12 @@ defineExpose({
             form.schedule.repeatSubmission.everyIntervalType &&
             AVAILABLE_DATES[1]
           "
-          :lang="lang"
-          >{{ $t('trans.formSettings.scheduleRepetition') }}
-          <b>{{ form.schedule.repeatSubmission.everyTerm }} </b>
-          <b>{{ form.schedule.repeatSubmission.everyIntervalType }}</b>
+          :lang="locale"
+          >{{ ' ' + $t('trans.formSettings.scheduleRepetition') }}
+          <b>
+            {{ form.schedule.repeatSubmission.everyTerm }}
+            {{ form.schedule.repeatSubmission.everyIntervalType }}
+          </b>
           {{ $t('trans.formSettings.until') }}
           <b>{{ form.schedule.repeatSubmission.repeatUntil }}</b
           >.
@@ -618,18 +617,18 @@ defineExpose({
                 icon="mdi:mdi-help-circle-outline"
               ></v-icon>
             </template>
-            <span :lang="lang">
+            <span :lang="locale">
               <!-- MORE FUTURE OCCURENCES -->
               {{ $t('trans.formSettings.datesOfSubmissnInfo') }}
               <ul>
                 <li
                   v-for="date in AVAILABLE_DATES"
                   :key="date.startDate + Math.random()"
-                  :lang="lang"
+                  :lang="locale"
                 >
                   {{ $t('trans.formSettings.formOpenInterval') }}
                   {{ date.startDate.split(' ')[0] }}
-                  <span v-if="form.schedule.enabled" :lang="lang">
+                  <span v-if="form.schedule.enabled" :lang="locale">
                     {{ $t('trans.formSettings.to') }}
                     {{ date.closeDate.split(' ')[0] }}
                     <span
@@ -637,7 +636,7 @@ defineExpose({
                         form.schedule.allowLateSubmissions.enabled &&
                         date.closeDate !== date.graceDate
                       "
-                      :lang="lang"
+                      :lang="locale"
                       >{{ $t('trans.formSettings.allowDateSubmissionDate') }}
                       {{ date.graceDate.split(' ')[0] }}</span
                     ></span
@@ -677,7 +676,7 @@ defineExpose({
         >
           <template #label>
             <div>
-              <span :class="{ 'mr-2': isRTL }" :lang="lang">
+              <span :class="{ 'mr-2': isRTL }" :lang="locale">
                 {{ $t('trans.formSettings.customClosingMessage') }}
               </span>
               <v-tooltip location="bottom">
@@ -690,7 +689,7 @@ defineExpose({
                     icon="mdi:mdi-help-circle-outline"
                   ></v-icon>
                 </template>
-                <span :lang="lang">
+                <span :lang="locale">
                   {{ $t('trans.formSettings.customClosingMessageToolTip') }}
                 </span>
               </v-tooltip>
@@ -704,7 +703,7 @@ defineExpose({
           <v-row class="mb-0 mt-0">
             <v-col class="mb-0 mt-0 pb-0 pt-0">
               <template #title
-                ><span :lang="lang">
+                ><span :lang="locale">
                   {{ $t('trans.formSettings.closingMessage') }}</span
                 ></template
               >
@@ -718,7 +717,7 @@ defineExpose({
                 data-test="text-name"
                 :rules="closeMessage"
                 :class="{ 'dir-rtl': isRTL, label: isRTL }"
-                :lang="lang"
+                :lang="locale"
               />
             </v-col>
           </v-row>
@@ -739,14 +738,14 @@ defineExpose({
           <v-row class="mb-0 mt-0">
             <v-col class="mb-0 mt-0 pb-0 pt-0">
               <template #title
-                ><span :lang="lang">{{
+                ><span :lang="locale">{{
                   $t('trans.formSettings.sendReminderEmail')
                 }}</span></template
               >
               <v-checkbox v-model="form.reminder_enabled" class="my-0 m-0 p-0">
                 <template #label>
                   <div :class="{ 'mr-2': isRTL }">
-                    <span :lang="lang">
+                    <span :lang="locale">
                       {{ $t('trans.formSettings.sendReminderEmail') }}
                     </span>
                     <v-tooltip close-delay="2500" location="bottom">
@@ -759,7 +758,7 @@ defineExpose({
                           :class="{ 'mr-2': isRTL }"
                         ></v-icon>
                       </template>
-                      <span :lang="lang">
+                      <span :lang="locale">
                         {{
                           $t('trans.formSettings.autoReminderNotificatnToolTip')
                         }}
@@ -767,7 +766,7 @@ defineExpose({
                           :href="githubLinkScheduleAndReminderFeature"
                           class="preview_info_link_field_white"
                           :target="'_blank'"
-                          :hreflang="lang"
+                          :lang="locale"
                         >
                           {{ $t('trans.formSettings.learnMore') }}
                           <v-icon

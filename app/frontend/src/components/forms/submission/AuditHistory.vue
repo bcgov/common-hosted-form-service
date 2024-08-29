@@ -1,59 +1,62 @@
-<script>
-import { mapActions, mapState } from 'pinia';
-import { i18n } from '~/internationalization';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import formService from '~/services/formService.js';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
-export default {
-  props: {
-    submissionId: {
-      type: String,
-      required: true,
+const { t, locale } = useI18n({ useScope: 'global' });
+
+const properties = defineProps({
+  submissionId: {
+    type: String,
+    required: true,
+  },
+});
+
+const notificationStore = useNotificationStore();
+
+const editHistoryDialog = ref(false);
+const loading = ref(true);
+const history = ref([]);
+
+const { isRTL } = storeToRefs(useFormStore());
+
+/* c8 ignore start */
+const headers = computed(() => {
+  return [
+    {
+      title: t('trans.auditHistory.userName'),
+      key: 'updatedByUsername',
     },
-  },
-  data() {
-    return {
-      dialog: false,
-      loading: true,
-      history: [],
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
-    headers() {
-      return [
-        {
-          title: i18n.t('trans.auditHistory.userName'),
-          key: 'updatedByUsername',
-        },
-        { title: i18n.t('trans.auditHistory.date'), key: 'actionTimestamp' },
-      ];
-    },
-  },
-  methods: {
-    ...mapActions(useNotificationStore, ['addNotification']),
-    async loadHistory() {
-      this.loading = true;
-      this.dialog = true;
-      try {
-        const response = await formService.listSubmissionEdits(
-          this.submissionId
-        );
-        this.history = response.data;
-      } catch (error) {
-        this.addNotification({
-          text: i18n.t('trans.auditHistory.errorMsg'),
-          consoleError:
-            i18n.t('trans.auditHistory.consoleErrMsg') +
-            `${this.submissionId}: ${error}`,
-        });
-      } finally {
-        this.loading = false;
-      }
-    },
-  },
-};
+    { title: t('trans.auditHistory.date'), key: 'actionTimestamp' },
+  ];
+});
+/* c8 ignore end */
+
+async function loadHistory() {
+  loading.value = true;
+  editHistoryDialog.value = true;
+  try {
+    const response = await formService.listSubmissionEdits(
+      properties.submissionId
+    );
+    history.value = response.data;
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.auditHistory.errorMsg'),
+      consoleError:
+        t('trans.auditHistory.consoleErrMsg') +
+        `${properties.submissionId}: ${error}`,
+    });
+  } finally {
+    loading.value = false;
+  }
+}
+
+defineExpose({ loadHistory });
 </script>
 
 <template>
@@ -71,22 +74,22 @@ export default {
           @click="loadHistory"
         />
       </template>
-      <span :class="{ 'dir-rtl': isRTL }" :lang="lang">{{
+      <span :class="{ 'dir-rtl': isRTL }" :lang="locale">{{
         $t('trans.auditHistory.viewEditHistory')
       }}</span>
     </v-tooltip>
 
-    <v-dialog v-model="dialog" width="900">
+    <v-dialog v-model="editHistoryDialog" width="900">
       <v-card>
         <v-card-title
           class="text-h5 pb-0"
           :class="{ 'dir-rtl': isRTL }"
-          :lang="lang"
+          :lang="locale"
           >{{ $t('trans.auditHistory.editHistory') }}</v-card-title
         >
         <v-card-text>
           <hr />
-          <p :class="{ 'dir-rtl': isRTL }" :lang="lang">
+          <p :class="{ 'dir-rtl': isRTL }" :lang="locale">
             {{ $t('trans.auditHistory.auditLogMsg') }}
           </p>
 
@@ -98,7 +101,7 @@ export default {
             :loading-text="$t('trans.auditHistory.loadingText')"
             item-key="id"
             class="status-table"
-            :lang="lang"
+            :lang="locale"
           >
             <template #[`item.actionTimestamp`]="{ item }">
               {{ $filters.formatDateLong(item.actionTimestamp) }}
@@ -112,9 +115,9 @@ export default {
             color="primary"
             variant="flat"
             :title="$t('trans.auditHistory.close')"
-            @click="dialog = false"
+            @click="editHistoryDialog = false"
           >
-            <span :lang="lang">{{ $t('trans.auditHistory.close') }}</span>
+            <span :lang="locale">{{ $t('trans.auditHistory.close') }}</span>
           </v-btn>
         </v-card-actions>
       </v-card>

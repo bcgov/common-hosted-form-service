@@ -1,6 +1,7 @@
-<script>
-import { mapState, mapActions } from 'pinia';
-import { i18n } from '~/internationalization';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { rbacService, userService } from '~/services';
@@ -8,219 +9,225 @@ import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { useIdpStore } from '~/store/identityProviders';
 import { FormPermissions, NotificationTypes, Regex } from '~/utils/constants';
+import { filterObject } from '~/utils/transformUtils';
 
-export default {
-  components: {
-    BaseDialog,
-  },
-  props: {
-    isDraft: {
-      type: Boolean,
-      required: true,
-    },
-    submissionId: {
-      type: String,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      dialog: false,
-      isLoadingTable: true,
-      showDeleteDialog: false,
-      userTableList: [],
-      userToDelete: {},
+const { t, locale } = useI18n({ useScope: 'global' });
 
-      findUsers: null,
-      isLoadingDropdown: false,
-      selectedIdp: null,
-      userSearchResults: [],
-      userSearchSelection: null,
-    };
+const properties = defineProps({
+  isDraft: {
+    type: Boolean,
+    required: true,
   },
-  computed: {
-    ...mapState(useFormStore, ['form', 'isRTL', 'lang']),
-    ...mapState(useIdpStore, ['loginButtons', 'primaryIdp']),
-    autocompleteLabel() {
-      return this.isPrimary(this.selectedIdp)
-        ? i18n.t('trans.manageSubmissionUsers.requiredFiled')
-        : i18n.t('trans.manageSubmissionUsers.exactEmailOrUsername');
-    },
+  submissionId: {
+    type: String,
+    required: true,
   },
-  watch: {
-    selectedIdp(newIdp, oldIdp) {
-      if (newIdp !== oldIdp) {
-        this.userSearchResults = [];
+});
+
+const dialog = ref(false);
+const formSubmissionUsers = ref([]); // the users added to the team for this submission
+const isLoadingDropdown = ref(false);
+const isLoadingTable = ref(true);
+const selectedIdp = ref(null);
+const showDeleteDialog = ref(false);
+const userSearchInput = ref(null); // the search filter
+const userSearchResults = ref([]);
+const userSearchSelection = ref(null); // the selected user
+const userToDelete = ref({});
+
+const formStore = useFormStore();
+const idpStore = useIdpStore();
+const notificationStore = useNotificationStore();
+
+const { isRTL } = storeToRefs(formStore);
+
+const autocompleteLabel = computed(() => {
+  return idpStore.isPrimary(selectedIdp.value)
+    ? t('trans.manageSubmissionUsers.requiredField')
+    : t('trans.manageSubmissionUsers.exactEmailOrUsername');
+});
+
+watch(selectedIdp, (newIdp, oldIdp) => {
+  onChangeSelectedIdp(newIdp, oldIdp);
+});
+
+watch(userSearchInput, async (input) => {
+  await onChangeUserSearchInput(input);
+});
+
+initializeSelectedIdp();
+getSubmissionUsers();
+
+function onChangeSelectedIdp(newIdp, oldIdp) {
+  if (newIdp !== oldIdp) {
+    userSearchResults.value = [];
+  }
+}
+
+async function onChangeUserSearchInput(input) {
+  if (!input) return;
+  isLoadingDropdown.value = true;
+  try {
+    // The form's IDP (only support 1 at a time right now), blank is 'team' and should be Primary
+    let params = {};
+    params.idpCode = selectedIdp.value;
+    let teamMembershipConfig = idpStore.teamMembershipSearch(selectedIdp.value);
+    if (teamMembershipConfig) {
+      if (input.length < teamMembershipConfig.text.minLength)
+        throw new Error(t(teamMembershipConfig.text.message));
+      if (input.includes('@')) {
+        if (!new RegExp(Regex.EMAIL).test(input))
+          throw new Error(t(teamMembershipConfig.email.message));
+        else params.email = input;
+      } else {
+        params.username = input;
       }
-    },
+    } else {
+      params.search = input;
+    }
+    const response = await userService.getUsers(params);
+    userSearchResults.value = response.data;
+  } catch (error) {
+    // userSearchResults.value = [];
+    /* eslint-disable no-console */
+    console.error(
+      t('trans.manageSubmissionUsers.getUsersErrMsg', {
+        error: error,
+      })
+    ); // eslint-disable-line no-console
+  } finally {
+    isLoadingDropdown.value = false;
+  }
+}
 
-    async findUsers(input) {
-      if (!input) return;
-      this.isLoadingDropdown = true;
-      try {
-        // The form's IDP (only support 1 at a time right now), blank is 'team' and should be Primary
-        let params = {};
-        params.idpCode = this.selectedIdp;
-        let teamMembershipConfig = this.teamMembershipSearch(this.selectedIdp);
-        if (teamMembershipConfig) {
-          if (input.length < teamMembershipConfig.text.minLength)
-            throw new Error(i18n.t(teamMembershipConfig.text.message));
-          if (input.includes('@')) {
-            if (!new RegExp(Regex.EMAIL).test(input))
-              throw new Error(i18n.t(teamMembershipConfig.email.message));
-            else params.email = input;
-          } else {
-            params.username = input;
-          }
-        } else {
-          params.search = input;
-        }
-        const response = await userService.getUsers(params);
-        this.userSearchResults = response.data;
-      } catch (error) {
-        // this.userSearchResults = [];
-        /* eslint-disable no-console */
-        console.error(
-          i18n.t('trans.manageSubmissionUsers.getUsersErrMsg', {
-            error: error,
-          })
-        ); // eslint-disable-line no-console
-      } finally {
-        this.isLoadingDropdown = false;
+// workaround so we can use computed value (primaryIdp) in created()
+function initializeSelectedIdp() {
+  selectedIdp.value = idpStore.primaryIdp?.code;
+}
+
+// show users in dropdown that have a text match on multiple properties
+async function addUser() {
+  // If the end user selected a user
+  if (userSearchSelection.value) {
+    const id = userSearchSelection.value.id;
+    // If a selected user is already on the team
+    if (formSubmissionUsers.value.some((u) => u.id === id)) {
+      notificationStore.addNotification({
+        ...NotificationTypes.WARNING,
+        text: t('trans.manageSubmissionUsers.remove', {
+          username: userSearchSelection.value.username,
+        }),
+      });
+    }
+    // Add a new user to the team
+    else {
+      await modifyPermissions(id, [
+        FormPermissions.SUBMISSION_UPDATE,
+        FormPermissions.SUBMISSION_READ,
+      ]);
+    }
+  }
+  // reset search field
+  userSearchSelection.value = null;
+}
+
+async function getSubmissionUsers() {
+  isLoadingTable.value = true;
+  try {
+    const response = await rbacService.getSubmissionUsers({
+      formSubmissionId: properties.submissionId,
+    });
+    if (response.data) {
+      formSubmissionUsers.value = transformResponseToTable(response.data);
+    }
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.manageSubmissionUsers.getSubmissionUsersErr'),
+      consoleError: t(
+        'trans.manageSubmissionUsers.getSubmissionUsersConsoleErr',
+        { submissionId: properties.submissionId, error: error }
+      ),
+    });
+  } finally {
+    isLoadingTable.value = false;
+  }
+}
+
+async function modifyPermissions(userId, permissions) {
+  isLoadingTable.value = true;
+  try {
+    const selectedEmail = permissions.length
+      ? userSearchSelection.value.email
+      : userToDelete.value.email;
+    // Add the selected user with read/update permissions on this submission
+    const response = await rbacService.setSubmissionUserPermissions(
+      { permissions: permissions },
+      {
+        formSubmissionId: properties.submissionId,
+        userId: userId,
+        selectedUserEmail: selectedEmail,
       }
-    },
-  },
-  created() {
-    this.initializeSelectedIdp();
-    this.getSubmissionUsers();
-  },
-  methods: {
-    ...mapActions(useNotificationStore, ['addNotification']),
-    ...mapActions(useIdpStore, ['isPrimary', 'teamMembershipSearch']),
-    // workaround so we can use computed value (primaryIdp) in created()
-    initializeSelectedIdp() {
-      this.selectedIdp = this.primaryIdp?.code;
-    },
-    // show users in dropdown that have a text match on multiple properties
-    addUser() {
-      if (this.userSearchSelection) {
-        const id = this.userSearchSelection.id;
-        if (this.userTableList.some((u) => u.id === id)) {
-          this.addNotification({
-            ...NotificationTypes.WARNING,
-            text: i18n.t('trans.manageSubmissionUsers.remove', {
-              username: this.userSearchSelection.username,
-            }),
-          });
-        } else {
-          this.modifyPermissions(id, [
-            FormPermissions.SUBMISSION_UPDATE,
-            FormPermissions.SUBMISSION_READ,
-          ]);
-        }
-      }
-      // reset search field
-      this.userSearchSelection = null;
-    },
+    );
+    if (response.data) {
+      formSubmissionUsers.value = transformResponseToTable(response.data);
+      notificationStore.addNotification({
+        ...NotificationTypes.SUCCESS,
+        text: permissions.length
+          ? t('trans.manageSubmissionUsers.sentInviteEmailTo') +
+            ' ' +
+            `${selectedEmail}`
+          : t('trans.manageSubmissionUsers.sentUninvitedEmailTo') +
+            ' ' +
+            `${selectedEmail}`,
+      });
+    }
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.manageSubmissionUsers.updateUserErrMsg'),
+      consoleError: t('trans.manageSubmissionUsers.updateUserErrMsg', {
+        submissionId: properties.submissionId,
+        userId: userId,
+        error: error,
+      }),
+    });
+  } finally {
+    isLoadingTable.value = false;
+  }
+}
 
-    filterObject(_itemTitle, queryText, item) {
-      return Object.values(item)
-        .filter((v) => v)
-        .some((v) => {
-          if (typeof v === 'string')
-            return v.toLowerCase().includes(queryText.toLowerCase());
-          else {
-            return Object.values(v).some(
-              (nestedValue) =>
-                typeof nestedValue === 'string' &&
-                nestedValue.toLowerCase().includes(queryText.toLowerCase())
-            );
-          }
-        });
-    },
+function removeUser(userRow) {
+  userToDelete.value = userRow;
+  showDeleteDialog.value = true;
+}
 
-    async getSubmissionUsers() {
-      this.isLoadingTable = true;
-      try {
-        const response = await rbacService.getSubmissionUsers({
-          formSubmissionId: this.submissionId,
-        });
-        if (response.data) {
-          this.userTableList = this.transformResponseToTable(response.data);
-        }
-      } catch (error) {
-        this.addNotification({
-          text: i18n.t('trans.manageSubmissionUsers.getSubmissionUsersErr'),
-          consoleError: i18n.t(
-            'trans.manageSubmissionUsers.getSubmissionUsersConsoleErr',
-            { submissionId: this.submissionId, error: error }
-          ),
-        });
-      } finally {
-        this.isLoadingTable = false;
-      }
-    },
+function transformResponseToTable(responseData) {
+  return responseData
+    .map((su) => {
+      return {
+        email: su.user.email,
+        fullName: su.user.fullName,
+        id: su.userId,
+        isOwner: su.permissions.includes(FormPermissions.SUBMISSION_CREATE),
+        username: su.user.username,
+      };
+    })
+    .sort((a, b) => b.isOwner - a.isOwner);
+}
 
-    async modifyPermissions(userId, permissions) {
-      this.isLoadingTable = true;
-      try {
-        const selectedEmail = permissions.length
-          ? this.userSearchSelection.email
-          : this.userToDelete.email;
-        // Add the selected user with read/update permissions on this submission
-        const response = await rbacService.setSubmissionUserPermissions(
-          { permissions: permissions },
-          {
-            formSubmissionId: this.submissionId,
-            userId: userId,
-            selectedUserEmail: selectedEmail,
-          }
-        );
-        if (response.data) {
-          this.userTableList = this.transformResponseToTable(response.data);
-          this.addNotification({
-            ...NotificationTypes.SUCCESS,
-            text: permissions.length
-              ? i18n.t('trans.manageSubmissionUsers.sentInviteEmailTo') +
-                `${selectedEmail}`
-              : i18n.t('trans.manageSubmissionUsers.sentUninvitedEmailTo') +
-                `${selectedEmail}`,
-          });
-        }
-      } catch (error) {
-        this.addNotification({
-          text: i18n.t('trans.manageSubmissionUsers.updateUserErrMsg'),
-          consoleError: i18n.t('trans.manageSubmissionUsers.updateUserErrMsg', {
-            submissionId: this.submissionId,
-            userId: userId,
-            error: error,
-          }),
-        });
-      } finally {
-        this.isLoadingTable = false;
-      }
-    },
-
-    removeUser(userRow) {
-      this.userToDelete = userRow;
-      this.showDeleteDialog = true;
-    },
-
-    transformResponseToTable(responseData) {
-      return responseData
-        .map((su) => {
-          return {
-            email: su.user.email,
-            fullName: su.user.fullName,
-            id: su.userId,
-            isOwner: su.permissions.includes(FormPermissions.SUBMISSION_CREATE),
-            username: su.user.username,
-          };
-        })
-        .sort((a, b) => b.isOwner - a.isOwner);
-    },
-  },
-};
+defineExpose({
+  addUser,
+  autocompleteLabel,
+  formSubmissionUsers,
+  modifyPermissions,
+  onChangeSelectedIdp,
+  onChangeUserSearchInput,
+  removeUser,
+  selectedIdp,
+  showDeleteDialog,
+  userSearchResults,
+  userSearchSelection,
+  userToDelete,
+});
 </script>
 
 <template>
@@ -238,19 +245,19 @@ export default {
           <v-icon icon="mdi:mdi-account-multiple"></v-icon>
         </v-btn>
       </template>
-      <span :lang="lang">{{
+      <span :lang="locale">{{
         $t('trans.manageSubmissionUsers.manageTeamMembers')
       }}</span>
     </v-tooltip>
     <v-dialog v-model="dialog" width="600">
       <v-card :class="{ 'dir-rtl': isRTL }">
-        <v-card-title class="text-h5 pb-0" :lang="lang">
+        <v-card-title class="text-h5 pb-0" :lang="locale">
           {{ $t('trans.manageSubmissionUsers.manageTeamMembers') }}
         </v-card-title>
         <v-card-subtitle>
           <v-radio-group v-if="isDraft" v-model="selectedIdp" inline>
             <v-radio
-              v-for="button in loginButtons"
+              v-for="button in idpStore.loginButtons"
               :key="button.code"
               :value="button.code"
               :label="button.display"
@@ -264,7 +271,7 @@ export default {
               <form autocomplete="off">
                 <v-autocomplete
                   v-model="userSearchSelection"
-                  v-model:search="findUsers"
+                  v-model:search="userSearchInput"
                   :class="{ label: isRTL }"
                   autocomplete="autocomplete_off"
                   :items="userSearchResults"
@@ -283,7 +290,7 @@ export default {
                   <template #no-data>
                     <div
                       class="px-2"
-                      :lang="lang"
+                      :lang="locale"
                       v-html="
                         $t('trans.manageSubmissionUsers.userNotFoundErrMsg')
                       "
@@ -313,17 +320,17 @@ export default {
                 :title="$t('trans.manageSubmissionUsers.add')"
                 @click="addUser"
               >
-                <span :lang="lang"
+                <span :lang="locale"
                   >{{ $t('trans.manageSubmissionUsers.add') }}
                 </span>
               </v-btn>
             </v-col>
           </v-row>
-          <div v-else :lang="lang">
+          <div v-else :lang="locale">
             {{ $t('trans.manageSubmissionUsers.draftFormInvite') }}
           </div>
 
-          <p class="mt-5" :lang="lang">
+          <p class="mt-5" :lang="locale">
             <strong
               >{{
                 $t('trans.manageSubmissionUsers.submissionTeamMembers')
@@ -339,26 +346,35 @@ export default {
             <v-table dense>
               <thead>
                 <tr>
-                  <th :class="isRTL ? 'text-right' : 'text-left'" :lang="lang">
+                  <th
+                    :class="isRTL ? 'text-right' : 'text-left'"
+                    :lang="locale"
+                  >
                     {{ $t('trans.manageSubmissionUsers.name') }}
                   </th>
-                  <th :class="isRTL ? 'text-right' : 'text-left'" :lang="lang">
+                  <th
+                    :class="isRTL ? 'text-right' : 'text-left'"
+                    :lang="locale"
+                  >
                     {{ $t('trans.manageSubmissionUsers.username') }}
                   </th>
-                  <th :class="isRTL ? 'text-right' : 'text-left'" :lang="lang">
+                  <th
+                    :class="isRTL ? 'text-right' : 'text-left'"
+                    :lang="locale"
+                  >
                     {{ $t('trans.manageSubmissionUsers.email') }}
                   </th>
                   <th
                     v-if="isDraft"
                     :class="isRTL ? 'text-right' : 'text-left'"
-                    :lang="lang"
+                    :lang="locale"
                   >
                     {{ $t('trans.manageSubmissionUsers.actions') }}
                   </th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="item in userTableList" :key="item.userId">
+                <tr v-for="item in formSubmissionUsers" :key="item.userId">
                   <td>{{ item.fullName }}</td>
                   <td>{{ item.username }}</td>
                   <td>{{ item.email }}</td>
@@ -388,7 +404,7 @@ export default {
             :title="$t('trans.manageSubmissionUsers.close')"
             @click="dialog = false"
           >
-            <span :lang="lang">
+            <span :lang="locale">
               {{ $t('trans.manageSubmissionUsers.close') }}</span
             >
           </v-btn>
@@ -409,14 +425,14 @@ export default {
           ><span>Remove {{ userToDelete.username }}</span></template
         >
         <template #text>
-          <span :lang="lang">
+          <span :lang="locale">
             {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg1') }}
             <strong>{{ userToDelete.username }}</strong
             >? {{ $t('trans.manageSubmissionUsers.removeUserWarningMsg2') }}
           </span>
         </template>
         <template #button-text-continue>
-          <span :lang="lang">{{
+          <span :lang="locale">{{
             $t('trans.manageSubmissionUsers.remove')
           }}</span>
         </template>

@@ -36,19 +36,19 @@ module.exports = {
       next(error);
     }
   },
-  deleteMutipleSubmissions: async (req, res, next) => {
+  deleteMultipleSubmissions: async (req, res, next) => {
     try {
       let submissionIds = req.body && req.body.submissionIds ? req.body.submissionIds : [];
-      const response = await service.deleteMutipleSubmissions(submissionIds, req.currentUser);
+      const response = await service.deleteMultipleSubmissions(submissionIds, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);
     }
   },
-  restoreMutipleSubmissions: async (req, res, next) => {
+  restoreMultipleSubmissions: async (req, res, next) => {
     try {
       let submissionIds = req.body && req.body.submissionIds ? req.body.submissionIds : [];
-      const response = await service.restoreMutipleSubmissions(submissionIds, req.currentUser);
+      const response = await service.restoreMultipleSubmissions(submissionIds, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -137,6 +137,7 @@ module.exports = {
       const template = await formService.documentTemplateRead(req.params.documentTemplateId);
       const fileName = template.filename.substring(0, template.filename.lastIndexOf('.'));
       const fileExtension = template.filename.substring(template.filename.lastIndexOf('.') + 1);
+      const convertTo = req.query.convertTo || 'pdf';
 
       const templateBody = {
         data: {
@@ -148,12 +149,12 @@ module.exports = {
           },
         },
         options: {
-          convertTo: 'pdf',
+          convertTo: convertTo,
           overwrite: true,
           reportName: fileName,
         },
         template: {
-          content: btoa(template.template),
+          content: template.template.toString(),
           encodingType: 'base64',
           fileType: fileExtension,
         },

@@ -1,63 +1,62 @@
-<script>
-import { mapState, mapActions } from 'pinia';
-import { i18n } from '~/internationalization';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { formService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
-export default {
-  props: {
-    submissionId: {
-      required: true,
-      type: String,
+const { t, locale } = useI18n({ useScope: 'global' });
+
+const properties = defineProps({
+  submissionId: {
+    required: true,
+    type: String,
+  },
+});
+
+const loading = ref(true);
+const statuses = ref([]);
+
+const notificationStore = useNotificationStore();
+
+const { isRTL } = storeToRefs(useFormStore());
+
+const headers = computed(() => {
+  return [
+    { title: t('trans.statusTable.status'), key: 'code' },
+    {
+      title: t('trans.statusTable.dateStatusChanged'),
+      align: 'start',
+      key: 'createdAt',
     },
-  },
-  data() {
-    return {
-      loading: true,
-      statuses: [],
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
-    headers() {
-      return [
-        { title: i18n.t('trans.statusTable.status'), key: 'code' },
-        {
-          title: i18n.t('trans.statusTable.dateStatusChanged'),
-          align: 'start',
-          key: 'createdAt',
-        },
-        { title: i18n.t('trans.statusTable.assignee'), key: 'user' },
-        { title: i18n.t('trans.statusTable.updatedBy'), key: 'createdBy' },
-      ];
-    },
-  },
-  async mounted() {
-    await this.getData();
-  },
-  methods: {
-    ...mapActions(useNotificationStore, ['addNotification']),
-    async getData() {
-      this.loading = true;
-      try {
-        const response = await formService.getSubmissionStatuses(
-          this.submissionId
-        );
-        this.statuses = response.data;
-      } catch (error) {
-        this.addNotification({
-          text: i18n.t('trans.statusTable.getSubmissionStatusErr'),
-          consoleError:
-            i18n.t('trans.statusTable.getSubmissionStatusConsErr') + `${error}`,
-        });
-      } finally {
-        this.loading = false;
-      }
-    },
-  },
-};
+    { title: t('trans.statusTable.assignee'), key: 'user' },
+    { title: t('trans.statusTable.updatedBy'), key: 'createdBy' },
+  ];
+});
+
+onMounted(async () => {
+  await getData();
+});
+
+async function getData() {
+  loading.value = true;
+  try {
+    const response = await formService.getSubmissionStatuses(
+      properties.submissionId
+    );
+    statuses.value = response.data;
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.statusTable.getSubmissionStatusErr'),
+      consoleError:
+        t('trans.statusTable.getSubmissionStatusConsErr') + `${error}`,
+    });
+  } finally {
+    loading.value = false;
+  }
+}
 </script>
 
 <template>
@@ -72,7 +71,7 @@ export default {
       :loading-text="$t('trans.statusTable.loadingText')"
       item-key="statusId"
       class="status-table"
-      :lang="lang"
+      :lang="locale"
     >
       <template #item.createdAt="{ item }">
         <span>{{ $filters.formatDate(item.createdAt) }}</span>

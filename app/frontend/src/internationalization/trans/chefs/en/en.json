@@ -1,4 +1,5 @@
 {
+  "open": "Open",
   "date": {
     "date": "yyyy-mm-dd"
   },
@@ -65,11 +66,12 @@
     "update": "Update",
     "cancel": "Cancel",
     "eventSubscription": "Event Subscription",
-    "cdogsTemplate": "CDOGS Template"
+    "cdogsTemplate": "CDOGS Template",
+    "externalAPIs": "External APIs"
   },
   "documentTemplate": {
     "uploadTemplate": "Upload CDOGS Template",
-    "uploadTemplateFile":"Upload template file",
+    "uploadTemplateFile": "Upload template file",
     "upload": "Upload",
     "delete": "Delete",
     "download": "Download",
@@ -79,7 +81,41 @@
     "deleteSuccess": "Template deleted successfully.",
     "deleteError": "An error occurred while deleting the template.",
     "fetchError": "An error occurred while fetching the template.",
-    "info" : "Upload a template to use the Common Document Generation Service (CDOGS)"
+    "info": "Upload a template to use the Common Document Generation Service (CDOGS)",
+    "fileSizeError": "File size must be less than 25MB."
+  },
+  "externalAPI": {
+    "info": "Configure External APIs for use in your form.",
+    "create": "Create new External API.",
+    "createError": "External API could not be created.",
+    "createSuccess": "External API created successfully.",
+    "createTitle": "New External API Configuration",
+    "delete": "Delete",
+    "deleteSuccess": "External API deleted successfully.",
+    "deleteError": "An error occurred while deleting the External API.",
+    "edit": "Edit",
+    "editError": "External API could not be updated.",
+    "editSuccess": "External API updated successfully.",
+    "editTitle": "Edit External API Configuration",
+    "fetchError": "An error occurred while fetching the External API.",
+    "fetchListError": "An error occurred while fetching the External API list.",
+    "fetchStatusListError": "An error occurred while fetching the External API Status Code list.",
+    "save": "Save",
+    "formName": "Name",
+    "formEndpointUrl": "Endpoint URL",
+    "formStatus": "Status",
+    "formSendApiKey": "Send API Key",
+    "formApiKeyHeader": "API Key Header Name",
+    "formApiKey": "API Key Value",
+    "formSendUserToken": "Send User Token",
+    "formUserTokenHeader": "User Token Header Name",
+    "formUserTokenBearer": "User Token as Bearer Token",
+    "formSendUserInfo": "Send User Information",
+    "formNameReq": "Name is required.",
+    "formNameMaxChars": "Name must be 255 characters or less",
+    "validEndpointRequired": "Please enter a valid endpoint starting with http:// or https://",
+    "apiKeyFieldRequired": "Required when 'Send API Key' selected.",
+    "userTokenFieldRequired": "Required when 'Send User Token' selected."
   },
   "formSettings": {
     "pressToAddMultiEmail": "Press <kbd>enter</kbd> or <kbd>,</kbd> or <kbd>space</kbd> to add multiple email addresses",
@@ -95,6 +131,7 @@
     "referenceGuideB": "user guide",
     "referenceGuideC": "for more details",
     "specificTeamMembers": "Specific Team Members",
+    "teamMemberTooltip": "Add team members from the Team Management settings after creating this form.",
     "formFunctionality": "Form Functionality",
     "formSubmissinScheduleMsg": "The Form Submissions Schedule will be available in the Form Settings after the form is published.",
     "formSubmissionsSchedule": "Form Submissions Schedule",
@@ -332,9 +369,25 @@
   "adminPage": {
     "forms": "Forms",
     "users": "Users",
+    "apis": "APIs",
     "developer": "Developer",
     "infoLinks": "Info Links",
     "metrics": "Metrics"
+  },
+  "adminAPIsTable": {
+    "search": "Search",
+    "loadingText": "Loading... Please wait",
+    "ministry": "Ministry",
+    "ministryName": "Ministry Name",
+    "formName": "Form",
+    "formId": "Form ID",
+    "name": "API Name",
+    "endpointUrl": "Endpoint URL",
+    "display": "Status",
+    "actions": "Actions",
+    "edit": "Edit",
+    "editTitle": "Update External API Status",
+    "allowSendUserToken": "Allow 'Send User Token'"
   },
   "adminUsersTable": {
     "search": "Search",
@@ -546,7 +599,7 @@
     "exactBCEIDSearch": "Email searches for BCeID must be exact.",
     "getUsersErrMsg": "Error getting users: {error}",
     "exactEmailOrUsername": "Enter an exact email or username.",
-    "requiredFiled": "Enter a name, email, or username"
+    "requiredField": "Enter a name, email, or username"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "View This Submission",
@@ -565,7 +618,7 @@
     "save": "Save",
     "filterTitle": "Search and select columns to show under your dashboard",
     "confirmationId": "Confirmation Id",
-    "actions": "actions",
+    "actions": "Actions",
     "createdBy": "Created By",
     "statusUpdatedBy": "Status Updated By",
     "status": "Status",
@@ -610,6 +663,7 @@
     "assigneeIsRequired": "Assignee is required",
     "assignToMe": "ASSIGN TO ME",
     "recipientEmail": "Recipient Email",
+    "recipientIsRequired": "Recipient is required",
     "attachCommentToEmail": "Attach Comment to Email",
     "emailComment": "Email Comment",
     "maxChars": "Max 4000 characters",
@@ -695,7 +749,8 @@
     "defaultCdogsTemplate": "Use default CDOGS template",
     "fileName": "File Name",
     "uploadDate": "Upload Date",
-    "upload": "Upload"
+    "upload": "Upload",
+    "selectExportFileType": "Select export filetype"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Component Information Link",
@@ -829,7 +884,8 @@
     "errorSavingFile": "Error saving files. Filename: {fileName}. Error: {error}",
     "submittingDraftErrMsg": "An error occurred while saving a draft",
     "submittingDraftConsErrMsg": "Error saving draft. SubmissionId: {submissionId}. Error: {error}",
-    "formDraftAccessErrMsg": "Requested submission is already submitted, redirecting to View page"
+    "formDraftAccessErrMsg": "Requested submission is already submitted, redirecting to View page",
+    "formUnauthorizedMessage": "You are not authorized to view this form, please contact the form owner for access."
   },
   "bCGovFooter": {
     "home": "Home",
@@ -955,7 +1011,13 @@
       "updatingFCStatusErrMsg": "An error occurred while updating publish status",
       "updatingFCStatusConsErrMsg": "Error updating publish status: {error}",
       "fecthingFormBuilderCompsErrMsg": "An error occurred while fetching form builder components",
-      "fecthingFormBuilderCompsConsErrMsg": "Error getting form builder components: {error}"
+      "fecthingFormBuilderCompsConsErrMsg": "Error getting form builder components: {error}",
+      "getAPIsErrMsg": "An error occurred while fetching External APIs list.",
+      "getAPIsConsErrMsg": "Error fetching External APIs list: {error}",
+      "updateAPIsErrMsg": "Error updating External API.",
+      "updateAPIsConsErrMsg": "Error updating External API: {error}",
+      "getAPICodesErrMsg": "Error fetching External API Status Codes list.",
+      "getAPICodesConsErrMsg": "Error fetching External API Status Codes list: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Error loading email templates for {formId}: {error}",

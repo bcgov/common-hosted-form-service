@@ -1,4 +1,5 @@
 {
+  "open": "Bukas",
   "date": {
     "date": "yyyy-mm-dd"
   },
@@ -83,7 +84,8 @@
     "deleteSuccess": "Matagumpay na natanggal ang template.",
     "deleteError": "Nagkaroon ng error habang tinatanggal ang template.",
     "fetchError": "Nagkaroon ng error habang kinukuha ang template.",
-    "info": "Mag-upload ng template upang gamitin ang Common Document Generation Service (CDOGS)"
+    "info": "Mag-upload ng template upang gamitin ang Common Document Generation Service (CDOGS)",
+    "fileSizeError": "Ang laki ng file ay dapat mas mababa sa 25MB."
   },
   "formSettings": {
     "pressToAddMultiEmail": "Pindutin <kbd>ang enter</kbd> o <kbd>,</kbd> o <kbd>space</kbd> para magdagdag ng maraming email address",
@@ -99,6 +101,7 @@
     "referenceGuideB": "gabay sa gumagamit",
     "referenceGuideC": "para sa karagdagang detalye",
     "specificTeamMembers": "Mga Partikular na Miyembro ng Koponan",
+    "teamMemberTooltip": "Idagdag ang mga miyembro ng team mula sa Mga Setting ng Pamamahala ng Team matapos likhain ang form na ito.",
     "formFunctionality": "Pag-andar ng Form",
     "formSubmissinScheduleMsg": "Ang Iskedyul ng Pagsusumite ng Form ay magiging available sa Mga Setting ng Form pagkatapos mailathala ang form.",
     "formSubmissionsSchedule": "Iskedyul ng Pagsusumite ng Form",
@@ -550,7 +553,7 @@
     "exactBCEIDSearch": "Dapat na eksakto ang mga paghahanap sa email para sa BceID.",
     "getUsersErrMsg": "Error sa pagkuha ng mga user: {error}",
     "exactEmailOrUsername": "Maglagay ng eksaktong e-mail o username.",
-    "requiredFiled": "Maglagay ng pangalan, e-mail, o username"
+    "requiredField": "Maglagay ng pangalan, e-mail, o username"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "Tingnan ang Pagsusumite na Ito",
@@ -614,6 +617,7 @@
     "assigneeIsRequired": "Kinakailangan ang assignee",
     "assignToMe": "ASSIGN TO ME",
     "recipientEmail": "Email ng Tatanggap",
+    "recipientIsRequired": "Kinakailangan ang tatanggap",
     "attachCommentToEmail": "Maglakip ng Komento sa Email",
     "emailComment": "Komento sa Email",
     "maxChars": "Max na 4000 character",
@@ -699,7 +703,8 @@
     "defaultCdogsTemplate": "Gamitin ang default na Template ng CDOGS",
     "fileName": "Pangalan ng File",
     "uploadDate": "Petsa ng Pag-upload",
-    "upload": "I-upload"
+    "upload": "I-upload",
+    "selectExportFileType": "Piliin ang uri ng file na i-export"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Link ng Impormasyon ng Bahagi",
@@ -826,7 +831,8 @@
     "errorSavingFile": "Error sa pag-save ng mga file. Filename: {fileName}. Error: {error}",
     "submittingDraftErrMsg": "Nagkaroon ng error habang nagse-save ng draft",
     "submittingDraftConsErrMsg": "Error sa pag-save ng draft. SubmissionId: {submissionId}. Error: {error}",
-    "formDraftAccessErrMsg": "Ang hiniling na pagsusumite ay naisumite na, nagre-redirect sa View page"
+    "formDraftAccessErrMsg": "Ang hiniling na pagsusumite ay naisumite na, nagre-redirect sa View page",
+    "formUnauthorizedMessage": "Hindi ka awtorisadong tingnan ang form na ito, mangyaring makipag-ugnayan sa may-ari ng form para sa access."
   },
   "bCGovFooter": {
     "home": "Bahay",

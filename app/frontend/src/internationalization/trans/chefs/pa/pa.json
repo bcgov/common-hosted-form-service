@@ -1,4 +1,5 @@
 {
+  "open": "ਖੁੱਲਾ",
   "date": {
     "date": "yyyy-mm-dd"
   },
@@ -83,7 +84,8 @@
     "deleteSuccess": "ਟੈਂਪਲੇਟ ਸਫਲਤਾਪੂਰਵਕ ਮਿਟਾਈ ਗਈ।",
     "deleteError": "ਟੈਂਪਲੇਟ ਮਿਟਾਉਣ ਸਮੇਂ ਇੱਕ ਗਲਤੀ ਆਈ।",
     "fetchError": "ਟੈਂਪਲੇਟ ਲਿਆਉਣ ਸਮੇਂ ਇੱਕ ਗਲਤੀ ਆਈ।",
-    "info": "ਕੌਮਨ ਦਸਤਾਵੇਜ਼ ਜਨਰੇਸ਼ਨ ਸਰਵਿਸ (CDOGS) ਵਰਤਣ ਲਈ ਇੱਕ ਟੈਂਪਲੇਟ ਅੱਪਲੋਡ ਕਰੋ"
+    "info": "ਕੌਮਨ ਦਸਤਾਵੇਜ਼ ਜਨਰੇਸ਼ਨ ਸਰਵਿਸ (CDOGS) ਵਰਤਣ ਲਈ ਇੱਕ ਟੈਂਪਲੇਟ ਅੱਪਲੋਡ ਕਰੋ",
+    "fileSizeError": "ਫਾਈਲ ਦਾ ਆਕਾਰ 25MB ਤੋਂ ਘੱਟ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।"
   },
   "formSettings": {
     "pressToAddMultiEmail": "ਕਈ ਈਮੇਲ ਪਤੇ ਜੋੜਨ ਲਈ <kbd>ਐਂਟਰ</kbd> <kbd>ਜਾਂ</kbd> <kbd>ਸਪੇਸ</kbd> ਦਬਾਓ",
@@ -99,6 +101,7 @@
     "referenceGuideB": "ਉਪਭੋਗਤਾ ਗਾਈਡ",
     "referenceGuideC": "ਹੋਰ ਵੇਰਵਿਆਂ ਲਈ",
     "specificTeamMembers": "ਖਾਸ ਟੀਮ ਦੇ ਮੈਂਬਰ",
+    "teamMemberTooltip": "ਇਸ ਫਾਰਮ ਨੂੰ ਬਣਾਉਣ ਤੋਂ ਬਾਅਦ ਟੀਮ ਪ੍ਰਬੰਧਨ ਸੈਟਿੰਗਾਂ ਤੋਂ ਟੀਮ ਦੇ ਮੈਂਬਰ ਨੂੰ ਜੋੜੋ।",
     "formFunctionality": "ਫਾਰਮ ਕਾਰਜਕੁਸ਼ਲਤਾ",
     "formSubmissinScheduleMsg": "ਫਾਰਮ ਪ੍ਰਕਾਸ਼ਿਤ ਹੋਣ ਤੋਂ ਬਾਅਦ ਫਾਰਮ ਸਬਮਿਸ਼ਨ ਅਨੁਸੂਚੀ ਫਾਰਮ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਉਪਲਬਧ ਹੋਵੇਗੀ।",
     "formSubmissionsSchedule": "ਫਾਰਮ ਸਬਮਿਸ਼ਨ ਅਨੁਸੂਚੀ",
@@ -550,7 +553,7 @@
     "exactBCEIDSearch": "BCeID ਲਈ ਈਮੇਲ ਖੋਜਾਂ ਸਟੀਕ ਹੋਣੀਆਂ ਚਾਹੀਦੀਆਂ ਹਨ।",
     "getUsersErrMsg": "ਉਪਭੋਗਤਾਵਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
     "exactEmailOrUsername": "ਇੱਕ ਸਹੀ ਈ-ਮੇਲ ਜਾਂ ਉਪਭੋਗਤਾ ਨਾਮ ਦਰਜ ਕਰੋ।",
-    "requiredFiled": "ਇੱਕ ਨਾਮ, ਈ-ਮੇਲ, ਜਾਂ ਉਪਭੋਗਤਾ ਨਾਮ ਦਰਜ ਕਰੋ"
+    "requiredField": "ਇੱਕ ਨਾਮ, ਈ-ਮੇਲ, ਜਾਂ ਉਪਭੋਗਤਾ ਨਾਮ ਦਰਜ ਕਰੋ"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "ਇਸ ਸਬਮਿਸ਼ਨ ਨੂੰ ਦੇਖੋ",
@@ -614,6 +617,7 @@
     "assigneeIsRequired": "ਜ਼ਿੰਮੇਦਾਰ ਲੋੜੀਂਦਾ ਹੈ",
     "assignToMe": "ਮੈਨੂੰ ਸੌਂਪੋ",
     "recipientEmail": "ਪ੍ਰਾਪਤਕਰਤਾ ਈਮੇਲ",
+    "recipientIsRequired": "ਪ੍ਰਾਪਤਕਰਤਾ ਦੀ ਲੋੜ ਹੈ",
     "attachCommentToEmail": "ਈਮੇਲ ਨਾਲ ਟਿੱਪਣੀ ਨੱਥੀ ਕਰੋ",
     "emailComment": "ਈਮੇਲ ਟਿੱਪਣੀ",
     "maxChars": "ਅਧਿਕਤਮ 4000 ਅੱਖਰ",
@@ -699,7 +703,8 @@
     "defaultCdogsTemplate": "ਮੂਲ CDOGS ਟੈਂਪਲੇਟ ਵਰਤੋ",
     "fileName": "ਫਾਈਲ ਦਾ ਨਾਂ",
     "uploadDate": "ਅੱਪਲੋਡ ਮਿਤੀ",
-    "upload": "ਅੱਪਲੋਡ ਕਰੋ"
+    "upload": "ਅੱਪਲੋਡ ਕਰੋ",
+    "selectExportFileType": "ਨਿਰਯਾਤ ਫਾਈਲ ਦੀ ਕਿਸਮ ਚੁਣੋ"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "ਕੰਪੋਨੈਂਟ ਜਾਣਕਾਰੀ ਲਿੰਕ",
@@ -826,7 +831,8 @@
     "errorSavingFile": "ਫ਼ਾਈਲਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋਈ। ਫ਼ਾਈਲ ਦਾ ਨਾਮ: {fileName}। ਗਲਤੀ: {error}",
     "submittingDraftErrMsg": "ਡਰਾਫਟ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
     "submittingDraftConsErrMsg": "ਡਰਾਫਟ ਸੁਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ। SubmissionId: {submissionId}। ਗਲਤੀ: {error}",
-    "formDraftAccessErrMsg": "ਬੇਨਤੀ ਕੀਤੀ ਸਪੁਰਦਗੀ ਪਹਿਲਾਂ ਹੀ ਸਪੁਰਦ ਕੀਤੀ ਗਈ ਹੈ, ਵੇਖੋ ਪੰਨੇ 'ਤੇ ਰੀਡਾਇਰੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
+    "formDraftAccessErrMsg": "ਬੇਨਤੀ ਕੀਤੀ ਸਪੁਰਦਗੀ ਪਹਿਲਾਂ ਹੀ ਸਪੁਰਦ ਕੀਤੀ ਗਈ ਹੈ, ਵੇਖੋ ਪੰਨੇ 'ਤੇ ਰੀਡਾਇਰੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ",
+    "formUnauthorizedMessage": "ਤੁਹਾਨੂੰ ਇਸ ਫਾਰਮ ਨੂੰ ਵੇਖਣ ਦੀ ਅਧਿਕਾਰਤਾ ਨਹੀਂ ਹੈ, ਕਿਰਪਾ ਕਰਕੇ ਪਹੁੰਚ ਲਈ ਫਾਰਮ ਦੇ ਮਾਲਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।"
   },
   "bCGovFooter": {
     "home": "ਘਰ",

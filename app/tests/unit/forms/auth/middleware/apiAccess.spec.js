@@ -1,5 +1,5 @@
 const { getMockReq, getMockRes } = require('@jest-mock/express');
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 
 const apiAccess = require('../../../../../src/forms/auth/middleware/apiAccess');
 const formService = require('../../../../../src/forms/form/service');
@@ -8,10 +8,10 @@ const fileService = require('../../../../../src/forms/file/service');
 const { NotFoundError } = require('objection');
 
 describe('apiAccess', () => {
-  const fileId = uuidv4();
-  const formId = uuidv4();
-  const formSubmissionId = uuidv4();
-  const secret = uuidv4();
+  const fileId = uuid.v4();
+  const formId = uuid.v4();
+  const formSubmissionId = uuid.v4();
+  const secret = uuid.v4();
 
   const token = Buffer.from(`${formId}:${secret}`).toString('base64');
   const authHeader = `Basic ${token}`;
@@ -263,7 +263,7 @@ describe('apiAccess', () => {
     it('should be bad request with non-uuid file id', async () => {
       const req = getMockReq({
         headers: { authorization: authHeader },
-        params: { id: 'invalidFileId' },
+        params: { fileId: 'invalidFileId' },
       });
       const { res, next } = getMockRes();
 
@@ -280,7 +280,7 @@ describe('apiAccess', () => {
       fileService.read = jest.fn().mockRejectedValue(new NotFoundError());
       const req = getMockReq({
         headers: { authorization: authHeader },
-        params: { id: fileId },
+        params: { fileId: fileId },
       });
       const { res, next } = getMockRes();
 
@@ -297,7 +297,7 @@ describe('apiAccess', () => {
       fileService.read = jest.fn().mockReturnValue({});
       const req = getMockReq({
         headers: { authorization: authHeader },
-        params: { id: fileId },
+        params: { fileId: fileId },
       });
       const { res, next } = getMockRes();
 
@@ -314,7 +314,7 @@ describe('apiAccess', () => {
       fileService.read = jest.fn().mockReturnValue({ formSubmissionId: undefined });
       const req = getMockReq({
         headers: { authorization: authHeader },
-        params: { id: fileId },
+        params: { fileId: fileId },
       });
       const { res, next } = getMockRes();
 
@@ -332,7 +332,7 @@ describe('apiAccess', () => {
       submissionService.read = jest.fn().mockReturnValue();
       const req = getMockReq({
         headers: { authorization: authHeader },
-        params: { id: fileId },
+        params: { fileId: fileId },
       });
       const { res, next } = getMockRes();
 
@@ -350,7 +350,7 @@ describe('apiAccess', () => {
       submissionService.read = jest.fn().mockReturnValue({});
       const req = getMockReq({
         headers: { authorization: authHeader },
-        params: { id: fileId },
+        params: { fileId: fileId },
       });
       const { res, next } = getMockRes();
 
@@ -368,7 +368,7 @@ describe('apiAccess', () => {
       submissionService.read = jest.fn().mockReturnValue({ form: {} });
       const req = getMockReq({
         headers: { authorization: authHeader },
-        params: { id: fileId },
+        params: { fileId: fileId },
       });
       const { res, next } = getMockRes();
 
@@ -387,7 +387,7 @@ describe('apiAccess', () => {
       submissionService.read = jest.fn().mockReturnValue({ form: { id: formId } });
       const req = getMockReq({
         headers: { authorization: authHeader },
-        params: { id: fileId },
+        params: { fileId: fileId },
       });
       const { res, next } = getMockRes();
 
@@ -405,7 +405,7 @@ describe('apiAccess', () => {
       submissionService.read = jest.fn().mockReturnValue({ form: { id: formId } });
       const req = getMockReq({
         headers: { authorization: authHeader },
-        params: { id: fileId },
+        params: { fileId: fileId },
       });
       const { res, next } = getMockRes();
 
@@ -424,7 +424,7 @@ describe('apiAccess', () => {
       submissionService.read = jest.fn().mockResolvedValue({ form: { id: formId } });
       const req = {
         headers: { authorization: authHeader },
-        params: { id: fileId },
+        params: { fileId: fileId },
       };
       const { res, next } = getMockRes();
 

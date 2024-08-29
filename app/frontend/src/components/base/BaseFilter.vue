@@ -1,30 +1,21 @@
 <script setup>
-import { i18n } from '~/internationalization';
 import { storeToRefs } from 'pinia';
+import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { useFormStore } from '~/store/form';
-import { ref } from 'vue';
-import { computed, onMounted } from 'vue';
+
+const { t, locale } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   inputHeaders: {
     type: Array,
-    default: () => [
-      {
-        title: i18n.t('trans.baseFilter.columnName'),
-        align: 'start',
-        sortable: true,
-        key: 'title',
-      },
-    ],
+    default: undefined,
   },
   // The data you will be filtering with
   inputData: {
     type: Array,
-    default: () => [
-      { title: i18n.t('trans.baseFilter.exampleText'), key: 'exampleText1' },
-      { title: i18n.t('trans.baseFilter.exampleText2'), key: 'exampleText2' },
-    ],
+    default: undefined,
   },
   resetData: {
     type: Array,
@@ -45,20 +36,36 @@ const properties = defineProps({
   },
   inputFilterPlaceholder: {
     type: String,
-    default: i18n.t('trans.baseFilter.exampleText2'),
+    default: undefined,
   },
   inputSaveButtonText: {
     type: String,
-    default: i18n.t('trans.baseFilter.filter'),
+    default: undefined,
   },
 });
 
 const emit = defineEmits(['saving-filter-data', 'cancel-filter-data']);
 
-const selectedData = ref([]);
+const headers = properties.inputHeaders || [
+  {
+    title: t('trans.baseFilter.columnName'),
+    align: 'start',
+    sortable: true,
+    key: 'title',
+  },
+];
+const inputData = properties.inputData || [
+  { title: t('trans.baseFilter.exampleText'), key: 'exampleText1' },
+  { title: t('trans.baseFilter.exampleText2'), key: 'exampleText2' },
+];
 const inputFilter = ref('');
+const inputFilterPlaceholder =
+  properties.inputFilterPlaceholder || t('trans.baseFilter.exampleText2');
+const inputSaveButtonText =
+  properties.inputSaveButtonText || t('trans.baseFilter.filter');
+const selectedData = ref([]);
 
-const { isRTL, lang } = storeToRefs(useFormStore());
+const { isRTL } = storeToRefs(useFormStore());
 
 const RTL = computed(() => (isRTL.value ? 'ml-3' : 'mr-3'));
 
@@ -107,7 +114,7 @@ defineExpose({ selectedData, inputFilter });
           density="compact"
           class="mt-3"
           :class="{ label: isRTL }"
-          :lang="lang"
+          :lang="locale"
         >
         </v-text-field>
         <v-tooltip location="bottom">
@@ -128,7 +135,7 @@ defineExpose({ selectedData, inputFilter });
               />
             </v-btn>
           </template>
-          <span :lang="lang">{{ $t('trans.baseFilter.resetColumns') }}</span>
+          <span :lang="locale">{{ $t('trans.baseFilter.resetColumns') }}</span>
         </v-tooltip>
       </div>
       <v-data-table
@@ -138,20 +145,20 @@ defineExpose({ selectedData, inputFilter });
         show-select
         hide-default-footer
         height="300px"
-        :headers="inputHeaders"
+        :headers="headers"
         :items="inputData"
         items-per-page="-1"
         :item-value="inputItemKey"
         :search="inputFilter"
         class="bg-grey-lighten-5 mb-3"
         disable-pagination
-        :lang="lang"
+        :lang="locale"
       >
       </v-data-table>
       <v-btn
         data-test="save-btn"
         class="bg-primary mt-3"
-        :lang="lang"
+        :lang="locale"
         :title="inputSaveButtonText"
         @click="savingFilterData"
       >
@@ -162,7 +169,7 @@ defineExpose({ selectedData, inputFilter });
         class="mt-3 text-primary"
         :class="RTL"
         variant="outlined"
-        :lang="lang"
+        :lang="locale"
         :title="$t('trans.baseFilter.cancel')"
         @click="cancelFilterData"
         >{{ $t('trans.baseFilter.cancel') }}</v-btn

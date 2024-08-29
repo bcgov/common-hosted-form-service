@@ -148,7 +148,16 @@ export default function getRouter(basePath = '/') {
               requiresAuth: 'primary',
               hasLogin: true,
             },
-            props: createProps,
+            props: (route) => {
+              return {
+                ...route.query,
+                ...route.params,
+                fd:
+                  String(route.query.fd).toLowerCase() === 'true' ||
+                  String(route.query.formDesigner) === 'true' ||
+                  route.query.fd === true,
+              };
+            },
           },
           {
             path: 'preview',

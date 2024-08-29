@@ -1,0 +1,41 @@
+name: Cypress Tests
+on:
+ workflow_dispatch:
+  inputs:
+      pr-number:
+        description: Pull request number
+        required: false
+        type: string
+  
+jobs:
+  cypress-run:
+    runs-on: ubuntu-22.04
+    steps:
+     - name: Checkout
+       uses: actions/checkout@v4
+     - name: Setup Node.js
+       uses: actions/setup-node@v4
+       with:
+         node-version: '20'
+         
+     - name: cache
+       uses: actions/cache@v4
+       with:
+            path: "tests/functional"
+            key: node-modules-${{ hashFiles('tests/functional/package.json') }}
+       
+        
+     - name: cypress install
+       uses: cypress-io/github-action@v6
+       with:
+          working-directory: '${{ github.workspace }}/tests/functional'
+       env:
+          CYPRESS_keycloakUsername: ${{secrets.keycloakUsername}}
+          CYPRESS_keycloakPassword: ${{secrets.keycloakPassword}}
+          CYPRESS_depEnv: ${{ github.event.inputs.pr-number }}
+          
+     - uses: actions/upload-artifact@v4
+       if: failure()
+       with:
+          name: cypress-screenshots
+          path: '${{ github.workspace }}/tests/functional/screenshots'

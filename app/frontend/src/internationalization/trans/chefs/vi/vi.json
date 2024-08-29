@@ -1,4 +1,5 @@
 {
+  "open": "mở",
   "date": {
     "date": "yyyy-mm-dd"
   },
@@ -83,7 +84,8 @@
     "deleteSuccess": "Xóa mẫu thành công.",
     "deleteError": "Có lỗi xảy ra khi xóa mẫu.",
     "fetchError": "Có lỗi xảy ra khi lấy mẫu.",
-    "info": "Tải lên một mẫu để sử dụng Dịch vụ Tạo Tài liệu Chung (CDOGS)"
+    "info": "Tải lên một mẫu để sử dụng Dịch vụ Tạo Tài liệu Chung (CDOGS)",
+    "fileSizeError": "Kích thước tệp phải nhỏ hơn 25MB."
   },
   "formSettings": {
     "pressToAddMultiEmail": "Nhấn <kbd>enter</kbd> hoặc <kbd>,</kbd> hoặc <kbd>dấu cách</kbd> để thêm nhiều địa chỉ email",
@@ -99,6 +101,7 @@
     "referenceGuideB": "hướng dẫn sử dụng",
     "referenceGuideC": "để biết thêm chi tiết",
     "specificTeamMembers": "Thành viên nhóm cụ thể",
+    "teamMemberTooltip": "Thêm thành viên nhóm từ cài đặt Quản lý Nhóm sau khi tạo mẫu này.",
     "formFunctionality": "Chức năng biểu mẫu",
     "formSubmissinScheduleMsg": "Lịch gửi biểu mẫu sẽ có sẵn trong Cài đặt biểu mẫu sau khi biểu mẫu được xuất bản.",
     "formSubmissionsSchedule": "Lịch gửi biểu mẫu",
@@ -550,7 +553,7 @@
     "exactBCEIDSearch": "Tìm kiếm email cho BCeID phải chính xác.",
     "getUsersErrMsg": "Lỗi nhận người dùng: {error}",
     "exactEmailOrUsername": "Nhập một e-mail hoặc tên người dùng chính xác.",
-    "requiredFiled": "Nhập tên, e-mail hoặc tên người dùng"
+    "requiredField": "Nhập tên, e-mail hoặc tên người dùng"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "Xem bài nộp này",
@@ -614,6 +617,7 @@
     "assigneeIsRequired": "Người được ủy quyền là bắt buộc",
     "assignToMe": "GIAO CHO TÔI",
     "recipientEmail": "Người nhận E-mail",
+    "recipientIsRequired": "Người nhận là bắt buộc",
     "attachCommentToEmail": "Đính kèm Nhận xét vào Email",
     "emailComment": "Nhận xét email",
     "maxChars": "Tối đa 4000 ký tự",
@@ -699,7 +703,8 @@
     "defaultCdogsTemplate": "Sử dụng mẫu CDOGS mặc định",
     "fileName": "Tên tệp",
     "uploadDate": "Ngày tải lên",
-    "upload": "Tải lên"
+    "upload": "Tải lên",
+    "selectExportFileType": "Chọn loại file xuất"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Liên kết thông tin thành phần",
@@ -826,7 +831,8 @@
     "errorSavingFile": "Lỗi khi lưu tệp. Tên tệp: {fileName}. Lỗi: {error}",
     "submittingDraftErrMsg": "Đã xảy ra lỗi khi lưu bản nháp",
     "submittingDraftConsErrMsg": "Lỗi khi lưu bản nháp. Đệ trìnhId: {submissionId}. Lỗi: {error}",
-    "formDraftAccessErrMsg": "Yêu cầu gửi đã được gửi, chuyển hướng đến Xem trang"
+    "formDraftAccessErrMsg": "Yêu cầu gửi đã được gửi, chuyển hướng đến Xem trang",
+    "formUnauthorizedMessage": "Bạn không được phép xem mẫu này, vui lòng liên hệ với chủ sở hữu mẫu để được truy cập."
   },
   "bCGovFooter": {
     "home": "Trang chủ",

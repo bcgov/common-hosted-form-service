@@ -28,7 +28,7 @@ describe('currentFileRecord', () => {
     test('there is no current user on the request', async () => {
       const req = getMockReq({
         params: {
-          id: fileId,
+          fileId: fileId,
         },
       });
       const { res, next } = getMockRes();
@@ -73,7 +73,7 @@ describe('currentFileRecord', () => {
       const req = getMockReq({
         currentUser: currentUserIdp,
         params: {
-          id: fileId,
+          fileId: fileId,
         },
       });
       const { res, next } = getMockRes();
@@ -99,7 +99,7 @@ describe('currentFileRecord', () => {
       const req = getMockReq({
         currentUser: currentUserIdp,
         params: {
-          id: fileId,
+          fileId: fileId,
         },
       });
       const { res, next } = getMockRes();
@@ -130,7 +130,7 @@ describe('currentFileRecord', () => {
       });
       const req = getMockReq({
         currentUser: currentUserIdp,
-        params: { id: fileId },
+        params: { fileId: fileId },
       });
       const { res, next } = getMockRes();
 
@@ -149,7 +149,7 @@ describe('currentFileRecord', () => {
       });
       const req = getMockReq({
         apiUser: true,
-        params: { id: fileId },
+        params: { fileId: fileId },
       });
       const { res, next } = getMockRes();
 

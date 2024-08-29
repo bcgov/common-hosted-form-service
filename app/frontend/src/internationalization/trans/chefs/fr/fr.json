@@ -1,4 +1,5 @@
 {
+  "open": "Ouvrir",
   "date": {
     "date": "aaaa-mm-jj"
   },
@@ -83,7 +84,8 @@
     "deleteSuccess": "Modèle supprimé avec succès.",
     "deleteError": "Une erreur s'est produite lors de la suppression du modèle.",
     "fetchError": "Une erreur s'est produite lors de la récupération du modèle.",
-    "info": "Téléchargez un modèle pour utiliser le Service de Génération de Documents Communs (CDOGS)"
+    "info": "Téléchargez un modèle pour utiliser le Service de Génération de Documents Communs (CDOGS)",
+    "fileSizeError": "La taille du fichier doit être inférieure à 25 Mo."
   },
   "formSettings": {
     "pressToAddMultiEmail": "Appuyez sur <kbd>entrée</kbd> ou <kbd>,</kbd> ou <kbd>espace</kbd> pour ajouter plusieurs adresses e-mail",
@@ -99,6 +101,7 @@
     "referenceGuideB": "mode d'emploi",
     "referenceGuideC": "pour plus de détails",
     "specificTeamMembers": "Membres spécifiques de l'équipe",
+    "teamMemberTooltip": "Ajoutez des membres de l'équipe depuis les paramètres de Gestion d'Équipe après avoir créé ce formulaire.",
     "formFunctionality": "Fonctionnalité du formulaire",
     "formSubmissinScheduleMsg": "Le calendrier de soumission des formulaires sera disponible dans les paramètres du formulaire après la publication du formulaire.",
     "formSubmissionsSchedule": "Calendrier de soumission des formulaires",
@@ -550,7 +553,7 @@
     "exactBCEIDSearch": "Les recherches par e-mail pour BCeID doivent être exactes.",
     "getUsersErrMsg": "Erreur lors de l'obtention des utilisateurs : {error}",
     "exactEmailOrUsername": "Entrez un e-mail ou un nom d'utilisateur exact.",
-    "requiredFiled": "Saisissez un nom, une adresse e-mail ou un nom d'utilisateur"
+    "requiredField": "Saisissez un nom, une adresse e-mail ou un nom d'utilisateur"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "Voir cette soumission",
@@ -614,6 +617,7 @@
     "assigneeIsRequired": "Le cessionnaire est requis",
     "assignToMe": "M'ASSIGNER",
     "recipientEmail": "Destinataire E-mail",
+    "recipientIsRequired": "Le destinataire est requis",
     "attachCommentToEmail": "Joindre un commentaire à un e-mail",
     "emailComment": "Commentaire par e-mail",
     "maxChars": "4000 caractères maximum",
@@ -699,7 +703,8 @@
     "defaultCdogsTemplate": "Utiliser le modèle CDOGS par défaut",
     "fileName": "Nom de fichier",
     "uploadDate": "Date de téléchargement",
-    "upload": "Télécharger"
+    "upload": "Télécharger",
+    "selectExportFileType": "Sélectionner le type de fichier à exporter"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Lien d'informations sur les composants",
@@ -826,7 +831,8 @@
     "errorSavingFile": "Erreur lors de l'enregistrement des fichiers. Nom de fichier : {fileName}. Erreur : {error}",
     "submittingDraftErrMsg": "Une erreur s'est produite lors de l'enregistrement d'un brouillon",
     "submittingDraftConsErrMsg": "Erreur lors de l'enregistrement du brouillon. ID de soumission : {submissionId}. Erreur : {error}",
-    "formDraftAccessErrMsg": "La soumission demandée est déjà soumise, redirigeant vers la page Afficher"
+    "formDraftAccessErrMsg": "La soumission demandée est déjà soumise, redirigeant vers la page Afficher",
+    "formUnauthorizedMessage": "Vous n'êtes pas autorisé à voir ce formulaire, veuillez contacter le propriétaire du formulaire pour accéder."
   },
   "bCGovFooter": {
     "home": "Maison",

@@ -1,6 +1,6 @@
 const { MockModel, MockTransaction } = require('../../../common/dbHelper');
 
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 
 const { EmailTypes } = require('../../../../src/forms/common/constants');
 const service = require('../../../../src/forms/form/service');
@@ -9,8 +9,8 @@ jest.mock('../../../../src/forms/common/models/tables/documentTemplate', () => M
 jest.mock('../../../../src/forms/common/models/tables/formEmailTemplate', () => MockModel);
 jest.mock('../../../../src/forms/common/models/views/submissionMetadata', () => MockModel);
 
-const documentTemplateId = uuidv4();
-const formId = uuidv4();
+const documentTemplateId = uuid.v4();
+const formId = uuid.v4();
 
 const currentUser = {
   usernameIdp: 'TESTER',
@@ -447,6 +447,18 @@ describe('_findFileIds', () => {
 });
 
 describe('listFormSubmissions', () => {
+  describe('400 response when', () => {
+    test('sort by column not in select', async () => {
+      await expect(
+        service.listFormSubmissions(formId, {
+          sortBy: {
+            column: 'x',
+          },
+        })
+      ).rejects.toThrow('400');
+    });
+  });
+
   it('should not error if fields has a trailing commma', async () => {
     await service.listFormSubmissions(formId, { fields: 'x,' });
 
@@ -677,7 +689,7 @@ describe('popFormLevelInfo', () => {
 
 describe('_getDefaultEmailTemplate', () => {
   it('should return a template', async () => {
-    const formId = uuidv4();
+    const formId = uuid.v4();
     const template = service._getDefaultEmailTemplate(formId, EmailTypes.SUBMISSION_CONFIRMATION);
 
     expect(template.formId).toEqual(formId);
@@ -761,7 +773,7 @@ describe('createOrUpdateEmailTemplates', () => {
   });
 
   it('should update template when it already exists', async () => {
-    const id = uuidv4();
+    const id = uuid.v4();
     service.readEmailTemplate = jest.fn().mockReturnValue({ id: id, ...emailTemplate });
     service.readEmailTemplates = jest.fn().mockReturnValue([{ id: id, ...emailTemplate }]);
 
@@ -776,7 +788,7 @@ describe('createOrUpdateEmailTemplates', () => {
   });
 
   it('should not rollback when an error occurs outside transaction', async () => {
-    service.readEmailTemplate = jest.fn().mockRejectedValue(new Error('SQL Error'));
+    service.readEmailTemplate = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
 
     await expect(service.createOrUpdateEmailTemplate(emailTemplate.formId, emailTemplate, user)).rejects.toThrow();
 
@@ -786,7 +798,7 @@ describe('createOrUpdateEmailTemplates', () => {
   it('should rollback when an insert error occurs inside transaction', async () => {
     service.readEmailTemplate = jest.fn().mockReturnValue(emailTemplate);
     service.readEmailTemplates = jest.fn().mockReturnValue([emailTemplate]);
-    MockModel.insert = jest.fn().mockRejectedValue(new Error('SQL Error'));
+    MockModel.insert = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
 
     await expect(service.createOrUpdateEmailTemplate(emailTemplate.formId, emailTemplate, user)).rejects.toThrow();
 
@@ -794,10 +806,10 @@ describe('createOrUpdateEmailTemplates', () => {
   });
 
   it('should rollback when an update error occurs inside transaction', async () => {
-    const id = uuidv4();
+    const id = uuid.v4();
     service.readEmailTemplate = jest.fn().mockReturnValue({ id: id, ...emailTemplate });
     service.readEmailTemplates = jest.fn().mockReturnValue([{ id: id, ...emailTemplate }]);
-    MockModel.update = jest.fn().mockRejectedValue(new Error('SQL Error'));
+    MockModel.update = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
 
     await expect(service.createOrUpdateEmailTemplate(emailTemplate.formId, emailTemplate, user)).rejects.toThrow();
 

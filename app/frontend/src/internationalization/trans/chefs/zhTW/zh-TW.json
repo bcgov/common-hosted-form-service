@@ -1,4 +1,5 @@
 {
+  "open": "打開",
   "date": {
     "date": "年-月-日"
   },
@@ -83,7 +84,8 @@
     "deleteSuccess": "範本成功刪除。",
     "deleteError": "刪除範本時發生錯誤。",
     "fetchError": "獲取範本時發生錯誤。",
-    "info": "上傳範本以使用公共文檔生成服務（CDOGS）"
+    "info": "上傳範本以使用公共文檔生成服務（CDOGS）",
+    "fileSizeError": "檔案大小必須小於25MB。"
   },
   "formSettings": {
     "pressToAddMultiEmail": "按<kbd>Enter</kbd>或<kbd>,</kbd>或<kbd>空格鍵</kbd>添加多個電子郵件地址",
@@ -99,6 +101,7 @@
     "referenceGuideB": "用戶指南",
     "referenceGuideC": "更多細節",
     "specificTeamMembers": "具體團隊成員",
+    "teamMemberTooltip": "在創建此表單後，從團隊管理設置中添加團隊成員。",
     "formFunctionality": "表單功能",
     "formSubmissinScheduleMsg": "表單發布後，表單提交計劃將在表單設置中可用。",
     "formSubmissionsSchedule": "表格提交時間表",
@@ -550,7 +553,7 @@
     "exactBCEIDSearch": "BCeID 的電子郵件搜索必須準確。",
     "getUsersErrMsg": "獲取用戶時出錯：{error}",
     "exactEmailOrUsername": "輸入準確的電子郵件或用戶名。",
-    "requiredFiled": "輸入姓名、電子郵件或用戶名"
+    "requiredField": "輸入姓名、電子郵件或用戶名"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "查看此提交內容",
@@ -614,6 +617,7 @@
     "assigneeIsRequired": "受讓人為必填項",
     "assignToMe": "分配給我",
     "recipientEmail": "收件人電子郵件",
+    "recipientIsRequired": "需要收件人",
     "attachCommentToEmail": "將評論附加到電子郵件",
     "emailComment": "電子郵件評論",
     "maxChars": "最多 4000 個字符",
@@ -699,7 +703,8 @@
     "defaultCdogsTemplate": "使用預設CDOGS範本",
     "fileName": "檔案名稱",
     "uploadDate": "上傳日期",
-    "upload": "上傳"
+    "upload": "上傳",
+    "selectExportFileType": "選擇導出文件類型"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "組件信息鏈接",
@@ -826,7 +831,8 @@
     "errorSavingFile": "保存文件時出錯。文件名：{fileName}。錯誤：{error}",
     "submittingDraftErrMsg": "保存草稿時出錯",
     "submittingDraftConsErrMsg": "保存草稿時出錯。提交 ID：{submissionId}。錯誤：{error}",
-    "formDraftAccessErrMsg": "請求的提交已提交，正在重定向到查看頁面"
+    "formDraftAccessErrMsg": "請求的提交已提交，正在重定向到查看頁面",
+    "formUnauthorizedMessage": "您無權查看此表單，請聯繫表單所有者以獲取訪問權限。"
   },
   "bCGovFooter": {
     "home": "家",

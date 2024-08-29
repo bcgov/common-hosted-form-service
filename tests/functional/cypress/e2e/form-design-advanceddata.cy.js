@@ -84,75 +84,49 @@ it('Checks the Container component', () => {
     
     var pretty=JSON.stringify({
       "label": "Applicant Details",
-          "customClass": "bg-primary",
-          "reorder": false,
-          "addAnotherPosition": "bottom",
-          "layoutFixed": false,
-          "enableRowGroups": false,
-          "initEmpty": false,
-          "tableView": false,
-          "key": "dataGrid",
-          "type": "datagrid",
-          "input": true,
-          "components": [
+      "key": "dataGrid",
+      "type": "datagrid",
+      "input": true,
+      "components": [
           {
             "label": "Children",
             "key": "children",
             "type": "datagrid",
             "input": true,
-            "validate": {
-              "minLength": 3,
-              "maxLength": 6
-            },
+            
+          
             "components": [
-                {
-                  "label": "First Name",
-                  "key": "firstName",
-                  "type": "textfield",
-                  "input": true,
-                  "tableView": true,
+              {
+                "label": "First Name",
+                "key": "firstName",
+                "type": "textfield",
+                "input": true,
+                "tableView": true
               },
-              
-                {
-                  "label": "Last Name",
-                  "key": "lastName",
-                  "type": "textfield",
-                  "input": true,
-                  "tableView": true
-                },
-                {
-                  "label": "Gender",
-                  "key": "gender",
-                  "type": "select",
-                  "input": true,
-                  data: {
-                    values: [
-                      {
-                        "value": "male",
-                        "label": "Male"
-                      },
-                      {
-                        "value": "female",
-                        "label": "Female"
-                      },
-                      {
-                        "value": "other",
-                        "label": "Other"
-                      }
-                    ]
+              {
+              "label": "Gender",
+              "key": "gender",
+              "type": "select",
+              "input": true,
+                data: {
+                values: [
+                  {
+                    "value": "male",
+                    "label": "Male"
                   },
-                  
-                }
-      
+                  {
+                    "value": "female",
+                    "label": "Female"
+                  }
+                ]
+               },
+               
+              } 
             ]
-    
-          }
-    
-        ]
-      
-      
-      
-      })
+        }
+     ]
+       
+})
       
     cy.get('div.ace_content').type(pretty,{ parseSpecialCharSequences: false });
     cy.get('button').contains('Save').click();
@@ -244,6 +218,16 @@ it('Checks the Container component', () => {
      cy.get('.list-group-item').should('be.visible');
      cy.get('[ref="datagrid-dataGrid"]').should('be.visible');
      cy.get('.col-md-1').should('be.visible');
+
+     cy.visit(`/${depEnv}`);
+     cy.get('[data-cy="userFormsLinks"]').click();
+     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+     cy.waitForLoad();
+    //Delete form after test run
+      //cy.get('.mdi-delete').click();
+      cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
+      cy.get('[data-test="continue-btn-continue"]').click();
+      cy.get('#logoutButton > .v-btn__content > span').click();
      
    })
     

@@ -32,6 +32,8 @@ app.use(express.urlencoded({ extended: true }));
 // See https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
 app.set('trust proxy', 1);
 
+app.set('x-powered-by', false);
+
 // Skip if running tests
 if (process.env.NODE_ENV !== 'test') {
   // Initialize connections and exit if unsuccessful
@@ -75,7 +77,7 @@ apiRouter.get('/api', (_req, res) => {
 // Host API endpoints
 apiRouter.use(config.get('server.apiPath'), v1Router);
 app.use(config.get('server.basePath'), apiRouter);
-app.use(middleware.dataErrors);
+app.use(middleware.errorHandler);
 
 // Host the static frontend assets
 const staticFilesPath = config.get('frontend.basePath');

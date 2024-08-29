@@ -1,82 +1,75 @@
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
+import { onMounted, ref } from 'vue';
+
 import BaseDialog from '~/components/base/BaseDialog.vue';
-import { i18n } from '~/internationalization';
 import { formService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
 
-export default {
-  components: {
-    BaseDialog,
+const { t, locale } = useI18n({ useScope: 'global' });
+
+const properties = defineProps({
+  email: {
+    type: String,
+    required: true,
   },
-  props: {
-    email: {
-      type: String,
-      required: true,
-    },
-    formName: {
-      type: String,
-      required: true,
-    },
-    submissionId: {
-      type: String,
-      required: true,
-    },
+  submissionId: {
+    type: String,
+    required: true,
   },
-  data() {
-    return {
-      emailRules: [(v) => !!v || 'E-mail is required'],
-      priority: 'normal',
-      showDialog: false,
-      to: '',
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
-  },
-  mounted() {
-    this.resetDialog();
-  },
-  methods: {
-    displayDialog() {
-      this.showDialog = true;
-    },
-    async requestReceipt() {
-      const { valid } = await this.$refs.form.validate();
-      if (valid) {
-        const notificationStore = useNotificationStore();
-        try {
-          await formService.requestReceiptEmail(this.submissionId, {
-            priority: this.priority,
-            to: this.to,
-          });
-          notificationStore.addNotification({
-            text: i18n.t('trans.requestReceipt.emailSent', { to: this.to }),
-            ...NotificationTypes.SUCCESS,
-          });
-        } catch (error) {
-          notificationStore.addNotification({
-            text: i18n.t('trans.requestReceipt.sendingEmailErrMsg'),
-            consoleError: i18n.t(
-              'trans.requestReceipt.sendingEmailConsErrMsg',
-              {
-                to: this.to,
-                error: error,
-              }
-            ),
-          });
-        } finally {
-          this.showDialog = false;
-        }
-      }
-    },
-    resetDialog() {
-      this.to = this.email;
-    },
-  },
-};
+});
+
+const emailRules = ref([(v) => !!v || 'E-mail is required']);
+const form = ref(null);
+const priority = ref('normal');
+const showDialog = ref(false);
+const to = ref('');
+
+const { isRTL } = storeToRefs(useFormStore());
+
+onMounted(() => {
+  resetDialog();
+});
+
+function displayDialog() {
+  showDialog.value = true;
+}
+
+async function requestReceipt() {
+  const { valid } = await form.value.validate();
+  if (valid) {
+    const notificationStore = useNotificationStore();
+    try {
+      await formService.requestReceiptEmail(properties.submissionId, {
+        priority: priority.value,
+        to: to.value,
+      });
+      notificationStore.addNotification({
+        text: t('trans.requestReceipt.emailSent', { to: to.value }),
+        ...NotificationTypes.SUCCESS,
+      });
+    } catch (error) {
+      notificationStore.addNotification({
+        text: t('trans.requestReceipt.sendingEmailErrMsg'),
+        consoleError: t('trans.requestReceipt.sendingEmailConsErrMsg', {
+          to: to.value,
+          error: error,
+        }),
+      });
+    } finally {
+      showDialog.value = false;
+    }
+  }
+}
+
+function resetDialog() {
+  to.value = properties.email;
+}
+
+defineExpose({ displayDialog, form, showDialog });
 </script>
 
 <template>
@@ -90,7 +83,7 @@ export default {
       @click="displayDialog"
     >
       <v-icon icon="mdi:mdi-email"></v-icon>
-      <span :lang="lang">{{ $t('trans.requestReceipt.emailReceipt') }}</span>
+      <span :lang="locale">{{ $t('trans.requestReceipt.emailReceipt') }}</span>
     </v-btn>
 
     <BaseDialog
@@ -110,7 +103,7 @@ export default {
             :label="$t('trans.requestReceipt.sendToEmailAddress')"
             :rules="emailRules"
             data-test="text-form-to"
-            :lang="lang"
+            :lang="locale"
           >
             <template #prepend>
               <v-icon
@@ -130,7 +123,7 @@ export default {
               { title: $t('trans.requestReceipt.high'), value: 'high' },
             ]"
             :label="$t('trans.requestReceipt.emailPriority')"
-            :lang="lang"
+            :lang="locale"
           >
             <template #prepend>
               <v-icon />
@@ -139,7 +132,7 @@ export default {
         </v-form>
       </template>
       <template #button-text-continue>
-        <span :lang="lang">{{ $t('trans.requestReceipt.send') }}</span>
+        <span :lang="locale">{{ $t('trans.requestReceipt.send') }}</span>
       </template>
     </BaseDialog>
   </div>

@@ -6,7 +6,13 @@ const _ = require('lodash');
 
 const setupMount = (type, app, routes) => {
   const p = `/${type}`;
-  app.use(p, routes);
+  if (Array.isArray(routes)) {
+    for (let r of routes) {
+      app.use(p, r);
+    }
+  } else {
+    app.use(p, routes);
+  }
 
   return p;
 };

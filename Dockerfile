@@ -1,4 +1,4 @@
-FROM docker.io/node:18.18.2-alpine
+FROM docker.io/node:18.20.4-alpine3.20
 
 ENV NO_UPDATE_NOTIFIER=true
 WORKDIR /opt/app-root/src/app

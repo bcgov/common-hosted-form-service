@@ -1,300 +1,305 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, onBeforeMount, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import { i18n } from '~/internationalization';
 import BaseFilter from '~/components/base/BaseFilter.vue';
 import MySubmissionsActions from '~/components/forms/submission/MySubmissionsActions.vue';
 import { useFormStore } from '~/store/form';
 
-export default {
-  components: {
-    BaseFilter,
-    MySubmissionsActions,
+const { t, locale } = useI18n({ useScope: 'global' });
+
+const properties = defineProps({
+  formId: {
+    type: String,
+    required: true,
   },
-  props: {
-    formId: {
-      type: String,
-      required: true,
-    },
+});
+
+const filterData = ref([]);
+const filterIgnore = ref([
+  {
+    key: 'confirmationId',
   },
-  data() {
-    return {
-      filterData: [],
-      filterIgnore: [
-        {
-          key: 'confirmationId',
-        },
-        {
-          key: 'actions',
-        },
-      ],
-      headers: [],
-      loading: true,
-      search: '',
-      serverItems: [],
-      showColumnsDialog: false,
-      tableFilterIgnore: [],
-    };
+  {
+    key: 'actions',
   },
-  computed: {
-    ...mapState(useFormStore, [
-      'form',
-      'formFields',
-      'submissionList',
-      'isRTL',
-      'lang',
-      'totalSubmissions',
-    ]),
+]);
+const loading = ref(true);
+const search = ref('');
+const serverItems = ref([]);
+const showColumnsDialog = ref(false);
 
-    //------------------------ TABLE HEADERS
-    // These are headers that will be available by default for the
-    // table in this view
-    BASE_HEADERS() {
-      let headers = [
-        {
-          title: i18n.t('trans.mySubmissionsTable.confirmationId'),
-          align: 'start',
-          key: 'confirmationId',
-          sortable: true,
-        },
-        {
-          title: i18n.t('trans.mySubmissionsTable.createdBy'),
-          key: 'createdBy',
-          sortable: true,
-        },
-        {
-          title: i18n.t('trans.mySubmissionsTable.statusUpdatedBy'),
-          key: 'username',
-          sortable: true,
-        },
-        {
-          title: i18n.t('trans.mySubmissionsTable.status'),
-          key: 'status',
-          sortable: true,
-        },
-        {
-          title: i18n.t('trans.mySubmissionsTable.submissionDate'),
-          key: 'submittedDate',
-          sortable: true,
-        },
-      ];
-      if (this.showDraftLastEdited || !this.formId) {
-        headers.splice(headers.length - 1, 0, {
-          title: i18n.t('trans.mySubmissionsTable.draftUpdatedBy'),
-          align: 'start',
-          key: 'updatedBy',
-          sortable: true,
-        });
-        headers.splice(headers.length - 1, 0, {
-          title: i18n.t('trans.mySubmissionsTable.draftLastEdited'),
-          align: 'start',
-          key: 'lastEdited',
-          sortable: true,
-        });
-      }
+const formStore = useFormStore();
 
-      // Add the form fields to the headers
-      headers = headers.concat(
-        this.formFields.map((ff) => {
-          return {
-            title: ff,
-            align: 'start',
-            key: ff,
-          };
-        })
-      );
-      return headers;
-    },
-    // The headers are based on the base headers but are modified
-    // by the following order:
-    // Remove columns that aren't saved in the filter data
-    HEADERS() {
-      let headers = this.BASE_HEADERS;
+const { form, formFields, submissionList, isRTL } = storeToRefs(formStore);
 
-      // The user selected some columns
-      if (this.filterData.length > 0) {
-        headers = headers.filter(
-          (header) =>
-            // It must be in the user selected columns
-            this.filterData.some((fd) => fd === header.key) ||
-            // except if it's in the filter ignore
-            this.filterIgnore.some((fd) => fd.key === header.key)
-        );
-      } else {
-        // Remove the form fields because this is the default view
-        // we don't need all the form fields
-        headers = headers.filter((header) => {
-          // we want columns that aren't form fields
-          return !this.formFields.includes(header.key);
-        });
-      }
+//------------------------ TABLE HEADERS
+// These are headers that will be available by default for the
+// table in this view
+const BASE_HEADERS = computed(() => {
+  let headers = [
+    {
+      title: t('trans.mySubmissionsTable.confirmationId'),
+      align: 'start',
+      key: 'confirmationId',
+      sortable: true,
+    },
+    {
+      title: t('trans.mySubmissionsTable.createdBy'),
+      key: 'createdBy',
+      sortable: true,
+    },
+    {
+      title: t('trans.mySubmissionsTable.statusUpdatedBy'),
+      key: 'username',
+      sortable: true,
+    },
+    {
+      title: t('trans.mySubmissionsTable.status'),
+      key: 'status',
+      sortable: true,
+    },
+    {
+      title: t('trans.mySubmissionsTable.submissionDate'),
+      key: 'submittedDate',
+      sortable: true,
+    },
+  ];
 
-      // Actions column at the end
-      headers.push({
-        title: this.$t('trans.mySubmissionsTable.actions'),
-        align: 'end',
-        key: 'actions',
-        filterable: false,
-        sortable: false,
-        width: '40px',
-      });
-
-      return headers;
-    },
-    //------------------------ END TABLE HEADERS
-
-    //------------------------ FILTER COLUMNS
-    // The base filter headers that will be available by default for the
-    // base filter. These are all the base headers in the table in this view
-    // with specific fields ignored because we always want specific fields
-    // to be available in the table in this view. For this reason, we don't
-    // add them to the table in the filter.
-    BASE_FILTER_HEADERS() {
-      let headers = this.BASE_HEADERS.filter(
-        (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
-      );
-      return headers;
-    },
-    // When clicking reset on the base filter, these will be the default
-    // preselected values
-    RESET_HEADERS() {
-      let headers = this.BASE_FILTER_HEADERS;
-      // Remove the form fields because this is the default view
-      // we don't need all the form fields
-      headers = headers
-        .filter((header) => {
-          // we want columns that aren't form fields
-          return (
-            !this.formFields.includes(header.key) &&
-            // These values won't be preselected
-            !this.tableFilterIgnore.some((fi) => fi.key === header.key)
-          );
-        })
-        .map((h) => h.key);
-      return headers;
-    },
-    // These are the columns that will be selected by default when the
-    // select columns dialog is opened
-    PRESELECTED_DATA() {
-      return this.HEADERS.filter(
-        (h) => !this.filterIgnore.some((fd) => fd.key === h.key)
-      );
-    },
-    //------------------------ END FILTER COLUMNS
-    showDraftLastEdited() {
-      return this.form && this.form.enableSubmitterDraft;
-    },
-    isCopyFromExistingSubmissionEnabled() {
-      return this.form && this.form.enableCopyExistingSubmission;
-    },
-  },
-  async mounted() {
-    await this.fetchForm(this.formId).then(async () => {
-      await this.fetchFormFields({
-        formId: this.formId,
-        formVersionId: this.form.versions[0].id,
-      });
+  if (showDraftLastEdited.value) {
+    headers.splice(headers.length - 1, 0, {
+      title: t('trans.mySubmissionsTable.draftUpdatedBy'),
+      align: 'start',
+      key: 'updatedBy',
+      sortable: true,
     });
-    await this.populateSubmissionsTable();
-  },
-  methods: {
-    ...mapActions(useFormStore, [
-      'fetchForm',
-      'fetchFormFields',
-      'fetchSubmissions',
-    ]),
-    onShowColumnDialog() {
-      this.BASE_FILTER_HEADERS.sort(
-        (a, b) =>
-          this.PRESELECTED_DATA.findIndex((x) => x.title === b.title) -
-          this.PRESELECTED_DATA.findIndex((x) => x.title === a.title)
+    headers.splice(headers.length - 1, 0, {
+      title: t('trans.mySubmissionsTable.draftLastEdited'),
+      align: 'start',
+      key: 'lastEdited',
+      sortable: true,
+    });
+  }
+
+  // Add the form fields to the headers
+  headers = headers.concat(
+    formFields.value.map((ff) => {
+      return {
+        title: ff,
+        align: 'start',
+        key: ff,
+      };
+    })
+  );
+  return headers;
+});
+
+// The headers are based on the base headers but are modified
+// by the following order:
+// Remove columns that aren't saved in the filter data
+const HEADERS = computed(() => {
+  let headers = BASE_HEADERS.value;
+
+  // The user selected some columns
+  if (filterData.value.length > 0) {
+    headers = headers.filter(
+      (header) =>
+        // It must be in the user selected columns
+        filterData.value.some((fd) => fd === header.key) ||
+        // except if it's in the filter ignore
+        filterIgnore.value.some((fd) => fd.key === header.key)
+    );
+  } else {
+    // Remove the form fields because this is the default view
+    // we don't need all the form fields
+    headers = headers.filter((header) => {
+      // we want columns that aren't form fields
+      return !formFields.value.includes(header.key);
+    });
+  }
+
+  // Actions column at the end
+  headers.push({
+    title: t('trans.mySubmissionsTable.actions'),
+    align: 'end',
+    key: 'actions',
+    filterable: false,
+    sortable: false,
+    width: '40px',
+  });
+
+  return headers;
+});
+//------------------------ END TABLE HEADERS
+
+//------------------------ FILTER COLUMNS
+// The base filter headers that will be available by default for the
+// base filter. These are all the base headers in the table in this view
+// with specific fields ignored because we always want specific fields
+// to be available in the table in this view. For this reason, we don't
+// add them to the table in the filter.
+const BASE_FILTER_HEADERS = computed(() => {
+  let headers = BASE_HEADERS.value.filter(
+    (h) => !filterIgnore.value.some((fd) => fd.key === h.key)
+  );
+  return headers;
+});
+
+// When clicking reset on the base filter, these will be the default
+// preselected values
+const RESET_HEADERS = computed(() => {
+  let headers = BASE_FILTER_HEADERS.value;
+  // Remove the form fields because this is the default view
+  // we don't need all the form fields
+  headers = headers
+    .filter((header) => {
+      // we want columns that aren't form fields
+      return (
+        !formFields.value.includes(header.key) &&
+        // These values won't be preselected
+        !filterIgnore.value.some((fi) => fi.key === header.key)
       );
+    })
+    .map((h) => h.key);
+  return headers;
+});
 
-      this.showColumnsDialog = true;
-    },
+// These are the columns that will be selected by default when the
+// select columns dialog is opened
+const PRESELECTED_DATA = computed(() => {
+  return HEADERS.value.filter(
+    (h) => !filterIgnore.value.some((fd) => fd.key === h.key)
+  );
+});
 
-    // Status columns in the table
-    getCurrentStatus(record) {
-      // Current status is most recent status (top in array, query returns in
-      // status created desc)
-      const status =
-        record.submissionStatus && record.submissionStatus[0]
-          ? record.submissionStatus[0].code
-          : 'N/A';
-      if (record.draft && status !== 'REVISING') {
-        return 'DRAFT';
-      } else {
-        return status;
-      }
-    },
+const showDraftLastEdited = computed(
+  () => form.value && form.value.enableSubmitterDraft
+);
 
-    getStatusDate(record, statusCode) {
-      // Get the created date of the most recent occurence of a specified status
-      if (record.submissionStatus) {
-        const submittedStatus = record.submissionStatus.find(
-          (stat) => stat.code === statusCode
-        );
-        if (submittedStatus) return submittedStatus.createdAt;
-      }
-      return '';
-    },
-    async populateSubmissionsTable() {
-      this.loading = true;
-      // Get the submissions for this form
-      await this.fetchSubmissions({
-        formId: this.formId,
-        userView: true,
-      });
-      // Build up the list of forms for the table
-      if (this.submissionList) {
-        const tableRows = this.submissionList.map((s) => {
-          const fields = {
-            confirmationId: s.confirmationId,
-            name: s.name,
-            permissions: s.permissions,
-            status: this.getCurrentStatus(s),
-            submissionId: s.formSubmissionId,
-            submittedDate: this.getStatusDate(s, 'SUBMITTED'),
-            createdBy: s.submission.createdBy,
-            updatedBy: s.draft ? s.submission.updatedBy : undefined,
-            lastEdited: s.draft ? s.submission.updatedAt : undefined,
-            username:
-              s.submissionStatus && s.submissionStatus.length > 0
-                ? s.submissionStatus[0].createdBy
-                : '',
-          };
-          s?.submission?.submission?.data &&
-            Object.keys(s.submission.submission.data).forEach((col) => {
-              let colData = s.submission.submission.data[col];
-              if (
-                !(typeof colData === 'string' || typeof colData === 'number')
-              ) {
-                // The data isn't a string or number, so we should turn it into a string
-                colData = JSON.stringify(colData);
-              }
-              if (Object.keys(fields).includes(col)) {
-                let suffixNum = 1;
-                while (Object.keys(fields).includes(col + '_' + suffixNum)) {
-                  suffixNum++;
-                }
-                fields[`${col}_${suffixNum}`] = colData;
-              } else {
-                fields[col] = colData;
-              }
-            });
-          return fields;
+const isCopyFromExistingSubmissionEnabled = computed(
+  () => form.value && form.value.enableCopyExistingSubmission
+);
+
+onBeforeMount(async () => {
+  await Promise.all([
+    await formStore.fetchForm(properties.formId),
+    await formStore.fetchFormFields({
+      formId: properties.formId,
+      formVersionId: form.value.versions[0].id,
+    }),
+    await populateSubmissionsTable(),
+  ]);
+});
+
+function onShowColumnDialog() {
+  BASE_FILTER_HEADERS.value.sort(
+    (a, b) =>
+      PRESELECTED_DATA.value.findIndex((x) => x.title === b.title) -
+      PRESELECTED_DATA.value.findIndex((x) => x.title === a.title)
+  );
+
+  showColumnsDialog.value = true;
+}
+
+// Status columns in the table
+function getCurrentStatus(record) {
+  // Current status is most recent status (top in array, query returns in
+  // status created desc)
+  const status =
+    record.submissionStatus && record.submissionStatus[0]
+      ? record.submissionStatus[0].code
+      : 'N/A';
+  if (record.draft && status !== 'REVISING') {
+    return 'DRAFT';
+  } else {
+    return status;
+  }
+}
+
+function getStatusDate(record, statusCode) {
+  // Get the created date of the most recent occurence of a specified status
+  if (record.submissionStatus) {
+    const submittedStatus = record.submissionStatus.find(
+      (stat) => stat.code === statusCode
+    );
+    if (submittedStatus) return submittedStatus.createdAt;
+  }
+  return '';
+}
+
+async function populateSubmissionsTable() {
+  loading.value = true;
+  // Get the submissions for this form
+  await formStore.fetchSubmissions({
+    formId: properties.formId,
+    userView: true,
+  });
+  // Build up the list of forms for the table
+  if (submissionList.value) {
+    const tableRows = submissionList.value.map((s) => {
+      let fields = {
+        confirmationId: s.confirmationId,
+        name: s.name,
+        permissions: s.permissions,
+        status: getCurrentStatus(s),
+        submissionId: s.formSubmissionId,
+        submittedDate: getStatusDate(s, 'SUBMITTED'),
+        createdBy: s.submission.createdBy,
+        updatedBy: s.draft ? s.submission.updatedBy : undefined,
+        lastEdited: s.draft ? s.submission.updatedAt : undefined,
+        username:
+          s.submissionStatus && s.submissionStatus.length > 0
+            ? s.submissionStatus[0].createdBy
+            : '',
+      };
+      s?.submission?.submission?.data &&
+        Object.keys(s.submission.submission.data).forEach((col) => {
+          let colData = s.submission.submission.data[col];
+          if (!(typeof colData === 'string' || typeof colData === 'number')) {
+            // The data isn't a string or number, so we should turn it into a string
+            colData = JSON.stringify(colData);
+          }
+          // this functionality might be broken, Object.keys will remove duplicate values
+          // so we shouldn't find more than one key with the same name
+          if (Object.keys(fields).includes(col)) {
+            let suffixNum = 1;
+            while (Object.keys(fields).includes(col + '_' + suffixNum)) {
+              suffixNum++;
+            }
+            fields[`${col}_${suffixNum}`] = colData;
+          } else {
+            fields[col] = colData;
+          }
         });
-        this.serverItems = tableRows;
-      }
-      this.loading = false;
-    },
+      return fields;
+    });
+    serverItems.value = tableRows;
+  }
+  loading.value = false;
+}
 
-    async updateFilter(data) {
-      this.filterData = data;
-      this.showColumnsDialog = false;
-    },
-  },
-};
+async function updateFilter(data) {
+  filterData.value = data;
+  showColumnsDialog.value = false;
+}
+
+defineExpose({
+  BASE_FILTER_HEADERS,
+  BASE_HEADERS,
+  filterData,
+  filterIgnore,
+  getCurrentStatus,
+  getStatusDate,
+  HEADERS,
+  onShowColumnDialog,
+  populateSubmissionsTable,
+  PRESELECTED_DATA,
+  serverItems,
+  showColumnsDialog,
+  RESET_HEADERS,
+  updateFilter,
+});
 </script>
 
 <template>
@@ -305,7 +310,7 @@ export default {
       >
         <!-- page title -->
         <div>
-          <h1 :lang="lang">
+          <h1 :lang="locale">
             {{ $t('trans.mySubmissionsTable.previousSubmissions') }}
           </h1>
           <h3>{{ formId ? form.name : 'All Forms' }}</h3>
@@ -325,7 +330,7 @@ export default {
                 @click="onShowColumnDialog"
               />
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               $t('trans.mySubmissionsTable.selectColumns')
             }}</span>
           </v-tooltip>
@@ -348,7 +353,7 @@ export default {
                 />
               </router-link>
             </template>
-            <span :lang="lang">{{
+            <span :lang="locale">{{
               $t('trans.mySubmissionsTable.createNewSubmission')
             }}</span>
           </v-tooltip>
@@ -371,7 +376,7 @@ export default {
         hide-details
         class="pb-5"
         :class="{ label: isRTL }"
-        :lang="lang"
+        :lang="locale"
       />
     </div>
 
@@ -390,7 +395,7 @@ export default {
           ? $t('trans.mySubmissionsTable.noMatchingRecordText')
           : $t('trans.mySubmissionsTable.noDataText')
       "
-      :lang="lang"
+      :lang="locale"
     >
       <template #item.lastEdited="{ item }">
         {{ $filters.formatDateLong(item.lastEdited) }}
@@ -425,7 +430,7 @@ export default {
         @cancel-filter-data="showColumnsDialog = false"
       >
         <template #filter-title
-          ><span :lang="lang">{{
+          ><span :lang="locale">{{
             $t('trans.mySubmissionsTable.filterTitle')
           }}</span></template
         >

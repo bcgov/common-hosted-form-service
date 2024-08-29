@@ -1,4 +1,5 @@
 {
+  "open": "باز کن",
   "date": {
     "date": "yyyy-mm-dd"
   },
@@ -83,7 +84,8 @@
     "deleteSuccess": "قالب با موفقیت حذف شد.",
     "deleteError": "خطایی در هنگام حذف قالب رخ داد.",
     "fetchError": "خطایی در هنگام دریافت قالب رخ داد.",
-    "info": "قالبی را بارگذاری کنید تا از خدمات تولید سند مشترک (CDOGS) استفاده کنید"
+    "info": "قالبی را بارگذاری کنید تا از خدمات تولید سند مشترک (CDOGS) استفاده کنید",
+    "fileSizeError": "اندازه فایل باید کمتر از 25 مگابایت باشد."
   },
   "formSettings": {
     "pressToAddMultiEmail": "برای افزودن چندین آدرس ایمیل، <kbd>اینتر</kbd> یا <kbd>،</kbd> یا <kbd>فاصله</kbd> را فشار دهید",
@@ -99,6 +101,7 @@
     "referenceGuideB": "راهنمای کاربر",
     "referenceGuideC": "برای جزئیات بیشتر",
     "specificTeamMembers": "اعضای تیم خاص",
+    "teamMemberTooltip": "پس از ایجاد این فرم، اعضای تیم را از تنظیمات مدیریت تیم اضافه کنید.",
     "formFunctionality": "عملکرد فرم",
     "formSubmissinScheduleMsg": "پس از انتشار فرم، برنامه ارسال فرم در تنظیمات فرم در دسترس خواهد بود.",
     "formSubmissionsSchedule": "جدول ارسال فرم ها",
@@ -550,7 +553,7 @@
     "exactBCEIDSearch": "جستجوی ایمیل برای BCeID باید دقیق باشد.",
     "getUsersErrMsg": "خطا در دریافت کاربران: {error}",
     "exactEmailOrUsername": "یک ایمیل یا نام کاربری دقیق وارد کنید.",
-    "requiredFiled": "یک نام، ایمیل یا نام کاربری وارد کنید"
+    "requiredField": "یک نام، ایمیل یا نام کاربری وارد کنید"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "مشاهده این ارسال",
@@ -614,6 +617,7 @@
     "assigneeIsRequired": "کارمند مورد نیاز است",
     "assignToMe": "به من اختصاص دهید",
     "recipientEmail": "ایمیل گیرنده",
+    "recipientIsRequired": "دریافت کننده الزامی است",
     "attachCommentToEmail": "نظر را به ایمیل ضمیمه کنید",
     "emailComment": "نظر ایمیل",
     "maxChars": "حداکثر 4000 کاراکتر",
@@ -699,7 +703,8 @@
     "defaultCdogsTemplate": "استفاده از قالب پیش‌فرض CDOGS",
     "fileName": "نام فایل",
     "uploadDate": "تاریخ بارگذاری",
-    "upload": "بارگذاری"
+    "upload": "بارگذاری",
+    "selectExportFileType": "نوع فایل صادرات را انتخاب کنید"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "لینک اطلاعات کامپوننت",
@@ -826,7 +831,8 @@
     "errorSavingFile": "خطا در ذخیره فایل ها. نام فایل: {fileName}. خطا: {error}",
     "submittingDraftErrMsg": "هنگام ذخیره پیش نویس خطایی روی داد",
     "submittingDraftConsErrMsg": "خطا در ذخیره پیش نویس. SubmissionId: {submissionId}. خطا: {error}",
-    "formDraftAccessErrMsg": "ارسال درخواستی قبلا ارسال شده است، به صفحه مشاهده هدایت می شود"
+    "formDraftAccessErrMsg": "ارسال درخواستی قبلا ارسال شده است، به صفحه مشاهده هدایت می شود",
+    "formUnauthorizedMessage": "شما مجاز به مشاهده این فرم نیستید، لطفاً برای دسترسی با مالک فرم تماس بگیرید."
   },
   "bCGovFooter": {
     "home": "صفحه اصلی",

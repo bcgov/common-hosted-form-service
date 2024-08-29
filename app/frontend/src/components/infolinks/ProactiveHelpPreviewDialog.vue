@@ -1,33 +1,31 @@
-<script>
-import { mapState } from 'pinia';
-import { useFormStore } from '~/store/form';
+<script setup>
+import { useI18n } from 'vue-i18n';
+import { ref, watch } from 'vue';
 
-export default {
-  props: {
-    showDialog: { type: Boolean, required: true },
-    component: { type: Object, default: () => {} },
-    fcProactiveHelpImageUrl: undefined,
-  },
-  emits: ['close-dialog'],
-  data() {
-    return {
-      dialog: this.showDialog,
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['isRTL', 'lang']),
-  },
-  watch: {
-    showDialog(value) {
-      this.dialog = value;
-    },
-  },
-  methods: {
-    onCloseDialog() {
-      this.$emit('close-dialog');
-    },
-  },
-};
+const { locale } = useI18n({ useScope: 'global' });
+
+const properties = defineProps({
+  showDialog: { type: Boolean, required: true },
+  component: { type: Object, default: () => {} },
+  fcProactiveHelpImageUrl: undefined,
+});
+
+const emit = defineEmits(['close-dialog']);
+
+const dialog = ref(properties.showDialog);
+
+watch(
+  () => properties.showDialog,
+  (value) => {
+    dialog.value = value;
+  }
+);
+
+function onCloseDialog() {
+  emit('close-dialog');
+}
+
+defineExpose({ onCloseDialog });
 </script>
 
 <template>
@@ -89,7 +87,7 @@ export default {
                   disabledLink: component && component.moreHelpInfoLink === '',
                 }"
               >
-                <div class="mr-1 cursor" :lang="lang">
+                <div class="mr-1 cursor" :lang="locale">
                   {{ $t('trans.proactiveHelpPreviewDialog.learnMore') }}
                   <v-icon icon="mdi:mdi-arrow-top-right-bold-box" /></div
               ></a>

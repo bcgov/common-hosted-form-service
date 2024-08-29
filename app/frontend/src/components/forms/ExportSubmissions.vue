@@ -1,256 +1,263 @@
-<script>
+<script setup>
 import moment from 'moment';
-import { mapActions, mapState } from 'pinia';
+import { storeToRefs } from 'pinia';
+import { useI18n } from 'vue-i18n';
+import { computed, onMounted, ref, watch } from 'vue';
 
-import { i18n } from '~/internationalization';
 import formService from '~/services/formService.js';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes, ExportLargeData } from '~/utils/constants';
 
-export default {
-  props: {
-    formId: {
-      type: String,
-      required: true,
-    },
+const { t, locale } = useI18n({ useScope: 'global' });
+
+const properties = defineProps({
+  formId: {
+    type: String,
+    required: true,
   },
-  data() {
-    return {
-      csvFormats: 'multiRowEmptySpacesCSVExport',
-      dateRange: false,
-      endDate: moment(new Date()).format('YYYY-MM-DD'),
-      endDateRules: [
-        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
-        (v) =>
-          (v &&
-            new RegExp(
-              /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
-            ).test(v)) ||
-          'Date must be in correct format. ie. yyyy-mm-dd',
-        (v) =>
-          moment(v).isAfter(this.startDate, 'day') ||
-          'End date should be greater than start date.',
-      ],
-      exportFormat: 'json',
-      formFieldsSearchFilter: '',
-      formVersions: [],
-      // This has the form fields in the table
-      // Table selection does not work if we use a computed value
-      items: [],
-      loading: false,
-      selectedFormFields: [],
-      selectedVersion: 0,
-      startDate: moment(new Date()).format('YYYY-MM-DD'),
-      startDateRules: [
-        (v) => !!v || this.$t('trans.formSettings.fieldRequired'),
-        (v) =>
-          (v &&
-            new RegExp(
-              /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
-            ).test(v)) ||
-          'Date must be in correct format. ie. yyyy-mm-dd',
-        (v) =>
-          moment(v).isBefore(moment(new Date()).format('YYYY-MM-DD'), 'day') ||
-          'Start date should be less than today.',
-      ],
-      versionRequired: false,
-    };
+});
+
+const csvFormats = ref('multiRowEmptySpacesCSVExport');
+const dateRange = ref(false);
+const endDate = ref(moment(new Date()).format('YYYY-MM-DD'));
+const endDateRules = ref([
+  (v) => !!v || t('trans.formSettings.fieldRequired'),
+  (v) =>
+    (v &&
+      new RegExp(
+        /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
+      ).test(v)) ||
+    'Date must be in correct format. ie. yyyy-mm-dd',
+  (v) =>
+    moment(v).isAfter(startDate.value, 'day') ||
+    'End date should be greater than start date.',
+]);
+const exportFormat = ref('json');
+const formFieldsSearchFilter = ref('');
+const formVersions = ref([]);
+// This has the form fields in the table
+// Table selection does not work if we use a computed value
+const items = ref([]);
+const loading = ref(false);
+const selectedFormFields = ref([]);
+const selectedVersion = ref(0);
+const startDate = ref(moment(new Date()).format('YYYY-MM-DD'));
+const startDateRules = ref([
+  (v) => !!v || t('trans.formSettings.fieldRequired'),
+  (v) =>
+    (v &&
+      new RegExp(
+        /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
+      ).test(v)) ||
+    'Date must be in correct format. ie. yyyy-mm-dd',
+  (v) =>
+    moment(v).isBefore(moment(new Date()).format('YYYY-MM-DD'), 'day') ||
+    'Start date should be less than today.',
+]);
+
+const authStore = useAuthStore();
+const formStore = useFormStore();
+const notificationStore = useNotificationStore();
+
+const { email } = storeToRefs(authStore);
+const { form, formFields, isRTL, submissionList } = storeToRefs(formStore);
+
+const FILENAME = computed(
+  () => `${form.value.snake}_submissions.${exportFormat.value}`
+);
+const FORM_UNPUBLISHED = computed(
+  () =>
+    form.value &&
+    form.value.versions &&
+    form.value.versions.every((version) => !version.published)
+);
+const headers = computed(() => [
+  {
+    title: t('trans.exportSubmissions.selectAllFields'),
+    align: isRTL.value ? 'end' : ' start',
+    sortable: true,
+    key: 'name',
   },
-  computed: {
-    ...mapState(useAuthStore, ['email']),
-    ...mapState(useFormStore, [
-      'form',
-      'formFields',
-      'isRTL',
-      'lang',
-      'permissions',
-      'submissionList',
-      'userFormPreferences',
-    ]),
-    FILENAME() {
-      return `${this.form.snake}_submissions.${this.exportFormat}`;
-    },
-    FORM_UNPUBLISHED() {
-      return (
-        this.form &&
-        this.form.versions &&
-        this.form.versions.every((version) => !version.published)
+]);
+const VERSION_REQUIRED = computed(
+  () => exportFormat.value === 'csv' && !selectedVersion.value
+);
+
+watch(csvFormats, async (value) => {
+  if (value === 'singleRowCSVExport') {
+    await fetchFormFields(selectedVersion.value, true);
+  } else {
+    await fetchFormFields(selectedVersion.value);
+  }
+});
+
+watch(dateRange, (value) => {
+  if (!value) {
+    endDate.value = moment(new Date()).format('YYYY-MM-DD');
+    startDate.value = moment(new Date()).format('YYYY-MM-DD');
+  }
+});
+
+watch(exportFormat, async (format) => {
+  if (format === 'json') {
+    selectedFormFields.value = [];
+  }
+});
+
+watch(selectedVersion, async (version) => {
+  await fetchFormFields(version);
+});
+
+watch(startDate, () => {
+  endDate.value = moment(new Date()).format('YYYY-MM-DD');
+});
+
+onMounted(async () => {
+  await formStore.fetchForm(properties.formId);
+
+  // The formVersions don't need to be updated, but the form fields should be..
+  if (form.value && Array.isArray(form.value.versions)) {
+    let versions = form.value.versions;
+    if (FORM_UNPUBLISHED.value) {
+      versions.sort((a, b) =>
+        a.version < b.version ? -1 : a.version > b.version ? 1 : 0
       );
-    },
-    headers() {
-      return [
-        {
-          title: i18n.t('trans.exportSubmissions.selectAllFields'),
-          align: this.isRTL ? 'end' : ' start',
-          sortable: true,
-          key: 'name',
-        },
-      ];
-    },
-    VERSION_REQUIRED() {
-      return this.exportFormat === 'csv' && !this.selectedVersion;
-    },
-  },
-  watch: {
-    async csvFormats(value) {
-      if (value === 'singleRowCSVExport') {
-        await this.fetchFormFields(this.selectedVersion, true);
-      } else {
-        await this.fetchFormFields(this.selectedVersion);
-      }
-    },
-    dateRange(value) {
-      if (!value) {
-        this.endDate = moment(new Date()).format('YYYY-MM-DD');
-        this.startDate = moment(new Date()).format('YYYY-MM-DD');
-      }
-    },
-    async exportFormat(format) {
-      if (format === 'json') {
-        this.selectedFormFields = [];
-      }
-    },
-    async selectedVersion(version) {
-      await this.fetchFormFields(version);
-    },
-    startDate() {
-      this.endDate = moment(new Date()).format('YYYY-MM-DD');
-    },
-  },
-  async mounted() {
-    await this.fetchForm(this.formId);
-
-    // The formVersions don't need to be updated, but the form fields should be..
-    if (this.form && Array.isArray(this.form.versions)) {
-      let versions = this.form.versions;
-      if (this.FORM_UNPUBLISHED) {
-        versions.sort((a, b) =>
-          a.version < b.version ? -1 : a.version > b.version ? 1 : 0
-        );
-        this.formVersions.push('');
-      } else {
-        versions.sort((a, b) => b.published - a.published);
-      }
-      this.formVersions.push(...versions.map((version) => version.version));
-      this.selectedVersion = this.formVersions[0];
+      formVersions.value.push('');
+    } else {
+      versions.sort((a, b) => b.published - a.published);
     }
-  },
-  methods: {
-    ...mapActions(useFormStore, ['fetchForm', 'fetchFormCSVExportFields']),
-    ...mapActions(useNotificationStore, ['addNotification']),
-    async callExport() {
-      let fieldsToExport =
-        this.selectedFormFields.length > 0
-          ? this.selectedFormFields.map((field) => {
-              return field.value;
-            })
-          : [''];
-      // Something is changing the selected values to include undefined fields
-      fieldsToExport = fieldsToExport.filter((el) => el !== undefined);
-      try {
-        // UTC start of selected start date...
-        const from =
-          this.dateRange && this.startDate
-            ? moment(this.startDate, 'YYYY-MM-DD hh:mm:ss').utc().format()
-            : undefined;
-        // UTC end of selected end date...
-        const to =
-          this.dateRange && this.endDate
-            ? moment(`${this.endDate} 23:59:59`, 'YYYY-MM-DD hh:mm:ss')
-                .utc()
-                .format()
-            : undefined;
+    formVersions.value.push(...versions.map((version) => version.version));
+    selectedVersion.value = formVersions.value[0];
+  }
+});
 
-        let emailExport = false;
-        if (
-          (this.submissionList.length > ExportLargeData.MAX_RECORDS ||
-            this.formFields.length > ExportLargeData.MAX_FIELDS) &&
-          this.exportFormat !== 'json'
-        ) {
-          emailExport = true;
-          this.addNotification({
-            ...NotificationTypes.SUCCESS,
-            title: i18n.t('trans.exportSubmissions.exportInProgress'),
-            text: i18n.t('trans.exportSubmissions.emailSentMsg', {
-              email: this.email,
-            }),
-            timeout: 20,
-          });
-        }
-        const response = await formService.exportSubmissions(
-          this.form.id,
-          this.exportFormat,
-          this.csvFormats,
-          this.exportFormat === 'csv' ? this.selectedVersion : undefined,
-          {
-            minDate: from,
-            maxDate: to,
-          },
-          fieldsToExport,
-          emailExport,
-          {
-            deleted: false,
-            drafts: false,
-          }
-        );
+async function callExport() {
+  let fieldsToExport =
+    selectedFormFields.value.length > 0
+      ? selectedFormFields.value.map((field) => {
+          return field.value;
+        })
+      : [''];
+  // Something is changing the selected values to include undefined fields
+  fieldsToExport = fieldsToExport.filter((el) => el !== undefined);
+  try {
+    // UTC start of selected start date...
+    const from =
+      dateRange.value && startDate.value
+        ? moment(startDate.value, 'YYYY-MM-DD hh:mm:ss').utc().format()
+        : undefined;
+    // UTC end of selected end date...
+    const to =
+      dateRange.value && endDate.value
+        ? moment(`${endDate.value} 23:59:59`, 'YYYY-MM-DD hh:mm:ss')
+            .utc()
+            .format()
+        : undefined;
 
-        if (response && response.data && !emailExport) {
-          const blob = new Blob([response.data], {
-            type: response.headers['content-type'],
-          });
-          const url = window.URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = this.FILENAME;
-          a.style.display = 'none';
-          a.classList.add('hiddenDownloadTextElement');
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        } else if (response && !response.data && !emailExport) {
-          throw new Error(i18n.t('trans.exportSubmissions.noResponseDataErr'));
-        }
-      } catch (error) {
-        const data = error?.response?.data
-          ? JSON.parse(await error.response.data.text())
-          : undefined;
-        this.addNotification({
-          text: data?.detail
-            ? data.detail
-            : i18n.t('trans.exportSubmissions.apiCallErrorMsg'),
-          consoleError:
-            i18n.t('trans.exportSubmissions.apiCallConsErrorMsg') +
-            `${this.form.id}: ${error}`,
-        });
+    let emailExport = false;
+    if (
+      (submissionList.value.length > ExportLargeData.MAX_RECORDS ||
+        formFields.value.length > ExportLargeData.MAX_FIELDS) &&
+      exportFormat.value !== 'json'
+    ) {
+      emailExport = true;
+      notificationStore.addNotification({
+        ...NotificationTypes.SUCCESS,
+        title: t('trans.exportSubmissions.exportInProgress'),
+        text: t('trans.exportSubmissions.emailSentMsg', {
+          email: email.value,
+        }),
+        timeout: 20,
+      });
+    }
+    const response = await formService.exportSubmissions(
+      form.value.id,
+      exportFormat.value,
+      csvFormats.value,
+      exportFormat.value === 'csv' ? selectedVersion.value : undefined,
+      {
+        minDate: from,
+        maxDate: to,
+      },
+      fieldsToExport,
+      emailExport,
+      {
+        deleted: false,
+        drafts: false,
       }
-    },
-    async changeVersions(version) {
-      await this.fetchFormFields(version);
-    },
-    async fetchFormFields(version, singleRow = false) {
-      this.loading = true;
-      this.selectedFormFields = [];
-      if (version !== '') {
-        await this.fetchFormCSVExportFields({
-          formId: this.formId,
-          type: 'submissions',
-          draft: false,
-          deleted: false,
-          version: version,
-          singleRow: singleRow,
-        });
-      }
-      this.items =
-        this.formFields && this.formFields.length > 0
-          ? this.formFields.map((ff) => ({ name: ff, value: ff }))
-          : [];
-      this.selectedFormFields = this.items;
-      this.loading = false;
-    },
-  },
-};
+    );
+
+    if (response && response.data && !emailExport) {
+      // Create a UTF-8 Byte Order Mark to handle BC Sans in Excel.
+      const BOM = new Uint8Array([0xef, 0xbb, 0xbf]);
+
+      const blob = new Blob([BOM, response.data], {
+        type: response.headers['content-type'],
+      });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = FILENAME.value;
+      a.style.display = 'none';
+      a.classList.add('hiddenDownloadTextElement');
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } else if (response && !response.data && !emailExport) {
+      throw new Error(t('trans.exportSubmissions.noResponseDataErr'));
+    }
+  } catch (error) {
+    const data = error?.response?.data
+      ? JSON.parse(await error.response.data.text())
+      : undefined;
+    notificationStore.addNotification({
+      text: data?.detail
+        ? data.detail
+        : t('trans.exportSubmissions.apiCallErrorMsg'),
+      consoleError:
+        t('trans.exportSubmissions.apiCallConsErrorMsg') +
+        `${form.value.id}: ${error}`,
+    });
+  }
+}
+
+async function changeVersions(version) {
+  await fetchFormFields(version);
+}
+
+async function fetchFormFields(version, singleRow = false) {
+  loading.value = true;
+  selectedFormFields.value = [];
+  if (version !== '') {
+    await formStore.fetchFormCSVExportFields({
+      formId: properties.formId,
+      type: 'submissions',
+      draft: false,
+      deleted: false,
+      version: version,
+      singleRow: singleRow,
+    });
+  }
+  items.value =
+    formFields.value && formFields.value.length > 0
+      ? formFields.value.map((ff) => ({ name: ff, value: ff }))
+      : [];
+  selectedFormFields.value = items.value;
+  loading.value = false;
+}
+
+defineExpose({
+  callExport,
+  changeVersions,
+  dateRange,
+  endDate,
+  exportFormat,
+  formVersions,
+  selectedFormFields,
+  startDate,
+});
 </script>
 
 <template>
@@ -259,7 +266,7 @@ export default {
       <v-col>
         <v-row>
           <v-col cols="11">
-            <h1 :lang="lang">
+            <h1 :lang="locale">
               {{ $t('trans.exportSubmissions.exportSubmissionsToFile') }}
             </h1>
             <h3>{{ formId ? form.name : '' }}</h3>
@@ -282,7 +289,7 @@ export default {
                     </v-btn>
                   </router-link>
                 </template>
-                <span :lang="lang">{{
+                <span :lang="locale">{{
                   $t('trans.exportSubmissions.viewSubmissions')
                 }}</span>
               </v-tooltip>
@@ -291,7 +298,7 @@ export default {
         </v-row>
         <v-row>
           <v-col>
-            <span class="subTitleObjectStyle" :lang="lang">
+            <span class="subTitleObjectStyle" :lang="locale">
               {{ $t('trans.exportSubmissions.fileType') }}
             </span>
             <v-radio-group v-model="exportFormat" hide-details="auto">
@@ -300,7 +307,7 @@ export default {
                   <span
                     :class="{ 'mr-1': isRTL }"
                     class="radioboxLabelStyle"
-                    :lang="lang"
+                    :lang="locale"
                     >{{ $t('trans.exportSubmissions.json') }}</span
                   >
                 </template>
@@ -310,7 +317,7 @@ export default {
                   <span
                     :class="{ 'mr-1': isRTL }"
                     class="radioboxLabelStyle"
-                    :lang="lang"
+                    :lang="locale"
                     >{{ $t('trans.exportSubmissions.csv') }}</span
                   >
                 </template>
@@ -320,10 +327,10 @@ export default {
         </v-row>
         <v-row v-if="exportFormat === 'csv'" class="mt-5">
           <v-col>
-            <div class="subTitleObjectStyle" :lang="lang">
+            <div class="subTitleObjectStyle" :lang="locale">
               {{ $t('trans.exportSubmissions.formVersion') }}
             </div>
-            <div v-if="VERSION_REQUIRED" class="text-red mt-3" :lang="lang">
+            <div v-if="VERSION_REQUIRED" class="text-red mt-3" :lang="locale">
               {{ $t('trans.exportSubmissions.versionIsRequired') }}
             </div>
             <v-select
@@ -339,7 +346,7 @@ export default {
         </v-row>
         <v-row v-if="exportFormat === 'csv' && !FORM_UNPUBLISHED" class="mt-0">
           <v-col>
-            <p class="subTitleObjectStyle" :lang="lang">
+            <p class="subTitleObjectStyle" :lang="locale">
               {{ $t('trans.exportSubmissions.dataFields') }}
             </p>
             <v-row v-if="exportFormat === 'csv'">
@@ -350,7 +357,7 @@ export default {
                       <span
                         v-if="formFields.length === 0"
                         :class="{ 'mr-1': isRTL }"
-                        :lang="lang"
+                        :lang="locale"
                       >
                         This form version has no submissions to export.
                       </span>
@@ -368,12 +375,12 @@ export default {
                           class="mt-3 submissions-table"
                           single-line
                           :class="{ 'dir-rtl': isRTL, label: isRTL }"
-                          :lang="lang"
+                          :lang="locale"
                         />
                         <span
                           class="subTitleObjectStyle"
                           style="font-size: 14px !important"
-                          :lang="lang"
+                          :lang="locale"
                         >
                           {{ selectedFormFields.length }}
                           {{ $t('trans.exportSubmissions.of') }}
@@ -409,16 +416,20 @@ export default {
         </v-row>
         <v-row class="mt-4">
           <v-col>
-            <span class="subTitleObjectStyle" :lang="lang">
+            <span class="subTitleObjectStyle" :lang="locale">
               {{ $t('trans.exportSubmissions.submissionDate') }}
             </span>
-            <v-radio-group v-model="dateRange" hide-details="auto">
+            <v-radio-group
+              v-model="dateRange"
+              cy-test="dateRange"
+              hide-details="auto"
+            >
               <v-radio :value="false">
                 <template #label>
                   <span
                     :class="{ 'mr-1': isRTL }"
                     class="radioboxLabelStyle"
-                    :lang="lang"
+                    :lang="locale"
                     >{{ $t('trans.exportSubmissions.all') }}</span
                   >
                 </template>
@@ -428,7 +439,7 @@ export default {
                   <span
                     :class="{ 'mr-1': isRTL }"
                     class="radioboxLabelStyle"
-                    :lang="lang"
+                    :lang="locale"
                     >{{ $t('trans.exportSubmissions.SelectdateRange') }}</span
                   >
                 </template>
@@ -450,10 +461,10 @@ export default {
                     variant="outlined"
                     :rules="startDateRules"
                     :class="{ 'dir-rtl': isRTL }"
-                    :lang="lang"
+                    :lang="locale"
                   >
                     <template #label>
-                      <span :lang="lang">{{
+                      <span :lang="locale">{{
                         $t('trans.exportSubmissions.from')
                       }}</span>
                     </template>
@@ -469,10 +480,10 @@ export default {
                     variant="outlined"
                     :rules="endDateRules"
                     :class="{ 'dir-rtl': isRTL }"
-                    :lang="lang"
+                    :lang="locale"
                   >
                     <template #label>
-                      <span :lang="lang">{{
+                      <span :lang="locale">{{
                         $t('trans.exportSubmissions.to')
                       }}</span>
                     </template>
@@ -492,7 +503,7 @@ export default {
           class="mt-0 pt-0"
         >
           <v-col>
-            <span class="subTitleObjectStyle mr-1" :lang="lang">
+            <span class="subTitleObjectStyle mr-1" :lang="locale">
               {{ $t('trans.exportSubmissions.CSVFormat') }}
             </span>
 
@@ -507,7 +518,7 @@ export default {
                     :class="{ 'mr-1': isRTL }"
                     class="radioboxLabelStyle"
                     style="display: flex; align-content: flex-start"
-                    :lang="lang"
+                    :lang="locale"
                   >
                     {{ $t('trans.exportSubmissions.multiRowPerSubmissionA') }}
                   </span>
@@ -522,7 +533,7 @@ export default {
                   <span
                     :class="{ 'mr-1': isRTL }"
                     class="radioboxLabelStyle"
-                    :lang="lang"
+                    :lang="locale"
                   >
                     {{ $t('trans.exportSubmissions.multiRowPerSubmissionB') }}
                   </span>
@@ -537,7 +548,7 @@ export default {
                   <span
                     :class="{ 'mr-1': isRTL }"
                     class="radioboxLabelStyle"
-                    :lang="lang"
+                    :lang="locale"
                     >{{ $t('trans.exportSubmissions.singleRowPerSubmission') }}
                   </span>
                 </template>
@@ -548,7 +559,7 @@ export default {
                     :class="{ 'mr-1': isRTL }"
                     class="radioboxLabelStyle"
                     style="display: flex; align-content: flex-start"
-                    :lang="lang"
+                    :lang="locale"
                   >
                     {{ $t('trans.exportSubmissions.unformatted') }}
                   </span>
@@ -563,7 +574,7 @@ export default {
             <span
               :class="{ 'mr-1': isRTL }"
               class="mt-7 fileLabelStyle"
-              :lang="lang"
+              :lang="locale"
             >
               <strong
                 >{{ $t('trans.exportSubmissions.fileNameAndType') }}:</strong
@@ -591,7 +602,7 @@ export default {
           :title="$t('trans.exportSubmissions.export')"
           @click="callExport"
         >
-          <span :lang="lang">{{ $t('trans.exportSubmissions.export') }}</span>
+          <span :lang="locale">{{ $t('trans.exportSubmissions.export') }}</span>
         </v-btn>
       </v-col>
     </v-row>

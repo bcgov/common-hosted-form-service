@@ -1,4 +1,5 @@
 {
+  "open": "Abrir",
   "date": {
     "date": "aaaa-mm-dd"
   },
@@ -83,7 +84,8 @@
     "deleteSuccess": "Modelo excluído com sucesso.",
     "deleteError": "Ocorreu um erro ao excluir o modelo.",
     "fetchError": "Ocorreu um erro ao buscar o modelo.",
-    "info": "Carregue um modelo para usar o Serviço de Geração de Documentos Comuns (CDOGS)"
+    "info": "Carregue um modelo para usar o Serviço de Geração de Documentos Comuns (CDOGS)",
+    "fileSizeError": "O tamanho do arquivo deve ser menor que 25 MB."
   },
   "formSettings": {
     "pressToAddMultiEmail": "Pressione <kbd>enter</kbd> ou <kbd>,</kbd> ou <kbd>espaço</kbd> para adicionar vários endereços de e-mail",
@@ -99,6 +101,7 @@
     "referenceGuideB": "guia de usuario",
     "referenceGuideC": "para mais detalhes",
     "specificTeamMembers": "Membros Específicos da Equipe",
+    "teamMemberTooltip": "Adicione membros da equipe a partir das configurações de Gestão de Equipe após criar este formulário.",
     "formFunctionality": "Funcionalidade do formulário",
     "formSubmissinScheduleMsg": "A Agenda de envios de formulários estará disponível nas Configurações de formulários após a publicação do formulário.",
     "formSubmissionsSchedule": "Cronograma de Envios de Formulários",
@@ -550,7 +553,7 @@
     "exactBCEIDSearch": "As pesquisas de e-mail para BCeID devem ser exatas.",
     "getUsersErrMsg": "Erro ao obter usuários: {error}",
     "exactEmailOrUsername": "Digite um e-mail ou nome de usuário exato.",
-    "requiredFiled": "Digite um nome, e-mail ou nome de usuário"
+    "requiredField": "Digite um nome, e-mail ou nome de usuário"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "Ver este envio",
@@ -614,6 +617,7 @@
     "assigneeIsRequired": "O cessionário é obrigatório",
     "assignToMe": "ATRIBUIR PARA MIM",
     "recipientEmail": "E-mail do destinatário",
+    "recipientIsRequired": "Destinatário é necessário",
     "attachCommentToEmail": "Anexar comentário ao e-mail",
     "emailComment": "Comentário de e-mail",
     "maxChars": "Máximo de 4.000 caracteres",
@@ -699,7 +703,8 @@
     "defaultCdogsTemplate": "Usar modelo padrão CDOGS",
     "fileName": "Nome do arquivo",
     "uploadDate": "Data de upload",
-    "upload": "Carregar"
+    "upload": "Carregar",
+    "selectExportFileType": "Selecionar tipo de arquivo de exportação"
   },
   "proactiveHelpDialog": {
     "componentInfoLink": "Link de informações do componente",
@@ -826,7 +831,8 @@
     "errorSavingFile": "Erro ao salvar arquivos. Nome do arquivo: {fileName}. Erro: {error}",
     "submittingDraftErrMsg": "Ocorreu um erro ao salvar um rascunho",
     "submittingDraftConsErrMsg": "Erro ao salvar rascunho. SubmissãoId: {submissionId}. Erro: {error}",
-    "formDraftAccessErrMsg": "O envio solicitado já foi enviado, redirecionando para a página Exibir"
+    "formDraftAccessErrMsg": "O envio solicitado já foi enviado, redirecionando para a página Exibir",
+    "formUnauthorizedMessage": "Você não está autorizado a visualizar este formulário, por favor, contate o proprietário do formulário para acesso."
   },
   "bCGovFooter": {
     "home": "Lar",

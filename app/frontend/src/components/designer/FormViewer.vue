@@ -1,21 +1,24 @@
 <script>
+import { Form } from '@formio/vue';
 import _ from 'lodash';
 import { mapActions, mapState } from 'pinia';
-import { Form } from '@formio/vue';
+import { useI18n } from 'vue-i18n';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import FormViewerActions from '~/components/designer/FormViewerActions.vue';
 import FormViewerMultiUpload from '~/components/designer/FormViewerMultiUpload.vue';
-import { i18n } from '~/internationalization';
 import templateExtensions from '~/plugins/templateExtensions';
-import { formService, rbacService } from '~/services';
+import { fileService, formService, rbacService } from '~/services';
 import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 
 import { isFormPublic } from '~/utils/permissionUtils';
-import { attachAttributesToLinks } from '~/utils/transformUtils';
+import {
+  attachAttributesToLinks,
+  getDisposition,
+} from '~/utils/transformUtils';
 import { FormPermissions, NotificationTypes } from '~/utils/constants';
 
 export default {
@@ -65,6 +68,11 @@ export default {
     },
   },
   emits: ['submission-updated'],
+  setup() {
+    const { t, locale } = useI18n({ useScope: 'global' });
+
+    return { t, locale };
+  },
   data() {
     return {
       allowSubmitterToUploadFile: false,
@@ -72,6 +80,7 @@ export default {
       bulkFile: false,
       confirmSubmit: false,
       currentForm: {},
+      downloadTimeout: null,
       doYouWantToSaveTheDraft: false,
       forceNewTabLinks: true,
       form: {},
@@ -106,6 +115,7 @@ export default {
       submissionRecord: {},
       version: 0,
       versionIdToSubmitTo: this.versionId,
+      isAuthorized: true,
     };
   },
   computed: {
@@ -116,10 +126,13 @@ export default {
       'tokenParsed',
       'user',
     ]),
-    ...mapState(useFormStore, ['lang', 'isRTL']),
+    ...mapState(useFormStore, ['downloadedFile', 'isRTL']),
 
     formScheduleExpireMessage() {
-      return i18n.t('trans.formViewer.formScheduleExpireMessage');
+      return this.$t('trans.formViewer.formScheduleExpireMessage');
+    },
+    formUnauthorizedMessage() {
+      return this.$t('trans.formViewer.formUnauthorizedMessage');
     },
     NOTIFICATIONS_TYPES() {
       return NotificationTypes;
@@ -143,6 +156,9 @@ export default {
           simplefile: {
             config: this.config,
             chefsToken: this.getCurrentAuthHeader,
+            deleteFile: this.deleteFile,
+            getFile: this.getFile,
+            uploadFile: this.uploadFile,
           },
         },
         evalContext: {
@@ -164,6 +180,9 @@ export default {
     },
   },
   async mounted() {
+    // load up headers for any External API calls
+    // from components.
+    await this.setProxyHeaders();
     if (this.submissionId && this.isDuplicate) {
       // Run when make new submission from existing one called. Get the
       // published version of form, and then get the submission data.
@@ -175,13 +194,13 @@ export default {
       this.showModal = true;
       await this.getFormSchema();
     }
-
     window.addEventListener('beforeunload', this.beforeWindowUnload);
 
     this.reRenderFormIo += 1;
   },
   beforeUnmount() {
     window.removeEventListener('beforeunload', this.beforeWindowUnload);
+    clearTimeout(this.downloadTimeout);
   },
   beforeUpdate() {
     if (this.forceNewTabLinks) {
@@ -189,6 +208,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(useFormStore, ['downloadFile']),
     ...mapActions(useNotificationStore, ['addNotification']),
     isFormPublic: isFormPublic,
     getCurrentAuthHeader() {
@@ -298,14 +318,30 @@ export default {
         }
       } catch (error) {
         this.addNotification({
-          text: i18n.t('trans.formViewer.getUsersSubmissionsErrMsg'),
-          consoleError: i18n.t(
+          text: this.$t('trans.formViewer.getUsersSubmissionsErrMsg'),
+          consoleError: this.$t(
             'trans.formViewer.getUsersSubmissionsConsoleErrMsg',
             { submissionId: this.submissionId, error: error }
           ),
         });
       } finally {
         this.loadingSubmission = false;
+      }
+    },
+    async setProxyHeaders() {
+      try {
+        let response = await formService.getProxyHeaders({
+          formId: this.formId,
+          versionId: this.versionId,
+          submissionId: this.submissionId,
+        });
+        // error checking for response
+        sessionStorage.setItem(
+          'X-CHEFS-PROXY-DATA',
+          response.data['X-CHEFS-PROXY-DATA']
+        );
+      } catch (error) {
+        // need error handling
       }
     },
     // Get the form definition/schema
@@ -318,7 +354,7 @@ export default {
           response = await formService.readVersion(this.formId, this.versionId);
           if (!response.data || !response.data.schema) {
             throw new Error(
-              i18n.t('trans.formViewer.readVersionErrMsg', {
+              this.$t('trans.formViewer.readVersionErrMsg', {
                 versionId: this.versionId,
               })
             );
@@ -331,7 +367,7 @@ export default {
           response = await formService.readDraft(this.formId, this.draftId);
           if (!response.data || !response.data.schema) {
             throw new Error(
-              i18n.t('trans.formViewer.readDraftErrMsg', {
+              this.$t('trans.formViewer.readDraftErrMsg', {
                 draftId: this.draftId,
               })
             );
@@ -349,7 +385,7 @@ export default {
             this.$router.push({
               name: 'Alert',
               query: {
-                text: i18n.t('trans.formViewer.alertRouteMsg'),
+                text: this.$t('trans.formViewer.alertRouteMsg'),
                 type: 'info',
               },
             });
@@ -370,16 +406,22 @@ export default {
         }
       } catch (error) {
         if (this.authenticated) {
-          this.isFormScheduleExpired = true;
-          this.isLateSubmissionAllowed = false;
-          this.formScheduleExpireMessage = error.message;
-          this.addNotification({
-            text: i18n.t('trans.formViewer.fecthingFormErrMsg'),
-            consoleError: i18n.t('trans.formViewer.fecthingFormConsoleErrMsg', {
-              versionId: this.versionId,
-              error: error,
-            }),
-          });
+          // if 401 error, the user is not authorized to view the form
+          if (error.response && error.response.status === 401) {
+            this.isAuthorized = false;
+          } else {
+            // throw a generic error message
+            this.addNotification({
+              text: this.$t('trans.formViewer.fecthingFormErrMsg'),
+              consoleError: this.$t(
+                'trans.formViewer.fecthingFormConsoleErrMsg',
+                {
+                  versionId: this.versionId,
+                  error: error,
+                }
+              ),
+            });
+          }
         }
       }
     },
@@ -436,7 +478,7 @@ export default {
         if ([200, 201].includes(response.status)) {
           // all is good, flag no errors and carry on...
           // store our submission result...
-          this.sbdMessage.message = i18n.t(
+          this.sbdMessage.message = this.$t(
             'trans.formViewer.multiDraftUploadSuccess'
           );
           this.sbdMessage.error = false;
@@ -449,7 +491,7 @@ export default {
             ...NotificationTypes.SUCCESS,
           });
         } else {
-          this.sbdMessage.message = i18n.t(
+          this.sbdMessage.message = this.$t(
             'trans.formViewer.failedResSubmissn',
             {
               status: response.status,
@@ -459,14 +501,14 @@ export default {
           this.sbdMessage.upload_state = 10;
           this.block = false;
           this.sbdMessage.response = [
-            { error_message: i18n.t('trans.formViewer.errSubmittingForm') },
+            { error_message: this.$t('trans.formViewer.errSubmittingForm') },
           ];
           this.sbdMessage.file_name =
             'error_report_' + this.form.name + '_' + Date.now();
           this.saving = false;
-          i18n.t('trans.formViewer.errSubmittingForm');
+          this.$t('trans.formViewer.errSubmittingForm');
           throw new Error(
-            i18n.t('trans.formViewer.failedResSubmissn', {
+            this.$t('trans.formViewer.failedResSubmissn', {
               status: response.status,
             })
           );
@@ -477,7 +519,7 @@ export default {
         this.setFinalError(error);
         this.addNotification({
           text: this.sbdMessage.message,
-          consoleError: i18n.t('trans.formViewer.errorSavingFile', {
+          consoleError: this.$t('trans.formViewer.errorSavingFile', {
             fileName: this.json_csv.file_name,
             error: error,
           }),
@@ -489,7 +531,7 @@ export default {
         if (error.response.data != undefined) {
           this.sbdMessage.message =
             error.response.data.title == undefined
-              ? i18n.t('trans.formViewer.errSubmittingForm')
+              ? this.$t('trans.formViewer.errSubmittingForm')
               : error.response.data.title;
           this.sbdMessage.error = true;
           this.sbdMessage.upload_state = 10;
@@ -497,30 +539,32 @@ export default {
             error.response.data.reports == undefined
               ? [
                   {
-                    error_message: i18n.t('trans.formViewer.errSubmittingForm'),
+                    error_message: this.$t(
+                      'trans.formViewer.errSubmittingForm'
+                    ),
                   },
                 ]
               : await this.formatResponse(error.response.data.reports);
           this.sbdMessage.file_name =
             'error_report_' + this.form.name + '_' + Date.now();
         } else {
-          this.sbdMessage.message = i18n.t(
+          this.sbdMessage.message = this.$t(
             'trans.formViewer.errSubmittingForm'
           );
           this.sbdMessage.error = true;
           this.sbdMessage.upload_state = 10;
           this.sbdMessage.response = [
-            { error_message: i18n.t('trans.formViewer.errSubmittingForm') },
+            { error_message: this.$t('trans.formViewer.errSubmittingForm') },
           ];
           this.sbdMessage.file_name =
             'error_report_' + this.form.name + '_' + Date.now();
         }
       } catch (error_2) {
-        this.sbdMessage.message = i18n.t('trans.formViewer.errSubmittingForm');
+        this.sbdMessage.message = this.$t('trans.formViewer.errSubmittingForm');
         this.sbdMessage.error = true;
         this.sbdMessage.upload_state = 10;
         this.sbdMessage.response = [
-          { error_message: i18n.t('trans.formViewer.errSubmittingForm') },
+          { error_message: this.$t('trans.formViewer.errSubmittingForm') },
         ];
         this.sbdMessage.file_name =
           'error_report_' + this.form.name + '_' + Date.now();
@@ -790,8 +834,8 @@ export default {
         this.saveDraftDialog = false;
       } catch (error) {
         this.addNotification({
-          text: i18n.t('trans.formViewer.savingDraftErrMsg'),
-          consoleError: i18n.t('trans.formViewer.fecthingFormConsoleErrMsg', {
+          text: this.$t('trans.formViewer.savingDraftErrMsg'),
+          consoleError: this.$t('trans.formViewer.fecthingFormConsoleErrMsg', {
             submissionId: this.submissionId,
             error: error,
           }),
@@ -838,7 +882,7 @@ export default {
     // else onSubmitError
     onSubmitButton(event) {
       if (this.preview) {
-        alert(i18n.t('trans.formViewer.submissionsPreviewAlert'));
+        alert(this.$t('trans.formViewer.submissionsPreviewAlert'));
         return;
       }
       // this is our first event in the submission chain.
@@ -889,7 +933,7 @@ export default {
     // eslint-disable-next-line no-unused-vars
     async onSubmit(sub) {
       if (this.preview) {
-        alert(i18n.t('trans.formViewer.submissionsPreviewAlert'));
+        alert(this.$t('trans.formViewer.submissionsPreviewAlert'));
         this.confirmSubmit = false;
         return;
       }
@@ -902,7 +946,7 @@ export default {
       if (errors) {
         this.addNotification({
           text: errors,
-          consoleError: i18n.t('trans.formViewer.submissionsSubmitErrMsg', {
+          consoleError: this.$t('trans.formViewer.submissionsSubmitErrMsg', {
             errors: errors,
           }),
         });
@@ -931,14 +975,14 @@ export default {
           );
         } else {
           throw new Error(
-            i18n.t('trans.formViewer.sendSubmissionErrMsg', {
+            this.$t('trans.formViewer.sendSubmissionErrMsg', {
               status: response.status,
             })
           );
         }
       } catch (error) {
         console.error(error); // eslint-disable-line no-console
-        errMsg = i18n.t('trans.formViewer.errMsg');
+        errMsg = this.$t('trans.formViewer.errMsg');
       } finally {
         this.confirmSubmit = false;
       }
@@ -964,7 +1008,9 @@ export default {
     },
     // Custom Event triggered from buttons with Action type "Event"
     onCustomEvent(event) {
-      alert(i18n.t('trans.formViewer.customEventAlert', { event: event.type }));
+      alert(
+        this.$t('trans.formViewer.customEventAlert', { event: event.type })
+      );
     },
     switchView() {
       if (!this.bulkFile) {
@@ -1031,8 +1077,8 @@ export default {
         this.showSubmitConfirmDialog = false;
       } catch (error) {
         this.addNotification({
-          text: i18n.t('trans.formViewer.submittingDraftErrMsg'),
-          consoleError: i18n.t('trans.formViewer.submittingDraftConsErrMsg', {
+          text: this.$t('trans.formViewer.submittingDraftErrMsg'),
+          consoleError: this.$t('trans.formViewer.submittingDraftConsErrMsg', {
             submissionId: this.submissionId,
             error: error,
           }),
@@ -1048,6 +1094,55 @@ export default {
         e.returnValue = '';
       }
     },
+    async deleteFile(file) {
+      const fileId = file?.data?.id
+        ? file.data.id
+        : file?.id
+        ? file.id
+        : undefined;
+      return fileService.deleteFile(fileId);
+    },
+    async getFile(fileId, options = {}) {
+      await this.downloadFile(fileId, options);
+      if (this.downloadedFile && this.downloadedFile.headers) {
+        let data;
+
+        if (
+          this.downloadedFile.headers['content-type'].includes(
+            'application/json'
+          )
+        ) {
+          data = JSON.stringify(this.downloadedFile.data);
+        } else {
+          data = this.downloadedFile.data;
+        }
+
+        if (typeof data === 'string') {
+          data = new Blob([data], {
+            type: this.downloadedFile.headers['content-type'],
+          });
+        }
+
+        // don't need to blob because it's already a blob
+        const url = window.URL.createObjectURL(data);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = getDisposition(
+          this.downloadedFile.headers['content-disposition']
+        );
+        a.style.display = 'none';
+        a.classList.add('hiddenDownloadTextElement');
+        document.body.appendChild(a);
+        a.click();
+        this.downloadTimeout = setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(a.href);
+        });
+      }
+    },
+    async uploadFile(file, config = {}) {
+      return fileService.uploadFile(file, config);
+    },
   },
 };
 </script>
@@ -1055,7 +1150,18 @@ export default {
 <template>
   <v-skeleton-loader :loading="loadingSubmission" type="article, actions">
     <v-container fluid>
-      <div v-if="isFormScheduleExpired">
+      <div v-if="!isAuthorized">
+        <v-alert
+          :text="formUnauthorizedMessage"
+          prominent
+          type="error"
+          :class="{ 'dir-rtl': isRTL }"
+          :lang="locale"
+        >
+        </v-alert>
+      </div>
+
+      <div v-else-if="isFormScheduleExpired">
         <v-alert
           :text="
             isLateSubmissionAllowed
@@ -1065,19 +1171,19 @@ export default {
           prominent
           type="error"
           :class="{ 'dir-rtl': isRTL }"
-          :lang="lang"
+          :lang="locale"
         >
         </v-alert>
 
         <div v-if="isLateSubmissionAllowed">
-          <v-col cols="3" md="2">
+          <v-col cols="12" md="6">
             <v-btn
               color="primary"
               :class="{ 'dir-rtl': isRTL }"
               :title="$t('trans.formViewer.createLateSubmission')"
               @click="isFormScheduleExpired = false"
             >
-              <span :lang="lang">{{
+              <span :lang="locale">{{
                 $t('trans.formViewer.createLateSubmission')
               }}</span>
             </v-btn>
@@ -1126,10 +1232,10 @@ export default {
             "
           >
             <div v-if="saving" :class="{ 'mr-2': isRTL }">
-              <v-progress-linear indeterminate :lang="lang" />
+              <v-progress-linear indeterminate :lang="locale" />
               {{ $t('trans.formViewer.saving') }}
             </div>
-            <div v-else :class="{ 'mr-2': isRTL }" :lang="lang">
+            <div v-else :class="{ 'mr-2': isRTL }" :lang="locale">
               {{ $t('trans.formViewer.draftSaved') }}
             </div>
           </v-alert>
@@ -1144,17 +1250,17 @@ export default {
             @continue-dialog="continueSubmit"
           >
             <template #title>
-              <span :lang="lang">{{
+              <span :lang="locale">{{
                 $t('trans.formViewer.pleaseConfirm')
               }}</span></template
             >
             <template #text
-              ><span :lang="lang">{{
+              ><span :lang="locale">{{
                 $t('trans.formViewer.submitFormWarningMsg')
               }}</span></template
             >
             <template #button-text-continue>
-              <span :lang="lang">{{ $t('trans.formViewer.submit') }}</span>
+              <span :lang="locale">{{ $t('trans.formViewer.submit') }}</span>
             </template>
           </BaseDialog>
 
@@ -1172,7 +1278,7 @@ export default {
                 color="blue-grey-lighten-4"
                 height="5"
               ></v-progress-linear>
-              <span :class="{ 'mr-2': isRTL }" :lang="lang">
+              <span :class="{ 'mr-2': isRTL }" :lang="locale">
                 {{ $t('trans.formViewer.formLoading') }}
               </span>
             </div>
@@ -1199,7 +1305,7 @@ export default {
             :form="formSchema"
             :submission="submission"
             :options="viewerOptions"
-            :language="lang"
+            :language="locale"
             @submit="onSubmit"
             @submitDone="onSubmitDone"
             @submitButton="onSubmitButton"
@@ -1211,7 +1317,7 @@ export default {
             v-if="version"
             :class="{ 'text-left': isRTL }"
             class="mt-3"
-            :lang="lang"
+            :lang="locale"
           >
             {{ $t('trans.formViewer.version', { version: version }) }}
           </p>
@@ -1227,20 +1333,20 @@ export default {
         @continue-dialog="yes"
       >
         <template #title
-          ><span :lang="lang">
+          ><span :lang="locale">
             {{ $t('trans.formViewer.pleaseConfirm') }}</span
           ></template
         >
         <template #text
-          ><span :lang="lang">
+          ><span :lang="locale">
             {{ $t('trans.formViewer.wantToSaveDraft') }}</span
           ></template
         >
         <template #button-text-continue>
-          <span :lang="lang"> {{ $t('trans.formViewer.yes') }}</span>
+          <span :lang="locale"> {{ $t('trans.formViewer.yes') }}</span>
         </template>
         <template #button-text-delete>
-          <span :lang="lang"> {{ $t('trans.formViewer.no') }}</span>
+          <span :lang="locale"> {{ $t('trans.formViewer.no') }}</span>
         </template>
       </BaseDialog>
     </v-container>

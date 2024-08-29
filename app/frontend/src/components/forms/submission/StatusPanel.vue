@@ -1,6 +1,7 @@
-<script>
-import { mapActions, mapState } from 'pinia';
-import { i18n } from '~/internationalization';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import StatusTable from '~/components/forms/submission/StatusTable.vue';
 import { formService, rbacService } from '~/services';
@@ -9,299 +10,289 @@ import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { FormPermissions } from '~/utils/constants';
 
-export default {
-  components: {
-    StatusTable,
+const { t, locale } = useI18n({ useScope: 'global' });
+
+const properties = defineProps({
+  formId: {
+    type: String,
+    required: true,
   },
-  props: {
-    formId: {
-      type: String,
-      required: true,
-    },
-    submissionId: {
-      type: String,
-      required: true,
-    },
+  submissionId: {
+    type: String,
+    required: true,
   },
-  emits: ['draft-enabled', 'note-updated'],
-  data() {
-    return {
-      assignee: null,
-      addComment: false,
-      currentStatus: {},
-      formReviewers: [],
-      historyDialog: false,
-      items: [],
-      loading: true,
-      note: '',
-      emailComment: '',
-      submissionUserEmail: '',
-      statusHistory: {},
-      statusFields: false,
-      statusToSet: '',
-      valid: false,
-      showSendConfirmEmail: false,
-      showStatusContent: false,
-    };
-  },
-  computed: {
-    ...mapState(useAuthStore, ['user']),
-    ...mapState(useFormStore, [
-      'form',
-      'formSubmission',
-      'submissionUsers',
-      'isRTL',
-      'lang',
-    ]),
-    // State Machine
-    showActionDate() {
-      return ['ASSIGNED', 'COMPLETED'].includes(this.statusToSet);
-    },
-    showAssignee() {
-      return ['ASSIGNED'].includes(this.statusToSet);
-    },
-    showCompleted() {
-      return ['COMPLETED'].includes(this.statusToSet);
-    },
-    showRevising() {
-      return ['REVISING'].includes(this.statusToSet);
-    },
-    statusRequired() {
-      return [(v) => !!v || this.$t('trans.statusPanel.statusIsRequired')];
-    },
-    assigneeRequired() {
-      return [(v) => !!v || this.$t('trans.statusPanel.assigneeIsRequired')];
-    },
-    maxChars() {
-      return [(v) => v.length <= 4000 || this.$t('trans.statusPanel.maxChars')];
-    },
-    statusAction() {
-      const obj = Object.freeze({
-        ASSIGNED: 'ASSIGN',
-        COMPLETED: 'COMPLETE',
-        REVISING: 'REVISE',
-        DEFAULT: 'UPDATE',
+});
+
+const emit = defineEmits(['draft-enabled', 'note-updated']);
+
+const assignee = ref(null);
+const addComment = ref(false);
+const currentStatus = ref({});
+const formReviewers = ref([]);
+const historyDialog = ref(false);
+const items = ref([]);
+const loading = ref(true);
+const note = ref('');
+const emailComment = ref('');
+const submissionUserEmail = ref('');
+const statusHistory = ref({});
+const statusFields = ref(false);
+const statusPanelForm = ref(null);
+const statusToSet = ref('');
+const valid = ref(false);
+const showSendConfirmEmail = ref(false);
+const showStatusContent = ref(false);
+
+const formStore = useFormStore();
+const notificationStore = useNotificationStore();
+
+const { user } = storeToRefs(useAuthStore());
+const { form, formSubmission, submissionUsers, isRTL } = storeToRefs(formStore);
+
+// State Machine
+const showAssignee = computed(() => ['ASSIGNED'].includes(statusToSet.value));
+
+const showCompleted = computed(() => ['COMPLETED'].includes(statusToSet.value));
+
+const showRevising = computed(() => ['REVISING'].includes(statusToSet.value));
+
+const statusAction = computed(() => {
+  const obj = Object.freeze({
+    ASSIGNED: 'ASSIGN',
+    COMPLETED: 'COMPLETE',
+    REVISING: 'REVISE',
+    DEFAULT: 'UPDATE',
+  });
+
+  let action = obj[statusToSet.value] ? obj[statusToSet.value] : obj['DEFAULT'];
+
+  let actionStatus = '';
+  switch (action) {
+    case 'ASSIGN':
+      actionStatus = t('trans.statusPanel.assign');
+      break;
+    case 'COMPLETE':
+      actionStatus = t('trans.statusPanel.complete');
+      break;
+    case 'REVISE':
+      actionStatus = t('trans.statusPanel.revise');
+      break;
+    case 'UPDATE':
+      actionStatus = t('trans.statusPanel.update');
+      break;
+    default:
+    // code block
+  }
+  return actionStatus;
+});
+
+getStatus();
+
+async function onStatusChange(status) {
+  statusFields.value = true;
+  addComment.value = false;
+  if (status === 'REVISING' || status === 'COMPLETED') {
+    try {
+      await formStore.fetchSubmissionUsers(properties.submissionId);
+
+      const submitterData = submissionUsers.value.data.find((data) => {
+        const username = data.user.idpCode
+          ? `${data.user.username}@${data.user.idpCode}`
+          : data.user.username;
+        return username === formSubmission.value.createdBy;
       });
 
-      let action = obj[this.statusToSet]
-        ? obj[this.statusToSet]
-        : obj['DEFAULT'];
-
-      let actionStatus = '';
-      switch (action) {
-        case 'ASSIGN':
-          actionStatus = i18n.t('trans.statusPanel.assign');
-          break;
-        case 'COMPLETE':
-          actionStatus = i18n.t('trans.statusPanel.complete');
-          break;
-        case 'REVISE':
-          actionStatus = i18n.t('trans.statusPanel.revise');
-          break;
-        case 'UPDATE':
-          actionStatus = i18n.t('trans.statusPanel.update');
-          break;
-        default:
-        // code block
+      if (submitterData) {
+        submissionUserEmail.value = submitterData.user
+          ? submitterData.user.email
+          : undefined;
+        showSendConfirmEmail.value = status === 'COMPLETED';
       }
-      return actionStatus;
-    },
-  },
-  created() {
-    this.getStatus();
-  },
-  methods: {
-    ...mapActions(useFormStore, ['fetchSubmissionUsers']),
-    ...mapActions(useNotificationStore, ['addNotification']),
-    async onStatusChange(status) {
-      this.statusFields = true;
-      this.addComment = false;
-      if (status === 'REVISING' || status === 'COMPLETED') {
-        try {
-          await this.fetchSubmissionUsers(this.submissionId);
+    } catch (error) {
+      notificationStore.addNotification({
+        text: t('trans.statusPanel.fetchSubmissionUsersErr'),
+        consoleError:
+          t('trans.statusPanel.fetchSubmissionUsersConsErr') +
+          `${properties.submissionId}: ${error}`,
+      });
+    }
+  }
+}
 
-          const submitterData = this.submissionUsers.data.find((data) => {
-            const username = data.user.idpCode
-              ? `${data.user.username}@${data.user.idpCode}`
-              : data.user.username;
-            return username === this.formSubmission.createdBy;
-          });
+function assignToCurrentUser() {
+  assignee.value = formReviewers.value.find(
+    (f) => f.idpUserId === user.value.idpUserId
+  );
+}
 
-          if (submitterData) {
-            this.submissionUserEmail = submitterData.user
-              ? submitterData.user.email
-              : undefined;
-            this.showSendConfirmEmail = status === 'COMPLETED';
-          }
-        } catch (error) {
-          this.addNotification({
-            text: i18n.t('trans.statusPanel.fetchSubmissionUsersErr'),
-            consoleError:
-              i18n.t('trans.statusPanel.fetchSubmissionUsersConsErr') +
-              `${this.submissionId}: ${error}`,
-          });
+function autoCompleteFilter(_itemTitle, queryText, item) {
+  return (
+    item.value.fullName
+      .toLocaleLowerCase()
+      .includes(queryText.toLocaleLowerCase()) ||
+    item.value.username
+      .toLocaleLowerCase()
+      .includes(queryText.toLocaleLowerCase())
+  );
+}
+
+async function getStatus() {
+  loading.value = true;
+  try {
+    // Prepopulate the form reviewers (people with submission read on this form)
+    const rbacUsrs = await rbacService.getFormUsers({
+      formId: properties.formId,
+      permissions: FormPermissions.SUBMISSION_READ,
+    });
+    formReviewers.value = rbacUsrs.data.sort((a, b) =>
+      a.fullName.localeCompare(b.fullName)
+    );
+
+    // Get submission status
+    const statuses = await formService.getSubmissionStatuses(
+      properties.submissionId
+    );
+
+    statusHistory.value = statuses.data;
+    if (!statusHistory.value.length || !statusHistory.value[0]) {
+      throw new Error(t('trans.statusPanel.noStatusesFound'));
+    } else {
+      emit('draft-enabled', statuses.data[0].code);
+      // Statuses are returned in date precedence, the 0th item in the array is the current status
+      currentStatus.value = statusHistory.value[0];
+
+      // Get the codes that this form is associated with
+      const scRes = await formService.getStatusCodes(properties.formId);
+      const statusCodes = scRes.data;
+      if (!statusCodes.length) {
+        throw new Error(t('trans.statusPanel.statusCodesErr'));
+      }
+      // For the CURRENT status, add the code details (display name, next codes etc)
+      currentStatus.value.statusCodeDetail = statusCodes.find(
+        (sc) => sc.code === currentStatus.value.code
+      ).statusCode;
+      items.value = currentStatus.value.statusCodeDetail.nextCodes;
+    }
+    if (!form.value.enableSubmitterDraft) {
+      items.value = items.value.filter((item) => item !== 'REVISING');
+    }
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.statusPanel.notifyErrorCode'),
+      consoleError:
+        t('trans.statusPanel.notifyConsoleErrorCode') + `${error.message}`,
+    });
+  } finally {
+    loading.value = false;
+  }
+}
+
+function resetForm() {
+  addComment.value = false;
+  emailComment.value = '';
+  statusFields.value = false;
+  statusPanelForm.value.resetValidation();
+  submissionUserEmail.value = '';
+  statusToSet.value = '';
+  note.value = '';
+}
+
+async function updateStatus() {
+  try {
+    if (statusPanelForm.value.validate()) {
+      if (!statusToSet.value) {
+        throw new Error(t('trans.statusPanel.status'));
+      }
+
+      const statusBody = {
+        code: statusToSet.value,
+        submissionUserEmail: submissionUserEmail.value,
+        revisionNotificationEmailContent: emailComment.value,
+      };
+      if (showAssignee.value) {
+        if (assignee.value) {
+          statusBody.assignedToUserId = assignee.value.userId;
+          statusBody.assignmentNotificationEmail = assignee.value.email;
         }
       }
-    },
-
-    assignToCurrentUser() {
-      this.assignee = this.formReviewers.find(
-        (f) => f.idpUserId === this.user.idpUserId
+      const statusResponse = await formService.updateSubmissionStatus(
+        properties.submissionId,
+        statusBody
       );
-    },
-
-    autoCompleteFilter(_itemTitle, queryText, item) {
-      return (
-        item.value.fullName
-          .toLocaleLowerCase()
-          .includes(queryText.toLocaleLowerCase()) ||
-        item.value.username
-          .toLocaleLowerCase()
-          .includes(queryText.toLocaleLowerCase())
-      );
-    },
-
-    async getStatus() {
-      this.loading = true;
-      try {
-        // Prepopulate the form reviewers (people with submission read on this form)
-        const rbacUsrs = await rbacService.getFormUsers({
-          formId: this.formId,
-          permissions: FormPermissions.SUBMISSION_READ,
-        });
-        this.formReviewers = rbacUsrs.data.sort((a, b) =>
-          a.fullName.localeCompare(b.fullName)
-        );
-
-        // Get submission status
-        const statuses = await formService.getSubmissionStatuses(
-          this.submissionId
-        );
-
-        this.$emit('draft-enabled', statuses.data[0].code);
-
-        this.statusHistory = statuses.data;
-        if (!this.statusHistory.length || !this.statusHistory[0]) {
-          throw new Error(i18n.t('trans.statusPanel.noStatusesFound'));
-        } else {
-          // Statuses are returned in date precedence, the 0th item in the array is the current status
-          this.currentStatus = this.statusHistory[0];
-
-          // Get the codes that this form is associated with
-          const scRes = await formService.getStatusCodes(this.formId);
-          const statusCodes = scRes.data;
-          if (!statusCodes.length) {
-            throw new Error(i18n.t('trans.statusPanel.statusCodesErr'));
-          }
-          // For the CURRENT status, add the code details (display name, next codes etc)
-          this.currentStatus.statusCodeDetail = statusCodes.find(
-            (sc) => sc.code === this.currentStatus.code
-          ).statusCode;
-          this.items = this.currentStatus.statusCodeDetail.nextCodes;
-        }
-        if (!this.form.enableSubmitterDraft) {
-          this.items = this.items.filter((item) => item !== 'REVISING');
-        }
-      } catch (error) {
-        this.addNotification({
-          text: i18n.t('trans.statusPanel.notifyErrorCode'),
-          consoleError:
-            i18n.t('trans.statusPanel.notifyConsoleErrorCode') +
-            `${error.message}`,
-        });
-      } finally {
-        this.loading = false;
+      if (!statusResponse.data) {
+        throw new Error(t('trans.statusPanel.updtSubmissionsStatusErr'));
       }
-    },
 
-    resetForm() {
-      this.addComment = false;
-      this.emailComment = '';
-      this.statusFields = false;
-      this.$refs.statusPanelForm.resetValidation();
-      this.submissionUserEmail = '';
-      this.statusToSet = null;
-      this.note = '';
-    },
-
-    async updateStatus() {
-      try {
-        if (this.$refs.statusPanelForm.validate()) {
-          if (!this.statusToSet) {
-            throw new Error(i18n.t('trans.statusPanel.status'));
-          }
-
-          const statusBody = {
-            code: this.statusToSet,
-            submissionUserEmail: this.submissionUserEmail,
-            revisionNotificationEmailContent: this.emailComment,
-          };
-          if (this.showAssignee) {
-            if (this.assignee) {
-              statusBody.assignedToUserId = this.assignee.userId;
-              statusBody.assignmentNotificationEmail = this.assignee.email;
-            }
-          }
-          const statusResponse = await formService.updateSubmissionStatus(
-            this.submissionId,
-            statusBody
-          );
-          if (!statusResponse.data) {
-            throw new Error(
-              i18n.t('trans.statusPanel.updtSubmissionsStatusErr')
-            );
-          }
-
-          if (this.emailComment) {
-            let formattedComment;
-            if (this.statusToSet === 'ASSIGNED') {
-              formattedComment = `Email to ${this.assignee.email}: ${this.emailComment}`;
-            } else if (
-              this.statusToSet === 'REVISING' ||
-              this.statusToSet === 'COMPLETED'
-            ) {
-              formattedComment = `Email to ${this.submissionUserEmail}: ${this.emailComment}`;
-            }
-
-            const submissionStatusId =
-              statusResponse.data[0].submissionStatusId;
-            const user = await rbacService.getCurrentUser();
-            const noteBody = {
-              submissionId: this.submissionId,
-              submissionStatusId: submissionStatusId,
-              note: formattedComment,
-              userId: user.data.id,
-            };
-            const response = await formService.addNote(
-              this.submissionId,
-              noteBody
-            );
-            if (!response.data) {
-              throw new Error(i18n.t('trans.statusPanel.addNoteNoReponserErr'));
-            }
-            // Update the parent if the note was updated
-            this.$emit('note-updated');
-          }
-          this.resetForm();
-          this.getStatus();
+      if (emailComment.value) {
+        let formattedComment;
+        if (statusToSet.value === 'ASSIGNED') {
+          formattedComment = `Email to ${assignee.value.email}: ${emailComment.value}`;
+        } else if (
+          statusToSet.value === 'REVISING' ||
+          statusToSet.value === 'COMPLETED'
+        ) {
+          formattedComment = `Email to ${submissionUserEmail.value}: ${emailComment.value}`;
         }
-      } catch (error) {
-        this.addNotification({
-          text: i18n.t('trans.statusPanel.addNoteErrMsg'),
-          consoleError: i18n.t('trans.statusPanel.addNoteConsoleErrMsg', {
-            error: error,
-          }),
-        });
+
+        const submissionStatusId = statusResponse.data[0].submissionStatusId;
+        const user = await rbacService.getCurrentUser();
+        const noteBody = {
+          submissionId: properties.submissionId,
+          submissionStatusId: submissionStatusId,
+          note: formattedComment,
+          userId: user.data.id,
+        };
+        const response = await formService.addNote(
+          properties.submissionId,
+          noteBody
+        );
+        if (!response.data) {
+          throw new Error(t('trans.statusPanel.addNoteNoReponserErr'));
+        }
+        // Update the parent if the note was updated
+        emit('note-updated');
       }
-    },
-  },
-};
+      resetForm();
+      await getStatus();
+    }
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.statusPanel.addNoteErrMsg'),
+      consoleError: t('trans.statusPanel.addNoteConsoleErrMsg', {
+        error: error,
+      }),
+    });
+  }
+}
+
+defineExpose({
+  addComment,
+  assignee,
+  autoCompleteFilter,
+  emailComment,
+  formReviewers,
+  getStatus,
+  note,
+  onStatusChange,
+  resetForm,
+  showSendConfirmEmail,
+  statusAction,
+  statusHistory,
+  statusFields,
+  statusToSet,
+  submissionUserEmail,
+  updateStatus,
+});
 </script>
 
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
-    <div class="flex-container" @click="showStatusContent = !showStatusContent">
-      <h2 class="status-heading" :class="{ 'dir-rtl': isRTL }" :lang="lang">
+    <div
+      class="flex-container"
+      data-test="showStatusPanel"
+      @click="showStatusContent = !showStatusContent"
+    >
+      <h2 class="status-heading" :class="{ 'dir-rtl': isRTL }" :lang="locale">
         {{ $t('trans.formSubmission.status') }}
         <v-icon>{{
           showStatusContent
@@ -312,7 +303,7 @@ export default {
         }}</v-icon>
       </h2>
       <!-- Show <p> here for screens greater than 959px  -->
-      <p class="hide-on-narrow" :lang="lang">
+      <p class="hide-on-narrow" :lang="locale">
         <span :class="isRTL ? 'status-details-rtl' : 'status-details'">
           <strong>{{ $t('trans.statusPanel.currentStatus') }}</strong>
           {{ currentStatus.code }}
@@ -320,9 +311,9 @@ export default {
         <span :class="isRTL ? 'status-details-rtl' : 'status-details'">
           <strong>{{ $t('trans.statusPanel.assignedTo') }}</strong>
           {{ currentStatus.user ? currentStatus.user.fullName : 'N/A' }}
-          <span v-if="currentStatus.user"
-            >({{ currentStatus.user.email }})</span
-          >
+          <span v-if="currentStatus.user" data-test="showAssigneeEmail">
+            ({{ currentStatus.user.email }})
+          </span>
         </span>
       </p>
     </div>
@@ -333,13 +324,13 @@ export default {
     >
       <div v-if="showStatusContent" class="d-flex flex-column flex-1-1-100">
         <!-- Show <p> here for screens less than 960px  -->
-        <p class="hide-on-wide" :lang="lang">
+        <p class="hide-on-wide" :lang="locale">
           <strong>{{ $t('trans.statusPanel.currentStatus') }}</strong>
           {{ currentStatus.code }}
           <br />
           <strong>{{ $t('trans.statusPanel.assignedTo') }}</strong>
           {{ currentStatus.user ? currentStatus.user.fullName : 'N/A' }}
-          <span v-if="currentStatus.user"
+          <span v-if="currentStatus.user" data-test="showAssigneeEmail"
             >({{ currentStatus.user.email }})</span
           >
         </p>
@@ -349,7 +340,7 @@ export default {
           lazy-validation
           style="width: inherit"
         >
-          <label :lang="lang">{{
+          <label :lang="locale">{{
             $t('trans.statusPanel.assignOrUpdateStatus')
           }}</label>
           <v-select
@@ -357,6 +348,7 @@ export default {
             variant="outlined"
             :items="items"
             item-title="display"
+            data-test="showStatusList"
             item-value="code"
             style="width: 100% !important; padding: 0px !important"
             :rules="[(v) => !!v || $t('trans.statusPanel.statusIsRequired')]"
@@ -376,7 +368,7 @@ export default {
                     ></v-icon>
                   </template>
                   <span
-                    :lang="lang"
+                    :lang="locale"
                     v-html="
                       $t('trans.statusPanel.assignSubmissnToFormReviewer')
                     "
@@ -388,6 +380,7 @@ export default {
                 v-model="assignee"
                 :class="{ 'dir-rtl': isRTL }"
                 autocomplete="autocomplete_off"
+                data-test="showAssigneeList"
                 clearable
                 :custom-filter="autoCompleteFilter"
                 :items="formReviewers"
@@ -399,7 +392,7 @@ export default {
                 :rules="[
                   (v) => !!v || $t('trans.statusPanel.assigneeIsRequired'),
                 ]"
-                :lang="lang"
+                :lang="locale"
               >
                 <!-- selected user -->
                 <template #chip="{ props, item }">
@@ -423,11 +416,12 @@ export default {
                   size="small"
                   color="primary"
                   class="pl-0 my-0 text-end"
+                  data-test="canAssignToMe"
                   :title="$t('trans.statusPanel.assignToMe')"
                   @click="assignToCurrentUser"
                 >
                   <v-icon class="mr-1" icon="mdi:mdi-account"></v-icon>
-                  <span :lang="lang">{{
+                  <span :lang="locale">{{
                     $t('trans.statusPanel.assignToMe')
                   }}</span>
                 </v-btn>
@@ -440,7 +434,8 @@ export default {
                 variant="outlined"
                 density="compact"
                 :class="{ 'dir-rtl': isRTL }"
-                :lang="lang"
+                :lang="locale"
+                data-test="showRecipientEmail"
               />
             </div>
 
@@ -448,10 +443,11 @@ export default {
               <v-checkbox
                 v-model="addComment"
                 :label="$t('trans.statusPanel.attachCommentToEmail')"
-                :lang="lang"
+                :lang="locale"
+                data-test="canAttachCommentToEmail"
               />
               <div v-if="addComment">
-                <label :lang="lang">{{
+                <label :lang="locale">{{
                   $t('trans.statusPanel.emailComment')
                 }}</label>
                 <v-textarea
@@ -465,6 +461,7 @@ export default {
                   auto-grow
                   density="compact"
                   variant="outlined"
+                  data-test="canAddComment"
                   solid
                 />
               </div>
@@ -482,8 +479,9 @@ export default {
                     color="textLink"
                     v-bind="props"
                     :title="$t('trans.statusPanel.viewHistory')"
+                    data-test="viewHistoryButton"
                   >
-                    <span :lang="lang">{{
+                    <span :lang="locale">{{
                       $t('trans.statusPanel.viewHistory')
                     }}</span>
                   </v-btn>
@@ -492,6 +490,7 @@ export default {
                     :disabled="!statusToSet"
                     color="primary"
                     :title="statusAction"
+                    data-test="updateStatusToNew"
                     @click="updateStatus"
                   >
                     <span>{{ statusAction }}</span>
@@ -502,7 +501,7 @@ export default {
                   <v-card-title
                     class="text-h5 pb-0"
                     :class="{ 'dir-rtl': isRTL }"
-                    :lang="lang"
+                    :lang="locale"
                     >{{ $t('trans.statusPanel.statusHistory') }}</v-card-title
                   >
 
@@ -518,9 +517,10 @@ export default {
                       color="primary"
                       variant="flat"
                       :title="$t('trans.statusPanel.close')"
+                      data-test="canCloseStatusPanel"
                       @click="historyDialog = false"
                     >
-                      <span :lang="lang">{{
+                      <span :lang="locale">{{
                         $t('trans.statusPanel.close')
                       }}</span>
                     </v-btn>

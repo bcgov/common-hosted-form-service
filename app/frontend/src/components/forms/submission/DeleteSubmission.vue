@@ -1,44 +1,43 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { useFormStore } from '~/store/form';
 
-export default {
-  components: {
-    BaseDialog,
+const { locale } = useI18n({ useScope: 'global' });
+
+const properties = defineProps({
+  disabled: {
+    type: Boolean,
+    default: false,
   },
-  props: {
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    isDraft: {
-      type: Boolean,
-      default: false,
-    },
-    submissionId: {
-      type: String,
-      required: true,
-    },
+  isDraft: {
+    type: Boolean,
+    default: false,
   },
-  emits: ['deleted'],
-  data() {
-    return {
-      showDeleteDialog: false,
-    };
+  submissionId: {
+    type: String,
+    required: true,
   },
-  computed: {
-    ...mapState(useFormStore, ['form', 'lang', 'isRTL']),
-  },
-  methods: {
-    ...mapActions(useFormStore, ['deleteSubmission']),
-    async delSub() {
-      await this.deleteSubmission(this.submissionId);
-      this.showDeleteDialog = false;
-      this.$emit('deleted');
-    },
-  },
-};
+});
+
+const emit = defineEmits(['deleted']);
+
+const showDeleteDialog = ref(false);
+
+const formStore = useFormStore();
+
+const { isRTL } = storeToRefs(formStore);
+
+async function delSub() {
+  await formStore.deleteSubmission(properties.submissionId);
+  showDeleteDialog.value = false;
+  emit('deleted');
+}
+
+defineExpose({ emit, delSub });
 </script>
 
 <template>
@@ -61,7 +60,7 @@ export default {
           @click="showDeleteDialog = true"
         />
       </template>
-      <span :lang="lang"
+      <span :lang="locale"
         >{{ $t('trans.deleteSubmission.deleteThis') }}
         {{
           isDraft
@@ -78,12 +77,12 @@ export default {
       @continue-dialog="delSub"
     >
       <template #title>
-        <span :lang="lang">{{
+        <span :lang="locale">{{
           $t('trans.deleteSubmission.confirmDeletion')
         }}</span></template
       >
       <template #text>
-        <span :lang="lang">
+        <span :lang="locale">
           {{ $t('trans.deleteSubmission.deleteWarning') }}
           {{
             isDraft
@@ -93,7 +92,7 @@ export default {
         >
       </template>
       <template #button-text-continue>
-        <span :lang="lang">{{ $t('trans.deleteSubmission.delete') }}</span>
+        <span :lang="locale">{{ $t('trans.deleteSubmission.delete') }}</span>
       </template>
     </BaseDialog>
   </span>

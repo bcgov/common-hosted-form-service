@@ -132,4 +132,41 @@ describe('Admin Service', () => {
       expect(mockAxios.history.get).toHaveLength(1);
     });
   });
+
+  //
+  // External APIs
+  //
+  describe('admin/externalAPIs', () => {
+    const endpoint = `${ApiRoutes.ADMIN}${ApiRoutes.EXTERNAL_APIS}`;
+
+    it('calls get endpoint', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+
+      const result = await adminService.listExternalAPIs();
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+    });
+  });
+  describe('admin/externalAPIs/{id}', () => {
+    const endpoint = `${ApiRoutes.ADMIN}${ApiRoutes.EXTERNAL_APIS}/12345`;
+
+    it('calls put endpoint', async () => {
+      mockAxios.onPut(endpoint).reply(200);
+
+      const result = await adminService.updateExternalAPI('12345', {});
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.put).toHaveLength(1);
+    });
+  });
+  describe('admin/externalAPIs/statusCodes', () => {
+    const endpoint = `${ApiRoutes.ADMIN}${ApiRoutes.EXTERNAL_APIS}/statusCodes`;
+
+    it('calls get endpoint', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+
+      const result = await adminService.listExternalAPIStatusCodes();
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+    });
+  });
 });
