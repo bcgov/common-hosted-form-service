@@ -1,315 +1,328 @@
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 
 import { useFormStore } from '~/store/form';
 
-export default {
-  props: {
-    formId: {
-      type: String,
-      default: null,
+const { t, locale } = useI18n({ useScope: 'global' });
+
+const router = useRouter();
+
+const properties = defineProps({
+  formId: {
+    type: String,
+    default: null,
+  },
+  draftId: {
+    type: String,
+    default: null,
+  },
+  saving: {
+    type: Boolean,
+    default: false,
+  },
+  undoEnabled: {
+    type: Boolean,
+    default: false,
+  },
+  redoEnabled: {
+    type: Boolean,
+    default: false,
+  },
+  saved: {
+    type: Boolean,
+    default: false,
+  },
+  isFormSaved: Boolean,
+  canSave: Boolean,
+  savedStatus: {
+    type: String,
+    default: null,
+  },
+  placement: {
+    type: String,
+    default: 'bottom-right',
+  },
+  fabItemsGap: {
+    type: String,
+    default: '13px',
+  },
+  size: {
+    type: String,
+    default: 'medium',
+  },
+  fabZIndex: {
+    type: Number,
+    default: 1000,
+  },
+  positionOffset: {
+    type: Object,
+    validator: function (value) {
+      // The value must match one of these strings
+      return ['top', 'bottom', 'right', 'left'].includes(...Object.keys(value));
     },
-    draftId: {
-      type: String,
-      default: null,
-    },
-    saving: {
-      type: Boolean,
-      default: false,
-    },
-    undoEnabled: {
-      type: Boolean,
-      default: false,
-    },
-    redoEnabled: {
-      type: Boolean,
-      default: false,
-    },
-    saved: {
-      type: Boolean,
-      default: false,
-    },
-    isFormSaved: Boolean,
-    canSave: Boolean,
-    savedStatus: {
-      type: String,
-      default: null,
-    },
-    placement: {
-      type: String,
-      default: 'bottom-right',
-    },
-    fabItemsGap: {
-      type: String,
-      default: '13px',
-    },
-    size: {
-      type: String,
-      default: 'medium',
-    },
-    fabZIndex: {
-      type: Number,
-      default: 1000,
-    },
-    positionOffset: {
-      type: Object,
-      validator: function (value) {
-        // The value must match one of these strings
-        return ['top', 'bottom', 'right', 'left'].includes(
-          ...Object.keys(value)
-        );
-      },
-      default: () => {
-        return { bottom: true, right: true };
-      },
-    },
-    newVersion: {
-      type: Boolean,
-      default: false,
+    default: () => {
+      return { bottom: true, right: true };
     },
   },
-  emits: ['undo', 'redo', 'save'],
-  setup() {
-    const { t, locale } = useI18n({ useScope: 'global' });
-
-    return { t, locale };
+  newVersion: {
+    type: Boolean,
+    default: false,
   },
-  data() {
-    return {
-      fabItemsDirection: 'column-reverse',
-      isFABActionsOpen: true,
-      fabItemsPosition: {},
-      fabItemsSize: 36,
-      fabItemsIconsSize: 31,
+});
 
-      //base fab item variable start
-      baseFABItemName: this.$t('trans.floatButton.collapse'),
-      baseIconName: 'mdi:mdi-close',
-      baseIconColor: '#ffffff', //end
+const emit = defineEmits(['undo', 'redo', 'save']);
 
-      // fab items icons variables start
-      fabItemsColor: '#1A5A96',
-      fabItemsInverColor: '#ffffff',
-      disabledInvertedFabItemsColor: '#707070C1',
-      disabledFabItemsColor: '#707070C1', // end
+const fabItemsDirection = ref('column-reverse');
+const isFABActionsOpen = ref(true);
+const fabItemsPosition = ref({});
+const fabItemsSize = ref(36);
+const fabItemsIconsSize = ref(31);
 
-      savedMsg: this.$t('trans.floatButton.save'),
-      scrollIconName: 'mdi:mdi-arrow-down',
-      scrollName: this.$t('trans.floatButton.bottom'),
-    };
-  },
-  computed: {
-    ...mapState(useFormStore, ['isRTL']),
-    computedStyles() {
-      let baseStyles = {
-        display: 'flex',
-        width: '92px',
-        flexDirection: this.fabItemsDirection,
-        gap: this.fabItemsGap,
-        zIndex: this.fabZIndex,
-        position: 'fixed',
-        right: '0',
-        bottom: '20px',
-      };
+// base fab item variable start
+const baseFABItemName = ref(t('trans.floatButton.collapse'));
+const baseIconName = ref('mdi:mdi-close');
+const baseIconColor = ref('#ffffff');
 
-      let conditionalStyles = {};
-      let fabItemsPosition = { ...this.fabItemsPosition };
+// fab items icons variables start
+const fabItemsColor = ref('#1A5A96');
+const fabItemsInverColor = ref('#ffffff');
+const disabledInvertedFabItemsColor = ref('#707070C1');
+const disabledFabItemsColor = ref('#707070C1');
 
-      switch (this.$i18n.locale) {
-        case 'uk':
-          baseStyles.width = '111px';
-          fabItemsPosition.right = '-.3vw';
-          break;
-      }
+const savedMsg = ref(t('trans.floatButton.save'));
+const scrollIconName = ref('mdi:mdi-arrow-down');
+const scrollName = ref(t('trans.floatButton.bottom'));
 
-      return [baseStyles, fabItemsPosition, conditionalStyles];
-    },
-    isPublishEnabled() {
-      return this.newVersion ? false : this.formId && this.draftId;
-    },
-    isManageEnabled() {
-      return this.formId;
-    },
-  },
-  watch: {
-    size() {
-      this.setSizes();
-    },
-    savedStatus(value) {
-      switch (value) {
-        case 'Saved':
-          this.savedMsg = this.$t('trans.floatButton.saved');
-          break;
-        case 'Save':
-          this.savedMsg = this.$t('trans.floatButton.save');
-          break;
-        case 'Saving':
-          this.savedMsg = this.$t('trans.floatButton.saving');
-          break;
-        case 'Not Saved':
-          this.savedMsg = this.$t('trans.floatButton.notSaved');
-          break;
-      }
-    },
-  },
-  created() {
-    window.addEventListener('scroll', this.handleScroll);
-  },
-  mounted() {
-    window.scrollTo(0, 0);
-    this.setPosition();
-    this.setSizes();
-  },
-  unmounted() {
-    window.removeEventListener('scroll', this.handleScroll);
-  },
-  methods: {
-    toParent(name) {
-      this.$emit(name);
-    },
-    onOpenFABActionItems() {
-      if (this.isFABActionsOpen) {
-        this.baseIconName = 'mdi:mdi-menu';
-        this.isFABActionsOpen = false;
-        this.baseFABItemName = this.$t('trans.floatButton.actions');
-      } else {
-        this.baseIconName = 'mdi:mdi-close';
-        this.isFABActionsOpen = true;
-        this.baseFABItemName = this.$t('trans.floatButton.collapse');
-      }
-    },
+const formStore = useFormStore();
 
-    gotoPreview() {
-      let route = this.$router.resolve({
-        name: 'FormPreview',
-        query: { f: this.formId, d: this.draftId },
-      });
-      window.open(route.href);
-    },
-    setSizes() {
-      switch (this.size) {
-        case 'x-large':
-          this.fabItemsSize = 52;
-          this.fabItemsIconsSize = 47;
-          break;
-        case 'large':
-          this.fabItemsSize = 44;
-          this.fabItemsIconsSize = 39;
-          break;
-        case 'medium':
-          this.fabItemsSize = 36;
-          this.fabItemsIconsSize = 31;
-          break;
-        case 'small':
-          this.fabItemsSize = 28;
-          this.fabItemsIconsSize = 18;
-          break;
-        default:
-          this.fabItemsSize = 36;
-          this.fabItemsIconsSize = 31;
-      }
-    },
+const { isRTL } = storeToRefs(formStore);
 
-    //checks if FAB is placed at the top right or top left of the screen
-    topLeftRight() {
-      if (this.placement === 'top-right' || this.placement === 'top-left') {
-        this.fabItemsDirection = 'column';
-      }
-    },
+const computedStyles = computed(() => {
+  let baseStyles = {
+    display: 'flex',
+    width: '92px',
+    flexDirection: fabItemsDirection.value,
+    gap: properties.fabItemsGap,
+    zIndex: properties.fabZIndex,
+    position: 'fixed',
+    right: '0',
+    bottom: '20px',
+  };
 
-    //checks if FAB is placed at the bottom right or bottom left of the screen
-    bottomLeftRight() {
-      if (
-        this.placement === 'bottom-right' ||
-        this.placement === 'bottom-left'
-      ) {
-        this.fabItemsDirection = 'column-reverse';
-      }
-    },
+  let conditionalStyles = {};
+  let fabItemsPosition = { ...fabItemsPosition.value };
 
-    // set where on the screen FAB will be displayed
-    setPosition() {
-      this.fabItemsPosition = {};
+  switch (locale) {
+    case 'uk':
+      baseStyles.width = '111px';
+      fabItemsPosition.right = '-.3vw';
+      break;
+  }
 
-      this.bottomLeftRight();
-      this.topLeftRight();
+  return [baseStyles, fabItemsPosition, conditionalStyles];
+});
 
-      if (this.positionOffset && Object.keys(this.positionOffset).length > 0) {
-        Object.assign(this.fabItemsPosition, this.positionOffset);
-        return;
-      }
-      switch (this.placement) {
-        case 'bottom-right':
-          this.fabItemsPosition.right = '-.5vw';
-          this.fabItemsPosition.bottom = '7vh';
-          break;
-        case 'bottom-left':
-          this.fabItemsPosition.left = '5vw';
-          this.fabItemsPosition.bottom = '4vh';
-          break;
-        case 'top-left':
-          this.fabItemsPosition.left = '5vw';
-          this.fabItemsPosition.top = '4vh';
-          break;
-        case 'top-right':
-          this.fabItemsPosition.right = '1vw';
-          this.fabItemsPosition.top = '8vh';
-          break;
-        default:
-          this.fabItemsPosition.right = '5vw';
-          this.fabItemsPosition.bottom = '4vh';
-      }
-    },
+const isPublishEnabled = computed(() =>
+  properties.newVersion ? false : properties.formId && properties.draftId
+);
 
-    // callback function for window scroll event
-    handleScroll() {
-      if (window.scrollY === 0) {
-        this.scrollIconName = 'mdi:mdi-arrow-down';
-        this.scrollName = this.$t('trans.floatButton.bottom');
-      } else if (
-        window.pageYOffset + window.innerHeight >=
-        document.documentElement.scrollHeight - 50
-      ) {
-        this.scrollIconName = 'mdi:mdi-arrow-up';
-        this.scrollName = this.$t('trans.floatButton.top');
-      }
-    },
+const isManageEnabled = computed(() => properties.formId);
 
-    // function for click scroll event
-    onHandleScroll() {
-      if (window.scrollY === 0) {
-        this.bottomScroll();
-      } else if (
-        this.scrollName === this.$t('trans.floatButton.bottom') &&
-        window.scrollY > 0
-      ) {
-        this.bottomScroll();
-      } else if (
-        this.scrollName === this.$t('trans.floatButton.top') &&
-        window.scrollY > 0
-      ) {
-        this.topScroll();
-      } else {
-        this.topScroll();
-      }
-    },
-    topScroll() {
-      window.scrollTo(0, 0);
-      this.scrollIconName = 'mdi:mdi-arrow-down';
-      this.scrollName = this.$t('trans.floatButton.bottom');
-    },
-    bottomScroll() {
-      window.scrollTo({
-        left: 0,
-        top: document.body.scrollHeight,
-        behavior: 'smooth',
-      });
-      this.scrollIconName = 'mdi:mdi-arrow-up';
-      this.scrollName = this.$t('trans.floatButton.top');
-    },
-  },
-};
+watch(
+  () => properties.size,
+  () => {
+    setSizes();
+  }
+);
+
+watch(
+  () => properties.savedStatus,
+  (value) => {
+    switch (value) {
+      case 'Saved':
+        savedMsg.value = t('trans.floatButton.saved');
+        break;
+      case 'Save':
+        savedMsg.value = t('trans.floatButton.save');
+        break;
+      case 'Saving':
+        savedMsg.value = t('trans.floatButton.saving');
+        break;
+      case 'Not Saved':
+        savedMsg.value = t('trans.floatButton.notSaved');
+        break;
+    }
+  }
+);
+
+window.addEventListener('scroll', handleScroll);
+
+onMounted(() => {
+  window.scrollTo(0, 0);
+  setPosition();
+  setSizes();
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
+
+function toParent(name) {
+  emit(name);
+}
+
+function onOpenFABActionItems() {
+  if (isFABActionsOpen.value) {
+    baseIconName.value = 'mdi:mdi-menu';
+    isFABActionsOpen.value = false;
+    baseFABItemName.value = t('trans.floatButton.actions');
+  } else {
+    baseIconName.value = 'mdi:mdi-close';
+    isFABActionsOpen.value = true;
+    baseFABItemName.value = t('trans.floatButton.collapse');
+  }
+}
+
+function gotoPreview() {
+  let route = router.resolve({
+    name: 'FormPreview',
+    query: { f: properties.formId, d: properties.draftId },
+  });
+  window.open(route.href);
+}
+
+function setSizes() {
+  switch (properties.size) {
+    case 'x-large':
+      fabItemsSize.value = 52;
+      fabItemsIconsSize.value = 47;
+      break;
+    case 'large':
+      fabItemsSize.value = 44;
+      fabItemsIconsSize.value = 39;
+      break;
+    case 'medium':
+      fabItemsSize.value = 36;
+      fabItemsIconsSize.value = 31;
+      break;
+    case 'small':
+      fabItemsSize.value = 28;
+      fabItemsIconsSize.value = 18;
+      break;
+    default:
+      fabItemsSize.value = 36;
+      fabItemsIconsSize.value = 31;
+  }
+}
+
+//checks if FAB is placed at the top right or top left of the screen
+function topLeftRight() {
+  if (
+    properties.placement === 'top-right' ||
+    properties.placement === 'top-left'
+  ) {
+    fabItemsDirection.value = 'column';
+  }
+}
+
+//checks if FAB is placed at the bottom right or bottom left of the screen
+function bottomLeftRight() {
+  if (
+    properties.placement === 'bottom-right' ||
+    properties.placement === 'bottom-left'
+  ) {
+    fabItemsDirection.value = 'column-reverse';
+  }
+}
+
+// set where on the screen FAB will be displayed
+function setPosition() {
+  fabItemsPosition.value = {};
+
+  bottomLeftRight();
+  topLeftRight();
+
+  if (
+    properties.positionOffset &&
+    Object.keys(properties.positionOffset).length > 0
+  ) {
+    Object.assign(fabItemsPosition.value, properties.positionOffset);
+    return;
+  }
+  switch (properties.placement) {
+    case 'bottom-right':
+      fabItemsPosition.value.right = '-.5vw';
+      fabItemsPosition.value.bottom = '7vh';
+      break;
+    case 'bottom-left':
+      fabItemsPosition.value.left = '5vw';
+      fabItemsPosition.value.bottom = '4vh';
+      break;
+    case 'top-left':
+      fabItemsPosition.value.left = '5vw';
+      fabItemsPosition.value.top = '4vh';
+      break;
+    case 'top-right':
+      fabItemsPosition.value.right = '1vw';
+      fabItemsPosition.value.top = '8vh';
+      break;
+    default:
+      fabItemsPosition.value.right = '5vw';
+      fabItemsPosition.value.bottom = '4vh';
+  }
+}
+
+// callback function for window scroll event
+function handleScroll() {
+  if (window.scrollY === 0) {
+    scrollIconName.value = 'mdi:mdi-arrow-down';
+    scrollName.value = t('trans.floatButton.bottom');
+  } else if (
+    window.pageYOffset + window.innerHeight >=
+    document.documentElement.scrollHeight - 50
+  ) {
+    scrollIconName.value = 'mdi:mdi-arrow-up';
+    scrollName.value = t('trans.floatButton.top');
+  }
+}
+
+// function for click scroll event
+function onHandleScroll() {
+  if (window.scrollY === 0) {
+    bottomScroll();
+  } else if (
+    scrollName.value === t('trans.floatButton.bottom') &&
+    window.scrollY > 0
+  ) {
+    bottomScroll();
+  } else if (
+    scrollName.value === t('trans.floatButton.top') &&
+    window.scrollY > 0
+  ) {
+    topScroll();
+  } else {
+    topScroll();
+  }
+}
+
+function topScroll() {
+  window.scrollTo(0, 0);
+  scrollIconName.value = 'mdi:mdi-arrow-down';
+  scrollName.value = t('trans.floatButton.bottom');
+}
+
+function bottomScroll() {
+  window.scrollTo({
+    left: 0,
+    top: document.body.scrollHeight,
+    behavior: 'smooth',
+  });
+  scrollIconName.value = 'mdi:mdi-arrow-up';
+  scrollName.value = t('trans.floatButton.top');
+}
 </script>
 
 <template>
