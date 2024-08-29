@@ -28,6 +28,7 @@ const properties = defineProps({
 });
 
 const component = ref({});
+const componentKey = ref('');
 const loading = ref(false);
 const publish = ref([]);
 const showEditProactiveHelpDialog = ref(false);
@@ -87,18 +88,18 @@ function isPreviewEnabled(compName) {
   );
 }
 
-function onOpenEditDialog(compName) {
-  setComponent(compName);
+function onOpenEditDialog(key, compName) {
+  setComponent(key, compName);
   toggleEditProactiveHelpDialog();
 }
 
-async function onOpenPreviewDialog(compName) {
+async function onOpenPreviewDialog(key, compName) {
   loading.value = true;
   const item = properties.formComponentData.find(
     (item) => item.componentName === compName
   );
   await adminStore.getFCProactiveHelpImageUrl(item.id);
-  setComponent(item.componentName);
+  setComponent(key, item.componentName);
   togglePreviewDialog();
   loading.value = false;
 }
@@ -108,11 +109,14 @@ async function onOpenPreviewDialog(compName) {
  *
  * @param compName The name of the component
  */
-function setComponent(compName) {
+function setComponent(key, compName) {
   if (compName) {
     component.value = properties.formComponentData.find((obj) => {
       return obj.componentName === compName;
     });
+    if (component.value) {
+      componentKey.value = key;
+    }
   }
 }
 
@@ -170,7 +174,7 @@ defineExpose({
               size="small"
               variant="text"
               :title="$t('trans.generalLayout.edit')"
-              @click="onOpenEditDialog(item.componentName)"
+              @click="onOpenEditDialog(item.key, item.componentName)"
             >
               <v-icon icon="mdi:mdi-pencil-box-outline"></v-icon>
               <span
@@ -189,7 +193,7 @@ defineExpose({
               size="small"
               :disabled="isPreviewEnabled(item.componentName)"
               :title="$t('trans.generalLayout.preview')"
-              @click="onOpenPreviewDialog(item.componentName)"
+              @click="onOpenPreviewDialog(item.key, item.componentName)"
             >
               <v-icon icon="mdi:mdi-eye"></v-icon>
               <span
@@ -230,6 +234,7 @@ defineExpose({
       v-if="showEditProactiveHelpDialog"
       :show-dialog="showEditProactiveHelpDialog"
       :group-name="groupName"
+      :component-key="component?.key ? component.key : componentKey"
       :component-name="component.componentName"
       :component="component"
       @close-dialog="toggleEditProactiveHelpDialog"

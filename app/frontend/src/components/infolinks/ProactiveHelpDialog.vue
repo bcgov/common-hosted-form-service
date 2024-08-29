@@ -11,6 +11,7 @@ const { t, locale } = useI18n({ useScope: 'global' });
 const properties = defineProps({
   showDialog: { type: Boolean, required: true },
   component: { type: Object, default: () => {} },
+  componentKey: { type: String, require: true, default: '' },
   componentName: { type: String, require: true, default: '' },
   groupName: { type: String, required: true },
 });
@@ -24,6 +25,11 @@ const { isRTL } = storeToRefs(formStore);
 
 const componentId = ref(
   properties.component?.id ? properties.component.id : undefined
+);
+const componentKey = ref(
+  properties.component?.componentKey
+    ? properties.component.componentKey
+    : properties.componentKey
 );
 const componentName = ref(
   properties.component?.componentName
@@ -110,6 +116,7 @@ async function submit() {
     moreHelpInfoLink.value = !isLinkEnabled.value ? '' : moreHelpInfoLink.value;
     await adminStore.addFCProactiveHelp({
       componentId: componentId.value,
+      key: componentKey.value,
       componentName: componentName.value,
       image: image.value,
       externalLink: moreHelpInfoLink.value,

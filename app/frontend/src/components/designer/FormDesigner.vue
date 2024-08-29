@@ -9,13 +9,12 @@ import FloatButton from '~/components/designer/FloatButton.vue';
 import ProactiveHelpPreviewDialog from '~/components/infolinks/ProactiveHelpPreviewDialog.vue';
 import formioIl8next from '~/internationalization/trans/formio/formio.json';
 import templateExtensions from '~/plugins/templateExtensions';
-import { formService } from '~/services';
+import { formService, userService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { IdentityMode } from '~/utils/constants';
 import { generateIdps } from '~/utils/transformUtils';
-import { userService } from '../../services';
 
 export default {
   components: {
@@ -76,6 +75,14 @@ export default {
         originalSchema: null,
         redoClicked: false,
         undoClicked: false,
+      },
+      proactiveHelp: {
+        currentKey: '',
+        currentGroup: '',
+        tooltip: {
+          closeDelay: 3000,
+          target: null,
+        },
       },
       reRenderFormIo: 0,
       savedStatus: this.isSavedStatus,
@@ -217,6 +224,64 @@ export default {
     if (this.formId) {
       Promise.all([this.fetchForm(this.formId), this.getFormSchema()]);
     }
+    /* document.addEventListener('click', (e) => {
+      let target = e.target.closest('a');
+      if (target) {
+        if (target.getAttribute('href').startsWith('https://help.form.io')) {
+          e.preventDefault();
+          this.showHelperClicked(
+            this.proactiveHelp.currentKey,
+            this.proactiveHelp.currentGroup
+          );
+        }
+      }
+    }); */
+    /* document.addEventListener('mousedown', (e) => {
+      let target = e.target;
+      if (target) {
+        let dataKey = target.getAttribute('data-key');
+        let dataGroup = target.getAttribute('data-group');
+        for (const [key, value] of Object.entries(
+          this.designerOptions.builder
+        )) {
+          if (key && key === dataGroup) {
+            this.proactiveHelp.currentKey = dataKey;
+            this.proactiveHelp.currentGroup = value.title;
+          }
+        }
+      }
+    }); */
+    document.addEventListener('mousemove', (e) => {
+      let target = e.target;
+      if (target) {
+        let parent = e.target.parentElement;
+        // iterate our proactive help groups
+        for (const [groupKey, groupValue] of Object.entries(
+          this.designerOptions.builder
+        )) {
+          if (parent.id === `group-container-${groupKey}`) {
+            // check to see if we're hovering over something we have proactive help for
+            for (const [
+              proactiveGroupKey,
+              proactiveGroupValue,
+            ] of Object.entries(this.fcProactiveHelpGroupList)) {
+              if (proactiveGroupKey === groupValue.title) {
+                const dataKey = e.target.getAttribute('data-key');
+                const proactiveHelp = proactiveGroupValue.find(
+                  (pGV) => pGV.key === dataKey
+                );
+                // If the key of the hovered form component has a proactive help
+                if (proactiveHelp) {
+                  this.proactiveHelp.currentKey = dataKey;
+                  this.proactiveHelp.currentGroup = groupValue.title;
+                  this.proactiveHelp.tooltip.target = target;
+                }
+              }
+            }
+          }
+        }
+      }
+    });
   },
   async mounted() {
     // load up headers for any External API calls
@@ -382,7 +447,8 @@ export default {
                 for (let i = 0; i < containerEl.children.length; i++) {
                   let elementName = containerEl.children[i].textContent.trim();
                   if (extractedElementsNames.includes(elementName)) {
-                    // Append the info el
+                    // check if we have proactive help for this
+                    /* // Append the info el
                     let child = document.createElement('i');
 
                     child.setAttribute(
@@ -394,7 +460,7 @@ export default {
                     child.addEventListener('click', function () {
                       this.showHelperClicked(elementName, groupName);
                     });
-                    containerEl.children[i].appendChild(child);
+                    containerEl.children[i].appendChild(child); */
                   }
                 }
               }
@@ -415,9 +481,7 @@ export default {
 
     async showHelperClicked(elementName, groupName) {
       const elements = this.fcProactiveHelpGroupList[groupName];
-      this.component = elements.find(
-        (element) => element.componentName === elementName
-      );
+      this.component = elements.find((element) => element.key === elementName);
       await this.getFCProactiveHelpImageUrl(this.component.id);
       this.onShowClosePreviewDialog();
     },
@@ -710,6 +774,21 @@ export default {
 
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
+    <v-tooltip
+      location="right"
+      :activator="proactiveHelp.tooltip.target"
+      :close-delay="proactiveHelp.tooltip.closeDelay"
+    >
+      <a
+        @click="
+          showHelperClicked(
+            proactiveHelp.currentKey,
+            proactiveHelp.currentGroup
+          )
+        "
+        >Click here for more help</a
+      >
+    </v-tooltip>
     <div
       class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
     >
@@ -788,6 +867,12 @@ export default {
         v-html="$t('trans.formDesigner.formDesignInfoB')"
       ></p>
     </BaseInfoCard>
+    <ProactiveHelpPreviewDialog
+      :show-dialog="showHelpLinkDialog"
+      :component="component"
+      :fc-proactive-help-image-url="fcProactiveHelpImageUrl"
+      @close-dialog="onShowClosePreviewDialog"
+    />
     <FormBuilder
       ref="formioForm"
       :key="reRenderFormIo"
@@ -801,12 +886,6 @@ export default {
       @addComponent="onAddSchemaComponent"
       @removeComponent="onRemoveSchemaComponent"
       @formLoad="onFormLoad"
-    />
-    <ProactiveHelpPreviewDialog
-      :show-dialog="showHelpLinkDialog"
-      :component="component"
-      :fc-proactive-help-image-url="fcProactiveHelpImageUrl"
-      @close-dialog="onShowClosePreviewDialog"
     />
     <FloatButton
       placement="bottom-right"
