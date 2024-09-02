@@ -10,7 +10,6 @@ import ProactiveHelpPreviewDialog from '~/components/infolinks/ProactiveHelpPrev
 import { useFormStore } from '~/store/form';
 import { useAppStore } from '~/store/app';
 
-
 describe('ProactiveHelpPreviewDialog.vue', () => {
   const pinia = createTestingPinia();
   const router = createRouter({
@@ -24,15 +23,11 @@ describe('ProactiveHelpPreviewDialog.vue', () => {
   const appStore = useAppStore(pinia);
 
   beforeEach(() => {
-    getSubmissionUsersSpy.mockReset();
     formStore.$reset();
     appStore.$reset();
   });
 
-  afterAll(() => {
-    getSubmissionUsersSpy.mockRestore();
-  });
-
+  afterAll(() => {});
 
   it('renders', () => {
     const wrapper = mount(ProactiveHelpPreviewDialog, {
