@@ -1,5 +1,8 @@
 const config = require('config');
-const nats = require('nats');
+
+// shim the websocket library
+globalThis.WebSocket = require('websocket').w3cwebsocket;
+const { connect } = require('nats.ws');
 const log = require('./log')(module.filename);
 
 const { FormVersion, Form, FormEventStreamConfig } = require('../forms/common/models');
@@ -95,7 +98,7 @@ class EventStreamService {
       if (this.connected) return this.nc;
 
       const me = this;
-      const connect = async function () {
+      const connectToNats = async function () {
         // nats.connect will throw errors only if the server is running.
         // nats.connect will NOT timeout if the server isn't reachable/not started.
         // so, let's wait twice the reconnect time and create our own timeout.
@@ -108,7 +111,7 @@ class EventStreamService {
         });
 
         // we either timeout or connect...
-        const result = await Promise.race([nats.connect(me.natsOptions), timeoutPromise]);
+        const result = await Promise.race([connect(me.natsOptions), timeoutPromise]);
 
         if (timeout) {
           clearTimeout(timeout);
@@ -116,7 +119,7 @@ class EventStreamService {
         return result;
       };
 
-      this.nc = await connect();
+      this.nc = await connectToNats();
       if (this.connected) {
         log.info('Connected', { function: 'openConnection' });
         this.js = this.nc.jetstream();

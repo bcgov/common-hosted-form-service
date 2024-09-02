@@ -1,0 +1,3 @@
+helm upgrade --install event-stream-service ./charts/event-stream-service -f ./charts/event-stream-service/values.yaml
+helm uninstall event-stream-service
+oc delete pvc -l 'app.kubernetes.io/instance=event-stream-service'

@@ -1,8 +1,12 @@
-const { AckPolicy, connect } = require("nats");
+const { AckPolicy } = require("nats");
 const Cryptr = require("cryptr");
 
+// shim the websocket library
+globalThis.WebSocket = require("websocket").w3cwebsocket;
+const { connect } = require("nats.ws");
+
 // connection info
-const servers = ["localhost:4222", "localhost:4223", "localhost:4224"];
+const servers = ["ess-a191b5-dev.apps.silver.devops.gov.bc.ca"]; //["localhost:4222", "localhost:4223", "localhost:4224"];
 
 let nc = undefined; // nats connection
 let js = undefined; // jet stream
@@ -14,7 +18,8 @@ const STREAM_NAME = "CHEFS";
 const FILTER_SUBJECTS = ["PUBLIC.forms.>", "PRIVATE.forms.>"];
 const MAX_MESSAGES = 2;
 const DURABLE_NAME = "pullConsumer";
-const ENCRYPTION_KEY = "";
+const ENCRYPTION_KEY =
+  "ad5520469720325d1694c87511afda28a0432dd974cb77b5b4b9f946a5af6985";
 
 const printMsg = (m) => {
   // illustrate grabbing the sequence and timestamp from the nats message...
@@ -27,13 +32,20 @@ const printMsg = (m) => {
     const data = m.json();
     console.log(JSON.stringify(data, null, 2));
     try {
-      if (data && data["payload"] && data["payload"]["data"]) {
+      if (
+        data &&
+        data["payload"] &&
+        data["payload"]["data"] &&
+        ENCRYPTION_KEY
+      ) {
         const cryptr = new Cryptr(ENCRYPTION_KEY);
-        const d = cryptr.decrypt(data["payload"]["data"]);
-        console.log(JSON.stringify(d, null, 2));
+        const decryptedData = cryptr.decrypt(data["payload"]["data"]);
+        const jsonData = JSON.parse(decryptedData);
+        console.log("decrypted payload data:");
+        console.log(jsonData);
       }
     } catch (err) {
-      console.error("Error decrypting payload.data");
+      console.error("Error decrypting payload.data", err);
     }
   } catch (e) {
     console.error(`Error printing message: ${e.message}`);
