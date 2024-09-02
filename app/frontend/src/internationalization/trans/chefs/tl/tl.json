@@ -84,7 +84,8 @@
     "deleteSuccess": "Matagumpay na natanggal ang template.",
     "deleteError": "Nagkaroon ng error habang tinatanggal ang template.",
     "fetchError": "Nagkaroon ng error habang kinukuha ang template.",
-    "info": "Mag-upload ng template upang gamitin ang Common Document Generation Service (CDOGS)"
+    "info": "Mag-upload ng template upang gamitin ang Common Document Generation Service (CDOGS)",
+    "fileSizeError": "Ang laki ng file ay dapat mas mababa sa 25MB."
   },
   "formSettings": {
     "pressToAddMultiEmail": "Pindutin <kbd>ang enter</kbd> o <kbd>,</kbd> o <kbd>space</kbd> para magdagdag ng maraming email address",

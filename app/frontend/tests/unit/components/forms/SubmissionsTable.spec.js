@@ -734,70 +734,70 @@ describe('SubmissionsTable.vue', () => {
     // should refresh submissions
     expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(0);
     expect(fetchSubmissionsSpy).toBeCalledTimes(0);
-    expect(wrapper.vm.page).toEqual(1);
-    expect(wrapper.vm.sortBy).toEqual({});
-    expect(wrapper.vm.itemsPerPage).toEqual(10);
+    expect(wrapper.vm.currentPage).toEqual(1);
+    expect(wrapper.vm.sort).toEqual({});
+    expect(wrapper.vm.itemsPP).toEqual(10);
 
     getFormPreferencesForCurrentUserSpy.mockReset();
     fetchSubmissionsSpy.mockReset();
 
     await wrapper.vm.updateTableOptions({
-      pg: 5,
-      itemsPP: 2,
-      sort: [{ key: 'date', order: 'desc' }],
+      page: 5,
+      itemsPerPage: 2,
+      sortBy: [{ key: 'date', order: 'desc' }],
     });
     // should not refresh submissions
     wrapper.vm.firstDataLoad = true;
     expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(0);
     expect(fetchSubmissionsSpy).toBeCalledTimes(0);
-    expect(wrapper.vm.page).toEqual(5);
-    expect(wrapper.vm.sortBy).toEqual({ column: 'createdAt', order: 'desc' });
-    expect(wrapper.vm.itemsPerPage).toEqual(2);
+    expect(wrapper.vm.currentPage).toEqual(5);
+    expect(wrapper.vm.sort).toEqual({ column: 'createdAt', order: 'desc' });
+    expect(wrapper.vm.itemsPP).toEqual(2);
 
     await wrapper.vm.updateTableOptions({
-      pg: 5,
-      itemsPP: 2,
-      sort: [{ key: 'submitter', order: 'desc' }],
+      page: 5,
+      itemsPerPage: 2,
+      sortBy: [{ key: 'submitter', order: 'desc' }],
     });
     // should not refresh submissions
     wrapper.vm.firstDataLoad = true;
     expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(0);
     expect(fetchSubmissionsSpy).toBeCalledTimes(0);
-    expect(wrapper.vm.page).toEqual(5);
-    expect(wrapper.vm.sortBy).toEqual({ column: 'createdBy', order: 'desc' });
-    expect(wrapper.vm.itemsPerPage).toEqual(2);
+    expect(wrapper.vm.currentPage).toEqual(5);
+    expect(wrapper.vm.sort).toEqual({ column: 'createdBy', order: 'desc' });
+    expect(wrapper.vm.itemsPP).toEqual(2);
 
     await wrapper.vm.updateTableOptions({
-      pg: 5,
-      itemsPP: 2,
-      sort: [{ key: 'status', order: 'desc' }],
+      page: 5,
+      itemsPerPage: 2,
+      sortBy: [{ key: 'status', order: 'desc' }],
     });
     // should not refresh submissions
     wrapper.vm.firstDataLoad = true;
     expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(0);
     expect(fetchSubmissionsSpy).toBeCalledTimes(0);
-    expect(wrapper.vm.page).toEqual(5);
-    expect(wrapper.vm.sortBy).toEqual({
+    expect(wrapper.vm.currentPage).toEqual(5);
+    expect(wrapper.vm.sort).toEqual({
       column: 'formSubmissionStatusCode',
       order: 'desc',
     });
-    expect(wrapper.vm.itemsPerPage).toEqual(2);
+    expect(wrapper.vm.itemsPP).toEqual(2);
 
     await wrapper.vm.updateTableOptions({
-      pg: 5,
-      itemsPP: 2,
-      sort: [{ key: 'something', order: 'desc' }],
+      page: 5,
+      itemsPerPage: 2,
+      sortBy: [{ key: 'something', order: 'desc' }],
     });
     // should not refresh submissions
     wrapper.vm.firstDataLoad = true;
     expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(0);
     expect(fetchSubmissionsSpy).toBeCalledTimes(0);
-    expect(wrapper.vm.page).toEqual(5);
-    expect(wrapper.vm.sortBy).toEqual({
+    expect(wrapper.vm.currentPage).toEqual(5);
+    expect(wrapper.vm.sort).toEqual({
       column: 'something',
       order: 'desc',
     });
-    expect(wrapper.vm.itemsPerPage).toEqual(2);
+    expect(wrapper.vm.itemsPP).toEqual(2);
   });
 
   it('getSubmissionData will fetchSubmissions in different ways', async () => {
