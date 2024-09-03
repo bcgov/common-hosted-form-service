@@ -52,26 +52,27 @@ describe('Form Designer', () => {
         cy.get('button').contains('Save').click();
       });
     }
+    cy.get('div.formio-builder-form').then($el => {
+      const coords2 = $el[0].getBoundingClientRect();
+      cy.get('span.btn').contains('Checkbox')
+          
+          .trigger('mousedown', { which: 1}, { force: true })
+          .trigger('mousemove', coords2.x, -50, { force: true })
+          .trigger('mouseup', { force: true });
+          cy.get('p').contains('Checkbox Component');
+          cy.get('input[name="data[label]"]').clear();
+          cy.get('input[name="data[label]"]').clear();
+          cy.get('input[name="data[label]"]').type('Applying for self');
+          cy.get('button').contains('Save').click();
+      });
  
 
     });
+
     it('Form Submission and Updation', () => {
         cy.viewport(1000, 1100);
         cy.waitForLoad();
         cy.waitForLoad();
-        cy.get('div.formio-builder-form').then($el => {
-        const coords2 = $el[0].getBoundingClientRect();
-        cy.get('span.btn').contains('Checkbox')
-            
-            .trigger('mousedown', { which: 1}, { force: true })
-            .trigger('mousemove', coords2.x, -50, { force: true })
-            .trigger('mouseup', { force: true });
-            cy.get('p').contains('Checkbox Component');
-            cy.get('input[name="data[label]"]').clear();
-            cy.get('input[name="data[label]"]').clear();
-            cy.get('input[name="data[label]"]').type('Applying for self');
-            cy.get('button').contains('Save').click();
-        });
         cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
         // Form saving
         let savedButton = cy.get('[data-cy=saveButton]');
