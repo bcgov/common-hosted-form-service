@@ -756,19 +756,14 @@ export default {
   <div :class="{ 'dir-rtl': isRTL }">
     <v-tooltip
       v-model="proactiveHelp.tooltip.enabled"
-      location="end"
+      style="position: relative !important; top: 10px !important"
       :attach="proactiveHelp.tooltip.target"
       :close-on-back="true"
+      @click="
+        showHelperClicked(proactiveHelp.currentKey, proactiveHelp.currentGroup)
+      "
     >
-      <a
-        @click="
-          showHelperClicked(
-            proactiveHelp.currentKey,
-            proactiveHelp.currentGroup
-          )
-        "
-        >Click here for more help</a
-      >
+      <div class="contextual-help">Click here for more help</div>
     </v-tooltip>
     <div
       class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
@@ -923,5 +918,20 @@ export default {
   right: 0;
 
   position: -webkit-sticky;
+}
+
+.v-tooltip a.contextual-help {
+  color: white;
+}
+
+.v-tooltip *.contextual-help::after {
+  content: ' ';
+  position: absolute;
+  bottom: 100%;
+  left: 20%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent black transparent;
 }
 </style>

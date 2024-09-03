@@ -60,7 +60,7 @@ defineExpose({ onCloseDialog });
           <v-col
             v-if="fcProactiveHelpImageUrl"
             class="flex-grow-0 flex-shrink-0"
-            cols="7"
+            cols="4"
             ><div class="ma-2 pa-2">
               <v-img
                 data-cy="preview_image_field"
