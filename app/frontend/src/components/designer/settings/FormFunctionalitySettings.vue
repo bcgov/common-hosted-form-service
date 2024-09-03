@@ -12,19 +12,19 @@ import { IdentityMode } from '~/utils/constants';
 const { locale } = useI18n({ useScope: 'global' });
 
 const githubLinkBulkUpload = ref(
-  'https://github.com/bcgov/common-hosted-form-service/wiki/Allow-multiple-draft-upload'
+  'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/Allow-multiple-draft-upload/'
 );
 const githubLinkCopyFromExistingFeature = ref(
-  'https://github.com/bcgov/common-hosted-form-service/wiki/Copy-an-existing-submission'
+  'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/Copy-an-existing-submission/'
 );
 const githubLinkScheduleAndReminderFeature = ref(
-  'https://github.com/bcgov/common-hosted-form-service/wiki/Schedule-and-Reminder-notification'
+  'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/Schedule-and-Reminder-notification/'
 );
 const githubLinkEventSubscriptionFeature = ref(
-  'https://github.com/bcgov/common-hosted-form-service/wiki/Event-Subscription'
+  'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Integrations/Event-Subscription/'
 );
 const githubLinkWideFormLayout = ref(
-  'https://github.com/bcgov/common-hosted-form-service/wiki/Wide-Form-Layout'
+  'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/Wide-Form-Layout'
 );
 
 const authStore = useAuthStore();

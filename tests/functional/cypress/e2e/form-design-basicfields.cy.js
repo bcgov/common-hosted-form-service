@@ -243,6 +243,7 @@ describe('Form Designer', () => {
         
         cy.get('button').contains('Save').click();
       });
+
       cy.waitForLoad();
       cy.waitForLoad();
       //Remove a component
@@ -251,6 +252,7 @@ describe('Form Designer', () => {
         const rem=$el[11];
         rem.click();
         
+
       });
 
       cy.waitForLoad();
