@@ -34,7 +34,7 @@ parameters:
     description: Enable Event Stream Service Feature
     displayName: Enable feature
     required: true
-    value: true
+    value: "true"
   - name: STREAMNAME
     description: Name of the CHEFS Event Stream
     displayName: CHEFS Event Stream name
