@@ -1,10 +1,10 @@
 const routes = require('express').Router();
 
-const controller = require('./controller');
 const jwtService = require('../../components/jwtService');
+const { currentUser, hasFormPermissions, hasFormRoles, hasRoleDeletePermissions, hasRoleModifyPermissions, hasSubmissionPermissions } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
 const R = require('../common/constants').Roles;
-const { currentUser, hasFormPermissions, hasFormRoles, hasRoleDeletePermissions, hasRoleModifyPermissions, hasSubmissionPermissions } = require('../auth/middleware/userAccess');
+const controller = require('./controller');
 
 routes.use(currentUser);
 

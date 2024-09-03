@@ -15,7 +15,7 @@ const { t, locale } = useI18n({ useScope: 'global' });
 
 const enableReminderDraw = ref(true);
 const githubLinkScheduleAndReminderFeature = ref(
-  'https://github.com/bcgov/common-hosted-form-service/wiki/Schedule-and-Reminder-notification'
+  'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/Schedule-and-Reminder-notification/'
 );
 /* c8 ignore start */
 const intervalType = ref([(v) => !!v || t('trans.formSettings.fieldRequired')]);
@@ -555,7 +555,7 @@ defineExpose({
         cols="12"
         md="12"
       >
-        <span :lang="locale">
+        <span :lang="locale" data-test="submission-schedule-text">
           {{ $t('trans.formSettings.submissionsOpenDateRange') }}
           <b>{{ form.schedule.openSubmissionDateTime }}</b>
           {{ $t('trans.formSettings.to') }}
@@ -567,9 +567,7 @@ defineExpose({
                   AVAILABLE_DATES[0]['closeDate'] &&
                   AVAILABLE_DATES[0]['closeDate'].split(' ')[0]
                 : ''
-            }}
-
-            {{
+            }}{{
               form.schedule.scheduleType === SCHEDULE_TYPE.CLOSINGDATE
                 ? form.schedule.closeSubmissionDateTime
                 : ''
@@ -577,11 +575,13 @@ defineExpose({
           </b>
         </span>
 
-        <span :lang="locale">{{
+        <span :lang="locale" data-test="late-submission-text">{{
           form.schedule.allowLateSubmissions.enabled &&
           form.schedule.allowLateSubmissions.forNext.intervalType &&
           form.schedule.allowLateSubmissions.forNext.term
-            ? $t('trans.formSettings.allowLateSubmissnInterval') +
+            ? ' ' +
+              $t('trans.formSettings.allowLateSubmissnInterval') +
+              ' ' +
               form.schedule.allowLateSubmissions.forNext.term +
               ' ' +
               form.schedule.allowLateSubmissions.forNext.intervalType +
@@ -599,9 +599,11 @@ defineExpose({
             AVAILABLE_DATES[1]
           "
           :lang="locale"
-          >{{ $t('trans.formSettings.scheduleRepetition') }}
-          <b>{{ form.schedule.repeatSubmission.everyTerm }} </b>
-          <b>{{ form.schedule.repeatSubmission.everyIntervalType }}</b>
+          >{{ ' ' + $t('trans.formSettings.scheduleRepetition') }}
+          <b>
+            {{ form.schedule.repeatSubmission.everyTerm }}
+            {{ form.schedule.repeatSubmission.everyIntervalType }}
+          </b>
           {{ $t('trans.formSettings.until') }}
           <b>{{ form.schedule.repeatSubmission.repeatUntil }}</b
           >.

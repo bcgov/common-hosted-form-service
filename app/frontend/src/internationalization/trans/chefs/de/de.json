@@ -84,7 +84,8 @@
     "deleteSuccess": "Vorlage erfolgreich gelöscht.",
     "deleteError": "Beim Löschen der Vorlage ist ein Fehler aufgetreten.",
     "fetchError": "Beim Abrufen der Vorlage ist ein Fehler aufgetreten.",
-    "info": "Laden Sie eine Vorlage hoch, um den Gemeinsamen Dokumenterstellungsdienst (CDOGS) zu verwenden"
+    "info": "Laden Sie eine Vorlage hoch, um den Gemeinsamen Dokumenterstellungsdienst (CDOGS) zu verwenden",
+    "fileSizeError": "Die Dateigröße muss weniger als 25 MB betragen."
   },
   "formSettings": {
     "pressToAddMultiEmail": "Drücken Sie <kbd>die Eingabetaste</kbd> oder <kbd>die Leertaste</kbd> oder <kbd>,</kbd> um mehrere E-Mail-Adressen hinzuzufügen",
@@ -100,6 +101,7 @@
     "referenceGuideB": "Benutzerhandbuch",
     "referenceGuideC": "für mehr Details",
     "specificTeamMembers": "Spezifische Teammitglieder",
+    "teamMemberTooltip": "Fügen Sie Teammitglieder aus den Teamverwaltungseinstellungen hinzu, nachdem Sie dieses Formular erstellt haben.",
     "formFunctionality": "Formularfunktionalität",
     "formSubmissinScheduleMsg": "Der Formulareinreichungsplan ist in den Formulareinstellungen verfügbar, nachdem das Formular veröffentlicht wurde.",
     "formSubmissionsSchedule": "Zeitplan für Formulareinreichungen",
@@ -551,7 +553,7 @@
     "exactBCEIDSearch": "E-Mail-Suchen nach BCeID müssen genau sein.",
     "getUsersErrMsg": "Fehler beim Abrufen von Benutzern: {error}",
     "exactEmailOrUsername": "Geben Sie eine genaue E-Mail-Adresse oder einen Benutzernamen ein.",
-    "requiredFiled": "Geben Sie einen Namen, eine E-Mail-Adresse oder einen Benutzernamen ein"
+    "requiredField": "Geben Sie einen Namen, eine E-Mail-Adresse oder einen Benutzernamen ein"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "Diesen Beitrag ansehen",
@@ -830,7 +832,8 @@
     "errorSavingFile": "Fehler beim Speichern der Dateien. Dateiname: {fileName}. Fehler: {error}",
     "submittingDraftErrMsg": "Beim Speichern eines Entwurfs ist ein Fehler aufgetreten",
     "submittingDraftConsErrMsg": "Fehler beim Speichern des Entwurfs. Einreichungs-ID: {submissionId}. Fehler: {error}",
-    "formDraftAccessErrMsg": "Die angeforderte Übermittlung wurde bereits übermittelt und wird zur Ansichtsseite weitergeleitet"
+    "formDraftAccessErrMsg": "Die angeforderte Übermittlung wurde bereits übermittelt und wird zur Ansichtsseite weitergeleitet",
+    "formUnauthorizedMessage": "Sie sind nicht berechtigt, dieses Formular anzusehen. Bitte kontaktieren Sie den Formulareigentümer für den Zugang."
   },
   "bCGovFooter": {
     "home": "Heim",

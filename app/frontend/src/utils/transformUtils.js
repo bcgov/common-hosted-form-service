@@ -193,3 +193,41 @@ export function getDisposition(disposition) {
   }
   return disposition;
 }
+
+export function filterObject(_itemTitle, queryText, item) {
+  return Object.values(item)
+    .filter((v) => v)
+    .some((v) => {
+      if (typeof v === 'string')
+        return v.toLowerCase().includes(queryText.toLowerCase());
+      else {
+        return Object.values(v).some(
+          (nestedValue) =>
+            typeof nestedValue === 'string' &&
+            nestedValue.toLowerCase().includes(queryText.toLowerCase())
+        );
+      }
+    });
+}
+
+export function splitFileName(filename = undefined) {
+  let name = undefined;
+  let extension = undefined;
+
+  if (filename) {
+    const filenameArray = filename.split('.');
+    name = filenameArray.slice(0, -1).join('.');
+    extension = filenameArray.slice(-1).join('.');
+  }
+
+  return { name, extension };
+}
+
+export function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result.replace(/^.*,/, ''));
+    reader.onerror = (error) => reject(error);
+  });
+}
