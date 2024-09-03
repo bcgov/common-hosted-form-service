@@ -235,7 +235,7 @@ describe('Form Designer', () => {
       cy.get('button').contains('Basic Fields').click();
       cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
-        cy.get('span.btn').contains('Text Field')
+        cy.get('span.btn').contains('Checkbox')
         
         .trigger('mousedown', { which: 1}, { force: true })
         .trigger('mousemove', coords.x, -50, { force: true })

@@ -60,8 +60,8 @@ describe('Form Designer', () => {
         cy.waitForLoad();
         cy.waitForLoad();
         cy.get('div.formio-builder-form').then($el => {
-            const coords2 = $el[0].getBoundingClientRect();
-            cy.get('span.btn').contains('Checkbox')
+        const coords2 = $el[0].getBoundingClientRect();
+        cy.get('span.btn').contains('Checkbox')
             
             .trigger('mousedown', { which: 1}, { force: true })
             .trigger('mousemove', coords2.x, -50, { force: true })
