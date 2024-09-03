@@ -1,0 +1,51 @@
+---
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  app.kubernetes.io/component: app
+  app.kubernetes.io/instance: "${APP_NAME}-${JOB_NAME}"
+  app.kubernetes.io/managed-by: github
+  app.kubernetes.io/name: nodejs
+  app.kubernetes.io/part-of: "${APP_NAME}-${JOB_NAME}"
+  app: "${APP_NAME}-${JOB_NAME}"
+  template: "chefs-app-event-stream-service-template"
+metadata:
+  name: "chefs-app-event-stream-service"
+objects:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: "${APP_NAME}-${JOB_NAME}-event-stream-service"
+    data:
+      FEATURES_EVENTSTREAMSERVICE: ${FEATURE}
+      EVENTSTREAMSERVICE_STREAMNAME: ${STREAMNAME}
+      EVENTSTREAMSERVICE_SOURCE: ${SOURCE}
+      EVENTSTREAMSERVICE_DOMAIN: ${DOMAIN}
+parameters:
+  - name: APP_NAME
+    description: Application name
+    displayName: Application name
+    required: true
+  - name: JOB_NAME
+    description: Job identifier (i.e. 'pr-5' OR 'master')
+    displayName: Job Branch Name
+    required: true
+  - name: FEATURE
+    description: Enable Event Stream Service Feature
+    displayName: Enable feature
+    required: true
+    value: true
+  - name: STREAMNAME
+    description: Name of the CHEFS Event Stream
+    displayName: CHEFS Event Stream name
+    required: true
+    value: CHEFS
+  - name: DOMAIN
+    description: Domain of the CHEFS Event Stream
+    displayName: CHEFS Event Stream domain
+    required: true
+    value: forms
+  - name: SOURCE
+    description: Source of CHEFS Event Stream
+    displayName: CHEFS Event Stream source
+    required: true

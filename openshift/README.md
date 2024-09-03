@@ -157,6 +157,20 @@ oc create -n $NAMESPACE secret generic $APP_NAME-encryption-keys \
   --from-literal=proxy=$proxy_key
 ```
 
+We need to store a password for Event Stream Service client. Since the server(s) will change along with the password, we will store the server and credentials in a secret per environment (DEV, TEST, PROD). Pull requests can use the same as DEV.
+
+```sh
+
+export ess_servers=<comma separated list of event stream servers>
+export ess_password=<chefs password from event stream service>
+
+oc create -n $NAMESPACE secret generic $APP_NAME-event-stream-service \
+  --type=Opaque \
+  --from-literal=servers=$ess_servers \
+  --from-literal=username=chefs \
+  --from-literal=password=$ess_password
+```
+
 ## Deployment
 
 This application is currently designed as a single application pod deployment. It will host a static frontend containing all of the Vue.js resources and assets, and a Node.js backend which serves the API that the frontend requires. We are currently leveraging Openshift Routes with path based filtering to forward incoming traffic to the right deployment service.
