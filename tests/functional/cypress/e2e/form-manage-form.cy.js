@@ -197,7 +197,7 @@ describe('Form Designer', () => {
 
       cy.get('.v-col > .v-btn > .v-btn__content > span').click();
       // Verify form settings updation success message
-      cy.get('.v-alert__content').contains('div','Your form settings have been updated successfully.').should('be.visible');
+      cy.get('.v-alert__content').contains('div','Subscription settings for this form has been saved.').should('be.visible');
 
       //Delete form after test run
       cy.get('.mdi-delete').click();
