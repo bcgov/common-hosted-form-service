@@ -77,10 +77,13 @@ export default {
         undoClicked: false,
       },
       proactiveHelp: {
+        isHovering: false,
         currentKey: '',
         currentGroup: '',
         tooltip: {
+          enabled: false,
           closeDelay: 3000,
+          closeTimer: null,
           target: null,
         },
       },
@@ -198,7 +201,7 @@ export default {
             },
           },
         },
-        language: this.lang ? this.lang : 'en',
+        language: this.locale ? this.locale : 'en',
         i18n: formioIl8next,
         templates: templateExtensions,
         evalContext: {
@@ -214,7 +217,7 @@ export default {
         this.reRenderFormIo += 1;
       }
     },
-    lang(value) {
+    locale(value) {
       if (value) {
         this.reRenderFormIo += 1;
       }
@@ -224,42 +227,16 @@ export default {
     if (this.formId) {
       Promise.all([this.fetchForm(this.formId), this.getFormSchema()]);
     }
-    /* document.addEventListener('click', (e) => {
-      let target = e.target.closest('a');
-      if (target) {
-        if (target.getAttribute('href').startsWith('https://help.form.io')) {
-          e.preventDefault();
-          this.showHelperClicked(
-            this.proactiveHelp.currentKey,
-            this.proactiveHelp.currentGroup
-          );
-        }
-      }
-    }); */
-    /* document.addEventListener('mousedown', (e) => {
-      let target = e.target;
-      if (target) {
-        let dataKey = target.getAttribute('data-key');
-        let dataGroup = target.getAttribute('data-group');
-        for (const [key, value] of Object.entries(
-          this.designerOptions.builder
-        )) {
-          if (key && key === dataGroup) {
-            this.proactiveHelp.currentKey = dataKey;
-            this.proactiveHelp.currentGroup = value.title;
-          }
-        }
-      }
-    }); */
     document.addEventListener('mousemove', (e) => {
       let target = e.target;
+      this.proactiveHelp.isHovering = false;
       if (target) {
         let parent = e.target.parentElement;
         // iterate our proactive help groups
         for (const [groupKey, groupValue] of Object.entries(
           this.designerOptions.builder
         )) {
-          if (parent.id === `group-container-${groupKey}`) {
+          if (parent && parent.id === `group-container-${groupKey}`) {
             // check to see if we're hovering over something we have proactive help for
             for (const [
               proactiveGroupKey,
@@ -275,11 +252,55 @@ export default {
                   this.proactiveHelp.currentKey = dataKey;
                   this.proactiveHelp.currentGroup = groupValue.title;
                   this.proactiveHelp.tooltip.target = target;
+                  this.proactiveHelp.isHovering = true;
                 }
               }
             }
           }
         }
+      }
+
+      // We are not hovering over a contextual help and the tooltip is enabled
+      if (
+        !this.proactiveHelp.isHovering &&
+        this.proactiveHelp.tooltip.enabled
+      ) {
+        // Only hide it after a delay
+        if (!this.proactiveHelp.tooltip.closeTimer) {
+          this.proactiveHelp.tooltip.closeTimer = setTimeout(() => {
+            this.proactiveHelp.tooltip.enabled = false;
+            clearTimeout(this.proactiveHelp.tooltip.closeTimer);
+            this.proactiveHelp.tooltip.closeTimer = null;
+          }, this.proactiveHelp.tooltip.closeDelay);
+        }
+      }
+      // We are hovering over a contextual help and the tooltip is not enabled
+      else if (
+        this.proactiveHelp.isHovering &&
+        !this.proactiveHelp.tooltip.enabled
+      ) {
+        // If a timer is not set, then enable the tooltip.
+        if (!this.proactiveHelp.tooltip.closeTimer) {
+          this.proactiveHelp.tooltip.enabled = true;
+        }
+      }
+
+      // If we're not hovering over the contextual help and it's not enabled, clear the timeout
+      if (
+        !this.proactiveHelp.isHovering &&
+        !this.proactiveHelp.tooltip.enabled
+      ) {
+        clearTimeout(this.proactiveHelp.tooltip.closeTimer);
+        this.proactiveHelp.tooltip.closeTimer = null;
+      }
+    });
+
+    document.addEventListener('click', () => {
+      if (!this.proactiveHelp.isHovering) {
+        // If we click outside of the formio component
+        this.proactiveHelp.tooltip.enabled = false;
+        clearTimeout(this.proactiveHelp.tooltip.closeTimer);
+        this.proactiveHelp.tooltip.closeTimer = null;
       }
     });
   },
@@ -403,8 +424,6 @@ export default {
     // ---------------------------------------------------------------------------------------------------
     init() {
       this.setDirtyFlag(false);
-      // Since change is triggered during loading
-      this.onFormLoad();
     },
     onChangeMethod(changed, flags, modified) {
       // Don't call an unnecessary action if already dirty
@@ -429,45 +448,6 @@ export default {
     onRemoveSchemaComponent() {
       // Component remove start
       this.patch.componentRemovedStart = true;
-    },
-
-    onFormLoad() {
-      // Contains the names of every category of components
-      let builder = this.$refs.formioForm.builder.instance.builder;
-      if (Object.keys(this.fcProactiveHelpGroupList).length > 0) {
-        for (const [groupName, elements] of Object.entries(
-          this.fcProactiveHelpGroupList
-        )) {
-          let extractedElementsNames = this.extractPublishedElement(elements);
-          for (const [key, builderElements] of Object.entries(builder)) {
-            if (groupName === builderElements.title) {
-              let containerId = `group-container-${key}`;
-              let containerEl = document.getElementById(containerId);
-              if (containerEl) {
-                for (let i = 0; i < containerEl.children.length; i++) {
-                  let elementName = containerEl.children[i].textContent.trim();
-                  if (extractedElementsNames.includes(elementName)) {
-                    // check if we have proactive help for this
-                    /* // Append the info el
-                    let child = document.createElement('i');
-
-                    child.setAttribute(
-                      'class',
-                      'fa fa-info-circle info-helper'
-                    );
-                    child.style.float = 'right';
-                    child.style.fontSize = '14px';
-                    child.addEventListener('click', function () {
-                      this.showHelperClicked(elementName, groupName);
-                    });
-                    containerEl.children[i].appendChild(child); */
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
     },
     extractPublishedElement(elements) {
       let publishedComponentsNames = [];
@@ -775,9 +755,10 @@ export default {
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
     <v-tooltip
-      location="right"
-      :activator="proactiveHelp.tooltip.target"
-      :close-delay="proactiveHelp.tooltip.closeDelay"
+      v-model="proactiveHelp.tooltip.enabled"
+      location="end"
+      :attach="proactiveHelp.tooltip.target"
+      :close-on-back="true"
     >
       <a
         @click="
@@ -885,7 +866,6 @@ export default {
       @initialized="init"
       @addComponent="onAddSchemaComponent"
       @removeComponent="onRemoveSchemaComponent"
-      @formLoad="onFormLoad"
     />
     <FloatButton
       placement="bottom-right"
