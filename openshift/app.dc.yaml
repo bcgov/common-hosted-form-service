@@ -266,7 +266,7 @@ objects:
                 - configMapRef:
                     name: "${APP_NAME}-custombcaddressformiocomponent-config"
                 - configMapRef:
-                    name: "${APP_NAME}-${JOB_NAME}-event-stream-config"
+                    name: "${APP_NAME}-${JOB_NAME}-event-stream-service"
           restartPolicy: Always
           terminationGracePeriodSeconds: 30
           volumes:
