@@ -243,12 +243,15 @@ describe('Form Designer', () => {
         
         cy.get('button').contains('Save').click();
       });
-      //cy.get('[ref=removeComponent]').then($el => {
+      cy.waitForLoad();
+      cy.waitForLoad();
+      //Remove a component
+      cy.get('[ref=removeComponent]').then($el => {
 
-       // const rem=$el[11];
-        //rem.click();
+        const rem=$el[11];
+        rem.click();
         
-        //});
+      });
 
       cy.waitForLoad();
       cy.waitForLoad();
