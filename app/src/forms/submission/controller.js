@@ -140,14 +140,6 @@ module.exports = {
       next(error);
     }
   },
-  deleteEmailRecipients: async (req, res, next) => {
-    try {
-      const response = await service.deleteEmailRecipients(req.params.formSubmissionId);
-      res.status(200).json(response);
-    } catch (error) {
-      next(error);
-    }
-  },
 
   /**
    * Takes a document template ID and a form submission ID and renders the

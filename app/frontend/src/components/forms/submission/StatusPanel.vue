@@ -95,7 +95,7 @@ async function getEmailRecipients() {
     const response = await formService.getEmailRecipients(
       properties.submissionId
     );
-    emailRecipients.value = response.data;
+    emailRecipients.value = response.data.emailRecipients;
   } catch (error) {
     notificationStore.addNotification({
       text: t('trans.statusPanel.fetchSubmissionUsersErr'),
@@ -126,7 +126,6 @@ watch(selectedSubmissionUsers, (newValue) => {
 });
 
 getStatus();
-getEmailRecipients();
 
 async function onStatusChange(status) {
   statusFields.value = true;
@@ -279,7 +278,10 @@ async function updateStatus() {
 
       const statusBody = {
         code: statusToSet.value,
-        submissionUserEmails: selectedSubmissionUsers.value, //array of emails used for the COMPLETED and REVISING status
+        submissionUserEmails:
+          statusToSet.value === 'COMPLETED'
+            ? emailRecipients.value
+            : selectedSubmissionUsers.value, //array of emails used for the COMPLETED and REVISING status
         revisionNotificationEmailContent: emailComment.value,
       };
       if (showAssignee.value) {
@@ -287,14 +289,6 @@ async function updateStatus() {
           statusBody.assignedToUserId = assignee.value.userId;
           statusBody.assignmentNotificationEmail = assignee.value.email;
         }
-      }
-
-      if (statusToSet.value === 'REVISING') {
-        await formService.addEmailRecipients(properties.submissionId, {
-          emails: selectedSubmissionUsers.value,
-        });
-      } else if (statusToSet.value === 'ASSIGNED') {
-        await formService.deleteEmailRecipients(properties.submissionId);
       }
 
       const statusResponse = await formService.updateSubmissionStatus(
@@ -305,15 +299,21 @@ async function updateStatus() {
         throw new Error(t('trans.statusPanel.updtSubmissionsStatusErr'));
       }
 
+      if (statusToSet.value === 'REVISING') {
+        await formService.addEmailRecipients(properties.submissionId, {
+          emailRecipients: selectedSubmissionUsers.value,
+        });
+      }
+
       if (emailComment.value) {
         let formattedComment;
         if (statusToSet.value === 'ASSIGNED') {
           formattedComment = `Email to ${assignee.value.email}: ${emailComment.value}`;
-        } else if (
-          statusToSet.value === 'REVISING' ||
-          statusToSet.value === 'COMPLETED'
-        ) {
+        } else if (statusToSet.value === 'REVISING') {
           const emailList = selectedSubmissionUsers.value.join(', ');
+          formattedComment = `Email to ${emailList}: ${emailComment.value}`;
+        } else if (statusToSet.value === 'COMPLETED') {
+          const emailList = emailRecipients.value.join(', ');
           formattedComment = `Email to ${emailList}: ${emailComment.value}`;
         }
 
@@ -334,10 +334,6 @@ async function updateStatus() {
         }
         // Update the parent if the note was updated
         emit('note-updated');
-      }
-
-      if (statusToSet.value === 'COMPLETED') {
-        await formService.deleteEmailRecipients(properties.submissionId);
       }
 
       resetForm();

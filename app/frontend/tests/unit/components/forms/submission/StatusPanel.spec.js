@@ -267,6 +267,8 @@ describe('StatusPanel', () => {
     fetchSubmissionUsersSpy.mockReset();
     addNotificationSpy.mockReset();
 
+    const getEmailRecipientsSpy = vi.spyOn(formService, 'getEmailRecipients');
+
     formStore.formSubmission = {
       createdBy: 'TEST@bceid-basic',
     };
@@ -282,6 +284,9 @@ describe('StatusPanel', () => {
         ],
       };
     });
+    getEmailRecipientsSpy.mockResolvedValue({
+      data: { emailRecipients: ['email@email.com'] },
+    })
     // Revising means don't showSendConfirmEmail
     await wrapper.vm.onStatusChange('COMPLETED');
     expect(fetchSubmissionUsersSpy).toHaveBeenCalledTimes(1);
@@ -855,6 +860,11 @@ describe('StatusPanel', () => {
       };
     });
 
+    const getEmailRecipientsSpy = vi.spyOn(formService, 'getEmailRecipients');
+    getEmailRecipientsSpy.mockResolvedValue({
+      data: { emailRecipients: ['email@email.com'] },
+    });
+
     await wrapper.vm.updateStatus();
 
     expect(updateSubmissionStatusSpy).toBeCalledTimes(1);
@@ -979,6 +989,16 @@ describe('StatusPanel', () => {
       return {
         data: {},
       };
+    });
+
+    const addEmailRecipientsSpy = vi.spyOn(formService, 'addEmailRecipients');
+    addEmailRecipientsSpy.mockImplementationOnce(() => {
+      return {};
+    });
+
+    const getEmailRecipientsSpy = vi.spyOn(formService, 'getEmailRecipients');
+    getEmailRecipientsSpy.mockResolvedValue({
+      data: { emailRecipients: ['email1@email.com', 'email2@email.com'] },
     });
   
     await wrapper.vm.updateStatus();
@@ -1111,6 +1131,11 @@ describe('StatusPanel', () => {
       return {
         data: {},
       };
+    });
+
+    const getEmailRecipientsSpy = vi.spyOn(formService, 'getEmailRecipients');
+    getEmailRecipientsSpy.mockResolvedValue({
+      data: { emailRecipients: ['email@email.com'] },
     });
 
     await wrapper.vm.updateStatus();
@@ -1413,6 +1438,11 @@ describe('StatusPanel', () => {
     });
     const addNoteSpy = vi.spyOn(formService, 'addNote');
     addNoteSpy.mockImplementationOnce(() => {
+      return {};
+    });
+
+    const addEmailRecipientsSpy = vi.spyOn(formService, 'addEmailRecipients');
+    addEmailRecipientsSpy.mockImplementationOnce(() => {
       return {};
     });
 

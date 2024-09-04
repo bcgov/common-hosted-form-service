@@ -65,10 +65,6 @@ routes.post('/:formSubmissionId/emailRecipients', hasSubmissionPermissions([P.SU
   await controller.addEmailRecipients(req, res, next);
 });
 
-routes.delete('/:formSubmissionId/emailRecipients', hasSubmissionPermissions([P.SUBMISSION_REVIEW]), async (req, res, next) => {
-  await controller.deleteEmailRecipients(req, res, next);
-});
-
 routes.get('/:formSubmissionId/edits', hasSubmissionPermissions([P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.listEdits(req, res, next);
 });

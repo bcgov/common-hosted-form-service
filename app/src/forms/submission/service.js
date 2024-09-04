@@ -401,7 +401,7 @@ const service = {
    * @returns The email recipients
    */
   getEmailRecipients: (submissionId) => {
-    return FormSubmissionStatus.query().findById(submissionId).select('emailRecipients');
+    return FormSubmissionStatus.query().modify('filterSubmissionId', submissionId).where('code', Statuses.REVISING).modify('orderDescending').first().select('emailRecipients');
   },
 
   /**
@@ -412,18 +412,17 @@ const service = {
    * @returns confirmation of the email recipients being added
    */
   addEmailRecipients: async (submissionId, emailRecipients) => {
-    await FormSubmissionStatus.query().findById(submissionId).patch({ emailRecipients: emailRecipients });
-    return service.getEmailRecipients(submissionId);
-  },
+    // Convert the JavaScript array to a PostgreSQL array literal
+    const pgArray = `{${emailRecipients.map((email) => `"${email}"`).join(',')}}`;
 
-  /**
-   * @function deleteEmailRecipients
-   * Delete email recipients when the status is changed
-   * @param {string} submissionId The submission id
-   * @returns confirmation of the email recipients being deleted
-   */
-  deleteEmailRecipients: async (submissionId) => {
-    await FormSubmissionStatus.query().findById(submissionId).patch({ emailRecipients: null });
+    await FormSubmissionStatus.query()
+      .modify('filterSubmissionId', submissionId)
+      .where('code', Statuses.REVISING)
+      .modify('orderDescending')
+      .first()
+      .patch({
+        emailRecipients: FormSubmissionStatus.raw('?::text[]', [pgArray]),
+      });
     return service.getEmailRecipients(submissionId);
   },
 
