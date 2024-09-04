@@ -27,7 +27,7 @@ routes.get('/:formId', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ])
   await controller.readForm(req, res, next);
 });
 
-routes.get('/:formId/documentTemplates', rateLimiter, apiAccess, async (req, res, next) => {
+routes.get('/:formId/documentTemplates', rateLimiter, apiAccess, hasFormPermissions([P.DOCUMENT_TEMPLATE_READ]), async (req, res, next) => {
   await controller.documentTemplateList(req, res, next);
 });
 
@@ -39,7 +39,7 @@ routes.delete('/:formId/documentTemplates/:documentTemplateId', rateLimiter, api
   await controller.documentTemplateDelete(req, res, next);
 });
 
-routes.get('/:formId/documentTemplates/:documentTemplateId', rateLimiter, apiAccess, async (req, res, next) => {
+routes.get('/:formId/documentTemplates/:documentTemplateId', rateLimiter, apiAccess, hasFormPermissions([P.DOCUMENT_TEMPLATE_READ]), async (req, res, next) => {
   await controller.documentTemplateRead(req, res, next);
 });
 
