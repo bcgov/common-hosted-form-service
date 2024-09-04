@@ -1,14 +1,43 @@
 import baseEditForm from 'formiojs/components/_classes/component/Component.form';
 import EditData from './editForm/Component.edit.data';
-import EditDisplay from './editForm/Component.edit.display';
-import SimpleApi from '../Common/Simple.edit.api';
-import SimpleConditional from '../Common/Simple.edit.conditional';
 import AdvancedEditLogic from '../Common/Advanced.edit.logic';
-import AdvancedEditLayout from '../Common/Advanced.edit.layout';
 export default function (...extend) {
   return baseEditForm(
     [
-      EditDisplay,
+      {
+        key: 'display',
+        components: [
+          {
+            // You can ignore existing fields.
+            key: 'placeholder',
+            ignore: true,
+          },
+          {
+            key: 'tableView',
+            ignore: true,
+          },
+          {
+            key: 'hidden',
+            ignore: true,
+          },
+          {
+            key: 'autofocus',
+            ignore: true,
+          },
+          {
+            key: 'tabindex',
+            ignore: true,
+          },
+          {
+            key: 'modalEdit',
+            ignore: true,
+          },
+          {
+            key: 'disabled',
+            ignore: true,
+          },
+        ],
+      },
       EditData,
       {
         key: 'data',
@@ -24,7 +53,7 @@ export default function (...extend) {
       },
       {
         key: 'layout',
-        components: AdvancedEditLayout,
+        ignore: true,
       },
     ],
     ...extend
