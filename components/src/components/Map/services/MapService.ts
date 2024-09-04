@@ -13,6 +13,9 @@ const COMPONENT_EDIT_CLASS = 'component-edit-tabs';
 const CUSTOM_MARKER_PATH = 'https://unpkg.com/leaflet@1.9.4/dist/images/';
 
 L.Icon.Default.imagePath = CUSTOM_MARKER_PATH;
+L.Icon.Default.mergeOptions({
+  iconAnchor: [17, 46],
+});
 
 interface MapServiceOptions {
   mapContainer: HTMLElement;
@@ -32,12 +35,13 @@ class MapService {
   drawnItems;
 
   constructor(options) {
+    console.log(L.Icon.Default);
     this.options = options;
 
     if (options.mapContainer) {
       const { map, drawnItems } = this.initializeMap(options);
 
-      this.map = map;
+      // this.map = map;
       this.drawnItems = drawnItems;
 
       map.invalidateSize();
@@ -91,6 +95,7 @@ class MapService {
     );
     L.tileLayer(DEFAULT_MAP_LAYER_URL, {
       attribution: DEFAULT_LAYER_ATTRIBUTION,
+      //}).addTo(map);
     }).addTo(map);
 
     // Initialize Draw Layer
