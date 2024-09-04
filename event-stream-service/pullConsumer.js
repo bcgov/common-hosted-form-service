@@ -6,7 +6,13 @@ globalThis.WebSocket = require("websocket").w3cwebsocket;
 const { connect } = require("nats.ws");
 
 // connection info
-const servers = ["ess-a191b5-dev.apps.silver.devops.gov.bc.ca"]; //["localhost:4222", "localhost:4223", "localhost:4224"];
+let servers = [];
+if (process.env.SERVERS) {
+  servers = process.env.SERVERS.split(",");
+} else {
+  // running locally
+  servers = ["localhost:4222", "localhost:4223", "localhost:4224"];
+}
 
 let nc = undefined; // nats connection
 let js = undefined; // jet stream
@@ -18,8 +24,7 @@ const STREAM_NAME = "CHEFS";
 const FILTER_SUBJECTS = ["PUBLIC.forms.>", "PRIVATE.forms.>"];
 const MAX_MESSAGES = 2;
 const DURABLE_NAME = "pullConsumer";
-const ENCRYPTION_KEY =
-  "ad5520469720325d1694c87511afda28a0432dd974cb77b5b4b9f946a5af6985";
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || undefined;
 
 const printMsg = (m) => {
   // illustrate grabbing the sequence and timestamp from the nats message...
@@ -64,6 +69,7 @@ const init = async () => {
       console.log(`connect to nats server(s) ${servers} as 'anonymous'...`);
       nc = await connect({
         servers: servers,
+        reconnectTimeWait: 10 * 1000, // 10s
       });
 
       console.log("access jetstream...");
