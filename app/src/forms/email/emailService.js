@@ -42,7 +42,7 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
       form,
     };
   } else if (emailType === EmailTypes.STATUS_COMPLETED) {
-    contextToVal = [additionalProperties.submissionUserEmails];
+    contextToVal = additionalProperties.submissionUserEmails; // already an array
     userTypePath = 'user/view';
     configData = {
       bodyTemplate: 'submission-completed.html',
@@ -75,7 +75,7 @@ const buildEmailTemplate = async (formId, formSubmissionId, emailType, referer, 
       form,
     };
   } else if (emailType === EmailTypes.STATUS_REVISING) {
-    contextToVal = [additionalProperties.submissionUserEmails];
+    contextToVal = additionalProperties.submissionUserEmails; // already an array
     userTypePath = 'user/view';
     configData = {
       bodyTemplate: 'send-status-revising-email-body.html',
@@ -310,7 +310,6 @@ const service = {
         assignmentNotificationEmail,
         emailContent,
       });
-
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
       log.error(e.message, {
@@ -359,7 +358,6 @@ const service = {
   statusRevising: async (formId, currentStatus, submissionUserEmails, emailContent, referer) => {
     try {
       const { configData, contexts } = await buildEmailTemplate(formId, currentStatus.submissionId, EmailTypes.STATUS_REVISING, referer, { submissionUserEmails, emailContent });
-
       return service._sendEmailTemplate(configData, contexts);
     } catch (e) {
       log.error(e.message, e, {

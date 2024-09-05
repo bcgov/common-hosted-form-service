@@ -338,7 +338,6 @@ async function updateStatus() {
 
       resetForm();
       await getStatus();
-      await getEmailRecipients();
     }
   } catch (error) {
     notificationStore.addNotification({
