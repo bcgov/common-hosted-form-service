@@ -282,7 +282,7 @@ async function updateStatus() {
         submissionUserEmails:
           statusToSet.value === 'COMPLETED'
             ? emailRecipients.value
-            : selectedSubmissionUsers.value, //array of emails used for the COMPLETED and REVISING status
+            : selectedSubmissionUsers.value,
         revisionNotificationEmailContent: emailComment.value,
       };
       if (showAssignee.value) {
