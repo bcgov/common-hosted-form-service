@@ -1,9 +1,9 @@
+const { S3Client } = require('@aws-sdk/client-s3');
 const config = require('config');
 const fs = require('fs-extra');
 const mime = require('mime-types');
 const path = require('path');
 const Problem = require('api-problem');
-const S3 = require('aws-sdk/clients/s3');
 
 const StorageTypes = require('../../common/constants').StorageTypes;
 const errorToProblem = require('../../../components/errorToProblem');
@@ -27,7 +27,7 @@ class ObjectStorageService {
     this._key = this._delimit(key);
     this._accessKeyId = accessKeyId;
     this._secretAccessKey = secretAccessKey;
-    this._s3 = new S3({
+    this._s3 = new S3Client({
       endpoint: this._endpoint,
       accessKeyId: this._accessKeyId,
       secretAccessKey: this._secretAccessKey,
