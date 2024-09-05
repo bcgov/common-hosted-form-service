@@ -544,18 +544,6 @@ export default {
     );
   },
 
-  // /**
-  //  * @function deleteEmailRecipients
-  //  * Delete the email recipients for the submission
-  //  * @param {string} submissionId The form submission identifier
-  //  * @returns {Promise} An axios response
-  //  */
-  // deleteEmailRecipients(submissionId) {
-  //   return appAxios().delete(
-  //     `${ApiRoutes.SUBMISSION}/${submissionId}/emailRecipients`
-  //   );
-  // },
-
   //
   // Email
   //
