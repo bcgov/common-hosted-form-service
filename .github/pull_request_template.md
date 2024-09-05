@@ -21,19 +21,17 @@ Uncomment the main reason for the change. For example: all "feat" PRs should
 include documentation ("docs") and tests ("test"), but only uncomment "feat".
 -->
 
-<!--
-feat (a new feature)
-fix (a bug fix)
+<!-- feat (a new feature) -->
+<!-- fix (a bug fix) -->
 
-build (change in build system or dependencies)
-ci (change in continuous integration / deployment)
-docs (change to documentation)
-perf (change to improve performance)
-refactor (change to improve code quality)
-revert (reverts changes in a previous commit)
-style (change to code style/formatting)
-test (add missing tests or correct existing tests)
--->
+<!-- build (change in build system or dependencies) -->
+<!-- ci (change in continuous integration / deployment) -->
+<!-- docs (change to documentation) -->
+<!-- perf (change to improve performance) -->
+<!-- refactor (change to improve code quality) -->
+<!-- revert (reverts changes in a previous commit) -->
+<!-- style (change to code style/formatting) -->
+<!-- test (add missing tests or correct existing tests) -->
 
 <!--
 This is a breaking change because ...
