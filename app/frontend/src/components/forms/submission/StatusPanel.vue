@@ -95,7 +95,11 @@ async function getEmailRecipients() {
     const response = await formService.getEmailRecipients(
       properties.submissionId
     );
-    emailRecipients.value = response.data.emailRecipients;
+    if (response.data) {
+      emailRecipients.value = response.data.emailRecipients;
+    } else {
+      emailRecipients.value = [submissionUserEmail.value];
+    }
   } catch (error) {
     notificationStore.addNotification({
       text: t('trans.statusPanel.fetchSubmissionUsersErr'),
@@ -134,13 +138,6 @@ async function onStatusChange(status) {
     try {
       await formStore.fetchSubmissionUsers(properties.submissionId);
 
-      if (status === 'COMPLETED') {
-        await getEmailRecipients();
-        selectedSubmissionUsers.value = emailRecipients.value.map(
-          (recipient) => recipient.email
-        );
-      }
-
       // add all the submission users emails to the formSubmitters array
       formSubmitters.value = submissionUsers.value.data.map((data) => {
         const username = data.user.idpCode
@@ -164,10 +161,14 @@ async function onStatusChange(status) {
         submissionUserEmail.value = submitterData.user
           ? submitterData.user.email
           : undefined;
-        showSendConfirmEmail.value = status === 'COMPLETED';
 
         // add the submissionUserEmail to the selectedSubmissionUsers array
         selectedSubmissionUsers.value = [submissionUserEmail.value];
+
+        if (status === 'COMPLETED') {
+          showSendConfirmEmail.value = true;
+          await getEmailRecipients();
+        }
       }
     } catch (error) {
       notificationStore.addNotification({
