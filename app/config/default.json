@@ -66,8 +66,9 @@
   },
   "eventStreamService": {
     "servers": "localhost:4222,localhost:4223,localhost:4224",
+    "websockets": "false",
     "streamName": "CHEFS",
-    "source": "chefs",
+    "source": "chefs-local",
     "domain": "forms",
     "username": "chefs",
     "password": "password"

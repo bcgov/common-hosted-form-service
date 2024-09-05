@@ -63,6 +63,7 @@
   },
   "eventStreamService": {
     "servers": "EVENTSTREAMSERVICE_SERVERS",
+    "websockets": "EVENTSTREAMSERVICE_WEBSOCKETS",
     "streamName": "EVENTSTREAMSERVICE_STREAMNAME",
     "source": "EVENTSTREAMSERVICE_SOURCE",
     "domain": "EVENTSTREAMSERVICE_DOMAIN",

@@ -1,8 +1,21 @@
 const config = require('config');
+const falsey = require('falsey');
+const { JSONCodec } = require('nats');
 
-// shim the websocket library
-globalThis.WebSocket = require('websocket').w3cwebsocket;
-const { connect } = require('nats.ws');
+// different connection libraries if we are using websockerts or nats protocols.
+const WEBSOCKETS = !falsey(config.get('eventStreamService.websockets'));
+
+let natsConnect;
+if (WEBSOCKETS) {
+  // shim the websocket library
+  globalThis.WebSocket = require('websocket').w3cwebsocket;
+  const { connect } = require('nats.ws');
+  natsConnect = connect;
+} else {
+  const { connect } = require('nats');
+  natsConnect = connect;
+}
+
 const log = require('./log')(module.filename);
 
 const { FormVersion, Form, FormEventStreamConfig } = require('../forms/common/models');
@@ -22,6 +35,8 @@ const SUBMISSION_EVENT_TYPES = {
   UPDATED: 'updated',
   DELETED: 'deleted',
 };
+
+const jsonCodec = JSONCodec();
 
 class DummyEventStreamService {
   // this class should not be called if we actually check that this feature is enabled.
@@ -111,7 +126,7 @@ class EventStreamService {
         });
 
         // we either timeout or connect...
-        const result = await Promise.race([connect(me.natsOptions), timeoutPromise]);
+        const result = await Promise.race([natsConnect(me.natsOptions), timeoutPromise]);
 
         if (timeout) {
           clearTimeout(timeout);
@@ -196,7 +211,8 @@ class EventStreamService {
                 data: encPayload,
               },
             };
-            const ack = await this.js.publish(privateSubj, JSON.stringify(privMsg));
+            const encodedPayload = jsonCodec.encode(privMsg);
+            const ack = await this.js.publish(privateSubj, encodedPayload);
             log.info(`form ${eventType} event (private) - formId: ${formId}, version: ${formVersion.version}, seq: ${ack.seq}`, { function: 'onPublish' });
           }
           if (evntStrmCfg.enablePublicStream) {
@@ -204,7 +220,8 @@ class EventStreamService {
               meta: meta,
               payload: {},
             };
-            const ack = await this.js.publish(publicSubj, JSON.stringify(pubMsg));
+            const encodedPayload = jsonCodec.encode(pubMsg);
+            const ack = await this.js.publish(publicSubj, encodedPayload);
             log.info(`form ${eventType} event (public) - formId: ${formId}, version: ${formVersion.version}, seq: ${ack.seq}`, { function: 'onPublish' });
           }
         } else {
@@ -254,7 +271,8 @@ class EventStreamService {
                 data: encPayload,
               },
             };
-            const ack = await this.js.publish(privateSubj, JSON.stringify(privMsg));
+            const encodedPayload = jsonCodec.encode(privMsg);
+            const ack = await this.js.publish(privateSubj, encodedPayload);
             log.info(`submission ${eventType} event (private) - formId: ${formVersion.formId}, version: ${formVersion.version}, submissionId: ${submission.id}, seq: ${ack.seq}`, {
               function: 'onSubmit',
             });
@@ -264,7 +282,8 @@ class EventStreamService {
               meta: meta,
               payload: {},
             };
-            const ack = await this.js.publish(publicSubj, JSON.stringify(pubMsg));
+            const encodedPayload = jsonCodec.encode(pubMsg);
+            const ack = await this.js.publish(publicSubj, encodedPayload);
             log.info(`submission ${eventType} event (public) - formId: ${formVersion.formId}, version: ${formVersion.version}, submissionId: ${submission.id}, seq: ${ack.seq}`, {
               function: 'onSubmit',
             });

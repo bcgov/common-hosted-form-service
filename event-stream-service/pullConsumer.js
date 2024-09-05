@@ -1,9 +1,31 @@
-const { AckPolicy } = require("nats");
+const { AckPolicy, JSONCodec } = require("nats");
 const Cryptr = require("cryptr");
+const falsey = require("falsey");
+/*
+ command line pass in environment variables for:
+ SERVERS - which nats instance to connect to (default is local from docker-compose)
+ WEBSOCKET - connect via nats protocol or websockets. true/false (default false, connect via nats)
+ ENCRYPTION_KEY - what encryption key to decrypt (Cryptr - aes-256-gcm) private payloads
 
-// shim the websocket library
-globalThis.WebSocket = require("websocket").w3cwebsocket;
-const { connect } = require("nats.ws");
+ Example:
+  SERVERS=ess-a191b5-dev.apps.silver.devops.gov.bc.ca WEBSOCKETS=true ENCRYPTION_KEY=ad5520469720325d1694c87511afda28a0432dd974cb77b5b4b9f946a5af6985 node pullConsumer.js
+*/
+
+// different connection libraries if we are using websockerts or nats protocols.
+const WEBSOCKETS = !falsey(process.env.WEBSOCKETS);
+
+let natsConnect;
+if (WEBSOCKETS) {
+  console.log("connect via ws");
+  // shim the websocket library
+  globalThis.WebSocket = require("websocket").w3cwebsocket;
+  const { connect } = require("nats.ws");
+  natsConnect = connect;
+} else {
+  console.log("connect via nats");
+  const { connect } = require("nats");
+  natsConnect = connect;
+}
 
 // connection info
 let servers = [];
@@ -11,7 +33,7 @@ if (process.env.SERVERS) {
   servers = process.env.SERVERS.split(",");
 } else {
   // running locally
-  servers = ["localhost:4222", "localhost:4223", "localhost:4224"];
+  servers = "localhost:4222,localhost:4223,localhost:4224".split(",");
 }
 
 let nc = undefined; // nats connection
@@ -34,8 +56,9 @@ const printMsg = (m) => {
       `msg seq: ${m.seq}, subject: ${m.subject}, timestamp: ${ts}, streamSequence: ${m.info.streamSequence}, deliverySequence: ${m.info.deliverySequence}`
     );
     // illustrate (one way of) grabbing message content as json
-    const data = m.json();
-    console.log(JSON.stringify(data, null, 2));
+    const jsonCodec = JSONCodec();
+    const data = jsonCodec.decode(m.data);
+    console.log(data);
     try {
       if (
         data &&
@@ -67,7 +90,7 @@ const init = async () => {
       // no credentials provided.
       // anonymous connections have read access to the stream
       console.log(`connect to nats server(s) ${servers} as 'anonymous'...`);
-      nc = await connect({
+      nc = await natsConnect({
         servers: servers,
         reconnectTimeWait: 10 * 1000, // 10s
       });
