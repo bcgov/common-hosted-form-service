@@ -11,6 +11,8 @@ const log = require('../../../components/log')(module.filename);
 
 const fileUpload = require('../middleware/upload').fileUpload;
 
+// The AWS SDK requires a region, even though it isn't used.
+const DUMMY_REGION = 'ca-west-1';
 const SERVICE = 'ObjectStorage';
 const TEMP_DIR = 'uploads';
 const Delimiter = '/';
@@ -37,7 +39,7 @@ class ObjectStorageService {
       params: {
         Bucket: this._bucket,
       },
-      region: 'ca-west-1',
+      region: DUMMY_REGION,
     });
   }
 
