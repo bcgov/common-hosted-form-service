@@ -1,4 +1,4 @@
-const { CopyObjectCommand, DeleteObjectCommand, PutObjectCommand, S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
+const { CopyObjectCommand, DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } = require('@aws-sdk/client-s3');
 const config = require('config');
 const fs = require('fs-extra');
 const mime = require('mime-types');
