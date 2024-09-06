@@ -1936,7 +1936,7 @@ paths:
                 $ref: '#/components/schemas/Error'
   /submission/{formSubmissionId}/emailRecipients:
     get:
-      summary: Get the list of email recipients for a submission that were assigned the REVISING status.
+      summary: Get email recipients
       operationId: getEmailRecipients
       tags:
         - Email Recipients
@@ -1960,7 +1960,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      summary: Add the array of email recipients for a submission that were assigned the REVISING status.
+      summary: Add email recipients
       operationId: addEmailRecipients
       tags:
         - Email Recipients
