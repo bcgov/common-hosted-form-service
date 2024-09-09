@@ -83,7 +83,6 @@ export default {
         tooltip: {
           enabled: false,
           closeDelay: 3000,
-          closeTimer: null,
           target: null,
         },
       },
@@ -259,48 +258,12 @@ export default {
           }
         }
       }
-
-      // We are not hovering over a contextual help and the tooltip is enabled
-      if (
-        !this.proactiveHelp.isHovering &&
-        this.proactiveHelp.tooltip.enabled
-      ) {
-        // Only hide it after a delay
-        if (!this.proactiveHelp.tooltip.closeTimer) {
-          this.proactiveHelp.tooltip.closeTimer = setTimeout(() => {
-            this.proactiveHelp.tooltip.enabled = false;
-            clearTimeout(this.proactiveHelp.tooltip.closeTimer);
-            this.proactiveHelp.tooltip.closeTimer = null;
-          }, this.proactiveHelp.tooltip.closeDelay);
-        }
-      }
-      // We are hovering over a contextual help and the tooltip is not enabled
-      else if (
-        this.proactiveHelp.isHovering &&
-        !this.proactiveHelp.tooltip.enabled
-      ) {
-        // If a timer is not set, then enable the tooltip.
-        if (!this.proactiveHelp.tooltip.closeTimer) {
-          this.proactiveHelp.tooltip.enabled = true;
-        }
-      }
-
-      // If we're not hovering over the contextual help and it's not enabled, clear the timeout
-      if (
-        !this.proactiveHelp.isHovering &&
-        !this.proactiveHelp.tooltip.enabled
-      ) {
-        clearTimeout(this.proactiveHelp.tooltip.closeTimer);
-        this.proactiveHelp.tooltip.closeTimer = null;
-      }
     });
 
     document.addEventListener('click', () => {
       if (!this.proactiveHelp.isHovering) {
         // If we click outside of the formio component
         this.proactiveHelp.tooltip.enabled = false;
-        clearTimeout(this.proactiveHelp.tooltip.closeTimer);
-        this.proactiveHelp.tooltip.closeTimer = null;
       }
     });
   },
@@ -756,9 +719,9 @@ export default {
   <div :class="{ 'dir-rtl': isRTL }">
     <v-tooltip
       v-model="proactiveHelp.tooltip.enabled"
-      style="position: relative !important; top: 10px !important"
-      :attach="proactiveHelp.tooltip.target"
+      :activator="proactiveHelp.tooltip.target"
       :close-on-back="true"
+      :close-delay="proactiveHelp.tooltip.closeDelay"
       @click="
         showHelperClicked(proactiveHelp.currentKey, proactiveHelp.currentGroup)
       "
@@ -927,11 +890,11 @@ export default {
 .v-tooltip *.contextual-help::after {
   content: ' ';
   position: absolute;
-  bottom: 100%;
-  left: 20%;
-  margin-left: -5px;
+  top: 50%;
+  right: 100%;
+  margin-top: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: transparent transparent black transparent;
+  border-color: transparent black transparent transparent;
 }
 </style>
