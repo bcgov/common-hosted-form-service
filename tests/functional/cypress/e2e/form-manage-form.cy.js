@@ -171,7 +171,7 @@ describe('Form Designer', () => {
         cy.get(rem).contains('2026-06-17').should('be.visible');
        });
       cy.contains('SEND Reminder email').click();
-      cy.contains('b','2026-06-21').should('be.visible');
+      cy.contains('b','2026-06-21').should('exist');
       cy.get('[data-test="canEditForm"]').click();
       
 

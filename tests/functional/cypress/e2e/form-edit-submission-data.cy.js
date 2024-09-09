@@ -52,51 +52,54 @@ describe('Form Designer', () => {
         cy.get('button').contains('Save').click();
       });
     }
- 
+    cy.get('div.formio-builder-form').then($el => {
+      const coords2 = $el[0].getBoundingClientRect();
+      cy.get('span.btn').contains('Checkbox')
+      
+      .trigger('mousedown', { which: 1}, { force: true })
+      .trigger('mousemove', coords2.x, -50, { force: true })
+      .trigger('mouseup', { force: true });
+      cy.get('p').contains('Checkbox Component');
+      cy.get('input[name="data[label]"]').clear();
+      cy.get('input[name="data[label]"]').clear();
+      cy.get('input[name="data[label]"]').type('Applying for self');
+      cy.get('button').contains('Save').click();
+    });
+    // Form saving
+    
 
     });
     it('Form Submission and Updation', () => {
-        cy.viewport(1000, 1100);
-        cy.waitForLoad();
-        cy.waitForLoad();
-        cy.get('div.formio-builder-form').then($el => {
-            const coords2 = $el[0].getBoundingClientRect();
-            cy.get('span.btn').contains('Checkbox')
-            
-            .trigger('mousedown', { which: 1}, { force: true })
-            .trigger('mousemove', coords2.x, -50, { force: true })
-            .trigger('mouseup', { force: true });
-            cy.get('p').contains('Checkbox Component');
-            cy.get('input[name="data[label]"]').clear();
-            cy.get('input[name="data[label]"]').clear();
-            cy.get('input[name="data[label]"]').type('Applying for self');
-            cy.get('button').contains('Save').click();
-        });
-        cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
-        // Form saving
-        let savedButton = cy.get('[data-cy=saveButton]');
-        expect(savedButton).to.not.be.null;
-        savedButton.trigger('click');
-        cy.waitForLoad();
-        
-      
-      
-        // Go to My forms  
-        cy.wait('@getForm').then(()=>{
-        let userFormsLinks = cy.get('[data-cy=userFormsLinks]');
-        expect(userFormsLinks).to.not.be.null;
-        userFormsLinks.trigger('click');
-        });
-        // Filter the newly created form
-        cy.location('search').then(search => {
-            //let pathName = fullUrl.pathname
-            let arr = search.split('=');
-            let arrayValues = arr[1].split('&');
-            cy.log(arrayValues[0]);
-            //cy.log(arrayValues[1]);
-            //cy.log(arrayValues[2]);
-            cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-            cy.waitForLoad();
+      cy.viewport(1000, 1100);
+      cy.waitForLoad();
+      cy.waitForLoad();
+      cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
+      // Form saving
+      let savedButton = cy.get('[data-cy=saveButton]');
+      expect(savedButton).to.not.be.null;
+      savedButton.trigger('click');
+      cy.waitForLoad();
+
+
+
+      // Go to My forms  
+      cy.wait('@getForm').then(()=>{
+      let userFormsLinks = cy.get('[data-cy=userFormsLinks]');
+      expect(userFormsLinks).to.not.be.null;
+      userFormsLinks.trigger('click');
+      });
+      // Filter the newly created form
+      cy.location('search').then(search => {
+          //let pathName = fullUrl.pathname
+          let arr = search.split('=');
+          let arrayValues = arr[1].split('&');
+          cy.log(arrayValues[0]);
+          //cy.log(arrayValues[1]);
+          //cy.log(arrayValues[2]);
+          cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+          cy.waitForLoad();
+
+
         
          
           //Publish the form
@@ -142,6 +145,7 @@ describe('Form Designer', () => {
         cy.waitForLoad();
         cy.waitForLoad();
         cy.get('button').contains('Submit').should('be.visible');
+        cy.waitForLoad();
         cy.get('input[name="data[simpletextfield1]"').click();
         cy.get('input[name="data[simpletextfield1]"').type('Alex');
         cy.get('input[name="data[simpletextfield2]"').click();
