@@ -134,13 +134,11 @@ function onClickScroll() {
 }
 
 function goToPreview() {
-  if (!properties.formId || !properties.draftId) {
-    let route = router.resolve({
-      name: 'FormPreview',
-      query: { f: properties.formId, d: properties.draftId },
-    });
-    window.open(route.href);
-  }
+  let route = router.resolve({
+    name: 'FormPreview',
+    query: { f: properties.formId, d: properties.draftId },
+  });
+  window.open(route.href);
 }
 </script>
 
@@ -174,6 +172,7 @@ function goToPreview() {
         :class="{
           'disabled-router': !properties.formId || !properties.draftId,
         }"
+        data-cy="previewRouterLink"
         @click="goToPreview"
       >
         <span :lang="locale">{{ $t('trans.floatButton.preview') }}</span>

@@ -1,14 +1,33 @@
+// @vitest-environment happy-dom
 import { mount, RouterLinkStub } from '@vue/test-utils';
 import { setActivePinia, createPinia } from 'pinia';
-import { expect, vi } from 'vitest';
+import { beforeEach, expect, vi } from 'vitest';
+import { useRouter } from 'vue-router';
 
 import FloatButton from '~/components/designer/FloatButton.vue';
 
 window.scrollTo = vi.fn();
 
+vi.mock('vue-router', () => ({
+  useRouter: vi.fn(() => ({
+    resolve: () => {},
+  })),
+}));
+
 describe('FloatButton.vue', () => {
   const pinia = createPinia();
   setActivePinia(pinia);
+  const resolve = vi.fn();
+
+  beforeEach(() => {
+    resolve.mockReset();
+    resolve.mockImplementationOnce(() => {
+      return {
+        href: '/#',
+      };
+    });
+    useRouter.mockReset();
+  });
 
   it('renders', () => {
     const wrapper = mount(FloatButton, {
@@ -45,9 +64,8 @@ describe('FloatButton.vue', () => {
       },
     });
 
-    expect(wrapper.find({ ref: 'undoButton' }).exists()).toBeTruthy();
-
-    const buttonWrapper = wrapper.find({ ref: 'undoButton' });
+    const buttonWrapper = wrapper.find('[data-cy="undoButton"]');
+    expect(buttonWrapper.exists()).toBeTruthy();
     buttonWrapper.trigger('click');
 
     wrapper.vm.$emit('undo');
@@ -70,9 +88,8 @@ describe('FloatButton.vue', () => {
       },
     });
 
-    expect(wrapper.find({ ref: 'redoButton' }).exists()).toBeTruthy();
-
-    const buttonWrapper = wrapper.find({ ref: 'redoButton' });
+    const buttonWrapper = wrapper.find('[data-cy="redoButton"]');
+    expect(buttonWrapper.exists()).toBeTruthy();
     buttonWrapper.trigger('click');
 
     wrapper.vm.$emit('redo');
@@ -95,9 +112,8 @@ describe('FloatButton.vue', () => {
       },
     });
 
-    expect(wrapper.find({ ref: 'saveButton' }).exists()).toBe(true);
-
-    const buttonWrapper = wrapper.find({ ref: 'saveButton' });
+    const buttonWrapper = wrapper.find('[data-cy="saveButton"]');
+    expect(buttonWrapper.exists()).toBeTruthy();
     buttonWrapper.trigger('click');
 
     wrapper.vm.$emit('save');
@@ -107,7 +123,7 @@ describe('FloatButton.vue', () => {
     expect(wrapper.emitted().save.length).toBe(1);
   });
 
-  it('test that publish button was click', async () => {
+  it('test that publish button was clicked', async () => {
     const wrapper = mount(FloatButton, {
       RouterLink: RouterLinkStub,
       props: {
@@ -133,7 +149,7 @@ describe('FloatButton.vue', () => {
     // that is tested by the vue-router team already
   });
 
-  it('test that manage button was click', async () => {
+  it('test that manage button was clicked', async () => {
     const wrapper = mount(FloatButton, {
       RouterLink: RouterLinkStub,
       props: {
@@ -159,19 +175,14 @@ describe('FloatButton.vue', () => {
     // that is tested by the vue-router team already
   });
 
-  it('test that preview button was click', async () => {
-    const mockRouter = {
-      resolve: vi.fn(),
-    };
-
+  it('test that preview button was clicked', async () => {
     window.open = vi.fn();
+    window.open.mockImplementationOnce(() => {});
+    useRouter.mockImplementationOnce(() => ({
+      resolve,
+    }));
 
-    mockRouter.resolve.mockImplementationOnce(() => {
-      return {
-        href: '',
-      };
-    });
-
+    // Preview only works if there is no form id or draft id
     const wrapper = mount(FloatButton, {
       RouterLink: RouterLinkStub,
       props: {
@@ -186,19 +197,16 @@ describe('FloatButton.vue', () => {
             template: '<div class="router-link-stub"><slot /></div>',
           },
         },
-        mocks: {
-          $router: mockRouter,
-        },
       },
     });
 
-    await wrapper.find({ ref: 'previewRouterLink' }).trigger('click');
+    await wrapper.find('[data-cy="previewRouterLink"]').trigger('click');
 
     await wrapper.vm.$nextTick();
 
     // We don't need to test that the router-link worked
     // that is tested by the vue-router team already
-    expect(mockRouter.resolve).toHaveBeenCalledTimes(1);
+    expect(resolve).toHaveBeenCalledTimes(1);
   });
 
   it('Publish button is enabled if it is not a new draft version and there is a form id and draft id', () => {
