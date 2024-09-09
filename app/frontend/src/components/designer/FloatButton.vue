@@ -153,7 +153,7 @@ function goToPreview() {
       </v-btn>
     </div>
     <div v-if="!isCollapsed">
-      <div class="fab d-flex flex-column">
+      <div class="fab d-flex flex-column" data-cy="saveButton">
         <span :lang="locale">{{ SAVE_TEXT }}</span>
         <v-btn
           :disabled="!properties.canSave && properties.isFormSaved"
@@ -186,7 +186,7 @@ function goToPreview() {
           <v-icon icon="mdi:mdi-eye"></v-icon>
         </v-btn>
       </div>
-      <div class="fab d-flex flex-column">
+      <div class="fab d-flex flex-column" data-cy="undoButton">
         <span :lang="locale">{{ $t('trans.floatButton.undo') }}</span>
         <v-btn
           :disabled="!properties.undoEnabled"
@@ -198,7 +198,7 @@ function goToPreview() {
           <v-icon icon="mdi:mdi-undo"></v-icon>
         </v-btn>
       </div>
-      <div class="fab d-flex flex-column">
+      <div class="fab d-flex flex-column" data-cy="redoButton">
         <span :lang="locale">{{ $t('trans.floatButton.redo') }}</span>
         <v-btn
           :disabled="!properties.redoEnabled"
@@ -221,6 +221,7 @@ function goToPreview() {
         <div
           class="fab d-flex flex-column"
           :class="{ 'disabled-router': !isManageEnabled }"
+          data-cy="settingsRouterLink"
         >
           <span :lang="locale">{{ $t('trans.floatButton.manage') }}</span>
           <v-btn
@@ -245,6 +246,8 @@ function goToPreview() {
         <div
           class="fab d-flex flex-column"
           :class="{ 'disabled-router': !isPublishEnabled }"
+          data-cy="publishRouterLink"
+          role="link"
         >
           <span :lang="locale">{{ $t('trans.floatButton.publish') }}</span>
           <v-btn
