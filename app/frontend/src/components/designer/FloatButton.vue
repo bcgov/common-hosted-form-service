@@ -314,6 +314,14 @@ defineExpose({
     color: #1a5a96;
   }
 
+  .v-btn.v-btn--disabled {
+    background-color: white;
+  }
+
+  .v-btn.v-btn--disabled .v-btn__overlay {
+    background-color: rgba(0, 0, 0, 0.26);
+  }
+
   .v-btn--disabled .v-icon {
     color: #707070c1 !important;
   }
