@@ -62,14 +62,6 @@ onUnmounted(() => {
   window.removeEventListener('scroll', onEventScroll);
 });
 
-// This is the text for the button that lets you scroll to the bottom or top of the page
-const SCROLL_TEXT = computed(() => {
-  if (!isAtTopOfPage.value) {
-    return t('trans.floatButton.top');
-  }
-  return t('trans.floatButton.bottom');
-});
-
 // This is the icon for the button that lets you scroll to the bottom or top of the page
 const SCROLL_ICON = computed(() => {
   if (!isAtTopOfPage.value) {
@@ -78,12 +70,12 @@ const SCROLL_ICON = computed(() => {
   return 'mdi:mdi-arrow-down';
 });
 
-// This is the text for the button that lets you collapse the actions
-const COLLAPSE_TEXT = computed(() => {
-  if (!isCollapsed.value) {
-    return t('trans.floatButton.collapse');
+// This is the text for the button that lets you scroll to the bottom or top of the page
+const SCROLL_TEXT = computed(() => {
+  if (!isAtTopOfPage.value) {
+    return t('trans.floatButton.top');
   }
-  return t('trans.floatButton.actions');
+  return t('trans.floatButton.bottom');
 });
 
 // This is the icon for the button that lets you collapse the actions
@@ -94,8 +86,15 @@ const COLLAPSE_ICON = computed(() => {
   return 'mdi:mdi-menu';
 });
 
+// This is the text for the button that lets you collapse the actions
+const COLLAPSE_TEXT = computed(() => {
+  if (!isCollapsed.value) {
+    return t('trans.floatButton.collapse');
+  }
+  return t('trans.floatButton.actions');
+});
+
 // This is the text for the button that lets you save
-// eslint-disable-next-line vue/return-in-computed-property
 const SAVE_TEXT = computed(() => {
   if (properties.savedStatus === 'Saved') {
     return t('trans.floatButton.saved');
@@ -140,6 +139,20 @@ function goToPreview() {
   });
   window.open(route.href);
 }
+
+defineExpose({
+  COLLAPSE_ICON,
+  COLLAPSE_TEXT,
+  isAtTopOfPage,
+  isCollapsed,
+  onClickCollapse,
+  onClickSave,
+  onClickScroll,
+  onEventScroll,
+  SAVE_TEXT,
+  SCROLL_ICON,
+  SCROLL_TEXT,
+});
 </script>
 
 <template>

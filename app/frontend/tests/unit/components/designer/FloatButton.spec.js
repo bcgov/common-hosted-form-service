@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { mount, RouterLinkStub } from '@vue/test-utils';
+import { mount, RouterLinkStub, shallowMount } from '@vue/test-utils';
 import { setActivePinia, createPinia } from 'pinia';
 import { beforeEach, expect, vi } from 'vitest';
 import { useRouter } from 'vue-router';
@@ -49,6 +49,240 @@ describe('FloatButton.vue', () => {
     expect(wrapper.html()).toContain('undo');
     expect(wrapper.html()).toContain('preview');
     expect(wrapper.html()).toContain('bottom');
+  });
+
+  it('unmounted should remove the scroll event listener', async () => {
+    const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
+    const wrapper = shallowMount(FloatButton, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    await wrapper.unmount();
+
+    expect(removeEventListenerSpy).toBeCalledTimes(1);
+    expect(removeEventListenerSpy).toBeCalledWith(
+      'scroll',
+      wrapper.vm.onEventScroll
+    );
+  });
+
+  it('SCROLL_ICON will be up if we are not at the top of the page and down otherwise', async () => {
+    const wrapper = shallowMount(FloatButton, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+    expect(wrapper.vm.SCROLL_ICON).toEqual('mdi:mdi-arrow-down');
+    wrapper.vm.isAtTopOfPage = false;
+    expect(wrapper.vm.SCROLL_ICON).toEqual('mdi:mdi-arrow-up');
+  });
+
+  it('SCROLL_TEXT will be the top translation if we are not at the top of the page and bottom otherwise', async () => {
+    const wrapper = shallowMount(FloatButton, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+    expect(wrapper.vm.SCROLL_TEXT).toEqual('trans.floatButton.bottom');
+    wrapper.vm.isAtTopOfPage = false;
+    expect(wrapper.vm.SCROLL_TEXT).toEqual('trans.floatButton.top');
+  });
+
+  it('COLLAPSE_ICON will be close if we are not at collapsed and menu otherwise', async () => {
+    const wrapper = shallowMount(FloatButton, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+    expect(wrapper.vm.COLLAPSE_ICON).toEqual('mdi:mdi-close');
+    wrapper.vm.isCollapsed = true;
+    expect(wrapper.vm.COLLAPSE_ICON).toEqual('mdi:mdi-menu');
+  });
+
+  it('COLLAPSE_TEXT will be the collapse translation if we are not collapsed and actions otherwise', async () => {
+    const wrapper = shallowMount(FloatButton, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+    expect(wrapper.vm.COLLAPSE_TEXT).toEqual('trans.floatButton.collapse');
+    wrapper.vm.isCollapsed = true;
+    expect(wrapper.vm.COLLAPSE_TEXT).toEqual('trans.floatButton.actions');
+  });
+
+  it('SAVE_TEXT will match the savedStatus property otherwise it is just save', async () => {
+    let wrapper = shallowMount(FloatButton, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+    expect(wrapper.vm.SAVE_TEXT).toEqual('trans.floatButton.save');
+    wrapper = shallowMount(FloatButton, {
+      props: {
+        savedStatus: 'Saved',
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+    expect(wrapper.vm.SAVE_TEXT).toEqual('trans.floatButton.saved');
+    wrapper = shallowMount(FloatButton, {
+      props: {
+        savedStatus: 'Saving',
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+    expect(wrapper.vm.SAVE_TEXT).toEqual('trans.floatButton.saving');
+    wrapper = shallowMount(FloatButton, {
+      props: {
+        savedStatus: 'Not Saved',
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+    expect(wrapper.vm.SAVE_TEXT).toEqual('trans.floatButton.notSaved');
+  });
+
+  it('onEventScroll sets isAtTopOfPage to true if window scroll is at 0, false otherwise', async () => {
+    const wrapper = shallowMount(FloatButton, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+    wrapper.vm.onEventScroll();
+    expect(wrapper.vm.isAtTopOfPage).toBe(true);
+    window.scrollY = 1;
+    wrapper.vm.onEventScroll();
+    expect(wrapper.vm.isAtTopOfPage).toBe(false);
+  });
+
+  it('onClickCollapse will toggle the value of isCollapsed', async () => {
+    const wrapper = shallowMount(FloatButton, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+    expect(wrapper.vm.isCollapsed).toBeFalsy();
+    wrapper.vm.onClickCollapse();
+    expect(wrapper.vm.isCollapsed).toBeTruthy();
+  });
+
+  it('onClickSave will emit save', async () => {
+    const wrapper = shallowMount(FloatButton, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+    wrapper.vm.onClickSave();
+    expect(wrapper.emitted()).toHaveProperty('save');
+  });
+
+  it('onClickScroll will scroll the window to either the top or bottom depending on if we are at the top of the page or not', async () => {
+    const wrapper = shallowMount(FloatButton, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          RouterLink: {
+            name: 'RouterLink',
+            template: '<div class="router-link-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+    const scrollToSpy = vi.spyOn(window, 'scrollTo');
+    wrapper.vm.onClickScroll();
+    expect(scrollToSpy).toHaveBeenCalledTimes(1);
+    expect(scrollToSpy).toBeCalledWith({
+      left: 0,
+      top: document.body.scrollHeight,
+      behavior: 'smooth',
+    });
+    wrapper.vm.isAtTopOfPage = false;
+    scrollToSpy.mockReset();
+    wrapper.vm.onClickScroll();
+    expect(scrollToSpy).toHaveBeenCalledTimes(1);
+    expect(scrollToSpy).toBeCalledWith({
+      left: 0,
+      top: 0,
+      behavior: 'smooth',
+    });
   });
 
   it('test that undo event was triggered', async () => {
