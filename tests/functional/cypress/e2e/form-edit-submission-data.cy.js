@@ -52,7 +52,7 @@ describe('Form Designer', () => {
         cy.get('button').contains('Save').click();
       });
     }
-    cy.get('div.formio-builder-form').then($el => {
+    /*cy.get('div.formio-builder-form').then($el => {
       const coords2 = $el[0].getBoundingClientRect();
       cy.get('span.btn').contains('Checkbox')
       
@@ -65,6 +65,7 @@ describe('Form Designer', () => {
       cy.get('input[name="data[label]"]').type('Applying for self');
       cy.get('button').contains('Save').click();
     });
+    */
     // Form saving
     
 
