@@ -57,7 +57,6 @@
     "lodash": "^4.17.21",
     "native-promise-only": "^0.8.1",
     "path-browserify": "^1.0.1",
-    "vue": "^3.4.38",
     "webpack": "^5.75.0"
   },
   "devDependencies": {

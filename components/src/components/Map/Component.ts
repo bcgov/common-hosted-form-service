@@ -96,6 +96,7 @@ export default class Component extends (FieldComponent as any) {
       onDrawnItemsChange: this.saveDrawnItems.bind(this),
       viewMode,
     });
+    this.map = this.mapService.getMap();
 
     // Load existing data if available
     if (this.dataValue && this.dataValue.features) {
