@@ -32,14 +32,10 @@ class MapService {
   drawnItems;
 
   constructor(options) {
-    console.log(L.Icon.Default);
     this.options = options;
 
     if (options.mapContainer) {
       const { map, drawnItems } = this.initializeMap(options);
-      this.map = map;
-      // this.map = map;
-      this.drawnItems = drawnItems;
 
       map.invalidateSize();
       // Triggering a resize event after map initialization
@@ -126,9 +122,6 @@ class MapService {
       }
     }
     return { map, drawnItems };
-  }
-  getMap() {
-    return this.map;
   }
   bindPopupToLayer(layer) {
     if (layer instanceof L.Marker) {
