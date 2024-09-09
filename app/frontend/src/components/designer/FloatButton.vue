@@ -303,27 +303,27 @@ defineExpose({
   font-style: normal;
   font-weight: normal;
   font-family: BCSans !important;
-}
 
-.v-btn {
-  margin-top: 2px !important;
-  margin-bottom: 12px !important;
-}
+  .v-btn {
+    margin-top: 2px !important;
+    margin-bottom: 12px !important;
+  }
 
-.v-icon {
-  font-size: 18px;
-  color: #1a5a96;
-}
+  .v-icon {
+    font-size: 18px;
+    color: #1a5a96;
+  }
 
-.v-btn--disabled .v-icon {
-  color: #707070c1 !important;
-}
+  .v-btn--disabled .v-icon {
+    color: #707070c1 !important;
+  }
 
-.inverted-colour {
-  background: #1a5a96;
-}
+  .inverted-colour {
+    background: #1a5a96;
+  }
 
-.inverted-colour .v-icon {
-  color: white;
+  .inverted-colour .v-icon {
+    color: white;
+  }
 }
 </style>

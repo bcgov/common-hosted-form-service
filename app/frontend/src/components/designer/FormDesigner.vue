@@ -8,17 +8,17 @@ import { useRouter } from 'vue-router';
 
 import BaseInfoCard from '~/components/base/BaseInfoCard.vue';
 import FloatButton from '~/components/designer/FloatButton.vue';
-import ProactiveHelpPreviewDialog from '~/components/infolinks/ProactiveHelpPreviewDialog.vue';
+import { exportFormSchema, importFormSchemaFromFile } from '~/composables/form';
 import formioIl8next from '~/internationalization/trans/formio/formio.json';
 import templateExtensions from '~/plugins/templateExtensions';
 import { formService, userService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
-import { IdentityMode } from '~/utils/constants';
+import { FormDesignerBuilderOptions, IdentityMode } from '~/utils/constants';
 import { generateIdps } from '~/utils/transformUtils';
 
-const { t, locale } = useI18n({ useScope: 'global' });
+const { locale, t } = useI18n({ useScope: 'global' });
 const router = useRouter();
 
 const properties = defineProps({
@@ -49,8 +49,6 @@ const properties = defineProps({
 });
 
 const canSave = ref(false);
-const component = ref({});
-const displayVersion = ref(1);
 const formSchema = ref({
   display: 'form',
   type: 'form',
@@ -71,121 +69,13 @@ const patch = ref({
 const reRenderFormIo = ref(0);
 const savedStatus = ref(properties.isSavedStatus);
 const saving = ref(false);
-const showHelpLinkDialog = ref(false);
 
 const authStore = useAuthStore();
 const formStore = useFormStore();
+const notificationStore = useNotificationStore();
 
 const { tokenParsed, user } = storeToRefs(authStore);
-
-const { fcProactiveHelpImageUrl, form, isRTL, userLabels } =
-  storeToRefs(formStore);
-
-const ID_MODE = computed(() => IdentityMode);
-const designerOptions = computed(() => {
-  return {
-    sanitizeConfig: {
-      addTags: ['iframe'],
-      ALLOWED_TAGS: ['iframe'],
-    },
-    noDefaultSubmitButton: false,
-    builder: {
-      basic: false,
-      premium: false,
-      layoutControls: {
-        title: 'Basic Layout',
-        default: true,
-        weight: 10,
-        components: {
-          simplecols2: true,
-          simplecols3: true,
-          simplecols4: true,
-          simplecontent: true,
-          simplefieldset: false,
-          simpleheading: false,
-          simplepanel: true,
-          simpleparagraph: false,
-          simpletabs: true,
-        },
-      },
-      entryControls: {
-        title: 'Basic Fields',
-        weight: 20,
-        components: {
-          simplecheckbox: true,
-          simplecheckboxes: true,
-          simpledatetime: true,
-          simpleday: true,
-          simpleemail: true,
-          simplenumber: true,
-          simplephonenumber: true,
-          simpleradios: true,
-          simpleselect: true,
-          simpletextarea: true,
-          simpletextfield: true,
-          simpletime: false,
-        },
-      },
-      layout: {
-        title: 'Advanced Layout',
-        weight: 30,
-      },
-      advanced: {
-        title: 'Advanced Fields',
-        weight: 40,
-        components: {
-          // Need to re-define Formio basic fields here
-          // To disable fields make it false here
-          // textfield: true,
-          // textarea: true,
-          // number: true,
-          // password: true,
-          // checkbox: true,
-          // selectboxes: true,
-          // select: true,
-          // radio: true,
-          // button: true,
-          email: false,
-          url: false,
-          phoneNumber: false,
-          tags: false,
-          address: false,
-          datetime: false,
-          day: false,
-          time: false,
-          currency: false,
-          survey: false,
-          signature: false,
-          // Prevent duplicate appearance of orgbook component
-          orgbook: false,
-          bcaddress: false,
-          simplebcaddress: false,
-        },
-      },
-      data: {
-        title: 'Advanced Data',
-        weight: 50,
-      },
-      customControls: {
-        title: 'BC Government',
-        weight: 60,
-        components: {
-          orgbook: true,
-          simplefile: form.value.userType !== ID_MODE.value.PUBLIC,
-          bcaddress: true,
-          simplebcaddress: true,
-        },
-      },
-    },
-    language: locale.value ? locale.value : 'en',
-    i18n: formioIl8next,
-    templates: templateExtensions,
-    evalContext: {
-      token: tokenParsed.value,
-      user: user.value,
-    },
-  };
-});
+const { form, isRTL, userLabels } = storeToRefs(formStore);
 
 watch(form, (newFormValue, oldFormValue) => {
   if (newFormValue.userType != oldFormValue.userType) {
@@ -213,106 +103,38 @@ onMounted(async () => {
   }
 });
 
-async function setProxyHeaders() {
-  try {
-    let response = await formService.getProxyHeaders({
-      formId: properties.formId,
-      versionId: properties.versionId,
-    });
-    // error checking for response
-    sessionStorage.setItem(
-      'X-CHEFS-PROXY-DATA',
-      response.data['X-CHEFS-PROXY-DATA']
-    );
-  } catch (error) {
-    // need error handling
-  }
-}
+const designerOptions = computed(() => {
+  return {
+    sanitizeConfig: {
+      addTags: ['iframe'],
+      ALLOWED_TAGS: ['iframe'],
+    },
+    noDefaultSubmitButton: false,
+    builder: {
+      ...FormDesignerBuilderOptions,
+      customControls: {
+        ...FormDesignerBuilderOptions.customControls,
+        components: {
+          ...FormDesignerBuilderOptions.customControls.components,
+          simplefile: form.value.userType !== ID_MODE.value.PUBLIC,
+        },
+      },
+    },
+    language: locale.value ? locale.value : 'en',
+    i18n: formioIl8next,
+    templates: templateExtensions,
+    evalContext: {
+      token: tokenParsed.value,
+      user: user.value,
+    },
+  };
+});
 
-async function getFormSchema() {
-  try {
-    let res;
-    if (properties.versionId) {
-      // Making a new draft from a previous version
-      res = await formService.readVersion(
-        properties.formId,
-        properties.versionId
-      );
-    } else if (properties.draftId) {
-      // Editing an existing draft
-      res = await formService.readDraft(properties.formId, properties.draftId);
-    }
-    formSchema.value = {
-      ...formSchema.value,
-      ...res.data.schema,
-    };
-    if (patch.value.history.length === 0) {
-      // We are fetching an existing form, so we get the original schema here because
-      // using the original schema in the mount will give you the default schema
-      patch.value.originalSchema = deepClone(formSchema.value);
-    }
-    reRenderFormIo.value += 1;
-  } catch (error) {
-    const notificationStore = useNotificationStore();
-    notificationStore.addNotification({
-      text: t('trans.formDesigner.formLoadErrMsg'),
-      consoleError: t('trans.formDesigner.formLoadConsoleErrMsg', {
-        formId: properties.formId,
-        versionId: properties.versionId,
-        draftId: properties.draftId,
-        error: error,
-      }),
-    });
-  }
-  // get a version number to show in header
-  displayVersion.value = form.value.versions.length + 1;
-}
+const DISPLAY_VERSION = computed(() =>
+  form.value?.versions?.length ? form.value.versions.length + 1 : 1
+);
 
-async function loadFile(event) {
-  try {
-    const file = event.target.files[0];
-    const fileReader = new FileReader();
-    fileReader.addEventListener('load', () => {
-      formSchema.value = JSON.parse(fileReader.result);
-      addPatchToHistory();
-      patch.value.undoClicked = false;
-      patch.value.redoClicked = false;
-      resetHistoryFlags();
-      // Key-changing to force a re-render of the formio component when we want to load a new schema after the page is already in
-      reRenderFormIo.value += 1;
-    });
-    fileReader.readAsText(file);
-  } catch (error) {
-    const notificationStore = useNotificationStore();
-    notificationStore.addNotification({
-      text: t('trans.formDesigner.formSchemaImportErrMsg'),
-      consoleError: t('trans.formDesigner.formSchemaImportConsoleErrMsg', {
-        error: error,
-      }),
-    });
-  }
-}
-
-function onExportClick() {
-  let snek = form.value.snake;
-  if (!form.value.snake) {
-    snek = form.value.name
-      .replace(/\s+/g, '_')
-      .replace(/[^-_0-9a-z]/gi, '')
-      .toLowerCase();
-  }
-
-  const a = document.createElement('a');
-  a.href = `data:application/json;charset=utf-8,${encodeURIComponent(
-    JSON.stringify(formSchema.value)
-  )}`;
-  a.download = `${snek}_schema.json`;
-  a.style.display = 'none';
-  a.classList.add('hiddenDownloadTextElement');
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-}
+const ID_MODE = computed(() => IdentityMode);
 
 // ---------------------------------------------------------------------------------------------------
 // FormIO event handlers
@@ -348,11 +170,6 @@ function onRemoveSchemaComponent() {
   // Component remove start
   patch.value.componentRemovedStart = true;
 }
-
-function onShowClosePreviewDialog() {
-  showHelpLinkDialog.value = !showHelpLinkDialog.value;
-}
-
 // ----------------------------------------------------------------------------------/ FormIO Handlers
 
 // ---------------------------------------------------------------------------------------------------
@@ -510,6 +327,7 @@ function undoEnabled() {
 function redoEnabled() {
   return canRedoPatch();
 }
+// ----------------------------------------------------------------------------------/ Patch History
 
 // ---------------------------------------------------------------------------------------------------
 // Saving the Schema
@@ -641,68 +459,136 @@ async function schemaUpdateExistingDraft() {
     query: { ...router.currentRoute.value.query, sv: true, svs: 'Saved' },
   });
 }
+// ----------------------------------------------------------------------------------/ Saving the Schema
+async function setProxyHeaders() {
+  try {
+    let response = await formService.getProxyHeaders({
+      formId: properties.formId,
+      versionId: properties.versionId,
+    });
+    // error checking for response
+    sessionStorage.setItem(
+      'X-CHEFS-PROXY-DATA',
+      response.data['X-CHEFS-PROXY-DATA']
+    );
+  } catch (error) {
+    // need error handling
+  }
+}
 
-// ----------------------------------------------------------------------------------/ Patch History
+async function getFormSchema() {
+  try {
+    let res;
+    if (properties.versionId) {
+      // Making a new draft from a previous version
+      res = await formService.readVersion(
+        properties.formId,
+        properties.versionId
+      );
+    } else if (properties.draftId) {
+      // Editing an existing draft
+      res = await formService.readDraft(properties.formId, properties.draftId);
+    }
+    formSchema.value = {
+      ...formSchema.value,
+      ...res.data.schema,
+    };
+    if (patch.value.history.length === 0) {
+      // We are fetching an existing form, so we get the original schema here because
+      // using the original schema in the mount will give you the default schema
+      patch.value.originalSchema = deepClone(formSchema.value);
+    }
+    reRenderFormIo.value += 1;
+  } catch (error) {
+    const notificationStore = useNotificationStore();
+    notificationStore.addNotification({
+      text: t('trans.formDesigner.formLoadErrMsg'),
+      consoleError: t('trans.formDesigner.formLoadConsoleErrMsg', {
+        formId: properties.formId,
+        versionId: properties.versionId,
+        draftId: properties.draftId,
+        error: error,
+      }),
+    });
+  }
+}
+
+async function loadFile(event) {
+  importFormSchemaFromFile(event.target.files[0])
+    .then((result) => {
+      formSchema.value = JSON.parse(result);
+      addPatchToHistory();
+      patch.value.undoClicked = false;
+      patch.value.redoClicked = false;
+      resetHistoryFlags();
+      // Key-changing to force a re-render of the formio component when we want to load a new schema after the page is already in
+      reRenderFormIo.value += 1;
+    })
+    .catch((error) => {
+      notificationStore.addNotification({
+        text: t('trans.formDesigner.formSchemaImportErrMsg'),
+        consoleError: t('trans.formDesigner.formSchemaImportConsoleErrMsg', {
+          error: error,
+        }),
+      });
+    });
+}
 </script>
-
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
-    <div
-      class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
-    >
+    <div class="d-flex flex-wrap">
       <!-- page title -->
-      <div :lang="locale">
+      <div :lang="locale" class="flex-1-0">
         <h1>{{ $t('trans.formDesigner.formDesign') }}</h1>
         <h3 v-if="form.name">{{ form.name }}</h3>
-        <em :lang="locale"
-          >{{ $t('trans.formDesigner.version') }} : {{ displayVersion }}</em
-        >
       </div>
       <!-- buttons -->
-      <div>
-        <v-tooltip location="bottom">
-          <template #activator="{ props }">
-            <v-btn
-              class="mx-1"
-              color="primary"
-              icon
-              size="x-small"
-              v-bind="props"
-              :title="$t('trans.formDesigner.exportDesign')"
-              @click="onExportClick"
-            >
-              <v-icon icon="mdi:mdi-download"></v-icon>
-            </v-btn>
-          </template>
+      <div class="d-flex flex-row">
+        <div class="d-flex flex-column ma-2" style="align-items: center">
           <span :lang="locale">{{
             $t('trans.formDesigner.exportDesign')
           }}</span>
-        </v-tooltip>
-        <v-tooltip location="bottom">
-          <template #activator="{ props }">
-            <v-btn
-              class="mx-1"
-              color="primary"
-              icon
-              size="x-small"
-              v-bind="props"
-              :title="$t('trans.formDesigner.importDesign')"
-              @click="$refs.uploader.click()"
-            >
-              <v-icon icon="mdi:mdi-publish"></v-icon>
-              <input
-                ref="uploader"
-                class="d-none"
-                type="file"
-                accept=".json"
-                @change="loadFile"
-              />
-            </v-btn>
-          </template>
+          <v-btn
+            class="mx-1"
+            color="primary"
+            icon
+            size="x-small"
+            :title="$t('trans.formDesigner.exportDesign')"
+            @click="exportFormSchema(form.name, formSchema, form.snake)"
+          >
+            <v-icon icon="mdi:mdi-download"></v-icon>
+          </v-btn>
+        </div>
+        <div class="d-flex flex-column ma-2" style="align-items: center">
           <span :lang="locale">{{
             $t('trans.formDesigner.importDesign')
           }}</span>
-        </v-tooltip>
+          <v-btn
+            class="mx-1"
+            color="primary"
+            icon
+            size="x-small"
+            :title="$t('trans.formDesigner.importDesign')"
+            @click="$refs.uploader.click()"
+          >
+            <v-icon icon="mdi:mdi-publish"></v-icon>
+            <input
+              ref="uploader"
+              class="d-none"
+              type="file"
+              accept=".json"
+              @change="loadFile"
+            />
+          </v-btn>
+        </div>
+      </div>
+    </div>
+    <div>
+      <!-- page version -->
+      <div :lang="locale">
+        <em :lang="locale"
+          >{{ $t('trans.formDesigner.version') }} : {{ DISPLAY_VERSION }}</em
+        >
       </div>
     </div>
     <BaseInfoCard class="my-6" :class="{ 'dir-rtl': isRTL }">
@@ -726,7 +612,6 @@ async function schemaUpdateExistingDraft() {
       ></p>
     </BaseInfoCard>
     <FormBuilder
-      ref="formioForm"
       :key="reRenderFormIo"
       :form="formSchema"
       :options="designerOptions"
@@ -737,12 +622,6 @@ async function schemaUpdateExistingDraft() {
       @initialized="init"
       @addComponent="onAddSchemaComponent"
       @removeComponent="onRemoveSchemaComponent"
-    />
-    <ProactiveHelpPreviewDialog
-      :show-dialog="showHelpLinkDialog"
-      :component="component"
-      :fc-proactive-help-image-url="fcProactiveHelpImageUrl"
-      @close-dialog="onShowClosePreviewDialog"
     />
     <FloatButton
       class="position-fixed bottom-0"
@@ -763,37 +642,3 @@ async function schemaUpdateExistingDraft() {
     />
   </div>
 </template>
-
-<style lang="scss">
-/* disable router-link */
-.disabled-router {
-  pointer-events: none;
-}
-
-.formSubmit {
-  background-color: red;
-}
-
-.formExport {
-  position: sticky;
-  top: 0;
-  right: 0;
-
-  position: -webkit-sticky;
-}
-
-.formImport {
-  position: sticky;
-  top: 0;
-  right: 0;
-
-  position: -webkit-sticky;
-}
-.formSetting {
-  position: sticky;
-  top: 0;
-  right: 0;
-
-  position: -webkit-sticky;
-}
-</style>
