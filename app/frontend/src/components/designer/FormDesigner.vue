@@ -89,11 +89,12 @@ watch(locale, (value) => {
   }
 });
 
-if (properties.formId) {
-  Promise.all([formStore.fetchForm(properties.formId), getFormSchema()]);
-}
-
 onMounted(async () => {
+  if (properties.formId) {
+    await formStore.fetchForm(properties.formId);
+    await getFormSchema();
+  }
+
   // load up headers for any External API calls
   // from components (component makes calls during design phase).
   await setProxyHeaders();
@@ -333,8 +334,6 @@ function redoEnabled() {
 // Saving the Schema
 // ---------------------------------------------------------------------------------------------------
 async function submitFormSchema() {
-  saving.value = true;
-  await formStore.setDirtyFlag(false);
   try {
     saving.value = true;
     savedStatus.value = 'Saving';
@@ -359,6 +358,7 @@ async function submitFormSchema() {
     isFormSaved.value = true;
     canSave.value = false;
   } catch (error) {
+    console.log(error);
     await formStore.setDirtyFlag(true);
     const notificationStore = useNotificationStore();
     savedStatus.value = 'Not Saved';
@@ -412,22 +412,22 @@ async function schemaCreateNew() {
   if (
     form.value.labels.some((label) => userLabels.value.indexOf(label) === -1)
   ) {
-    const response = await userService.updateUserLabels(form.value.labels);
-    userLabels.value = response.data;
+    const userLabelResponse = await userService.updateUserLabels(
+      form.value.labels
+    );
+    userLabels.value = userLabelResponse.data;
   }
 
   // Navigate back to this page with ID updated
-  router
-    .push({
-      name: 'FormDesigner',
-      query: {
-        f: response.data.id,
-        d: response.data.draft.id,
-        sv: true,
-        svs: 'Saved',
-      },
-    })
-    .catch(() => {});
+  router.push({
+    name: 'FormDesigner',
+    query: {
+      f: response.data.id,
+      d: response.data.draft.id,
+      sv: true,
+      svs: 'Saved',
+    },
+  });
 }
 
 async function schemaCreateDraftFromVersion() {
@@ -533,6 +533,8 @@ async function loadFile(event) {
       });
     });
 }
+
+defineExpose({ designerOptions, reRenderFormIo });
 </script>
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
