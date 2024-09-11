@@ -8,6 +8,10 @@ export default function (...extend) {
       EditDisplay,
       EditData,
       {
+        key: 'display',
+        ignore: true,
+      },
+      {
         key: 'data',
         ignore: true,
       },
