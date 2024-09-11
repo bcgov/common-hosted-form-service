@@ -182,7 +182,7 @@ function onSchemaChange(_changed, flags, modified) {
   if (!patch.value.undoClicked && !patch.value.redoClicked) {
     // flags and modified are defined when a component is added
     if (flags !== undefined && modified !== undefined) {
-      // Component was pasted here or edited and saved
+      // Component was added into the form and save was clicked
       if (patch.value.componentAddedStart) {
         addPatchToHistory();
       } else {
@@ -358,7 +358,6 @@ async function submitFormSchema() {
     isFormSaved.value = true;
     canSave.value = false;
   } catch (error) {
-    console.log(error);
     await formStore.setDirtyFlag(true);
     const notificationStore = useNotificationStore();
     savedStatus.value = 'Not Saved';
@@ -472,7 +471,11 @@ async function setProxyHeaders() {
       response.data['X-CHEFS-PROXY-DATA']
     );
   } catch (error) {
-    // need error handling
+    const notificationStore = useNotificationStore();
+    notificationStore.addNotification({
+      text: 'Failed to set proxy headers',
+      consoleError: error,
+    });
   }
 }
 
