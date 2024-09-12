@@ -138,6 +138,16 @@ describe('Form Designer', () => {
       cy.waitForLoad();
       cy.waitForLoad();
       cy.contains('days').click();
+      //verification of Summary
+      cy.contains('span','This form will be open for submissions from').should('be.visible');
+      cy.get('b').then($el => {
+
+        const rem=$el[0];
+        const rem1=$el[1];
+        cy.get(rem).contains('2026-06-17').should('exist');
+        cy.get(rem1).contains('2026-06-21').should('exist');
+
+       });
       //Repeat period
       cy.contains('Repeat period').click();
       cy.get('input[type="number"]').then($el => {
@@ -163,16 +173,7 @@ describe('Form Designer', () => {
       cy.contains('Set custom closing message').click();
       cy.get('textarea').type('closed for some reasons')
       cy.contains('SEND Reminder email').click();
-      //verification of Summary
-      cy.contains('span','This form will be open for submissions from').should('be.visible');
-      cy.get('b').then($el => {
-
-        const rem=$el[0];
-        const rem1=$el[1];
-        cy.get(rem).contains('2026-06-17').should('exist');
-        cy.get(rem1).contains('2026-06-21').should('exist');
-
-       });
+      
       cy.contains('SEND Reminder email').click();
       //cy.contains('b','2026-06-21').should('exist');
       cy.get('[data-test="canEditForm"]').click();
