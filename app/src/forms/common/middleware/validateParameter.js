@@ -1,6 +1,7 @@
 const Problem = require('api-problem');
 const uuid = require('uuid');
 
+const constants = require('../../common/constants');
 const externalApiService = require('../../form/externalApi/service');
 const formService = require('../../form/service');
 const submissionService = require('../../submission/service');
@@ -92,12 +93,19 @@ const validateExternalAPIId = async (req, _res, next, externalAPIId) => {
     _validateUuid(externalAPIId, 'externalAPIId');
 
     const externalApi = await externalApiService.readExternalAPI(externalAPIId);
-    if (!externalApi || externalApi.formId !== req.params.formId) {
+    if (!externalApi) {
       throw new Problem(404, {
-        detail: 'externalAPIId does not exist on this form',
+        detail: 'externalAPIId does not exist',
       });
     }
-
+    // perform this check only if there is a formId (admin routes don't have form id)
+    if (req.params.formId) {
+      if (!externalApi || externalApi.formId !== req.params.formId) {
+        throw new Problem(404, {
+          detail: 'externalAPIId does not exist on this form',
+        });
+      }
+    }
     next();
   } catch (error) {
     next(error);
@@ -211,6 +219,50 @@ const validateFormVersionId = async (req, _res, next, formVersionId) => {
 };
 
 /**
+ * Validates that the :code route parameter for permissions is valid.
+ *
+ * @param {*} _req the Express object representing the HTTP request - unused.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @param {*} code the :code value from the route.
+ */
+const validatePermissionCode = async (_req, _res, next, code) => {
+  try {
+    if (!Object.values(constants.Permissions).includes(code)) {
+      throw new Problem(400, {
+        detail: 'Bad permission code',
+      });
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Validates that the :code route parameter for roles is valid.
+ *
+ * @param {*} _req the Express object representing the HTTP request - unused.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @param {*} code the :code value from the route.
+ */
+const validateRoleCode = async (_req, _res, next, code) => {
+  try {
+    if (!Object.values(constants.Roles).includes(code)) {
+      throw new Problem(400, {
+        detail: 'Bad role code',
+      });
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Validates that the :userId route parameter exists and is a UUID.
  *
  * @param {*} _req the Express object representing the HTTP request - unused.
@@ -237,5 +289,7 @@ module.exports = {
   validateFormSubmissionId,
   validateFormVersionDraftId,
   validateFormVersionId,
+  validatePermissionCode,
+  validateRoleCode,
   validateUserId,
 };

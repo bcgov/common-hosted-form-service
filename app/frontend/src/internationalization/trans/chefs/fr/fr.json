@@ -84,7 +84,8 @@
     "deleteSuccess": "Modèle supprimé avec succès.",
     "deleteError": "Une erreur s'est produite lors de la suppression du modèle.",
     "fetchError": "Une erreur s'est produite lors de la récupération du modèle.",
-    "info": "Téléchargez un modèle pour utiliser le Service de Génération de Documents Communs (CDOGS)"
+    "info": "Téléchargez un modèle pour utiliser le Service de Génération de Documents Communs (CDOGS)",
+    "fileSizeError": "La taille du fichier doit être inférieure à 25 Mo."
   },
   "formSettings": {
     "pressToAddMultiEmail": "Appuyez sur <kbd>entrée</kbd> ou <kbd>,</kbd> ou <kbd>espace</kbd> pour ajouter plusieurs adresses e-mail",

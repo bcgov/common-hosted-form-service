@@ -81,7 +81,8 @@
     "deleteSuccess": "Template deleted successfully.",
     "deleteError": "An error occurred while deleting the template.",
     "fetchError": "An error occurred while fetching the template.",
-    "info": "Upload a template to use the Common Document Generation Service (CDOGS)"
+    "info": "Upload a template to use the Common Document Generation Service (CDOGS)",
+    "fileSizeError": "File size must be less than 25MB."
   },
   "externalAPI": {
     "info": "Configure External APIs for use in your form.",

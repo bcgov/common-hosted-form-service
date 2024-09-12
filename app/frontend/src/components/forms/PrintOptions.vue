@@ -1,360 +1,339 @@
-<script>
-import { mapState, mapActions } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
+import { onBeforeUnmount, computed, ref, watch, nextTick } from 'vue';
 
+import { createDownload } from '~/composables/printOptions';
 import { formService, utilsService } from '~/services';
-import { NotificationTypes } from '~/utils/constants';
-
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
+import { NotificationTypes } from '~/utils/constants';
+import {
+  fileToBase64,
+  getDisposition,
+  splitFileName,
+} from '~/utils/transformUtils';
 
-export default {
-  props: {
-    submissionId: {
-      type: String,
-      default: '',
-    },
-    submission: {
-      type: Object,
-      default: undefined,
-    },
-    f: {
-      type: String,
-      default: '',
-    },
+const { t, locale } = useI18n({ useScope: 'global' });
+
+const properties = defineProps({
+  submissionId: {
+    type: String,
+    default: '',
   },
-  setup() {
-    const { t, locale } = useI18n({ useScope: 'global' });
-
-    return { t, locale };
+  submission: {
+    type: Object,
+    default: undefined,
   },
-  data() {
-    return {
-      dialog: false,
-      loading: false,
-      templateForm: {
-        files: [],
-        contentFileType: null,
-        outputFileName: '',
-        outputFileType: null,
-      },
-      expandedText: false,
-      timeout: undefined,
-      tab: 'tab-1',
-      selectedOption: 'upload',
-      defaultTemplate: false,
-      defaultTemplateContent: null,
-      defaultTemplateDate: '',
-      defaultTemplateFilename: '',
-      defaultTemplateExtension: '',
-      defaultReportname: '',
-      displayTemplatePrintButton: false,
-      isValidFile: true,
-      fileInputKey: 0,
-      validFileExtensions: ['txt', 'docx', 'html', 'odt', 'pptx', 'xlsx'],
-      defaultExportFileTypes: ['pdf'],
-      uploadExportFileTypes: ['pdf'],
-    };
+  f: {
+    type: String,
+    default: '',
   },
-  computed: {
-    ...mapState(useFormStore, ['isRTL', 'form', 'getInitialForm']),
-    files() {
-      return this.templateForm.files;
-    },
-    formId() {
-      return this.f ? this.f : this.form.id;
-    },
-    validationRules() {
-      return [
-        this.isValidFile ||
-          this.$t('trans.documentTemplate.invalidFileMessage'),
-      ];
-    },
-  },
-  watch: {
-    files() {
-      if (
-        this.templateForm.files.length === null ||
-        this.templateForm.files.length === 0
-      ) {
-        this.displayTemplatePrintButton = false;
-      }
-      if (
-        this.templateForm?.files &&
-        this.templateForm.files[0] instanceof File
-      ) {
-        this.displayTemplatePrintButton = true;
-        const { name, extension } = this.splitFileName(
-          this.templateForm.files[0].name
-        );
-        if (!this.templateForm.outputFileName) {
-          this.templateForm.outputFileName = name;
-        }
-        this.templateForm.contentFileType = extension;
-        if (!this.uploadExportFileTypes.includes(extension)) {
-          this.uploadExportFileTypes.push(extension);
-        }
-      }
-    },
-    selectedOption() {
-      if (this.selectedOption === 'default') {
-        this.displayTemplatePrintButton = true;
-      } else if (this.selectedOption === 'upload') {
-        this.displayTemplatePrintButton = this.templateForm.files.length > 0;
-      } else {
-        this.displayTemplatePrintButton = false;
-      }
-    },
-  },
-  beforeUnmount() {
-    if (this.timeout) clearTimeout(this.timeout);
-  },
-  methods: {
-    ...mapActions(useNotificationStore, ['addNotification']),
-    async printBrowser() {
-      //handle the 'Download Options' popup (v-dialog)
-      this.dialog = false;
+});
 
-      if (this.expandedText) {
-        // Get all text input elements
-        let inputs = document.querySelectorAll('input[type="text"]');
+const dialog = ref(false);
+const loading = ref(false);
+const templateForm = ref({
+  files: [],
+  contentFileType: null,
+  outputFileName: '',
+  outputFileType: null,
+});
+const expandedText = ref(false);
+const timeout = ref(undefined);
+const tab = ref('tab-1');
+const selectedOption = ref('upload');
+const defaultReportname = ref('');
+const defaultTemplate = ref(false);
+const defaultTemplateContent = ref(null);
+const defaultTemplateDate = ref('');
+const defaultTemplateFilename = ref('');
+const defaultTemplateExtension = ref('');
+const displayTemplatePrintButton = ref(false);
+const isValidFile = ref(true);
+const isValidSize = ref(true);
+const fileInput = ref(null);
+const fileInputKey = ref(0);
+const validFileExtensions = ref(['txt', 'docx', 'html', 'odt', 'pptx', 'xlsx']);
+const defaultExportFileTypes = ref(['pdf']);
+const uploadExportFileTypes = ref(['pdf']);
 
-        // Create arrays to store original input fields and new divs
-        let originalInputs = [];
-        let divs = [];
+const formStore = useFormStore();
+const notificationStore = useNotificationStore();
 
-        inputs.forEach((input) => {
-          let div = document.createElement('div');
-          div.textContent = input.value;
-          // apply styling
-          div.style.width = '100%';
-          div.style.height = 'auto';
-          div.style.padding = '6px 12px';
-          div.style.lineHeight = '1.5';
-          div.style.color = '#495057';
-          div.style.border = '1px solid #606060';
-          div.style.borderRadius = '4px';
-          div.style.boxSizing = 'border-box';
+const { isRTL, form } = storeToRefs(formStore);
 
-          // Store the original input and new div
-          originalInputs.push(input);
-          divs.push(div);
+const files = computed(() => templateForm.value.files);
+const formId = computed(() => (properties.f ? properties.f : form.value.id));
+const validationRules = computed(() => [
+  isValidSize.value || t('trans.documentTemplate.fileSizeError'),
+  isValidFile.value || t('trans.documentTemplate.invalidFileMessage'),
+]);
 
-          // Replace the input with the div
-          input.parentNode.replaceChild(div, input);
-        });
+watch(files, () => {
+  if (
+    templateForm.value.files.length === null ||
+    templateForm.value.files.length === 0
+  ) {
+    displayTemplatePrintButton.value = false;
+  }
+  if (
+    templateForm.value?.files &&
+    templateForm.value.files[0] instanceof File
+  ) {
+    displayTemplatePrintButton.value = true;
+    const { name, extension } = splitFileName(templateForm.value.files[0].name);
+    if (!templateForm.value.outputFileName) {
+      templateForm.value.outputFileName = name;
+    }
+    templateForm.value.contentFileType = extension;
+    if (!uploadExportFileTypes.value.includes(extension)) {
+      uploadExportFileTypes.value.push(extension);
+    }
+  }
+});
 
-        window.onafterprint = () => {
-          // Restore the original input fields after printing
-          originalInputs.forEach((input, index) => {
-            divs[index].parentNode.replaceChild(input, divs[index]);
-          });
-          //show the dialog again
-          this.dialog = true;
-        };
-      }
+watch(selectedOption, () => {
+  if (selectedOption.value === 'default') {
+    displayTemplatePrintButton.value = true;
+  } else if (selectedOption.value === 'upload') {
+    displayTemplatePrintButton.value = templateForm.value.files.length > 0;
+  } else {
+    displayTemplatePrintButton.value = false;
+  }
+});
 
-      //delaying window.print() so that the 'Download Options' popup isn't rendered
-      setTimeout(() => window.print(), 500);
-    },
+onBeforeUnmount(() => {
+  if (timeout.value) clearTimeout(timeout.value);
+});
 
-    splitFileName(filename = undefined) {
-      let name = undefined;
-      let extension = undefined;
+async function printBrowser() {
+  //handle the 'Download Options' popup (v-dialog)
+  dialog.value = false;
 
-      if (filename) {
-        const filenameArray = filename.split('.');
-        name = filenameArray.slice(0, -1).join('.');
-        extension = filenameArray.slice(-1).join('.');
-      }
+  if (expandedText.value) {
+    // Get all text input elements
+    let inputs = document.querySelectorAll('input[type="text"]');
 
-      return { name, extension };
-    },
+    // Create arrays to store original input fields and new divs
+    let originalInputs = [];
+    let divs = [];
 
-    fileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result.replace(/^.*,/, ''));
-        reader.onerror = (error) => reject(error);
+    inputs.forEach((input) => {
+      let div = document.createElement('div');
+      div.textContent = input.value;
+      // apply styling
+      div.style.width = '100%';
+      div.style.height = 'auto';
+      div.style.padding = '6px 12px';
+      div.style.lineHeight = '1.5';
+      div.style.color = '#495057';
+      div.style.border = '1px solid #606060';
+      div.style.borderRadius = '4px';
+      div.style.boxSizing = 'border-box';
+
+      // Store the original input and new div
+      originalInputs.push(input);
+      divs.push(div);
+
+      // Replace the input with the div
+      input.parentNode.replaceChild(div, input);
+    });
+
+    window.onafterprint = () => {
+      // Restore the original input fields after printing
+      originalInputs.forEach((input, index) => {
+        divs[index].parentNode.replaceChild(input, divs[index]);
       });
-    },
+      //show the dialog again
+      dialog.value = true;
+    };
+  }
 
-    getDispositionFilename(disposition) {
-      return disposition
-        ? disposition.substring(disposition.indexOf('filename=') + 9)
-        : undefined;
-    },
+  //delaying window.print() so that the 'Download Options' popup isn't rendered
+  timeout.value = setTimeout(() => window.print(), 500);
+}
 
-    createDownload(blob, filename = undefined) {
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = filename;
-      a.click();
-      window.URL.revokeObjectURL(url);
-      a.remove();
-    },
+async function generate() {
+  try {
+    loading.value = true;
+    let outputFileType = templateForm.value.outputFileType || 'pdf';
+    let content = '';
+    let contentFileType = '';
+    let outputFileName = '';
 
-    async generate() {
-      try {
-        this.loading = true;
-        let outputFileType = this.templateForm.outputFileType || 'pdf';
-        let content = '';
-        let contentFileType = '';
-        let outputFileName = '';
+    if (selectedOption.value === 'default') {
+      content = defaultTemplateContent.value;
+      contentFileType = defaultTemplateExtension.value;
+      outputFileName = defaultReportname.value;
+    } else if (selectedOption.value === 'upload') {
+      content = await fileToBase64(templateForm.value.files[0]);
+      contentFileType = templateForm.value.contentFileType;
+      outputFileName = templateForm.value.outputFileName;
+    }
 
-        if (this.selectedOption === 'default') {
-          content = this.defaultTemplateContent;
-          contentFileType = this.defaultTemplateExtension;
-          outputFileName = this.defaultReportname;
-        } else if (this.selectedOption === 'upload') {
-          content = await this.fileToBase64(this.templateForm.files[0]);
-          contentFileType = this.templateForm.contentFileType;
-          outputFileName = this.templateForm.outputFileName;
-        }
-
-        const body = this.createBody(
-          content,
-          contentFileType,
-          outputFileName,
-          outputFileType
-        );
-        let response = null;
-        // Submit Template to CDOGS API
-        if (this.submissionId?.length > 0) {
-          response = await formService.docGen(this.submissionId, body);
-        } else {
-          const draftData = {
-            template: body,
-            submission: this.submission,
-          };
-          response = await utilsService.draftDocGen(draftData);
-        }
-        // create file to download
-        const filename = this.getDispositionFilename(
-          response.headers['content-disposition']
-        );
-
-        const blob = new Blob([response.data], {
-          type: 'attachment',
-        });
-
-        // Generate Temporary Download Link
-        this.createDownload(blob, filename);
-        this.addNotification({
-          text: this.$t('trans.printOptions.docGrnSucess'),
-          ...NotificationTypes.SUCCESS,
-        });
-      } catch (e) {
-        this.addNotification({
-          text: this.$t('trans.printOptions.failedDocGenErrMsg'),
-          consoleError: this.$t('trans.printOptions.failedDocGenErrMsg', {
-            error: e.message,
-          }),
-        });
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    createBody(content, contentFileType, outputFileName, outputFileType) {
-      return {
-        options: {
-          reportName: outputFileName,
-          convertTo: outputFileType,
-          overwrite: true,
-        },
-        template: {
-          content: content,
-          encodingType: 'base64',
-          fileType: contentFileType,
-        },
+    const body = createBody(
+      content,
+      contentFileType,
+      outputFileName,
+      outputFileType
+    );
+    let response = null;
+    // Submit Template to CDOGS API
+    if (properties.submissionId?.length > 0) {
+      response = await formService.docGen(properties.submissionId, body);
+    } else {
+      const draftData = {
+        template: body,
+        submission: properties.submission,
       };
+      response = await utilsService.draftDocGen(draftData);
+    }
+    // create file to download
+    const filename = getDisposition(response.headers['content-disposition']);
+
+    const blob = new Blob([response.data], {
+      type: 'attachment',
+    });
+
+    // Generate Temporary Download Link
+    createDownload(blob, filename);
+    notificationStore.addNotification({
+      text: t('trans.printOptions.docGrnSucess'),
+      ...NotificationTypes.SUCCESS,
+    });
+  } catch (e) {
+    notificationStore.addNotification({
+      text: t('trans.printOptions.failedDocGenErrMsg'),
+      consoleError: t('trans.printOptions.failedDocGenErrMsg', {
+        error: e.message,
+      }),
+    });
+  } finally {
+    loading.value = false;
+  }
+}
+
+function createBody(content, contentFileType, outputFileName, outputFileType) {
+  return {
+    options: {
+      reportName: outputFileName,
+      convertTo: outputFileType,
+      overwrite: true,
     },
+    template: {
+      content: content,
+      encodingType: 'base64',
+      fileType: contentFileType,
+    },
+  };
+}
 
-    async fetchDefaultTemplate() {
-      // Calling the API to check whether the form has any uploaded document templates
-      this.loading = true;
-      try {
-        const response1 = await formService.documentTemplateList(this.formId);
-        if (response1 && response1.data.length > 0) {
-          this.defaultTemplate = true;
-          this.selectedOption = 'default';
-        }
-        if (this.defaultTemplate) {
-          const docId = response1.data[0].id;
-          const response2 = await formService.documentTemplateRead(
-            this.formId,
-            docId
-          );
-          const temp = response2.data.template.data;
-          const base64String = temp
-            .map((code) => String.fromCharCode(code))
-            .join('');
-          this.defaultTemplateContent = base64String;
-          this.defaultTemplateFilename = response1.data[0].filename;
-          const { name, extension } = this.splitFileName(
-            response2.data.filename
-          );
-          this.defaultTemplateExtension = extension;
-          this.defaultReportname = name;
-          this.defaultTemplateDate = response2.data.createdAt.split('T')[0];
+async function fetchDefaultTemplate() {
+  // Calling the API to check whether the form has any uploaded document templates
+  loading.value = true;
+  try {
+    const response1 = await formService.documentTemplateList(formId.value);
+    if (response1 && response1.data.length > 0) {
+      defaultTemplate.value = true;
+      selectedOption.value = 'default';
+    }
+    if (defaultTemplate.value) {
+      const docId = response1.data[0].id;
+      const response2 = await formService.documentTemplateRead(
+        formId.value,
+        docId
+      );
+      const temp = response2.data.template.data;
+      const base64String = temp
+        .map((code) => String.fromCharCode(code))
+        .join('');
+      defaultTemplateContent.value = base64String;
+      defaultTemplateFilename.value = response1.data[0].filename;
+      const { name, extension } = splitFileName(response2.data.filename);
+      defaultTemplateExtension.value = extension;
+      defaultReportname.value = name;
+      defaultTemplateDate.value = response2.data.createdAt.split('T')[0];
 
-          if (!this.defaultExportFileTypes.includes(extension)) {
-            this.defaultExportFileTypes.push(extension);
-          }
-        }
-      } catch (e) {
-        this.addNotification({
-          text: this.$t('trans.documentTemplate.fetchError'),
-          consoleError: this.$t('trans.documentTemplate.fetchError', {
-            error: e.message,
-          }),
-        });
-      } finally {
-        this.loading = false;
+      if (!defaultExportFileTypes.value.includes(extension)) {
+        defaultExportFileTypes.value.push(extension);
       }
-    },
+    }
+  } catch (e) {
+    notificationStore.addNotification({
+      text: t('trans.documentTemplate.fetchError'),
+      consoleError: t('trans.documentTemplate.fetchError', {
+        error: e.message,
+      }),
+    });
+  } finally {
+    loading.value = false;
+  }
+}
 
-    validateFileExtension(event) {
-      if (event.length > 0) {
-        const fileExtension = event[0].name.split('.').pop();
-        // reset the outputFileName when a new file is uploaded
-        this.templateForm.outputFileName = event[0].name
-          .split('.')
-          .slice(0, -1)
-          .join('.');
-        // reset uploadExportFileTypes when a new file is uploaded
-        this.uploadExportFileTypes = ['pdf'];
-        // reset the v-select value
-        this.templateForm.outputFileType = null;
+function validateFile(event) {
+  if (event.length > 0) {
+    // validate file size
+    if (event[0].size > 25000000) {
+      isValidSize.value = false;
+    } else {
+      isValidSize.value = true;
+    }
 
-        if (this.validFileExtensions.includes(fileExtension)) {
-          this.isValidFile = true;
-        } else {
-          this.isValidFile = false;
-        }
-      } else {
-        // Remove the file extension from uploadExportFileTypes when the file input is cleared
-        const fileExtension = this.templateForm.contentFileType;
-        if (fileExtension && fileExtension !== 'pdf') {
-          this.uploadExportFileTypes = this.uploadExportFileTypes.filter(
-            (type) => type !== fileExtension
-          );
-        }
-        this.isValidFile = true;
-      }
-    },
+    // validate file extension
+    const fileExtension = event[0].name.split('.').pop();
+    // reset the outputFileName when a new file is uploaded
+    templateForm.value.outputFileName = event[0].name
+      .split('.')
+      .slice(0, -1)
+      .join('.');
+    // reset uploadExportFileTypes when a new file is uploaded
+    uploadExportFileTypes.value = ['pdf'];
+    // reset the v-select value
+    templateForm.value.outputFileType = null;
+    if (validFileExtensions.value.includes(fileExtension)) {
+      isValidFile.value = true;
+    } else {
+      isValidFile.value = false;
+    }
+  } else {
+    // Remove the file extension from uploadExportFileTypes when the file input is cleared
+    const fileExtension = templateForm.value.contentFileType;
+    if (fileExtension && fileExtension !== 'pdf') {
+      uploadExportFileTypes.value = uploadExportFileTypes.value.filter(
+        (type) => type !== fileExtension
+      );
+    }
+    isValidFile.value = true;
+    isValidSize.value = true;
+  }
+}
 
-    handleFileUpload(event) {
-      this.fileInputKey += 1;
-      this.templateForm.files = event;
-      this.validateFileExtension(event);
-    },
-  },
-};
+function handleFileUpload(event) {
+  fileInputKey.value += 1;
+  templateForm.value.files = event;
+  validateFile(event);
+
+  //force immediate validation as the v-file-input is bound to the :key
+  nextTick(() => {
+    if (fileInput.value) {
+      fileInput.value.validate();
+    }
+  });
+}
+
+defineExpose({
+  createBody,
+  createDownload,
+  fetchDefaultTemplate,
+  isValidFile,
+  isValidSize,
+  selectedOption,
+  templateForm,
+  timeout,
+  uploadExportFileTypes,
+  validateFile,
+});
 </script>
 
 <template>
@@ -487,6 +466,7 @@ export default {
                   value="upload"
                 ></v-radio>
                 <v-file-input
+                  ref="fileInput"
                   :key="fileInputKey"
                   v-model="templateForm.files"
                   :class="{ label: isRTL }"
@@ -523,7 +503,11 @@ export default {
                         id="file-input-submit"
                         variant="flat"
                         class="btn-file-input-submit px-4"
-                        :disabled="!displayTemplatePrintButton || !isValidFile"
+                        :disabled="
+                          !displayTemplatePrintButton ||
+                          !isValidFile ||
+                          !isValidSize
+                        "
                         color="primary"
                         :loading="loading"
                         v-bind="props"

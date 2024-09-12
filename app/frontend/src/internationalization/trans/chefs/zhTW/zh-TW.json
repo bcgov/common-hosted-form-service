@@ -84,7 +84,8 @@
     "deleteSuccess": "範本成功刪除。",
     "deleteError": "刪除範本時發生錯誤。",
     "fetchError": "獲取範本時發生錯誤。",
-    "info": "上傳範本以使用公共文檔生成服務（CDOGS）"
+    "info": "上傳範本以使用公共文檔生成服務（CDOGS）",
+    "fileSizeError": "檔案大小必須小於25MB。"
   },
   "formSettings": {
     "pressToAddMultiEmail": "按<kbd>Enter</kbd>或<kbd>,</kbd>或<kbd>空格鍵</kbd>添加多個電子郵件地址",

@@ -84,7 +84,8 @@
     "deleteSuccess": "Template eliminato con successo.",
     "deleteError": "Si è verificato un errore durante l'eliminazione del template.",
     "fetchError": "Si è verificato un errore durante il recupero del template.",
-    "info": "Carica un template per utilizzare il Servizio di Generazione Documenti Comuni (CDOGS)"
+    "info": "Carica un template per utilizzare il Servizio di Generazione Documenti Comuni (CDOGS)",
+    "fileSizeError": "La dimensione del file deve essere inferiore a 25 MB."
   },
   "formSettings": {
     "pressToAddMultiEmail": "Premi <kbd>invio</kbd> o <kbd>,</kbd> o <kbd>spazio</kbd> per aggiungere più indirizzi email",
