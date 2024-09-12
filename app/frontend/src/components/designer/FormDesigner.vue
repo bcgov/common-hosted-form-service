@@ -153,7 +153,7 @@ function onChangeMethod(changed, flags, modified) {
 
 function onRenderMethod() {
   const el = document.querySelector('input.builder-sidebar_search:focus');
-  if (el && el === '') reRenderFormIo.value += 1;
+  if (el === '') reRenderFormIo.value += 1;
   formStore.setDirtyFlag(false);
 }
 
@@ -359,7 +359,6 @@ async function submitFormSchema() {
     canSave.value = false;
   } catch (error) {
     await formStore.setDirtyFlag(true);
-    const notificationStore = useNotificationStore();
     savedStatus.value = 'Not Saved';
     isFormSaved.value = false;
     notificationStore.addNotification({
@@ -471,7 +470,6 @@ async function setProxyHeaders() {
       response.data['X-CHEFS-PROXY-DATA']
     );
   } catch (error) {
-    const notificationStore = useNotificationStore();
     notificationStore.addNotification({
       text: 'Failed to set proxy headers',
       consoleError: error,
@@ -503,7 +501,6 @@ async function getFormSchema() {
     }
     reRenderFormIo.value += 1;
   } catch (error) {
-    const notificationStore = useNotificationStore();
     notificationStore.addNotification({
       text: t('trans.formDesigner.formLoadErrMsg'),
       consoleError: t('trans.formDesigner.formLoadConsoleErrMsg', {
@@ -517,24 +514,24 @@ async function getFormSchema() {
 }
 
 async function loadFile(event) {
-  importFormSchemaFromFile(event.target.files[0])
-    .then((result) => {
-      formSchema.value = JSON.parse(result);
-      addPatchToHistory();
-      patch.value.undoClicked = false;
-      patch.value.redoClicked = false;
-      resetHistoryFlags();
-      // Key-changing to force a re-render of the formio component when we want to load a new schema after the page is already in
-      reRenderFormIo.value += 1;
-    })
-    .catch((error) => {
-      notificationStore.addNotification({
-        text: t('trans.formDesigner.formSchemaImportErrMsg'),
-        consoleError: t('trans.formDesigner.formSchemaImportConsoleErrMsg', {
-          error: error,
-        }),
-      });
+  try {
+    const result = await importFormSchemaFromFile(event.target.files[0]);
+
+    formSchema.value = JSON.parse(result);
+    addPatchToHistory();
+    patch.value.undoClicked = false;
+    patch.value.redoClicked = false;
+    resetHistoryFlags();
+    // Key-changing to force a re-render of the formio component when we want to load a new schema after the page is already in
+    reRenderFormIo.value += 1;
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.formDesigner.formSchemaImportErrMsg'),
+      consoleError: t('trans.formDesigner.formSchemaImportConsoleErrMsg', {
+        error: error,
+      }),
     });
+  }
 }
 
 defineExpose({ designerOptions, reRenderFormIo });

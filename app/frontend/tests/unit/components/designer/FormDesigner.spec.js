@@ -6,6 +6,7 @@ import { beforeEach, vi } from 'vitest';
 import { useRouter } from 'vue-router';
 
 import FormDesigner from '~/components/designer/FormDesigner.vue';
+import * as formComposables from '~/composables/form';
 import formioIl8next from '~/internationalization/trans/formio/formio.json';
 import templateExtensions from '~/plugins/templateExtensions';
 import { formService, userService } from '~/services';
@@ -125,7 +126,7 @@ describe('FormDesigner.vue', () => {
     addNotificationSpy.mockImplementation(() => {});
 
     getProxyHeadersSpy.mockReset();
-    getProxyHeadersSpy.mockImplementation(() => {
+    getProxyHeadersSpy.mockImplementationOnce(() => {
       return {
         data: {
           'X-CHEFS-PROXY-DATA': '',
@@ -152,6 +153,8 @@ describe('FormDesigner.vue', () => {
 
     setDirtyFlagSpy.mockReset();
     setDirtyFlagSpy.mockImplementation(() => {});
+
+    formStore.form.isDirty = false;
   });
 
   it('when the form is changed, it will increment reRenderFormIo', async () => {
@@ -169,55 +172,77 @@ describe('FormDesigner.vue', () => {
     expect(wrapper.vm.reRenderFormIo).toEqual(1);
   });
 
-  it('onMounted, if there is a form id it will fetchForm and getFormSchema, if no versionId or draftId is set, it will throw an error', async () => {
-    shallowMount(FormDesigner, {
-      props: {
-        formId: '123',
-      },
-      global: {
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
-
-    await flushPromises();
-
-    expect(fetchFormSpy).toBeCalledTimes(1);
-    expect(getProxyHeadersSpy).toBeCalledTimes(1);
-    expect(addNotificationSpy).toBeCalledTimes(1);
-    expect(readVersionSpy).toBeCalledTimes(0);
-  });
-
-  it('onMounted, if there is a form id it will fetchForm and getFormSchema, if there is a version id will call readVersion', async () => {
-    readVersionSpy.mockImplementationOnce(() => {
-      return {
-        data: {
-          schema: {},
+  describe('onMounted', () => {
+    it('onMounted, if there is a form id it will fetchForm and getFormSchema, if no versionId or draftId is set, it will throw an error', async () => {
+      shallowMount(FormDesigner, {
+        props: {
+          formId: '123',
         },
-      };
+        global: {
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      expect(fetchFormSpy).toBeCalledTimes(1);
+      expect(getProxyHeadersSpy).toBeCalledTimes(1);
+      expect(addNotificationSpy).toBeCalledTimes(1);
+      expect(readVersionSpy).toBeCalledTimes(0);
     });
 
-    shallowMount(FormDesigner, {
-      props: {
-        formId: '123',
-        versionId: '123',
-      },
-      global: {
-        plugins: [pinia],
-        stubs: STUBS,
-      },
+    it('onMounted, if there is a form id it will fetchForm and getFormSchema, if there is a version id will call readVersion', async () => {
+      readVersionSpy.mockImplementationOnce(() => {
+        return {
+          data: {
+            schema: {},
+          },
+        };
+      });
+
+      shallowMount(FormDesigner, {
+        props: {
+          formId: '123',
+          versionId: '123',
+        },
+        global: {
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+      expect(fetchFormSpy).toBeCalledTimes(1);
+      expect(getProxyHeadersSpy).toBeCalledTimes(1);
+      expect(addNotificationSpy).toBeCalledTimes(0);
+      expect(readVersionSpy).toBeCalledTimes(1);
+      expect(readDraftSpy).toBeCalledTimes(0);
     });
 
-    await flushPromises();
-    expect(fetchFormSpy).toBeCalledTimes(1);
-    expect(getProxyHeadersSpy).toBeCalledTimes(1);
-    expect(addNotificationSpy).toBeCalledTimes(0);
-    expect(readVersionSpy).toBeCalledTimes(1);
-    expect(readDraftSpy).toBeCalledTimes(0);
+    it('onMounted, if there is a form id it will fetchForm and getFormSchema, if there is a draft id will call readDraft', async () => {
+      shallowMount(FormDesigner, {
+        props: {
+          formId: '123',
+          draftId: '123',
+        },
+        global: {
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+      expect(fetchFormSpy).toBeCalledTimes(1);
+      expect(getProxyHeadersSpy).toBeCalledTimes(1);
+      expect(addNotificationSpy).toBeCalledTimes(0);
+      expect(readVersionSpy).toBeCalledTimes(0);
+      expect(readDraftSpy).toBeCalledTimes(1);
+    });
   });
 
-  it('onMounted, if there is a form id it will fetchForm and getFormSchema, if there is a draft id will call readDraft', async () => {
-    shallowMount(FormDesigner, {
+  it('setProxyHeaders will addNotification if an error occurs', async () => {
+    const wrapper = shallowMount(FormDesigner, {
       props: {
         formId: '123',
         draftId: '123',
@@ -229,11 +254,14 @@ describe('FormDesigner.vue', () => {
     });
 
     await flushPromises();
-    expect(fetchFormSpy).toBeCalledTimes(1);
+
+    getProxyHeadersSpy.mockReset();
+    getProxyHeadersSpy.mockImplementationOnce(() => {
+      throw new Error();
+    });
+    await wrapper.vm.setProxyHeaders();
     expect(getProxyHeadersSpy).toBeCalledTimes(1);
-    expect(addNotificationSpy).toBeCalledTimes(0);
-    expect(readVersionSpy).toBeCalledTimes(0);
-    expect(readDraftSpy).toBeCalledTimes(1);
+    expect(addNotificationSpy).toBeCalledTimes(1);
   });
 
   it('onMounted, patch originalSchema should be a clone of the formSchema', async () => {
@@ -1158,5 +1186,155 @@ describe('FormDesigner.vue', () => {
       expect(setDirtyFlagSpy).toBeCalledTimes(1);
       expect(setDirtyFlagSpy).toBeCalledWith(false);
     });
+
+    it('onChangeMethod will setDirtyFlag to true if the form is not dirty', async () => {
+      const wrapper = shallowMount(FormDesigner, {
+        props: {},
+        global: {
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      wrapper.vm.form.isDirty = true;
+      wrapper.vm.onChangeMethod();
+
+      expect(wrapper.vm.form.isDirty).toBeTruthy();
+    });
+
+    it('onRenderMethod will setDirtyFlag to false', async () => {
+      const wrapper = shallowMount(FormDesigner, {
+        props: {},
+        global: {
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      const querySelectorSpy = vi.spyOn(document, 'querySelector');
+      querySelectorSpy.mockImplementationOnce(() => {
+        return '';
+      });
+
+      await flushPromises();
+
+      wrapper.vm.onRenderMethod();
+
+      expect(wrapper.vm.reRenderFormIo).toEqual(1);
+      expect(wrapper.vm.form.isDirty).toBeFalsy();
+    });
+
+    it('onAddSchemaComponent will set componentAddedStart to true if the isNew flag is true', async () => {
+      const wrapper = shallowMount(FormDesigner, {
+        props: {},
+        global: {
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      expect(wrapper.vm.patch.componentAddedStart).toBeFalsy();
+      expect(wrapper.vm.patch.componentMovedStart).toBeFalsy();
+
+      wrapper.vm.onAddSchemaComponent(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        false
+      );
+
+      expect(wrapper.vm.patch.componentMovedStart).toBeTruthy();
+
+      wrapper.vm.onAddSchemaComponent(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        true
+      );
+      expect(wrapper.vm.patch.componentAddedStart).toBeTruthy();
+    });
+
+    it('onRemoveSchemaComponent will set componentRemovedStart to true', async () => {
+      const wrapper = shallowMount(FormDesigner, {
+        props: {},
+        global: {
+          plugins: [pinia],
+          stubs: STUBS,
+        },
+      });
+
+      await flushPromises();
+
+      expect(wrapper.vm.patch.componentRemovedStart).toBeFalsy();
+
+      wrapper.vm.onRemoveSchemaComponent();
+
+      expect(wrapper.vm.patch.componentRemovedStart).toBeTruthy();
+    });
+  });
+
+  it('loadFile will set the form schema and add to patch history', async () => {
+    const importFormSchemaFromFileSpy = vi.spyOn(
+      formComposables,
+      'importFormSchemaFromFile'
+    );
+    importFormSchemaFromFileSpy.mockImplementationOnce(() => {
+      return Promise.resolve(
+        JSON.stringify({
+          components: [
+            {
+              id: '123',
+            },
+          ],
+          display: 'form',
+          type: 'form',
+        })
+      );
+    });
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    await wrapper.vm.loadFile({ target: { files: [0] } });
+
+    expect(wrapper.vm.patch.history).toEqual([
+      [{ op: 'add', path: '/components/0', value: { id: '123' } }],
+    ]);
+  });
+
+  it('loadFile will addNotification if an error occurs', async () => {
+    const importFormSchemaFromFileSpy = vi.spyOn(
+      formComposables,
+      'importFormSchemaFromFile'
+    );
+    importFormSchemaFromFileSpy.mockImplementationOnce(() => {
+      throw new Error();
+    });
+    const wrapper = shallowMount(FormDesigner, {
+      props: {},
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    await wrapper.vm.loadFile({ target: { files: [0] } });
+
+    expect(wrapper.vm.patch.history).toEqual([]);
+    expect(addNotificationSpy).toBeCalledTimes(1);
   });
 });
