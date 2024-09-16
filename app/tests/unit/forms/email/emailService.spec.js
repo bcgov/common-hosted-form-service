@@ -107,6 +107,7 @@ describe('public methods', () => {
     },
   };
   const assignmentNotificationEmail = 'x@y.com';
+  const emailArray = ['x@y.com'];
   const body = { to: 'a@b.com' };
   const body_high = { priority: 'high', to: 'a@b.com' };
   const body_low = { priority: 'low', to: 'a@b.com' };
@@ -157,7 +158,7 @@ describe('public methods', () => {
     formService.readForm = jest.fn().mockReturnValue(form);
     formService.readSubmission = jest.fn().mockReturnValue(submission);
     emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
-    const result = await emailService.statusRevising('123', currentStatus, assignmentNotificationEmail, emailContent, referer);
+    const result = await emailService.statusRevising('123', currentStatus, emailArray, emailContent, referer);
     const configData = {
       bodyTemplate: 'send-status-revising-email-body.html',
       title: `${form.name} Submission Revision Requested`,
@@ -191,7 +192,7 @@ describe('public methods', () => {
     formService.readForm = jest.fn().mockReturnValue(form);
     formService.readSubmission = jest.fn().mockReturnValue(submission);
     emailService._sendEmailTemplate = jest.fn().mockReturnValue('ret');
-    const result = await emailService.statusCompleted('123', currentStatus, assignmentNotificationEmail, emailContent, referer);
+    const result = await emailService.statusCompleted('123', currentStatus, emailArray, emailContent, referer);
     const configData = {
       bodyTemplate: 'submission-completed.html',
       title: `${form.name} Has Been Completed`,
