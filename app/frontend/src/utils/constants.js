@@ -172,3 +172,68 @@ export const ExportLargeData = Object.freeze({
   MAX_RECORDS: 300, // Maximum number of submissions after that we gonna upload the export to Cloud and send user a download link via email
   MAX_FIELDS: 30, // Maximum number of fields in a form after that we gonna upload the export to Cloud and send user a download link via email
 });
+
+/** Constants for the form components proactive help */
+export const FormComponentProactiveHelpValues = Object.freeze({
+  'Basic Layout': [
+    'Text/Images',
+    'Columns - 2',
+    'Columns - 3',
+    'Columns - 4',
+    'Tabs',
+    'Panel',
+  ],
+  'Basic Fields': [
+    'Text Field',
+    'Multi-line Text',
+    'Select List',
+    'Checkbox',
+    'Checkbox Group',
+    'Radio Group',
+    'Number',
+    'Phone Number',
+    'Email',
+    'Date / Time',
+    'Day',
+  ],
+  'Advanced Layout': [
+    'HTML Element',
+    'Content',
+    'Columns',
+    'Field Set',
+    'Panel',
+    'Table',
+    'Tabs',
+    'Well',
+  ],
+  'Advanced Fields': [
+    'Text Field',
+    'Email',
+    'Text Area',
+    'Url',
+    'Number',
+    'Phone Number',
+    'Tags',
+    'Address',
+    'Password',
+    'Date / Time',
+    'Checkbox',
+    'Day',
+    'Time',
+    'Select Boxes',
+    'Select',
+    'Currency',
+    'Radio',
+    'Survey',
+    'Signature',
+  ],
+  'Advanced Data': [
+    'Hidden',
+    'Container',
+    'Data Map',
+    'Data Grid',
+    'Edit Grid',
+    'Tree',
+  ],
+  'BC Government': ['File Upload', 'Business Name Search', 'BC Address'],
+});

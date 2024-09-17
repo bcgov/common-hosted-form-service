@@ -103,10 +103,12 @@ module.exports = {
         emailService
           .statusAssigned(submission.form.id, response[0], req.body.assignmentNotificationEmail, req.body.revisionNotificationEmailContent, req.headers.referer)
           .catch(() => {});
-      } else if (req.body.code === Statuses.COMPLETED && req.body.submissionUserEmail) {
-        emailService.statusCompleted(submission.form.id, response[0], req.body.submissionUserEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => {});
-      } else if (req.body.code === Statuses.REVISING && req.body.submissionUserEmail) {
-        emailService.statusRevising(submission.form.id, response[0], req.body.submissionUserEmail, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => {});
+      } else if (req.body.code === Statuses.COMPLETED && req.body.submissionUserEmails) {
+        emailService
+          .statusCompleted(submission.form.id, response[0], req.body.submissionUserEmails, req.body.revisionNotificationEmailContent, req.headers.referer)
+          .catch(() => {});
+      } else if (req.body.code === Statuses.REVISING && req.body.submissionUserEmails) {
+        emailService.statusRevising(submission.form.id, response[0], req.body.submissionUserEmails, req.body.revisionNotificationEmailContent, req.headers.referer).catch(() => {});
       }
       res.status(200).json(response);
     } catch (error) {
@@ -117,6 +119,22 @@ module.exports = {
     try {
       const submission = await service.read(req.params.formSubmissionId);
       const response = await emailService.submissionConfirmation(submission.form.id, req.params.formSubmissionId, req.body, req.headers.referer);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  getEmailRecipients: async (req, res, next) => {
+    try {
+      const response = await service.getEmailRecipients(req.params.formSubmissionId);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  addEmailRecipients: async (req, res, next) => {
+    try {
+      const response = await service.addEmailRecipients(req.params.formSubmissionId, req.body.emailRecipients);
       res.status(200).json(response);
     } catch (error) {
       next(error);

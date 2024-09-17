@@ -57,6 +57,14 @@ routes.post('/:formSubmissionId/email', hasSubmissionPermissions([P.SUBMISSION_R
   await controller.email(req, res, next);
 });
 
+routes.get('/:formSubmissionId/emailRecipients', hasSubmissionPermissions([P.SUBMISSION_REVIEW]), async (req, res, next) => {
+  await controller.getEmailRecipients(req, res, next);
+});
+
+routes.post('/:formSubmissionId/emailRecipients', hasSubmissionPermissions([P.SUBMISSION_REVIEW]), async (req, res, next) => {
+  await controller.addEmailRecipients(req, res, next);
+});
+
 routes.get('/:formSubmissionId/edits', hasSubmissionPermissions([P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.listEdits(req, res, next);
 });

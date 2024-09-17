@@ -84,7 +84,8 @@
     "deleteSuccess": "Plantilla eliminada exitosamente.",
     "deleteError": "Ocurrió un error al eliminar la plantilla.",
     "fetchError": "Ocurrió un error al obtener la plantilla.",
-    "info": "Sube una plantilla para usar el Servicio de Generación de Documentos Comunes (CDOGS)"
+    "info": "Sube una plantilla para usar el Servicio de Generación de Documentos Comunes (CDOGS)",
+    "fileSizeError": "El tamaño del archivo debe ser menor de 25 MB."
   },
   "formSettings": {
     "pressToAddMultiEmail": "Presiona <kbd>enter</kbd> o <kbd>,</kbd> o <kbd>espacio</kbd> para agregar varias direcciones de correo electrónico",

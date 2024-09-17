@@ -518,6 +518,32 @@ export default {
     );
   },
 
+  /**
+   * @function getEmailRecipients
+   * Get the email recipients for the submission
+   * @param {string} submissionId The form submission identifier
+   * @returns {Promise} An axios response
+   */
+  getEmailRecipients(submissionId) {
+    return appAxios().get(
+      `${ApiRoutes.SUBMISSION}/${submissionId}/emailRecipients`
+    );
+  },
+
+  /**
+   * @function addEmailRecipients
+   * Add a new email recipients to the submission
+   * @param {string} submissionId The form submission identifier
+   * @param {Object} data The request body
+   * @returns {Promise} An axios response
+   */
+  addEmailRecipients(submissionId, data) {
+    return appAxios().post(
+      `${ApiRoutes.SUBMISSION}/${submissionId}/emailRecipients`,
+      data
+    );
+  },
+
   //
   // Email
   //

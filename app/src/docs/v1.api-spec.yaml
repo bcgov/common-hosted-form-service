@@ -80,6 +80,10 @@ tags:
     description: >-
       These API endpoints handle operations to update and retrieve statuses and
       notes on a submission, and status code management for a Form.
+  - name: Email Recipients
+    description: >-
+      These API endpoints handle operations to update and retrieve email
+      recipients for a form when the status is set to REVISING or COMPLETED.
   - name: Files
     description: API endpoints to upload and retrieve files stored in CHEFS.
   - name: User
@@ -1920,6 +1924,61 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Note'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /submission/{formSubmissionId}/emailRecipients:
+    get:
+      summary: Get email recipients
+      operationId: getEmailRecipients
+      tags:
+        - Email Recipients
+      parameters:
+        - $ref: '#/components/parameters/formSubmissionIdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailRecipients'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Add email recipients
+      operationId: addEmailRecipients
+      tags:
+        - Email Recipients
+      parameters:
+        - $ref: '#/components/parameters/formSubmissionIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailRecipients'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailRecipients'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -4246,6 +4305,16 @@ components:
           example: >-
             'This is a note that can be up to 4000 characters I add to the
             submission and can link to an individual status id'
+    EmailRecipients:
+      type: object
+      properties:
+        emailRecipients:
+          type: array
+          items:
+            type: string
+          example:
+            - xyz@email.com
+            - abc@email.com
     Permission:
       allOf:
         - $ref: '#/components/schemas/PermissionBasic'
