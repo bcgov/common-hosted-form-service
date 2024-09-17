@@ -393,6 +393,39 @@ const service = {
       throw err;
     }
   },
+
+  /**
+   * @function getEmailRecipients
+   * Get email recipients that were selected when the status was set to REVISING
+   * @param {string} submissionId The submission id
+   * @returns The email recipients
+   */
+  getEmailRecipients: (submissionId) => {
+    return FormSubmissionStatus.query().modify('filterSubmissionId', submissionId).where('code', Statuses.REVISING).modify('orderDescending').first().select('emailRecipients');
+  },
+
+  /**
+   * @function addEmailRecipients
+   * Add email recipients of the REVISING status to the database
+   * @param {string} submissionId The submission id
+   * @param {string[]} emailRecipients The email recipients
+   * @returns confirmation of the email recipients being added
+   */
+  addEmailRecipients: async (submissionId, emailRecipients) => {
+    // Convert the JavaScript array to a PostgreSQL array literal
+    const pgArray = `{${emailRecipients.map((email) => `"${email}"`).join(',')}}`;
+
+    await FormSubmissionStatus.query()
+      .modify('filterSubmissionId', submissionId)
+      .where('code', Statuses.REVISING)
+      .modify('orderDescending')
+      .first()
+      .patch({
+        emailRecipients: FormSubmissionStatus.raw('?::text[]', [pgArray]),
+      });
+    return service.getEmailRecipients(submissionId);
+  },
+
   // -------------------------------------------------------------------------------------------------/Notes
 };
 
