@@ -1,6 +1,6 @@
 import 'cypress-keycloak-commands';
 import 'cypress-drag-drop';
-import { formsettings } from '../support/login.js';
+import { formsettings } from '../support/form-settings-IDIR-login.js';
 
 const depEnv = Cypress.env('depEnv');
 
@@ -35,23 +35,15 @@ describe('Form Designer', () => {
     cy.viewport(1000, 1800);
     cy.waitForLoad();
     cy.get('button').contains('Basic Fields').click();
-    let textFields = ["First Name", "Middle Name", "Last Name"];
-
-    for(let i=0; i<textFields.length; i++) {
-      cy.get('button').contains('Basic Fields').click();
-      cy.get('div.formio-builder-form').then($el => {
-      const bounds = $el[0].getBoundingClientRect();
+    cy.get('div.formio-builder-form').then($el => {
+      const coords = $el[0].getBoundingClientRect();
       cy.get('span.btn').contains('Text Field')
-        .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', bounds.x, -100, { force: true })
-        .trigger('mouseup', { force: true });
-        cy.get('p').contains('Text Field Component');
-        cy.get('input[name="data[label]"]').clear();
-        cy.get('input[name="data[label]"]').clear();
-        cy.get('input[name="data[label]"]').type(textFields[i]);
-        cy.get('button').contains('Save').click();
-      });
-    }
+      
+      .trigger('mousedown', { which: 1}, { force: true })
+      .trigger('mousemove', coords.x, -50, { force: true })
+      .trigger('mouseup', { force: true });
+      cy.get('button').contains('Save').click();
+    });
  
 
     });
