@@ -156,20 +156,11 @@ class IdpService {
           let groupValid = reqd === 1 ? true : false;
           for (const f of filters) {
             // add the filter to the query...
-            const filterName = f.name;
-            const paramName = f.param;
-            const value = params[paramName];
-            if ('exact' in f || 'caseSensitive' in f) {
-              const exact = f.exact;
-              const caseSensitive = f.caseSensitive;
-              q.modify(filterName, value, exact, caseSensitive);
-            } else {
-              q.modify(filterName, value);
-            }
-
+            this.applyUserSearchFilters(f, params, q);
             //
             // ok, check for required...
             //
+            const value = params[f.param];
             if (reqd < 1) {
               // if required < 1, do nothing, always valid
               groupValid = true;
@@ -206,6 +197,20 @@ class IdpService {
       .modify('filterEmail', params.email, false, false)
       .modify('filterSearch', params.search)
       .modify('orderLastFirstAscending');
+  }
+
+  applyUserSearchFilters(filter, params, query) {
+    const filterName = filter.name;
+    const paramName = filter.param;
+    const value = params[paramName];
+    let exact = 'exact' in filter ? filter.exact : false;
+    let caseSensitive = 'caseSensitive' in filter ? filter.caseSensitive : true;
+    if (exact || caseSensitive) {
+      query.modify(filterName, value, exact, caseSensitive);
+    } else {
+      query.modify(filterName, value);
+    }
+    return value;
   }
 }
 

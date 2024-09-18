@@ -43,9 +43,10 @@ class User extends Timestamps(Model) {
       filterUsername(query, value, exact = false, caseSensitive = true) {
         if (value) {
           if (exact && caseSensitive) query.where('username', value);
-          else if (exact && !caseSensitive) query.where('username', 'ilike', String(value).toLowerCase());
           // ilike is postgres case insensitive like
-          else query.where('username', 'ilike', `%${value}%`);
+          else if (exact && !caseSensitive) query.where('username', 'ilike', String(value).toLowerCase());
+          else if (!exact && caseSensitive) query.where('username', 'ilike', `%${value}%`);
+          else query.where('username', 'ilike', `%${String(value).toLowerCase()}%`);
         }
       },
       filterFirstName(query, value) {
