@@ -1,5 +1,5 @@
 import 'cypress-drag-drop';
-import { formsettings } from '../support/login.js';
+import { formsettings } from '../support/form-settings-IDIR-login.js';
 
 const depEnv = Cypress.env('depEnv');
 

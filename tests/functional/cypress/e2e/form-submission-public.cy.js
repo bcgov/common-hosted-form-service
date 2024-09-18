@@ -167,12 +167,14 @@ describe('Form Designer', () => {
               
           }
           
-          cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
-          cy.get('[data-test="idir"]').click();
+        cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
+        cy.get('[data-test="idir"]').click();
           
-          cy.get('#user').type(username);
-          cy.get('#password').type(password);
-          cy.get('.btn').click();
+        cy.get('#user').type(username);
+        cy.get('#password').type(password);
+        cy.get('.btn').click();
+        cy.waitForLoad();
+        cy.waitForLoad();
         //view submission
         
         //cy.get('[data-cy="userFormsLinks"]').click();
@@ -180,22 +182,11 @@ describe('Form Designer', () => {
         cy.get('.mdi-list-box-outline').click();
         cy.waitForLoad();
         cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn > .v-btn__content > .mdi-eye').click();
-        
-        //Verify status option not present for public forms
-        //cy.get('.status-heading > .mdi-chevron-right').should('not.exist');
 
       
    
 
     });
-
-  });
-
-
-  it('Submission status Assignment', () => {
-    cy.viewport(1000, 1100);
-    cy.waitForLoad();
-    cy.waitForLoad();
     //Assign status submission
     cy.get('.status-heading > .mdi-chevron-right').click();
     cy.get('[data-test="showStatusList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
@@ -228,4 +219,5 @@ describe('Form Designer', () => {
     
     
   });
+
 });
