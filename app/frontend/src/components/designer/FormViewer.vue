@@ -505,7 +505,6 @@ async function sendMultiSubmissionData(body) {
       sbdMessage.value.file_name =
         'error_report_' + form.value.name + '_' + Date.now();
       saving.value = false;
-      t('trans.formViewer.errSubmittingForm');
       throw new Error(
         t('trans.formViewer.failedResSubmissn', {
           status: response.status,
@@ -533,8 +532,6 @@ async function setFinalError(error) {
         error.response.data.title == undefined
           ? t('trans.formViewer.errSubmittingForm')
           : error.response.data.title;
-      sbdMessage.value.error = true;
-      sbdMessage.value.upload_state = 10;
       sbdMessage.value.response =
         error.response.data.reports == undefined
           ? [
@@ -543,25 +540,20 @@ async function setFinalError(error) {
               },
             ]
           : await formatResponse(error.response.data.reports);
-      sbdMessage.value.file_name =
-        'error_report_' + form.value.name + '_' + Date.now();
     } else {
       sbdMessage.value.message = t('trans.formViewer.errSubmittingForm');
-      sbdMessage.value.error = true;
-      sbdMessage.value.upload_state = 10;
       sbdMessage.value.response = [
         { error_message: t('trans.formViewer.errSubmittingForm') },
       ];
-      sbdMessage.value.file_name =
-        'error_report_' + form.value.name + '_' + Date.now();
     }
   } catch (error_2) {
     sbdMessage.value.message = t('trans.formViewer.errSubmittingForm');
-    sbdMessage.value.error = true;
-    sbdMessage.value.upload_state = 10;
     sbdMessage.value.response = [
       { error_message: t('trans.formViewer.errSubmittingForm') },
     ];
+  } finally {
+    sbdMessage.value.error = true;
+    sbdMessage.value.upload_state = 10;
     sbdMessage.value.file_name =
       'error_report_' + form.value.name + '_' + Date.now();
   }
@@ -739,18 +731,18 @@ async function formatResponse(response) {
         let error = {};
         if (obj.context != undefined) {
           error = Object({
-            ' submission': index,
-            ' key': obj.context.key,
-            ' label': obj.context.label,
-            ' validator': obj.context.validator,
+            submission: index,
+            key: obj.context.key,
+            label: obj.context.label,
+            validator: obj.context.validator,
             error_message: obj.message,
           });
         } else {
           error = Object({
-            ' submission': index,
-            ' key': null,
-            ' label': null,
-            ' validator': null,
+            submission: index,
+            key: null,
+            label: null,
+            validator: null,
             error_message: obj.message,
           });
         }
@@ -805,11 +797,11 @@ async function saveDraft() {
     saving.value = true;
 
     const response = await sendSubmission(true, submission.value);
-    if (properties.submissionId) {
+    if (properties.submissionId && properties.submissionId !== null) {
       // Editing an existing draft
       // Update this route with saved flag
       if (!properties.saved) {
-        router.replace({
+        await router.replace({
           name: 'UserFormDraftEdit',
           query: { ...router.currentRoute.value.query, sv: true },
         });
@@ -818,7 +810,7 @@ async function saveDraft() {
     } else {
       // Creating a new submission in draft state
       // Go to the user form draft page
-      router.push({
+      await router.push({
         name: 'UserFormDraftEdit',
         query: {
           s: response.data.id,
@@ -866,6 +858,7 @@ async function sendSubmission(isDraft, sub) {
       body
     );
   }
+
   return response;
 }
 
@@ -917,13 +910,15 @@ async function onBeforeSubmit(submission, next) {
 
   // if form has drafts enabled in form setttings,
   if (form.value.enableSubmitterDraft) {
+    let timeout;
     // while 'confirm submit?' dialog is open..
     while (showSubmitConfirmDialog.value) {
       // await a promise that never resolves to block this thread
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => (timeout = setTimeout(resolve, 500)));
     }
     if (confirmSubmit.value) {
       confirmSubmit.value = false; // clear for next attempt
+      clearTimeout(timeout);
       next();
     } else {
       // Force re-render form.io to reset submit button state
