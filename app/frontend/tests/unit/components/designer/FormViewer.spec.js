@@ -1,18 +1,21 @@
+// @vitest-environment happy-dom
+// happy-dom is required to access window.URL
 import { createTestingPinia } from '@pinia/testing';
 import { setActivePinia } from 'pinia';
 import { flushPromises, shallowMount } from '@vue/test-utils';
 import { beforeEach, expect, vi } from 'vitest';
 import { useRouter } from 'vue-router';
+import { nextTick, ref } from 'vue';
 
 import FormViewer from '~/components/designer/FormViewer.vue';
 import templateExtensions from '~/plugins/templateExtensions';
-import { formService, rbacService } from '~/services';
+import { fileService, formService, rbacService } from '~/services';
 import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { FormPermissions, IdentityMode } from '~/utils/constants';
-import { nextTick, ref } from 'vue';
+import * as transformUtils from '~/utils/transformUtils';
 
 vi.mock('vue-router', () => ({
   useRouter: vi.fn(() => ({
@@ -58,6 +61,9 @@ describe('FormViewer.vue', () => {
   const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
   const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
   const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
+  const alertSpy = vi.spyOn(window, 'alert');
+  const downloadFileSpy = vi.spyOn(formStore, 'downloadFile');
+  const getDispositionSpy = vi.spyOn(transformUtils, 'getDisposition');
 
   beforeEach(() => {
     appStore.$reset();
@@ -152,6 +158,10 @@ describe('FormViewer.vue', () => {
 
     addEventListenerSpy.mockReset();
     removeEventListener.mockReset();
+    alertSpy.mockReset();
+    downloadFileSpy.mockReset();
+    getDispositionSpy.mockReset();
+    getDispositionSpy.mockImplementationOnce(() => {});
   });
 
   it('viewerOptions returns ', async () => {
@@ -1035,7 +1045,6 @@ describe('FormViewer.vue', () => {
 
     await flushPromises();
 
-    const alertSpy = vi.spyOn(window, 'alert');
     alertSpy.mockImplementationOnce(() => {});
 
     wrapper.vm.onSubmitButton({ instance: { parent: { root: '' } } });
@@ -1061,7 +1070,6 @@ describe('FormViewer.vue', () => {
 
     await flushPromises();
 
-    const alertSpy = vi.spyOn(window, 'alert');
     alertSpy.mockImplementationOnce(() => {});
 
     wrapper.vm.form.enableSubmitterDraft = true;
@@ -1319,7 +1327,6 @@ describe('FormViewer.vue', () => {
 
       wrapper.vm.reRenderFormIo = 0;
 
-      const alertSpy = vi.spyOn(window, 'alert');
       alertSpy.mockImplementationOnce(() => {});
 
       await wrapper.vm.onSubmit({});
@@ -1404,5 +1411,644 @@ describe('FormViewer.vue', () => {
 
       expect(addNotificationSpy).toBeCalledTimes(1);
     });
+  });
+
+  it('onSubmitDone will emit submission-updated if staffEditMode is true', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+        staffEditMode: true,
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    await wrapper.vm.onSubmitDone();
+
+    expect(wrapper.emitted()).toHaveProperty('submission-updated');
+  });
+
+  it('onSubmitDone will push to router if staffEditMode is false', async () => {
+    const push = vi.fn();
+    useRouter.mockImplementationOnce(() => ({
+      push,
+    }));
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+        staffEditMode: false,
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    await wrapper.vm.onSubmitDone();
+
+    expect(push).toBeCalledTimes(1);
+  });
+
+  it('onCustomEvent will just make an alert right now', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    await wrapper.vm.onCustomEvent({ type: 'custom' });
+
+    expect(alertSpy).toBeCalledTimes(1);
+  });
+
+  it('leaveThisPage will push to router if saveDraftState is 0 or if there is a bulkFile value', async () => {
+    const push = vi.fn();
+    useRouter.mockImplementationOnce(() => ({
+      push,
+    }));
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    wrapper.vm.saveDraftState = 0;
+
+    wrapper.vm.leaveThisPage();
+
+    expect(push).toBeCalledTimes(1);
+    push.mockReset();
+
+    wrapper.vm.saveDraftState = 1;
+    wrapper.vm.bulkFile = true;
+
+    wrapper.vm.leaveThisPage();
+
+    expect(push).toBeCalledTimes(1);
+    push.mockReset();
+
+    wrapper.vm.saveDraftState = 1;
+    wrapper.vm.bulkFile = false;
+
+    wrapper.vm.leaveThisPage();
+
+    expect(push).toBeCalledTimes(0);
+    expect(wrapper.vm.bulkFile).toBeTruthy();
+  });
+
+  it('yes will call saveDraftFromModal', async () => {
+    const updateSubmissionSpy = vi.spyOn(formService, 'updateSubmission');
+    updateSubmissionSpy.mockImplementationOnce(() => {});
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    wrapper.vm.yes();
+
+    expect(updateSubmissionSpy).toBeCalledTimes(1);
+  });
+
+  it('no will call leaveThisPage', async () => {
+    const push = vi.fn();
+    useRouter.mockImplementationOnce(() => ({
+      push,
+    }));
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    wrapper.vm.no();
+
+    expect(push).toBeCalledTimes(1);
+  });
+
+  it('showdoYouWantToSaveTheDraftModalForSwitch will set doYouWantToSaveTheDraft to true if the form had data entered and showModal is true', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    wrapper.vm.formDataEntered = true;
+    wrapper.vm.showModal = true;
+
+    wrapper.vm.showdoYouWantToSaveTheDraftModalForSwitch();
+
+    expect(wrapper.vm.doYouWantToSaveTheDraft).toBeTruthy();
+
+    wrapper.vm.formDataEntered = false;
+    wrapper.vm.showModal = false;
+    wrapper.vm.doYouWantToSaveTheDraft = false;
+
+    wrapper.vm.showdoYouWantToSaveTheDraftModalForSwitch();
+    expect(wrapper.vm.doYouWantToSaveTheDraft).toBeFalsy();
+    // leaveThisPage will just toggle bulkFile
+    expect(wrapper.vm.bulkFile).toBeTruthy();
+  });
+
+  it('showdoYouWantToSaveTheDraftModal will set doYouWantToSaveTheDraft to true it is not a bulk upload, if (submissionId is not undefined or the form had data entered) and enableSubmitterDraft is enabled', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: undefined,
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    wrapper.vm.showModal = true;
+    wrapper.vm.form.enableSubmitterDraft = true;
+
+    wrapper.vm.showdoYouWantToSaveTheDraftModal();
+
+    expect(wrapper.vm.doYouWantToSaveTheDraft).toBeTruthy();
+  });
+
+  it('showdoYouWantToSaveTheDraftModal will call leaveThisPage otherwise', async () => {
+    const push = vi.fn();
+    useRouter.mockImplementationOnce(() => ({
+      push,
+    }));
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: undefined,
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    wrapper.vm.showModal = false;
+    wrapper.vm.form.enableSubmitterDraft = true;
+
+    wrapper.vm.showdoYouWantToSaveTheDraftModal();
+
+    expect(wrapper.vm.doYouWantToSaveTheDraft).toBeFalsy();
+    expect(push).toBeCalledTimes(1);
+  });
+
+  it('showdoYouWantToSaveTheDraftModal will call leaveThisPage if bulkFile is enabled', async () => {
+    const push = vi.fn();
+    useRouter.mockImplementationOnce(() => ({
+      push,
+    }));
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: undefined,
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    wrapper.vm.bulkFile = true;
+
+    wrapper.vm.showdoYouWantToSaveTheDraftModal();
+
+    expect(wrapper.vm.doYouWantToSaveTheDraft).toBeFalsy();
+    expect(push).toBeCalledTimes(1);
+  });
+
+  it('switchView will call showdoYouWantToSaveTheDraftModalForSwitch and does not toggle bulkFile if bulkFile is false', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    wrapper.vm.formDataEntered = true;
+    wrapper.vm.showModal = true;
+    wrapper.vm.bulkFile = false;
+
+    wrapper.vm.switchView();
+
+    expect(wrapper.vm.bulkFile).toBeFalsy();
+  });
+
+  it('switchView will call toggle bulkFile if bulkFile is true', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    wrapper.vm.formDataEntered = false;
+    wrapper.vm.showModal = false;
+    wrapper.vm.bulkFile = true;
+
+    wrapper.vm.switchView();
+
+    expect(wrapper.vm.bulkFile).toBeFalsy();
+  });
+
+  it('saveDraftFromModalNow will call sendSubmission and then leaveThisPage', async () => {
+    const push = vi.fn();
+    useRouter.mockImplementationOnce(() => ({
+      push,
+    }));
+    const updateSubmissionSpy = vi.spyOn(formService, 'updateSubmission');
+    updateSubmissionSpy.mockImplementationOnce(() => {});
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    addNotificationSpy.mockReset();
+
+    await wrapper.vm.saveDraftFromModalNow();
+
+    expect(updateSubmissionSpy).toBeCalledTimes(1);
+    expect(addNotificationSpy).toBeCalledTimes(0);
+  });
+
+  it('saveDraftFromModalNow will call addNotification if an error occurs', async () => {
+    const push = vi.fn();
+    useRouter.mockImplementationOnce(() => ({
+      push,
+    }));
+    const updateSubmissionSpy = vi.spyOn(formService, 'updateSubmission');
+    updateSubmissionSpy.mockImplementationOnce(() => {
+      throw new Error();
+    });
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    addNotificationSpy.mockReset();
+
+    await wrapper.vm.saveDraftFromModalNow();
+
+    expect(updateSubmissionSpy).toBeCalledTimes(1);
+    expect(addNotificationSpy).toBeCalledTimes(1);
+  });
+
+  it('saveDraftFromModal will call saveDraftFromModalNow if there is an event', async () => {
+    const push = vi.fn();
+    useRouter.mockImplementationOnce(() => ({
+      push,
+    }));
+    const updateSubmissionSpy = vi.spyOn(formService, 'updateSubmission');
+    updateSubmissionSpy.mockImplementationOnce(() => {
+      throw new Error();
+    });
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    addNotificationSpy.mockReset();
+
+    wrapper.vm.saveDraftFromModal({});
+
+    expect(updateSubmissionSpy).toBeCalledTimes(1);
+    expect(addNotificationSpy).toBeCalledTimes(0);
+  });
+
+  it('saveDraftFromModal will call leaveThisPage if there is no event', async () => {
+    const push = vi.fn();
+    useRouter.mockImplementationOnce(() => ({
+      push,
+    }));
+    const updateSubmissionSpy = vi.spyOn(formService, 'updateSubmission');
+    updateSubmissionSpy.mockImplementationOnce(() => {
+      throw new Error();
+    });
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    addNotificationSpy.mockReset();
+
+    wrapper.vm.bulkFile = true;
+
+    wrapper.vm.saveDraftFromModal();
+
+    expect(updateSubmissionSpy).toBeCalledTimes(0);
+    expect(addNotificationSpy).toBeCalledTimes(0);
+    expect(push).toBeCalledTimes(1);
+  });
+
+  it('closeBulkYesOrNo sets doYouWantToSaveTheDraft to false', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    wrapper.vm.doYouWantToSaveTheDraft = true;
+
+    wrapper.vm.closeBulkYesOrNo();
+
+    expect(wrapper.vm.doYouWantToSaveTheDraft).toBeFalsy();
+  });
+
+  it('beforeWindowUnload calls the events preventDefault and sets returnValue to an empty string if preview is disabled and it is not read only', async () => {
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    const preventDefault = vi.fn();
+
+    wrapper.vm.beforeWindowUnload({
+      preventDefault: preventDefault,
+      returnValue: 'return some value',
+    });
+
+    expect(preventDefault).toBeCalledTimes(1);
+  });
+
+  it('deleteFile will call fileServices deleteFile', async () => {
+    const deleteFileSpy = vi.spyOn(fileService, 'deleteFile');
+    deleteFileSpy.mockImplementation(() => {});
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    await wrapper.vm.deleteFile('asdf');
+    expect(deleteFileSpy).toBeCalledWith(undefined);
+    await wrapper.vm.deleteFile({ id: '123' });
+    expect(deleteFileSpy).toBeCalledWith('123');
+    await wrapper.vm.deleteFile({ data: { id: '123' } });
+    expect(deleteFileSpy).toBeCalledWith('123');
+  });
+
+  it('getFile will call form stores downloadFile for json', async () => {
+    let createObjectURLSpy = vi.spyOn(window.URL, 'createObjectURL');
+    createObjectURLSpy.mockImplementation((data) => data);
+    downloadFileSpy.mockImplementationOnce(() => {
+      formStore.downloadedFile = {
+        headers: {
+          'content-type': 'application/json',
+          'content-disposition': 'attachment; filename="test.json"',
+        },
+        data: {
+          testKey: 'testValue',
+        },
+      };
+    });
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    await wrapper.vm.getFile('asdf');
+    expect(downloadFileSpy).toBeCalledTimes(1);
+    expect(getDispositionSpy).toBeCalledTimes(1);
+  });
+
+  it('getFile will call form stores downloadFile for other file types', async () => {
+    let createObjectURLSpy = vi.spyOn(window.URL, 'createObjectURL');
+    createObjectURLSpy.mockImplementation((data) => data);
+    downloadFileSpy.mockImplementationOnce(() => {
+      formStore.downloadedFile = {
+        headers: {
+          'content-type': 'text/csv',
+          'content-disposition': 'attachment; filename="test.csv"',
+        },
+        data: 'cell1,cell2,cell3',
+      };
+    });
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    await wrapper.vm.getFile('asdf');
+    expect(downloadFileSpy).toBeCalledTimes(1);
+    expect(getDispositionSpy).toBeCalledTimes(1);
+  });
+
+  it('uploadFile will call fileServices uploadFile', async () => {
+    const uploadFileSpy = vi.spyOn(fileService, 'uploadFile');
+    uploadFileSpy.mockImplementation(() => {});
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    await wrapper.vm.uploadFile('this is a file object');
+    expect(uploadFileSpy).toBeCalledTimes(1);
   });
 });
