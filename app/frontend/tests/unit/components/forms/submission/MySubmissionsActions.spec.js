@@ -79,9 +79,9 @@ describe('MySubmissionsActions', () => {
     );
   });
 
-  it('renders if this is a submitted submission and isCopyFromExistingSubmissionEnabled is true', () => {
+  it('renders if this is a completed submission and isCopyFromExistingSubmissionEnabled is true', () => {
     const SUBMISSION = {
-      status: 'SUBMITTED',
+      status: 'COMPLETED',
     };
     formStore.form = {
       enableCopyExistingSubmission: true,
@@ -99,6 +99,30 @@ describe('MySubmissionsActions', () => {
     });
 
     expect(wrapper.html()).toContain(
+      'trans.mySubmissionsActions.copyThisSubmission'
+    );
+  });
+
+  it('renders if this is a completed submission and isCopyFromExistingSubmissionEnabled is true', () => {
+    const SUBMISSION = {
+      status: 'ASSIGNED',
+    };
+    formStore.form = {
+      enableCopyExistingSubmission: true,
+    };
+
+    const wrapper = shallowMount(MySubmissionsActions, {
+      props: {
+        formId: FORM_ID,
+        submission: SUBMISSION,
+      },
+      global: {
+        plugins: [pinia, router],
+        stubs: STUBS,
+      },
+    });
+
+    expect(wrapper.html()).not.toContain(
       'trans.mySubmissionsActions.copyThisSubmission'
     );
   });
