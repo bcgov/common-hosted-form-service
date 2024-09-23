@@ -55,7 +55,7 @@ export default class Component extends (FieldComponent as any) {
   loadMap() {
     const mapContainer = document.getElementById(`map-${this.componentID}`);
     const form = document.getElementsByClassName('formio');
-    let drawOptions = {
+    const drawOptions = {
       marker: false,
       circlemarker: false,
       polygon: false,
@@ -72,8 +72,14 @@ export default class Component extends (FieldComponent as any) {
       drawOptions[this.component.markerType] = true; // set marker type from user choice
     }
 
-    const { numPoints, defaultZoom, readOnlyMap, center, defaultValue } =
-      this.component;
+    const {
+      numPoints,
+      defaultZoom,
+      readOnlyMap,
+      center,
+      defaultValue,
+      myLocation,
+    } = this.component;
 
     const { readOnly: viewMode } = this.options;
 
@@ -95,6 +101,7 @@ export default class Component extends (FieldComponent as any) {
       defaultValue,
       onDrawnItemsChange: this.saveDrawnItems.bind(this),
       viewMode,
+      myLocation,
     });
 
     // Load existing data if available
@@ -147,8 +154,6 @@ export default class Component extends (FieldComponent as any) {
     // Additional logic to render the saved data on the map if necessary
     if (this.mapService && value && value.features) {
       try {
-        //const parsedValue = JSON.parse(value);
-
         this.mapService.loadDrawnItems(value.features);
       } catch (error) {
         console.error('Failed to parse value:', error);

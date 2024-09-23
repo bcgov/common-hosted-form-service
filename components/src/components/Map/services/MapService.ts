@@ -25,6 +25,7 @@ interface MapServiceOptions {
   readOnlyMap?: boolean;
   onDrawnItemsChange: (items: any) => void; // Support both single and multiple items
   viewMode?: boolean;
+  myLocation?: boolean;
 }
 
 class MapService {
@@ -38,6 +39,7 @@ class MapService {
     if (options.mapContainer) {
       const { map, drawnItems } = this.initializeMap(options);
       this.map = map;
+
       // this.map = map;
       this.drawnItems = drawnItems;
 
@@ -46,7 +48,7 @@ class MapService {
       setTimeout(() => window.dispatchEvent(new Event('resize')), 0);
       // Event listener for drawn objects
       map.on('draw:created', (e) => {
-        let layer = e.layer;
+        const layer = e.layer;
         if (drawnItems.getLayers().length === options.numPoints) {
           L.popup()
             .setLatLng(layer.getLatLng())
@@ -71,7 +73,7 @@ class MapService {
   }
 
   initializeMap(options: MapServiceOptions) {
-    let {
+    const {
       mapContainer,
       center,
       drawOptions,
@@ -79,14 +81,15 @@ class MapService {
       defaultZoom,
       readOnlyMap,
       viewMode,
+      myLocation,
     } = options;
 
     if (drawOptions.rectangle) {
       drawOptions.rectangle.showArea = false;
     }
-    //Check to see if there is the formio read only class in the current page, and set notEditable to true if the map is inside a read-only page
+    // Check to see if there is the formio read only class in the current page, and set notEditable to true if the map is inside a read-only page
 
-    //if the user chooses it to be read-only, and the
+    // if the user chooses it to be read-only, and the
     const map = L.map(mapContainer, {
       zoomAnimation: viewMode,
     }).setView(center, defaultZoom || DEFAULT_MAP_ZOOM);
@@ -95,14 +98,58 @@ class MapService {
     }).addTo(map);
 
     // Initialize Draw Layer
-    let drawnItems = new L.FeatureGroup();
+    const drawnItems = new L.FeatureGroup();
 
     map.addLayer(drawnItems);
+
+    if (myLocation) {
+      const myLocationButton = L.Control.extend({
+        options: {
+          position: 'bottomright',
+        },
+        onAdd(map) {
+          const container = L.DomUtil.create(
+            'div',
+            'leaflet-bar leaflet-control'
+          );
+          const button = L.DomUtil.create(
+            'a',
+            'leaflet-control-button',
+            container
+          );
+          button.innerHTML = '<i class="fa fa-location-arrow"></i>';
+          L.DomEvent.disableClickPropagation(button);
+          L.DomEvent.on(button, 'click', () => {
+            if ('geolocation' in navigator) {
+              navigator.geolocation.getCurrentPosition((position) => {
+                map.setView(
+                  [position.coords.latitude, position.coords.longitude],
+                  14
+                );
+                L.popup()
+                  .setLatLng([
+                    position.coords.latitude,
+                    position.coords.longitude,
+                  ])
+                  .setContent(
+                    `(${position.coords.latitude}, ${position.coords.longitude})`
+                  )
+                  .openOn(map);
+              });
+            }
+          });
+          container.title = 'Click to center the map on your location';
+          return container;
+        },
+      });
+      const myLocationControl = new myLocationButton();
+      myLocationControl.addTo(map);
+    }
 
     // Add Drawing Controllers
     if (!readOnlyMap) {
       if (!viewMode) {
-        let drawControl = new L.Control.Draw({
+        const drawControl = new L.Control.Draw({
           draw: drawOptions,
           edit: {
             featureGroup: drawnItems,
