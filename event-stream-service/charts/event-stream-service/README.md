@@ -49,7 +49,7 @@ We will need to create different param override (values) files for each instance
 You can specify the '--values'/'-f' flag multiple times. The priority will be given to the last (right-most) file specified.
 
 ```
-helm upgrade --install event-stream-service ./charts/event-stream-service -f ./charts/event-stream-service/values.yaml -f ./charts/event-stream-service/values-prod.yaml
+helm upgrade --install event-stream-service ./charts/event-stream-service -f ./charts/event-stream-service/values.yaml -f ./charts/event-stream-service/values-dev.yaml
 ```
 
 This would apply our default values file (`values.yaml`) with any overrides found in `values-prod.yaml` taking priority.
