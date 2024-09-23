@@ -380,6 +380,7 @@ async function getFormSchema() {
       // If getting the HEAD form version (IE making a new submission)
       response = await formService.readPublished(properties.formId);
       if (
+        !response ||
         !response.data ||
         !response.data.versions ||
         !response.data.versions[0]
@@ -402,7 +403,6 @@ async function getFormSchema() {
         let formScheduleStatus = response.data.schedule;
         isFormScheduleExpired.value = formScheduleStatus.expire;
         isLateSubmissionAllowed.value = formScheduleStatus.allowLateSubmissions;
-        formScheduleExpireMessage.value = formScheduleStatus.message;
       }
     }
   } catch (error) {
