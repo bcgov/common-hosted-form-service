@@ -25,6 +25,7 @@ interface MapServiceOptions {
   readOnlyMap?: boolean;
   onDrawnItemsChange: (items: any) => void; // Support both single and multiple items
   viewMode?: boolean;
+  myLocation?: boolean;
 }
 
 class MapService {
@@ -38,6 +39,7 @@ class MapService {
     if (options.mapContainer) {
       const { map, drawnItems } = this.initializeMap(options);
       this.map = map;
+
       // this.map = map;
       this.drawnItems = drawnItems;
 
@@ -79,7 +81,9 @@ class MapService {
       defaultZoom,
       readOnlyMap,
       viewMode,
+      myLocation,
     } = options;
+    console.log(options);
 
     if (drawOptions.rectangle) {
       drawOptions.rectangle.showArea = false;
@@ -98,6 +102,51 @@ class MapService {
     let drawnItems = new L.FeatureGroup();
 
     map.addLayer(drawnItems);
+
+    if (myLocation) {
+      const myLocationButton = L.Control.extend({
+        options: {
+          position: 'topright',
+        },
+        onAdd: function (map) {
+          var container = L.DomUtil.create(
+            'div',
+            'leaflet-bar leaflet-control'
+          );
+          var button = L.DomUtil.create(
+            'a',
+            'leaflet-control-button',
+            container
+          );
+          button.innerHTML = '<i class="fa fa-location-arrow"></i>';
+          L.DomEvent.disableClickPropagation(button);
+          L.DomEvent.on(button, 'click', function () {
+            if ('geolocation' in navigator) {
+              navigator.geolocation.getCurrentPosition((position) => {
+                map.setView(
+                  [position.coords.latitude, position.coords.longitude],
+                  14
+                );
+                L.popup()
+                  .setLatLng([
+                    position.coords.latitude,
+                    position.coords.longitude,
+                  ])
+                  .setContent(
+                    `(${position.coords.latitude}, ${position.coords.longitude})`
+                  )
+                  .openOn(map);
+              });
+            }
+          });
+          container.title = 'Click to center the map on your location';
+          return container;
+        },
+        onRemove: function (map) {},
+      });
+      var myLocationControl = new myLocationButton();
+      myLocationControl.addTo(map);
+    }
 
     // Add Drawing Controllers
     if (!readOnlyMap) {

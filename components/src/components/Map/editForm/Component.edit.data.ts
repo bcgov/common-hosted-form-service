@@ -76,5 +76,13 @@ export default {
       type: 'simplecheckbox',
       input: true,
     },
+    {
+      label: 'Submitter "My Location" button',
+      description:
+        'This allows for the user to center the map on their location.',
+      key: 'myLocation',
+      type: 'simplecheckbox',
+      input: true,
+    },
   ],
 };
