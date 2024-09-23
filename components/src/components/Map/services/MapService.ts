@@ -48,7 +48,7 @@ class MapService {
       setTimeout(() => window.dispatchEvent(new Event('resize')), 0);
       // Event listener for drawn objects
       map.on('draw:created', (e) => {
-        let layer = e.layer;
+        const layer = e.layer;
         if (drawnItems.getLayers().length === options.numPoints) {
           L.popup()
             .setLatLng(layer.getLatLng())
@@ -73,7 +73,7 @@ class MapService {
   }
 
   initializeMap(options: MapServiceOptions) {
-    let {
+    const {
       mapContainer,
       center,
       drawOptions,
@@ -83,14 +83,13 @@ class MapService {
       viewMode,
       myLocation,
     } = options;
-    console.log(options);
 
     if (drawOptions.rectangle) {
       drawOptions.rectangle.showArea = false;
     }
-    //Check to see if there is the formio read only class in the current page, and set notEditable to true if the map is inside a read-only page
+    // Check to see if there is the formio read only class in the current page, and set notEditable to true if the map is inside a read-only page
 
-    //if the user chooses it to be read-only, and the
+    // if the user chooses it to be read-only, and the
     const map = L.map(mapContainer, {
       zoomAnimation: viewMode,
     }).setView(center, defaultZoom || DEFAULT_MAP_ZOOM);
@@ -99,28 +98,28 @@ class MapService {
     }).addTo(map);
 
     // Initialize Draw Layer
-    let drawnItems = new L.FeatureGroup();
+    const drawnItems = new L.FeatureGroup();
 
     map.addLayer(drawnItems);
 
     if (myLocation) {
       const myLocationButton = L.Control.extend({
         options: {
-          position: 'topright',
+          position: 'bottomright',
         },
-        onAdd: function (map) {
-          var container = L.DomUtil.create(
+        onAdd(map) {
+          const container = L.DomUtil.create(
             'div',
             'leaflet-bar leaflet-control'
           );
-          var button = L.DomUtil.create(
+          const button = L.DomUtil.create(
             'a',
             'leaflet-control-button',
             container
           );
           button.innerHTML = '<i class="fa fa-location-arrow"></i>';
           L.DomEvent.disableClickPropagation(button);
-          L.DomEvent.on(button, 'click', function () {
+          L.DomEvent.on(button, 'click', () => {
             if ('geolocation' in navigator) {
               navigator.geolocation.getCurrentPosition((position) => {
                 map.setView(
@@ -142,16 +141,15 @@ class MapService {
           container.title = 'Click to center the map on your location';
           return container;
         },
-        onRemove: function (map) {},
       });
-      var myLocationControl = new myLocationButton();
+      const myLocationControl = new myLocationButton();
       myLocationControl.addTo(map);
     }
 
     // Add Drawing Controllers
     if (!readOnlyMap) {
       if (!viewMode) {
-        let drawControl = new L.Control.Draw({
+        const drawControl = new L.Control.Draw({
           draw: drawOptions,
           edit: {
             featureGroup: drawnItems,
