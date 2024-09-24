@@ -75,7 +75,7 @@ export default class Component extends (FieldComponent as any) {
     const {
       numPoints,
       defaultZoom,
-      readOnlyMap,
+      allowSubmissions,
       center,
       defaultValue,
       myLocation,
@@ -97,7 +97,7 @@ export default class Component extends (FieldComponent as any) {
       form,
       numPoints,
       defaultZoom,
-      readOnlyMap,
+      readOnlyMap: !allowSubmissions, // if allow submissions, read only is false
       defaultValue,
       onDrawnItemsChange: this.saveDrawnItems.bind(this),
       viewMode,
