@@ -25,6 +25,11 @@ export default {
             'Add circular area of interest through a point and custom radius',
           value: 'circle',
         },
+        {
+          label:
+            'Add polygon',
+          value: 'polygon',
+        },
       ],
       defaultValue: 'marker',
       key: 'markerType',
