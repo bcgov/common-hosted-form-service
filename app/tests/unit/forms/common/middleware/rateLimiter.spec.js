@@ -70,7 +70,10 @@ describe('apiKeyRateLimiter', () => {
 
       await apiKeyRateLimiter(req, res, next);
 
-      expect(res.setHeader).toBeCalledTimes(0);
+      expect(res.setHeader).toBeCalledTimes(2);
+      // These also test that the rate limiter uses our custom config values.
+      expect(res.setHeader).toHaveBeenNthCalledWith(1, rateLimitPolicyName, rateLimitPolicyValue);
+      expect(res.setHeader).toHaveBeenNthCalledWith(2, rateLimitName, rateLimitValue);
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
     });
@@ -85,7 +88,10 @@ describe('apiKeyRateLimiter', () => {
 
       await apiKeyRateLimiter(req, res, next);
 
-      expect(res.setHeader).toBeCalledTimes(0);
+      expect(res.setHeader).toBeCalledTimes(2);
+      // These also test that the rate limiter uses our custom config values.
+      expect(res.setHeader).toHaveBeenNthCalledWith(1, rateLimitPolicyName, rateLimitPolicyValue);
+      expect(res.setHeader).toHaveBeenNthCalledWith(2, rateLimitName, rateLimitValue);
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
     });
@@ -102,7 +108,10 @@ describe('apiKeyRateLimiter', () => {
 
       await apiKeyRateLimiter(req, res, next);
 
-      expect(res.setHeader).toBeCalledTimes(0);
+      expect(res.setHeader).toBeCalledTimes(2);
+      // These also test that the rate limiter uses our custom config values.
+      expect(res.setHeader).toHaveBeenNthCalledWith(1, rateLimitPolicyName, rateLimitPolicyValue);
+      expect(res.setHeader).toHaveBeenNthCalledWith(2, rateLimitName, rateLimitValue);
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
     });
@@ -119,7 +128,10 @@ describe('apiKeyRateLimiter', () => {
 
       await apiKeyRateLimiter(req, res, next);
 
-      expect(res.setHeader).toBeCalledTimes(0);
+      expect(res.setHeader).toBeCalledTimes(2);
+      // These also test that the rate limiter uses our custom config values.
+      expect(res.setHeader).toHaveBeenNthCalledWith(1, rateLimitPolicyName, rateLimitPolicyValue);
+      expect(res.setHeader).toHaveBeenNthCalledWith(2, rateLimitName, rateLimitValue);
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
     });
@@ -136,7 +148,10 @@ describe('apiKeyRateLimiter', () => {
 
       await apiKeyRateLimiter(req, res, next);
 
-      expect(res.setHeader).toBeCalledTimes(0);
+      expect(res.setHeader).toBeCalledTimes(2);
+      // These also test that the rate limiter uses our custom config values.
+      expect(res.setHeader).toHaveBeenNthCalledWith(1, rateLimitPolicyName, rateLimitPolicyValue);
+      expect(res.setHeader).toHaveBeenNthCalledWith(2, rateLimitName, rateLimitValue);
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
     });
