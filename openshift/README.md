@@ -255,7 +255,7 @@ oc process -f backup-cronjob-verify.yaml \
     -p JOB_NAME=backup-postgres-verify \
     -p JOB_PERSISTENT_STORAGE_NAME=$PVC \
     -p SCHEDULE="0 9 * * *" \
-    -p TAG_NAME=2.8.0 \
+    -p TAG_NAME=2.9.0 \
     | oc -n $NAMESPACE apply -f -
 ```
 
@@ -275,6 +275,6 @@ oc process -f backup-cronjob-verify.yaml \
     -p RESOURCE_LIMIT_CPU="1500m" \
     -p RESOURCE_LIMIT_MEMORY="1Gi" \
     -p SCHEDULE="0 9 * * *" \
-    -p TAG_NAME=2.8.0 \
+    -p TAG_NAME=2.9.0 \
     | oc -n $NAMESPACE apply -f -
 ```
