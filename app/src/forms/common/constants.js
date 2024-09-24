@@ -29,7 +29,7 @@ module.exports = Object.freeze({
     FORM_API_UPDATE: 'form_api_update',
     FORM_DELETE: 'form_delete',
     FORM_READ: 'form_read',
-    FORM_SUBMITTER: ['form_read', 'submission_create'],
+    FORM_SUBMITTER: ['form_read', 'submission_create', 'document_template_read'],
     FORM_UPDATE: 'form_update',
     SUBMISSION_CREATE: 'submission_create',
     SUBMISSION_DELETE: 'submission_delete',
