@@ -39,7 +39,7 @@ describe('addStatus', () => {
   });
 
   it('should call statusRevising if email specified', async () => {
-    req.body.submissionUserEmail = 'a@a.com';
+    req.body.submissionUserEmails = ['a@a.com'];
     req.body.revisionNotificationEmailContent = 'Email content';
     req.body.code = Statuses.REVISING;
     service.read = jest.fn().mockReturnValue({ form: { id: '123' } });
@@ -49,11 +49,11 @@ describe('addStatus', () => {
 
     expect(service.changeStatusState).toBeCalledTimes(1);
     expect(emailService.statusRevising).toBeCalledTimes(1);
-    expect(emailService.statusRevising).toBeCalledWith('123', 1, 'a@a.com', 'Email content', 'a');
+    expect(emailService.statusRevising).toBeCalledWith('123', 1, ['a@a.com'], 'Email content', 'a');
   });
 
   it('should call statusCompleted if email specified', async () => {
-    req.body.submissionUserEmail = 'a@a.com';
+    req.body.submissionUserEmails = ['a@a.com'];
     req.body.revisionNotificationEmailContent = 'Email Content';
     req.body.confirmCompleted = true;
     req.body.code = Statuses.COMPLETED;
@@ -64,7 +64,7 @@ describe('addStatus', () => {
 
     expect(service.changeStatusState).toBeCalledTimes(1);
     expect(emailService.statusCompleted).toBeCalledTimes(1);
-    expect(emailService.statusCompleted).toBeCalledWith('123', 1, 'a@a.com', 'Email Content', 'a');
+    expect(emailService.statusCompleted).toBeCalledWith('123', 1, ['a@a.com'], 'Email Content', 'a');
   });
 });
 

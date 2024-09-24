@@ -87,7 +87,8 @@ defineExpose({
 
     <span
       v-if="
-        submission.status === 'SUBMITTED' &&
+        (submission.status === 'SUBMITTED' ||
+          submission.status === 'COMPLETED') &&
         isCopyFromExistingSubmissionEnabled === true
       "
     >
