@@ -53,8 +53,9 @@
     "port": "8080",
     "rateLimit": {
       "public": {
-        "windowMs": "60000",
-        "max": "120"
+        "limitApiKey": "120",
+        "limitFrontend": "500",
+        "windowMs": "60000"
       }
     },
     "encryption": {
