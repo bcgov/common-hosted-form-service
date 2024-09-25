@@ -16,7 +16,6 @@ const properties = defineProps({
   },
 });
 
-const filterData = ref([]);
 const filterIgnore = ref([
   {
     key: 'confirmationId',
@@ -32,7 +31,8 @@ const showColumnsDialog = ref(false);
 
 const formStore = useFormStore();
 
-const { form, formFields, submissionList, isRTL } = storeToRefs(formStore);
+const { form, formFields, mySubmissionPreferences, submissionList, isRTL } =
+  storeToRefs(formStore);
 
 //------------------------ TABLE HEADERS
 // These are headers that will be available by default for the
@@ -102,11 +102,11 @@ const HEADERS = computed(() => {
   let headers = BASE_HEADERS.value;
 
   // The user selected some columns
-  if (filterData.value.length > 0) {
+  if (USER_PREFERENCES.value.length > 0) {
     headers = headers.filter(
       (header) =>
         // It must be in the user selected columns
-        filterData.value.some((fd) => fd === header.key) ||
+        USER_PREFERENCES.value.some((up) => up === header.key) ||
         // except if it's in the filter ignore
         filterIgnore.value.some((fd) => fd.key === header.key)
     );
@@ -180,6 +180,21 @@ const showDraftLastEdited = computed(
 const isCopyFromExistingSubmissionEnabled = computed(
   () => form.value && form.value.enableCopyExistingSubmission
 );
+
+// These are columns that the user has previously selected
+// through the select columns dialog. These are columns
+// that they wish to see in the table in this view.
+const USER_PREFERENCES = computed(() => {
+  let preselectedData = [];
+  if (
+    mySubmissionPreferences.value?.preferences?.formId &&
+    mySubmissionPreferences.value.preferences.formId == properties.formId &&
+    mySubmissionPreferences.value?.preferences?.columns
+  ) {
+    preselectedData = mySubmissionPreferences.value.preferences.columns;
+  }
+  return preselectedData;
+});
 
 onBeforeMount(async () => {
   await Promise.all([
@@ -280,14 +295,20 @@ async function populateSubmissionsTable() {
 }
 
 async function updateFilter(data) {
-  filterData.value = data;
+  let preferences = {
+    formId: properties.formId,
+    columns: [],
+  };
+  data.forEach((d) => {
+    preferences.columns.push(d);
+  });
+  mySubmissionPreferences.value.preferences = preferences;
   showColumnsDialog.value = false;
 }
 
 defineExpose({
   BASE_FILTER_HEADERS,
   BASE_HEADERS,
-  filterData,
   filterIgnore,
   getCurrentStatus,
   getStatusDate,

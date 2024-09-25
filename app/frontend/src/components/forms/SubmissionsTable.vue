@@ -27,7 +27,6 @@ const debounceTime = ref(300);
 const deleteItem = ref({});
 // Show only deleted items
 const deletedOnly = ref(false);
-const filterData = ref([]);
 const search = ref('');
 const filterIgnore = ref([
   {
@@ -503,7 +502,6 @@ async function restoreMultipleSubs() {
 
 async function updateFilter(data) {
   showColumnsDialog.value = false;
-  filterData.value = data;
   let preferences = {
     columns: [],
   };
