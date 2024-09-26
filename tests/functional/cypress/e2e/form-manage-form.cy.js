@@ -134,9 +134,7 @@ describe('Form Designer', () => {
         
         });
       cy.get(':nth-child(4) > .v-input > .v-input__control > .v-field').click();
-      cy.waitForLoad();
-      cy.waitForLoad();
-      cy.waitForLoad();
+      cy.wait(4000);
       cy.contains('days').click();
       //Repeat period
       cy.contains('Repeat period').click();

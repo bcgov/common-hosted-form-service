@@ -226,8 +226,7 @@ describe('Form Designer', () => {
       cy.waitForLoad();
       cy.get('[data-cy="settingsRouterLink"]').click();
       cy.get('a > .v-btn > .v-btn__content > .mdi-pencil').click();
-      cy.waitForLoad();
-      cy.waitForLoad();
+      cy.wait(4000);
       
       //Adding another component
 
@@ -244,8 +243,7 @@ describe('Form Designer', () => {
         cy.get('button').contains('Save').click();
       });
 
-      cy.waitForLoad();
-      cy.waitForLoad();
+      cy.wait(4000);
       //Remove a component
       cy.get('[ref=removeComponent]').then($el => {
 
@@ -255,8 +253,7 @@ describe('Form Designer', () => {
 
       });
 
-      cy.waitForLoad();
-      cy.waitForLoad();
+      cy.wait(4000);
       cy.get('[data-cy=saveButton]').click();
       cy.waitForLoad();
 
@@ -292,9 +289,7 @@ describe('Form Designer', () => {
 
      //Delete form after test run
      cy.visit(`/${depEnv}/form/design?d=${arrayValues[0]}&f=${dval[0]}`);
-     cy.waitForLoad();
-     cy.waitForLoad();
-     
+     cy.wait(4000);
      cy.get('[data-cy="settingsRouterLink"] > .v-btn').click();
      cy.waitForLoad();
      cy.get('[data-test="canRemoveForm"]').click();
