@@ -320,7 +320,6 @@ describe('Form Designer', () => {
         cy.waitForLoad();
         cy.get('.mdi-delete').click();
         cy.get('[data-test="continue-btn-continue"]').click();
-        cy.get('#logoutButton > .v-btn__content > span').click();
         
         })
 

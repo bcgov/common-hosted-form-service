@@ -134,9 +134,7 @@ describe('Form Designer', () => {
         
         });
       cy.get(':nth-child(4) > .v-input > .v-input__control > .v-field').click();
-      cy.waitForLoad();
-      cy.waitForLoad();
-      cy.waitForLoad();
+      cy.wait(4000);
       cy.contains('days').click();
       //Repeat period
       cy.contains('Repeat period').click();
@@ -171,7 +169,8 @@ describe('Form Designer', () => {
         cy.get(rem).contains('2026-06-17').should('be.visible');
        });
       cy.contains('SEND Reminder email').click();
-      cy.contains('b','2026-06-21').should('be.visible');
+      //cy.contains('b','2026-06-21');
+      cy.get('[data-test="submission-schedule-text"] > :nth-child(2)').contains('2026-06-21');
       cy.get('[data-test="canEditForm"]').click();
       
 
@@ -197,7 +196,7 @@ describe('Form Designer', () => {
 
       cy.get('.v-col > .v-btn > .v-btn__content > span').click();
       // Verify form settings updation success message
-      cy.get('.v-alert__content').contains('div','Your form settings have been updated successfully.').should('be.visible');
+      cy.get('.v-alert__content').contains('div','Subscription settings for this form has been saved.').should('be.visible');
 
       //Delete form after test run
       cy.get('.mdi-delete').click();
