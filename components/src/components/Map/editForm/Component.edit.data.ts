@@ -22,6 +22,14 @@ export default {
       input: true,
     },
     {
+      label: 'How many Markers per Submission?',
+      key: 'numPoints',
+      type: 'simplenumber',
+      defaultValue: 1,
+      input: true,
+    },
+
+    {
       label: 'Default Zoom Level',
       description:
         'Zoom Levels are from 0 (Most zoomed out) to 18 (most zoomed in).',
@@ -77,6 +85,10 @@ export default {
           label:
             'Add circular area of interest through a point and custom radius',
           value: 'circle',
+        },
+        {
+          label: 'Add a polygon',
+          value: 'polygon',
         },
       ],
       defaultValue: 'marker',
