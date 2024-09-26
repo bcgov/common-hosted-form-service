@@ -44,7 +44,7 @@ export default {
       label: 'Default Center',
       numPoints: 1,
       tableView: false,
-      markerType: 'marker',
+      markerType: { marker: true },
       defaultZoom: 5,
       allowSubmissions: true,
       description:
@@ -81,7 +81,7 @@ export default {
       ],
       defaultValue: 'marker',
       key: 'markerType',
-      type: 'simpleradios',
+      type: 'simplecheckboxes',
       input: true,
     },
     {
@@ -92,12 +92,13 @@ export default {
       input: true,
     },
     {
-      label: 'Submitter "My Location" button',
+      label: 'Enable Submitter "My Location" button',
       description:
         'This allows for the user to center the map on their location.',
       key: 'myLocation',
-      type: 'simplecheckbox',
+      type: 'simplecheckboxadvanced',
       input: true,
+      defaultValue: true,
     },
   ],
 };
