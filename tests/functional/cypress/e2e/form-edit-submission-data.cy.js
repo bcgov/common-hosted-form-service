@@ -44,24 +44,7 @@ describe('Form Designer', () => {
       .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
-    
-    /*cy.get('div.formio-builder-form').then($el => {
-      const coords2 = $el[0].getBoundingClientRect();
-      cy.get('span.btn').contains('Checkbox')
-      
-      .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords2.x, -50, { force: true })
-      .trigger('mouseup', { force: true });
-      //cy.get('p').contains('Checkbox Component');
-      //cy.get('input[name="data[label]"]').clear();
-      //cy.get('input[name="data[label]"]').clear();
-      //cy.get('input[name="data[label]"]').type('Applying for self');
-      cy.get('button').contains('Save').click();
-    });
-    */
     // Form saving
-    
-
     });
     it('Form Submission and Updation', () => {
       cy.viewport(1000, 1100);
@@ -84,19 +67,13 @@ describe('Form Designer', () => {
       });
       // Filter the newly created form
       cy.location('search').then(search => {
-          //let pathName = fullUrl.pathname
+          
         let arr = search.split('=');
         let arrayValues = arr[1].split('&');
         cy.log(arrayValues[0]);
-          //cy.log(arrayValues[1]);
-          //cy.log(arrayValues[2]);
         cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
         cy.waitForLoad();
-
-
-        
-         
-          //Publish the form
+        //Publish the form
         cy.get('.v-label > span').click();
       
         cy.get('span').contains('Publish Version 1');
@@ -113,20 +90,11 @@ describe('Form Designer', () => {
         cy.waitForLoad();
         cy.contains('Text Field').click();
         cy.contains('Text Field').type('Alex');
-        //cy.contains('Text Field 2').click();
-        //cy.contains('Text Field 2').type('Smith');
-        //cy.get('.form-check-input').click();
          //form submission
         cy.get('button').contains('Submit').click();
         cy.waitForLoad();
-        //cy.get('button').contains('Submit').click();
-        //cy.contains('Submit').trigger({ force: true }).click();
         cy.get('[data-test="continue-btn-continue"]').click({force: true});
         cy.waitForLoad();
-        //cy.get('button').contains('Submit').click();
-        cy.waitForLoad();
-        cy.waitForLoad();
-        //cy.get('[data-test="continue-btn-continue"]').click();
         cy.waitForLoad();
         cy.waitForLoad();
         cy.get('label').contains('Text Field').should('be.visible');
@@ -134,14 +102,6 @@ describe('Form Designer', () => {
         cy.location('pathname').should('eq', `/${depEnv}/form/success`);
     
         cy.contains('h1', 'Your form has been submitted successfully');
-
-        //cy.get('label').contains('Last Name').should('be.visible');
-        //cy.get('label').contains('Applying for self').should('be.visible');
-      
-    /*it('Form Submission and Updation', () => {
-        
-        //Update submission
-        */
         cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
         cy.waitForLoad();
         cy.waitForLoad();
@@ -154,8 +114,6 @@ describe('Form Designer', () => {
         cy.waitForLoad();
         cy.contains('Text Field').click();
         cy.contains('Text Field').type('Alex');
-        //cy.contains('Text Field 2').click();
-        //cy.contains('Text Field 2').type('Smith');
         cy.get('button').contains('Submit').click();
         cy.waitForLoad();
         cy.get('[data-test="continue-btn-continue"]').should('be.visible');
@@ -163,11 +121,7 @@ describe('Form Designer', () => {
         cy.get('[data-test="continue-btn-continue"]').click({force: true});
         cy.waitForLoad();
         cy.waitForLoad();
-        //cy.get('[data-test="continue-btn-continue"]').click();
         cy.waitForLoad();
-        //cy.get('label').contains('First Name').should('be.visible');
-        //cy.get('label').contains('Last Name').should('be.visible');
-        //cy.get('label').contains('Applying for self').should('be.visible')
         //view submission
         cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
         cy.waitForLoad();
@@ -183,11 +137,6 @@ describe('Form Designer', () => {
         cy.get('button').contains('Submit').should('be.visible');
         
         //Edit submission data
-        //cy.get('input[name="data[simpletextfield1]"').click();
-        //cy.get('input[name="data[simpletextfield1]"').clear();
-        //cy.get('input[name="data[simpletextfield1]"').type('Nancy');
-        //cy.get('input[name="data[simpletextfield2]"').click();
-        //cy.get('input[name="data[simpletextfield2]"').type('Smith');
         cy.contains('Text Field').click();
         cy.contains('Text Field').type('Smith');
 
@@ -198,8 +147,7 @@ describe('Form Designer', () => {
         cy.waitForLoad();
         cy.waitForLoad();
         cy.waitForLoad();
-        //cy.get('label').contains('First Name').should('be.visible');
-        //cy.get('label').contains('Last Name').should('be.visible');
+        
         //Adding notes to submission
         cy.get('.mdi-plus').click();
         cy.get('div').find('textarea').then($el => {
