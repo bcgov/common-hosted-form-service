@@ -56,31 +56,30 @@ Similar to `.only` is the `.skip` modifier to skip a test or group of tests.
 
 ## Testing Strategy
 
-The testing strategy for the backend unit tests can be broken down into the different layers of the backend. For all tests we should:
+The testing strategy for the backend unit tests can be broken down into the different layers of the backend. For all tests:
 
-- ensure that the tests are consistent
-- ensure that we have 100% test coverage
-- ensure that we have complete test coverage: we should be testing additional corner cases even once we reach 100% test coverage
-- test the interface, not the implementation
-- test the unit under test, not its dependencies
+- Ensure that the tests are consistent: be sure to completely understand similar tests before creating a new test
+- Ensure that we have 100% test coverage
+- Ensure that we have complete test coverage: we should be testing additional corner cases even once we reach 100% test coverage
+- Test the interface, not the implementation
+- Test the unit under test, not its dependencies
 
 ### Middleware Testing
 
-The tests for the middleware files should:
+The tests for the middleware files:
 
-- mock all services calls used by the middleware, including both exception and minimal valid results
-- test all response codes produced by the middleware
+- Mock all services calls used by the middleware, including both exception and minimal valid results
+- Test all response codes produced by the middleware
 
 ### Route Testing
 
-The tests for the `route.js` files should:
+The tests for the `route.js` files:
 
-- mock all middleware used by the file
-- each route test should check that every middleware is called the proper number of times
-- each route test should mock the controller function that it calls
-- mock controller functions with `res.sendStatus(200)`, as doing something like `next()` will call multiple controller functions when route paths are overloaded
-- check that the mocked controller function is called - this will catch when a new route path accidentally overloads an old one
-- for consistency and ease of comparison, alphabetize the expect clauses ("alphabetize when possible")
+- Mock middleware used by the file
+- Each route test mocks its controller function with `res.sendStatus(200)`, as doing something like `next()` calls multiple controller functions when route paths are overloaded
+- Check that the route calls every middleware the proper number of times - should be 0 or 1
+- Check that the route calls the expected controller function - this will catch when a new route path accidentally overloads an old one
+- Alphabetize the expect clauses ("alphabetize when possible") for consistency and ease of comparison
 
 Note:
 
