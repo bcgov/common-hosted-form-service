@@ -136,6 +136,16 @@ describe('Form Designer', () => {
       cy.get(':nth-child(4) > .v-input > .v-input__control > .v-field').click();
       cy.wait(4000);
       cy.contains('days').click();
+      //verification of Summary
+      cy.contains('span','This form will be open for submissions from').should('be.visible');
+      cy.get('b').then($el => {
+
+        const rem=$el[0];
+        const rem1=$el[1];
+        cy.get(rem).contains('2026-06-17').should('exist');
+        cy.get(rem1).contains('2026-06-21').should('exist');
+
+       });
       //Repeat period
       cy.contains('Repeat period').click();
       cy.get('input[type="number"]').then($el => {
@@ -157,20 +167,12 @@ describe('Form Designer', () => {
         
         });
  
-      //Clsing date for submission
+      //Closing date for submission
       cy.contains('Set custom closing message').click();
       cy.get('textarea').type('closed for some reasons')
       cy.contains('SEND Reminder email').click();
-      //verification of Summary
-      cy.contains('span','This form will be open for submissions from').should('be.visible');
-      cy.get('b').then($el => {
-
-        const rem=$el[0];
-        cy.get(rem).contains('2026-06-17').should('be.visible');
-       });
+      
       cy.contains('SEND Reminder email').click();
-      //cy.contains('b','2026-06-21');
-      cy.get('[data-test="submission-schedule-text"] > :nth-child(2)').contains('2026-06-21');
       cy.get('[data-test="canEditForm"]').click();
       
 
