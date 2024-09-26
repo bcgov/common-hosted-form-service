@@ -72,6 +72,7 @@ export default {
         'This allows for the user to view and scroll the map, but not add any input',
       key: 'allowSubmissions',
       type: 'simplecheckbox',
+      defaultValue: true,
       input: true,
     },
     {
