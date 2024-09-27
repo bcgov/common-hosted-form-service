@@ -55,6 +55,7 @@ export default class Component extends (FieldComponent as any) {
   loadMap() {
     const mapContainer = document.getElementById(`map-${this.componentID}`);
     const form = document.getElementsByClassName('formio');
+
     const drawOptions = {
       marker: false,
       circlemarker: false,
@@ -63,19 +64,24 @@ export default class Component extends (FieldComponent as any) {
       circle: false,
       rectangle: null,
     };
+    // set marker type from user choice
+    if (this.component.markerType) {
+      for (const [key, value] of Object.entries(this.component.markerType)) {
+        drawOptions[key] = value;
+      }
+    }
 
     // Set drawing options based on markerType
-    if (this.component.markerType === 'rectangle') {
+    if (this.component?.markerType?.rectangle) {
       drawOptions.rectangle = { showArea: false }; // fixes a bug in Leaflet.Draw
     } else {
       drawOptions.rectangle = false;
-      drawOptions[this.component.markerType] = true; // set marker type from user choice
     }
 
     const {
       numPoints,
       defaultZoom,
-      readOnlyMap,
+      allowSubmissions,
       center,
       defaultValue,
       myLocation,
@@ -97,7 +103,7 @@ export default class Component extends (FieldComponent as any) {
       form,
       numPoints,
       defaultZoom,
-      readOnlyMap,
+      readOnlyMap: !allowSubmissions, // if allow submissions, read only is false
       defaultValue,
       onDrawnItemsChange: this.saveDrawnItems.bind(this),
       viewMode,
