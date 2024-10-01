@@ -5,6 +5,7 @@ import FormGeneralSettings from '~/components/designer/settings/FormGeneralSetti
 import FormFunctionalitySettings from '~/components/designer/settings/FormFunctionalitySettings.vue';
 import FormScheduleSettings from '~/components/designer/settings/FormScheduleSettings.vue';
 import FormSubmissionSettings from '~/components/designer/settings/FormSubmissionSettings.vue';
+import FormMetadataSettings from '~/components/designer/settings/FormMetadataSettings.vue';
 import { useFormStore } from '~/store/form';
 
 export default {
@@ -14,6 +15,7 @@ export default {
     FormFunctionalitySettings,
     FormScheduleSettings,
     FormSubmissionSettings,
+    FormMetadataSettings,
   },
   props: {
     disabled: {
@@ -45,6 +47,9 @@ export default {
       </v-col>
       <v-col v-if="form.schedule.enabled && isFormPublished" cols="12" md="6">
         <FormScheduleSettings />
+      </v-col>
+      <v-col cols="12" md="6">
+        <FormMetadataSettings :disabled="disabled" />
       </v-col>
     </v-row>
   </v-container>

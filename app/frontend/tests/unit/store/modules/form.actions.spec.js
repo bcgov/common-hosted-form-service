@@ -6,6 +6,7 @@ import {
   rbacService,
   userService,
   adminService,
+  formMetadataService,
 } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
@@ -133,6 +134,7 @@ describe('form actions', () => {
       formService.readForm.mockResolvedValue({ data: { form: {} } });
       mockStore.apiKey = undefined;
       mockStore.form = undefined;
+      formMetadataService.getFormMetadata.mockResolvedValue({});
       await mockStore.fetchForm({ formId: 'fId' });
 
       expect(mockStore.apiKey).toEqual(null);
