@@ -1,11 +1,13 @@
 const routes = require('express').Router();
 const { currentUser, hasFormPermissions } = require('../../auth/middleware/userAccess');
+const rateLimiter = require('../../common/middleware').apiKeyRateLimiter;
 const validateParameter = require('../../common/middleware/validateParameter');
 const P = require('../../common/constants').Permissions;
 
 const controller = require('./controller');
 
 routes.use(currentUser);
+routes.use(rateLimiter);
 
 routes.param('formId', validateParameter.validateFormId);
 

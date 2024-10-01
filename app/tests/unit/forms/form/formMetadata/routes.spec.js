@@ -73,7 +73,7 @@ describe(`${basePath}/:formId/formMetadata`, () => {
     expect(apiAccess).toBeCalledTimes(0);
     expect(controller.delete).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
   });
@@ -88,7 +88,7 @@ describe(`${basePath}/:formId/formMetadata`, () => {
     expect(apiAccess).toBeCalledTimes(0);
     expect(controller.read).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
   });
@@ -103,7 +103,7 @@ describe(`${basePath}/:formId/formMetadata`, () => {
     expect(apiAccess).toBeCalledTimes(0);
     expect(controller.create).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
   });
@@ -118,7 +118,7 @@ describe(`${basePath}/:formId/formMetadata`, () => {
     expect(apiAccess).toBeCalledTimes(0);
     expect(controller.update).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
   });
