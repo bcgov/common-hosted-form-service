@@ -92,7 +92,7 @@ it('Verify draft submission', () => {
       shareFormLinkButton.trigger('click');
       cy.get('.mx-2 > .v-btn').click();
     })
-      //Form submission and verification for public forms
+      //Draft submission and verification
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
     cy.waitForLoad();
     cy.get('button').contains('Submit').should('be.visible');
@@ -109,13 +109,41 @@ it('Verify draft submission', () => {
     cy.get(':nth-child(2) > :nth-child(4) > :nth-child(1) > .v-btn').click();
     //cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
     //cy.get('div > .bg-primary').click();
+    cy.get('form > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
+    cy.get('form > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').type('NIM');
+    cy.contains('John, Nimya 1 CITZ:EX (nimya.1.john@gov.bc.ca)').click();
+    console.log();
+    cy.get('.v-col-3').click();
+    cy.get('tbody > :nth-child(2) > :nth-child(1)').contains('John, Nimya 1 CITZ:EX').should('be.visible');
+    cy.get('.v-card-actions > .v-btn > .v-btn__content > span').click();
+    // Edit draft submission
+    cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
+    cy.get('.mdi-pencil').click();
+    cy.waitForLoad();
+    cy.contains('Text Field').click();
+    //cy.get('textarea').clear();
+    cy.contains('Text Field').type('Nancy');
+    cy.get('button').contains('Submit').click();
+    cy.waitForLoad();
+    cy.get('[data-test="continue-btn-continue"]').click({force: true});
+    cy.waitForLoad();
+
+    cy.location('pathname').should('eq', `/${depEnv}/form/success`);
+    
+    cy.contains('h1', 'Your form has been submitted successfully');
+    cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
+    //cy.get('div > .bg-primary').click();
+    cy.get('.v-data-table__tr > :nth-child(4)').contains('SUBMITTED');
+
+
 
 
       //Delete form after test run
-      //cy.get('.mdi-delete').click();
-    //cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
-    //cy.get('[data-test="continue-btn-continue"]').click();
-    //cy.get('#logoutButton > .v-btn__content > span').click();
+    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+    cy.waitForLoad();
+    cy.get('.mdi-delete').click();
+    cy.get('[data-test="continue-btn-continue"]').click();
+    cy.get('#logoutButton > .v-btn__content > span').click();
    
 
     });
