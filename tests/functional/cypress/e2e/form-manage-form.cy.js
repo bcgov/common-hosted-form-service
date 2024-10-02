@@ -26,14 +26,10 @@ describe('Form Designer', () => {
     });
   });
   it('Visits the form settings page', () => {
-    
-    
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     
     formsettings();
-    
-
   });  
 // Update manage form settings
  it('Checks manage form settings', () => {
@@ -174,9 +170,6 @@ describe('Form Designer', () => {
       
       cy.contains('SEND Reminder email').click();
       cy.get('[data-test="canEditForm"]').click();
-      
-
-
     })
     it('Checks Event Subscription settings', () => {
       cy.viewport(1000, 1100);
@@ -204,11 +197,5 @@ describe('Form Designer', () => {
       cy.get('.mdi-delete').click();
       cy.get('[data-test="continue-btn-continue"]').click();
       cy.get('#logoutButton > .v-btn__content > span').click();
-
-
-
     })
-
-
-   
 })

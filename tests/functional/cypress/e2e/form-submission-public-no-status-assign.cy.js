@@ -13,14 +13,9 @@ Cypress.Commands.add('waitForLoad', () => {
   cy.get('.nprogress-busy', { timeout: loaderTimeout }).should('not.exist');
 });
 
-
-
 describe('Form Designer', () => {
 
   beforeEach(()=>{
-    
-    
-    
     cy.on('uncaught:exception', (err, runnable) => {
       // Form.io throws an uncaught exception for missing projectid
       // Cypress catches it as undefined: undefined so we can't get the text
@@ -105,10 +100,6 @@ describe('Form Designer', () => {
     cy.waitForLoad();
     cy.get(':nth-child(3) > .v-card > .v-card-text > :nth-child(2) > .v-input__control > .v-selection-control > .v-label > span').click();//uncheck for not able to update the status of the form
     cy.get('input[type="checkbox"]').then($el => {
-
-        
-
-        
         const rem=$el[0];//save and edit drafts
         const rem2=$el[2];//multiple draft upload
         const rem3=$el[3];//form submission schedule settings
@@ -119,8 +110,6 @@ describe('Form Designer', () => {
         cy.get(rem3).should("be.enabled");
         cy.get(rem4).should("not.be.enabled");
         cy.get(rem5).should("be.enabled");
-    
-      
     });
     cy.get('[data-test="canEditForm"]').click();
     //Check team management functionality for public forms
@@ -150,12 +139,9 @@ describe('Form Designer', () => {
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.waitForLoad();
     cy.waitForLoad();
-      //Logout to submit the public form
+    //Logout to submit the public form
     cy.get('#logoutButton > .v-btn__content > span').click();
-        
-
-
-      //Form submission and verification for public forms
+    //Form submission and verification for public forms
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
     cy.waitForLoad();
     cy.waitForLoad();
@@ -165,10 +151,10 @@ describe('Form Designer', () => {
     cy.waitForLoad();
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('Alex');
-         //form submission
+    //form submission
     cy.get('button').contains('Submit').click();
     cy.waitForLoad();
-        //cy.get('[data-test="continue-btn-continue"]').click({force: true});
+    //cy.get('[data-test="continue-btn-continue"]').click({force: true});
     cy.waitForLoad();
     cy.waitForLoad();
     cy.waitForLoad();
@@ -198,9 +184,7 @@ describe('Form Designer', () => {
     cy.get('.btn').click();
     cy.waitForLoad();
     cy.waitForLoad();
-        //view submission
-        
-    
+    //view submission
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.get('.mdi-list-box-outline').click();
     cy.waitForLoad();

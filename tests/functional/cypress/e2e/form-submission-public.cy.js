@@ -112,9 +112,7 @@ describe('Form Designer', () => {
             cy.get(rem2).should("not.be.enabled");
             cy.get(rem3).should("be.enabled");
             cy.get(rem4).should("not.be.enabled");
-            cy.get(rem5).should("be.enabled");
-        
-          
+            cy.get(rem5).should("be.enabled");      
     });
     cy.get('[data-test="canEditForm"]').click();
     //Check team management functionality for public forms
@@ -176,7 +174,6 @@ describe('Form Designer', () => {
           }
     else
           {
-             
               cy.visit(`/${depEnv}`);
               
           }
@@ -223,12 +220,12 @@ describe('Form Designer', () => {
       cy.get(rem).type('some notes');
       
       
-      });
-      //Verify  submitted by label is public
+    });
+    //Verify  submitted by label is public
     cy.get('p').contains('public').should('be.visible');
     //Edit submission data for public form
     cy.get('.mdi-pencil').click();
-        //check visibility of cancel button
+    //check visibility of cancel button
     cy.get('.v-col-2 > .v-btn').should('be.visible');
     cy.get('button').contains('Submit').should('be.visible');
     cy.contains('Text Field').click();
@@ -244,9 +241,7 @@ describe('Form Designer', () => {
     cy.get('.mdi-list-box-outline').click();
     cy.waitForLoad();
     cy.get('.mdi-cog').click();
-    
     //Delete form after test run
-      
     cy.waitForLoad();
     cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
     cy.get('[data-test="continue-btn-continue"]').click();
