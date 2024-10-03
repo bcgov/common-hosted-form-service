@@ -3,6 +3,7 @@ const Problem = require('api-problem');
 const { v4: uuidv4 } = require('uuid');
 
 const { FormMetadata } = require('../../common/models');
+const { typeUtils } = require('../../common/utils');
 
 const DEFAULT_HEADERNAME = 'X-FORM-METADATA';
 const DEFAULT_ATTRIBUTENAME = 'formMetadata';
@@ -22,6 +23,35 @@ const service = {
       attributeName: data.attributeName ? data.attributeName : DEFAULT_ATTRIBUTENAME,
       metadata: data.metadata ? data.metadata : {},
     };
+  },
+
+  hasMetadata: (formMetadata) => {
+    return formMetadata && formMetadata.metadata && Object.keys(formMetadata.metadata).length;
+  },
+
+  addMetadataToObject: async (formId, data, name, encode) => {
+    if (!formId || !data || !name) return;
+    if (!['attributeName', 'headerName'].includes(name)) return;
+
+    if (data && typeUtils.isObject(data)) {
+      const o = await service.read(formId);
+      if (service.hasMetadata(o)) {
+        let value = o.metadata;
+        if (encode) {
+          let bufferObj = Buffer.from(JSON.stringify(o.metadata), 'utf8');
+          value = bufferObj.toString('base64');
+        }
+        data[o[name]] = value;
+      }
+    }
+  },
+
+  addAttribute: async (formId, obj) => {
+    return await service.addMetadataToObject(formId, obj, 'attributeName');
+  },
+
+  addHeader: async (formId, headers) => {
+    return await service.addMetadataToObject(formId, headers, 'headerName', true);
   },
 
   create: async (formId, data, currentUser) => {

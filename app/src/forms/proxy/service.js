@@ -101,13 +101,8 @@ const service = {
   createExternalAPIHeaders: async (externalAPI, proxyHeaderInfo) => {
     const result = {};
     // form metadata, add if specified and there are attributes in the metadata.
-    const formMetadata = await formMetadataService.read(proxyHeaderInfo['formId']);
-    if (formMetadata && formMetadata.metadata && Object.keys(formMetadata.metadata).length) {
-      // turn JSON into utf8 string then base64 encode it and pass as a header
-      let bufferObj = Buffer.from(JSON.stringify(formMetadata.metadata), 'utf8');
-      let base64String = bufferObj.toString('base64');
-      result[formMetadata.headerName] = base64String;
-    }
+    await formMetadataService.addHeader(proxyHeaderInfo['formId'], result);
+
     if (externalAPI.sendApiKey) {
       result[externalAPI.apiKeyHeader] = externalAPI.apiKey;
     }

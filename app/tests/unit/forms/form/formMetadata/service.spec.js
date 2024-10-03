@@ -287,3 +287,246 @@ describe('delete', () => {
     expect(FormMetadata.deleteById).toBeCalledTimes(0);
   });
 });
+
+describe('hasMetadata', () => {
+  it('return true when metadata has keys', async () => {
+    const result = await service.hasMetadata({ metadata: { a: 'b' } });
+    expect(result).toBeTruthy();
+  });
+
+  it('return false when no object', async () => {
+    const result = await service.hasMetadata();
+    expect(result).toBeFalsy();
+  });
+
+  it('return false when no metadata', async () => {
+    const result = await service.hasMetadata({});
+    expect(result).toBeFalsy();
+  });
+
+  it('return false when  metadata has no keys', async () => {
+    const result = await service.hasMetadata({ metadata: {} });
+    expect(result).toBeFalsy();
+  });
+});
+
+describe('addMetadataToObject', () => {
+  let validData;
+  beforeEach(() => {
+    // no idea why MockModel wasn't working in this test, so just use the model directly
+    FormMetadata.query = jest.fn().mockReturnThis();
+    FormMetadata.where = jest.fn().mockReturnThis();
+    FormMetadata.modify = jest.fn().mockReturnThis();
+    FormMetadata.first = jest.fn().mockReturnThis();
+    FormMetadata.deleteById = jest.fn();
+    FormMetadata.throwIfNotFound = jest.fn().mockReturnThis();
+    validData = {
+      id: uuid.v4(),
+      formId: uuid.v4(),
+      headerName: 'X-FORM-METADATA',
+      attributeName: 'formMetadata',
+      metadata: { externalId: '456' },
+    };
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('should do nothing if no formid', async () => {
+    let obj = {};
+    await service.addMetadataToObject(null, obj, 'name');
+    expect(FormMetadata.query).not.toBeCalled();
+    expect(obj).toEqual({});
+  });
+
+  it('should do nothing if no data', async () => {
+    await service.addMetadataToObject('123', null, 'name');
+    expect(FormMetadata.query).not.toBeCalled();
+  });
+
+  it('should do nothing if no name', async () => {
+    let obj = {};
+    await service.addMetadataToObject('formId', obj, null);
+    expect(FormMetadata.query).not.toBeCalled();
+    expect(obj).toEqual({});
+  });
+
+  it('should do nothing if invalid name', async () => {
+    let obj = {};
+    await service.addMetadataToObject('formId', obj, 'badname');
+    expect(FormMetadata.query).not.toBeCalled();
+    expect(obj).toEqual({});
+  });
+
+  it('should do nothing if no data is not an object', async () => {
+    await service.addMetadataToObject('123', 123, 'attributeName');
+    expect(FormMetadata.query).not.toBeCalled();
+    await service.addMetadataToObject('123', [], 'attributeName');
+    expect(FormMetadata.query).not.toBeCalled();
+  });
+
+  it('should do nothing if formMetadata is not found', async () => {
+    FormMetadata.first = jest.fn().mockResolvedValueOnce(null);
+    let obj = {};
+    await service.addMetadataToObject('123', obj, 'attributeName');
+    expect(FormMetadata.query).toBeCalledTimes(1);
+    expect(FormMetadata.first).toBeCalledTimes(1);
+    expect(obj).toEqual({});
+  });
+
+  it('should add metadata as attributeName', async () => {
+    FormMetadata.first = jest.fn().mockResolvedValueOnce(validData);
+    let obj = {};
+    await service.addMetadataToObject('123', obj, 'attributeName');
+    expect(FormMetadata.query).toBeCalledTimes(1);
+    expect(FormMetadata.first).toBeCalledTimes(1);
+    expect(obj).toEqual({ formMetadata: { externalId: '456' } });
+  });
+
+  it('should add metadata as headerName', async () => {
+    FormMetadata.first = jest.fn().mockResolvedValueOnce(validData);
+    let obj = {};
+    await service.addMetadataToObject('123', obj, 'headerName');
+    expect(FormMetadata.query).toBeCalledTimes(1);
+    expect(FormMetadata.first).toBeCalledTimes(1);
+    expect(obj).toEqual({ 'X-FORM-METADATA': { externalId: '456' } });
+  });
+
+  it('should add encoded metadata as headerName', async () => {
+    FormMetadata.first = jest.fn().mockResolvedValueOnce(validData);
+    let bufferObj = Buffer.from(JSON.stringify(validData.metadata), 'utf8');
+    let encodedValue = bufferObj.toString('base64');
+
+    let obj = {};
+    await service.addMetadataToObject('123', obj, 'headerName', true);
+    expect(FormMetadata.query).toBeCalledTimes(1);
+    expect(FormMetadata.first).toBeCalledTimes(1);
+    expect(obj['X-FORM-METADATA']).toMatch(encodedValue);
+  });
+});
+
+describe('addAttribute', () => {
+  let validData;
+  beforeEach(() => {
+    // no idea why MockModel wasn't working in this test, so just use the model directly
+    FormMetadata.query = jest.fn().mockReturnThis();
+    FormMetadata.where = jest.fn().mockReturnThis();
+    FormMetadata.modify = jest.fn().mockReturnThis();
+    FormMetadata.first = jest.fn().mockReturnThis();
+    FormMetadata.deleteById = jest.fn();
+    FormMetadata.throwIfNotFound = jest.fn().mockReturnThis();
+    validData = {
+      id: uuid.v4(),
+      formId: uuid.v4(),
+      headerName: 'X-FORM-METADATA',
+      attributeName: 'formMetadata',
+      metadata: { externalId: '456' },
+    };
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('should do nothing if no formid', async () => {
+    let obj = {};
+    await service.addAttribute(null, obj);
+    expect(FormMetadata.query).not.toBeCalled();
+    expect(obj).toEqual({});
+  });
+
+  it('should do nothing if no data', async () => {
+    await service.addAttribute('123', null);
+    expect(FormMetadata.query).not.toBeCalled();
+  });
+
+  it('should do nothing if no data is not an object', async () => {
+    await service.addAttribute('123', 123);
+    expect(FormMetadata.query).not.toBeCalled();
+    await service.addAttribute('123', []);
+    expect(FormMetadata.query).not.toBeCalled();
+  });
+
+  it('should do nothing if formMetadata is not found', async () => {
+    FormMetadata.first = jest.fn().mockResolvedValueOnce(null);
+    let obj = {};
+    await service.addAttribute('123', obj);
+    expect(FormMetadata.query).toBeCalledTimes(1);
+    expect(FormMetadata.first).toBeCalledTimes(1);
+    expect(obj).toEqual({});
+  });
+
+  it('should add metadata as attributeName', async () => {
+    FormMetadata.first = jest.fn().mockResolvedValueOnce(validData);
+    let obj = {};
+    await service.addAttribute('123', obj);
+    expect(FormMetadata.query).toBeCalledTimes(1);
+    expect(FormMetadata.first).toBeCalledTimes(1);
+    expect(obj).toEqual({ formMetadata: { externalId: '456' } });
+  });
+});
+
+describe('addHeader', () => {
+  let validData;
+  beforeEach(() => {
+    // no idea why MockModel wasn't working in this test, so just use the model directly
+    FormMetadata.query = jest.fn().mockReturnThis();
+    FormMetadata.where = jest.fn().mockReturnThis();
+    FormMetadata.modify = jest.fn().mockReturnThis();
+    FormMetadata.first = jest.fn().mockReturnThis();
+    FormMetadata.deleteById = jest.fn();
+    FormMetadata.throwIfNotFound = jest.fn().mockReturnThis();
+    validData = {
+      id: uuid.v4(),
+      formId: uuid.v4(),
+      headerName: 'X-FORM-METADATA',
+      attributeName: 'formMetadata',
+      metadata: { externalId: '456' },
+    };
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('should do nothing if no formid', async () => {
+    let obj = {};
+    await service.addHeader(null, obj);
+    expect(FormMetadata.query).not.toBeCalled();
+    expect(obj).toEqual({});
+  });
+
+  it('should do nothing if no data', async () => {
+    await service.addHeader('123', null);
+    expect(FormMetadata.query).not.toBeCalled();
+  });
+
+  it('should do nothing if no data is not an object', async () => {
+    await service.addHeader('123', 123);
+    expect(FormMetadata.query).not.toBeCalled();
+    await service.addHeader('123', []);
+    expect(FormMetadata.query).not.toBeCalled();
+  });
+
+  it('should do nothing if formMetadata is not found', async () => {
+    FormMetadata.first = jest.fn().mockResolvedValueOnce(null);
+    let obj = {};
+    await service.addHeader('123', obj);
+    expect(FormMetadata.query).toBeCalledTimes(1);
+    expect(FormMetadata.first).toBeCalledTimes(1);
+    expect(obj).toEqual({});
+  });
+
+  it('should add encoded metadata as headerName', async () => {
+    FormMetadata.first = jest.fn().mockResolvedValueOnce(validData);
+    let bufferObj = Buffer.from(JSON.stringify(validData.metadata), 'utf8');
+    let encodedValue = bufferObj.toString('base64');
+
+    let obj = {};
+    await service.addHeader('123', obj);
+    expect(FormMetadata.query).toBeCalledTimes(1);
+    expect(FormMetadata.first).toBeCalledTimes(1);
+    expect(obj['X-FORM-METADATA']).toMatch(encodedValue);
+  });
+});
