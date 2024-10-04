@@ -103,42 +103,56 @@ it('Verify draft submission', () => {
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
     cy.get('div > .bg-primary').click();
     cy.get('.v-data-table__tr > :nth-child(4)').contains('DRAFT');
+    //Verify draft delete button exist
+    cy.get('[icon-size="x-small"] > .v-btn').should('be.exist');
+    //View column management
+    cy.get('.mdi-view-column').click();
+    cy.get('[data-test="filter-search"]').type('Status');
+    //Remove Status column from draft submission table
+    cy.get('input[type="checkbox"]').then($el => {
+
+      const rem=$el[1];
+      cy.get(rem).click();
+
+    });
+    //Verify Status column is removed from submission table
+    cy.get('[data-test="save-btn"] > .v-btn__content').click();
+    cy.get('.v-data-table__tr > :nth-child(4)').contains('DRAFT').should('not.exist');
     cy.get('.mdi-pencil').click();
     cy.get('.mdi-content-save').click();
     cy.get('.v-alert__content > div').contains('Draft Saved');
     cy.get(':nth-child(2) > :nth-child(4) > :nth-child(1) > .v-btn').click();
-    //cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
-    //cy.get('div > .bg-primary').click();
+    //Manage  members for draft management
     cy.get('form > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
     cy.get('form > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').type('NIM');
     cy.contains('John, Nimya 1 CITZ:EX (nimya.1.john@gov.bc.ca)').click();
-    console.log();
     cy.get('.v-col-3').click();
     cy.get('tbody > :nth-child(2) > :nth-child(1)').contains('John, Nimya 1 CITZ:EX').should('be.visible');
+    cy.get(':nth-child(1) > :nth-child(4) > .v-btn > .v-btn__content > .mdi-minus').should('not.be.enabled');
+    //Remove added member
+    cy.get(':nth-child(2) > :nth-child(4) > .v-btn > .v-btn__content > .mdi-minus').click();
+    cy.get('[data-test="continue-btn-continue"] > .v-btn__content > span').click();
+    cy.get('tbody > :nth-child(2) > :nth-child(1)').should('not.exist');
+
     cy.get('.v-card-actions > .v-btn > .v-btn__content > span').click();
     // Edit draft submission
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
     cy.get('.mdi-pencil').click();
     cy.waitForLoad();
+    //Form submission
     cy.contains('Text Field').click();
-    //cy.get('textarea').clear();
+    cy.contains('Text Field').type('{selectall}{backspace}');
     cy.contains('Text Field').type('Nancy');
     cy.get('button').contains('Submit').click();
     cy.waitForLoad();
     cy.get('[data-test="continue-btn-continue"]').click({force: true});
     cy.waitForLoad();
-
     cy.location('pathname').should('eq', `/${depEnv}/form/success`);
-    
     cy.contains('h1', 'Your form has been submitted successfully');
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
     //cy.get('div > .bg-primary').click();
     cy.get('.v-data-table__tr > :nth-child(4)').contains('SUBMITTED');
-
-
-
-
-      //Delete form after test run
+    //Delete form after test run
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.waitForLoad();
     cy.get('.mdi-delete').click();
