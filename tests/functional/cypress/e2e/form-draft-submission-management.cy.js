@@ -133,8 +133,10 @@ it('Verify draft submission', () => {
     cy.get(':nth-child(2) > :nth-child(4) > .v-btn > .v-btn__content > .mdi-minus').click();
     cy.get('[data-test="continue-btn-continue"] > .v-btn__content > span').click();
     cy.get('tbody > :nth-child(2) > :nth-child(1)').should('not.exist');
+    cy.wait(4000);
 
     cy.get('.v-card-actions > .v-btn > .v-btn__content > span').click();
+    cy.waitForLoad();
     // Edit draft submission
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
     cy.get('.mdi-pencil').click();
