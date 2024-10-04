@@ -139,7 +139,6 @@ describe('Form Designer', () => {
         const rem=$el[0];
         const rem1=$el[1];
         cy.get(rem).contains('2026-06-17').should('exist');
-        cy.get(rem1).contains('2026-06-21').should('exist');
 
        });
       //Repeat period

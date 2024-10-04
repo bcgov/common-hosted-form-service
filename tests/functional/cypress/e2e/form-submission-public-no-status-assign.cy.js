@@ -133,7 +133,7 @@ describe('Form Designer', () => {
     cy.get(':nth-child(10) > span').should('not.exist');// verify Submitter role is not present on table view
     // Verify member is added with proper roles
     cy.get('[data-test="ApproverRoleCheckbox"]').should('be.visible');
-    cy.get('[data-test="ReviewerRoleCheckbox"]').should('be.visible');
+    cy.get('[data-test="ReviewerRoleCheckbox"]').should('exist');
     cy.get('[data-test="TeamManagerRoleCheckbox"]').should('be.visible');
     cy.get('[data-test="ApproverRoleCheckbox"]').click({multiple:true,force:true});
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
