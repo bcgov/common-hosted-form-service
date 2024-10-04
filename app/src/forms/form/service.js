@@ -229,7 +229,8 @@ const service = {
     return Form.query()
       .findById(formId)
       .modify('filterActive', params.active)
-      .allowGraph('[identityProviders,versions]')
+      .allowGraph('[formMetadata,identityProviders,versions]')
+      .withGraphFetched('formMetadata')
       .withGraphFetched('identityProviders(orderDefault)')
       .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
       .throwIfNotFound();

@@ -6,7 +6,6 @@ import {
   fileService,
   rbacService,
   userService,
-  formMetadataService,
 } from '~/services';
 import { useNotificationStore } from '~/store/notification';
 import { IdentityMode, NotificationTypes } from '~/utils/constants';
@@ -318,19 +317,13 @@ export const useFormStore = defineStore('form', {
         });
       }
     },
-    async fetchFormMetadata(formId) {
-      let resp = await formMetadataService.getFormMetadata(formId);
-      let formMetadata = resp.data;
-      if (!formMetadata) {
-        formMetadata = genInitialFormMetadata();
-      }
-      return formMetadata;
-    },
     async fetchForm(formId) {
       try {
         this.apiKey = null;
         // Get the form definition from the api
         const { data } = await formService.readForm(formId);
+        // eslint-disable-next-line no-console
+        console.log(data);
         const identityProviders = parseIdps(data.identityProviders);
         data.idps = identityProviders.idps;
         data.userType = identityProviders.userType;
@@ -342,9 +335,9 @@ export const useFormStore = defineStore('form', {
           ...genInitialSubscribe(),
           ...data.subscribe,
         };
-        const formMetadata = await this.fetchFormMetadata(formId);
-        data.formMetadata = formMetadata;
         this.form = data;
+        // eslint-disable-next-line no-console
+        console.log(data);
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({

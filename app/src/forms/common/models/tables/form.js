@@ -34,6 +34,7 @@ class Form extends Timestamps(Model) {
     const FormVersion = require('./formVersion');
     const FormVersionDraft = require('./formVersionDraft');
     const IdentityProvider = require('./identityProvider');
+    const FormMetadata = require('./formMetadata');
     return {
       drafts: {
         relation: Model.HasManyRelation,
@@ -74,6 +75,14 @@ class Form extends Timestamps(Model) {
         join: {
           from: 'form.id',
           to: 'form_version.formId',
+        },
+      },
+      formMetadata: {
+        relation: Model.HasOneRelation,
+        modelClass: FormMetadata,
+        join: {
+          from: 'form.id',
+          to: 'form_metadata.formId',
         },
       },
     };
