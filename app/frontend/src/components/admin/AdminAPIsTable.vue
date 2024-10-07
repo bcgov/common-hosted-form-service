@@ -1,147 +1,139 @@
-<script>
-import { mapActions, mapState } from 'pinia';
-
-import { i18n } from '~/internationalization';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { useAdminStore } from '~/store/admin';
 import { useFormStore } from '~/store/form';
 import BaseDialog from '~/components/base/BaseDialog.vue';
 
-export default {
-  components: {
-    BaseDialog,
-  },
-  data() {
-    return {
-      loading: true,
-      search: '',
-      editDialog: {
-        title: '',
-        item: {
-          id: null,
-          formName: null,
-          ministry: null,
-          ministryText: null,
-          name: null,
-          endpointUrl: null,
-          code: null,
-          allowSendUserToken: false,
-        },
-        show: false,
-      },
-    };
-  },
-  computed: {
-    ...mapState(useAdminStore, ['externalAPIList', 'externalAPIStatusCodes']),
-    ...mapState(useFormStore, ['isRTL', 'lang']),
-    headers() {
-      return [
-        {
-          title: i18n.t('trans.adminAPIsTable.ministry'),
-          align: 'start',
-          key: 'ministry',
-        },
-        {
-          title: i18n.t('trans.adminAPIsTable.ministryName'),
-          align: 'start',
-          key: 'ministryName',
-          // we don't want to see this (too long)
-          // but we need it for searching, so it needs to be in the DOM
-          headerProps: {
-            class: 'hidden',
-          },
-          cellProps: {
-            class: 'hidden',
-          },
-        },
-        {
-          title: i18n.t('trans.adminAPIsTable.formName'),
-          align: 'start',
-          key: 'formName',
-        },
-        {
-          title: i18n.t('trans.adminAPIsTable.formId'),
-          align: 'start',
-          key: 'formId',
-        },
-        {
-          title: i18n.t('trans.adminAPIsTable.name'),
-          align: 'start',
-          key: 'name',
-        },
-        {
-          title: i18n.t('trans.adminAPIsTable.display'),
-          align: 'start',
-          key: 'display',
-        },
-        {
-          title: i18n.t('trans.adminAPIsTable.actions'),
-          align: 'end',
-          key: 'actions',
-          filterable: false,
-          sortable: false,
-        },
-      ];
-    },
-    items() {
-      // add ministry name to objects so we can search on them
-      return this.externalAPIList.map((x) => ({
-        ...x,
-        ministryName: this.getMinistryName(x),
-      }));
-    },
-  },
-  async mounted() {
-    await this.getExternalAPIStatusCodes();
-    await this.getExternalAPIs();
-    this.loading = false;
-  },
-  methods: {
-    ...mapActions(useAdminStore, [
-      'getExternalAPIs',
-      'updateExternalAPI',
-      'getExternalAPIStatusCodes',
-    ]),
-    getMinistryName(item) {
-      return item.ministry ? i18n.t(`trans.ministries.${item.ministry}`) : '';
-    },
-    resetEditDialog() {
-      this.editDialog = {
-        title: '',
-        item: {
-          id: null,
-          formName: null,
-          ministry: null,
-          name: null,
-          endpointUrl: null,
-          code: null,
-          allowSendUserToken: false,
-        },
-        show: false,
-      };
-    },
-    handleEdit(item) {
-      this.resetEditDialog();
-      this.editDialog.item = { ...item };
-      this.editDialog.item.ministryText = this.getMinistryName(item);
-      this.editDialog.title = i18n.t('trans.adminAPIsTable.editTitle');
-      this.editDialog.show = true;
-    },
-    async saveItem() {
-      await this.updateExternalAPI(
-        this.editDialog.item.id,
-        this.editDialog.item
-      );
+const { t } = useI18n({ uesScope: 'global' });
 
-      // reset and close on success...
-      this.resetEditDialog();
-      // reload data...
-      this.loading = true;
-      await this.getExternalAPIs();
-      this.loading = false;
+const loading = ref(true);
+const search = ref('');
+const editDialog = ref({
+  title: '',
+  item: {
+    id: null,
+    formName: null,
+    ministry: null,
+    ministryText: null,
+    name: null,
+    endpointUrl: null,
+    code: null,
+    allowSendUserToken: false,
+  },
+  show: false,
+});
+
+const adminStore = useAdminStore();
+const formStore = useFormStore();
+
+const { externalAPIList, externalAPIStatusCodes } = storeToRefs(adminStore);
+const { isRTL, lang } = storeToRefs(formStore);
+
+const headers = computed(() => [
+  {
+    title: t('trans.adminAPIsTable.ministry'),
+    align: 'start',
+    key: 'ministry',
+  },
+  {
+    title: t('trans.adminAPIsTable.ministryName'),
+    align: 'start',
+    key: 'ministryName',
+    // we don't want to see this (too long)
+    // but we need it for searching, so it needs to be in the DOM
+    headerProps: {
+      class: 'hidden',
+    },
+    cellProps: {
+      class: 'hidden',
     },
   },
-};
+  {
+    title: t('trans.adminAPIsTable.formName'),
+    align: 'start',
+    key: 'formName',
+  },
+  {
+    title: t('trans.adminAPIsTable.formId'),
+    align: 'start',
+    key: 'formId',
+  },
+  {
+    title: t('trans.adminAPIsTable.name'),
+    align: 'start',
+    key: 'name',
+  },
+  {
+    title: t('trans.adminAPIsTable.display'),
+    align: 'start',
+    key: 'display',
+  },
+  {
+    title: t('trans.adminAPIsTable.actions'),
+    align: 'end',
+    key: 'actions',
+    filterable: false,
+    sortable: false,
+  },
+]);
+
+const items = computed(() =>
+  externalAPIList.value.map((x) => ({
+    ...x,
+    ministryName: getMinistryName(x),
+  }))
+);
+
+onMounted(async () => {
+  await adminStore.getExternalAPIStatusCodes();
+  await adminStore.getExternalAPIs();
+  loading.value = false;
+});
+
+function getMinistryName(item) {
+  return item?.ministry ? t(`trans.ministries.${item.ministry}`) : '';
+}
+
+function resetEditDialog() {
+  editDialog.value = {
+    title: '',
+    item: {
+      id: null,
+      formName: null,
+      ministry: null,
+      name: null,
+      endpointUrl: null,
+      code: null,
+      allowSendUserToken: false,
+    },
+    show: false,
+  };
+}
+
+function handleEdit(item) {
+  resetEditDialog();
+  editDialog.value.item = { ...item };
+  editDialog.value.item.ministryText = getMinistryName(item);
+  editDialog.value.title = t('trans.adminAPIsTable.editTitle');
+  editDialog.value.show = true;
+}
+
+async function saveItem() {
+  await adminStore.updateExternalAPI(
+    editDialog.value.item.id,
+    editDialog.value.item
+  );
+
+  // reset and close on success...
+  resetEditDialog();
+  // reload data...
+  loading.value = true;
+  await adminStore.getExternalAPIs();
+  loading.value = false;
+}
 </script>
 
 <template>
