@@ -193,7 +193,7 @@ objects:
                   command:
                     - "/bin/bash"
                     - "-c"
-                    - "/backup.sh -v all"
+                    - "/backup.sh -I -v all"
                   volumeMounts:
                     - mountPath: "${BACKUP_DIR}"
                       name: "backup"
