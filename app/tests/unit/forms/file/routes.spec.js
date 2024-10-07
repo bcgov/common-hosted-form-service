@@ -80,7 +80,7 @@ describe(`${basePath}`, () => {
     expect(filePermissions.currentFileRecord).toBeCalledTimes(0);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(1);
     expect(hasFilePermissionsMock).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(upload.fileUpload.upload).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFileId).toBeCalledTimes(0);
@@ -103,7 +103,7 @@ describe(`${basePath}/:id`, () => {
     expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
     expect(hasFilePermissionsMock).toBeCalledTimes(1);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
+    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(upload.fileUpload.upload).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFileId).toBeCalledTimes(1);
