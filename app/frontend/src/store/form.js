@@ -322,8 +322,6 @@ export const useFormStore = defineStore('form', {
         this.apiKey = null;
         // Get the form definition from the api
         const { data } = await formService.readForm(formId);
-        // eslint-disable-next-line no-console
-        console.log(data);
         const identityProviders = parseIdps(data.identityProviders);
         data.idps = identityProviders.idps;
         data.userType = identityProviders.userType;
@@ -336,8 +334,6 @@ export const useFormStore = defineStore('form', {
           ...data.subscribe,
         };
         this.form = data;
-        // eslint-disable-next-line no-console
-        console.log(data);
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({

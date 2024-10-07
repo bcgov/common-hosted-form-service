@@ -7,7 +7,7 @@ import { useFormStore } from '~/store/form';
 const { t, locale } = useI18n({ useScope: 'global' });
 const { form, isRTL } = storeToRefs(useFormStore());
 const techdocsLink =
-  'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities';
+  'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Integrations/Form-Metadata/';
 
 const jsonStr = ref(null);
 
