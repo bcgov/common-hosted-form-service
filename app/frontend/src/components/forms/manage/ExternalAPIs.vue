@@ -25,7 +25,7 @@ export default {
       externalAPIStatusCodes: [],
       items: [],
       techdocsLink:
-        'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities',
+        'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Integrations/Calling-External-API/',
       editDialog: {
         title: '',
         item: {
