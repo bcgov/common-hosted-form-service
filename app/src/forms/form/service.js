@@ -878,6 +878,7 @@ const service = {
         return {
           id: item.id,
           status: item.publishStatus,
+          key: item.key,
           componentName: item.componentName,
           externalLink: item.externalLink,
           version: item.version,

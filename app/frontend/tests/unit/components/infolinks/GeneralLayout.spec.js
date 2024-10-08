@@ -187,8 +187,8 @@ describe('GeneralLayout.vue', () => {
           },
         ],
         formComponentNames: [
-          { componentName: 'Text/Images' },
-          { componentName: 'Columns - 2' },
+          { componentName: 'Text/Images', key: 'simplecontent' },
+          { componentName: 'Columns - 2', key: 'simplecols2' },
         ],
         groupName: '',
       },
@@ -203,7 +203,7 @@ describe('GeneralLayout.vue', () => {
 
     expect(wrapper.vm.showEditProactiveHelpDialog).toBeFalsy();
     expect(wrapper.vm.component).toEqual({});
-    wrapper.vm.onOpenEditDialog('Text/Images');
+    wrapper.vm.onOpenEditDialog('simplecontent', 'Text/Images');
     expect(wrapper.vm.component).toEqual({
       componentName: 'Text/Images',
       description:
@@ -235,8 +235,8 @@ describe('GeneralLayout.vue', () => {
           },
         ],
         formComponentNames: [
-          { componentName: 'Text/Images' },
-          { componentName: 'Columns - 2' },
+          { componentName: 'Text/Images', key: 'simplecontent' },
+          { componentName: 'Columns - 2', key: 'simplecols2' },
         ],
         groupName: '',
       },
@@ -257,7 +257,7 @@ describe('GeneralLayout.vue', () => {
 
     expect(wrapper.vm.showPreviewDialog).toBeFalsy();
     expect(wrapper.vm.component).toEqual({});
-    await wrapper.vm.onOpenPreviewDialog('Text/Images');
+    await wrapper.vm.onOpenPreviewDialog('simplecontent', 'Text/Images');
     expect(getFCProactiveHelpImageUrlSpy).toBeCalledTimes(1);
     expect(getFCProactiveHelpImageUrlSpy).toBeCalledWith('123-456');
     expect(wrapper.vm.component).toEqual({
@@ -291,8 +291,8 @@ describe('GeneralLayout.vue', () => {
           },
         ],
         formComponentNames: [
-          { componentName: 'Text/Images' },
-          { componentName: 'Columns - 2' },
+          { componentName: 'Text/Images', key: 'simplecontent' },
+          { componentName: 'Columns - 2', key: 'simplecols2' },
         ],
         groupName: '',
       },

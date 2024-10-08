@@ -179,6 +179,7 @@ const service = {
       if (id) {
         await FormComponentsProactiveHelp.query(trx).patchAndFetchById(data.componentId, {
           componentName: data && data.componentName,
+          key: data && data.key,
           externalLink: data && data.externalLink,
           image: buf,
           imageType: imageType,
@@ -193,6 +194,7 @@ const service = {
         const obj = {};
         id = uuidv4();
         obj.id = id;
+        obj.key = data && data.key;
         obj.componentName = data && data.componentName;
         obj.externalLink = data && data.externalLink;
         obj.image = buf;

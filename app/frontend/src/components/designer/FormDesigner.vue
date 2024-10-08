@@ -9,13 +9,12 @@ import FloatButton from '~/components/designer/FloatButton.vue';
 import ProactiveHelpPreviewDialog from '~/components/infolinks/ProactiveHelpPreviewDialog.vue';
 import formioIl8next from '~/internationalization/trans/formio/formio.json';
 import templateExtensions from '~/plugins/templateExtensions';
-import { formService } from '~/services';
+import { formService, userService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { IdentityMode } from '~/utils/constants';
 import { generateIdps } from '~/utils/transformUtils';
-import { userService } from '../../services';
 
 export default {
   components: {
@@ -76,6 +75,16 @@ export default {
         originalSchema: null,
         redoClicked: false,
         undoClicked: false,
+      },
+      proactiveHelp: {
+        isHovering: false,
+        currentKey: '',
+        currentGroup: '',
+        tooltip: {
+          enabled: false,
+          closeDelay: 3000,
+          target: null,
+        },
       },
       reRenderFormIo: 0,
       savedStatus: this.isSavedStatus,
@@ -191,7 +200,7 @@ export default {
             },
           },
         },
-        language: this.lang ? this.lang : 'en',
+        language: this.locale ? this.locale : 'en',
         i18n: formioIl8next,
         templates: templateExtensions,
         evalContext: {
@@ -207,7 +216,7 @@ export default {
         this.reRenderFormIo += 1;
       }
     },
-    lang(value) {
+    locale(value) {
       if (value) {
         this.reRenderFormIo += 1;
       }
@@ -217,6 +226,46 @@ export default {
     if (this.formId) {
       Promise.all([this.fetchForm(this.formId), this.getFormSchema()]);
     }
+    document.addEventListener('mousemove', (e) => {
+      let target = e.target;
+      this.proactiveHelp.isHovering = false;
+      if (target) {
+        let parent = e.target.parentElement;
+        // iterate our proactive help groups
+        for (const [groupKey, groupValue] of Object.entries(
+          this.designerOptions.builder
+        )) {
+          if (parent && parent.id === `group-container-${groupKey}`) {
+            // check to see if we're hovering over something we have proactive help for
+            for (const [
+              proactiveGroupKey,
+              proactiveGroupValue,
+            ] of Object.entries(this.fcProactiveHelpGroupList)) {
+              if (proactiveGroupKey === groupValue.title) {
+                const dataKey = e.target.getAttribute('data-key');
+                const proactiveHelp = proactiveGroupValue.find(
+                  (pGV) => pGV.key === dataKey
+                );
+                // If the key of the hovered form component has a proactive help
+                if (proactiveHelp) {
+                  this.proactiveHelp.currentKey = dataKey;
+                  this.proactiveHelp.currentGroup = groupValue.title;
+                  this.proactiveHelp.tooltip.target = target;
+                  this.proactiveHelp.isHovering = true;
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+
+    document.addEventListener('click', () => {
+      if (!this.proactiveHelp.isHovering) {
+        // If we click outside of the formio component
+        this.proactiveHelp.tooltip.enabled = false;
+      }
+    });
   },
   async mounted() {
     // load up headers for any External API calls
@@ -338,8 +387,6 @@ export default {
     // ---------------------------------------------------------------------------------------------------
     init() {
       this.setDirtyFlag(false);
-      // Since change is triggered during loading
-      this.onFormLoad();
     },
     onChangeMethod(changed, flags, modified) {
       // Don't call an unnecessary action if already dirty
@@ -365,44 +412,6 @@ export default {
       // Component remove start
       this.patch.componentRemovedStart = true;
     },
-
-    onFormLoad() {
-      // Contains the names of every category of components
-      let builder = this.$refs.formioForm.builder.instance.builder;
-      if (Object.keys(this.fcProactiveHelpGroupList).length > 0) {
-        for (const [groupName, elements] of Object.entries(
-          this.fcProactiveHelpGroupList
-        )) {
-          let extractedElementsNames = this.extractPublishedElement(elements);
-          for (const [key, builderElements] of Object.entries(builder)) {
-            if (groupName === builderElements.title) {
-              let containerId = `group-container-${key}`;
-              let containerEl = document.getElementById(containerId);
-              if (containerEl) {
-                for (let i = 0; i < containerEl.children.length; i++) {
-                  let elementName = containerEl.children[i].textContent.trim();
-                  if (extractedElementsNames.includes(elementName)) {
-                    // Append the info el
-                    let child = document.createElement('i');
-
-                    child.setAttribute(
-                      'class',
-                      'fa fa-info-circle info-helper'
-                    );
-                    child.style.float = 'right';
-                    child.style.fontSize = '14px';
-                    child.addEventListener('click', function () {
-                      this.showHelperClicked(elementName, groupName);
-                    });
-                    containerEl.children[i].appendChild(child);
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     extractPublishedElement(elements) {
       let publishedComponentsNames = [];
       for (let element of elements) {
@@ -415,9 +424,7 @@ export default {
 
     async showHelperClicked(elementName, groupName) {
       const elements = this.fcProactiveHelpGroupList[groupName];
-      this.component = elements.find(
-        (element) => element.componentName === elementName
-      );
+      this.component = elements.find((element) => element.key === elementName);
       await this.getFCProactiveHelpImageUrl(this.component.id);
       this.onShowClosePreviewDialog();
     },
@@ -710,6 +717,17 @@ export default {
 
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
+    <v-tooltip
+      v-model="proactiveHelp.tooltip.enabled"
+      :activator="proactiveHelp.tooltip.target"
+      :close-on-back="true"
+      :close-delay="proactiveHelp.tooltip.closeDelay"
+      @click="
+        showHelperClicked(proactiveHelp.currentKey, proactiveHelp.currentGroup)
+      "
+    >
+      <div class="contextual-help">Click here for more help</div>
+    </v-tooltip>
     <div
       class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
     >
@@ -788,6 +806,12 @@ export default {
         v-html="$t('trans.formDesigner.formDesignInfoB')"
       ></p>
     </BaseInfoCard>
+    <ProactiveHelpPreviewDialog
+      :show-dialog="showHelpLinkDialog"
+      :component="component"
+      :fc-proactive-help-image-url="fcProactiveHelpImageUrl"
+      @close-dialog="onShowClosePreviewDialog"
+    />
     <FormBuilder
       ref="formioForm"
       :key="reRenderFormIo"
@@ -800,13 +824,6 @@ export default {
       @initialized="init"
       @addComponent="onAddSchemaComponent"
       @removeComponent="onRemoveSchemaComponent"
-      @formLoad="onFormLoad"
-    />
-    <ProactiveHelpPreviewDialog
-      :show-dialog="showHelpLinkDialog"
-      :component="component"
-      :fc-proactive-help-image-url="fcProactiveHelpImageUrl"
-      @close-dialog="onShowClosePreviewDialog"
     />
     <FloatButton
       placement="bottom-right"
@@ -864,5 +881,20 @@ export default {
   right: 0;
 
   position: -webkit-sticky;
+}
+
+.v-tooltip a.contextual-help {
+  color: white;
+}
+
+.v-tooltip *.contextual-help::after {
+  content: ' ';
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent black transparent transparent;
 }
 </style>

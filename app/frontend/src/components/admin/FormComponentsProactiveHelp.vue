@@ -36,8 +36,8 @@ function extractGroupComponents(groupName) {
     FormComponentProactiveHelpValues
   )) {
     if (title && title === groupName && components) {
-      for (let componentName of components) {
-        groupComponents.push({ componentName: componentName });
+      for (let [key, value] of Object.entries(components)) {
+        groupComponents.push({ key: key, componentName: value });
       }
     }
   }
