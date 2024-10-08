@@ -1,6 +1,14 @@
 const path = require('path');
 
 module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: ["css-loader"],
+      },
+    ],
+  },
   entry: path.join(path.resolve(__dirname, 'lib'), 'index.js'),
   output: {
     library: 'BcGovFormioComponents',

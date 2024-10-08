@@ -47,8 +47,13 @@
     "components"
   ],
   "dependencies": {
+    "@types/leaflet": "^1.9.12",
+    "@types/leaflet-draw": "^1.0.11",
     "autocompleter": "^7.0.1",
+    "css-loader": "^7.1.2",
     "formiojs": "^4.14.6",
+    "leaflet": "^1.9.4",
+    "leaflet-draw": "^1.0.4",
     "lodash": "^4.17.21",
     "native-promise-only": "^0.8.1",
     "path-browserify": "^1.0.1",
