@@ -16,6 +16,8 @@ describe('Constants', () => {
       UTILS: '/utils',
       FILES_API_ACCESS: '/filesApiAccess',
       PROXY: '/proxy',
+      ENCRYPTION_KEY: '/encryptionKey',
+      EVENT_STREAM_CONFIG: '/eventStreamConfig',
     });
   });
 

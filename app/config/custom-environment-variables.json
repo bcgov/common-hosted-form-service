@@ -58,6 +58,18 @@
       "proxy": "SERVER_ENCRYPTION_PROXY"
     }
   },
+  "features": {
+    "eventStreamService": "FEATURES_EVENTSTREAMSERVICE"
+  },
+  "eventStreamService": {
+    "servers": "EVENTSTREAMSERVICE_SERVERS",
+    "websockets": "EVENTSTREAMSERVICE_WEBSOCKETS",
+    "streamName": "EVENTSTREAMSERVICE_STREAMNAME",
+    "source": "EVENTSTREAMSERVICE_SOURCE",
+    "domain": "EVENTSTREAMSERVICE_DOMAIN",
+    "username": "EVENTSTREAMSERVICE_USERNAME",
+    "password": "EVENTSTREAMSERVICE_PASSWORD"
+  },
   "serviceClient": {
     "commonServices": {
       "ches": {

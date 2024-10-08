@@ -8,6 +8,7 @@ import getRouter from '~/router';
 import FormViewer from '~/components/designer/FormViewer.vue';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useAppStore } from '~/store/app';
 
 describe('FormViewer.vue', () => {
   const formId = '123-456';
@@ -22,10 +23,12 @@ describe('FormViewer.vue', () => {
   setActivePinia(pinia);
   const authStore = useAuthStore(pinia);
   const formStore = useFormStore(pinia);
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     authStore.$reset();
     formStore.$reset();
+    appStore.$reset();
 
     authStore.keycloak = {
       tokenParsed: {

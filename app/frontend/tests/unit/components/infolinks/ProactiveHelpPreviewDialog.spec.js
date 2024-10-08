@@ -7,6 +7,9 @@ import { expect } from 'vitest';
 import getRouter from '~/router';
 import ProactiveHelpPreviewDialog from '~/components/infolinks/ProactiveHelpPreviewDialog.vue';
 
+import { useFormStore } from '~/store/form';
+import { useAppStore } from '~/store/app';
+
 describe('ProactiveHelpPreviewDialog.vue', () => {
   const pinia = createTestingPinia();
   const router = createRouter({
@@ -15,6 +18,16 @@ describe('ProactiveHelpPreviewDialog.vue', () => {
   });
 
   setActivePinia(pinia);
+
+  const formStore = useFormStore(pinia);
+  const appStore = useAppStore(pinia);
+
+  beforeEach(() => {
+    formStore.$reset();
+    appStore.$reset();
+  });
+
+  afterAll(() => {});
 
   it('renders', () => {
     const wrapper = mount(ProactiveHelpPreviewDialog, {

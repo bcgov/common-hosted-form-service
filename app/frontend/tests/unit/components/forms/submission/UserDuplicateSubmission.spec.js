@@ -6,6 +6,7 @@ import { beforeEach, vi } from 'vitest';
 import UserDuplicateSubmission from '~/components/forms/submission/UserDuplicateSubmission.vue';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
+import { useAppStore } from '~/store/app';
 
 const STUBS = {
   VSkeletonLoader: {
@@ -22,10 +23,12 @@ describe('UserDuplicateSubmission.vue', () => {
   setActivePinia(pinia);
   const formStore = useFormStore(pinia);
   const notificationStore = useNotificationStore(pinia);
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     formStore.$reset();
     notificationStore.$reset();
+    appStore.$reset();
   });
 
   it('renders', async () => {

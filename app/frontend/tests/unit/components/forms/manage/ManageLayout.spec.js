@@ -9,6 +9,7 @@ import ManageLayout from '~/components/forms/manage/ManageLayout.vue';
 import { useFormStore } from '~/store/form';
 import { FormPermissions } from '~/utils/constants';
 import { ref } from 'vue';
+import { useAppStore } from '~/store/app';
 
 describe('ManageLayout.vue', () => {
   const pinia = createTestingPinia();
@@ -19,9 +20,11 @@ describe('ManageLayout.vue', () => {
 
   setActivePinia(pinia);
   const formStore = useFormStore(pinia);
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     formStore.$reset();
+    appStore.$reset();
   });
 
   it('renders', () => {
