@@ -242,41 +242,34 @@ describe('Form Designer', () => {
       cy.get('[data-cy=saveButton]').click();
       cy.waitForLoad();
 
-      
-      
- // Filter the newly created form
-   cy.location('search').then(search => {
+    // Filter the newly created form
+      cy.location('search').then(search => {
      //let pathName = fullUrl.pathname
-     let arr = search.split('=');
-     let arrayValues = arr[1].split('&');
-     cy.log(arrayValues[0]);
-     //
-     //cy.log(arrayValues[2]);
-     let dval=arr[2].split('&');
-     cy.log(dval);
-     //Form preview
-     cy.visit(`/${depEnv}/form/preview?f=${dval[0]}&d=${arrayValues[0]}`);
-     cy.waitForLoad();
-     cy.get('label').contains('Last Name').should('be.visible');
-     cy.get('label').contains('First Name').should('be.visible');
-     cy.get('label').contains('Applying for self').should('be.visible');
-     cy.get('label').contains('Select all skills').should('be.visible');
-     cy.get('label').contains('Phone Number').should('be.visible');
-     cy.get('label').contains('Date / Time').should('be.visible');
-     cy.get('label').contains('Select Gender');
+      let arr = search.split('=');
+      let arrayValues = arr[1].split('&');
+      cy.log(arrayValues[0]);
+      let dval=arr[2].split('&');
+      cy.log(dval);
+      //Form preview
+      cy.visit(`/${depEnv}/form/preview?f=${dval[0]}&d=${arrayValues[0]}`);
+      cy.waitForLoad();
+      cy.get('label').contains('Last Name').should('be.visible');
+      cy.get('label').contains('First Name').should('be.visible');
+      cy.get('label').contains('Applying for self').should('be.visible');
+      cy.get('label').contains('Select all skills').should('be.visible');
+      cy.get('label').contains('Phone Number').should('be.visible');
+      cy.get('label').contains('Date / Time').should('be.visible');
+      cy.get('label').contains('Select Gender');
 
      //Delete form after test run
-     cy.visit(`/${depEnv}/form/design?d=${arrayValues[0]}&f=${dval[0]}`);
-     cy.wait(4000);
-     cy.get('[data-cy="settingsRouterLink"] > .v-btn').click();
-     cy.waitForLoad();
-     cy.get('[data-test="canRemoveForm"]').click();
+      cy.visit(`/${depEnv}/form/design?d=${arrayValues[0]}&f=${dval[0]}`);
+      cy.wait(4000);
+      cy.get('[data-cy="settingsRouterLink"] > .v-btn').click();
+      cy.waitForLoad();
+      cy.get('[data-test="canRemoveForm"]').click();
+      cy.get('[data-test="continue-btn-continue"]').click();
      
-     cy.get('[data-test="continue-btn-continue"]').click();
-     
-    });
-
-    
+      });
   });
 
 });
