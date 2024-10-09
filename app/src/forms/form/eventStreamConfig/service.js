@@ -61,43 +61,6 @@ const service = {
     }
   },
 
-  createEventStreamConfig: async (formId, data, currentUser) => {
-    service.validateEventStreamConfig(data);
-
-    const existing = await FormEventStreamConfig.query().modify('filterFormId', formId).first();
-    if (existing) {
-      // if found throw error? or just update?
-    }
-
-    data.id = uuidv4();
-    await FormEventStreamConfig.query().insert({
-      ...data,
-      createdBy: currentUser.usernameIdp,
-    });
-
-    return FormEventStreamConfig.query().findById(data.id);
-  },
-
-  updateEventStreamConfig: async (formId, data, currentUser) => {
-    service.validateExternalAPI(data);
-
-    const existing = await FormEventStreamConfig.query().modify('filterFormId', formId).first().throwIfNotFound();
-    // compare to see if we are actually updating any attributes.
-    await FormEventStreamConfig.query()
-      .findById(existing.id)
-      .update({
-        ...data,
-        updatedBy: currentUser.usernameIdp,
-      });
-
-    return FormEventStreamConfig.query().findById(existing.id);
-  },
-
-  deleteEventStreamConfig: async (formId) => {
-    const existing = await FormEventStreamConfig.query().modify('filterFormId', formId).first().throwIfNotFound();
-    await FormEventStreamConfig.query().deleteById(existing.id);
-  },
-
   readEventStreamConfig: async (formId) => {
     let result = await FormEventStreamConfig.query().modify('filterFormId', formId).first(); // there should be only one
     if (!result) {

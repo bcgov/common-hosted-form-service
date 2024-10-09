@@ -1,5 +1,3 @@
-const Problem = require('api-problem');
-
 const { v4: uuidv4 } = require('uuid');
 
 const { FormEncryptionKey } = require('../../common/models');
@@ -14,16 +12,6 @@ const service = {
       code: x,
       display: x,
     }));
-  },
-
-  validateEncryptionKey: (data) => {
-    if (!data) {
-      throw new Problem(422, `'EncryptionKey record' cannot be empty.`);
-    }
-  },
-
-  listEncryptionKeys: (formId) => {
-    return FormEncryptionKey.query().modify('filterFormId', formId);
   },
 
   upsertForEventStreamConfig: async (formId, data, currentUser, transaction) => {
@@ -92,45 +80,8 @@ const service = {
     }
   },
 
-  createEncryptionKey: async (formId, data, currentUser) => {
-    service.validateEncryptionKey(data);
-
-    data.id = uuidv4();
-    await FormEncryptionKey.query().insert({
-      ...data,
-      createdBy: currentUser.usernameIdp,
-    });
-
-    return FormEncryptionKey.query().findById(data.id);
-  },
-
-  updateEncryptionKey: async (formId, formEncryptionKeyId, data, currentUser) => {
-    service.validateEncryptionKey(data);
-
-    const existing = await FormEncryptionKey.query().modify('findByIdAndFormId', formEncryptionKeyId, formId).first().throwIfNotFound();
-    // compare to see if we are actually updating any attributes.
-    data.code = existing.code;
-    await FormEncryptionKey.query()
-      .findById(formEncryptionKeyId)
-      .update({
-        ...data,
-        updatedBy: currentUser.usernameIdp,
-      });
-
-    return FormEncryptionKey.query().findById(formEncryptionKeyId);
-  },
-
-  deleteEncryptionKey: async (formId, formEncryptionKeyId) => {
-    await FormEncryptionKey.query().modify('findByIdAndFormId', formEncryptionKeyId, formId).first().throwIfNotFound();
-    await FormEncryptionKey.query().deleteById(formEncryptionKeyId);
-  },
-
   readEncryptionKey: async (formId, formEncryptionKeyId) => {
     return FormEncryptionKey.query().modify('findByIdAndFormId', formEncryptionKeyId, formId).first();
-  },
-
-  fetchEncryptionKey: async (formId, name) => {
-    return await FormEncryptionKey.query().modify('findByFormIdAndName', formId, name).first();
   },
 };
 

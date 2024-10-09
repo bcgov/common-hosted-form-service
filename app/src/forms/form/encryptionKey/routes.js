@@ -18,24 +18,8 @@ routes.get('/encryptionKey/algorithms', rateLimiter, apiAccess, async (req, res,
   await controller.listEncryptionAlgorithms(req, res, next);
 });
 
-routes.get('/:formId/encryptionKey', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {
-  await controller.listEncryptionKeys(req, res, next);
-});
-
-routes.post('/:formId/encryptionKey', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {
-  await controller.createEncryptionKey(req, res, next);
-});
-
 routes.get('/:formId/encryptionKey/:formEncryptionKeyId', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {
   await controller.readEncryptionKey(req, res, next);
-});
-
-routes.put('/:formId/encryptionKey/:formEncryptionKeyId', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {
-  await controller.updateEncryptionKey(req, res, next);
-});
-
-routes.delete('/:formId/encryptionKey/:formEncryptionKeyId', rateLimiter, apiAccess, hasFormPermissions([P.FORM_READ, P.FORM_UPDATE]), async (req, res, next) => {
-  await controller.deleteEncryptionKey(req, res, next);
 });
 
 module.exports = routes;
