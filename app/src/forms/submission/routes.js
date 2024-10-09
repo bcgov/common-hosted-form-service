@@ -7,13 +7,14 @@ const rateLimiter = require('../common/middleware').apiKeyRateLimiter;
 const validateParameter = require('../common/middleware/validateParameter');
 const controller = require('./controller');
 
+routes.use(rateLimiter);
 routes.use(currentUser);
 
 routes.param('documentTemplateId', validateParameter.validateDocumentTemplateId);
 routes.param('formId', validateParameter.validateFormId);
 routes.param('formSubmissionId', validateParameter.validateFormSubmissionId);
 
-routes.get('/:formSubmissionId', rateLimiter, apiAccess, hasSubmissionPermissions([P.SUBMISSION_READ]), async (req, res, next) => {
+routes.get('/:formSubmissionId', apiAccess, hasSubmissionPermissions([P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.read(req, res, next);
 });
 
@@ -21,7 +22,7 @@ routes.put('/:formSubmissionId', hasSubmissionPermissions([P.SUBMISSION_UPDATE])
   await controller.update(req, res, next);
 });
 
-routes.delete('/:formSubmissionId', rateLimiter, apiAccess, hasSubmissionPermissions([P.SUBMISSION_DELETE]), async (req, res, next) => {
+routes.delete('/:formSubmissionId', apiAccess, hasSubmissionPermissions([P.SUBMISSION_DELETE]), async (req, res, next) => {
   await controller.delete(req, res, next);
 });
 
@@ -45,7 +46,7 @@ routes.post('/:formSubmissionId/notes', hasSubmissionPermissions([P.SUBMISSION_R
   await controller.addNote(req, res, next);
 });
 
-routes.get('/:formSubmissionId/status', rateLimiter, apiAccess, hasSubmissionPermissions([P.SUBMISSION_REVIEW]), async (req, res, next) => {
+routes.get('/:formSubmissionId/status', apiAccess, hasSubmissionPermissions([P.SUBMISSION_REVIEW]), async (req, res, next) => {
   await controller.getStatus(req, res, next);
 });
 
@@ -69,11 +70,11 @@ routes.get('/:formSubmissionId/edits', hasSubmissionPermissions([P.SUBMISSION_RE
   await controller.listEdits(req, res, next);
 });
 
-routes.get('/:formSubmissionId/template/:documentTemplateId/render', rateLimiter, apiAccess, hasSubmissionPermissions([P.SUBMISSION_READ]), async (req, res, next) => {
+routes.get('/:formSubmissionId/template/:documentTemplateId/render', apiAccess, hasSubmissionPermissions([P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.templateRender(req, res, next);
 });
 
-routes.post('/:formSubmissionId/template/render', rateLimiter, apiAccess, hasSubmissionPermissions([P.SUBMISSION_READ]), async (req, res, next) => {
+routes.post('/:formSubmissionId/template/render', apiAccess, hasSubmissionPermissions([P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.templateUploadAndRender(req, res, next);
 });
 
