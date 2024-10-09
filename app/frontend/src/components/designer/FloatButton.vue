@@ -1,624 +1,337 @@
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { computed, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 
-import { useFormStore } from '~/store/form';
+const { locale, t } = useI18n({ useScope: 'global' });
 
-export default {
-  props: {
-    formId: {
-      type: String,
-      default: null,
-    },
-    draftId: {
-      type: String,
-      default: null,
-    },
-    saving: {
-      type: Boolean,
-      default: false,
-    },
-    undoEnabled: {
-      type: Boolean,
-      default: false,
-    },
-    redoEnabled: {
-      type: Boolean,
-      default: false,
-    },
-    saved: {
-      type: Boolean,
-      default: false,
-    },
-    isFormSaved: Boolean,
-    canSave: Boolean,
-    savedStatus: {
-      type: String,
-      default: null,
-    },
-    placement: {
-      type: String,
-      default: 'bottom-right',
-    },
-    fabItemsGap: {
-      type: String,
-      default: '13px',
-    },
-    size: {
-      type: String,
-      default: 'medium',
-    },
-    fabZIndex: {
-      type: Number,
-      default: 1000,
-    },
-    positionOffset: {
-      type: Object,
-      validator: function (value) {
-        // The value must match one of these strings
-        return ['top', 'bottom', 'right', 'left'].includes(
-          ...Object.keys(value)
-        );
-      },
-      default: () => {
-        return { bottom: true, right: true };
-      },
-    },
-    newVersion: {
-      type: Boolean,
-      default: false,
-    },
+const router = useRouter();
+
+const properties = defineProps({
+  formId: {
+    type: String,
+    default: null,
   },
-  emits: ['undo', 'redo', 'save'],
-  setup() {
-    const { t, locale } = useI18n({ useScope: 'global' });
-
-    return { t, locale };
+  canSave: {
+    type: Boolean,
+    default: false,
   },
-  data() {
-    return {
-      fabItemsDirection: 'column-reverse',
-      isFABActionsOpen: true,
-      fabItemsPosition: {},
-      fabItemsSize: 36,
-      fabItemsIconsSize: 31,
-
-      //base fab item variable start
-      baseFABItemName: this.$t('trans.floatButton.collapse'),
-      baseIconName: 'mdi:mdi-close',
-      baseIconColor: '#ffffff', //end
-
-      // fab items icons variables start
-      fabItemsColor: '#1A5A96',
-      fabItemsInverColor: '#ffffff',
-      disabledInvertedFabItemsColor: '#707070C1',
-      disabledFabItemsColor: '#707070C1', // end
-
-      savedMsg: this.$t('trans.floatButton.save'),
-      scrollIconName: 'mdi:mdi-arrow-down',
-      scrollName: this.$t('trans.floatButton.bottom'),
-    };
+  draftId: {
+    type: String,
+    default: null,
   },
-  computed: {
-    ...mapState(useFormStore, ['isRTL']),
-    computedStyles() {
-      let baseStyles = {
-        display: 'flex',
-        width: '92px',
-        flexDirection: this.fabItemsDirection,
-        gap: this.fabItemsGap,
-        zIndex: this.fabZIndex,
-        position: 'fixed',
-        right: '0',
-        bottom: '20px',
-      };
-
-      let conditionalStyles = {};
-      let fabItemsPosition = { ...this.fabItemsPosition };
-
-      switch (this.$i18n.locale) {
-        case 'uk':
-          baseStyles.width = '111px';
-          fabItemsPosition.right = '-.3vw';
-          break;
-      }
-
-      return [baseStyles, fabItemsPosition, conditionalStyles];
-    },
-    isPublishEnabled() {
-      return this.newVersion ? false : this.formId && this.draftId;
-    },
-    isManageEnabled() {
-      return this.formId;
-    },
+  isFormSaved: {
+    type: Boolean,
+    default: false,
   },
-  watch: {
-    size() {
-      this.setSizes();
-    },
-    savedStatus(value) {
-      switch (value) {
-        case 'Saved':
-          this.savedMsg = this.$t('trans.floatButton.saved');
-          break;
-        case 'Save':
-          this.savedMsg = this.$t('trans.floatButton.save');
-          break;
-        case 'Saving':
-          this.savedMsg = this.$t('trans.floatButton.saving');
-          break;
-        case 'Not Saved':
-          this.savedMsg = this.$t('trans.floatButton.notSaved');
-          break;
-      }
-    },
+  isManageEnabled: {
+    type: Boolean,
+    default: false,
   },
-  created() {
-    window.addEventListener('scroll', this.handleScroll);
+  isSaving: {
+    type: Boolean,
+    default: false,
   },
-  mounted() {
-    window.scrollTo(0, 0);
-    this.setPosition();
-    this.setSizes();
+  undoEnabled: {
+    type: Boolean,
+    default: false,
   },
-  unmounted() {
-    window.removeEventListener('scroll', this.handleScroll);
+  redoEnabled: {
+    type: Boolean,
+    default: false,
   },
-  methods: {
-    toParent(name) {
-      this.$emit(name);
-    },
-    onOpenFABActionItems() {
-      if (this.isFABActionsOpen) {
-        this.baseIconName = 'mdi:mdi-menu';
-        this.isFABActionsOpen = false;
-        this.baseFABItemName = this.$t('trans.floatButton.actions');
-      } else {
-        this.baseIconName = 'mdi:mdi-close';
-        this.isFABActionsOpen = true;
-        this.baseFABItemName = this.$t('trans.floatButton.collapse');
-      }
-    },
-
-    gotoPreview() {
-      let route = this.$router.resolve({
-        name: 'FormPreview',
-        query: { f: this.formId, d: this.draftId },
-      });
-      window.open(route.href);
-    },
-    setSizes() {
-      switch (this.size) {
-        case 'x-large':
-          this.fabItemsSize = 52;
-          this.fabItemsIconsSize = 47;
-          break;
-        case 'large':
-          this.fabItemsSize = 44;
-          this.fabItemsIconsSize = 39;
-          break;
-        case 'medium':
-          this.fabItemsSize = 36;
-          this.fabItemsIconsSize = 31;
-          break;
-        case 'small':
-          this.fabItemsSize = 28;
-          this.fabItemsIconsSize = 18;
-          break;
-        default:
-          this.fabItemsSize = 36;
-          this.fabItemsIconsSize = 31;
-      }
-    },
-
-    //checks if FAB is placed at the top right or top left of the screen
-    topLeftRight() {
-      if (this.placement === 'top-right' || this.placement === 'top-left') {
-        this.fabItemsDirection = 'column';
-      }
-    },
-
-    //checks if FAB is placed at the bottom right or bottom left of the screen
-    bottomLeftRight() {
-      if (
-        this.placement === 'bottom-right' ||
-        this.placement === 'bottom-left'
-      ) {
-        this.fabItemsDirection = 'column-reverse';
-      }
-    },
-
-    // set where on the screen FAB will be displayed
-    setPosition() {
-      this.fabItemsPosition = {};
-
-      this.bottomLeftRight();
-      this.topLeftRight();
-
-      if (this.positionOffset && Object.keys(this.positionOffset).length > 0) {
-        Object.assign(this.fabItemsPosition, this.positionOffset);
-        return;
-      }
-      switch (this.placement) {
-        case 'bottom-right':
-          this.fabItemsPosition.right = '-.5vw';
-          this.fabItemsPosition.bottom = '7vh';
-          break;
-        case 'bottom-left':
-          this.fabItemsPosition.left = '5vw';
-          this.fabItemsPosition.bottom = '4vh';
-          break;
-        case 'top-left':
-          this.fabItemsPosition.left = '5vw';
-          this.fabItemsPosition.top = '4vh';
-          break;
-        case 'top-right':
-          this.fabItemsPosition.right = '1vw';
-          this.fabItemsPosition.top = '8vh';
-          break;
-        default:
-          this.fabItemsPosition.right = '5vw';
-          this.fabItemsPosition.bottom = '4vh';
-      }
-    },
-
-    // callback function for window scroll event
-    handleScroll() {
-      if (window.scrollY === 0) {
-        this.scrollIconName = 'mdi:mdi-arrow-down';
-        this.scrollName = this.$t('trans.floatButton.bottom');
-      } else if (
-        window.pageYOffset + window.innerHeight >=
-        document.documentElement.scrollHeight - 50
-      ) {
-        this.scrollIconName = 'mdi:mdi-arrow-up';
-        this.scrollName = this.$t('trans.floatButton.top');
-      }
-    },
-
-    // function for click scroll event
-    onHandleScroll() {
-      if (window.scrollY === 0) {
-        this.bottomScroll();
-      } else if (
-        this.scrollName === this.$t('trans.floatButton.bottom') &&
-        window.scrollY > 0
-      ) {
-        this.bottomScroll();
-      } else if (
-        this.scrollName === this.$t('trans.floatButton.top') &&
-        window.scrollY > 0
-      ) {
-        this.topScroll();
-      } else {
-        this.topScroll();
-      }
-    },
-    topScroll() {
-      window.scrollTo(0, 0);
-      this.scrollIconName = 'mdi:mdi-arrow-down';
-      this.scrollName = this.$t('trans.floatButton.bottom');
-    },
-    bottomScroll() {
-      window.scrollTo({
-        left: 0,
-        top: document.body.scrollHeight,
-        behavior: 'smooth',
-      });
-      this.scrollIconName = 'mdi:mdi-arrow-up';
-      this.scrollName = this.$t('trans.floatButton.top');
-    },
+  newVersion: {
+    type: Boolean,
+    default: false,
   },
-};
+  savedStatus: {
+    type: String,
+    default: null,
+  },
+});
+
+const emit = defineEmits(['redo', 'save', 'undo']);
+
+const isAtTopOfPage = ref(true);
+const isCollapsed = ref(false);
+
+// We need to handle scroll through an event listener because computed values do not update on a scroll event
+window.addEventListener('scroll', onEventScroll);
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', onEventScroll);
+});
+
+// This is the icon for the button that lets you scroll to the bottom or top of the page
+const SCROLL_ICON = computed(() => {
+  if (!isAtTopOfPage.value) {
+    return 'mdi:mdi-arrow-up';
+  }
+  return 'mdi:mdi-arrow-down';
+});
+
+// This is the text for the button that lets you scroll to the bottom or top of the page
+const SCROLL_TEXT = computed(() => {
+  if (!isAtTopOfPage.value) {
+    return t('trans.floatButton.top');
+  }
+  return t('trans.floatButton.bottom');
+});
+
+// This is the icon for the button that lets you collapse the actions
+const COLLAPSE_ICON = computed(() => {
+  if (!isCollapsed.value) {
+    return 'mdi:mdi-close';
+  }
+  return 'mdi:mdi-menu';
+});
+
+// This is the text for the button that lets you collapse the actions
+const COLLAPSE_TEXT = computed(() => {
+  if (!isCollapsed.value) {
+    return t('trans.floatButton.collapse');
+  }
+  return t('trans.floatButton.actions');
+});
+
+// This is the text for the button that lets you save
+const SAVE_TEXT = computed(() => {
+  if (properties.savedStatus === 'Saved') {
+    return t('trans.floatButton.saved');
+  } else if (properties.savedStatus === 'Saving') {
+    return t('trans.floatButton.saving');
+  } else if (properties.savedStatus === 'Not Saved') {
+    return t('trans.floatButton.notSaved');
+  }
+  return t('trans.floatButton.save');
+});
+
+const isManageEnabled = computed(() => properties.formId);
+
+const isPublishEnabled = computed(() =>
+  properties.newVersion ? false : properties.formId && properties.draftId
+);
+
+function onEventScroll() {
+  isAtTopOfPage.value = window.scrollY === 0 ? true : false;
+}
+
+function onClickCollapse() {
+  isCollapsed.value = !isCollapsed.value;
+}
+
+function onClickSave() {
+  emit('save');
+}
+
+function onClickScroll() {
+  window.scrollTo({
+    left: 0,
+    top: isAtTopOfPage.value ? document.body.scrollHeight : 0,
+    behavior: 'smooth',
+  });
+}
+
+function goToPreview() {
+  let route = router.resolve({
+    name: 'FormPreview',
+    query: { f: properties.formId, d: properties.draftId },
+  });
+  window.open(route.href);
+}
+
+defineExpose({
+  COLLAPSE_ICON,
+  COLLAPSE_TEXT,
+  isAtTopOfPage,
+  isCollapsed,
+  onClickCollapse,
+  onClickSave,
+  onClickScroll,
+  onEventScroll,
+  SAVE_TEXT,
+  SCROLL_ICON,
+  SCROLL_TEXT,
+});
 </script>
 
 <template>
-  <div :class="{ 'dir-rtl': isRTL }" :style="computedStyles">
-    <div class="fabAction" :lang="locale" @click="onOpenFABActionItems">
-      <div class="text" :lang="locale" v-text="baseFABItemName" />
-      <v-btn
-        class="fabItemsInverColor"
-        :size="fabItemsSize"
-        :title="baseFABItemName"
-      >
-        <v-icon
-          :color="baseIconColor"
-          :size="fabItemsIconsSize"
-          :icon="baseIconName"
-        >
-        </v-icon>
+  <div class="d-flex flex-column float-button">
+    <div class="fab d-flex flex-column">
+      <span :lang="locale">{{ SCROLL_TEXT }}</span>
+      <v-btn class="ma-2" density="compact" icon @click="onClickScroll">
+        <v-icon :icon="SCROLL_ICON"></v-icon>
       </v-btn>
     </div>
-    <div
-      v-if="isFABActionsOpen"
-      :style="[
-        { display: 'flex', flexDirection: fabItemsDirection, gap: fabItemsGap },
-      ]"
-    >
-      <router-link
-        v-slot="{ navigate }"
-        :to="{
-          name: 'PublishForm',
-          query: { f: formId, fd: true, d: draftId },
-        }"
-        custom
-      >
-        <div
-          ref="publishRouterLink"
-          role="link"
-          data-cy="publishRouterLink"
-          :class="{ fabAction: true, 'disabled-router': !isPublishEnabled }"
+    <div v-if="!isCollapsed">
+      <div class="fab d-flex flex-column" data-cy="saveButton">
+        <span :lang="locale">{{ SAVE_TEXT }}</span>
+        <v-btn
+          :disabled="!properties.canSave && properties.isFormSaved"
+          class="ma-2"
+          density="compact"
+          icon
+          @click="onClickSave"
         >
-          <div
-            class="text"
-            :lang="locale"
-            v-text="$t('trans.floatButton.publish')"
-          />
-          <v-btn
-            :class="{
-              fabItemsInverColor: isPublishEnabled,
-              disabledInvertedFabItemsColor: !isPublishEnabled,
-            }"
-            :size="fabItemsSize"
-            :title="$t('trans.floatButton.publish')"
-            @click="navigate"
-          >
-            <v-icon
-              :color="
-                isPublishEnabled
-                  ? fabItemsInverColor
-                  : disabledInvertedFabItemsColor
-              "
-              :size="fabItemsIconsSize"
-              icon="mdi:mdi-file-upload"
-            >
-            </v-icon>
-          </v-btn>
-        </div>
-      </router-link>
+          <v-icon
+            v-if="!properties.isSaving"
+            icon="mdi:mdi-content-save"
+          ></v-icon>
+          <v-progress-circular v-else indeterminate></v-progress-circular>
+        </v-btn>
+      </div>
+      <div
+        class="fab d-flex flex-column"
+        :class="{
+          'disabled-router': !properties.formId || !properties.draftId,
+        }"
+        data-cy="previewRouterLink"
+        @click="goToPreview"
+      >
+        <span :lang="locale">{{ $t('trans.floatButton.preview') }}</span>
+        <v-btn
+          :disabled="!(!properties.formId || !properties.draftId)"
+          class="ma-2"
+          density="compact"
+          icon
+        >
+          <v-icon icon="mdi:mdi-eye"></v-icon>
+        </v-btn>
+      </div>
+      <div class="fab d-flex flex-column" data-cy="undoButton">
+        <span :lang="locale">{{ $t('trans.floatButton.undo') }}</span>
+        <v-btn
+          :disabled="!properties.undoEnabled"
+          class="ma-2"
+          density="compact"
+          icon
+          @click="$emit('undo')"
+        >
+          <v-icon icon="mdi:mdi-undo"></v-icon>
+        </v-btn>
+      </div>
+      <div class="fab d-flex flex-column" data-cy="redoButton">
+        <span :lang="locale">{{ $t('trans.floatButton.redo') }}</span>
+        <v-btn
+          :disabled="!properties.redoEnabled"
+          class="ma-2"
+          density="compact"
+          icon
+          @click="$emit('redo')"
+        >
+          <v-icon icon="mdi:mdi-redo"></v-icon>
+        </v-btn>
+      </div>
       <router-link
         v-slot="{ navigate }"
         :to="{
           name: 'FormManage',
-          query: { f: formId, fd: false, d: draftId },
+          query: { f: properties.formId, fd: false, d: properties.draftId },
         }"
         custom
       >
         <div
-          ref="settingsRouterLink"
-          role="link"
+          class="fab d-flex flex-column"
+          :class="{ 'disabled-router': !isManageEnabled }"
           data-cy="settingsRouterLink"
-          :class="{ fabAction: true, 'disabled-router': !isManageEnabled }"
         >
-          <div
-            class="text"
-            :lang="locale"
-            v-text="$t('trans.floatButton.manage')"
-          />
+          <span :lang="locale">{{ $t('trans.floatButton.manage') }}</span>
           <v-btn
-            :class="{
-              fabItemsInverColor: isManageEnabled,
-              disabledInvertedFabItemsColor: !isManageEnabled,
-            }"
-            :size="fabItemsSize"
-            :title="$t('trans.floatButton.manage')"
+            :disabled="!isManageEnabled"
+            class="ma-2 inverted-colour"
+            density="compact"
+            icon
             @click="navigate"
           >
-            <v-icon
-              :color="
-                isManageEnabled
-                  ? fabItemsInverColor
-                  : disabledInvertedFabItemsColor
-              "
-              :size="fabItemsIconsSize"
-              icon="mdi:mdi-cog"
-            >
-            </v-icon>
+            <v-icon icon="mdi:mdi-cog"></v-icon>
           </v-btn>
         </div>
       </router-link>
-
-      <div
-        ref="redoButton"
-        class="fabAction"
-        data-cy="redoButton"
-        :class="{ 'disabled-router': !redoEnabled }"
+      <router-link
+        v-slot="{ navigate }"
+        :to="{
+          name: 'PublishForm',
+          query: { f: properties.formId, fd: true, d: properties.draftId },
+        }"
+        custom
       >
         <div
-          class="text"
-          :lang="locale"
-          v-text="$t('trans.floatButton.redo')"
-        />
-        <v-btn
-          class="fabItems"
-          :size="fabItemsSize"
-          :title="$t('trans.floatButton.redo')"
-          @click="toParent('redo')"
+          class="fab d-flex flex-column"
+          :class="{ 'disabled-router': !isPublishEnabled }"
+          data-cy="publishRouterLink"
+          role="link"
         >
-          <v-icon
-            :color="redoEnabled ? fabItemsColor : disabledFabItemsColor"
-            :size="fabItemsIconsSize"
-            icon="mdi:mdi-redo"
+          <span :lang="locale">{{ $t('trans.floatButton.publish') }}</span>
+          <v-btn
+            :disabled="!isPublishEnabled"
+            class="ma-2 inverted-colour"
+            density="compact"
+            icon
+            @click="navigate"
           >
-          </v-icon>
-        </v-btn>
-      </div>
-      <div
-        ref="undoButton"
-        class="fabAction"
-        data-cy="undoButton"
-        :class="{ 'disabled-router': !undoEnabled }"
-      >
-        <div
-          class="text"
-          :lang="locale"
-          v-text="$t('trans.floatButton.undo')"
-        />
-        <v-btn
-          class="fabItems"
-          :size="fabItemsSize"
-          :title="$t('trans.floatButton.undo')"
-          @click="toParent('undo')"
-        >
-          <v-icon
-            :color="undoEnabled ? fabItemsColor : disabledFabItemsColor"
-            :size="fabItemsIconsSize"
-            icon="mdi:mdi-undo"
-          >
-          </v-icon>
-        </v-btn>
-      </div>
-      <div
-        ref="previewRouterLink"
-        class="fabAction"
-        :class="{ 'disabled-router': !formId || !draftId }"
-        @click="gotoPreview"
-      >
-        <div
-          class="text"
-          :lang="locale"
-          v-text="$t('trans.floatButton.preview')"
-        />
-        <v-btn
-          class="fabItems"
-          :size="fabItemsSize"
-          :title="$t('trans.floatButton.preview')"
-        >
-          <v-icon
-            :color="formId ? fabItemsColor : disabledFabItemsColor"
-            :size="fabItemsIconsSize"
-            icon="mdi:mdi-eye"
-          >
-          </v-icon>
-        </v-btn>
-      </div>
-      <div
-        ref="saveButton"
-        class="fabAction"
-        data-cy="saveButton"
-        :class="{ 'disabled-router': isFormSaved && !canSave }"
-      >
-        <div class="text" :lang="locale">{{ savedMsg }}</div>
-        <v-btn
-          class="fabItems"
-          :size="fabItemsSize"
-          :title="savedMsg"
-          @click="canSave ? toParent('save') : null"
-        >
-          <v-icon
-            v-if="!saving"
-            :color="
-              !isFormSaved && canSave ? fabItemsColor : disabledFabItemsColor
-            "
-            :size="fabItemsIconsSize"
-            dark
-            icon="mdi:mdi-content-save"
-          >
-          </v-icon>
-
-          <v-progress-circular
-            v-if="saving"
-            indeterminate
-            color="#1A5A96"
-            size="25"
-          ></v-progress-circular>
-        </v-btn>
-      </div>
-      <div class="fabAction">
-        <div :lang="locale">{{ scrollName }}</div>
-
-        <v-btn
-          class="fabItems"
-          :size="fabItemsSize"
-          :title="scrollName"
-          @click="onHandleScroll"
-        >
-          <v-icon
-            :color="fabItemsColor"
-            :size="fabItemsIconsSize"
-            :icon="scrollIconName"
-          >
-          </v-icon>
-        </v-btn>
-      </div>
+            <v-icon icon="mdi:mdi-file-upload"></v-icon>
+          </v-btn>
+        </div>
+      </router-link>
     </div>
-    <div v-if="!isFABActionsOpen" class="fabAction">
-      <div :lang="locale">{{ scrollName }}</div>
+    <div class="fab d-flex flex-column">
+      <span :lang="locale">{{ COLLAPSE_TEXT }}</span>
       <v-btn
-        class="fabItems"
-        :size="fabItemsSize"
-        :title="scrollName"
-        @click="onHandleScroll"
+        class="ma-2 inverted-colour"
+        density="compact"
+        icon
+        @click="onClickCollapse"
       >
-        <v-icon
-          :color="fabItemsColor"
-          :size="fabItemsIconsSize"
-          :icon="scrollIconName"
-        >
-        </v-icon>
+        <v-icon :icon="COLLAPSE_ICON"></v-icon>
       </v-btn>
     </div>
   </div>
 </template>
 
-<style>
-/* disable router-link */
-.disabled-router {
-  pointer-events: none;
+<style lang="scss">
+.float-button {
+  min-width: 80px;
+  padding-right: 20px;
+  padding-bottom: 40px;
 }
 
-.fabAction {
-  display: flex;
+.fab {
   justify-content: center;
-  flex-direction: column;
   align-items: center;
   align-content: center;
-  overflow: hidden;
-  width: auto;
-  height: auto;
-  pointer-events: cursor;
-  color: #313132;
   font-size: 12px;
   font-style: normal;
   font-weight: normal;
   font-family: BCSans !important;
-  cursor: pointer;
-  border-radius: 100%;
-}
 
-.fabItemsInverColor {
-  background: #1a5a96 0% 0% no-repeat padding-box;
-  border-radius: 100%;
-  box-shadow: 0px 3px 6px #00000029;
-  transition: background 1s;
-}
+  .v-btn {
+    margin-top: 2px !important;
+    margin-bottom: 12px !important;
+  }
 
-.fabItemsInverColor:hover {
-  background: #003366 0% 0% no-repeat padding-box;
-  border: none;
-}
+  .v-icon {
+    font-size: 18px;
+    color: #1a5a96;
+  }
 
-.disabledInvertedFabItemsColor {
-  border-radius: 100%;
-  box-shadow: 0px 3px 6px #00000029;
-  transition: background 1s;
-}
+  .v-btn.v-btn--disabled {
+    background-color: white;
+  }
 
-.fabItems {
-  background: #ffffff 0% 0% no-repeat padding-box;
-  border: 1px solid #70707063;
-  transition: border 1s;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  border-radius: 100%;
-  box-shadow: 0px 3px 6px #00000029;
-}
+  .v-btn.v-btn--disabled .v-btn__overlay {
+    background-color: rgba(0, 0, 0, 0.26);
+  }
 
-.fabItems:hover {
-  border: 1px solid #003366;
-}
-.text {
-  text-align: center;
+  .v-btn--disabled .v-icon {
+    color: #707070c1 !important;
+  }
+
+  .inverted-colour {
+    background: #1a5a96;
+  }
+
+  .inverted-colour .v-icon {
+    color: white;
+  }
 }
 </style>

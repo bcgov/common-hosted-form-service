@@ -1,19 +1,12 @@
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 
 import { useFormStore } from '~/store/form';
 
-export default {
-  setup() {
-    const { locale } = useI18n({ useScope: 'global' });
+const { locale } = useI18n({ useScope: 'global' });
 
-    return { locale };
-  },
-  computed: {
-    ...mapState(useFormStore, ['isRTL']),
-  },
-};
+const { isRTL } = storeToRefs(useFormStore());
 </script>
 
 <template>
