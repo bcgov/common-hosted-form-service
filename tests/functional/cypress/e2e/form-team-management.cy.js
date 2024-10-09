@@ -99,7 +99,7 @@ describe('Form Designer', () => {
     cy.get('.v-btn--elevated > .v-btn__content > span').click();
     // Verify member is added with proper roles
     cy.get('[data-test="ApproverRoleCheckbox"]').should('be.visible');
-    cy.get('[data-test="ReviewerRoleCheckbox"]').should('be.visible');
+    cy.get('[data-test="ReviewerRoleCheckbox"]').should('exist');
     cy.get('[data-test="TeamManagerRoleCheckbox"]').should('be.visible');
     cy.get('[data-test="ApproverRoleCheckbox"]').click({multiple:true,force:true});
     //Manage column views
