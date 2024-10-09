@@ -137,29 +137,21 @@ describe('Form Designer', () => {
     cy.get('[data-test="TeamManagerRoleCheckbox"]').should('be.visible');
     cy.get('[data-test="ApproverRoleCheckbox"]').click({multiple:true,force:true});
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-    cy.waitForLoad();
-    cy.waitForLoad();
-    //Logout to submit the public form
+    cy.wait(2000);
+        //Logout to submit the public form
     cy.get('#logoutButton > .v-btn__content > span').click();
     //Form submission and verification for public forms
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
-    cy.waitForLoad();
-    cy.waitForLoad();
-    cy.waitForLoad();
+    cy.wait(2000);
     cy.get('button').contains('Submit').should('be.visible');
-    cy.waitForLoad();
-    cy.waitForLoad();
+    cy.wait(2000);
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('Alex');
     //form submission
     cy.get('button').contains('Submit').click();
     cy.waitForLoad();
     //cy.get('[data-test="continue-btn-continue"]').click({force: true});
-    cy.waitForLoad();
-    cy.waitForLoad();
-    cy.waitForLoad();
-    cy.waitForLoad();
-    cy.waitForLoad();
+    cy.wait(2000);
     cy.get('label').contains('Text Field').should('be.visible');
     cy.get('label').contains('Text Field').should('be.visible');
     cy.location('pathname').should('eq', `/${depEnv}/form/success`);
@@ -182,13 +174,11 @@ describe('Form Designer', () => {
     cy.get('#user').type(username);
     cy.get('#password').type(password);
     cy.get('.btn').click();
-    cy.waitForLoad();
-    cy.waitForLoad();
+    cy.wait(2000);
     //view submission
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.get('.mdi-list-box-outline').click();
-    cy.waitForLoad();
-    cy.waitForLoad();
+    cy.wait(2000);
     cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn > .v-btn__content > .mdi-eye').click();
     cy.waitForLoad();
     //Verify status option is not available for this

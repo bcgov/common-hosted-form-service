@@ -140,29 +140,20 @@ describe('Form Designer', () => {
     cy.get('[data-test="TeamManagerRoleCheckbox"]').should('be.visible');
     cy.get('[data-test="ApproverRoleCheckbox"]').click({multiple:true,force:true});
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-    cy.waitForLoad();
-    cy.waitForLoad();
+    cy.wait(2000);
       //Logout to submit the public form
     cy.get('#logoutButton > .v-btn__content > span').click();
         //Form submission and verification for public forms
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
-    cy.waitForLoad();
-    cy.waitForLoad();
-    cy.waitForLoad();
+    cy.wait(2000);
     cy.get('button').contains('Submit').should('be.visible');
-    cy.waitForLoad();
-    cy.waitForLoad();
+    cy.wait(2000);
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('Alex');
          //form submission
     cy.get('button').contains('Submit').click();
-    cy.waitForLoad();
-        //cy.get('[data-test="continue-btn-continue"]').click({force: true});
-    cy.waitForLoad();
-    cy.waitForLoad();
-    cy.waitForLoad();
-    cy.waitForLoad();
-    cy.waitForLoad();
+    //cy.get('[data-test="continue-btn-continue"]').click({force: true});
+    cy.wait(2000);
     cy.get('label').contains('Text Field').should('be.visible');
     cy.get('label').contains('Text Field').should('be.visible');
     cy.location('pathname').should('eq', `/${depEnv}/form/success`);
@@ -184,8 +175,7 @@ describe('Form Designer', () => {
     cy.get('#user').type(username);
     cy.get('#password').type(password);
     cy.get('.btn').click();
-    cy.waitForLoad();
-    cy.waitForLoad();
+    cy.wait(2000);
         //view submission
         
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
@@ -231,9 +221,7 @@ describe('Form Designer', () => {
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('Smith');
     cy.get('button').contains('Submit').click();
-    cy.waitForLoad();
-    cy.waitForLoad();
-    cy.waitForLoad();
+    cy.wait(2000);
     //Verify Edit History Panel
     cy.get('.mdi-history').click();
     cy.get('.v-data-table__tr> :nth-child(1)').contains('CHEFSTST@idir').should('be.visible');
