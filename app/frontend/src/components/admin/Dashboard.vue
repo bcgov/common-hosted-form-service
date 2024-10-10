@@ -1,12 +1,10 @@
-<script>
-export default {
-  props: {
-    url: {
-      type: String,
-      required: true,
-    },
+<script setup>
+defineProps({
+  url: {
+    type: String,
+    required: true,
   },
-};
+});
 </script>
 
 <template>

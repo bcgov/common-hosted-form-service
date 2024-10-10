@@ -1,100 +1,76 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { exportFormSchema } from '~/composables/form';
 import adminService from '~/services/adminService';
 import { useAdminStore } from '~/store/admin';
 import { useNotificationStore } from '~/store/notification';
 
-export default {
-  setup() {
-    const { t, locale } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
 
-    return { t, locale };
-  },
-  data() {
-    return {
-      formSchema: {
-        display: 'form',
-        type: 'form',
-        components: [],
-      },
-    };
-  },
-  computed: {
-    ...mapState(useAdminStore, ['form']),
-    headers() {
-      return [
-        {
-          title: this.$t('trans.adminVersions.versions'),
-          align: 'start',
-          key: 'version',
-        },
-        {
-          title: this.$t('trans.adminVersions.status'),
-          align: 'start',
-          key: 'status',
-        },
-        {
-          title: this.$t('trans.adminVersions.created'),
-          align: 'start',
-          key: 'createdAt',
-        },
-        {
-          title: this.$t('trans.adminVersions.lastUpdated'),
-          align: 'start',
-          key: 'updatedAt',
-        },
-        {
-          title: this.$t('trans.adminVersions.actions'),
-          align: 'end',
-          key: 'action',
-          filterable: false,
-          sortable: false,
-        },
-      ];
-    },
-    versionList() {
-      return this.form ? this.form.versions : [];
-    },
-  },
-  methods: {
-    ...mapActions(useNotificationStore, ['addNotification']),
-    // ---------------------------------------------/ Publish/unpublish actions
-    async onExportClick(id, isDraft) {
-      await this.getFormSchema(id, isDraft);
-      let snek = this.form.snake;
-      if (!this.form.snake) {
-        snek = this.form.name
-          .replace(/\s+/g, '_')
-          .replace(/[^-_0-9a-z]/gi, '')
-          .toLowerCase();
-      }
+const formSchema = ref({
+  display: 'form',
+  type: 'form',
+  components: [],
+});
 
-      const a = document.createElement('a');
-      a.href = `data:application/json;charset=utf-8,${encodeURIComponent(
-        JSON.stringify(this.formSchema)
-      )}`;
-      a.download = `${snek}_schema.json`;
-      a.style.display = 'none';
-      a.classList.add('hiddenDownloadTextElement');
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    },
+const adminStore = useAdminStore();
+const notificationStore = useNotificationStore();
 
-    async getFormSchema(id) {
-      try {
-        const res = await adminService.readVersion(this.form.id, id);
-        this.formSchema = { ...this.formSchema, ...res.data.schema };
-      } catch (error) {
-        this.addNotification({
-          text: this.$t('trans.adminVersions.notificationMsg'),
-        });
-      }
-    },
+const { form } = storeToRefs(adminStore);
+
+const headers = computed(() => [
+  {
+    title: t('trans.adminVersions.versions'),
+    align: 'start',
+    key: 'version',
   },
-};
+  {
+    title: t('trans.adminVersions.status'),
+    align: 'start',
+    key: 'status',
+  },
+  {
+    title: t('trans.adminVersions.created'),
+    align: 'start',
+    key: 'createdAt',
+  },
+  {
+    title: t('trans.adminVersions.lastUpdated'),
+    align: 'start',
+    key: 'updatedAt',
+  },
+  {
+    title: t('trans.adminVersions.actions'),
+    align: 'end',
+    key: 'action',
+    filterable: false,
+    sortable: false,
+  },
+]);
+
+const versionList = computed(() =>
+  form.value?.versions ? form.value.versions : []
+);
+
+// ---------------------------------------------/ Publish/unpublish actions
+async function onExportClick(id, isDraft) {
+  await getFormSchema(id, isDraft);
+  exportFormSchema(form.value.name, formSchema.value, form.value.snake);
+}
+
+async function getFormSchema(id) {
+  try {
+    const res = await adminService.readVersion(form.value.id, id);
+    formSchema.value = { ...formSchema.value, ...res.data.schema };
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.adminVersions.notificationMsg'),
+    });
+  }
+}
 </script>
 
 <template>
