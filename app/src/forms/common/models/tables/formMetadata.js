@@ -26,12 +26,10 @@ class FormMetadata extends Timestamps(Model) {
   static get jsonSchema() {
     return {
       type: 'object',
-      required: ['formId', 'headerName', 'attributeName'],
+      required: ['formId'],
       properties: {
         id: { type: 'string', pattern: Regex.UUID },
         formId: { type: 'string', pattern: Regex.UUID },
-        headerName: { type: 'string', minLength: 1, maxLength: 255 },
-        attributeName: { type: 'string', minLength: 1, maxLength: 255 },
         metadata: { type: 'object' },
         ...stamps,
       },

@@ -19,10 +19,12 @@ const service = {
     return {
       id: uuidv4(),
       formId: formId,
-      headerName: data.headerName ? data.headerName : DEFAULT_HEADERNAME,
-      attributeName: data.attributeName ? data.attributeName : DEFAULT_ATTRIBUTENAME,
       metadata: data.metadata ? data.metadata : {},
     };
+  },
+
+  read: async (formId) => {
+    return FormMetadata.query().modify('filterFormId', formId).first();
   },
 
   hasMetadata: (formMetadata) => {
@@ -31,7 +33,7 @@ const service = {
 
   addMetadataToObject: async (formId, data, name, encode) => {
     if (!formId || !data || !name) return;
-    if (!['attributeName', 'headerName'].includes(name)) return;
+    if (![DEFAULT_ATTRIBUTENAME, DEFAULT_HEADERNAME].includes(name)) return;
 
     if (data && typeUtils.isObject(data)) {
       const o = await service.read(formId);
@@ -41,34 +43,35 @@ const service = {
           let bufferObj = Buffer.from(JSON.stringify(o.metadata), 'utf8');
           value = bufferObj.toString('base64');
         }
-        data[o[name]] = value;
+        data[name] = value;
       }
     }
   },
 
   addAttribute: async (formId, obj) => {
-    return await service.addMetadataToObject(formId, obj, 'attributeName');
+    return await service.addMetadataToObject(formId, obj, DEFAULT_ATTRIBUTENAME);
   },
 
   addHeader: async (formId, headers) => {
-    return await service.addMetadataToObject(formId, headers, 'headerName', true);
+    return await service.addMetadataToObject(formId, headers, DEFAULT_HEADERNAME, true);
   },
 
-  create: async (formId, data, currentUser) => {
-    return service.upsert(formId, data, currentUser);
+  _insert: async (formId, data, currentUser, transaction) => {
+    const rec = service.initModel(formId, data);
+    await FormMetadata.query(transaction).insert({
+      ...rec,
+      createdBy: currentUser.usernameIdp,
+    });
   },
 
-  read: async (formId) => {
-    return FormMetadata.query().modify('filterFormId', formId).first();
-  },
-
-  update: async (formId, data, currentUser) => {
-    return service.upsert(formId, data, currentUser);
-  },
-
-  delete: async (formId) => {
-    const existing = await FormMetadata.query().modify('filterFormId', formId).first().throwIfNotFound();
-    await FormMetadata.query().deleteById(existing.id);
+  _update: async (existing, data, currentUser, transaction) => {
+    data.id = existing.id; //make sure that id wasn't changed in transit
+    await FormMetadata.query(transaction)
+      .findById(existing.id)
+      .update({
+        ...data,
+        updatedBy: currentUser.usernameIdp,
+      });
   },
 
   upsert: async (formId, data, currentUser, transaction) => {
@@ -77,20 +80,11 @@ const service = {
     let trx;
     try {
       trx = externalTrx ? transaction : await FormMetadata.startTransaction();
-      const existing = await FormMetadata.query(trx).modify('filterFormId', formId).first(); //only 1...
+      const existing = await service.read(formId);
       if (existing) {
-        await FormMetadata.query(trx)
-          .findById(existing.id)
-          .update({
-            ...data,
-            updatedBy: currentUser.usernameIdp,
-          });
+        await service._update(existing, data, currentUser, transaction);
       } else {
-        const rec = service.initModel(formId, data);
-        await FormMetadata.query(trx).insert({
-          ...rec,
-          createdBy: currentUser.usernameIdp,
-        });
+        await service._insert(formId, data, currentUser, transaction);
       }
       if (!externalTrx) trx.commit();
     } catch (err) {

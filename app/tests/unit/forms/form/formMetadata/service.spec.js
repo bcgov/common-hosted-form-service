@@ -22,8 +22,6 @@ describe('validate', () => {
     validData = {
       id: uuid.v4(),
       formId: uuid.v4(),
-      headerName: 'X-FORM-METADATA',
-      attributeName: 'formMetadata',
       metadata: { externalId: '456' },
     };
   });
@@ -41,137 +39,16 @@ describe('initModel', () => {
     const res = service.initModel('123', {});
     expect(res.id).toBeTruthy();
     expect(res.formId).toEqual('123');
-    expect(res.headerName).toEqual('X-FORM-METADATA');
-    expect(res.attributeName).toEqual('formMetadata');
     expect(res.metadata).toEqual({});
   });
 
   it('should init with existing values 422 with no data', () => {
     const res = service.initModel('123', {
-      headerName: 'XX-FORM-METADATA',
-      attributeName: 'xformMetadata',
       metadata: { externalId: '456' },
     });
     expect(res.id).toBeTruthy();
     expect(res.formId).toEqual('123');
-    expect(res.headerName).toEqual('XX-FORM-METADATA');
-    expect(res.attributeName).toEqual('xformMetadata');
     expect(res.metadata).toEqual({ externalId: '456' });
-  });
-});
-
-describe('read', () => {
-  const user = { usernameIdp: 'username' };
-  let validData = null;
-
-  beforeEach(() => {
-    MockModel.mockReset();
-    MockTransaction.mockReset();
-    validData = {
-      id: uuid.v4(),
-      formId: uuid.v4(),
-      headerName: 'X-FORM-METADATA',
-      attributeName: 'formMetadata',
-      metadata: { externalId: '456' },
-    };
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
-  it('should return valid data', async () => {
-    MockModel.first = jest.fn().mockResolvedValueOnce(validData);
-    const res = await service.read(validData.formId, validData, user);
-    expect(MockModel.first).toBeCalledTimes(1);
-    expect(res).toEqual(validData);
-  });
-});
-
-describe('create', () => {
-  const user = { usernameIdp: 'username' };
-  let validData = null;
-
-  beforeEach(() => {
-    MockModel.mockReset();
-    MockTransaction.mockReset();
-    validData = {
-      id: uuid.v4(),
-      formId: uuid.v4(),
-      headerName: 'X-FORM-METADATA',
-      attributeName: 'formMetadata',
-      metadata: { externalId: '456' },
-    };
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
-  it('should insert valid data', async () => {
-    validData.id = null;
-    service.initModel = jest.fn().mockReturnValue(validData);
-    await service.create(validData.formId, validData, user);
-    expect(MockModel.insert).toBeCalledTimes(1);
-    expect(MockModel.insert).toBeCalledWith({
-      createdBy: user.usernameIdp,
-      ...validData,
-    });
-  });
-
-  it('should raise errors', async () => {
-    MockModel.insert = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
-    await expect(service.create(validData.formId, validData, user)).rejects.toThrow();
-  });
-});
-
-describe('update', () => {
-  const user = { usernameIdp: 'username' };
-  let validData = null;
-
-  beforeEach(() => {
-    MockModel.mockClear();
-    MockModel.mockReset();
-    MockTransaction.mockReset();
-    validData = {
-      id: uuid.v4(),
-      formId: uuid.v4(),
-      headerName: 'X-FORM-METADATA',
-      attributeName: 'formMetadata',
-      metadata: { externalId: '456' },
-    };
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
-  it('should update valid data', async () => {
-    MockModel.first = jest.fn().mockResolvedValue(Object.assign({}, validData));
-
-    await service.update(validData.formId, validData, user);
-    expect(MockModel.update).toBeCalledTimes(1);
-    expect(MockModel.update).toBeCalledWith({
-      updatedBy: user.usernameIdp,
-      ...validData,
-    });
-  });
-
-  it('should create when not found', async () => {
-    MockModel.first = jest.fn().mockResolvedValueOnce(null);
-    service.initModel = jest.fn().mockReturnValue(validData);
-    await service.update(validData.formId, validData, user);
-    expect(MockModel.insert).toBeCalledTimes(1);
-    expect(MockModel.insert).toBeCalledWith({
-      createdBy: user.usernameIdp,
-      ...validData,
-    });
-  });
-
-  it('should raise errors', async () => {
-    MockModel.first = jest.fn().mockResolvedValue(Object.assign({}, validData));
-    MockModel.update = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
-    await expect(service.update(validData.formId, validData, user)).rejects.toThrow();
   });
 });
 
@@ -186,8 +63,6 @@ describe('upsert', () => {
     validData = {
       id: uuid.v4(),
       formId: uuid.v4(),
-      headerName: 'X-FORM-METADATA',
-      attributeName: 'formMetadata',
       metadata: { externalId: '456' },
     };
   });
@@ -258,36 +133,6 @@ describe('upsert', () => {
   });
 });
 
-describe('delete', () => {
-  beforeEach(() => {
-    // no idea why MockModel wasn't working in this test, so just use the model directly
-    FormMetadata.query = jest.fn().mockReturnThis();
-    FormMetadata.where = jest.fn().mockReturnThis();
-    FormMetadata.modify = jest.fn().mockReturnThis();
-    FormMetadata.first = jest.fn().mockReturnThis();
-    FormMetadata.deleteById = jest.fn();
-    FormMetadata.throwIfNotFound = jest.fn().mockReturnThis();
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
-  it('should delete valid data', async () => {
-    FormMetadata.throwIfNotFound = jest.fn().mockResolvedValueOnce({ id: 123 });
-    await service.delete('');
-    expect(FormMetadata.deleteById).toBeCalledTimes(1);
-  });
-
-  it('should raise error when not found', async () => {
-    FormMetadata.modify = jest.fn().mockReturnThis();
-    FormMetadata.first = jest.fn().mockReturnThis();
-    FormMetadata.throwIfNotFound = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
-    await expect(service.delete('')).rejects.toThrow(); // throws but on reading return value
-    expect(FormMetadata.deleteById).toBeCalledTimes(0);
-  });
-});
-
 describe('hasMetadata', () => {
   it('return true when metadata has keys', async () => {
     const result = await service.hasMetadata({ metadata: { a: 'b' } });
@@ -323,8 +168,6 @@ describe('addMetadataToObject', () => {
     validData = {
       id: uuid.v4(),
       formId: uuid.v4(),
-      headerName: 'X-FORM-METADATA',
-      attributeName: 'formMetadata',
       metadata: { externalId: '456' },
     };
   });
@@ -360,16 +203,16 @@ describe('addMetadataToObject', () => {
   });
 
   it('should do nothing if no data is not an object', async () => {
-    await service.addMetadataToObject('123', 123, 'attributeName');
+    await service.addMetadataToObject('123', 123, 'formMetadata');
     expect(FormMetadata.query).not.toBeCalled();
-    await service.addMetadataToObject('123', [], 'attributeName');
+    await service.addMetadataToObject('123', [], 'formMetadata');
     expect(FormMetadata.query).not.toBeCalled();
   });
 
   it('should do nothing if formMetadata is not found', async () => {
     FormMetadata.first = jest.fn().mockResolvedValueOnce(null);
     let obj = {};
-    await service.addMetadataToObject('123', obj, 'attributeName');
+    await service.addMetadataToObject('123', obj, 'formMetadata');
     expect(FormMetadata.query).toBeCalledTimes(1);
     expect(FormMetadata.first).toBeCalledTimes(1);
     expect(obj).toEqual({});
@@ -378,7 +221,7 @@ describe('addMetadataToObject', () => {
   it('should add metadata as attributeName', async () => {
     FormMetadata.first = jest.fn().mockResolvedValueOnce(validData);
     let obj = {};
-    await service.addMetadataToObject('123', obj, 'attributeName');
+    await service.addMetadataToObject('123', obj, 'formMetadata');
     expect(FormMetadata.query).toBeCalledTimes(1);
     expect(FormMetadata.first).toBeCalledTimes(1);
     expect(obj).toEqual({ formMetadata: { externalId: '456' } });
@@ -387,7 +230,7 @@ describe('addMetadataToObject', () => {
   it('should add metadata as headerName', async () => {
     FormMetadata.first = jest.fn().mockResolvedValueOnce(validData);
     let obj = {};
-    await service.addMetadataToObject('123', obj, 'headerName');
+    await service.addMetadataToObject('123', obj, 'X-FORM-METADATA');
     expect(FormMetadata.query).toBeCalledTimes(1);
     expect(FormMetadata.first).toBeCalledTimes(1);
     expect(obj).toEqual({ 'X-FORM-METADATA': { externalId: '456' } });
@@ -399,7 +242,7 @@ describe('addMetadataToObject', () => {
     let encodedValue = bufferObj.toString('base64');
 
     let obj = {};
-    await service.addMetadataToObject('123', obj, 'headerName', true);
+    await service.addMetadataToObject('123', obj, 'X-FORM-METADATA', true);
     expect(FormMetadata.query).toBeCalledTimes(1);
     expect(FormMetadata.first).toBeCalledTimes(1);
     expect(obj['X-FORM-METADATA']).toMatch(encodedValue);
@@ -419,8 +262,6 @@ describe('addAttribute', () => {
     validData = {
       id: uuid.v4(),
       formId: uuid.v4(),
-      headerName: 'X-FORM-METADATA',
-      attributeName: 'formMetadata',
       metadata: { externalId: '456' },
     };
   });
@@ -480,8 +321,6 @@ describe('addHeader', () => {
     validData = {
       id: uuid.v4(),
       formId: uuid.v4(),
-      headerName: 'X-FORM-METADATA',
-      attributeName: 'formMetadata',
       metadata: { externalId: '456' },
     };
   });
@@ -528,5 +367,104 @@ describe('addHeader', () => {
     expect(FormMetadata.query).toBeCalledTimes(1);
     expect(FormMetadata.first).toBeCalledTimes(1);
     expect(obj['X-FORM-METADATA']).toMatch(encodedValue);
+  });
+});
+
+describe('read', () => {
+  const user = { usernameIdp: 'username' };
+  let validData = null;
+
+  beforeEach(() => {
+    MockModel.mockReset();
+    MockTransaction.mockReset();
+    validData = {
+      id: uuid.v4(),
+      formId: uuid.v4(),
+      metadata: { externalId: '456' },
+    };
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('should return valid data', async () => {
+    MockModel.first = jest.fn().mockResolvedValueOnce(validData);
+    const res = await service.read(validData.formId, validData, user);
+    expect(MockModel.first).toBeCalledTimes(1);
+    expect(res).toEqual(validData);
+  });
+});
+
+describe('_update', () => {
+  const user = { usernameIdp: 'username' };
+  let validData = null;
+
+  beforeEach(() => {
+    MockModel.mockClear();
+    MockModel.mockReset();
+    MockTransaction.mockReset();
+    validData = {
+      id: uuid.v4(),
+      formId: uuid.v4(),
+      metadata: { externalId: '456' },
+    };
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('should update valid data', async () => {
+    const xact = jest.fn().mockResolvedValue(MockTransaction);
+    await service._update(validData, validData, user, xact);
+    expect(MockModel.update).toBeCalledTimes(1);
+    expect(MockModel.update).toBeCalledWith({
+      updatedBy: user.usernameIdp,
+      ...validData,
+    });
+  });
+
+  it('should raise errors on failed update', async () => {
+    MockModel.update = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
+    const xact = jest.fn().mockResolvedValue(MockTransaction);
+    await expect(service._update(validData, validData, user, xact)).rejects.toThrow();
+  });
+});
+
+describe('_insert', () => {
+  const user = { usernameIdp: 'username' };
+  let validData = null;
+
+  beforeEach(() => {
+    MockModel.mockClear();
+    MockModel.mockReset();
+    MockTransaction.mockReset();
+    validData = {
+      id: uuid.v4(),
+      formId: uuid.v4(),
+      metadata: { externalId: '456' },
+    };
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('should create with good data', async () => {
+    const xact = jest.fn().mockResolvedValue(MockTransaction);
+    service.initModel = jest.fn().mockReturnValue(validData);
+    await service._insert(validData.formId, validData, user, xact);
+    expect(MockModel.insert).toBeCalledTimes(1);
+    expect(MockModel.insert).toBeCalledWith({
+      createdBy: user.usernameIdp,
+      ...validData,
+    });
+  });
+
+  it('should raise errors on failed insert', async () => {
+    MockModel.insert = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
+    const xact = jest.fn().mockResolvedValue(MockTransaction);
+    await expect(service._insert(validData.formId, validData, user, xact)).rejects.toThrow();
   });
 });

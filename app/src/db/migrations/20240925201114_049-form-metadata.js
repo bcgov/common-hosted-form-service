@@ -10,8 +10,6 @@ exports.up = function (knex) {
     knex.schema.createTable('form_metadata', (table) => {
       table.uuid('id').primary();
       table.uuid('formId').references('id').inTable('form').notNullable().index();
-      table.string('headerName', 255).notNullable();
-      table.string('attributeName', 255).notNullable();
       table.jsonb('metadata');
       stamps(knex, table);
     })
