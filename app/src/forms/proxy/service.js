@@ -2,6 +2,7 @@ const { encryptionService } = require('../../components/encryptionService');
 const jwtService = require('../../components/jwtService');
 const ProxyServiceError = require('./error');
 const { ExternalAPI, SubmissionMetadata } = require('../../forms/common/models');
+const formMetadataService = require('../../forms/form/formMetadata/service');
 
 const headerValue = (headers, key) => {
   if (headers && key) {
@@ -99,6 +100,9 @@ const service = {
   },
   createExternalAPIHeaders: async (externalAPI, proxyHeaderInfo) => {
     const result = {};
+    // form metadata, add if specified and there are attributes in the metadata.
+    await formMetadataService.addHeader(proxyHeaderInfo['formId'], result);
+
     if (externalAPI.sendApiKey) {
       result[externalAPI.apiKeyHeader] = externalAPI.apiKey;
     }

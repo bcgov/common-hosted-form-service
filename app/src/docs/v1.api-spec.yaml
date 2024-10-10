@@ -3726,6 +3726,14 @@ components:
         - $ref: '#/components/schemas/FormCore'
         - type: object
           properties:
+            formMetadata:
+              type: object
+              description: Contains Custom Form Metadata object
+              properties:
+                metadata:
+                  type: object
+                  description: JSON Object
+                  example: { externalId: 'AB-0123456789' }
             identityProviders:
               type: array
               items:

@@ -7,6 +7,7 @@ const service = require('../../../../src/forms/proxy/service');
 const { ExternalAPI } = require('../../../../src/forms/common/models');
 
 jest.mock('../../../../src/forms/common/models/views/submissionMetadata', () => MockModel);
+jest.mock('../../../../src/forms/common/models/tables/formMetadata', () => MockModel);
 
 const goodPayload = {
   formId: '123',
@@ -50,6 +51,14 @@ const goodExternalApi = {
   userInfoEncrypted: true,
   userInfoEncryptionKey: '0489aa2a7882dc53be7c76db43be1800e56627c31a88a0011d85ccc255b79d00',
   userInfoEncryptionAlgo: ENCRYPTION_ALGORITHMS.AES_256_GCM,
+};
+
+const goodFormMetadata = {
+  id: uuid.v4(),
+  formId: uuid.v4(),
+  headerName: 'X-FORM-METADATA',
+  attributeName: 'formMetadata',
+  metadata: { externalId: '789' },
 };
 
 beforeEach(() => {
@@ -256,6 +265,13 @@ describe('Proxy Service', () => {
     });
   });
   describe('createExternalAPIHeaders', () => {
+    beforeEach(() => {
+      MockModel.mockReset();
+      MockModel.first = jest.fn().mockResolvedValueOnce(goodFormMetadata);
+    });
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
     it('should throw error with no headers', async () => {
       const externalAPI = undefined;
       const proxyHeaderInfo = goodProxyHeaderInfo;
@@ -275,7 +291,7 @@ describe('Proxy Service', () => {
       const externalAPI = Object.assign({}, goodExternalApi);
       externalAPI.sendUserToken = false;
       externalAPI.sendUserInfo = false;
-      const proxyHeaderInfo = undefined;
+      const proxyHeaderInfo = { formId: uuid.v4() };
       const result = await service.createExternalAPIHeaders(externalAPI, proxyHeaderInfo);
       expect(result).toBeTruthy();
     });
@@ -351,6 +367,28 @@ describe('Proxy Service', () => {
       //  user info headers
       expect(result['X-CHEFS-USER-EMAIL']).toBe(userInfo.email);
       expect(result['X-CHEFS-FORM-FORMID']).toBe(userInfo.formId);
+    });
+    it('should add base64 encoded form metadata header', async () => {
+      const externalAPI = Object.assign({}, goodExternalApi);
+      const proxyHeaderInfo = Object.assign({}, goodProxyHeaderInfo);
+      const result = await service.createExternalAPIHeaders(externalAPI, proxyHeaderInfo);
+      expect(result).toBeTruthy();
+      expect(result['X-FORM-METADATA']).toBeTruthy();
+      // check for encoding
+      let bufferObj = Buffer.from(result['X-FORM-METADATA'], 'base64');
+      let decodedString = bufferObj.toString('utf8');
+      let o = JSON.parse(decodedString);
+      expect(o).toMatchObject(goodFormMetadata.metadata);
+    });
+    it('should not add base64 encoded form metadata header when no metadata', async () => {
+      const externalAPI = Object.assign({}, goodExternalApi);
+      const proxyHeaderInfo = Object.assign({}, goodProxyHeaderInfo);
+      let fd = goodFormMetadata;
+      fd.metadata = {}; //no attributes
+      MockModel.first = jest.fn().mockResolvedValueOnce(fd);
+      const result = await service.createExternalAPIHeaders(externalAPI, proxyHeaderInfo);
+      expect(result).toBeTruthy();
+      expect(result['X-FORM-METADATA']).toBeFalsy();
     });
   });
 });

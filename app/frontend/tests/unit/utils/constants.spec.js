@@ -16,6 +16,7 @@ describe('Constants', () => {
       UTILS: '/utils',
       FILES_API_ACCESS: '/filesApiAccess',
       PROXY: '/proxy',
+      FORM_METADATA: '/formMetadata',
     });
   });
 

@@ -3,6 +3,7 @@ const { SubscriptionEvent } = require('../common/constants');
 const { FormVersion, Form, FormSubscription } = require('../common/models');
 const axios = require('axios');
 const { queryUtils } = require('../common/utils');
+const formMetadataService = require('../form/formMetadata/service');
 
 const service = {
   /**
@@ -54,6 +55,8 @@ const service = {
         if (submissionId != null) {
           jsonData['submissionId'] = submissionId;
         }
+
+        await formMetadataService.addAttribute(formVersion.formId, jsonData);
 
         axiosInstance.interceptors.request.use(
           (cfg) => {
