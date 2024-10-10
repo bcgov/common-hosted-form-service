@@ -1,48 +1,40 @@
-<script>
-import { mapActions } from 'pinia';
+<script setup>
 import { version as uuidVersion, validate as uuidValidate } from 'uuid';
 import { useI18n } from 'vue-i18n';
+import { ref } from 'vue';
 
 import { useAdminStore } from '~/store/admin';
 import { FormRoleCodes } from '~/utils/constants';
 
-export default {
-  props: {
-    formId: {
-      type: String,
-      required: true,
-    },
-  },
-  setup() {
-    const { locale } = useI18n({ useScope: 'global' });
+const { locale } = useI18n({ useScope: 'global' });
 
-    return { locale };
+const properties = defineProps({
+  formId: {
+    type: String,
+    required: true,
   },
-  data() {
-    return {
-      userGuid: '',
-      valid: false,
-      userGuidRules: [
-        (v) => !!v || 'User ID required',
-        (v) =>
-          (uuidValidate(v) && uuidVersion(v) === 4) ||
-          'Enter a valid User ID GUID',
-      ],
-    };
-  },
-  methods: {
-    ...mapActions(useAdminStore, ['addFormUser', 'readRoles']),
-    async addOwner() {
-      if (this.$refs.addUserForm.validate()) {
-        await this.addFormUser({
-          userId: this.userGuid,
-          formId: this.formId,
-          roles: [FormRoleCodes.OWNER],
-        });
-      }
-    },
-  },
-};
+});
+
+const addUserForm = ref(null);
+const userGuid = ref('');
+const valid = ref(false);
+const userGuidRules = ref([
+  (v) => !!v || 'User ID required',
+  (v) =>
+    (uuidValidate(v) && uuidVersion(v) === 4) || 'Enter a valid User ID GUID',
+]);
+
+const adminStore = useAdminStore();
+
+async function addOwner() {
+  if (addUserForm.value.validate()) {
+    await adminStore.addFormUser({
+      userId: userGuid.value,
+      formId: properties.formId,
+      roles: [FormRoleCodes.OWNER],
+    });
+  }
+}
 </script>
 
 <template>
