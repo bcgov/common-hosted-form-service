@@ -81,7 +81,18 @@ describe('export', () => {
     describe('type 1 / multiRowEmptySpacesCSVExport', () => {
       const params = {
         emailExport: false,
-        fields: ['form.submissionId', 'form.confirmationId', 'form.formName', 'form.version', 'form.createdAt', 'form.fullName', 'form.username', 'form.email', 'simpletextfield'],
+        fields: [
+          'form.submissionId',
+          'form.confirmationId',
+          'form.formName',
+          'form.version',
+          'form.createdAt',
+          'form.fullName',
+          'form.username',
+          'form.email',
+          'form.submittedAt',
+          'simpletextfield',
+        ],
         template: 'multiRowEmptySpacesCSVExport',
       };
 
@@ -93,6 +104,7 @@ describe('export', () => {
             formName: 'form',
             version: 1,
             createdAt: '2024-05-03T20:56:31.270Z',
+            submittedAt: '2024-05-03T20:56:31.270Z',
             fullName: 'Pat Test',
             username: 'PAT_TEST',
             email: 'pat.test@gov.bc.ca',
@@ -125,6 +137,7 @@ describe('export', () => {
           'form.fullName',
           'form.username',
           'form.email',
+          'form.submittedAt',
           'dataGrid',
           'dataGrid.0.simpletextfield',
           'dataGrid.1.simpletextfield',
@@ -143,6 +156,7 @@ describe('export', () => {
             formName: 'form',
             version: 1,
             createdAt: '2024-05-03T20:56:31.270Z',
+            submittedAt: '2024-05-03T20:56:31.270Z',
             fullName: 'Pat Test',
             username: 'PAT_TEST',
             email: 'pat.test@gov.bc.ca',
@@ -652,6 +666,7 @@ describe('', () => {
       'form.fullName',
       'form.username',
       'form.email',
+      'form.submittedAt',
       'fishermansName',
       'email',
       'forWhichBcLakeRegionAreYouCompletingTheseQuestions',
@@ -682,7 +697,7 @@ describe('', () => {
     expect(exportService._getData).toBeCalledTimes(1);
     expect(exportService._buildCsvHeaders).toBeCalledTimes(1);
     // test cases
-    expect(fields.length).toEqual(19);
+    expect(fields.length).toEqual(20);
   });
 });
 
@@ -716,7 +731,7 @@ describe('_submissionsColumns', () => {
     };
 
     const submissions = exportService._submissionsColumns(form, params);
-    expect(submissions.length).toEqual(9);
+    expect(submissions.length).toEqual(10);
     expect(submissions).toEqual(expect.arrayContaining(['submissionId', 'confirmationId', 'formName', 'version', 'createdAt', 'fullName', 'username', 'email', 'submission']));
   });
 
@@ -731,7 +746,7 @@ describe('_submissionsColumns', () => {
     };
 
     const submissions = exportService._submissionsColumns(form, params);
-    expect(submissions.length).toEqual(10);
+    expect(submissions.length).toEqual(11);
   });
 
   it('should return right number of columns, when 1 prefered column (draft) passed as params.', async () => {
@@ -745,7 +760,7 @@ describe('_submissionsColumns', () => {
     };
 
     const submissions = exportService._submissionsColumns(form, params);
-    expect(submissions.length).toEqual(10);
+    expect(submissions.length).toEqual(11);
   });
 
   it('should return right number of columns, when 2 prefered column (draft & deleted) passed as params.', async () => {
@@ -760,7 +775,7 @@ describe('_submissionsColumns', () => {
 
     const submissions = exportService._submissionsColumns(form, params);
 
-    expect(submissions.length).toEqual(11);
+    expect(submissions.length).toEqual(12);
   });
 
   it('should return right number of columns, when a garbage or NON-allowed column (testCol1 & testCol2) passed as params.', async () => {
@@ -774,7 +789,7 @@ describe('_submissionsColumns', () => {
     };
 
     const submissions = exportService._submissionsColumns(form, params);
-    expect(submissions.length).toEqual(9);
+    expect(submissions.length).toEqual(10);
   });
 });
 
