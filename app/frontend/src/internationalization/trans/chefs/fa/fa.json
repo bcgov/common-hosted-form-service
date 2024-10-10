@@ -549,7 +549,7 @@
     "sentUninvitedEmailTo": "ایمیل ناخوانده به",
     "updateUserErrMsg": "هنگام تلاش برای به‌روزرسانی کاربران برای این ارسال، خطایی روی داد.",
     "updateUserConsoleErrMsg": "خطا در تنظیم مجوزهای کاربر. فرعی: {submissionId} کاربر: {userId} خطا: {error}",
-    "searchInputLength": "ورودی جستجو برای نام کاربری/ایمیل BCeID باید بیشتر از 6 کاراکتر باشد.",
+    "searchInputLength": "ورودی جستجو برای نام کاربری/ایمیل BCeID باید بیشتر از 4 کاراکتر باشد.",
     "exactBCEIDSearch": "جستجوی ایمیل برای BCeID باید دقیق باشد.",
     "getUsersErrMsg": "خطا در دریافت کاربران: {error}",
     "exactEmailOrUsername": "یک ایمیل یا نام کاربری دقیق وارد کنید.",
