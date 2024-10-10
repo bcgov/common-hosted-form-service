@@ -830,6 +830,7 @@
     "failedResSubmissn": "Fehlgeschlagene Antwort vom Übermittlungsendpunkt. Antwortcode: {status}",
     "errSubmittingForm": "Beim Absenden dieses Formulars ist ein Fehler aufgetreten",
     "errorSavingFile": "Fehler beim Speichern der Dateien. Dateiname: {fileName}. Fehler: {error}",
+    "errorDeletingFile": "Fehler beim Löschen der Dateien. Dateiname: {fileName}. Fehler: {error}",
     "submittingDraftErrMsg": "Beim Speichern eines Entwurfs ist ein Fehler aufgetreten",
     "submittingDraftConsErrMsg": "Fehler beim Speichern des Entwurfs. Einreichungs-ID: {submissionId}. Fehler: {error}",
     "formDraftAccessErrMsg": "Die angeforderte Übermittlung wurde bereits übermittelt und wird zur Ansichtsseite weitergeleitet",

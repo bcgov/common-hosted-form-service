@@ -829,6 +829,7 @@
     "failedResSubmissn": "सबमिशन समापन बिंदु से विफल प्रतिक्रिया। प्रतिक्रिया कोड: {status}",
     "errSubmittingForm": "इस फ़ॉर्म को सबमिट करते समय एक त्रुटि हुई",
     "errorSavingFile": "फ़ाइलें सहेजने में त्रुटि. फ़ाइल का नाम: {fileName}. त्रुटि: {error}",
+    "errorDeletingFile": "फ़ाइलें हटाने में त्रुटि. फ़ाइल नाम: {fileName}. त्रुटि: {error}",
     "submittingDraftErrMsg": "ड्राफ्ट सहेजते समय एक त्रुटि उत्पन्न हुई",
     "submittingDraftConsErrMsg": "ड्राफ्ट सहेजने में त्रुटि. सबमिशनआईडी: {submissionId}। त्रुटि: {error}",
     "formDraftAccessErrMsg": "अनुरोधित सबमिशन पहले ही सबमिट किया जा चुका है, व्यू पेज पर रीडायरेक्ट किया जा रहा है",

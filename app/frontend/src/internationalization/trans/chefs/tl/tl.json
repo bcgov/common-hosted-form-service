@@ -829,6 +829,7 @@
     "failedResSubmissn": "Nabigong tugon mula sa endpoint ng pagsusumite. Code ng tugon: {status}",
     "errSubmittingForm": "Nagkaroon ng error sa pagsusumite ng form na ito",
     "errorSavingFile": "Error sa pag-save ng mga file. Filename: {fileName}. Error: {error}",
+    "errorDeletingFile": "Error sa pagtanggal ng mga file. Filename: {fileName}. Error: {error}",
     "submittingDraftErrMsg": "Nagkaroon ng error habang nagse-save ng draft",
     "submittingDraftConsErrMsg": "Error sa pag-save ng draft. SubmissionId: {submissionId}. Error: {error}",
     "formDraftAccessErrMsg": "Ang hiniling na pagsusumite ay naisumite na, nagre-redirect sa View page",

@@ -828,6 +828,7 @@
     "failedResSubmissn": "Помилка відповіді від кінцевої точки надсилання. Код відповіді: {status}",
     "errSubmittingForm": "Під час надсилання цієї форми сталася помилка",
     "errorSavingFile": "Помилка збереження файлів. Ім'я файлу: {fileName}. Помилка: {error}",
+    "errorDeletingFile": "Error sa pagtanggal ng mga file. Filename: {fileName}. Error: {error}",
     "submittingDraftErrMsg": "Під час збереження чернетки сталася помилка",
     "submittingDraftConsErrMsg": "Помилка збереження чернетки. SubmissionId: {submissionId}. Помилка: {error}",
     "formDraftAccessErrMsg": "Запитане подання вже подано, переспрямовує на сторінку перегляду",

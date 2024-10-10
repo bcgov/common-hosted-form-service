@@ -76,7 +76,12 @@ export default class Component extends (ParentComponent as any) {
     deleteFile(fileInfo) {
         const { options = {} } = this.component;
         if (fileInfo) {
-            options.deleteFile(fileInfo);
+            options.deleteFile(fileInfo, {
+                onSuccess: () => {
+                    this.redraw();
+                    this.triggerChange();
+                },
+            });
         }
     }
 
@@ -94,7 +99,7 @@ export default class Component extends (ParentComponent as any) {
                     name: fileName,
                     size: file.size,
                     status: 'info',
-                    message: this.t('Starting upload'),
+                    message: this.t('File will begin uploading when the form is submitted or the draft is saved.'),
                 };
 
                 // Check file pattern
@@ -176,6 +181,7 @@ export default class Component extends (ParentComponent as any) {
                     options.uploadFile(formData, {
                         onUploadProgress: (evt) => {
                             fileUpload.status = 'progress';
+                            fileUpload.message = this.t('Starting upload');
                             // @ts-ignore
                             fileUpload.progress = parseInt(100.0 * evt.loaded / evt.total);
                             delete fileUpload.message;
@@ -184,8 +190,7 @@ export default class Component extends (ParentComponent as any) {
                         headers: {
                             'Content-Type': 'multipart/form-data',
                         },
-                    })
-                        .then((response) => {
+                        onUploaded: (response) => {
                             response.data = response.data || {};
                             const index = this.statuses.indexOf(fileUpload);
                             if (index !== -1) {
@@ -207,15 +212,16 @@ export default class Component extends (ParentComponent as any) {
                             this.dataValue.push(fileInfo);
                             this.redraw();
                             this.triggerChange();
-                        })
-                        .catch((response) => {
+                        },
+                        onError: (response) => {
                             fileUpload.status = 'error';
                             // grab the detail out our api-problem response.
                             fileUpload.message = response.detail;
                             // @ts-ignore
                             delete fileUpload.progress;
                             this.redraw();
-                        })
+                        },
+                    })
                 }
             });
         }
