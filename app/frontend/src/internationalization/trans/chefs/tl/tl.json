@@ -549,7 +549,7 @@
     "sentUninvitedEmailTo": "Nagpadala ng hindi inanyayahang email kay",
     "updateUserErrMsg": "May naganap na error habang sinusubukang i-update ang mga user para sa pagsusumiteng ito.",
     "updateUserConsoleErrMsg": "Error sa pagtatakda ng mga pahintulot ng user. Sub: {submissionId} User: {userId} Error: {error}",
-    "searchInputLength": "Ang input ng paghahanap para sa username/email ng BceID ay dapat na higit sa 6 na character.",
+    "searchInputLength": "Ang input ng paghahanap para sa username/email ng BceID ay dapat na higit sa 4 na character.",
     "exactBCEIDSearch": "Dapat na eksakto ang mga paghahanap sa email para sa BceID.",
     "getUsersErrMsg": "Error sa pagkuha ng mga user: {error}",
     "exactEmailOrUsername": "Maglagay ng eksaktong e-mail o username.",

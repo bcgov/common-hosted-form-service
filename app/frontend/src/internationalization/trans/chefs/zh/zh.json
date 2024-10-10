@@ -549,7 +549,7 @@
     "sentUninvitedEmailTo": "发送了未经邀请的电子邮件至",
     "updateUserErrMsg": "尝试更新此提交的用户时出错。",
     "updateUserConsoleErrMsg": "设置用户权限时出错。子：{submissionId} 用户：{userId} 错误：{error}",
-    "searchInputLength": "BCeID 用户名/电子邮件的搜索输入必须大于 6 个字符。",
+    "searchInputLength": "BCeID 用户名/电子邮件的搜索输入必须大于 4 个字符。",
     "exactBCEIDSearch": "BCeID 的电子邮件搜索必须准确。",
     "getUsersErrMsg": "获取用户时出错：{error}",
     "exactEmailOrUsername": "输入准确的电子邮件或用户名。",

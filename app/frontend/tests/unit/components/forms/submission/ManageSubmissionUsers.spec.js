@@ -161,7 +161,7 @@ describe('ManageSubmissionUsers.vue', () => {
     wrapper.vm.selectedIdp = 'bceid-basic';
 
     // should throw an error if search input is shorter than the min length specified by teamMebershipConfig
-    wrapper.vm.onChangeUserSearchInput('john');
+    wrapper.vm.onChangeUserSearchInput('jon');
     expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
     consoleErrorSpy.mockReset();
 

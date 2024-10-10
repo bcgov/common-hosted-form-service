@@ -113,7 +113,7 @@
       "addTeamMemberSearch": {
         "text": {
           "message": "trans.manageSubmissionUsers.searchInputLength",
-          "minLength": 6
+          "minLength": 4
         },
         "email": {
           "exact": true,
@@ -199,7 +199,7 @@
       "addTeamMemberSearch": {
         "text": {
           "message": "trans.manageSubmissionUsers.searchInputLength",
-          "minLength": 6
+          "minLength": 4
         },
         "email": {
           "exact": true,

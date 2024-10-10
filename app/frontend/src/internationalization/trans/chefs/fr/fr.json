@@ -549,7 +549,7 @@
     "sentUninvitedEmailTo": "Envoyé un e-mail non invité à",
     "updateUserErrMsg": "Une erreur s'est produite lors de la tentative de mise à jour des utilisateurs pour cette soumission.",
     "updateUserConsoleErrMsg": "Erreur lors de la définition des autorisations utilisateur. Sous : {submissionId} Utilisateur : {userId} Erreur : {error}",
-    "searchInputLength": "L'entrée de recherche pour le nom d'utilisateur/e-mail BCeID doit comporter plus de 6 caractères.",
+    "searchInputLength": "L'entrée de recherche pour le nom d'utilisateur/e-mail BCeID doit comporter plus de 4 caractères.",
     "exactBCEIDSearch": "Les recherches par e-mail pour BCeID doivent être exactes.",
     "getUsersErrMsg": "Erreur lors de l'obtention des utilisateurs : {error}",
     "exactEmailOrUsername": "Entrez un e-mail ou un nom d'utilisateur exact.",
