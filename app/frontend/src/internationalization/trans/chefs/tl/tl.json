@@ -169,7 +169,10 @@
     "eventSubscription": "Subscription sa Kaganapan",
     "validEndpointRequired": "Mangyaring magpasok ng wastong endpoint na nagsisimula sa https://",
     "validBearerTokenRequired": "Maglagay ng wastong halimbawa ng token ng maydala: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
-    "wideFormLayout": "Malapad na Porma ng Layout"
+    "wideFormLayout": "Malapad na Porma ng Layout",
+    "formMetadataTitle": "Metadata ng Form",
+    "formMetadataMessage": "Nakabalangkas na impormasyon upang ilarawan o ipaliwanag ang form na ito sa mga panlabas na system. Isasama sa mga tawag sa mga external na system ang metadata na ito sa kanilang mga payload.",
+    "formMetadataJsonError": "Ang metadata ng form ay dapat na wastong JSON. Gumamit ng double-quotes sa paligid ng mga attribute at value."
   },
   "formProfile": {
     "message": "Ang CHEFS team ay nagkokolekta at nag-oorganisa ng impormasyon upang magsilbing mahalagang input para sa pagbuo ng kapsulang kaso ng negosyo. Ang mga kaso na ito ay magiging pangunahing bahagi sa paggabay sa pangangasiwa at patuloy na pagpapabuti ng CHEFS sa mga darating na taon. Ang inisyatibang ito sa pagsasama ng datos ay mahalaga para sa pagbibigay impormasyon sa mga kritikal na desisyon at pagsanay sa takbo ng CHEFS, tiyak na nagiging adaptable at epektibo sa pagsasaad sa mga nagbabagong pangangailangan at hamon.",

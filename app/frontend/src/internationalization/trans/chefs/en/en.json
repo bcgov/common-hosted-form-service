@@ -201,7 +201,7 @@
     "validBearerTokenRequired": "Enter a valid bearer token example: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
     "wideFormLayout": "Wide Form Layout",
     "formMetadataTitle": "Form Metadata",
-    "formMetadataMessage": "Define identifiers and labels for this form. Calls to external systems will include this metadata in their payloads.",
+    "formMetadataMessage": "Structured information to describe or explain this form to external systems. Calls to external systems will include this metadata in their payloads.",
     "formMetadataJsonError": "Form metadata must be valid JSON. Use double-quotes around attributes and values."
   },
   "formProfile": {

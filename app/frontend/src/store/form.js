@@ -62,8 +62,6 @@ const genInitialSubscribeDetails = () => ({
 const genInitialFormMetadata = () => ({
   id: null,
   formId: null,
-  headerName: null,
-  attributeName: null,
   metadata: {},
 });
 const genInitialForm = () => ({
