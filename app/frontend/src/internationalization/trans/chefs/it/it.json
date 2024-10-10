@@ -829,6 +829,7 @@
     "failedResSubmissn": "Risposta non riuscita dall'endpoint di invio. Codice di risposta: {status}",
     "errSubmittingForm": "Si è verificato un errore durante l'invio di questo modulo",
     "errorSavingFile": "Errore durante il salvataggio dei file. nome file: {fileName}. Errore: {error}",
+    "errorDeletingFile": "Errore durante l'eliminazione dei file. Nome file: {fileName}. Errore: {error}",
     "submittingDraftErrMsg": "Si è verificato un errore durante il salvataggio di una bozza",
     "submittingDraftConsErrMsg": "Errore durante il salvataggio della bozza. SubmissionId: {submissionId}. Errore: {error}",
     "formDraftAccessErrMsg": "L'invio richiesto è già stato inviato, reindirizzamento alla pagina Visualizza",

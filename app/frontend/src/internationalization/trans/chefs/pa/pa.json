@@ -829,6 +829,7 @@
     "failedResSubmissn": "ਸਪੁਰਦਗੀ ਅੰਤਮ ਬਿੰਦੂ ਤੋਂ ਅਸਫਲ ਜਵਾਬ। ਜਵਾਬ ਕੋਡ: {status}",
     "errSubmittingForm": "ਇਸ ਫਾਰਮ ਨੂੰ ਸਪੁਰਦ ਕਰਨ ਵਿੱਚ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
     "errorSavingFile": "ਫ਼ਾਈਲਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋਈ। ਫ਼ਾਈਲ ਦਾ ਨਾਮ: {fileName}। ਗਲਤੀ: {error}",
+    "errorDeletingFile": "ਫ਼ਾਈਲਾਂ ਨੂੰ ਮਿਟਾਉਣ ਵਿੱਚ ਗੜਬੜ ਹੋਈ। ਫ਼ਾਈਲ ਦਾ ਨਾਮ: {fileName}। ਗਲਤੀ: {error}",
     "submittingDraftErrMsg": "ਡਰਾਫਟ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਤਰੁੱਟੀ ਉਤਪੰਨ ਹੋਈ",
     "submittingDraftConsErrMsg": "ਡਰਾਫਟ ਸੁਰੱਖਿਅਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ। SubmissionId: {submissionId}। ਗਲਤੀ: {error}",
     "formDraftAccessErrMsg": "ਬੇਨਤੀ ਕੀਤੀ ਸਪੁਰਦਗੀ ਪਹਿਲਾਂ ਹੀ ਸਪੁਰਦ ਕੀਤੀ ਗਈ ਹੈ, ਵੇਖੋ ਪੰਨੇ 'ਤੇ ਰੀਡਾਇਰੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ",

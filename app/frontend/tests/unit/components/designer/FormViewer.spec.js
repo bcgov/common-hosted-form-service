@@ -1844,6 +1844,7 @@ describe('FormViewer.vue', () => {
       props: {
         formId: formId,
         submissionId: '123',
+        isDuplicate: false,
       },
       global: {
         provide: {
@@ -1856,7 +1857,7 @@ describe('FormViewer.vue', () => {
 
     await flushPromises();
 
-    wrapper.vm.yes();
+    await wrapper.vm.yes();
 
     expect(updateSubmissionSpy).toBeCalledTimes(1);
   });
@@ -2127,13 +2128,12 @@ describe('FormViewer.vue', () => {
       push,
     }));
     const updateSubmissionSpy = vi.spyOn(formService, 'updateSubmission');
-    updateSubmissionSpy.mockImplementationOnce(() => {
-      throw new Error();
-    });
+    updateSubmissionSpy.mockImplementationOnce(() => {});
     const wrapper = shallowMount(FormViewer, {
       props: {
         formId: formId,
         submissionId: '123',
+        isDuplicate: false,
       },
       global: {
         provide: {
@@ -2148,7 +2148,7 @@ describe('FormViewer.vue', () => {
 
     addNotificationSpy.mockReset();
 
-    wrapper.vm.saveDraftFromModal({});
+    await wrapper.vm.saveDraftFromModal({});
 
     expect(updateSubmissionSpy).toBeCalledTimes(1);
     expect(addNotificationSpy).toBeCalledTimes(0);
@@ -2241,7 +2241,7 @@ describe('FormViewer.vue', () => {
     expect(preventDefault).toBeCalledTimes(1);
   });
 
-  it('deleteFile will call fileServices deleteFile', async () => {
+  it('deleteFile will add the file to queuedDeleteFiles', async () => {
     const deleteFileSpy = vi.spyOn(fileService, 'deleteFile');
     deleteFileSpy.mockImplementation(() => {});
     const wrapper = shallowMount(FormViewer, {
@@ -2260,12 +2260,97 @@ describe('FormViewer.vue', () => {
 
     await flushPromises();
 
-    await wrapper.vm.deleteFile('asdf');
-    expect(deleteFileSpy).toBeCalledWith(undefined);
-    await wrapper.vm.deleteFile({ id: '123' });
-    expect(deleteFileSpy).toBeCalledWith('123');
-    await wrapper.vm.deleteFile({ data: { id: '123' } });
-    expect(deleteFileSpy).toBeCalledWith('123');
+    const onSuccess = vi.fn();
+
+    await wrapper.vm.deleteFile({}, { onSuccess: onSuccess });
+    expect(wrapper.vm.queuedDeleteFiles).toEqual([
+      {
+        file: {},
+        onSuccess: onSuccess,
+      },
+    ]);
+  });
+
+  it('deleteQueuedFiles will call deleteFile and then the files onSuccess function', async () => {
+    const deleteFileSpy = vi.spyOn(fileService, 'deleteFile');
+    deleteFileSpy.mockImplementation(() => {});
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    const onSuccess = vi.fn();
+
+    wrapper.vm.queuedDeleteFiles = [
+      {
+        file: {
+          id: '123',
+        },
+        onSuccess: onSuccess,
+      },
+    ];
+
+    await wrapper.vm.deleteQueuedFiles();
+    expect(deleteFileSpy).toBeCalledTimes(1);
+    expect(onSuccess).toBeCalledTimes(1);
+    expect(wrapper.vm.queuedDeleteFiles).toEqual([]);
+  });
+
+  it('deleteQueuedFiles will addNotification if an error occurs', async () => {
+    const deleteFileSpy = vi.spyOn(fileService, 'deleteFile');
+    deleteFileSpy.mockImplementation(() => {
+      throw new Error();
+    });
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    const onSuccess = vi.fn();
+
+    wrapper.vm.queuedDeleteFiles = [
+      {
+        file: {
+          id: '123',
+        },
+        onSuccess: onSuccess,
+      },
+    ];
+
+    await wrapper.vm.deleteQueuedFiles();
+    expect(deleteFileSpy).toBeCalledTimes(1);
+    expect(onSuccess).toBeCalledTimes(0);
+    expect(wrapper.vm.queuedDeleteFiles).toEqual([
+      {
+        file: {
+          id: '123',
+        },
+        onSuccess: onSuccess,
+      },
+    ]);
+    expect(addNotificationSpy).toBeCalledTimes(1);
   });
 
   it('getFile will call form stores downloadFile for json', async () => {
@@ -2336,7 +2421,7 @@ describe('FormViewer.vue', () => {
     expect(getDispositionSpy).toBeCalledTimes(1);
   });
 
-  it('uploadFile will call fileServices uploadFile', async () => {
+  it('uploadFile will add the file and config to queuedUploadFiles', async () => {
     const uploadFileSpy = vi.spyOn(fileService, 'uploadFile');
     uploadFileSpy.mockImplementation(() => {});
     const wrapper = shallowMount(FormViewer, {
@@ -2355,7 +2440,128 @@ describe('FormViewer.vue', () => {
 
     await flushPromises();
 
-    await wrapper.vm.uploadFile('this is a file object');
+    const onError = vi.fn();
+    const onUploaded = vi.fn();
+    const onUploadProgress = vi.fn();
+
+    await wrapper.vm.uploadFile(
+      {},
+      {
+        onError: onError,
+        onUploadProgress: onUploadProgress,
+        onUploaded: onUploaded,
+        headers: {},
+      }
+    );
+    expect(wrapper.vm.queuedUploadFiles).toEqual([
+      {
+        file: {},
+        config: {
+          onUploadProgress: onUploadProgress,
+          headers: {},
+        },
+        onUploaded: onUploaded,
+        onError: onError,
+      },
+    ]);
+  });
+
+  it('uploadQueuedFiles will call fileServices uploadFile', async () => {
+    const uploadFileSpy = vi.spyOn(fileService, 'uploadFile');
+    uploadFileSpy.mockImplementation(() => {});
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    const onError = vi.fn();
+    const onUploaded = vi.fn();
+    const onUploadProgress = vi.fn();
+
+    wrapper.vm.queuedUploadFiles = [
+      {
+        file: {},
+        config: {
+          onUploadProgress: onUploadProgress,
+          headers: {},
+        },
+        onError: onError,
+        onUploaded: onUploaded,
+      },
+    ];
+
+    await wrapper.vm.uploadQueuedFiles();
     expect(uploadFileSpy).toBeCalledTimes(1);
+    expect(onUploaded).toBeCalledTimes(1);
+    expect(wrapper.vm.queuedUploadFiles).toEqual([]);
+  });
+
+  it('uploadQueuedFiles will addNotification if an error is thrown', async () => {
+    const uploadFileSpy = vi.spyOn(fileService, 'uploadFile');
+    uploadFileSpy.mockImplementation(() => {
+      throw new Error();
+    });
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    const onError = vi.fn();
+    const onUploaded = vi.fn();
+    const onUploadProgress = vi.fn();
+
+    wrapper.vm.queuedUploadFiles = [
+      {
+        file: {
+          originalName: 'test.txt',
+        },
+        config: {
+          onUploadProgress: onUploadProgress,
+          headers: {},
+        },
+        onError: onError,
+        onUploaded: onUploaded,
+      },
+    ];
+
+    await wrapper.vm.uploadQueuedFiles();
+    expect(uploadFileSpy).toBeCalledTimes(1);
+    expect(onUploaded).toBeCalledTimes(0);
+    expect(wrapper.vm.queuedUploadFiles).toEqual([
+      {
+        file: {
+          originalName: 'test.txt',
+        },
+        config: {
+          onUploadProgress: onUploadProgress,
+          headers: {},
+        },
+        onError: onError,
+        onUploaded: onUploaded,
+      },
+    ]);
+    expect(addNotificationSpy).toBeCalledTimes(1);
   });
 });
