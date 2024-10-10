@@ -15,21 +15,34 @@ onMounted(async () => {
   jsonStr.value = JSON.stringify(form.value.formMetadata.metadata, null, 2);
 });
 
-function updateMetadata(v) {
+function toJSON(str) {
+  let result = null;
   try {
-    form.value.formMetadata.metadata = JSON.parse(v);
+    if (Object.prototype.toString.call(str) === '[object String]') {
+      let o = JSON.parse(str);
+      // JSON.parse can return values that are strings not objects...
+      if (Object.prototype.toString.call(o) === '[object Object]') {
+        result = o;
+      }
+    }
   } catch {
-    return false;
+    /* empty */
+  }
+  return result;
+}
+
+function updateMetadata(v) {
+  const o = toJSON(v);
+  if (o) {
+    form.value.formMetadata.metadata = JSON.parse(v);
   }
 }
 
 function formatJSON(focus) {
   if (!focus) {
-    try {
-      const t = JSON.parse(jsonStr.value);
-      jsonStr.value = JSON.stringify(t, null, 2);
-    } catch {
-      /* empty */
+    const o = toJSON(jsonStr.value);
+    if (o) {
+      jsonStr.value = JSON.stringify(o, null, 2);
     }
   }
 }
@@ -37,12 +50,11 @@ function formatJSON(focus) {
 /* c8 ignore start */
 const metadataRules = ref([
   (v) => {
-    try {
-      JSON.parse(v);
+    const o = toJSON(v);
+    if (o) {
       return true;
-    } catch {
-      return t('trans.formSettings.formMetadataJsonError');
     }
+    return t('trans.formSettings.formMetadataJsonError');
   },
 ]);
 /* c8 ignore stop */
