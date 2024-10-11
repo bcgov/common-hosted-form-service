@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-
+import { computed } from 'vue';
 import FormGeneralSettings from '~/components/designer/settings/FormGeneralSettings.vue';
 import FormAccessSettings from '~/components/designer/settings/FormAccessSettings.vue';
 import FormFunctionalitySettings from '~/components/designer/settings/FormFunctionalitySettings.vue';
@@ -20,13 +20,10 @@ defineProps({
 
 const { form, isFormPublished, isRTL } = storeToRefs(useFormStore());
 
-const eventStreamEnabled = computed(
-  () => {
-    const appStore = useAppStore();
-    return appStore.config?.features?.eventStreamService;
-  }
-);
-
+const eventStreamEnabled = computed(() => {
+  const appStore = useAppStore();
+  return appStore.config?.features?.eventStreamService;
+});
 </script>
 
 <template>
