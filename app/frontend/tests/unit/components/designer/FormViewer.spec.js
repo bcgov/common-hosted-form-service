@@ -13,7 +13,6 @@ import { fileService, formService, rbacService } from '~/services';
 import { useAppStore } from '~/store/app';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
-import { useAppStore } from '~/store/app';
 import { useNotificationStore } from '~/store/notification';
 import { FormPermissions, IdentityMode } from '~/utils/constants';
 import * as transformUtils from '~/utils/transformUtils';
@@ -51,7 +50,6 @@ describe('FormViewer.vue', () => {
   const appStore = useAppStore(pinia);
   const authStore = useAuthStore(pinia);
   const formStore = useFormStore(pinia);
-  const appStore = useAppStore(pinia);
   const notificationStore = useNotificationStore(pinia);
   const getProxyHeadersSpy = vi.spyOn(formService, 'getProxyHeaders');
   const readVersionSpy = vi.spyOn(formService, 'readVersion');

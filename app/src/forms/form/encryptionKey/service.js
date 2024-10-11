@@ -14,6 +14,36 @@ const service = {
     }));
   },
 
+  _initModel: (formId, data) => {
+    data.id = uuidv4();
+    data.formId = formId;
+    data.name = PRIVATE_EVENT_STREAM_NAME;
+  },
+
+  _update: async (existing, data, currentUser, transaction) => {
+    // only update if data has changed.
+    if (existing.algorithm != data.algorithm || existing.key != data.key) {
+      // yes... update.
+      await FormEncryptionKey.query(transaction)
+        .findById(existing.id)
+        .update({
+          ...data,
+          updatedBy: currentUser.usernameIdp,
+        });
+    }
+  },
+
+  _insert: async (data, currentUser, transaction) => {
+    if (data && data.algorithm && data.key) {
+      await FormEncryptionKey.query(transaction).insert({
+        ...data,
+        createdBy: currentUser.usernameIdp,
+        updatedBy: currentUser.usernameIdp,
+      });
+      return data.id;
+    }
+  },
+
   upsertForEventStreamConfig: async (formId, data, currentUser, transaction) => {
     // special case for forms. they have only one event stream configuration
     // that requires an encryption key if it has private streams.
@@ -25,33 +55,14 @@ const service = {
     try {
       trx = externalTrx ? transaction : await FormEncryptionKey.startTransaction();
       const existing = await FormEncryptionKey.query(trx).modify('findByFormIdAndName', formId, PRIVATE_EVENT_STREAM_NAME).first();
-
       if (existing) {
         id = existing.id;
-        // do we need to update?
-        if (existing.algorithm != data.algorithm || existing.key != data.key) {
-          // yes... update.
-          await FormEncryptionKey.query(trx)
-            .findById(existing.id)
-            .update({
-              ...data,
-              updatedBy: currentUser.usernameIdp,
-            });
-        }
+        await service._update(existing, data, currentUser, trx);
       } else {
         // add a new configuration.
-        if (data && !data.algorithm && !data.key) return; // no encryption key to insert
-        id = uuidv4();
-        data.id = id;
-        data.formId = formId;
-        data.name = PRIVATE_EVENT_STREAM_NAME;
-        await FormEncryptionKey.query(trx).insert({
-          ...data,
-          createdBy: currentUser.usernameIdp,
-          updatedBy: currentUser.usernameIdp,
-        });
+        service._initModel(formId, data);
+        id = await service._insert(data, currentUser, trx); //returns id if inserted.
       }
-
       if (!externalTrx) trx.commit();
       if (id) {
         return FormEncryptionKey.query(trx).findById(id);
