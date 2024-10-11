@@ -21,13 +21,6 @@ export default {
         'This will be the value for this field, before user interaction.',
       input: true,
     },
-    {
-      label: 'How many Markers per Submission?',
-      key: 'numPoints',
-      type: 'simplenumber',
-      defaultValue: 1,
-      input: true,
-    },
 
     {
       label: 'Default Zoom Level',

@@ -1,7 +1,10 @@
 import * as L from 'leaflet';
+import * as GeoSearch from 'leaflet-geosearch';
+import { BCGeocoderProvider } from '../services/BCGeocoderProvider';
 import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw-src.css';
+import 'leaflet-geosearch/dist/geosearch.css';
 
 const DEFAULT_MAP_LAYER_URL =
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -26,6 +29,7 @@ interface MapServiceOptions {
   onDrawnItemsChange: (items: any) => void; // Support both single and multiple items
   viewMode?: boolean;
   myLocation?: boolean;
+  geocoder: any;
 }
 
 class MapService {
@@ -145,6 +149,24 @@ class MapService {
       const myLocationControl = new myLocationButton();
       myLocationControl.addTo(map);
     }
+
+    //Geocoder Control
+    // const geoControl = new GeoSearch.GeoSearchControl({
+
+    // })
+    const geocoderControl = new (GeoSearch.GeoSearchControl as any)({
+      provider: new BCGeocoderProvider(),
+      style: 'bar',
+      position: 'bottomleft',
+    });
+
+    // const geocoderControl = new (GeoSearch.GeoSearchControl as any)({
+    //   provider: new GeoSearch.OpenStreetMapProvider(),
+    //   style: 'bar',
+    //   position: 'bottomleft',
+    // });
+
+    map.addControl(geocoderControl);
 
     // Add Drawing Controllers
     if (!readOnlyMap) {
