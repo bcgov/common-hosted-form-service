@@ -20,7 +20,6 @@ vi.mock('vue-router', () => ({
 
 describe('Create.vue', () => {
   const onBeforeRouteLeaveSpy = vi.spyOn(VueRouter, 'onBeforeRouteLeave');
-  const onFormLoad = vi.fn();
   const mockWindowConfirm = vi.spyOn(window, 'confirm');
   const pinia = createTestingPinia();
   setActivePinia(pinia);
@@ -61,9 +60,6 @@ describe('Create.vue', () => {
           FormDisclaimer: true,
           FormDesigner: {
             name: 'FormDesigner',
-            methods: {
-              onFormLoad,
-            },
             template: '<div class="form-designer-stub"><slot /></div>',
           },
           VForm: {
@@ -134,9 +130,6 @@ describe('Create.vue', () => {
           FormDisclaimer: true,
           FormDesigner: {
             name: 'FormDesigner',
-            methods: {
-              onFormLoad,
-            },
             template: '<div class="form-designer-stub"><slot /></div>',
           },
           VStepper: {
@@ -197,9 +190,6 @@ describe('Create.vue', () => {
           FormDisclaimer: true,
           FormDesigner: {
             name: 'FormDesigner',
-            methods: {
-              onFormLoad,
-            },
             template: '<div class="form-designer-stub"><slot /></div>',
           },
           VStepper: {
@@ -265,9 +255,6 @@ describe('Create.vue', () => {
           FormDisclaimer: true,
           FormDesigner: {
             name: 'FormDesigner',
-            methods: {
-              onFormLoad,
-            },
             template: '<div class="form-designer-stub"><slot /></div>',
           },
           VStepper: {

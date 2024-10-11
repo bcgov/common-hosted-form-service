@@ -1,39 +1,32 @@
-<script>
-import { mapState, mapWritableState } from 'pinia';
-import FormAccessSettings from '~/components/designer/settings/FormAccessSettings.vue';
+<script setup>
+import { storeToRefs } from 'pinia';
+
 import FormGeneralSettings from '~/components/designer/settings/FormGeneralSettings.vue';
+import FormAccessSettings from '~/components/designer/settings/FormAccessSettings.vue';
 import FormFunctionalitySettings from '~/components/designer/settings/FormFunctionalitySettings.vue';
-import FormScheduleSettings from '~/components/designer/settings/FormScheduleSettings.vue';
 import FormSubmissionSettings from '~/components/designer/settings/FormSubmissionSettings.vue';
+import FormScheduleSettings from '~/components/designer/settings/FormScheduleSettings.vue';
 import FormEventStreamSettings from '~/components/designer/settings/FormEventStreamSettings.vue';
 
 import { useAppStore } from '~/store/app';
 import { useFormStore } from '~/store/form';
 
-export default {
-  components: {
-    FormAccessSettings,
-    FormGeneralSettings,
-    FormFunctionalitySettings,
-    FormScheduleSettings,
-    FormSubmissionSettings,
-    FormEventStreamSettings,
+defineProps({
+  disabled: {
+    type: Boolean,
+    default: false,
   },
-  props: {
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  computed: {
-    ...mapWritableState(useFormStore, ['form']),
-    ...mapState(useFormStore, ['isFormPublished', 'isRTL']),
-    eventStreamEnabled() {
-      const appStore = useAppStore();
-      return appStore.config?.features?.eventStreamService;
-    },
-  },
-};
+});
+
+const { form, isFormPublished, isRTL } = storeToRefs(useFormStore());
+
+const eventStreamEnabled = computed(
+  () => {
+    const appStore = useAppStore();
+    return appStore.config?.features?.eventStreamService;
+  }
+);
+
 </script>
 
 <template>

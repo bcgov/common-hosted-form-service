@@ -16,7 +16,6 @@ vi.mock('vue-router', () => ({
 }));
 
 describe('Design.vue', () => {
-  const onFormLoad = vi.fn();
   const mockWindowConfirm = vi.spyOn(window, 'confirm');
   const pinia = createTestingPinia();
   setActivePinia(pinia);
@@ -45,9 +44,6 @@ describe('Design.vue', () => {
           },
           FormDesigner: {
             name: 'FormDesigner',
-            methods: {
-              onFormLoad,
-            },
             template: '<div class="form-designer-stub"><slot /></div>',
           },
         },

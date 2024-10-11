@@ -1,75 +1,65 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useAdminStore } from '~/store/admin';
 import { useFormStore } from '~/store/form';
 
-export default {
-  setup() {
-    const { t, locale } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
 
-    return { t, locale };
+const showDeleted = ref(false);
+const loading = ref(false);
+const search = ref('');
+
+const adminStore = useAdminStore();
+const formStore = useFormStore();
+
+const { formList } = storeToRefs(adminStore);
+const { isRTL } = storeToRefs(formStore);
+
+const calcHeaders = computed(() =>
+  headers.value.filter((x) => x.key !== 'updatedAt' || showDeleted.value)
+);
+
+const headers = computed(() => [
+  {
+    title: t('trans.adminFormsTable.formTitle'),
+    align: 'start',
+    key: 'name',
   },
-  data() {
-    return {
-      showDeleted: false,
-      loading: false,
-      search: '',
-    };
+  {
+    title: t('trans.adminFormsTable.created'),
+    align: 'start',
+    key: 'createdAt',
   },
-  computed: {
-    ...mapState(useAdminStore, ['formList']),
-    ...mapState(useFormStore, ['isRTL']),
-    calcHeaders() {
-      return this.headers.filter(
-        (x) => x.key !== 'updatedAt' || this.showDeleted
-      );
-    },
-    headers() {
-      return [
-        {
-          title: this.$t('trans.adminFormsTable.formTitle'),
-          align: 'start',
-          key: 'name',
-        },
-        {
-          title: this.$t('trans.adminFormsTable.created'),
-          align: 'start',
-          key: 'createdAt',
-        },
-        {
-          title: this.$t('trans.adminFormsTable.deleted'),
-          align: 'start',
-          key: 'updatedAt',
-        },
-        {
-          title: this.$t('trans.adminFormsTable.actions'),
-          align: 'end',
-          key: 'actions',
-          filterable: false,
-          sortable: false,
-        },
-      ];
-    },
+  {
+    title: t('trans.adminFormsTable.deleted'),
+    align: 'start',
+    key: 'updatedAt',
   },
-  watch: {
-    showDeleted() {
-      this.refreshForms();
-    },
+  {
+    title: t('trans.adminFormsTable.actions'),
+    align: 'end',
+    key: 'actions',
+    filterable: false,
+    sortable: false,
   },
-  async mounted() {
-    this.refreshForms();
-  },
-  methods: {
-    ...mapActions(useAdminStore, ['getForms']),
-    async refreshForms() {
-      this.loading = true;
-      await this.getForms(!this.showDeleted);
-      this.loading = false;
-    },
-  },
-};
+]);
+
+watch(showDeleted, async () => {
+  await refreshForms();
+});
+
+onMounted(async () => {
+  await refreshForms();
+});
+
+async function refreshForms() {
+  loading.value = true;
+  await adminStore.getForms(!showDeleted.value);
+  loading.value = false;
+}
 </script>
 
 <template>
