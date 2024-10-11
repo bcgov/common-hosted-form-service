@@ -1,33 +1,26 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { useAppStore } from '~/store/app';
 import { useAdminStore } from '~/store/admin';
 
-export default {
-  props: {
-    userId: {
-      type: String,
-      required: true,
-    },
-  },
-  setup() {
-    const { locale } = useI18n({ useScope: 'global' });
+const { locale } = useI18n({ useScope: 'global' });
 
-    return { locale };
+const properties = defineProps({
+  userId: {
+    type: String,
+    required: true,
   },
-  computed: {
-    ...mapState(useAppStore, ['config']),
-    ...mapState(useAdminStore, ['user']),
-  },
-  async mounted() {
-    await this.readUser(this.userId);
-  },
-  methods: {
-    ...mapActions(useAdminStore, ['readUser']),
-  },
-};
+});
+
+const adminStore = useAdminStore();
+
+const { user } = storeToRefs(adminStore);
+
+onMounted(async () => {
+  await adminStore.readUser(properties.userId);
+});
 </script>
 
 <template>

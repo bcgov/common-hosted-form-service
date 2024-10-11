@@ -1,51 +1,39 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
 import VueJsonPretty from 'vue-json-pretty';
 import { useI18n } from 'vue-i18n';
+import { onBeforeMount, ref } from 'vue';
 
 import BaseCopyToClipboard from '~/components/base/BaseCopyToClipboard.vue';
 import { rbacService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useNotificationStore } from '~/store/notification';
 
-export default {
-  components: {
-    BaseCopyToClipboard,
-    VueJsonPretty,
-  },
-  setup() {
-    const { t, locale } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
 
-    return { t, locale };
-  },
-  data() {
-    return {
-      apiRes: '',
-    };
-  },
-  computed: {
-    ...mapState(useAuthStore, ['fullName', 'token', 'tokenParsed', 'userName']),
-  },
-  created() {
-    this.getUser();
-  },
-  methods: {
-    ...mapActions(useNotificationStore, ['addNotification']),
-    async getUser() {
-      try {
-        const user = await rbacService.getCurrentUser();
-        this.apiRes = user.data;
-      } catch (error) {
-        this.addNotification({
-          text: this.$t('trans.developer.notificationMsg'),
-          consoleError:
-            this.$t('trans.developer.notificationConsErr') +
-            `: ${error.message}`,
-        });
-      }
-    },
-  },
-};
+const apiRes = ref('');
+
+const authStore = useAuthStore();
+const notificationStore = useNotificationStore();
+
+const { fullName, token, tokenParsed, userName } = storeToRefs(authStore);
+
+onBeforeMount(async () => {
+  await getUser();
+});
+
+async function getUser() {
+  try {
+    const user = await rbacService.getCurrentUser();
+    apiRes.value = user.data;
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.developer.notificationMsg'),
+      consoleError:
+        t('trans.developer.notificationConsErr') + `: ${error.message}`,
+    });
+  }
+}
 </script>
 
 <template>

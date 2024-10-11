@@ -20,3 +20,14 @@ export function exportFormSchema(formName, formSchema, snake) {
 
   return { snek };
 }
+
+export function importFormSchemaFromFile(file) {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      resolve(fileReader.result);
+    };
+    fileReader.onerror = reject;
+    fileReader.readAsText(file);
+  });
+}
