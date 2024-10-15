@@ -97,7 +97,6 @@ it('Verify draft submission', () => {
     cy.waitForLoad();
     cy.get('button').contains('Submit').should('be.visible');
     cy.waitForLoad();
-    cy.waitForLoad();
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('Alex');
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
