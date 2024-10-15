@@ -1,79 +1,72 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
-import BaseDialog from '~/components/base/BaseDialog.vue';
 import { checkFormManage, checkSubmissionView } from '~/utils/permissionUtils';
 
-export default {
-  components: {
-    BaseDialog,
-  },
-  setup() {
-    const { t, locale } = useI18n({ useScope: 'global' });
+const { locale, t } = useI18n({ useScope: 'global' });
 
-    return { t, locale };
+const formId = ref(null);
+const showDescriptionDialog = ref(false);
+const loading = ref(true);
+const formDescription = ref(null);
+const search = ref(null);
+const sortBy = ref([{ key: 'name', order: 'asc' }]);
+
+const formStore = useFormStore();
+const idpStore = useIdpStore();
+
+const { formList, isRTL } = storeToRefs(formStore);
+const { user } = storeToRefs(useAuthStore());
+
+const headers = computed(() => [
+  {
+    title: t('trans.formsTable.formTitle'),
+    align: 'start',
+    key: 'name',
+    width: '1%',
   },
-  data() {
-    return {
-      formId: null,
-      showDescriptionDialog: false,
-      loading: true,
-      formDescription: null,
-      search: null,
-      sortBy: [{ key: 'name', order: 'asc' }],
-    };
+  {
+    title: t('trans.formsTable.action'),
+    align: 'end',
+    key: 'actions',
+    filterable: false,
+    sortable: false,
+    width: '1%',
   },
-  computed: {
-    ...mapState(useFormStore, ['formList', 'isRTL']),
-    ...mapState(useAuthStore, ['user']),
-    ...mapState(useIdpStore, ['isPrimary']),
-    headers() {
-      return [
-        {
-          title: this.$t('trans.formsTable.formTitle'),
-          align: 'start',
-          key: 'name',
-          width: '1%',
-        },
-        {
-          title: this.$t('trans.formsTable.action'),
-          align: 'end',
-          key: 'actions',
-          filterable: false,
-          sortable: false,
-          width: '1%',
-        },
-      ];
-    },
-    canCreateForm() {
-      return this.isPrimary(this.user.idp?.code);
-    },
-    filteredFormList() {
-      return this.formList.filter(
-        (f) =>
-          checkFormManage(f.permissions) || checkSubmissionView(f.permissions)
-      );
-    },
-  },
-  async mounted() {
-    await this.getFormsForCurrentUser();
-    this.loading = false;
-  },
-  methods: {
-    ...mapActions(useFormStore, ['getFormsForCurrentUser']),
-    checkFormManage: checkFormManage,
-    checkSubmissionView: checkSubmissionView,
-    onDescriptionClick(fId, fDescription) {
-      this.formId = fId;
-      this.formDescription = fDescription;
-      this.showDescriptionDialog = true;
-    },
-  },
-};
+]);
+
+const canCreateForm = computed(() =>
+  idpStore.isPrimary(user?.value?.idp?.code)
+);
+
+const filteredFormList = computed(() =>
+  formList.value.filter(
+    (f) => checkFormManage(f.permissions) || checkSubmissionView(f.permissions)
+  )
+);
+
+onMounted(async () => {
+  await formStore.getFormsForCurrentUser();
+  loading.value = false;
+});
+
+function onDescriptionClick(fId, fDescription) {
+  formId.value = fId;
+  formDescription.value = fDescription;
+  showDescriptionDialog.value = true;
+}
+
+defineExpose({
+  formId,
+  formDescription,
+  onDescriptionClick,
+  showDescriptionDialog,
+});
 </script>
 
 <template>

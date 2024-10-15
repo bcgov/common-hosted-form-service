@@ -1,4 +1,4 @@
-import { flushPromises, mount } from '@vue/test-utils';
+import { flushPromises, mount, shallowMount } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import { setActivePinia } from 'pinia';
 import { expect, vi } from 'vitest';
@@ -39,5 +39,39 @@ describe('Dashboard.vue', () => {
     for (let [title] of Object.entries(FormComponentProactiveHelpValues)) {
       expect(wrapper.html()).toContain(title);
     }
+  });
+
+  it('extractGroupComponents should extract group components from FormComponentProactiveHelpValues', async () => {
+    const wrapper = shallowMount(FormComponentsProactiveHelp, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          GeneralLayout: true,
+        },
+      },
+    });
+
+    await flushPromises();
+
+    expect(wrapper.vm.extractGroupComponents('Basic Layout')).toEqual([
+      {
+        componentName: 'Text/Images',
+      },
+      {
+        componentName: 'Columns - 2',
+      },
+      {
+        componentName: 'Columns - 3',
+      },
+      {
+        componentName: 'Columns - 4',
+      },
+      {
+        componentName: 'Tabs',
+      },
+      {
+        componentName: 'Panel',
+      },
+    ]);
   });
 });

@@ -112,9 +112,7 @@ describe('Form Designer', () => {
             cy.get(rem2).should("not.be.enabled");
             cy.get(rem3).should("be.enabled");
             cy.get(rem4).should("not.be.enabled");
-            cy.get(rem5).should("be.enabled");
-        
-          
+            cy.get(rem5).should("be.enabled");      
     });
     cy.get('[data-test="canEditForm"]').click();
     //Check team management functionality for public forms
@@ -142,29 +140,20 @@ describe('Form Designer', () => {
     cy.get('[data-test="TeamManagerRoleCheckbox"]').should('be.visible');
     cy.get('[data-test="ApproverRoleCheckbox"]').click({multiple:true,force:true});
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-    cy.waitForLoad();
-    cy.waitForLoad();
+    cy.wait(2000);
       //Logout to submit the public form
     cy.get('#logoutButton > .v-btn__content > span').click();
         //Form submission and verification for public forms
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
-    cy.waitForLoad();
-    cy.waitForLoad();
-    cy.waitForLoad();
+    cy.wait(2000);
     cy.get('button').contains('Submit').should('be.visible');
-    cy.waitForLoad();
-    cy.waitForLoad();
+    cy.wait(2000);
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('Alex');
          //form submission
     cy.get('button').contains('Submit').click();
-    cy.waitForLoad();
-        //cy.get('[data-test="continue-btn-continue"]').click({force: true});
-    cy.waitForLoad();
-    cy.waitForLoad();
-    cy.waitForLoad();
-    cy.waitForLoad();
-    cy.waitForLoad();
+    //cy.get('[data-test="continue-btn-continue"]').click({force: true});
+    cy.wait(2000);
     cy.get('label').contains('Text Field').should('be.visible');
     cy.get('label').contains('Text Field').should('be.visible');
     cy.location('pathname').should('eq', `/${depEnv}/form/success`);
@@ -176,7 +165,6 @@ describe('Form Designer', () => {
           }
     else
           {
-             
               cy.visit(`/${depEnv}`);
               
           }
@@ -187,8 +175,7 @@ describe('Form Designer', () => {
     cy.get('#user').type(username);
     cy.get('#password').type(password);
     cy.get('.btn').click();
-    cy.waitForLoad();
-    cy.waitForLoad();
+    cy.wait(2000);
         //view submission
         
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
@@ -223,20 +210,18 @@ describe('Form Designer', () => {
       cy.get(rem).type('some notes');
       
       
-      });
-      //Verify  submitted by label is public
+    });
+    //Verify  submitted by label is public
     cy.get('p').contains('public').should('be.visible');
     //Edit submission data for public form
     cy.get('.mdi-pencil').click();
-        //check visibility of cancel button
+    //check visibility of cancel button
     cy.get('.v-col-2 > .v-btn').should('be.visible');
     cy.get('button').contains('Submit').should('be.visible');
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('Smith');
     cy.get('button').contains('Submit').click();
-    cy.waitForLoad();
-    cy.waitForLoad();
-    cy.waitForLoad();
+    cy.wait(2000);
     //Verify Edit History Panel
     cy.get('.mdi-history').click();
     cy.get('.v-data-table__tr> :nth-child(1)').contains('CHEFSTST@idir').should('be.visible');
@@ -244,9 +229,7 @@ describe('Form Designer', () => {
     cy.get('.mdi-list-box-outline').click();
     cy.waitForLoad();
     cy.get('.mdi-cog').click();
-    
     //Delete form after test run
-      
     cy.waitForLoad();
     cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
     cy.get('[data-test="continue-btn-continue"]').click();
