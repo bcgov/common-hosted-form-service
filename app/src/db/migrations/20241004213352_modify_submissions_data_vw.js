@@ -38,7 +38,7 @@ exports.up = function (knex) {
      LEFT JOIN "user" u ON fsu."userId" = u.id
      JOIN (
     SELECT form_submission_status."submissionId", form_submission_status."createdAt", ROW_NUMBER() OVER (PARTITION BY form_submission_status."submissionId" ORDER BY form_submission_status."createdAt" DESC) AS rn
-    FROM form_submission_status
+    FROM form_submission_status where form_submission_status.code='SUBMITTED'
 ) fss
 ON s."submissionId" = fss."submissionId" WHERE fss.rn = 1
   ORDER BY s."createdAt", s."formName", s.version;`)
