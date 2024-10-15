@@ -55,19 +55,19 @@ formStore.resetForm();
         <v-stepper-item
           :title="$t('trans.baseStepper.setUpForm')"
           value="1"
-          :complete="step == 1"
+          :complete="step == 0"
         />
         <v-divider />
         <v-stepper-item
           :title="$t('trans.baseStepper.designForm')"
           value="2"
-          :complete="step > 1"
+          :complete="step > 0"
         />
         <v-divider />
         <v-stepper-item
           :title="$t('trans.baseStepper.manageForm')"
           value="3"
-          :complete="step > 2"
+          :complete="step > 1"
         />
       </v-stepper-header>
       <v-stepper-window>

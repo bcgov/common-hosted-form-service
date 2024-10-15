@@ -1,7 +1,7 @@
-import { flushPromises, mount } from '@vue/test-utils';
+import { flushPromises, mount, shallowMount } from '@vue/test-utils';
 import { createTestingPinia } from '@pinia/testing';
 import { setActivePinia } from 'pinia';
-import { beforeEach, expect } from 'vitest';
+import { beforeEach, expect, vi } from 'vitest';
 
 import AdministerForm from '~/components/admin/AdministerForm.vue';
 import { useAdminStore } from '~/store/admin';
@@ -12,20 +12,19 @@ describe('AdministerForm.vue', () => {
   setActivePinia(pinia);
   const adminStore = useAdminStore(pinia);
 
+  const readFormSpy = vi.spyOn(adminStore, 'readForm');
+  const readApiDetailsSpy = vi.spyOn(adminStore, 'readApiDetails');
+  const readRolesSpy = vi.spyOn(adminStore, 'readRoles');
+
   beforeEach(() => {
     adminStore.$reset();
+
+    readFormSpy.mockReset();
+    readApiDetailsSpy.mockReset();
+    readRolesSpy.mockReset();
   });
 
   it('renders', async () => {
-    adminStore.readForm.mockImplementation(() => {
-      return {};
-    });
-    adminStore.readApiDetails.mockImplementation(() => {
-      return {};
-    });
-    adminStore.readRoles.mockImplementation(() => {
-      return [];
-    });
     adminStore.form = {
       name: 'tehForm',
       versions: [],
@@ -42,5 +41,45 @@ describe('AdministerForm.vue', () => {
 
     await flushPromises();
     expect(wrapper.text()).toContain('tehForm');
+  });
+
+  it('deleteKey calls deleteApiKey', async () => {
+    const wrapper = shallowMount(AdministerForm, {
+      props: {
+        formId: 'f',
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {},
+      },
+    });
+
+    await flushPromises();
+
+    const deleteApiKeySpy = vi.spyOn(adminStore, 'deleteApiKey');
+    deleteApiKeySpy.mockImplementation(() => {});
+
+    await wrapper.vm.deleteKey();
+    expect(deleteApiKeySpy).toBeCalledTimes(1);
+  });
+
+  it('restore calls restoreForm', async () => {
+    const wrapper = shallowMount(AdministerForm, {
+      props: {
+        formId: 'f',
+      },
+      global: {
+        plugins: [pinia],
+        stubs: {},
+      },
+    });
+
+    await flushPromises();
+
+    const restoreFormSpy = vi.spyOn(adminStore, 'restoreForm');
+    restoreFormSpy.mockImplementation(() => {});
+
+    await wrapper.vm.restore();
+    expect(restoreFormSpy).toBeCalledTimes(1);
   });
 });

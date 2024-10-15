@@ -1,9 +1,8 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { onMounted } from 'vue';
-import { computed, ref } from 'vue';
-import { nextTick } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
+
 import FormDesigner from '~/components/designer/FormDesigner.vue';
 import { useFormStore } from '~/store/form';
 import { AppPermissions } from '~/utils/constants';
@@ -42,9 +41,6 @@ const APP_PERMS = computed(() => AppPermissions);
 
 onMounted(async () => {
   await formStore.listFCProactiveHelp();
-  nextTick(() => {
-    onFormLoad();
-  });
 });
 
 onBeforeRouteLeave((_to, _from, next) => {
@@ -56,10 +52,6 @@ onBeforeRouteLeave((_to, _from, next) => {
       )
     : next();
 });
-
-function onFormLoad() {
-  if (formDesigner.value) formDesigner.value.onFormLoad();
-}
 </script>
 
 <template>

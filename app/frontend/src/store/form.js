@@ -1,3 +1,4 @@
+import { useLocalStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { i18n } from '~/internationalization';
 import {
@@ -116,6 +117,7 @@ export const useFormStore = defineStore('form', {
     subscriptionData: genInitialSubscribeDetails(),
     totalSubmissions: 0,
     userFormPreferences: {},
+    mySubmissionPreferences: useLocalStorage('mySubmissionPreferences', {}),
     version: {},
     userLabels: [],
   }),
