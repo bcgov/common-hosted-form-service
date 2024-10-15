@@ -106,5 +106,14 @@ export default {
       input: true,
       defaultValue: true,
     },
+    {
+      label: 'Enable BC Address Autocomplete',
+      description:
+        'This allows for the user to enter an address and have results appear in a dropdown. The user can then select the result which fits best and have the map center on that location',
+      key: 'bcGeocoder',
+      type: 'simplecheckboxadvanced',
+      input: true,
+      defaultValue: true,
+    },
   ],
 };

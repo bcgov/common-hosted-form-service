@@ -29,7 +29,7 @@ interface MapServiceOptions {
   onDrawnItemsChange: (items: any) => void; // Support both single and multiple items
   viewMode?: boolean;
   myLocation?: boolean;
-  geocoder: any;
+  bcGeocoder: boolean;
 }
 
 class MapService {
@@ -86,6 +86,7 @@ class MapService {
       readOnlyMap,
       viewMode,
       myLocation,
+      bcGeocoder,
     } = options;
 
     if (drawOptions.rectangle) {
@@ -150,23 +151,20 @@ class MapService {
       myLocationControl.addTo(map);
     }
 
-    //Geocoder Control
-    // const geoControl = new GeoSearch.GeoSearchControl({
-
-    // })
-    const geocoderControl = new (GeoSearch.GeoSearchControl as any)({
-      provider: new BCGeocoderProvider(),
-      style: 'bar',
-      position: 'bottomleft',
-    });
-
-    // const geocoderControl = new (GeoSearch.GeoSearchControl as any)({
-    //   provider: new GeoSearch.OpenStreetMapProvider(),
-    //   style: 'bar',
-    //   position: 'bottomleft',
-    // });
-
-    map.addControl(geocoderControl);
+    if (bcGeocoder) {
+      const geocoderControl = new (GeoSearch.GeoSearchControl as any)({
+        provider: new BCGeocoderProvider(),
+        style: 'bar',
+        position: 'bottomleft',
+      });
+      map.addControl(geocoderControl);
+      map.on('geosearch/showlocation', (e) => {
+        L.popup()
+          .setLatLng([(e as any).location.y, (e as any).location.x])
+          .setContent(`${(e as any).location.label}`)
+          .openOn(map);
+      });
+    }
 
     // Add Drawing Controllers
     if (!readOnlyMap) {

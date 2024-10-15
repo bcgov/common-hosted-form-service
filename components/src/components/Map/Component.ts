@@ -91,6 +91,7 @@ export default class Component extends (FieldComponent as any) {
       center,
       defaultValue,
       myLocation,
+      bcGeocoder,
     } = this.component;
 
     const { readOnly: viewMode } = this.options;
@@ -114,6 +115,7 @@ export default class Component extends (FieldComponent as any) {
       onDrawnItemsChange: this.saveDrawnItems.bind(this),
       viewMode,
       myLocation,
+      bcGeocoder,
     });
 
     // Load existing data if available
