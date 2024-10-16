@@ -42,7 +42,7 @@ export default class Component extends (FieldComponent as any) {
 
   render() {
     return super.render(
-      `<div id="map-${this.componentID}" style="height:400px; z-index:1;"></div>`
+      `<div id="map-${this.componentID}" style="height:400px; z-index:1;"> </div>`
     );
   }
 
@@ -57,13 +57,19 @@ export default class Component extends (FieldComponent as any) {
     const form = document.getElementsByClassName('formio');
 
     const drawOptions = {
-      marker: false,
-      circlemarker: false,
-      polygon: false,
-      polyline: false,
-      circle: false,
       rectangle: null,
+      circle: false,
+      polyline: false,
+      polygon: false,
+      circlemarker: false,
+      marker: false,
     };
+    // marker: false,
+    // circlemarker: false,
+    // polygon: false,
+    // polyline: false,
+    // circle: false,
+    // rectangle: null,
     // set marker type from user choice
     if (this.component.markerType) {
       for (const [key, value] of Object.entries(this.component.markerType)) {
@@ -85,6 +91,7 @@ export default class Component extends (FieldComponent as any) {
       center,
       defaultValue,
       myLocation,
+      bcGeocoder,
     } = this.component;
 
     const { readOnly: viewMode } = this.options;
@@ -108,6 +115,7 @@ export default class Component extends (FieldComponent as any) {
       onDrawnItemsChange: this.saveDrawnItems.bind(this),
       viewMode,
       myLocation,
+      bcGeocoder,
     });
 
     // Load existing data if available

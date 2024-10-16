@@ -21,13 +21,6 @@ export default {
         'This will be the value for this field, before user interaction.',
       input: true,
     },
-    {
-      label: 'How many Markers per Submission?',
-      key: 'numPoints',
-      type: 'simplenumber',
-      defaultValue: 1,
-      input: true,
-    },
 
     {
       label: 'Default Zoom Level',
@@ -109,6 +102,15 @@ export default {
       description:
         'This allows for the user to center the map on their location.',
       key: 'myLocation',
+      type: 'simplecheckboxadvanced',
+      input: true,
+      defaultValue: true,
+    },
+    {
+      label: 'Enable BC Address Autocomplete',
+      description:
+        'This allows for the user to enter an address and have results appear in a dropdown. The user can then select the result which fits best and have the map center on that location',
+      key: 'bcGeocoder',
       type: 'simplecheckboxadvanced',
       input: true,
       defaultValue: true,
