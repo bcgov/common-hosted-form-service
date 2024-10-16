@@ -71,7 +71,7 @@ Currently, `IDIR` has no data in `extra`.
   formAccessSettings: 'idim',
   addTeamMemberSearch: {
     text: {
-      minLength: 6,
+      minLength: 4,
       message: 'trans.manageSubmissionUsers.searchInputLength',
     },
     email: {

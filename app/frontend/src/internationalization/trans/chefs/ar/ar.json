@@ -552,7 +552,7 @@
     "sentUninvitedEmailTo": "أرسل بريدًا إلكترونيًا غير مدعو إلى",
     "updateUserErrMsg": "حدث خطأ أثناء محاولة تحديث المستخدمين لهذا الإرسال.",
     "updateUserConsoleErrMsg": "خطأ في تعيين أذونات المستخدم. Sub: {submitId} المستخدم: {userId} خطأ: {error}",
-    "searchInputLength": "يجب أن يكون إدخال البحث عن اسم المستخدم / البريد الإلكتروني BCeID أكبر من 6 أحرف.",
+    "searchInputLength": "يجب أن يكون إدخال البحث لاسم المستخدم/البريد الإلكتروني BCeID أكبر من 4 أحرف.",
     "exactBCEIDSearch": "يجب أن تكون عمليات البحث في البريد الإلكتروني عن BCeID دقيقة.",
     "getUsersErrMsg": "خطأ في الحصول على المستخدمين: {error}",
     "exactEmailOrUsername": "أدخل البريد الإلكتروني أو اسم المستخدم بالضبط.",

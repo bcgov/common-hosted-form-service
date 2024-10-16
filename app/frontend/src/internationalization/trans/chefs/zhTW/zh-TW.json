@@ -552,7 +552,7 @@
     "sentUninvitedEmailTo": "發送了未經邀請的電子郵件至",
     "updateUserErrMsg": "嘗試更新此提交的用戶時出錯。",
     "updateUserConsoleErrMsg": "設置用戶權限時出錯。子：{submissionId} 用戶：{userId} 錯誤：{error}",
-    "searchInputLength": "BCeID 用戶名/電子郵件的搜索輸入必須大於 6 個字符。",
+    "searchInputLength": "BCeID 用戶名/電子郵件的搜索輸入必須大於 4 個字符。",
     "exactBCEIDSearch": "BCeID 的電子郵件搜索必須準確。",
     "getUsersErrMsg": "獲取用戶時出錯：{error}",
     "exactEmailOrUsername": "輸入準確的電子郵件或用戶名。",

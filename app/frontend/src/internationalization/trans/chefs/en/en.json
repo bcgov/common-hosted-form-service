@@ -598,7 +598,7 @@
     "sentUninvitedEmailTo": "Sent uninvited email to",
     "updateUserErrMsg": "An error occurred while trying to update users for this submission.",
     "updateUserConsoleErrMsg": "Error setting user permissions. Sub: {submissionId} User: {userId} Error: {error}",
-    "searchInputLength": "Search input for BCeID username/email must be greater than 6 characters.",
+    "searchInputLength": "Search input for BCeID username/email must be greater than 4 characters.",
     "exactBCEIDSearch": "Email searches for BCeID must be exact.",
     "getUsersErrMsg": "Error getting users: {error}",
     "exactEmailOrUsername": "Enter an exact email or username.",

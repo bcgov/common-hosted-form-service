@@ -552,7 +552,7 @@
     "sentUninvitedEmailTo": "招待されていないメールを次の宛先に送信しました",
     "updateUserErrMsg": "この送信のユーザーを更新しようとしたときにエラーが発生しました。",
     "updateUserConsoleErrMsg": "ユーザー権限の設定中にエラーが発生しました。サブ: {submissionId} ユーザー: {userId} エラー: {error}",
-    "searchInputLength": "BCeID ユーザー名/電子メールの検索入力は 6 文字以上である必要があります。",
+    "searchInputLength": "BCeID ユーザー名/電子メールの検索入力は 4 文字以上である必要があります。",
     "exactBCEIDSearch": "BCeID の電子メール検索は正確である必要があります。",
     "getUsersErrMsg": "ユーザー取得エラー: {error}",
     "exactEmailOrUsername": "正確な電子メールまたはユーザー名を入力します。",

@@ -552,7 +552,7 @@
     "sentUninvitedEmailTo": "초대받지 않은 이메일을 보낸 사람",
     "updateUserErrMsg": "이 제출에 대해 사용자를 업데이트하는 동안 오류가 발생했습니다.",
     "updateUserConsoleErrMsg": "사용자 권한을 설정하는 중에 오류가 발생했습니다. 하위: {submissionId} 사용자: {userId} 오류: {error}",
-    "searchInputLength": "BCeID 사용자 이름/이메일에 대한 검색 입력은 6자보다 커야 합니다.",
+    "searchInputLength": "BCeID 사용자 이름/이메일에 대한 검색 입력은 4자보다 커야 합니다.",
     "exactBCEIDSearch": "BCeID에 대한 이메일 검색은 정확해야 합니다.",
     "getUsersErrMsg": "사용자 가져오기 오류: {error}",
     "exactEmailOrUsername": "정확한 이메일 또는 사용자 이름을 입력하세요.",
