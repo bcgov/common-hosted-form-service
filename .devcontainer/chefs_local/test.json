@@ -62,7 +62,7 @@
     }
   },
   "features": {
-    "eventStreamService": false
+    "eventStreamService": true
   },
   "eventStreamService": {
     "servers": "localhost:4222,localhost:4223,localhost:4224",

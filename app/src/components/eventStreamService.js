@@ -311,8 +311,6 @@ if (featureFlags.eventStreamService) {
   eventStreamService = new EventStreamService(config.get('eventStreamService'));
 }
 
-module.exports = eventStreamService;
-
 module.exports = {
   eventStreamService: eventStreamService,
   FORM_EVENT_TYPES: Object.freeze(FORM_EVENT_TYPES),
