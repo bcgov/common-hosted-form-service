@@ -549,7 +549,7 @@
     "sentUninvitedEmailTo": "Uneingeladene E-Mail an gesendet",
     "updateUserErrMsg": "Beim Versuch, Benutzer für diese Übermittlung zu aktualisieren, ist ein Fehler aufgetreten.",
     "updateUserConsoleErrMsg": "Fehler beim Festlegen der Benutzerberechtigungen. Sub: {submissionId} Benutzer: {userId} Fehler: {error}",
-    "searchInputLength": "Die Sucheingabe für BCeID-Benutzername/E-Mail-Adresse muss mehr als 6 Zeichen umfassen.",
+    "searchInputLength": "Die Sucheingabe für BCeID-Benutzername/E-Mail-Adresse muss mehr als 4 Zeichen umfassen.",
     "exactBCEIDSearch": "E-Mail-Suchen nach BCeID müssen genau sein.",
     "getUsersErrMsg": "Fehler beim Abrufen von Benutzern: {error}",
     "exactEmailOrUsername": "Geben Sie eine genaue E-Mail-Adresse oder einen Benutzernamen ein.",

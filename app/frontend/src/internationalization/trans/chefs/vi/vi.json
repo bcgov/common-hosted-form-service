@@ -549,7 +549,7 @@
     "sentUninvitedEmailTo": "Đã gửi email không mời đến",
     "updateUserErrMsg": "Đã xảy ra lỗi khi cố gắng cập nhật người dùng cho lần gửi này.",
     "updateUserConsoleErrMsg": "Lỗi đặt quyền của người dùng. Phụ: {submissionId} Người dùng: {userId} Lỗi: {error}",
-    "searchInputLength": "Đầu vào tìm kiếm cho tên người dùng/email BCeID phải lớn hơn 6 ký tự.",
+    "searchInputLength": "Đầu vào tìm kiếm cho tên người dùng/email BCeID phải lớn hơn 4 ký tự.",
     "exactBCEIDSearch": "Tìm kiếm email cho BCeID phải chính xác.",
     "getUsersErrMsg": "Lỗi nhận người dùng: {error}",
     "exactEmailOrUsername": "Nhập một e-mail hoặc tên người dùng chính xác.",
