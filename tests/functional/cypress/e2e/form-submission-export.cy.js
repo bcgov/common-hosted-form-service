@@ -229,7 +229,7 @@ describe("Form Designer", () => {
     cy.get('.v-card-actions > .flex-container > .text-textLink').should('be.enabled');
     cy.get('.v-card-actions > .flex-container > .text-textLink').click();
     cy.get('.mdi-printer').click();
-    cy.get('#file-input-submit').click();
+    cy.get('#file-input-submit').click({force: true});
     // Verify cdogs template uplaod success message
     cy.get('body').click(0,0);
     cy.wait(2000);
