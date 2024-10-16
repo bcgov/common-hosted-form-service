@@ -177,19 +177,31 @@ class EventStreamService {
     return false;
   }
 
+  async _getForm(formId) {
+    return Form.query().findById(formId).allowGraph('[identityProviders]').withGraphFetched('identityProviders(orderDefault)').throwIfNotFound();
+  }
+
+  async _getFormVersion(formVersionId) {
+    return FormVersion.query().findById(formVersionId).throwIfNotFound();
+  }
+
+  async _getEventStreamConfig(formId) {
+    return FormEventStreamConfig.query().modify('filterFormId', formId).allowGraph('[encryptionKey]').withGraphFetched('encryptionKey').first();
+  }
+
   async onPublish(formId, formVersionId, published) {
     try {
       const eventType = published ? FORM_EVENT_TYPES.PUBLISHED : FORM_EVENT_TYPES.UNPUBLISHED;
       await this.openConnection();
       if (this.connected) {
         // fetch form (don't fetch all versions...)
-        const form = await Form.query().findById(formId).allowGraph('[identityProviders]').withGraphFetched('identityProviders(orderDefault)').throwIfNotFound();
+        const form = await this._getForm(formId);
         // fetch version and place in form.versions[]
-        const formVersion = await FormVersion.query().findById(formVersionId).throwIfNotFound();
+        const formVersion = await this._getFormVersion(formVersionId);
         form['versions'] = [formVersion];
 
         // need to fetch the encryption key...
-        const evntStrmCfg = await FormEventStreamConfig.query().modify('filterFormId', formId).allowGraph('[encryptionKey]').withGraphFetched('encryptionKey').first();
+        const evntStrmCfg = await this._getEventStreamConfig(formId);
 
         if (evntStrmCfg) {
           const sub = `schema.${eventType}.${formId}`;
@@ -243,10 +255,10 @@ class EventStreamService {
       const submissionId = submission.id;
       await this.openConnection();
       if (this.connected) {
-        const formVersion = await FormVersion.query().findById(submission.formVersionId).throwIfNotFound();
+        const formVersion = await this._getFormVersion(submission.formVersionId);
 
         // need to fetch the encryption key...
-        const evntStrmCfg = await FormEventStreamConfig.query().modify('filterFormId', formVersion.formId).allowGraph('[encryptionKey]').withGraphFetched('encryptionKey').first();
+        const evntStrmCfg = await this._getEventStreamConfig(formVersion.formId);
 
         if (evntStrmCfg) {
           const sub = `submission.${eventType}.${formVersion.formId}`;
