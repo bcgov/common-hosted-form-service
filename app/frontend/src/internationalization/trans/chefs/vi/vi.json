@@ -829,6 +829,7 @@
     "failedResSubmissn": "Phản hồi không thành công từ điểm cuối gửi. Mã phản hồi: {status}",
     "errSubmittingForm": "Đã xảy ra lỗi khi gửi biểu mẫu này",
     "errorSavingFile": "Lỗi khi lưu tệp. Tên tệp: {fileName}. Lỗi: {error}",
+    "errorDeletingFile": "Lỗi khi xóa tệp. Tên tệp: {fileName}. Lỗi: {error}",
     "submittingDraftErrMsg": "Đã xảy ra lỗi khi lưu bản nháp",
     "submittingDraftConsErrMsg": "Lỗi khi lưu bản nháp. Đệ trìnhId: {submissionId}. Lỗi: {error}",
     "formDraftAccessErrMsg": "Yêu cầu gửi đã được gửi, chuyển hướng đến Xem trang",

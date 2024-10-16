@@ -829,6 +829,7 @@
     "failedResSubmissn": "پاسخ ناموفق از نقطه پایان ارسال. کد پاسخ: {status}",
     "errSubmittingForm": "هنگام ارسال این فرم خطایی روی داد",
     "errorSavingFile": "خطا در ذخیره فایل ها. نام فایل: {fileName}. خطا: {error}",
+    "errorDeletingFile": "خطا در حذف فایل ها نام فایل: {fileName}. خطا: {خطا}",
     "submittingDraftErrMsg": "هنگام ذخیره پیش نویس خطایی روی داد",
     "submittingDraftConsErrMsg": "خطا در ذخیره پیش نویس. SubmissionId: {submissionId}. خطا: {error}",
     "formDraftAccessErrMsg": "ارسال درخواستی قبلا ارسال شده است، به صفحه مشاهده هدایت می شود",

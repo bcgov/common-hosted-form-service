@@ -98,6 +98,8 @@ const json_csv = ref({
 });
 const loadingSubmission = ref(false);
 const permissions = ref([]);
+const queuedDeleteFiles = ref([]);
+const queuedUploadFiles = ref([]);
 const reRenderFormIo = ref(0);
 const saveDraftDialog = ref(false);
 const saveDraftState = ref(0);
@@ -796,7 +798,7 @@ async function saveDraft() {
   try {
     saving.value = true;
 
-    const response = await sendSubmission(true, submission.value);
+    const response = await sendSubmission(true);
     if (properties.submissionId && properties.submissionId !== null) {
       // Editing an existing draft
       // Update this route with saved flag
@@ -831,15 +833,25 @@ async function saveDraft() {
   }
 }
 
-async function sendSubmission(isDraft, sub) {
-  sub.data.lateEntry =
+async function sendSubmission(isDraft) {
+  let err = await uploadQueuedFiles();
+  if (err) {
+    return;
+  }
+
+  err = await deleteQueuedFiles();
+  if (err) {
+    return;
+  }
+
+  submission.value.data.lateEntry =
     form.value?.schedule?.expire !== undefined &&
     form.value.schedule.expire === true
       ? form.value.schedule.allowLateSubmissions
       : false;
   const body = {
     draft: isDraft,
-    submission: sub,
+    submission: submission.value,
   };
 
   let response;
@@ -931,14 +943,14 @@ async function onBeforeSubmit(submission, next) {
 
 // FormIO submit event
 // eslint-disable-next-line no-unused-vars
-async function onSubmit(sub) {
+async function onSubmit() {
   if (properties.preview) {
     alert(t('trans.formViewer.submissionsPreviewAlert'));
     confirmSubmit.value = false;
     return;
   }
 
-  const errors = await doSubmit(sub);
+  const errors = await doSubmit();
 
   // if we are here, the submission has been saved to our db
   // the passed in submission is the formio submission, not our db persisted submission record...
@@ -956,12 +968,12 @@ async function onSubmit(sub) {
 }
 
 // Not a formIO event, our saving routine to POST the submission to our API
-async function doSubmit(sub) {
+async function doSubmit() {
   // since we are not using formio api
   // we should do the actual submit here, and return any error that occurrs to handle in the submit event
   let errMsg = undefined;
   try {
-    const response = await sendSubmission(false, sub);
+    const response = await sendSubmission(false);
 
     if ([200, 201].includes(response.status)) {
       // all is good, flag no errors and carry on...
@@ -1057,18 +1069,18 @@ function leaveThisPage() {
   }
 }
 
-function yes() {
-  saveDraftFromModal(true);
+async function yes() {
+  await saveDraftFromModal(true);
 }
 
-function no() {
-  saveDraftFromModal(false);
+async function no() {
+  await saveDraftFromModal(false);
 }
 
-function saveDraftFromModal(event) {
+async function saveDraftFromModal(event) {
   doYouWantToSaveTheDraft.value = false;
   if (event) {
-    saveDraftFromModalNow();
+    await saveDraftFromModalNow();
   } else {
     leaveThisPage();
   }
@@ -1078,7 +1090,7 @@ function saveDraftFromModal(event) {
 async function saveDraftFromModalNow() {
   try {
     saving.value = true;
-    await sendSubmission(true, submission.value);
+    await sendSubmission(true);
     saving.value = false;
     // Creating a new submission in draft state
     // Go to the user form draft page
@@ -1106,9 +1118,11 @@ function beforeWindowUnload(e) {
   }
 }
 
-async function deleteFile(file) {
-  const fileId = file?.data?.id ? file.data.id : file?.id ? file.id : undefined;
-  return fileService.deleteFile(fileId);
+function deleteFile(file, cfg) {
+  queuedDeleteFiles.value.push({
+    file: file,
+    onSuccess: cfg.onSuccess,
+  });
 }
 
 async function getFile(fileId, options = {}) {
@@ -1148,8 +1162,74 @@ async function getFile(fileId, options = {}) {
   }
 }
 
-async function uploadFile(file, config = {}) {
-  return fileService.uploadFile(file, config);
+function uploadFile(file, cfg = {}) {
+  queuedUploadFiles.value.push({
+    file: file,
+    config: {
+      onUploadProgress: cfg.onUploadProgress,
+      headers: cfg.headers,
+    },
+    onUploaded: cfg.onUploaded,
+    onError: cfg.onError,
+  });
+}
+
+async function uploadQueuedFiles() {
+  let err = false;
+  for (let i = queuedUploadFiles.value.length - 1; i >= 0; i--) {
+    let response;
+    try {
+      response = await fileService.uploadFile(
+        queuedUploadFiles.value[i].file,
+        queuedUploadFiles.value[i].config
+      );
+      queuedUploadFiles.value[i].onUploaded(response);
+      queuedUploadFiles.value.splice(i, 1);
+    } catch (error) {
+      err = true;
+      queuedUploadFiles.value[i].onError(error);
+      notificationStore.addNotification({
+        text: t('trans.formViewer.errorSavingFile', {
+          fileName: queuedUploadFiles.value[i].file.originalName,
+          error: error,
+        }),
+        consoleError: t('trans.formViewer.errorSavingFile', {
+          fileName: queuedUploadFiles.value[i].file.originalName,
+          error: error,
+        }),
+      });
+    }
+  }
+  return err;
+}
+
+async function deleteQueuedFiles() {
+  let err = false;
+  for (let i = queuedDeleteFiles.value.length - 1; i >= 0; i--) {
+    const fileId = queuedDeleteFiles.value[i].file?.data?.id
+      ? queuedDeleteFiles.value[i].file.data.id
+      : queuedDeleteFiles.value[i].file?.id
+      ? queuedDeleteFiles.value[i].file.id
+      : undefined;
+    try {
+      await fileService.deleteFile(fileId);
+      queuedDeleteFiles.value[i].onSuccess();
+      queuedDeleteFiles.value.splice(i, 1);
+    } catch (error) {
+      err = true;
+      notificationStore.addNotification({
+        text: t('trans.formViewer.errorDeletingFile', {
+          fileName: queuedDeleteFiles.value[i].file.originalName,
+          error: error,
+        }),
+        consoleError: t('trans.formViewer.errorDeletingFile', {
+          fileName: queuedDeleteFiles.value[i].file.originalName,
+          error: error,
+        }),
+      });
+    }
+  }
+  return err;
 }
 </script>
 

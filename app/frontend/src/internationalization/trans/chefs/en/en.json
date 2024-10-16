@@ -882,6 +882,7 @@
     "failedResSubmissn": "Failed response from submission endpoint. Response code: {status}",
     "errSubmittingForm": "An error occurred submitting this form",
     "errorSavingFile": "Error saving files. Filename: {fileName}. Error: {error}",
+    "errorDeletingFile": "Error deleting files. Filename: {fileName}. Error: {error}",
     "submittingDraftErrMsg": "An error occurred while saving a draft",
     "submittingDraftConsErrMsg": "Error saving draft. SubmissionId: {submissionId}. Error: {error}",
     "formDraftAccessErrMsg": "Requested submission is already submitted, redirecting to View page",

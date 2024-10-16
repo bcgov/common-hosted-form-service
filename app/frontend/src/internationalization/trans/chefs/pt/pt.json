@@ -829,6 +829,7 @@
     "failedResSubmissn": "Falha na resposta do endpoint de envio. Código de resposta: {status}",
     "errSubmittingForm": "Ocorreu um erro ao enviar este formulário",
     "errorSavingFile": "Erro ao salvar arquivos. Nome do arquivo: {fileName}. Erro: {error}",
+    "errorDeletingFile": "Erro ao excluir arquivos. Nome do arquivo: {fileName}. Erro: {error}",
     "submittingDraftErrMsg": "Ocorreu um erro ao salvar um rascunho",
     "submittingDraftConsErrMsg": "Erro ao salvar rascunho. SubmissãoId: {submissionId}. Erro: {error}",
     "formDraftAccessErrMsg": "O envio solicitado já foi enviado, redirecionando para a página Exibir",

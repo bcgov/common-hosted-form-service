@@ -829,6 +829,7 @@
     "failedResSubmissn": "提交端点响应失败。响应代码：{status}",
     "errSubmittingForm": "提交此表单时出错",
     "errorSavingFile": "保存文件时出错。文件名：{fileName}。错误：{error}",
+    "errorDeletingFile": "删除文件时出错。文件名：{fileName}。错误：{error}",
     "submittingDraftErrMsg": "保存草稿时出错",
     "submittingDraftConsErrMsg": "保存草稿时出错。提交 ID：{submissionId}。错误：{error}",
     "formDraftAccessErrMsg": "请求的提交已提交，正在重定向到查看页面",
