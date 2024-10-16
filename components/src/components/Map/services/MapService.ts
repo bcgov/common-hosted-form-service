@@ -156,9 +156,11 @@ class MapService {
         provider: new BCGeocoderProvider(),
         style: 'bar',
         position: 'bottomleft',
+        showMarker: false,
       });
       map.addControl(geocoderControl);
       map.on('geosearch/showlocation', (e) => {
+        console.log((e as any).location);
         L.popup()
           .setLatLng([(e as any).location.y, (e as any).location.x])
           .setContent(`${(e as any).location.label}`)
