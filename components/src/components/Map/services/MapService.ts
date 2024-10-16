@@ -156,6 +156,7 @@ class MapService {
         provider: new BCGeocoderProvider(),
         style: 'bar',
         position: 'bottomleft',
+        showMarker: false,
       });
       map.addControl(geocoderControl);
       map.on('geosearch/showlocation', (e) => {
