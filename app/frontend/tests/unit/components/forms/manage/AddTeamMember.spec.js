@@ -62,7 +62,7 @@ const BCEIDBASIC = {
       },
       text: {
         message: 'trans.manageSubmissionUsers.searchInputLength',
-        minLength: 6,
+        minLength: 4,
       },
     },
     userSearch: {
@@ -144,7 +144,7 @@ const BCEIDBUSINESS = {
       },
       text: {
         message: 'trans.manageSubmissionUsers.searchInputLength',
-        minLength: 6,
+        minLength: 4,
       },
     },
     formAccessSettings: 'idim',
