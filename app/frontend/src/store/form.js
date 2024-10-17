@@ -75,6 +75,11 @@ const genInitialEventStreamConfig = () => ({
   encryptionKeyId: null,
   encryptionKey: genInitialEncryptionKey(),
 });
+const genInitialFormMetadata = () => ({
+  id: null,
+  formId: null,
+  metadata: {},
+});
 const genInitialForm = () => ({
   description: '',
   enableSubmitterDraft: false,
@@ -100,6 +105,7 @@ const genInitialForm = () => ({
   apiIntegration: null,
   useCase: null,
   wideFormLayout: false,
+  formMetadata: genInitialFormMetadata(),
   eventStreamConfig: genInitialEventStreamConfig(),
 });
 
@@ -371,6 +377,7 @@ export const useFormStore = defineStore('form', {
         };
         const evntSrvCfg = await this.fetchEventStreamConfig(formId);
         data.eventStreamConfig = evntSrvCfg;
+
         this.form = data;
       } catch (error) {
         const notificationStore = useNotificationStore();
@@ -459,6 +466,8 @@ export const useFormStore = defineStore('form', {
         const subscribe = this.form.subscribe.enabled
           ? this.form.subscribe
           : {};
+
+        const formMetadata = this.form.formMetadata;
         const eventStreamConfig = this.form.eventStreamConfig;
         await formService.updateForm(this.form.id, {
           name: this.form.name,
@@ -487,6 +496,7 @@ export const useFormStore = defineStore('form', {
           enableCopyExistingSubmission: this.form.enableCopyExistingSubmission
             ? this.form.enableCopyExistingSubmission
             : false,
+          formMetadata: formMetadata,
           eventStreamConfig: eventStreamConfig,
         });
 

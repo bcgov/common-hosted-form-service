@@ -16,6 +16,7 @@ export const ApiRoutes = Object.freeze({
   FILES_API_ACCESS: '/filesApiAccess',
   PROXY: '/proxy',
   EXTERNAL_APIS: '/externalAPIs',
+  FORM_METADATA: '/formMetadata',
   EVENT_STREAM_CONFIG: '/eventStreamConfig',
   ENCRYPTION_KEY: '/encryptionKey',
 });

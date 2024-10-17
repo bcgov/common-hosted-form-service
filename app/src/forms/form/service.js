@@ -25,6 +25,7 @@ const {
 } = require('../common/models');
 const { falsey, queryUtils, checkIsFormExpired, validateScheduleObject, typeUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
+const formMetadataService = require('./formMetadata/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
 const eventStreamConfigService = require('./eventStreamConfig/service');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER, Roles.SUBMISSION_APPROVER];
@@ -135,6 +136,7 @@ const service = {
       }));
       await FormStatusCode.query(trx).insert(defaultStatuses);
 
+      await formMetadataService.upsert(obj.id, data.formMetadata, currentUser, trx);
       await eventStreamConfigService.upsert(obj.id, data.eventStreamConfig, currentUser, trx);
 
       await trx.commit();
@@ -193,6 +195,7 @@ const service = {
       }));
       if (fIdps && fIdps.length) await FormIdentityProvider.query(trx).insert(fIdps);
 
+      await formMetadataService.upsert(obj.id, data.formMetadata, currentUser, trx);
       await eventStreamConfigService.upsert(obj.id, data.eventStreamConfig, currentUser, trx);
 
       await trx.commit();
@@ -229,7 +232,8 @@ const service = {
     return Form.query()
       .findById(formId)
       .modify('filterActive', params.active)
-      .allowGraph('[identityProviders,versions]')
+      .allowGraph('[formMetadata,identityProviders,versions]')
+      .withGraphFetched('formMetadata')
       .withGraphFetched('identityProviders(orderDefault)')
       .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
       .throwIfNotFound();
