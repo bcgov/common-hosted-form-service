@@ -51,7 +51,6 @@ describe('FormViewer.vue', () => {
   const authStore = useAuthStore(pinia);
   const formStore = useFormStore(pinia);
   const notificationStore = useNotificationStore(pinia);
-
   const getProxyHeadersSpy = vi.spyOn(formService, 'getProxyHeaders');
   const readVersionSpy = vi.spyOn(formService, 'readVersion');
   const readDraftSpy = vi.spyOn(formService, 'readDraft');
@@ -69,6 +68,7 @@ describe('FormViewer.vue', () => {
     appStore.$reset();
     authStore.$reset();
     formStore.$reset();
+    appStore.$reset();
     authStore.authenticated = true;
     authStore.keycloak = {
       tokenParsed: {

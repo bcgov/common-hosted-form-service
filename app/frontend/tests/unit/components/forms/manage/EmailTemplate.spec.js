@@ -7,6 +7,7 @@ import { ref } from 'vue';
 import EmailTemplate from '~/components/forms/manage/EmailTemplate.vue';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
+import { useAppStore } from '~/store/app';
 
 const STUBS = {};
 
@@ -16,10 +17,11 @@ describe('EmailTemplate.vue', () => {
 
   const formStore = useFormStore(pinia);
   const notificationStore = useNotificationStore(pinia);
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     formStore.$reset();
-
+    appStore.$reset();
     formStore.emailTemplates = ref([
       {
         body: 'Thank you for your {{ form.name }} submission. You can view your submission details by visiting the following links:',

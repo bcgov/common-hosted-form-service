@@ -26,6 +26,7 @@ describe('auth actions', () => {
     beforeEach(() => {
       mockStore.$reset();
       formStore.$reset();
+      appStore.$reset();
       mockStore.keycloak = {
         createLoginUrl: vi.fn(() => 'about:blank'),
         createLogoutUrl: vi.fn(() => 'about:blank'),

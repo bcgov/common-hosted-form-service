@@ -406,6 +406,7 @@ async function schemaCreateNew() {
     useCase: form.value.useCase,
     labels: form.value.labels,
     formMetadata: form.value.formMetadata,
+    eventStreamConfig: form.value.eventStreamConfig,
   });
   // update user labels with any new added labels
   if (

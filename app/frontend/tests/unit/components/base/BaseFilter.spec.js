@@ -3,13 +3,16 @@ import { describe, it } from 'vitest';
 import { createTestingPinia } from '@pinia/testing';
 import BaseFilter from '~/components/base/BaseFilter.vue';
 import { useFormStore } from '~/store/form';
+import { useAppStore } from '~/store/app';
 
 describe('BaseFilter.vue', () => {
   const pinia = createTestingPinia();
   const formStore = useFormStore();
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     formStore.$reset();
+    appStore.$reset();
   });
 
   it('renders', async () => {

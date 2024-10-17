@@ -7,6 +7,7 @@ import { useRouter } from 'vue-router';
 import UserSubmission from '~/components/forms/submission/UserSubmission.vue';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
+import { useAppStore } from '~/store/app';
 
 vi.mock('vue-router', () => ({
   useRouter: vi.fn(() => ({
@@ -31,10 +32,12 @@ describe('UserSubmission.vue', () => {
   setActivePinia(pinia);
   const formStore = useFormStore(pinia);
   const notificationStore = useNotificationStore(pinia);
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     formStore.$reset();
     notificationStore.$reset();
+    appStore.$reset();
   });
 
   it('renders', async () => {
