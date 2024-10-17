@@ -405,6 +405,7 @@ async function schemaCreateNew() {
     apiIntegration: form.value.apiIntegration,
     useCase: form.value.useCase,
     labels: form.value.labels,
+    formMetadata: form.value.formMetadata,
   });
   // update user labels with any new added labels
   if (
