@@ -375,6 +375,9 @@ export const useFormStore = defineStore('form', {
           ...genInitialSubscribe(),
           ...data.subscribe,
         };
+        if (!data.formMetadata) {
+          data.formMetadata = genInitialFormMetadata();
+        }
         const evntSrvCfg = await this.fetchEventStreamConfig(formId);
         data.eventStreamConfig = evntSrvCfg;
 
