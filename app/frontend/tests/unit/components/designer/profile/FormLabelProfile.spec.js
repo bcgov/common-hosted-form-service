@@ -7,18 +7,21 @@ import FormLabelProfile from '~/components/designer/profile/FormLabelProfile.vue
 import { userService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
+import { useAppStore } from '~/store/app';
 
 describe('FormLabelProfile.vue', () => {
   const pinia = createTestingPinia();
   setActivePinia(pinia);
   const formStore = useFormStore(pinia);
   const notificationStore = useNotificationStore(pinia);
+  const appStore = useAppStore(pinia);
 
   const getUserLabelsSpy = vi.spyOn(userService, 'getUserLabels');
   const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
 
   beforeEach(() => {
     formStore.$reset();
+    appStore.$reset();
     notificationStore.$reset();
     getUserLabelsSpy.mockReset();
   });

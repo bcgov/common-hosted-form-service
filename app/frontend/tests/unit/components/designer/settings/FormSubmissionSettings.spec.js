@@ -6,15 +6,18 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { useFormStore } from '~/store/form';
 import FormSubmissionSettings from '~/components/designer/settings/FormSubmissionSettings.vue';
 import { nextTick } from 'vue';
+import { useAppStore } from '~/store/app';
 
 describe('FormSubmissionSettings.vue', () => {
   const pinia = createTestingPinia();
   setActivePinia(pinia);
 
   const formStore = useFormStore(pinia);
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     formStore.$reset();
+    appStore.$reset();
   });
 
   it('renders and tests default values', () => {

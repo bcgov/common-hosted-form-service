@@ -7,6 +7,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import getRouter from '~/router';
 import MySubmissionsTable from '~/components/forms/submission/MySubmissionsTable.vue';
 import { useFormStore } from '~/store/form';
+import { useAppStore } from '~/store/app';
 
 describe('MySubmissionsTable.vue', () => {
   const formId = '123-456';
@@ -20,6 +21,7 @@ describe('MySubmissionsTable.vue', () => {
 
   setActivePinia(pinia);
   const formStore = useFormStore(pinia);
+  const appStore = useAppStore(pinia);
 
   const fetchFormSpy = vi.spyOn(formStore, 'fetchForm').mockResolvedValue({});
   const fetchFormFieldsSpy = vi
@@ -30,6 +32,7 @@ describe('MySubmissionsTable.vue', () => {
     fetchFormSpy.mockReset();
     fetchFormFieldsSpy.mockReset();
     formStore.$reset();
+    appStore.$reset();
 
     formStore.form = {
       versions: [

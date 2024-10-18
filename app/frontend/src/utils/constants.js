@@ -17,6 +17,8 @@ export const ApiRoutes = Object.freeze({
   PROXY: '/proxy',
   EXTERNAL_APIS: '/externalAPIs',
   FORM_METADATA: '/formMetadata',
+  EVENT_STREAM_CONFIG: '/eventStreamConfig',
+  ENCRYPTION_KEY: '/encryptionKey',
 });
 
 /** Roles a user can have on a form. These are defined in the DB and sent from the API */

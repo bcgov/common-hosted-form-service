@@ -11,15 +11,18 @@ import { useFormStore } from '~/store/form';
 import FormScheduleSettings from '~/components/designer/settings/FormScheduleSettings.vue';
 import { ScheduleType } from '~/utils/constants';
 import { getSubmissionPeriodDates } from '~/utils/transformUtils';
+import { useAppStore } from '~/store/app';
 
 describe('FormScheduleSettings.vue', () => {
   const pinia = createTestingPinia();
   setActivePinia(pinia);
 
   const formStore = useFormStore(pinia);
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     formStore.$reset();
+    appStore.$reset();
     formStore.form = ref({
       schedule: {
         enabled: null,
