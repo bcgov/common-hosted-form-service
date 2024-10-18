@@ -169,7 +169,10 @@
     "eventSubscription": "イベントのサブスクリプション",
     "validEndpointRequired": "で始まる有効なエンドポイントを入力してください https://",
     "validBearerTokenRequired": "有効なベアラー トークンの例を入力してください: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
-    "wideFormLayout": "ワイドフォームレイアウト"
+    "wideFormLayout": "ワイドフォームレイアウト",
+    "formMetadataTitle": "フォームのメタデータ",
+    "formMetadataMessage": "このフォームを外部システムに記述または説明するための構造化情報。外部システムへの呼び出しには、このメタデータがペイロードに含まれます。",
+    "formMetadataJsonError": "フォームのメタデータは有効な JSON である必要があります。属性と値を二重引用符で囲みます。"
   },
   "formProfile": {
     "message": "CHEFSチームは包括的なビジネスケースの作成に重要な入力となる情報を収集し、整理しています。これらのケースは、CHEFSの戦略的な運用と今後の改善を指南するうえで重要な役割を果たします。データを収集するこの取り組みは、重要な意思決定の情報提供やCHEFSの軌道を形作るために不可欠です。これにより、CHEFSが変化するニーズと課題に対応するための適応性と効果を確保します.",
@@ -549,7 +552,7 @@
     "sentUninvitedEmailTo": "招待されていないメールを次の宛先に送信しました",
     "updateUserErrMsg": "この送信のユーザーを更新しようとしたときにエラーが発生しました。",
     "updateUserConsoleErrMsg": "ユーザー権限の設定中にエラーが発生しました。サブ: {submissionId} ユーザー: {userId} エラー: {error}",
-    "searchInputLength": "BCeID ユーザー名/電子メールの検索入力は 6 文字以上である必要があります。",
+    "searchInputLength": "BCeID ユーザー名/電子メールの検索入力は 4 文字以上である必要があります。",
     "exactBCEIDSearch": "BCeID の電子メール検索は正確である必要があります。",
     "getUsersErrMsg": "ユーザー取得エラー: {error}",
     "exactEmailOrUsername": "正確な電子メールまたはユーザー名を入力します。",
