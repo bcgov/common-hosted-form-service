@@ -221,7 +221,7 @@ describe('Form Designer', () => {
       });
       
       cy.waitForLoad();
-      cy.get('[data-cy="settingsRouterLink"]').click();
+      cy.get('.mdi-cog').click();
       cy.get('a > .v-btn > .v-btn__content > .mdi-pencil').click();
       cy.wait(4000);
       
