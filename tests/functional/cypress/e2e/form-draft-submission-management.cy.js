@@ -97,6 +97,7 @@ it('Verify draft submission', () => {
     cy.waitForLoad();
     cy.get('button').contains('Submit').should('be.visible');
     cy.waitForLoad();
+    cy.waitForLoad();
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('Alex');
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
@@ -151,7 +152,7 @@ it('Verify draft submission', () => {
     cy.location('pathname').should('eq', `/${depEnv}/form/success`);
     cy.contains('h1', 'Your form has been submitted successfully');
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
-    
+    //cy.get('div > .bg-primary').click();
     cy.get('.v-data-table__tr > :nth-child(4)').contains('SUBMITTED').should('not.exist');
     //Delete form after test run
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);

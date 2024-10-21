@@ -1,60 +1,51 @@
-<script>
-import { mapActions, mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useAdminStore } from '~/store/admin';
 import { useFormStore } from '~/store/form';
 
-export default {
-  setup() {
-    const { t, locale } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
 
-    return { t, locale };
+const loading = ref(true);
+const search = ref('');
+
+const adminStore = useAdminStore();
+const formStore = useFormStore();
+
+const { userList } = storeToRefs(adminStore);
+const { isRTL } = storeToRefs(formStore);
+
+const headers = computed(() => [
+  {
+    title: t('trans.adminUsersTable.fullName'),
+    align: 'start',
+    key: 'fullName',
   },
-  data() {
-    return {
-      loading: true,
-      search: '',
-    };
+  {
+    title: t('trans.adminUsersTable.userID'),
+    align: 'start',
+    key: 'username',
   },
-  computed: {
-    ...mapState(useAdminStore, ['userList']),
-    ...mapState(useFormStore, ['isRTL']),
-    headers() {
-      return [
-        {
-          title: this.$t('trans.adminUsersTable.fullName'),
-          align: 'start',
-          key: 'fullName',
-        },
-        {
-          title: this.$t('trans.adminUsersTable.userID'),
-          align: 'start',
-          key: 'username',
-        },
-        {
-          title: this.$t('trans.adminUsersTable.created'),
-          align: 'start',
-          key: 'created',
-        },
-        {
-          title: this.$t('trans.adminUsersTable.actions'),
-          align: 'end',
-          key: 'actions',
-          filterable: false,
-          sortable: false,
-        },
-      ];
-    },
+  {
+    title: t('trans.adminUsersTable.created'),
+    align: 'start',
+    key: 'created',
   },
-  async mounted() {
-    await this.getUsers();
-    this.loading = false;
+  {
+    title: t('trans.adminUsersTable.actions'),
+    align: 'end',
+    key: 'actions',
+    filterable: false,
+    sortable: false,
   },
-  methods: {
-    ...mapActions(useAdminStore, ['getUsers']),
-  },
-};
+]);
+
+onMounted(async () => {
+  await adminStore.getUsers();
+  loading.value = false;
+});
 </script>
 
 <template>

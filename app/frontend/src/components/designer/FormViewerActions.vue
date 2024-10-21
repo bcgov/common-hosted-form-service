@@ -1,98 +1,87 @@
-<script>
-import { mapState } from 'pinia';
+<script setup>
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, inject, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ManageSubmissionUsers from '~/components/forms/submission/ManageSubmissionUsers.vue';
 import PrintOptions from '~/components/forms/PrintOptions.vue';
 import { FormPermissions } from '~/utils/constants';
+
 import { useFormStore } from '~/store/form';
 
-export default {
-  components: {
-    ManageSubmissionUsers,
-    PrintOptions,
-  },
-  inject: ['setWideLayout'],
-  props: {
-    block: {
-      type: Boolean,
-      default: false,
-    },
-    bulkFile: {
-      type: Boolean,
-      default: false,
-    },
-    allowSubmitterToUploadFile: {
-      type: Boolean,
-      default: false,
-    },
-    draftEnabled: {
-      type: Boolean,
-      default: false,
-    },
-    formId: {
-      type: String,
-      default: undefined,
-    },
-    isDraft: {
-      type: Boolean,
-      default: false,
-    },
-    permissions: {
-      type: Array,
-      default: () => [],
-    },
-    readOnly: {
-      type: Boolean,
-      default: false,
-    },
-    submissionId: {
-      type: String,
-      default: undefined,
-    },
-    submission: {
-      type: Object,
-      default: undefined,
-    },
-    wideFormLayout: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  emits: ['save-draft', 'switchView', 'showdoYouWantToSaveTheDraftModal'],
-  setup() {
-    const { locale } = useI18n({ useScope: 'global' });
+const { locale } = useI18n({ useScope: 'global' });
 
-    return { locale };
+const setWideLayout = inject('setWideLayout');
+defineEmits(['save-draft', 'switchView', 'showdoYouWantToSaveTheDraftModal']);
+
+const properties = defineProps({
+  block: {
+    type: Boolean,
+    default: false,
   },
-  data() {
-    return {
-      isWideLayout: false,
-    };
+  bulkFile: {
+    type: Boolean,
+    default: false,
   },
-  computed: {
-    ...mapState(useFormStore, ['isRTL']),
-    canSaveDraft() {
-      return !this.readOnly;
-    },
-    showEditToggle() {
-      return (
-        this.readOnly &&
-        this.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
-      );
-    },
+  allowSubmitterToUploadFile: {
+    type: Boolean,
+    default: false,
   },
-  async mounted() {
-    // set wide layout
-    this.setWideLayout(this.isWideLayout);
+  draftEnabled: {
+    type: Boolean,
+    default: false,
   },
-  methods: {
-    toggleWideLayout() {
-      this.isWideLayout = !this.isWideLayout;
-      this.setWideLayout(this.isWideLayout);
-    },
+  formId: {
+    type: String,
+    default: undefined,
   },
-};
+  isDraft: {
+    type: Boolean,
+    default: false,
+  },
+  permissions: {
+    type: Array,
+    default: () => [],
+  },
+  readOnly: {
+    type: Boolean,
+    default: false,
+  },
+  submissionId: {
+    type: String,
+    default: undefined,
+  },
+  submission: {
+    type: Object,
+    default: undefined,
+  },
+  wideFormLayout: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const isWideLayout = ref(false);
+
+const formStore = useFormStore();
+
+const { isRTL } = storeToRefs(formStore);
+
+const canSaveDraft = computed(() => !properties.readOnly);
+const showEditToggle = computed(
+  () =>
+    properties.readOnly &&
+    properties.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
+);
+
+onMounted(() => {
+  setWideLayout(isWideLayout.value);
+});
+
+function toggleWideLayout() {
+  isWideLayout.value = !isWideLayout.value;
+  setWideLayout(isWideLayout.value);
+}
 </script>
 
 <template>

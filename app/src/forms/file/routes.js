@@ -9,6 +9,7 @@ const controller = require('./controller');
 const { currentFileRecord, hasFileCreate, hasFilePermissions } = require('./middleware/filePermissions');
 const fileUpload = require('./middleware/upload').fileUpload;
 
+routes.use(rateLimiter);
 routes.use(currentUser);
 
 routes.param('fileId', validateParameter.validateFileId);
@@ -17,7 +18,7 @@ routes.post('/', hasFileCreate, fileUpload.upload, async (req, res, next) => {
   await controller.create(req, res, next);
 });
 
-routes.get('/:fileId', rateLimiter, apiAccess, currentFileRecord, hasFilePermissions([P.SUBMISSION_READ]), async (req, res, next) => {
+routes.get('/:fileId', apiAccess, currentFileRecord, hasFilePermissions([P.SUBMISSION_READ]), async (req, res, next) => {
   await controller.read(req, res, next);
 });
 

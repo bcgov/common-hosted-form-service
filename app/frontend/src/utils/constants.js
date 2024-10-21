@@ -16,6 +16,7 @@ export const ApiRoutes = Object.freeze({
   FILES_API_ACCESS: '/filesApiAccess',
   PROXY: '/proxy',
   EXTERNAL_APIS: '/externalAPIs',
+  FORM_METADATA: '/formMetadata',
 });
 
 /** Roles a user can have on a form. These are defined in the DB and sent from the API */
@@ -236,4 +237,92 @@ export const FormComponentProactiveHelpValues = Object.freeze({
     'Tree',
   ],
   'BC Government': ['File Upload', 'Business Name Search', 'BC Address'],
+});
+
+export const FormDesignerBuilderOptions = Object.freeze({
+  basic: false,
+  premium: false,
+  layoutControls: {
+    title: 'Basic Layout',
+    default: true,
+    weight: 10,
+    components: {
+      simplecols2: true,
+      simplecols3: true,
+      simplecols4: true,
+      simplecontent: true,
+      simplefieldset: false,
+      simpleheading: false,
+      simplepanel: true,
+      simpleparagraph: false,
+      simpletabs: true,
+    },
+  },
+  entryControls: {
+    title: 'Basic Fields',
+    weight: 20,
+    components: {
+      simplecheckbox: true,
+      simplecheckboxes: true,
+      simpledatetime: true,
+      simpleday: true,
+      simpleemail: true,
+      simplenumber: true,
+      simplephonenumber: true,
+      simpleradios: true,
+      simpleselect: true,
+      simpletextarea: true,
+      simpletextfield: true,
+      simpletime: false,
+    },
+  },
+  layout: {
+    title: 'Advanced Layout',
+    weight: 30,
+  },
+  advanced: {
+    title: 'Advanced Fields',
+    weight: 40,
+    components: {
+      // Need to re-define Formio basic fields here
+      // To disable fields make it false here
+      // textfield: true,
+      // textarea: true,
+      // number: true,
+      // password: true,
+      // checkbox: true,
+      // selectboxes: true,
+      // select: true,
+      // radio: true,
+      // button: true,
+      email: false,
+      url: false,
+      phoneNumber: false,
+      tags: false,
+      address: false,
+      datetime: false,
+      day: false,
+      time: false,
+      currency: false,
+      survey: false,
+      signature: false,
+      // Prevent duplicate appearance of orgbook component
+      orgbook: false,
+      bcaddress: false,
+      simplebcaddress: false,
+    },
+  },
+  data: {
+    title: 'Advanced Data',
+    weight: 50,
+  },
+  customControls: {
+    title: 'BC Government',
+    weight: 60,
+    components: {
+      orgbook: true,
+      bcaddress: true,
+      simplebcaddress: true,
+    },
+  },
 });

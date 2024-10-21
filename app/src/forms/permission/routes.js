@@ -2,9 +2,11 @@ const routes = require('express').Router();
 
 const jwtService = require('../../components/jwtService');
 const currentUser = require('../auth/middleware/userAccess').currentUser;
+const rateLimiter = require('../common/middleware').apiKeyRateLimiter;
 const validateParameter = require('../common/middleware/validateParameter');
 const controller = require('./controller');
 
+routes.use(rateLimiter);
 routes.use(jwtService.protect('admin'));
 routes.use(currentUser);
 

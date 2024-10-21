@@ -39,6 +39,12 @@ describe('MySubmissionsTable.vue', () => {
       ],
     };
     formStore.formFields = [];
+    formStore.mySubmissionPreferences = {
+      preferences: {
+        formId: formId,
+        columns: [],
+      },
+    };
   });
 
   it('renders', async () => {
@@ -171,7 +177,7 @@ describe('MySubmissionsTable.vue', () => {
     };
     formStore.formFields = ['formField1', 'formField2'];
 
-    wrapper.vm.filterData = [
+    formStore.mySubmissionPreferences.preferences.columns = [
       'createdBy',
       'username',
       'status',
@@ -732,12 +738,12 @@ describe('MySubmissionsTable.vue', () => {
 
     wrapper.vm.showColumnsDialog = true;
 
-    expect(wrapper.vm.filterData).toEqual([]);
+    expect(formStore.mySubmissionPreferences.preferences.columns).toEqual([]);
     expect(wrapper.vm.showColumnsDialog).toBeTruthy();
 
     wrapper.vm.updateFilter(['createdBy']);
 
-    expect(wrapper.vm.filterData).toEqual(['createdBy']);
+    expect(formStore.mySubmissionPreferences.preferences.columns).toEqual(['createdBy']);
     expect(wrapper.vm.showColumnsDialog).toBeFalsy();
   });
 });
