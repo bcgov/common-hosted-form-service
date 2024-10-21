@@ -55,7 +55,7 @@ export function formsettings(){
     cy.get('[data-test="email-test"] > .v-input__control > .v-selection-control > .v-label > div > span').click();
     cy.get(':nth-child(4) > .v-card > .v-card-text > .v-text-field > .v-input__control > .v-field > .v-field__field > .v-field__input').type('abc@gmail.com');
    
-    cy.get('.v-row > :nth-child(1) > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
+    cy.get('.v-row > :nth-child(1) > .v-input > .v-input__control > .v-field > .v-field__append-inner').click();
     cy.contains("Citizens' Services (CITZ)").click();
     
     cy.get('[data-test="case-select"]').click();

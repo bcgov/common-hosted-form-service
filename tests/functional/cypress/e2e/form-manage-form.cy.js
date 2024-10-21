@@ -80,7 +80,8 @@ describe('Form Designer', () => {
       cy.get('[data-test="text-description"]').type('test description edit');
       cy.get('[data-test="canSaveAndEditDraftsCheckbox"]').click();
       //Verify form schedule settings is not present
-      cy.get(':nth-child(5) > .v-card > .v-card-text').should('not.exist');
+      
+      cy.get('span').contains('Form Schedule Settings').should('not.exist');
       //cy.get('span').contains('UPDATE').click();
       cy.get('.mb-5 > .v-btn--elevated').click();
 
@@ -164,7 +165,12 @@ describe('Form Designer', () => {
  
       //Closing date for submission
       cy.contains('Set custom closing message').click();
-      cy.get('textarea').type('closed for some reasons')
+      cy.get('textarea').then($el => {
+
+        const rem=$el[0];
+        cy.get(rem).type('closed for some reasons');
+      });
+      //cy.get('textarea').type('closed for some reasons')
       cy.contains('SEND Reminder email').click();
       
       cy.contains('SEND Reminder email').click();
