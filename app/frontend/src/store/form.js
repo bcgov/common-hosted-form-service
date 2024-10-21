@@ -333,6 +333,9 @@ export const useFormStore = defineStore('form', {
           ...genInitialSubscribe(),
           ...data.subscribe,
         };
+        if (!data.formMetadata) {
+          data.formMetadata = genInitialFormMetadata();
+        }
         this.form = data;
       } catch (error) {
         const notificationStore = useNotificationStore();
