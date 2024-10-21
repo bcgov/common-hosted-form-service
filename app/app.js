@@ -8,6 +8,7 @@ const querystring = require('querystring');
 const log = require('./src/components/log')(module.filename);
 const httpLogger = require('./src/components/log').httpLogger;
 const middleware = require('./src/forms/common/middleware');
+const rateLimiter = require('./src/forms/common/middleware').apiKeyRateLimiter;
 const v1Router = require('./src/routes/v1');
 
 const DataConnection = require('./src/db/dataConnection');
@@ -51,6 +52,8 @@ app.use((_req, res, next) => {
     next();
   }
 });
+
+app.use(rateLimiter);
 
 // Frontend configuration endpoint
 apiRouter.use('/config', (_req, res, next) => {
