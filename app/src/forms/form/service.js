@@ -25,6 +25,7 @@ const {
 } = require('../common/models');
 const { falsey, queryUtils, checkIsFormExpired, validateScheduleObject, typeUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
+const formMetadataService = require('./formMetadata/service');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER, Roles.SUBMISSION_APPROVER];
 
 const service = {
@@ -133,6 +134,8 @@ const service = {
       }));
       await FormStatusCode.query(trx).insert(defaultStatuses);
 
+      await formMetadataService.upsert(obj.id, data.formMetadata, currentUser, trx);
+
       await trx.commit();
       const result = await service.readForm(obj.id);
       result.draft = draft;
@@ -189,6 +192,8 @@ const service = {
       }));
       if (fIdps && fIdps.length) await FormIdentityProvider.query(trx).insert(fIdps);
 
+      await formMetadataService.upsert(obj.id, data.formMetadata, currentUser, trx);
+
       await trx.commit();
       const result = await service.readForm(obj.id);
       return result;
@@ -224,7 +229,8 @@ const service = {
     return Form.query()
       .findById(formId)
       .modify('filterActive', params.active)
-      .allowGraph('[identityProviders,versions]')
+      .allowGraph('[formMetadata,identityProviders,versions]')
+      .withGraphFetched('formMetadata')
       .withGraphFetched('identityProviders(orderDefault)')
       .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
       .throwIfNotFound();

@@ -199,7 +199,10 @@
     "eventSubscription": "Event Subscription",
     "validEndpointRequired": "Please enter a valid endpoint starting with https://",
     "validBearerTokenRequired": "Enter a valid bearer token example: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
-    "wideFormLayout": "Wide Form Layout"
+    "wideFormLayout": "Wide Form Layout",
+    "formMetadataTitle": "Form Metadata",
+    "formMetadataMessage": "Structured information to describe or explain this form to external systems. Calls to external systems will include this metadata in their payloads.",
+    "formMetadataJsonError": "Form metadata must be valid JSON. Use double-quotes around attributes and values."
   },
   "formProfile": {
     "message": "The CHEFS team is collecting and organizing information to serve as crucial input for crafting comprehensive business cases. These cases will play a pivotal role in guiding the strategic operation and ongoing improvement of CHEFS in the coming years. This initiative to gather data is essential for informing critical decisions and molding the trajectory of CHEFS, ensuring its adaptability and effectiveness in addressing evolving needs and challenges.",
@@ -595,7 +598,7 @@
     "sentUninvitedEmailTo": "Sent uninvited email to",
     "updateUserErrMsg": "An error occurred while trying to update users for this submission.",
     "updateUserConsoleErrMsg": "Error setting user permissions. Sub: {submissionId} User: {userId} Error: {error}",
-    "searchInputLength": "Search input for BCeID username/email must be greater than 6 characters.",
+    "searchInputLength": "Search input for BCeID username/email must be greater than 4 characters.",
     "exactBCEIDSearch": "Email searches for BCeID must be exact.",
     "getUsersErrMsg": "Error getting users: {error}",
     "exactEmailOrUsername": "Enter an exact email or username.",

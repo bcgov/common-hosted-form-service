@@ -169,7 +169,10 @@
     "eventSubscription": "Abbonamento all'evento",
     "validEndpointRequired": "Inserisci un endpoint valido che inizi con https://",
     "validBearerTokenRequired": "Inserisci un esempio di token al portatore valido: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
-    "wideFormLayout": "Layout di modulo ampio"
+    "wideFormLayout": "Layout di modulo ampio",
+    "formMetadataTitle": "Metadati del modulo",
+    "formMetadataMessage": "Informazioni strutturate per descrivere o spiegare questo modulo a sistemi esterni. Le chiamate ai sistemi esterni includeranno questi metadati nei loro payload.",
+    "formMetadataJsonError": "I metadati del modulo devono essere JSON validi. Utilizzare le virgolette doppie attorno ad attributi e valori."
   },
   "formProfile": {
     "message": "Il team CHEFS sta raccogliendo e organizzando informazioni per servire come input cruciale per la creazione di casi aziendali completi. Questi casi avranno un ruolo cruciale nella guida dell'operazione strategica e nell'ulteriore miglioramento di CHEFS nei prossimi anni. Questa iniziativa di raccolta dati è essenziale per informare decisioni critiche e plasmare la traiettoria di CHEFS, garantendone adattabilità ed efficacia nel affrontare esigenze e sfide in evoluzione.",
@@ -225,7 +228,7 @@
     "TACS": "Turismo, Arte, Cultura e Sport (TACS)",
     "MOTI": "Trasporti e Infrastrutture (MOTI)",
     "WLRS": "Gestione dell'Acqua, della Terra e delle Risorse (WLRS)"
-},
+  },
   "subscribeEvent": {
     "eventType": "Tipo di evento",
     "endpointUrl": "URL dell'endpoint",
@@ -248,7 +251,7 @@
     "infoA": "Assicurati che il segreto della tua chiave API sia archiviato in un luogo sicuro (ad es. Key Vault).",
     "infoB": "La tua chiave API garantisce l'accesso illimitato al tuo modulo. Non dare la tua chiave API a nessuno.",
     "infoC": "La chiave API deve essere utilizzata SOLO per le interazioni di sistema automatizzate. Non utilizzare la chiave API per l'accesso basato sull'utente",
-    "infoD":"Se desideri accedere ai file inviati tramite la chiave API, abilita la seguente casella di controllo dopo aver generato la chiave.",
+    "infoD": "Se desideri accedere ai file inviati tramite la chiave API, abilita la seguente casella di controllo dopo aver generato la chiave.",
     "deleteKey": "Elimina chiave",
     "apiKey": "chiave API",
     "hideSecret": "Nascondi segreto",
@@ -549,7 +552,7 @@
     "sentUninvitedEmailTo": "Email non invitata inviata a",
     "updateUserErrMsg": "Si è verificato un errore durante il tentativo di aggiornare gli utenti per questo invio.",
     "updateUserConsoleErrMsg": "Errore durante l'impostazione delle autorizzazioni utente. Sub: {submissionId} Utente: {userId} Errore: {error}",
-    "searchInputLength": "L'input di ricerca per nome utente/e-mail BCeID deve contenere più di 6 caratteri.",
+    "searchInputLength": "L'input di ricerca per nome utente/e-mail BCeID deve contenere più di 4 caratteri.",
     "exactBCEIDSearch": "Le ricerche e-mail per BCeID devono essere esatte.",
     "getUsersErrMsg": "Errore durante il recupero degli utenti: {error}",
     "exactEmailOrUsername": "Inserisci un'e-mail o un nome utente esatti.",
