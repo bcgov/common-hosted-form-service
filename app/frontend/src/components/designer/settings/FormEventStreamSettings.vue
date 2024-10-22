@@ -58,7 +58,13 @@ async function generateKey() {
 const encryptionKeyRules = ref([
   (v) => {
     if (form.value.eventStreamConfig.enablePrivateStream) {
-      return !!v || t('trans.formSettings.encryptionKeyReq');
+      let x = v;
+      if (v && Object.prototype.toString.call(v) === '[object String]') {
+        if (v.trim().length === 0) {
+          x = null;
+        }
+      }
+      return !!x || t('trans.formSettings.encryptionKeyReq');
     }
   },
 ]);
@@ -66,6 +72,7 @@ const encryptionKeyRules = ref([
 defineExpose({
   fetchAlgorithms,
   generateKey,
+  encryptionKeyRules,
 });
 </script>
 
