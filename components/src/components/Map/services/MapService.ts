@@ -54,7 +54,6 @@ class MapService {
       map.on('draw:created', (e) => {
         const layer = e.layer;
         if (drawnItems.getLayers().length === options.numPoints) {
-          console.log('too many markers');
           map.closePopup();
           L.popup()
             .setLatLng(map.getCenter())
