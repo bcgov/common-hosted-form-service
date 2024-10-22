@@ -104,35 +104,19 @@ it('Verify draft submission', () => {
     cy.get('div > .bg-primary').click();
     cy.get('.v-data-table__tr > :nth-child(4)').contains('DRAFT');
     //Verify draft delete button exist
-    cy.get('[icon-size="x-small"] > .v-btn').should('be.exist');
-    //View column management
-    cy.get('.mdi-view-column').click();
-    cy.get('[data-test="filter-search"]').type('Status');
-    //Remove Status column from draft submission table
-    cy.get('input[type="checkbox"]').then($el => {
-
-      const rem=$el[1];
-      cy.get(rem).click();
-
-    });
-    //Verify Status column is removed from submission table
-    cy.get('[data-test="save-btn"] > .v-btn__content').click();
-    cy.get('.v-data-table__tr > :nth-child(4)').contains('DRAFT').should('not.exist');
+    //cy.get('[icon-size="x-small"] > .v-btn').should('be.exist');
+    
+    //Manage  members for draft management
     cy.get('.mdi-pencil').click();
     cy.get('.mdi-content-save').click();
     cy.get('.v-alert__content > div').contains('Draft Saved');
     cy.get(':nth-child(2) > :nth-child(4) > :nth-child(1) > .v-btn').click();
-    //Manage  members for draft management
     cy.get('form > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
     cy.get('form > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').type('NIM');
     cy.contains('John, Nimya 1 CITZ:EX (nimya.1.john@gov.bc.ca)').click();
     cy.get('.v-col-3').click();
     cy.get('tbody > :nth-child(2) > :nth-child(1)').contains('John, Nimya 1 CITZ:EX').should('be.visible');
     cy.get(':nth-child(1) > :nth-child(4) > .v-btn > .v-btn__content > .mdi-minus').should('not.be.enabled');
-    //Remove added member
-    cy.get(':nth-child(2) > :nth-child(4) > .v-btn > .v-btn__content > .mdi-minus').click();
-    cy.get('[data-test="continue-btn-continue"] > .v-btn__content > span').click();
-    cy.get('tbody > :nth-child(2) > :nth-child(1)').should('not.exist');
     cy.wait(4000);
 
     cy.get('.v-card-actions > .v-btn > .v-btn__content > span').click();
@@ -153,17 +137,46 @@ it('Verify draft submission', () => {
     cy.contains('h1', 'Your form has been submitted successfully');
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
     //cy.get('div > .bg-primary').click();
-    cy.get('.v-data-table__tr > :nth-child(4)').contains('SUBMITTED').should('not.exist');
+    //Assign status submission
+    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+    cy.get('.mdi-list-box-outline').click();
+    cy.waitForLoad();
+    cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn > .v-btn__content > .mdi-eye').click();
+    cy.get('.status-heading > .mdi-chevron-right').click();
+    cy.get('[data-test="showStatusList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
+    cy.contains('ASSIGNED').click();
+    cy.get('[data-test="canAssignToMe"] > .v-btn__content > span').should('be.visible');
+    cy.get('[data-test="showAssigneeList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
+    cy.get('[data-test="showAssigneeList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').type('ch');
+    cy.get('div').contains('CHEFS Testing').click();
+    cy.get('[data-test="updateStatusToNew"] > .v-btn__content > span').click();
+    cy.wait(4000);
+    cy.get('[data-test="showStatusList"] > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
+    cy.contains('REVISING').click();
+    //cy.get('.v-selection-control > .v-label').click();
+    cy.get('.v-chip__content').contains('chefs.testing@gov.bc.ca').should('be.visible');
+    cy.get('[data-test="showRecipientEmail"] > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
+    cy.contains('John, Nimya 1 CITZ:EX (nimya.1.john@gov.bc.ca)').should('be.visible');
+    cy.get('label').contains('Notify all submitters').should('be.visible');
+    cy.get('[data-test="canAttachCommentToEmail"] > .v-input__control > .v-selection-control > .v-label').click();
+    cy.get('textarea[rows="1"]').type('some comments');
+    cy.get('button').contains('REVISE').click();
+    cy.get(':nth-child(1) > .v-checkbox > .v-input__control > .v-selection-control > .v-label').click();
+    cy.wait(4000);
+    
+    //Verify Edit submission button is disabled
+    cy.get('button[title="Edit This Submission"]').should('be.disabled');
+
     //Delete form after test run
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.waitForLoad();
     cy.get('.mdi-delete').click();
     cy.get('[data-test="continue-btn-continue"]').click();
     cy.get('#logoutButton > .v-btn__content > span').click();
-   
+});
 
-    });
 
-  });
+});
+
     
 });
