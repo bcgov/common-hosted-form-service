@@ -19,7 +19,7 @@ if (WEBSOCKETS) {
 const log = require('./log')(module.filename);
 
 const { FormVersion, Form, FormEventStreamConfig } = require('../forms/common/models');
-
+const formMetadataService = require('../forms/form/formMetadata/service');
 const { featureFlags } = require('./featureFlags');
 const { encryptionService } = require('./encryptionService');
 
@@ -215,6 +215,8 @@ class EventStreamService {
             formId: formId,
             formVersionId: formVersionId,
           };
+          await formMetadataService.addAttribute(formId, meta);
+
           if (evntStrmCfg.enablePrivateStream) {
             const encPayload = encryptionService.encryptExternal(evntStrmCfg.encryptionKey.algorithm, evntStrmCfg.encryptionKey.key, form);
             const privMsg = {
@@ -274,6 +276,7 @@ class EventStreamService {
             submissionId: submission.id,
             draft: draft,
           };
+          await formMetadataService.addAttribute(formVersion.formId, meta);
 
           if (evntStrmCfg.enablePrivateStream) {
             const encPayload = encryptionService.encryptExternal(evntStrmCfg.encryptionKey.algorithm, evntStrmCfg.encryptionKey.key, submission);

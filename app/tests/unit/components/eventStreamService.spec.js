@@ -6,6 +6,9 @@ const { Form, FormVersion, FormEventStreamConfig } = require('../../../src/forms
 const FORM_EVENT_TYPES_COUNT = 2;
 const SUBMISSION_EVENT_TYPES_COUNT = 3;
 
+const formMetadataService = require('../../../src/forms/form/formMetadata/service');
+jest.mock('../../../src/forms/form/formMetadata/service');
+
 beforeEach(() => {
   MockModel.mockReset();
   jest.resetModules();
@@ -46,6 +49,8 @@ describe('eventStreamService', () => {
     FormEventStreamConfig.withGraphFetched = jest.fn().mockReturnThis();
     FormEventStreamConfig.first = jest.fn().mockReturnThis();
     FormEventStreamConfig.throwIfNotFound = jest.fn().mockReturnThis();
+
+    formMetadataService.addAttribute = jest.fn().mockResolvedValueOnce({});
   });
 
   afterEach(() => {

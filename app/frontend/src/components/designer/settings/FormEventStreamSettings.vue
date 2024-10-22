@@ -18,7 +18,7 @@ const { form, isRTL } = storeToRefs(formStore);
 const loading = ref(true);
 const algorithms = ref([]);
 const techdocsLink =
-  'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities';
+  'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Integrations/Event-Stream-Service/';
 
 onMounted(async () => {
   await fetchAlgorithms();
