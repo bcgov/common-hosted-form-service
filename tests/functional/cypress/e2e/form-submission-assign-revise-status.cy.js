@@ -103,9 +103,17 @@ it('Verify draft submission', () => {
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
     cy.get('div > .bg-primary').click();
     cy.get('.v-data-table__tr > :nth-child(4)').contains('DRAFT');
-    //Verify draft delete button exist
-    //cy.get('[icon-size="x-small"] > .v-btn').should('be.exist');
-    
+    });
+
+});
+it('Submission revise status Assignment', () => {
+    cy.viewport(1000, 1100);
+    cy.wait(4000);
+    cy.location('search').then(search => {
+        //let pathName = fullUrl.pathname
+        let arr = search.split('=');
+        let arrayValues = arr[1].split('&');
+        cy.log(arrayValues[0]);
     //Manage  members for draft management
     cy.get('.mdi-pencil').click();
     cy.get('.mdi-content-save').click();
@@ -125,6 +133,7 @@ it('Verify draft submission', () => {
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
     cy.get('.mdi-pencil').click();
     cy.waitForLoad();
+
     //Form submission
     cy.contains('Text Field').click();
     cy.contains('Text Field').type('{selectall}{backspace}');
@@ -136,8 +145,9 @@ it('Verify draft submission', () => {
     cy.location('pathname').should('eq', `/${depEnv}/form/success`);
     cy.contains('h1', 'Your form has been submitted successfully');
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
-    //cy.get('div > .bg-primary').click();
+    
     //Assign status submission
+    
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.get('.mdi-list-box-outline').click();
     cy.waitForLoad();
@@ -173,7 +183,7 @@ it('Verify draft submission', () => {
     cy.get('.mdi-delete').click();
     cy.get('[data-test="continue-btn-continue"]').click();
     cy.get('#logoutButton > .v-btn__content > span').click();
-});
+    });
 
 
 });
