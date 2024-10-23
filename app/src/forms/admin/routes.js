@@ -2,12 +2,9 @@ const routes = require('express').Router();
 
 const jwtService = require('../../components/jwtService');
 const currentUser = require('../auth/middleware/userAccess').currentUser;
-const rateLimiter = require('../common/middleware').apiKeyRateLimiter;
 const validateParameter = require('../common/middleware/validateParameter');
 const userController = require('../user/controller');
 const controller = require('./controller');
-
-routes.use(rateLimiter);
 
 // Routes under /admin fetch data without doing form permission checks. All
 // routes in this file should remain under the "admin" role check, with the
