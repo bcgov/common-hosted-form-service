@@ -54,10 +54,13 @@ class MapService {
       map.on('draw:created', (e) => {
         const layer = e.layer;
         if (drawnItems.getLayers().length === options.numPoints) {
+          map.closePopup();
           L.popup()
-            .setLatLng(layer.getLatLng())
-            .setContent('<p>Only one marker for submission</p>')
-            .openOn(map);
+            .setLatLng(map.getCenter())
+            .setContent(
+              `<p>Only ${options.numPoints} features per submission</p>`
+            )
+            .addTo(map);
         } else {
           drawnItems.addLayer(layer);
         }
