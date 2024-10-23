@@ -53,8 +53,6 @@ app.use((_req, res, next) => {
   }
 });
 
-app.use(config.get('server.basePath') + config.get('server.apiPath'), rateLimiter);
-
 // Frontend configuration endpoint
 apiRouter.use('/config', (_req, res, next) => {
   try {
@@ -78,6 +76,7 @@ apiRouter.get('/api', (_req, res) => {
 });
 
 // Host API endpoints
+apiRouter.use(rateLimiter);
 apiRouter.use(config.get('server.apiPath'), v1Router);
 app.use(config.get('server.basePath'), apiRouter);
 app.use(middleware.errorHandler);
