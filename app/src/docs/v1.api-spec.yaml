@@ -637,11 +637,13 @@ paths:
           name: columns
           schema:
             type: array
-          description: List of form level columns (Only Allowed `deleted`, `draft`, `updatedAt`) to be included, others will be ignored
-          example:
-            - deleted,
-            - draft,
-            - updatedAt
+            description: List of form level columns (Only Allowed `deleted`, `draft`, `updatedAt`) to be included, others will be ignored
+            example:
+              - deleted,
+              - draft,
+              - updatedAt
+            items:
+              type: string
         - in: query
           name: status
           schema:
@@ -3455,6 +3457,119 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /forms/encryptionKey/algorithms:
+    get:
+      summary: Get the list of encryption algorithms
+      operationId: listEncryptionAlgorithms
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Form
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                      description: code for encryption Algorithm
+                    display:
+                      type: string
+                      description: display for encryption Algorithm
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/{formId}/encryptionKey/{formEncryptionKeyId}:
+    get:
+      summary: Get the list of encryption algorithms
+      operationId: readEncryptionKey
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Form
+      parameters:
+        - in: path
+          name: formId
+          schema:
+            type: string
+            example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+          description: form ID
+          required: true
+        - in: path
+          name: formEncryptionKeyId
+          schema:
+            type: string
+            example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+          description: form encryption key ID
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EncryptionKey'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/{formId}/eventStreamConfig:
+    get:
+      summary: Get a form's event stream configuration
+      operationId: readEventStreamConfig
+      security:
+        - BasicAuth: []
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - Form
+      parameters:
+        - in: path
+          name: formId
+          schema:
+            type: string
+            example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+          description: form ID
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventStreamConfig'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   headers:
     RateLimit:
@@ -3651,6 +3766,34 @@ components:
               format: uuid
               description: Transaction ID returned by a messaging service
               example: 7d13b78b-21d2-4128-b4e8-02ad3da17d22
+    EncryptionKey:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: ID of EncryptionKey.
+              example: 1223h78b-21d2-4128-b4e8-02ad3daipoi32
+            formId:
+              type: string
+              format: uuid
+              description: Form ID this EncryptionKey belongs to.
+              example: 1223h78b-21d2-4128-b4e8-02ad3daipoi32
+            name:
+              type: string
+              description: Name to identify this EncryptionKey to a user
+              example: 'private-event-stream'
+            algorithm:
+              type: string
+              description: Algorithm used for encryption
+              example: 'aes-256-gcm'
+            key:
+              type: string
+              format: sha256 hash
+              description: sha256 hash for encryption algorithm
+              example: ad5520469720325d1694c87511afda28a0432dd974cb77b5b4b9f946a5af6985
+        - $ref: '#/components/schemas/TimeStampUserData'
     Error:
       allOf:
         - $ref: '#/components/schemas/Problem'
@@ -3662,6 +3805,34 @@ components:
               example: Internal Server Error
             type:
               example: https://httpstatuses.com/500
+    EventStreamConfig:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: ID of EventStreamConfig.
+              example: 1223h78b-21d2-4128-b4e8-02ad3daipoi32
+            formId:
+              type: string
+              format: uuid
+              description: Form ID this EventStreamConfig belongs to.
+              example: 1223h78b-21d2-4128-b4e8-02ad3daipoi32
+            enablePublicStream:
+              type: boolean
+              description: When true, send messages on public stream
+            enablePrivateStream:
+              type: boolean
+              description: When true, send messages on private stream (requires EncryptionKey)
+            encryptionKeyId:
+              type: string
+              format: uuid
+              description: Id of EncryptionKey for private stream
+              example: 7d13b78b-21d2-4128-b4e8-02ad3da17d22
+            encryptionKey:
+              $ref: '#/components/schemas/EncryptionKey'
+        - $ref: '#/components/schemas/TimeStampUserData'
     FileUpload:
       type: object
       properties:
@@ -3863,6 +4034,8 @@ components:
               type: string
               description: This contains a value that makes apparent that use case of the created form
               example: feedback
+            eventStreamConfig:
+              $ref: '#/components/schemas/EventStreamConfig'
     FormCore:
       type: object
       properties:
@@ -4112,6 +4285,8 @@ components:
                 - oneRowPerLake.dataGrid.fishType,
                 - oneRowPerLake.dataGrid.numberCaught,
                 - oneRowPerLake.dataGrid.numberKept
+              items:
+                type: string
             emailExport:
               type: boolean
               description: This parameter should be set to true if the form submissions are large (e.g. above 500) or the form is big
@@ -4143,23 +4318,23 @@ components:
       allOf:
         - type: array
           items:
-            - type: object
-              properties:
-                draft:
-                  type: boolean
-                  description: >-
-                    Used to indicate if submission came from a draft version of a
-                    form.
-                  example: false
-                submission:
-                  type: object
-                  description: this object should contain one property named data as an array. This array named data should store all the multiple drafts as object in this array.
-                  properties:
-                    data:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/FormSubmissionObjectForMultipleUpload'
-                      description: this is an array of multiple objects, each object contain data of single the form submissions.
+            type: object
+            properties:
+              draft:
+                type: boolean
+                description: >-
+                  Used to indicate if submission came from a draft version of a
+                  form.
+                example: false
+              submission:
+                type: object
+                description: this object should contain one property named data as an array. This array named data should store all the multiple drafts as object in this array.
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FormSubmissionObjectForMultipleUpload'
+                    description: this is an array of multiple objects, each object contain data of single the form submissions.
     FormSubmissionSummary:
       allOf:
         - type: object
