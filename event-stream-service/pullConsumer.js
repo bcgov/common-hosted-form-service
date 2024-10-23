@@ -1,14 +1,21 @@
 const { AckPolicy, JSONCodec } = require("nats");
 const Cryptr = require("cryptr");
 const falsey = require("falsey");
+const { v4: uuidv4 } = require("uuid");
 /*
  command line pass in environment variables for:
  SERVERS - which nats instance to connect to (default is local from docker-compose)
+ DURABLE_NAME - name for the consumer, makes a persistant/durable consumer that will remain listening through periods of inactivity (default is generated uuid)
  WEBSOCKET - connect via nats protocol or websockets. true/false (default false, connect via nats)
  ENCRYPTION_KEY - what encryption key to decrypt (Cryptr - aes-256-gcm) private payloads
-
- Example:
+ SOURCE - filter messages based on meta.source (default is none)
+ Examples:
+  SERVERS=ess-a191b5-dev.apps.silver.devops.gov.bc.ca WEBSOCKETS=true DURABLE_NAME=pullConsumer ENCRYPTION_KEY=ad5520469720325d1694c87511afda28a0432dd974cb77b5b4b9f946a5af6985 SOURCE=pr-1444 node pullConsumer.js
+  
   SERVERS=ess-a191b5-dev.apps.silver.devops.gov.bc.ca WEBSOCKETS=true ENCRYPTION_KEY=ad5520469720325d1694c87511afda28a0432dd974cb77b5b4b9f946a5af6985 node pullConsumer.js
+
+  // runs with all defaults against localhost
+  node pullConsumer.js
 */
 
 // different connection libraries if we are using websockerts or nats protocols.
@@ -45,8 +52,9 @@ let consumer = undefined; // pull consumer (ordered, ephemeral)
 const STREAM_NAME = "CHEFS";
 const FILTER_SUBJECTS = ["PUBLIC.forms.>", "PRIVATE.forms.>"];
 const MAX_MESSAGES = 2;
-const DURABLE_NAME = "pullConsumer";
+const DURABLE_NAME = process.env.DURABLE_NAME || uuidv4();
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || undefined;
+const SOURCE_FILTER = process.env.SOURCE || false;
 
 const printMsg = (m) => {
   // illustrate grabbing the sequence and timestamp from the nats message...
@@ -58,22 +66,33 @@ const printMsg = (m) => {
     // illustrate (one way of) grabbing message content as json
     const jsonCodec = JSONCodec();
     const data = jsonCodec.decode(m.data);
-    console.log(data);
-    try {
-      if (
-        data &&
-        data["payload"] &&
-        data["payload"]["data"] &&
-        ENCRYPTION_KEY
-      ) {
-        const cryptr = new Cryptr(ENCRYPTION_KEY);
-        const decryptedData = cryptr.decrypt(data["payload"]["data"]);
-        const jsonData = JSON.parse(decryptedData);
-        console.log("decrypted payload data:");
-        console.log(jsonData);
+    let process = true;
+    if (SOURCE_FILTER) {
+      process = data["meta"]["source"] === SOURCE_FILTER;
+      if (!process) {
+        console.log(
+          `  not processing message. filter = ${SOURCE_FILTER}, meta.source = ${data["meta"]["source"]}`
+        );
       }
-    } catch (err) {
-      console.error("Error decrypting payload.data", err);
+    }
+    if (process) {
+      console.log(data);
+      try {
+        if (
+          data &&
+          data["payload"] &&
+          data["payload"]["data"] &&
+          ENCRYPTION_KEY
+        ) {
+          const cryptr = new Cryptr(ENCRYPTION_KEY);
+          const decryptedData = cryptr.decrypt(data["payload"]["data"]);
+          const jsonData = JSON.parse(decryptedData);
+          console.log("decrypted payload data:");
+          console.log(jsonData);
+        }
+      } catch (err) {
+        console.error("  Error decrypting payload.data - check ENCRYPTION_KEY");
+      }
     }
   } catch (e) {
     console.error(`Error printing message: ${e.message}`);
@@ -103,6 +122,9 @@ const init = async () => {
         ack_policy: AckPolicy.Explicit,
         durable_name: DURABLE_NAME,
       });
+      console.log(
+        `get consumer: stream = ${STREAM_NAME}, durable name = ${DURABLE_NAME}...`
+      );
       consumer = await js.consumers.get(STREAM_NAME, DURABLE_NAME);
     } catch (e) {
       console.error(e);
