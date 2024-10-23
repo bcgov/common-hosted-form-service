@@ -6,7 +6,6 @@ const { expressHelper } = require('../../../common/helper');
 const jwtService = require('../../../../src/components/jwtService');
 const apiAccess = require('../../../../src/forms/auth/middleware/apiAccess');
 const userAccess = require('../../../../src/forms/auth/middleware/userAccess');
-const rateLimiter = require('../../../../src/forms/common/middleware/rateLimiter');
 const validateParameter = require('../../../../src/forms/common/middleware/validateParameter');
 const controller = require('../../../../src/forms/form/controller');
 
@@ -27,10 +26,6 @@ const mockJwtServiceProtect = jest.fn((_req, _res, next) => {
 });
 jwtService.protect = jest.fn(() => {
   return mockJwtServiceProtect;
-});
-
-rateLimiter.apiKeyRateLimiter = jest.fn((_req, _res, next) => {
-  next();
 });
 
 const hasFormPermissionsMock = jest.fn((_req, _res, next) => {
@@ -83,7 +78,6 @@ describe(`${basePath}`, () => {
     expect(controller.listForms).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(0);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
@@ -102,7 +96,6 @@ describe(`${basePath}`, () => {
     expect(controller.createForm).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(0);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
@@ -126,7 +119,6 @@ describe(`${basePath}/:formId`, () => {
     expect(controller.deleteForm).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -145,7 +137,6 @@ describe(`${basePath}/:formId`, () => {
     expect(controller.readForm).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -164,7 +155,6 @@ describe(`${basePath}/:formId`, () => {
     expect(controller.updateForm).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -188,7 +178,6 @@ describe(`${basePath}/:formId/apiKey`, () => {
     expect(controller.deleteApiKey).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -207,7 +196,6 @@ describe(`${basePath}/:formId/apiKey`, () => {
     expect(controller.readApiKey).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -226,7 +214,6 @@ describe(`${basePath}/:formId/apiKey`, () => {
     expect(controller.createOrReplaceApiKey).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -250,7 +237,6 @@ describe(`${basePath}/:formId/apiKey/filesApiAccess`, () => {
     expect(controller.filesApiKeyAccess).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -274,7 +260,6 @@ describe(`${basePath}/:formId/csvexport/fields`, () => {
     expect(controller.readFieldsForCSVExport).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -298,7 +283,6 @@ describe(`${basePath}/:formId/documentTemplates`, () => {
     expect(controller.documentTemplateList).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -317,7 +301,6 @@ describe(`${basePath}/:formId/documentTemplates`, () => {
     expect(controller.documentTemplateCreate).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -342,7 +325,6 @@ describe(`${basePath}/:formId/documentTemplates/:documentTemplateId`, () => {
     expect(controller.documentTemplateDelete).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -361,7 +343,6 @@ describe(`${basePath}/:formId/documentTemplates/:documentTemplateId`, () => {
     expect(controller.documentTemplateRead).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -385,7 +366,6 @@ describe(`${basePath}/:formId/drafts`, () => {
     expect(controller.listDrafts).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -404,7 +384,6 @@ describe(`${basePath}/:formId/drafts`, () => {
     expect(controller.createDraft).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -429,7 +408,6 @@ describe(`${basePath}/:formId/drafts/:formVersionDraftId`, () => {
     expect(controller.deleteDraft).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -448,7 +426,6 @@ describe(`${basePath}/:formId/drafts/:formVersionDraftId`, () => {
     expect(controller.readDraft).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -467,7 +444,6 @@ describe(`${basePath}/:formId/drafts/:formVersionDraftId`, () => {
     expect(controller.updateDraft).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -492,7 +468,6 @@ describe(`${basePath}/:formId/drafts/:formVersionDraftId/publish`, () => {
     expect(controller.publishDraft).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -516,7 +491,6 @@ describe(`${basePath}/:formId/emailTemplate`, () => {
     expect(controller.createOrUpdateEmailTemplate).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -540,7 +514,6 @@ describe(`${basePath}/:formId/emailTemplates`, () => {
     expect(controller.readEmailTemplates).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -564,7 +537,6 @@ describe(`${basePath}/:formId/export`, () => {
     expect(controller.export).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -588,7 +560,6 @@ describe(`${basePath}/:formId/export/fields`, () => {
     expect(controller.exportWithFields).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -612,7 +583,6 @@ describe(`${basePath}/:formId/options`, () => {
     expect(controller.readFormOptions).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(0);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -636,7 +606,6 @@ describe(`${basePath}/:formId/statusCodes`, () => {
     expect(controller.getStatusCodes).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -660,7 +629,6 @@ describe(`${basePath}/:formId/submissions`, () => {
     expect(controller.listFormSubmissions).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -684,7 +652,6 @@ describe(`${basePath}/:formId/subscriptions`, () => {
     expect(controller.readFormSubscriptionDetails).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -703,7 +670,6 @@ describe(`${basePath}/:formId/subscriptions`, () => {
     expect(controller.createOrUpdateSubscriptionDetails).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -727,7 +693,6 @@ describe(`${basePath}/:formId/version`, () => {
     expect(controller.readPublishedForm).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -752,7 +717,6 @@ describe(`${basePath}/:formId/versions/:formVersionId`, () => {
     expect(controller.readVersion).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -777,7 +741,6 @@ describe(`${basePath}/:formId/versions/:formVersionId/fields`, () => {
     expect(controller.readVersionFields).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -802,7 +765,6 @@ describe(`${basePath}/:formId/versions/:formVersionId/multiSubmission`, () => {
     expect(controller.createMultiSubmission).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -827,7 +789,6 @@ describe(`${basePath}/:formId/versions/:formVersionId/publish`, () => {
     expect(controller.publishVersion).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -852,7 +813,6 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions`, () => {
     expect(controller.listSubmissions).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -871,7 +831,6 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions`, () => {
     expect(controller.createSubmission).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -896,7 +855,6 @@ describe(`${basePath}/:formId/versions/:formVersionId/submissions/discover`, () 
     expect(controller.listSubmissionFields).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -920,7 +878,6 @@ describe(`${basePath}/formcomponents/proactivehelp/imageUrl/:componentId`, () =>
     expect(controller.getFCProactiveHelpImageUrl).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(0);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
@@ -943,7 +900,6 @@ describe(`${basePath}/formcomponents/proactivehelp/list`, () => {
     expect(controller.listFormComponentsProactiveHelp).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(0);
     expect(mockJwtServiceProtect).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateDocumentTemplateId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(0);
