@@ -138,6 +138,7 @@ it('Verify draft submission', () => {
     cy.get('.v-card-actions > .v-btn > .v-btn__content > span').click();
     cy.waitForLoad();
     // Edit draft submission
+    cy.wait(4000);
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
     cy.get('.mdi-pencil').click();
     cy.waitForLoad();
