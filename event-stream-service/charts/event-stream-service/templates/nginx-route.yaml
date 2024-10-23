@@ -1,0 +1,22 @@
+{{- if .Values.ess.nginx.route.enabled -}}
+{{- $routeName := (.Values.ess.nginx.route.name) }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ $routeName }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+  annotations:
+    haproxy.router.openshift.io/timeout: {{ .Values.ess.nginx.route.timeout }}
+spec:
+  host: {{ .Values.ess.nginx.route.ingressPrefix }}{{ .Values.ess.nginx.route.ingressSuffix }}
+  path: {{ .Values.ess.nginx.route.path }}
+  to:
+    kind: Service
+    name: {{ .Values.ess.nginx.route.serviceName }}
+    weight: 100
+  port:
+    targetPort: {{ .Values.ess.nginx.route.targetPort }}
+  wildcardPolicy: {{ .Values.ess.nginx.route.wildcardPolicy }}
+{{ include "nginx.openshift.route.tls" . | indent 2}}
+{{- end -}}

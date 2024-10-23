@@ -10,6 +10,7 @@ import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import Download from '~/views/file/Download.vue';
 import * as transformUtils from '~/utils/transformUtils';
+import { useAppStore } from '~/store/app';
 
 describe('Download.vue', () => {
   let pinia;
@@ -37,6 +38,8 @@ describe('Download.vue', () => {
     formStore.$reset();
     const notificationStore = useNotificationStore();
     notificationStore.$reset();
+    const appStore = useAppStore(pinia);
+    appStore.$reset();
   });
 
   it('renders and downloads json', async () => {

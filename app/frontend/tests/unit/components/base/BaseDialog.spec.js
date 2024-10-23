@@ -6,14 +6,17 @@ import { createTestingPinia } from '@pinia/testing';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { useFormStore } from '~/store/form';
+import { useAppStore } from '~/store/app';
 
 describe('BaseDialog.vue', () => {
   const pinia = createTestingPinia();
   setActivePinia(pinia);
   const formStore = useFormStore();
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     formStore.$reset();
+    appStore.$reset();
   });
 
   it('renders with ok button', async () => {
