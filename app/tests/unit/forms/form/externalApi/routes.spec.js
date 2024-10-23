@@ -6,7 +6,6 @@ const { expressHelper } = require('../../../../common/helper');
 const jwtService = require('../../../../../src/components/jwtService');
 const apiAccess = require('../../../../../src/forms/auth/middleware/apiAccess');
 const userAccess = require('../../../../../src/forms/auth/middleware/userAccess');
-const rateLimiter = require('../../../../../src/forms/common/middleware/rateLimiter');
 const validateParameter = require('../../../../../src/forms/common/middleware/validateParameter');
 const controller = require('../../../../../src/forms/form/externalApi/controller');
 
@@ -26,10 +25,6 @@ jwtService.protect = jest.fn(() => {
   return jest.fn((_req, _res, next) => {
     next();
   });
-});
-
-rateLimiter.apiKeyRateLimiter = jest.fn((_req, _res, next) => {
-  next();
 });
 
 const hasFormPermissionsMock = jest.fn((_req, _res, next) => {
@@ -82,7 +77,6 @@ describe(`${basePath}/:formId/externalAPIs`, () => {
     expect(apiAccess).toBeCalledTimes(0);
     expect(controller.listExternalAPIs).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -98,7 +92,6 @@ describe(`${basePath}/:formId/externalAPIs`, () => {
     expect(apiAccess).toBeCalledTimes(0);
     expect(controller.createExternalAPI).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -126,7 +119,6 @@ describe(`${basePath}/:formId/externalAPIs/:externalAPIId`, () => {
     expect(apiAccess).toBeCalledTimes(0);
     expect(controller.deleteExternalAPI).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateExternalAPIId).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -154,7 +146,6 @@ describe(`${basePath}/:formId/externalAPIs/:externalAPIId`, () => {
     expect(apiAccess).toBeCalledTimes(0);
     expect(controller.updateExternalAPI).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateExternalAPIId).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
@@ -182,7 +173,6 @@ describe(`${basePath}/:formId/externalAPIs/algorithms`, () => {
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
     expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
     expect(apiAccess).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(controller.listExternalAPIAlgorithms).toBeCalledTimes(1);
   });
@@ -222,7 +212,6 @@ describe(`${basePath}/:formId/externalAPIs/statusCodes`, () => {
     expect(apiAccess).toBeCalledTimes(0);
     expect(controller.listExternalAPIStatusCodes).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateExternalAPIId).toBeCalledTimes(0);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);
