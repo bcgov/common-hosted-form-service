@@ -153,7 +153,7 @@ it('Verify draft submission', () => {
     cy.contains('h1', 'Your form has been submitted successfully');
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
     //cy.get('div > .bg-primary').click();
-    cy.get('.v-data-table__tr > :nth-child(4)').contains('SUBMITTED');
+    cy.get('.v-data-table__tr > :nth-child(4)').contains('SUBMITTED').should('not.exist');
     //Delete form after test run
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.waitForLoad();
