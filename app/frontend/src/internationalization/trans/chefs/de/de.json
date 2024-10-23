@@ -169,7 +169,10 @@
     "eventSubscription": "Ereignisabonnement",
     "validEndpointRequired": "Bitte geben Sie einen gültigen Endpunkt ein, beginnend mit https://",
     "validBearerTokenRequired": "Bitte geben Sie ein gültiges Token ein. Beispiel: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
-    "wideFormLayout": "Breites Formularlayout"
+    "wideFormLayout": "Breites Formularlayout",
+    "formMetadataTitle": "Formularmetadaten",
+    "formMetadataMessage": "Strukturierte Informationen, um diese Form externen Systemen zu beschreiben oder zu erklären. Aufrufe an externe Systeme enthalten diese Metadaten in ihren Nutzdaten.",
+    "formMetadataJsonError": "Formularmetadaten müssen gültiges JSON sein. Verwenden Sie doppelte Anführungszeichen um Attribute und Werte."
   },
   "formProfile": {
     "message": "Das CHEFS-Team sammelt und organisiert Informationen, um als entscheidende Grundlage für die Erstellung umfassender Geschäftsfälle zu dienen. Diese Fälle werden eine Schlüsselrolle dabei spielen, den strategischen Betrieb und die laufende Verbesserung von CHEFS in den kommenden Jahren zu leiten. Diese Initiative zur Datensammlung ist entscheidend, um kritische Entscheidungen zu informieren und die Trajektorie von CHEFS zu formen, um seine Anpassungsfähigkeit und Wirksamkeit bei der Bewältigung sich wandelnder Bedürfnisse und Herausforderungen zu gewährleisten.",
@@ -549,7 +552,7 @@
     "sentUninvitedEmailTo": "Uneingeladene E-Mail an gesendet",
     "updateUserErrMsg": "Beim Versuch, Benutzer für diese Übermittlung zu aktualisieren, ist ein Fehler aufgetreten.",
     "updateUserConsoleErrMsg": "Fehler beim Festlegen der Benutzerberechtigungen. Sub: {submissionId} Benutzer: {userId} Fehler: {error}",
-    "searchInputLength": "Die Sucheingabe für BCeID-Benutzername/E-Mail-Adresse muss mehr als 6 Zeichen umfassen.",
+    "searchInputLength": "Die Sucheingabe für BCeID-Benutzername/E-Mail-Adresse muss mehr als 4 Zeichen umfassen.",
     "exactBCEIDSearch": "E-Mail-Suchen nach BCeID müssen genau sein.",
     "getUsersErrMsg": "Fehler beim Abrufen von Benutzern: {error}",
     "exactEmailOrUsername": "Geben Sie eine genaue E-Mail-Adresse oder einen Benutzernamen ein.",
@@ -605,7 +608,6 @@
     "note": "Notiz",
     "maxChars": "Maximal 4000 Zeichen",
     "totalNotes": "Gesamtanzahl Notizen:"
-
   },
   "statusPanel": {
     "currentStatus": "Aktueller Status:",
