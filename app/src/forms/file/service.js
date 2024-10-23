@@ -112,6 +112,38 @@ const service = {
       throw err;
     }
   },
+
+  // This is moveSubmissionFiles with the restriction that it only moves files
+  // in the chefs/prod/uploads directory.
+  tempfix: async (submissionId) => {
+    let trx;
+    try {
+      trx = await FileStorage.startTransaction();
+
+      // fetch all the File Storage records for a submission id
+      // move them to permanent storage
+      // update their new paths.
+      const items = await FileStorage.query(trx).where('formSubmissionId', submissionId);
+
+      for (const item of items) {
+        if (item.path.startsWith('chefs/prod/uploads')) {
+          // move the files under a sub directory for this submission
+          const newPath = await storageService.move(item, 'submissions', submissionId);
+          if (!newPath) {
+            throw new Error('Error moving files for submission');
+          }
+          await FileStorage.query(trx).patchAndFetchById(item.id, {
+            storage: PERMANENT_STORAGE,
+            path: newPath,
+          });
+        }
+      }
+      await trx.commit();
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
 };
 
 module.exports = service;
