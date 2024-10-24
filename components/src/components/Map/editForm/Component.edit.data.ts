@@ -76,13 +76,16 @@ export default {
           value: 'marker',
         },
         {
-          label:
-            'Add circular area of interest through a point and custom radius',
+          label: 'Add circular area of interest with a point and custom radius',
           value: 'circle',
         },
         {
           label: 'Add a polygon',
           value: 'polygon',
+        },
+        {
+          label: 'Add a line',
+          value: 'polyline',
         },
       ],
       defaultValue: 'marker',
