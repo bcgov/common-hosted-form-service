@@ -33,7 +33,7 @@
     "apiPath": "FRONTEND_APIPATH",
     "basePath": "VITE_FRONTEND_BASEPATH",
     "oidc": {
-      "clientId": "OIDC_CLIENTID",
+      "clientId": "BCSC_DEMO_OIDC_CLIENTID",
       "realm": "OIDC_REALM",
       "serverUrl": "OIDC_SERVERURL",
       "logoutUrl": "OIDC_LOGOUTURL"
@@ -48,7 +48,7 @@
       "serverUrl": "OIDC_SERVERURL",
       "jwksUri": "OIDC_JWKSURI",
       "issuer": "OIDC_ISSUER",
-      "audience": "OIDC_CLIENTID",
+      "audience": "BCSC_DEMO_OIDC_CLIENTID",
       "maxTokenAge": "OIDC_MAXTOKENAGE"
     },
     "logFile": "SERVER_LOGFILE",
