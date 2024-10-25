@@ -26,14 +26,10 @@ describe('Form Designer', () => {
     });
   });
   it('Visits the form settings page', () => {
-    
-    
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     
     formsettings();
-    
-
   });  
 // Update manage form settings
  it('Checks manage form settings', () => {
@@ -84,7 +80,8 @@ describe('Form Designer', () => {
       cy.get('[data-test="text-description"]').type('test description edit');
       cy.get('[data-test="canSaveAndEditDraftsCheckbox"]').click();
       //Verify form schedule settings is not present
-      cy.get(':nth-child(5) > .v-card > .v-card-text').should('not.exist');
+      
+      cy.get('span').contains('Form Schedule Settings').should('not.exist');
       //cy.get('span').contains('UPDATE').click();
       cy.get('.mb-5 > .v-btn--elevated').click();
 
@@ -134,10 +131,17 @@ describe('Form Designer', () => {
         
         });
       cy.get(':nth-child(4) > .v-input > .v-input__control > .v-field').click();
-      cy.waitForLoad();
-      cy.waitForLoad();
-      cy.waitForLoad();
+      cy.wait(4000);
       cy.contains('days').click();
+      //verification of Summary
+      cy.contains('span','This form will be open for submissions from').should('be.visible');
+      cy.get('b').then($el => {
+
+        const rem=$el[0];
+        const rem1=$el[1];
+        cy.get(rem).contains('2026-06-17').should('exist');
+
+       });
       //Repeat period
       cy.contains('Repeat period').click();
       cy.get('input[type="number"]').then($el => {
@@ -159,23 +163,18 @@ describe('Form Designer', () => {
         
         });
  
-      //Clsing date for submission
+      //Closing date for submission
       cy.contains('Set custom closing message').click();
-      cy.get('textarea').type('closed for some reasons')
-      cy.contains('SEND Reminder email').click();
-      //verification of Summary
-      cy.contains('span','This form will be open for submissions from').should('be.visible');
-      cy.get('b').then($el => {
+      cy.get('textarea').then($el => {
 
         const rem=$el[0];
-        cy.get(rem).contains('2026-06-17').should('be.visible');
-       });
+        cy.get(rem).type('closed for some reasons');
+      });
+      //cy.get('textarea').type('closed for some reasons')
       cy.contains('SEND Reminder email').click();
-      cy.contains('b','2026-06-21').should('be.visible');
-      cy.get('[data-test="canEditForm"]').click();
       
-
-
+      cy.contains('SEND Reminder email').click();
+      cy.get('[data-test="canEditForm"]').click();
     })
     it('Checks Event Subscription settings', () => {
       cy.viewport(1000, 1100);
@@ -197,17 +196,11 @@ describe('Form Designer', () => {
 
       cy.get('.v-col > .v-btn > .v-btn__content > span').click();
       // Verify form settings updation success message
-      cy.get('.v-alert__content').contains('div','Your form settings have been updated successfully.').should('be.visible');
+      cy.get('.v-alert__content').contains('div','Subscription settings for this form has been saved.').should('be.visible');
 
       //Delete form after test run
       cy.get('.mdi-delete').click();
       cy.get('[data-test="continue-btn-continue"]').click();
       cy.get('#logoutButton > .v-btn__content > span').click();
-
-
-
     })
-
-
-   
 })

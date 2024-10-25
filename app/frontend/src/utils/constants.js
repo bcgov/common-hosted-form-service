@@ -16,6 +16,7 @@ export const ApiRoutes = Object.freeze({
   FILES_API_ACCESS: '/filesApiAccess',
   PROXY: '/proxy',
   EXTERNAL_APIS: '/externalAPIs',
+  FORM_METADATA: '/formMetadata',
 });
 
 /** Roles a user can have on a form. These are defined in the DB and sent from the API */
@@ -171,4 +172,157 @@ export const ScheduleType = Object.freeze({
 export const ExportLargeData = Object.freeze({
   MAX_RECORDS: 300, // Maximum number of submissions after that we gonna upload the export to Cloud and send user a download link via email
   MAX_FIELDS: 30, // Maximum number of fields in a form after that we gonna upload the export to Cloud and send user a download link via email
+});
+
+/** Constants for the form components proactive help */
+export const FormComponentProactiveHelpValues = Object.freeze({
+  'Basic Layout': [
+    'Text/Images',
+    'Columns - 2',
+    'Columns - 3',
+    'Columns - 4',
+    'Tabs',
+    'Panel',
+  ],
+  'Basic Fields': [
+    'Text Field',
+    'Multi-line Text',
+    'Select List',
+    'Checkbox',
+    'Checkbox Group',
+    'Radio Group',
+    'Number',
+    'Phone Number',
+    'Email',
+    'Date / Time',
+    'Day',
+  ],
+  'Advanced Layout': [
+    'HTML Element',
+    'Content',
+    'Columns',
+    'Field Set',
+    'Panel',
+    'Table',
+    'Tabs',
+    'Well',
+  ],
+  'Advanced Fields': [
+    'Text Field',
+    'Email',
+    'Text Area',
+    'Url',
+    'Number',
+    'Phone Number',
+    'Tags',
+    'Address',
+    'Password',
+    'Date / Time',
+    'Checkbox',
+    'Day',
+    'Time',
+    'Select Boxes',
+    'Select',
+    'Currency',
+    'Radio',
+    'Survey',
+    'Signature',
+  ],
+  'Advanced Data': [
+    'Hidden',
+    'Container',
+    'Data Map',
+    'Data Grid',
+    'Edit Grid',
+    'Tree',
+  ],
+  'BC Government': ['File Upload', 'Business Name Search', 'BC Address'],
+});
+
+export const FormDesignerBuilderOptions = Object.freeze({
+  basic: false,
+  premium: false,
+  layoutControls: {
+    title: 'Basic Layout',
+    default: true,
+    weight: 10,
+    components: {
+      simplecols2: true,
+      simplecols3: true,
+      simplecols4: true,
+      simplecontent: true,
+      simplefieldset: false,
+      simpleheading: false,
+      simplepanel: true,
+      simpleparagraph: false,
+      simpletabs: true,
+    },
+  },
+  entryControls: {
+    title: 'Basic Fields',
+    weight: 20,
+    components: {
+      simplecheckbox: true,
+      simplecheckboxes: true,
+      simpledatetime: true,
+      simpleday: true,
+      simpleemail: true,
+      simplenumber: true,
+      simplephonenumber: true,
+      simpleradios: true,
+      simpleselect: true,
+      simpletextarea: true,
+      simpletextfield: true,
+      simpletime: false,
+    },
+  },
+  layout: {
+    title: 'Advanced Layout',
+    weight: 30,
+  },
+  advanced: {
+    title: 'Advanced Fields',
+    weight: 40,
+    components: {
+      // Need to re-define Formio basic fields here
+      // To disable fields make it false here
+      // textfield: true,
+      // textarea: true,
+      // number: true,
+      // password: true,
+      // checkbox: true,
+      // selectboxes: true,
+      // select: true,
+      // radio: true,
+      // button: true,
+      email: false,
+      url: false,
+      phoneNumber: false,
+      tags: false,
+      address: false,
+      datetime: false,
+      day: false,
+      time: false,
+      currency: false,
+      survey: false,
+      signature: false,
+      // Prevent duplicate appearance of orgbook component
+      orgbook: false,
+      bcaddress: false,
+      simplebcaddress: false,
+    },
+  },
+  data: {
+    title: 'Advanced Data',
+    weight: 50,
+  },
+  customControls: {
+    title: 'BC Government',
+    weight: 60,
+    components: {
+      orgbook: true,
+      bcaddress: true,
+      simplebcaddress: true,
+    },
+  },
 });

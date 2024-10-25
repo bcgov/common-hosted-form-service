@@ -87,7 +87,7 @@ const BCEIDBASIC = {
       },
       text: {
         message: 'trans.manageSubmissionUsers.searchInputLength',
-        minLength: 6,
+        minLength: 4,
       },
     },
     userSearch: {
@@ -108,6 +108,7 @@ const BCEIDBASIC = {
           param: 'username',
           exact: true,
           required: 2,
+          caseSensitive: false,
         },
         {
           name: 'filterFullName',
@@ -129,6 +130,7 @@ const BCEIDBASIC = {
           exact: true,
           param: 'email',
           required: 2,
+          caseSensitive: false,
         },
         {
           name: 'filterSearch',
@@ -167,7 +169,7 @@ const BCEIDBUSINESS = {
       },
       text: {
         message: 'trans.manageSubmissionUsers.searchInputLength',
-        minLength: 6,
+        minLength: 4,
       },
     },
     formAccessSettings: 'idim',
@@ -189,6 +191,7 @@ const BCEIDBUSINESS = {
           param: 'username',
           exact: true,
           required: 2,
+          caseSensitive: false,
         },
         {
           name: 'filterFullName',
@@ -210,6 +213,7 @@ const BCEIDBUSINESS = {
           exact: true,
           param: 'email',
           required: 2,
+          caseSensitive: false,
         },
         {
           name: 'filterSearch',
@@ -898,7 +902,7 @@ describe('TeamManagement.vue', () => {
 
     expect(addNotificationSpy).toBeCalledTimes(1);
     expect(addNotificationSpy).toBeCalledWith({
-      text: `${IDIR_USER.username}@${IDIR_USER.idpCode}trans.teamManagement.idpMessage`,
+      text: `${IDIR_USER.username}@${IDIR_USER.idpCode} trans.teamManagement.idpMessage`,
     });
   });
 

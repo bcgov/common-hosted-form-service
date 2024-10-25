@@ -209,3 +209,25 @@ export function filterObject(_itemTitle, queryText, item) {
       }
     });
 }
+
+export function splitFileName(filename = undefined) {
+  let name = undefined;
+  let extension = undefined;
+
+  if (filename) {
+    const filenameArray = filename.split('.');
+    name = filenameArray.slice(0, -1).join('.');
+    extension = filenameArray.slice(-1).join('.');
+  }
+
+  return { name, extension };
+}
+
+export function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result.replace(/^.*,/, ''));
+    reader.onerror = (error) => reject(error);
+  });
+}

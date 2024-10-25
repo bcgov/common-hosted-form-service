@@ -22,6 +22,26 @@ parameters:
     description: "Pre-Created PVC to use for backup target"
     value: "bk-devex-von-tools-a9vlgd1jpsg1"
     required: true
+  - name: "RESOURCE_LIMIT_CPU"
+    displayName: "CPU Limit"
+    description: "The maximium CPU resources for the container"
+    value: "250m"
+    required: true
+  - name: "RESOURCE_LIMIT_MEMORY"
+    displayName: "Memory Limit"
+    description: "The maximium memory resources for the container"
+    value: "1Gi"
+    required: true
+  - name: "RESOURCE_REQUEST_CPU"
+    displayName: "CPU Request"
+    description: "The minimium CPU resources for the container"
+    value: "50m"
+    required: true
+  - name: "RESOURCE_REQUEST_MEMORY"
+    displayName: "Memory Request"
+    description: "The minimium memory resources for the container"
+    value: "256Mi"
+    required: true
   - name: "SCHEDULE"
     displayName: "Cron Schedule"
     description: "Cron Schedule to Execute the Job (using local cluster system TZ)"
@@ -161,12 +181,19 @@ objects:
             spec:
               containers:
                 - name: "${JOB_NAME}-cronjob"
+                  resources:
+                    limits:
+                      cpu: "${RESOURCE_LIMIT_CPU}"
+                      memory: "${RESOURCE_LIMIT_MEMORY}"
+                    requests:
+                      cpu: "${RESOURCE_REQUEST_CPU}"
+                      memory: "${RESOURCE_REQUEST_MEMORY}"
                   image: "${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/${SOURCE_IMAGE_NAME}:${TAG_NAME}"
                   # image: backup
                   command:
                     - "/bin/bash"
                     - "-c"
-                    - "/backup.sh -v all"
+                    - "/backup.sh -I -v all"
                   volumeMounts:
                     - mountPath: "${BACKUP_DIR}"
                       name: "backup"

@@ -241,7 +241,7 @@ Refer to the `patroni.dc.yaml` and `patroni.secret.yaml` files found below for a
 
 After backups are made a verification job should be run to restore the backup into a temporary database and check that tables are created and data is written. This is not a full verification to ensure all data integrity, but it is an automatable first step.
 
-Using the `backup-cronjon-verify.yaml` file from the `redash` directory:
+Using the `backup-cronjon-verify.yaml` file from the `redash` directory we will use the default resource values for the Development and Test Environments:
 
 ```sh
 export NAMESPACE=<yournamespace>
@@ -255,6 +255,26 @@ oc process -f backup-cronjob-verify.yaml \
     -p JOB_NAME=backup-postgres-verify \
     -p JOB_PERSISTENT_STORAGE_NAME=$PVC \
     -p SCHEDULE="0 9 * * *" \
-    -p TAG_NAME=2.6.1 \
+    -p TAG_NAME=2.9.0 \
+    | oc -n $NAMESPACE apply -f -
+```
+
+For the Production environment we have a much larger database and we want the verification to complete within a reasonable amount of time. Increase the limits so that the container is not memory- or cpu-bound:
+
+```sh
+export NAMESPACE=<yournamespace>
+export PVC=<yourpvcname>
+
+oc process -f backup-cronjob-verify.yaml \
+    -p BACKUP_JOB_CONFIG=backup-postgres-config \
+    -p DATABASE_DEPLOYMENT_NAME=patroni-master-secret \
+    -p DATABASE_PASSWORD_KEY_NAME=app-db-password \
+    -p DATABASE_USER_KEY_NAME=app-db-username \
+    -p JOB_NAME=backup-postgres-verify \
+    -p JOB_PERSISTENT_STORAGE_NAME=$PVC \
+    -p RESOURCE_LIMIT_CPU="1500m" \
+    -p RESOURCE_LIMIT_MEMORY="1Gi" \
+    -p SCHEDULE="0 9 * * *" \
+    -p TAG_NAME=2.9.0 \
     | oc -n $NAMESPACE apply -f -
 ```

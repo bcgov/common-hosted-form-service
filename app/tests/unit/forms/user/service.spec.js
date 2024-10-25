@@ -38,11 +38,11 @@ describe('list', () => {
     expect(MockModel.modify).toBeCalledTimes(9);
     expect(MockModel.modify).toBeCalledWith('filterIdpUserId', params.idpUserId);
     expect(MockModel.modify).toBeCalledWith('filterIdpCode', params.idpCode);
-    expect(MockModel.modify).toBeCalledWith('filterUsername', params.username, false);
+    expect(MockModel.modify).toBeCalledWith('filterUsername', params.username, false, false);
     expect(MockModel.modify).toBeCalledWith('filterFullName', params.fullName);
     expect(MockModel.modify).toBeCalledWith('filterFirstName', params.firstName);
     expect(MockModel.modify).toBeCalledWith('filterLastName', params.lastName);
-    expect(MockModel.modify).toBeCalledWith('filterEmail', params.email, false);
+    expect(MockModel.modify).toBeCalledWith('filterEmail', params.email, false, false);
     expect(MockModel.modify).toBeCalledWith('filterSearch', params.search);
     expect(MockModel.modify).toBeCalledWith('orderLastFirstAscending');
   });

@@ -338,7 +338,9 @@ describe('DocumentTemplate.vue', () => {
       'documentTemplateCreate'
     );
     documentTemplateCreateSpy.mockImplementation(() => {
-      throw new Error('Error');
+      const error = new Error('Error');
+      error.response = { status: 500 };
+      throw error;
     });
     const wrapper = mount(DocumentTemplate, {
       global: {

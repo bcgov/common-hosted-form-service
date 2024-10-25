@@ -161,7 +161,7 @@ describe('ManageSubmissionUsers.vue', () => {
     wrapper.vm.selectedIdp = 'bceid-basic';
 
     // should throw an error if search input is shorter than the min length specified by teamMebershipConfig
-    wrapper.vm.onChangeUserSearchInput('john');
+    wrapper.vm.onChangeUserSearchInput('jon');
     expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
     consoleErrorSpy.mockReset();
 
@@ -291,7 +291,7 @@ describe('ManageSubmissionUsers.vue', () => {
     expect(addNotificationSpy).toHaveBeenCalledWith({
       color: 'success',
       icon: 'mdi:mdi-check-circle',
-      text: 'trans.manageSubmissionUsers.sentInviteEmailTojohn@email.com',
+      text: 'trans.manageSubmissionUsers.sentInviteEmailTo john@email.com',
       type: 'success',
     });
   });

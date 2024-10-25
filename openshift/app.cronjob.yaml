@@ -54,7 +54,7 @@ objects:
             spec:
               containers:
                 - name: my-container
-                  image: docker.io/curlimages/curl:8.9.0
+                  image: docker.io/curlimages/curl:8.10.0
                   env:
                     - name: APITOKEN
                       valueFrom:

@@ -84,7 +84,8 @@
     "deleteSuccess": "Plantilla eliminada exitosamente.",
     "deleteError": "Ocurrió un error al eliminar la plantilla.",
     "fetchError": "Ocurrió un error al obtener la plantilla.",
-    "info": "Sube una plantilla para usar el Servicio de Generación de Documentos Comunes (CDOGS)"
+    "info": "Sube una plantilla para usar el Servicio de Generación de Documentos Comunes (CDOGS)",
+    "fileSizeError": "El tamaño del archivo debe ser menor de 25 MB."
   },
   "formSettings": {
     "pressToAddMultiEmail": "Presiona <kbd>enter</kbd> o <kbd>,</kbd> o <kbd>espacio</kbd> para agregar varias direcciones de correo electrónico",
@@ -168,7 +169,10 @@
     "eventSubscription": "Suscripción a eventos",
     "validEndpointRequired": "Ingrese un punto final válido que comience con https://",
     "validBearerTokenRequired": "Introduzca un ejemplo de token de portador válido: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
-    "wideFormLayout": "Diseño de formulario amplio"
+    "wideFormLayout": "Diseño de formulario amplio",
+    "formMetadataTitle": "Metadatos del formulario",
+    "formMetadataMessage": "Información estructurada para describir o explicar este formulario a sistemas externos. Las llamadas a sistemas externos incluirán estos metadatos en sus cargas útiles.",
+    "formMetadataJsonError": "Los metadatos del formulario deben ser JSON válidos. Utilice comillas dobles alrededor de atributos y valores."
   },
   "formProfile": {
     "message": "El equipo de CHEFS está recopilando y organizando información para servir como entrada crucial para la elaboración de casos de negocio integrales. Estos casos jugarán un papel fundamental en la guía de la operación estratégica y la mejora continua de CHEFS en los próximos años. Esta iniciativa de recopilación de datos es esencial para informar decisiones críticas y dar forma a la trayectoria de CHEFS, asegurando su adaptabilidad y efectividad para abordar necesidades y desafíos en constante evolución.",
@@ -548,7 +552,7 @@
     "sentUninvitedEmailTo": "Enviado correo electrónico no invitado a",
     "updateUserErrMsg": "Se produjo un error al intentar actualizar los usuarios para este envío.",
     "updateUserConsoleErrMsg": "Error al establecer los permisos de usuario. Sub: {submissionId} Usuario: {userId} Error: {error}",
-    "searchInputLength": "La entrada de búsqueda para el nombre de usuario/correo electrónico de BCeID debe tener más de 6 caracteres.",
+    "searchInputLength": "La entrada de búsqueda para el nombre de usuario/correo electrónico de BCeID debe tener más de 4 caracteres.",
     "exactBCEIDSearch": "Las búsquedas de correo electrónico para BCeID deben ser exactas.",
     "getUsersErrMsg": "Error al obtener usuarios: {error}",
     "exactEmailOrUsername": "Ingrese un correo electrónico o nombre de usuario exacto.",

@@ -1,3 +1,4 @@
+import { useLocalStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { i18n } from '~/internationalization';
 import {
@@ -58,7 +59,11 @@ const genInitialSubscribeDetails = () => ({
   endpointToken: null,
   key: '',
 });
-
+const genInitialFormMetadata = () => ({
+  id: null,
+  formId: null,
+  metadata: {},
+});
 const genInitialForm = () => ({
   description: '',
   enableSubmitterDraft: false,
@@ -84,6 +89,7 @@ const genInitialForm = () => ({
   apiIntegration: null,
   useCase: null,
   wideFormLayout: false,
+  formMetadata: genInitialFormMetadata(),
 });
 
 export const useFormStore = defineStore('form', {
@@ -116,6 +122,7 @@ export const useFormStore = defineStore('form', {
     subscriptionData: genInitialSubscribeDetails(),
     totalSubmissions: 0,
     userFormPreferences: {},
+    mySubmissionPreferences: useLocalStorage('mySubmissionPreferences', {}),
     version: {},
     userLabels: [],
   }),
@@ -326,7 +333,9 @@ export const useFormStore = defineStore('form', {
           ...genInitialSubscribe(),
           ...data.subscribe,
         };
-
+        if (!data.formMetadata) {
+          data.formMetadata = genInitialFormMetadata();
+        }
         this.form = data;
       } catch (error) {
         const notificationStore = useNotificationStore();
@@ -415,7 +424,7 @@ export const useFormStore = defineStore('form', {
         const subscribe = this.form.subscribe.enabled
           ? this.form.subscribe
           : {};
-
+        const formMetadata = this.form.formMetadata;
         await formService.updateForm(this.form.id, {
           name: this.form.name,
           description: this.form.description,
@@ -443,6 +452,7 @@ export const useFormStore = defineStore('form', {
           enableCopyExistingSubmission: this.form.enableCopyExistingSubmission
             ? this.form.enableCopyExistingSubmission
             : false,
+          formMetadata: formMetadata,
         });
 
         // update user labels with any new added labels

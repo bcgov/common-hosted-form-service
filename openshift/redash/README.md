@@ -26,7 +26,7 @@ oc process -f backup-cronjob.yaml \
     -p JOB_PERSISTENT_STORAGE_NAME=backup-chefs-redash-postgresql \
     -p MONTHLY_BACKUPS=3 \
     -p SCHEDULE="0 8 * * *" \
-    -p TAG_NAME=2.6.1 \
+    -p TAG_NAME=2.9.0 \
     -p WEEKLY_BACKUPS=8 \
     | oc -n a12c97-tools apply -f -
 ```
@@ -42,7 +42,7 @@ oc process -f backup-cronjob-verify.yaml \
     -p JOB_NAME=backup-chefs-redash-postgres-verify \
     -p JOB_PERSISTENT_STORAGE_NAME=backup-chefs-redash-postgresql \
     -p SCHEDULE="0 9 * * *" \
-    -p TAG_NAME=2.6.1 \
+    -p TAG_NAME=2.9.0 \
     | oc -n a12c97-tools apply -f -
 ```
 

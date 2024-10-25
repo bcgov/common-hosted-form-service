@@ -165,7 +165,7 @@ describe('Form Designer', () => {
   
       });
     });
-
+    // Check registered business address
     it('Checks the orgbook', () => {
 
       cy.viewport(1000, 1800);
@@ -193,7 +193,7 @@ describe('Form Designer', () => {
         const coords = $el[0].getBoundingClientRect();
         cy.get('[data-type="bcaddress"]')
         .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, +20, { force: true })
+        .trigger('mousemove', coords.x, +30, { force: true })
           //.trigger('mousemove', coords.y, +100, { force: true })
         .trigger('mouseup', { force: true });
         cy.waitForLoad();
@@ -268,7 +268,6 @@ describe('Form Designer', () => {
         cy.get('.mdi-printer').should('be.visible');
         cy.get('.mdi-content-save').should('be.visible');
         cy.waitForLoad();
-        // Check registered business address
 
         cy.waitForLoad();
         cy.waitForLoad();
@@ -280,7 +279,6 @@ describe('Form Designer', () => {
         cy.get('input[type="checkbox"]').click();
     
         cy.get('div').find('textarea').type('some text');
-        cy.get('input[name="data[bcaddress]"').type('goldstream');
         cy.get('input[name="data[simpleurladvanced]"').type('www.google');
         cy.get('.choices__inner').click();
         cy.get('.choices__inner').type('hello');
@@ -290,6 +288,7 @@ describe('Form Designer', () => {
         cy.contains('THRIFTY FOODS').click();
         cy.get('input[name="data[bcaddress]"').click();
         cy.get('input[name="data[bcaddress]"').type('2260 Sooke');
+        cy.contains('2260 Sooke').click();
         cy.get('.browse').should('have.attr', 'ref').and('include', 'fileBrowse');
         cy.get('.browse').should('have.attr', 'href').and('include', '#');
         cy.get('.browse').click();
@@ -320,7 +319,6 @@ describe('Form Designer', () => {
         cy.waitForLoad();
         cy.get('.mdi-delete').click();
         cy.get('[data-test="continue-btn-continue"]').click();
-        cy.get('#logoutButton > .v-btn__content > span').click();
         
         })
 

@@ -1,31 +1,22 @@
-<script>
-import { mapState, mapWritableState } from 'pinia';
-import FormAccessSettings from '~/components/designer/settings/FormAccessSettings.vue';
+<script setup>
+import { storeToRefs } from 'pinia';
+
 import FormGeneralSettings from '~/components/designer/settings/FormGeneralSettings.vue';
+import FormAccessSettings from '~/components/designer/settings/FormAccessSettings.vue';
 import FormFunctionalitySettings from '~/components/designer/settings/FormFunctionalitySettings.vue';
-import FormScheduleSettings from '~/components/designer/settings/FormScheduleSettings.vue';
 import FormSubmissionSettings from '~/components/designer/settings/FormSubmissionSettings.vue';
+import FormScheduleSettings from '~/components/designer/settings/FormScheduleSettings.vue';
+import FormMetadataSettings from '~/components/designer/settings/FormMetadataSettings.vue';
 import { useFormStore } from '~/store/form';
 
-export default {
-  components: {
-    FormAccessSettings,
-    FormGeneralSettings,
-    FormFunctionalitySettings,
-    FormScheduleSettings,
-    FormSubmissionSettings,
+defineProps({
+  disabled: {
+    type: Boolean,
+    default: false,
   },
-  props: {
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  computed: {
-    ...mapWritableState(useFormStore, ['form']),
-    ...mapState(useFormStore, ['isFormPublished', 'isRTL']),
-  },
-};
+});
+
+const { form, isFormPublished, isRTL } = storeToRefs(useFormStore());
 </script>
 
 <template>
@@ -45,6 +36,9 @@ export default {
       </v-col>
       <v-col v-if="form.schedule.enabled && isFormPublished" cols="12" md="6">
         <FormScheduleSettings />
+      </v-col>
+      <v-col cols="12" md="6">
+        <FormMetadataSettings :disabled="disabled" />
       </v-col>
     </v-row>
   </v-container>
