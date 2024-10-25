@@ -1,501 +1,809 @@
-<script>
+<script setup>
 import { Formio, Utils } from '@formio/vue';
 import _ from 'lodash';
-import { mapActions, mapState } from 'pinia';
+import { storeToRefs } from 'pinia';
+import { computed, nextTick, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import BaseInfoCard from '~/components/base/BaseInfoCard.vue';
+import { formService } from '~/services';
 import { useAppStore } from '~/store/app';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
+import { NotificationTypes } from '~/utils/constants';
+import { multiuploadTemplateFilename } from '~/utils/transformUtils';
 
-export default {
-  components: {
-    BaseInfoCard,
-  },
-  props: {
-    formElement: undefined,
-    form: {
-      type: Object,
-      default: () => {},
-    },
-    formSchema: {
-      type: Object,
-      default: () => {},
-    },
-    formFields: {
-      type: Array,
-      default: () => [],
-    },
-    block: Boolean,
-    response: {
-      type: Object,
-      default: () => {
-        return {
-          message: '',
-          error: false,
-          upload_state: 0,
-          response: [],
-          file_name: '',
-        };
-      },
-    },
-    jsonCsv: {
-      type: Object,
-      default: () => {
-        return {
-          data: [],
-          file_name: '',
-        };
-      },
-    },
-  },
-  emits: ['reset-message', 'save-bulk-data', 'set-error', 'toggleBlock'],
-  setup() {
-    const { t, locale } = useI18n({ useScope: 'global' });
+const { locale, t } = useI18n({ useScope: 'global' });
 
-    return { t, locale };
+const properties = defineProps({
+  // The form data
+  form: {
+    type: Object,
+    default: () => {},
   },
-  data() {
-    return {
-      file: undefined,
-      globalError: [],
-      index: 0,
-      Json: [],
-      max: 100,
-      max_file_size: 5,
-      percent: 0,
-      progress: false,
-      timeout: undefined,
-      upload_state: 0,
-      vForm: {},
+  // The form schema
+  formSchema: {
+    type: Object,
+    default: () => {},
+  },
+  // The version id to submit to
+  submissionVersion: {
+    type: String,
+    default: null,
+  },
+  // This is the provided template
+  jsonCsv: {
+    type: Object,
+    default: () => {},
+  },
+});
+
+const emit = defineEmits(['isProcessingMultiUpload']);
+
+const appStore = useAppStore();
+const formStore = useFormStore();
+const notificationStore = useNotificationStore();
+
+const { isRTL } = storeToRefs(formStore);
+
+// This timeout is purely used for adding an artificial delay, some systems were having
+// an issue where they were running out of memory. The garbage collection for memory
+// was not happening early/fast enough. This seems to be a good middleground.
+const delayTimeout = ref(null);
+// These are the errors that occur while validating the submissions or the file
+const errors = ref([]);
+// The file to be uploaded
+const file = ref(null);
+// The file input reference
+const fileRef = ref(null);
+// If there is a file currently being processed
+const isProcessing = ref(false);
+// This is the data that is read using the FileReader, this is usually multiple submissions in an array
+const fileReaderData = ref(null);
+const progressBar = ref({
+  modelValue: 0,
+  max: 100,
+  message: '',
+});
+const sbdMessage = ref({
+  message: String,
+  error: Boolean,
+  upload_state: Number,
+  response: [],
+  file_name: String,
+  typeError: Number,
+});
+// This is the index in the list of submissions that are being uploaded
+const submissionIndex = ref(0);
+// This is purely for validating the submission
+const submissionToValidate = ref(null);
+
+const fileSize = computed(() => {
+  if (file.value.size < 1024) return file.value.size.toFixed(2) + ' bytes';
+  if (file.value.size < 1024 * 1024)
+    return (file.value.size / 1024).toFixed(2) + ' KB';
+  return (file.value.size / (1024 * 1024)).toFixed(2) + ' MB';
+});
+
+const txt_colour = computed(() => {
+  if (!sbdMessage.value.error) return 'success-text';
+  else return 'fail-text';
+});
+
+function download(filename, data) {
+  if (window.confirm(t('trans.formViewerMultiUpload.confirmDownload'))) {
+    const blob = new Blob([JSON.stringify(data)], {
+      type: 'application/json',
+    });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+}
+
+function addFile(e, type) {
+  if (isProcessing.value) return;
+
+  if (file.value != undefined) {
+    notificationStore.addNotification({
+      text: t('trans.formViewerMultiUpload.uploadMultipleFileErr'),
+      consoleError: t('trans.formViewerMultiUpload.uploadMultipleFileErr'),
+    });
+    return;
+  }
+  try {
+    let files = type == 0 ? e.dataTransfer.files : e.target.files;
+
+    if (!files || files == undefined) return;
+
+    if (files.length > 1) {
+      notificationStore.addNotification({
+        text: t('trans.formViewerMultiUpload.dragMultipleFileErr'),
+        consoleError: t('trans.formViewerMultiUpload.dragMultipleFileErr'),
+      });
+      return;
+    }
+
+    if (files[0]['type'] != 'application/json') {
+      notificationStore.addNotification({
+        text: t('trans.formViewerMultiUpload.fileFormatErr'),
+        consoleError: t('trans.formViewerMultiUpload.fileFormatErr'),
+      });
+      return;
+    }
+    if (files[0].size > appStore.config.uploads.fileMaxSizeBytes) {
+      notificationStore.addNotification({
+        text: t('trans.formViewerMultiUpload.fileSizeErr'),
+        consoleError: t('trans.formViewerMultiUpload.fileSizeErr'),
+      });
+      return;
+    }
+    file.value = files[0];
+    parseFile();
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.formViewerMultiUpload.errorWhileValidate'),
+      consoleError:
+        t('trans.formViewerMultiUpload.errorWhileValidate') + `${error}`,
+    });
+    return;
+  }
+}
+
+function handleFile() {
+  if (file.value == undefined) {
+    fileRef.value.click();
+  }
+}
+
+function parseFile() {
+  try {
+    let reader = new FileReader();
+    reader.onload = (e) => {
+      // The file MUST be JSON. If it fails to parse then it will throw an error.
+      fileReaderData.value = popFormLevelInfo(JSON.parse(e.target.result));
     };
-  },
-  computed: {
-    ...mapState(useAppStore, ['config']),
-    ...mapState(useFormStore, ['isRTL']),
+    reader.onloadend = preValidateSubmission;
+    reader.readAsText(file.value);
+  } catch (e) {
+    resetUploadState();
+    notificationStore.addNotification({
+      text: t('trans.formViewerMultiUpload.parseJsonErr'),
+      consoleError: e,
+    });
+  }
+}
 
-    txt_colour() {
-      if (!this.response.error) return 'success-text';
-      else return 'fail-text';
-    },
-    fileSize() {
-      if (this.file.size < 1024) return this.file.size.toFixed(2) + ' bytes';
-      if (this.file.size < 1024 * 1024)
-        return (this.file.size / 1024).toFixed(2) + ' KB';
-      return (this.file.size / (1024 * 1024)).toFixed(2) + ' MB';
-    },
-    fileName() {
-      try {
-        const fs = this.file.name.split('_');
-        return fs[0] + '...' + fs[fs.length - 1];
-      } catch (e) {
-        return this.file.name;
+function popFormLevelInfo(jsonPayload = []) {
+  /** This function is purely made to remove un-necessery information
+   * from the json payload of submissions. It will also help to remove crucial data
+   * to be removed from the payload that should not be going to DB like confirmationId,
+   * formName,version,createdAt,fullName,username,email,status,assignee,assigneeEmail and
+   * lateEntry
+   * Example: Sometime end user use the export json file as a bulk
+   * upload payload that contains formId, confirmationId and User
+   * details as well so we need to remove those details from the payload.
+   *
+   */
+  if (jsonPayload.length) {
+    jsonPayload.forEach(function (submission) {
+      delete submission.submit;
+      delete submission.lateEntry;
+      if (Object.prototype.hasOwnProperty.call(submission, 'form')) {
+        const propsToRemove = [
+          'confirmationId',
+          'formName',
+          'version',
+          'createdAt',
+          'fullName',
+          'username',
+          'email',
+          'status',
+          'assignee',
+          'assigneeEmail',
+        ];
+        propsToRemove.forEach((key) => delete submission.form[key]);
       }
-    },
-  },
-  beforeUnmount() {
-    if (this.timeout) clearTimeout(this.timeout);
-  },
-  methods: {
-    ...mapActions(useNotificationStore, ['addNotification']),
-    download(filename, data) {
-      if (
-        window.confirm(this.$t('trans.formViewerMultiUpload.confirmDownload'))
-      ) {
-        const blob = new Blob([JSON.stringify(data)], {
-          type: 'application/json',
-        });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = filename;
-        link.click();
-        URL.revokeObjectURL(link.href);
-      }
-    },
+    });
+  }
+  return jsonPayload;
+}
 
-    addFile(e, type) {
-      if (this.block) {
-        return;
-      }
-
-      if (this.file != undefined) {
-        this.addNotification({
-          text: this.$t('trans.formViewerMultiUpload.uploadMultipleFileErr'),
-          consoleError: this.$t(
-            'trans.formViewerMultiUpload.uploadMultipleFileErr'
-          ),
-        });
-        return;
-      }
-      try {
-        let files = type == 0 ? e.dataTransfer.files : e.target.files;
-
-        if (!files || files == undefined) return;
-
-        if (files.length > 1) {
-          this.addNotification({
-            text: this.$t('trans.formViewerMultiUpload.dragMultipleFileErr'),
-            consoleError: this.$t(
-              'trans.formViewerMultiUpload.dragMultipleFileErr'
-            ),
-          });
-          return;
-        }
-
-        if (files[0]['type'] != 'application/json') {
-          this.addNotification({
-            text: this.$t('trans.formViewerMultiUpload.fileFormatErr'),
-            consoleError: this.$t('trans.formViewerMultiUpload.fileFormatErr'),
-          });
-          return;
-        }
-        if (files[0].size > this.config.uploads.fileMaxSizeBytes) {
-          this.addNotification({
-            text: this.$t('trans.formViewerMultiUpload.fileSizeErr'),
-            consoleError: this.$t('trans.formViewerMultiUpload.fileSizeErr'),
-          });
-          return;
-        }
-        this.file = files[0];
-        this.parseFile();
-      } catch (error) {
-        this.addNotification({
-          text: this.$t('trans.formViewerMultiUpload.dragMultipleFileErr'),
-          consoleError:
-            this.$t('trans.formViewerMultiUpload.dragMultipleFileErr') +
-            `${error}`,
-        });
-        return;
-      }
-    },
-    handleFile() {
-      if (this.file == undefined) {
-        this.$refs.fileRef.click();
-      }
-    },
-    removeFile(file) {
-      this.files = this.files.filter((f) => {
-        return f != file;
+async function preValidateSubmission() {
+  try {
+    if (!Array.isArray(fileReaderData.value)) {
+      resetUploadState();
+      notificationStore.addNotification({
+        text: t('trans.formViewerMultiUpload.jsonObjNotArray'),
+        consoleError: t('trans.formViewerMultiUpload.jsonObjNotArrayConsErr'),
       });
-    },
-
-    parseFile() {
-      try {
-        let reader = new FileReader();
-        reader.onload = (e) => {
-          this.Json = this.popFormLevelInfo(JSON.parse(e.target.result));
-        };
-        reader.onloadend = this.preValidateSubmission;
-        reader.readAsText(this.file);
-      } catch (e) {
-        this.resetUpload();
-        this.addNotification({
-          text: this.$t('trans.formViewerMultiUpload.parseJsonErr'),
-          consoleError: e,
-        });
-      }
-    },
-    popFormLevelInfo(jsonPayload = []) {
-      /** This function is purely made to remove un-necessery information
-       * from the json payload of submissions. It will also help to remove crucial data
-       * to be removed from the payload that should not be going to DB like confirmationId,
-       * formName,version,createdAt,fullName,username,email,status,assignee,assigneeEmail and
-       * lateEntry
-       * Example: Sometime end user use the export json file as a bulk
-       * upload payload that contains formId, confirmationId and User
-       * details as well so we need to remove those details from the payload.
-       *
-       */
-      if (jsonPayload.length) {
-        jsonPayload.forEach(function (submission) {
-          delete submission.submit;
-          delete submission.lateEntry;
-          if (Object.prototype.hasOwnProperty.call(submission, 'form')) {
-            const propsToRemove = [
-              'confirmationId',
-              'formName',
-              'version',
-              'createdAt',
-              'fullName',
-              'username',
-              'email',
-              'status',
-              'assignee',
-              'assigneeEmail',
-            ];
-            propsToRemove.forEach((key) => delete submission.form[key]);
-          }
-        });
-      }
-      return jsonPayload;
-    },
-    async preValidateSubmission() {
-      try {
-        if (!Array.isArray(this.Json)) {
-          this.resetUpload();
-          this.addNotification({
-            text: this.$t('trans.formViewerMultiUpload.jsonObjNotArray'),
-            consoleError: this.$t(
-              'trans.formViewerMultiUpload.jsonObjNotArrayConsErr'
-            ),
-          });
-          return;
-        }
-        if (this.Json.length == 0) {
-          this.resetUpload();
-          this.addNotification({
-            text: this.$t('trans.formViewerMultiUpload.jsonArrayEmpty'),
-            consoleError: this.$t('trans.formViewerMultiUpload.fileIsEmpty'),
-          });
-          return;
-        }
-        this.globalError = [];
-        this.index = 0;
-        this.max = 100;
-        this.progress = true;
-        this.$emit('toggleBlock', true);
-        const formHtml = document.getElementById('validateForm');
-        //Add custom validation to the Components those are not covered by FormIO Validation class
-        await Utils.eachComponent(
-          this.formSchema.components,
-          function (component) {
-            //Need to cover Validation parts those are not performed by FormIO validate funciton
-            switch (component.type) {
-              case 'number':
-                component.validate.custom =
-                  "if(component.validate.required === true || input){valid = _.isNumber(input) ? true : 'Only numbers are allowed in a number field.';}" +
-                  component.validate.custom;
-                break;
-
-              case 'simplenumber':
-                component.validate.custom =
-                  "if(component.validate.required === true || input){valid = _.isNumber(input) ? true : 'Only numbers are allowed in a simple number field.';}" +
-                  component.validate.custom;
-                break;
-
-              case 'simplenumberadvanced':
-                component.validate.custom =
-                  "if(component.validate.required === true || input){valid = _.isNumber(input) ? true : 'Only numbers are allowed in a simple number advanced field.';}" +
-                  component.validate.custom;
-                break;
-
-              case 'simpledatetimeadvanced':
-                component.validate.custom =
-                  "if(component.validate.required === true || input){valid = moment(input, _.replace('" +
-                  component.widget.format +
-                  "','dd','DD'), true).isValid() === true ? true : 'Wrong DateTime format.';}" +
-                  component.validate.custom;
-                break;
-
-              case 'simpledatetime':
-                component.validate.custom =
-                  "if(component.validate.required === true || input){valid = moment(input, _.replace('" +
-                  component.widget.format +
-                  "','dd','DD'), true).isValid() === true ? true : 'Wrong Date/Time format.';}" +
-                  component.validate.custom;
-                break;
-
-              case 'simpletimeadvanced':
-                component.validate.custom =
-                  "if(component.validate.required === true || input){valid = moment(input, _.replace('" +
-                  component.widget.format +
-                  "','dd','DD'), true).isValid() === true ? true : 'Wrong Time format.';}" +
-                  component.validate.custom;
-                break;
-
-              default:
-                break;
-            }
-          }
-        );
-        this.vForm = await Formio.createForm(formHtml, this.formSchema, {
-          highlightErrors: true,
-          alwaysDirty: true,
-          hide: {
-            submit: true,
-          },
-        });
-        this.$nextTick(() => {
-          this.validate(this.Json[this.index], []);
-        });
-      } catch (error) {
-        this.resetUpload();
-        this.$emit('set-error', {
-          error: true,
-          text: this.$t('trans.formViewerMultiUpload.errorWhileValidate'),
-        });
-        this.addNotification({
-          text: this.$t('trans.formViewerMultiUpload.errorWhileValidate'),
-          consoleError: error,
-        });
-        return;
-      }
-    },
-    async getMemoryInfo() {
-      return new Promise((resolve) => {
-        if (window.performance && window.performance.memory) {
-          resolve(
-            (
-              (window.performance.memory.usedJSHeapSize * 100) /
-              window.performance.memory.jsHeapSizeLimit
-            ).toFixed(0)
-          );
-        }
-        resolve(undefined);
+      return;
+    }
+    if (fileReaderData.value.length == 0) {
+      resetUploadState();
+      notificationStore.addNotification({
+        text: t('trans.formViewerMultiUpload.jsonArrayEmpty'),
+        consoleError: t('trans.formViewerMultiUpload.fileIsEmpty'),
       });
-    },
-    async checkMemoryUsage() {
-      let time = 1000;
-      const memoryUsage = await this.getMemoryInfo();
-      if (memoryUsage != undefined) {
-        if (memoryUsage <= 50) {
-          time = 50;
-        } else if (memoryUsage > 50 || memoryUsage < 70) {
-          time = 1000;
-        } else if (memoryUsage > 70 || memoryUsage < 80) {
-          time = 2000;
-        } else if (memoryUsage > 80) {
-          time = 3000;
+      return;
+    }
+    errors.value = [];
+    submissionIndex.value = 0;
+    isProcessing.value = true;
+    emit('isProcessingMultiUpload', true);
+    const formHtml = document.getElementById('validateForm');
+    //Add custom validation to the Components those are not covered by FormIO Validation class
+    await Utils.eachComponent(
+      properties.formSchema.components,
+      function (component) {
+        //Need to cover Validation parts those are not performed by FormIO validate funciton
+        switch (component.type) {
+          case 'number':
+            component.validate.custom =
+              "if(component.validate.required === true || input){valid = _.isNumber(input) ? true : 'Only numbers are allowed in a number field.';}" +
+              component.validate.custom;
+            break;
+
+          case 'simplenumber':
+            component.validate.custom =
+              "if(component.validate.required === true || input){valid = _.isNumber(input) ? true : 'Only numbers are allowed in a simple number field.';}" +
+              component.validate.custom;
+            break;
+
+          case 'simplenumberadvanced':
+            component.validate.custom =
+              "if(component.validate.required === true || input){valid = _.isNumber(input) ? true : 'Only numbers are allowed in a simple number advanced field.';}" +
+              component.validate.custom;
+            break;
+
+          case 'simpledatetimeadvanced':
+            component.validate.custom =
+              "if(component.validate.required === true || input){valid = moment(input, _.replace('" +
+              component.widget.format +
+              "','dd','DD'), true).isValid() === true ? true : 'Wrong DateTime format.';}" +
+              component.validate.custom;
+            break;
+
+          case 'simpledatetime':
+            component.validate.custom =
+              "if(component.validate.required === true || input){valid = moment(input, _.replace('" +
+              component.widget.format +
+              "','dd','DD'), true).isValid() === true ? true : 'Wrong Date/Time format.';}" +
+              component.validate.custom;
+            break;
+
+          case 'simpletimeadvanced':
+            component.validate.custom =
+              "if(component.validate.required === true || input){valid = moment(input, _.replace('" +
+              component.widget.format +
+              "','dd','DD'), true).isValid() === true ? true : 'Wrong Time format.';}" +
+              component.validate.custom;
+            break;
+
+          default:
+            break;
         }
       }
-      return time;
-    },
-    convertEmptyArraysToNull(obj) {
-      /*
-       * This function is purely made to solve this https://github.com/formio/formio.js/issues/4515 formio bug
-       * where setSubmission mislead payload for submission. In our case if setSubmission got triggered multiple
-       * time it cache submission key's with old values that leads to trigger false validation errors.
-       * This function clear object with some empty arrays to null. Main problem was occured to columns and grids components.
-       */
-
-      if (_.isArray(obj)) {
-        return obj.length === 0 ? null : obj.map(this.convertEmptyArraysToNull);
-      } else if (_.isObject(obj)) {
-        return _.mapValues(obj, this.convertEmptyArraysToNull);
-      } else {
-        return obj;
+    );
+    submissionToValidate.value = await Formio.createForm(
+      formHtml,
+      properties.formSchema,
+      {
+        highlightErrors: true,
+        alwaysDirty: true,
+        hide: {
+          submit: true,
+        },
       }
-    },
-    async validate(element, errors) {
-      await this.delay(500);
-      //this.checkMemoryUsage();
-      this.formIOValidation(element).then((response) => {
-        if (response.error) {
-          errors[this.index] = {
-            submission: this.index,
-            errors: response.data,
+    );
+    // In the next tick, we begin validating the submission
+    nextTick(() => {
+      validate(fileReaderData.value[submissionIndex.value], []);
+    });
+  } catch (error) {
+    resetUploadState();
+    notificationStore.addNotification({
+      text: t('trans.formViewerMultiUpload.errorWhileValidate'),
+      consoleError: error,
+    });
+    return;
+  }
+}
+
+async function getMemoryInfo() {
+  return new Promise((resolve) => {
+    if (window.performance && window.performance.memory) {
+      resolve(
+        (
+          (window.performance.memory.usedJSHeapSize * 100) /
+          window.performance.memory.jsHeapSizeLimit
+        ).toFixed(0)
+      );
+    }
+    resolve(undefined);
+  });
+}
+
+async function checkMemoryUsage() {
+  let time = 1000;
+  const memoryUsage = await getMemoryInfo();
+  if (memoryUsage != undefined) {
+    if (memoryUsage <= 50) {
+      time = 50;
+    } else if (memoryUsage > 50 || memoryUsage < 70) {
+      time = 1000;
+    } else if (memoryUsage > 70 || memoryUsage < 80) {
+      time = 2000;
+    } else if (memoryUsage > 80) {
+      time = 3000;
+    }
+  }
+  return time;
+}
+
+function convertEmptyArraysToNull(obj) {
+  /*
+   * This function is purely made to solve this https://github.com/formio/formio.js/issues/4515 formio bug
+   * where setSubmission mislead payload for submission. In our case if setSubmission got triggered multiple
+   * time it cache submission key's with old values that leads to trigger false validation errors.
+   * This function clear object with some empty arrays to null. Main problem was occured to columns and grids components.
+   */
+
+  if (_.isArray(obj)) {
+    return obj.length === 0 ? null : obj.map(convertEmptyArraysToNull);
+  } else if (_.isObject(obj)) {
+    return _.mapValues(obj, convertEmptyArraysToNull);
+  } else {
+    return obj;
+  }
+}
+
+async function validate(element, errors) {
+  await delay(500);
+  //this.checkMemoryUsage();
+  formIOValidation(element).then((response) => {
+    if (response.error) {
+      errors[submissionIndex.value] = {
+        submission: submissionIndex.value,
+        errors: response.data,
+      };
+    }
+    delete response.error;
+    delete response.data;
+    submissionToValidate.value.setSubmission({
+      data: undefined,
+    });
+    validationDispatcher(errors);
+  });
+}
+
+async function validationDispatcher(errors) {
+  /* we need this timer allow to the gargabe colector to have time
+    to clean the memory before starting  a new form validation */
+
+  submissionToValidate.value.clearServerErrors();
+  submissionToValidate.value.resetValue();
+  submissionToValidate.value.clear();
+  const response = await checkMemoryUsage();
+
+  await delay(response);
+  const check = {
+    shouldContinueValidation:
+      Number(submissionIndex.value) < Number(fileReaderData.value.length - 1), //Need to compare with JSON length - 1 because we only need to perform validation upto the last instance/object of Json array.
+  };
+  if (check.shouldContinueValidation) {
+    nextTick(() => {
+      submissionIndex.value++;
+      progressBar.value.percent = percentage(submissionIndex.value);
+    });
+    delete check.shouldContinueValidation;
+    nextTick(() => {
+      validate(fileReaderData.value[submissionIndex.value], errors);
+    });
+  } else {
+    nextTick(() => {
+      submissionIndex.value++;
+      progressBar.value.percent = percentage(submissionIndex.value);
+    });
+    endValidation(errors);
+  }
+}
+
+async function formIOValidation(element) {
+  return new Promise((resolve) => {
+    submissionToValidate.value.setSubmission({
+      data: convertEmptyArraysToNull(element),
+    });
+    submissionToValidate.value
+      .submit()
+      .then((submission) => {
+        resolve({ error: false, data: submission });
+      })
+      .catch((error) => {
+        resolve({ error: true, data: error });
+      });
+  });
+}
+
+function delay(ms) {
+  return new Promise((resolve) => {
+    delayTimeout.value = setTimeout(() => {
+      clearTimeout(delayTimeout.value);
+      resolve();
+    }, ms);
+  });
+}
+
+function percentage(i) {
+  let number_of_submission = fileReaderData.value.length;
+  if (number_of_submission > 0 && i > 0) {
+    return Math.ceil((i * progressBar.value.max) / number_of_submission);
+  }
+  return 0;
+}
+
+async function endValidation(errs) {
+  errors.value = errs;
+  isProcessing.value = false;
+  submissionToValidate.value.destroy();
+  submissionToValidate.value = null;
+  if (errors.value.length == 0) {
+    await saveBulkData(fileReaderData.value);
+    console.log('we should be emitting save-bulk-data now');
+  } else {
+    emit('isProcessingMultiUpload', false);
+    console.log('we should be emitting set-error now');
+    setError({
+      text: t('trans.formViewerMultiUpload.errAfterValidate'),
+      error: true,
+      upload_state: 10,
+      response: {
+        data: {
+          title: 'Validation Error',
+          reports: errors.value,
+        },
+      },
+      typeError: 0,
+    });
+  }
+}
+
+function resetUploadState() {
+  errors.value = [];
+  isProcessing.value = false;
+  file.value = undefined;
+  submissionIndex.value = 0;
+  progressBar.value = {
+    percent: 0,
+    message: '',
+  };
+}
+
+async function saveBulkData(submissions) {
+  const payload = {
+    draft: true,
+    submission: Object.freeze({ data: submissions }),
+  };
+  sendMultiSubmissionData(payload);
+}
+
+async function sendMultiSubmissionData(body) {
+  try {
+    isProcessing.value = true;
+    let response = await formService.createMultiSubmission(
+      properties.form.id,
+      properties.submissionVersion,
+      body
+    );
+    if ([200, 201].includes(response.status)) {
+      // all is good, flag no errors and carry on...
+      // store our submission result...
+      sbdMessage.value.message = t('trans.formViewer.multiDraftUploadSuccess');
+      sbdMessage.value.error = false;
+      sbdMessage.value.upload_state = 10;
+      sbdMessage.value.response = [];
+      notificationStore.addNotification({
+        text: sbdMessage.value.message,
+        ...NotificationTypes.SUCCESS,
+      });
+    } else {
+      sbdMessage.value.message = t('trans.formViewer.failedResSubmissn', {
+        status: response.status,
+      });
+      sbdMessage.value.error = true;
+      sbdMessage.value.upload_state = 10;
+      sbdMessage.value.response = [
+        { error_message: t('trans.formViewer.errSubmittingForm') },
+      ];
+      sbdMessage.value.file_name =
+        'error_report_' + properties.form.name + '_' + Date.now();
+      throw new Error(
+        t('trans.formViewer.failedResSubmissn', {
+          status: response.status,
+        })
+      );
+    }
+  } catch (error) {
+    setFinalError(error);
+    notificationStore.addNotification({
+      text: sbdMessage.value.message,
+      consoleError: t('trans.formViewer.errorSavingFile', {
+        fileName: file.value.name,
+        error: error,
+      }),
+    });
+  } finally {
+    isProcessing.value = false;
+  }
+}
+
+async function setFinalError(error) {
+  try {
+    if (error.response.data != undefined) {
+      sbdMessage.value.message =
+        error.response.data.title == undefined
+          ? t('trans.formViewer.errSubmittingForm')
+          : error.response.data.title;
+      sbdMessage.value.response =
+        error.response.data.reports == undefined
+          ? [
+              {
+                error_message: t('trans.formViewer.errSubmittingForm'),
+              },
+            ]
+          : await formatResponse(error.response.data.reports);
+    } else {
+      sbdMessage.value.message = t('trans.formViewer.errSubmittingForm');
+      sbdMessage.value.response = [
+        { error_message: t('trans.formViewer.errSubmittingForm') },
+      ];
+    }
+  } catch (error_2) {
+    sbdMessage.value.message = t('trans.formViewer.errSubmittingForm');
+    sbdMessage.value.response = [
+      { error_message: t('trans.formViewer.errSubmittingForm') },
+    ];
+  } finally {
+    sbdMessage.value.error = true;
+    sbdMessage.value.upload_state = 10;
+    sbdMessage.value.file_name =
+      'error_report_' + properties.form.name + '_' + Date.now();
+  }
+}
+
+function buildValidationFromComponent(obj) {
+  if (obj?.component?.validate) {
+    let validatorIdentity = '';
+    Object.keys(obj.component.validate).forEach((validity) => {
+      switch (validity) {
+        case 'maxSelectedCount':
+          if (obj.component.validate.maxSelectedCount) {
+            validatorIdentity +=
+              '|maxSelectedCount:' + obj.component.validate[validity];
+          }
+          break;
+
+        case 'minSelectedCount':
+          if (obj.component.validate.minSelectedCount) {
+            validatorIdentity +=
+              '|minSelectedCount:' + obj.component.validate[validity];
+          }
+          break;
+
+        case 'multiple':
+          if (obj.component.validate.multiple) {
+            validatorIdentity +=
+              '|multiple:' + obj.component.validate[validity];
+          }
+          break;
+
+        case 'onlyAvailableItems':
+          if (obj.component.validate.onlyAvailableItems) {
+            validatorIdentity +=
+              '|onlyAvailableItems:' + obj.component.validate[validity];
+          }
+          break;
+
+        case 'required':
+          if (obj.component.validate.required) {
+            validatorIdentity +=
+              '|required:' + obj.component.validate[validity];
+          }
+          break;
+
+        case 'strictDateValidation':
+          if (obj.component.validate.strictDateValidation) {
+            validatorIdentity +=
+              '|strictDateValidation:' + obj.component.validate[validity];
+          }
+          break;
+
+        case 'unique':
+          if (obj.component.validate.unique) {
+            validatorIdentity += '|unique:' + obj.component.validate[validity];
+          }
+          break;
+
+        case 'custom':
+          if (obj.component.validate.custom.length) {
+            validatorIdentity +=
+              '|custom:' +
+              obj.component.validate[validity].trim().replaceAll(',', '‚');
+          }
+          break;
+
+        case 'customMessage':
+          if (obj.component.validate.customMessage) {
+            validatorIdentity +=
+              '|customMessage:' +
+              obj.component.validate[validity].trim().replaceAll(',', '‚');
+          }
+          break;
+
+        case 'customPrivate':
+          if (obj.component.validate.customPrivate) {
+            validatorIdentity +=
+              '|customPrivate:' + obj.component.validate[validity].trim();
+          }
+          break;
+
+        case 'json':
+          if (obj.component.validate.json) {
+            validatorIdentity += '|json:' + obj.component.validate[validity];
+          }
+          break;
+
+        case 'pattern':
+          if (obj.component.validate.pattern) {
+            validatorIdentity += '|pattern:' + obj.component.validate[validity];
+          }
+          break;
+
+        case 'maxWords':
+          if (obj.component.validate.maxWords) {
+            validatorIdentity +=
+              '|maxWords:' + obj.component.validate[validity];
+          }
+          break;
+
+        case 'minWords':
+          if (obj.component.validate.minWords) {
+            validatorIdentity +=
+              '|minWords:' + obj.component.validate[validity];
+          }
+          break;
+
+        case 'maxLength':
+          if (obj.component.validate.maxLength) {
+            validatorIdentity +=
+              '|maxLength:' + obj.component.validate[validity];
+          }
+          break;
+
+        case 'minLength':
+          if (obj.component.validate.minLength) {
+            validatorIdentity +=
+              '|minLength:' + obj.component.validate[validity];
+          }
+          break;
+
+        default:
+          validatorIdentity +=
+            '|' + validity + ':' + obj.component.validate[validity];
+          break;
+      }
+    });
+    return validatorIdentity.replace(/^\|/, '');
+  } else if (obj?.messages[0]?.context?.validator) {
+    return obj.messages[0].context.validator;
+  } else {
+    return 'Unknown';
+  }
+}
+
+async function frontendFormatResponse(response) {
+  let newResponse = [];
+
+  for (const item of response) {
+    if (item != null && item != undefined) {
+      for (const obj of item.errors) {
+        let error = {};
+
+        if (obj.component != undefined) {
+          error = {
+            submission: item.submission,
+            key: obj.component.key,
+            label: obj.component.label,
+            validator: buildValidationFromComponent(obj),
+            error_message: obj.message,
+          };
+        } else {
+          error = {
+            submission: item.submission,
+            key: null,
+            label: null,
+            validator: null,
+            error_message: obj.message,
           };
         }
-        delete response.error;
-        delete response.data;
-        this.vForm.setSubmission({
-          data: undefined,
-        });
-        this.validationDispatcher(errors);
-      });
-    },
-    async validationDispatcher(errors) {
-      /* we need this timer allow to the gargabe colector to have time
-       to clean the memory before starting  a new form validation */
 
-      this.vForm.clearServerErrors();
-      this.vForm.resetValue();
-      this.vForm.clear();
-      const response = await this.checkMemoryUsage();
-
-      await this.delay(response);
-      // if (!response) {
-      const check = {
-        shouldContinueValidation:
-          Number(this.index) < Number(this.Json.length - 1), //Need to compare with JSON length - 1 because we only need to perform validation upto the last instance/object of Json array.
-      };
-      if (check.shouldContinueValidation) {
-        this.$nextTick(() => {
-          this.index++;
-          this.percent = this.percentage(this.index);
-        });
-        delete check.shouldContinueValidation;
-        this.$nextTick(() => {
-          this.validate(this.Json[this.index], errors);
-        });
-      } else {
-        this.$nextTick(() => {
-          this.index++;
-          this.value = this.percentage(this.index);
-        });
-        this.endValidation(errors);
+        newResponse.push(error);
       }
-    },
-    async formIOValidation(element) {
-      return new Promise((resolve) => {
-        this.vForm.setSubmission({
-          data: this.convertEmptyArraysToNull(element),
-        });
-        this.vForm
-          .submit()
-          .then((submission) => {
-            resolve({ error: false, data: submission });
-          })
-          .catch((error) => {
-            resolve({ error: true, data: error });
+    }
+  }
+
+  return newResponse;
+}
+
+async function formatResponse(response) {
+  let newResponse = [];
+  await response.forEach((item, index) => {
+    if (item != null && item != undefined) {
+      item.details.forEach((obj) => {
+        let error = {};
+        if (obj.context != undefined) {
+          error = Object({
+            submission: index,
+            key: obj.context.key,
+            label: obj.context.label,
+            validator: obj.context.validator,
+            error_message: obj.message,
           });
+        } else {
+          error = Object({
+            submission: index,
+            key: null,
+            label: null,
+            validator: null,
+            error_message: obj.message,
+          });
+        }
+        newResponse.push(error);
       });
-    },
-    delay(ms) {
-      return new Promise((resolve) => {
-        this.timeout = setTimeout(() => {
-          clearTimeout(this.timeout);
-          resolve();
-        }, ms);
-      });
-    },
+    }
+  });
+  return newResponse;
+}
 
-    percentage(i) {
-      let number_of_submission = this.Json.length;
-      if (number_of_submission > 0 && i > 0) {
-        return Math.ceil((i * this.max) / number_of_submission);
-      }
-      return 0;
-    },
+async function setError(error) {
+  sbdMessage.value = error;
 
-    endValidation(errors) {
-      this.progress = false;
-      this.globalError = errors;
-      this.vForm.destroy();
-      this.vForm = null;
-      if (this.globalError.length == 0) {
-        this.$emit('save-bulk-data', this.Json);
-      } else {
-        this.$emit('toggleBlock', false);
-        this.$emit('set-error', {
-          text: this.$t('trans.formViewerMultiUpload.errAfterValidate'),
-          error: true,
-          upload_state: 10,
-          response: {
-            data: {
-              title: 'Validation Error',
-              reports: this.globalError,
-            },
-          },
-          typeError: 0,
-        });
-      }
-    },
-
-    resetUpload() {
-      this.globalError = [];
-      this.file = undefined;
-      this.Json = [];
-      this.percent = 0;
-      this.upload_state = 0;
-      this.index = 0;
-      this.globalError = [];
-      this.progress = false;
-      this.$emit('reset-message');
-    },
-  },
-};
+  try {
+    if (error.response.data != undefined) {
+      sbdMessage.value.message =
+        error.response.data.title == undefined
+          ? 'An error occurred submitting this form'
+          : error.response.data.title;
+      sbdMessage.value.error = true;
+      sbdMessage.value.upload_state = 10;
+      sbdMessage.value.response =
+        error.response.data.reports == undefined
+          ? [{ error_message: 'An error occurred submitting this form' }]
+          : await frontendFormatResponse(error.response.data.reports);
+      sbdMessage.value.file_name =
+        'error_report_' + properties.form.name + '_' + Date.now();
+    } else {
+      sbdMessage.value.message = 'An error occurred submitting this form';
+      sbdMessage.value.error = true;
+      sbdMessage.value.upload_state = 10;
+      sbdMessage.value.response = [
+        { error_message: 'An error occurred submitting this form' },
+      ];
+      sbdMessage.value.file_name =
+        'error_report_' + properties.form.name + '_' + Date.now();
+    }
+  } catch (error_2) {
+    sbdMessage.value.message = 'An error occurred submitting this form';
+    sbdMessage.value.error = true;
+    sbdMessage.value.upload_state = 10;
+    sbdMessage.value.response = [
+      { error_message: 'An error occurred submitting this form' },
+    ];
+    sbdMessage.value.file_name =
+      'error_report_' + properties.form.name + '_' + Date.now();
+  }
+}
 </script>
 
 <template>
@@ -517,8 +825,8 @@ export default {
               :lang="locale"
               @click="
                 download(
-                  jsonCsv.file_name,
-                  jsonCsv.data,
+                  multiuploadTemplateFilename(form.name),
+                  jsonCsv,
                   $t('trans.formViewerMultiUpload.confirmDownload')
                 )
               "
@@ -561,10 +869,10 @@ export default {
         >
         </v-file-input>
       </div>
-      <div v-if="file" class="worker-zone">
+      <div v-else class="worker-zone">
         <div class="wz-top">
           <v-progress-linear
-            v-model="percent"
+            v-model="progressBar.percent"
             class="loading"
             rounded
             height="15"
@@ -578,85 +886,89 @@ export default {
               <label class="label-left">{{ file.name }}</label>
               <label class="label-right">
                 {{ fileSize }}
-                <p v-if="index > 0 && Json.length > 0">
-                  {{ index + '/' + Json.length }}
+                <p v-if="submissionIndex > 0 && fileReaderData.length > 0">
+                  {{ submissionIndex + '/' + fileReaderData.length }}
                 </p>
               </label>
             </v-col>
           </v-row>
-        </div>
-        <v-row class="p-1">
-          <v-col
-            v-if="!progress && response.upload_state == 10"
-            cols="12"
-            md="12"
-            class="message-block"
-          >
-            <hr v-if="response.error" />
-            <span>Report: </span>
-            <p :class="txt_colour">
-              <v-icon v-if="response.error" color="red" icon="mdi:mdi-close" />
-              <v-icon
-                v-if="!response.error"
-                color="green"
-                icon="mdi:mdi-check"
-              />
-              {{ response.message }}
-            </p>
-          </v-col>
-          <v-col cols="12" md="12">
-            <p
-              v-if="response.error && response.response.length > 0"
-              style="text-align: justify; line-height: 1.2"
-              :lang="locale"
+          <v-row class="p-1">
+            <v-col
+              v-if="!isProcessing && sbdMessage.upload_state == 10"
+              cols="12"
+              md="12"
+              class="message-block"
             >
-              {{ $t('trans.formViewerMultiUpload.downloadDraftSubmns') }}
-              <br />
-              <span class="link">
-                <a
-                  :lang="locale"
-                  @click="
-                    download(
-                      response.file_name,
-                      response.response,
-                      $t('trans.formViewerMultiUpload.doYouWantToDownload')
-                    )
-                  "
-                >
-                  {{ $t('trans.formViewerMultiUpload.downloadReport') }}</a
-                >
+              <hr v-if="sbdMessage.error" />
+              <span>Report: </span>
+              <p :class="txt_colour">
                 <v-icon
-                  class="mr-1"
-                  color="#003366"
-                  icon="mdi:mdi-download"
-                ></v-icon>
-              </span>
-            </p>
-          </v-col>
-          <v-col
-            v-if="
-              file &&
-              !progress &&
-              response.error &&
-              response.response.length > 0
-            "
-            cols="12"
-            md="12"
-          >
-            <span class="m-1 pull-right">
-              <v-btn
-                color="primary"
-                :title="$t('trans.formViewerMultiUpload.uploadNewFile')"
-                @click="resetUpload"
+                  v-if="sbdMessage.error"
+                  color="red"
+                  icon="mdi:mdi-close"
+                />
+                <v-icon
+                  v-if="!sbdMessage.error"
+                  color="green"
+                  icon="mdi:mdi-check"
+                />
+                {{ sbdMessage.message }}
+              </p>
+            </v-col>
+            <v-col cols="12" md="12">
+              <p
+                v-if="sbdMessage.error && sbdMessage.response.length > 0"
+                style="text-align: justify; line-height: 1.2"
+                :lang="locale"
               >
-                <span :lang="locale">{{
-                  $t('trans.formViewerMultiUpload.uploadNewFile')
-                }}</span>
-              </v-btn>
-            </span>
-          </v-col>
-        </v-row>
-        <v-row id="validateForm" class="displayNone"></v-row>
+                {{ $t('trans.formViewerMultiUpload.downloadDraftSubmns') }}
+                <br />
+                <span class="link">
+                  <a
+                    :lang="locale"
+                    @click="
+                      download(
+                        sbdMessage.file_name,
+                        sbdMessage.response,
+                        $t('trans.formViewerMultiUpload.doYouWantToDownload')
+                      )
+                    "
+                  >
+                    {{ $t('trans.formViewerMultiUpload.downloadReport') }}</a
+                  >
+                  <v-icon
+                    class="mr-1"
+                    color="#003366"
+                    icon="mdi:mdi-download"
+                  ></v-icon>
+                </span>
+              </p>
+            </v-col>
+            <v-col
+              v-if="
+                file &&
+                !isProcessing &&
+                sbdMessage.error &&
+                sbdMessage.response.length > 0
+              "
+              cols="12"
+              md="12"
+            >
+              <span class="m-1 pull-right">
+                <v-btn
+                  color="primary"
+                  :title="$t('trans.formViewerMultiUpload.uploadNewFile')"
+                  @click="resetUploadState"
+                >
+                  <span :lang="locale">{{
+                    $t('trans.formViewerMultiUpload.uploadNewFile')
+                  }}</span>
+                </v-btn>
+              </span>
+            </v-col>
+          </v-row>
+          <v-row id="validateForm" class="displayNone"></v-row>
+        </div>
       </div>
     </v-container>
   </div>

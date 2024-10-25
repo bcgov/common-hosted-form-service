@@ -87,7 +87,6 @@ const forceNewTabLinks = ref(true);
 const form = ref({});
 const formDataEntered = ref(false);
 const formElement = ref(undefined);
-const formFields = ref([]);
 const formSchema = ref({});
 const isFormScheduleExpired = ref(false);
 const isLateSubmissionAllowed = ref(false);
@@ -102,14 +101,6 @@ const reRenderFormIo = ref(0);
 const saveDraftDialog = ref(false);
 const saveDraftState = ref(0);
 const saving = ref(false);
-const sbdMessage = ref({
-  message: String,
-  error: Boolean,
-  upload_state: Number,
-  response: [],
-  file_name: String,
-  typeError: Number,
-});
 const showModal = ref(false);
 const showSubmitConfirmDialog = ref(false);
 const submission = ref({ data: { lateEntry: false } });
@@ -424,7 +415,7 @@ async function getFormSchema() {
   }
 }
 
-function toggleBlock(e) {
+function isProcessingMultiUpload(e) {
   block.value = e;
 }
 
@@ -449,346 +440,6 @@ function jsonManager() {
       JSON.parse(JSON.stringify(formElement.value._data)),
       JSON.parse(JSON.stringify(formElement.value._data)),
     ];
-  }
-}
-
-function resetMessage() {
-  sbdMessage.value.message = undefined;
-  sbdMessage.value.error = false;
-  sbdMessage.value.upload_state = 0;
-  sbdMessage.value.response = [];
-  sbdMessage.value.file_name = undefined;
-  sbdMessage.value.typeError = -1;
-  block.value = false;
-}
-
-async function saveBulkData(submissions) {
-  const payload = {
-    draft: true,
-    submission: Object.freeze({ data: submissions }),
-  };
-  block.value = true;
-  sendMultiSubmissionData(payload);
-}
-
-async function sendMultiSubmissionData(body) {
-  try {
-    saving.value = true;
-    let response = await formService.createMultiSubmission(
-      properties.formId,
-      versionIdToSubmitTo.value,
-      body
-    );
-    if ([200, 201].includes(response.status)) {
-      // all is good, flag no errors and carry on...
-      // store our submission result...
-      sbdMessage.value.message = t('trans.formViewer.multiDraftUploadSuccess');
-      sbdMessage.value.error = false;
-      sbdMessage.value.upload_state = 10;
-      sbdMessage.value.response = [];
-      block.value = false;
-      saving.value = false;
-      notificationStore.addNotification({
-        text: sbdMessage.value.message,
-        ...NotificationTypes.SUCCESS,
-      });
-    } else {
-      sbdMessage.value.message = t('trans.formViewer.failedResSubmissn', {
-        status: response.status,
-      });
-      sbdMessage.value.error = true;
-      sbdMessage.value.upload_state = 10;
-      block.value = false;
-      sbdMessage.value.response = [
-        { error_message: t('trans.formViewer.errSubmittingForm') },
-      ];
-      sbdMessage.value.file_name =
-        'error_report_' + form.value.name + '_' + Date.now();
-      saving.value = false;
-      throw new Error(
-        t('trans.formViewer.failedResSubmissn', {
-          status: response.status,
-        })
-      );
-    }
-  } catch (error) {
-    saving.value = false;
-    block.value = false;
-    setFinalError(error);
-    notificationStore.addNotification({
-      text: sbdMessage.value.message,
-      consoleError: t('trans.formViewer.errorSavingFile', {
-        fileName: json_csv.value.file_name,
-        error: error,
-      }),
-    });
-  }
-}
-
-async function setFinalError(error) {
-  try {
-    if (error.response.data != undefined) {
-      sbdMessage.value.message =
-        error.response.data.title == undefined
-          ? t('trans.formViewer.errSubmittingForm')
-          : error.response.data.title;
-      sbdMessage.value.response =
-        error.response.data.reports == undefined
-          ? [
-              {
-                error_message: t('trans.formViewer.errSubmittingForm'),
-              },
-            ]
-          : await formatResponse(error.response.data.reports);
-    } else {
-      sbdMessage.value.message = t('trans.formViewer.errSubmittingForm');
-      sbdMessage.value.response = [
-        { error_message: t('trans.formViewer.errSubmittingForm') },
-      ];
-    }
-  } catch (error_2) {
-    sbdMessage.value.message = t('trans.formViewer.errSubmittingForm');
-    sbdMessage.value.response = [
-      { error_message: t('trans.formViewer.errSubmittingForm') },
-    ];
-  } finally {
-    sbdMessage.value.error = true;
-    sbdMessage.value.upload_state = 10;
-    sbdMessage.value.file_name =
-      'error_report_' + form.value.name + '_' + Date.now();
-  }
-}
-
-function buildValidationFromComponent(obj) {
-  if (obj?.component?.validate) {
-    let validatorIdentity = '';
-    Object.keys(obj.component.validate).forEach((validity) => {
-      switch (validity) {
-        case 'maxSelectedCount':
-          if (obj.component.validate.maxSelectedCount) {
-            validatorIdentity +=
-              '|maxSelectedCount:' + obj.component.validate[validity];
-          }
-          break;
-
-        case 'minSelectedCount':
-          if (obj.component.validate.minSelectedCount) {
-            validatorIdentity +=
-              '|minSelectedCount:' + obj.component.validate[validity];
-          }
-          break;
-
-        case 'multiple':
-          if (obj.component.validate.multiple) {
-            validatorIdentity +=
-              '|multiple:' + obj.component.validate[validity];
-          }
-          break;
-
-        case 'onlyAvailableItems':
-          if (obj.component.validate.onlyAvailableItems) {
-            validatorIdentity +=
-              '|onlyAvailableItems:' + obj.component.validate[validity];
-          }
-          break;
-
-        case 'required':
-          if (obj.component.validate.required) {
-            validatorIdentity +=
-              '|required:' + obj.component.validate[validity];
-          }
-          break;
-
-        case 'strictDateValidation':
-          if (obj.component.validate.strictDateValidation) {
-            validatorIdentity +=
-              '|strictDateValidation:' + obj.component.validate[validity];
-          }
-          break;
-
-        case 'unique':
-          if (obj.component.validate.unique) {
-            validatorIdentity += '|unique:' + obj.component.validate[validity];
-          }
-          break;
-
-        case 'custom':
-          if (obj.component.validate.custom.length) {
-            validatorIdentity +=
-              '|custom:' +
-              obj.component.validate[validity].trim().replaceAll(',', '‚');
-          }
-          break;
-
-        case 'customMessage':
-          if (obj.component.validate.customMessage) {
-            validatorIdentity +=
-              '|customMessage:' +
-              obj.component.validate[validity].trim().replaceAll(',', '‚');
-          }
-          break;
-
-        case 'customPrivate':
-          if (obj.component.validate.customPrivate) {
-            validatorIdentity +=
-              '|customPrivate:' + obj.component.validate[validity].trim();
-          }
-          break;
-
-        case 'json':
-          if (obj.component.validate.json) {
-            validatorIdentity += '|json:' + obj.component.validate[validity];
-          }
-          break;
-
-        case 'pattern':
-          if (obj.component.validate.pattern) {
-            validatorIdentity += '|pattern:' + obj.component.validate[validity];
-          }
-          break;
-
-        case 'maxWords':
-          if (obj.component.validate.maxWords) {
-            validatorIdentity +=
-              '|maxWords:' + obj.component.validate[validity];
-          }
-          break;
-
-        case 'minWords':
-          if (obj.component.validate.minWords) {
-            validatorIdentity +=
-              '|minWords:' + obj.component.validate[validity];
-          }
-          break;
-
-        case 'maxLength':
-          if (obj.component.validate.maxLength) {
-            validatorIdentity +=
-              '|maxLength:' + obj.component.validate[validity];
-          }
-          break;
-
-        case 'minLength':
-          if (obj.component.validate.minLength) {
-            validatorIdentity +=
-              '|minLength:' + obj.component.validate[validity];
-          }
-          break;
-
-        default:
-          validatorIdentity +=
-            '|' + validity + ':' + obj.component.validate[validity];
-          break;
-      }
-    });
-    return validatorIdentity.replace(/^\|/, '');
-  } else if (obj?.messages[0]?.context?.validator) {
-    return obj.messages[0].context.validator;
-  } else {
-    return 'Unknown';
-  }
-}
-
-async function frontendFormatResponse(response) {
-  let newResponse = [];
-
-  for (const item of response) {
-    if (item != null && item != undefined) {
-      for (const obj of item.errors) {
-        let error = {};
-
-        if (obj.component != undefined) {
-          error = {
-            submission: item.submission,
-            key: obj.component.key,
-            label: obj.component.label,
-            validator: buildValidationFromComponent(obj),
-            error_message: obj.message,
-          };
-        } else {
-          error = {
-            submission: item.submission,
-            key: null,
-            label: null,
-            validator: null,
-            error_message: obj.message,
-          };
-        }
-
-        newResponse.push(error);
-      }
-    }
-  }
-
-  return newResponse;
-}
-
-async function formatResponse(response) {
-  let newResponse = [];
-  await response.forEach((item, index) => {
-    if (item != null && item != undefined) {
-      item.details.forEach((obj) => {
-        let error = {};
-        if (obj.context != undefined) {
-          error = Object({
-            submission: index,
-            key: obj.context.key,
-            label: obj.context.label,
-            validator: obj.context.validator,
-            error_message: obj.message,
-          });
-        } else {
-          error = Object({
-            submission: index,
-            key: null,
-            label: null,
-            validator: null,
-            error_message: obj.message,
-          });
-        }
-        newResponse.push(error);
-      });
-    }
-  });
-  return newResponse;
-}
-
-async function setError(error) {
-  sbdMessage.value = error;
-
-  try {
-    if (error.response.data != undefined) {
-      sbdMessage.value.message =
-        error.response.data.title == undefined
-          ? 'An error occurred submitting this form'
-          : error.response.data.title;
-      sbdMessage.value.error = true;
-      sbdMessage.value.upload_state = 10;
-      sbdMessage.value.response =
-        error.response.data.reports == undefined
-          ? [{ error_message: 'An error occurred submitting this form' }]
-          : await frontendFormatResponse(error.response.data.reports);
-      sbdMessage.value.file_name =
-        'error_report_' + form.value.name + '_' + Date.now();
-    } else {
-      sbdMessage.value.message = 'An error occurred submitting this form';
-      sbdMessage.value.error = true;
-      sbdMessage.value.upload_state = 10;
-      sbdMessage.value.response = [
-        { error_message: 'An error occurred submitting this form' },
-      ];
-      sbdMessage.value.file_name =
-        'error_report_' + form.value.name + '_' + Date.now();
-    }
-  } catch (error_2) {
-    sbdMessage.value.message = 'An error occurred submitting this form';
-    sbdMessage.value.error = true;
-    sbdMessage.value.upload_state = 10;
-    sbdMessage.value.response = [
-      { error_message: 'An error occurred submitting this form' },
-    ];
-    sbdMessage.value.file_name =
-      'error_report_' + form.value.name + '_' + Date.now();
   }
 }
 
@@ -1291,16 +942,12 @@ async function uploadFile(file, config = {}) {
           </v-alert>
           <FormViewerMultiUpload
             v-if="!isLoading && form.allowSubmitterToUploadFile && bulkFile"
-            :response="sbdMessage"
             :form="form"
             :form-element="formElement"
             :form-schema="formSchema"
             :json-csv="json_csv"
-            :form-fields="formFields"
-            @save-bulk-data="saveBulkData"
-            @reset-message="resetMessage"
-            @set-error="setError"
-            @toggleBlock="toggleBlock"
+            :submission-version="versionIdToSubmitTo"
+            @isProcessing="isProcessingMultiUpload"
           />
 
           <Form
