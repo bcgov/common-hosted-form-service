@@ -947,7 +947,7 @@ async function uploadFile(file, config = {}) {
             :form-schema="formSchema"
             :json-csv="json_csv"
             :submission-version="versionIdToSubmitTo"
-            @isProcessing="isProcessingMultiUpload"
+            @isProcessingMultiUpload="isProcessingMultiUpload"
           />
 
           <Form

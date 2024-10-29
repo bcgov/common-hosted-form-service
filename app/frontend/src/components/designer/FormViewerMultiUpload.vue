@@ -5,6 +5,7 @@ import { storeToRefs } from 'pinia';
 import { computed, nextTick, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { delay } from '~/composables/form';
 import { formService } from '~/services';
 import { useAppStore } from '~/store/app';
 import { useFormStore } from '~/store/form';
@@ -48,11 +49,11 @@ const { isRTL } = storeToRefs(formStore);
 // This timeout is purely used for adding an artificial delay, some systems were having
 // an issue where they were running out of memory. The garbage collection for memory
 // was not happening early/fast enough. This seems to be a good middleground.
-const delayTimeout = ref(null);
+const delayTime = ref(500);
 // These are the errors that occur while validating the submissions or the file
 const errors = ref([]);
 // The file to be uploaded
-const file = ref(null);
+const file = ref(undefined);
 // The file input reference
 const fileRef = ref(null);
 // If there is a file currently being processed
@@ -65,12 +66,12 @@ const progressBar = ref({
   message: '',
 });
 const sbdMessage = ref({
-  message: String,
-  error: Boolean,
-  upload_state: Number,
+  message: undefined,
+  error: false,
+  upload_state: 0,
   response: [],
-  file_name: String,
-  typeError: Number,
+  file_name: undefined,
+  typeError: -1,
 });
 // This is the index in the list of submissions that are being uploaded
 const submissionIndex = ref(0);
@@ -176,7 +177,7 @@ function parseFile() {
 }
 
 function popFormLevelInfo(jsonPayload = []) {
-  /** This function is purely made to remove un-necessery information
+  /** This function is purely made to remove unnecessary information
    * from the json payload of submissions. It will also help to remove crucial data
    * to be removed from the payload that should not be going to DB like confirmationId,
    * formName,version,createdAt,fullName,username,email,status,assignee,assigneeEmail and
@@ -313,6 +314,7 @@ async function preValidateSubmission() {
 
 async function getMemoryInfo() {
   return new Promise((resolve) => {
+    // window.performance.memory is DEPRECATED, this needs to be replaced
     if (window.performance && window.performance.memory) {
       resolve(
         (
@@ -360,22 +362,21 @@ function convertEmptyArraysToNull(obj) {
 }
 
 async function validate(element, errors) {
-  await delay(500);
+  await delay(delayTime.value);
   //this.checkMemoryUsage();
-  formIOValidation(element).then((response) => {
-    if (response.error) {
-      errors[submissionIndex.value] = {
-        submission: submissionIndex.value,
-        errors: response.data,
-      };
-    }
-    delete response.error;
-    delete response.data;
-    submissionToValidate.value.setSubmission({
-      data: undefined,
-    });
-    validationDispatcher(errors);
+  const response = await formIOValidation(element);
+  if (response.error) {
+    errors[submissionIndex.value] = {
+      submission: submissionIndex.value,
+      errors: response.data,
+    };
+  }
+  delete response.error;
+  delete response.data;
+  submissionToValidate.value.setSubmission({
+    data: undefined,
   });
+  validationDispatcher(errors);
 }
 
 async function validationDispatcher(errors) {
@@ -386,7 +387,6 @@ async function validationDispatcher(errors) {
   submissionToValidate.value.resetValue();
   submissionToValidate.value.clear();
   const response = await checkMemoryUsage();
-
   await delay(response);
   const check = {
     shouldContinueValidation:
@@ -426,15 +426,6 @@ async function formIOValidation(element) {
   });
 }
 
-function delay(ms) {
-  return new Promise((resolve) => {
-    delayTimeout.value = setTimeout(() => {
-      clearTimeout(delayTimeout.value);
-      resolve();
-    }, ms);
-  });
-}
-
 function percentage(i) {
   let number_of_submission = fileReaderData.value.length;
   if (number_of_submission > 0 && i > 0) {
@@ -450,10 +441,8 @@ async function endValidation(errs) {
   submissionToValidate.value = null;
   if (errors.value.length == 0) {
     await saveBulkData(fileReaderData.value);
-    console.log('we should be emitting save-bulk-data now');
   } else {
     emit('isProcessingMultiUpload', false);
-    console.log('we should be emitting set-error now');
     setError({
       text: t('trans.formViewerMultiUpload.errAfterValidate'),
       error: true,
@@ -478,6 +467,14 @@ function resetUploadState() {
     percent: 0,
     message: '',
   };
+  sbdMessage.value = {
+    message: undefined,
+    error: false,
+    upload_state: 0,
+    response: [],
+    file_name: undefined,
+    typeError: -1,
+  };
 }
 
 async function saveBulkData(submissions) {
@@ -485,7 +482,7 @@ async function saveBulkData(submissions) {
     draft: true,
     submission: Object.freeze({ data: submissions }),
   };
-  sendMultiSubmissionData(payload);
+  await sendMultiSubmissionData(payload);
 }
 
 async function sendMultiSubmissionData(body) {
@@ -538,9 +535,9 @@ async function sendMultiSubmissionData(body) {
   }
 }
 
-async function setFinalError(error) {
+function setFinalError(error) {
   try {
-    if (error.response.data != undefined) {
+    if (error.response.data != undefined && error.response.data !== '') {
       sbdMessage.value.message =
         error.response.data.title == undefined
           ? t('trans.formViewer.errSubmittingForm')
@@ -552,14 +549,14 @@ async function setFinalError(error) {
                 error_message: t('trans.formViewer.errSubmittingForm'),
               },
             ]
-          : await formatResponse(error.response.data.reports);
+          : formatResponse(error.response.data.reports);
     } else {
       sbdMessage.value.message = t('trans.formViewer.errSubmittingForm');
       sbdMessage.value.response = [
         { error_message: t('trans.formViewer.errSubmittingForm') },
       ];
     }
-  } catch (error_2) {
+  } catch (err) {
     sbdMessage.value.message = t('trans.formViewer.errSubmittingForm');
     sbdMessage.value.response = [
       { error_message: t('trans.formViewer.errSubmittingForm') },
@@ -695,14 +692,17 @@ function buildValidationFromComponent(obj) {
       }
     });
     return validatorIdentity.replace(/^\|/, '');
-  } else if (obj?.messages[0]?.context?.validator) {
+  } else if (
+    obj?.messages?.length > 0 &&
+    obj?.messages[0]?.context?.validator
+  ) {
     return obj.messages[0].context.validator;
   } else {
     return 'Unknown';
   }
 }
 
-async function frontendFormatResponse(response) {
+function frontendFormatResponse(response) {
   let newResponse = [];
 
   for (const item of response) {
@@ -736,9 +736,9 @@ async function frontendFormatResponse(response) {
   return newResponse;
 }
 
-async function formatResponse(response) {
+function formatResponse(response) {
   let newResponse = [];
-  await response.forEach((item, index) => {
+  response.forEach((item, index) => {
     if (item != null && item != undefined) {
       item.details.forEach((obj) => {
         let error = {};
@@ -766,39 +766,39 @@ async function formatResponse(response) {
   return newResponse;
 }
 
-async function setError(error) {
+function setError(error) {
   sbdMessage.value = error;
 
   try {
     if (error.response.data != undefined) {
       sbdMessage.value.message =
-        error.response.data.title == undefined
-          ? 'An error occurred submitting this form'
+        error.response.data.title === undefined
+          ? t('trans.formViewer.errSubmittingForm')
           : error.response.data.title;
       sbdMessage.value.error = true;
       sbdMessage.value.upload_state = 10;
       sbdMessage.value.response =
         error.response.data.reports == undefined
-          ? [{ error_message: 'An error occurred submitting this form' }]
-          : await frontendFormatResponse(error.response.data.reports);
+          ? [{ error_message: t('trans.formViewer.errSubmittingForm') }]
+          : frontendFormatResponse(error.response.data.reports);
       sbdMessage.value.file_name =
         'error_report_' + properties.form.name + '_' + Date.now();
     } else {
-      sbdMessage.value.message = 'An error occurred submitting this form';
+      sbdMessage.value.message = t('trans.formViewer.errSubmittingForm');
       sbdMessage.value.error = true;
       sbdMessage.value.upload_state = 10;
       sbdMessage.value.response = [
-        { error_message: 'An error occurred submitting this form' },
+        { error_message: t('trans.formViewer.errSubmittingForm') },
       ];
       sbdMessage.value.file_name =
         'error_report_' + properties.form.name + '_' + Date.now();
     }
-  } catch (error_2) {
-    sbdMessage.value.message = 'An error occurred submitting this form';
+  } catch (err) {
+    sbdMessage.value.message = t('trans.formViewer.errSubmittingForm');
     sbdMessage.value.error = true;
     sbdMessage.value.upload_state = 10;
     sbdMessage.value.response = [
-      { error_message: 'An error occurred submitting this form' },
+      { error_message: t('trans.formViewer.errSubmittingForm') },
     ];
     sbdMessage.value.file_name =
       'error_report_' + properties.form.name + '_' + Date.now();
@@ -826,7 +826,7 @@ async function setError(error) {
               @click="
                 download(
                   multiuploadTemplateFilename(form.name),
-                  jsonCsv,
+                  jsonCsv.data,
                   $t('trans.formViewerMultiUpload.confirmDownload')
                 )
               "
