@@ -9,6 +9,7 @@ dist
 **/src/formio
 **/cypress/**/videos
 screenshots
+downloads
 node_modules
 
 # Ignore only top-level package-lock.json

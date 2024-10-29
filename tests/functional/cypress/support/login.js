@@ -25,6 +25,12 @@ export function formsettings(){
     cy.get('#user').type(username);
     cy.get('#password').type(password);
     cy.get('.btn').click();
+    cy.get('[data-cy="help"]')
+    .should("have.attr", "href", "https://developer.gov.bc.ca/docs/default/component/chefs-techdocs")
+    .should("have.text", "Help");
+    cy.get('[data-cy="feedback"]')
+    .should("have.attr", "href", "https://chefs-fider.apps.silver.devops.gov.bc.ca/")
+    .should("have.text", "Feedback");
     cy.get('[data-cy="createNewForm"]').click();
     cy.get('.v-row > :nth-child(1) > .v-card > .v-card-title > span').contains('Form Title');
 
