@@ -12,7 +12,7 @@ import { useAppStore } from '~/store/app';
 import { useNotificationStore } from '~/store/notification';
 import { IdentityMode, NotificationTypes } from '~/utils/constants';
 import { generateIdps, parseIdps } from '~/utils/transformUtils';
-import { encryptionKeyService, eventStreamConfigService } from '../services';
+import { encryptionKeyService, eventStreamConfigService } from '~/services';
 
 const genInitialSchedule = () => ({
   enabled: null,

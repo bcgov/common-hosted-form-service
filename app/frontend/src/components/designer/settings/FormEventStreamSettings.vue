@@ -15,7 +15,6 @@ const formStore = useFormStore();
 const notificationStore = useNotificationStore();
 const { form, isRTL } = storeToRefs(formStore);
 
-const loading = ref(true);
 const algorithms = ref([]);
 const techdocsLink =
   'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Integrations/Event-Stream-Service/';
@@ -25,7 +24,6 @@ onMounted(async () => {
 });
 
 async function fetchAlgorithms() {
-  loading.value = true;
   try {
     algorithms.value = [];
     const result = await encryptionKeyService.listEncryptionAlgorithms();

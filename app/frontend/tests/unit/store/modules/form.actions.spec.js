@@ -9,7 +9,7 @@ import {
 } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
-import { useAppStore } from '../../../../src/store/app';
+import { useAppStore } from '~/store/app';
 
 vi.mock('~/services');
 
