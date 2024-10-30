@@ -323,6 +323,7 @@ export const FormDesignerBuilderOptions = Object.freeze({
       orgbook: true,
       bcaddress: true,
       simplebcaddress: true,
+      map: true,
     },
   },
 });
