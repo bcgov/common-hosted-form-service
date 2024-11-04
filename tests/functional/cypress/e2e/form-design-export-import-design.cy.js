@@ -94,7 +94,36 @@ describe('Form Designer', () => {
     cy.get('.mdi-redo').should('not.exist');
     cy.get('.mdi-menu').should('be.visible');
     cy.get('.mdi-arrow-up').should('be.visible');
+    cy.get('.mdi-menu').click();
+    
+
+    // Form saving
+    let savedButton = cy.get('[data-cy=saveButton]');
+    expect(savedButton).to.not.be.null;
+    savedButton.trigger('click');
+    cy.wait(2000);
+    
+    // Filter the newly created form
+    cy.location('search').then(search => {
+        //let pathName = fullUrl.pathname
+    let arr = search.split('=');
+    let arrayValues = arr[1].split('&');
+    cy.log(arrayValues[0]);
+    let dval=arr[2].split('&');
+    cy.log(dval);
+         //Form preview
+    cy.visit(`/${depEnv}/form/preview?f=${arrayValues[0]}&d=${dval[0]}`);
+    cy.waitForLoad();
+    cy.get('input[name="data[simplebcaddress]"]').should('be.visible');
+
+    //Delete form after test run
+    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+     cy.waitForLoad();
+    cy.get('[data-test="canRemoveForm"]').click();
+    cy.get('[data-test="continue-btn-continue"]').click();
     cy.get('#logoutButton > .v-btn__content > span').click();
+    });
+    
     
     
 });
