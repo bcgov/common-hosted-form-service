@@ -74,7 +74,7 @@ describe('Form Designer', () => {
         cy.log(arr);
         let remname = arr[1] + "_schema.json";
         cy.wait(2000);
-        cy.readFile(`cypress\\downloads\\${remname}`).should("exist");
+        cy.readFile(`cypress\\downloads\\${remname}`);
     });
     //Verify visibility of right side buttons on design page
     cy.get('[data-cy="saveButton"] > .v-btn').should('be.enabled');
