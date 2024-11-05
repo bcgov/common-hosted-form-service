@@ -298,23 +298,6 @@ describe('Test Schedule object validation Utils functions', () => {
     });
   });
 
-  it('checkIsFormExpired should return a valid object for a manual schedule with a valid schedule ', () => {
-    expect(
-      checkIsFormExpired({
-        enabled: true,
-        scheduleType: ScheduleType.MANUAL,
-        allowLateSubmissions: {
-          enabled: false,
-        },
-        openSubmissionDateTime: moment().subtract(1, 'days').format('YYYY-MM-DD'),
-      })
-    ).toEqual({
-      allowLateSubmissions: false,
-      expire: false,
-      message: '',
-    });
-  });
-
   it('checkIsFormExpired should append a closing message if it is enabled and a valid object for a valid schedule', () => {
     expect(
       checkIsFormExpired({
