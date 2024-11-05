@@ -1,6 +1,8 @@
 const config = require('config');
+const moment = require('moment');
 
-const { getBaseUrl, queryUtils, typeUtils, validateScheduleObject } = require('../../../../src/forms/common/utils');
+const { checkIsFormExpired, getBaseUrl, queryUtils, typeUtils, validateScheduleObject } = require('../../../../src/forms/common/utils');
+const { ScheduleType } = require('../../../../src/forms/common/constants');
 
 jest.mock('config');
 
@@ -257,5 +259,211 @@ describe('Test Schedule object validation Utils functions', () => {
     let result = validateScheduleObject(testPayload);
     expect(result).toBeDefined();
     expect(result).toHaveProperty('status', 'success');
+  });
+
+  it('checkIsFormExpired should return the default result object { allowLateSubmission: false, expire: false, message: "" }', () => {
+    expect(checkIsFormExpired()).toEqual({ allowLateSubmissions: false, expire: false, message: '' });
+  });
+
+  it('checkIsFormExpired should return a message that the form is not available yet if the open time is a future date { ...result, expire: true, allowLateSubmissions: false, message: "This form is not yet available for submission."', () => {
+    expect(
+      checkIsFormExpired({
+        enabled: true,
+        allowLateSubmissions: {
+          enabled: false,
+        },
+        openSubmissionDateTime: moment().add(1, 'days').format('YYYY-MM-DD'),
+      })
+    ).toEqual({
+      allowLateSubmissions: false,
+      expire: true,
+      message: 'This form is not yet available for submission.',
+    });
+  });
+
+  it('checkIsFormExpired should return a valid object for a manual schedule with a valid schedule ', () => {
+    expect(
+      checkIsFormExpired({
+        enabled: true,
+        scheduleType: ScheduleType.MANUAL,
+        allowLateSubmissions: {
+          enabled: false,
+        },
+        openSubmissionDateTime: moment().subtract(1, 'days').format('YYYY-MM-DD'),
+      })
+    ).toEqual({
+      allowLateSubmissions: false,
+      expire: false,
+      message: '',
+    });
+  });
+
+  it('checkIsFormExpired should append a closing message if it is enabled and a valid object for a valid schedule', () => {
+    expect(
+      checkIsFormExpired({
+        enabled: true,
+        scheduleType: ScheduleType.CLOSINGDATE,
+        closingMessageEnabled: true,
+        closingMessage: 'closing message',
+        allowLateSubmissions: {
+          enabled: false,
+        },
+        repeatSubmission: {
+          enabled: false,
+        },
+        openSubmissionDateTime: moment().subtract(1, 'days').format('YYYY-MM-DD'),
+        closeSubmissionDateTime: moment().add(1, 'days').format('YYYY-MM-DD'),
+      })
+    ).toEqual({
+      allowLateSubmissions: false,
+      expire: false,
+      message: 'closing message',
+    });
+  });
+
+  it('checkIsFormExpired should return an expired object for a late schedule with no late submissions', () => {
+    expect(
+      checkIsFormExpired({
+        enabled: true,
+        scheduleType: ScheduleType.CLOSINGDATE,
+        allowLateSubmissions: {
+          enabled: false,
+        },
+        repeatSubmission: {
+          enabled: false,
+        },
+        openSubmissionDateTime: moment().subtract(2, 'days').format('YYYY-MM-DD'),
+        closeSubmissionDateTime: moment().subtract(1, 'days').format('YYYY-MM-DD'),
+      })
+    ).toEqual({
+      allowLateSubmissions: false,
+      expire: true,
+      message: '',
+    });
+  });
+
+  it('checkIsFormExpired should return an expired object but have allowLateSubmissions to be true for a late schedule with late submissions', () => {
+    expect(
+      checkIsFormExpired({
+        enabled: true,
+        scheduleType: ScheduleType.CLOSINGDATE,
+        allowLateSubmissions: {
+          enabled: true,
+          forNext: {
+            term: '1',
+            intervalType: 'days',
+          },
+        },
+        repeatSubmission: {
+          enabled: false,
+        },
+        openSubmissionDateTime: moment().subtract(2, 'days').format('YYYY-MM-DD'),
+        closeSubmissionDateTime: moment().subtract(1, 'days').format('YYYY-MM-DD'),
+      })
+    ).toEqual({
+      allowLateSubmissions: true,
+      expire: true,
+      message: '',
+    });
+  });
+
+  it('checkIsFormExpired for a period of 1 days should return an unexpired object in a valid schedule', () => {
+    expect(
+      checkIsFormExpired({
+        enabled: true,
+        scheduleType: 'period',
+        keepOpenForTerm: '1',
+        repeatSubmission: {
+          enabled: true,
+          everyTerm: '1',
+          repeatUntil: moment().add(1, 'month').format('YYYY-MM-DD'),
+          everyIntervalType: 'weeks',
+        },
+        keepOpenForInterval: 'days',
+        allowLateSubmissions: { enabled: true, forNext: { term: '1', intervalType: 'days' } },
+        closingMessageEnabled: false,
+        openSubmissionDateTime: moment().format('YYYY-MM-DD'),
+        closeSubmissionDateTime: null,
+      })
+    ).toEqual({
+      allowLateSubmissions: false,
+      expire: false,
+      message: '',
+    });
+  });
+
+  it('checkIsFormExpired for a period on an expired day with late submissions should allow it', () => {
+    expect(
+      checkIsFormExpired({
+        enabled: true,
+        scheduleType: 'period',
+        keepOpenForTerm: '1',
+        repeatSubmission: {
+          enabled: true,
+          everyTerm: '1',
+          repeatUntil: moment().add(1, 'month').format('YYYY-MM-DD'),
+          everyIntervalType: 'weeks',
+        },
+        keepOpenForInterval: 'days',
+        allowLateSubmissions: { enabled: true, forNext: { term: '1', intervalType: 'days' } },
+        closingMessageEnabled: false,
+        openSubmissionDateTime: moment().subtract(1, 'days').format('YYYY-MM-DD'),
+        closeSubmissionDateTime: null,
+      })
+    ).toEqual({
+      allowLateSubmissions: true,
+      expire: true,
+      message: '',
+    });
+  });
+
+  it('checkIsFormExpired for a period on an expired day with no late submissions should disallow it', () => {
+    expect(
+      checkIsFormExpired({
+        enabled: true,
+        scheduleType: 'period',
+        keepOpenForTerm: '1',
+        repeatSubmission: {
+          enabled: true,
+          everyTerm: '1',
+          repeatUntil: moment().add(1, 'month').format('YYYY-MM-DD'),
+          everyIntervalType: 'weeks',
+        },
+        keepOpenForInterval: 'days',
+        allowLateSubmissions: { enabled: false, forNext: { term: '1', intervalType: 'days' } },
+        closingMessageEnabled: false,
+        openSubmissionDateTime: moment().subtract(1, 'days').format('YYYY-MM-DD'),
+        closeSubmissionDateTime: null,
+      })
+    ).toEqual({
+      allowLateSubmissions: false,
+      expire: true,
+      message: '',
+    });
+  });
+
+  it('checkIsFormExpired for a period of 1 days should return an expired object in an invalid schedule', () => {
+    expect(
+      checkIsFormExpired({
+        enabled: true,
+        scheduleType: 'period',
+        keepOpenForTerm: '1',
+        repeatSubmission: {
+          enabled: false,
+          everyTerm: null,
+          repeatUntil: null,
+          everyIntervalType: null,
+        },
+        keepOpenForInterval: 'days',
+        allowLateSubmissions: { enabled: false, forNext: { term: '1', intervalType: 'days' } },
+        closingMessageEnabled: false,
+        openSubmissionDateTime: moment().subtract(5, 'days').format('YYYY-MM-DD'),
+        closeSubmissionDateTime: null,
+      })
+    ).toEqual({
+      allowLateSubmissions: false,
+      expire: true,
+      message: '',
+    });
   });
 });
