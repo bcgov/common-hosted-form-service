@@ -833,7 +833,8 @@
     "submittingDraftErrMsg": "Đã xảy ra lỗi khi lưu bản nháp",
     "submittingDraftConsErrMsg": "Lỗi khi lưu bản nháp. Đệ trìnhId: {submissionId}. Lỗi: {error}",
     "formDraftAccessErrMsg": "Yêu cầu gửi đã được gửi, chuyển hướng đến Xem trang",
-    "formUnauthorizedMessage": "Bạn không được phép xem mẫu này, vui lòng liên hệ với chủ sở hữu mẫu để được truy cập."
+    "formUnauthorizedMessage": "Bạn không được phép xem mẫu này, vui lòng liên hệ với chủ sở hữu mẫu để được truy cập.",
+    "fileUploadWarning": "Để tải lên tệp đính kèm của bạn, bạn phải nhấp vào nút 'Lưu dưới dạng bản nháp' hoặc gửi biểu mẫu của bạn. Nếu bạn thoát khỏi màn hình này, bạn sẽ mất tệp đính kèm của mình"
   },
   "bCGovFooter": {
     "home": "Trang chủ",
@@ -1079,5 +1080,8 @@
       "history": "LỊCH SỬ",
       "user": "Người dùng"
     }
+  },
+  "alert": {
+    "warning": "Cảnh báo"
   }
 }

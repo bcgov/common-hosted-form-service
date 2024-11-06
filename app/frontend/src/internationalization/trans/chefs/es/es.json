@@ -833,7 +833,8 @@
     "submittingDraftErrMsg": "Se produjo un error al guardar un borrador",
     "submittingDraftConsErrMsg": "Error al guardar el borrador. Id de envío: {submissionId}. Error: {error}",
     "formDraftAccessErrMsg": "El envío solicitado ya se envió, redirigiendo a la página Ver",
-    "formUnauthorizedMessage": "No tienes autorización para ver este formulario, por favor contacta al propietario del formulario para acceder."
+    "formUnauthorizedMessage": "No tienes autorización para ver este formulario, por favor contacta al propietario del formulario para acceder.",
+    "fileUploadWarning": "Para cargar sus archivos adjuntos, debe hacer clic en el botón \"Guardar como borrador\" o enviar su formulario. Si sale de esta pantalla, perderá sus archivos adjuntos."
   },
   "bCGovFooter": {
     "home": "Hogar",
@@ -1081,5 +1082,8 @@
       "history": "HISTORIA",
       "user": "Usuario"
     }
+  },
+  "alert": {
+    "warning": "Advertencia"
   }
 }

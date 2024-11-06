@@ -833,7 +833,8 @@
     "submittingDraftErrMsg": "Si è verificato un errore durante il salvataggio di una bozza",
     "submittingDraftConsErrMsg": "Errore durante il salvataggio della bozza. SubmissionId: {submissionId}. Errore: {error}",
     "formDraftAccessErrMsg": "L'invio richiesto è già stato inviato, reindirizzamento alla pagina Visualizza",
-    "formUnauthorizedMessage": "Non sei autorizzato a visualizzare questo modulo, si prega di contattare il proprietario del modulo per l'accesso."
+    "formUnauthorizedMessage": "Non sei autorizzato a visualizzare questo modulo, si prega di contattare il proprietario del modulo per l'accesso.",
+    "fileUploadWarning": "Per caricare i tuoi allegati, devi cliccare sul pulsante \"Salva come bozza\" o inviare il tuo modulo. Se esci da questa schermata, perderai i tuoi allegati."
   },
   "bCGovFooter": {
     "home": "Casa",
@@ -1081,5 +1082,8 @@
       "history": "STORIA",
       "user": "Utente"
     }
+  },
+  "alert": {
+    "warning": "Avvertimento"
   }
 }

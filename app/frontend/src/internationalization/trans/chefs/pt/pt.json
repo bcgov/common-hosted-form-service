@@ -833,7 +833,8 @@
     "submittingDraftErrMsg": "Ocorreu um erro ao salvar um rascunho",
     "submittingDraftConsErrMsg": "Erro ao salvar rascunho. SubmissãoId: {submissionId}. Erro: {error}",
     "formDraftAccessErrMsg": "O envio solicitado já foi enviado, redirecionando para a página Exibir",
-    "formUnauthorizedMessage": "Você não está autorizado a visualizar este formulário, por favor, contate o proprietário do formulário para acesso."
+    "formUnauthorizedMessage": "Você não está autorizado a visualizar este formulário, por favor, contate o proprietário do formulário para acesso.",
+    "fileUploadWarning": "Para enviar os seus anexos, deve clicar no botão 'Guardar como rascunho' ou enviar o seu formulário. Se sair deste ecrã, perderá os seus anexos"
   },
   "bCGovFooter": {
     "home": "Lar",
@@ -1081,5 +1082,8 @@
       "history": "HISTÓRIA",
       "user": "Do utilizador"
     }
+  },
+  "alert": {
+    "warning": "Aviso"
   }
 }

@@ -833,7 +833,8 @@
     "submittingDraftErrMsg": "Nagkaroon ng error habang nagse-save ng draft",
     "submittingDraftConsErrMsg": "Error sa pag-save ng draft. SubmissionId: {submissionId}. Error: {error}",
     "formDraftAccessErrMsg": "Ang hiniling na pagsusumite ay naisumite na, nagre-redirect sa View page",
-    "formUnauthorizedMessage": "Hindi ka awtorisadong tingnan ang form na ito, mangyaring makipag-ugnayan sa may-ari ng form para sa access."
+    "formUnauthorizedMessage": "Hindi ka awtorisadong tingnan ang form na ito, mangyaring makipag-ugnayan sa may-ari ng form para sa access.",
+    "fileUploadWarning": "Upang i-upload ang iyong mga kalakip, dapat mong i-click ang pindutang 'I-save bilang draft' o isumite ang iyong form. Kung mag-navigate ka palayo sa screen na ito, mawawala ang iyong mga attachment"
   },
   "bCGovFooter": {
     "home": "Bahay",
@@ -1079,5 +1080,8 @@
       "history": "KASAYSAYAN",
       "user": "Gumagamit"
     }
+  },
+  "alert": {
+    "warning": "Babala"
   }
 }

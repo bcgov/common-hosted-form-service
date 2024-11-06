@@ -886,7 +886,8 @@
     "submittingDraftErrMsg": "An error occurred while saving a draft",
     "submittingDraftConsErrMsg": "Error saving draft. SubmissionId: {submissionId}. Error: {error}",
     "formDraftAccessErrMsg": "Requested submission is already submitted, redirecting to View page",
-    "formUnauthorizedMessage": "You are not authorized to view this form, please contact the form owner for access."
+    "formUnauthorizedMessage": "You are not authorized to view this form, please contact the form owner for access.",
+    "fileUploadWarning": "To upload your attachments, you must either click on the 'Save as draft' button or submit your form. If you navigate away from this screen, you will lose your attachments."
   },
   "bCGovFooter": {
     "home": "Home",
@@ -1144,5 +1145,8 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "alert": {
+    "warning": "Warning"
   }
 }

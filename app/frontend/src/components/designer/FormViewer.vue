@@ -1172,6 +1172,14 @@ function uploadFile(file, cfg = {}) {
     onUploaded: cfg.onUploaded,
     onError: cfg.onError,
   });
+
+  notificationStore.addNotification({
+    ...NotificationTypes.WARNING,
+    title: t('trans.alert.warning'),
+    text: t('trans.formViewer.fileUploadWarning'),
+    retain: true,
+    unique: true,
+  });
 }
 
 async function uploadQueuedFiles() {

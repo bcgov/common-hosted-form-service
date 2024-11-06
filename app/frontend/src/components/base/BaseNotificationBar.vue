@@ -58,12 +58,14 @@ onBeforeMount(() => {
     );
   }
   const notificationStore = useNotificationStore();
-  timeout = setTimeout(
-    () => notificationStore.deleteNotification(properties.notification),
-    properties.notification.timeout
-      ? properties.notification.timeout * 1000
-      : 10000
-  );
+  if (!properties.notification.retain) {
+    timeout = setTimeout(
+      () => notificationStore.deleteNotification(properties.notification),
+      properties.notification.timeout
+        ? properties.notification.timeout * 1000
+        : 10000
+    );
+  }
 });
 
 onBeforeUnmount(() => {
@@ -93,5 +95,13 @@ onBeforeUnmount(() => {
 <style scoped>
 .target-notification :deep(.v-alert__icon.v-icon):after {
   display: none;
+}
+
+.v-alert {
+  color: white !important;
+}
+
+.v-alert-title {
+  font-weight: bold !important;
 }
 </style>

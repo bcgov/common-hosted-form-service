@@ -833,7 +833,8 @@
     "submittingDraftErrMsg": "保存草稿时出错",
     "submittingDraftConsErrMsg": "保存草稿时出错。提交 ID：{submissionId}。错误：{error}",
     "formDraftAccessErrMsg": "请求的提交已提交，正在重定向到查看页面",
-    "formUnauthorizedMessage": "您无权查看此表单，请联系表单所有者以获取访问权限。"
+    "formUnauthorizedMessage": "您无权查看此表单，请联系表单所有者以获取访问权限。",
+    "fileUploadWarning": "要上传附件，您必须点击“另存为草稿”按钮或提交表单。如果您离开此屏幕，您将丢失附件"
   },
   "bCGovFooter": {
     "home": "家",
@@ -1081,5 +1082,8 @@
       "history": "历史",
       "user": "用户"
     }
+  },
+  "alert": {
+    "warning": "警告"
   }
 }

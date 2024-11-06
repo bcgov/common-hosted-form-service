@@ -833,7 +833,8 @@
     "submittingDraftErrMsg": "下書きの保存中にエラーが発生しました",
     "submittingDraftConsErrMsg": "下書きの保存中にエラーが発生しました。送信 ID: {submissionId}。エラー: {error}",
     "formDraftAccessErrMsg": "リクエストされた送信はすでに送信されており、[表示] ページにリダイレクトされます。",
-    "formUnauthorizedMessage": "このフォームを表示する権限がありません。アクセスするにはフォームの所有者に連絡してください。"
+    "formUnauthorizedMessage": "このフォームを表示する権限がありません。アクセスするにはフォームの所有者に連絡してください。",
+    "fileUploadWarning": "添付ファイルをアップロードするには、「下書きとして保存」ボタンをクリックするか、フォームを送信する必要があります。この画面から移動すると、添付ファイルは失われます。"
   },
   "bCGovFooter": {
     "home": "家",
@@ -1081,5 +1082,8 @@
       "history": "歴史",
       "user": "ユーザー"
     }
+  },
+  "alert": {
+    "warning": "警告"
   }
 }

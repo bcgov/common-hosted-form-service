@@ -834,7 +834,8 @@
     "submittingDraftErrMsg": "Beim Speichern eines Entwurfs ist ein Fehler aufgetreten",
     "submittingDraftConsErrMsg": "Fehler beim Speichern des Entwurfs. Einreichungs-ID: {submissionId}. Fehler: {error}",
     "formDraftAccessErrMsg": "Die angeforderte Übermittlung wurde bereits übermittelt und wird zur Ansichtsseite weitergeleitet",
-    "formUnauthorizedMessage": "Sie sind nicht berechtigt, dieses Formular anzusehen. Bitte kontaktieren Sie den Formulareigentümer für den Zugang."
+    "formUnauthorizedMessage": "Sie sind nicht berechtigt, dieses Formular anzusehen. Bitte kontaktieren Sie den Formulareigentümer für den Zugang.",
+    "fileUploadWarning": "Um Ihre Anhänge hochzuladen, müssen Sie entweder auf die Schaltfläche „Als Entwurf speichern“ klicken oder Ihr Formular absenden. Wenn Sie diesen Bildschirm verlassen, gehen Ihre Anhänge verloren."
   },
   "bCGovFooter": {
     "home": "Heim",
@@ -1082,5 +1083,8 @@
       "history": "GESCHICHTE",
       "user": "Benutzer"
     }
+  },
+  "alert": {
+    "warning": "Warnung"
   }
 }
