@@ -236,7 +236,7 @@ function initializeConnections() {
           function: 'initializeConnections',
         });
         // Start periodic 10 second connection probe check
-        probeId = setInterval(checkConnections, 30000);
+        probeId = setInterval(checkConnections, 10000);
       } else {
         log.error(`Service not ready to accept traffic`, {
           function: 'initializeConnections',
