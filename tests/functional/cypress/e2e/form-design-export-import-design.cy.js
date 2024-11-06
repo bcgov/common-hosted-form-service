@@ -31,7 +31,6 @@ describe('Form Designer', () => {
     
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-    
     formsettings();
     
 
@@ -74,10 +73,7 @@ describe('Form Designer', () => {
         cy.log(arr);
         let remname = arr[1] + "_schema.json";
         cy.wait(2000);
-        //
-        //cy.readFile(`cypress\\downloads\\${remname}`);
         const path = require("path");
-        //const downloadsPath = path.join(process.env.GITHUB_WORKSPACE, 'cypress/downloads');
         const downloadsFolder=Cypress.config("downloadsFolder");
         cy.readFile(path.join(downloadsFolder,remname)).should('exist');
 
@@ -111,7 +107,6 @@ describe('Form Designer', () => {
     
     // Filter the newly created form
     cy.location('search').then(search => {
-        //let pathName = fullUrl.pathname
     let arr = search.split('=');
     let arrayValues = arr[1].split('&');
     cy.log(arrayValues[0]);
