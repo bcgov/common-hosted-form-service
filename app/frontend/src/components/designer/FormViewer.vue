@@ -1175,10 +1175,11 @@ function uploadFile(file, cfg = {}) {
 
   notificationStore.addNotification({
     ...NotificationTypes.WARNING,
-    title: t('trans.alert.warning'),
-    text: t('trans.formViewer.fileUploadWarning'),
+    title: 'trans.alert.warning',
+    text: 'trans.formViewer.fileUploadWarning',
     retain: true,
     unique: true,
+    translate: true,
   });
 }
 
