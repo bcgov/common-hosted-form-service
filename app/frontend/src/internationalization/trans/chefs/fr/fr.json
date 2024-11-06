@@ -169,7 +169,10 @@
     "eventSubscription": "Abonnement à l'événement",
     "validEndpointRequired": "Veuillez saisir un point de terminaison valide commençant par https://",
     "validBearerTokenRequired": "Saisissez un exemple de jeton de support valide : 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
-    "wideFormLayout": "Disposition large du formulaire"
+    "wideFormLayout": "Disposition large du formulaire",
+    "formMetadataTitle": "Métadonnées du formulaire",
+    "formMetadataMessage": "Informations structurées pour décrire ou expliquer ce formulaire aux systèmes externes. Les appels vers des systèmes externes incluront ces métadonnées dans leurs charges utiles.",
+    "formMetadataJsonError": "Les métadonnées du formulaire doivent être du JSON valide. Utilisez des guillemets doubles autour des attributs et des valeurs."
   },
   "formProfile": {
     "message": "L'équipe CHEFS collecte et organise des informations pour servir de contribution cruciale à l'élaboration de cas d'affaires complets. Ces cas joueront un rôle central dans la direction des opérations stratégiques et l'amélioration continue de CHEFS au cours des prochaines années. Cette initiative de collecte de données est essentielle pour éclairer les décisions critiques et façonner la trajectoire de CHEFS, assurant son adaptabilité et son efficacité face aux besoins et aux défis en constante évolution.",
@@ -266,7 +269,7 @@
     "regenerate": "Régénérer",
     "generate": "Générer",
     "secret": "Secret",
-    "filesAPIAccess":"Autoriser cette clé API à accéder aux fichiers soumis"
+    "filesAPIAccess": "Autoriser cette clé API à accéder aux fichiers soumis"
   },
   "manageVersions": {
     "important": "IMPORTANT!",
@@ -549,7 +552,7 @@
     "sentUninvitedEmailTo": "Envoyé un e-mail non invité à",
     "updateUserErrMsg": "Une erreur s'est produite lors de la tentative de mise à jour des utilisateurs pour cette soumission.",
     "updateUserConsoleErrMsg": "Erreur lors de la définition des autorisations utilisateur. Sous : {submissionId} Utilisateur : {userId} Erreur : {error}",
-    "searchInputLength": "L'entrée de recherche pour le nom d'utilisateur/e-mail BCeID doit comporter plus de 6 caractères.",
+    "searchInputLength": "L'entrée de recherche pour le nom d'utilisateur/e-mail BCeID doit comporter plus de 4 caractères.",
     "exactBCEIDSearch": "Les recherches par e-mail pour BCeID doivent être exactes.",
     "getUsersErrMsg": "Erreur lors de l'obtention des utilisateurs : {error}",
     "exactEmailOrUsername": "Entrez un e-mail ou un nom d'utilisateur exact.",

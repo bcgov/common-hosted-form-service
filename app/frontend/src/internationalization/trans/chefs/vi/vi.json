@@ -169,7 +169,10 @@
     "eventSubscription": "Đăng ký sự kiện",
     "validEndpointRequired": "Vui lòng nhập một điểm cuối hợp lệ bắt đầu bằng https://",
     "validBearerTokenRequired": "Nhập ví dụ về mã thông báo mang hợp lệ: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
-    "wideFormLayout": "Bố cục hình thức rộng"
+    "wideFormLayout": "Bố cục hình thức rộng",
+    "formMetadataTitle": "Siêu dữ liệu biểu mẫu",
+    "formMetadataMessage": "Thông tin có cấu trúc để mô tả hoặc giải thích biểu mẫu này cho các hệ thống bên ngoài. Các cuộc gọi đến hệ thống bên ngoài sẽ bao gồm siêu dữ liệu này trong tải trọng của chúng.",
+    "formMetadataJsonError": "Siêu dữ liệu biểu mẫu phải là JSON hợp lệ. Sử dụng dấu ngoặc kép xung quanh các thuộc tính và giá trị."
   },
   "formProfile": {
     "message": "Đội ngũ CHEFS đang thu thập và tổ chức thông tin để phục vụ như một đầu vào quan trọng cho việc xây dựng các trường hợp kinh doanh toàn diện. Những trường hợp này sẽ đóng một vai trò quan trọng trong hướng dẫn vận hành chiến lược và cải tiến liên tục của CHEFS trong những năm sắp tới. Sáng kiến này để thu thập dữ liệu là quan trọng để thông tin quyết định quan trọng và định hình quỹ đạo của CHEFS, đảm bảo tính linh hoạt và hiệu quả trong đối mặt với những nhu cầu và thách thức đang thay đổi.",
@@ -225,7 +228,7 @@
     "TACS": "Du lịch, Nghệ thuật, Văn hóa và Thể thao (TACS)",
     "MOTI": "Giao thông vận tải và Cơ sở hạ tầng (MOTI)",
     "WLRS": "Quản lý Nước, Đất và Tài nguyên (WLRS)"
-  },  
+  },
   "subscribeEvent": {
     "eventType": "Loại sự kiện",
     "endpointUrl": "URL điểm cuối",
@@ -549,7 +552,7 @@
     "sentUninvitedEmailTo": "Đã gửi email không mời đến",
     "updateUserErrMsg": "Đã xảy ra lỗi khi cố gắng cập nhật người dùng cho lần gửi này.",
     "updateUserConsoleErrMsg": "Lỗi đặt quyền của người dùng. Phụ: {submissionId} Người dùng: {userId} Lỗi: {error}",
-    "searchInputLength": "Đầu vào tìm kiếm cho tên người dùng/email BCeID phải lớn hơn 6 ký tự.",
+    "searchInputLength": "Đầu vào tìm kiếm cho tên người dùng/email BCeID phải lớn hơn 4 ký tự.",
     "exactBCEIDSearch": "Tìm kiếm email cho BCeID phải chính xác.",
     "getUsersErrMsg": "Lỗi nhận người dùng: {error}",
     "exactEmailOrUsername": "Nhập một e-mail hoặc tên người dùng chính xác.",
