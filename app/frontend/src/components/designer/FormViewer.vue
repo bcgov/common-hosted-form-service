@@ -1196,7 +1196,9 @@ async function uploadQueuedFiles() {
       queuedUploadFiles.value.splice(i, 1);
     } catch (error) {
       err = true;
-      queuedUploadFiles.value[i].onError(error);
+      queuedUploadFiles.value[i].onError({
+        detail: error?.message ? error.message : error,
+      });
       notificationStore.addNotification({
         text: t('trans.formViewer.errorSavingFile', {
           fileName: queuedUploadFiles.value[i].file.originalName,

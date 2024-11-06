@@ -76,11 +76,23 @@ export default class Component extends (ParentComponent as any) {
     deleteFile(fileInfo) {
         const { options = {} } = this.component;
         if (fileInfo) {
-            options.deleteFile(fileInfo, {
-                onSuccess: () => {
-                    this.redraw();
-                    this.triggerChange();
-                },
+            return new Promise((resolve, reject) => {
+                options.deleteFile(fileInfo, {
+                    onSuccess: () => {
+                        this.redraw();
+                        this.triggerChange();
+                        resolve(fileInfo);
+                    },
+                    onError: (error) => {
+                        this.redraw();
+                        this.triggerChange();
+                        reject(error);
+                        this.statuses.push({
+                            status: 'error',
+                            message: error.detail,
+                        });
+                    },
+                });
             });
         }
     }
@@ -99,7 +111,7 @@ export default class Component extends (ParentComponent as any) {
                     name: fileName,
                     size: file.size,
                     status: 'info',
-                    message: this.t('File will begin uploading when the form is submitted or the draft is saved.'),
+                    message: '',
                 };
 
                 // Check file pattern
