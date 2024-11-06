@@ -13,7 +13,6 @@ const { expressHelper } = require('../../../common/helper');
 
 const apiAccess = require('../../../../src/forms/auth/middleware/apiAccess');
 const userAccess = require('../../../../src/forms/auth/middleware/userAccess');
-const rateLimiter = require('../../../../src/forms/common/middleware/rateLimiter');
 
 //
 // Mock out all the middleware - we're testing that the routes are set up
@@ -26,10 +25,6 @@ apiAccess.mockImplementation(
     next();
   })
 );
-
-rateLimiter.apiKeyRateLimiter = jest.fn((_req, _res, next) => {
-  next();
-});
 
 userAccess.currentUser = jest.fn((_req, _res, next) => {
   next();

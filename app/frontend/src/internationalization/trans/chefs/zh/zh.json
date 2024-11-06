@@ -169,7 +169,10 @@
     "eventSubscription": "E活动订阅",
     "validEndpointRequired": "请输入以以下开头的有效端点 https://",
     "validBearerTokenRequired": "输入有效的不记名令牌示例: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
-    "wideFormLayout": "宽表单布局"
+    "wideFormLayout": "宽表单布局",
+    "formMetadataTitle": "表单元数据",
+    "formMetadataMessage": "向外部系统描述或解释这种形式的结构化信息。对外部系统的调用将在其有效负载中包含此元数据。",
+    "formMetadataJsonError": "表单元数据必须是有效的 JSON。在属性和值周围使用双引号。"
   },
   "formProfile": {
     "message": "CHEFS团队正在收集和组织信息，作为制定全面业务案例的关键输入。这些案例将在指导CHEFS未来几年的战略运作和持续改进中发挥关键作用。这一收集数据的倡议对于提供关键决策的信息和塑造CHEFS轨迹至关重要，确保其在应对不断变化的需求和挑战中的适应性和有效性。",
@@ -549,7 +552,7 @@
     "sentUninvitedEmailTo": "发送了未经邀请的电子邮件至",
     "updateUserErrMsg": "尝试更新此提交的用户时出错。",
     "updateUserConsoleErrMsg": "设置用户权限时出错。子：{submissionId} 用户：{userId} 错误：{error}",
-    "searchInputLength": "BCeID 用户名/电子邮件的搜索输入必须大于 6 个字符。",
+    "searchInputLength": "BCeID 用户名/电子邮件的搜索输入必须大于 4 个字符。",
     "exactBCEIDSearch": "BCeID 的电子邮件搜索必须准确。",
     "getUsersErrMsg": "获取用户时出错：{error}",
     "exactEmailOrUsername": "输入准确的电子邮件或用户名。",

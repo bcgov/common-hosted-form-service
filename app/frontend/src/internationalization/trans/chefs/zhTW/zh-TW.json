@@ -169,7 +169,10 @@
     "eventSubscription": "活動訂閱",
     "validEndpointRequired": "請輸入以以下開頭的有效端點 https://",
     "validBearerTokenRequired": "輸入有效的不記名令牌示例: 89abddfb-2cff-4fda-83e6-13221f0c3d4f",
-    "wideFormLayout": "寬表單布局"
+    "wideFormLayout": "寬表單布局",
+    "formMetadataTitle": "表單元數據",
+    "formMetadataMessage": "向外部系統描述或解釋這種形式的結構化資訊。對外部系統的呼叫將在其有效負載中包含此元資料。",
+    "formMetadataJsonError": "表單元資料必須是有效的 JSON。在屬性和值周圍使用雙引號。"
   },
   "formProfile": {
     "message": "CHEFS團隊正在收集和組織信息，作為制定全面業務案例的關鍵輸入。這些案例將在指導CHEFS未來幾年的戰略運作和持續改進中發揮關鍵作用。這一收集數據的倡議對於提供關鍵決策的信息和塑造CHEFS軌跡至關重要，確保其在應對不斷變化的需求和挑戰中的適應性和有效性。",
@@ -549,7 +552,7 @@
     "sentUninvitedEmailTo": "發送了未經邀請的電子郵件至",
     "updateUserErrMsg": "嘗試更新此提交的用戶時出錯。",
     "updateUserConsoleErrMsg": "設置用戶權限時出錯。子：{submissionId} 用戶：{userId} 錯誤：{error}",
-    "searchInputLength": "BCeID 用戶名/電子郵件的搜索輸入必須大於 6 個字符。",
+    "searchInputLength": "BCeID 用戶名/電子郵件的搜索輸入必須大於 4 個字符。",
     "exactBCEIDSearch": "BCeID 的電子郵件搜索必須準確。",
     "getUsersErrMsg": "獲取用戶時出錯：{error}",
     "exactEmailOrUsername": "輸入準確的電子郵件或用戶名。",
