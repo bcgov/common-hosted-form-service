@@ -223,9 +223,9 @@ class EventStreamService {
     }
   }
 
-  async _onPublishWebhook(eventType, meta, formId) {
+  async _onPublishWebhook(meta) {
     try {
-      const cfg = await this._getWebhook(formId);
+      const cfg = await this._getWebhook(meta.formId);
       if (cfg && cfg.endpointUrl && cfg.eventStreamNotifications) {
         const axiosOptions = { timeout: 10000 };
         const axiosInstance = axios.create(axiosOptions);
@@ -255,24 +255,22 @@ class EventStreamService {
         type: eventType,
         formId: formId,
         formVersionId: formVersionId,
+        timestamp: new Date(),
       };
       await formMetadataService.addAttribute(formId, meta);
 
-      const tasks = [this._onPublishEventStream(eventType, meta, formId, formVersionId, published), this._onPublishWebhook(eventType, meta, formId, formVersionId, published)];
+      const tasks = [this._onPublishEventStream(eventType, meta, formId, formVersionId, published), this._onPublishWebhook(meta)];
 
-      Promise.all(tasks);
+      return Promise.all(tasks);
     } catch (e) {
       log.error(`${SERVICE}.onPublish: ${e.message}`, e);
     }
   }
 
-  async onSubmit(eventType, submission, draft) {
+  async _onSubmitEventStream(eventType, meta, submission, formVersion) {
     try {
-      const submissionId = submission.id;
       await this.openConnection();
       if (this.connected) {
-        const formVersion = await this._getFormVersion(submission.formVersionId);
-
         // need to fetch the encryption key...
         const evntStrmCfg = await this._getEventStreamConfig(formVersion.formId);
 
@@ -280,17 +278,6 @@ class EventStreamService {
           const sub = `submission.${eventType}.${formVersion.formId}`;
           const publicSubj = `${this.publicSubject}.${sub}`;
           const privateSubj = `${this.privateSubject}.${sub}`;
-          const meta = {
-            source: this.source,
-            domain: this.domain,
-            class: 'submission',
-            type: eventType,
-            formId: formVersion.formId,
-            formVersionId: submission.formVersionId,
-            submissionId: submission.id,
-            draft: draft,
-          };
-          await formMetadataService.addAttribute(formVersion.formId, meta);
 
           if (evntStrmCfg.enablePrivateStream) {
             const encPayload = encryptionService.encryptExternal(evntStrmCfg.encryptionKey.algorithm, evntStrmCfg.encryptionKey.key, submission);
@@ -322,10 +309,57 @@ class EventStreamService {
         }
       } else {
         // warn, error???
-        log.warn(`${SERVICE} is not connected. Cannot publish (submission) event. [submission.event: '${eventType}', submissionId: ${submissionId}]`, {
+        log.warn(`${SERVICE} is not connected. Cannot publish (submission) event. [submission.event: '${eventType}', submissionId: ${submission.id}]`, {
           function: 'onSubmit',
         });
       }
+    } catch (e) {
+      log.error(`${SERVICE}._onSubmitEventStream: ${e.message}`, e);
+    }
+  }
+
+  async _onSubmitWebhook(meta) {
+    try {
+      const cfg = await this._getWebhook(meta.formId);
+      if (cfg && cfg.endpointUrl && cfg.eventStreamNotifications) {
+        const axiosOptions = { timeout: 10000 };
+        const axiosInstance = axios.create(axiosOptions);
+        axiosInstance.interceptors.request.use(
+          (cfg) => {
+            cfg.headers = { [cfg.key]: `${cfg.endpointToken}` };
+            return Promise.resolve(cfg);
+          },
+          (error) => {
+            return Promise.reject(error);
+          }
+        );
+        axiosInstance.post(cfg.endpointUrl, meta);
+      }
+    } catch (e) {
+      log.error(`${SERVICE}._onSubmitWebhook: ${e.message}`, e);
+    }
+  }
+
+  async onSubmit(eventType, submission, draft) {
+    try {
+      const formVersion = await this._getFormVersion(submission.formVersionId);
+
+      const meta = {
+        source: this.source,
+        domain: this.domain,
+        class: 'submission',
+        type: eventType,
+        formId: formVersion.formId,
+        formVersionId: submission.formVersionId,
+        submissionId: submission.id,
+        draft: draft,
+        timestamp: new Date(),
+      };
+      await formMetadataService.addAttribute(formVersion.formId, meta);
+
+      const tasks = [this._onSubmitEventStream(eventType, meta, submission, formVersion), this._onSubmitWebhook(meta)];
+
+      return Promise.all(tasks);
     } catch (e) {
       log.error(`${SERVICE}.onSubmit: ${e.message}`, e);
     }

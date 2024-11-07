@@ -4,7 +4,6 @@ const uuid = require('uuid');
 const { expressHelper } = require('../../../../common/helper');
 
 const jwtService = require('../../../../../src/components/jwtService');
-const { featureFlags } = require('../../../../../src/components/featureFlags');
 const apiAccess = require('../../../../../src/forms/auth/middleware/apiAccess');
 const userAccess = require('../../../../../src/forms/auth/middleware/userAccess');
 const rateLimiter = require('../../../../../src/forms/common/middleware/rateLimiter');
@@ -31,14 +30,6 @@ jwtService.protect = jest.fn(() => {
 
 rateLimiter.apiKeyRateLimiter = jest.fn((_req, _res, next) => {
   next();
-});
-
-const eventStreamServiceEnabled = jest.fn((_req, _res, next) => {
-  next();
-});
-
-featureFlags.eventStreamServiceEnabled = jest.fn(() => {
-  return eventStreamServiceEnabled;
 });
 
 const hasFormPermissionsMock = jest.fn((_req, _res, next) => {
@@ -82,7 +73,6 @@ describe(`${basePath}/:formId/eventStreamConfig`, () => {
     expect(apiAccess).toBeCalledTimes(0);
     expect(controller.readEventStreamConfig).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
-    expect(eventStreamServiceEnabled).toBeCalledTimes(1);
     expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFormId).toBeCalledTimes(1);

@@ -25,7 +25,7 @@ helm upgrade --install event-stream-service ./charts/event-stream-service -f ./c
 
 To set up a CHEFS instance to use this installation of Event Stream Service, you will need to know the server name and you will need the generated secret for the `chefs` account.
 
-Find the `ess-nginx-route` and note the location. The Event Stream Service server will the host (so no `https://` and no path).
+Find the `ess-nginx-route` and note the location. The Event Stream Service server will be the host (so no `https://` and no path).
 Find the `ess-nats-auth` and copy the value for `chefs_pwd`.
 
 ### To remove

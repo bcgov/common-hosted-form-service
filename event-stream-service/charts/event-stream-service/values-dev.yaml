@@ -35,3 +35,6 @@ nats:
           requests:
             cpu: 50m
             memory: 64Mi
+
+nginx:
+  replicaCount: 3

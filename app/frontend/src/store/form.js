@@ -335,23 +335,27 @@ export const useFormStore = defineStore('form', {
       }
     },
     async fetchEventStreamConfig(formId) {
-      // populate the event service config object...
-      let resp = await eventStreamConfigService.getEventStreamConfig(formId);
-      const evntSrvCfg = resp.data;
-      let encKey = genInitialEncryptionKey();
-      if (evntSrvCfg.encryptionKeyId) {
-        resp = await encryptionKeyService.getEncryptionKey(
-          formId,
-          evntSrvCfg.encryptionKeyId
-        );
-        encKey = resp.data;
+      try {
+        // populate the event service config object...
+        let resp = await eventStreamConfigService.getEventStreamConfig(formId);
+        const evntSrvCfg = resp.data;
+        let encKey = genInitialEncryptionKey();
+        if (evntSrvCfg.encryptionKeyId) {
+          resp = await encryptionKeyService.getEncryptionKey(
+            formId,
+            evntSrvCfg.encryptionKeyId
+          );
+          encKey = resp.data;
+        }
+        return {
+          ...evntSrvCfg,
+          encryptionKey: {
+            ...encKey,
+          },
+        };
+      } catch {
+        return genInitialEventStreamConfig();
       }
-      return {
-        ...evntSrvCfg,
-        encryptionKey: {
-          ...encKey,
-        },
-      };
     },
     async fetchForm(formId) {
       try {
