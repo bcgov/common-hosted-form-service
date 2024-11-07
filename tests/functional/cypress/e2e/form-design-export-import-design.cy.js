@@ -85,6 +85,7 @@ describe('Form Designer', () => {
     cy.get('[data-cy="redoButton"] > .v-btn').should('not.be.enabled');
     cy.get('.mdi-undo').click();
     cy.get('[data-cy="redoButton"] > .v-btn').should('be.enabled');
+    cy.get('[data-cy="redoButton"] > .v-btn').click();
     cy.get('.float-button > :nth-child(1) > .v-btn').should('be.enabled');
     cy.get('.float-button > :nth-child(1) > .v-btn').click();
     cy.get('.mdi-arrow-down').should('not.exist');
@@ -115,7 +116,8 @@ describe('Form Designer', () => {
          //Form preview
     cy.visit(`/${depEnv}/form/preview?f=${arrayValues[0]}&d=${dval[0]}`);
     cy.waitForLoad();
-    cy.get('input[name="data[simplebcaddress]"]').should('be.visible');
+    //Verify new design is updated in the form
+    cy.get('label').contains('Select List').should('be.visible');
 
     //Delete form after test run
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
