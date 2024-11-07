@@ -48,6 +48,7 @@ class FormEventStreamConfig extends Timestamps(Model) {
         enablePublicStream: { type: 'boolean', default: false },
         enablePrivateStream: { type: 'boolean', default: false },
         encryptionKeyId: { type: ['string', 'null'], pattern: Regex.UUID },
+        enabled: { type: 'boolean', default: false },
         ...stamps,
       },
       additionalProperties: false,

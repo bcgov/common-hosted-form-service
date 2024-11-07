@@ -34,6 +34,8 @@ const service = {
           existing.encryptionKeyId != data.encryptionKeyId
         ) {
           // yes... update.
+          // except the enabled field... do not allow change via API (yet)
+          data.enabled = existing.enabled;
           await FormEventStreamConfig.query(trx)
             .findById(existing.id)
             .update({

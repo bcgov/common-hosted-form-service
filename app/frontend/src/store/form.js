@@ -8,7 +8,6 @@ import {
   rbacService,
   userService,
 } from '~/services';
-import { useAppStore } from '~/store/app';
 import { useNotificationStore } from '~/store/notification';
 import { IdentityMode, NotificationTypes } from '~/utils/constants';
 import { generateIdps, parseIdps } from '~/utils/transformUtils';
@@ -70,6 +69,7 @@ const genInitialEncryptionKey = () => ({
 const genInitialEventStreamConfig = () => ({
   id: null,
   formId: null,
+  enabled: false,
   enablePublicStream: false,
   enablePrivateStream: false,
   encryptionKeyId: null,
@@ -335,29 +335,23 @@ export const useFormStore = defineStore('form', {
       }
     },
     async fetchEventStreamConfig(formId) {
-      const appStore = useAppStore();
-      // see if this is an active feature...
-      if (appStore.config?.features?.eventStreamService) {
-        // populate the event service config object...
-        let resp = await eventStreamConfigService.getEventStreamConfig(formId);
-        const evntSrvCfg = resp.data;
-        let encKey = genInitialEncryptionKey();
-        if (evntSrvCfg.encryptionKeyId) {
-          resp = await encryptionKeyService.getEncryptionKey(
-            formId,
-            evntSrvCfg.encryptionKeyId
-          );
-          encKey = resp.data;
-        }
-        return {
-          ...evntSrvCfg,
-          encryptionKey: {
-            ...encKey,
-          },
-        };
-      } else {
-        return genInitialEventStreamConfig();
+      // populate the event service config object...
+      let resp = await eventStreamConfigService.getEventStreamConfig(formId);
+      const evntSrvCfg = resp.data;
+      let encKey = genInitialEncryptionKey();
+      if (evntSrvCfg.encryptionKeyId) {
+        resp = await encryptionKeyService.getEncryptionKey(
+          formId,
+          evntSrvCfg.encryptionKeyId
+        );
+        encKey = resp.data;
       }
+      return {
+        ...evntSrvCfg,
+        encryptionKey: {
+          ...encKey,
+        },
+      };
     },
     async fetchForm(formId) {
       try {

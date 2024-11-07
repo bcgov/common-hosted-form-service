@@ -921,6 +921,8 @@ const service = {
 
       if (subscriptionDetails) {
         // Update new subscription settings for a form
+        // except the eventStreamNotifications - for now, no updates via API
+        subscriptionData.eventStreamNotifications = subscriptionDetails.eventStreamNotifications;
         await FormSubscription.query(trx)
           .modify('filterFormId', formId)
           .update({

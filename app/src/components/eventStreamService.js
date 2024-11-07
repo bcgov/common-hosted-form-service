@@ -1,8 +1,9 @@
 const config = require('config');
 const falsey = require('falsey');
 const { JSONCodec } = require('nats');
+const axios = require('axios');
 
-// different connection libraries if we are using websockerts or nats protocols.
+// different connection libraries if we are using websockets or nats protocols.
 const WEBSOCKETS = !falsey(config.get('eventStreamService.websockets'));
 
 let natsConnect;
@@ -18,9 +19,8 @@ if (WEBSOCKETS) {
 
 const log = require('./log')(module.filename);
 
-const { FormVersion, Form, FormEventStreamConfig } = require('../forms/common/models');
+const { FormVersion, Form, FormEventStreamConfig, FormSubscription } = require('../forms/common/models');
 const formMetadataService = require('../forms/form/formMetadata/service');
-const { featureFlags } = require('./featureFlags');
 const { encryptionService } = require('./encryptionService');
 
 const SERVICE = 'EventStreamService';
@@ -37,32 +37,6 @@ const SUBMISSION_EVENT_TYPES = {
 };
 
 const jsonCodec = JSONCodec();
-
-class DummyEventStreamService {
-  // this class should not be called if we actually check that this feature is enabled.
-  // however... if we missed that check these calls will do nothing.
-  async checkConnection() {
-    log.warn('EventStreamService.checkConnection - EventStreamService is not enabled.');
-  }
-  async openConnection() {
-    log.warn('EventStreamService.openConnection - EventStreamService is not enabled.');
-  }
-  closeConnection() {
-    log.warn('EventStreamService.closeConnection - EventStreamService is not enabled.');
-  }
-  get connected() {
-    log.warn('EventStreamService.connected - EventStreamService is not enabled.');
-    return false;
-  }
-  // eslint-disable-next-line no-unused-vars
-  async onPublish(formId, formVersionId, published) {
-    log.warn('EventStreamService.onPublish - EventStreamService is not enabled.');
-  }
-  // eslint-disable-next-line no-unused-vars
-  async onSubmit(eventType, submission, draft) {
-    log.warn('EventStreamService.onSubmit - EventStreamService is not enabled.');
-  }
-}
 
 class EventStreamService {
   constructor({ servers, streamName, source, domain, username, password }) {
@@ -147,6 +121,9 @@ class EventStreamService {
             log.info('the connection closed.', { function: 'connection.closed' });
           }
         });
+        // log will be littered with these messages... (every 10 seconds).
+        //} else {
+        //  log.warn(`the connection to event stream service [${this.servers}] can not be established.`);
       }
       return this.nc;
     } catch (e) {
@@ -189,9 +166,12 @@ class EventStreamService {
     return FormEventStreamConfig.query().modify('filterFormId', formId).allowGraph('[encryptionKey]').withGraphFetched('encryptionKey').first();
   }
 
-  async onPublish(formId, formVersionId, published) {
+  async _getWebhook(formId) {
+    return FormSubscription.query().modify('filterFormId', formId).first();
+  }
+
+  async _onPublishEventStream(eventType, meta, formId, formVersionId) {
     try {
-      const eventType = published ? FORM_EVENT_TYPES.PUBLISHED : FORM_EVENT_TYPES.UNPUBLISHED;
       await this.openConnection();
       if (this.connected) {
         // fetch form (don't fetch all versions...)
@@ -203,19 +183,10 @@ class EventStreamService {
         // need to fetch the encryption key...
         const evntStrmCfg = await this._getEventStreamConfig(formId);
 
-        if (evntStrmCfg) {
+        if (evntStrmCfg && evntStrmCfg.enabled) {
           const sub = `schema.${eventType}.${formId}`;
           const publicSubj = `${this.publicSubject}.${sub}`;
           const privateSubj = `${this.privateSubject}.${sub}`;
-          const meta = {
-            source: this.source,
-            domain: this.domain,
-            class: 'schema',
-            type: eventType,
-            formId: formId,
-            formVersionId: formVersionId,
-          };
-          await formMetadataService.addAttribute(formId, meta);
 
           if (evntStrmCfg.enablePrivateStream) {
             const encPayload = encryptionService.encryptExternal(evntStrmCfg.encryptionKey.algorithm, evntStrmCfg.encryptionKey.key, form);
@@ -239,7 +210,7 @@ class EventStreamService {
             log.info(`form ${eventType} event (public) - formId: ${formId}, version: ${formVersion.version}, seq: ${ack.seq}`, { function: 'onPublish' });
           }
         } else {
-          log.info(`formId '${formId}' has no event stream configuration; will not publish events.`);
+          log.info(`formId '${formId}' has no event stream configuration (or it is not enabled); will not publish events.`);
         }
       } else {
         // warn, error???
@@ -247,6 +218,49 @@ class EventStreamService {
           function: 'onPublish',
         });
       }
+    } catch (e) {
+      log.error(`${SERVICE}._onPublishEventStream: ${e.message}`, e);
+    }
+  }
+
+  async _onPublishWebhook(eventType, meta, formId) {
+    try {
+      const cfg = await this._getWebhook(formId);
+      if (cfg && cfg.endpointUrl && cfg.eventStreamNotifications) {
+        const axiosOptions = { timeout: 10000 };
+        const axiosInstance = axios.create(axiosOptions);
+        axiosInstance.interceptors.request.use(
+          (cfg) => {
+            cfg.headers = { [cfg.key]: `${cfg.endpointToken}` };
+            return Promise.resolve(cfg);
+          },
+          (error) => {
+            return Promise.reject(error);
+          }
+        );
+        axiosInstance.post(cfg.endpointUrl, meta);
+      }
+    } catch (e) {
+      log.error(`${SERVICE}._onPublishWebhook: ${e.message}`, e);
+    }
+  }
+
+  async onPublish(formId, formVersionId, published) {
+    try {
+      const eventType = published ? FORM_EVENT_TYPES.PUBLISHED : FORM_EVENT_TYPES.UNPUBLISHED;
+      const meta = {
+        source: this.source,
+        domain: this.domain,
+        class: 'schema',
+        type: eventType,
+        formId: formId,
+        formVersionId: formVersionId,
+      };
+      await formMetadataService.addAttribute(formId, meta);
+
+      const tasks = [this._onPublishEventStream(eventType, meta, formId, formVersionId, published), this._onPublishWebhook(eventType, meta, formId, formVersionId, published)];
+
+      Promise.all(tasks);
     } catch (e) {
       log.error(`${SERVICE}.onPublish: ${e.message}`, e);
     }
@@ -262,7 +276,7 @@ class EventStreamService {
         // need to fetch the encryption key...
         const evntStrmCfg = await this._getEventStreamConfig(formVersion.formId);
 
-        if (evntStrmCfg) {
+        if (evntStrmCfg && evntStrmCfg.enabled) {
           const sub = `submission.${eventType}.${formVersion.formId}`;
           const publicSubj = `${this.publicSubject}.${sub}`;
           const privateSubj = `${this.privateSubject}.${sub}`;
@@ -304,7 +318,7 @@ class EventStreamService {
             });
           }
         } else {
-          log.info(`formId '${formVersion.formId}' has no event stream configuration; will not publish events.`);
+          log.info(`formId '${formVersion.formId}' has no event stream configuration (or it is not enabled); will not publish events.`);
         }
       } else {
         // warn, error???
@@ -318,13 +332,7 @@ class EventStreamService {
   }
 }
 
-// we need something to import when feature flag is off...
-let eventStreamService = new DummyEventStreamService();
-
-if (featureFlags.eventStreamService) {
-  // feature flag on, let's use the real thing.
-  eventStreamService = new EventStreamService(config.get('eventStreamService'));
-}
+const eventStreamService = new EventStreamService(config.get('eventStreamService'));
 
 module.exports = {
   eventStreamService: eventStreamService,

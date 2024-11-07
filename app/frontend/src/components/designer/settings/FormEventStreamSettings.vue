@@ -42,9 +42,21 @@ async function generateKey() {
   let generatedKey;
   // when we have more algorithms, move this into some kind of service...
   if (form.value.eventStreamConfig.encryptionKey.algorithm === 'aes-256-gcm') {
-    const data = crypto.getRandomValues(new Uint8Array(16));
-    const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
-    generatedKey = Array.from(new Uint8Array(hashBuffer))
+    //const data = crypto.getRandomValues(new Uint8Array(16));
+    //const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
+    //generatedKey = Array.from(new Uint8Array(hashBuffer))
+    //  .map((b) => b.toString(16).padStart(2, '0'))
+    //  .join('');
+    const key = await window.crypto.subtle.generateKey(
+      {
+        name: 'AES-GCM',
+        length: 256,
+      },
+      true,
+      ['encrypt', 'decrypt']
+    );
+    const rawKey = await window.crypto.subtle.exportKey('raw', key);
+    generatedKey = Array.from(new Uint8Array(rawKey))
       .map((b) => b.toString(16).padStart(2, '0'))
       .join('');
   }

@@ -15,14 +15,12 @@ This current documentation will be very simple and make assumptions:
 
 1. get your Openshift token
 2. use oc login to your namespace
-3. navigate to the <repo>/event-stream-service
+3. navigate to the `<repo>/event-stream-service`
 4. run the `helm` install / upgrade command
 
 ```
 oc login --token=sha256~yk5BCjn0syJV0qXEyPk12s09v-RIdmTeLVdQmQrQEBc --server=https://api.silver.devops.gov.bc.ca:6443
 helm upgrade --install event-stream-service ./charts/event-stream-service -f ./charts/event-stream-service/values.yaml
-helm uninstall event-stream-service
-oc delete pvc -l 'app.kubernetes.io/instance=event-stream-service'
 ```
 
 To set up a CHEFS instance to use this installation of Event Stream Service, you will need to know the server name and you will need the generated secret for the `chefs` account.

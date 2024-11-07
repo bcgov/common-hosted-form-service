@@ -58,9 +58,6 @@
       "proxy": "SERVER_ENCRYPTION_PROXY"
     }
   },
-  "features": {
-    "eventStreamService": "FEATURES_EVENTSTREAMSERVICE"
-  },
   "eventStreamService": {
     "servers": "EVENTSTREAMSERVICE_SERVERS",
     "websockets": "EVENTSTREAMSERVICE_WEBSOCKETS",

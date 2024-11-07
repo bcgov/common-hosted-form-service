@@ -29,6 +29,7 @@ class FormSubscription extends Timestamps(Model) {
         endpointUrl: { type: 'string' },
         endpointToken: { type: 'string' },
         key: { type: 'string' },
+        eventStreamNotifications: { type: 'boolean', default: false },
         ...stamps,
       },
       additionalProperties: false,
