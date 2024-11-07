@@ -834,15 +834,10 @@ async function saveDraft() {
 }
 
 async function sendSubmission(isDraft) {
-  let err = await uploadQueuedFiles();
-  if (err) {
-    return;
-  }
+  const uploadError = await uploadQueuedFiles();
+  const deleteError = await deleteQueuedFiles();
 
-  err = await deleteQueuedFiles();
-  if (err) {
-    return;
-  }
+  if (uploadError || deleteError) return;
 
   submission.value.data.lateEntry =
     form.value?.schedule?.expire !== undefined &&
