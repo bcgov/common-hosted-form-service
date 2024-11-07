@@ -3462,7 +3462,6 @@ paths:
       summary: Get the list of encryption algorithms
       operationId: listEncryptionAlgorithms
       security:
-        - BasicAuth: []
         - BearerAuth: []
           OpenID: []
       tags:
@@ -3498,7 +3497,6 @@ paths:
       summary: Get the encryption key for a form
       operationId: readEncryptionKey
       security:
-        - BasicAuth: []
         - BearerAuth: []
           OpenID: []
       tags:
@@ -3540,7 +3538,6 @@ paths:
       summary: Get a form's event stream configuration
       operationId: readEventStreamConfig
       security:
-        - BasicAuth: []
         - BearerAuth: []
           OpenID: []
       tags:

@@ -68,7 +68,7 @@ describe(`${basePath}/encryptionKey/algorithms`, () => {
 
     await appRequest.get(path);
 
-    expect(apiAccess).toBeCalledTimes(1);
+    expect(apiAccess).toBeCalledTimes(0);
     expect(controller.listEncryptionAlgorithms).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(0); // no form id, no permissions check
     expect(userAccess.currentUser).toBeCalledTimes(1);
@@ -106,7 +106,7 @@ describe(`${basePath}/:formId/encryptionKey/:formEncryptionKeyId`, () => {
 
     await appRequest.get(path);
 
-    expect(apiAccess).toBeCalledTimes(1);
+    expect(apiAccess).toBeCalledTimes(0);
     expect(controller.readEncryptionKey).toBeCalledTimes(1);
     expect(hasFormPermissionsMock).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
