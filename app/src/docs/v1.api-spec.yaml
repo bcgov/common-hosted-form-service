@@ -3726,6 +3726,14 @@ components:
         - $ref: '#/components/schemas/FormCore'
         - type: object
           properties:
+            formMetadata:
+              type: object
+              description: Contains Custom Form Metadata object
+              properties:
+                metadata:
+                  type: object
+                  description: JSON Object
+                  example: { externalId: 'AB-0123456789' }
             identityProviders:
               type: array
               items:
@@ -4043,6 +4051,10 @@ components:
                   example: 1
                 createdAt:
                   type: string
+                  example: '2020-06-04T18:49:20.672Z'
+                submittedAt:
+                  type: string
+                  description: Represents the timestamp indicating when a submission was last moved to the SUBMITTED state. If a submission is revised and resubmitted multiple times, submittedAt will update each time the state changes back to SUBMITTED, reflecting the most recent submission time.
                   example: '2020-06-04T18:49:20.672Z'
             formFieldA:
               type: string

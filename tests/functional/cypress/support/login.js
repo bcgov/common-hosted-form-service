@@ -25,6 +25,12 @@ export function formsettings(){
     cy.get('#user').type(username);
     cy.get('#password').type(password);
     cy.get('.btn').click();
+    cy.get('[data-cy="help"]')
+    .should("have.attr", "href", "https://developer.gov.bc.ca/docs/default/component/chefs-techdocs")
+    .should("have.text", "Help");
+    cy.get('[data-cy="feedback"]')
+    .should("have.attr", "href", "https://chefs-fider.apps.silver.devops.gov.bc.ca/")
+    .should("have.text", "Feedback");
     cy.get('[data-cy="createNewForm"]').click();
     cy.get('.v-row > :nth-child(1) > .v-card > .v-card-title > span').contains('Form Title');
 
@@ -55,7 +61,7 @@ export function formsettings(){
     cy.get('[data-test="email-test"] > .v-input__control > .v-selection-control > .v-label > div > span').click();
     cy.get(':nth-child(4) > .v-card > .v-card-text > .v-text-field > .v-input__control > .v-field > .v-field__field > .v-field__input').type('abc@gmail.com');
    
-    cy.get('.v-row > :nth-child(1) > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
+    cy.get('.v-row > :nth-child(1) > .v-input > .v-input__control > .v-field > .v-field__append-inner').click();
     cy.contains("Citizens' Services (CITZ)").click();
     
     cy.get('[data-test="case-select"]').click();

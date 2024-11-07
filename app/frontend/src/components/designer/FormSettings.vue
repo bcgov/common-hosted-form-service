@@ -6,6 +6,7 @@ import FormAccessSettings from '~/components/designer/settings/FormAccessSetting
 import FormFunctionalitySettings from '~/components/designer/settings/FormFunctionalitySettings.vue';
 import FormSubmissionSettings from '~/components/designer/settings/FormSubmissionSettings.vue';
 import FormScheduleSettings from '~/components/designer/settings/FormScheduleSettings.vue';
+import FormMetadataSettings from '~/components/designer/settings/FormMetadataSettings.vue';
 import { useFormStore } from '~/store/form';
 
 defineProps({
@@ -35,6 +36,9 @@ const { form, isFormPublished, isRTL } = storeToRefs(useFormStore());
       </v-col>
       <v-col v-if="form.schedule.enabled && isFormPublished" cols="12" md="6">
         <FormScheduleSettings />
+      </v-col>
+      <v-col cols="12" md="6">
+        <FormMetadataSettings :disabled="disabled" />
       </v-col>
     </v-row>
   </v-container>

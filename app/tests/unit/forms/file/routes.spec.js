@@ -5,7 +5,6 @@ const { expressHelper } = require('../../../common/helper');
 
 const apiAccess = require('../../../../src/forms/auth/middleware/apiAccess');
 const userAccess = require('../../../../src/forms/auth/middleware/userAccess');
-const rateLimiter = require('../../../../src/forms/common/middleware/rateLimiter');
 const validateParameter = require('../../../../src/forms/common/middleware/validateParameter');
 const controller = require('../../../../src/forms/file/controller');
 const filePermissions = require('../../../../src/forms/file/middleware/filePermissions');
@@ -34,10 +33,6 @@ const hasFilePermissionsMock = jest.fn((_req, _res, next) => {
 });
 filePermissions.hasFilePermissions = jest.fn(() => {
   return hasFilePermissionsMock;
-});
-
-rateLimiter.apiKeyRateLimiter = jest.fn((_req, _res, next) => {
-  next();
 });
 
 upload.fileUpload.upload = jest.fn((_req, _res, next) => {
@@ -80,7 +75,6 @@ describe(`${basePath}`, () => {
     expect(filePermissions.currentFileRecord).toBeCalledTimes(0);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(1);
     expect(hasFilePermissionsMock).toBeCalledTimes(0);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(upload.fileUpload.upload).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFileId).toBeCalledTimes(0);
@@ -103,7 +97,6 @@ describe(`${basePath}/:id`, () => {
     expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
     expect(hasFilePermissionsMock).toBeCalledTimes(1);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(upload.fileUpload.upload).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFileId).toBeCalledTimes(1);
@@ -121,7 +114,6 @@ describe(`${basePath}/:id`, () => {
     expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
     expect(hasFilePermissionsMock).toBeCalledTimes(1);
-    expect(rateLimiter.apiKeyRateLimiter).toBeCalledTimes(1);
     expect(upload.fileUpload.upload).toBeCalledTimes(0);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFileId).toBeCalledTimes(1);

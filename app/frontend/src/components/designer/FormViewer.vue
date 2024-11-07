@@ -130,7 +130,9 @@ const { authenticated, keycloak, tokenParsed, user } = storeToRefs(authStore);
 const { downloadedFile, isRTL } = storeToRefs(formStore);
 
 const formScheduleExpireMessage = computed(() =>
-  t('trans.formViewer.formScheduleExpireMessage')
+  form?.value?.schedule?.message
+    ? form.value.schedule.message
+    : t('trans.formViewer.formScheduleExpireMessage')
 );
 
 const formUnauthorizedMessage = computed(() =>

@@ -170,7 +170,7 @@ describe('FormViewer.vue', () => {
     getDispositionSpy.mockImplementation(() => {});
   });
 
-  it('formScheduleExpireMessage returns the formScheduleExpireMessage translation', async () => {
+  it('formScheduleExpireMessage returns the formScheduleExpireMessage translation or custom message', async () => {
     const wrapper = shallowMount(FormViewer, {
       props: {
         formId: formId,
@@ -187,9 +187,19 @@ describe('FormViewer.vue', () => {
 
     await flushPromises();
 
+    wrapper.vm.form = {};
+
     expect(wrapper.vm.formScheduleExpireMessage).toEqual(
       'trans.formViewer.formScheduleExpireMessage'
     );
+
+    wrapper.vm.form = {
+      schedule: {
+        message: 'custom message',
+      },
+    };
+
+    expect(wrapper.vm.formScheduleExpireMessage).toEqual('custom message');
   });
 
   it('formUnauthorizedMessage returns the formUnauthorizedMessage translation', async () => {
