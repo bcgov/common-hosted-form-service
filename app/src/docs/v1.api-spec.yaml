@@ -3495,7 +3495,7 @@ paths:
                 $ref: '#/components/schemas/Error'
   /forms/{formId}/encryptionKey/{formEncryptionKeyId}:
     get:
-      summary: Get the list of encryption algorithms
+      summary: Get the encryption key for a form
       operationId: readEncryptionKey
       security:
         - BasicAuth: []
