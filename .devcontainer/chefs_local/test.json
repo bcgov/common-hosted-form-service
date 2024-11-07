@@ -61,9 +61,6 @@
       "proxy": "5fb2054478353fd8d514056d1745b3a9eef066deadda4b90967af7ca65ce6505"
     }
   },
-  "features": {
-    "eventStreamService": true
-  },
   "eventStreamService": {
     "servers": "localhost:4222,localhost:4223,localhost:4224",
     "streamName": "CHEFS",
