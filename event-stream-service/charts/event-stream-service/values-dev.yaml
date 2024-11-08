@@ -2,39 +2,13 @@ nats:
   config:
     cluster:
       replicas: 3
-    jetstream:
-      fileStore:
-        pvc:
-          size: 1Gi
     websocket:
       enabled: true
       port: 8888
-  container:
-    merge:
-      resources:
-        limits:
-          cpu: 1
-          memory: 1Gi
-        requests:
-          cpu: 500m
-          memory: 500Mi
   configMap:
     merge:
       data:
         params.conf: |
-          max_payload: 10MB
-  natsBox:
-    container:
-      image:
-        tag: nonroot
-      merge:
-        resources:
-          limits:
-            cpu: 250m
-            memory: 128Mi
-          requests:
-            cpu: 50m
-            memory: 64Mi
-
+          max_payload: 1MB
 nginx:
   replicaCount: 3

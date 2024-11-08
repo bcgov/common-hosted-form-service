@@ -151,7 +151,7 @@ nats:
     merge:
       data:
         params.conf: |
-          max_payload: 2MB
+          max_payload: 1MB
   natsBox:
     container:
       image:

@@ -1,10 +1,19 @@
 const config = require('config');
 const falsey = require('falsey');
-const { JSONCodec } = require('nats');
+const { JSONCodec, nanos } = require('nats');
 const axios = require('axios');
 
 // different connection libraries if we are using websockets or nats protocols.
 const WEBSOCKETS = !falsey(config.get('eventStreamService.websockets'));
+
+// these should get moved into a configuration map when we are happy with the service.
+//
+// bytes for maximum size of message (headers + payload)
+const max_msg_size = 1024 * 1024 * 1; // 1MB
+// milliseconds for how long message can stay persisted
+const max_age = 604800000; // 1 week
+// milliseconds for how long to check duplicate messages
+const duplicate_window = 1000 * 60; // 1 minute
 
 let natsConnect;
 if (WEBSOCKETS) {
@@ -113,7 +122,29 @@ class EventStreamService {
         log.info('Connected', { function: 'openConnection' });
         this.js = this.nc.jetstream();
         this.jsm = await this.js.jetstreamManager();
-        this.jsm.streams.add({ name: this.streamName, subjects: [`${this.publicSubject}.>`, `${this.privateSubject}.>`] });
+        const cfg = {
+          name: this.streamName,
+          subjects: [`${this.publicSubject}.>`, `${this.privateSubject}.>`],
+        };
+        try {
+          // this will throw an error if stream is not created.
+          await this.jsm.streams.info(cfg.name);
+        } catch (err) {
+          // catch the error and add the stream, it doesn't exist!
+          if (err.message === 'stream not found') {
+            log.info(`Stream: ${cfg.name} not found, creating stream...`, { function: 'openConnection' });
+            await this.jsm.streams.add(cfg);
+            log.info(`Stream: ${cfg.name} created.`, { function: 'openConnection' });
+          }
+        }
+        log.info(`Stream: ${cfg.name} updating configuration...`, { function: 'openConnection' });
+        // let's ensure that we have the current configuration
+        await this.jsm.streams.update(cfg.name, { max_msg_size: max_msg_size });
+        await this.jsm.streams.update(cfg.name, { max_age: nanos(max_age), duplicate_window: nanos(duplicate_window) });
+        // make sure the config is updated...
+        await new Promise((r) => setTimeout(r, 1000));
+        log.info(`Stream: ${cfg.name} configuration updated.`, { function: 'openConnection' });
+
         this.nc.closed().then((err) => {
           if (err) {
             log.warn(`the connection closed with an error ${err.message}`, { function: 'connection.closed' });
