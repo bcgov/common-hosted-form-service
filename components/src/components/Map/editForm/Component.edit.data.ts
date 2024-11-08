@@ -35,7 +35,7 @@ export default {
         max: 18,
       },
       key: 'defaultZoom',
-      type: 'simplenumber',
+      type: 'number',
       input: true,
     },
     {
@@ -54,7 +54,7 @@ export default {
     {
       html: '<h2>Submitter Options</h2>',
       key: 'simplecontent1',
-      type: 'simplecontent',
+      type: 'content',
       input: false,
       tableView: false,
       label: 'Text/Images',
@@ -64,7 +64,7 @@ export default {
       description:
         'This allows for the user to view and scroll the map, but not add any input',
       key: 'allowSubmissions',
-      type: 'simplecheckbox',
+      type: 'checkbox',
       defaultValue: true,
       input: true,
     },
@@ -90,13 +90,13 @@ export default {
       ],
       defaultValue: 'marker',
       key: 'markerType',
-      type: 'simplecheckboxes',
+      type: 'selectboxes',
       input: true,
     },
     {
       label: 'How many Markers per Submission?',
       key: 'numPoints',
-      type: 'simplenumber',
+      type: 'number',
       defaultValue: 1,
       input: true,
     },
@@ -105,7 +105,7 @@ export default {
       description:
         'This allows for the user to center the map on their location.',
       key: 'myLocation',
-      type: 'simplecheckboxadvanced',
+      type: 'checkbox',
       input: true,
       defaultValue: true,
     },
@@ -114,7 +114,7 @@ export default {
       description:
         'This allows for the user to enter an address and have results appear in a dropdown. The user can then select the result which fits best and have the map center on that location',
       key: 'bcGeocoder',
-      type: 'simplecheckboxadvanced',
+      type: 'checkbox',
       input: true,
       defaultValue: true,
     },
