@@ -30,6 +30,7 @@ interface MapServiceOptions {
   viewMode?: boolean;
   myLocation?: boolean;
   bcGeocoder: boolean;
+  required: boolean;
 }
 
 class MapService {
@@ -90,6 +91,7 @@ class MapService {
       viewMode,
       myLocation,
       bcGeocoder,
+      required,
     } = options;
 
     if (drawOptions.rectangle) {

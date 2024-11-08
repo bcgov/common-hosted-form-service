@@ -93,6 +93,8 @@ export default class Component extends (FieldComponent as any) {
       myLocation,
       bcGeocoder,
     } = this.component;
+    const { required } = this.component.validate;
+    console.log(this.component);
 
     const { readOnly: viewMode } = this.options;
 
@@ -177,5 +179,11 @@ export default class Component extends (FieldComponent as any) {
 
   getValue() {
     return this.dataValue;
+  }
+  isValid() {
+    if (this.this.component.validate) {
+      console.log(this.dataValue);
+      return !!this.dataValue;
+    }
   }
 }
