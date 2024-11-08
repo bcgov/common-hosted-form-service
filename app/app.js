@@ -222,15 +222,6 @@ function initializeConnections() {
         });
         // Start periodic 10 second connection probe check
         probeId = setInterval(checkConnections, 10000);
-      } else {
-        log.error(`Service not ready to accept traffic`, {
-          function: 'initializeConnections',
-        });
-        log.error(`Database connected = ${state.connections.data}`, { function: 'initializeConnections' });
-        log.error(`EventStreamService connected = ${state.connections.eventStreamService}`, { function: 'initializeConnections' });
-
-        process.exitCode = 1;
-        shutdown();
       }
     });
 }

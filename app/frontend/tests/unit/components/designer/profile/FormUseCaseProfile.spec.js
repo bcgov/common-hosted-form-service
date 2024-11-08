@@ -39,8 +39,6 @@ describe('FormUseCaseProfile.vue', () => {
     const select = wrapper.findComponent('[data-test="case-select"]');
 
     const items = select.componentVM.items;
-    // eslint-disable-next-line no-console
-    console.log(items);
     expect(items).toEqual(FormProfileValues.USE_CASE);
   });
 });
