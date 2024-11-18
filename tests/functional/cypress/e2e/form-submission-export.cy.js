@@ -126,6 +126,7 @@ describe("Form Designer", () => {
       const rem = $elem.text();
       cy.log(rem);
       const remname = rem + "_submissions.json";
+      cy.wait(2000);
       cy.get(".ml-1").contains(remname);
     });
     cy.get(':nth-child(2) > .v-col > .v-input > .v-input__control > .v-selection-control-group > :nth-child(2) > .v-label > .radioboxLabelStyle').click();
@@ -183,8 +184,7 @@ describe("Form Designer", () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     cy.get(".mdi-list-box-outline").click();
-    
-   
+    cy.wait(2000);
     cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn').click();
      //print option
     cy.get('.mdi-printer').click();
