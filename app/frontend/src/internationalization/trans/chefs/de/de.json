@@ -913,7 +913,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "Meine Entwürfe/Einreichungen ansehen",
-    "saveAsADraft": "Als einen Entwurf sichern",
+    "saveAsDraft": "Als einen Entwurf sichern",
     "editThisDraft": "Bearbeiten Sie diesen Entwurf",
     "switchSingleSubmssn": "Wechseln Sie zur Einzeleinreichung",
     "switchMultiSubmssn": "Wechseln Sie zu mehreren Einreichungen",

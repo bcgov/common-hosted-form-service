@@ -913,7 +913,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "Ver meus rascunhos/envios",
-    "saveAsADraft": "Salve como um rascunho",
+    "saveAsDraft": "Salve como um rascunho",
     "editThisDraft": "Editar este rascunho",
     "switchSingleSubmssn": "Alternar para envio único",
     "switchMultiSubmssn": "Mudar para vários envios",

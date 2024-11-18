@@ -913,7 +913,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "Tingnan ang Aking draft/mga isinumite",
-    "saveAsADraft": "I-save bilang Draft",
+    "saveAsDraft": "I-save bilang Draft",
     "editThisDraft": "I-edit ang Draft na ito",
     "switchSingleSubmssn": "Lumipat sa iisang pagsusumite",
     "switchMultiSubmssn": "Lumipat sa maramihang pagsusumite",

@@ -913,7 +913,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "Visualizza le mie bozze/presentazioni",
-    "saveAsADraft": "Salva come bozza",
+    "saveAsDraft": "Salva come bozza",
     "editThisDraft": "Modifica questa bozza",
     "switchSingleSubmssn": "Passa all'invio singolo",
     "switchMultiSubmssn": "Passa a più invii",

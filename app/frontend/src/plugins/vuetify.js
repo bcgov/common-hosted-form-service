@@ -34,7 +34,7 @@ const chefsTheme = {
     error: '#D8292F',
     info: '#2196F3',
     success: '#2E8540',
-    warning: '#FFC107',
+    warning: '#DA7102',
   },
 };
 

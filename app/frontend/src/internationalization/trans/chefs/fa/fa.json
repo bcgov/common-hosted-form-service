@@ -913,7 +913,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "مشاهده پیش نویس/موارد ارسالی من",
-    "saveAsADraft": "ذخیره به عنوان پیش نویس",
+    "saveAsDraft": "ذخیره به عنوان پیش نویس",
     "editThisDraft": "این پیش نویس را ویرایش کنید",
     "switchSingleSubmssn": "به ارسال تکی بروید",
     "switchMultiSubmssn": "تغییر به ارسال های متعدد",

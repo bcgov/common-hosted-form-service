@@ -913,7 +913,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "Просмотреть мои черновики/представленные материалы",
-    "saveAsADraft": "Сохранить как черновик",
+    "saveAsDraft": "Сохранить как черновик",
     "editThisDraft": "Изменить этот черновик",
     "switchSingleSubmssn": "Переключиться на одиночную отправку",
     "switchMultiSubmssn": "Переключиться на несколько отправок",

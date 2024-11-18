@@ -913,7 +913,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "عرض المسودة / التقديمات الخاصة بي",
-    "saveAsADraft": "احفظ كمسودة",
+    "saveAsDraft": "احفظ كمسودة",
     "editThisDraft": "قم بتحرير هذه المسودة",
     "switchSingleSubmssn": "التبديل إلى الإرسال الفردي",
     "switchMultiSubmssn": "التبديل إلى تقديمات متعددة",

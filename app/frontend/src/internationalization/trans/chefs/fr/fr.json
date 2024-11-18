@@ -913,7 +913,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "Afficher mes brouillons/soumissions",
-    "saveAsADraft": "Enregistrer en tant que projet",
+    "saveAsDraft": "Enregistrer en tant que projet",
     "editThisDraft": "Modifier ce brouillon",
     "switchSingleSubmssn": "Passer à la soumission unique",
     "switchMultiSubmssn": "Passer à plusieurs soumissions",

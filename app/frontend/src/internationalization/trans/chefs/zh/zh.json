@@ -913,7 +913,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "查看我的草稿/提交内容",
-    "saveAsADraft": "另存为草稿",
+    "saveAsDraft": "另存为草稿",
     "editThisDraft": "编辑本草稿",
     "switchSingleSubmssn": "切换到单一提交",
     "switchMultiSubmssn": "切换到多次提交",

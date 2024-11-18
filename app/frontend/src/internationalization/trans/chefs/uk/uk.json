@@ -912,7 +912,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "Переглянути мої чернетки/подання",
-    "saveAsADraft": "Зберегти як чернетку",
+    "saveAsDraft": "Зберегти як чернетку",
     "editThisDraft": "Відредагуйте цю чернетку",
     "switchSingleSubmssn": "Перейти до одноразової подачі",
     "switchMultiSubmssn": "Переключитися на кілька повідомлень",

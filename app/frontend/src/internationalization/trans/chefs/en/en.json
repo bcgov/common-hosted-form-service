@@ -967,7 +967,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "View My Drafts/Submissions",
-    "saveAsADraft": "Save as a Draft",
+    "saveAsDraft": "Save as Draft",
     "editThisDraft": "Edit this Draft",
     "switchSingleSubmssn": "Switch to single submission",
     "switchMultiSubmssn": "Switch to multiple submissions",

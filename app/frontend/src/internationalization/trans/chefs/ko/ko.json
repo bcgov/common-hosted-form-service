@@ -913,7 +913,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "내 초안/제출물 보기",
-    "saveAsADraft": "초안으로 저장",
+    "saveAsDraft": "초안으로 저장",
     "editThisDraft": "이 초안 편집",
     "switchSingleSubmssn": "단일 제출로 전환",
     "switchMultiSubmssn": "다중 제출로 전환",

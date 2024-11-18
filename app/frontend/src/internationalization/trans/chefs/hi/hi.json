@@ -913,7 +913,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "मेरा ड्राफ्ट/प्रस्तुतियाँ देखें",
-    "saveAsADraft": "एक मसौदे के रूप में सहेजो",
+    "saveAsDraft": "एक मसौदे के रूप में सहेजो",
     "editThisDraft": "इस ड्राफ्ट को संपादित करें",
     "switchSingleSubmssn": "एकल सबमिशन पर स्विच करें",
     "switchMultiSubmssn": "एकाधिक सबमिशन पर स्विच करें",

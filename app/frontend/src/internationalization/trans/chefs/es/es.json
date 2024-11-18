@@ -913,7 +913,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "Ver mis borradores/presentaciones",
-    "saveAsADraft": "Guardar como borrador",
+    "saveAsDraft": "Guardar como borrador",
     "editThisDraft": "Editar este borrador",
     "switchSingleSubmssn": "Cambiar a envío único",
     "switchMultiSubmssn": "Cambiar a envíos múltiples",
