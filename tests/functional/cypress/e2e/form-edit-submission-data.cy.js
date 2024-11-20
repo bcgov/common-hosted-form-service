@@ -122,10 +122,13 @@ describe('Form Designer', () => {
           cy.get('.v-data-table__tr > :nth-child(2)').should('not.exist');
           cy.wait(2000);
           cy.get(rem).click({ force: true });
+          //submission delete verification
           cy.get('.v-data-table__tr > :nth-child(7) > span[data-v-1cd101d8=""] > .v-btn > .v-btn__content > .mdi-minus').click();
           cy.get('[data-test="continue-btn-continue"]').click();
           cy.get('.v-alert__content').contains('div','Submission deleted successfully.').should('be.visible');
           cy.get(rem).click({ force: true });
+          //Submission restore verification
+          cy.get('.v-btn > .v-btn__content > .mdi-minus').should('not.exist');
           cy.get(':nth-child(2) > .v-btn > .v-btn__content > .mdi-delete-restore').click();
           cy.get('[data-test="continue-btn-continue"] > .v-btn__content > span').click();
           cy.get('.v-data-table__tr > :nth-child(2)').should('not.exist');
