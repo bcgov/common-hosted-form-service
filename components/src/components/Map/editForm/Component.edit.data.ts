@@ -6,7 +6,7 @@ export default {
     {
       html: '<h2>Default Values</h2>',
       key: 'simplecontent1',
-      type: 'simplecontent',
+      type: 'content',
       input: false,
       tableView: false,
       label: 'Text/Images',

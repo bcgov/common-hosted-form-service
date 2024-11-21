@@ -7,6 +7,7 @@ import * as L from 'leaflet';
 const DEFAULT_CENTER: [number, number] = [
   53.96717190097409, -123.98320425388914,
 ]; // Ensure CENTER is a tuple with exactly two elements
+const DEFAULT_CONTAINER_HEIGHT = '400px';
 
 export default class Component extends (FieldComponent as any) {
   static schema(...extend) {
@@ -42,7 +43,7 @@ export default class Component extends (FieldComponent as any) {
 
   render() {
     return super.render(
-      `<div id="map-${this.componentID}" style="height:400px; z-index:1;"> </div>`
+      `<div id="map-${this.componentID}" style="height:${DEFAULT_CONTAINER_HEIGHT}; z-index:1;"> </div>`
     );
   }
 
