@@ -1,10 +1,11 @@
 const { MockModel } = require('../../common/dbHelper');
-
+const { JSONCodec } = require('nats');
+const crypto = require('crypto');
 const { Form, FormVersion, FormEventStreamConfig } = require('../../../src/forms/common/models');
 
 const formMetadataService = require('../../../src/forms/form/formMetadata/service');
 const { eventStreamService, FORM_EVENT_TYPES, SUBMISSION_EVENT_TYPES } = require('../../../src/components/eventStreamService');
-
+const jsonCodec = JSONCodec();
 jest.mock('../../../src/forms/form/formMetadata/service');
 
 // change these as appropriate after adding new default keys/algos...
@@ -390,5 +391,27 @@ describe('eventStreamService', () => {
     service._onSubmitWebhook = jest.fn().mockRejectedValueOnce();
     await service.onSubmit('created', { id: '345', formId: '123', formVersionId: '456' });
     expect(service.js.publish).toBeCalledTimes(0);
+  });
+
+  it('_sizeCheck should handle large message', async () => {
+    // mock out service properties and functions
+    service.allowedMsgSize = 1000; // allow 1000 bytes max
+    const msg = {
+      meta: {},
+      payload: { data: 'hi' },
+    };
+
+    // small message: no error, payload same
+    let encoded = service._sizeCheck(msg);
+    let decoded = jsonCodec.decode(encoded);
+    expect(decoded.error).toBeFalsy();
+    expect(decoded.payload.data).toEqual('hi');
+
+    // large message: error, payload removed
+    msg.payload.data = crypto.randomBytes(1000).toString('hex');
+    encoded = service._sizeCheck(msg);
+    decoded = jsonCodec.decode(encoded);
+    expect(decoded.error).toBeTruthy();
+    expect(decoded.payload.data).toEqual({});
   });
 });

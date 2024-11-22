@@ -1,0 +1,16 @@
+ess:
+  nginx:
+    route:
+      ingressPrefix: streams
+      ingressSuffix: .apps.silver.devops.gov.bc.ca
+
+nats:
+  container:
+    merge:
+      resources:
+        limits:
+          cpu: 250m
+          memory: 256Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi

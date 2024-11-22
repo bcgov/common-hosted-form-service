@@ -6,14 +6,7 @@ const axios = require('axios');
 // different connection libraries if we are using websockets or nats protocols.
 const WEBSOCKETS = !falsey(config.get('eventStreamService.websockets'));
 
-// these should get moved into a configuration map when we are happy with the service.
-//
-// bytes for maximum size of message (headers + payload)
-const max_msg_size = 1024 * 1024 * 1; // 1MB
-// milliseconds for how long message can stay persisted
-const max_age = 604800000; // 1 week
-// milliseconds for how long to check duplicate messages
-const duplicate_window = 1000 * 60; // 1 minute
+const HEADERS_SIZE = 1024; // account for NATS headers in messages, use 1kb.
 
 let natsConnect;
 if (WEBSOCKETS) {
@@ -48,17 +41,36 @@ const SUBMISSION_EVENT_TYPES = {
 const jsonCodec = JSONCodec();
 
 class EventStreamService {
-  constructor({ servers, streamName, source, domain, username, password }) {
-    if (!servers || !streamName || !source || !domain || !username || !password) {
+  constructor(cfg) {
+    if (!cfg || !cfg.servers || !cfg.streamName || !cfg.source || !cfg.domain || !cfg.username || !cfg.password) {
       throw new Error('EventStreamService is not configured. Check configuration.');
     }
 
-    this.servers = servers;
-    this.streamName = streamName;
-    this.source = source;
-    this.domain = domain;
-    this.username = username;
-    this.password = password;
+    if (!cfg.maxAge || !cfg.maxBytes || !cfg.maxMsgs || !cfg.maxMsgSize || !cfg.duplicateWindow || !cfg.numReplicas) {
+      throw new Error('EventStreamService is not configured (missing stream limits). Check configuration.');
+    }
+
+    this.servers = cfg.servers;
+    this.streamName = cfg.streamName;
+    this.source = cfg.source;
+    this.domain = cfg.domain;
+    this.username = cfg.username;
+    this.password = cfg.password;
+
+    // stream limits configuration
+    try {
+      this.maxAge = parseInt(cfg.maxAge);
+      this.maxBytes = parseInt(cfg.maxBytes);
+      this.maxMsgs = parseInt(cfg.maxMsgs);
+      this.maxMsgSize = parseInt(cfg.maxMsgSize);
+      this.duplicateWindow = parseInt(cfg.duplicateWindow);
+
+      this.numReplicas = parseInt(cfg.numReplicas);
+    } catch (error) {
+      throw new Error('EventStreamService configuration, error parsing integers for stream limits. Check configuration.');
+    }
+
+    this.allowedMsgSize = this.maxMsgSize - HEADERS_SIZE; // the allowed message size is the stream limit less the nats headers.
 
     this.nc = null; // nats connection
     this.js = null; // jet stream
@@ -139,8 +151,9 @@ class EventStreamService {
         }
         log.info(`Stream: ${cfg.name} updating configuration...`, { function: 'openConnection' });
         // let's ensure that we have the current configuration
-        await this.jsm.streams.update(cfg.name, { max_msg_size: max_msg_size });
-        await this.jsm.streams.update(cfg.name, { max_age: nanos(max_age), duplicate_window: nanos(duplicate_window) });
+        await this.jsm.streams.update(cfg.name, { max_msgs: this.maxMsgs, max_bytes: this.maxBytes, max_msg_size: this.maxMsgSize, num_replicas: this.numReplicas });
+        await new Promise((r) => setTimeout(r, 100)); // quick pause to let update proceed
+        await this.jsm.streams.update(cfg.name, { max_age: nanos(this.maxAge), duplicate_window: nanos(this.duplicateWindow) });
         // make sure the config is updated...
         await new Promise((r) => setTimeout(r, 1000));
         log.info(`Stream: ${cfg.name} configuration updated.`, { function: 'openConnection' });
@@ -201,6 +214,16 @@ class EventStreamService {
     return FormSubscription.query().modify('filterFormId', formId).first();
   }
 
+  _sizeCheck(msg) {
+    const size = Buffer.byteLength(JSON.stringify(msg));
+    if (size > this.allowedMsgSize) {
+      // we need to remove the payload data and add metadata that this is too big.
+      msg.payload = { data: {} };
+      msg.error = { code: 'MAX_MSG_SIZE', message: `Message is ${size} bytes. This exceeds maximum allowed of ${this.allowedMsgSize} bytes. Please download payload via API.` };
+    }
+    return jsonCodec.encode(msg);
+  }
+
   async _onPublishEventStream(eventType, meta, formId, formVersionId) {
     try {
       await this.openConnection();
@@ -227,7 +250,7 @@ class EventStreamService {
                 data: encPayload,
               },
             };
-            const encodedPayload = jsonCodec.encode(privMsg);
+            const encodedPayload = this._sizeCheck(privMsg);
             const ack = await this.js.publish(privateSubj, encodedPayload);
             log.info(`form ${eventType} event (private) - formId: ${formId}, version: ${formVersion.version}, seq: ${ack.seq}`, { function: 'onPublish' });
           }
@@ -318,7 +341,7 @@ class EventStreamService {
                 data: encPayload,
               },
             };
-            const encodedPayload = jsonCodec.encode(privMsg);
+            const encodedPayload = this._sizeCheck(privMsg);
             const ack = await this.js.publish(privateSubj, encodedPayload);
             log.info(`submission ${eventType} event (private) - formId: ${formVersion.formId}, version: ${formVersion.version}, submissionId: ${submission.id}, seq: ${ack.seq}`, {
               function: 'onSubmit',

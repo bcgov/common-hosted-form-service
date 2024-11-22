@@ -1,14 +1,6 @@
 nats:
   config:
-    cluster:
-      replicas: 3
-    websocket:
-      enabled: true
-      port: 8888
-  configMap:
-    merge:
-      data:
-        params.conf: |
-          max_payload: 1MB
-nginx:
-  replicaCount: 3
+    jetstream:
+      fileStore:
+        pvc:
+          size: 1Gi

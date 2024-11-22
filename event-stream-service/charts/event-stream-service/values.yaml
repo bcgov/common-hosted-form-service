@@ -6,8 +6,8 @@ ess:
     route:
       name: ess-nginx-route
       enabled: true
-      ingressPrefix: ess-
-      ingressSuffix: a191b5-dev.apps.silver.devops.gov.bc.ca
+      ingressPrefix: streams-dev
+      ingressSuffix: .apps.silver.devops.gov.bc.ca
       path: ""
       serviceName: ess-nginx
       targetPort: http
@@ -23,18 +23,26 @@ nats:
   config:
     cluster:
       enabled: true
-      replicas: 2
+      replicas: 3
     jetstream:
       enabled: true
       fileStore:
         enabled: true
         pvc:
           enabled: true
+          storageClassName: netapp-block-standard
           size: 250Mi
     websocket:
       enabled: true
       port: 8888
     merge:
+      debug: false
+      trace: false
+      accounts:
+        $SYS:
+          users:
+            - user: "sysadmin"
+              password: << $SYSADMIN_PWD >>
       authorization:
         default_permissions:
           publish:
@@ -52,14 +60,37 @@ nats:
               "$JS.API.CONSUMER.MSG.NEXT.*.NEW",
               "$JS.API.STREAM.MSG.GET.*",
               "$JS.API.STREAM.INFO.*",
+              "$JS.API.STREAM.LIST",
               "$JS.API.STREAM.NAMES",
               "$JS.ACK.*",
               "$JS.ACK.*.>",
             ]
           subscribe: ["PUBLIC.>", "PRIVATE.>", "_INBOX.>"]
         users:
-          - user: "anonymous"
-            password: << $ANONYMOUS_PWD >>
+          - user: "chefsConsumer"
+            password: << $CHEFSCONSUMER_PWD >>
+            permissions:
+              publish:
+                [
+                  "SANDBOX.*",
+                  "$JS.API.INFO",
+                  "$JS.API.CONSUMER.CREATE.CHEFS",
+                  "$JS.API.CONSUMER.CREATE.CHEFS.>",
+                  "$JS.API.CONSUMER.DURABLE.CREATE.CHEFS.>",
+                  "$JS.API.CONSUMER.DELETE.CHEFS.>",
+                  "$JS.API.CONSUMER.INFO.CHEFS.>",
+                  "$JS.API.CONSUMER.LIST.CHEFS",
+                  "$JS.API.CONSUMER.NAMES.CHEFS",
+                  "$JS.API.CONSUMER.MSG.NEXT.CHEFS.>",
+                  "$JS.API.CONSUMER.MSG.NEXT.CHEFS.NEW",
+                  "$JS.API.STREAM.MSG.GET.CHEFS",
+                  "$JS.API.STREAM.INFO.CHEFS",
+                  "$JS.API.STREAM.LIST",
+                  "$JS.API.STREAM.NAMES",
+                  "$JS.ACK.CHEFS",
+                  "$JS.ACK.CHEFS.>",
+                ]
+              subscribe: ["PUBLIC.forms.>", "PRIVATE.forms.>", "_INBOX.>"]
           - user: "admin"
             password: << $ADMIN_PWD >>
             permissions:
@@ -97,10 +128,13 @@ nats:
                   "PRIVATE.forms.>",
                 ]
               subscribe: ["_INBOX.>"]
-      no_auth_user: anonymous
-      01$include: params.conf
   container:
     env:
+      SYSADMIN_PWD:
+        valueFrom:
+          secretKeyRef:
+            name: ess-nats-auth
+            key: sysadmin_pwd
       ADMIN_PWD:
         valueFrom:
           secretKeyRef:
@@ -111,19 +145,30 @@ nats:
           secretKeyRef:
             name: ess-nats-auth
             key: chefs_pwd
-      ANONYMOUS_PWD:
+      CHEFSCONSUMER_PWD:
         valueFrom:
           secretKeyRef:
             name: ess-nats-auth
-            key: anonymous_pwd
+            key: chefsconsumer_pwd
+    merge:
+      # Each pod combines these resources with the reloader (2 containers, 1 pod)
+      # so add the below to the reloader for total resources per pod.
+      resources:
+        limits:
+          cpu: 500m
+          memory: 256Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
+  reloader:
     merge:
       resources:
         limits:
-          cpu: 250m
-          memory: 128Mi
-        requests:
           cpu: 50m
           memory: 64Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
   service:
     ports:
       nats:
@@ -147,30 +192,33 @@ nats:
       kubernetes.io/hostname:
         maxSkew: 1
         whenUnsatisfiable: DoNotSchedule
-  configMap:
-    merge:
-      data:
-        params.conf: |
-          max_payload: 1MB
   natsBox:
+    enabled: false
     container:
       image:
         tag: nonroot
       merge:
         resources:
           limits:
-            cpu: 250m
+            cpu: 50m
             memory: 128Mi
           requests:
-            cpu: 50m
+            cpu: 25m
             memory: 64Mi
 
 nginx:
   fullnameOverride: ess-nginx
+  replicaCount: 3
   readinessProbe:
     enabled: true
     path: /health
-  resourcesPreset: "nano"
+  resources:
+    limits:
+      cpu: 125m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
   service:
     type: ClusterIP
     ports:

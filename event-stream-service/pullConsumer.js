@@ -55,6 +55,8 @@ const MAX_MESSAGES = 2;
 const DURABLE_NAME = process.env.DURABLE_NAME || uuidv4();
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || undefined;
 const SOURCE_FILTER = process.env.SOURCE || false;
+const USERNAME = process.env.USERNAME || "chefsConsumer";
+const PASSWORD = process.env.PASSWORD || "password";
 
 const printMsg = (m) => {
   // illustrate grabbing the sequence and timestamp from the nats message...
@@ -78,7 +80,9 @@ const printMsg = (m) => {
     if (process) {
       console.log(data);
       try {
-        if (
+        if (data && data["error"]) {
+          console.log(`error with payload: ${data["error"]["message"]}`);
+        } else if (
           data &&
           data["payload"] &&
           data["payload"]["data"] &&
@@ -108,10 +112,12 @@ const init = async () => {
     try {
       // no credentials provided.
       // anonymous connections have read access to the stream
-      console.log(`connect to nats server(s) ${servers} as 'anonymous'...`);
+      console.log(`connect to nats server(s) ${servers} as '${USERNAME}'...`);
       nc = await natsConnect({
         servers: servers,
         reconnectTimeWait: 10 * 1000, // 10s
+        user: USERNAME,
+        pass: PASSWORD,
       });
 
       console.log("access jetstream...");

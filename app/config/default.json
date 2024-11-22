@@ -69,7 +69,13 @@
     "source": "chefs-local",
     "domain": "forms",
     "username": "chefs",
-    "password": "password"
+    "password": "password",
+    "maxAge": "900000",
+    "maxBytes": "966367641",
+    "maxMsgs": "1000",
+    "maxMsgSize": "966367",
+    "duplicateWindow": "60000",
+    "numReplicas": "3"
   },
   "serviceClient": {
     "commonServices": {

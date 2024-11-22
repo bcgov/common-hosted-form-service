@@ -30,7 +30,7 @@ dependencies:
     alias: common
   - name: nats
     repository: https://nats-io.github.io/k8s/helm/charts/
-    version: 1.2.3
+    version: 1.2.6
     alias: nats
   - name: nginx
     version: 18.1.11
