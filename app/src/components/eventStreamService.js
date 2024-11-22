@@ -149,15 +149,24 @@ class EventStreamService {
             log.info(`Stream: ${cfg.name} created.`, { function: 'openConnection' });
           }
         }
-        log.info(`Stream: ${cfg.name} updating configuration...`, { function: 'openConnection' });
-        // let's ensure that we have the current configuration
-        await this.jsm.streams.update(cfg.name, { max_msgs: this.maxMsgs, max_bytes: this.maxBytes, max_msg_size: this.maxMsgSize, num_replicas: this.numReplicas });
-        await new Promise((r) => setTimeout(r, 100)); // quick pause to let update proceed
-        await this.jsm.streams.update(cfg.name, { max_age: nanos(this.maxAge), duplicate_window: nanos(this.duplicateWindow) });
-        // make sure the config is updated...
-        await new Promise((r) => setTimeout(r, 1000));
-        log.info(`Stream: ${cfg.name} configuration updated.`, { function: 'openConnection' });
-
+        try {
+          log.info(`Stream: ${cfg.name} updating max_msgs/max_bytes/max_msg_size/num_replicas...`, { function: 'openConnection' });
+          // let's ensure that we have the current configuration
+          await this.jsm.streams.update(cfg.name, { max_msgs: this.maxMsgs, max_bytes: this.maxBytes, max_msg_size: this.maxMsgSize, num_replicas: this.numReplicas });
+          await new Promise((r) => setTimeout(r, 1000));
+          log.info(`Stream: ${cfg.name} max_msgs/max_bytes/max_msg_size/num_replicas configuration updated.`, { function: 'openConnection' });
+        } catch (err) {
+          log.error(err.message, { function: 'openConnection' });
+        }
+        try {
+          log.info(`Stream: ${cfg.name} updating max_age/duplicate_window...`, { function: 'openConnection' });
+          // let's ensure that we have the current configuration
+          await this.jsm.streams.update(cfg.name, { max_age: nanos(this.maxAge), duplicate_window: nanos(this.duplicateWindow) });
+          await new Promise((r) => setTimeout(r, 1000));
+          log.info(`Stream: ${cfg.name} max_age/duplicate_window configuration updated.`, { function: 'openConnection' });
+        } catch (err) {
+          log.error(err.message, { function: 'openConnection' });
+        }
         this.nc.closed().then((err) => {
           if (err) {
             log.warn(`the connection closed with an error ${err.message}`, { function: 'connection.closed' });
