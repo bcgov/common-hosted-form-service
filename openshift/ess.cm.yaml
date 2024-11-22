@@ -53,29 +53,29 @@ parameters:
     description: Maximum age of any message in the Stream (milliseconds)
     displayName: Age of msgs (ms)
     required: true
-    value: 604800000
+    value: "604800000"
   - name: MAXBYTES
     description: Maximum number of bytes stored in the stream.
     displayName: Size of stream (bytes)
     required: true
-    value: 209715200
+    value: "209715200"
   - name: MAXMSGS
     description: Maximum number of messages stored in the stream.
     displayName: Number of msgs in stream
     required: true
-    value: 4000
+    value: "4000"
   - name: MAXMSGSIZE
     description: The largest message that will be accepted by the Stream (bytes)
     displayName: Max Msg Size (bytes)
     required: true
-    value: 50000
+    value: "50000"
   - name: DUPLICATEWINDOW
     description: Duplicate messages window (milliseconds)
     displayName: Duplicate window (ms)
     required: true
-    value: 60000
+    value: "60000"
   - name: NUMREPLICAS
     description: Number of stream replicas
     display: Number of stream replicas
     required: true
-    value: 3
+    value: "3"
