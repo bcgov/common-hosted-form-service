@@ -16,6 +16,7 @@ module.exports = defineConfig({
   video: false,
   fixturesFolder: 'cypress/fixtures',
   screenshotsFolder: 'screenshots',
+  downloadsFolder:  'cypress/downloads',
   videosFolder: 'videos',
   
   e2e: {
