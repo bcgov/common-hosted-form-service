@@ -1,7 +1,7 @@
 ess:
   nginx:
     route:
-      ingressPrefix: streams-test
+      ingressPrefix: stream-test
       ingressSuffix: .apps.silver.devops.gov.bc.ca
 
 nats:

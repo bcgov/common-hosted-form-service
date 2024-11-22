@@ -6,7 +6,7 @@ ess:
     route:
       name: ess-nginx-route
       enabled: true
-      ingressPrefix: streams-dev
+      ingressPrefix: stream-dev
       ingressSuffix: .apps.silver.devops.gov.bc.ca
       path: ""
       serviceName: ess-nginx

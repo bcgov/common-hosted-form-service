@@ -9,16 +9,17 @@ const { v4: uuidv4 } = require("uuid");
  WEBSOCKET - connect via nats protocol or websockets. true/false (default false, connect via nats)
  ENCRYPTION_KEY - what encryption key to decrypt (Cryptr - aes-256-gcm) private payloads
  SOURCE - filter messages based on meta.source (default is none)
+ USERNAME/PASSWORD - user and pass to connect to the stream (default is chefsConsumer/password)
  Examples:
-  SERVERS=ess-a191b5-dev.apps.silver.devops.gov.bc.ca WEBSOCKETS=true DURABLE_NAME=pullConsumer ENCRYPTION_KEY=ad5520469720325d1694c87511afda28a0432dd974cb77b5b4b9f946a5af6985 SOURCE=pr-1444 node pullConsumer.js
-  
-  SERVERS=ess-a191b5-dev.apps.silver.devops.gov.bc.ca WEBSOCKETS=true ENCRYPTION_KEY=ad5520469720325d1694c87511afda28a0432dd974cb77b5b4b9f946a5af6985 node pullConsumer.js
+  SERVERS=stream-dev.apps.silver.devops.gov.bc.ca WEBSOCKETS=true DURABLE_NAME=pullConsumer ENCRYPTION_KEY=ad5520469720325d1694c87511afda28a0432dd974cb77b5b4b9f946a5af6985 SOURCE=pr-1444 node pullConsumer.js
+  SERVERS=stream-dev.apps.silver.devops.gov.bc.ca WEBSOCKETS=true ENCRYPTION_KEY=ad5520469720325d1694c87511afda28a0432dd974cb77b5b4b9f946a5af6985 SOURCE=pr-1444 PASSWORD=<chefsConsumer password> node pullConsumer.js  
+  SERVERS=stream-dev.apps.silver.devops.gov.bc.ca WEBSOCKETS=true ENCRYPTION_KEY=ad5520469720325d1694c87511afda28a0432dd974cb77b5b4b9f946a5af6985 node pullConsumer.js
 
   // runs with all defaults against localhost
   node pullConsumer.js
 */
 
-// different connection libraries if we are using websockerts or nats protocols.
+// different connection libraries if we are using websockets or nats protocols.
 const WEBSOCKETS = !falsey(process.env.WEBSOCKETS);
 
 let natsConnect;
