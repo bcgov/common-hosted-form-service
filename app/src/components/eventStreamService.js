@@ -138,32 +138,50 @@ class EventStreamService {
           name: this.streamName,
           subjects: [`${this.publicSubject}.>`, `${this.privateSubject}.>`],
         };
+        let streamInfo;
         try {
           // this will throw an error if stream is not created.
-          await this.jsm.streams.info(cfg.name);
+          streamInfo = await this.jsm.streams.info(cfg.name);
         } catch (err) {
           // catch the error and add the stream, it doesn't exist!
           if (err.message === 'stream not found') {
             log.info(`Stream: ${cfg.name} not found, creating stream...`, { function: 'openConnection' });
+            Object.assign(
+              cfg,
+              { max_msgs: this.maxMsgs, max_bytes: this.maxBytes, max_msg_size: this.maxMsgSize, num_replicas: this.numReplicas },
+              { max_age: nanos(this.maxAge), duplicate_window: nanos(this.duplicateWindow) }
+            );
             await this.jsm.streams.add(cfg);
             log.info(`Stream: ${cfg.name} created.`, { function: 'openConnection' });
           }
         }
         try {
-          log.info(`Stream: ${cfg.name} updating max_msgs/max_bytes/max_msg_size/num_replicas...`, { function: 'openConnection' });
-          // let's ensure that we have the current configuration
-          await this.jsm.streams.update(cfg.name, { max_msgs: this.maxMsgs, max_bytes: this.maxBytes, max_msg_size: this.maxMsgSize, num_replicas: this.numReplicas });
-          await new Promise((r) => setTimeout(r, 1000));
-          log.info(`Stream: ${cfg.name} max_msgs/max_bytes/max_msg_size/num_replicas configuration updated.`, { function: 'openConnection' });
-        } catch (err) {
-          log.error(err.message, { function: 'openConnection' });
-        }
-        try {
-          log.info(`Stream: ${cfg.name} updating max_age/duplicate_window...`, { function: 'openConnection' });
-          // let's ensure that we have the current configuration
-          await this.jsm.streams.update(cfg.name, { max_age: nanos(this.maxAge), duplicate_window: nanos(this.duplicateWindow) });
-          await new Promise((r) => setTimeout(r, 1000));
-          log.info(`Stream: ${cfg.name} max_age/duplicate_window configuration updated.`, { function: 'openConnection' });
+          streamInfo = await this.jsm.streams.info(cfg.name);
+          const upd = {};
+          if (streamInfo.config.max_msgs !== this.maxMsgs) {
+            upd['max_msgs'] = this.maxMsgs;
+          }
+          if (streamInfo.config.max_bytes !== this.maxBytes) {
+            upd['max_bytes'] = this.maxBytes;
+          }
+          if (streamInfo.config.max_msg_size !== this.maxMsgSize) {
+            upd['max_msg_size'] = this.maxMsgSize;
+          }
+          if (streamInfo.config.num_replicas !== this.numReplicas) {
+            upd['num_replicas'] = this.maxMsgs;
+          }
+          if (streamInfo.config.max_age !== nanos(this.maxAge)) {
+            upd['max_age'] = nanos(this.maxAge);
+          }
+          if (streamInfo.config.duplicate_window !== nanos(this.duplicateWindow)) {
+            upd['duplicate_window'] = nanos(this.duplicateWindow);
+          }
+          if (Object.keys(upd).length) {
+            log.info(`Stream: ${cfg.name} updating configuration...`, { function: 'openConnection' });
+            await this.jsm.streams.update(cfg.name, upd);
+            await new Promise((r) => setTimeout(r, 1000));
+            log.info(`Stream: ${cfg.name} configuration updated.`, { function: 'openConnection' });
+          }
         } catch (err) {
           log.error(err.message, { function: 'openConnection' });
         }

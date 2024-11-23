@@ -26,19 +26,21 @@ helm upgrade --install event-stream-service ./charts/event-stream-service -f ./c
 To set up a CHEFS instance to use this installation of Event Stream Service, you will need to know the server name and you will need the generated secret for the `chefs` account.
 
 Find the `ess-nginx-route` and note the location. The Event Stream Service server will be the host (so no `https://` and no path).
-Find the `ess-nats-auth` and copy the value for `chefs_pwd`.
+Find the `ess-nats-auth` secret and copy the value for `chefs_pwd`.
 
 ### To remove
 
 1. get your Openshift token
 2. use oc login to your namespace
 3. run the `helm` uninstall command
-4. if permanently deleting, then run the `oc delete pvc` command to remove the persistent storage
+4. if wanting to do a clean install later, then run the `oc delete pvc` command to remove the persistent storage
+5. if permanently deleting, then run the `oc delete secret` command to remove the secret
 
 ```
 oc login --token=sha256~yk5BCjn0syJV0qXEyPk12s09v-RIdmTeLVdQmQrQEBc --server=https://api.silver.devops.gov.bc.ca:6443
 helm uninstall event-stream-service
 oc delete pvc -l 'app.kubernetes.io/instance=event-stream-service'
+oc delete secret -l 'app.kubernetes.io/instance=event-stream-service'
 ```
 
 ## Future
@@ -47,7 +49,7 @@ We will need to create different param override (values) files for each instance
 You can specify the '--values'/'-f' flag multiple times. The priority will be given to the last (right-most) file specified.
 
 ```
-helm upgrade --install event-stream-service ./charts/event-stream-service -f ./charts/event-stream-service/values.yaml -f ./charts/event-stream-service/values-dev.yaml
+helm upgrade --install event-stream-service ./charts/event-stream-service -f ./charts/event-stream-service/values.yaml -f ./charts/event-stream-service/values-prod.yaml
 ```
 
 This would apply our default values file (`values.yaml`) with any overrides found in `values-prod.yaml` taking priority.
