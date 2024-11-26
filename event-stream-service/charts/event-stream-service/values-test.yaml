@@ -9,7 +9,7 @@ nats:
     merge:
       resources:
         limits:
-          cpu: 250m
+          cpu: 20m
           memory: 256Mi
         requests:
           cpu: 10m
