@@ -164,11 +164,11 @@ nats:
     merge:
       resources:
         limits:
-          cpu: 50m
-          memory: 64Mi
+          cpu: 20m
+          memory: 12Mi
         requests:
           cpu: 10m
-          memory: 32Mi
+          memory: 8Mi
   service:
     ports:
       nats:
