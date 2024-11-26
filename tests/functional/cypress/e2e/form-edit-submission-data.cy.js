@@ -109,7 +109,7 @@ describe('Form Designer', () => {
         cy.waitForLoad();
         
         //cy.get('.mdi-list-box-outline').click();
-        cy.get('[data-test="canViewFormSubmissions"]').click();
+        cy.get('[data-test="canViewFormSubmissions"]').click({multiple:true,force:true});
         cy.waitForLoad();
         cy.get('.v-data-table__tr > :nth-child(2)').should('exist');
         cy.get('input[type="checkbox"]').then($el => {
