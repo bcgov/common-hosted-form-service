@@ -123,29 +123,55 @@ describe('Form Designer', () => {
     cy.waitForLoad();
   
     //Remove a user from Roles
+    
     cy.get('tbody > :nth-child(1) > [style="width: 1rem;"] > .v-btn').click();
     cy.waitForLoad();
     //cy.contains('REMOVE').click();
     cy.get('[data-test="continue-btn-continue"] > .v-btn__content > span').click();
     cy.waitForLoad();
     cy.contains('NIMJOHN').should('not.exist');
+    cy.get('[data-test="OwnerRoleCheckbox"]').click();
+    cy.wait(1000);
+    cy.get('.v-alert__content').contains("Can't remove the only owner.").should('be.visible');
+    
+    //Email management functionality
+    cy.get('.mdi-cog').click();
+    cy.get('.mdi-email').click();
+    cy.wait(2000);
+    cy.get('input[type="text"]').then($el => {
+
+      const sub=$el[1];
+      const titl=$el[2];
+      
+      //cy.get(sub).click({force: true});
+      cy.get(sub).should('have.value', '{{ form.name }} Accepted');
+      cy.get(titl).should('have.value', '{{ form.name }} Accepted');
+      cy.get(sub).type('{selectall}{backspace}');
+      cy.get('div').contains('Please enter a Subject line for the email').should('be.visible');
+      cy.get(titl).type('{selectall}{backspace}');
+      cy.get('div').contains('Please enter a Title for the email').should('be.visible');
+      cy.get('textarea').then($el => {
+        const body=$el[0];
+      cy.get(body).type('{selectall}{backspace}');
+      cy.get('div').contains('Please enter a Body for the email').should('be.visible');
+      cy.get(body).type('Thank you for submission, Click on this link');
+      });
+      cy.get(sub).type('CHEFS submission Subject');
+      cy.get(titl).type('CHEFS submission Title');
+      cy.get('.v-form > .v-btn').should('be.enabled');
+      cy.get('.v-form > .v-btn').click();
+      
+
+      
+      });
+
 
  });
 
  it('Checks team management after form publish', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-    
-    
-    cy.location('search').then(search => {
-      //let pathName = fullUrl.pathname
-    let arr = search.split('=');
-    let arrayValues = arr[1].split('&');
-    cy.log(arrayValues[0]);
-      
-    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-    cy.waitForLoad();
-    cy.log(arrayValues[0]);
+    cy.get('.mdi-cog').click();
     //Publish the form
     cy.get('.v-label > span').click();
 
@@ -165,20 +191,22 @@ describe('Form Designer', () => {
     cy.get(':nth-child(5) > .v-chip__content').should('be.visible');
     cy.contains('John, Nimya 1 CITZ:EX (nimya.1.john@gov.bc.ca)').click();
     cy.get(':nth-child(2) > .v-chip__content').click();
+    cy.wait(5000);
     cy.get(':nth-child(4) > .v-chip__content').click();
     cy.get(':nth-child(5) > .v-chip__content').click();
     cy.get('.v-btn--elevated > .v-btn__content > span').click();
     cy.waitForLoad();
-    cy.visit(`/${depEnv}`);
-    cy.get('[data-cy="userFormsLinks"]').click();
-    cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
+    cy.get('.mdi-cog').click();
+    //cy.visit(`/${depEnv}`);
+    //cy.get('[data-cy="userFormsLinks"]').click();
+    //cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.waitForLoad();
     //Delete form after test run
       cy.get('.mdi-delete').click();
       cy.get('[data-test="continue-btn-continue"]').click();
       cy.get('#logoutButton > .v-btn__content > span').click();
-    })
+    
     
   });
-    
+  
 });
