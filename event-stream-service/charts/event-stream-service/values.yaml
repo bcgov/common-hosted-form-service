@@ -17,6 +17,12 @@ ess:
         insecureEdgeTerminationPolicy: None
         termination: edge
       wildcardPolicy: None
+    hpa:
+      name: ess-nginx-hpa
+      enabled: true
+      deploymentName: ess-nginx
+      minReplicas: 2
+      maxReplicas: 5
 
 nats:
   fullnameOverride: ess-nats
@@ -208,17 +214,16 @@ nats:
 
 nginx:
   fullnameOverride: ess-nginx
-  replicaCount: 3
   readinessProbe:
     enabled: true
     path: /health
   resources:
     limits:
-      cpu: 125m
-      memory: 128Mi
+      cpu: 500m
+      memory: 512Mi
     requests:
-      cpu: 50m
-      memory: 64Mi
+      cpu: 250m
+      memory: 256Mi
   service:
     type: ClusterIP
     ports:
@@ -232,6 +237,9 @@ nginx:
         listen 8080;
         listen [::]:8080;
         server_name localhost;
+        proxy_buffer_size 16k;
+        proxy_buffers 8 16k;
+        proxy_busy_buffers_size 32k;
         
         location / {
             proxy_pass  http://ess-nats:8888;

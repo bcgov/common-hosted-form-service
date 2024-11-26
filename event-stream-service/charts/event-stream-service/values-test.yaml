@@ -14,3 +14,12 @@ nats:
         requests:
           cpu: 10m
           memory: 32Mi
+
+nginx:
+  resources:
+    limits:
+      cpu: 125m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
