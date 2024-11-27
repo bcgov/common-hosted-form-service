@@ -126,6 +126,7 @@ describe("Form Designer", () => {
       const rem = $elem.text();
       cy.log(rem);
       const remname = rem + "_submissions.json";
+      cy.wait(2000);
       cy.get(".ml-1").contains(remname);
     });
     cy.get(':nth-child(2) > .v-col > .v-input > .v-input__control > .v-selection-control-group > :nth-child(2) > .v-label > .radioboxLabelStyle').click();
@@ -183,8 +184,7 @@ describe("Form Designer", () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     cy.get(".mdi-list-box-outline").click();
-    
-   
+    cy.wait(2000);
     cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn').click();
      //print option
     cy.get('.mdi-printer').click();
@@ -208,14 +208,14 @@ describe("Form Designer", () => {
     cy.get('input[type=file]').should('not.to.be.null');
     fileUploadInputField.attachFile('add1.png');
     cy.waitForLoad();
-    //cy.get('label').contains('Upload template file').click({multiple:true,force:true});
-    //cy.get('.v-messages__message').contains('The template must use one of the following extentions: .txt, .docx, .html, .odt, .pptx, .xlsx');
+    cy.get('label').contains('Upload template file').click({multiple:true,force:true});
+    cy.get('.v-messages__message').contains('The template must use one of the following extentions: .txt, .docx, .html, .odt, .pptx, .xlsx');
     cy.get('#file-input-submit').should('not.be.enabled');
     //
     cy.waitForLoad();
     //Upload print template
-    cy.get('[tabindex="-1"] > .v-btn__content').click();
     cy.get('.v-slide-group__content > [tabindex="-1"]').click();
+    cy.get('[tabindex="-1"] > .v-btn__content').click();
     cy.waitForLoad();
     cy.get('.mdi-close-circle').click();
     cy.get('input[type=file]').attachFile('test.docx');
