@@ -159,23 +159,11 @@ function toggleWideLayout() {
 
       <!-- Save a draft -->
       <span v-if="canSaveDraft && draftEnabled && !bulkFile" class="ml-2">
-        <v-tooltip location="bottom">
-          <template #activator="{ props }">
-            <v-btn
-              color="primary"
-              icon
-              v-bind="props"
-              size="x-small"
-              :title="$t('trans.formViewerActions.saveAsADraft')"
-              @click="$emit('save-draft')"
-            >
-              <v-icon icon="mdi:mdi-content-save"></v-icon>
-            </v-btn>
-          </template>
+        <v-btn color="primary" variant="outlined" @click="$emit('save-draft')">
           <span :lang="locale">{{
-            $t('trans.formViewerActions.saveAsADraft')
+            $t('trans.formViewerActions.saveAsDraft')
           }}</span>
-        </v-tooltip>
+        </v-btn>
       </span>
 
       <!-- Go to draft edit -->
