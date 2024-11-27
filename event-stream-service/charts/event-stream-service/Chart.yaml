@@ -32,7 +32,3 @@ dependencies:
     repository: https://nats-io.github.io/k8s/helm/charts/
     version: 1.2.6
     alias: nats
-  - name: nginx
-    version: 18.1.11
-    repository: oci://registry-1.docker.io/bitnamicharts
-    alias: nginx

@@ -1,6 +1,7 @@
 ess:
-  nginx:
+  nats:
     route:
+      enabled: false
       ingressPrefix: stream
       ingressSuffix: .apps.silver.devops.gov.bc.ca
 

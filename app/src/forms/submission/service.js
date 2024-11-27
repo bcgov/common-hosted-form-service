@@ -104,6 +104,7 @@ const service = {
 
   update: async (formSubmissionId, data, currentUser, referrer, etrx = undefined) => {
     let trx;
+    let result;
     try {
       trx = etrx ? etrx : await FormSubmission.startTransaction();
       const restoring = data['deleted'] !== undefined && typeof data.deleted == 'boolean';
@@ -152,12 +153,14 @@ const service = {
 
       if (!etrx) await trx.commit();
 
-      const result = await service.read(formSubmissionId);
-      await eventStreamService.onSubmit(SUBMISSION_EVENT_TYPES.UPDATED, result.submission, data.draft);
-      return result;
+      result = await service.read(formSubmissionId);
     } catch (err) {
       if (!etrx && trx) await trx.rollback();
       throw err;
+    }
+    if (result) {
+      await eventStreamService.onSubmit(SUBMISSION_EVENT_TYPES.UPDATED, result.submission, data.draft);
+      return result;
     }
   },
 
@@ -191,6 +194,7 @@ const service = {
 
   delete: async (formSubmissionId, currentUser) => {
     let trx;
+    let result;
     try {
       trx = await FormSubmission.startTransaction();
       await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, {
@@ -198,12 +202,14 @@ const service = {
         updatedBy: currentUser.usernameIdp,
       });
       await trx.commit();
-      const result = await service.read(formSubmissionId);
-      await eventStreamService.onSubmit(SUBMISSION_EVENT_TYPES.DELETED, result.submission, false);
-      return result;
+      result = await service.read(formSubmissionId);
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;
+    }
+    if (result) {
+      await eventStreamService.onSubmit(SUBMISSION_EVENT_TYPES.DELETED, result.submission, false);
+      return result;
     }
   },
 

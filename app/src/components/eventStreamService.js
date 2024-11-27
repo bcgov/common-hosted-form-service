@@ -57,6 +57,8 @@ class EventStreamService {
     this.username = cfg.username;
     this.password = cfg.password;
 
+    this.configured = false;
+
     // stream limits configuration
     try {
       this.maxAge = parseInt(cfg.maxAge);
@@ -77,11 +79,11 @@ class EventStreamService {
     this.jsm = null; // jet stream manager
     this.natsOptions = {
       servers: this.servers.split(','),
-      maxReconnectAttempts: 1,
+      maxReconnectAttempts: 5,
       name: this.streamName,
       reconnectTimeWait: 5000, // wait 5 seconds before retrying...
       waitOnFirstConnect: true,
-      pingInterval: 2000,
+      pingInterval: 500,
       user: this.username,
       pass: this.password,
     };
@@ -131,60 +133,64 @@ class EventStreamService {
 
       this.nc = await connectToNats();
       if (this.connected) {
-        log.info('Connected', { function: 'openConnection' });
+        log.info(`Connected to server: ${this.nc.info.server_name}`, { function: 'openConnection' });
         this.js = this.nc.jetstream();
         this.jsm = await this.js.jetstreamManager();
-        const cfg = {
-          name: this.streamName,
-          subjects: [`${this.publicSubject}.>`, `${this.privateSubject}.>`],
-        };
-        let streamInfo;
-        try {
-          // this will throw an error if stream is not created.
-          streamInfo = await this.jsm.streams.info(cfg.name);
-        } catch (err) {
-          // catch the error and add the stream, it doesn't exist!
-          if (err.message === 'stream not found') {
-            log.info(`Stream: ${cfg.name} not found, creating stream...`, { function: 'openConnection' });
-            Object.assign(
-              cfg,
-              { max_msgs: this.maxMsgs, max_bytes: this.maxBytes, max_msg_size: this.maxMsgSize, num_replicas: this.numReplicas },
-              { max_age: nanos(this.maxAge), duplicate_window: nanos(this.duplicateWindow) }
-            );
-            await this.jsm.streams.add(cfg);
-            log.info(`Stream: ${cfg.name} created.`, { function: 'openConnection' });
+        if (!this.configured) {
+          const cfg = {
+            name: this.streamName,
+            subjects: [`${this.publicSubject}.>`, `${this.privateSubject}.>`],
+          };
+          let streamInfo;
+          try {
+            // this will throw an error if stream is not created.
+            streamInfo = await this.jsm.streams.info(cfg.name);
+          } catch (err) {
+            // catch the error and add the stream, it doesn't exist!
+            if (err.message === 'stream not found') {
+              log.info(`Stream: ${cfg.name} not found, creating stream...`, { function: 'openConnection' });
+              Object.assign(
+                cfg,
+                { max_msgs: this.maxMsgs, max_bytes: this.maxBytes, max_msg_size: this.maxMsgSize, num_replicas: this.numReplicas },
+                { max_age: nanos(this.maxAge), duplicate_window: nanos(this.duplicateWindow) }
+              );
+              await this.jsm.streams.add(cfg);
+              log.info(`Stream: ${cfg.name} created.`, { function: 'openConnection' });
+            }
           }
+          try {
+            streamInfo = await this.jsm.streams.info(cfg.name);
+            const upd = {};
+            if (streamInfo.config.max_msgs !== this.maxMsgs) {
+              upd['max_msgs'] = this.maxMsgs;
+            }
+            if (streamInfo.config.max_bytes !== this.maxBytes) {
+              upd['max_bytes'] = this.maxBytes;
+            }
+            if (streamInfo.config.max_msg_size !== this.maxMsgSize) {
+              upd['max_msg_size'] = this.maxMsgSize;
+            }
+            if (streamInfo.config.num_replicas !== this.numReplicas) {
+              upd['num_replicas'] = this.maxMsgs;
+            }
+            if (streamInfo.config.max_age !== nanos(this.maxAge)) {
+              upd['max_age'] = nanos(this.maxAge);
+            }
+            if (streamInfo.config.duplicate_window !== nanos(this.duplicateWindow)) {
+              upd['duplicate_window'] = nanos(this.duplicateWindow);
+            }
+            if (Object.keys(upd).length) {
+              log.info(`Stream: ${cfg.name} updating configuration...`, { function: 'openConnection' });
+              await this.jsm.streams.update(cfg.name, upd);
+              await new Promise((r) => setTimeout(r, 1000));
+              log.info(`Stream: ${cfg.name} configuration updated.`, { function: 'openConnection' });
+            }
+          } catch (err) {
+            log.error(err.message, { function: 'openConnection' });
+          }
+          this.configured = true;
         }
-        try {
-          streamInfo = await this.jsm.streams.info(cfg.name);
-          const upd = {};
-          if (streamInfo.config.max_msgs !== this.maxMsgs) {
-            upd['max_msgs'] = this.maxMsgs;
-          }
-          if (streamInfo.config.max_bytes !== this.maxBytes) {
-            upd['max_bytes'] = this.maxBytes;
-          }
-          if (streamInfo.config.max_msg_size !== this.maxMsgSize) {
-            upd['max_msg_size'] = this.maxMsgSize;
-          }
-          if (streamInfo.config.num_replicas !== this.numReplicas) {
-            upd['num_replicas'] = this.maxMsgs;
-          }
-          if (streamInfo.config.max_age !== nanos(this.maxAge)) {
-            upd['max_age'] = nanos(this.maxAge);
-          }
-          if (streamInfo.config.duplicate_window !== nanos(this.duplicateWindow)) {
-            upd['duplicate_window'] = nanos(this.duplicateWindow);
-          }
-          if (Object.keys(upd).length) {
-            log.info(`Stream: ${cfg.name} updating configuration...`, { function: 'openConnection' });
-            await this.jsm.streams.update(cfg.name, upd);
-            await new Promise((r) => setTimeout(r, 1000));
-            log.info(`Stream: ${cfg.name} configuration updated.`, { function: 'openConnection' });
-          }
-        } catch (err) {
-          log.error(err.message, { function: 'openConnection' });
-        }
+
         this.nc.closed().then((err) => {
           if (err) {
             log.warn(`the connection closed with an error ${err.message}`, { function: 'connection.closed' });
@@ -278,8 +284,12 @@ class EventStreamService {
               },
             };
             const encodedPayload = this._sizeCheck(privMsg);
-            const ack = await this.js.publish(privateSubj, encodedPayload);
-            log.info(`form ${eventType} event (private) - formId: ${formId}, version: ${formVersion.version}, seq: ${ack.seq}`, { function: 'onPublish' });
+            const ack = await this._publishToStream(privateSubj, encodedPayload);
+            if (ack) {
+              log.info(`form ${eventType} event (private) - formId: ${formId}, version: ${formVersion.version}, seq: ${ack.seq}`, { function: 'onPublish' });
+            } else {
+              log.error(`failed: form ${eventType} event (private) - formId: ${formId}, version: ${formVersion.version}, seq: ${ack.seq}`, { function: 'onPublish' });
+            }
           }
           if (evntStrmCfg.enablePublicStream) {
             const pubMsg = {
@@ -287,8 +297,12 @@ class EventStreamService {
               payload: {},
             };
             const encodedPayload = jsonCodec.encode(pubMsg);
-            const ack = await this.js.publish(publicSubj, encodedPayload);
-            log.info(`form ${eventType} event (public) - formId: ${formId}, version: ${formVersion.version}, seq: ${ack.seq}`, { function: 'onPublish' });
+            const ack = await this._publishToStream(publicSubj, encodedPayload);
+            if (ack) {
+              log.info(`form ${eventType} event (public) - formId: ${formId}, version: ${formVersion.version}, seq: ${ack.seq}`, { function: 'onPublish' });
+            } else {
+              log.error(`failed: form ${eventType} event (public) - formId: ${formId}, version: ${formVersion.version}, seq: ${ack.seq}`, { function: 'onPublish' });
+            }
           }
         } else {
           log.info(`formId '${formId}' has no event stream configuration (or it is not enabled); will not publish events.`);
@@ -348,6 +362,26 @@ class EventStreamService {
     }
   }
 
+  async _publishToStream(subject, payload) {
+    let conn;
+    let ack;
+    try {
+      conn = await natsConnect(this.natsOptions);
+      log.info(`Connected to server: ${conn.info.server_name}`, { function: '_publishToStream' });
+      const js = conn.jetstream();
+      ack = await js.publish(subject, payload);
+    } catch (e) {
+      log.error(`${e.message}, try again.`);
+    } finally {
+      try {
+        await conn.close();
+      } catch (e) {
+        log.error(e.message, { function: '_publishToStream' });
+      }
+    }
+    return ack;
+  }
+
   async _onSubmitEventStream(eventType, meta, submission, formVersion) {
     try {
       await this.openConnection();
@@ -369,10 +403,19 @@ class EventStreamService {
               },
             };
             const encodedPayload = this._sizeCheck(privMsg);
-            const ack = await this.js.publish(privateSubj, encodedPayload);
-            log.info(`submission ${eventType} event (private) - formId: ${formVersion.formId}, version: ${formVersion.version}, submissionId: ${submission.id}, seq: ${ack.seq}`, {
-              function: 'onSubmit',
-            });
+            const ack = await this._publishToStream(privateSubj, encodedPayload);
+            if (ack) {
+              log.info(
+                `submission ${eventType} event (private) - formId: ${formVersion.formId}, version: ${formVersion.version}, submissionId: ${submission.id}, seq: ${ack.seq}`,
+                {
+                  function: 'onSubmit',
+                }
+              );
+            } else {
+              log.error(`failed: submission ${eventType} event (private) - formId: ${formVersion.formId}, version: ${formVersion.version}, submissionId: ${submission.id}`, {
+                function: 'onSubmit',
+              });
+            }
           }
           if (evntStrmCfg.enablePublicStream) {
             const pubMsg = {
@@ -380,10 +423,19 @@ class EventStreamService {
               payload: {},
             };
             const encodedPayload = jsonCodec.encode(pubMsg);
-            const ack = await this.js.publish(publicSubj, encodedPayload);
-            log.info(`submission ${eventType} event (public) - formId: ${formVersion.formId}, version: ${formVersion.version}, submissionId: ${submission.id}, seq: ${ack.seq}`, {
-              function: 'onSubmit',
-            });
+            const ack = await this._publishToStream(publicSubj, encodedPayload);
+            if (ack) {
+              log.info(`submission ${eventType} event (public) - formId: ${formVersion.formId}, version: ${formVersion.version}, submissionId: ${submission.id}, seq: ${ack.seq}`, {
+                function: 'onSubmit',
+              });
+            } else {
+              log.error(
+                `failed: submission ${eventType} event (public) - formId: ${formVersion.formId}, version: ${formVersion.version}, submissionId: ${submission.id}, seq: ${ack.seq}`,
+                {
+                  function: 'onSubmit',
+                }
+              );
+            }
           }
         } else {
           log.info(`formId '${formVersion.formId}' has no event stream configuration (or it is not enabled); will not publish events.`);

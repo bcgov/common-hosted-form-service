@@ -73,8 +73,7 @@ describe('eventStreamService', () => {
     service.openConnection = jest.fn().mockResolvedValueOnce(true);
     service.nc = jest.fn().mockReturnThis();
     service.nc.info = jest.fn().mockReturnThis();
-    service.js = jest.fn().mockReturnThis();
-    service.js.publish = jest.fn().mockResolvedValueOnce({ seq: 1 });
+    service._publishToStream = jest.fn().mockResolvedValueOnce({ seq: 1 });
     // mock out model queries
     service._getForm = jest.fn().mockResolvedValueOnce({ id: '123' });
     service._getFormVersion = jest.fn().mockResolvedValueOnce({ id: '456', formId: '123', version: '1' });
@@ -96,8 +95,8 @@ describe('eventStreamService', () => {
     service._onPublishWebhook = jest.fn().mockResolvedValueOnce({});
 
     await service.onPublish('123', '456', true);
-    expect(service.js.publish).toBeCalledTimes(1); // called once for private, no public stream enabled
-    expect(service.js.publish).toBeCalledWith('PRIVATE.forms.schema.published.123', expect.anything()); // called once for private, no public stream enabled
+    expect(service._publishToStream).toBeCalledTimes(1); // called once for private, no public stream enabled
+    expect(service._publishToStream).toBeCalledWith('PRIVATE.forms.schema.published.123', expect.anything()); // called once for private, no public stream enabled
   });
 
   it('onPublish should not emit when config not enabled', async () => {
@@ -105,8 +104,7 @@ describe('eventStreamService', () => {
     service.openConnection = jest.fn().mockResolvedValueOnce(true);
     service.nc = jest.fn().mockReturnThis();
     service.nc.info = jest.fn().mockReturnThis();
-    service.js = jest.fn().mockReturnThis();
-    service.js.publish = jest.fn().mockResolvedValueOnce({ seq: 1 });
+    service._publishToStream = jest.fn().mockResolvedValueOnce({ seq: 1 });
     // mock out model queries
     service._getForm = jest.fn().mockResolvedValueOnce({ id: '123' });
     service._getFormVersion = jest.fn().mockResolvedValueOnce({ id: '456', formId: '123', version: '1' });
@@ -128,7 +126,7 @@ describe('eventStreamService', () => {
     service._onPublishWebhook = jest.fn().mockResolvedValueOnce({});
 
     await service.onPublish('123', '456', true);
-    expect(service.js.publish).toBeCalledTimes(0); // config not enabled, js.publish not called
+    expect(service._publishToStream).toBeCalledTimes(0); // config not enabled, js.publish not called
   });
 
   it('onPublish should emit published public', async () => {
@@ -136,8 +134,7 @@ describe('eventStreamService', () => {
     service.openConnection = jest.fn().mockResolvedValueOnce(true);
     service.nc = jest.fn().mockReturnThis();
     service.nc.info = jest.fn().mockReturnThis();
-    service.js = jest.fn().mockReturnThis();
-    service.js.publish = jest.fn().mockResolvedValueOnce({ seq: 1 });
+    service._publishToStream = jest.fn().mockResolvedValueOnce({ seq: 1 });
     // mock out model queries
     service._getForm = jest.fn().mockResolvedValueOnce({ id: '123' });
     service._getFormVersion = jest.fn().mockResolvedValueOnce({ id: '456', formId: '123', version: '1' });
@@ -151,8 +148,8 @@ describe('eventStreamService', () => {
     await service.onPublish('123', '456', true);
     service._onPublishWebhook = jest.fn().mockResolvedValueOnce({});
 
-    expect(service.js.publish).toBeCalledTimes(1); // called once for private, no public stream enabled
-    expect(service.js.publish).toBeCalledWith('PUBLIC.forms.schema.published.123', expect.anything()); // called once for private, no public stream enabled
+    expect(service._publishToStream).toBeCalledTimes(1); // called once for private, no public stream enabled
+    expect(service._publishToStream).toBeCalledWith('PUBLIC.forms.schema.published.123', expect.anything()); // called once for private, no public stream enabled
   });
 
   it('onPublish should emit unpublished private', async () => {
@@ -160,8 +157,7 @@ describe('eventStreamService', () => {
     service.openConnection = jest.fn().mockResolvedValueOnce(true);
     service.nc = jest.fn().mockReturnThis();
     service.nc.info = jest.fn().mockReturnThis();
-    service.js = jest.fn().mockReturnThis();
-    service.js.publish = jest.fn().mockResolvedValueOnce({ seq: 1 });
+    service._publishToStream = jest.fn().mockResolvedValueOnce({ seq: 1 });
     // mock out model queries
     service._getForm = jest.fn().mockResolvedValueOnce({ id: '123' });
     service._getFormVersion = jest.fn().mockResolvedValueOnce({ id: '456', formId: '123', version: '1' });
@@ -183,8 +179,8 @@ describe('eventStreamService', () => {
     await service.onPublish('123', '456', false);
     service._onPublishWebhook = jest.fn().mockResolvedValueOnce({});
 
-    expect(service.js.publish).toBeCalledTimes(1); // called once for private, no public stream enabled
-    expect(service.js.publish).toBeCalledWith('PRIVATE.forms.schema.unpublished.123', expect.anything()); // called once for private, no public stream enabled
+    expect(service._publishToStream).toBeCalledTimes(1); // called once for private, no public stream enabled
+    expect(service._publishToStream).toBeCalledWith('PRIVATE.forms.schema.unpublished.123', expect.anything()); // called once for private, no public stream enabled
   });
 
   it('onPublish should emit unpublished public', async () => {
@@ -192,8 +188,7 @@ describe('eventStreamService', () => {
     service.openConnection = jest.fn().mockResolvedValueOnce(true);
     service.nc = jest.fn().mockReturnThis();
     service.nc.info = jest.fn().mockReturnThis();
-    service.js = jest.fn().mockReturnThis();
-    service.js.publish = jest.fn().mockResolvedValueOnce({ seq: 1 });
+    service._publishToStream = jest.fn().mockResolvedValueOnce({ seq: 1 });
     // mock out model queries
     service._getForm = jest.fn().mockResolvedValueOnce({ id: '123' });
     service._getFormVersion = jest.fn().mockResolvedValueOnce({ id: '456', formId: '123', version: '1' });
@@ -207,8 +202,8 @@ describe('eventStreamService', () => {
     service._onPublishWebhook = jest.fn().mockResolvedValueOnce({});
 
     await service.onPublish('123', '456', false);
-    expect(service.js.publish).toBeCalledTimes(1); // called once for private, no public stream enabled
-    expect(service.js.publish).toBeCalledWith('PUBLIC.forms.schema.unpublished.123', expect.anything()); // called once for private, no public stream enabled
+    expect(service._publishToStream).toBeCalledTimes(1); // called once for private, no public stream enabled
+    expect(service._publishToStream).toBeCalledWith('PUBLIC.forms.schema.unpublished.123', expect.anything()); // called once for private, no public stream enabled
   });
 
   it('onPublish should emit private and public', async () => {
@@ -216,8 +211,7 @@ describe('eventStreamService', () => {
     service.openConnection = jest.fn().mockResolvedValueOnce(true);
     service.nc = jest.fn().mockReturnThis();
     service.nc.info = jest.fn().mockReturnThis();
-    service.js = jest.fn().mockReturnThis();
-    service.js.publish = jest.fn().mockResolvedValueOnce({ seq: 1 });
+    service._publishToStream = jest.fn().mockResolvedValueOnce({ seq: 1 });
     // mock out model queries
     service._getForm = jest.fn().mockResolvedValueOnce({ id: '123' });
     service._getFormVersion = jest.fn().mockResolvedValueOnce({ id: '456', formId: '123', version: '1' });
@@ -239,7 +233,7 @@ describe('eventStreamService', () => {
     service._onPublishWebhook = jest.fn().mockResolvedValueOnce({});
 
     await service.onPublish('123', '456', true);
-    expect(service.js.publish).toBeCalledTimes(2);
+    expect(service._publishToStream).toBeCalledTimes(2);
   });
 
   it('onSubmit should emit private', async () => {
@@ -247,8 +241,7 @@ describe('eventStreamService', () => {
     service.openConnection = jest.fn().mockResolvedValueOnce(true);
     service.nc = jest.fn().mockReturnThis();
     service.nc.info = jest.fn().mockReturnThis();
-    service.js = jest.fn().mockReturnThis();
-    service.js.publish = jest.fn().mockResolvedValueOnce({ seq: 1 });
+    service._publishToStream = jest.fn().mockResolvedValueOnce({ seq: 1 });
     // mock out model queries
     service._getForm = jest.fn().mockResolvedValueOnce({ id: '123' });
     service._getFormVersion = jest.fn().mockResolvedValueOnce({ id: '456', formId: '123', version: '1' });
@@ -270,8 +263,8 @@ describe('eventStreamService', () => {
     service._onSubmitWebhook = jest.fn().mockResolvedValueOnce({});
 
     await service.onSubmit('created', { id: '345', formId: '123', formVersionId: '456' });
-    expect(service.js.publish).toBeCalledTimes(1); // called once for private, no public stream enabled
-    expect(service.js.publish).toBeCalledWith('PRIVATE.forms.submission.created.123', expect.anything()); // called once for private, no public stream enabled
+    expect(service._publishToStream).toBeCalledTimes(1); // called once for private, no public stream enabled
+    expect(service._publishToStream).toBeCalledWith('PRIVATE.forms.submission.created.123', expect.anything()); // called once for private, no public stream enabled
   });
 
   it('onSubmit should not emit when config not enabled', async () => {
@@ -279,8 +272,7 @@ describe('eventStreamService', () => {
     service.openConnection = jest.fn().mockResolvedValueOnce(true);
     service.nc = jest.fn().mockReturnThis();
     service.nc.info = jest.fn().mockReturnThis();
-    service.js = jest.fn().mockReturnThis();
-    service.js.publish = jest.fn().mockResolvedValueOnce({ seq: 1 });
+    service._publishToStream = jest.fn().mockResolvedValueOnce({ seq: 1 });
     // mock out model queries
     service._getForm = jest.fn().mockResolvedValueOnce({ id: '123' });
     service._getFormVersion = jest.fn().mockResolvedValueOnce({ id: '456', formId: '123', version: '1' });
@@ -302,7 +294,7 @@ describe('eventStreamService', () => {
     service._onSubmitWebhook = jest.fn().mockResolvedValueOnce({});
 
     await service.onSubmit('created', { id: '345', formId: '123', formVersionId: '456' });
-    expect(service.js.publish).toBeCalledTimes(0); // config not enabled, no js.publish
+    expect(service._publishToStream).toBeCalledTimes(0); // config not enabled, no js.publish
   });
 
   it('onSubmit should emit public', async () => {
@@ -310,8 +302,7 @@ describe('eventStreamService', () => {
     service.openConnection = jest.fn().mockResolvedValueOnce(true);
     service.nc = jest.fn().mockReturnThis();
     service.nc.info = jest.fn().mockReturnThis();
-    service.js = jest.fn().mockReturnThis();
-    service.js.publish = jest.fn().mockResolvedValueOnce({ seq: 1 });
+    service._publishToStream = jest.fn().mockResolvedValueOnce({ seq: 1 });
     // mock out model queries
     service._getForm = jest.fn().mockResolvedValueOnce({ id: '123' });
     service._getFormVersion = jest.fn().mockResolvedValueOnce({ id: '456', formId: '123', version: '1' });
@@ -325,8 +316,8 @@ describe('eventStreamService', () => {
     service._onSubmitWebhook = jest.fn().mockResolvedValueOnce({});
 
     await service.onSubmit('created', { id: '345', formId: '123', formVersionId: '456' });
-    expect(service.js.publish).toBeCalledTimes(1); // called once for private, no public stream enabled
-    expect(service.js.publish).toBeCalledWith('PUBLIC.forms.submission.created.123', expect.anything()); // called once for private, no public stream enabled
+    expect(service._publishToStream).toBeCalledTimes(1); // called once for private, no public stream enabled
+    expect(service._publishToStream).toBeCalledWith('PUBLIC.forms.submission.created.123', expect.anything()); // called once for private, no public stream enabled
   });
 
   it('onSubmit should emit private and public', async () => {
@@ -334,8 +325,7 @@ describe('eventStreamService', () => {
     service.openConnection = jest.fn().mockResolvedValueOnce(true);
     service.nc = jest.fn().mockReturnThis();
     service.nc.info = jest.fn().mockReturnThis();
-    service.js = jest.fn().mockReturnThis();
-    service.js.publish = jest.fn().mockResolvedValueOnce({ seq: 1 });
+    service._publishToStream = jest.fn().mockResolvedValueOnce({ seq: 1 });
     // mock out model queries
     service._getForm = jest.fn().mockResolvedValueOnce({ id: '123' });
     service._getFormVersion = jest.fn().mockResolvedValueOnce({ id: '456', formId: '123', version: '1' });
@@ -357,7 +347,7 @@ describe('eventStreamService', () => {
     service._onSubmitWebhook = jest.fn().mockResolvedValueOnce({});
 
     await service.onSubmit('created', { id: '345', formId: '123', formVersionId: '456' });
-    expect(service.js.publish).toBeCalledTimes(2);
+    expect(service._publishToStream).toBeCalledTimes(2);
   });
 
   it('onPublish should not throw error', async () => {
@@ -365,8 +355,7 @@ describe('eventStreamService', () => {
     service.openConnection = jest.fn().mockResolvedValueOnce(true);
     service.nc = jest.fn().mockReturnThis();
     service.nc.info = jest.fn().mockReturnThis();
-    service.js = jest.fn().mockReturnThis();
-    service.js.publish = jest.fn().mockResolvedValueOnce({ seq: 1 });
+    service._publishToStream = jest.fn().mockResolvedValueOnce({ seq: 1 });
     // mock out model queries
     service._getForm = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
     service._getFormVersion = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
@@ -374,7 +363,7 @@ describe('eventStreamService', () => {
     service._onPublishWebhook = jest.fn().mockResolvedValueOnce({});
 
     await service.onPublish('123', '456', true);
-    expect(service.js.publish).toBeCalledTimes(0);
+    expect(service._publishToStream).toBeCalledTimes(0);
   });
 
   it('onSubmit should not throw error', async () => {
@@ -382,15 +371,14 @@ describe('eventStreamService', () => {
     service.openConnection = jest.fn().mockResolvedValueOnce(true);
     service.nc = jest.fn().mockReturnThis();
     service.nc.info = jest.fn().mockReturnThis();
-    service.js = jest.fn().mockReturnThis();
-    service.js.publish = jest.fn().mockResolvedValueOnce({ seq: 1 });
+    service._publishToStream = jest.fn().mockResolvedValueOnce({ seq: 1 });
     // mock out model queries
     service._getForm = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
     service._getFormVersion = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
     service._getEventStreamConfig = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
     service._onSubmitWebhook = jest.fn().mockRejectedValueOnce();
     await service.onSubmit('created', { id: '345', formId: '123', formVersionId: '456' });
-    expect(service.js.publish).toBeCalledTimes(0);
+    expect(service._publishToStream).toBeCalledTimes(0);
   });
 
   it('_sizeCheck should handle large message', async () => {

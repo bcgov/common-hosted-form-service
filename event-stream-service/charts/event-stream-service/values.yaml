@@ -2,27 +2,21 @@ ess:
   nats:
     secret:
       name: ess-nats-auth
-  nginx:
+    certSecret: tls-stream-secret
     route:
-      name: ess-nginx-route
-      enabled: true
+      name: ess-route
+      enabled: false
       ingressPrefix: stream-dev
       ingressSuffix: .apps.silver.devops.gov.bc.ca
       path: ""
-      serviceName: ess-nginx
-      targetPort: http
+      serviceName: ess-nats
+      targetPort: websocket
       timeout: 2m
       tls:
         enabled: true
         insecureEdgeTerminationPolicy: None
         termination: edge
       wildcardPolicy: None
-    hpa:
-      name: ess-nginx-hpa
-      enabled: true
-      deploymentName: ess-nginx
-      minReplicas: 2
-      maxReplicas: 5
 
 nats:
   fullnameOverride: ess-nats

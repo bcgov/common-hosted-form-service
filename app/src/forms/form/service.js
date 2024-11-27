@@ -466,9 +466,10 @@ const service = {
 
   publishVersion: async (formId, formVersionId, params = {}, currentUser) => {
     let trx;
+    let result;
+    // allow an unpublish if they pass in unpublish parameter with an affirmative
+    const publish = params.unpublish ? falsey(params.unpublish) : true;
     try {
-      // allow an unpublish if they pass in unpublish parameter with an affirmative
-      const publish = params.unpublish ? falsey(params.unpublish) : true;
       const form = await service.readForm(formId);
       trx = await FormVersion.startTransaction();
 
@@ -489,12 +490,14 @@ const service = {
       eventService.publishFormEvent(formId, formVersionId, publish);
 
       // return the published form/version...
-      const result = await service.readPublishedForm(formId);
-      await eventStreamService.onPublish(formId, formVersionId, publish);
-      return result;
+      result = await service.readPublishedForm(formId);
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;
+    }
+    if (result) {
+      await eventStreamService.onPublish(formId, formVersionId, publish);
+      return result;
     }
   },
 
@@ -534,6 +537,7 @@ const service = {
   },
   createSubmission: async (formVersionId, data, currentUser) => {
     let trx;
+    let result;
     try {
       const formVersion = await service.readVersion(formVersionId);
       const { identityProviders } = await service.readForm(formVersion.formId);
@@ -602,12 +606,14 @@ const service = {
       }
 
       await trx.commit();
-      const result = await service.readSubmission(obj.id);
-      eventStreamService.onSubmit(SUBMISSION_EVENT_TYPES.CREATED, result, data.draft);
-      return result;
+      result = await service.readSubmission(obj.id);
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;
+    }
+    if (result) {
+      await eventStreamService.onSubmit(SUBMISSION_EVENT_TYPES.CREATED, result, data.draft);
+      return result;
     }
   },
   createMultiSubmission: async (formVersionId, data, currentUser) => {
@@ -748,12 +754,14 @@ const service = {
   },
   publishDraft: async (formId, formVersionDraftId, currentUser) => {
     let trx;
+    let result;
+    let version;
     try {
       const form = await service.readForm(formId);
       const draft = await service.readDraft(formVersionDraftId);
       trx = await FormVersionDraft.startTransaction();
 
-      const version = {
+      version = {
         id: uuidv4(),
         formId: form.id,
         version: form.versions.length ? form.versions[0].version + 1 : 1,
@@ -775,13 +783,15 @@ const service = {
 
       eventService.publishFormEvent(formId, version.id, version.published);
 
-      await eventStreamService.onPublish(formId, version.id, version.published);
-
       // return the published version...
-      return await service.readVersion(version.id);
+      result = await service.readVersion(version.id);
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;
+    }
+    if (result) {
+      await eventStreamService.onPublish(formId, version.id, version.published);
+      return result;
     }
   },
   getStatusCodes: async (formId) => {
