@@ -13,6 +13,7 @@ import ManageVersions from '~/components/forms/manage/ManageVersions.vue';
 import { formService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
+import { useAppStore } from '~/store/app';
 
 vi.mock('vue-router', () => ({
   useRouter: vi.fn(() => ({
@@ -32,10 +33,12 @@ describe('ManageVersions.vue', () => {
   setActivePinia(pinia);
   const formStore = useFormStore(pinia);
   const notificationStore = useNotificationStore(pinia);
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     formStore.$reset();
     notificationStore.$reset();
+    appStore.$reset();
   });
 
   it('renders', async () => {

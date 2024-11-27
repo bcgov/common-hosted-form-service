@@ -12,8 +12,11 @@ import ExportSubmissions from '~/components/forms/ExportSubmissions.vue';
 import { formService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+
+import { useAppStore } from '~/store/app';
 import { useNotificationStore } from '~/store/notification';
 import { ExportLargeData } from '~/utils/constants';
+
 
 describe('ExportSubmissions.vue', () => {
   const formId = '123-456';
@@ -28,6 +31,8 @@ describe('ExportSubmissions.vue', () => {
   setActivePinia(pinia);
   const authStore = useAuthStore(pinia);
   const formStore = useFormStore(pinia);
+
+  const appStore = useAppStore(pinia);
   const notificationStore = useNotificationStore(pinia);
   const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
   addNotificationSpy.mockImplementation(() => {});
@@ -35,7 +40,7 @@ describe('ExportSubmissions.vue', () => {
   beforeEach(() => {
     authStore.$reset();
     formStore.$reset();
-
+    appStore.$reset();
     addNotificationSpy.mockReset();
   });
 

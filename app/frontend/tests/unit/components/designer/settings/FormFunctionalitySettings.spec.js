@@ -9,6 +9,7 @@ import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 import FormFunctionalitySettings from '~/components/designer/settings/FormFunctionalitySettings.vue';
 import { FormRoleCodes, AppPermissions } from '~/utils/constants';
+import { useAppStore } from '~/store/app';
 
 const IDIR = {
   active: true,
@@ -109,11 +110,13 @@ describe('FormFunctionalitySettings.vue', () => {
   const authStore = useAuthStore(pinia);
   const formStore = useFormStore(pinia);
   const idpStore = useIdpStore(pinia);
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     authStore.$reset();
     formStore.$reset();
     idpStore.$reset();
+    appStore.$reset();
 
     authStore.identityProvider = ref({
       code: 'idir',

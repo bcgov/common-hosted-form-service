@@ -5,14 +5,17 @@ import { beforeEach, vi } from 'vitest';
 
 import Subscription from '~/components/forms/manage/Subscription.vue';
 import { useFormStore } from '~/store/form';
+import { useAppStore } from '~/store/app';
 
 describe('Subscription.vue', () => {
   const pinia = createTestingPinia();
   setActivePinia(pinia);
   const formStore = useFormStore(pinia);
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     formStore.$reset();
+    appStore.$reset();
   });
 
   it('showHideKey should toggle the value', async () => {

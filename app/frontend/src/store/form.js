@@ -11,6 +11,7 @@ import {
 import { useNotificationStore } from '~/store/notification';
 import { IdentityMode, NotificationTypes } from '~/utils/constants';
 import { generateIdps, parseIdps } from '~/utils/transformUtils';
+import { encryptionKeyService, eventStreamConfigService } from '~/services';
 
 const genInitialSchedule = () => ({
   enabled: null,
@@ -59,6 +60,21 @@ const genInitialSubscribeDetails = () => ({
   endpointToken: null,
   key: '',
 });
+const genInitialEncryptionKey = () => ({
+  id: null,
+  name: null,
+  algorithm: null,
+  key: null,
+});
+const genInitialEventStreamConfig = () => ({
+  id: null,
+  formId: null,
+  enabled: false,
+  enablePublicStream: false,
+  enablePrivateStream: false,
+  encryptionKeyId: null,
+  encryptionKey: genInitialEncryptionKey(),
+});
 const genInitialFormMetadata = () => ({
   id: null,
   formId: null,
@@ -90,6 +106,7 @@ const genInitialForm = () => ({
   useCase: null,
   wideFormLayout: false,
   formMetadata: genInitialFormMetadata(),
+  eventStreamConfig: genInitialEventStreamConfig(),
 });
 
 export const useFormStore = defineStore('form', {
@@ -317,6 +334,29 @@ export const useFormStore = defineStore('form', {
         });
       }
     },
+    async fetchEventStreamConfig(formId) {
+      try {
+        // populate the event service config object...
+        let resp = await eventStreamConfigService.getEventStreamConfig(formId);
+        const evntSrvCfg = resp.data;
+        let encKey = genInitialEncryptionKey();
+        if (evntSrvCfg.encryptionKeyId) {
+          resp = await encryptionKeyService.getEncryptionKey(
+            formId,
+            evntSrvCfg.encryptionKeyId
+          );
+          encKey = resp.data;
+        }
+        return {
+          ...evntSrvCfg,
+          encryptionKey: {
+            ...encKey,
+          },
+        };
+      } catch {
+        return genInitialEventStreamConfig();
+      }
+    },
     async fetchForm(formId) {
       try {
         this.apiKey = null;
@@ -336,6 +376,9 @@ export const useFormStore = defineStore('form', {
         if (!data.formMetadata) {
           data.formMetadata = genInitialFormMetadata();
         }
+        const evntSrvCfg = await this.fetchEventStreamConfig(formId);
+        data.eventStreamConfig = evntSrvCfg;
+
         this.form = data;
       } catch (error) {
         const notificationStore = useNotificationStore();
@@ -424,7 +467,9 @@ export const useFormStore = defineStore('form', {
         const subscribe = this.form.subscribe.enabled
           ? this.form.subscribe
           : {};
+
         const formMetadata = this.form.formMetadata;
+        const eventStreamConfig = this.form.eventStreamConfig;
         await formService.updateForm(this.form.id, {
           name: this.form.name,
           description: this.form.description,
@@ -453,6 +498,7 @@ export const useFormStore = defineStore('form', {
             ? this.form.enableCopyExistingSubmission
             : false,
           formMetadata: formMetadata,
+          eventStreamConfig: eventStreamConfig,
         });
 
         // update user labels with any new added labels
