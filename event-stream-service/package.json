@@ -1,0 +1,17 @@
+{
+  "name": "event-stream-service-demos",
+  "version": "0.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "scripts": {},
+  "dependencies": {
+    "axios": "^1.7.7",
+    "command-line-args": "^6.0.1",
+    "cryptr": "^6.3.0",
+    "falsey": "^1.0.0",
+    "nats": "^2.28.0",
+    "nats.ws": "^1.29.2",
+    "uuid": "^10.0.0",
+    "websocket": "^1.0.35"
+  }
+}

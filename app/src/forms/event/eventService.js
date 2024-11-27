@@ -48,7 +48,7 @@ const service = {
   postSubscriptionEvent: async (subscribe, formVersion, submissionId, subscriptionEvent) => {
     try {
       // Check if there are endpoints subscribed for form submission event
-      if (subscribe && subscribe.endpointUrl) {
+      if (subscribe && subscribe.endpointUrl && !subscribe.eventStreamNotifications) {
         const axiosOptions = { timeout: 10000 };
         const axiosInstance = axios.create(axiosOptions);
         const jsonData = { formId: formVersion.formId, formVersion: formVersion.id, subscriptionEvent: subscriptionEvent };

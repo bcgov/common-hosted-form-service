@@ -1,0 +1,5 @@
+You have deployed the following:
+Release: {{ include "common.names.fullname" . }}
+Namespace: {{ include "common.names.namespace" . | quote}}
+
+
