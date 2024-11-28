@@ -1,10 +1,18 @@
+const cors = require('cors');
 const routes = require('express').Router();
+const { Development } = require('../common/constants');
 
 const { currentUser } = require('../auth/middleware/userAccess');
 const controller = require('./controller');
 
+// need to allow cors for OPTIONS call (localhost only)
+// formio component will call OPTIONS pre-flight
+routes.options('/external', cors({ origin: Development.LOCALHOST_ORIGIN }));
+
 // called with encrypted headers, no current user!!!
-routes.get('/external', async (req, res, next) => {
+routes.get('/external', cors({ origin: Development.LOCALHOST_ORIGIN }), async (req, res, next) => {
+  // eslint-disable-next-line no-console
+  console.log(req);
   await controller.callExternalApi(req, res, next);
 });
 
