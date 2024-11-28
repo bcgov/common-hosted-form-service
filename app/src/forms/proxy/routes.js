@@ -11,8 +11,6 @@ routes.options('/external', cors({ origin: Development.LOCALHOST_ORIGIN }));
 
 // called with encrypted headers, no current user!!!
 routes.get('/external', cors({ origin: Development.LOCALHOST_ORIGIN }), async (req, res, next) => {
-  // eslint-disable-next-line no-console
-  console.log(req);
   await controller.callExternalApi(req, res, next);
 });
 
