@@ -36,7 +36,15 @@ CHEFS API and Frontend are running as node applications on the devcontainer - ag
 
 ### Configuring CHEFS locally
 
-When the devcontainer is built, it copies `.devcontainer/chefs_local/local.json.sample` to `.devcontainer/chefs_local/local.json`. The copy is not checked in and allow the developer to make changes and tweaks without impacting other developers or accidentially committing passwords.
+When the devcontainer is built, it copies `.devcontainer/chefs_local/local.json.sample` and `.devcontainer/chefs_local/realm-export.json.sample` to `.devcontainer/chefs_local/local.json` and `.devcontainer/chefs_local/realm-export.json` respectively. These copies are not checked in and allow the developer to make changes and tweaks without impacting other developers or accidentially committing passwords.
+
+### Authorization Prerequisites
+
+1.  An IDIR account is required to access CHEFS.
+2.  Request an SSO Integration from the Common Hosted Single Sign-on (CSS) page in order to obtain a resource and secret that will be used for authentication when building CHEFS. View the [detailed documentation](https://bcdevex.atlassian.net/wiki/spaces/CCP/pages/961675282) about requesting the Pathfinder SSO integration.
+3.  Open realm-export.json located at build/docker/imports/keycloak and search for `XXXXXXXXXXXX`. This value must match the `clientSecret` value in `local.json` so that the CHEFS API can connect to your Keycloak instance. By default, these are set to be equal and don’t need to be altered.
+4.  Navigate to the CSS page, login with your IDIR, and download the ‘Development’ Installation JSON from your SSO Integration.
+5.  Back in the `realm-export.json` file, search for all instances of `YYYYYYYYYYYY` and replace it with the `resource` you obtained from the downloaded JSON file. Search for all instances of `ZZZZZZZZZZZZ` and replace it with the `secret`.
 
 ### Run/Debug
 
@@ -67,11 +75,9 @@ _Notes_
 If you are developing the formio components, you should build and redeploy them before running your local debug instances of CHEFS. Use tasks `Components build` and `Components Deploy`.
 
 ## KNEX - Database tools
-
 [knex](https://knexjs.org) is installed globally and should be run from the `/app` directory where the knex configuration is located. Use knex to stub out migrations or to rollback migrations as you are developing.
 
 ### create a migration file
-
 This will create a stub file with a timestamp. You will populate the up and down methods to add/update/delete database objects.
 
 ```
@@ -81,11 +87,9 @@ knex migrate:make my_new_migration_script
 ```
 
 ### rollback previous migration
-
-When developing your migrations, you may find it useful to run the migration and roll it back if it isn't exactly what you expect to happen.
+When developing your migrations, you may find it useful to run the migration and roll it back if it isn't exactly what you expect to happen. 
 
 #### run the migration(s)
-
 ```
 cd app
 knex migrate:latest
@@ -93,7 +97,6 @@ knex migrate:latest
 ```
 
 #### rollback the migration(s)
-
 ```
 cd app
 knex migrate:rollback
