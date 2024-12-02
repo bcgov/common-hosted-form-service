@@ -1,0 +1,17 @@
+ess:
+  nats:
+    route:
+      enabled: true
+      ingressPrefix: stream-test
+      ingressSuffix: .apps.silver.devops.gov.bc.ca
+
+nats:
+  container:
+    merge:
+      resources:
+        limits:
+          cpu: 20m
+          memory: 256Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi

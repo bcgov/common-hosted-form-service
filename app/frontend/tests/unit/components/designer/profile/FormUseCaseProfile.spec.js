@@ -5,14 +5,17 @@ import { FormProfileValues } from '~/utils/constants';
 import { createTestingPinia } from '@pinia/testing';
 import { setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
+import { useAppStore } from '~/store/app';
 
 describe('FormUseCaseProfile.vue', () => {
   const pinia = createTestingPinia();
   setActivePinia(pinia);
   const formStore = useFormStore(pinia);
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     formStore.$reset();
+    appStore.$reset();
   });
 
   it('renders properly', () => {
@@ -36,7 +39,6 @@ describe('FormUseCaseProfile.vue', () => {
     const select = wrapper.findComponent('[data-test="case-select"]');
 
     const items = select.componentVM.items;
-    console.log(items);
     expect(items).toEqual(FormProfileValues.USE_CASE);
   });
 });

@@ -209,14 +209,14 @@ describe("Form Designer", () => {
     cy.get('input[type=file]').should('not.to.be.null');
     fileUploadInputField.attachFile('add1.png');
     cy.waitForLoad();
-    //cy.get('label').contains('Upload template file').click({multiple:true,force:true});
-    //cy.get('.v-messages__message').contains('The template must use one of the following extentions: .txt, .docx, .html, .odt, .pptx, .xlsx');
+    cy.get('label').contains('Upload template file').click({multiple:true,force:true});
+    cy.get('.v-messages__message').contains('The template must use one of the following extentions: .txt, .docx, .html, .odt, .pptx, .xlsx');
     cy.get('#file-input-submit').should('not.be.enabled');
     //
     cy.waitForLoad();
     //Upload print template
-    cy.get('[tabindex="-1"] > .v-btn__content').click();
     cy.get('.v-slide-group__content > [tabindex="-1"]').click();
+    cy.get('[tabindex="-1"] > .v-btn__content').click();
     cy.waitForLoad();
     cy.get('.mdi-close-circle').click();
     cy.get('input[type=file]').attachFile('test.docx');
