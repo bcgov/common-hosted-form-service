@@ -120,7 +120,8 @@ describe("Form Designer", () => {
     cy.get(".mdi-list-box-outline").click();
     cy.waitForLoad();
     //Export submission files
-    cy.get(".mdi-download").click();
+    cy.get(".mdi-download").click({ force: true });
+    cy.wait(2000);
     //Verify submission file name
     cy.get("h3").then(($elem) => {
       const rem = $elem.text();

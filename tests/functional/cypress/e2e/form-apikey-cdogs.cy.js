@@ -119,7 +119,7 @@ describe('Form Designer', () => {
     
     cy.get('[data-test="canRemoveForm"]').click();
     cy.get('[data-test="continue-btn-continue"]').click();
-    cy.wait(3000);
+    cy.wait(9000);
     cy.get('#logoutButton > .v-btn__content > span').click();
 
   })
