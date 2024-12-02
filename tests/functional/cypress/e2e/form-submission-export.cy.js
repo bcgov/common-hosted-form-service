@@ -120,16 +120,18 @@ describe("Form Designer", () => {
     cy.get(".mdi-list-box-outline").click();
     cy.waitForLoad();
     //Export submission files
-    cy.get(".mdi-download").click({ force: true });
-    cy.wait(2000);
+    
     //Verify submission file name
     cy.get("h3").then(($elem) => {
       const rem = $elem.text();
       cy.log(rem);
       const remname = rem + "_submissions.json";
       cy.wait(2000);
+      cy.get(".mdi-download").click({ force: true });
+      cy.wait(2000);
       cy.get(".ml-1").contains(remname);
     });
+    
     cy.get(':nth-child(2) > .v-col > .v-input > .v-input__control > .v-selection-control-group > :nth-child(2) > .v-label > .radioboxLabelStyle').click();
     cy.get('.v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').contains('1');
     cy.contains('form.submissionId').should('be.visible');
