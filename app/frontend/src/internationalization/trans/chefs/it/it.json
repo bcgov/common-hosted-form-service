@@ -70,7 +70,9 @@
     "update": "Aggiornamento",
     "cancel": "Annulla",
     "eventSubscription": "Abbonamento all'evento",
-    "cdogsTemplate": "Modello CDOGS"
+    "cdogsTemplate": "Modello CDOGS",
+    "externalAPIs": "API esterne",
+    "eventStreamConfig": "Configurazione del flusso di eventi"
   },
   "documentTemplate": {
     "uploadTemplate": "Carica template CDOGS",
@@ -172,7 +174,26 @@
     "wideFormLayout": "Layout di modulo ampio",
     "formMetadataTitle": "Metadati del modulo",
     "formMetadataMessage": "Informazioni strutturate per descrivere o spiegare questo modulo a sistemi esterni. Le chiamate ai sistemi esterni includeranno questi metadati nei loro payload.",
-    "formMetadataJsonError": "I metadati del modulo devono essere JSON validi. Utilizzare le virgolette doppie attorno ad attributi e valori."
+    "formMetadataJsonError": "I metadati del modulo devono essere JSON validi. Utilizzare le virgolette doppie attorno ad attributi e valori.",
+    "eventStreamTitle": "Impostazioni del flusso di eventi",
+    "eventStreamMessage": "Event Stream Service pubblicherà notifiche sulla pubblicazione e l&#39;invio di moduli. La tecnologia sottostante è NATS.io che consente ai consumatori di sottoscrivere o estrarre i messaggi di evento ed elaborarli in sistemi esterni. I messaggi privati conterranno payload crittografati con la chiave configurata qui.",
+    "natsConfiguration": "Configurazione NATS e metadati dei messaggi",
+    "publishConfiguration": "Configurazione della pubblicazione dell&#39;evento",
+    "enablePublicStream": "Abilita flusso pubblico",
+    "enablePrivateStream": "Abilita flusso privato",
+    "encryptionKeyAlgorithm": "Algoritmo della chiave di crittografia",
+    "encryptionKey": "Chiave di crittografia",
+    "encryptionKeyReq": "La chiave di crittografia è richiesta per i flussi privati",
+    "fetchEncryptionAlgorithmListError": "Errore durante il recupero dell&#39;elenco degli algoritmi di crittografia.",
+    "serversLabel": "Server",
+    "streamNameLabel": "Nome del flusso",
+    "sourceLabel": "Fonte",
+    "domainLabel": "Dominio",
+    "eventStreamUpdatedBy": "Impostazioni flusso eventi aggiornate da",
+    "encryptionKeyUpdatedBy": "Chiave di crittografia aggiornata da",
+    "encryptionKeyCopySnackbar": "Chiave di crittografia copiata negli appunti",
+    "encryptionKeyCopyTooltip": "Copia la chiave di crittografia negli appunti",
+    "encryptionKeyGenerate": "Genera chiave di crittografia"
   },
   "formProfile": {
     "message": "Il team CHEFS sta raccogliendo e organizzando informazioni per servire come input cruciale per la creazione di casi aziendali completi. Questi casi avranno un ruolo cruciale nella guida dell'operazione strategica e nell'ulteriore miglioramento di CHEFS nei prossimi anni. Questa iniziativa di raccolta dati è essenziale per informare decisioni critiche e plasmare la traiettoria di CHEFS, garantendone adattabilità ed efficacia nel affrontare esigenze e sfide in evoluzione.",
@@ -344,7 +365,8 @@
     "users": "Utenti",
     "developer": "Sviluppatore",
     "infoLinks": "Collegamenti informativi",
-    "metrics": "Metrica"
+    "metrics": "Metrica",
+    "apis": "API"
   },
   "adminUsersTable": {
     "search": "Ricerca",
@@ -725,10 +747,6 @@
   "proactiveHelpPreviewDialog": {
     "learnMore": "Saperne di più"
   },
-  "preview": {
-    "preview": "Anteprima",
-    "previewToolTip": "Questo mostra un'anteprima del design e del comportamento della versione del modulo come lo vedranno i tuoi mittenti. Non puoi inviare il modulo da questa pagina."
-  },
   "generalLayout": {
     "loadingText": "Attendere il caricamento prego",
     "preview": "ANTEPRIMA",
@@ -885,7 +903,8 @@
     "continue": "Continua",
     "back": "Indietro",
     "confirmPageNav": "Vuoi davvero lasciare questa pagina? Le modifiche apportate non verranno salvate.",
-    "agreementErrMsg": "Devi accettare il disclaimer sulla privacy mostrato sopra."
+    "agreementErrMsg": "Devi accettare il disclaimer sulla privacy mostrato sopra.",
+    "formProfile": "Profilo del modulo"
   },
   "addTeamMember": {
     "cantFindChefsUsers": "Non riesci a trovare qualcuno? Potrebbero non aver effettuato l&#39;accesso a CHEFS.<br /> Si prega di inviare loro un collegamento a CHEFS e chiedere loro di accedere.",
@@ -991,7 +1010,13 @@
       "updatingFCStatusErrMsg": "Si è verificato un errore durante l'aggiornamento dello stato di pubblicazione",
       "updatingFCStatusConsErrMsg": "Errore durante l'aggiornamento dello stato di pubblicazione: {error}",
       "fecthingFormBuilderCompsErrMsg": "Si è verificato un errore durante il recupero dei componenti del generatore di moduli",
-      "fecthingFormBuilderCompsConsErrMsg": "Errore durante il recupero dei componenti del generatore di moduli: {error}"
+      "fecthingFormBuilderCompsConsErrMsg": "Errore durante il recupero dei componenti del generatore di moduli: {error}",
+      "getAPIsErrMsg": "Si è verificato un errore durante il recupero dell&#39;elenco delle API esterne.",
+      "getAPIsConsErrMsg": "Errore durante il recupero dell&#39;elenco delle API esterne: {error}",
+      "updateAPIsErrMsg": "Errore durante l&#39;aggiornamento dell&#39;API esterna.",
+      "updateAPIsConsErrMsg": "Errore durante l&#39;aggiornamento dell&#39;API esterna: {error}",
+      "getAPICodesErrMsg": "Errore durante il recupero dell&#39;elenco dei codici di stato dell&#39;API esterna.",
+      "getAPICodesConsErrMsg": "Errore durante il recupero dell&#39;elenco dei codici di stato dell&#39;API esterna: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Errore durante il caricamento dei modelli di email per {formId}: {error}",
@@ -1083,5 +1108,89 @@
       "history": "STORIA",
       "user": "Utente"
     }
+  },
+  "eventStreamConfig": {
+    "info": "Configura Event Stream per il tuo modulo.",
+    "create": "Crea una nuova configurazione del flusso di eventi",
+    "createError": "Impossibile creare la configurazione del flusso di eventi.",
+    "createSuccess": "Configurazione del flusso di eventi creata correttamente.",
+    "createTitle": "Nuova configurazione del flusso di eventi",
+    "delete": "Eliminare",
+    "deleteSuccess": "Configurazione del flusso di eventi eliminata correttamente.",
+    "deleteError": "Si è verificato un errore durante l&#39;eliminazione della configurazione del flusso di eventi.",
+    "edit": "Modificare",
+    "editError": "Impossibile aggiornare la configurazione del flusso di eventi.",
+    "editSuccess": "Configurazione del flusso di eventi aggiornata correttamente.",
+    "editTitle": "Modifica configurazione flusso eventi",
+    "fetchError": "Si è verificato un errore durante il recupero della configurazione del flusso di eventi.",
+    "save": "Salva"
+  },
+  "encryptionKey": {
+    "info": "Configura le chiavi di crittografia per il tuo modulo.",
+    "create": "Crea nuova chiave di crittografia",
+    "createError": "Impossibile creare la chiave di crittografia.",
+    "createSuccess": "Chiave di crittografia creata correttamente.",
+    "createTitle": "Nuova configurazione della chiave di crittografia",
+    "delete": "Eliminare",
+    "deleteSuccess": "Chiave di crittografia eliminata correttamente.",
+    "deleteError": "Si è verificato un errore durante l&#39;eliminazione della chiave di crittografia.",
+    "edit": "Modificare",
+    "editError": "Impossibile aggiornare la chiave di crittografia.",
+    "editSuccess": "Chiave di crittografia aggiornata correttamente.",
+    "editTitle": "Modifica chiave di crittografia",
+    "fetchError": "Si è verificato un errore durante il recupero della chiave di crittografia.",
+    "fetchListError": "Si è verificato un errore durante il recupero dell&#39;elenco delle chiavi di crittografia.",
+    "save": "Salva"
+  },
+  "externalAPI": {
+    "info": "Configura le API esterne da utilizzare nel tuo modulo.",
+    "create": "Crea una nuova API esterna.",
+    "createError": "Impossibile creare l&#39;API esterna.",
+    "createSuccess": "API esterna creata correttamente.",
+    "createTitle": "Nuova configurazione API esterna",
+    "delete": "Eliminare",
+    "deleteSuccess": "API esterna eliminata correttamente.",
+    "deleteError": "Si è verificato un errore durante l&#39;eliminazione dell&#39;API esterna.",
+    "edit": "Modificare",
+    "editError": "Impossibile aggiornare l&#39;API esterna.",
+    "editSuccess": "API esterna aggiornata correttamente.",
+    "editTitle": "Modifica configurazione API esterna",
+    "fetchError": "Si è verificato un errore durante il recupero dell&#39;API esterna.",
+    "fetchListError": "Si è verificato un errore durante il recupero dell&#39;elenco delle API esterne.",
+    "fetchStatusListError": "Si è verificato un errore durante il recupero dell&#39;elenco dei codici di stato dell&#39;API esterna.",
+    "save": "Salva",
+    "formName": "Nome",
+    "formEndpointUrl": "URL dell&#39;endpoint",
+    "formStatus": "Stato",
+    "formSendApiKey": "Invia chiave API",
+    "formApiKeyHeader": "Nome dell&#39;intestazione della chiave API",
+    "formApiKey": "Valore chiave API",
+    "formSendUserToken": "Invia token utente",
+    "formUserTokenHeader": "Nome intestazione token utente",
+    "formUserTokenBearer": "Token utente come token portatore",
+    "formSendUserInfo": "Invia informazioni utente",
+    "formNameReq": "Il nome è obbligatorio.",
+    "formNameMaxChars": "Il nome deve contenere al massimo 255 caratteri",
+    "validEndpointRequired": "Inserisci un endpoint valido che inizi con http:// o https://",
+    "apiKeyFieldRequired": "Obbligatorio quando è selezionato &#39;Invia chiave API&#39;.",
+    "userTokenFieldRequired": "Obbligatorio quando è selezionato &#39;Invia token utente&#39;."
+  },
+  "adminAPIsTable": {
+    "search": "Ricerca",
+    "loadingText": "Caricamento in corso... Attendi",
+    "ministry": "Ministero",
+    "ministryName": "Nome del Ministero",
+    "formName": "Modulo",
+    "formId": "ID modulo",
+    "name": "Nome API",
+    "endpointUrl": "URL dell&#39;endpoint",
+    "display": "Stato",
+    "actions": "Azioni",
+    "edit": "Modificare",
+    "editTitle": "Aggiorna lo stato dell&#39;API esterna",
+    "allowSendUserToken": "Consenti &quot;Invia token utente&quot;"
+  },
+  "test": {
+    "customError": "This is a custom error message for testing."
   }
 }
