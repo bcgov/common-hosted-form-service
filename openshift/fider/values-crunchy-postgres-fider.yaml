@@ -1,0 +1,2 @@
+deploymentName: crunchy-postgres-fider
+fullnameOverride: crunchy-postgres-tools-fider
