@@ -70,7 +70,9 @@
     "update": "更新",
     "cancel": "取消",
     "eventSubscription": "E活动订阅",
-    "cdogsTemplate": "CDOGS 模板"
+    "cdogsTemplate": "CDOGS 模板",
+    "externalAPIs": "外部 API",
+    "eventStreamConfig": "事件流配置"
   },
   "documentTemplate": {
     "uploadTemplate": "上传CDOGS模板",
@@ -172,7 +174,26 @@
     "wideFormLayout": "宽表单布局",
     "formMetadataTitle": "表单元数据",
     "formMetadataMessage": "向外部系统描述或解释这种形式的结构化信息。对外部系统的调用将在其有效负载中包含此元数据。",
-    "formMetadataJsonError": "表单元数据必须是有效的 JSON。在属性和值周围使用双引号。"
+    "formMetadataJsonError": "表单元数据必须是有效的 JSON。在属性和值周围使用双引号。",
+    "eventStreamTitle": "事件流设置",
+    "eventStreamMessage": "Event Stream Service 将发布有关表单发布和提交的通知。底层技术是 NATS.io，它允许消费者订阅或提取事件消息并在外部系统中处理它们。私人消息将包含使用此处配置的密钥的加密有效负载。",
+    "natsConfiguration": "NATS 配置和消息元数据",
+    "publishConfiguration": "事件发布配置",
+    "enablePublicStream": "启用公共流",
+    "enablePrivateStream": "启用私人流",
+    "encryptionKeyAlgorithm": "加密密钥算法",
+    "encryptionKey": "加密密钥",
+    "encryptionKeyReq": "私有流需要加密密钥",
+    "fetchEncryptionAlgorithmListError": "获取加密算法列表时出错。",
+    "serversLabel": "服务器",
+    "streamNameLabel": "流名称",
+    "sourceLabel": "来源",
+    "domainLabel": "领域",
+    "eventStreamUpdatedBy": "事件流设置更新者",
+    "encryptionKeyUpdatedBy": "加密密钥更新者",
+    "encryptionKeyCopySnackbar": "加密密钥已复制到剪贴板",
+    "encryptionKeyCopyTooltip": "将加密密钥复制到剪贴板",
+    "encryptionKeyGenerate": "生成加密密钥"
   },
   "formProfile": {
     "message": "CHEFS团队正在收集和组织信息，作为制定全面业务案例的关键输入。这些案例将在指导CHEFS未来几年的战略运作和持续改进中发挥关键作用。这一收集数据的倡议对于提供关键决策的信息和塑造CHEFS轨迹至关重要，确保其在应对不断变化的需求和挑战中的适应性和有效性。",
@@ -344,7 +365,8 @@
     "users": "用户",
     "developer": "开发商",
     "infoLinks": "信息链接",
-    "metrics": "指标"
+    "metrics": "指标",
+    "apis": "蜜蜂"
   },
   "adminUsersTable": {
     "search": "搜索",
@@ -725,10 +747,6 @@
   "proactiveHelpPreviewDialog": {
     "learnMore": "了解更多"
   },
-  "preview": {
-    "preview": "预览",
-    "previewToolTip": "这显示了提交者将看到的表单版本设计和行为的预览。您无法从此页面提交表格。"
-  },
   "generalLayout": {
     "loadingText": "加载请稍候",
     "preview": "预览",
@@ -885,7 +903,8 @@
     "continue": "继续",
     "back": "后退",
     "confirmPageNav": "您真的要离开此页面吗？您所做的更改将不会被保存。",
-    "agreementErrMsg": "您必须同意上面显示的隐私免责声明。"
+    "agreementErrMsg": "您必须同意上面显示的隐私免责声明。",
+    "formProfile": "表格简介"
   },
   "addTeamMember": {
     "cantFindChefsUsers": "找不到人吗？他们可能没有登录 CHEFS。<br />请向他们发送 CHEFS 链接并要求他们登录。",
@@ -991,7 +1010,13 @@
       "updatingFCStatusErrMsg": "更新发布状态时出错",
       "updatingFCStatusConsErrMsg": "更新发布状态时出错：{error}",
       "fecthingFormBuilderCompsErrMsg": "获取表单构建器组件时发生错误",
-      "fecthingFormBuilderCompsConsErrMsg": "获取表单生成器组件时出错：{error}"
+      "fecthingFormBuilderCompsConsErrMsg": "获取表单生成器组件时出错：{error}",
+      "getAPIsErrMsg": "获取外部 API 列表时发生错误。",
+      "getAPIsConsErrMsg": "获取外部 API 列表时出错：{error}",
+      "updateAPIsErrMsg": "更新外部 API 时出错。",
+      "updateAPIsConsErrMsg": "更新外部 API 时出错：{error}",
+      "getAPICodesErrMsg": "获取外部 API 状态代码列表时出错。",
+      "getAPICodesConsErrMsg": "获取外部 API 状态代码列表时出错：{error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "加载 {formId} 的电子邮件模板时出错：{error}",
@@ -1083,5 +1108,89 @@
       "history": "历史",
       "user": "用户"
     }
+  },
+  "eventStreamConfig": {
+    "info": "为您的表单配置事件流。",
+    "create": "创建新的事件流配置",
+    "createError": "无法创建事件流配置。",
+    "createSuccess": "事件流配置创建成功。",
+    "createTitle": "新事件流配置",
+    "delete": "删除",
+    "deleteSuccess": "事件流配置已成功删除。",
+    "deleteError": "删除事件流配置时发生错误。",
+    "edit": "编辑",
+    "editError": "无法更新事件流配置。",
+    "editSuccess": "事件流配置更新成功。",
+    "editTitle": "编辑事件流配置",
+    "fetchError": "获取事件流配置时发生错误。",
+    "save": "节省"
+  },
+  "encryptionKey": {
+    "info": "为您的表单配置加密密钥。",
+    "create": "创建新的加密密钥",
+    "createError": "无法创建加密密钥。",
+    "createSuccess": "加密密钥创建成功。",
+    "createTitle": "新的加密密钥配置",
+    "delete": "删除",
+    "deleteSuccess": "加密密钥已成功删除。",
+    "deleteError": "删除加密密钥时发生错误。",
+    "edit": "编辑",
+    "editError": "无法更新加密密钥。",
+    "editSuccess": "加密密钥更新成功。",
+    "editTitle": "编辑加密密钥",
+    "fetchError": "获取加密密钥时发生错误。",
+    "fetchListError": "获取加密密钥列表时发生错误。",
+    "save": "节省"
+  },
+  "externalAPI": {
+    "info": "配置外部 API 以供在您的表单中使用。",
+    "create": "创建新的外部 API。",
+    "createError": "无法创建外部 API。",
+    "createSuccess": "外部 API 创建成功。",
+    "createTitle": "新的外部 API 配置",
+    "delete": "删除",
+    "deleteSuccess": "外部 API 已成功删除。",
+    "deleteError": "删除外部 API 时发生错误。",
+    "edit": "编辑",
+    "editError": "无法更新外部 API。",
+    "editSuccess": "外部 API 更新成功。",
+    "editTitle": "编辑外部 API 配置",
+    "fetchError": "获取外部 API 时发生错误。",
+    "fetchListError": "获取外部 API 列表时发生错误。",
+    "fetchStatusListError": "获取外部 API 状态代码列表时发生错误。",
+    "save": "节省",
+    "formName": "姓名",
+    "formEndpointUrl": "端点 URL",
+    "formStatus": "地位",
+    "formSendApiKey": "发送 API 密钥",
+    "formApiKeyHeader": "API 密钥标头名称",
+    "formApiKey": "API 键值",
+    "formSendUserToken": "发送用户令牌",
+    "formUserTokenHeader": "用户令牌标头名称",
+    "formUserTokenBearer": "用户令牌作为承载令牌",
+    "formSendUserInfo": "发送用户信息",
+    "formNameReq": "姓名为必填项。",
+    "formNameMaxChars": "名称必须不超过 255 个字符",
+    "validEndpointRequired": "请输入以 http:// 或 https:// 开头的有效端点",
+    "apiKeyFieldRequired": "选择“发送 API 密钥”时必填。",
+    "userTokenFieldRequired": "选择“发送用户令牌”时必填。"
+  },
+  "adminAPIsTable": {
+    "search": "搜索",
+    "loadingText": "正在加载...请等待",
+    "ministry": "部",
+    "ministryName": "部委名称",
+    "formName": "形式",
+    "formId": "表单编号",
+    "name": "API 名称",
+    "endpointUrl": "端点 URL",
+    "display": "地位",
+    "actions": "操作",
+    "edit": "编辑",
+    "editTitle": "更新外部 API 状态",
+    "allowSendUserToken": "允许‘发送用户令牌’"
+  },
+  "test": {
+    "customError": "This is a custom error message for testing."
   }
 }

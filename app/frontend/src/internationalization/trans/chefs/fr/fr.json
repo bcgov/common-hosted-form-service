@@ -70,7 +70,9 @@
     "update": "Mise à jour",
     "cancel": "Annuler",
     "eventSubscription": "Abonnement à l'événement",
-    "cdogsTemplate": "Modèle CDOGS"
+    "cdogsTemplate": "Modèle CDOGS",
+    "externalAPIs": "API externes",
+    "eventStreamConfig": "Configuration du flux d&#39;événements"
   },
   "documentTemplate": {
     "uploadTemplate": "Télécharger le modèle CDOGS",
@@ -172,7 +174,26 @@
     "wideFormLayout": "Disposition large du formulaire",
     "formMetadataTitle": "Métadonnées du formulaire",
     "formMetadataMessage": "Informations structurées pour décrire ou expliquer ce formulaire aux systèmes externes. Les appels vers des systèmes externes incluront ces métadonnées dans leurs charges utiles.",
-    "formMetadataJsonError": "Les métadonnées du formulaire doivent être du JSON valide. Utilisez des guillemets doubles autour des attributs et des valeurs."
+    "formMetadataJsonError": "Les métadonnées du formulaire doivent être du JSON valide. Utilisez des guillemets doubles autour des attributs et des valeurs.",
+    "eventStreamTitle": "Paramètres du flux d&#39;événements",
+    "eventStreamMessage": "Le service de flux d&#39;événements publiera des notifications sur la publication et les soumissions de formulaires. La technologie sous-jacente est NATS.io qui permet aux consommateurs de s&#39;abonner ou d&#39;extraire les messages d&#39;événements et de les traiter dans des systèmes externes. Les messages privés contiendront des charges utiles chiffrées avec la clé configurée ici.",
+    "natsConfiguration": "Configuration NATS et métadonnées des messages",
+    "publishConfiguration": "Configuration de la publication d&#39;événements",
+    "enablePublicStream": "Activer le flux public",
+    "enablePrivateStream": "Activer le flux privé",
+    "encryptionKeyAlgorithm": "Algorithme de clé de chiffrement",
+    "encryptionKey": "Clé de cryptage",
+    "encryptionKeyReq": "Une clé de chiffrement est requise pour les flux privés",
+    "fetchEncryptionAlgorithmListError": "Erreur lors de la récupération de la liste des algorithmes de chiffrement.",
+    "serversLabel": "Serveurs",
+    "streamNameLabel": "Nom du flux",
+    "sourceLabel": "Source",
+    "domainLabel": "Domaine",
+    "eventStreamUpdatedBy": "Paramètres du flux d&#39;événements mis à jour par",
+    "encryptionKeyUpdatedBy": "Clé de cryptage mise à jour par",
+    "encryptionKeyCopySnackbar": "Clé de chiffrement copiée dans le presse-papiers",
+    "encryptionKeyCopyTooltip": "Copier la clé de chiffrement dans le presse-papiers",
+    "encryptionKeyGenerate": "Générer une clé de cryptage"
   },
   "formProfile": {
     "message": "L'équipe CHEFS collecte et organise des informations pour servir de contribution cruciale à l'élaboration de cas d'affaires complets. Ces cas joueront un rôle central dans la direction des opérations stratégiques et l'amélioration continue de CHEFS au cours des prochaines années. Cette initiative de collecte de données est essentielle pour éclairer les décisions critiques et façonner la trajectoire de CHEFS, assurant son adaptabilité et son efficacité face aux besoins et aux défis en constante évolution.",
@@ -344,7 +365,8 @@
     "users": "Utilisateurs",
     "developer": "Développeur",
     "infoLinks": "Liens d'information",
-    "metrics": "Métrique"
+    "metrics": "Métrique",
+    "apis": "Apis"
   },
   "adminUsersTable": {
     "search": "Recherche",
@@ -725,10 +747,6 @@
   "proactiveHelpPreviewDialog": {
     "learnMore": "Apprendre encore plus"
   },
-  "preview": {
-    "preview": "Aperçu",
-    "previewToolTip": "Cela montre un aperçu de la conception et du comportement de la version du formulaire tels que vos expéditeurs le verront. Vous ne pouvez pas soumettre le formulaire à partir de cette page."
-  },
   "generalLayout": {
     "loadingText": "Chargement, veuillez patienter",
     "preview": "APERÇU",
@@ -885,7 +903,8 @@
     "continue": "Continuer",
     "back": "Dos",
     "confirmPageNav": "Voulez-vous vraiment quitter cette page ? Les modifications que vous avez apportées ne seront pas enregistrées.",
-    "agreementErrMsg": "Vous devez accepter la clause de non-responsabilité en matière de confidentialité indiquée ci-dessus."
+    "agreementErrMsg": "Vous devez accepter la clause de non-responsabilité en matière de confidentialité indiquée ci-dessus.",
+    "formProfile": "Profil de formulaire"
   },
   "addTeamMember": {
     "cantFindChefsUsers": "Vous ne trouvez pas quelqu&#39;un ? Ils ne se sont peut-être pas connectés à CHEFS.<br /> Veuillez leur envoyer un lien vers CHEFS et leur demander de se connecter.",
@@ -991,7 +1010,13 @@
       "updatingFCStatusErrMsg": "Une erreur s'est produite lors de la mise à jour de l'état de publication",
       "updatingFCStatusConsErrMsg": "Erreur lors de la mise à jour de l'état de publication : {error}",
       "fecthingFormBuilderCompsErrMsg": "Une erreur s'est produite lors de la récupération des composants du générateur de formulaires",
-      "fecthingFormBuilderCompsConsErrMsg": "Erreur lors de l'obtention des composants du générateur de formulaire : {error}"
+      "fecthingFormBuilderCompsConsErrMsg": "Erreur lors de l'obtention des composants du générateur de formulaire : {error}",
+      "getAPIsErrMsg": "Une erreur s&#39;est produite lors de la récupération de la liste des API externes.",
+      "getAPIsConsErrMsg": "Erreur lors de la récupération de la liste des API externes : {error}",
+      "updateAPIsErrMsg": "Erreur lors de la mise à jour de l&#39;API externe.",
+      "updateAPIsConsErrMsg": "Erreur lors de la mise à jour de l&#39;API externe : {error}",
+      "getAPICodesErrMsg": "Erreur lors de la récupération de la liste des codes d&#39;état de l&#39;API externe.",
+      "getAPICodesConsErrMsg": "Erreur lors de la récupération de la liste des codes d&#39;état de l&#39;API externe : {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Erreur lors du chargement des modèles d'e-mail pour {formId} : {error}",
@@ -1083,5 +1108,89 @@
       "history": "HISTOIRE",
       "user": "Utilisateur"
     }
+  },
+  "eventStreamConfig": {
+    "info": "Configurez le flux d’événements pour votre formulaire.",
+    "create": "Créer une nouvelle configuration de flux d&#39;événements",
+    "createError": "La configuration du flux d&#39;événements n&#39;a pas pu être créée.",
+    "createSuccess": "Configuration du flux d&#39;événements créée avec succès.",
+    "createTitle": "Nouvelle configuration du flux d&#39;événements",
+    "delete": "Supprimer",
+    "deleteSuccess": "La configuration du flux d&#39;événements a été supprimée avec succès.",
+    "deleteError": "Une erreur s&#39;est produite lors de la suppression de la configuration du flux d&#39;événements.",
+    "edit": "Modifier",
+    "editError": "La configuration du flux d&#39;événements n&#39;a pas pu être mise à jour.",
+    "editSuccess": "La configuration du flux d&#39;événements a été mise à jour avec succès.",
+    "editTitle": "Modifier la configuration du flux d&#39;événements",
+    "fetchError": "Une erreur s&#39;est produite lors de la récupération de la configuration du flux d&#39;événements.",
+    "save": "Sauvegarder"
+  },
+  "encryptionKey": {
+    "info": "Configurez les clés de chiffrement pour votre formulaire.",
+    "create": "Créer une nouvelle clé de chiffrement",
+    "createError": "La clé de chiffrement n&#39;a pas pu être créée.",
+    "createSuccess": "Clé de cryptage créée avec succès.",
+    "createTitle": "Nouvelle configuration de clé de chiffrement",
+    "delete": "Supprimer",
+    "deleteSuccess": "La clé de cryptage a été supprimée avec succès.",
+    "deleteError": "Une erreur s&#39;est produite lors de la suppression de la clé de chiffrement.",
+    "edit": "Modifier",
+    "editError": "La clé de chiffrement n&#39;a pas pu être mise à jour.",
+    "editSuccess": "Clé de cryptage mise à jour avec succès.",
+    "editTitle": "Modifier la clé de cryptage",
+    "fetchError": "Une erreur s&#39;est produite lors de la récupération de la clé de chiffrement.",
+    "fetchListError": "Une erreur s&#39;est produite lors de la récupération de la liste des clés de chiffrement.",
+    "save": "Sauvegarder"
+  },
+  "externalAPI": {
+    "info": "Configurez les API externes à utiliser dans votre formulaire.",
+    "create": "Créer une nouvelle API externe.",
+    "createError": "L&#39;API externe n&#39;a pas pu être créée.",
+    "createSuccess": "API externe créée avec succès.",
+    "createTitle": "Nouvelle configuration de l&#39;API externe",
+    "delete": "Supprimer",
+    "deleteSuccess": "API externe supprimée avec succès.",
+    "deleteError": "Une erreur s&#39;est produite lors de la suppression de l&#39;API externe.",
+    "edit": "Modifier",
+    "editError": "L&#39;API externe n&#39;a pas pu être mise à jour.",
+    "editSuccess": "API externe mise à jour avec succès.",
+    "editTitle": "Modifier la configuration de l&#39;API externe",
+    "fetchError": "Une erreur s&#39;est produite lors de la récupération de l&#39;API externe.",
+    "fetchListError": "Une erreur s&#39;est produite lors de la récupération de la liste des API externes.",
+    "fetchStatusListError": "Une erreur s&#39;est produite lors de la récupération de la liste des codes d&#39;état de l&#39;API externe.",
+    "save": "Sauvegarder",
+    "formName": "Nom",
+    "formEndpointUrl": "URL du point de terminaison",
+    "formStatus": "Statut",
+    "formSendApiKey": "Envoyer la clé API",
+    "formApiKeyHeader": "Nom de l&#39;en-tête de la clé API",
+    "formApiKey": "Valeur de la clé API",
+    "formSendUserToken": "Envoyer un jeton d&#39;utilisateur",
+    "formUserTokenHeader": "Nom de l&#39;en-tête du jeton utilisateur",
+    "formUserTokenBearer": "Jeton d&#39;utilisateur comme jeton de porteur",
+    "formSendUserInfo": "Envoyer des informations sur l&#39;utilisateur",
+    "formNameReq": "Le nom est obligatoire.",
+    "formNameMaxChars": "Le nom doit comporter 255 caractères ou moins",
+    "validEndpointRequired": "Veuillez saisir un point de terminaison valide commençant par http:// ou https://",
+    "apiKeyFieldRequired": "Obligatoire lorsque « Envoyer la clé API » est sélectionné.",
+    "userTokenFieldRequired": "Obligatoire lorsque « Envoyer un jeton utilisateur » est sélectionné."
+  },
+  "adminAPIsTable": {
+    "search": "Recherche",
+    "loadingText": "Chargement en cours... Veuillez patienter",
+    "ministry": "Ministère",
+    "ministryName": "Nom du ministère",
+    "formName": "Formulaire",
+    "formId": "ID du formulaire",
+    "name": "Nom de l&#39;API",
+    "endpointUrl": "URL du point de terminaison",
+    "display": "Statut",
+    "actions": "Actes",
+    "edit": "Modifier",
+    "editTitle": "Mettre à jour le statut de l&#39;API externe",
+    "allowSendUserToken": "Autoriser « Envoyer un jeton utilisateur »"
+  },
+  "test": {
+    "customError": "This is a custom error message for testing."
   }
 }
