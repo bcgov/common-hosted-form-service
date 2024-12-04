@@ -4099,12 +4099,12 @@ components:
           example: CITZ
         formName:
           type: string
-          description: Name of the ExternalApi - unique per form.
+          description: Name of the Form using the External API
           example: My Form
         endpointUrl:
           type: string
           format: url
-          description: Name of the ExternalApi - unique per form.
+          description: Endpoint URL of the External API - the api to call.
           example: https://bcreg.com/v1/lookup
         code:
           type: string
@@ -4304,7 +4304,7 @@ components:
         endpointUrl:
           type: string
           format: url
-          description: Name of the ExternalApi - unique per form.
+          description: Endpoint URL of the External API - the api to call.
           example: https://bcreg.com/v1/lookup
         code:
           type: string
