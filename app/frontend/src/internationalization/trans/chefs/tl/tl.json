@@ -1170,8 +1170,8 @@
     "formNameReq": "Pangalan ang kailangan.",
     "formNameMaxChars": "Ang pangalan ay dapat na 255 character o mas kaunti",
     "validEndpointRequired": "Mangyaring magpasok ng wastong endpoint na nagsisimula sa http:// o https://",
-    "apiKeyFieldRequired": "Kinakailangan kapag napili ang &#39;Ipadala ang API Key.&#39;",
-    "userTokenFieldRequired": "Kinakailangan kapag napili ang &#39;Ipadala ang User Token&#39;."
+    "apiKeyFieldRequired": "Kinakailangan kapag napili ang 'Ipadala ang API Key.'",
+    "userTokenFieldRequired": "Kinakailangan kapag napili ang 'Ipadala ang User Token'."
   },
   "adminAPIsTable": {
     "search": "Maghanap",
@@ -1186,7 +1186,7 @@
     "actions": "Mga aksyon",
     "edit": "I-edit",
     "editTitle": "I-update ang Katayuan ng Panlabas na API",
-    "allowSendUserToken": "Payagan ang &#39;Ipadala ang Token ng User&#39;"
+    "allowSendUserToken": "Payagan ang 'Ipadala ang Token ng User'"
   },
   "download": {
     "chefsDataExport": "Pag-export ng Data ng CHEFS",
