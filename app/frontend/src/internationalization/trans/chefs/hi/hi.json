@@ -1172,8 +1172,8 @@
     "formNameReq": "नाम आवश्यक है।",
     "formNameMaxChars": "नाम 255 अक्षर या उससे कम होना चाहिए",
     "validEndpointRequired": "कृपया http:// या https:// से शुरू होने वाला एक मान्य समापन बिंदु दर्ज करें",
-    "apiKeyFieldRequired": "&#39;API कुंजी भेजें&#39; चयनित होने पर आवश्यक.",
-    "userTokenFieldRequired": "&#39;उपयोगकर्ता टोकन भेजें&#39; चयनित होने पर आवश्यक."
+    "apiKeyFieldRequired": "'API कुंजी भेजें' चयनित होने पर आवश्यक.",
+    "userTokenFieldRequired": "'उपयोगकर्ता टोकन भेजें' चयनित होने पर आवश्यक."
   },
   "adminAPIsTable": {
     "search": "खोज",
@@ -1188,7 +1188,7 @@
     "actions": "कार्रवाई",
     "edit": "संपादन करना",
     "editTitle": "बाहरी API स्थिति अपडेट करें",
-    "allowSendUserToken": "&#39;उपयोगकर्ता टोकन भेजें&#39; की अनुमति दें"
+    "allowSendUserToken": "'उपयोगकर्ता टोकन भेजें' की अनुमति दें"
   },
   "test": {
     "customError": "This is a custom error message for testing."

@@ -1170,8 +1170,8 @@
     "formNameReq": "Tên là bắt buộc.",
     "formNameMaxChars": "Tên phải có 255 ký tự hoặc ít hơn",
     "validEndpointRequired": "Vui lòng nhập điểm cuối hợp lệ bắt đầu bằng http:// hoặc https://",
-    "apiKeyFieldRequired": "Bắt buộc khi chọn &#39;Gửi khóa API&#39;.",
-    "userTokenFieldRequired": "Bắt buộc khi chọn &#39;Gửi mã thông báo người dùng&#39;."
+    "apiKeyFieldRequired": "Bắt buộc khi chọn 'Gửi khóa API'.",
+    "userTokenFieldRequired": "Bắt buộc khi chọn 'Gửi mã thông báo người dùng'."
   },
   "adminAPIsTable": {
     "search": "Tìm kiếm",
@@ -1186,7 +1186,7 @@
     "actions": "Hành động",
     "edit": "Biên tập",
     "editTitle": "Cập nhật trạng thái API bên ngoài",
-    "allowSendUserToken": "Cho phép &#39;Gửi mã thông báo người dùng&#39;"
+    "allowSendUserToken": "Cho phép 'Gửi mã thông báo người dùng'"
   },
   "download": {
     "chefsDataExport": "Xuất dữ liệu CHEFS",
