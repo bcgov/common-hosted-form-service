@@ -1172,8 +1172,8 @@
     "formNameReq": "Nome é obrigatório.",
     "formNameMaxChars": "O nome deve ter 255 caracteres ou menos",
     "validEndpointRequired": "Insira um ponto de extremidade válido começando com http:// ou https://",
-    "apiKeyFieldRequired": "Obrigatório quando &#39;Enviar chave de API&#39; estiver selecionado.",
-    "userTokenFieldRequired": "Obrigatório quando &#39;Enviar token de usuário&#39; estiver selecionado."
+    "apiKeyFieldRequired": "Obrigatório quando 'Enviar chave de API' estiver selecionado.",
+    "userTokenFieldRequired": "Obrigatório quando 'Enviar token de usuário' estiver selecionado."
   },
   "adminAPIsTable": {
     "search": "Procurar",
@@ -1188,7 +1188,7 @@
     "actions": "Ações",
     "edit": "Editar",
     "editTitle": "Atualizar status da API externa",
-    "allowSendUserToken": "Permitir &#39;Enviar Token de Usuário&#39;"
+    "allowSendUserToken": "Permitir 'Enviar Token de Usuário'"
   },
   "test": {
     "customError": "This is a custom error message for testing."
