@@ -8,8 +8,12 @@ CHEFS_LOCAL_DIR=${WORKSPACE_DIR}/.devcontainer/chefs_local
 npm install knex -g
 npm install jest -g
 
-# install app libraries, prepare for app development and debugging...
-cd app
+# install components/formio libraries, prepare for ux development and debugging...
+cd components
+npm install
+
+ # install app libraries, prepare for app development and debugging...
+cd ../app
 npm install
 
 # install frontend libraries, prepare for ux development and debugging...
