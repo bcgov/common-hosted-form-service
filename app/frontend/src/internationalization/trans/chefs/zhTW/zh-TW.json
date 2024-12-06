@@ -70,7 +70,9 @@
     "update": "更新",
     "cancel": "取消",
     "eventSubscription": "活動訂閱",
-    "cdogsTemplate": "CDOGS 模板"
+    "cdogsTemplate": "CDOGS 模板",
+    "externalAPIs": "外部API",
+    "eventStreamConfig": "事件流配置"
   },
   "documentTemplate": {
     "uploadTemplate": "上傳CDOGS範本",
@@ -172,7 +174,26 @@
     "wideFormLayout": "寬表單布局",
     "formMetadataTitle": "表單元數據",
     "formMetadataMessage": "向外部系統描述或解釋這種形式的結構化資訊。對外部系統的呼叫將在其有效負載中包含此元資料。",
-    "formMetadataJsonError": "表單元資料必須是有效的 JSON。在屬性和值周圍使用雙引號。"
+    "formMetadataJsonError": "表單元資料必須是有效的 JSON。在屬性和值周圍使用雙引號。",
+    "eventStreamTitle": "事件流設定",
+    "eventStreamMessage": "Event Stream Service 將發布有關表單發布和提交的通知。底層技術是 NATS.io，它允許消費者訂閱或拉取事件訊息並在外部系統中處理它們。私人訊息將包含使用此處配置的金鑰進行加密的有效負載。",
+    "natsConfiguration": "NATS 配置和訊息元數據",
+    "publishConfiguration": "事件發布配置",
+    "enablePublicStream": "啟用公共串流",
+    "enablePrivateStream": "啟用私有串流",
+    "encryptionKeyAlgorithm": "加密金鑰演算法",
+    "encryptionKey": "加密金鑰",
+    "encryptionKeyReq": "私有流需要加密金鑰",
+    "fetchEncryptionAlgorithmListError": "取得加密演算法清單時發生錯誤。",
+    "serversLabel": "伺服器",
+    "streamNameLabel": "流名稱",
+    "sourceLabel": "來源",
+    "domainLabel": "領域",
+    "eventStreamUpdatedBy": "事件流設定更新者",
+    "encryptionKeyUpdatedBy": "加密金鑰更新者",
+    "encryptionKeyCopySnackbar": "加密金鑰已複製到剪貼簿",
+    "encryptionKeyCopyTooltip": "將加密金鑰複製到剪貼簿",
+    "encryptionKeyGenerate": "產生加密金鑰"
   },
   "formProfile": {
     "message": "CHEFS團隊正在收集和組織信息，作為制定全面業務案例的關鍵輸入。這些案例將在指導CHEFS未來幾年的戰略運作和持續改進中發揮關鍵作用。這一收集數據的倡議對於提供關鍵決策的信息和塑造CHEFS軌跡至關重要，確保其在應對不斷變化的需求和挑戰中的適應性和有效性。",
@@ -344,7 +365,8 @@
     "users": "用戶",
     "developer": "開發商",
     "infoLinks": "信息鏈接",
-    "metrics": "指標"
+    "metrics": "指標",
+    "apis": "蜜蜂"
   },
   "adminUsersTable": {
     "search": "搜索",
@@ -725,10 +747,6 @@
   "proactiveHelpPreviewDialog": {
     "learnMore": "了解更多"
   },
-  "preview": {
-    "preview": "預覽",
-    "previewToolTip": "這顯示了提交者將看到的表單版本設計和行為的預覽。您無法從此頁面提交表格。"
-  },
   "generalLayout": {
     "loadingText": "加載請稍候",
     "preview": "預覽",
@@ -885,7 +903,8 @@
     "continue": "繼續",
     "back": "後退",
     "confirmPageNav": "您真的要離開此頁面嗎？您所做的更改將不會被保存。",
-    "agreementErrMsg": "您必須同意上面顯示的隱私免責聲明。"
+    "agreementErrMsg": "您必須同意上面顯示的隱私免責聲明。",
+    "formProfile": "表格簡介"
   },
   "addTeamMember": {
     "cantFindChefsUsers": "找不到人嗎？他們可能沒有登錄 CHEFS。<br />請向他們發送 CHEFS 鏈接並要求他們登錄。",
@@ -991,7 +1010,13 @@
       "updatingFCStatusErrMsg": "更新發布狀態時出錯",
       "updatingFCStatusConsErrMsg": "更新發布狀態時出錯：{error}",
       "fecthingFormBuilderCompsErrMsg": "獲取表單構建器組件時發生錯誤",
-      "fecthingFormBuilderCompsConsErrMsg": "獲取表單生成器組件時出錯：{error}"
+      "fecthingFormBuilderCompsConsErrMsg": "獲取表單生成器組件時出錯：{error}",
+      "getAPIsErrMsg": "取得外部 API 清單時發生錯誤。",
+      "getAPIsConsErrMsg": "取得外部 API 清單時發生錯誤：{error}",
+      "updateAPIsErrMsg": "更新外部 API 時發生錯誤。",
+      "updateAPIsConsErrMsg": "更新外部 API 時發生錯誤：{error}",
+      "getAPICodesErrMsg": "取得外部 API 狀態代碼清單時發生錯誤。",
+      "getAPICodesConsErrMsg": "取得外部 API 狀態代碼清單時發生錯誤：{error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "加載 {formId} 的電子郵件模板時出錯：{error}",
@@ -1083,5 +1108,89 @@
       "history": "歷史",
       "user": "用戶"
     }
+  },
+  "eventStreamConfig": {
+    "info": "為您的表單配置事件流。",
+    "create": "建立新的事件流配置",
+    "createError": "無法建立事件流配置。",
+    "createSuccess": "事件流配置建立成功。",
+    "createTitle": "新的事件流配置",
+    "delete": "刪除",
+    "deleteSuccess": "事件流配置已成功刪除。",
+    "deleteError": "刪除事件流配置時發生錯誤。",
+    "edit": "編輯",
+    "editError": "無法更新事件流配置。",
+    "editSuccess": "事件流配置已成功更新。",
+    "editTitle": "編輯事件流配置",
+    "fetchError": "取得事件流配置時發生錯誤。",
+    "save": "節省"
+  },
+  "encryptionKey": {
+    "info": "為您的表單配置加密金鑰。",
+    "create": "建立新的加密金鑰",
+    "createError": "無法建立加密金鑰。",
+    "createSuccess": "加密密鑰創建成功。",
+    "createTitle": "新的加密金鑰配置",
+    "delete": "刪除",
+    "deleteSuccess": "加密金鑰已成功刪除。",
+    "deleteError": "刪除加密金鑰時發生錯誤。",
+    "edit": "編輯",
+    "editError": "無法更新加密金鑰。",
+    "editSuccess": "加密金鑰更新成功。",
+    "editTitle": "編輯加密金鑰",
+    "fetchError": "取得加密金鑰時發生錯誤。",
+    "fetchListError": "取得加密金鑰清單時發生錯誤。",
+    "save": "節省"
+  },
+  "externalAPI": {
+    "info": "配置外部 API 以在您的表單中使用。",
+    "create": "建立新的外部 API。",
+    "createError": "無法建立外部 API。",
+    "createSuccess": "外部 API 創建成功。",
+    "createTitle": "新的外部 API 配置",
+    "delete": "刪除",
+    "deleteSuccess": "外部 API 刪除成功。",
+    "deleteError": "刪除外部 API 時發生錯誤。",
+    "edit": "編輯",
+    "editError": "外部 API 無法更新。",
+    "editSuccess": "外部 API 更新成功。",
+    "editTitle": "編輯外部 API 配置",
+    "fetchError": "取得外部 API 時發生錯誤。",
+    "fetchListError": "取得外部 API 清單時發生錯誤。",
+    "fetchStatusListError": "取得外部 API 狀態代碼清單時發生錯誤。",
+    "save": "節省",
+    "formName": "姓名",
+    "formEndpointUrl": "端點網址",
+    "formStatus": "地位",
+    "formSendApiKey": "發送 API 金鑰",
+    "formApiKeyHeader": "API 金鑰標頭名稱",
+    "formApiKey": "API鍵值",
+    "formSendUserToken": "發送用戶令牌",
+    "formUserTokenHeader": "使用者令牌標頭名稱",
+    "formUserTokenBearer": "使用者令牌作為承載令牌",
+    "formSendUserInfo": "發送用戶訊息",
+    "formNameReq": "姓名為必填項。",
+    "formNameMaxChars": "名稱不得超過 255 個字符",
+    "validEndpointRequired": "請輸入以 http:// 或 https:// 開頭的有效端點",
+    "apiKeyFieldRequired": "選擇“發送 API 金鑰”時需要。",
+    "userTokenFieldRequired": "選擇“發送用戶令牌”時需要。"
+  },
+  "adminAPIsTable": {
+    "search": "搜尋",
+    "loadingText": "正在加載...請稍候",
+    "ministry": "部",
+    "ministryName": "部門名稱",
+    "formName": "形式",
+    "formId": "表格編號",
+    "name": "API名稱",
+    "endpointUrl": "端點網址",
+    "display": "地位",
+    "actions": "行動",
+    "edit": "編輯",
+    "editTitle": "更新外部 API 狀態",
+    "allowSendUserToken": "允許“發送用戶令牌”"
+  },
+  "test": {
+    "customError": "This is a custom error message for testing."
   }
 }

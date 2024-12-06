@@ -70,7 +70,9 @@
     "update": "Aktualisieren",
     "cancel": "Stornieren",
     "eventSubscription": "Ereignisabonnement",
-    "cdogsTemplate": "CDOGS-Vorlage"
+    "cdogsTemplate": "CDOGS-Vorlage",
+    "externalAPIs": "Externe APIs",
+    "eventStreamConfig": "Event Stream-Konfiguration"
   },
   "documentTemplate": {
     "uploadTemplate": "CDOGS-Vorlage hochladen",
@@ -172,7 +174,26 @@
     "wideFormLayout": "Breites Formularlayout",
     "formMetadataTitle": "Formularmetadaten",
     "formMetadataMessage": "Strukturierte Informationen, um diese Form externen Systemen zu beschreiben oder zu erklären. Aufrufe an externe Systeme enthalten diese Metadaten in ihren Nutzdaten.",
-    "formMetadataJsonError": "Formularmetadaten müssen gültiges JSON sein. Verwenden Sie doppelte Anführungszeichen um Attribute und Werte."
+    "formMetadataJsonError": "Formularmetadaten müssen gültiges JSON sein. Verwenden Sie doppelte Anführungszeichen um Attribute und Werte.",
+    "eventStreamTitle": "Ereignisstreameinstellungen",
+    "eventStreamMessage": "Der Event Stream Service veröffentlicht Benachrichtigungen über die Veröffentlichung und Übermittlung von Formularen. Die zugrundeliegende Technologie ist NATS.io, mit der Verbraucher die Ereignisnachrichten abonnieren oder abrufen und in externen Systemen verarbeiten können. Private Nachrichten enthalten verschlüsselte Nutzdaten mit dem hier konfigurierten Schlüssel.",
+    "natsConfiguration": "NATS-Konfiguration und Nachrichtenmetadaten",
+    "publishConfiguration": "Konfiguration der Ereignisveröffentlichung",
+    "enablePublicStream": "Öffentlichen Stream aktivieren",
+    "enablePrivateStream": "Privaten Stream aktivieren",
+    "encryptionKeyAlgorithm": "Verschlüsselungsschlüsselalgorithmus",
+    "encryptionKey": "Verschlüsselungsschlüssel",
+    "encryptionKeyReq": "Für private Streams ist ein Verschlüsselungsschlüssel erforderlich",
+    "fetchEncryptionAlgorithmListError": "Fehler beim Abrufen der Liste der Verschlüsselungsalgorithmen.",
+    "serversLabel": "Server",
+    "streamNameLabel": "Streamname",
+    "sourceLabel": "Quelle",
+    "domainLabel": "Domain",
+    "eventStreamUpdatedBy": "Event Stream-Einstellungen aktualisiert von",
+    "encryptionKeyUpdatedBy": "Verschlüsselungsschlüssel aktualisiert von",
+    "encryptionKeyCopySnackbar": "Verschlüsselungsschlüssel in die Zwischenablage kopiert",
+    "encryptionKeyCopyTooltip": "Verschlüsselungsschlüssel in die Zwischenablage kopieren",
+    "encryptionKeyGenerate": "Verschlüsselungsschlüssel generieren"
   },
   "formProfile": {
     "message": "Das CHEFS-Team sammelt und organisiert Informationen, um als entscheidende Grundlage für die Erstellung umfassender Geschäftsfälle zu dienen. Diese Fälle werden eine Schlüsselrolle dabei spielen, den strategischen Betrieb und die laufende Verbesserung von CHEFS in den kommenden Jahren zu leiten. Diese Initiative zur Datensammlung ist entscheidend, um kritische Entscheidungen zu informieren und die Trajektorie von CHEFS zu formen, um seine Anpassungsfähigkeit und Wirksamkeit bei der Bewältigung sich wandelnder Bedürfnisse und Herausforderungen zu gewährleisten.",
@@ -344,7 +365,8 @@
     "users": "Benutzer",
     "developer": "Entwickler",
     "infoLinks": "Info-Links",
-    "metrics": "Metriken"
+    "metrics": "Metriken",
+    "apis": "APIs"
   },
   "adminUsersTable": {
     "search": "Suchen",
@@ -725,10 +747,6 @@
   "proactiveHelpPreviewDialog": {
     "learnMore": "Erfahren Sie mehr"
   },
-  "preview": {
-    "preview": "Vorschau",
-    "previewToolTip": "Dies zeigt eine Vorschau des Designs und Verhaltens der Formularversion, wie es Ihren Einsendern angezeigt wird. Sie können das Formular nicht von dieser Seite aus senden."
-  },
   "generalLayout": {
     "loadingText": "Laden, bitte warten",
     "preview": "VORSCHAU",
@@ -885,7 +903,8 @@
     "continue": "Weitermachen",
     "back": "Zurück",
     "confirmPageNav": "Möchten Sie diese Seite wirklich verlassen? Von Ihnen vorgenommene Änderungen werden nicht gespeichert.",
-    "agreementErrMsg": "Sie müssen dem oben aufgeführten Datenschutz-Haftungsausschluss zustimmen."
+    "agreementErrMsg": "Sie müssen dem oben aufgeführten Datenschutz-Haftungsausschluss zustimmen.",
+    "formProfile": "Formularprofil"
   },
   "addTeamMember": {
     "cantFindChefsUsers": "Sie können niemanden finden? Möglicherweise haben sie sich nicht bei CHEFS angemeldet.<br /> Bitte senden Sie ihnen einen Link zu CHEFS und bitten Sie sie, sich anzumelden.",
@@ -991,7 +1010,13 @@
       "updatingFCStatusErrMsg": "Beim Aktualisieren des Veröffentlichungsstatus ist ein Fehler aufgetreten",
       "updatingFCStatusConsErrMsg": "Fehler beim Aktualisieren des Veröffentlichungsstatus: {error}",
       "fecthingFormBuilderCompsErrMsg": "Beim Abrufen der Form Builder-Komponenten ist ein Fehler aufgetreten",
-      "fecthingFormBuilderCompsConsErrMsg": "Fehler beim Abrufen der Formular-Builder-Komponenten: {error}"
+      "fecthingFormBuilderCompsConsErrMsg": "Fehler beim Abrufen der Formular-Builder-Komponenten: {error}",
+      "getAPIsErrMsg": "Beim Abrufen der Liste der externen APIs ist ein Fehler aufgetreten.",
+      "getAPIsConsErrMsg": "Fehler beim Abrufen der Liste externer APIs: {error}",
+      "updateAPIsErrMsg": "Fehler beim Aktualisieren der externen API.",
+      "updateAPIsConsErrMsg": "Fehler beim Aktualisieren der externen API: {error}",
+      "getAPICodesErrMsg": "Fehler beim Abrufen der Liste mit externen API-Statuscodes.",
+      "getAPICodesConsErrMsg": "Fehler beim Abrufen der Liste mit externen API-Statuscodes: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Fehler beim Laden der E-Mail-Vorlagen für {formId}: {error}",
@@ -1083,5 +1108,89 @@
       "history": "GESCHICHTE",
       "user": "Benutzer"
     }
+  },
+  "eventStreamConfig": {
+    "info": "Konfigurieren Sie Event Stream für Ihr Formular.",
+    "create": "Neue Event Stream-Konfiguration erstellen",
+    "createError": "Die Event Stream-Konfiguration konnte nicht erstellt werden.",
+    "createSuccess": "Event Stream-Konfiguration erfolgreich erstellt.",
+    "createTitle": "Neue Event Stream-Konfiguration",
+    "delete": "Löschen",
+    "deleteSuccess": "Event Stream-Konfiguration erfolgreich gelöscht.",
+    "deleteError": "Beim Löschen der Event Stream-Konfiguration ist ein Fehler aufgetreten.",
+    "edit": "Bearbeiten",
+    "editError": "Die Event Stream-Konfiguration konnte nicht aktualisiert werden.",
+    "editSuccess": "Event Stream-Konfiguration erfolgreich aktualisiert.",
+    "editTitle": "Event Stream-Konfiguration bearbeiten",
+    "fetchError": "Beim Abrufen der Event Stream-Konfiguration ist ein Fehler aufgetreten.",
+    "save": "Speichern"
+  },
+  "encryptionKey": {
+    "info": "Konfigurieren Sie Verschlüsselungsschlüssel für Ihr Formular.",
+    "create": "Neuen Verschlüsselungsschlüssel erstellen",
+    "createError": "Der Verschlüsselungsschlüssel konnte nicht erstellt werden.",
+    "createSuccess": "Verschlüsselungsschlüssel erfolgreich erstellt.",
+    "createTitle": "Neue Verschlüsselungsschlüsselkonfiguration",
+    "delete": "Löschen",
+    "deleteSuccess": "Verschlüsselungsschlüssel erfolgreich gelöscht.",
+    "deleteError": "Beim Löschen des Verschlüsselungsschlüssels ist ein Fehler aufgetreten.",
+    "edit": "Bearbeiten",
+    "editError": "Der Verschlüsselungsschlüssel konnte nicht aktualisiert werden.",
+    "editSuccess": "Verschlüsselungsschlüssel erfolgreich aktualisiert.",
+    "editTitle": "Verschlüsselungsschlüssel bearbeiten",
+    "fetchError": "Beim Abrufen des Verschlüsselungsschlüssels ist ein Fehler aufgetreten.",
+    "fetchListError": "Beim Abrufen der Verschlüsselungsschlüsselliste ist ein Fehler aufgetreten.",
+    "save": "Speichern"
+  },
+  "externalAPI": {
+    "info": "Konfigurieren Sie externe APIs zur Verwendung in Ihrem Formular.",
+    "create": "Neue externe API erstellen.",
+    "createError": "Externe API konnte nicht erstellt werden.",
+    "createSuccess": "Externe API erfolgreich erstellt.",
+    "createTitle": "Neue externe API-Konfiguration",
+    "delete": "Löschen",
+    "deleteSuccess": "Externe API erfolgreich gelöscht.",
+    "deleteError": "Beim Löschen der externen API ist ein Fehler aufgetreten.",
+    "edit": "Bearbeiten",
+    "editError": "Externe API konnte nicht aktualisiert werden.",
+    "editSuccess": "Externe API erfolgreich aktualisiert.",
+    "editTitle": "Externe API-Konfiguration bearbeiten",
+    "fetchError": "Beim Abrufen der externen API ist ein Fehler aufgetreten.",
+    "fetchListError": "Beim Abrufen der externen API-Liste ist ein Fehler aufgetreten.",
+    "fetchStatusListError": "Beim Abrufen der Liste mit den externen API-Statuscodes ist ein Fehler aufgetreten.",
+    "save": "Speichern",
+    "formName": "Name",
+    "formEndpointUrl": "Endpunkt-URL",
+    "formStatus": "Status",
+    "formSendApiKey": "API-Schlüssel senden",
+    "formApiKeyHeader": "API-Schlüsselheadername",
+    "formApiKey": "API-Schlüsselwert",
+    "formSendUserToken": "Benutzertoken senden",
+    "formUserTokenHeader": "Name des Benutzertoken-Headers",
+    "formUserTokenBearer": "Benutzertoken als Bearertoken",
+    "formSendUserInfo": "Benutzerinformationen senden",
+    "formNameReq": "Name ist erforderlich.",
+    "formNameMaxChars": "Der Name darf höchstens 255 Zeichen lang sein.",
+    "validEndpointRequired": "Bitte geben Sie einen gültigen Endpunkt ein, der mit http:// oder https:// beginnt.",
+    "apiKeyFieldRequired": "Erforderlich, wenn „API-Schlüssel senden“ ausgewählt ist.",
+    "userTokenFieldRequired": "Erforderlich, wenn „Benutzertoken senden“ ausgewählt ist."
+  },
+  "adminAPIsTable": {
+    "search": "Suchen",
+    "loadingText": "Wird geladen... Bitte warten",
+    "ministry": "Ministerium",
+    "ministryName": "Name des Ministeriums",
+    "formName": "Bilden",
+    "formId": "Formular-ID",
+    "name": "API-Name",
+    "endpointUrl": "Endpunkt-URL",
+    "display": "Status",
+    "actions": "Aktionen",
+    "edit": "Bearbeiten",
+    "editTitle": "Externen API-Status aktualisieren",
+    "allowSendUserToken": "„Benutzertoken senden“ zulassen"
+  },
+  "test": {
+    "customError": "This is a custom error message for testing."
   }
 }
