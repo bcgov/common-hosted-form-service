@@ -243,8 +243,11 @@ describe('Form Designer', () => {
       cy.get(':nth-child(1) > .v-btn > .v-btn__content > .mdi-pencil').click();
       cy.get('span').contains('Submitted').should('exist');
       cy.get('[data-test="continue-btn-continue"]').click();
+      cy.get('.v-data-table__tbody > .v-data-table__tr > :nth-child(1)').should('have.text',"chefs_name");
         //Delete external api configuration
-      cy.get('.v-data-table__tbody > .v-data-table__tr > .v-data-table-column--align-end > :nth-child(2) > [targetref="[object Object]"] > .v-btn').click();  
+      cy.get('.v-data-table__tbody > .v-data-table__tr > .v-data-table-column--align-end > :nth-child(2) > [targetref="[object Object]"] > .v-btn').click(); 
+      cy.wait(2000);
+      cy.get('.v-data-table__tbody > .v-data-table__tr > :nth-child(1)').should('not.exist'); 
        //Delete form after test run
       cy.get('[data-test="canRemoveForm"]').then($el => {
       const delform=$el[0];
