@@ -70,7 +70,9 @@
     "update": "Update",
     "cancel": "Kanselahin",
     "eventSubscription": "Subscription sa Kaganapan",
-    "cdogsTemplate": "template ng CDOGS"
+    "cdogsTemplate": "template ng CDOGS",
+    "externalAPIs": "Mga panlabas na API",
+    "eventStreamConfig": "Configuration ng Stream ng Event"
   },
   "documentTemplate": {
     "uploadTemplate": "I-upload ang Template ng CDOGS",
@@ -172,7 +174,26 @@
     "wideFormLayout": "Malapad na Porma ng Layout",
     "formMetadataTitle": "Metadata ng Form",
     "formMetadataMessage": "Nakabalangkas na impormasyon upang ilarawan o ipaliwanag ang form na ito sa mga panlabas na system. Isasama sa mga tawag sa mga external na system ang metadata na ito sa kanilang mga payload.",
-    "formMetadataJsonError": "Ang metadata ng form ay dapat na wastong JSON. Gumamit ng double-quotes sa paligid ng mga attribute at value."
+    "formMetadataJsonError": "Ang metadata ng form ay dapat na wastong JSON. Gumamit ng double-quotes sa paligid ng mga attribute at value.",
+    "eventStreamTitle": "Mga Setting ng Stream ng Kaganapan",
+    "eventStreamMessage": "Ang Serbisyo ng Stream ng Kaganapan ay magpa-publish ng mga notification tungkol sa pag-publish at pagsusumite ng form. Ang pinagbabatayan na teknolohiya ay NATS.io na nagpapahintulot sa mga mamimili na mag-subscribe o hilahin ang mga mensahe ng kaganapan at iproseso ang mga ito sa mga panlabas na system. Maglalaman ang mga pribadong mensahe ng mga naka-encrypt na payload na may key na na-configure dito.",
+    "natsConfiguration": "NATS Configuration at Metadata ng Mensahe",
+    "publishConfiguration": "Configuration ng Pag-publish ng Kaganapan",
+    "enablePublicStream": "Paganahin ang Public Stream",
+    "enablePrivateStream": "Paganahin ang Pribadong Stream",
+    "encryptionKeyAlgorithm": "Encryption Key Algorithm",
+    "encryptionKey": "Encryption Key",
+    "encryptionKeyReq": "Kinakailangan ang Encryption Key para sa Mga Pribadong Stream",
+    "fetchEncryptionAlgorithmListError": "Error sa pagkuha ng listahan ng Encryption Algorithm.",
+    "serversLabel": "Mga server",
+    "streamNameLabel": "Pangalan ng Stream",
+    "sourceLabel": "Pinagmulan",
+    "domainLabel": "Domain",
+    "eventStreamUpdatedBy": "Mga Setting ng Stream ng Kaganapan Na-update Ni",
+    "encryptionKeyUpdatedBy": "Encryption Key Na-update Ni",
+    "encryptionKeyCopySnackbar": "Nakopya ang Encryption Key sa clipboard",
+    "encryptionKeyCopyTooltip": "Kopyahin ang Encryption Key sa clipboard",
+    "encryptionKeyGenerate": "Bumuo ng Encryption Key"
   },
   "formProfile": {
     "message": "Ang CHEFS team ay nagkokolekta at nag-oorganisa ng impormasyon upang magsilbing mahalagang input para sa pagbuo ng kapsulang kaso ng negosyo. Ang mga kaso na ito ay magiging pangunahing bahagi sa paggabay sa pangangasiwa at patuloy na pagpapabuti ng CHEFS sa mga darating na taon. Ang inisyatibang ito sa pagsasama ng datos ay mahalaga para sa pagbibigay impormasyon sa mga kritikal na desisyon at pagsanay sa takbo ng CHEFS, tiyak na nagiging adaptable at epektibo sa pagsasaad sa mga nagbabagong pangangailangan at hamon.",
@@ -344,7 +365,8 @@
     "users": "Mga gumagamit",
     "developer": "Developer",
     "infoLinks": "Mga Link ng Impormasyon",
-    "metrics": "Mga sukatan"
+    "metrics": "Mga sukatan",
+    "apis": "Mga API"
   },
   "adminUsersTable": {
     "search": "Maghanap",
@@ -725,10 +747,6 @@
   "proactiveHelpPreviewDialog": {
     "learnMore": "Matuto pa"
   },
-  "preview": {
-    "preview": "Silipin",
-    "previewToolTip": "Nagpapakita ito ng preview ng disenyo at gawi ng bersyon ng form habang makikita ito ng iyong mga nagsumite. Hindi mo maaaring isumite ang form mula sa pahinang ito."
-  },
   "generalLayout": {
     "loadingText": "Naglo-load... Mangyaring maghintay",
     "preview": "PREVIEW",
@@ -885,7 +903,8 @@
     "continue": "Magpatuloy",
     "back": "Bumalik",
     "confirmPageNav": "Gusto mo ba talagang umalis sa page na ito? Hindi mase-save ang mga pagbabagong ginawa mo.",
-    "agreementErrMsg": "Dapat kang sumang-ayon sa disclaimer sa privacy na ipinapakita sa itaas."
+    "agreementErrMsg": "Dapat kang sumang-ayon sa disclaimer sa privacy na ipinapakita sa itaas.",
+    "formProfile": "Profile ng Form"
   },
   "addTeamMember": {
     "cantFindChefsUsers": "Hindi mahanap ang isang tao? Maaaring hindi sila naka-log in sa CHEFS.<br /> Mangyaring magpadala sa kanila ng link sa CHEFS at hilingin sa kanila na mag-log in.",
@@ -989,7 +1008,13 @@
       "updatingFCStatusErrMsg": "Nagkaroon ng error habang ina-update ang status ng pag-publish",
       "updatingFCStatusConsErrMsg": "Error sa pag-update ng status ng pag-publish: {error}",
       "fecthingFormBuilderCompsErrMsg": "May naganap na error habang kinukuha ang mga bahagi ng tagabuo ng form",
-      "fecthingFormBuilderCompsConsErrMsg": "Error sa pagkuha ng mga bahagi ng tagabuo ng form: {error}"
+      "fecthingFormBuilderCompsConsErrMsg": "Error sa pagkuha ng mga bahagi ng tagabuo ng form: {error}",
+      "getAPIsErrMsg": "May naganap na error habang kinukuha ang listahan ng mga Panlabas na API.",
+      "getAPIsConsErrMsg": "Error sa pagkuha ng listahan ng mga Panlabas na API: {error}",
+      "updateAPIsErrMsg": "Error sa pag-update ng External API.",
+      "updateAPIsConsErrMsg": "Error sa pag-update ng External API: {error}",
+      "getAPICodesErrMsg": "Error sa pagkuha ng listahan ng External API Status Codes.",
+      "getAPICodesConsErrMsg": "Error sa pagkuha ng listahan ng External API Status Codes: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Error sa paglo-load ng mga template ng email para sa {formId}: {error}",
@@ -1081,5 +1106,95 @@
       "history": "KASAYSAYAN",
       "user": "Gumagamit"
     }
+  },
+  "eventStreamConfig": {
+    "info": "I-configure ang Stream ng Event para sa iyong form.",
+    "create": "Gumawa ng bagong Event Stream Configuration",
+    "createError": "Hindi malikha ang Configuration ng Stream ng Kaganapan.",
+    "createSuccess": "Matagumpay na nagawa ang Configuration ng Stream ng Kaganapan.",
+    "createTitle": "Bagong Event Stream Configuration",
+    "delete": "Tanggalin",
+    "deleteSuccess": "Matagumpay na natanggal ang Configuration ng Stream ng Event.",
+    "deleteError": "May naganap na error habang tinatanggal ang Configuration ng Stream ng Event.",
+    "edit": "I-edit",
+    "editError": "Hindi ma-update ang Configuration ng Stream ng Event.",
+    "editSuccess": "Matagumpay na na-update ang Configuration ng Stream ng Kaganapan.",
+    "editTitle": "I-edit ang Configuration ng Stream ng Event",
+    "fetchError": "May naganap na error habang kinukuha ang Configuration ng Stream ng Kaganapan.",
+    "save": "I-save"
+  },
+  "encryptionKey": {
+    "info": "I-configure ang Mga Encryption Key para sa iyong form.",
+    "create": "Gumawa ng bagong Encryption Key",
+    "createError": "Hindi malikha ang Encryption Key.",
+    "createSuccess": "Matagumpay na nagawa ang Encryption Key.",
+    "createTitle": "Bagong Encryption Key Configuration",
+    "delete": "Tanggalin",
+    "deleteSuccess": "Matagumpay na natanggal ang Encryption Key.",
+    "deleteError": "May naganap na error habang tinatanggal ang Encryption Key.",
+    "edit": "I-edit",
+    "editError": "Hindi ma-update ang Encryption Key.",
+    "editSuccess": "Matagumpay na na-update ang Encryption Key.",
+    "editTitle": "I-edit ang Encryption Key",
+    "fetchError": "May naganap na error habang kinukuha ang Encryption Key.",
+    "fetchListError": "May naganap na error habang kinukuha ang listahan ng Encryption Key.",
+    "save": "I-save"
+  },
+  "externalAPI": {
+    "info": "I-configure ang mga Panlabas na API para magamit sa iyong form.",
+    "create": "Lumikha ng bagong Panlabas na API.",
+    "createError": "Hindi malikha ang panlabas na API.",
+    "createSuccess": "Matagumpay na nagawa ang panlabas na API.",
+    "createTitle": "Bagong Panlabas na Configuration ng API",
+    "delete": "Tanggalin",
+    "deleteSuccess": "Matagumpay na natanggal ang panlabas na API.",
+    "deleteError": "May naganap na error habang tinatanggal ang External API.",
+    "edit": "I-edit",
+    "editError": "Hindi ma-update ang panlabas na API.",
+    "editSuccess": "Matagumpay na na-update ang panlabas na API.",
+    "editTitle": "I-edit ang Panlabas na Configuration ng API",
+    "fetchError": "May naganap na error habang kinukuha ang External API.",
+    "fetchListError": "May naganap na error habang kinukuha ang listahan ng Panlabas na API.",
+    "fetchStatusListError": "May naganap na error habang kinukuha ang listahan ng External API Status Code.",
+    "save": "I-save",
+    "formName": "Pangalan",
+    "formEndpointUrl": "Endpoint URL",
+    "formStatus": "Katayuan",
+    "formSendApiKey": "Ipadala ang API Key",
+    "formApiKeyHeader": "Pangalan ng Header ng Key ng API",
+    "formApiKey": "Halaga ng Key ng API",
+    "formSendUserToken": "Magpadala ng Token ng Gumagamit",
+    "formUserTokenHeader": "Pangalan ng Header ng Token ng User",
+    "formUserTokenBearer": "User Token bilang Bearer Token",
+    "formSendUserInfo": "Ipadala ang Impormasyon ng Gumagamit",
+    "formNameReq": "Pangalan ang kailangan.",
+    "formNameMaxChars": "Ang pangalan ay dapat na 255 character o mas kaunti",
+    "validEndpointRequired": "Mangyaring magpasok ng wastong endpoint na nagsisimula sa http:// o https://",
+    "apiKeyFieldRequired": "Kinakailangan kapag napili ang 'Ipadala ang API Key.'",
+    "userTokenFieldRequired": "Kinakailangan kapag napili ang 'Ipadala ang User Token'."
+  },
+  "adminAPIsTable": {
+    "search": "Maghanap",
+    "loadingText": "Naglo-load... Mangyaring maghintay",
+    "ministry": "Ministeryo",
+    "ministryName": "Pangalan ng Ministeryo",
+    "formName": "Form",
+    "formId": "Form ID",
+    "name": "Pangalan ng API",
+    "endpointUrl": "Endpoint URL",
+    "display": "Katayuan",
+    "actions": "Mga aksyon",
+    "edit": "I-edit",
+    "editTitle": "I-update ang Katayuan ng Panlabas na API",
+    "allowSendUserToken": "Payagan ang 'Ipadala ang Token ng User'"
+  },
+  "download": {
+    "chefsDataExport": "Pag-export ng Data ng CHEFS",
+    "preparingForDownloading": "Naghahanda para sa pag-download...",
+    "downloadInfoA": "Kung hindi awtomatikong nagda-download ang iyong file",
+    "downloadInfoB": "mag-click dito upang subukang muli"
+  },
+  "test": {
+    "customError": "This is a custom error message for testing."
   }
 }

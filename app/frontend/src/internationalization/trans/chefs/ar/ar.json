@@ -70,7 +70,9 @@
     "update": "تحديث",
     "cancel": "يلغي",
     "eventSubscription": "اشتراك الحدث",
-    "cdogsTemplate": "قالب CDOGS"
+    "cdogsTemplate": "قالب CDOGS",
+    "externalAPIs": "واجهات برمجة التطبيقات الخارجية",
+    "eventStreamConfig": "تكوين تدفق الحدث"
   },
   "documentTemplate": {
     "uploadTemplate": "تحميل قالب CDOGS",
@@ -172,7 +174,26 @@
     "wideFormLayout": "تخطيط نموذج واسع",
     "formMetadataTitle": "بيانات تعريف النموذج",
     "formMetadataMessage": "معلومات منظمة لوصف أو شرح هذا النموذج للأنظمة الخارجية. ستتضمن الاستدعاءات للأنظمة الخارجية هذه البيانات التعريفية في حمولاتها.",
-    "formMetadataJsonError": "يجب أن تكون البيانات الوصفية للنموذج JSON صالحة. استخدم علامات الاقتباس المزدوجة حول السمات والقيم."
+    "formMetadataJsonError": "يجب أن تكون البيانات الوصفية للنموذج JSON صالحة. استخدم علامات الاقتباس المزدوجة حول السمات والقيم.",
+    "eventStreamTitle": "إعدادات بث الحدث",
+    "eventStreamMessage": "ستنشر خدمة Event Stream إشعارات حول نشر النماذج وإرسالها. تعتمد هذه الخدمة على تقنية NATS.io التي تسمح للمستهلكين بالاشتراك أو سحب رسائل الحدث ومعالجتها في أنظمة خارجية. ستحتوي الرسائل الخاصة على حمولات مشفرة بالمفتاح الذي تم تكوينه هنا.",
+    "natsConfiguration": "تكوين NATS وبيانات الرسائل الوصفية",
+    "publishConfiguration": "تكوين نشر الحدث",
+    "enablePublicStream": "تمكين البث العام",
+    "enablePrivateStream": "تمكين البث الخاص",
+    "encryptionKeyAlgorithm": "خوارزمية مفتاح التشفير",
+    "encryptionKey": "مفتاح التشفير",
+    "encryptionKeyReq": "مفتاح التشفير مطلوب للتدفقات الخاصة",
+    "fetchEncryptionAlgorithmListError": "خطأ في جلب قائمة خوارزمية التشفير.",
+    "serversLabel": "الخوادم",
+    "streamNameLabel": "اسم البث",
+    "sourceLabel": "مصدر",
+    "domainLabel": "اِختِصاص",
+    "eventStreamUpdatedBy": "تم تحديث إعدادات تدفق الحدث بواسطة",
+    "encryptionKeyUpdatedBy": "تم تحديث مفتاح التشفير بواسطة",
+    "encryptionKeyCopySnackbar": "تم نسخ مفتاح التشفير إلى الحافظة",
+    "encryptionKeyCopyTooltip": "نسخ مفتاح التشفير إلى الحافظة",
+    "encryptionKeyGenerate": "إنشاء مفتاح التشفير"
   },
   "formProfile": {
     "message": "تقوم فرق CHEFS بجمع وتنظيم المعلومات لتكون مدخلات حاسمة لصياغة حالات أعمال شاملة. ستلعب هذه الحالات دورًا حيويًا في توجيه العمليات الاستراتيجية وتحسين CHEFS المستمر في السنوات القادمة. هذه المبادرة لجمع البيانات ضرورية لإعلام القرارات الحاسمة وتشكيل مسار CHEFS ، مما يضمن قابليتها للتكيف وفعاليتها في التعامل مع الاحتياجات والتحديات المتطورة.",
@@ -344,7 +365,8 @@
     "users": "المستخدمون",
     "developer": "مطور",
     "infoLinks": "روابط المعلومات",
-    "metrics": "المقاييس"
+    "metrics": "المقاييس",
+    "apis": "واجهات برمجة التطبيقات"
   },
   "adminUsersTable": {
     "search": "يبحث",
@@ -725,10 +747,6 @@
   "proactiveHelpPreviewDialog": {
     "learnMore": "يتعلم أكثر"
   },
-  "preview": {
-    "preview": "معاينة",
-    "previewToolTip": "يعرض هذا معاينة لتصميم إصدار النموذج وسلوكه كما يراه مقدموه. لا يمكنك تقديم النموذج من هذه الصفحة."
-  },
   "generalLayout": {
     "loadingText": "جاري التحميل الرجاءالانتظار",
     "preview": "معاينة",
@@ -885,7 +903,8 @@
     "continue": "يكمل",
     "back": "خلف",
     "confirmPageNav": "هل تريد حقًا مغادرة هذه الصفحة؟ لن يتم حفظ التغييرات التي قمت بها.",
-    "agreementErrMsg": "يجب أن توافق على إخلاء مسؤولية الخصوصية الموضح أعلاه."
+    "agreementErrMsg": "يجب أن توافق على إخلاء مسؤولية الخصوصية الموضح أعلاه.",
+    "formProfile": "نموذج الملف الشخصي"
   },
   "addTeamMember": {
     "cantFindChefsUsers": "لا يمكنك العثور على شخص ما؟ ربما لم يقوموا بتسجيل الدخول إلى CHEFS.<br /> يرجى إرسال رابط إلى CHEFS واطلب منهم تسجيل الدخول.",
@@ -991,7 +1010,13 @@
       "updatingFCStatusErrMsg": "حدث خطأ أثناء تحديث حالة النشر",
       "updatingFCStatusConsErrMsg": "خطأ في تحديث حالة النشر: {error}",
       "fecthingFormBuilderCompsErrMsg": "حدث خطأ أثناء إحضار مكونات أداة إنشاء النماذج",
-      "fecthingFormBuilderCompsConsErrMsg": "خطأ في الحصول على مكونات منشئ النموذج: {error}"
+      "fecthingFormBuilderCompsConsErrMsg": "خطأ في الحصول على مكونات منشئ النموذج: {error}",
+      "getAPIsErrMsg": "حدث خطأ أثناء جلب قائمة واجهات برمجة التطبيقات الخارجية.",
+      "getAPIsConsErrMsg": "حدث خطأ أثناء جلب قائمة واجهات برمجة التطبيقات الخارجية: {error}",
+      "updateAPIsErrMsg": "خطأ في تحديث واجهة برمجة التطبيقات الخارجية.",
+      "updateAPIsConsErrMsg": "خطأ في تحديث واجهة برمجة التطبيقات الخارجية: {error}",
+      "getAPICodesErrMsg": "حدث خطأ أثناء جلب قائمة رموز حالة واجهة برمجة التطبيقات الخارجية.",
+      "getAPICodesConsErrMsg": "حدث خطأ أثناء جلب قائمة رموز حالة واجهة برمجة التطبيقات الخارجية: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "خطأ في تحميل قوالب البريد الإلكتروني لـ {formId}: {error}",
@@ -1083,5 +1108,89 @@
       "history": "تاريخ",
       "user": "مستخدم"
     }
+  },
+  "eventStreamConfig": {
+    "info": "قم بتكوين تدفق الحدث للنموذج الخاص بك.",
+    "create": "إنشاء تكوين تدفق الحدث الجديد",
+    "createError": "لم يتم إنشاء تكوين تدفق الحدث.",
+    "createSuccess": "تم إنشاء تكوين تدفق الحدث بنجاح.",
+    "createTitle": "تكوين تدفق الحدث الجديد",
+    "delete": "يمسح",
+    "deleteSuccess": "تم حذف تكوين تدفق الحدث بنجاح.",
+    "deleteError": "حدث خطأ أثناء حذف تكوين تدفق الحدث.",
+    "edit": "يحرر",
+    "editError": "لم يتم تحديث تكوين تدفق الحدث.",
+    "editSuccess": "تم تحديث تكوين تدفق الحدث بنجاح.",
+    "editTitle": "تحرير تكوين تدفق الحدث",
+    "fetchError": "حدث خطأ أثناء جلب تكوين تدفق الحدث.",
+    "save": "يحفظ"
+  },
+  "encryptionKey": {
+    "info": "قم بتكوين مفاتيح التشفير للنماذج الخاصة بك.",
+    "create": "إنشاء مفتاح تشفير جديد",
+    "createError": "لم يتم إنشاء مفتاح التشفير.",
+    "createSuccess": "تم إنشاء مفتاح التشفير بنجاح.",
+    "createTitle": "تكوين مفتاح التشفير الجديد",
+    "delete": "يمسح",
+    "deleteSuccess": "تم حذف مفتاح التشفير بنجاح.",
+    "deleteError": "حدث خطأ أثناء حذف مفتاح التشفير.",
+    "edit": "يحرر",
+    "editError": "لم يتم تحديث مفتاح التشفير.",
+    "editSuccess": "تم تحديث مفتاح التشفير بنجاح.",
+    "editTitle": "تعديل مفتاح التشفير",
+    "fetchError": "حدث خطأ أثناء جلب مفتاح التشفير.",
+    "fetchListError": "حدث خطأ أثناء جلب قائمة مفاتيح التشفير.",
+    "save": "يحفظ"
+  },
+  "externalAPI": {
+    "info": "قم بتكوين واجهات برمجة التطبيقات الخارجية لاستخدامها في النموذج الخاص بك.",
+    "create": "إنشاء واجهة برمجة تطبيقات خارجية جديدة.",
+    "createError": "لم يتم إنشاء واجهة برمجة التطبيقات الخارجية.",
+    "createSuccess": "تم إنشاء واجهة برمجة التطبيقات الخارجية بنجاح.",
+    "createTitle": "تكوين واجهة برمجة التطبيقات الخارجية الجديدة",
+    "delete": "يمسح",
+    "deleteSuccess": "تم حذف واجهة برمجة التطبيقات الخارجية بنجاح.",
+    "deleteError": "حدث خطأ أثناء حذف واجهة برمجة التطبيقات الخارجية.",
+    "edit": "يحرر",
+    "editError": "لم يتمكن من تحديث واجهة برمجة التطبيقات الخارجية.",
+    "editSuccess": "تم تحديث واجهة برمجة التطبيقات الخارجية بنجاح.",
+    "editTitle": "تعديل تكوين واجهة برمجة التطبيقات الخارجية",
+    "fetchError": "حدث خطأ أثناء جلب واجهة برمجة التطبيقات الخارجية.",
+    "fetchListError": "حدث خطأ أثناء جلب قائمة API الخارجية.",
+    "fetchStatusListError": "حدث خطأ أثناء جلب قائمة رمز حالة واجهة برمجة التطبيقات الخارجية.",
+    "save": "يحفظ",
+    "formName": "اسم",
+    "formEndpointUrl": "عنوان URL لنقطة النهاية",
+    "formStatus": "حالة",
+    "formSendApiKey": "إرسال مفتاح API",
+    "formApiKeyHeader": "اسم رأس مفتاح API",
+    "formApiKey": "قيمة مفتاح API",
+    "formSendUserToken": "إرسال رمز المستخدم",
+    "formUserTokenHeader": "اسم رأس رمز المستخدم",
+    "formUserTokenBearer": "رمز المستخدم كرمز حامل",
+    "formSendUserInfo": "إرسال معلومات المستخدم",
+    "formNameReq": "الاسم مطلوب.",
+    "formNameMaxChars": "يجب أن يكون الاسم 255 حرفًا أو أقل",
+    "validEndpointRequired": "الرجاء إدخال نقطة نهاية صالحة تبدأ بـ http:// أو https://",
+    "apiKeyFieldRequired": "مطلوب عند تحديد &quot;إرسال مفتاح API&quot;.",
+    "userTokenFieldRequired": "مطلوب عند تحديد &quot;إرسال رمز المستخدم&quot;."
+  },
+  "adminAPIsTable": {
+    "search": "يبحث",
+    "loadingText": "جاري التحميل... الرجاء الإنتظار",
+    "ministry": "وزارة",
+    "ministryName": "اسم الوزارة",
+    "formName": "استمارة",
+    "formId": "معرف النموذج",
+    "name": "اسم واجهة برمجة التطبيقات",
+    "endpointUrl": "عنوان URL لنقطة النهاية",
+    "display": "حالة",
+    "actions": "الإجراءات",
+    "edit": "يحرر",
+    "editTitle": "تحديث حالة واجهة برمجة التطبيقات الخارجية",
+    "allowSendUserToken": "السماح بـ &quot;إرسال رمز المستخدم&quot;"
+  },
+  "test": {
+    "customError": "This is a custom error message for testing."
   }
 }

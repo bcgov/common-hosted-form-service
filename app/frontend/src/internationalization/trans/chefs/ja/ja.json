@@ -70,7 +70,9 @@
     "update": "アップデート",
     "cancel": "キャンセル",
     "eventSubscription": "イベントのサブスクリプション",
-    "cdogsTemplate": "CDOGS テンプレート"
+    "cdogsTemplate": "CDOGS テンプレート",
+    "externalAPIs": "外部API",
+    "eventStreamConfig": "イベントストリームの構成"
   },
   "documentTemplate": {
     "uploadTemplate": "CDOGSテンプレートをアップロード",
@@ -172,7 +174,26 @@
     "wideFormLayout": "ワイドフォームレイアウト",
     "formMetadataTitle": "フォームのメタデータ",
     "formMetadataMessage": "このフォームを外部システムに記述または説明するための構造化情報。外部システムへの呼び出しには、このメタデータがペイロードに含まれます。",
-    "formMetadataJsonError": "フォームのメタデータは有効な JSON である必要があります。属性と値を二重引用符で囲みます。"
+    "formMetadataJsonError": "フォームのメタデータは有効な JSON である必要があります。属性と値を二重引用符で囲みます。",
+    "eventStreamTitle": "イベントストリーム設定",
+    "eventStreamMessage": "イベント ストリーム サービスは、フォームの公開と送信に関する通知を発行します。基盤となるテクノロジーは NATS.io で、これによりコンシューマーはイベント メッセージをサブスクライブまたはプルし、外部システムで処理できます。プライベート メッセージには、ここで設定されたキーを使用して暗号化されたペイロードが含まれます。",
+    "natsConfiguration": "NATS 構成とメッセージ メタデータ",
+    "publishConfiguration": "イベント公開設定",
+    "enablePublicStream": "パブリックストリームを有効にする",
+    "enablePrivateStream": "プライベートストリームを有効にする",
+    "encryptionKeyAlgorithm": "暗号化キーアルゴリズム",
+    "encryptionKey": "暗号化キー",
+    "encryptionKeyReq": "プライベートストリームには暗号化キーが必要です",
+    "fetchEncryptionAlgorithmListError": "暗号化アルゴリズム リストの取得中にエラーが発生しました。",
+    "serversLabel": "サーバー",
+    "streamNameLabel": "ストリーム名",
+    "sourceLabel": "ソース",
+    "domainLabel": "ドメイン",
+    "eventStreamUpdatedBy": "イベントストリーム設定の更新者",
+    "encryptionKeyUpdatedBy": "暗号化キーの更新者",
+    "encryptionKeyCopySnackbar": "暗号化キーがクリップボードにコピーされました",
+    "encryptionKeyCopyTooltip": "暗号化キーをクリップボードにコピー",
+    "encryptionKeyGenerate": "暗号化キーの生成"
   },
   "formProfile": {
     "message": "CHEFSチームは包括的なビジネスケースの作成に重要な入力となる情報を収集し、整理しています。これらのケースは、CHEFSの戦略的な運用と今後の改善を指南するうえで重要な役割を果たします。データを収集するこの取り組みは、重要な意思決定の情報提供やCHEFSの軌道を形作るために不可欠です。これにより、CHEFSが変化するニーズと課題に対応するための適応性と効果を確保します.",
@@ -344,7 +365,8 @@
     "users": "ユーザー",
     "developer": "デベロッパー",
     "infoLinks": "情報リンク",
-    "metrics": "メトリクス"
+    "metrics": "メトリクス",
+    "apis": "APIについて"
   },
   "adminUsersTable": {
     "search": "検索",
@@ -725,10 +747,6 @@
   "proactiveHelpPreviewDialog": {
     "learnMore": "もっと詳しく知る"
   },
-  "preview": {
-    "preview": "プレビュー",
-    "previewToolTip": "これは、送信者に表示されるフォーム バージョンのデザインと動作のプレビューを示します。このページからフォームを送信することはできません。"
-  },
   "generalLayout": {
     "loadingText": "読み込み中。。。待って下さい",
     "preview": "プレビュー",
@@ -885,7 +903,8 @@
     "continue": "続く",
     "back": "戻る",
     "confirmPageNav": "本当にこのページを離れてもよろしいですか?加えた変更は保存されません。",
-    "agreementErrMsg": "上記のプライバシー免責事項に同意する必要があります。"
+    "agreementErrMsg": "上記のプライバシー免責事項に同意する必要があります。",
+    "formProfile": "フォームプロファイル"
   },
   "addTeamMember": {
     "cantFindChefsUsers": "誰かが見つかりませんか?彼らは CHEFS にログインしていない可能性があります。<br /> CHEFS へのリンクを送信して、ログインするようお願いしてください。",
@@ -991,7 +1010,13 @@
       "updatingFCStatusErrMsg": "公開ステータスの更新中にエラーが発生しました",
       "updatingFCStatusConsErrMsg": "公開ステータスの更新中にエラーが発生しました: {error}",
       "fecthingFormBuilderCompsErrMsg": "フォームビルダーコンポーネントの取得中にエラーが発生しました",
-      "fecthingFormBuilderCompsConsErrMsg": "フォームビルダーコンポーネントの取得エラー: {error}"
+      "fecthingFormBuilderCompsConsErrMsg": "フォームビルダーコンポーネントの取得エラー: {error}",
+      "getAPIsErrMsg": "外部 API リストの取得中にエラーが発生しました。",
+      "getAPIsConsErrMsg": "外部 API リストの取得中にエラーが発生しました: {error}",
+      "updateAPIsErrMsg": "外部 API の更新中にエラーが発生しました。",
+      "updateAPIsConsErrMsg": "外部 API の更新中にエラーが発生しました: {error}",
+      "getAPICodesErrMsg": "外部 API ステータス コード リストの取得中にエラーが発生しました。",
+      "getAPICodesConsErrMsg": "外部 API ステータス コード リストの取得中にエラーが発生しました: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "{formId} の電子メール テンプレートの読み込みエラー: {error}",
@@ -1083,5 +1108,89 @@
       "history": "歴史",
       "user": "ユーザー"
     }
+  },
+  "eventStreamConfig": {
+    "info": "フォームのイベント ストリームを構成します。",
+    "create": "新しいイベントストリーム構成を作成する",
+    "createError": "イベント ストリーム構成を作成できませんでした。",
+    "createSuccess": "イベント ストリーム構成が正常に作成されました。",
+    "createTitle": "新しいイベントストリーム構成",
+    "delete": "消去",
+    "deleteSuccess": "イベント ストリーム構成が正常に削除されました。",
+    "deleteError": "イベント ストリーム構成の削除中にエラーが発生しました。",
+    "edit": "編集",
+    "editError": "イベント ストリーム構成を更新できませんでした。",
+    "editSuccess": "イベント ストリーム構成が正常に更新されました。",
+    "editTitle": "イベントストリーム構成の編集",
+    "fetchError": "イベント ストリーム構成の取得中にエラーが発生しました。",
+    "save": "保存"
+  },
+  "encryptionKey": {
+    "info": "フォームの暗号化キーを設定します。",
+    "create": "新しい暗号化キーを作成する",
+    "createError": "暗号化キーを作成できませんでした。",
+    "createSuccess": "暗号化キーが正常に作成されました。",
+    "createTitle": "新しい暗号化キーの設定",
+    "delete": "消去",
+    "deleteSuccess": "暗号化キーが正常に削除されました。",
+    "deleteError": "暗号化キーの削除中にエラーが発生しました。",
+    "edit": "編集",
+    "editError": "暗号化キーを更新できませんでした。",
+    "editSuccess": "暗号化キーが正常に更新されました。",
+    "editTitle": "暗号化キーの編集",
+    "fetchError": "暗号化キーの取得中にエラーが発生しました。",
+    "fetchListError": "暗号化キー リストの取得中にエラーが発生しました。",
+    "save": "保存"
+  },
+  "externalAPI": {
+    "info": "フォームで使用するために外部 API を構成します。",
+    "create": "新しい外部 API を作成します。",
+    "createError": "外部 API を作成できませんでした。",
+    "createSuccess": "外部 API が正常に作成されました。",
+    "createTitle": "新しい外部API構成",
+    "delete": "消去",
+    "deleteSuccess": "外部 API が正常に削除されました。",
+    "deleteError": "外部 API の削除中にエラーが発生しました。",
+    "edit": "編集",
+    "editError": "外部 API を更新できませんでした。",
+    "editSuccess": "外部 API が正常に更新されました。",
+    "editTitle": "外部API設定の編集",
+    "fetchError": "外部 API の取得中にエラーが発生しました。",
+    "fetchListError": "外部 API リストの取得中にエラーが発生しました。",
+    "fetchStatusListError": "外部 API ステータス コード リストの取得中にエラーが発生しました。",
+    "save": "保存",
+    "formName": "名前",
+    "formEndpointUrl": "エンドポイント URL",
+    "formStatus": "状態",
+    "formSendApiKey": "APIキーを送信",
+    "formApiKeyHeader": "API キー ヘッダー名",
+    "formApiKey": "APIキー値",
+    "formSendUserToken": "ユーザートークンを送信",
+    "formUserTokenHeader": "ユーザートークンヘッダー名",
+    "formUserTokenBearer": "ベアラートークンとしてのユーザートークン",
+    "formSendUserInfo": "ユーザー情報を送信",
+    "formNameReq": "名前は必須です。",
+    "formNameMaxChars": "名前は255文字以下でなければなりません",
+    "validEndpointRequired": "http:// または https:// で始まる有効なエンドポイントを入力してください",
+    "apiKeyFieldRequired": "「API キーの送信」を選択した場合は必須です。",
+    "userTokenFieldRequired": "「ユーザー トークンの送信」を選択した場合に必須です。"
+  },
+  "adminAPIsTable": {
+    "search": "検索",
+    "loadingText": "読み込み中... しばらくお待ちください",
+    "ministry": "省",
+    "ministryName": "省庁名",
+    "formName": "形状",
+    "formId": "フォームID",
+    "name": "API名",
+    "endpointUrl": "エンドポイント URL",
+    "display": "状態",
+    "actions": "アクション",
+    "edit": "編集",
+    "editTitle": "外部APIステータスの更新",
+    "allowSendUserToken": "「ユーザートークンの送信」を許可する"
+  },
+  "test": {
+    "customError": "This is a custom error message for testing."
   }
 }

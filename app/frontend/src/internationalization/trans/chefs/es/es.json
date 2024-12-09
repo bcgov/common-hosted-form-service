@@ -70,7 +70,9 @@
     "update": "Actualizar",
     "cancel": "Cancelar",
     "eventSubscription": "Suscripción a eventos",
-    "cdogsTemplate": "Plantilla CDDOGS"
+    "cdogsTemplate": "Plantilla CDDOGS",
+    "externalAPIs": "API externas",
+    "eventStreamConfig": "Configuración de la secuencia de eventos"
   },
   "documentTemplate": {
     "uploadTemplate": "Subir plantilla de CDOGS",
@@ -172,7 +174,26 @@
     "wideFormLayout": "Diseño de formulario amplio",
     "formMetadataTitle": "Metadatos del formulario",
     "formMetadataMessage": "Información estructurada para describir o explicar este formulario a sistemas externos. Las llamadas a sistemas externos incluirán estos metadatos en sus cargas útiles.",
-    "formMetadataJsonError": "Los metadatos del formulario deben ser JSON válidos. Utilice comillas dobles alrededor de atributos y valores."
+    "formMetadataJsonError": "Los metadatos del formulario deben ser JSON válidos. Utilice comillas dobles alrededor de atributos y valores.",
+    "eventStreamTitle": "Configuración de la transmisión de eventos",
+    "eventStreamMessage": "El servicio Event Stream Service publicará notificaciones sobre la publicación y el envío de formularios. La tecnología subyacente es NATS.io, que permite a los consumidores suscribirse o extraer los mensajes de eventos y procesarlos en sistemas externos. Los mensajes privados contendrán cargas útiles cifradas con la clave configurada aquí.",
+    "natsConfiguration": "Configuración de NATS y metadatos de mensajes",
+    "publishConfiguration": "Configuración de publicación de eventos",
+    "enablePublicStream": "Habilitar transmisión pública",
+    "enablePrivateStream": "Habilitar transmisión privada",
+    "encryptionKeyAlgorithm": "Algoritmo de clave de cifrado",
+    "encryptionKey": "Clave de cifrado",
+    "encryptionKeyReq": "Se requiere una clave de cifrado para transmisiones privadas",
+    "fetchEncryptionAlgorithmListError": "Error al obtener la lista de algoritmos de cifrado.",
+    "serversLabel": "Servidores",
+    "streamNameLabel": "Nombre de la transmisión",
+    "sourceLabel": "Fuente",
+    "domainLabel": "Dominio",
+    "eventStreamUpdatedBy": "Configuración de transmisión de eventos actualizada por",
+    "encryptionKeyUpdatedBy": "Clave de cifrado actualizada por",
+    "encryptionKeyCopySnackbar": "Clave de cifrado copiada al portapapeles",
+    "encryptionKeyCopyTooltip": "Copiar la clave de cifrado al portapapeles",
+    "encryptionKeyGenerate": "Generar clave de cifrado"
   },
   "formProfile": {
     "message": "El equipo de CHEFS está recopilando y organizando información para servir como entrada crucial para la elaboración de casos de negocio integrales. Estos casos jugarán un papel fundamental en la guía de la operación estratégica y la mejora continua de CHEFS en los próximos años. Esta iniciativa de recopilación de datos es esencial para informar decisiones críticas y dar forma a la trayectoria de CHEFS, asegurando su adaptabilidad y efectividad para abordar necesidades y desafíos en constante evolución.",
@@ -344,7 +365,8 @@
     "users": "Usuarios",
     "developer": "Desarrollador",
     "infoLinks": "Enlaces de información",
-    "metrics": "Métrica"
+    "metrics": "Métrica",
+    "apis": "API"
   },
   "adminUsersTable": {
     "search": "Buscar",
@@ -725,10 +747,6 @@
   "proactiveHelpPreviewDialog": {
     "learnMore": "Aprende más"
   },
-  "preview": {
-    "preview": "Avance",
-    "previewToolTip": "Esto muestra una vista previa del diseño y el comportamiento de la versión del formulario tal como lo verán los remitentes. No puede enviar el formulario desde esta página."
-  },
   "generalLayout": {
     "loadingText": "Cargando por favor espere",
     "preview": "AVANCE",
@@ -885,7 +903,8 @@
     "continue": "Continuar",
     "back": "Atrás",
     "confirmPageNav": "¿De verdad quieres salir de esta página? Los cambios que haya realizado no se guardarán.",
-    "agreementErrMsg": "Debe aceptar el descargo de responsabilidad de privacidad que se muestra arriba."
+    "agreementErrMsg": "Debe aceptar el descargo de responsabilidad de privacidad que se muestra arriba.",
+    "formProfile": "Perfil del formulario"
   },
   "addTeamMember": {
     "cantFindChefsUsers": "¿No puedes encontrar a alguien? Es posible que no hayan iniciado sesión en CHEFS.<br /> Envíeles un enlace a CHEFS y pídales que inicien sesión.",
@@ -991,7 +1010,13 @@
       "updatingFCStatusErrMsg": "Ocurrió un error al actualizar el estado de publicación",
       "updatingFCStatusConsErrMsg": "Error al actualizar el estado de publicación: {error}",
       "fecthingFormBuilderCompsErrMsg": "Se produjo un error al obtener los componentes del generador de formularios",
-      "fecthingFormBuilderCompsConsErrMsg": "Error al obtener los componentes del generador de formularios: {error}"
+      "fecthingFormBuilderCompsConsErrMsg": "Error al obtener los componentes del generador de formularios: {error}",
+      "getAPIsErrMsg": "Se produjo un error al obtener la lista de API externas.",
+      "getAPIsConsErrMsg": "Error al obtener la lista de API externas: {error}",
+      "updateAPIsErrMsg": "Error al actualizar la API externa.",
+      "updateAPIsConsErrMsg": "Error al actualizar la API externa: {error}",
+      "getAPICodesErrMsg": "Error al obtener la lista de códigos de estado de API externas.",
+      "getAPICodesConsErrMsg": "Error al obtener la lista de códigos de estado de API externas: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Error al cargar plantillas de correo electrónico para {formId}: {error}",
@@ -1083,5 +1108,89 @@
       "history": "HISTORIA",
       "user": "Usuario"
     }
+  },
+  "eventStreamConfig": {
+    "info": "Configure el flujo de eventos para su formulario.",
+    "create": "Crear nueva configuración de flujo de eventos",
+    "createError": "No se pudo crear la configuración del flujo de eventos.",
+    "createSuccess": "Configuración de flujo de eventos creada exitosamente.",
+    "createTitle": "Nueva configuración de flujo de eventos",
+    "delete": "Borrar",
+    "deleteSuccess": "La configuración del flujo de eventos se eliminó correctamente.",
+    "deleteError": "Se produjo un error al eliminar la configuración del flujo de eventos.",
+    "edit": "Editar",
+    "editError": "No se pudo actualizar la configuración del flujo de eventos.",
+    "editSuccess": "La configuración del flujo de eventos se actualizó correctamente.",
+    "editTitle": "Editar la configuración de la secuencia de eventos",
+    "fetchError": "Se produjo un error al obtener la configuración del flujo de eventos.",
+    "save": "Ahorrar"
+  },
+  "encryptionKey": {
+    "info": "Configure claves de cifrado para su formulario.",
+    "create": "Crear nueva clave de cifrado",
+    "createError": "No se pudo crear la clave de cifrado.",
+    "createSuccess": "Clave de cifrado creada exitosamente.",
+    "createTitle": "Nueva configuración de clave de cifrado",
+    "delete": "Borrar",
+    "deleteSuccess": "Clave de cifrado eliminada correctamente.",
+    "deleteError": "Se produjo un error al eliminar la clave de cifrado.",
+    "edit": "Editar",
+    "editError": "No se pudo actualizar la clave de cifrado.",
+    "editSuccess": "Clave de cifrado actualizada correctamente.",
+    "editTitle": "Editar clave de cifrado",
+    "fetchError": "Se produjo un error al obtener la clave de cifrado.",
+    "fetchListError": "Se produjo un error al obtener la lista de claves de cifrado.",
+    "save": "Ahorrar"
+  },
+  "externalAPI": {
+    "info": "Configure las API externas para usarlas en su formulario.",
+    "create": "Crear nueva API externa.",
+    "createError": "No se pudo crear la API externa.",
+    "createSuccess": "API externa creada exitosamente.",
+    "createTitle": "Nueva configuración de API externa",
+    "delete": "Borrar",
+    "deleteSuccess": "API externa eliminada exitosamente",
+    "deleteError": "Se produjo un error al eliminar la API externa.",
+    "edit": "Editar",
+    "editError": "No se pudo actualizar la API externa.",
+    "editSuccess": "API externa actualizada exitosamente.",
+    "editTitle": "Editar la configuración de la API externa",
+    "fetchError": "Se produjo un error al obtener la API externa.",
+    "fetchListError": "Se produjo un error al obtener la lista de API externas.",
+    "fetchStatusListError": "Se produjo un error al obtener la lista de códigos de estado de API externa.",
+    "save": "Ahorrar",
+    "formName": "Nombre",
+    "formEndpointUrl": "URL del punto final",
+    "formStatus": "Estado",
+    "formSendApiKey": "Enviar clave API",
+    "formApiKeyHeader": "Nombre del encabezado de la clave API",
+    "formApiKey": "Valor de la clave API",
+    "formSendUserToken": "Enviar token de usuario",
+    "formUserTokenHeader": "Nombre del encabezado del token de usuario",
+    "formUserTokenBearer": "Token de usuario como token portador",
+    "formSendUserInfo": "Enviar información del usuario",
+    "formNameReq": "El nombre es obligatorio.",
+    "formNameMaxChars": "El nombre debe tener 255 caracteres o menos",
+    "validEndpointRequired": "Ingrese un punto final válido que comience con http:// o https://",
+    "apiKeyFieldRequired": "Obligatorio cuando se selecciona 'Enviar clave API'.",
+    "userTokenFieldRequired": "Obligatorio cuando se selecciona 'Enviar token de usuario'."
+  },
+  "adminAPIsTable": {
+    "search": "Buscar",
+    "loadingText": "Cargando... Por favor espere",
+    "ministry": "Ministerio",
+    "ministryName": "Nombre del ministerio",
+    "formName": "Forma",
+    "formId": "Identificación del formulario",
+    "name": "Nombre de la API",
+    "endpointUrl": "URL del punto final",
+    "display": "Estado",
+    "actions": "Comportamiento",
+    "edit": "Editar",
+    "editTitle": "Actualizar el estado de la API externa",
+    "allowSendUserToken": "Permitir 'Enviar token de usuario'"
+  },
+  "test": {
+    "customError": "This is a custom error message for testing."
   }
 }
