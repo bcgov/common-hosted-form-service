@@ -54,6 +54,7 @@ describe('FormSubmission.vue', () => {
     formStore.form = {
       id: 0,
       name: 'This is a form title',
+      wideFormLayout: true,
     };
     const fetchSubmissionSpy = vi.spyOn(formStore, 'fetchSubmission');
     fetchSubmissionSpy.mockImplementation(() => {});
@@ -88,6 +89,8 @@ describe('FormSubmission.vue', () => {
     expect(wrapper.text()).toContain('trans.formSubmission.submitted');
     expect(wrapper.text()).toContain('trans.formSubmission.submission');
     expect(wrapper.html()).toContain(formStore.form.name);
+    expect(setWideLayout).toHaveBeenCalledTimes(1);
+    expect(wrapper.vm.isWideLayout).toBeTruthy();
   });
 
   it('onDelete should push to the FormSubmissions page', async () => {

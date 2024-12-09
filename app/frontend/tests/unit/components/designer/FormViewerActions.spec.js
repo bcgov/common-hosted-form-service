@@ -73,6 +73,26 @@ describe('FormDisclaimer.vue', () => {
     expect(wrapper.vm.showEditToggle).toBeTruthy();
   });
 
+  it('when props.wideFormLayout is set from parent call setWideLayout', async () => {
+    const setWideLayout = vi.fn();
+    setWideLayout.mockImplementation(() => {});
+    const wrapper = mount(FormViewerActions, {
+      props: {
+        wideFormLayout: true,
+      },
+      global: {
+        plugins: [pinia],
+        provide: {
+          setWideLayout: setWideLayout,
+        },
+        stubs: STUBS,
+      },
+    });
+
+    expect(wrapper.vm.isWideLayout).toBeTruthy();
+    expect(setWideLayout).toBeCalledTimes(1);
+  });
+
   it('toggleWideLayout will toggle isWideLayout and call setWideLayout', async () => {
     const setWideLayout = vi.fn();
     setWideLayout.mockImplementation(() => {});
