@@ -234,15 +234,9 @@ objects:
                       key: mailapitoken
                       name: "chefs-${JOB_NAME}-secret"
                 - name: EVENTSTREAMSERVICE_SERVERS
-                  valueFrom:
-                    secretKeyRef:
-                      key: servers
-                      name: "${APP_NAME}-event-stream-service"
+                  value: "ess-nats.a191b5-dev.svc.cluster.local"
                 - name: EVENTSTREAMSERVICE_WEBSOCKETS
-                  valueFrom:
-                    secretKeyRef:
-                      key: websockets
-                      name: "${APP_NAME}-event-stream-service"
+                  value: "false"
                 - name: EVENTSTREAMSERVICE_USERNAME
                   valueFrom:
                     secretKeyRef:
