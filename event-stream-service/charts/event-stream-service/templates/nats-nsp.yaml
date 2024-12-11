@@ -1,0 +1,69 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-chefs-to-nats
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: nats
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: nats
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              environment: {{ .Values.nsp.chefs.env }}
+              name: {{ .Values.nsp.chefs.namespace }}
+          podSelector:
+            matchLabels:
+              role: app
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-websocket-ingress-to-nats
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+spec:
+  podSelector: 
+    matchLabels:
+      app.kubernetes.io/component: nats
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: nats
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            network.openshift.io/policy-group: ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-nats-to-nats
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+spec:
+  podSelector: 
+    matchLabels:
+      app.kubernetes.io/component: nats
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: nats
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            environment: {{ .Values.nsp.nats.env }}
+            name: {{ .Values.nsp.nats.namespace }}
+        podSelector:
+          matchLabels:
+            app.kubernetes.io/component: nats
+            app.kubernetes.io/instance: {{ .Release.Name }}
+            app.kubernetes.io/name: nats

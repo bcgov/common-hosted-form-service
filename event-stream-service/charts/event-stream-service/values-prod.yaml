@@ -5,6 +5,12 @@ ess:
       ingressPrefix: stream
       ingressSuffix: .apps.silver.devops.gov.bc.ca
 
+nsp:
+  nats:
+    env: prod
+  chefs:
+    env: prod
+
 nats:
   config:
     jetstream:

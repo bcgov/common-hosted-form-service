@@ -18,6 +18,14 @@ ess:
         termination: edge
       wildcardPolicy: None
 
+nsp:
+  nats:
+    env: dev
+    namespace: a191b5
+  chefs:
+    env: dev
+    namespace: a12c97
+
 nats:
   fullnameOverride: ess-nats
   config:

@@ -5,6 +5,12 @@ ess:
       ingressPrefix: stream-test
       ingressSuffix: .apps.silver.devops.gov.bc.ca
 
+nsp:
+  nats:
+    env: test
+  chefs:
+    env: test
+
 nats:
   container:
     merge:
