@@ -60,10 +60,30 @@ export function formsettings(){
     
     cy.get('[data-test="email-test"] > .v-input__control > .v-selection-control > .v-label > div > span').click();
     cy.get(':nth-child(4) > .v-card > .v-card-text > .v-text-field > .v-input__control > .v-field > .v-field__field > .v-field__input').type('abc@gmail.com');
+    cy.get('.mb-6 > .mdi-help-circle-outline').should('exist');
+    cy.get('a.preview_info_link_field_white').then($el => {
+    const drftupload=$el[0];
+    const copy_sub=$el[1];
+    const wide_layput=$el[3];
+    const metadata=$el[4];
+    cy.get(drftupload).should("have.attr", "href", "https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/Allow-multiple-draft-upload/");
+    cy.get(copy_sub).should("have.attr", "href", "https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/Copy-an-existing-submission/");
+    cy.get(wide_layput).should("have.attr", "href", "https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/Wide-Form-Layout");
+    cy.get(metadata).should("have.attr", "href", "https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Integrations/Form-Metadata/");
+    });
+    cy.get('textarea').then($el => {
+
+        const metadata=$el[1];
+        cy.get(metadata).click({force: true});
+        cy.get('[data-test="json-test"]').type('{selectall}{backspace}');
+        cy.get('.v-messages__message').contains('Form metadata must be valid JSON. Use double-quotes around attributes and values.').should('exist');
+        cy.get('[data-test="json-test"]').type('{}');
+        
+        
+    });
    
     cy.get('.v-row > :nth-child(1) > .v-input > .v-input__control > .v-field > .v-field__append-inner').click();
     cy.contains("Citizens' Services (CITZ)").click();
-    
     cy.get('[data-test="case-select"]').click();
     cy.get('.v-list').should('contain','Applications that will be evaluated followed');
     cy.get('.v-list').should('contain','Collection of Datasets, data submission');
