@@ -1,13 +1,18 @@
-# Fider
+# CrunchyDB
 
-Fider uses CrunchyDB as its highly available database. CrunchyDB uses Patroni,
-which uses PostgreSQL as the database.
+CHEFS uses CrunchyDB for all of its highly available database. CrunchyDB uses
+Patroni for replication and failovers, and Patroni uses PostgreSQL as the
+underlying database.
 
 ## Installation
 
 This CrunchyDB installation use the
 [Helm chart](https://github.com/bcgov/crunchy-postgres) provided by the fine
-folks over at platform services. The `charts` directory has been copied here
-from commit `91d32cb` so that changes to the upstream repo don't unexpectedly
-change our deployments. This stability and consistency comes at the cost of
-added maintenance effort to stay in sync.
+folks over at platform services. Huge thanks go to this team for doing the hard
+work of figuring out the CrunchyDB setup and making it easy for the community.
+
+The `charts` directory has been copied here so that changes to the upstream repo
+don't unexpectedly change our deployments. This stability and consistency comes
+at the cost of added maintenance effort to stay in sync.
+
+This code is current to commit `91d32cb` in December 2024.
