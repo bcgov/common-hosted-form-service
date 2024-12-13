@@ -6,7 +6,7 @@ underlying database.
 
 ## Installation
 
-This CrunchyDB installation use the
+The CrunchyDB installations use the
 [Helm chart](https://github.com/bcgov/crunchy-postgres) provided by the fine
 folks over at platform services. Huge thanks go to this team for doing the hard
 work of figuring out the CrunchyDB setup and making it easy for the community.
