@@ -619,7 +619,7 @@ paths:
           name: preference
           schema:
             type: object
-          example: '{minDate=2020-12-17T08:00:00Z,maxDate=2020-12-18T08:00:00Z,updatedMinDate=2020-12-17T08:00:00Z,updatedMaxDate=2020-12-18T08:00:00Z}'
+          example: '{"minDate":"2020-12-17T08:00:00Z","maxDate":"2020-12-18T08:00:00Z","updatedMinDate":"2020-12-17T08:00:00Z","updatedMaxDate":"2020-12-18T08:00:00Z"}'
           description: form submissions export preferences
         - in: query
           name: deleted
@@ -3567,6 +3567,419 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /forms/{formId}/externalAPIs/algorithms:
+    get:
+      summary: List available algorithms for External API encryption
+      operationId: listExternalAPIAlgorithms
+      security:
+        - BearerAuth: []
+      tags:
+        - ExternalApi
+      parameters:
+        - in: path
+          name: formId
+          schema:
+            type: string
+            example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+          description: form ID
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                      description: code for encryption Algorithm
+                    display:
+                      type: string
+                      description: display for encryption Algorithm
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/{formId}/externalAPIs/statusCodes:
+    get:
+      summary: List status codes for External APIs
+      operationId: listExternalAPIStatusCodes
+      security:
+        - BearerAuth: []
+      tags:
+        - ExternalApi
+      parameters:
+        - in: path
+          name: formId
+          schema:
+            type: string
+            example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+          description: form ID
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                      description: code for Status
+                    display:
+                      type: string
+                      description: display for Status
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/{formId}/externalAPIs:
+    get:
+      summary: List External API configurations for form
+      operationId: listExternalAPIs
+      security:
+        - BearerAuth: []
+      tags:
+        - ExternalApi
+      parameters:
+        - in: path
+          name: formId
+          schema:
+            type: string
+            example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+          description: form ID
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExternalApi'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create a new External API configuration
+      operationId: createExternalAPI
+      tags:
+        - ExternalApi
+      parameters:
+        - in: path
+          name: formId
+          schema:
+            type: string
+            example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+          description: form ID
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ExternalApi'
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalApi'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forms/{formId}/externalAPIs/{externalAPIId}:
+    put:
+      summary: Update an External API configuration
+      operationId: updateExternalAPI
+      security:
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - ExternalApi
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+        - in: path
+          name: externalAPIId
+          schema:
+            type: string
+            example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+          description: external API ID
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExternalApi'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalApi'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete an External API configuration
+      operationId: deleteExternalAPI
+      security:
+        - BearerAuth: []
+          OpenID: []
+      tags:
+        - ExternalApi
+      parameters:
+        - $ref: '#/components/parameters/formIdParam'
+        - in: path
+          name: externalAPIId
+          schema:
+            type: string
+            example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+          description: external API ID
+          required: true
+      responses:
+        '204':
+          description: OK
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /proxy/external:
+    get:
+      summary: Call a GET on an External API and return the results
+      operationId: callExternalApi
+      tags:
+        - ExternalApi
+      parameters:
+        - in: header
+          name: X-CHEFS-PROXY-DATA
+          schema:
+            type: string
+            format: hex
+          required: true
+        - in: header
+          name: X-CHEFS-EXTERNAL-API-NAME
+          schema:
+            type: string
+            example: BC Registries Number Lookup
+          required: true
+        - in: header
+          name: X-CHEFS-EXTERNAL-API-PATH
+          schema:
+            type: string
+            example: /path/to/api?qs=val
+          required: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '407':
+          $ref: '#/components/responses/ApiNotApproved'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /proxy/headers:
+    post:
+      summary: Generate encrypted headers for External API
+      operationId: generateProxyHeaders
+      security:
+        - BearerAuth: []
+      tags:
+        - ExternalApi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProxyInfo'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProxyData'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/externalAPIs:
+    get:
+      summary: Get list of External APIs
+      operationId: adminGetExternalAPIs
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+          OpenID:
+            - admin
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdminExternalApi'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/externalAPIs/statusCodes:
+    get:
+      summary: Get list of Status Codes for External API
+      operationId: adminGetExternalAPIStatusCodes
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+          OpenID:
+            - admin
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                      description: code for Status
+                    display:
+                      type: string
+                      description: display for Status
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /admin/externalAPIs/{externalAPIId}:
+    put:
+      summary: Update an External API
+      operationId: adminUpdateExternalAPI
+      tags:
+        - Admin
+      security:
+        - BearerAuth: []
+          OpenID:
+            - admin
+      parameters:
+        - in: path
+          name: externalAPIId
+          schema:
+            type: string
+            example: bea3b705-1de5-4f4e-a4e6-0716b7674132
+          description: external API ID
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminExternalApi'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminExternalApi'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   headers:
     RateLimit:
@@ -3663,6 +4076,47 @@ components:
       example: 3cb9acc7-cfd8-4491-b091-1277bc0ec303
       required: true
   schemas:
+    AdminExternalApi:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of ExternalApi.
+          example: 1223h78b-21d2-4128-b4e8-02ad3daipoi32
+        formId:
+          type: string
+          format: uuid
+          description: Form ID this ExternalApi belongs to.
+          example: 1223h78b-21d2-4128-b4e8-02ad3daipoi32
+        name:
+          type: string
+          description: Name of the ExternalApi - unique per form.
+          example: BC Registries Number Lookup
+        ministry:
+          type: string
+          description: Ministry Name of Form
+          example: CITZ
+        formName:
+          type: string
+          description: Name of the Form using the External API
+          example: My Form
+        endpointUrl:
+          type: string
+          format: url
+          description: Endpoint URL of the External API - the api to call.
+          example: https://bcreg.com/v1/lookup
+        code:
+          type: string
+          description: Status code.
+          example: APPROVED
+        display:
+          type: string
+          description: Status code display value.
+          example: Approved
+        allowSendUserToken:
+          type: boolean
+          description: Set by CHEFS Admin, true allows the sendUserToken to be set to true
     CurrentUser:
       type: object
       properties:
@@ -3830,6 +4284,57 @@ components:
             encryptionKey:
               $ref: '#/components/schemas/EncryptionKey'
         - $ref: '#/components/schemas/TimeStampUserData'
+    ExternalApi:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of ExternalApi.
+          example: 1223h78b-21d2-4128-b4e8-02ad3daipoi32
+        formId:
+          type: string
+          format: uuid
+          description: Form ID this ExternalApi belongs to.
+          example: 1223h78b-21d2-4128-b4e8-02ad3daipoi32
+        name:
+          type: string
+          description: Name of the ExternalApi - unique per form.
+          example: BC Registries Number Lookup
+        endpointUrl:
+          type: string
+          format: url
+          description: Endpoint URL of the External API - the api to call.
+          example: https://bcreg.com/v1/lookup
+        code:
+          type: string
+          description: Status code.
+          example: APPROVED
+        sendApiKey:
+          type: boolean
+          description: True, send an API Key to External API Endpoint
+        apiKeyHeader:
+          type: string
+          description: Name of API Key header
+          example: X-API-KEY
+        apiKey:
+          type: string
+          description: API Key Header value
+        allowSendUserToken:
+          type: boolean
+          description: Set by CHEFS Admin, true allows the sendUserToken to be set to true
+        sendUserToken:
+          type: boolean
+          description: True, send the user's token in headers to External API
+        userTokenHeader:
+          type: string
+          description: Name of header for sending the user token
+        userTokenBearer:
+          type: boolean
+          description: When true, send user token as a Bearer token
+        sendUserInfo:
+          type: boolean
+          description: Include user information via headers to External API
     FileUpload:
       type: object
       properties:
@@ -4545,6 +5050,22 @@ components:
         detail:
           type: string
           description: Short description of why this problem was raised
+    ProxyData:
+      properties:
+        'X-CHEFS-PROXY-DATA':
+          type: string
+          description: Encrypted payload that includes user identification and form/submission identification. Can only be read by CHEFs server.
+    ProxyInfo:
+      properties:
+        formId:
+          type: string
+          description: Id of the form (required when no submissionId)
+        versionId:
+          type: string
+          description: Id of the form version (required when no submissionId)
+        submissionId:
+          type: string
+          description: Id of the submission (optional) if submissionId provided, then formId and versionId are ignored
     Role:
       allOf:
         - $ref: '#/components/schemas/RoleBasic'
@@ -5123,6 +5644,36 @@ components:
   responses:
     Accepted:
       description: Accepted
+    ApiNotApproved:
+      description: CHEFS Admins have not approved the External API
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Problem'
+              - type: object
+                properties:
+                  status:
+                    example: 407
+                  title:
+                    example: Proxy Authentication Required
+                  type:
+                    example: https://httpstatuses.com/407
+    BadGateway:
+      description: Error attempting to call external system
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Problem'
+              - type: object
+                properties:
+                  status:
+                    example: 502
+                  title:
+                    example: Bad Gateway
+                  type:
+                    example: https://httpstatuses.com/502
     BadRequest:
       description: Request is missing content or is malformed
       content:
