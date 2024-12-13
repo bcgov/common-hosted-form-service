@@ -1,3 +1,4 @@
+const { ExternalAPIStatuses } = require('../common/constants');
 const { Form, FormVersion, User, UserFormAccess, FormComponentsProactiveHelp, AdminExternalAPI, ExternalAPI, ExternalAPIStatusCode } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 const { v4: uuidv4 } = require('uuid');
@@ -148,13 +149,32 @@ const service = {
       upd['userTokenHeader'] = null;
       upd['userTokenBearer'] = false;
     }
-
-    await ExternalAPI.query().patchAndFetchById(id, upd);
-
-    return ExternalAPI.query().findById(id);
+    let trx;
+    try {
+      trx = await ExternalAPI.startTransaction();
+      await ExternalAPI.query(trx).patchAndFetchById(id, upd);
+      await service._approveMany(id, data, trx);
+      await trx.commit();
+      return ExternalAPI.query().findById(id);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
   },
   getExternalAPIStatusCodes: async () => {
     return ExternalAPIStatusCode.query();
+  },
+  _approveMany: async (id, data, trx) => {
+    // if we are setting to approved, approve all similar endpoints.
+    // same ministry, same base url...
+    if (data.code === ExternalAPIStatuses.APPROVED) {
+      const adminExternalAPI = await AdminExternalAPI.query(trx).findById(id);
+      const delimiter = '?';
+      const baseUrl = data.endpointUrl.split(delimiter)[0];
+      await ExternalAPI.query(trx)
+        .patch({ code: ExternalAPIStatuses.APPROVED })
+        .whereRaw(`"endpointUrl" like '${baseUrl}%' and code = 'SUBMITTED' and "formId" in (select id from form where ministry = '${adminExternalAPI.ministry}')`);
+    }
   },
 
   /**

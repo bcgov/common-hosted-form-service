@@ -155,6 +155,7 @@ describe('createExternalAPI', () => {
   });
 
   it('should insert valid data', async () => {
+    service._updateAllPreApproved = jest.fn().mockResolvedValueOnce(0);
     validData.id = null;
     validData.code = null;
     await service.createExternalAPI(validData.formId, validData, user);
@@ -164,6 +165,7 @@ describe('createExternalAPI', () => {
       code: ExternalAPIStatuses.SUBMITTED,
       ...validData,
     });
+    expect(service._updateAllPreApproved).toBeCalledWith(validData.formId, validData, expect.anything());
   });
 
   it('should raise errors', async () => {
@@ -205,6 +207,7 @@ describe('updateExternalAPI', () => {
   });
 
   it('should update valid data', async () => {
+    service._updateAllPreApproved = jest.fn().mockResolvedValueOnce(0);
     MockModel.throwIfNotFound = jest.fn().mockResolvedValueOnce(Object.assign({}, validData));
 
     // we do not update (status) code - must stay SUBMITTED
@@ -217,6 +220,7 @@ describe('updateExternalAPI', () => {
       code: ExternalAPIStatuses.SUBMITTED,
       ...validData,
     });
+    expect(service._updateAllPreApproved).toBeCalledWith(validData.formId, validData, expect.anything());
   });
 
   it('should update user token fields when allowed', async () => {
@@ -226,6 +230,7 @@ describe('updateExternalAPI', () => {
     validData.userTokenHeader = 'Authorization';
     validData.userTokenBearer = true;
     MockModel.throwIfNotFound = jest.fn().mockResolvedValueOnce(Object.assign({}, validData));
+    service._updateAllPreApproved = jest.fn().mockResolvedValueOnce(0);
 
     await service.updateExternalAPI(validData.formId, validData.id, validData, user);
     expect(MockModel.update).toBeCalledTimes(1);
@@ -243,6 +248,7 @@ describe('updateExternalAPI', () => {
     validData.userTokenHeader = 'Authorization';
     validData.userTokenBearer = true;
     MockModel.throwIfNotFound = jest.fn().mockResolvedValueOnce(Object.assign({}, validData));
+    service._updateAllPreApproved = jest.fn().mockResolvedValueOnce(0);
 
     await service.updateExternalAPI(validData.formId, validData.id, validData, user);
     expect(MockModel.update).toBeCalledTimes(1);
