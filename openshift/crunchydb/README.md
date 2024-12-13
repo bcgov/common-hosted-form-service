@@ -8,8 +8,9 @@ underlying database.
 
 The CrunchyDB installations use the
 [Helm chart](https://github.com/bcgov/crunchy-postgres) provided by the fine
-folks over at platform services. Huge thanks go to this team for doing the hard
-work of figuring out the CrunchyDB setup and making it easy for the community.
+folks over at platform services. Huge thanks go to that team for doing the hard
+work of figuring out the CrunchyDB setup and making it easier for the community
+to use CrunchyDB.
 
 The `charts` directory has been copied here so that changes to the upstream repo
 don't unexpectedly change our deployments. This stability and consistency comes
