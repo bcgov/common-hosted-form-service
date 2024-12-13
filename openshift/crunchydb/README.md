@@ -1,6 +1,6 @@
 # CrunchyDB
 
-CHEFS uses CrunchyDB for all of its highly available database. CrunchyDB uses
+CHEFS uses CrunchyDB for all of its highly available databases. CrunchyDB uses
 Patroni for replication and failovers, and Patroni uses PostgreSQL as the
 underlying database.
 
