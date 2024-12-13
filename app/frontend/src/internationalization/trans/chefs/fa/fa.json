@@ -70,7 +70,9 @@
     "update": "به روز رسانی",
     "cancel": "لغو کنید",
     "eventSubscription": "اشتراک رویداد",
-    "cdogsTemplate": "قالب CDOGS"
+    "cdogsTemplate": "قالب CDOGS",
+    "externalAPIs": "API های خارجی",
+    "eventStreamConfig": "پیکربندی جریان رویداد"
   },
   "documentTemplate": {
     "uploadTemplate": "بارگذاری قالب CDOGS",
@@ -172,7 +174,26 @@
     "wideFormLayout": "طرح فرم گسترده",
     "formMetadataTitle": "فراداده فرم",
     "formMetadataMessage": "اطلاعات ساختاریافته برای توصیف یا توضیح این فرم برای سیستم های خارجی. تماس‌ها با سیستم‌های خارجی این ابرداده را در محموله‌های خود شامل می‌شوند.",
-    "formMetadataJsonError": "فراداده فرم باید JSON معتبر باشد. از دو نقل قول در مورد ویژگی ها و مقادیر استفاده کنید."
+    "formMetadataJsonError": "فراداده فرم باید JSON معتبر باشد. از دو نقل قول در مورد ویژگی ها و مقادیر استفاده کنید.",
+    "eventStreamTitle": "تنظیمات جریان رویداد",
+    "eventStreamMessage": "سرویس جریان رویداد اعلان‌های مربوط به انتشار فرم‌ها و ارسال‌ها را منتشر می‌کند. فناوری زیربنایی NATS.io است که به مصرف کنندگان اجازه می دهد تا پیام های رویداد را مشترک یا دریافت کنند و آنها را در سیستم های خارجی پردازش کنند. پیام های خصوصی حاوی محموله های رمزگذاری شده با کلید پیکربندی شده در اینجا خواهند بود.",
+    "natsConfiguration": "پیکربندی NATS و فراداده پیام",
+    "publishConfiguration": "پیکربندی انتشار رویداد",
+    "enablePublicStream": "جریان عمومی را فعال کنید",
+    "enablePrivateStream": "جریان خصوصی را فعال کنید",
+    "encryptionKeyAlgorithm": "الگوریتم کلید رمزگذاری",
+    "encryptionKey": "کلید رمزگذاری",
+    "encryptionKeyReq": "کلید رمزگذاری برای جریان‌های خصوصی لازم است",
+    "fetchEncryptionAlgorithmListError": "خطا در واکشی فهرست الگوریتم رمزگذاری.",
+    "serversLabel": "سرورها",
+    "streamNameLabel": "نام جریان",
+    "sourceLabel": "منبع",
+    "domainLabel": "دامنه",
+    "eventStreamUpdatedBy": "تنظیمات جریان رویداد به‌روزرسانی شده توسط",
+    "encryptionKeyUpdatedBy": "کلید رمزگذاری به روز شده توسط",
+    "encryptionKeyCopySnackbar": "کلید رمزگذاری در کلیپ بورد کپی شد",
+    "encryptionKeyCopyTooltip": "کلید رمزگذاری را در کلیپ بورد کپی کنید",
+    "encryptionKeyGenerate": "ایجاد کلید رمزگذاری"
   },
   "formProfile": {
     "message": "تیم CHEFS اطلاعات را جمع آوری و سازماندهی می‌کند تا به عنوان ورودی حیاتی برای ساخت مورد کارهای تجاری جامع عمل کند. این موارد نقش کلیدی در راهنمایی عملیات استراتژیک و بهبود مستمر CHEFS در سال‌های آینده خواهند داشت. این اقدام برای جمع‌آوری داده‌ها برای اطلاع از تصمیمات حیاتی و شکل‌دهی مسیر CHEFS جهت اطمینان از قابلیت تطبیق و کارایی آن در مواجهه با نیازها و چالش‌های در حال تحول حیاتی است.",
@@ -344,7 +365,8 @@
     "users": "کاربران",
     "developer": "توسعه دهنده",
     "infoLinks": "لینک های اطلاعات",
-    "metrics": "معیارهای"
+    "metrics": "معیارهای",
+    "apis": "API ها"
   },
   "adminUsersTable": {
     "search": "جستجو کردن",
@@ -725,10 +747,6 @@
   "proactiveHelpPreviewDialog": {
     "learnMore": "بیشتر بدانید"
   },
-  "preview": {
-    "preview": "پیش نمایش",
-    "previewToolTip": "این یک پیش نمایش از طراحی و رفتار نسخه فرم را نشان می دهد که ارسال کنندگان شما آن را مشاهده می کنند. شما نمی توانید فرم را از این صفحه ارسال کنید."
-  },
   "generalLayout": {
     "loadingText": "در حال بارگذاری لطفا صبر کنید",
     "preview": "پیش نمایش",
@@ -885,7 +903,8 @@
     "continue": "ادامه هید",
     "back": "بازگشت",
     "confirmPageNav": "آیا واقعاً می خواهید این صفحه را ترک کنید؟ تغییراتی که ایجاد کرده اید ذخیره نمی شوند.",
-    "agreementErrMsg": "شما باید با سلب مسئولیت حریم خصوصی نشان داده شده در بالا موافقت کنید."
+    "agreementErrMsg": "شما باید با سلب مسئولیت حریم خصوصی نشان داده شده در بالا موافقت کنید.",
+    "formProfile": "نمایه فرم"
   },
   "addTeamMember": {
     "cantFindChefsUsers": "نمی توانید کسی را پیدا کنید؟ آنها ممکن است وارد CHEFS نشده باشند.<br /> لطفاً یک پیوند به CHEFS برای آنها ارسال کنید و از آنها بخواهید که وارد شوند.",
@@ -991,7 +1010,13 @@
       "updatingFCStatusErrMsg": "هنگام به‌روزرسانی وضعیت انتشار خطایی روی داد",
       "updatingFCStatusConsErrMsg": "خطا در به‌روزرسانی وضعیت انتشار: {error}",
       "fecthingFormBuilderCompsErrMsg": "هنگام واکشی اجزای سازنده فرم خطایی روی داد",
-      "fecthingFormBuilderCompsConsErrMsg": "خطا در دریافت اجزای فرم ساز: {error}"
+      "fecthingFormBuilderCompsConsErrMsg": "خطا در دریافت اجزای فرم ساز: {error}",
+      "getAPIsErrMsg": "هنگام واکشی فهرست APIهای خارجی خطایی روی داد.",
+      "getAPIsConsErrMsg": "خطا در واکشی فهرست APIهای خارجی: {error}",
+      "updateAPIsErrMsg": "خطا در به‌روزرسانی API خارجی.",
+      "updateAPIsConsErrMsg": "خطا در به‌روزرسانی API خارجی: {error}",
+      "getAPICodesErrMsg": "خطا در واکشی لیست کدهای وضعیت API خارجی.",
+      "getAPICodesConsErrMsg": "خطا در واکشی لیست کدهای وضعیت API خارجی: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "خطا در بارگیری الگوهای ایمیل برای {formId}: {error}",
@@ -1083,5 +1108,89 @@
       "history": "تاریخ",
       "user": "کاربر"
     }
+  },
+  "eventStreamConfig": {
+    "info": "جریان رویداد را برای فرم خود پیکربندی کنید.",
+    "create": "پیکربندی جریان رویداد جدید ایجاد کنید",
+    "createError": "پیکربندی جریان رویداد ایجاد نشد.",
+    "createSuccess": "پیکربندی جریان رویداد با موفقیت ایجاد شد.",
+    "createTitle": "پیکربندی جریان رویداد جدید",
+    "delete": "حذف کنید",
+    "deleteSuccess": "پیکربندی جریان رویداد با موفقیت حذف شد.",
+    "deleteError": "هنگام حذف پیکربندی جریان رویداد خطایی روی داد.",
+    "edit": "ویرایش کنید",
+    "editError": "پیکربندی جریان رویداد به‌روزرسانی نشد.",
+    "editSuccess": "پیکربندی جریان رویداد با موفقیت به‌روزرسانی شد.",
+    "editTitle": "ویرایش پیکربندی جریان رویداد",
+    "fetchError": "هنگام واکشی پیکربندی جریان رویداد خطایی روی داد.",
+    "save": "ذخیره کنید"
+  },
+  "encryptionKey": {
+    "info": "کلیدهای رمزگذاری را برای فرم خود پیکربندی کنید.",
+    "create": "کلید رمزگذاری جدید ایجاد کنید",
+    "createError": "کلید رمزگذاری ایجاد نشد.",
+    "createSuccess": "کلید رمزگذاری با موفقیت ایجاد شد.",
+    "createTitle": "پیکربندی کلید رمزگذاری جدید",
+    "delete": "حذف کنید",
+    "deleteSuccess": "کلید رمزگذاری با موفقیت حذف شد.",
+    "deleteError": "هنگام حذف کلید رمزگذاری خطایی روی داد.",
+    "edit": "ویرایش کنید",
+    "editError": "کلید رمزگذاری به روز نشد.",
+    "editSuccess": "کلید رمزگذاری با موفقیت به روز شد.",
+    "editTitle": "ویرایش کلید رمزگذاری",
+    "fetchError": "هنگام واکشی کلید رمزگذاری خطایی روی داد.",
+    "fetchListError": "هنگام واکشی فهرست کلید رمزگذاری خطایی روی داد.",
+    "save": "ذخیره کنید"
+  },
+  "externalAPI": {
+    "info": "APIهای خارجی را برای استفاده در فرم خود پیکربندی کنید.",
+    "create": "API خارجی جدید ایجاد کنید.",
+    "createError": "API خارجی ایجاد نشد.",
+    "createSuccess": "API خارجی با موفقیت ایجاد شد.",
+    "createTitle": "پیکربندی جدید API خارجی",
+    "delete": "حذف کنید",
+    "deleteSuccess": "API خارجی با موفقیت حذف شد.",
+    "deleteError": "هنگام حذف API خارجی خطایی روی داد.",
+    "edit": "ویرایش کنید",
+    "editError": "API خارجی به روز نمی شود.",
+    "editSuccess": "API خارجی با موفقیت به روز شد.",
+    "editTitle": "پیکربندی API خارجی را ویرایش کنید",
+    "fetchError": "هنگام واکشی API خارجی خطایی روی داد.",
+    "fetchListError": "هنگام واکشی فهرست API خارجی خطایی روی داد.",
+    "fetchStatusListError": "هنگام واکشی لیست کد وضعیت API خارجی، خطایی روی داد.",
+    "save": "ذخیره کنید",
+    "formName": "نام",
+    "formEndpointUrl": "نشانی وب نقطه پایانی",
+    "formStatus": "وضعیت",
+    "formSendApiKey": "ارسال کلید API",
+    "formApiKeyHeader": "نام سرصفحه کلید API",
+    "formApiKey": "مقدار کلید API",
+    "formSendUserToken": "ارسال رمز کاربر",
+    "formUserTokenHeader": "نام سربرگ رمز کاربر",
+    "formUserTokenBearer": "توکن کاربر به عنوان توکن حامل",
+    "formSendUserInfo": "ارسال اطلاعات کاربر",
+    "formNameReq": "نام الزامی است.",
+    "formNameMaxChars": "نام باید 255 کاراکتر یا کمتر باشد",
+    "validEndpointRequired": "لطفاً یک نقطه پایان معتبر که با http:// یا https:// شروع می‌شود وارد کنید.",
+    "apiKeyFieldRequired": "هنگام انتخاب «ارسال کلید API» الزامی است.",
+    "userTokenFieldRequired": "هنگام انتخاب «ارسال رمز کاربر» الزامی است."
+  },
+  "adminAPIsTable": {
+    "search": "جستجو کنید",
+    "loadingText": "در حال بارگذاری... لطفاً صبر کنید",
+    "ministry": "وزارت",
+    "ministryName": "نام وزارت",
+    "formName": "فرم",
+    "formId": "شناسه فرم",
+    "name": "نام API",
+    "endpointUrl": "نشانی وب نقطه پایانی",
+    "display": "وضعیت",
+    "actions": "اقدامات",
+    "edit": "ویرایش کنید",
+    "editTitle": "به روز رسانی وضعیت API خارجی",
+    "allowSendUserToken": "اجازه دادن به &quot;Send User Token&quot;"
+  },
+  "test": {
+    "customError": "This is a custom error message for testing."
   }
 }

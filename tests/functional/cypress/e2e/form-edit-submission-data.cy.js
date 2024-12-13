@@ -106,7 +106,6 @@ describe('Form Designer', () => {
         //view submission
         cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
         cy.wait(2000);
-        
         //cy.get('.mdi-list-box-outline').click({multiple:true,force:true});
         cy.get('[data-test="canViewFormSubmissions"]').click({multiple:true,force:true});
         cy.waitForLoad();
