@@ -48,7 +48,6 @@ class MapService {
 
       // this.map = map;
       this.drawnItems = drawnItems;
-      console.log(options.defaultValue);
       map.invalidateSize();
       // Triggering a resize event after map initialization
       setTimeout(() => window.dispatchEvent(new Event('resize')), 0);
@@ -84,9 +83,7 @@ class MapService {
         });
         options.onDrawnItemsChange(drawnItems.getLayers());
       });
-      map.on(L.Draw.Event.DELETESTOP, (e) => {
-        console.log('end of delete');
-      });
+
       map.on(L.Draw.Event.EDITSTOP, (e) => {
         options.onDrawnItemsChange(drawnItems.getLayers());
       });
@@ -294,11 +291,9 @@ class MapService {
   isDefaultFeature(feature): boolean {
     const defaults = this.options.defaultValue.features;
     if (defaults.length === 0) {
-      console.log('No Defaults');
       return false;
     }
     const featureType = this.getFeatureType(feature);
-    console.log(featureType);
     const sameTypes = defaults.filter((d) => {
       return d.type === featureType;
     }); //filter out the types that don't match the marker to be deleted
@@ -311,10 +306,8 @@ class MapService {
         case 'marker':
           return this.coordinatesEqual(f.coordinates, feature.getLatLng());
         case 'rectangle':
-          console.log('Match Rectangle');
           return f.bounds === feature.getBounds();
         case 'circle':
-          console.log('Match Circle');
           const radCheck = f.radius === feature.getRadius();
           const pointCheck = this.coordinatesEqual(
             f.coordinates,
@@ -322,13 +315,10 @@ class MapService {
           );
           return radCheck && pointCheck;
         case 'polygon':
-          console.log('Match Polygon');
           return this.polyEqual(f.coordinates, feature.getLatLngs());
         case 'polyline':
-          console.log('Match Polyline');
           return this.polyEqual(f.coordinates, feature.getLatLngs());
         default:
-          console.log('Not matching a feature type');
           return false;
       }
     });
@@ -352,7 +342,6 @@ class MapService {
   polyEqual(c1, c2) {
     if (c1[0] instanceof Array) {
       c1 = c1[0];
-      console.log(c1);
     }
     if (c2[0] instanceof Array) {
       c2 = c2[0];
