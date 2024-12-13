@@ -13,12 +13,10 @@ export function formsettings(){
     else
     {
        
-        
-        
         cy.visit(`/${depEnv}`);
         
     }
-    
+    cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
     cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span').click();
     cy.get('[data-test="idir"]').click();
     
@@ -36,8 +34,6 @@ export function formsettings(){
 
     let title="title" + Math.random().toString(16).slice(2);
 
-    
-   
     cy.get('[data-test="text-name"]').type(title);
     
     cy.get('[data-test="text-description"]').type('test description');
@@ -51,13 +47,19 @@ export function formsettings(){
     cy.get(':nth-child(2) > .v-card > .v-card-text > .v-input--error > :nth-child(2)').contains('Please select 1 log-in type');
    
     cy.get('input[value="team"]').click();
+    cy.get('.v-label > .mdi-help-circle-outline').click();
+    cy.contains('Add team members from the Team Management settings after creating this form.').should('be.visible');
+    cy.get('.v-label > div > .mdi-help-circle-outline').then($el => {
+    const email_notify=$el[1];
     
+    cy.get(email_notify).click({force: true});
+    cy.contains('Send a notification to your specified email address when any user submits this form').should('be.visible');
+    });
     cy.get('[data-test="canSaveAndEditDraftsCheckbox"]').click();
     cy.get(':nth-child(3) > .v-card > .v-card-text > :nth-child(2) > .v-input__control > .v-selection-control > .v-label > span').click();//Update the status of the form
-    //cy.get(':nth-child(3) > .v-input__control > .v-selection-control > .v-label > div > .mdi-flask').should('be.enabled');//Multiple draft upload
     cy.get(':nth-child(5) > .v-input__control > .v-selection-control > .v-label > div > span > strong').click();//Copy existing submission
     cy.get(':nth-child(7) > .v-input__control > .v-selection-control > .v-label > div').click();//Wide form Layout
-    
+    cy.get('[data-test="email-test"] > .v-input__control > .v-selection-control > .v-label > div > span').click({force: true});
     cy.get('[data-test="email-test"] > .v-input__control > .v-selection-control > .v-label > div > span').click();
     cy.get(':nth-child(4) > .v-card > .v-card-text > .v-text-field > .v-input__control > .v-field > .v-field__field > .v-field__input').type('abc@gmail.com');
     cy.get('.mb-6 > .mdi-help-circle-outline').should('exist');
@@ -71,6 +73,7 @@ export function formsettings(){
     cy.get(wide_layput).should("have.attr", "href", "https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/Wide-Form-Layout");
     cy.get(metadata).should("have.attr", "href", "https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Integrations/Form-Metadata/");
     });
+    //Validate Form Meta Data section
     cy.get('textarea').then($el => {
 
         const metadata=$el[1];
@@ -84,6 +87,9 @@ export function formsettings(){
    
     cy.get('.v-row > :nth-child(1) > .v-input > .v-input__control > .v-field > .v-field__append-inner').click();
     cy.contains("Citizens' Services (CITZ)").click();
+    cy.get('.mb-4 > .mdi-help-circle-outline').click();
+    cy.contains('If you do not see your specific use case, contact the CHEFS team to discuss further options').should('be.visible');
+
     cy.get('[data-test="case-select"]').click();
     cy.get('.v-list').should('contain','Applications that will be evaluated followed');
     cy.get('.v-list').should('contain','Collection of Datasets, data submission');
@@ -97,6 +103,7 @@ export function formsettings(){
     cy.get('[data-test="api-true"] > .v-label > span').click();
     cy.get('.mt-3 > .mdi-help-circle-outline').should('be.visible');
     cy.get('.mt-3 > .mdi-help-circle-outline').click();
+    cy.contains('Labels serve as a means to categorize similar forms that may belong to a common organization or share a related context.').should('be.visible');
     cy.get('.d-flex > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
     cy.get('.d-flex > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').type('test label');
     cy.get(':nth-child(4) > .v-card-text > .v-input > .v-input__control > .v-selection-control > .v-label > span').click();
