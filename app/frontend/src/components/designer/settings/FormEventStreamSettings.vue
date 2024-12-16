@@ -127,7 +127,7 @@ defineExpose({
             >{{ $t('trans.formSettings.serversLabel') }}:
           </span>
           <span class="ml-2">{{
-            appStore.config?.eventStreamService?.servers
+            appStore.config?.eventStreamService?.consumerservers
           }}</span>
         </span>
         <br />
