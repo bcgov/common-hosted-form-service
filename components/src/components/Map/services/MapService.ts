@@ -73,11 +73,11 @@ class MapService {
         e.layers.eachLayer((layer) => {
           const match = this.isDefaultFeature(layer as L.Layer);
           if (match) {
-            //re-add the feature/layer to the map
+            // re-add the feature/layer to the map
             drawnItems.addLayer(layer);
             L.popup()
               .setLatLng(map.getCenter())
-              .setContent(`<p>Please do not delete pre-existing features</p>`)
+              .setContent('<p>Please do not delete pre-existing features</p>')
               .addTo(map);
           }
         });
@@ -144,10 +144,6 @@ class MapService {
           L.DomEvent.on(button, 'click', () => {
             if ('geolocation' in navigator) {
               navigator.geolocation.getCurrentPosition((position) => {
-                console.log(
-                  'centering map on: ' +
-                    [position.coords.latitude, position.coords.longitude]
-                );
                 map.setView(
                   [position.coords.latitude, position.coords.longitude],
                   14
@@ -296,12 +292,12 @@ class MapService {
     const featureType = this.getFeatureType(feature);
     const sameTypes = defaults.filter((d) => {
       return d.type === featureType;
-    }); //filter out the types that don't match the marker to be deleted
+    }); // filter out the types that don't match the marker to be deleted
     if (sameTypes.length === 0) {
       return false;
     }
     return sameTypes.some((f) => {
-      //returns true if one of the filtered defaults
+      // returns true if one of the filtered defaults
       switch (featureType) {
         case 'marker':
           return this.coordinatesEqual(f.coordinates, feature.getLatLng());
@@ -347,12 +343,12 @@ class MapService {
       c2 = c2[0];
     }
     if (c1.length !== c2.length) {
-      //different number of vertices, no match
+      // different number of vertices, no match
       return false;
     } else {
-      for (var i = 0; i < c1.length; i++) {
+      for (let i = 0; i < c1.length; i++) {
         if (!this.coordinatesEqual(c1[i], c2[i])) {
-          return false; //if there's no match in one of the points, it's a new feature
+          return false; // if there's no match in one of the points, it's a new feature
         }
       }
       return true;
