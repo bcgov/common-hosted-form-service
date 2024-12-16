@@ -1,0 +1,13 @@
+ess:
+  nats:
+    route:
+      enabled: true
+      ingressPrefix: stream-dev
+      ingressSuffix: .apps.silver.devops.gov.bc.ca
+
+nats:
+  config:
+    jetstream:
+      fileStore:
+        pvc:
+          size: 1Gi

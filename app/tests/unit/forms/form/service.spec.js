@@ -9,11 +9,30 @@ jest.mock('../../../../src/forms/common/models/tables/documentTemplate', () => M
 jest.mock('../../../../src/forms/common/models/tables/formEmailTemplate', () => MockModel);
 jest.mock('../../../../src/forms/common/models/views/submissionMetadata', () => MockModel);
 
+const { eventStreamService } = require('../../../../src/components/eventStreamService');
+const formMetadataService = require('../../../../src/forms/form/formMetadata/service');
+const eventStreamConfigService = require('../../../../src/forms/form/eventStreamConfig/service');
+const eventService = require('../../../../src/forms//event/eventService');
+
+const {
+  Form,
+  FormIdentityProvider,
+  FormRoleUser,
+  FormStatusCode,
+  IdentityProvider,
+  FormVersionDraft,
+  FormVersion,
+  FormSubmission,
+  FormSubmissionUser,
+  FormSubmissionStatus,
+} = require('../../../../src/forms/common/models');
+
 const documentTemplateId = uuid.v4();
 const formId = uuid.v4();
 
 const currentUser = {
   usernameIdp: 'TESTER',
+  id: uuid.v4(),
 };
 
 const documentTemplate = {
@@ -39,9 +58,82 @@ const emailTemplate = {
   type: EmailTypes.SUBMISSION_CONFIRMATION,
 };
 
+function resetModels() {
+  Form.query = jest.fn().mockReturnThis();
+  Form.where = jest.fn().mockReturnThis();
+  Form.modify = jest.fn().mockReturnThis();
+  Form.first = jest.fn().mockReturnThis();
+  Form.insert = jest.fn().mockReturnThis();
+  Form.startTransaction = jest.fn().mockResolvedValue(MockTransaction);
+  Form.patchAndFetchById = jest.fn().mockReturnThis();
+
+  FormVersion.query = jest.fn().mockReturnThis();
+  FormVersion.where = jest.fn().mockReturnThis();
+  FormVersion.modify = jest.fn().mockReturnThis();
+  FormVersion.first = jest.fn().mockReturnThis();
+  FormVersion.insert = jest.fn().mockReturnThis();
+  FormVersion.patch = jest.fn().mockReturnThis();
+  FormVersion.findById = jest.fn().mockReturnThis();
+  FormVersion.startTransaction = jest.fn().mockResolvedValue(MockTransaction);
+
+  IdentityProvider.query = jest.fn().mockReturnThis();
+  IdentityProvider.where = jest.fn().mockReturnThis();
+  IdentityProvider.modify = jest.fn().mockReturnThis();
+  IdentityProvider.first = jest.fn().mockReturnThis();
+  IdentityProvider.insert = jest.fn().mockReturnThis();
+
+  FormIdentityProvider.query = jest.fn().mockReturnThis();
+  FormIdentityProvider.where = jest.fn().mockReturnThis();
+  FormIdentityProvider.modify = jest.fn().mockReturnThis();
+  FormIdentityProvider.first = jest.fn().mockReturnThis();
+  FormIdentityProvider.insert = jest.fn().mockReturnThis();
+  FormIdentityProvider.delete = jest.fn().mockReturnThis();
+
+  FormRoleUser.query = jest.fn().mockReturnThis();
+  FormRoleUser.where = jest.fn().mockReturnThis();
+  FormRoleUser.modify = jest.fn().mockReturnThis();
+  FormRoleUser.first = jest.fn().mockReturnThis();
+  FormRoleUser.insert = jest.fn().mockReturnThis();
+
+  FormStatusCode.query = jest.fn().mockReturnThis();
+  FormStatusCode.where = jest.fn().mockReturnThis();
+  FormStatusCode.modify = jest.fn().mockReturnThis();
+  FormStatusCode.first = jest.fn().mockReturnThis();
+  FormStatusCode.insert = jest.fn().mockReturnThis();
+
+  FormVersionDraft.query = jest.fn().mockReturnThis();
+  FormVersionDraft.where = jest.fn().mockReturnThis();
+  FormVersionDraft.modify = jest.fn().mockReturnThis();
+  FormVersionDraft.first = jest.fn().mockReturnThis();
+  FormVersionDraft.insert = jest.fn().mockReturnThis();
+  FormVersionDraft.startTransaction = jest.fn().mockResolvedValue(MockTransaction);
+  FormVersionDraft.deleteById = jest.fn().mockResolvedValue(MockTransaction);
+
+  FormSubmission.query = jest.fn().mockReturnThis();
+  FormSubmission.where = jest.fn().mockReturnThis();
+  FormSubmission.modify = jest.fn().mockReturnThis();
+  FormSubmission.first = jest.fn().mockReturnThis();
+  FormSubmission.insert = jest.fn().mockReturnThis();
+  FormSubmission.startTransaction = jest.fn().mockResolvedValue(MockTransaction);
+  FormSubmission.deleteById = jest.fn().mockResolvedValue(MockTransaction);
+
+  FormSubmissionUser.query = jest.fn().mockReturnThis();
+  FormSubmissionUser.where = jest.fn().mockReturnThis();
+  FormSubmissionUser.modify = jest.fn().mockReturnThis();
+  FormSubmissionUser.first = jest.fn().mockReturnThis();
+  FormSubmissionUser.insert = jest.fn().mockReturnThis();
+
+  FormSubmissionStatus.query = jest.fn().mockReturnThis();
+  FormSubmissionStatus.where = jest.fn().mockReturnThis();
+  FormSubmissionStatus.modify = jest.fn().mockReturnThis();
+  FormSubmissionStatus.first = jest.fn().mockReturnThis();
+  FormSubmissionStatus.insert = jest.fn().mockReturnThis();
+}
+
 beforeEach(() => {
   MockModel.mockReset();
   MockTransaction.mockReset();
+  resetModels();
 });
 
 afterEach(() => {
@@ -814,5 +906,138 @@ describe('createOrUpdateEmailTemplates', () => {
     await expect(service.createOrUpdateEmailTemplate(emailTemplate.formId, emailTemplate, user)).rejects.toThrow();
 
     expect(MockTransaction.rollback).toBeCalledTimes(1);
+  });
+});
+
+describe('createForm', () => {
+  beforeEach(() => {
+    MockModel.mockReset();
+    MockTransaction.mockReset();
+    resetModels();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('should upsert event stream configuration and form metadata', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { identityProviders: [{ code: 'test' }] };
+    await service.createForm(data, currentUser);
+
+    expect(formMetadataService.upsert).toBeCalledTimes(1);
+    expect(eventStreamConfigService.upsert).toBeCalledTimes(1);
+    expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+});
+
+describe('updateForm', () => {
+  beforeEach(() => {
+    MockModel.mockReset();
+    MockTransaction.mockReset();
+    resetModels();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('should upsert event stream configuration and form metadata', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    formMetadataService.upsert = jest.fn().mockResolvedValueOnce();
+    eventStreamConfigService.upsert = jest.fn().mockResolvedValueOnce();
+
+    const data = { identityProviders: [{ code: 'test' }] };
+    await service.updateForm(formId, data, currentUser);
+
+    expect(formMetadataService.upsert).toBeCalledTimes(1);
+    expect(eventStreamConfigService.upsert).toBeCalledTimes(1);
+    expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+});
+
+describe('publishVersion', () => {
+  beforeEach(() => {
+    MockModel.mockReset();
+    MockTransaction.mockReset();
+    resetModels();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('should trigger event notifications', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({});
+    service.readPublishedForm = jest.fn().mockReturnValueOnce({});
+    eventService.publishFormEvent = jest.fn().mockResolvedValueOnce();
+    eventStreamService.onPublish = jest.fn().mockResolvedValueOnce();
+
+    await service.publishVersion(formId, '123', {}, currentUser);
+
+    expect(eventService.publishFormEvent).toBeCalledTimes(1);
+    expect(eventStreamService.onPublish).toBeCalledTimes(1);
+    expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+});
+
+describe('publishDraft', () => {
+  beforeEach(() => {
+    MockModel.mockReset();
+    MockTransaction.mockReset();
+    resetModels();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('should trigger event notifications', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({ id: formId, versions: [{ version: 1 }] });
+    service.readDraft = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({});
+    eventService.publishFormEvent = jest.fn().mockResolvedValueOnce();
+    eventStreamService.onPublish = jest.fn().mockResolvedValueOnce();
+
+    await service.publishDraft(formId, '123', currentUser);
+
+    expect(eventService.publishFormEvent).toBeCalledTimes(1);
+    expect(eventStreamService.onPublish).toBeCalledTimes(1);
+    expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+});
+
+describe('createSubmission', () => {
+  beforeEach(() => {
+    MockModel.mockReset();
+    MockTransaction.mockReset();
+    resetModels();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('should trigger event notifications', async () => {
+    service.validateScheduleObject = jest.fn().mockReturnValueOnce({ status: 'success' });
+    service.readForm = jest.fn().mockReturnValueOnce({ id: formId, versions: [{ version: 1 }], identityProviders: [] });
+    service.readSubmission = jest.fn().mockReturnValueOnce({});
+    service.readVersion = jest.fn().mockReturnValueOnce({ id: '123', formId: formId, schema: {} });
+    eventService.formSubmissionEventReceived = jest.fn().mockReturnValueOnce();
+    eventStreamService.onSubmit = jest.fn().mockResolvedValueOnce();
+
+    const data = { draft: false, submission: { data: {} } };
+    await service.createSubmission('123', data, currentUser);
+
+    expect(eventService.formSubmissionEventReceived).toBeCalledTimes(1);
+    expect(eventStreamService.onSubmit).toBeCalledTimes(1);
+    expect(MockTransaction.commit).toBeCalledTimes(1);
   });
 });

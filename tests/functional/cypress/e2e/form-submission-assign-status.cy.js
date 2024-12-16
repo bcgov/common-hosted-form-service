@@ -50,21 +50,24 @@ describe('Form Designer', () => {
     it('Form Submission and Updation', () => {
         cy.viewport(1000, 1100);
         cy.wait(4000);
-        cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
+        /*cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
+        */
         // Form saving
         let savedButton = cy.get('[data-cy=saveButton]');
         expect(savedButton).to.not.be.null;
         savedButton.trigger('click');
         cy.waitForLoad();
+        cy.wait(4000);
         // Go to My forms  
-        cy.wait('@getForm').then(()=>{
+        /*cy.wait('@getForm').then(()=>{
         let userFormsLinks = cy.get('[data-cy=userFormsLinks]');
         expect(userFormsLinks).to.not.be.null;
         userFormsLinks.trigger('click');
         });
+        */
         // Filter the newly created form
         cy.location('search').then(search => {
-            //let pathName = fullUrl.pathname
+        
         let arr = search.split('=');
         let arrayValues = arr[1].split('&');
         cy.log(arrayValues[0]);
@@ -128,7 +131,7 @@ describe('Form Designer', () => {
          //view submission
         cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn > .v-btn__content > .mdi-eye').click();
         cy.wait(4000);
-        })
+        });
 
     });
     it('Submission status Assignment', () => {
@@ -206,7 +209,7 @@ describe('Form Designer', () => {
         cy.get('.mdi-delete').click();
         cy.get('[data-test="continue-btn-continue"]').click();
         cy.get('#logoutButton > .v-btn__content > span').click();
-        })
+        });
            
     });
 

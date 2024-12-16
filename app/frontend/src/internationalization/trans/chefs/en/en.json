@@ -67,7 +67,8 @@
     "cancel": "Cancel",
     "eventSubscription": "Event Subscription",
     "cdogsTemplate": "CDOGS Template",
-    "externalAPIs": "External APIs"
+    "externalAPIs": "External APIs",
+    "eventStreamConfig": "Event Stream Configuration"
   },
   "documentTemplate": {
     "uploadTemplate": "Upload CDOGS Template",
@@ -83,6 +84,39 @@
     "fetchError": "An error occurred while fetching the template.",
     "info": "Upload a template to use the Common Document Generation Service (CDOGS)",
     "fileSizeError": "File size must be less than 25MB."
+  },
+  "eventStreamConfig": {
+    "info": "Configure Event Stream for your form.",
+    "create": "Create new Event Stream Configuration",
+    "createError": "Event Stream Configuration could not be created.",
+    "createSuccess": "Event Stream Configuration created successfully.",
+    "createTitle": "New Event Stream Configuration",
+    "delete": "Delete",
+    "deleteSuccess": "Event Stream Configuration deleted successfully.",
+    "deleteError": "An error occurred while deleting the Event Stream Configuration.",
+    "edit": "Edit",
+    "editError": "Event Stream Configuration could not be updated.",
+    "editSuccess": "Event Stream Configuration updated successfully.",
+    "editTitle": "Edit Event Stream Configuration",
+    "fetchError": "An error occurred while fetching the Event Stream Configuration.",
+    "save": "Save"
+  },
+  "encryptionKey": {
+    "info": "Configure Encryption Keys for your form.",
+    "create": "Create new Encryption Key",
+    "createError": "Encryption Key could not be created.",
+    "createSuccess": "Encryption Key created successfully.",
+    "createTitle": "New Encryption Key Configuration",
+    "delete": "Delete",
+    "deleteSuccess": "Encryption Key deleted successfully.",
+    "deleteError": "An error occurred while deleting the Encryption Key.",
+    "edit": "Edit",
+    "editError": "Encryption Key could not be updated.",
+    "editSuccess": "Encryption Key updated successfully.",
+    "editTitle": "Edit Encryption Key",
+    "fetchError": "An error occurred while fetching the Encryption Key.",
+    "fetchListError": "An error occurred while fetching the Encryption Key list.",
+    "save": "Save"
   },
   "externalAPI": {
     "info": "Configure External APIs for use in your form.",
@@ -202,7 +236,26 @@
     "wideFormLayout": "Wide Form Layout",
     "formMetadataTitle": "Form Metadata",
     "formMetadataMessage": "Structured information to describe or explain this form to external systems. Calls to external systems will include this metadata in their payloads.",
-    "formMetadataJsonError": "Form metadata must be valid JSON. Use double-quotes around attributes and values."
+    "formMetadataJsonError": "Form metadata must be valid JSON. Use double-quotes around attributes and values.",
+    "eventStreamTitle": "Event Stream Settings",
+    "eventStreamMessage": "Event Stream Service will publish notifications about form publishing and submissions. The underlying technology is NATS.io which allows consumers to subscribe or pull the event messages and process them in external systems. Private messages will contain encrypted payloads with the key configured here.",
+    "natsConfiguration": "NATS Configuration and Message Metadata",
+    "publishConfiguration": "Event Publishing Configuration",
+    "enablePublicStream": "Enable Public Stream",
+    "enablePrivateStream": "Enable Private Stream",
+    "encryptionKeyAlgorithm": "Encryption Key Algorithm",
+    "encryptionKey": "Encryption Key",
+    "encryptionKeyReq": "Encryption Key is required for Private Streams",
+    "fetchEncryptionAlgorithmListError": "Error fetching Encryption Algorithm list.",
+    "serversLabel": "Servers",
+    "streamNameLabel": "Stream Name",
+    "sourceLabel": "Source",
+    "domainLabel": "Domain",
+    "eventStreamUpdatedBy": "Event Stream Settings Updated By",
+    "encryptionKeyUpdatedBy": "Encryption Key Updated By",
+    "encryptionKeyCopySnackbar": "Encryption Key copied to clipboard",
+    "encryptionKeyCopyTooltip": "Copy Encryption Key to clipboard",
+    "encryptionKeyGenerate": "Generate Encryption Key"
   },
   "formProfile": {
     "message": "The CHEFS team is collecting and organizing information to serve as crucial input for crafting comprehensive business cases. These cases will play a pivotal role in guiding the strategic operation and ongoing improvement of CHEFS in the coming years. This initiative to gather data is essential for informing critical decisions and molding the trajectory of CHEFS, ensuring its adaptability and effectiveness in addressing evolving needs and challenges.",
@@ -1135,13 +1188,6 @@
     },
     "user": {
       "administerUser": "Administer User"
-    }
-  },
-  "user": {
-    "root": {
-      "myForms": "MY FORMS",
-      "history": "HISTORY",
-      "user": "User"
     }
   },
   "test": {

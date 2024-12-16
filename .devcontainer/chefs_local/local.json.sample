@@ -55,12 +55,27 @@
         "public": {
           "limitApiKey": "120",
           "limitFrontend": "500",
-          "windowMs": "60000",
+          "windowMs": "60000"
         }
       },
       "encryption": {
         "proxy": "352f7c24819086bf3df5a38c1a40586045f73e0007440c9d27d59ee8560e3fe7"
       }
+    },
+    "eventStreamService": {
+      "servers": "localhost:4222,localhost:4223,localhost:4224",
+      "websockets": "false",
+      "streamName": "CHEFS",
+      "source": "chefs-local",
+      "domain": "forms",
+      "username": "chefs",
+      "password": "password",
+      "maxAge": "300000",
+      "maxBytes": "1048576",
+      "maxMsgs": "10",
+      "maxMsgSize": "51200",
+      "duplicateWindow": "60000",
+      "numReplicas": "3"
     },
     "serviceClient": {
       "commonServices": {

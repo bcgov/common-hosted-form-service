@@ -95,7 +95,7 @@ describe('Form Designer', () => {
     cy.waitForLoad();
     cy.waitForLoad();
     cy.get('button[title="Upload"]').click();
-    
+    cy.wait(2000);    
     cy.get('.mdi-minus-circle').click();
     cy.get('input[type=file]').should('not.to.be.null');
     fileUploadInputField.attachFile('file_example_XLSX_50.xlsx');
@@ -119,8 +119,7 @@ describe('Form Designer', () => {
     
     cy.get('[data-test="canRemoveForm"]').click();
     cy.get('[data-test="continue-btn-continue"]').click();
-    cy.waitForLoad();
-    cy.waitForLoad();
+    cy.wait(9000);
     cy.get('#logoutButton > .v-btn__content > span').click();
 
   })
