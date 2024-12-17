@@ -169,13 +169,18 @@ const service = {
     // same ministry, same base url...
     if (data.code === ExternalAPIStatuses.APPROVED) {
       const adminExternalAPI = await AdminExternalAPI.query(trx).findById(id);
-      const delimiter = '?';
-      const baseUrl = data.endpointUrl.split(delimiter)[0];
-      await ExternalAPI.query(trx)
-        .patch({ code: ExternalAPIStatuses.APPROVED })
-        .whereRaw(`"formId" in (select id from form where ministry = '${adminExternalAPI.ministry}')`)
-        .andWhere('endpointUrl', 'ilike', `${baseUrl}%`)
-        .andWhere('code', ExternalAPIStatuses.SUBMITTED);
+      const regex = /^[A-Z]{2,4}$/; // Ministry constants are in the Frontend, they are 2,3,or 4 Capital chars
+      if (regex.test(adminExternalAPI.ministry)) {
+        // this will protect from sql injection.
+        // this should be removed when form API and db are updated to restrict form Ministry values.
+        const delimiter = '?';
+        const baseUrl = data.endpointUrl.split(delimiter)[0];
+        await ExternalAPI.query(trx)
+          .patch({ code: ExternalAPIStatuses.APPROVED })
+          .whereRaw(`"formId" in (select id from form where ministry = '${adminExternalAPI.ministry}')`)
+          .andWhere('endpointUrl', 'ilike', `${baseUrl}%`)
+          .andWhere('code', ExternalAPIStatuses.SUBMITTED);
+      }
     }
   },
 
