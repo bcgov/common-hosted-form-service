@@ -7,3 +7,6 @@ MAXMSGS="500"
 MAXMSGSIZE="419430"
 DUPLICATEWINDOW="60000"
 NUMREPLICAS="3"
+SERVERS=ess-nats.a191b5-test.svc.cluster.local
+WEBSOCKETS=false
+CONSUMERSERVERS=stream-test.apps.silver.devops.gov.bc.ca

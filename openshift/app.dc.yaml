@@ -233,16 +233,6 @@ objects:
                     secretKeyRef:
                       key: mailapitoken
                       name: "chefs-${JOB_NAME}-secret"
-                - name: EVENTSTREAMSERVICE_SERVERS
-                  valueFrom:
-                    secretKeyRef:
-                      key: servers
-                      name: "${APP_NAME}-event-stream-service"
-                - name: EVENTSTREAMSERVICE_WEBSOCKETS
-                  valueFrom:
-                    secretKeyRef:
-                      key: websockets
-                      name: "${APP_NAME}-event-stream-service"
                 - name: EVENTSTREAMSERVICE_USERNAME
                   valueFrom:
                     secretKeyRef:

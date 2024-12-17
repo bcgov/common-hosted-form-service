@@ -157,18 +157,14 @@ oc create -n $NAMESPACE secret generic $APP_NAME-encryption-keys \
   --from-literal=proxy=$proxy_key
 ```
 
-We need to store a password for Event Stream Service client. Since the server(s) will change along with the password, we will store the server and credentials in a secret per environment (DEV, TEST, PROD) and whether we connect with WebSockets or NATS protocols Pull requests can use the same as DEV.
+We need to store a username/password for Event Stream Service client. Additional configuration (Stream name, servers, stream limits) is in a Config Map: `chefs-XXX-event-stream-service`.
 
 ```sh
 
-export ess_servers=<comma separated list of event stream servers>
-export ess_websockets=<true/false - true if connection is made via websockets>
 export ess_password=<chefs password from event stream service>
 
 oc create -n $NAMESPACE secret generic $APP_NAME-event-stream-service \
   --type=Opaque \
-  --from-literal=servers=$ess_servers \
-  --from-literal=websockets=$ess_websockets \
   --from-literal=username=chefs \
   --from-literal=password=$ess_password
 ```
