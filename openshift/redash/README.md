@@ -2,6 +2,15 @@
 
 CHEFS uses [Redash](https://redash.io) to visualize forms metadata and display it in dashboards.
 
+## Database
+
+Redash uses CrunchyDB for its highly available database.
+
+```sh
+helm -n a12c97-tools upgrade --install crunchy-tools-redash ../crunchydb/charts/tools -f crunchydb-tools-values.yaml
+helm -n a12c97-tools upgrade --install crunchy-postgres-redash ../crunchydb/charts/crunchy-postgres -f crunchydb-postgres-values-no-limits.yaml -f crunchydb-postgres-values.yaml
+```
+
 ## Install Pre-requisites
 
 The Redash Helm Chart doesn't work well in OpenShift due to the accounts it is trying to use for PostgreSQL and Redis. Install our own versions of them:

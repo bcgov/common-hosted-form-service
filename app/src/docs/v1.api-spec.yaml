@@ -619,7 +619,7 @@ paths:
           name: preference
           schema:
             type: object
-          example: '{minDate=2020-12-17T08:00:00Z,maxDate=2020-12-18T08:00:00Z,updatedMinDate=2020-12-17T08:00:00Z,updatedMaxDate=2020-12-18T08:00:00Z}'
+          example: '{"minDate":"2020-12-17T08:00:00Z","maxDate":"2020-12-18T08:00:00Z","updatedMinDate":"2020-12-17T08:00:00Z","updatedMaxDate":"2020-12-18T08:00:00Z"}'
           description: form submissions export preferences
         - in: query
           name: deleted
