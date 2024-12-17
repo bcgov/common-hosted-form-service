@@ -30,6 +30,8 @@ interface MapServiceOptions {
   viewMode?: boolean;
   myLocation?: boolean;
   bcGeocoder: boolean;
+  required: boolean;
+  defaultValue?: any;
 }
 
 class MapService {
@@ -46,7 +48,6 @@ class MapService {
 
       // this.map = map;
       this.drawnItems = drawnItems;
-
       map.invalidateSize();
       // Triggering a resize event after map initialization
       setTimeout(() => window.dispatchEvent(new Event('resize')), 0);
@@ -67,9 +68,22 @@ class MapService {
         this.bindPopupToLayer(layer);
         options.onDrawnItemsChange(drawnItems.getLayers());
       });
-      map.on(L.Draw.Event.DELETED, (e) => {
+
+      map.on(L.Draw.Event.DELETED, (e: any) => {
+        e.layers.eachLayer((layer) => {
+          const match = this.isDefaultFeature(layer as L.Layer);
+          if (match) {
+            // re-add the feature/layer to the map
+            drawnItems.addLayer(layer);
+            L.popup()
+              .setLatLng(map.getCenter())
+              .setContent('<p>Please do not delete pre-existing features</p>')
+              .addTo(map);
+          }
+        });
         options.onDrawnItemsChange(drawnItems.getLayers());
       });
+
       map.on(L.Draw.Event.EDITSTOP, (e) => {
         options.onDrawnItemsChange(drawnItems.getLayers());
       });
@@ -269,6 +283,76 @@ class MapService {
       }
     }
     return false;
+  }
+  isDefaultFeature(feature): boolean {
+    const defaults = this.options.defaultValue.features;
+    if (defaults.length === 0) {
+      return false;
+    }
+    const featureType = this.getFeatureType(feature);
+    const sameTypes = defaults.filter((d) => {
+      return d.type === featureType;
+    }); // filter out the types that don't match the marker to be deleted
+    if (sameTypes.length === 0) {
+      return false;
+    }
+    return sameTypes.some((f) => {
+      // returns true if one of the filtered defaults
+      switch (featureType) {
+        case 'marker':
+          return this.coordinatesEqual(f.coordinates, feature.getLatLng());
+        case 'rectangle':
+          return f.bounds === feature.getBounds();
+        case 'circle':
+          const radCheck = f.radius === feature.getRadius();
+          const pointCheck = this.coordinatesEqual(
+            f.coordinates,
+            feature.getLatLng()
+          );
+          return radCheck && pointCheck;
+        case 'polygon':
+          return this.polyEqual(f.coordinates, feature.getLatLngs());
+        case 'polyline':
+          return this.polyEqual(f.coordinates, feature.getLatLngs());
+        default:
+          return false;
+      }
+    });
+  }
+  getFeatureType(feature) {
+    if (feature instanceof L.Marker) {
+      return 'marker';
+    } else if (feature instanceof L.Rectangle) {
+      return 'rectangle';
+    } else if (feature instanceof L.Circle) {
+      return 'circle';
+    } else if (feature instanceof L.Polygon) {
+      return 'polygon';
+    } else if (feature instanceof L.Polyline) {
+      return 'polyline';
+    }
+  }
+  coordinatesEqual(c1, c2) {
+    return c1.lat === c2.lat && c1.lng === c2.lng;
+  }
+  polyEqual(c1, c2) {
+    if (c1[0] instanceof Array) {
+      c1 = c1[0];
+    }
+    if (c2[0] instanceof Array) {
+      c2 = c2[0];
+    }
+    if (c1.length !== c2.length) {
+      // different number of vertices, no match
+      return false;
+    } else {
+      for (let i = 0; i < c1.length; i++) {
+        if (!this.coordinatesEqual(c1[i], c2[i])) {
+          return false; // if there's no match in one of the points, it's a new feature
+        }
+      }
+      return true;
+    }
   }
 }
 export default MapService;
