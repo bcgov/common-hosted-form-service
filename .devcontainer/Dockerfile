@@ -1,4 +1,4 @@
-ARG VARIANT="18.20.4-bookworm"
+ARG VARIANT="20.18.1-bookworm"
 FROM node:${VARIANT}
 
 # not much in here, could acheive this another way for sure...
