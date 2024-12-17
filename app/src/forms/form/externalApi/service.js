@@ -41,6 +41,9 @@ const service = {
         throw new Problem(422, `'userTokenHeader' is required when 'sendUserToken' is true.`);
       }
     }
+    if (!data.endpointUrl || (data.endpointUrl && !(data.endpointUrl.startsWith('https://') || data.endpointUrl.startsWith('http://')))) {
+      throw new Problem(422, `'endpointUrl' is required and must start with 'http://' or 'https://'`);
+    }
   },
 
   checkAllowSendUserToken: (data, allowSendUserToken) => {
@@ -66,12 +69,17 @@ const service = {
     const delimiter = '?';
     const baseUrl = data.endpointUrl.split(delimiter)[0];
     // check if there are matching api endpoints for the same ministry as our form that have been previously approved.
-    const approvedApis = await AdminExternalAPI.query(trx).whereRaw(`"endpointUrl" like '${baseUrl}%' and ministry = '${form.ministry}' and code = 'APPROVED'`);
+    const approvedApis = await AdminExternalAPI.query(trx)
+      .where('endpointUrl', 'ilike', `${baseUrl}%`)
+      .andWhere('ministry', form.ministry)
+      .andWhere('code', ExternalAPIStatuses.APPROVED);
     if (approvedApis && approvedApis.length) {
       // ok, since we've already approved a matching api endpoint, make sure others on this form are approved too.
       result = await ExternalAPI.query(trx)
         .patch({ code: ExternalAPIStatuses.APPROVED })
-        .whereRaw(`"endpointUrl" like '${baseUrl}%' and code = 'SUBMITTED' and "formId" = '${formId}'`);
+        .where('endpointUrl', 'ilike', `${baseUrl}%`)
+        .andWhere('formId', formId)
+        .andWhere('code', ExternalAPIStatuses.SUBMITTED);
     }
     return result;
   },
@@ -117,12 +125,20 @@ const service = {
     let trx;
     try {
       trx = await ExternalAPI.startTransaction();
-      await ExternalAPI.query(trx)
-        .modify('findByIdAndFormId', externalAPIId, formId)
-        .update({
-          ...data,
-          updatedBy: currentUser.usernameIdp,
-        });
+      await ExternalAPI.query(trx).modify('findByIdAndFormId', externalAPIId, formId).update({
+        formId: formId,
+        name: data.name,
+        code: data.code,
+        endpointUrl: data.endpointUrl,
+        sendApiKey: data.sendApiKey,
+        apiKeyHeader: data.apiKeyHeader,
+        apiKey: data.apiKey,
+        allowSendUserToken: data.allowSendUserToken,
+        sendUserToken: data.sendUserToken,
+        userTokenHeader: data.userTokenHeader,
+        userTokenBearer: data.userTokenBearer,
+        updatedBy: currentUser.usernameIdp,
+      });
       // any urls on this form pre-approved?
       await service._updateAllPreApproved(formId, data, trx);
       await trx.commit();

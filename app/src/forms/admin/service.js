@@ -173,7 +173,9 @@ const service = {
       const baseUrl = data.endpointUrl.split(delimiter)[0];
       await ExternalAPI.query(trx)
         .patch({ code: ExternalAPIStatuses.APPROVED })
-        .whereRaw(`"endpointUrl" like '${baseUrl}%' and code = 'SUBMITTED' and "formId" in (select id from form where ministry = '${adminExternalAPI.ministry}')`);
+        .whereRaw(`"formId" in (select id from form where ministry = '${adminExternalAPI.ministry}')`)
+        .andWhere('endpointUrl', 'ilike', `${baseUrl}%`)
+        .andWhere('code', ExternalAPIStatuses.SUBMITTED);
     }
   },
 

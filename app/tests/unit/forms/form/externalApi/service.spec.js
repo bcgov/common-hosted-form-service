@@ -218,7 +218,16 @@ describe('updateExternalAPI', () => {
     expect(MockModel.update).toBeCalledWith({
       updatedBy: user.usernameIdp,
       code: ExternalAPIStatuses.SUBMITTED,
-      ...validData,
+      formId: validData.formId,
+      name: validData.name,
+      endpointUrl: validData.endpointUrl,
+      sendApiKey: validData.sendApiKey,
+      apiKeyHeader: validData.apiKeyHeader,
+      apiKey: validData.apiKey,
+      allowSendUserToken: validData.allowSendUserToken,
+      sendUserToken: validData.sendUserToken,
+      userTokenHeader: validData.userTokenHeader,
+      userTokenBearer: validData.userTokenBearer,
     });
     expect(service._updateAllPreApproved).toBeCalledWith(validData.formId, validData, expect.anything());
   });
@@ -237,13 +246,22 @@ describe('updateExternalAPI', () => {
     expect(MockModel.update).toBeCalledWith({
       updatedBy: user.usernameIdp,
       code: ExternalAPIStatuses.SUBMITTED,
-      ...validData,
+      formId: validData.formId,
+      name: validData.name,
+      endpointUrl: validData.endpointUrl,
+      sendApiKey: validData.sendApiKey,
+      apiKeyHeader: validData.apiKeyHeader,
+      apiKey: validData.apiKey,
+      allowSendUserToken: validData.allowSendUserToken,
+      sendUserToken: validData.sendUserToken,
+      userTokenHeader: validData.userTokenHeader,
+      userTokenBearer: validData.userTokenBearer,
     });
   });
 
   it('should blank out user token fields when not allowed', async () => {
     // mark as allowed by admin, and set some user token config values...
-    validData.allowSendUserToken = true;
+    validData.allowSendUserToken = false;
     validData.sendUserToken = false; // don't want to throw a 422...
     validData.userTokenHeader = 'Authorization';
     validData.userTokenBearer = true;
@@ -255,10 +273,16 @@ describe('updateExternalAPI', () => {
     expect(MockModel.update).toBeCalledWith({
       updatedBy: user.usernameIdp,
       code: ExternalAPIStatuses.SUBMITTED,
+      allowSendUserToken: false,
       sendUserToken: false,
       userTokenHeader: null,
       userTokenBearer: false,
-      ...validData,
+      formId: validData.formId,
+      name: validData.name,
+      endpointUrl: validData.endpointUrl,
+      sendApiKey: validData.sendApiKey,
+      apiKeyHeader: validData.apiKeyHeader,
+      apiKey: validData.apiKey,
     });
   });
 
