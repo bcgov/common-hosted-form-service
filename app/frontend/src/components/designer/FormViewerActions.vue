@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, inject, ref } from 'vue';
+import { computed, inject, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ManageSubmissionUsers from '~/components/forms/submission/ManageSubmissionUsers.vue';
@@ -61,7 +61,7 @@ const properties = defineProps({
   },
 });
 
-const isWideLayout = ref(false);
+const isWideLayout = ref(properties.wideFormLayout);
 
 const formStore = useFormStore();
 
@@ -74,14 +74,19 @@ const showEditToggle = computed(
     properties.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
 );
 
-onMounted(() => {
-  setWideLayout(isWideLayout.value);
-});
-
 function toggleWideLayout() {
   isWideLayout.value = !isWideLayout.value;
   setWideLayout(isWideLayout.value);
 }
+// Sync the local copy with the prop when it changes
+watch(
+  () => properties.wideFormLayout,
+  (newValue) => {
+    isWideLayout.value = newValue;
+    setWideLayout(newValue);
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
