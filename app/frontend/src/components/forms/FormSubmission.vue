@@ -46,6 +46,7 @@ onMounted(async () => {
   await formStore.getFormPermissionsForUser(form.value.id);
   loading.value = false;
   // set wide layout
+  isWideLayout.value = form.value.wideFormLayout;
   setWideLayout(isWideLayout.value);
 });
 
