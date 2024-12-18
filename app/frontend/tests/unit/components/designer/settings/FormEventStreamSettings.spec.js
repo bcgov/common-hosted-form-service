@@ -8,10 +8,6 @@ import { useFormStore } from '~/store/form';
 import FormEventStreamSettings from '~/components/designer/settings/FormEventStreamSettings.vue';
 
 describe('FormEventStreamSettings.vue', () => {
-  const crypto = require('crypto').webcrypto;
-  // Shims the crypto property onto global
-  global.crypto = crypto;
-
   const pinia = createTestingPinia();
   setActivePinia(pinia);
 
