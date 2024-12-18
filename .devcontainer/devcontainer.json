@@ -6,7 +6,7 @@
     "dockerfile": "Dockerfile",
     "context": "..",
     "args": {
-      "VARIANT": "18.20.4-bookworm"
+      "VARIANT": "20.18.1-bookworm"
     }
   },
 
