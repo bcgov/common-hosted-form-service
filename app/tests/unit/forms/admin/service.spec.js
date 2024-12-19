@@ -137,6 +137,7 @@ describe('Admin service', () => {
   });
 
   it('updateExternalAPI should patch and fetch', async () => {
+    service._approveMany = jest.fn().mockResolvedValueOnce();
     await service.updateExternalAPI('id', { code: 'APPROVED', allowSendUserToken: true });
     expect(MockModel.query).toBeCalledTimes(3);
     expect(MockModel.patchAndFetchById).toBeCalledTimes(1);
@@ -145,9 +146,11 @@ describe('Admin service', () => {
       code: 'APPROVED',
       allowSendUserToken: true,
     });
+    expect(service._approveMany).toBeCalledWith('id', { code: 'APPROVED', allowSendUserToken: true }, expect.anything());
   });
 
   it('updateExternalAPI should patch and fetch and update user token fields', async () => {
+    service._approveMany = jest.fn().mockResolvedValueOnce();
     await service.updateExternalAPI('id', { code: 'APPROVED', allowSendUserToken: false });
     expect(MockModel.query).toBeCalledTimes(3);
     expect(MockModel.patchAndFetchById).toBeCalledTimes(1);
@@ -160,6 +163,7 @@ describe('Admin service', () => {
       userTokenHeader: null,
       userTokenBearer: false,
     });
+    expect(service._approveMany).toBeCalledWith('id', { code: 'APPROVED', allowSendUserToken: false }, expect.anything());
   });
 
   it('getExternalAPIStatusCodes should fetch data', async () => {
