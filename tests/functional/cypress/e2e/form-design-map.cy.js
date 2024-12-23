@@ -48,7 +48,6 @@ describe('Form Designer', () => {
       cy.get('[data-type="map"]')
       .trigger('mousedown', { which: 1}, { force: true })
       .trigger('mousemove', coords.x, -550, { force: true })
-        //.trigger('mousemove', coords.y, +100, { force: true })
       .trigger('mouseup', { force: true });
       cy.waitForLoad();
       cy.get('input[name="data[label]"]').type('s'); 
@@ -60,6 +59,8 @@ describe('Form Designer', () => {
       cy.wait(2000);
       cy.get('i[ref="tooltip"]').should('exist');
       cy.get('label').contains('Maps').should('exist');
+      cy.get('div[data-value="top"]').should('exist');
+      cy.get('input[name="data[customClass]"').should('exist');
       
       cy.waitForLoad();
       cy.get('button').contains('Save').click();
