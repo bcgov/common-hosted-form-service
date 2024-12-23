@@ -59,6 +59,7 @@ describe('Form Designer', () => {
       cy.get('textarea[placeholder="Add a tooltip beside the label"]').type('Add your desired location');
       cy.wait(2000);
       cy.get('i[ref="tooltip"]').should('exist');
+      cy.get('label').contains('Maps').should('exist');
       
       cy.waitForLoad();
       cy.get('button').contains('Save').click();
