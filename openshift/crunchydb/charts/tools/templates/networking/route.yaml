@@ -1,0 +1,21 @@
+{{- if and .Values.networking.route.enabled (ne .Release.Namespace .Values.provisioner.namespace) }}
+
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ template "crunchy-postgres-tools.fullname" . }}
+  labels:
+{{ include "crunchy-postgres-tools.labels" . | indent 4}}
+spec:
+  host: {{ .Values.networking.route.host }}
+  port:
+    targetPort: {{ template "crunchy-postgres-tools.fullname" . }}
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  to:
+    kind: Service
+    name: {{ template "crunchy-postgres-tools.fullname" . }}
+    weight: 100
+
+{{ end }}
