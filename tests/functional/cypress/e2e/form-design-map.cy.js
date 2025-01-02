@@ -37,8 +37,8 @@ describe('Form Designer', () => {
     
 
   });  
-// Publish a simple form with Simplebc Address component
- it('Checks simplebcaddress and form submission', () => {
+// Checks Map component functionalities
+it('Checks Map component', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     
