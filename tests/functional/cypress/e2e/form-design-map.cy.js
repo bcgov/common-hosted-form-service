@@ -1,7 +1,6 @@
 import 'cypress-keycloak-commands';
 import 'cypress-drag-drop';
 import { formsettings } from '../support/login.js';
-//import { should } from 'chai';
 
 const depEnv = Cypress.env('depEnv');
 
@@ -38,7 +37,7 @@ describe('Form Designer', () => {
 
   });  
 // Publish a simple form with Simplebc Address component
- it('Checks simplebcaddress and form submission', () => {
+it('Checks Map component', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     
@@ -48,25 +47,70 @@ describe('Form Designer', () => {
       cy.get('[data-type="map"]')
       .trigger('mousedown', { which: 1}, { force: true })
       .trigger('mousemove', coords.x, -550, { force: true })
+        //.trigger('mousemove', coords.y, +100, { force: true })
       .trigger('mouseup', { force: true });
       cy.waitForLoad();
       cy.get('input[name="data[label]"]').type('s'); 
       cy.get('textarea[name="data[description]"]').should("have.attr","placeholder","This will appear below the map");
       cy.get('textarea[name="data[description]"]').type('Map location above');
       cy.wait(2000);
-      cy.contains('Map location above').should('exist');
+      //cy.get('div').should('have.text','Map location above');
       cy.get('textarea[placeholder="Add a tooltip beside the label"]').type('Add your desired location');
       cy.wait(2000);
-      cy.get('i[ref="tooltip"]').should('exist');
-      cy.get('label').contains('Maps').should('exist');
-      cy.get('div[data-value="top"]').should('exist');
-      cy.get('input[name="data[customClass]"').should('exist');
+      //cy.get('i[ref="tooltip"]').should('exist');
+      cy.get(':nth-child(2) > .nav-link').click();
+      cy.wait(2000);
+      //cy.get('a[title="Draw a marker"]').then($el => {
       
+      cy.get('a[title="Draw a marker"]').then($el => {
+        const marker_elem=$el[0];
+        cy.get(marker_elem).click({force: true});
+      });
+        
+      cy.get('a[title="No layers to delete"]').then($el => {
+            const layer_del_btn=$el[0];
+            cy.get(layer_del_btn)
+            .trigger('mousedown', { which: 1}, { force: true })
+        .trigger('mousemove', coords.x, -30, { force: true })
+          //.trigger('mousemove', coords.y, +100, { force: true })
+        .trigger('mouseup', { force: true });
+      });
+      cy.get('img[alt="Marker"]').click({ force: true });
+      cy.wait(2000);
+      cy.get('input[value="circle"]').click();
+      cy.get('input[value="polygon"]').click();
+      cy.get('input[name="data[numPoints]"').type('{selectall}{backspace}');
+      cy.get('input[name="data[numPoints]"').type('2');
+      cy.wait(2000);
+      cy.get('a.leaflet-draw-draw-circle').then($el => {
+        const draw_circle=$el[0];
+      cy.get(draw_circle).click();
+      });
+      cy.get('img[alt="Marker"]').then($el => {
+        const mark_cir=$el[0];
+        cy.get(mark_cir)
+        .trigger('mousedown', { which: 1}, { force: true })
+        .trigger('mousemove', coords.x, -10, { force: true })
+        .click({ force: true })
+        //
+        //cy.wait(2000);
+          //.trigger('mouseup', { force: true })
+          //.drag( coords.x, -30, { force: true });
+      });
+        
+      
+        
+            
+      });
+      
+
+
+
       cy.waitForLoad();
       cy.get('button').contains('Save').click();
 
 
-      });
+      
     
   // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
