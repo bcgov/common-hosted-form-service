@@ -210,6 +210,16 @@ a,
     word-break: break-word;
   }
 
+  /**FORMS-1640 - Remove the pink background entirely or change its colour to transparent across the entire CHEFS product 
+  or specifically within the "form submitter" forms to Improve error message contrast for accessibility. **/
+  .formio-error-wrapper {
+    background-color: transparent;
+  }
+  .formio-error-wrapper,
+  .formio-warning-wrapper {
+    padding: 0;
+  }
+
   // tabs component
   .formio-component-simpletabs {
     & > .card {
@@ -554,7 +564,9 @@ a,
   background-color: #eee !important;
 }
 
-.v-data-table, .v-data-table-server, .v-table {
+.v-data-table,
+.v-data-table-server,
+.v-table {
   font-size: 16px !important;
 }
 
