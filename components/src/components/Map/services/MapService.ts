@@ -1,15 +1,12 @@
 import * as L from 'leaflet';
 import * as GeoSearch from 'leaflet-geosearch';
 import { BCGeocoderProvider } from '../services/BCGeocoderProvider';
+import { BASE_LAYER_URLS, BASE_LAYER_ATTRIBUTIONS } from '../Common/MapConstants';
 import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw-src.css';
 import 'leaflet-geosearch/dist/geosearch.css';
 
-const DEFAULT_MAP_LAYER_URL =
-  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-const DEFAULT_LAYER_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 const DEFAULT_MAP_ZOOM = 5;
 const DECIMALS_LATLNG = 5; // the number of decimals of latitude and longitude to be displayed in the marker popup
 const COMPONENT_EDIT_CLASS = 'component-edit-tabs';
@@ -96,14 +93,52 @@ class MapService {
       drawOptions.rectangle.showArea = false;
     }
     // Check to see if there is the formio read only class in the current page, and set notEditable to true if the map is inside a read-only page
-
     // if the user chooses it to be read-only, and the
+
+    // Initialize the map
     const map = L.map(mapContainer, {
       zoomAnimation: viewMode,
     }).setView(center, defaultZoom || DEFAULT_MAP_ZOOM);
-    L.tileLayer(DEFAULT_MAP_LAYER_URL, {
-      attribution: DEFAULT_LAYER_ATTRIBUTION,
-    }).addTo(map);
+
+    // Define base layers
+    const baseLayers = {
+      OpenStreetMap: L.tileLayer(BASE_LAYER_URLS.OpenStreetMap, {
+        attribution: BASE_LAYER_ATTRIBUTIONS.OpenStreetMap,
+      }),
+      Satellite: L.tileLayer(BASE_LAYER_URLS.Satellite, {
+        attribution: BASE_LAYER_ATTRIBUTIONS.Satellite,
+      }),
+      Topographic: L.tileLayer(BASE_LAYER_URLS.Topographic, {
+        attribution: BASE_LAYER_ATTRIBUTIONS.Topographic,
+      }),
+      ESRIWorldImagery: L.tileLayer(BASE_LAYER_URLS.ESRIWorldImagery, {
+        attribution: BASE_LAYER_ATTRIBUTIONS.ESRIWorldImagery,
+      }),
+      // WMS Layer (for example, OpenStreetMap WMS)
+      OSM_WMS: L.tileLayer.wms('https://ows.terrestris.de/osm/service?', {
+        layers: 'OSM-WMS',
+        format: 'image/png',
+        transparent: true,
+        attribution: '&copy; <a href="https://www.terrestris.de/en">Terrestris</a> contributors'
+      }),
+
+      // Example of adding ESRI World Imagery as WMS
+      ESRI_WMS: L.tileLayer.wms('https://server.arcgisonline.com/ArcGIS/services/World_Imagery/MapServer/WMSServer', {
+        layers: '0',
+        format: 'image/png',
+        transparent: true,
+        attribution: '&copy; <a href="https://www.esri.com/">ESRI</a> contributors'
+      }),
+    };
+
+
+    // Add default base layer to the map
+    baseLayers.OpenStreetMap.addTo(map);
+
+    // Add Layer Control to the map
+    L.control.layers(baseLayers).addTo(map);
+
+
 
     // Initialize Draw Layer
     const drawnItems = new L.FeatureGroup();
