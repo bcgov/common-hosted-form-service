@@ -210,4 +210,38 @@ describe('FormDisclaimer.vue', () => {
 
     expect(wrapper.html()).toContain('manage-submission-users-stub');
   });
+
+  it('does not render drafts, switch submissions functionality and reders widelayout, print', () => {
+    const wrapper = mount(FormViewerActions, {
+      props: {
+        publicForm: true,
+      },
+      global: {
+        plugins: [pinia],
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        stubs: STUBS,
+      },
+    });
+
+    expect(wrapper.text()).toContain('trans.formViewerActions.wideLayout');
+    expect(wrapper.text()).toContain('trans.printOptions.print');
+
+    expect(wrapper.text()).not.toContain(
+      'trans.formViewerActions.viewMyDraftOrSubmissions'
+    );
+    expect(wrapper.text()).not.toContain(
+      'trans.formViewerActions.switchSingleSubmssn'
+    );
+    expect(wrapper.text()).not.toContain(
+      'trans.formViewerActions.saveAsADraft'
+    );
+    expect(wrapper.text()).not.toContain(
+      'trans.formViewerActions.editThisDraft'
+    );
+    expect(wrapper.text()).not.toContain(
+      'trans.manageSubmissionUsers.manageTeamMembers'
+    );
+  });
 });
