@@ -1,4 +1,3 @@
-version: "3.9"
 volumes:
   postgres_kc_data:
     driver: local
