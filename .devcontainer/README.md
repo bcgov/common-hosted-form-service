@@ -36,7 +36,7 @@ CHEFS API and Frontend are running as node applications on the devcontainer - ag
 
 ### Configuring CHEFS locally
 
-When the devcontainer is built, it copies `.devcontainer/chefs_local/local.json.sample` and `.devcontainer/chefs_local/realm-export.json.sample` to `.devcontainer/chefs_local/local.json` and `.devcontainer/chefs_local/realm-export.json` respectively. These copies are not checked in and allow the developer to make changes and tweaks without impacting other developers or accidentially committing passwords.
+When the devcontainer is built, it copies `.devcontainer/chefs_local/local.sample.json` and `.devcontainer/chefs_local/realm-export.json.sample` to `.devcontainer/chefs_local/local.json` and `.devcontainer/chefs_local/realm-export.json` respectively. These copies are not checked in and allow the developer to make changes and tweaks without impacting other developers or accidentially committing passwords.
 
 ### Authorization Prerequisites
 

@@ -48,6 +48,7 @@ yarn-error.log*
 
 # devcontainer files
 !.devcontainer/chefs_local/*.sample
+!.devcontainer/chefs_local/*.sample.json
 .devcontainer/chefs_local/local.json
 .devcontainer/chefs_local/realm-export.json
 

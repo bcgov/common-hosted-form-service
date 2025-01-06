@@ -25,7 +25,7 @@ npm run build:formio
 npm run deploy:formio
 
 # copy over the sample files to the image...
-cp -u ${CHEFS_LOCAL_DIR}/local.json.sample ${CHEFS_LOCAL_DIR}/local.json
+cp -u ${CHEFS_LOCAL_DIR}/local.sample.json ${CHEFS_LOCAL_DIR}/local.json
 cp -u ${CHEFS_LOCAL_DIR}/realm-export.json.sample ${CHEFS_LOCAL_DIR}/realm-export.json
 
 # fire up keycloak and postgres... we want to seed the db
@@ -38,4 +38,3 @@ npm run migrate
 
 # take down keycloak and postgres, do not need them running all the time.
 docker compose -f ${CHEFS_LOCAL_DIR}/docker-compose.yml down
-
