@@ -63,6 +63,7 @@ describe('AdminAPIsTable.vue', () => {
         code: 'APPROVED',
         display: 'Approved',
         allowSendUserToken: true,
+        sendApiKey: true,
       },
     ];
 
@@ -78,6 +79,7 @@ describe('AdminAPIsTable.vue', () => {
         code: 'APPROVED',
         display: 'Approved',
         allowSendUserToken: true,
+        sendApiKey: true,
       },
     ]);
   });
@@ -108,6 +110,7 @@ describe('AdminAPIsTable.vue', () => {
         endpointUrl: 'null',
         code: 'null',
         allowSendUserToken: true,
+        sendApiKey: true,
       },
       show: true,
     };
@@ -124,6 +127,7 @@ describe('AdminAPIsTable.vue', () => {
         endpointUrl: null,
         code: null,
         allowSendUserToken: false,
+        sendApiKey: false,
       },
       show: false,
     });
@@ -155,6 +159,7 @@ describe('AdminAPIsTable.vue', () => {
         endpointUrl: 'null',
         code: 'null',
         allowSendUserToken: true,
+        sendApiKey: true,
       },
       show: true,
     };
@@ -199,6 +204,7 @@ describe('AdminAPIsTable.vue', () => {
         endpointUrl: 'null',
         code: 'null',
         allowSendUserToken: true,
+        sendApiKey: true,
       },
       show: true,
     };
