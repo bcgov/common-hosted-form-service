@@ -36,7 +36,7 @@ CHEFS API and Frontend are running as node applications on the devcontainer - ag
 
 ### Configuring CHEFS locally
 
-When the devcontainer is built, it copies `.devcontainer/chefs_local/local.samplejson` to `.devcontainer/chefs_local/local.json`. This copy is not checked in and allows the developer to make changes and tweaks without impacting other developers or accidentially committing passwords.
+When the devcontainer is built, it copies `.devcontainer/chefs_local/local.sample.json` to `.devcontainer/chefs_local/local.json`. This copy is not checked in and allows the developer to make changes and tweaks without impacting other developers or accidentially committing passwords.
 
 ### Authorization Prerequisites
 
