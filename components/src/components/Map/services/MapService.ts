@@ -140,7 +140,7 @@ class MapService {
         }
       ),
       HILL_SHADE: L.vectorGrid.protobuf(
-        `${BASE_LAYER_URLS.HILLSHADE}/tile/{z}/{y}/{x}.pbf`,
+        `${BASE_LAYER_URLS.HILL_SHADE}/tile/{z}/{y}/{x}.pbf`,
         {
           vectorTileLayerStyles: {
             default: {
