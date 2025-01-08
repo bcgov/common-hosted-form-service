@@ -16,9 +16,6 @@ Cypress.Commands.add('waitForLoad', () => {
 describe('Form Designer', () => {
 
   beforeEach(()=>{
-    
-    
-    
     cy.on('uncaught:exception', (err, runnable) => {
       // Form.io throws an uncaught exception for missing projectid
       // Cypress catches it as undefined: undefined so we can't get the text
@@ -36,13 +33,12 @@ describe('Form Designer', () => {
     
 
   });  
-// Publish a simple form with Simplebc Address component
-it('Checks Map component', () => {
-    cy.viewport(1000, 1100);
-    cy.waitForLoad();
-    
-    cy.get('button').contains('BC Government').click();
-    cy.get('div.formio-builder-form').then($el => {
+// Checks Map component functionalities
+  it('Checks Map component for Point marker', () => {
+      cy.viewport(1000, 1100);
+      cy.waitForLoad();
+      cy.get('button').contains('BC Government').click();
+      cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('[data-type="map"]')
       .trigger('mousedown', { which: 1}, { force: true })
@@ -65,8 +61,7 @@ it('Checks Map component', () => {
       cy.get('a[title="Draw a marker"]').then($el => {
         const marker_elem=$el[0];
         cy.get(marker_elem).click({force: true});
-      });
-        
+      });       
       cy.get('a[title="No layers to delete"]').then($el => {
             const layer_del_btn=$el[0];
             cy.get(layer_del_btn)
@@ -82,84 +77,69 @@ it('Checks Map component', () => {
       cy.get('input[name="data[numPoints]"').type('{selectall}{backspace}');
       cy.get('input[name="data[numPoints]"').type('2');
       cy.wait(2000);
+      });
+});
+  it('Checks Map component for circle marker', () => {
+      cy.viewport(1000, 1100);
+      cy.waitForLoad(); 
       cy.get('a.leaflet-draw-draw-circle').then($el => {
         const draw_circle=$el[0];
       cy.get(draw_circle).click();
       });
       cy.get('img[alt="Marker"]').then($el => {
         const mark_cir=$el[0];
+        const coords = $el[0].getBoundingClientRect();
         cy.get(mark_cir)
         .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, -10, { force: true })
-        .click({ force: true })
-        //
-        //cy.wait(2000);
-          //.trigger('mouseup', { force: true })
-          //.drag( coords.x, -30, { force: true });
+        .trigger('mousemove', coords.x, -5, { force: true })
+        .trigger('mouseup', coords.x, -5, { force: true })
+        cy.wait(2000);
+        //Verify circular area drawn is exist on the map
+        cy.get('p').contains('(65.03593,-120.63474)').should('exist');
+        cy.wait(2000);
       });
-        
-      
-        
-            
-      });
-      
-
-
-
+             
       cy.waitForLoad();
       cy.get('button').contains('Save').click();
-
-
-      
-    
   // Form saving
-    let savedButton = cy.get('[data-cy=saveButton]');
-    expect(savedButton).to.not.be.null;
-    savedButton.trigger('click');
-    cy.wait(2000);
-
-
-  
-    
+      let savedButton = cy.get('[data-cy=saveButton]');
+      expect(savedButton).to.not.be.null;
+      savedButton.trigger('click');
+      cy.wait(2000); 
   // Filter the newly created form
-    cy.location('search').then(search => {
+      cy.location('search').then(search => {
       //let pathName = fullUrl.pathname
       let arr = search.split('=');
       let arrayValues = arr[1].split('&');
       cy.log(arrayValues[0]);
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
       cy.waitForLoad();
-      
-   
     //Publish the form
-    cy.get('.v-label > span').click();
+      cy.get('.v-label > span').click();
 
-    cy.get('span').contains('Publish Version 1');
-
-    cy.contains('Continue').should('be.visible');
-    cy.contains('Continue').trigger('click');
+      cy.get('span').contains('Publish Version 1');
+      cy.contains('Continue').should('be.visible');
+      cy.contains('Continue').trigger('click');
     //Share link verification
-    let shareFormButton = cy.get('[data-cy=shareFormButton]');
-    expect(shareFormButton).to.not.be.null;
-    shareFormButton.trigger('click').then(()=>{
+      let shareFormButton = cy.get('[data-cy=shareFormButton]');
+      expect(shareFormButton).to.not.be.null;
+      shareFormButton.trigger('click').then(()=>{
       //let shareFormLinkButton = cy.get('[data-cy=shareFormLinkButtonss]');
       let shareFormLinkButton=cy.get('.mx-2');
       expect(shareFormLinkButton).to.not.be.null;
       shareFormLinkButton.trigger('click');
       cy.get('.mx-2 > .v-btn').click();
-    })
+      })
       cy.visit(`/${depEnv}`);
       cy.get('[data-cy="userFormsLinks"]').click();
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
       cy.waitForLoad();
       //Delete form after test run
-      //cy.get('.mdi-delete').click();
       cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
       cy.get('[data-test="continue-btn-continue"]').click();
       cy.get('#logoutButton > .v-btn__content > span').click();
    
-
-    });
+      });
 
   });
     
