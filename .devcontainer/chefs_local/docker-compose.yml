@@ -1,4 +1,3 @@
-version: "3.9"
 volumes:
   postgres_kc_data:
     driver: local
@@ -14,29 +13,3 @@ services:
       - POSTGRES_USER=app
       - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=chefs
-  chefs-keycloak:
-    image: quay.io/keycloak/keycloak:17.0.1
-    volumes:
-      - type: bind
-        source: ./realm-export.json
-        target: /tmp/realm-export.json
-        read_only: true
-    ports:
-      - 8082:8082
-    environment:
-      - DB_VENDOR=POSTGRES
-      - DB_ADDR=postgres
-      - DB_USER=admin
-      - DB_PASSWORD=admin
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=admin
-    depends_on:
-      - postgres
-    restart: unless-stopped
-    command:
-      - "start-dev"
-      - "--http-port=8082"
-      - "-Dkeycloak.migration.action=import"
-      - "-Dkeycloak.migration.provider=singleFile"
-      - "-Dkeycloak.migration.file=/tmp/realm-export.json"
-      - "-Dkeycloak.migration.strategy=OVERWRITE_EXISTING"

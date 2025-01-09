@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        version: [18]
+        version: [20]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -49,14 +49,13 @@ jobs:
         env:
           CI: true
       - name: Save Coverage Results
-        if: matrix.version == 18
+        if: matrix.version == 20
         uses: actions/upload-artifact@v4
         with:
           name: coverage-app
           path: ${{ github.workspace }}/app/coverage
-          retention-days: 1
       - name: Monitor Coverage
-        if: "matrix.version == 18 && ! github.event.pull_request.head.repo.fork"
+        if: "matrix.version == 20 && ! github.event.pull_request.head.repo.fork"
         uses: slavcodev/coverage-monitor-action@v1
         with:
           comment_mode: update
@@ -78,7 +77,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        version: [18]
+        version: [20]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -106,14 +105,13 @@ jobs:
         env:
           CI: true
       - name: Save Coverage Results
-        if: matrix.version == 18
+        if: matrix.version == 20
         uses: actions/upload-artifact@v4
         with:
           name: coverage-frontend
           path: ${{ github.workspace }}/app/frontend/coverage
-          retention-days: 1
       - name: Monitor Coverage
-        if: "matrix.version == 18 && ! github.event.pull_request.head.repo.fork"
+        if: "matrix.version == 20 && ! github.event.pull_request.head.repo.fork"
         uses: slavcodev/coverage-monitor-action@v1
         with:
           comment_mode: update

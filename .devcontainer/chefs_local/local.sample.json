@@ -1,0 +1,111 @@
+{
+  "db": {
+    "database": "chefs",
+    "host": "localhost",
+    "port": "5432",
+    "username": "app",
+    "password": "admin"
+  },
+  "files": {
+    "uploads": {
+      "enabled": "true",
+      "fileCount": "1",
+      "fileKey": "files",
+      "fileMaxSize": "25MB",
+      "fileMinSize": "0KB",
+      "path": "files"
+    },
+    "permanent": "localStorage",
+    "localStorage": {
+      "path": "myfiles"
+    },
+    "objectStorage": {
+      "accessKeyId": "bcgov-citz-ccft",
+      "bucket": "chefs",
+      "endpoint": "https://commonservices.objectstore.gov.bc.ca",
+      "key": "chefs/dev/",
+      "secretAccessKey": "anything"
+    }
+  },
+  "frontend": {
+    "apiPath": "api/v1",
+    "basePath": "/app",
+    "oidc": {
+      "clientId": "chefs-frontend-localhost-5300",
+      "realm": "standard",
+      "serverUrl": "https://dev.loginproxy.gov.bc.ca/auth",
+      "logoutUrl": "https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https%3A%2F%2Fdev.loginproxy.gov.bc.ca%2Fauth%2Frealms%2Fstandard%2Fprotocol%2Fopenid-connect%2Flogout"
+    }
+  },
+  "server": {
+    "apiPath": "/api/v1",
+    "basePath": "/app",
+    "bodyLimit": "30mb",
+    "oidc": {
+      "realm": "standard",
+      "serverUrl": "https://dev.loginproxy.gov.bc.ca/auth",
+      "jwksUri": "https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/certs",
+      "issuer": "https://dev.loginproxy.gov.bc.ca/auth/realms/standard",
+      "audience": "chefs-frontend-localhost-5300",
+      "maxTokenAge": "300"
+    },
+    "logLevel": "http",
+    "port": "8080",
+    "rateLimit": {
+      "public": {
+        "limitApiKey": "120",
+        "limitFrontend": "500",
+        "windowMs": "60000"
+      }
+    },
+    "encryption": {
+      "proxy": "352f7c24819086bf3df5a38c1a40586045f73e0007440c9d27d59ee8560e3fe7"
+    }
+  },
+  "eventStreamService": {
+    "servers": "localhost:4222,localhost:4223,localhost:4224",
+    "websockets": "false",
+    "streamName": "CHEFS",
+    "source": "chefs-local",
+    "domain": "forms",
+    "username": "chefs",
+    "password": "password",
+    "maxAge": "300000",
+    "maxBytes": "1048576",
+    "maxMsgs": "10",
+    "maxMsgSize": "51200",
+    "duplicateWindow": "60000",
+    "numReplicas": "3"
+  },
+  "serviceClient": {
+    "commonServices": {
+      "ches": {
+        "endpoint": "https://ches-dev.api.gov.bc.ca/api",
+        "tokenEndpoint": "https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token",
+        "clientId": "CHES_CLIENT_ID",
+        "clientSecret": "CHES_CLIENT_SECRET"
+      },
+      "cdogs": {
+        "endpoint": "https://cdogs-dev.api.gov.bc.ca/api",
+        "tokenEndpoint": "https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token",
+        "clientId": "CDOGS_CLIENT_ID",
+        "clientSecret": "CDOGS_CLIENT_SECRET"
+      }
+    }
+  },
+  "customBcAddressFormioComponent": {
+    "apikey": "xxxxxxxxxxxxxxx",
+    "bcAddressURL": "https://geocoder.api.gov.bc.ca/addresses.json",
+    "queryParameters": {
+      "echo": false,
+      "brief": true,
+      "minScore": 55,
+      "onlyCivic": true,
+      "maxResults": 15,
+      "autocomplete": true,
+      "matchAccuracy": 100,
+      "matchPrecision": "occupant, unit, site, civic_number, intersection, block, street, locality, province",
+      "precisionPoints": 100
+    }
+  }
+}

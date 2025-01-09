@@ -6,7 +6,7 @@
     "dockerfile": "Dockerfile",
     "context": "..",
     "args": {
-      "VARIANT": "18.20.4-bookworm"
+      "VARIANT": "20.18.1-bookworm"
     }
   },
 
@@ -24,8 +24,7 @@
     5173, // CHEFS Frontend
     5432, // PostgreSQL
     8080, // CHEFS Backend
-    8081,
-    8082 // Keycloak
+    8081
   ],
 
   // Use 'postCreateCommand' to run commands after the container is created.
