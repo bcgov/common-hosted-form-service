@@ -301,7 +301,7 @@ async function saveItem() {
         >
           <template #label>
             <span :class="{ 'mr-2': isRTL }" :lang="lang">
-              {{ $t('trans.externalAPI.formSendApiKeynpm run migrate') }}
+              {{ $t('trans.externalAPI.formSendApiKey') }}
             </span>
           </template>
         </v-checkbox>
