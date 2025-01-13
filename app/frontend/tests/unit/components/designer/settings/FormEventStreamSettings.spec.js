@@ -4,21 +4,48 @@ import { setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ref } from 'vue';
 
+import { useAppStore } from '~/store/app';
 import { useFormStore } from '~/store/form';
 import FormEventStreamSettings from '~/components/designer/settings/FormEventStreamSettings.vue';
 
 describe('FormEventStreamSettings.vue', () => {
-  const crypto = require('crypto').webcrypto;
-  // Shims the crypto property onto global
-  global.crypto = crypto;
-
   const pinia = createTestingPinia();
   setActivePinia(pinia);
 
   const formStore = useFormStore(pinia);
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
+    appStore.$reset();
     formStore.$reset();
+  });
+
+  it('renders eventStreamService configuration', async () => {
+    appStore.config = ref({
+      eventStreamService: {
+        consumerservers: 'http://consumerservers.com',
+        streamName: 'stream',
+        source: 'src',
+        domain: 'domain',
+      },
+    });
+    const wrapper = mount(FormEventStreamSettings, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          BasePanel: {
+            name: 'BasePanel',
+            template: '<div class="base-panel-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+    expect(wrapper.find('[data-test="consumerservers"]').text()).toContain(
+      'http://consumerservers.com'
+    );
+    expect(wrapper.find('[data-test="streamName"]').text()).toContain('stream');
+    expect(wrapper.find('[data-test="source"]').text()).toContain('src');
+    expect(wrapper.find('[data-test="domain"]').text()).toContain('domain');
   });
 
   it('generates an encryption key when it has an algorithm', async () => {

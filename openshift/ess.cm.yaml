@@ -17,6 +17,9 @@ objects:
     metadata:
       name: "${APP_NAME}-${JOB_NAME}-event-stream-service"
     data:
+      EVENTSTREAMSERVICE_SERVERS: ${SERVERS}
+      EVENTSTREAMSERVICE_WEBSOCKETS: ${WEBSOCKETS}
+      EVENTSTREAMSERVICE_CONSUMERSERVERS: ${CONSUMERSERVERS}
       EVENTSTREAMSERVICE_STREAMNAME: ${STREAMNAME}
       EVENTSTREAMSERVICE_SOURCE: ${SOURCE}
       EVENTSTREAMSERVICE_DOMAIN: ${DOMAIN}
@@ -34,6 +37,18 @@ parameters:
   - name: JOB_NAME
     description: Job identifier (i.e. 'pr-5' OR 'master')
     displayName: Job Branch Name
+    required: true
+  - name: SERVERS
+    description: Comma separated list of NATS servers for Event Stream Service
+    displayName: Event Stream NATS servers
+    required: true
+  - name: WEBSOCKETS
+    description: Connect to ESS via websockets or NATS protocol
+    displayName: Connect with websockets
+    required: true
+  - name: CONSUMERSERVERS
+    description: ESS Servers for consumer configuration
+    displayName: ESS Servers (consumers)
     required: true
   - name: STREAMNAME
     description: Name of the CHEFS Event Stream

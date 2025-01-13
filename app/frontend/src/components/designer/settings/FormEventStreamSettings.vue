@@ -126,8 +126,8 @@ defineExpose({
           <span :lang="locale" class="font-weight-bold"
             >{{ $t('trans.formSettings.serversLabel') }}:
           </span>
-          <span class="ml-2">{{
-            appStore.config?.eventStreamService?.servers
+          <span class="ml-2" data-test="consumerservers">{{
+            appStore.config?.eventStreamService?.consumerservers
           }}</span>
         </span>
         <br />
@@ -135,7 +135,7 @@ defineExpose({
           <span :lang="locale" class="font-weight-bold"
             >{{ $t('trans.formSettings.streamNameLabel') }}:
           </span>
-          <span class="ml-2">{{
+          <span class="ml-2" data-test="streamName">{{
             appStore.config?.eventStreamService?.streamName
           }}</span>
         </span>
@@ -144,7 +144,7 @@ defineExpose({
           <span :lang="locale" class="font-weight-bold"
             >{{ $t('trans.formSettings.sourceLabel') }}:
           </span>
-          <span class="ml-2">{{
+          <span class="ml-2" data-test="source">{{
             appStore.config?.eventStreamService?.source
           }}</span>
         </span>
@@ -153,7 +153,7 @@ defineExpose({
           <span :lang="locale" class="font-weight-bold"
             >{{ $t('trans.formSettings.domainLabel') }}:
           </span>
-          <span class="ml-2">{{
+          <span class="ml-2" data-test="domain">{{
             appStore.config?.eventStreamService?.domain
           }}</span>
         </span>

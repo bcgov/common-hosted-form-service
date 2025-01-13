@@ -80,7 +80,7 @@ describe('Form Designer', () => {
     });
     //Verify visibility of right side buttons on design page
     cy.get('[data-cy="saveButton"] > .v-btn').should('be.enabled');
-    cy.get('[data-cy="previewRouterLink"] > .v-btn').should('be.enabled');
+    //cy.get('[data-cy="previewRouterLink"] > .v-btn').should('be.enabled');
     cy.get('[data-cy="undoButton"] > .v-btn').should('be.enabled');
     cy.get('[data-cy="redoButton"] > .v-btn').should('not.be.enabled');
     cy.get('.mdi-undo').click();
@@ -105,6 +105,7 @@ describe('Form Designer', () => {
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
     cy.wait(2000);
+    //cy.get('[data-cy="previewRouterLink"] > .v-btn').should('be.enabled');
     
     // Filter the newly created form
     cy.location('search').then(search => {

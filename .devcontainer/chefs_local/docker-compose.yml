@@ -1,7 +1,22 @@
-version: "3.9"
 volumes:
   postgres_kc_data:
     driver: local
+  n1-data:
+    driver: local
+  n2-data:
+    driver: local
+  n3-data:
+    driver: local
+
+networks:
+  nats:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "192.168.0.0/24"
+          gateway: "192.168.0.1"
+
 services:
   postgres:
     image: postgres:14.2
@@ -14,29 +29,51 @@ services:
       - POSTGRES_USER=app
       - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=chefs
-  chefs-keycloak:
-    image: quay.io/keycloak/keycloak:17.0.1
-    volumes:
-      - type: bind
-        source: ./realm-export.json
-        target: /tmp/realm-export.json
-        read_only: true
+
+  n1:
+    container_name: n1
+    image: nats:2.10.12
+    entrypoint: /nats-server
+    command: "--config /config/jetstream.conf --server_name S1"
+    networks:
+      - nats
     ports:
-      - 8082:8082
-    environment:
-      - DB_VENDOR=POSTGRES
-      - DB_ADDR=postgres
-      - DB_USER=admin
-      - DB_PASSWORD=admin
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=admin
-    depends_on:
-      - postgres
-    restart: unless-stopped
-    command:
-      - "start-dev"
-      - "--http-port=8082"
-      - "-Dkeycloak.migration.action=import"
-      - "-Dkeycloak.migration.provider=singleFile"
-      - "-Dkeycloak.migration.file=/tmp/realm-export.json"
-      - "-Dkeycloak.migration.strategy=OVERWRITE_EXISTING"
+      - 4222:4222
+    volumes:
+      - ./config:/config
+      - n1-data:/data/nats-server/jetstream
+
+  n2:
+    container_name: n2
+    image: nats:2.10.12
+    entrypoint: /nats-server
+    command: "--config /config/jetstream.conf --server_name S2"
+    networks:
+      - nats
+    ports:
+      - 4223:4222
+    volumes:
+      - ./config:/config
+      - n2-data:/data/nats-server/jetstream
+
+  n3:
+    container_name: n3
+    image: nats:2.10.12
+    entrypoint: /nats-server
+    command: "--config /config/jetstream.conf --server_name S3"
+    networks:
+      - nats
+    ports:
+      - 4224:4222
+    volumes:
+      - ./config:/config
+      - n3-data:/data/nats-server/jetstream
+
+  natsbox:
+    container_name: natsbox
+    image: natsio/nats-box:latest
+    tty: true
+    stdin_open: true
+    command: sh
+    networks:
+      - nats

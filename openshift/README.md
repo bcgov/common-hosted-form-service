@@ -36,22 +36,16 @@ In order to prepare an environment, you will need to ensure that all of the foll
 
 _Note:_ Replace anything in angle brackets with the appropriate value.
 
-_Note 2:_ The Keycloak Public Key can be found in the Keycloak Admin Panel under `Realm Settings` > `Keys`. Look for the Public key button (normally under RS256 row), and click to see the key. The key should begin with a pattern of `MIIBIjANB...`.
-
 ```sh
 export APP_NAME=<yourappshortname>
 export NAMESPACE=<yournamespace>
-export PUBLIC_KEY=<yourkeycloakpublickey>
 export REPO_NAME=common-hosted-form-service
-export SSO_REALM=<yourssorealm>
 export STORAGE_BUCKET=<yourstoragebucket>
 
 oc create -n $NAMESPACE configmap $APP_NAME-frontend-config \
   --from-literal=FRONTEND_APIPATH=api/v1 \
   --from-literal=VITE_FRONTEND_BASEPATH=/app \
-  --from-literal=FRONTEND_ENV=dev \
-  --from-literal=FRONTEND_KC_REALM=$SSO_REALM \
-  --from-literal=FRONTEND_KC_SERVERURL=https://dev.loginproxy.gov.bc.ca/auth
+  --from-literal=FRONTEND_ENV=dev
 ```
 
 ```sh
@@ -67,9 +61,6 @@ oc create -n $NAMESPACE configmap $APP_NAME-server-config \
   --from-literal=SERVER_APIPATH=/api/v1 \
   --from-literal=SERVER_BASEPATH=/app \
   --from-literal=SERVER_BODYLIMIT=30mb \
-  --from-literal=SERVER_KC_PUBLICKEY=$PUBLIC_KEY \
-  --from-literal=SERVER_KC_REALM=$SSO_REALM \
-  --from-literal=SERVER_KC_SERVERURL=https://dev.loginproxy.gov.bc.ca/auth \
   --from-literal=SERVER_LOGLEVEL=http \
   --from-literal=SERVER_PORT=8080
 ```
@@ -157,18 +148,14 @@ oc create -n $NAMESPACE secret generic $APP_NAME-encryption-keys \
   --from-literal=proxy=$proxy_key
 ```
 
-We need to store a password for Event Stream Service client. Since the server(s) will change along with the password, we will store the server and credentials in a secret per environment (DEV, TEST, PROD) and whether we connect with WebSockets or NATS protocols Pull requests can use the same as DEV.
+We need to store a username/password for Event Stream Service client. Additional configuration (Stream name, servers, stream limits) is in a Config Map: `chefs-XXX-event-stream-service`.
 
 ```sh
 
-export ess_servers=<comma separated list of event stream servers>
-export ess_websockets=<true/false - true if connection is made via websockets>
 export ess_password=<chefs password from event stream service>
 
 oc create -n $NAMESPACE secret generic $APP_NAME-event-stream-service \
   --type=Opaque \
-  --from-literal=servers=$ess_servers \
-  --from-literal=websockets=$ess_websockets \
   --from-literal=username=chefs \
   --from-literal=password=$ess_password
 ```

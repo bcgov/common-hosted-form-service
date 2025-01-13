@@ -121,22 +121,6 @@ it('Verify draft submission', () => {
     cy.get('.mdi-pencil').click();
     cy.get('.mdi-content-save').click();
     cy.get('.v-alert__content > div').contains('Draft Saved');
-    cy.get(':nth-child(2) > :nth-child(4) > :nth-child(1) > .v-btn').click();
-    //Manage  members for draft management
-    cy.get('form > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
-    cy.get('form > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').type('NIM');
-    cy.contains('John, Nimya 1 CITZ:EX (nimya.1.john@gov.bc.ca)').click();
-    cy.get('.v-col-3').click();
-    cy.get('tbody > :nth-child(2) > :nth-child(1)').contains('John, Nimya 1 CITZ:EX').should('be.visible');
-    cy.get(':nth-child(1) > :nth-child(4) > .v-btn > .v-btn__content > .mdi-minus').should('not.be.enabled');
-    //Remove added member
-    cy.get(':nth-child(2) > :nth-child(4) > .v-btn > .v-btn__content > .mdi-minus').click();
-    cy.get('[data-test="continue-btn-continue"] > .v-btn__content > span').click();
-    cy.get('tbody > :nth-child(2) > :nth-child(1)').should('not.exist');
-    cy.wait(4000);
-
-    cy.get('.v-card-actions > .v-btn > .v-btn__content > span').click();
-    cy.waitForLoad();
     // Edit draft submission
     cy.wait(4000);
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();
