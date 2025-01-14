@@ -4,6 +4,7 @@ const { Form, FormSubmissionUserPermissions, PublicFormAccess, SubmissionMetadat
 const { queryUtils } = require('../common/utils');
 
 const idpService = require('../../components/idpService');
+const cacheService = require('../../components/cacheService');
 
 const FORM_SUBMITTER = require('../common/constants').Permissions.FORM_SUBMITTER;
 
@@ -165,12 +166,18 @@ const service = {
   },
 
   login: async (token) => {
+    let result;
     const userInfo = await idpService.parseToken(token);
-    const idp = await idpService.findByIdp(userInfo.idp);
-    userInfo.idp = idp.code;
-    const user = await service.getUserId(userInfo);
-
-    return { ...user, idpHint: idp.idp };
+    result = await cacheService.getLoginUser(userInfo);
+    if (!result) {
+      const idp = await idpService.findByIdp(userInfo.idp);
+      userInfo.idp = idp.code;
+      const user = await service.getUserId(userInfo);
+      const loginUser = { ...user, idpHint: idp.idp };
+      result = loginUser;
+      await cacheService.setLoginUser(userInfo, loginUser);
+    }
+    return result;
   },
 
   // -------------------------------------------------------------------------------------------------------------

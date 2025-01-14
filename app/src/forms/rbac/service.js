@@ -5,6 +5,7 @@ const { Roles } = require('../common/constants');
 const { queryUtils } = require('../common/utils');
 const authService = require('../auth/service');
 const idpService = require('../../components/idpService');
+const cacheService = require('../../components/cacheService');
 
 const service = {
   list: async () => {
@@ -20,6 +21,7 @@ const service = {
 
       await FormRoleUser.query(trx).insert(obj);
       await trx.commit();
+      await cacheService.clearCurrentUsersById([obj.userId]);
       const result = await service.read(obj.id);
       return result;
     } catch (err) {
@@ -42,6 +44,7 @@ const service = {
 
       await FormRoleUser.query(trx).patchAndFetchById(obj.id, update);
       await trx.commit();
+      await cacheService.clearCurrentUsersById([obj.userId]);
       const result = await service.read(obj.id);
       return result;
     } catch (err) {
@@ -59,7 +62,9 @@ const service = {
   },
 
   delete: async (id) => {
-    return FormRoleUser.query().deleteById(id).throwIfNotFound();
+    const obj = await FormRoleUser.query().findById(id).throwIfNotFound();
+    await cacheService.clearCurrentUsersById([obj.userId]);
+    return FormRoleUser.query().deleteById(id);
   },
 
   readUser: async (id) => {
@@ -67,23 +72,26 @@ const service = {
   },
 
   getCurrentUser: async (currentUser, params) => {
-    const user = Object.assign({}, currentUser);
-    const accessLevels = [];
-    if (user.public) {
-      accessLevels.push('public');
-    } else {
-      if (params.public) accessLevels.push('public');
-      if (params.idp) accessLevels.push('idp');
-      if (params.team) accessLevels.push('team');
+    let user = await cacheService.getCurrentUser(currentUser, params);
+    if (!user) {
+      user = Object.assign({}, currentUser);
+      const accessLevels = [];
+      if (user.public) {
+        accessLevels.push('public');
+      } else {
+        if (params.public) accessLevels.push('public');
+        if (params.idp) accessLevels.push('idp');
+        if (params.team) accessLevels.push('team');
+      }
+
+      const forms = await authService.getUserForms(user, {
+        ...params,
+        active: true,
+      });
+      const filteredForms = authService.filterForms(user, forms, accessLevels);
+      user.forms = filteredForms;
+      await cacheService.setCurrentUser(currentUser, params, user);
     }
-
-    const forms = await authService.getUserForms(user, {
-      ...params,
-      active: true,
-    });
-    const filteredForms = authService.filterForms(user, forms, accessLevels);
-    user.forms = filteredForms;
-
     return user;
   },
 
@@ -158,6 +166,7 @@ const service = {
       trx = await FormRoleUser.startTransaction();
       // remove existing mappings...
       await FormRoleUser.query(trx).delete().where('formId', formId).where('userId', userId);
+      await cacheService.clearCurrentUsersById([userId]);
 
       // create the batch and insert...
       if (!Array.isArray(data)) {
@@ -224,6 +233,7 @@ const service = {
         trx = await FormRoleUser.startTransaction();
         // remove existing mappings...
         await FormRoleUser.query(trx).delete().where('formId', formId).whereIn('userId', data);
+        await cacheService.clearCurrentUsersById(data);
 
         await trx.commit();
         return;
@@ -268,6 +278,7 @@ const service = {
       trx = await FormRoleUser.startTransaction();
       // remove existing mappings...
       await FormRoleUser.query(trx).delete().where('userId', userId).where('formId', formId);
+      await cacheService.clearCurrentUsersById([userId]);
 
       // add an id and save them
       const items = data.map((d) => {

@@ -28,6 +28,7 @@ const { Permissions, Roles, Statuses } = require('../common/constants');
 const formMetadataService = require('./formMetadata/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
 const eventStreamConfigService = require('./eventStreamConfig/service');
+const cacheService = require('../../components/cacheService');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER, Roles.SUBMISSION_APPROVER];
 
 const service = {
@@ -116,6 +117,7 @@ const service = {
         return { id: uuidv4(), createdBy: currentUser.usernameIdp, userId: currentUser.id, formId: obj.id, role: r };
       });
       await FormRoleUser.query(trx).insert(userRoles);
+      await cacheService.clearCurrentUser(currentUser);
 
       // create a unpublished draft
       const draft = {
