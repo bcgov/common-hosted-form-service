@@ -244,4 +244,44 @@ describe('FormDisclaimer.vue', () => {
       'trans.manageSubmissionUsers.manageTeamMembers'
     );
   });
+
+  it('show viewMyDraftOrSubmissions when set formId && not publicForm ', () => {
+    const wrapper = mount(FormViewerActions, {
+      props: {
+        publicForm: false,
+        formId: '123-456',
+      },
+      global: {
+        plugins: [pinia],
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        stubs: STUBS,
+      },
+    });
+
+    expect(wrapper.text()).toContain(
+      'trans.formViewerActions.viewMyDraftOrSubmissions'
+    );
+  });
+
+  it('hide viewMyDraftOrSubmissions when set formId && publicForm ', () => {
+    const wrapper = mount(FormViewerActions, {
+      props: {
+        publicForm: true,
+        formId: '123-456',
+      },
+      global: {
+        plugins: [pinia],
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        stubs: STUBS,
+      },
+    });
+
+    expect(wrapper.text()).not.toContain(
+      'trans.formViewerActions.viewMyDraftOrSubmissions'
+    );
+  });
 });
