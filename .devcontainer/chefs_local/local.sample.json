@@ -3,7 +3,8 @@
     "database": "chefs",
     "host": "localhost",
     "port": "5432",
-    "username": "app"
+    "username": "app",
+    "password": "admin"
   },
   "files": {
     "uploads": {
@@ -11,23 +12,22 @@
       "fileCount": "1",
       "fileKey": "files",
       "fileMaxSize": "25MB",
-      "fileMaxSizeBytes": "25000000",
       "fileMinSize": "0KB",
       "path": "files"
     },
-    "permanent": "objectStorage",
+    "permanent": "localStorage",
     "localStorage": {
-      "path": ""
+      "path": "myfiles"
     },
     "objectStorage": {
       "accessKeyId": "bcgov-citz-ccft",
       "bucket": "chefs",
       "endpoint": "https://commonservices.objectstore.gov.bc.ca",
-      "key": "chefs/dev/"
+      "key": "chefs/dev/",
+      "secretAccessKey": "anything"
     }
   },
   "frontend": {
-    "adminDashboardUrl": "",
     "apiPath": "api/v1",
     "basePath": "/app",
     "oidc": {
@@ -65,16 +65,15 @@
   "eventStreamService": {
     "servers": "localhost:4222,localhost:4223,localhost:4224",
     "websockets": "false",
-    "consumerservers": "localhost:4222,localhost:4223,localhost:4224",
     "streamName": "CHEFS",
     "source": "chefs-local",
     "domain": "forms",
     "username": "chefs",
     "password": "password",
-    "maxAge": "900000",
-    "maxBytes": "966367641",
-    "maxMsgs": "1000",
-    "maxMsgSize": "966367",
+    "maxAge": "300000",
+    "maxBytes": "1048576",
+    "maxMsgs": "10",
+    "maxMsgSize": "51200",
     "duplicateWindow": "60000",
     "numReplicas": "3"
   },

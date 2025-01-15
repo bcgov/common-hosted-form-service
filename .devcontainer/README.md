@@ -15,9 +15,9 @@ There are limitations running this devcontainer, such as all networking is withi
 
 The `.devcontainer` folder contains the `devcontainer.json` file which defines this container. We are using a `Dockerfile` and `post-install.sh` to build and configure the container run image. The `Dockerfile` is simple but in place for simplifying image enhancements. The `post-install.sh` will install the required node libraries for CHEFS including the frontend and formio components.
 
-In order to run CHEFS you require Keycloak (configured), Postgresql (seeded) and the CHEFS backend/API and frontend/UX. Previously, this was a series of downloads and configuration updates and numerous commands to run. See `.devcontainer/chefs_local` files.
+In order to run CHEFS you require Postgresql (seeded) and the CHEFS backend/API and frontend/UX - optionally you will use a [NATS](https://nats.io/) server for event streaming. Previously, this was a series of downloads and configuration updates and numerous commands to run. See `.devcontainer/chefs_local` files.
 
-**NODE_CONFIG_DIR** to simplify loading a default configuration to the CHEFS infrastructure (Keycloak, Postgresql, etc), we set an environment variable [`NODE_CONFIG_DIR`](https://github.com/node-config/node-config/wiki/Environment-Variables#node_config_dir). This supercedes the files found under `app/config`. Running node apps and commands (ex. knex, launch configurations) will use this environment variable and load configuration from `.devcontainer/chefs_local`.
+**NODE_CONFIG_DIR** to simplify loading a default configuration to the CHEFS infrastructure (Postgresql, etc), we set an environment variable [`NODE_CONFIG_DIR`](https://github.com/node-config/node-config/wiki/Environment-Variables#node_config_dir). This supercedes the files found under `app/config`. Running node apps and commands (ex. knex, launch configurations) will use this environment variable and load configuration from `.devcontainer/chefs_local`.
 
 Also included are convenient launch tasks to run and debug CHEFS.
 
@@ -30,25 +30,21 @@ To open CHEFS in a devcontainer, we open the _root_ of this repository. We can o
 
 ## Running CHEFS locally
 
-Keycloak and Postgresql will be launched using docker compose. These will run inside of the devcontainer (docker-in-docker) but the ports are forwarded to the host machine and are accessible on the local host.
+Postgresql will be launched using docker compose. These will run inside of the devcontainer (docker-in-docker) but the ports are forwarded to the host machine and are accessible on the local host.
 
 CHEFS API and Frontend are running as node applications on the devcontainer - again, ports are forwarded to the host.
 
 ### Configuring CHEFS locally
 
-When the devcontainer is built, it copies `.devcontainer/chefs_local/local.json.sample` and `.devcontainer/chefs_local/realm-export.json.sample` to `.devcontainer/chefs_local/local.json` and `.devcontainer/chefs_local/realm-export.json` respectively. These copies are not checked in and allow the developer to make changes and tweaks without impacting other developers or accidentially committing passwords.
+When the devcontainer is built, it copies `.devcontainer/chefs_local/local.sample.json` to `.devcontainer/chefs_local/local.json`. This copy is not checked in and allows the developer to make changes and tweaks without impacting other developers or accidentially committing passwords.
 
 ### Authorization Prerequisites
 
 1.  An IDIR account is required to access CHEFS.
-2.  Request an SSO Integration from the Common Hosted Single Sign-on (CSS) page in order to obtain a resource and secret that will be used for authentication when building CHEFS. View the [detailed documentation](https://bcdevex.atlassian.net/wiki/spaces/CCP/pages/961675282) about requesting the Pathfinder SSO integration.
-3.  Open realm-export.json located at build/docker/imports/keycloak and search for `XXXXXXXXXXXX`. This value must match the `clientSecret` value in `local.json` so that the CHEFS API can connect to your Keycloak instance. By default, these are set to be equal and don’t need to be altered.
-4.  Navigate to the CSS page, login with your IDIR, and download the ‘Development’ Installation JSON from your SSO Integration.
-5.  Back in the `realm-export.json` file, search for all instances of `YYYYYYYYYYYY` and replace it with the `resource` you obtained from the downloaded JSON file. Search for all instances of `ZZZZZZZZZZZZ` and replace it with the `secret`.
 
 ### Run/Debug
 
-1. start Keycloak and Postgresql. Many ways to start...
+1. start Postgresql and NATS. Many ways to start...
    - right click on `.devcontainer/chefs_local/docker-compose.yml` and select `Compose up`
    - or use command palette `Docker: Compose Up` then select `.devcontainer/chefs_local/docker-compose.yml`
    - or `Terminal | Run Task...|chefs_local up`
@@ -56,17 +52,16 @@ When the devcontainer is built, it copies `.devcontainer/chefs_local/local.json.
    - Run and Debug, select 'CHEFS' which will start both the API and the frontend.
 3. debug Frontend with Chrome
    - Run and Debug, select 'CHEFS Frontend - chrome' which will start a Chrome browser against the frontend, will allow breakpoints in `/app/frontend/src`
-4. stop Keycloak and Postgresql. Many ways to stop...
+4. stop Postgresql and NATS. Many ways to stop...
    - right click on `.devcontainer/chefs_local/docker-compose.yml` and select `Compose down`
    - or use command palette `Docker: Compose Down` then select `.devcontainer/chefs_local/docker-compose.yml`
    - or `Terminal | Run Task...|chefs_local down`
 
 _Notes_
 
-- `CHEFS Frontend` launch configuration is using the `chefs-frontend-local` client in Keycloak, not `chefs-frontend` client as we do in production.
+- `CHEFS Frontend` launch configuration is using the `chefs-frontend-localhost-5300` client in Keycloak, not `chefs-frontend-xxxx` client as we do in production.
 - `CHEFS API` will use the configuration found at `.devcontainer/chefs_local/local.json`
 - `Postgres DB`: localhost:5432
-- `Keycloak Admin console`: http://localhost:8082 - username/password = admin/admin
 - `CHEFS Frontend`: http://localhost:5173/app
 - `CHEFS API`: http://localhost:5173/app/api/v1
 
@@ -75,9 +70,11 @@ _Notes_
 If you are developing the formio components, you should build and redeploy them before running your local debug instances of CHEFS. Use tasks `Components build` and `Components Deploy`.
 
 ## KNEX - Database tools
+
 [knex](https://knexjs.org) is installed globally and should be run from the `/app` directory where the knex configuration is located. Use knex to stub out migrations or to rollback migrations as you are developing.
 
 ### create a migration file
+
 This will create a stub file with a timestamp. You will populate the up and down methods to add/update/delete database objects.
 
 ```
@@ -87,9 +84,11 @@ knex migrate:make my_new_migration_script
 ```
 
 ### rollback previous migration
-When developing your migrations, you may find it useful to run the migration and roll it back if it isn't exactly what you expect to happen. 
+
+When developing your migrations, you may find it useful to run the migration and roll it back if it isn't exactly what you expect to happen.
 
 #### run the migration(s)
+
 ```
 cd app
 knex migrate:latest
@@ -97,6 +96,7 @@ knex migrate:latest
 ```
 
 #### rollback the migration(s)
+
 ```
 cd app
 knex migrate:rollback
