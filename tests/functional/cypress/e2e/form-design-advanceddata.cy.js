@@ -83,17 +83,11 @@ it('Checks the Container component', () => {
     cy.get('div.ace_content').type('{selectall}{backspace}');
     
     var pretty=JSON.stringify({
-      "label": "Applicant Details",
-      "key": "dataGrid",
       "type": "datagrid",
-      "input": true,
 
             "components": [
               {
-              "label": "Gender",
-              "key": "gender",
               "type": "select",
-              "input": true,
                 data: {
                 values: [
                   {
