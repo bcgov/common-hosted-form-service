@@ -15,7 +15,7 @@ There are limitations running this devcontainer, such as all networking is withi
 
 The `.devcontainer` folder contains the `devcontainer.json` file which defines this container. We are using a `Dockerfile` and `post-install.sh` to build and configure the container run image. The `Dockerfile` is simple but in place for simplifying image enhancements. The `post-install.sh` will install the required node libraries for CHEFS including the frontend and formio components.
 
-In order to run CHEFS you require Postgresql (seeded) and the CHEFS backend/API and frontend/UX. Previously, this was a series of downloads and configuration updates and numerous commands to run. See `.devcontainer/chefs_local` files.
+In order to run CHEFS you require Postgresql (seeded) and the CHEFS backend/API and frontend/UX - optionally you will use a [NATS](https://nats.io/) server for event streaming. Previously, this was a series of downloads and configuration updates and numerous commands to run. See `.devcontainer/chefs_local` files.
 
 **NODE_CONFIG_DIR** to simplify loading a default configuration to the CHEFS infrastructure (Postgresql, etc), we set an environment variable [`NODE_CONFIG_DIR`](https://github.com/node-config/node-config/wiki/Environment-Variables#node_config_dir). This supercedes the files found under `app/config`. Running node apps and commands (ex. knex, launch configurations) will use this environment variable and load configuration from `.devcontainer/chefs_local`.
 
@@ -44,7 +44,7 @@ When the devcontainer is built, it copies `.devcontainer/chefs_local/local.sampl
 
 ### Run/Debug
 
-1. start Postgresql. Many ways to start...
+1. start Postgresql and NATS. Many ways to start...
    - right click on `.devcontainer/chefs_local/docker-compose.yml` and select `Compose up`
    - or use command palette `Docker: Compose Up` then select `.devcontainer/chefs_local/docker-compose.yml`
    - or `Terminal | Run Task...|chefs_local up`
@@ -52,7 +52,7 @@ When the devcontainer is built, it copies `.devcontainer/chefs_local/local.sampl
    - Run and Debug, select 'CHEFS' which will start both the API and the frontend.
 3. debug Frontend with Chrome
    - Run and Debug, select 'CHEFS Frontend - chrome' which will start a Chrome browser against the frontend, will allow breakpoints in `/app/frontend/src`
-4. stop Postgresql. Many ways to stop...
+4. stop Postgresql and NATS. Many ways to stop...
    - right click on `.devcontainer/chefs_local/docker-compose.yml` and select `Compose down`
    - or use command palette `Docker: Compose Down` then select `.devcontainer/chefs_local/docker-compose.yml`
    - or `Terminal | Run Task...|chefs_local down`
