@@ -50,10 +50,13 @@ describe('Form Designer', () => {
       cy.get('textarea[name="data[description]"]').should("have.attr","placeholder","This will appear below the map");
       cy.get('textarea[name="data[description]"]').type('Map location above');
       cy.wait(2000);
-      //cy.get('div').should('have.text','Map location above');
+      cy.contains('Map location above').should('exist');
       cy.get('textarea[placeholder="Add a tooltip beside the label"]').type('Add your desired location');
       cy.wait(2000);
-      //cy.get('i[ref="tooltip"]').should('exist');
+      cy.get('i[ref="tooltip"]').should('exist');
+      cy.get('label').contains('Maps').should('exist');
+      cy.get('div[data-value="top"]').should('exist');
+      cy.get('input[name="data[customClass]"').should('exist');
       cy.get(':nth-child(2) > .nav-link').click();
       cy.wait(2000);
       //cy.get('a[title="Draw a marker"]').then($el => {
