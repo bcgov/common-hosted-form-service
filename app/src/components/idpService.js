@@ -1,5 +1,6 @@
 const errorToProblem = require('./errorToProblem');
 const { IdentityProvider, User } = require('../forms/common/models');
+const hasher = require('node-object-hash').hasher();
 
 const SERVICE = 'IdpService';
 
@@ -108,6 +109,7 @@ class IdpService {
         email: undefined,
         idp: 'public',
         public: true,
+        hash: undefined,
       };
       if (token) {
         // token needs `identity_provider` field
@@ -123,6 +125,7 @@ class IdpService {
               }
             }
             userInfo.public = false;
+            userInfo.hash = hasher.hash(token);
           } else {
             throw new Error(`Cannot find configuration for Identity Provider: '${token[IDP_KEY]}'.`);
           }
