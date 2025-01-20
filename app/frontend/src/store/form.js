@@ -156,10 +156,10 @@ export const useFormStore = defineStore('form', {
     async getFormsForCurrentUser() {
       try {
         // Get the forms based on the user's permissions
-        const response = await rbacService.getCurrentUser();
+        const response = await rbacService.getCurrentUserForms();
         const data = response.data;
         // Build up the list of forms for the table
-        const forms = data.forms.map((f) => ({
+        const forms = data.map((f) => ({
           currentVersionId: f.formVersionId,
           id: f.formId,
           idps: f.idps,
@@ -183,10 +183,12 @@ export const useFormStore = defineStore('form', {
       try {
         this.permissions = [];
         // Get the forms based on the user's permissions
-        const response = await rbacService.getCurrentUser({ formId: formId });
+        const response = await rbacService.getCurrentUserForms({
+          formId: formId,
+        });
         const data = response.data;
-        if (data.forms[0]) {
-          this.permissions = data.forms[0].permissions;
+        if (data[0]) {
+          this.permissions = data[0].permissions;
         } else {
           throw new Error('No form found');
         }
@@ -205,10 +207,12 @@ export const useFormStore = defineStore('form', {
       try {
         this.roles = [];
         // Get the forms based on the user's permissions
-        const response = await rbacService.getCurrentUser({ formId: formId });
+        const response = await rbacService.getCurrentUserForms({
+          formId: formId,
+        });
         const data = response.data;
-        if (data.forms[0]) {
-          this.roles = data.forms[0].roles;
+        if (data[0]) {
+          this.roles = data[0].roles;
         } else {
           throw new Error('No form found');
         }
