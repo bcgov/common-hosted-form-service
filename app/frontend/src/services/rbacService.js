@@ -15,8 +15,16 @@ export default {
    * Get the current user details from the rbac endpoint
    * @returns {Promise} An axios response
    */
-  getCurrentUser(params = {}) {
-    return appAxios().get(`${ApiRoutes.RBAC}/current`, { params });
+  getCurrentUser() {
+    return appAxios().get(`${ApiRoutes.RBAC}/current`, {});
+  },
+  /**
+   * @function getCurrentUserForms
+   * Get the current user's forms from the rbac endpoint
+   * @returns {Promise} An axios response
+   */
+  getCurrentUserForms(params = {}) {
+    return appAxios().get(`${ApiRoutes.RBAC}/current/forms`, { params });
   },
 
   /**

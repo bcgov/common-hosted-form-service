@@ -36,3 +36,19 @@ describe('setSubmissionUserPermissions', () => {
     expect(service.modifySubmissionUser).toBeCalledWith(req.query.formSubmissionId, req.query.userId, req.body, req.currentUser);
   });
 });
+
+describe('getCurrentUserForms', () => {
+  const req = {
+    query: { formId: '1' },
+    body: { permissions: [] },
+    currentUser: {},
+    headers: { referer: 'a' },
+  };
+  it('should call the service with the query params', async () => {
+    service.getCurrentUserForms = jest.fn().mockReturnValue([]);
+    await controller.getCurrentUserForms(req, {}, jest.fn());
+
+    expect(service.getCurrentUserForms).toBeCalledTimes(1);
+    expect(service.getCurrentUserForms).toBeCalledWith(req.currentUser, req.query);
+  });
+});
