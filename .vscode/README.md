@@ -19,8 +19,8 @@ Tasks can be run from the `Terminal` > `Run Task...` menu item. The `tasks.json`
 - `Unit Tests - Frontend`: run the unit tests for the Frontend
 - `Components Build`: build the formio components
 - `Components Deploy`: deploy the formio components. Build and deploy before serving the frontend will save lots of time.
-- `chefs_local up`: when inside the devcontainer, will bring up keycloak and postgresql for local CHEFS deployment.
-- `chefs_local down`: when inside the devcontainer, will tear down running keycloak and postgresql for local CHEFS deployment.
+- `chefs_local up`: when inside the devcontainer, will bring up postgresql and nats for local CHEFS deployment.
+- `chefs_local down`: when inside the devcontainer, will tear down running postgresql and nats for local CHEFS deployment.
 
 Tip: You can run the builtin `All Tests` task to run both of the unit tests at the same time. This is possible since they're both configured to be in the `test` group.
 

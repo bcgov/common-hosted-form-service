@@ -8,6 +8,7 @@ import ManageFormActions from '~/components/forms/manage/ManageFormActions.vue';
 import { useFormStore } from '~/store/form';
 import { FormPermissions } from '~/utils/constants';
 import { ref } from 'vue';
+import { useAppStore } from '~/store/app';
 
 vi.mock('vue-router', () => ({
   useRouter: vi.fn(() => ({
@@ -30,9 +31,11 @@ describe('ManageForm.vue', () => {
 
   setActivePinia(pinia);
   const formStore = useFormStore(pinia);
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     formStore.$reset();
+    appStore.$reset();
   });
 
   it('renders', async () => {

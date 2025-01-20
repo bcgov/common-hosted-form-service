@@ -9,6 +9,7 @@ dist
 **/src/formio
 **/cypress/**/videos
 screenshots
+downloads
 node_modules
 
 # Ignore only top-level package-lock.json
@@ -46,9 +47,7 @@ yarn-error.log*
 !.vscode/README.md
 
 # devcontainer files
-!.devcontainer/chefs_local/*.sample
-.devcontainer/chefs_local/local.json
-.devcontainer/chefs_local/realm-export.json
+!.devcontainer/chefs_local/local.sample.json
 
 # temp office files
 ~$*
@@ -69,3 +68,5 @@ build
 !app/frontend/.env
 !local-infrastructure/.env
 .history
+realm-export.json
+chefs_build

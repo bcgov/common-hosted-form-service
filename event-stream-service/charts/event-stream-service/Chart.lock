@@ -1,0 +1,9 @@
+dependencies:
+- name: common
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 2.22.0
+- name: nats
+  repository: https://nats-io.github.io/k8s/helm/charts/
+  version: 1.2.6
+digest: sha256:bc1f650dd08952cb93d8584e991562b99ac7b688db94f0b21ccabc629ff768d5
+generated: "2024-11-27T10:49:45.816335-08:00"

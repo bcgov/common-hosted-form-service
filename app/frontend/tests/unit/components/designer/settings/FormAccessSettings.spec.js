@@ -7,15 +7,18 @@ import { nextTick, ref } from 'vue';
 import { useFormStore } from '~/store/form';
 import FormAccessSettings from '~/components/designer/settings/FormAccessSettings.vue';
 import { IdentityMode } from '~/utils/constants';
+import { useAppStore } from '~/store/app';
 
 describe('FormAccessSettings.vue', () => {
   const pinia = createTestingPinia();
   setActivePinia(pinia);
 
   const formStore = useFormStore(pinia);
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     formStore.$reset();
+    appStore.$reset();
   });
 
   it('renders and displays 3 radio buttons', () => {

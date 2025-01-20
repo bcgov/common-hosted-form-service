@@ -3,6 +3,7 @@ const falsey = require('falsey');
 const moment = require('moment');
 const clone = require('lodash/clone');
 const _ = require('lodash');
+const { ScheduleType } = require('./constants');
 
 const setupMount = (type, app, routes) => {
   const p = `/${type}`;
@@ -209,109 +210,98 @@ const checkIsFormExpired = (formSchedule = {}) => {
     message: '',
   };
 
-  if (formSchedule && formSchedule.enabled) {
-    //Check if Form open date is in past or Is form already started for submission
-    if (formSchedule.openSubmissionDateTime) {
-      let startDate = moment(formSchedule.openSubmissionDateTime).format('YYYY-MM-DD HH:MM:SS');
-      let closingDate = null;
-      if (formSchedule.scheduleType === 'closingDate' && formSchedule.closeSubmissionDateTime) {
-        closingDate = moment(formSchedule.closeSubmissionDateTime).format('YYYY-MM-DD HH:MM:SS');
-      }
-      let isFormStartedAlready = moment().diff(startDate, 'seconds'); //If a positive number it means form get started
-      if (isFormStartedAlready >= 0) {
-        //Form have valid past open date for scheduling so lets check for the next conditions
-        if (isFormStartedAlready && formSchedule.enabled && formSchedule.scheduleType !== 'manual') {
-          if (formSchedule.closingMessageEnabled) {
-            if (formSchedule.closingMessage) {
-              result = { ...result, message: formSchedule.closingMessage };
-            } else {
-              result = { ...result, message: 'Something went wrong.' };
-            }
-          } else {
-            result = { ...result, message: 'The form submission period has expired.' };
-          }
+  if (formSchedule && formSchedule.enabled && formSchedule.openSubmissionDateTime) {
+    // The start date is the date that the form should be scheduled to be open to allow submissions
+    let startDate = moment(formSchedule.openSubmissionDateTime).startOf('day');
+    // The closing date is the date that the form should be scheduled to be closed
+    let closingDate = null;
+    if (formSchedule.scheduleType === ScheduleType.CLOSINGDATE && formSchedule.closeSubmissionDateTime) {
+      closingDate = moment(formSchedule.closeSubmissionDateTime).endOf('day');
+    }
 
-          let closeDate =
-            formSchedule.scheduleType === 'period'
-              ? getCalculatedCloseSubmissionDate(
-                  startDate,
-                  formSchedule.keepOpenForTerm,
-                  formSchedule.keepOpenForInterval,
-                  formSchedule.allowLateSubmissions.enabled ? formSchedule.allowLateSubmissions.forNext.term : 0,
-                  formSchedule.allowLateSubmissions.forNext.intervalType,
-                  formSchedule.repeatSubmission.everyTerm,
-                  formSchedule.repeatSubmission.everyIntervalType,
-                  formSchedule.repeatSubmission.repeatUntil,
-                  formSchedule.scheduleType,
-                  formSchedule.closeSubmissionDateTime
-                )
-              : closingDate; //moment(formSchedule.closeSubmissionDateTime).format('YYYY-MM-DD HH:MM:SS');
-          let isBetweenStartAndCloseDate = moment().isBetween(startDate, closeDate);
+    const currentMoment = moment();
 
-          if (isBetweenStartAndCloseDate) {
-            /** Check if form is Repeat enabled - start */
-            /** Check if form is Repeat enabled and alow late submition - start */
-            if (formSchedule.repeatSubmission.enabled) {
-              let availableDates = getSubmissionPeriodDates(
+    let isFormStartedAlready = currentMoment.diff(startDate, 'seconds'); //If a positive number it means form get started
+
+    if (isFormStartedAlready >= 0) {
+      // The manual submission period does not have a custom closing message
+      if (formSchedule.scheduleType !== ScheduleType.MANUAL) {
+        if (formSchedule.closingMessageEnabled && formSchedule.closingMessage) {
+          result = { ...result, message: formSchedule.closingMessage };
+        }
+
+        let closeDate =
+          formSchedule.scheduleType === ScheduleType.PERIOD
+            ? getCalculatedCloseSubmissionDate(
+                startDate,
                 formSchedule.keepOpenForTerm,
                 formSchedule.keepOpenForInterval,
-                startDate,
-                formSchedule.repeatSubmission.everyTerm,
-                formSchedule.repeatSubmission.everyIntervalType,
                 formSchedule.allowLateSubmissions.enabled ? formSchedule.allowLateSubmissions.forNext.term : 0,
                 formSchedule.allowLateSubmissions.forNext.intervalType,
-                formSchedule.repeatSubmission.repeatUntil
-              );
-              for (let i = 0; i < availableDates.length; i++) {
-                //Check if today is the day when a submitter can submit the form for given period of repeat submission
-                let repeatIsBetweenStartAndCloseDate = moment().isBetween(availableDates[i].startDate, availableDates[i].closeDate);
+                formSchedule.repeatSubmission.everyTerm,
+                formSchedule.repeatSubmission.everyIntervalType,
+                formSchedule.repeatSubmission.repeatUntil,
+                formSchedule.scheduleType,
+                formSchedule.closeSubmissionDateTime
+              )
+            : closingDate;
+        let isBetweenStartAndCloseDate = currentMoment.isBetween(startDate, closeDate);
+        if (isBetweenStartAndCloseDate) {
+          if (formSchedule.repeatSubmission.enabled) {
+            // These are the available submission periods that a user can submit
+            let availableDates = getSubmissionPeriodDates(
+              formSchedule.keepOpenForTerm,
+              formSchedule.keepOpenForInterval,
+              startDate,
+              formSchedule.repeatSubmission.everyTerm,
+              formSchedule.repeatSubmission.everyIntervalType,
+              formSchedule.allowLateSubmissions.enabled ? formSchedule.allowLateSubmissions.forNext.term : 0,
+              formSchedule.allowLateSubmissions.forNext.intervalType,
+              formSchedule.repeatSubmission.repeatUntil
+            );
+            for (let i = 0; i < availableDates.length; i++) {
+              // Check if today is the day when a submitter can submit the form for given period of repeat submission
+              let repeatIsBetweenStartAndCloseDate = moment().isBetween(availableDates[i].startDate, availableDates[i].closeDate);
 
-                if (repeatIsBetweenStartAndCloseDate) {
-                  result = { ...result, expire: false }; //Form is available for given period to be submit.
+              if (repeatIsBetweenStartAndCloseDate) {
+                result = { ...result, expire: false }; //Form is available for given period to be submit.
+                break;
+              } else if (formSchedule.allowLateSubmissions.enabled) {
+                result = { ...result, expire: true };
+                let isallowLateSubmissions = moment().isBetween(availableDates[i].startDate, availableDates[i].graceDate);
+                if (isallowLateSubmissions) {
+                  //If late submission is allowed for the given repeat submission period then stop checking for other dates
+                  result = {
+                    ...result,
+                    expire: true,
+                    allowLateSubmissions: isallowLateSubmissions,
+                  };
                   break;
-                } else if (formSchedule.allowLateSubmissions.enabled) {
-                  result = { ...result, expire: true };
-                  /** Check if form is alow late submition - start */
-                  let isallowLateSubmissions = moment().isBetween(availableDates[i].startDate, availableDates[i].graceDate);
-                  if (isallowLateSubmissions) {
-                    //If late submission is allowed for the given repeat submission period then stop checking for other dates
-                    result = {
-                      ...result,
-                      expire: true,
-                      allowLateSubmissions: isallowLateSubmissions,
-                    };
-                    break;
-                  }
-                  /** Check if form is alow late submition - end */
-                } else {
-                  result = { ...result, expire: true, allowLateSubmissions: false };
                 }
+              } else {
+                result = { ...result, expire: true, allowLateSubmissions: false };
               }
             }
-            /** Check if form is Repeat enabled and alow late submition - end */
-            /** Check if form is Repeat enabled - end */
+          }
+        } else {
+          // Block form submission but check if the designer allowed for late submissions
+          if (formSchedule.allowLateSubmissions.enabled) {
+            result = {
+              ...result,
+              expire: true,
+              allowLateSubmissions: isEligibleLateSubmission(closeDate, formSchedule.allowLateSubmissions.forNext.term, formSchedule.allowLateSubmissions.forNext.intervalType),
+            };
           } else {
-            //if close date not valid or not-in future OR close date not in between start and Today then block formSubmission but check the late submission if allowed
-
-            if (formSchedule.allowLateSubmissions.enabled) {
-              /** Check if form is alow late submition - start */
-              result = {
-                ...result,
-                expire: true,
-                allowLateSubmissions: isEligibleLateSubmission(closeDate, formSchedule.allowLateSubmissions.forNext.term, formSchedule.allowLateSubmissions.forNext.intervalType),
-              };
-              /** Check if form is alow late submition - end */
-            } else {
-              result = { ...result, expire: true, allowLateSubmissions: false };
-            }
+            result = { ...result, expire: true, allowLateSubmissions: formSchedule.allowLateSubmissions.enabled };
           }
         }
-      } else {
-        //Form schedule open date is in the future so form will not be available for submission
-        result = { ...result, expire: true, allowLateSubmissions: false, message: 'This form is not yet available for submission.' };
       }
+    } else {
+      // The open submission date time is a future date time, so the form is not yet available for submission
+      result = { ...result, expire: true, allowLateSubmissions: formSchedule.allowLateSubmissions.enabled, message: 'This form is not yet available for submission.' };
     }
   }
+
   return result;
 };
 
@@ -361,12 +351,12 @@ const getSubmissionPeriodDates = (
   let graceDate = null;
 
   calculatedCloseDate.add(keepOpenForTerm, keepOpenForInterval);
-  if (allowLateTerm && allowLateInterval) graceDate = calculatedCloseDate.clone().add(allowLateTerm, allowLateInterval).format('YYYY-MM-DD HH:MM:SS');
+  if (allowLateTerm && allowLateInterval) graceDate = calculatedCloseDate.clone().add(allowLateTerm, allowLateInterval);
 
   // Always push through the first submission period
   submissionPeriodDates.push({
-    startDate: openSubmissionDate.clone().format('YYYY-MM-DD HH:MM:SS'),
-    closeDate: calculatedCloseDate.format('YYYY-MM-DD HH:MM:SS'),
+    startDate: openSubmissionDate.clone(),
+    closeDate: calculatedCloseDate,
     graceDate: graceDate,
   });
 
@@ -383,12 +373,12 @@ const getSubmissionPeriodDates = (
       calculatedCloseDate = openSubmissionDate.clone().add(keepOpenForTerm, keepOpenForInterval);
       // If late submissions are enabled, set the grace period equal to the closing date
       // with the addition of the late period
-      if (allowLateTerm && allowLateInterval) graceDate = calculatedCloseDate.clone().add(allowLateTerm, allowLateInterval).format('YYYY-MM-DD HH:MM:SS');
+      if (allowLateTerm && allowLateInterval) graceDate = calculatedCloseDate.clone().add(allowLateTerm, allowLateInterval);
 
       // Add the calculated dates to the submission period array
       submissionPeriodDates.push({
-        startDate: openSubmissionDate.clone().format('YYYY-MM-DD HH:MM:SS'),
-        closeDate: calculatedCloseDate.format('YYYY-MM-DD HH:MM:SS'),
+        startDate: openSubmissionDate.clone(),
+        closeDate: calculatedCloseDate,
         graceDate: graceDate,
       });
 
@@ -432,13 +422,13 @@ const getCalculatedCloseSubmissionDate = (
   repeatSubmissionUntil = moment(repeatSubmissionUntil);
 
   if (!allowLateTerm && !repeatSubmissionTerm) {
-    calculatedCloseDate = openDate.add(keepOpenForTerm, keepOpenForInterval).format('YYYY-MM-DD HH:MM:SS');
+    calculatedCloseDate = openDate.add(keepOpenForTerm, keepOpenForInterval);
   } else {
     if (repeatSubmissionTerm && repeatSubmissionInterval && repeatSubmissionUntil) {
       calculatedCloseDate = repeatSubmissionUntil;
     }
     if (allowLateTerm && allowLateInterval) {
-      calculatedCloseDate = calculatedCloseDate.add(keepOpenForTerm, keepOpenForInterval).add(allowLateTerm, allowLateInterval).format('YYYY-MM-DD HH:MM:SS');
+      calculatedCloseDate = calculatedCloseDate.add(keepOpenForTerm, keepOpenForInterval).add(allowLateTerm, allowLateInterval);
     }
   }
 
@@ -622,7 +612,7 @@ const validateScheduleObject = (schedule = {}) => {
     let schType = schedule.scheduleType;
     let openSubmissionDateTime = schedule.openSubmissionDateTime;
     if (isDateValid(openSubmissionDateTime)) {
-      if (schType === 'closingDate') {
+      if (schType === ScheduleType.CLOSINGDATE) {
         if (!isDateValid(schedule.closeSubmissionDateTime)) {
           result = {
             message: 'Invalid closed submission date.',
@@ -646,7 +636,7 @@ const validateScheduleObject = (schedule = {}) => {
           };
           return result;
         }
-      } else if (schType === 'period') {
+      } else if (schType === ScheduleType.PERIOD) {
         if (!isLateSubmissionObjValid(schedule)) {
           result = {
             message: 'Invalid late submission data.',
@@ -681,7 +671,7 @@ const validateScheduleObject = (schedule = {}) => {
           return result;
         }
       } else {
-        if (schType !== 'manual') {
+        if (schType !== ScheduleType.MANUAL) {
           result = {
             message: 'Invalid schedule type.',
             status: 'error',

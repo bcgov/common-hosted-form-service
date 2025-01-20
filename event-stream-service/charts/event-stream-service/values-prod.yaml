@@ -1,0 +1,28 @@
+ess:
+  nats:
+    route:
+      enabled: false
+      ingressPrefix: stream
+      ingressSuffix: .apps.silver.devops.gov.bc.ca
+
+nsp:
+  nats:
+    env: prod
+  chefs:
+    env: prod
+
+nats:
+  config:
+    jetstream:
+      fileStore:
+        pvc:
+          size: 1Gi
+  container:
+    merge:
+      resources:
+        limits:
+          cpu: 250m
+          memory: 256Mi
+        requests:
+          cpu: 100m
+          memory: 64Mi

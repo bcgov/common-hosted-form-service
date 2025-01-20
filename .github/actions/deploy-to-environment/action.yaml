@@ -94,6 +94,15 @@ runs:
       run: |
         oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/app.cm.yaml -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -p APP_NAME=${{ inputs.acronym }} -p JOB_NAME=${{ inputs.job_name }} -p SERVER_HOST=${{ inputs.server_host }} -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
 
+    - name: Deploy event stream ConfigMaps
+      shell: bash
+      run: |
+        if [[ "${{ inputs.job_name }}" == pr-* ]]; then
+          oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/ess.cm.yaml -p APP_NAME=${{ inputs.acronym }} -p JOB_NAME=${{ inputs.job_name }} --param-file=openshift/ess.dev.param -p SOURCE=${{ inputs.job_name }} -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+        else
+          oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/ess.cm.yaml -p APP_NAME=${{ inputs.acronym }} -p JOB_NAME=${{ inputs.job_name }} --param-file=openshift/ess.${{ inputs.namespace_environment }}.param -o yaml | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
+        fi
+
     - name: Deploy App
       shell: bash
       run: |
