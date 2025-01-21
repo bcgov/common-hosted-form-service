@@ -70,7 +70,9 @@
     "update": "Cập nhật",
     "cancel": "Hủy bỏ",
     "eventSubscription": "Đăng ký sự kiện",
-    "cdogsTemplate": "mẫu CDOGS"
+    "cdogsTemplate": "mẫu CDOGS",
+    "externalAPIs": "API bên ngoài",
+    "eventStreamConfig": "Cấu hình luồng sự kiện"
   },
   "documentTemplate": {
     "uploadTemplate": "Tải lên mẫu CDOGS",
@@ -172,7 +174,26 @@
     "wideFormLayout": "Bố cục hình thức rộng",
     "formMetadataTitle": "Siêu dữ liệu biểu mẫu",
     "formMetadataMessage": "Thông tin có cấu trúc để mô tả hoặc giải thích biểu mẫu này cho các hệ thống bên ngoài. Các cuộc gọi đến hệ thống bên ngoài sẽ bao gồm siêu dữ liệu này trong tải trọng của chúng.",
-    "formMetadataJsonError": "Siêu dữ liệu biểu mẫu phải là JSON hợp lệ. Sử dụng dấu ngoặc kép xung quanh các thuộc tính và giá trị."
+    "formMetadataJsonError": "Siêu dữ liệu biểu mẫu phải là JSON hợp lệ. Sử dụng dấu ngoặc kép xung quanh các thuộc tính và giá trị.",
+    "eventStreamTitle": "Cài đặt luồng sự kiện",
+    "eventStreamMessage": "Event Stream Service sẽ công bố thông báo về việc công bố và gửi biểu mẫu. Công nghệ cơ bản là NATS.io cho phép người dùng đăng ký hoặc kéo các thông báo sự kiện và xử lý chúng trong các hệ thống bên ngoài. Tin nhắn riêng sẽ chứa các tải trọng được mã hóa với khóa được cấu hình tại đây.",
+    "natsConfiguration": "Cấu hình NATS và Siêu dữ liệu tin nhắn",
+    "publishConfiguration": "Cấu hình xuất bản sự kiện",
+    "enablePublicStream": "Bật luồng công khai",
+    "enablePrivateStream": "Bật luồng riêng tư",
+    "encryptionKeyAlgorithm": "Thuật toán khóa mã hóa",
+    "encryptionKey": "Khóa mã hóa",
+    "encryptionKeyReq": "Khóa mã hóa là bắt buộc đối với Luồng riêng tư",
+    "fetchEncryptionAlgorithmListError": "Có lỗi khi tải danh sách Thuật toán mã hóa.",
+    "serversLabel": "Máy chủ",
+    "streamNameLabel": "Tên luồng",
+    "sourceLabel": "Nguồn",
+    "domainLabel": "Lãnh địa",
+    "eventStreamUpdatedBy": "Cài đặt Luồng sự kiện được cập nhật bởi",
+    "encryptionKeyUpdatedBy": "Khóa mã hóa được cập nhật bởi",
+    "encryptionKeyCopySnackbar": "Khóa mã hóa đã được sao chép vào bảng tạm",
+    "encryptionKeyCopyTooltip": "Sao chép Khóa mã hóa vào clipboard",
+    "encryptionKeyGenerate": "Tạo khóa mã hóa"
   },
   "formProfile": {
     "message": "Đội ngũ CHEFS đang thu thập và tổ chức thông tin để phục vụ như một đầu vào quan trọng cho việc xây dựng các trường hợp kinh doanh toàn diện. Những trường hợp này sẽ đóng một vai trò quan trọng trong hướng dẫn vận hành chiến lược và cải tiến liên tục của CHEFS trong những năm sắp tới. Sáng kiến này để thu thập dữ liệu là quan trọng để thông tin quyết định quan trọng và định hình quỹ đạo của CHEFS, đảm bảo tính linh hoạt và hiệu quả trong đối mặt với những nhu cầu và thách thức đang thay đổi.",
@@ -344,7 +365,8 @@
     "users": "người dùng",
     "developer": "nhà phát triển",
     "infoLinks": "Liên kết thông tin",
-    "metrics": "số liệu"
+    "metrics": "số liệu",
+    "apis": "API"
   },
   "adminUsersTable": {
     "search": "Tìm kiếm",
@@ -725,10 +747,6 @@
   "proactiveHelpPreviewDialog": {
     "learnMore": "Tìm hiểu thêm"
   },
-  "preview": {
-    "preview": "Xem trước",
-    "previewToolTip": "Điều này hiển thị bản xem trước của thiết kế và hành vi của phiên bản biểu mẫu khi người gửi của bạn sẽ nhìn thấy nó. Bạn không thể gửi biểu mẫu từ trang này."
-  },
   "generalLayout": {
     "loadingText": "Tải vui lòng đợi",
     "preview": "XEM TRƯỚC",
@@ -885,7 +903,8 @@
     "continue": "Tiếp tục",
     "back": "Mặt sau",
     "confirmPageNav": "Bạn có thực sự muốn rời khỏi trang này? Những thay đổi bạn đã thực hiện sẽ không được lưu.",
-    "agreementErrMsg": "Bạn phải đồng ý với tuyên bố từ chối trách nhiệm về quyền riêng tư được hiển thị ở trên."
+    "agreementErrMsg": "Bạn phải đồng ý với tuyên bố từ chối trách nhiệm về quyền riêng tư được hiển thị ở trên.",
+    "formProfile": "Hồ sơ biểu mẫu"
   },
   "addTeamMember": {
     "cantFindChefsUsers": "Không thể tìm thấy một người nào đó? Họ có thể chưa đăng nhập vào CHEFS.<br /> Vui lòng gửi cho họ một liên kết đến CHEFS và yêu cầu họ đăng nhập.",
@@ -989,7 +1008,13 @@
       "updatingFCStatusErrMsg": "Đã xảy ra lỗi khi cập nhật trạng thái xuất bản",
       "updatingFCStatusConsErrMsg": "Lỗi khi cập nhật trạng thái xuất bản: {error}",
       "fecthingFormBuilderCompsErrMsg": "Đã xảy ra lỗi khi tìm nạp các thành phần của trình tạo biểu mẫu",
-      "fecthingFormBuilderCompsConsErrMsg": "Lỗi khi nhận các thành phần của trình tạo biểu mẫu: {error}"
+      "fecthingFormBuilderCompsConsErrMsg": "Lỗi khi nhận các thành phần của trình tạo biểu mẫu: {error}",
+      "getAPIsErrMsg": "Đã xảy ra lỗi khi tải danh sách API bên ngoài.",
+      "getAPIsConsErrMsg": "Lỗi khi tải danh sách API bên ngoài: {error}",
+      "updateAPIsErrMsg": "Lỗi khi cập nhật API bên ngoài.",
+      "updateAPIsConsErrMsg": "Lỗi khi cập nhật API bên ngoài: {error}",
+      "getAPICodesErrMsg": "Có lỗi khi tải danh sách Mã trạng thái API bên ngoài.",
+      "getAPICodesConsErrMsg": "Lỗi khi tải danh sách Mã trạng thái API bên ngoài: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Lỗi tải mẫu email cho {formId}: {error}",
@@ -1081,5 +1106,95 @@
       "history": "LỊCH SỬ",
       "user": "Người dùng"
     }
+  },
+  "eventStreamConfig": {
+    "info": "Cấu hình Luồng sự kiện cho biểu mẫu của bạn.",
+    "create": "Tạo cấu hình luồng sự kiện mới",
+    "createError": "Không thể tạo Cấu hình luồng sự kiện.",
+    "createSuccess": "Cấu hình luồng sự kiện đã được tạo thành công.",
+    "createTitle": "Cấu hình luồng sự kiện mới",
+    "delete": "Xóa bỏ",
+    "deleteSuccess": "Cấu hình luồng sự kiện đã được xóa thành công.",
+    "deleteError": "Đã xảy ra lỗi khi xóa Cấu hình luồng sự kiện.",
+    "edit": "Biên tập",
+    "editError": "Không thể cập nhật Cấu hình luồng sự kiện.",
+    "editSuccess": "Cấu hình luồng sự kiện đã được cập nhật thành công.",
+    "editTitle": "Chỉnh sửa cấu hình luồng sự kiện",
+    "fetchError": "Đã xảy ra lỗi khi tải Cấu hình luồng sự kiện.",
+    "save": "Cứu"
+  },
+  "encryptionKey": {
+    "info": "Cấu hình Khóa mã hóa cho biểu mẫu của bạn.",
+    "create": "Tạo Khóa Mã Hóa mới",
+    "createError": "Không thể tạo Khóa mã hóa.",
+    "createSuccess": "Khóa mã hóa đã được tạo thành công.",
+    "createTitle": "Cấu hình khóa mã hóa mới",
+    "delete": "Xóa bỏ",
+    "deleteSuccess": "Đã xóa khóa mã hóa thành công.",
+    "deleteError": "Đã xảy ra lỗi khi xóa Khóa mã hóa.",
+    "edit": "Biên tập",
+    "editError": "Không thể cập nhật Khóa mã hóa.",
+    "editSuccess": "Khóa mã hóa đã được cập nhật thành công.",
+    "editTitle": "Chỉnh sửa khóa mã hóa",
+    "fetchError": "Đã xảy ra lỗi khi lấy Khóa mã hóa.",
+    "fetchListError": "Đã xảy ra lỗi khi tải danh sách Khóa mã hóa.",
+    "save": "Cứu"
+  },
+  "externalAPI": {
+    "info": "Cấu hình API bên ngoài để sử dụng trong biểu mẫu của bạn.",
+    "create": "Tạo API bên ngoài mới.",
+    "createError": "Không thể tạo API bên ngoài.",
+    "createSuccess": "API bên ngoài đã được tạo thành công.",
+    "createTitle": "Cấu hình API bên ngoài mới",
+    "delete": "Xóa bỏ",
+    "deleteSuccess": "Đã xóa API bên ngoài thành công.",
+    "deleteError": "Đã xảy ra lỗi khi xóa API bên ngoài.",
+    "edit": "Biên tập",
+    "editError": "Không thể cập nhật API bên ngoài.",
+    "editSuccess": "Đã cập nhật API bên ngoài thành công.",
+    "editTitle": "Chỉnh sửa cấu hình API bên ngoài",
+    "fetchError": "Đã xảy ra lỗi khi tải API bên ngoài.",
+    "fetchListError": "Đã xảy ra lỗi khi tải danh sách API bên ngoài.",
+    "fetchStatusListError": "Đã xảy ra lỗi khi tải danh sách Mã trạng thái API bên ngoài.",
+    "save": "Cứu",
+    "formName": "Tên",
+    "formEndpointUrl": "URL điểm cuối",
+    "formStatus": "Trạng thái",
+    "formSendApiKey": "Gửi Khóa API",
+    "formApiKeyHeader": "Tên tiêu đề khóa API",
+    "formApiKey": "Giá trị khóa API",
+    "formSendUserToken": "Gửi Mã thông báo Người dùng",
+    "formUserTokenHeader": "Tên tiêu đề mã thông báo người dùng",
+    "formUserTokenBearer": "Mã thông báo người dùng làm Mã thông báo người mang",
+    "formSendUserInfo": "Gửi thông tin người dùng",
+    "formNameReq": "Tên là bắt buộc.",
+    "formNameMaxChars": "Tên phải có 255 ký tự hoặc ít hơn",
+    "validEndpointRequired": "Vui lòng nhập điểm cuối hợp lệ bắt đầu bằng http:// hoặc https://",
+    "apiKeyFieldRequired": "Bắt buộc khi chọn 'Gửi khóa API'.",
+    "userTokenFieldRequired": "Bắt buộc khi chọn 'Gửi mã thông báo người dùng'."
+  },
+  "adminAPIsTable": {
+    "search": "Tìm kiếm",
+    "loadingText": "Đang tải... Vui lòng đợi",
+    "ministry": "Bộ",
+    "ministryName": "Tên Bộ",
+    "formName": "Hình thức",
+    "formId": "ID biểu mẫu",
+    "name": "Tên API",
+    "endpointUrl": "URL điểm cuối",
+    "display": "Trạng thái",
+    "actions": "Hành động",
+    "edit": "Biên tập",
+    "editTitle": "Cập nhật trạng thái API bên ngoài",
+    "allowSendUserToken": "Cho phép 'Gửi mã thông báo người dùng'"
+  },
+  "download": {
+    "chefsDataExport": "Xuất dữ liệu CHEFS",
+    "preparingForDownloading": "Đang chuẩn bị tải xuống...",
+    "downloadInfoA": "Nếu tập tin của bạn không tự động tải xuống",
+    "downloadInfoB": "nhấp vào đây để thử lại"
+  },
+  "test": {
+    "customError": "This is a custom error message for testing."
   }
 }

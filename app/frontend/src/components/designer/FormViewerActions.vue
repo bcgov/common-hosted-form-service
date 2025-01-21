@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, inject, ref } from 'vue';
+import { computed, inject, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ManageSubmissionUsers from '~/components/forms/submission/ManageSubmissionUsers.vue';
@@ -59,9 +59,13 @@ const properties = defineProps({
     type: Boolean,
     default: false,
   },
+  publicForm: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-const isWideLayout = ref(false);
+const isWideLayout = ref(properties.wideFormLayout);
 
 const formStore = useFormStore();
 
@@ -74,14 +78,19 @@ const showEditToggle = computed(
     properties.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
 );
 
-onMounted(() => {
-  setWideLayout(isWideLayout.value);
-});
-
 function toggleWideLayout() {
   isWideLayout.value = !isWideLayout.value;
   setWideLayout(isWideLayout.value);
 }
+// Sync the local copy with the prop when it changes
+watch(
+  () => properties.wideFormLayout,
+  (newValue) => {
+    isWideLayout.value = newValue;
+    setWideLayout(newValue);
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
@@ -89,7 +98,7 @@ function toggleWideLayout() {
     class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
     :class="{ 'dir-rtl': isRTL }"
   >
-    <div v-if="formId">
+    <div v-if="formId && !publicForm">
       <v-btn
         color="primary"
         variant="outlined"
@@ -101,9 +110,12 @@ function toggleWideLayout() {
         }}</span>
       </v-btn>
     </div>
-    <div>
+    <div class="ml-auto d-flex">
       <!-- Bulk button -->
-      <span v-if="allowSubmitterToUploadFile && !block" class="ml-2">
+      <span
+        v-if="allowSubmitterToUploadFile && !block && !publicForm"
+        class="ml-2"
+      >
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <v-btn
@@ -158,7 +170,10 @@ function toggleWideLayout() {
       </span>
 
       <!-- Save a draft -->
-      <span v-if="canSaveDraft && draftEnabled && !bulkFile" class="ml-2">
+      <span
+        v-if="canSaveDraft && draftEnabled && !bulkFile && !publicForm"
+        class="ml-2"
+      >
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <v-btn
@@ -179,7 +194,10 @@ function toggleWideLayout() {
       </span>
 
       <!-- Go to draft edit -->
-      <span v-if="showEditToggle && isDraft && draftEnabled" class="ml-2">
+      <span
+        v-if="showEditToggle && isDraft && draftEnabled && !publicForm"
+        class="ml-2"
+      >
         <router-link
           :to="{
             name: 'UserFormDraftEdit',
@@ -207,7 +225,7 @@ function toggleWideLayout() {
       </span>
 
       <!-- Go to draft edit -->
-      <span v-if="submissionId && draftEnabled" class="ml-2">
+      <span v-if="submissionId && draftEnabled && !publicForm" class="ml-2">
         <ManageSubmissionUsers
           :is-draft="isDraft"
           :submission-id="submissionId"

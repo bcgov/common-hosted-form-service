@@ -58,6 +58,22 @@
       "proxy": "SERVER_ENCRYPTION_PROXY"
     }
   },
+  "eventStreamService": {
+    "servers": "EVENTSTREAMSERVICE_SERVERS",
+    "websockets": "EVENTSTREAMSERVICE_WEBSOCKETS",
+    "consumerservers": "EVENTSTREAMSERVICE_CONSUMERSERVERS",
+    "streamName": "EVENTSTREAMSERVICE_STREAMNAME",
+    "source": "EVENTSTREAMSERVICE_SOURCE",
+    "domain": "EVENTSTREAMSERVICE_DOMAIN",
+    "username": "EVENTSTREAMSERVICE_USERNAME",
+    "password": "EVENTSTREAMSERVICE_PASSWORD",
+    "maxAge": "EVENTSTREAMSERVICE_MAXAGE",
+    "maxBytes": "EVENTSTREAMSERVICE_MAXBYTES",
+    "maxMsgs": "EVENTSTREAMSERVICE_MAXMSGS",
+    "maxMsgSize": "EVENTSTREAMSERVICE_MAXMSGSIZE",
+    "duplicateWindow": "EVENTSTREAMSERVICE_DUPLICATEWINDOW",
+    "numReplicas": "EVENTSTREAMSERVICE_NUMREPLICAS"
+  },
   "serviceClient": {
     "commonServices": {
       "ches": {

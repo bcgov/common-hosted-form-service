@@ -61,6 +61,22 @@
       "proxy": "5fb2054478353fd8d514056d1745b3a9eef066deadda4b90967af7ca65ce6505"
     }
   },
+  "eventStreamService": {
+    "servers": "localhost:4222,localhost:4223,localhost:4224",
+    "websockets": "false",
+    "consumerservers": "localhost:4222,localhost:4223,localhost:4224",
+    "streamName": "CHEFS",
+    "source": "chefs",
+    "domain": "forms",
+    "username": "chefs",
+    "password": "password",
+    "maxAge": "900000",
+    "maxBytes": "26214400",
+    "maxMsgs": "500",
+    "maxMsgSize": "50000",
+    "duplicateWindow": "60000",
+    "numReplicas": "3"
+  },
   "serviceClient": {
     "commonServices": {
       "ches": {

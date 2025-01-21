@@ -48,7 +48,7 @@
       "type": "node",
       "request": "launch",
       "name": "Jest: current file",
-      //"env": { "NODE_ENV": "test" },
+      "env": { "NODE_ENV": "test" },
       "program": "${workspaceFolder}/app/node_modules/.bin/jest",
       "args": [
         "${file}",
@@ -77,6 +77,12 @@
       ],
       "smartStep": true,
       "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Node.js - Debug Current File",
+      "program": "${file}"
     }
   ],
   "version": "0.2.0"

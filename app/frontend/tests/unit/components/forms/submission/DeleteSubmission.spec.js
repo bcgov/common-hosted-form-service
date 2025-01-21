@@ -2,7 +2,7 @@ import { createTestingPinia } from '@pinia/testing';
 import { shallowMount } from '@vue/test-utils';
 import { setActivePinia } from 'pinia';
 import DeleteSubmission from '~/components/forms/submission/DeleteSubmission.vue';
-import { useFormStore } from '../../../../../src/store/form';
+import { useFormStore } from '~/store/form';
 import { beforeEach, vi } from 'vitest';
 
 describe('DeleteSubmission.vue', () => {

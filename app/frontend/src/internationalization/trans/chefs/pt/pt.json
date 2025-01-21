@@ -70,7 +70,9 @@
     "update": "Atualizar",
     "cancel": "Cancelar",
     "eventSubscription": "Assinatura de evento",
-    "cdogsTemplate": "modelo CDOGS"
+    "cdogsTemplate": "modelo CDOGS",
+    "externalAPIs": "APIs externas",
+    "eventStreamConfig": "Configuração do fluxo de eventos"
   },
   "documentTemplate": {
     "uploadTemplate": "Carregar modelo CDOGS",
@@ -172,7 +174,26 @@
     "wideFormLayout": "Layout de Formulário Amplo",
     "formMetadataTitle": "Metadados de formulário",
     "formMetadataMessage": "Informações estruturadas para descrever ou explicar este formulário para sistemas externos. As chamadas para sistemas externos incluirão esses metadados em suas cargas.",
-    "formMetadataJsonError": "Os metadados do formulário devem ser JSON válidos. Use aspas duplas em torno de atributos e valores."
+    "formMetadataJsonError": "Os metadados do formulário devem ser JSON válidos. Use aspas duplas em torno de atributos e valores.",
+    "eventStreamTitle": "Configurações do fluxo de eventos",
+    "eventStreamMessage": "O Event Stream Service publicará notificações sobre publicação e envios de formulários. A tecnologia subjacente é NATS.io, que permite que os consumidores assinem ou puxem as mensagens de eventos e as processem em sistemas externos. As mensagens privadas conterão payloads criptografados com a chave configurada aqui.",
+    "natsConfiguration": "Configuração NATS e metadados de mensagens",
+    "publishConfiguration": "Configuração de publicação de eventos",
+    "enablePublicStream": "Habilitar fluxo público",
+    "enablePrivateStream": "Habilitar transmissão privada",
+    "encryptionKeyAlgorithm": "Algoritmo de chave de criptografia",
+    "encryptionKey": "Chave de criptografia",
+    "encryptionKeyReq": "Chave de criptografia é necessária para fluxos privados",
+    "fetchEncryptionAlgorithmListError": "Erro ao buscar a lista de algoritmos de criptografia.",
+    "serversLabel": "Servidores",
+    "streamNameLabel": "Nome do fluxo",
+    "sourceLabel": "Fonte",
+    "domainLabel": "Domínio",
+    "eventStreamUpdatedBy": "Configurações do fluxo de eventos atualizadas por",
+    "encryptionKeyUpdatedBy": "Chave de criptografia atualizada por",
+    "encryptionKeyCopySnackbar": "Chave de criptografia copiada para a área de transferência",
+    "encryptionKeyCopyTooltip": "Copiar chave de criptografia para a área de transferência",
+    "encryptionKeyGenerate": "Gerar chave de criptografia"
   },
   "formProfile": {
     "message": "A equipe CHEFS está coletando e organizando informações para servir como entrada crucial para a criação de casos de negócios abrangentes. Esses casos desempenharão um papel fundamental na orientação da operação estratégica e na melhoria contínua do CHEFS nos próximos anos. Essa iniciativa de coleta de dados é essencial para informar decisões críticas e moldar a trajetória do CHEFS, garantindo sua adaptabilidade e eficácia em lidar com necessidades e desafios em evolução.",
@@ -344,7 +365,8 @@
     "users": "Usuários",
     "developer": "Desenvolvedor",
     "infoLinks": "Links de informações",
-    "metrics": "Métricas"
+    "metrics": "Métricas",
+    "apis": "APIs"
   },
   "adminUsersTable": {
     "search": "Procurar",
@@ -725,10 +747,6 @@
   "proactiveHelpPreviewDialog": {
     "learnMore": "Saber mais"
   },
-  "preview": {
-    "preview": "Visualização",
-    "previewToolTip": "Isso mostra uma visualização do design e do comportamento da versão do formulário, conforme seus remetentes o verão. Você não pode enviar o formulário desta página."
-  },
   "generalLayout": {
     "loadingText": "Carregando, por favor espere",
     "preview": "VISUALIZAR",
@@ -885,7 +903,8 @@
     "continue": "Continuar",
     "back": "Voltar",
     "confirmPageNav": "Você realmente deseja sair desta página? As alterações feitas não serão salvas.",
-    "agreementErrMsg": "Você deve concordar com o aviso de privacidade mostrado acima."
+    "agreementErrMsg": "Você deve concordar com o aviso de privacidade mostrado acima.",
+    "formProfile": "Perfil do formulário"
   },
   "addTeamMember": {
     "cantFindChefsUsers": "Não consegue encontrar alguém? Eles podem não ter logado no CHEFS.<br /> Por favor, envie-lhes um link para CHEFS e peça-lhes para fazer login.",
@@ -991,7 +1010,13 @@
       "updatingFCStatusErrMsg": "Ocorreu um erro ao atualizar o status de publicação",
       "updatingFCStatusConsErrMsg": "Erro ao atualizar o status de publicação: {error}",
       "fecthingFormBuilderCompsErrMsg": "Ocorreu um erro ao buscar os componentes do construtor de formulários",
-      "fecthingFormBuilderCompsConsErrMsg": "Erro ao obter os componentes do construtor de formulário: {error}"
+      "fecthingFormBuilderCompsConsErrMsg": "Erro ao obter os componentes do construtor de formulário: {error}",
+      "getAPIsErrMsg": "Ocorreu um erro ao buscar a lista de APIs externas.",
+      "getAPIsConsErrMsg": "Erro ao buscar lista de APIs externas: {error}",
+      "updateAPIsErrMsg": "Erro ao atualizar API externa.",
+      "updateAPIsConsErrMsg": "Erro ao atualizar API externa: {error}",
+      "getAPICodesErrMsg": "Erro ao buscar a lista de códigos de status da API externa.",
+      "getAPICodesConsErrMsg": "Erro ao buscar a lista de códigos de status da API externa: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Erro ao carregar modelos de e-mail para {formId}: {error}",
@@ -1083,5 +1108,89 @@
       "history": "HISTÓRIA",
       "user": "Do utilizador"
     }
+  },
+  "eventStreamConfig": {
+    "info": "Configure o Event Stream para seu formulário.",
+    "create": "Criar nova configuração de fluxo de eventos",
+    "createError": "Não foi possível criar a configuração do fluxo de eventos.",
+    "createSuccess": "Configuração do fluxo de eventos criada com sucesso.",
+    "createTitle": "Nova configuração de fluxo de eventos",
+    "delete": "Excluir",
+    "deleteSuccess": "Configuração do fluxo de eventos excluída com sucesso.",
+    "deleteError": "Ocorreu um erro ao excluir a configuração do fluxo de eventos.",
+    "edit": "Editar",
+    "editError": "Não foi possível atualizar a configuração do fluxo de eventos.",
+    "editSuccess": "Configuração do fluxo de eventos atualizada com sucesso.",
+    "editTitle": "Editar configuração do fluxo de eventos",
+    "fetchError": "Ocorreu um erro ao buscar a configuração do fluxo de eventos.",
+    "save": "Salvar"
+  },
+  "encryptionKey": {
+    "info": "Configure chaves de criptografia para seu formulário.",
+    "create": "Criar nova chave de criptografia",
+    "createError": "Não foi possível criar a chave de criptografia.",
+    "createSuccess": "Chave de criptografia criada com sucesso.",
+    "createTitle": "Nova configuração de chave de criptografia",
+    "delete": "Excluir",
+    "deleteSuccess": "Chave de criptografia excluída com sucesso.",
+    "deleteError": "Ocorreu um erro ao excluir a chave de criptografia.",
+    "edit": "Editar",
+    "editError": "A chave de criptografia não pôde ser atualizada.",
+    "editSuccess": "Chave de criptografia atualizada com sucesso.",
+    "editTitle": "Editar chave de criptografia",
+    "fetchError": "Ocorreu um erro ao obter a chave de criptografia.",
+    "fetchListError": "Ocorreu um erro ao buscar a lista de chaves de criptografia.",
+    "save": "Salvar"
+  },
+  "externalAPI": {
+    "info": "Configure APIs externas para uso em seu formulário.",
+    "create": "Crie uma nova API externa.",
+    "createError": "Não foi possível criar a API externa.",
+    "createSuccess": "API externa criada com sucesso.",
+    "createTitle": "Nova configuração de API externa",
+    "delete": "Excluir",
+    "deleteSuccess": "API externa excluída com sucesso.",
+    "deleteError": "Ocorreu um erro ao excluir a API externa.",
+    "edit": "Editar",
+    "editError": "A API externa não pôde ser atualizada.",
+    "editSuccess": "API externa atualizada com sucesso.",
+    "editTitle": "Editar configuração de API externa",
+    "fetchError": "Ocorreu um erro ao buscar a API externa.",
+    "fetchListError": "Ocorreu um erro ao buscar a lista de API externa.",
+    "fetchStatusListError": "Ocorreu um erro ao buscar a lista de códigos de status da API externa.",
+    "save": "Salvar",
+    "formName": "Nome",
+    "formEndpointUrl": "URL do ponto final",
+    "formStatus": "Status",
+    "formSendApiKey": "Enviar chave API",
+    "formApiKeyHeader": "Nome do cabeçalho da chave da API",
+    "formApiKey": "Valor da chave da API",
+    "formSendUserToken": "Enviar Token de Usuário",
+    "formUserTokenHeader": "Nome do cabeçalho do token do usuário",
+    "formUserTokenBearer": "Token do usuário como Token do portador",
+    "formSendUserInfo": "Enviar informações do usuário",
+    "formNameReq": "Nome é obrigatório.",
+    "formNameMaxChars": "O nome deve ter 255 caracteres ou menos",
+    "validEndpointRequired": "Insira um ponto de extremidade válido começando com http:// ou https://",
+    "apiKeyFieldRequired": "Obrigatório quando 'Enviar chave de API' estiver selecionado.",
+    "userTokenFieldRequired": "Obrigatório quando 'Enviar token de usuário' estiver selecionado."
+  },
+  "adminAPIsTable": {
+    "search": "Procurar",
+    "loadingText": "Carregando... Por favor aguarde",
+    "ministry": "Ministério",
+    "ministryName": "Nome do Ministério",
+    "formName": "Forma",
+    "formId": "ID do formulário",
+    "name": "Nome da API",
+    "endpointUrl": "URL do ponto final",
+    "display": "Status",
+    "actions": "Ações",
+    "edit": "Editar",
+    "editTitle": "Atualizar status da API externa",
+    "allowSendUserToken": "Permitir 'Enviar Token de Usuário'"
+  },
+  "test": {
+    "customError": "This is a custom error message for testing."
   }
 }

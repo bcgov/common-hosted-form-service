@@ -233,6 +233,16 @@ objects:
                     secretKeyRef:
                       key: mailapitoken
                       name: "chefs-${JOB_NAME}-secret"
+                - name: EVENTSTREAMSERVICE_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: username
+                      name: "${APP_NAME}-event-stream-service"
+                - name: EVENTSTREAMSERVICE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: password
+                      name: "${APP_NAME}-event-stream-service"
                 # - name: SERVER_LOGFILE
                 #   value: "/var/log/app.log"
               envFrom:
@@ -250,6 +260,8 @@ objects:
                     name: "${APP_NAME}-oidc-config"
                 - configMapRef:
                     name: "${APP_NAME}-custombcaddressformiocomponent-config"
+                - configMapRef:
+                    name: "${APP_NAME}-${JOB_NAME}-event-stream-service"
           restartPolicy: Always
           terminationGracePeriodSeconds: 30
           volumes:

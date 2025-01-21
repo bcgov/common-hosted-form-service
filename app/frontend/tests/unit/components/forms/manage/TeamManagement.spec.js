@@ -11,6 +11,8 @@ import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 import { useNotificationStore } from '~/store/notification';
+import { useAppStore } from '~/store/app';
+
 import {
   AppPermissions,
   FormPermissions,
@@ -279,6 +281,7 @@ describe('TeamManagement.vue', () => {
   const formStore = useFormStore(pinia);
   const idpStore = useIdpStore(pinia);
   const notificationStore = useNotificationStore(pinia);
+  const appStore = useAppStore(pinia);
   const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
   const listRolesSpy = vi.spyOn(roleService, 'list');
 
@@ -286,6 +289,7 @@ describe('TeamManagement.vue', () => {
     authStore.$reset();
     formStore.$reset();
     idpStore.$reset();
+    appStore.$reset();
     notificationStore.$reset();
     fetchFormSpy.mockReset();
     listRolesSpy.mockReset();

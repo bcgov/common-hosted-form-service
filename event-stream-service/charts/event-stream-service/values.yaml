@@ -1,0 +1,262 @@
+ess:
+  nats:
+    secret:
+      name: ess-nats-auth
+    certSecret: tls-stream-secret
+    route:
+      name: ess-route
+      enabled: false
+      ingressPrefix: stream-dev
+      ingressSuffix: .apps.silver.devops.gov.bc.ca
+      path: ""
+      serviceName: ess-nats
+      targetPort: websocket
+      timeout: 2m
+      tls:
+        enabled: true
+        insecureEdgeTerminationPolicy: None
+        termination: edge
+      wildcardPolicy: None
+
+nsp:
+  nats:
+    env: dev
+    namespace: a191b5
+  chefs:
+    env: dev
+    namespace: a12c97
+
+nats:
+  fullnameOverride: ess-nats
+  config:
+    cluster:
+      enabled: true
+      replicas: 3
+    jetstream:
+      enabled: true
+      fileStore:
+        enabled: true
+        pvc:
+          enabled: true
+          storageClassName: netapp-block-standard
+          size: 250Mi
+    websocket:
+      enabled: true
+      port: 8888
+    merge:
+      debug: false
+      trace: false
+      accounts:
+        $SYS:
+          users:
+            - user: "sysadmin"
+              password: << $SYSADMIN_PWD >>
+      authorization:
+        default_permissions:
+          publish:
+            [
+              "SANDBOX.*",
+              "$JS.API.INFO",
+              "$JS.API.CONSUMER.CREATE.*",
+              "$JS.API.CONSUMER.CREATE.*.>",
+              "$JS.API.CONSUMER.DURABLE.CREATE.*.>",
+              "$JS.API.CONSUMER.DELETE.*.>",
+              "$JS.API.CONSUMER.INFO.*.>",
+              "$JS.API.CONSUMER.LIST.*",
+              "$JS.API.CONSUMER.NAMES.*",
+              "$JS.API.CONSUMER.MSG.NEXT.*.>",
+              "$JS.API.CONSUMER.MSG.NEXT.*.NEW",
+              "$JS.API.STREAM.MSG.GET.*",
+              "$JS.API.STREAM.INFO.*",
+              "$JS.API.STREAM.LIST",
+              "$JS.API.STREAM.NAMES",
+              "$JS.ACK.*",
+              "$JS.ACK.*.>",
+            ]
+          subscribe: ["PUBLIC.>", "PRIVATE.>", "_INBOX.>"]
+        users:
+          - user: "chefsConsumer"
+            password: << $CHEFSCONSUMER_PWD >>
+            permissions:
+              publish:
+                [
+                  "SANDBOX.*",
+                  "$JS.API.INFO",
+                  "$JS.API.CONSUMER.CREATE.CHEFS",
+                  "$JS.API.CONSUMER.CREATE.CHEFS.>",
+                  "$JS.API.CONSUMER.DURABLE.CREATE.CHEFS.>",
+                  "$JS.API.CONSUMER.DELETE.CHEFS.>",
+                  "$JS.API.CONSUMER.INFO.CHEFS.>",
+                  "$JS.API.CONSUMER.LIST.CHEFS",
+                  "$JS.API.CONSUMER.NAMES.CHEFS",
+                  "$JS.API.CONSUMER.MSG.NEXT.CHEFS.>",
+                  "$JS.API.CONSUMER.MSG.NEXT.CHEFS.NEW",
+                  "$JS.API.STREAM.MSG.GET.CHEFS",
+                  "$JS.API.STREAM.INFO.CHEFS",
+                  "$JS.API.STREAM.LIST",
+                  "$JS.API.STREAM.NAMES",
+                  "$JS.ACK.CHEFS",
+                  "$JS.ACK.CHEFS.>",
+                ]
+              subscribe: ["PUBLIC.forms.>", "PRIVATE.forms.>", "_INBOX.>"]
+          - user: "admin"
+            password: << $ADMIN_PWD >>
+            permissions:
+              publish: [">"]
+              subscribe: [">"]
+          - user: "chefs"
+            password: << $CHEFS_PWD >>
+            permissions:
+              publish:
+                [
+                  "$JS.API.INFO",
+                  "$JS.API.STREAM.CREATE.CHEFS",
+                  "$JS.API.STREAM.UPDATE.CHEFS",
+                  "$JS.API.STREAM.DELETE.CHEFS",
+                  "$JS.API.STREAM.INFO.CHEFS",
+                  "$JS.API.STREAM.PURGE.CHEFS",
+                  "$JS.API.STREAM.LIST",
+                  "$JS.API.STREAM.NAMES",
+                  "$JS.API.STREAM.MSG.DELETE.CHEFS",
+                  "$JS.API.STREAM.MSG.GET.CHEFS",
+                  "$JS.API.STREAM.SNAPSHOT.CHEFS",
+                  "$JS.API.STREAM.RESTORE.CHEFS",
+                  "$JS.API.CONSUMER.CREATE.CHEFS",
+                  "$JS.API.CONSUMER.CREATE.CHEFS.>",
+                  "$JS.API.CONSUMER.DURABLE.CREATE.CHEFS.>",
+                  "$JS.API.CONSUMER.DELETE.CHEFS.>",
+                  "$JS.API.CONSUMER.INFO.CHEFS.>",
+                  "$JS.API.CONSUMER.LIST.CHEFS",
+                  "$JS.API.CONSUMER.NAMES.CHEFS",
+                  "$JS.API.CONSUMER.MSG.NEXT.CHEFS.>",
+                  "$JS.API.CONSUMER.MSG.NEXT.CHEFS.NEW",
+                  "$JS.API.STREAM.MSG.GET.CHEFS",
+                  "$JS.ACK.CHEFS.>",
+                  "PUBLIC.forms.>",
+                  "PRIVATE.forms.>",
+                ]
+              subscribe: ["_INBOX.>"]
+  container:
+    env:
+      SYSADMIN_PWD:
+        valueFrom:
+          secretKeyRef:
+            name: ess-nats-auth
+            key: sysadmin_pwd
+      ADMIN_PWD:
+        valueFrom:
+          secretKeyRef:
+            name: ess-nats-auth
+            key: admin_pwd
+      CHEFS_PWD:
+        valueFrom:
+          secretKeyRef:
+            name: ess-nats-auth
+            key: chefs_pwd
+      CHEFSCONSUMER_PWD:
+        valueFrom:
+          secretKeyRef:
+            name: ess-nats-auth
+            key: chefsconsumer_pwd
+    merge:
+      # Each pod combines these resources with the reloader (2 containers, 1 pod)
+      # so add the below to the reloader for total resources per pod.
+      resources:
+        limits:
+          cpu: 500m
+          memory: 256Mi
+        requests:
+          cpu: 10m
+          memory: 32Mi
+  reloader:
+    merge:
+      resources:
+        limits:
+          cpu: 20m
+          memory: 12Mi
+        requests:
+          cpu: 10m
+          memory: 8Mi
+  service:
+    ports:
+      nats:
+        enabled: true
+      leafnodes:
+        enabled: false
+      websocket:
+        enabled: true
+      mqtt:
+        enabled: false
+      cluster:
+        enabled: true
+      gateway:
+        enabled: false
+      monitor:
+        enabled: false
+      profiling:
+        enabled: false
+  podTemplate:
+    topologySpreadConstraints:
+      kubernetes.io/hostname:
+        maxSkew: 1
+        whenUnsatisfiable: DoNotSchedule
+  natsBox:
+    enabled: false
+    container:
+      image:
+        tag: nonroot
+      merge:
+        resources:
+          limits:
+            cpu: 50m
+            memory: 128Mi
+          requests:
+            cpu: 25m
+            memory: 64Mi
+
+nginx:
+  fullnameOverride: ess-nginx
+  readinessProbe:
+    enabled: true
+    path: /health
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  service:
+    type: ClusterIP
+    ports:
+      http: 8080
+      https: 8443
+    extraPorts:
+  tls:
+    enabled: true
+  serverBlock: |-
+    server {
+        listen 8080;
+        listen [::]:8080;
+        server_name localhost;
+        proxy_buffer_size 16k;
+        proxy_buffers 8 16k;
+        proxy_busy_buffers_size 32k;
+        
+        location / {
+            proxy_pass  http://ess-nats:8888;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "Upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /health {
+          default_type application/json;
+          return 200 '{"message": "healthy"}';
+        }         
+
+    }

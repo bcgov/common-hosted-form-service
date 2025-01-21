@@ -45,6 +45,7 @@ import simplesignatureadvanced from './SimpleSignatureAdvanced/Component';
 import simplebuttonadvanced from './SimpleButtonAdvanced/Component';
 import bcaddress from './BCAddress/Component';
 import simplebcaddress from './SimpleBCAddress/Component';
+import map from './Map/Component';
 
 export default {
   orgbook,
@@ -93,5 +94,6 @@ export default {
   simplesignatureadvanced,
   simplebuttonadvanced,
   bcaddress,
-  simplebcaddress
+  simplebcaddress,
+  map,
 };

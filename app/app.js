@@ -13,14 +13,18 @@ const v1Router = require('./src/routes/v1');
 
 const DataConnection = require('./src/db/dataConnection');
 const dataConnection = new DataConnection();
+const { eventStreamService } = require('./src/components/eventStreamService');
+
 const apiRouter = express.Router();
 const state = {
   connections: {
     data: false,
+    eventStreamService: false,
   },
   ready: false,
   shutdown: false,
 };
+
 let probeId;
 const app = express();
 app.use(compression());
@@ -62,6 +66,14 @@ apiRouter.use('/config', (_req, res, next) => {
     // we will need to pass
     const uploads = config.get('files.uploads');
     const feConfig = { ...frontend, uploads: uploads };
+    let ess = config.util.cloneDeep(config.get('eventStreamService'));
+    if (ess) {
+      delete ess['username'];
+      delete ess['password'];
+      feConfig['eventStreamService'] = {
+        ...ess,
+      };
+    }
     res.status(200).json(feConfig);
   } catch (err) {
     next(err);
@@ -160,6 +172,7 @@ function cleanup() {
   log.info('Cleaning up...', { function: 'cleanup' });
   clearInterval(probeId);
 
+  eventStreamService.closeConnection();
   dataConnection.close(() => process.exit());
 
   // Wait 10 seconds max before hard exiting
@@ -173,7 +186,7 @@ function cleanup() {
  */
 function initializeConnections() {
   // Initialize connections and exit if unsuccessful
-  const tasks = [dataConnection.checkAll()];
+  const tasks = [dataConnection.checkAll(), eventStreamService.checkConnection()];
 
   Promise.all(tasks)
     .then((results) => {
@@ -183,9 +196,16 @@ function initializeConnections() {
         log.info('DataConnection Reachable', {
           function: 'initializeConnections',
         });
+
+      state.connections.eventStreamService = results[1];
+      const reachable = state.connections.eventStreamService ? 'Reachable' : 'Unreachable';
+      log.info(`EventStreamService ${reachable}`, {
+        function: 'initializeConnections',
+      });
     })
     .catch((error) => {
       log.error(`Initialization failed: Database OK = ${state.connections.data}`, { function: 'initializeConnections' });
+      log.error(`Initialization failed: EventStreamService OK = ${state.connections.eventStreamService}`, { function: 'initializeConnections' });
       log.error('Connection initialization failure', error.message, {
         function: 'initializeConnections',
       });
@@ -195,7 +215,7 @@ function initializeConnections() {
       }
     })
     .finally(() => {
-      state.ready = Object.values(state.connections).every((x) => x);
+      state.ready = state.connections.data; // only need db running
       if (state.ready) {
         log.info('Service ready to accept traffic', {
           function: 'initializeConnections',
@@ -214,17 +234,21 @@ function initializeConnections() {
 function checkConnections() {
   const wasReady = state.ready;
   if (!state.shutdown) {
-    const tasks = [dataConnection.checkConnection()];
+    const tasks = [dataConnection.checkConnection(), eventStreamService.checkConnection()];
 
     Promise.all(tasks).then((results) => {
       state.connections.data = results[0];
-      state.ready = Object.values(state.connections).every((x) => x);
+      state.connections.eventStreamService = results[1];
+
+      state.ready = state.connections.data; // only want no db to halt application
       if (!wasReady && state.ready)
         log.info('Service ready to accept traffic', {
           function: 'checkConnections',
         });
       log.verbose(state);
       if (!state.ready) {
+        log.error(`Database connected = ${state.connections.data}`, { function: 'checkConnections' });
+        log.error(`EventStreamService connected = ${state.connections.eventStreamService}`, { function: 'checkConnections' });
         process.exitCode = 1;
         shutdown();
       }

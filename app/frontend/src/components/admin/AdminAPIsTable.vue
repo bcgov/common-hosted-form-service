@@ -22,6 +22,7 @@ const editDialog = ref({
     endpointUrl: null,
     code: null,
     allowSendUserToken: false,
+    sendApiKey: false,
   },
   show: false,
 });
@@ -108,6 +109,7 @@ function resetEditDialog() {
       endpointUrl: null,
       code: null,
       allowSendUserToken: false,
+      sendApiKey: false,
     },
     show: false,
   };
@@ -289,6 +291,17 @@ async function saveItem() {
           <template #label>
             <span :class="{ 'mr-2': isRTL }" :lang="lang">
               {{ $t('trans.adminAPIsTable.allowSendUserToken') }}
+            </span>
+          </template>
+        </v-checkbox>
+        <v-checkbox
+          v-model="editDialog.item.sendApiKey"
+          class="my-0 pt-0"
+          disabled
+        >
+          <template #label>
+            <span :class="{ 'mr-2': isRTL }" :lang="lang">
+              {{ $t('trans.externalAPI.formSendApiKey') }}
             </span>
           </template>
         </v-checkbox>
