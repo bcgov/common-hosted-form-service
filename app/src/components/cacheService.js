@@ -56,8 +56,6 @@ const deleteFromCache = async (cache, key) => {
 };
 
 class CacheService {
-  constructor() {}
-
   async clear() {
     try {
       await loginUserCache.items.clear();
@@ -75,14 +73,12 @@ class CacheService {
         return loginUser;
       }
     }
-    return;
   }
 
   async setLoginUser(userInfo, value, ttl) {
     if (userInfo && userInfo.idpUserId && userInfo.hash) {
       return await setToCache(loginUserCache, userInfo.idpUserId, value, ttl);
     }
-    return;
   }
 }
 

@@ -1,6 +1,23 @@
 const { MockModel } = require('../../common/dbHelper');
 const cacheService = require('../../../src/components/cacheService');
 
+async function setUpGoodTest(ttl) {
+  const userInfo = { idpUserId: 'idpUserId', hash: '1' };
+  const loginUser = { idpUserId: 'idpUserId', email: 'email@mail.com', hash: '1' };
+  // cache and fetch login user...
+  await cacheService.setLoginUser(userInfo, loginUser, ttl);
+  let cached = await cacheService.getLoginUser(userInfo);
+  // expect to find the cached loginUser
+  expect(cached).toBeTruthy();
+  expect(cached).toMatchObject(loginUser);
+  return userInfo;
+}
+
+async function expectCachedFailure(userInfo) {
+  const cached = await cacheService.getLoginUser(userInfo);
+  expect(cached).toBeFalsy();
+}
+
 beforeEach(() => {
   MockModel.mockReset();
 });
@@ -75,38 +92,20 @@ describe('cacheService', () => {
   });
 
   it('should clear a loginUser when time to live expires', async () => {
-    const userInfo = { idpUserId: 'idpUserId', hash: '1' };
-    const loginUser = { idpUserId: 'idpUserId', email: 'email@mail.com', hash: '1' };
-
     const ttl = 1000; // 1 second
+    const userInfo = await setUpGoodTest(ttl);
+    // introduce failure... cache expired...
+    await new Promise((r) => setTimeout(r, ttl * 2));
 
-    await cacheService.setLoginUser(userInfo, loginUser, ttl);
-    let cached = await cacheService.getLoginUser(userInfo);
-
-    expect(cached).toBeTruthy();
-    expect(cached).toMatchObject(loginUser);
-
-    await new Promise((r) => setTimeout(r, ttl));
-
-    cached = await cacheService.getLoginUser(userInfo);
-
-    expect(cached).toBeFalsy();
+    await expectCachedFailure(userInfo);
   });
 
   it('should not return a loginUser when hash changes', async () => {
-    const userInfo = { idpUserId: 'idpUserId', hash: '1' };
-    const loginUser = { idpUserId: 'idpUserId', email: 'email@mail.com', hash: '1' };
-
-    await cacheService.setLoginUser(userInfo, loginUser);
-    let cached = await cacheService.getLoginUser(userInfo);
-
-    expect(cached).toBeTruthy();
-    expect(cached).toMatchObject(loginUser);
-
+    const userInfo = await setUpGoodTest();
+    // introduce failure - hash doesn't match in cache...
     userInfo.hash = '2';
-    cached = await cacheService.getLoginUser(userInfo);
 
-    expect(cached).toBeFalsy();
+    await expectCachedFailure(userInfo);
   });
 
   it('should clear cache', async () => {
