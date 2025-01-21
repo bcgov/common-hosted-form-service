@@ -2351,8 +2351,32 @@ paths:
                 $ref: '#/components/schemas/Error'
   /rbac/current:
     get:
-      summary: Get forms/roles/permissions for current user
+      summary: Get current user details
       operationId: getCurrentUser
+      tags:
+        - RBAC
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/CurrentUser'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /rbac/current/forms:
+    get:
+      summary: Get forms/roles/permissions for current user
+      operationId: getCurrentUserForms
       tags:
         - RBAC
       parameters:
@@ -2385,7 +2409,6 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/CurrentUser'
                   - type: array
                     items:
                       $ref: '#/components/schemas/UserForm'

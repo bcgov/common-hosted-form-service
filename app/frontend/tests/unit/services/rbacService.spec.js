@@ -25,7 +25,19 @@ describe('RBAC Service', () => {
     it('calls rbac/current endpoint', async () => {
       mockAxios.onGet(endpoint).reply(200);
 
-      const result = await rbacService.getCurrentUser({ idp: 'idir' });
+      const result = await rbacService.getCurrentUser();
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+    });
+  });
+
+  describe('rbac/current/forms', () => {
+    const endpoint = `${ApiRoutes.RBAC}/current/forms`;
+
+    it('calls rbac/current endpoint', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+
+      const result = await rbacService.getCurrentUserForms({ idp: 'idir' });
       expect(result).toBeTruthy();
       expect(mockAxios.history.get).toHaveLength(1);
       expect(Object.keys(mockAxios.history.get[0].params)).toEqual(['idp']);
