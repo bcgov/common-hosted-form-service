@@ -67,6 +67,9 @@
     "4224": {
       "label": "NATS Server 3"
     },
+    "5173": {
+      "label": "CHEFS Frontend"
+    },
     "5432": {
       "label": "PostgreSQL"
     },
