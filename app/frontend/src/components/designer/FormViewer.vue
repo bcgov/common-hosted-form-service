@@ -1201,28 +1201,25 @@ async function uploadFile(file, config = {}) {
 
       <div v-else>
         <div v-if="displayTitle">
-          <div v-if="!isFormPublic(form)">
-            <FormViewerActions
-              :allow-submitter-to-upload-file="form.allowSubmitterToUploadFile"
-              :block="block"
-              :bulk-file="bulkFile"
-              :copy-existing-submission="form.enableCopyExistingSubmission"
-              :draft-enabled="form.enableSubmitterDraft"
-              :form-id="form.id"
-              :is-draft="submissionRecord.draft"
-              :permissions="permissions"
-              :read-only="readOnly"
-              :submission="submission"
-              :submission-id="submissionId"
-              :wide-form-layout="form.wideFormLayout"
-              class="d-print-none"
-              @showdoYouWantToSaveTheDraftModal="
-                showdoYouWantToSaveTheDraftModal
-              "
-              @save-draft="saveDraft"
-              @switchView="switchView"
-            />
-          </div>
+          <FormViewerActions
+            :allow-submitter-to-upload-file="form.allowSubmitterToUploadFile"
+            :block="block"
+            :bulk-file="bulkFile"
+            :copy-existing-submission="form.enableCopyExistingSubmission"
+            :draft-enabled="form.enableSubmitterDraft"
+            :form-id="form.id"
+            :is-draft="submissionRecord.draft"
+            :permissions="permissions"
+            :read-only="readOnly"
+            :submission="submission"
+            :submission-id="submissionId"
+            :wide-form-layout="form.wideFormLayout"
+            :public-form="isFormPublic(form)"
+            class="d-print-none"
+            @showdoYouWantToSaveTheDraftModal="showdoYouWantToSaveTheDraftModal"
+            @save-draft="saveDraft"
+            @switchView="switchView"
+          />
           <h1 class="my-6 text-center">{{ form.name }}</h1>
         </div>
         <div class="form-wrapper">
