@@ -27,7 +27,8 @@
     8081,
     4222, //nats
     4223, //nats
-    4224 // nats
+    4224, // nats
+    64120 //sonarlint ide
   ],
 
   // Use 'postCreateCommand' to run commands after the container is created.
