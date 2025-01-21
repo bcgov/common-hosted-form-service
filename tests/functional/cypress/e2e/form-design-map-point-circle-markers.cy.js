@@ -98,7 +98,8 @@ describe('Form Designer', () => {
         .trigger('mouseup', coords.x, -5, { force: true })
         cy.wait(2000);
         //Verify circular area drawn is exist on the map
-        cy.get('p').contains('(65.03593,-120.63474)').should('exist');
+        //cy.get('p').contains('(65.03593,-120.63474)').should('exist');
+        cy.get('g').find('path[d="M-102.11055350553488,-342.0530363116486a337,341 0 1,0 674,0 a337,341 0 1,0 -674,0 "]').should('exist');
         cy.wait(2000);
       });
              
