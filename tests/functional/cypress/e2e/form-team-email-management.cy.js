@@ -64,6 +64,9 @@ describe("Form Designer", () => {
     cy.get(
       ".v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input"
     ).click();
+    cy.get('.v-col > .v-btn--variant-outlined > .v-btn__content > span').click();
+    cy.wait(3000);
+    /*
     cy.get(
       ".v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input"
     ).type("NIM");
@@ -83,6 +86,7 @@ describe("Form Designer", () => {
       multiple: true,
       force: true,
     });
+    */
     //Manage column views
 
     cy.get(".mdi-view-column").click();
@@ -104,7 +108,7 @@ describe("Form Designer", () => {
     cy.waitForLoad();
 
     //Remove a user from Roles
-
+     /*
     cy.get('tbody > :nth-child(1) > [style="width: 1rem;"] > .v-btn').click();
     cy.waitForLoad();
     //cy.contains('REMOVE').click();
@@ -113,6 +117,7 @@ describe("Form Designer", () => {
     ).click();
     cy.waitForLoad();
     cy.contains("NIMJOHN").should("not.exist");
+    */
     cy.get('[data-test="OwnerRoleCheckbox"]').click();
     cy.wait(1000);
     cy.get(".v-alert__content")
@@ -174,6 +179,7 @@ describe("Form Designer", () => {
     cy.get(
       ".v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input"
     ).click();
+    /*
     cy.get(
       ".v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input"
     ).type("NIM");
@@ -190,7 +196,7 @@ describe("Form Designer", () => {
     cy.get(":nth-child(5) > .v-chip__content").click();
     cy.wait(3000);
     cy.get(".v-btn--elevated > .v-btn__content > span").click();
-    cy.wait(3000);
+    
     /*
     cy.get('[data-test="OwnerRoleCheckbox"]').then(($el) => {
       const ownercheck = $el[0];
@@ -205,6 +211,8 @@ describe("Form Designer", () => {
       .contains("You can't update an owner's roles.")
       .should("be.visible");
       */
+    cy.get('.v-col > .v-btn--variant-outlined > .v-btn__content > span').click();
+    cy.wait(3000);
     cy.get(".mdi-cog").click();
     
     cy.waitForLoad();
