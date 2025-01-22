@@ -66,25 +66,32 @@ const service = {
     return User.query().findById(id).throwIfNotFound();
   },
 
-  getCurrentUser: async (currentUser, params) => {
+  getCurrentUser: async (currentUser) => {
     const user = Object.assign({}, currentUser);
-    const accessLevels = [];
-    if (user.public) {
-      accessLevels.push('public');
-    } else {
-      if (params.public) accessLevels.push('public');
-      if (params.idp) accessLevels.push('idp');
-      if (params.team) accessLevels.push('team');
-    }
-
-    const forms = await authService.getUserForms(user, {
-      ...params,
-      active: true,
-    });
-    const filteredForms = authService.filterForms(user, forms, accessLevels);
-    user.forms = filteredForms;
-
     return user;
+  },
+
+  getCurrentUserForms: async (currentUser, params = {}) => {
+    if (!currentUser) return [];
+    try {
+      const accessLevels = [];
+      if (currentUser.public) {
+        accessLevels.push('public');
+      } else {
+        if (params.public) accessLevels.push('public');
+        if (params.idp) accessLevels.push('idp');
+        if (params.team) accessLevels.push('team');
+      }
+
+      const forms = await authService.getUserForms(currentUser, {
+        ...params,
+        active: true,
+      });
+      const filteredForms = authService.filterForms(currentUser, forms, accessLevels);
+      return filteredForms;
+    } catch {
+      return [];
+    }
   },
 
   getCurrentUserSubmissions: async (currentUser, params) => {
