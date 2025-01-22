@@ -1,5 +1,4 @@
-const { v4: uuidv4 } = require('uuid');
-
+const uuid = require('uuid');
 const { Role } = require('../common/models');
 
 const service = {
@@ -48,7 +47,7 @@ const service = {
       await trx.raw(`delete from role_permission where "role" = '${obj.code}'`);
       // set to specified permissions...
       for (const p of data.permissions) {
-        await trx.raw(`insert into role_permission (id, "role", "permission", "createdBy") values ('${uuidv4()}', '${obj.code}', '${p.code}', '${currentUser.usernameIdp}');`);
+        await trx.raw(`insert into role_permission (id, "role", "permission", "createdBy") values ('${uuid.v4()}', '${obj.code}', '${p.code}', '${currentUser.usernameIdp}');`);
       }
 
       await trx.commit();
