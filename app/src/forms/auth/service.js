@@ -1,5 +1,4 @@
-const { v4: uuidv4 } = require('uuid');
-
+const uuid = require('uuid');
 const { Form, FormSubmissionUserPermissions, PublicFormAccess, SubmissionMetadata, User, UserFormAccess } = require('../common/models');
 const { queryUtils } = require('../common/utils');
 
@@ -15,7 +14,7 @@ const service = {
       trx = await User.startTransaction();
 
       const obj = {
-        id: uuidv4(),
+        id: uuid.v4(),
         idpUserId: data.idpUserId,
         keycloakId: data.keycloakId,
         username: data.username,

@@ -1,7 +1,6 @@
 const Problem = require('api-problem');
 
-const { v4: uuidv4 } = require('uuid');
-
+const uuid = require('uuid');
 const { FormEventStreamConfig } = require('../../common/models');
 
 const encryptionKeyService = require('../encryptionKey/service');
@@ -45,7 +44,7 @@ const service = {
         }
       } else {
         // add a new configuration.
-        data.id = uuidv4();
+        data.id = uuid.v4();
         data.formId = formId;
         await FormEventStreamConfig.query(trx).insert({
           ...data,
