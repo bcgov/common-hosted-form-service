@@ -8,7 +8,12 @@ export const BASE_LAYER_URLS = {
     'https://tiles.arcgis.com/tiles/ubm4tcTYICKBpist/arcgis/rest/services/BC_BASEMAP_20240307/VectorTileServer',
   HILL_SHADE:
     'https://tiles.arcgis.com/tiles/ubm4tcTYICKBpist/arcgis/rest/services/BC_Basemap_Vector_Hillshade/VectorTileServer',
-  };
+  // Define ArcGIS vector tile service URLs
+  VECTOR_TILE_SERVER:
+    'https://tiles.arcgis.com/tiles/ubm4tcTYICKBpist/arcgis/rest/services/BC_BASEMAP_20240307/VectorTileServer',
+  STYLE_JSON_URL:
+    'https://www.arcgis.com/sharing/rest/content/items/bbe05270d3a642f5b62203d6c454f457/resources/styles/root.json?f=pjson',
+};
 
 export const BASE_LAYER_ATTRIBUTIONS = {
   OpenStreetMap:

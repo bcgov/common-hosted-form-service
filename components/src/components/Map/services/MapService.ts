@@ -143,10 +143,22 @@ class MapService {
         `${BASE_LAYER_URLS.HILL_SHADE}/tile/{z}/{y}/{x}.pbf`,
         {
           vectorTileLayerStyles: {
+            // Style for different layers in the tile
             default: {
-              fillColor: '#ffffff',
-              color: '#000000',
               weight: 1,
+              color: '#3388ff',
+              fillColor: '#66c2a5',
+              fillOpacity: 0.4,
+            },
+            water: {
+              weight: 0,
+              fillColor: '#aadaff',
+              fillOpacity: 0.6,
+            },
+            land: {
+              weight: 0,
+              fillColor: '#f0e7c0',
+              fillOpacity: 0.8,
             },
           },
           attribution: BASE_LAYER_ATTRIBUTIONS.BC_BASEMAP,
