@@ -1,5 +1,4 @@
-const { v4: uuidv4 } = require('uuid');
-
+const uuid = require('uuid');
 const { FormEncryptionKey } = require('../../common/models');
 
 const { ENCRYPTION_ALGORITHMS } = require('../../../components/encryptionService');
@@ -15,7 +14,7 @@ const service = {
   },
 
   _initModel: (formId, data) => {
-    data.id = uuidv4();
+    data.id = uuid.v4();
     data.formId = formId;
     data.name = PRIVATE_EVENT_STREAM_NAME;
   },
