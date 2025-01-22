@@ -21,13 +21,12 @@
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [
+    4222, // NATS Server 1
+    4223, // NATS Server 2
+    4224, // NATS Server 3
     5173, // CHEFS Frontend
     5432, // PostgreSQL
-    8080, // CHEFS Backend
-    8081,
-    4222, //nats
-    4223, //nats
-    4224 // nats
+    8080 // CHEFS Backend
   ],
 
   // Use 'postCreateCommand' to run commands after the container is created.
@@ -57,5 +56,25 @@
 
   "containerEnv": {
     "NODE_CONFIG_DIR": "${containerWorkspaceFolder}/.devcontainer/chefs_local"
+  },
+  "portsAttributes": {
+    "4222": {
+      "label": "NATS Server 1"
+    },
+    "4223": {
+      "label": "NATS Server 2"
+    },
+    "4224": {
+      "label": "NATS Server 3"
+    },
+    "5173": {
+      "label": "CHEFS Frontend"
+    },
+    "5432": {
+      "label": "PostgreSQL"
+    },
+    "8080": {
+      "label": "CHEFS Backend"
+    }
   }
 }
