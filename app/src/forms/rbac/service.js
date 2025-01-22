@@ -1,5 +1,5 @@
 const Problem = require('api-problem');
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 const { FormRoleUser, FormSubmissionUser, User, UserFormAccess, UserSubmissions } = require('../common/models');
 const { Roles } = require('../common/constants');
 const { queryUtils } = require('../common/utils');
@@ -16,7 +16,7 @@ const service = {
       trx = await FormRoleUser.startTransaction();
 
       const obj = Object.assign({}, data);
-      obj.id = uuidv4();
+      obj.id = uuid.v4();
 
       await FormRoleUser.query(trx).insert(obj);
       await trx.commit();
@@ -66,25 +66,32 @@ const service = {
     return User.query().findById(id).throwIfNotFound();
   },
 
-  getCurrentUser: async (currentUser, params) => {
+  getCurrentUser: async (currentUser) => {
     const user = Object.assign({}, currentUser);
-    const accessLevels = [];
-    if (user.public) {
-      accessLevels.push('public');
-    } else {
-      if (params.public) accessLevels.push('public');
-      if (params.idp) accessLevels.push('idp');
-      if (params.team) accessLevels.push('team');
-    }
-
-    const forms = await authService.getUserForms(user, {
-      ...params,
-      active: true,
-    });
-    const filteredForms = authService.filterForms(user, forms, accessLevels);
-    user.forms = filteredForms;
-
     return user;
+  },
+
+  getCurrentUserForms: async (currentUser, params = {}) => {
+    if (!currentUser) return [];
+    try {
+      const accessLevels = [];
+      if (currentUser.public) {
+        accessLevels.push('public');
+      } else {
+        if (params.public) accessLevels.push('public');
+        if (params.idp) accessLevels.push('idp');
+        if (params.team) accessLevels.push('team');
+      }
+
+      const forms = await authService.getUserForms(currentUser, {
+        ...params,
+        active: true,
+      });
+      const filteredForms = authService.filterForms(currentUser, forms, accessLevels);
+      return filteredForms;
+    } catch {
+      return [];
+    }
   },
 
   getCurrentUserSubmissions: async (currentUser, params) => {
@@ -170,7 +177,7 @@ const service = {
       }
       // add an id and save them
       const items = data.map((d) => {
-        return { id: uuidv4(), createdBy: currentUser.usernameIdp, ...d };
+        return { id: uuid.v4(), createdBy: currentUser.usernameIdp, ...d };
       });
       if (items && items.length) await FormRoleUser.query(trx).insert(items);
       await trx.commit();
@@ -196,7 +203,7 @@ const service = {
       if (Array.isArray(body.permissions) && body.permissions.length !== 0) {
         // add ids and save them
         const items = body.permissions.map((perm) => ({
-          id: uuidv4(),
+          id: uuid.v4(),
           formSubmissionId: formSubmissionId,
           userId: userId,
           createdBy: currentUser.usernameIdp,
@@ -271,7 +278,7 @@ const service = {
 
       // add an id and save them
       const items = data.map((d) => {
-        return { id: uuidv4(), createdBy: currentUser.usernameIdp, ...d };
+        return { id: uuid.v4(), createdBy: currentUser.usernameIdp, ...d };
       });
       if (items && items.length) await FormRoleUser.query(trx).insert(items);
       await trx.commit();

@@ -1,6 +1,5 @@
 const config = require('config');
-const { v4: uuidv4 } = require('uuid');
-
+const uuid = require('uuid');
 const { FileStorage } = require('../common/models');
 const storageService = require('./storage/storageService');
 
@@ -13,7 +12,7 @@ const service = {
       trx = await FileStorage.startTransaction();
 
       const obj = {};
-      obj.id = uuidv4();
+      obj.id = uuid.v4();
       obj.storage = folder;
       obj.originalName = data.originalname;
       obj.mimeType = data.mimetype;
