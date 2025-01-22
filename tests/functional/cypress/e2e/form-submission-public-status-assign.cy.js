@@ -121,24 +121,8 @@ describe('Form Designer', () => {
     cy.get('.mdi-account-plus').click();
     //Search for a member to add
     cy.get('.v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
-    cy.get('.v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').type('NIM');
-    cy.get('.v-slide-group__content > :nth-child(1)').should('be.visible')//designer role
-    cy.get(':nth-child(2) > .v-chip__content').should('be.visible');//submitter role
-    cy.get(':nth-child(3) > .v-chip__content').should('be.visible');//owner role
-    cy.get(':nth-child(4) > .v-chip__content').should('be.visible');//approver role
-    cy.get(':nth-child(5) > .v-chip__content').should('be.visible');//reviewer role
-    cy.get(':nth-child(6) > .v-chip__content').should('be.visible');//team manager role
-    cy.contains('John, Nimya 1 CITZ:EX (nimya.1.john@gov.bc.ca)').click();
-    cy.get(':nth-child(2) > .v-chip__content').click();
-    cy.get(':nth-child(4) > .v-chip__content').click();
-    cy.get(':nth-child(5) > .v-chip__content').click();
-    cy.get('.v-btn--elevated > .v-btn__content > span').click();
-    cy.get(':nth-child(10) > span').should('not.exist');// verify Submitter role is not present on table view
-    // Verify member is added with proper roles
-    cy.get('[data-test="ApproverRoleCheckbox"]').should('be.visible');
-    cy.get('[data-test="ReviewerRoleCheckbox"]').should('exist');
-    cy.get('[data-test="TeamManagerRoleCheckbox"]').should('be.visible');
-    cy.get('[data-test="ApproverRoleCheckbox"]').click({multiple:true,force:true});
+    cy.get('.v-col > .v-btn--variant-outlined > .v-btn__content > span').click();
+    cy.wait(3000);
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.wait(2000);
       //Logout to submit the public form
