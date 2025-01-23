@@ -1,15 +1,11 @@
 import 'cypress-keycloak-commands';
 import 'cypress-drag-drop';
 import { formsettings } from '../support/login.js';
-//import 'cypress-wait-until';
 
 const depEnv = Cypress.env('depEnv');
-
-
 Cypress.Commands.add('waitForLoad', () => {
-  const loaderTimeout = 60000;
-
-  cy.get('.nprogress-busy', { timeout: loaderTimeout }).should('not.exist');
+const loaderTimeout = 60000;
+cy.get('.nprogress-busy', { timeout: loaderTimeout }).should('not.exist');
 });
 
 describe('Form Designer', () => {
