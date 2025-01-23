@@ -50,7 +50,7 @@ describe('Form Designer', () => {
       cy.get('input[value="circle"]').click();
       cy.get('input[value="polygon"]').click();
       cy.get('input[name="data[numPoints]"').type('{selectall}{backspace}');
-      cy.get('input[name="data[numPoints]"').type('2');
+      cy.get('input[name="data[numPoints]"').type('3');
       cy.wait(2000);
       cy.get('a[title="Draw a marker"]').then($el => {
         const marker_elem=$el[0];
@@ -98,6 +98,11 @@ describe('Form Designer', () => {
       });
       cy.waitForLoad();
       cy.get('button').contains('Save').click();
+  });
+
+  it('Checks form submission for a Map component', () => {
+        cy.viewport(1000, 1100);
+        cy.waitForLoad();
   // Form saving
       let savedButton = cy.get('[data-cy=saveButton]');
       expect(savedButton).to.not.be.null;
@@ -117,21 +122,42 @@ describe('Form Designer', () => {
       cy.get('span').contains('Publish Version 1');
       cy.contains('Continue').should('be.visible');
       cy.contains('Continue').trigger('click');
-    //Share link verification
-      let shareFormButton = cy.get('[data-cy=shareFormButton]');
-      expect(shareFormButton).to.not.be.null;
-      shareFormButton.trigger('click').then(()=>{
-      //let shareFormLinkButton = cy.get('[data-cy=shareFormLinkButtonss]');
-      let shareFormLinkButton=cy.get('.mx-2');
-      expect(shareFormLinkButton).to.not.be.null;
-      shareFormLinkButton.trigger('click');
-      cy.get('.mx-2 > .v-btn').click();
-      })
-      cy.visit(`/${depEnv}`);
-      cy.get('[data-cy="userFormsLinks"]').click();
+    //Form submission verification
+      cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
+      cy.wait(2000);
+      cy.get('button').contains('Submit').should('be.visible');
+       cy.wait(2000);
+       cy.get('a.leaflet-draw-draw-circle').then($el => {
+        const draw_circle=$el[0];
+      cy.get(draw_circle).click();
+      });
+      cy.get('img[alt="Marker"]').then($el => {
+        const mark_cir=$el[0];
+        const coords = $el[0].getBoundingClientRect();
+        cy.get(mark_cir)
+        .trigger('mousedown', { which: 1}, { force: true })
+        .trigger('mousemove', coords.x, -5, { force: true })
+        .trigger('mouseup', coords.x, -5, { force: true })
+        cy.wait(2000);
+      });
+      cy.get('a[title="Draw a marker"]').then($el => {
+        const marker_elem=$el[0];
+        cy.get(marker_elem).click({force: true});
+      });  
+      cy.get('div[class="leaflet-draw-tooltip leaflet-draw-tooltip-single"]').click({ force: true });
+      
+      cy.get('div[class="leaflet-popup-content"]').find('p').contains('Only 3 features per submission').should('be.visible');
+      cy.get('button').contains('Submit').click();
+      cy.wait(4000);
+      cy.get('button').contains('Submit').click();
+      cy.waitForLoad();
+      cy.location('pathname').should('eq', `/${depEnv}/form/success`);
+      cy.contains('h1', 'Your form has been submitted successfully');
+      cy.wait(4000);
+      cy.get('g').find('path[stroke-linejoin="round"]').should('exist');
+      //Delete form after test run
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
       cy.waitForLoad();
-      //Delete form after test run
       cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
       cy.get('[data-test="continue-btn-continue"]').click();
       cy.get('#logoutButton > .v-btn__content > span').click();
