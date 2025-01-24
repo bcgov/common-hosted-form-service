@@ -89,7 +89,7 @@ const service = {
 
     data.id = uuid.v4();
     // always create as SUBMITTED.
-    data.code = ExternalAPIStatuses.SUBMITTED;
+    data.code = ExternalAPIStatuses.APPROVED; //just for this PR, demo only, do not merge
     // ensure that new records don't send user tokens.
     service.checkAllowSendUserToken(data, false);
     let trx;

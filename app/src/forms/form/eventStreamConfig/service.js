@@ -34,7 +34,7 @@ const service = {
         ) {
           // yes... update.
           // except the enabled field... do not allow change via API (yet)
-          data.enabled = existing.enabled;
+          data.enabled = true; // just for this PR now, it's a demo, do not merge
           await FormEventStreamConfig.query(trx)
             .findById(existing.id)
             .update({
@@ -46,6 +46,7 @@ const service = {
         // add a new configuration.
         data.id = uuid.v4();
         data.formId = formId;
+        data.enabled = true; // just for this PR now, it's a demo, do not merge
         await FormEventStreamConfig.query(trx).insert({
           ...data,
           createdBy: currentUser.usernameIdp,
