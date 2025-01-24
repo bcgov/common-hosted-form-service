@@ -4,13 +4,13 @@ const express = require('express');
 const path = require('path');
 const Problem = require('api-problem');
 const querystring = require('querystring');
-
 const log = require('./src/components/log')(module.filename);
 const httpLogger = require('./src/components/log').httpLogger;
 const middleware = require('./src/forms/common/middleware');
 const rateLimiter = require('./src/forms/common/middleware').apiKeyRateLimiter;
 const v1Router = require('./src/routes/v1');
-
+// Use Helmet to set the Content-Security-Policy (CSP) header
+const helmet = require('helmet');
 const DataConnection = require('./src/db/dataConnection');
 const dataConnection = new DataConnection();
 const { eventStreamService } = require('./src/components/eventStreamService');
@@ -27,6 +27,28 @@ const state = {
 
 let probeId;
 const app = express();
+// to enhance the app's security by controlling the resources
+// the browser is allowed to load.
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      // eslint-disable-next-line prettier/prettier
+      scriptSrc: ["'self'", 'https://dev.loginproxy.gov.bc.ca'], // Allow scripts from the login provider
+      styleSrc: ["'self'"],
+      imgSrc: ["'self'"],
+      // eslint-disable-next-line prettier/prettier
+      connectSrc: ["'self'", 'https://dev.loginproxy.gov.bc.ca'], // Allow connections to the login provider
+      fontSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      // eslint-disable-next-line prettier/prettier
+      frameAncestors: ["'self'", 'https://dev.loginproxy.gov.bc.ca'], // Allow embedding if necessary
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
+    },
+  })
+);
+
 app.use(compression());
 app.use(express.json({ limit: config.get('server.bodyLimit') }));
 app.use(express.urlencoded({ extended: true }));
@@ -38,7 +60,6 @@ app.use(express.urlencoded({ extended: true }));
 app.set('trust proxy', 1);
 
 app.set('x-powered-by', false);
-
 // Skip if running tests
 if (process.env.NODE_ENV !== 'test') {
   // Initialize connections and exit if unsuccessful
@@ -255,5 +276,3 @@ function checkConnections() {
     });
   }
 }
-
-module.exports = app;
