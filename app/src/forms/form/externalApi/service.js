@@ -90,6 +90,7 @@ const service = {
     data.id = uuid.v4();
     // always create as SUBMITTED.
     data.code = ExternalAPIStatuses.APPROVED; //just for this PR, demo only, do not merge
+    data.sendUserInfo = true; //just for this PR, demo only, do not merge
     // ensure that new records don't send user tokens.
     service.checkAllowSendUserToken(data, false);
     let trx;
@@ -123,6 +124,8 @@ const service = {
     }
     service.checkAllowSendUserToken(data, existing.allowSendUserToken);
     let trx;
+    data.code = ExternalAPIStatuses.APPROVED; //just for this PR, demo only, do not merge
+    data.sendUserInfo = true; //just for this PR, demo only, do not merge
     try {
       trx = await ExternalAPI.startTransaction();
       await ExternalAPI.query(trx).modify('findByIdAndFormId', externalAPIId, formId).update({
