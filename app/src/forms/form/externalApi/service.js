@@ -136,6 +136,7 @@ const service = {
         sendApiKey: data.sendApiKey,
         apiKeyHeader: data.apiKeyHeader,
         apiKey: data.apiKey,
+        sendUserInfo: data.sendUserInfo,
         allowSendUserToken: data.allowSendUserToken,
         sendUserToken: data.sendUserToken,
         userTokenHeader: data.userTokenHeader,
