@@ -36,16 +36,18 @@ class MapService {
   options;
   map;
   drawnItems;
+  drawControl; // Add this property to store the draw control
 
   constructor(options) {
     this.options = options;
-
+    console.log('this options', this.options);
     if (options.mapContainer) {
-      const { map, drawnItems } = this.initializeMap(options);
+      const { map, drawnItems, drawControl } = this.initializeMap(options);
       this.map = map;
 
       // this.map = map;
       this.drawnItems = drawnItems;
+      this.drawControl = drawControl; // Store the draw control globally
 
       map.invalidateSize();
       // Triggering a resize event after map initialization
@@ -53,6 +55,7 @@ class MapService {
       // Event listener for drawn objects
       map.on('draw:created', (e) => {
         const layer = e.layer;
+        console.log('draw created;');
         if (drawnItems.getLayers().length === options.numPoints) {
           map.closePopup();
           L.popup()
@@ -68,10 +71,16 @@ class MapService {
         options.onDrawnItemsChange(drawnItems.getLayers());
       });
       map.on(L.Draw.Event.DELETED, (e) => {
+        // Handle delete event
         options.onDrawnItemsChange(drawnItems.getLayers());
       });
       map.on(L.Draw.Event.EDITSTOP, (e) => {
+        // Handle edit event
         options.onDrawnItemsChange(drawnItems.getLayers());
+      });
+      map.on(L.Draw.Event.DELETESTOP, (e) => {
+        // Handle delete stop event
+        this.disableDeleteMode(); // Disable delete mode after deleting
       });
       map.on('resize', () => {
         map.invalidateSize();
@@ -171,12 +180,14 @@ class MapService {
     }
 
     // Add Drawing Controllers
+    let drawControl = null;
     if (!readOnlyMap) {
       if (!viewMode) {
-        const drawControl = new L.Control.Draw({
+        drawControl = new L.Control.Draw({
           draw: drawOptions,
           edit: {
             featureGroup: drawnItems,
+            remove: true,
           },
         });
         map.addControl(drawControl);
@@ -197,8 +208,22 @@ class MapService {
         }
       }
     }
-    return { map, drawnItems };
+    return { map, drawnItems, drawControl };
   }
+  disableDeleteMode() {
+    if (this.drawControl && this.drawControl._toolbars?.edit) {
+      const editToolbar = this.drawControl._toolbars.edit;
+      const deleteHandler = editToolbar._modes.remove.handler;
+      if (deleteHandler.enabled()) {
+        deleteHandler.disable();
+      }
+      /*if (this.drawControl?._toolbars?.edit) {
+        console.log('Disabling edit/delete mode...', this.drawControl._toolbars, 'edit', this.drawControl._toolbars.edit);
+        // this.drawControl._toolbars.edit.disable();
+    }*/
+    }
+  }
+
   bindPopupToLayer(layer) {
     if (layer instanceof L.Marker) {
       layer
