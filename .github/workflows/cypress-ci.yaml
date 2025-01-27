@@ -1,10 +1,10 @@
 name: Cypress Tests
 on:
- workflow_dispatch:
+ workflow_call:
   inputs:
       pr-number:
         description: Pull request number
-        required: false
+        required: true
         type: string
   
 jobs:
@@ -32,7 +32,7 @@ jobs:
        env:
           CYPRESS_keycloakUsername: ${{secrets.keycloakUsername}}
           CYPRESS_keycloakPassword: ${{secrets.keycloakPassword}}
-          CYPRESS_depEnv: ${{ github.event.inputs.pr-number }}
+          CYPRESS_depEnv: 'pr-${{ inputs.pr-number }}'
           
      - uses: actions/upload-artifact@v4
        if: failure()
