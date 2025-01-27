@@ -1,0 +1,18 @@
+fullnameOverride: crunchy-postgres-redash
+
+postgresVersion: 16
+
+instances:
+  replicas: 3
+  dataVolumeClaimSpec:
+    storage: 512Mi
+
+pgBackRest:
+  repos:
+    schedules:
+      full: 0 12 * * *
+      incremental: 0 0,4,8,16,20 * * *
+
+proxy:
+  pgBouncer:
+    replicas: 3

@@ -22,8 +22,6 @@
   "main": "lib/index.js",
   "module": "node",
   "scripts": {
-    "test:coverage": "nyc --reporter=text mocha --reporter spec './{,!(node_modules)/**/}*.spec.js'",
-    "test": "mocha --require ts-node/register --reporter spec './{,!(node_modules)/**/}*.spec.ts'",
     "watch": "tsc -w",
     "webpack:dev": "webpack",
     "webpack:prod": "webpack --config webpack.prod.js",
@@ -34,10 +32,6 @@
     "purge": "rm -rf node_modules",
     "lint": "tslint -p ."
   },
-  "pre-commit": [
-    "lint",
-    "test"
-  ],
   "files": [
     "dist",
     "lib"
@@ -47,38 +41,27 @@
     "components"
   ],
   "dependencies": {
-    "autocompleter": "^7.0.1",
+    "@types/leaflet": "^1.9.12",
+    "@types/leaflet-draw": "^1.0.11",
     "formiojs": "^4.14.6",
-    "lodash": "^4.17.21",
-    "native-promise-only": "^0.8.1",
-    "path-browserify": "^1.0.1",
-    "webpack": "^5.75.0"
+    "leaflet": "^1.9.4",
+    "leaflet-draw": "^1.0.4",
+    "leaflet-geosearch": "^4.0.0",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@types/chai": "^4.3.1",
     "@types/ejs": "^3.1.1",
-    "@types/mocha": "^9.1.1",
-    "@types/node": "^16.11.8",
-    "@types/sinon": "^10.0.12",
-    "chai": "^4.3.6",
-    "glob-parent": "^6.0.2",
+    "@types/google.maps": "^3.58.1",
+    "css-loader": "^7.1.2",
     "gulp": "^5.0.0",
     "gulp-insert": "^0.5.0",
     "gulp-rename": "^2.0.0",
     "gulp-template": "^5.0.0",
-    "mocha": "^9.1.3",
-    "nyc": "^15.0.1",
-    "pre-commit": "^1.2.2",
     "sass": "^1.62.0",
-    "sinon": "^12.0.1",
-    "ts-node": "^10.8.2",
-    "ts-sinon": "^2.0.2",
     "tslint": "^6.1.3",
     "typescript": "^4.7.4",
-    "vite": "^4.5.3",
+    "vite": "^6.0.11",
+    "webpack": "^5.75.0",
     "webpack-cli": "^4.10.0"
-  },
-  "overrides": {
-    "glob-parent": "$glob-parent"
   }
 }

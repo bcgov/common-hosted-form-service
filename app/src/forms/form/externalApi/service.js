@@ -1,9 +1,9 @@
 const Problem = require('api-problem');
 
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 const { ExternalAPIStatuses } = require('../../common/constants');
 
-const { ExternalAPI, ExternalAPIStatusCode } = require('../../common/models');
+const { ExternalAPI, ExternalAPIStatusCode, Form, AdminExternalAPI } = require('../../common/models');
 
 const { ENCRYPTION_ALGORITHMS } = require('../../../components/encryptionService');
 
@@ -41,6 +41,9 @@ const service = {
         throw new Problem(422, `'userTokenHeader' is required when 'sendUserToken' is true.`);
       }
     }
+    if (!data.endpointUrl || (data.endpointUrl && !(data.endpointUrl.startsWith('https://') || data.endpointUrl.startsWith('http://')))) {
+      throw new Problem(422, `'endpointUrl' is required and must start with 'http://' or 'https://'`);
+    }
   },
 
   checkAllowSendUserToken: (data, allowSendUserToken) => {
@@ -60,20 +63,50 @@ const service = {
     }
   },
 
+  _updateAllPreApproved: async (formId, data, trx) => {
+    let result = 0;
+    const form = await Form.query().findById(formId);
+    const delimiter = '?';
+    const baseUrl = data.endpointUrl.split(delimiter)[0];
+    // check if there are matching api endpoints for the same ministry as our form that have been previously approved.
+    const approvedApis = await AdminExternalAPI.query(trx)
+      .where('endpointUrl', 'ilike', `${baseUrl}%`)
+      .andWhere('ministry', form.ministry)
+      .andWhere('code', ExternalAPIStatuses.APPROVED);
+    if (approvedApis && approvedApis.length) {
+      // ok, since we've already approved a matching api endpoint, make sure others on this form are approved too.
+      result = await ExternalAPI.query(trx)
+        .patch({ code: ExternalAPIStatuses.APPROVED })
+        .where('endpointUrl', 'ilike', `${baseUrl}%`)
+        .andWhere('formId', formId)
+        .andWhere('code', ExternalAPIStatuses.SUBMITTED);
+    }
+    return result;
+  },
+
   createExternalAPI: async (formId, data, currentUser) => {
     service.validateExternalAPI(data);
 
-    data.id = uuidv4();
-    // set status to SUBMITTED
+    data.id = uuid.v4();
+    // always create as SUBMITTED.
     data.code = ExternalAPIStatuses.SUBMITTED;
     // ensure that new records don't send user tokens.
     service.checkAllowSendUserToken(data, false);
-    await ExternalAPI.query().insert({
-      ...data,
-      createdBy: currentUser.usernameIdp,
-    });
-
-    return ExternalAPI.query().findById(data.id);
+    let trx;
+    try {
+      trx = await ExternalAPI.startTransaction();
+      await ExternalAPI.query(trx).insert({
+        ...data,
+        createdBy: currentUser.usernameIdp,
+      });
+      // any urls on this form pre-approved?
+      await service._updateAllPreApproved(formId, data, trx);
+      await trx.commit();
+      return ExternalAPI.query().findById(data.id);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
   },
 
   updateExternalAPI: async (formId, externalAPIId, data, currentUser) => {
@@ -82,17 +115,38 @@ const service = {
     const existing = await ExternalAPI.query().modify('findByIdAndFormId', externalAPIId, formId).first().throwIfNotFound();
 
     // let's use a different method for the administrators to update status code and allow send user token
-    // this method should not change the status code.
+    // this method should not change the status code
     data.code = existing.code;
+    if (existing.endpointUrl.split('?')[0] !== data.endpointUrl.split('?')[0]) {
+      // url changed, so save as SUBMITTED.
+      data.code = ExternalAPIStatuses.SUBMITTED;
+    }
     service.checkAllowSendUserToken(data, existing.allowSendUserToken);
-    await ExternalAPI.query()
-      .modify('findByIdAndFormId', externalAPIId, formId)
-      .update({
-        ...data,
+    let trx;
+    try {
+      trx = await ExternalAPI.startTransaction();
+      await ExternalAPI.query(trx).modify('findByIdAndFormId', externalAPIId, formId).update({
+        formId: formId,
+        name: data.name,
+        code: data.code,
+        endpointUrl: data.endpointUrl,
+        sendApiKey: data.sendApiKey,
+        apiKeyHeader: data.apiKeyHeader,
+        apiKey: data.apiKey,
+        allowSendUserToken: data.allowSendUserToken,
+        sendUserToken: data.sendUserToken,
+        userTokenHeader: data.userTokenHeader,
+        userTokenBearer: data.userTokenBearer,
         updatedBy: currentUser.usernameIdp,
       });
-
-    return ExternalAPI.query().findById(externalAPIId);
+      // any urls on this form pre-approved?
+      await service._updateAllPreApproved(formId, data, trx);
+      await trx.commit();
+      return ExternalAPI.query().findById(data.id);
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
   },
 
   deleteExternalAPI: async (formId, externalAPIId) => {

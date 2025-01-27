@@ -1,5 +1,4 @@
-const { v4: uuidv4 } = require('uuid');
-
+const uuid = require('uuid');
 const log = require('../../components/log')(module.filename);
 
 const { Statuses } = require('../common/constants');
@@ -9,6 +8,7 @@ const eventService = require('../event/eventService');
 const fileService = require('../file/service');
 const formService = require('../form/service');
 const permissionService = require('../permission/service');
+const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
 
 const service = {
   // -------------------------------------------------------------------------------------------------------
@@ -103,11 +103,13 @@ const service = {
 
   update: async (formSubmissionId, data, currentUser, referrer, etrx = undefined) => {
     let trx;
+    let result;
     try {
       trx = etrx ? etrx : await FormSubmission.startTransaction();
+      const restoring = data['deleted'] !== undefined && typeof data.deleted == 'boolean';
 
       // If we're restoring a submission
-      if (data['deleted'] !== undefined && typeof data.deleted == 'boolean') {
+      if (restoring) {
         await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, { deleted: data.deleted, updatedBy: currentUser.usernameIdp });
       } else {
         const statuses = await FormSubmissionStatus.query().modify('filterSubmissionId', formSubmissionId).modify('orderDescending');
@@ -150,10 +152,14 @@ const service = {
 
       if (!etrx) await trx.commit();
 
-      return service.read(formSubmissionId);
+      result = await service.read(formSubmissionId);
     } catch (err) {
       if (!etrx && trx) await trx.rollback();
       throw err;
+    }
+    if (result) {
+      await eventStreamService.onSubmit(SUBMISSION_EVENT_TYPES.UPDATED, result.submission, data.draft);
+      return result;
     }
   },
 
@@ -187,6 +193,7 @@ const service = {
 
   delete: async (formSubmissionId, currentUser) => {
     let trx;
+    let result;
     try {
       trx = await FormSubmission.startTransaction();
       await FormSubmission.query(trx).patchAndFetchById(formSubmissionId, {
@@ -194,10 +201,14 @@ const service = {
         updatedBy: currentUser.usernameIdp,
       });
       await trx.commit();
-      return await service.read(formSubmissionId);
+      result = await service.read(formSubmissionId);
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;
+    }
+    if (result) {
+      await eventStreamService.onSubmit(SUBMISSION_EVENT_TYPES.DELETED, result.submission, false);
+      return result;
     }
   },
 
@@ -284,7 +295,7 @@ const service = {
     try {
       trx = await Note.startTransaction();
       const result = await Note.query(trx).insertAndFetch({
-        id: uuidv4(),
+        id: uuid.v4(),
         submissionId: submissionId,
         submissionStatusId: data.submissionStatusId,
         note: data.note,
@@ -388,7 +399,7 @@ const service = {
       trx = etrx ? etrx : await FormSubmissionStatus.startTransaction();
 
       await FormSubmissionStatus.query(trx).insert({
-        id: uuidv4(),
+        id: uuid.v4(),
         submissionId: submissionId,
         code: data.code,
         assignedToUserId: data.assignedToUserId,

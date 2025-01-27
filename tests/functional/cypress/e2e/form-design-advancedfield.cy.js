@@ -193,7 +193,7 @@ describe('Form Designer', () => {
         const coords = $el[0].getBoundingClientRect();
         cy.get('[data-type="bcaddress"]')
         .trigger('mousedown', { which: 1}, { force: true })
-        .trigger('mousemove', coords.x, +30, { force: true })
+        .trigger('mousemove', coords.x, -30, { force: true })
           //.trigger('mousemove', coords.y, +100, { force: true })
         .trigger('mouseup', { force: true });
         cy.waitForLoad();

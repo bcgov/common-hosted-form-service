@@ -9,12 +9,14 @@ import {
 } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
+import { useAppStore } from '~/store/app';
 
 vi.mock('~/services');
 
 describe('form actions', () => {
   setActivePinia(createPinia());
   const mockStore = useFormStore();
+  const appStore = useAppStore();
   const notificationStore = useNotificationStore();
   const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
   const listSubmissionsSpy = vi.spyOn(formService, 'listSubmissions');
@@ -24,6 +26,7 @@ describe('form actions', () => {
   beforeEach(() => {
     mockStore.$reset();
     mockConsoleError.mockReset();
+    appStore.$reset();
     notificationStore.$reset();
     addNotificationSpy.mockReset();
     listSubmissionsSpy.mockReset();

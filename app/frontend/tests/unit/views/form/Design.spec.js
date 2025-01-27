@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useFormStore } from '~/store/form';
 import Design from '~/views/form/Design.vue';
+import { useAppStore } from '~/store/app';
 
 vi.mock('vue-router', () => ({
   ...vi.importActual('vue-router'),
@@ -20,9 +21,11 @@ describe('Design.vue', () => {
   setActivePinia(pinia);
 
   const formStore = useFormStore(pinia);
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     formStore.$reset();
+    appStore.$reset();
     mockWindowConfirm.mockReset();
   });
 

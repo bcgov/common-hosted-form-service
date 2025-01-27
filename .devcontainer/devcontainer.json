@@ -6,7 +6,7 @@
     "dockerfile": "Dockerfile",
     "context": "..",
     "args": {
-      "VARIANT": "18.20.4-bookworm"
+      "VARIANT": "20.18.1-bookworm"
     }
   },
 
@@ -21,11 +21,13 @@
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [
+    4222, // NATS Server 1
+    4223, // NATS Server 2
+    4224, // NATS Server 3
     5173, // CHEFS Frontend
     5432, // PostgreSQL
     8080, // CHEFS Backend
-    8081,
-    8082 // Keycloak
+    64120 //sonarlint ide
   ],
 
   // Use 'postCreateCommand' to run commands after the container is created.
@@ -40,7 +42,8 @@
         "esbenp.prettier-vscode", // Prettier to format files on save
         "postman.postman-for-vscode", // Postman for integration tests
         "redocly.openapi-vs-code", // ReDocly to catch OpenAPI errors
-        "vue.volar" // Vue 3 recommended extension
+        "vue.volar", // Vue 3 recommended extension
+        "SonarSource.sonarlint-vscode" // sonarqube static analysis
       ],
       "settings": {
         "database-client.telemetry.usesOnlineServices": false,
@@ -55,5 +58,28 @@
 
   "containerEnv": {
     "NODE_CONFIG_DIR": "${containerWorkspaceFolder}/.devcontainer/chefs_local"
+  },
+  "portsAttributes": {
+    "4222": {
+      "label": "NATS Server 1"
+    },
+    "4223": {
+      "label": "NATS Server 2"
+    },
+    "4224": {
+      "label": "NATS Server 3"
+    },
+    "5173": {
+      "label": "CHEFS Frontend"
+    },
+    "5432": {
+      "label": "PostgreSQL"
+    },
+    "8080": {
+      "label": "CHEFS Backend"
+    },
+    "64120": {
+      "label": "Sonarlint IDE"
+    }
   }
 }

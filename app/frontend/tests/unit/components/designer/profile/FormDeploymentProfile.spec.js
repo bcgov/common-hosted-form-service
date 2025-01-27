@@ -5,14 +5,17 @@ import { setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
 import { FormProfileValues } from '~/utils/constants';
 import { nextTick } from 'vue';
+import { useAppStore } from '~/store/app';
 
 describe('FormDeploymentProfile.vue', () => {
   const pinia = createTestingPinia();
   setActivePinia(pinia);
   const formStore = useFormStore(pinia);
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     formStore.$reset();
+    appStore.$reset();
   });
 
   it('renders properly', () => {

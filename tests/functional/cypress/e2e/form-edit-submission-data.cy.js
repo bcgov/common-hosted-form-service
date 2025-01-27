@@ -102,33 +102,42 @@ describe('Form Designer', () => {
         cy.location('pathname').should('eq', `/${depEnv}/form/success`);
     
         cy.contains('h1', 'Your form has been submitted successfully');
-        cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-        cy.waitForLoad();
-        cy.waitForLoad();
-        cy.waitForLoad();
-        cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
-        cy.waitForLoad();
-        cy.waitForLoad();
-        cy.waitForLoad();
-        cy.get('button').contains('Submit').should('be.visible');
-        cy.waitForLoad();
-        cy.contains('Text Field').click();
-        cy.contains('Text Field').type('Alex');
-        cy.get('button').contains('Submit').click();
-        cy.waitForLoad();
-        cy.get('[data-test="continue-btn-continue"]').should('be.visible');
-        cy.get('[data-test="continue-btn-continue"]').should('exist');
-        cy.get('[data-test="continue-btn-continue"]').click({force: true});
-        cy.waitForLoad();
-        cy.waitForLoad();
-        cy.waitForLoad();
+        
         //view submission
         cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-        cy.waitForLoad();
-        cy.waitForLoad();
-        
+        cy.wait(4000);
         cy.get('.mdi-list-box-outline').click();
+        cy.wait(4000);
+        //cy.get('[data-test="canViewFormSubmissions"]').click({multiple:true,force:true});
         cy.waitForLoad();
+        cy.get('.v-data-table__tr > :nth-child(2)').should('exist');
+        cy.get('input[type="checkbox"]').then($el => {
+          const rem=$el[0];
+          rem.click();
+          const rem1=$el[1];
+          cy.get('.v-data-table__tr > :nth-child(2)').should('not.exist');
+          rem.click();
+          rem1.click();
+          cy.get('.v-data-table__tr > :nth-child(2)').should('not.exist');
+          cy.wait(2000);
+          cy.get(rem).click({ force: true });
+          //submission delete verification
+          cy.get('.v-data-table__tr > :nth-child(7) > span[data-v-1cd101d8=""] > .v-btn > .v-btn__content > .mdi-minus').click();
+          cy.get('[data-test="continue-btn-continue"]').click();
+          cy.get('.v-alert__content').contains('div','Submission deleted successfully.').should('be.visible');
+          cy.get(rem).click({ force: true });
+          //Submission restore verification
+          cy.get('.v-btn > .v-btn__content > .mdi-minus').should('not.exist');
+          cy.get(':nth-child(2) > .v-btn > .v-btn__content > .mdi-delete-restore').click();
+          cy.get('[data-test="continue-btn-continue"] > .v-btn__content > span').click();
+          cy.get('.v-data-table__tr > :nth-child(2)').should('not.exist');
+          cy.get(rem).click({ force: true });
+          
+          cy.get('.v-data-table__tr > :nth-child(2)').should('exist');
+
+
+        });
+        
         cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn > .v-btn__content > .mdi-eye').click();
         //Edit submission
         cy.get('.mdi-pencil').click();

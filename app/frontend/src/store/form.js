@@ -11,6 +11,7 @@ import {
 import { useNotificationStore } from '~/store/notification';
 import { IdentityMode, NotificationTypes } from '~/utils/constants';
 import { generateIdps, parseIdps } from '~/utils/transformUtils';
+import { encryptionKeyService, eventStreamConfigService } from '~/services';
 
 const genInitialSchedule = () => ({
   enabled: null,
@@ -59,6 +60,21 @@ const genInitialSubscribeDetails = () => ({
   endpointToken: null,
   key: '',
 });
+const genInitialEncryptionKey = () => ({
+  id: null,
+  name: null,
+  algorithm: null,
+  key: null,
+});
+const genInitialEventStreamConfig = () => ({
+  id: null,
+  formId: null,
+  enabled: false,
+  enablePublicStream: false,
+  enablePrivateStream: false,
+  encryptionKeyId: null,
+  encryptionKey: genInitialEncryptionKey(),
+});
 const genInitialFormMetadata = () => ({
   id: null,
   formId: null,
@@ -90,6 +106,7 @@ const genInitialForm = () => ({
   useCase: null,
   wideFormLayout: false,
   formMetadata: genInitialFormMetadata(),
+  eventStreamConfig: genInitialEventStreamConfig(),
 });
 
 export const useFormStore = defineStore('form', {
@@ -139,10 +156,10 @@ export const useFormStore = defineStore('form', {
     async getFormsForCurrentUser() {
       try {
         // Get the forms based on the user's permissions
-        const response = await rbacService.getCurrentUser();
+        const response = await rbacService.getCurrentUserForms();
         const data = response.data;
         // Build up the list of forms for the table
-        const forms = data.forms.map((f) => ({
+        const forms = data.map((f) => ({
           currentVersionId: f.formVersionId,
           id: f.formId,
           idps: f.idps,
@@ -166,10 +183,12 @@ export const useFormStore = defineStore('form', {
       try {
         this.permissions = [];
         // Get the forms based on the user's permissions
-        const response = await rbacService.getCurrentUser({ formId: formId });
+        const response = await rbacService.getCurrentUserForms({
+          formId: formId,
+        });
         const data = response.data;
-        if (data.forms[0]) {
-          this.permissions = data.forms[0].permissions;
+        if (data[0]) {
+          this.permissions = data[0].permissions;
         } else {
           throw new Error('No form found');
         }
@@ -188,10 +207,12 @@ export const useFormStore = defineStore('form', {
       try {
         this.roles = [];
         // Get the forms based on the user's permissions
-        const response = await rbacService.getCurrentUser({ formId: formId });
+        const response = await rbacService.getCurrentUserForms({
+          formId: formId,
+        });
         const data = response.data;
-        if (data.forms[0]) {
-          this.roles = data.forms[0].roles;
+        if (data[0]) {
+          this.roles = data[0].roles;
         } else {
           throw new Error('No form found');
         }
@@ -317,6 +338,29 @@ export const useFormStore = defineStore('form', {
         });
       }
     },
+    async fetchEventStreamConfig(formId) {
+      try {
+        // populate the event service config object...
+        let resp = await eventStreamConfigService.getEventStreamConfig(formId);
+        const evntSrvCfg = resp.data;
+        let encKey = genInitialEncryptionKey();
+        if (evntSrvCfg.encryptionKeyId) {
+          resp = await encryptionKeyService.getEncryptionKey(
+            formId,
+            evntSrvCfg.encryptionKeyId
+          );
+          encKey = resp.data;
+        }
+        return {
+          ...evntSrvCfg,
+          encryptionKey: {
+            ...encKey,
+          },
+        };
+      } catch {
+        return genInitialEventStreamConfig();
+      }
+    },
     async fetchForm(formId) {
       try {
         this.apiKey = null;
@@ -336,6 +380,9 @@ export const useFormStore = defineStore('form', {
         if (!data.formMetadata) {
           data.formMetadata = genInitialFormMetadata();
         }
+        const evntSrvCfg = await this.fetchEventStreamConfig(formId);
+        data.eventStreamConfig = evntSrvCfg;
+
         this.form = data;
       } catch (error) {
         const notificationStore = useNotificationStore();
@@ -424,7 +471,9 @@ export const useFormStore = defineStore('form', {
         const subscribe = this.form.subscribe.enabled
           ? this.form.subscribe
           : {};
+
         const formMetadata = this.form.formMetadata;
+        const eventStreamConfig = this.form.eventStreamConfig;
         await formService.updateForm(this.form.id, {
           name: this.form.name,
           description: this.form.description,
@@ -453,6 +502,7 @@ export const useFormStore = defineStore('form', {
             ? this.form.enableCopyExistingSubmission
             : false,
           formMetadata: formMetadata,
+          eventStreamConfig: eventStreamConfig,
         });
 
         // update user labels with any new added labels

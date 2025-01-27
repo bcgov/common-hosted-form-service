@@ -7,6 +7,7 @@ import { describe, beforeEach, vi } from 'vitest';
 import ApiKey from '~/components/forms/manage/ApiKey.vue';
 import { useFormStore } from '~/store/form';
 import { FormPermissions } from '~/utils/constants';
+import { useAppStore } from '~/store/app';
 
 const STUBS = {
   BaseCopyToClipboard: {
@@ -32,9 +33,11 @@ describe('ApiKey.vue', () => {
   setActivePinia(pinia);
 
   const formStore = useFormStore(pinia);
+  const appStore = useAppStore(pinia);
 
   beforeEach(() => {
     formStore.$reset();
+    appStore.$reset();
   });
 
   it('renders', () => {

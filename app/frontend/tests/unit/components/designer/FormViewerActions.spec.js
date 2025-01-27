@@ -73,6 +73,26 @@ describe('FormDisclaimer.vue', () => {
     expect(wrapper.vm.showEditToggle).toBeTruthy();
   });
 
+  it('when props.wideFormLayout is set from parent call setWideLayout', async () => {
+    const setWideLayout = vi.fn();
+    setWideLayout.mockImplementation(() => {});
+    const wrapper = mount(FormViewerActions, {
+      props: {
+        wideFormLayout: true,
+      },
+      global: {
+        plugins: [pinia],
+        provide: {
+          setWideLayout: setWideLayout,
+        },
+        stubs: STUBS,
+      },
+    });
+
+    expect(wrapper.vm.isWideLayout).toBeTruthy();
+    expect(setWideLayout).toBeCalledTimes(1);
+  });
+
   it('toggleWideLayout will toggle isWideLayout and call setWideLayout', async () => {
     const setWideLayout = vi.fn();
     setWideLayout.mockImplementation(() => {});
@@ -189,5 +209,79 @@ describe('FormDisclaimer.vue', () => {
     });
 
     expect(wrapper.html()).toContain('manage-submission-users-stub');
+  });
+
+  it('does not render drafts, switch submissions functionality and reders widelayout, print', () => {
+    const wrapper = mount(FormViewerActions, {
+      props: {
+        publicForm: true,
+      },
+      global: {
+        plugins: [pinia],
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        stubs: STUBS,
+      },
+    });
+
+    expect(wrapper.text()).toContain('trans.formViewerActions.wideLayout');
+    expect(wrapper.text()).toContain('trans.printOptions.print');
+
+    expect(wrapper.text()).not.toContain(
+      'trans.formViewerActions.viewMyDraftOrSubmissions'
+    );
+    expect(wrapper.text()).not.toContain(
+      'trans.formViewerActions.switchSingleSubmssn'
+    );
+    expect(wrapper.text()).not.toContain(
+      'trans.formViewerActions.saveAsADraft'
+    );
+    expect(wrapper.text()).not.toContain(
+      'trans.formViewerActions.editThisDraft'
+    );
+    expect(wrapper.text()).not.toContain(
+      'trans.manageSubmissionUsers.manageTeamMembers'
+    );
+  });
+
+  it('show viewMyDraftOrSubmissions when set formId && not publicForm ', () => {
+    const wrapper = mount(FormViewerActions, {
+      props: {
+        publicForm: false,
+        formId: '123-456',
+      },
+      global: {
+        plugins: [pinia],
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        stubs: STUBS,
+      },
+    });
+
+    expect(wrapper.text()).toContain(
+      'trans.formViewerActions.viewMyDraftOrSubmissions'
+    );
+  });
+
+  it('hide viewMyDraftOrSubmissions when set formId && publicForm ', () => {
+    const wrapper = mount(FormViewerActions, {
+      props: {
+        publicForm: true,
+        formId: '123-456',
+      },
+      global: {
+        plugins: [pinia],
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        stubs: STUBS,
+      },
+    });
+
+    expect(wrapper.text()).not.toContain(
+      'trans.formViewerActions.viewMyDraftOrSubmissions'
+    );
   });
 });
