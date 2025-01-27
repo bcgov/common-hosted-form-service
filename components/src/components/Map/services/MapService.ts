@@ -40,7 +40,6 @@ class MapService {
 
   constructor(options) {
     this.options = options;
-    console.log('this options', this.options);
     if (options.mapContainer) {
       const { map, drawnItems, drawControl } = this.initializeMap(options);
       this.map = map;
@@ -55,7 +54,6 @@ class MapService {
       // Event listener for drawn objects
       map.on('draw:created', (e) => {
         const layer = e.layer;
-        console.log('draw created;');
         if (drawnItems.getLayers().length === options.numPoints) {
           map.closePopup();
           L.popup()
