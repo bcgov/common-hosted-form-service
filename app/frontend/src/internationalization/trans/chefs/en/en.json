@@ -715,7 +715,7 @@
     "display": "display",
     "statusIsRequired": "Status is required",
     "assignTo": "Assign To",
-    "noDataText": "No Form Reviewers found with search. Add Form Reviewers on the Manage page.",
+    "noDataText": "No results found. Please add team members in the draft/submission manage page.",
     "assigneeIsRequired": "Assignee is required",
     "assignToMe": "ASSIGN TO ME",
     "recipientEmail": "Recipient Email",

@@ -638,7 +638,7 @@
     "display": "display",
     "statusIsRequired": "Kinakailangan ang katayuan",
     "assignTo": "Italaga Kay",
-    "noDataText": "Walang nahanap na Mga Tagasuri ng Form na may paghahanap. Magdagdag ng Mga Tagasuri ng Form sa pahina ng Pamahalaan.",
+    "noDataText": "Walang nakitang resulta. Mangyaring magdagdag ng mga miyembro ng koponan sa pahina ng pamamahala ng draft/pagsumite.",
     "assigneeIsRequired": "Kinakailangan ang assignee",
     "assignToMe": "ASSIGN TO ME",
     "recipientEmail": "Email ng Tatanggap",

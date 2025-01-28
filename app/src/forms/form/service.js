@@ -1,6 +1,6 @@
 const Problem = require('api-problem');
 const { ref } = require('objection');
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 const { EmailTypes } = require('../common/constants');
 const eventService = require('../event/eventService');
 const moment = require('moment');
@@ -77,7 +77,7 @@ const service = {
     try {
       trx = await Form.startTransaction();
       const obj = {};
-      obj.id = uuidv4();
+      obj.id = uuid.v4();
       obj.name = data.name;
       obj.description = data.description;
       obj.active = true;
@@ -107,19 +107,19 @@ const service = {
           if (!exists) {
             throw new Problem(422, `${p.code} is not a valid Identity Provider code`);
           }
-          fips.push({ id: uuidv4(), formId: obj.id, code: p.code, createdBy: currentUser.usernameIdp });
+          fips.push({ id: uuid.v4(), formId: obj.id, code: p.code, createdBy: currentUser.usernameIdp });
         }
         await FormIdentityProvider.query(trx).insert(fips);
       }
       // make this user have ALL the roles...
       const userRoles = Rolenames.map((r) => {
-        return { id: uuidv4(), createdBy: currentUser.usernameIdp, userId: currentUser.id, formId: obj.id, role: r };
+        return { id: uuid.v4(), createdBy: currentUser.usernameIdp, userId: currentUser.id, formId: obj.id, role: r };
       });
       await FormRoleUser.query(trx).insert(userRoles);
 
       // create a unpublished draft
       const draft = {
-        id: uuidv4(),
+        id: uuid.v4(),
         formId: obj.id,
         createdBy: currentUser.usernameIdp,
         schema: data.schema,
@@ -129,7 +129,7 @@ const service = {
       // Map all status codes to the form - hardcoded to include all states
       // TODO: Could make this more dynamic and settable by the user if that feature is required
       const defaultStatuses = Object.values(Statuses).map((status) => ({
-        id: uuidv4(),
+        id: uuid.v4(),
         formId: obj.id,
         code: status,
         createdBy: currentUser.usernameIdp,
@@ -188,7 +188,7 @@ const service = {
 
       // insert any new identity providers
       const fIdps = data.identityProviders.map((p) => ({
-        id: uuidv4(),
+        id: uuid.v4(),
         formId: obj.id,
         code: p.code,
         createdBy: currentUser.usernameIdp,
@@ -286,7 +286,7 @@ const service = {
 
     try {
       const documentTemplate = {
-        id: uuidv4(),
+        id: uuid.v4(),
         formId: formId,
         filename: data.filename,
         template: data.template,
@@ -548,7 +548,7 @@ const service = {
       const isPublicForm = identityProviders.some((idp) => idp.code === 'public');
       const createdBy = isPublicForm ? 'public' : currentUser.usernameIdp;
 
-      const submissionId = uuidv4();
+      const submissionId = uuid.v4();
       const obj = Object.assign(
         {
           id: submissionId,
@@ -573,7 +573,7 @@ const service = {
         }
 
         const itemsToInsert = perms.map((perm) => ({
-          id: uuidv4(),
+          id: uuid.v4(),
           userId: currentUser.id,
           formSubmissionId: submissionId,
           permission: perm,
@@ -586,7 +586,7 @@ const service = {
       if (!data.draft) {
         // Add a SUBMITTED status if it's not a draft
         const stObj = {
-          id: uuidv4(),
+          id: uuid.v4(),
           submissionId: submissionId,
           code: Statuses.SUBMITTED,
           createdBy: createdBy,
@@ -644,7 +644,7 @@ const service = {
         let submissionId;
         // let's create multiple submissions with same metadata
         service.popFormLevelInfo(submissionDataArray).map((singleData) => {
-          submissionId = uuidv4();
+          submissionId = uuid.v4();
           recordsToInsert.push({
             ...recordWithoutData,
             id: submissionId,
@@ -666,7 +666,7 @@ const service = {
         result.map((singleSubmission) => {
           itemsToInsert.push(
             ...perms.map((perm) => ({
-              id: uuidv4(),
+              id: uuid.v4(),
               userId: currentUser.id,
               formSubmissionId: singleSubmission.id,
               permission: perm,
@@ -715,7 +715,7 @@ const service = {
 
       // data.schema, maybe data.formVersionId
       const obj = Object.assign({}, data);
-      obj.id = uuidv4();
+      obj.id = uuid.v4();
       obj.formId = form.id;
       obj.createdBy = currentUser.usernameIdp;
 
@@ -762,7 +762,7 @@ const service = {
       trx = await FormVersionDraft.startTransaction();
 
       version = {
-        id: uuidv4(),
+        id: uuid.v4(),
         formId: form.id,
         version: form.versions.length ? form.versions[0].version + 1 : 1,
         createdBy: currentUser.usernameIdp,
@@ -819,7 +819,7 @@ const service = {
         // Replace API key for the form
         await FormApiKey.query(trx).modify('filterFormId', formId).update({
           formId: formId,
-          secret: uuidv4(),
+          secret: uuid.v4(),
           updatedBy: currentUser.usernameIdp,
           filesApiAccess: false,
         });
@@ -827,7 +827,7 @@ const service = {
         // Add new API key for the form
         await FormApiKey.query(trx).insert({
           formId: formId,
-          secret: uuidv4(),
+          secret: uuid.v4(),
           createdBy: currentUser.usernameIdp,
           filesApiAccess: false,
         });
@@ -942,7 +942,7 @@ const service = {
       } else {
         // Add new subscription settings for the form
         await FormSubscription.query(trx).insert({
-          id: uuidv4(),
+          id: uuid.v4(),
           ...subscriptionData,
           createdBy: currentUser.usernameIdp,
         });
@@ -1048,7 +1048,7 @@ const service = {
       } else {
         // Add new email template settings for the form
         await FormEmailTemplate.query(transaction).insert({
-          id: uuidv4(),
+          id: uuid.v4(),
           ...data,
           createdBy: currentUser.usernameIdp,
         });
