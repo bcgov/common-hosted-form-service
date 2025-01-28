@@ -170,7 +170,10 @@ watch(
       </span>
 
       <!-- Save a draft -->
-      <span v-if="canSaveDraft && draftEnabled && !bulkFile && !publicForm" class="ml-2">
+      <span
+        v-if="canSaveDraft && draftEnabled && !bulkFile && !publicForm"
+        class="ml-2"
+      >
         <v-btn color="primary" variant="outlined" @click="$emit('save-draft')">
           <span :lang="locale">{{
             $t('trans.formViewerActions.saveAsDraft')
