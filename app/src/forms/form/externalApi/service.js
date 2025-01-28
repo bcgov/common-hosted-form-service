@@ -137,6 +137,7 @@ const service = {
         sendUserToken: data.sendUserToken,
         userTokenHeader: data.userTokenHeader,
         userTokenBearer: data.userTokenBearer,
+        sendUserInfo: data.sendUserInfo,
         updatedBy: currentUser.usernameIdp,
       });
       // any urls on this form pre-approved?
