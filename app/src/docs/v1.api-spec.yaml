@@ -2112,40 +2112,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-    post:
-      summary: Create a new permission
-      operationId: createPermission
-      tags:
-        - Permission
-      security:
-        - BearerAuth: []
-          OpenID:
-            - admin
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Permission'
-      responses:
-        '201':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Permission'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   /permissions/{code}:
     get:
       summary: Get a permission
@@ -2164,46 +2130,6 @@ paths:
           required: true
           description: code of the permission to fetch
           example: submission_read
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Permission'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    put:
-      summary: Update a permission
-      operationId: updatePermission
-      tags:
-        - Permission
-      security:
-        - BearerAuth: []
-          OpenID:
-            - admin
-      parameters:
-        - in: path
-          name: code
-          schema:
-            type: string
-          required: true
-          example: submission_read
-          description: code of the permission to update
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Permission'
       responses:
         '200':
           description: OK
@@ -2246,40 +2172,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-    post:
-      summary: Create a new role
-      operationId: createRole
-      tags:
-        - Role
-      security:
-        - BearerAuth: []
-          OpenID:
-            - admin
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Role'
-      responses:
-        '201':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Role'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   /roles/{code}:
     get:
       summary: Get a role
@@ -2293,45 +2185,6 @@ paths:
             type: string
           required: true
           description: code of the role to fetch
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Role'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        default:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    put:
-      summary: Update a role
-      operationId: updateRole
-      tags:
-        - Role
-      security:
-        - BearerAuth: []
-          OpenID:
-            - admin
-      parameters:
-        - in: path
-          name: code
-          schema:
-            type: string
-          required: true
-          description: code of the role to update
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Role'
       responses:
         '200':
           description: OK
