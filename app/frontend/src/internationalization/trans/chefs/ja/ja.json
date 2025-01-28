@@ -638,7 +638,7 @@
     "display": "画面",
     "statusIsRequired": "ステータスは必須です",
     "assignTo": "に割り当てます",
-    "noDataText": "検索してもフォームレビュー担当者が見つかりませんでした。 「管理」ページでフォームレビュー担当者を追加します。",
+    "noDataText": "結果が見つかりませんでした。ドラフト/投稿管理ページでチームメンバーを追加してください。",
     "assigneeIsRequired": "譲受人は必須です",
     "assignToMe": "私に割り当ててください",
     "recipientEmail": "受信者のEメール",
