@@ -638,7 +638,7 @@
     "display": "trưng bày",
     "statusIsRequired": "Trạng thái là bắt buộc",
     "assignTo": "Giao cho",
-    "noDataText": "Không tìm thấy Người đánh giá biểu mẫu nào với tìm kiếm. Thêm Người đánh giá biểu mẫu trên trang Quản lý.",
+    "noDataText": "Không tìm thấy kết quả nào. Vui lòng thêm thành viên nhóm vào trang quản lý bản nháp/gửi.",
     "assigneeIsRequired": "Người được ủy quyền là bắt buộc",
     "assignToMe": "GIAO CHO TÔI",
     "recipientEmail": "Người nhận E-mail",

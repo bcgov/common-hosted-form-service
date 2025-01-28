@@ -638,7 +638,7 @@
     "display": "Schermo",
     "statusIsRequired": "Lo stato è obbligatorio",
     "assignTo": "Assegnato a",
-    "noDataText": "Nessun revisore di moduli trovato con la ricerca. Aggiungi i revisori del modulo nella pagina Gestisci.",
+    "noDataText": "Nessun risultato trovato Aggiungi membri del team nella pagina di gestione delle bozze/invii.",
     "assigneeIsRequired": "L'assegnatario è obbligatorio",
     "assignToMe": "ASSEGNAMI",
     "recipientEmail": "Destinatario dell'email",

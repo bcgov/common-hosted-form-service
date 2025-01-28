@@ -638,7 +638,7 @@
     "display": "Anzeige",
     "statusIsRequired": "Status ist erforderlich",
     "assignTo": "Zuweisen",
-    "noDataText": "Bei der Suche wurden keine Formularprüfer gefunden. Fügen Sie Formularprüfer auf der Seite „Verwalten“ hinzu.",
+    "noDataText": "Keine Ergebnisse gefunden. Bitte fügen Sie Teammitglieder auf der Seite „Entwurf/Einreichung verwalten“ hinzu.",
     "assigneeIsRequired": "Bevollmächtigter ist erforderlich",
     "assignToMe": "MIR ZUWEISEN",
     "recipientEmail": "Empfänger E-Mail",

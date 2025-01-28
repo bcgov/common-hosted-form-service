@@ -638,7 +638,7 @@
     "display": "afficher",
     "statusIsRequired": "Le statut est requis",
     "assignTo": "Affecter à",
-    "noDataText": "Aucun examinateur de formulaire n'a été trouvé avec la recherche. Ajoutez des réviseurs de formulaires sur la page Gérer.",
+    "noDataText": "Aucun résultat trouvé. Veuillez ajouter des membres de l'équipe dans la page de gestion des brouillons/soumissions.",
     "assigneeIsRequired": "Le cessionnaire est requis",
     "assignToMe": "M'ASSIGNER",
     "recipientEmail": "Destinataire E-mail",

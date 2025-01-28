@@ -638,7 +638,7 @@
     "display": "mostrar",
     "statusIsRequired": "O status é obrigatório",
     "assignTo": "Atribuir a",
-    "noDataText": "Nenhum Revisor de formulário encontrado na pesquisa. Adicione revisores de formulário na página Gerenciar.",
+    "noDataText": "Nenhum resultado encontrado. Adicione membros da equipe na página de gerenciamento de rascunhos/envios.",
     "assigneeIsRequired": "O cessionário é obrigatório",
     "assignToMe": "ATRIBUIR PARA MIM",
     "recipientEmail": "E-mail do destinatário",

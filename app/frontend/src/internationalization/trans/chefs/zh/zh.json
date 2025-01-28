@@ -638,7 +638,7 @@
     "display": "展示",
     "statusIsRequired": "状态为必填项",
     "assignTo": "分配给",
-    "noDataText": "通过搜索未找到表单审阅者。在管理页面添加表单审阅者。",
+    "noDataText": "没有找到结果。请在草稿/提交管理页面添加团队成员。",
     "assigneeIsRequired": "受让人为必填项",
     "assignToMe": "分配给我",
     "recipientEmail": "收件人电子邮件",

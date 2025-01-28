@@ -638,7 +638,7 @@
     "display": "mostrar",
     "statusIsRequired": "Se requiere estado",
     "assignTo": "Asignar a",
-    "noDataText": "No se encontraron revisores de formularios con la búsqueda. Agregue revisores de formularios en la página Administrar.",
+    "noDataText": "No se encontraron resultados. Agregue miembros del equipo en la página de administración de borradores/envíos.",
     "assigneeIsRequired": "Se requiere cesionario",
     "assignToMe": "ASIGNARME",
     "recipientEmail": "Receptor de E-mail",
