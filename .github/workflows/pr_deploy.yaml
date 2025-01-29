@@ -119,3 +119,9 @@ jobs:
     uses: ./.github/workflows/reusable-owasp-zap.yaml
     with:
       url: ${{ needs.set-vars.outputs.URL }}
+
+  Tests:
+    name: Automation Tests
+    uses: ./.github/workflows/cypress-ci.yaml 
+    with:
+      pr-number: ${{ github.event.inputs.pr-number }}
