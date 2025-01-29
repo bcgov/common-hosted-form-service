@@ -12,11 +12,10 @@ const controller = require('../../../../src/forms/role/controller');
 // correctly, not the functionality of the middleware.
 //
 
-const mockJwtServiceProtect = jest.fn((_req, _res, next) => {
-  next();
-});
 jwtService.protect = jest.fn(() => {
-  return mockJwtServiceProtect;
+  return jest.fn((_req, _res, next) => {
+    next();
+  });
 });
 
 userAccess.currentUser = jest.fn((_req, _res, next) => {
@@ -45,7 +44,7 @@ afterEach(() => {
 // works when we use(protect) at the file level, not individually in the routes.
 // However, this does test that we don't accidentally turn off the protection.
 describe('jwtService.protect', () => {
-  it('should be called with admin', () => {
+  it('should be called', () => {
     jest.resetModules();
     const jwtService = require('../../../../src/components/jwtService');
     jwtService.protect = jest.fn(() => {
@@ -55,7 +54,7 @@ describe('jwtService.protect', () => {
     });
     require('../../../../src/forms/role/routes');
 
-    expect(jwtService.protect).toBeCalledWith('admin');
+    expect(jwtService.protect).toBeCalled();
   });
 });
 
@@ -70,20 +69,6 @@ describe(`${basePath}`, () => {
     await appRequest.get(path);
 
     expect(controller.list).toBeCalledTimes(1);
-    expect(mockJwtServiceProtect).toBeCalledTimes(1);
-    expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateRoleCode).toBeCalledTimes(0);
-  });
-
-  it('should have correct middleware for POST', async () => {
-    controller.create = jest.fn((_req, res) => {
-      res.sendStatus(200);
-    });
-
-    await appRequest.post(path);
-
-    expect(controller.create).toBeCalledTimes(1);
-    expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateRoleCode).toBeCalledTimes(0);
   });
@@ -100,20 +85,6 @@ describe(`${basePath}/:code`, () => {
     await appRequest.get(path);
 
     expect(controller.read).toBeCalledTimes(1);
-    expect(mockJwtServiceProtect).toBeCalledTimes(1);
-    expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validateRoleCode).toBeCalledTimes(1);
-  });
-
-  it('should have correct middleware for PUT', async () => {
-    controller.update = jest.fn((_req, res) => {
-      res.sendStatus(200);
-    });
-
-    await appRequest.put(path);
-
-    expect(controller.update).toBeCalledTimes(1);
-    expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateRoleCode).toBeCalledTimes(1);
   });

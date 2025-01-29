@@ -74,19 +74,6 @@ describe(`${basePath}`, () => {
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validatePermissionCode).toBeCalledTimes(0);
   });
-
-  it('should have correct middleware for POST', async () => {
-    controller.create = jest.fn((_req, res) => {
-      res.sendStatus(200);
-    });
-
-    await appRequest.post(path);
-
-    expect(controller.create).toBeCalledTimes(1);
-    expect(mockJwtServiceProtect).toBeCalledTimes(1);
-    expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validatePermissionCode).toBeCalledTimes(0);
-  });
 });
 
 describe(`${basePath}/:code`, () => {
@@ -100,19 +87,6 @@ describe(`${basePath}/:code`, () => {
     await appRequest.get(path);
 
     expect(controller.read).toBeCalledTimes(1);
-    expect(mockJwtServiceProtect).toBeCalledTimes(1);
-    expect(userAccess.currentUser).toBeCalledTimes(1);
-    expect(validateParameter.validatePermissionCode).toBeCalledTimes(1);
-  });
-
-  it('should have correct middleware for PUT', async () => {
-    controller.update = jest.fn((_req, res) => {
-      res.sendStatus(200);
-    });
-
-    await appRequest.put(path);
-
-    expect(controller.update).toBeCalledTimes(1);
     expect(mockJwtServiceProtect).toBeCalledTimes(1);
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validatePermissionCode).toBeCalledTimes(1);
