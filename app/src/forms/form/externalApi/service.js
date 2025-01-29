@@ -1,6 +1,6 @@
 const Problem = require('api-problem');
 
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 const { ExternalAPIStatuses } = require('../../common/constants');
 
 const { ExternalAPI, ExternalAPIStatusCode, Form, AdminExternalAPI } = require('../../common/models');
@@ -87,7 +87,7 @@ const service = {
   createExternalAPI: async (formId, data, currentUser) => {
     service.validateExternalAPI(data);
 
-    data.id = uuidv4();
+    data.id = uuid.v4();
     // always create as SUBMITTED.
     data.code = ExternalAPIStatuses.SUBMITTED;
     // ensure that new records don't send user tokens.
@@ -137,6 +137,7 @@ const service = {
         sendUserToken: data.sendUserToken,
         userTokenHeader: data.userTokenHeader,
         userTokenBearer: data.userTokenBearer,
+        sendUserInfo: data.sendUserInfo,
         updatedBy: currentUser.usernameIdp,
       });
       // any urls on this form pre-approved?

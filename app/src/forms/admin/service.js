@@ -1,8 +1,7 @@
 const { ExternalAPIStatuses } = require('../common/constants');
 const { Form, FormVersion, User, UserFormAccess, FormComponentsProactiveHelp, AdminExternalAPI, ExternalAPI, ExternalAPIStatusCode } = require('../common/models');
 const { queryUtils } = require('../common/utils');
-const { v4: uuidv4 } = require('uuid');
-
+const uuid = require('uuid');
 const service = {
   //
   // Forms
@@ -218,7 +217,7 @@ const service = {
         });
       } else {
         const obj = {};
-        id = uuidv4();
+        id = uuid.v4();
         obj.id = id;
         obj.componentName = data && data.componentName;
         obj.externalLink = data && data.externalLink;

@@ -77,6 +77,8 @@ defineExpose({ saveEmailTemplate });
         :label="$t('trans.emailTemplate.subject')"
         :lang="locale"
         :rules="subjectRules"
+        :maxlength="255"
+        counter
         @update:model-value="formChanged = true"
       />
       <v-text-field
@@ -89,6 +91,8 @@ defineExpose({ saveEmailTemplate });
         :label="$t('trans.emailTemplate.title')"
         :lang="locale"
         :rules="titleRules"
+        :maxlength="255"
+        counter
         @update:model-value="formChanged = true"
       />
       <v-textarea
@@ -101,6 +105,8 @@ defineExpose({ saveEmailTemplate });
         :label="$t('trans.emailTemplate.body')"
         :lang="locale"
         :rules="bodyRules"
+        :maxlength="4096"
+        counter
         @update:model-value="formChanged = true"
       />
       <v-btn

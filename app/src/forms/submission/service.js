@@ -1,5 +1,4 @@
-const { v4: uuidv4 } = require('uuid');
-
+const uuid = require('uuid');
 const log = require('../../components/log')(module.filename);
 
 const { Statuses } = require('../common/constants');
@@ -296,7 +295,7 @@ const service = {
     try {
       trx = await Note.startTransaction();
       const result = await Note.query(trx).insertAndFetch({
-        id: uuidv4(),
+        id: uuid.v4(),
         submissionId: submissionId,
         submissionStatusId: data.submissionStatusId,
         note: data.note,
@@ -400,7 +399,7 @@ const service = {
       trx = etrx ? etrx : await FormSubmissionStatus.startTransaction();
 
       await FormSubmissionStatus.query(trx).insert({
-        id: uuidv4(),
+        id: uuid.v4(),
         submissionId: submissionId,
         code: data.code,
         assignedToUserId: data.assignedToUserId,
