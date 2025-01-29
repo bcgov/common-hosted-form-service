@@ -54,7 +54,6 @@ jobs:
         with:
           name: coverage-app
           path: ${{ github.workspace }}/app/coverage
-          retention-days: 1
       - name: Monitor Coverage
         if: "matrix.version == 20 && ! github.event.pull_request.head.repo.fork"
         uses: slavcodev/coverage-monitor-action@v1
@@ -111,7 +110,6 @@ jobs:
         with:
           name: coverage-frontend
           path: ${{ github.workspace }}/app/frontend/coverage
-          retention-days: 1
       - name: Monitor Coverage
         if: "matrix.version == 20 && ! github.event.pull_request.head.repo.fork"
         uses: slavcodev/coverage-monitor-action@v1
