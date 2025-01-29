@@ -122,6 +122,7 @@ jobs:
 
   Tests:
     name: Automation Tests
+    needs: [deploy, set-vars]
     uses: ./.github/workflows/cypress-ci.yaml 
     with:
       pr-number: ${{ github.event.inputs.pr-number }}
