@@ -6,6 +6,11 @@ on:
         description: Pull request number
         required: true
         type: string
+  secrets:
+      Username: 
+        required: true
+      Password:
+        required: true
   
 jobs:
   cypress-run:
@@ -30,8 +35,8 @@ jobs:
        with:
           working-directory: '${{ github.workspace }}/tests/functional'
        env:
-          CYPRESS_keycloakUsername: ${{secrets.keycloakUsername}}
-          CYPRESS_keycloakPassword: ${{secrets.keycloakPassword}}
+          CYPRESS_keycloakUsername: ${{secrets.Username}}
+          CYPRESS_keycloakPassword: ${{secrets.Password}}
           CYPRESS_depEnv: 'pr-${{ inputs.pr-number }}'
           
      - uses: actions/upload-artifact@v4
