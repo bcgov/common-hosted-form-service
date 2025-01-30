@@ -638,7 +638,7 @@
     "display": "표시하다",
     "statusIsRequired": "상태가 필요합니다.",
     "assignTo": "할당 대상",
-    "noDataText": "검색 결과 양식 검토자가 없습니다. 관리 페이지에서 양식 검토자를 추가합니다.",
+    "noDataText": "검색된 결과가 없습니다. 초안/제출 관리 페이지에서 팀원을 추가해주세요.",
     "assigneeIsRequired": "담당자는 필수 항목입니다.",
     "assignToMe": "나에게 할당",
     "recipientEmail": "이메일 수령인",
