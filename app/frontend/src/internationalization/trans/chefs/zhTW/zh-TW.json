@@ -248,7 +248,9 @@
     "SDPR": "社會發展與貧困減輕 (SDPR)",
     "TACS": "旅遊、藝術、文化和體育 (TACS)",
     "MOTI": "交通與基礎設施 (MOTI)",
-    "WLRS": "水域、土地和資源管理 (WLRS)"
+    "WLRS": "水域、土地和資源管理 (WLRS)",
+    "PSA": "不列顛哥倫比亞省公共服務機構 (PSA)",
+    "EBC": "BC 選舉 (EBC)"
   },
   "subscribeEvent": {
     "eventType": "事件類型",

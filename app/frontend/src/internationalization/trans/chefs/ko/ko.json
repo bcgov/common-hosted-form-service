@@ -248,7 +248,9 @@
     "SDPR": "사회 개발 및 빈곤 감소 (SDPR)",
     "TACS": "관광, 예술, 문화 및 스포츠 (TACS)",
     "MOTI": "교통 및 기반 시설 (MOTI)",
-    "WLRS": "수자원, 토지 및 자원 관리 (WLRS)"
+    "WLRS": "수자원, 토지 및 자원 관리 (WLRS)",
+    "PSA": "BC 공공 서비스 기관 (PSA)",
+    "EBC": "BC 선거 위원회 (EBC)"
   },
   "subscribeEvent": {
     "eventType": "イベントタイプ",

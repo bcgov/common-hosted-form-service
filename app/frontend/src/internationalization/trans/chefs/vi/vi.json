@@ -248,7 +248,9 @@
     "SDPR": "Phát triển Xã hội và Giảm nghèo (SDPR)",
     "TACS": "Du lịch, Nghệ thuật, Văn hóa và Thể thao (TACS)",
     "MOTI": "Giao thông vận tải và Cơ sở hạ tầng (MOTI)",
-    "WLRS": "Quản lý Nước, Đất và Tài nguyên (WLRS)"
+    "WLRS": "Quản lý Nước, Đất và Tài nguyên (WLRS)",
+    "PSA": "Cơ quan Dịch vụ Công British Columbia (PSA)",
+    "EBC": "Bầu cử BC (EBC)"
   },
   "subscribeEvent": {
     "eventType": "Loại sự kiện",

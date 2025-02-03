@@ -248,7 +248,9 @@
     "SDPR": "社会发展与扶贫 (SDPR)",
     "TACS": "旅游、艺术、文化和体育 (TACS)",
     "MOTI": "交通与基础设施 (MOTI)",
-    "WLRS": "水域、土地和资源管理 (WLRS)"
+    "WLRS": "水域、土地和资源管理 (WLRS)",
+    "PSA": "不列颠哥伦比亚省公共服务机构 (PSA)",
+    "EBC": "BC 选举 (EBC)"
   },
   "subscribeEvent": {
     "eventType": "事件类型",

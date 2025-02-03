@@ -117,6 +117,9 @@ export const Ministries = Object.freeze([
   { id: 'TACS', text: 'trans.ministries.TACS' },
   { id: 'MOTI', text: 'trans.ministries.MOTI' },
   { id: 'WLRS', text: 'trans.ministries.WLRS' },
+  //New Ministries
+  { id: 'EBC', text: 'trans.ministries.EBC' },
+  { id: 'PSA', text: 'trans.ministries.PSA' },
 ]);
 
 /** Corresponds to the values of form profile fields */

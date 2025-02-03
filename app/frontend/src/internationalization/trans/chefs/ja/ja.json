@@ -248,7 +248,9 @@
     "SDPR": "社会開発と貧困削減 (SDPR)",
     "TACS": "観光、芸術、文化、スポーツ (TACS)",
     "MOTI": "輸送と基盤整備 (MOTI)",
-    "WLRS": "水、土地、資源管理 (WLRS)"
+    "WLRS": "水、土地、資源管理 (WLRS)",
+    "PSA": "不列颠哥伦比亚省公共服务机构 (PSA)",
+    "EBC": "不列颠哥伦比亚省选举委员会 (EBC)"
   },
   "subscribeEvent": {
     "eventType": "イベントタイプ",

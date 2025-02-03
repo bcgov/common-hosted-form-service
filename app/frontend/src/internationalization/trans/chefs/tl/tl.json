@@ -248,7 +248,9 @@
     "SDPR": "Pag-unlad sa Panlipunan at Pagbawas ng Kahirapan (SDPR)",
     "TACS": "Turismo, Sining, Kultura at Isports (TACS)",
     "MOTI": "Transportasyon at Infrastruktura (MOTI)",
-    "WLRS": "Pamamahala ng Tubig, Lupa at Yaman (WLRS)"
+    "WLRS": "Pamamahala ng Tubig, Lupa at Yaman (WLRS)",
+    "PSA": "Ahensya ng Pampublikong Serbisyo ng British Columbia (PSA)",
+    "EBC": "Halalan sa British Columbia (EBC)"
   },
   "subscribeEvent": {
     "eventType": "Uri ng kaganapan",

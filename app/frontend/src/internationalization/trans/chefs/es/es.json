@@ -248,7 +248,9 @@
     "SDPR": "Desarrollo Social y Reducción de la Pobreza (SDPR)",
     "TACS": "Turismo, Artes, Cultura y Deporte (TACS)",
     "MOTI": "Transporte e Infraestructura (MOTI)",
-    "WLRS": "Cuidado del Agua, Tierra y Recursos (WLRS)"
+    "WLRS": "Cuidado del Agua, Tierra y Recursos (WLRS)",
+    "PSA": "Agencia de Servicio Público de BC (PSA)",
+    "EBC": "Elecciones BC (EBC)"
   },
   "subscribeEvent": {
     "eventType": "Tipo de evento",

@@ -248,7 +248,9 @@
     "SDPR": "Sviluppo Sociale e Riduzione della Povertà (SDPR)",
     "TACS": "Turismo, Arte, Cultura e Sport (TACS)",
     "MOTI": "Trasporti e Infrastrutture (MOTI)",
-    "WLRS": "Gestione dell'Acqua, della Terra e delle Risorse (WLRS)"
+    "WLRS": "Gestione dell'Acqua, della Terra e delle Risorse (WLRS)",
+    "PSA": "Agenzia dei Servizi Pubblici della Columbia Britannica (PSA)",
+    "EBC": "Elezioni della Columbia Britannica (EBC)"
   },
   "subscribeEvent": {
     "eventType": "Tipo di evento",

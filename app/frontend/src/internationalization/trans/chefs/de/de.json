@@ -248,7 +248,9 @@
     "SDPR": "Soziale Entwicklung und Armutsbekämpfung (SDPR)",
     "TACS": "Tourismus, Kunst, Kultur und Sport (TACS)",
     "MOTI": "Verkehr und Infrastruktur (MOTI)",
-    "WLRS": "Wasser, Land und Ressourcenpflege (WLRS)"
+    "WLRS": "Wasser, Land und Ressourcenpflege (WLRS)",
+    "PSA": "Öffentlicher Dienst von British Columbia (PSA)",
+    "EBC": "Wahlen British Columbia (EBC)"
   },
   "subscribeEvent": {
     "eventType": "Ereignistyp",
