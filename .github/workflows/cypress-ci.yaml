@@ -35,8 +35,8 @@ jobs:
        with:
           working-directory: '${{ github.workspace }}/tests/functional'
        env:
-          CYPRESS_keycloakUsername: ${{secrets.Username}}
-          CYPRESS_keycloakPassword: ${{secrets.Password}}
+          CYPRESS_keycloakUsername: ${{ secrets.Username }}
+          CYPRESS_keycloakPassword: ${{ secrets.Password }}
           CYPRESS_depEnv: 'pr-${{ inputs.pr-number }}'
           
      - uses: actions/upload-artifact@v4
