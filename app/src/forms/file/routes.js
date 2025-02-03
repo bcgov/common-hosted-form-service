@@ -24,4 +24,11 @@ routes.delete('/:fileId', currentFileRecord, hasFilePermissions([P.SUBMISSION_UP
   await controller.delete(req, res, next);
 });
 
+// FORMS-1138: Add a temporary route that can be called with a submission ID to
+// fix any files that are stuck in the "uploads" directory. This will be removed
+// once all the files have been moved into the proper submissions directory.
+routes.post('/tempfix/:submissionId', async (req, res, next) => {
+  await controller.tempfix(req, res, next);
+});
+
 module.exports = routes;
