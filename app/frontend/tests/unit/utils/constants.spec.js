@@ -117,6 +117,8 @@ describe('Constants', () => {
       { id: 'TACS', text: 'trans.ministries.TACS' },
       { id: 'MOTI', text: 'trans.ministries.MOTI' },
       { id: 'WLRS', text: 'trans.ministries.WLRS' },
+      { id: 'PSA', text: 'trans.ministries.PSA' },
+      { id: 'EBC', text: 'trans.ministries.EBC' },
     ]);
   });
 
