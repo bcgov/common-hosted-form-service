@@ -312,7 +312,7 @@
     "MOTI": "Transportation and Infrastructure (MOTI)",
     "WLRS": "Water, Land and Resource Stewardship (WLRS)",
     "PSA": "BC Public Service Agency (PSA)",
-    "EBC": "Elections BC (EBC)"
+    "EBC": "BC Elections (EBC)"
   },
   "subscribeEvent": {
     "eventType": "Event Type",
