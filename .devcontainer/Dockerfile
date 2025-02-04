@@ -1,4 +1,4 @@
-ARG VARIANT="20.18.1-bookworm"
+ARG VARIANT="20.18.2-bookworm"
 FROM node:${VARIANT}
 
 RUN apt-get update && \
