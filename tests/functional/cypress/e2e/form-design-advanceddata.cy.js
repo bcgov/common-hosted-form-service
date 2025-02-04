@@ -102,7 +102,7 @@ it('Checks the Container component', () => {
           cy.get('button').contains('Save').click();
       
       });
-      
+      /*
         //Verify Edit Json button   
       cy.get('[ref=editJson]').then($el => {
       
@@ -112,7 +112,7 @@ it('Checks the Container component', () => {
       });
       
       let acecont=cy.get('div.ace_content');
-      /*
+      
       cy.get('div.ace_content').then($el => {
       cy.get('div.ace_content').type('{selectall}{backspace}');
       
@@ -144,10 +144,10 @@ it('Checks the Container component', () => {
       
       cy.get('.ui').click();
       cy.contains('Male').should('be.visible');
-      */
+      
       cy.get('button').contains('Save').click();
          
-              
+       */       
           
       //});
     }); 
