@@ -62,7 +62,7 @@ describe("Form Designer", () => {
       let arrayValues = arr[1].split("&");
       cy.log(arrayValues[0]);
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-      cy.waitForLoad();
+      cy.wait(6000);
       //Publish the form
       cy.get(".v-label > span").click();
 
