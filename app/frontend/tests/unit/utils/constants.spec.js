@@ -99,6 +99,7 @@ describe('Constants', () => {
       { id: 'MCF', text: 'trans.ministries.MCF' },
       { id: 'CITZ', text: 'trans.ministries.CITZ' },
       { id: 'ECC', text: 'trans.ministries.ECC' },
+      { id: 'EBC', text: 'trans.ministries.EBC' },
       { id: 'EMCR', text: 'trans.ministries.EMCR' },
       { id: 'EMLI', text: 'trans.ministries.EMLI' },
       { id: 'ENV', text: 'trans.ministries.ENV' },
@@ -111,14 +112,13 @@ describe('Constants', () => {
       { id: 'LBR', text: 'trans.ministries.LBR' },
       { id: 'MMHA', text: 'trans.ministries.MMHA' },
       { id: 'MUNI', text: 'trans.ministries.MUNI' },
+      { id: 'PSA', text: 'trans.ministries.PSA' },
       { id: 'PSFS', text: 'trans.ministries.PSFS' },
       { id: 'PSSG', text: 'trans.ministries.PSSG' },
       { id: 'SDPR', text: 'trans.ministries.SDPR' },
       { id: 'TACS', text: 'trans.ministries.TACS' },
       { id: 'MOTI', text: 'trans.ministries.MOTI' },
       { id: 'WLRS', text: 'trans.ministries.WLRS' },
-      { id: 'PSA', text: 'trans.ministries.PSA' },
-      { id: 'EBC', text: 'trans.ministries.EBC' },
     ]);
   });
 

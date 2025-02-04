@@ -99,6 +99,7 @@ export const Ministries = Object.freeze([
   { id: 'MCF', text: 'trans.ministries.MCF' },
   { id: 'CITZ', text: 'trans.ministries.CITZ' },
   { id: 'ECC', text: 'trans.ministries.ECC' },
+  { id: 'EBC', text: 'trans.ministries.EBC' },
   { id: 'EMCR', text: 'trans.ministries.EMCR' },
   { id: 'EMLI', text: 'trans.ministries.EMLI' },
   { id: 'ENV', text: 'trans.ministries.ENV' },
@@ -111,15 +112,13 @@ export const Ministries = Object.freeze([
   { id: 'LBR', text: 'trans.ministries.LBR' },
   { id: 'MMHA', text: 'trans.ministries.MMHA' },
   { id: 'MUNI', text: 'trans.ministries.MUNI' },
+  { id: 'PSA', text: 'trans.ministries.PSA' },
   { id: 'PSFS', text: 'trans.ministries.PSFS' },
   { id: 'PSSG', text: 'trans.ministries.PSSG' },
   { id: 'SDPR', text: 'trans.ministries.SDPR' },
   { id: 'TACS', text: 'trans.ministries.TACS' },
   { id: 'MOTI', text: 'trans.ministries.MOTI' },
   { id: 'WLRS', text: 'trans.ministries.WLRS' },
-  //New Ministries
-  { id: 'EBC', text: 'trans.ministries.EBC' },
-  { id: 'PSA', text: 'trans.ministries.PSA' },
 ]);
 
 /** Corresponds to the values of form profile fields */
