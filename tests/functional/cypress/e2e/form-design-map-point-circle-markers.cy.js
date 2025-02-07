@@ -63,12 +63,13 @@ describe('Form Designer', () => {
       cy.wait(2000);
       cy.get('input[value="circle"]').click();
       cy.get('input[value="polygon"]').click();
+      cy.get('input[value="polyline"]').click();
       cy.get('input[name="data[numPoints]"').type('{selectall}{backspace}');
-      cy.get('input[name="data[numPoints]"').type('2');
+      cy.get('input[name="data[numPoints]"').type('4');
       cy.wait(2000);
       });
-});
-  it('Checks Map component for circle marker', () => {
+    });
+    it('Checks Map component for circle marker', () => {
       cy.viewport(1000, 1100);
       cy.waitForLoad(); 
       cy.get('a.leaflet-draw-draw-circle').then($el => {
@@ -86,10 +87,53 @@ describe('Form Designer', () => {
         //Verify circular area drawn is exist on the map
         cy.get('.leaflet-interactive').should('exist');
         cy.wait(2000);
-        cy.get('g').find('path[stroke-linejoin="round"]').should('exist');
+        cy.get('g').find('path[fill="#3388ff"]').should('exist');
       });
-             
-      cy.waitForLoad();
+    });
+    it('Checks Map component for Line marker', () => {
+
+      cy.viewport(1000, 1100);
+      cy.wait(3000);
+      cy.get('a.leaflet-draw-draw-polyline').then($el => {
+        const draw_line=$el[0];
+      cy.get(draw_line).click();
+      }); 
+      cy.get('div[class="leaflet-draw-tooltip leaflet-draw-tooltip-single"]').click({ force: true });
+      cy.get('a[title="No layers to delete"]').then($el => {
+        const coords = $el[0].getBoundingClientRect();
+        const layer_del_btn=$el[0];
+        cy.get(layer_del_btn)
+        .trigger('mousedown', { which: 1}, { force: true })
+    //.trigger('mousemove', coords.x, -30, { force: true })
+       .trigger('mousemove', coords.y, +350, { force: true })
+       .trigger('mouseup', { force: true });
+      });
+      cy.get('.leaflet-interactive').then($el => {
+        const interactive_btn=$el[1];
+        cy.get(interactive_btn).click({ force: true });
+      });
+      cy.get('div[class="leaflet-marker-icon leaflet-mouse-marker leaflet-zoom-hide leaflet-interactive"]').click({ force: true });
+      cy.get('.leaflet-interactive').then($el => {
+        const interactive_btn=$el[1];
+        cy.get(interactive_btn).click({ force: true });
+      });
+      cy.get('div[class="leaflet-marker-icon leaflet-mouse-marker leaflet-zoom-hide leaflet-interactive"]').click({ force: true });
+      cy.get('a[title="Finish drawing"]').click({ force: true });
+      cy.get('g').find('path[fill="none"]').should('exist');
+      cy.get(5000);
+      // To view line drawn on map
+      cy.get('div[class="leaflet-container leaflet-touch leaflet-fade-anim leaflet-touch-zoom leaflet-grab leaflet-touch-drag"]').then($el => {
+      const scroll_in=$el[0];
+      cy.get(scroll_in).scrollIntoView();
+      
+      });
+      cy.get('a[class="leaflet-control-zoom-in"]').then($el => {
+        const zoom_in=$el[0];
+      cy.get(zoom_in).click({ force: true });
+      
+      });
+
+      cy.get(9000);
       cy.get('button').contains('Save').click();
   // Form saving
       let savedButton = cy.get('[data-cy=saveButton]');
@@ -123,13 +167,12 @@ describe('Form Designer', () => {
       cy.get('[data-cy="userFormsLinks"]').click();
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
       cy.waitForLoad();
+      //
       //Delete form after test run
       cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
       cy.get('[data-test="continue-btn-continue"]').click();
       cy.get('#logoutButton > .v-btn__content > span').click();
-   
+  
       });
-
-  });
-    
+    });
 });
