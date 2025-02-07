@@ -38,49 +38,48 @@ class MapService {
   map;
   drawnItems;
 
+  async initialize(options) {
+    const { map, drawnItems } = await this.initializeMap(options);
+    this.map = map;
+    this.drawnItems = drawnItems;
+
+    map.invalidateSize();
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 0);
+
+    map.on('draw:created', (e) => {
+      const layer = e.layer;
+      if (drawnItems.getLayers().length === options.numPoints) {
+        map.closePopup();
+        L.popup()
+          .setLatLng(map.getCenter())
+          .setContent(
+            `<p>Only ${options.numPoints} features per submission</p>`
+          )
+          .addTo(map);
+      } else {
+        drawnItems.addLayer(layer);
+      }
+      this.bindPopupToLayer(layer);
+      options.onDrawnItemsChange(drawnItems.getLayers());
+    });
+
+    map.on(L.Draw.Event.DELETED, () =>
+      options.onDrawnItemsChange(drawnItems.getLayers())
+    );
+    map.on(L.Draw.Event.EDITSTOP, () =>
+      options.onDrawnItemsChange(drawnItems.getLayers())
+    );
+    map.on('resize', () => map.invalidateSize());
+  }
   constructor(options) {
     this.options = options;
 
     if (options.mapContainer) {
-      const { map, drawnItems } = this.initializeMap(options);
-      this.map = map;
-
-      // this.map = map;
-      this.drawnItems = drawnItems;
-
-      map.invalidateSize();
-      // Triggering a resize event after map initialization
-      setTimeout(() => window.dispatchEvent(new Event('resize')), 0);
-      // Event listener for drawn objects
-      map.on('draw:created', (e) => {
-        const layer = e.layer;
-        if (drawnItems.getLayers().length === options.numPoints) {
-          map.closePopup();
-          L.popup()
-            .setLatLng(map.getCenter())
-            .setContent(
-              `<p>Only ${options.numPoints} features per submission</p>`
-            )
-            .addTo(map);
-        } else {
-          drawnItems.addLayer(layer);
-        }
-        this.bindPopupToLayer(layer);
-        options.onDrawnItemsChange(drawnItems.getLayers());
-      });
-      map.on(L.Draw.Event.DELETED, (e) => {
-        options.onDrawnItemsChange(drawnItems.getLayers());
-      });
-      map.on(L.Draw.Event.EDITSTOP, (e) => {
-        options.onDrawnItemsChange(drawnItems.getLayers());
-      });
-      map.on('resize', () => {
-        map.invalidateSize();
-      });
+      this.initialize(options);
     }
   }
 
-  initializeMap(options: MapServiceOptions) {
+  async initializeMap(options: MapServiceOptions) {
     const {
       mapContainer,
       center,
@@ -160,6 +159,16 @@ class MapService {
               fillColor: '#f0e7c0',
               fillOpacity: 0.8,
             },
+            'POLITICAL/Placeholders/TIR BC FN Reserves': {
+              weight: 2,
+              color: '#C500FF',
+              fillOpacity: 0.5,
+            },
+            'POLITICAL/Placeholders/BC Treaty Lands': {
+              weight: 2,
+              color: '#C500FF',
+              fillOpacity: 0.5,
+            },
           },
           attribution: BASE_LAYER_ATTRIBUTIONS.BC_BASEMAP,
         }
@@ -168,6 +177,43 @@ class MapService {
 
     // Add default base layer to the map
     baseLayers.OpenStreetMap.addTo(map);
+    // Load and add vector tile layer from external server
+    try {
+      const response = await fetch(BASE_LAYER_URLS.STYLE_JSON_URL);
+      const styleJson = await response.json();
+      console.log('styleJson', styleJson, baseLayers);
+
+      // Dynamically add sources and layers
+      const sources = styleJson.sources;
+      const layers = styleJson.layers;
+
+      // Explicitly type the vectorTileLayers object as Record<string, L.VectorGrid>
+      const vectorTileLayers: Record<string, L.VectorGrid> = {}; // This will allow only L.VectorGrid instances
+
+      // Loop through sources and layers
+      Object.keys(sources).forEach((sourceKey) => {
+        const source = sources[sourceKey];
+        const vectorTileLayer = L.vectorGrid.protobuf(source.tiles[0], {
+          attribution: source.attribution,
+          vectorTileLayerStyles: this.createLayerStyles(layers),
+          bounds: source.bounds,
+          minZoom: source.minzoom,
+          maxZoom: source.maxzoom,
+        });
+
+        // Add the layer to the map layers object
+        vectorTileLayers[sourceKey] = vectorTileLayer;
+      });
+
+      // Add vector tile layers control
+      L.control.layers({}, vectorTileLayers).addTo(map);
+
+      // Add the first source by default
+      // Since vectorTileLayers is now typed, TypeScript will know that addTo is valid
+      vectorTileLayers[Object.keys(vectorTileLayers)[0]].addTo(map);
+    } catch (error) {
+      console.error('Error loading vector tile style JSON:', error);
+    }
 
     // Add Layer Control to the map
     L.control.layers(baseLayers).addTo(map);
@@ -265,6 +311,22 @@ class MapService {
       }
     }
     return { map, drawnItems };
+  }
+
+  // Helper function to create styles based on the JSON layers
+  createLayerStyles(layers) {
+    const styles = {};
+    layers.forEach((layer) => {
+      styles[layer.id] = {
+        // You can customize the style generation as per your needs
+        'text-color': layer.paint['text-color'],
+        'text-font': layer.layout['text-font'],
+        'text-size': layer.layout['text-size'],
+        'text-field': layer.layout['text-field'],
+        visibility: layer.layout.visibility,
+      };
+    });
+    return styles;
   }
   bindPopupToLayer(layer) {
     if (layer instanceof L.Marker) {

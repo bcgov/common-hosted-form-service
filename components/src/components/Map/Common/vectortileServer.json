@@ -1,0 +1,7125 @@
+{
+  "version": 8,
+  "sprite": "https://www.arcgis.com/sharing/rest/content/items/bbe05270d3a642f5b62203d6c454f457/resources/sprites/sprite-1723150528504",
+  "glyphs": "https://tiles.arcgis.com/tiles/ubm4tcTYICKBpist/arcgis/rest/services/BC_BASEMAP_20240307/VectorTileServer/resources/styles/../fonts/{fontstack}/{range}.pbf",
+  "sources": {
+    "esri": {
+      "type": "vector",
+      "attribution": "Ministry of Land, Water and Resource Stewardship - GeoBC Branch",
+      "bounds": [
+        -146.197,
+        42.5262,
+        -105.679,
+        65.0753
+      ],
+      "minzoom": 0,
+      "maxzoom": 19,
+      "scheme": "xyz",
+      "url": "https://tiles.arcgis.com/tiles/ubm4tcTYICKBpist/arcgis/rest/services/BC_BASEMAP_20240307/VectorTileServer",
+      "tiles": [
+        "https://tiles.arcgis.com/tiles/ubm4tcTYICKBpist/arcgis/rest/services/BC_BASEMAP_20240307/VectorTileServer/tile/{z}/{y}/{x}.pbf"
+      ]
+    },
+    "hillshade": {
+      "type": "vector",
+      "attribution": "Ministry of Land, Water and Resource Stewardship - GeoBC Branch",
+      "minzoom": 0,
+      "maxzoom": 19,
+      "url": "https://tiles.arcgis.com/tiles/ubm4tcTYICKBpist/arcgis/rest/services/BC_Basemap_Vector_Hillshade/VectorTileServer",
+      "tiles": [
+        "https://tiles.arcgis.com/tiles/ubm4tcTYICKBpist/arcgis/rest/services/BC_Basemap_Vector_Hillshade/VectorTileServer/tile/{z}/{y}/{x}.pbf"
+      ]
+    }
+  },
+  "layers": [
+    {
+      "id": "POLITICAL/Placeholders/TIR BC FN Reserves/label/Class 1",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "TIR BC FN Reserves/label",
+      "layout": {
+        "text-font": [
+          "Tahoma Regular"
+        ],
+        "text-size": 13.3333,
+        "text-field": "{_name}",
+        "text-optional": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "#C500FF"
+      }
+    },
+    {
+      "id": "POLITICAL/Placeholders/BC Treaty Lands/label/Class 1",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "BC Treaty Lands/label",
+      "layout": {
+        "text-font": [
+          "Tahoma Regular"
+        ],
+        "text-size": 13.3333,
+        "text-field": "{_name}",
+        "text-optional": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "#C500FF"
+      }
+    },
+    {
+      "id": "POLITICAL/Placeholders/FN Reserves (Outside BC)/label/Class 1",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "FN Reserves (Outside BC)/label",
+      "layout": {
+        "text-font": [
+          "Tahoma Regular"
+        ],
+        "text-size": 13.3333,
+        "text-field": "{_name}",
+        "text-optional": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "#C500FF"
+      }
+    },
+    {
+      "id": "POLITICAL/Placeholders/Populated Places (Outside BC)/label/Class 1",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Populated Places (Outside BC)",
+      "layout": {
+        "text-font": [
+          "Optima Haidatron Regular"
+        ],
+        "text-size": 13.3333,
+        "text-anchor": "bottom-left",
+        "text-justify": "left",
+        "text-offset": [
+          0.305711,
+          -0.00571068
+        ],
+        "text-field": "{_name}",
+        "text-optional": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "#C500FF"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Placeholders/Railways (Outside BC)/label/Class 1",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Railways (Outside BC)/label",
+      "layout": {
+        "symbol-placement": "line",
+        "symbol-spacing": 1000,
+        "text-font": [
+          "Tahoma Regular"
+        ],
+        "text-size": 13.3333,
+        "text-anchor": "bottom",
+        "text-offset": [
+          0,
+          -0.1
+        ],
+        "text-field": "{_name}",
+        "text-optional": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "#C500FF"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Placeholders/DriveBC DRA/label/Class 1",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DriveBC DRA/label",
+      "layout": {
+        "symbol-placement": "line",
+        "symbol-spacing": 1000,
+        "text-font": [
+          "Tahoma Regular"
+        ],
+        "text-size": 13.3333,
+        "text-anchor": "bottom",
+        "text-offset": [
+          0,
+          -0.1
+        ],
+        "text-field": "{_name}",
+        "text-optional": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "#C500FF"
+      }
+    },
+    {
+      "id": "WATER/Placeholders/Streams (Outside BC)/label/Class 1",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Streams (Outside BC)/label",
+      "layout": {
+        "symbol-placement": "line",
+        "symbol-spacing": 1000,
+        "text-font": [
+          "Tahoma Regular"
+        ],
+        "text-size": 13.3333,
+        "text-anchor": "bottom",
+        "text-offset": [
+          0,
+          -0.1
+        ],
+        "text-field": "{_name}",
+        "text-optional": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "#C500FF"
+      }
+    },
+    {
+      "id": "WATER/Placeholders/Lakes (Outside BC)/label/Class 1",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Lakes (Outside BC)/label",
+      "layout": {
+        "text-font": [
+          "Tahoma Regular"
+        ],
+        "text-size": 13.3333,
+        "text-field": "{_name}",
+        "text-optional": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "#C500FF"
+      }
+    },
+    {
+      "id": "WATER/Placeholders/Streams (Outside BC)",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Streams (Outside BC)",
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "visibility": "none"
+      },
+      "paint": {
+        "line-color": "#C500FF",
+        "line-width": 1.33333
+      }
+    },
+    {
+      "id": "WATER/Placeholders/Lakes (Outside BC)",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Lakes (Outside BC)",
+      "layout": {
+        "visibility": "none"
+      },
+      "paint": {
+        "fill-color": "#C500FF",
+        "fill-outline-color": "#C500FF"
+      }
+    },
+    {
+      "id": "POLITICAL/Placeholders/TIR BC FN Reserves",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "TIR BC FN Reserves",
+      "layout": {
+        "visibility": "none"
+      },
+      "paint": {
+        "fill-color": "#C500FF",
+        "fill-outline-color": "#C500FF"
+      }
+    },
+    {
+      "id": "POLITICAL/Placeholders/BC Treaty Lands",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "BC Treaty Lands",
+      "layout": {
+        "visibility": "none"
+      },
+      "paint": {
+        "fill-color": "#C500FF",
+        "fill-outline-color": "#C500FF"
+      }
+    },
+    {
+      "id": "POLITICAL/Placeholders/FN Reserves (Outside BC)",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "FN Reserves (Outside BC)",
+      "layout": {
+        "visibility": "none"
+      },
+      "paint": {
+        "fill-color": "#C500FF",
+        "fill-outline-color": "#C500FF"
+      }
+    },
+    {
+      "id": "POLITICAL/Placeholders/Populated Places (Outside BC)",
+      "type": "circle",
+      "source": "esri",
+      "source-layer": "Populated Places (Outside BC)",
+      "layout": {
+        "visibility": "none"
+      },
+      "paint": {
+        "circle-radius": 2.2,
+        "circle-color": "#C500FF",
+        "circle-stroke-color": "#C500FF",
+        "circle-stroke-width": 0.933333
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Placeholders/DriveBC DRA",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DriveBC DRA",
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "visibility": "none"
+      },
+      "paint": {
+        "line-color": "#C500FF",
+        "line-width": 1.33333
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Placeholders/Railways (Outside BC)",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Railways (Outside BC)",
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "visibility": "none"
+      },
+      "paint": {
+        "line-color": "#C500FF",
+        "line-width": 1.33333
+      }
+    },
+    {
+      "id": "TOPOGRAPHIC/Physiographic/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "(L) Physiographic (Line)",
+      "minzoom": 5,
+      "maxzoom": 15,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+        "visibility": "none"
+      },
+      "paint": {
+        "line-color": "rgba(181,207,226,0.02)",
+        "line-width": 0.0133333
+      }
+    },
+    {
+      "id": "TOPOGRAPHIC/BC Terrestrial/Base",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "BC Terrestrial (Base)",
+      "layout": {},
+      "paint": {
+        "fill-color": "#EFE7DD"
+      }
+    },
+    {
+      "id": "PARKS/Additional/Mixed/Fill",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Additional",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 5,
+      "layout": {},
+      "paint": {
+        "fill-color": "#D4E6B8"
+      }
+    },
+    {
+      "id": "PARKS/National/Terrestrial/Fill",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "National",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 5,
+      "layout": {},
+      "paint": {
+        "fill-color": "#D4E6B8"
+      }
+    },
+    {
+      "id": "PARKS/Additional/Terrestrial/Fill",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Additional",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 5,
+      "layout": {},
+      "paint": {
+        "fill-color": "#D4E6B8"
+      }
+    },
+    {
+      "id": "PARKS/Outside BC/USA",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Outside BC (USA)",
+      "minzoom": 5,
+      "layout": {},
+      "paint": {
+        "fill-opacity": 0.6,
+        "fill-color": "#DDE6C3"
+      }
+    },
+    {
+      "id": "PARKS/Outside BC/Canada",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Outside BC (Canada)",
+      "minzoom": 5,
+      "layout": {},
+      "paint": {
+        "fill-opacity": 0.6,
+        "fill-color": "#DDE6C3"
+      }
+    },
+    {
+      "id": "PARKS/Conservancies/Terrestrial/Fill",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Conservancies",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 5,
+      "layout": {},
+      "paint": {
+        "fill-color": "#C3DEC8"
+      }
+    },
+    {
+      "id": "PARKS/Conservancies/Marine/Fill",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Conservancies",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 5,
+      "layout": {},
+      "paint": {
+        "fill-color": "#C3DEC8"
+      }
+    },
+    {
+      "id": "PARKS/Provincial/Marine/Fill",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Provincial",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 5,
+      "layout": {},
+      "paint": {
+        "fill-color": "#D4E6B8"
+      }
+    },
+    {
+      "id": "PARKS/National/Marine/Fill",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "National",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 4,
+      "layout": {},
+      "paint": {
+        "fill-color": "#D4E6B8"
+      }
+    },
+    {
+      "id": "PARKS/Regional/Fill",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Regional",
+      "minzoom": 5,
+      "layout": {},
+      "paint": {
+        "fill-color": "#BFE6B8"
+      }
+    },
+    {
+      "id": "PARKS/Provincial/Terrestrial/Fill",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Provincial",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 5,
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "fill-opacity": 1,
+        "fill-color": "#D4E6B8",
+        "fill-antialias": true,
+        "fill-translate": [
+          0,
+          0
+        ],
+        "fill-translate-anchor": "map"
+      }
+    },
+    {
+      "id": "PARKS/Provincial/Recreational Area/Fill",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Provincial",
+      "filter": [
+        "==",
+        "_symbol",
+        2
+      ],
+      "minzoom": 5,
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "fill-opacity": 1,
+        "fill-color": "#b5dea0",
+        "fill-antialias": true,
+        "fill-translate": [
+          0,
+          0
+        ],
+        "fill-translate-anchor": "map"
+      }
+    },
+    {
+      "id": "PARKS/Additional/Marine/Fill",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Additional",
+      "filter": [
+        "==",
+        "_symbol",
+        2
+      ],
+      "minzoom": 4,
+      "layout": {},
+      "paint": {
+        "fill-pattern": {
+          "base": 1,
+          "stops": [
+            [
+              4,
+              "Marine X (Small)"
+            ],
+            [
+              10,
+              "Marine X (Medium)"
+            ],
+            [
+              13,
+              "Marine X (Large)"
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "HILLSHADE/Cascadia_Hillshade/1/1",
+      "type": "fill",
+      "source": "hillshade",
+      "source-layer": "Cascadia_Hillshade",
+      "filter": [
+        "==",
+        "_symbol",
+        2
+      ],
+      "minzoom": 4,
+      "maxzoom": 12,
+      "layout": {},
+      "paint": {
+        "fill-color": "#B3B1AB",
+        "fill-opacity": 0.7
+      }
+    },
+    {
+      "id": "HILLSHADE/Cascadia_Hillshade/2/1",
+      "type": "fill",
+      "source": "hillshade",
+      "source-layer": "Cascadia_Hillshade",
+      "filter": [
+        "==",
+        "_symbol",
+        3
+      ],
+      "minzoom": 4,
+      "maxzoom": 12,
+      "layout": {},
+      "paint": {
+        "fill-color": "#BFBDB9",
+        "fill-opacity": 0.7
+      }
+    },
+    {
+      "id": "HILLSHADE/Cascadia_Hillshade/3/1",
+      "type": "fill",
+      "source": "hillshade",
+      "source-layer": "Cascadia_Hillshade",
+      "filter": [
+        "==",
+        "_symbol",
+        4
+      ],
+      "minzoom": 4,
+      "maxzoom": 12,
+      "layout": {},
+      "paint": {
+        "fill-color": "#CCC9C7",
+        "fill-opacity": 0.7
+      }
+    },
+    {
+      "id": "HILLSHADE/Cascadia_Hillshade/4/1",
+      "type": "fill",
+      "source": "hillshade",
+      "source-layer": "Cascadia_Hillshade",
+      "filter": [
+        "==",
+        "_symbol",
+        5
+      ],
+      "minzoom": 4,
+      "maxzoom": 12,
+      "layout": {},
+      "paint": {
+        "fill-color": "#D9D6D4",
+        "fill-opacity": 0.7
+      }
+    },
+    {
+      "id": "HILLSHADE/Cascadia_Hillshade/5/1",
+      "type": "fill",
+      "source": "hillshade",
+      "source-layer": "Cascadia_Hillshade",
+      "filter": [
+        "==",
+        "_symbol",
+        6
+      ],
+      "minzoom": 4,
+      "maxzoom": 12,
+      "layout": {},
+      "paint": {
+        "fill-color": "#E6E3E2",
+        "fill-opacity": 0.7
+      }
+    },
+    {
+      "id": "HILLSHADE/Cascadia_Hillshade/6/1",
+      "type": "fill",
+      "source": "hillshade",
+      "source-layer": "Cascadia_Hillshade",
+      "filter": [
+        "==",
+        "_symbol",
+        7
+      ],
+      "minzoom": 4,
+      "maxzoom": 12,
+      "layout": {},
+      "paint": {
+        "fill-color": "#F2F1F1",
+        "fill-opacity": 0.7
+      }
+    },
+    {
+      "id": "HILLSHADE/Cascadia_Hillshade/7/1",
+      "type": "fill",
+      "source": "hillshade",
+      "source-layer": "Cascadia_Hillshade",
+      "filter": [
+        "==",
+        "_symbol",
+        8
+      ],
+      "minzoom": 4,
+      "maxzoom": 12,
+      "layout": {},
+      "paint": {
+        "fill-color": "#FFFFFF",
+        "fill-opacity": 0.7
+      }
+    },
+    {
+      "id": "HILLSHADE/Alaska_Vector_Hillshade/1/1",
+      "type": "fill",
+      "source": "hillshade",
+      "source-layer": "Alaska_Vector_Hillshade",
+      "filter": [
+        "==",
+        "_symbol",
+        2
+      ],
+      "minzoom": 4,
+      "maxzoom": 12,
+      "layout": {},
+      "paint": {
+        "fill-color": "#B3B1AB",
+        "fill-opacity": 0.7
+      }
+    },
+    {
+      "id": "HILLSHADE/Alaska_Vector_Hillshade/2/1",
+      "type": "fill",
+      "source": "hillshade",
+      "source-layer": "Alaska_Vector_Hillshade",
+      "filter": [
+        "==",
+        "_symbol",
+        3
+      ],
+      "minzoom": 4,
+      "maxzoom": 12,
+      "layout": {},
+      "paint": {
+        "fill-color": "#BFBDB9",
+        "fill-opacity": 0.7
+      }
+    },
+    {
+      "id": "HILLSHADE/Alaska_Vector_Hillshade/3/1",
+      "type": "fill",
+      "source": "hillshade",
+      "source-layer": "Alaska_Vector_Hillshade",
+      "filter": [
+        "==",
+        "_symbol",
+        4
+      ],
+      "minzoom": 4,
+      "maxzoom": 12,
+      "layout": {},
+      "paint": {
+        "fill-color": "#CCC9C7",
+        "fill-opacity": 0.7
+      }
+    },
+    {
+      "id": "HILLSHADE/Alaska_Vector_Hillshade/4/1",
+      "type": "fill",
+      "source": "hillshade",
+      "source-layer": "Alaska_Vector_Hillshade",
+      "filter": [
+        "==",
+        "_symbol",
+        5
+      ],
+      "minzoom": 4,
+      "maxzoom": 12,
+      "layout": {},
+      "paint": {
+        "fill-color": "#D9D6D4",
+        "fill-opacity": 0.7
+      }
+    },
+    {
+      "id": "HILLSHADE/Alaska_Vector_Hillshade/5/1",
+      "type": "fill",
+      "source": "hillshade",
+      "source-layer": "Alaska_Vector_Hillshade",
+      "filter": [
+        "==",
+        "_symbol",
+        6
+      ],
+      "minzoom": 4,
+      "maxzoom": 12,
+      "layout": {},
+      "paint": {
+        "fill-color": "#E6E3E2",
+        "fill-opacity": 0.7
+      }
+    },
+    {
+      "id": "HILLSHADE/Alaska_Vector_Hillshade/6/1",
+      "type": "fill",
+      "source": "hillshade",
+      "source-layer": "Alaska_Vector_Hillshade",
+      "filter": [
+        "==",
+        "_symbol",
+        7
+      ],
+      "minzoom": 4,
+      "maxzoom": 12,
+      "layout": {},
+      "paint": {
+        "fill-color": "#F2F1F1",
+        "fill-opacity": 0.7
+      }
+    },
+    {
+      "id": "HILLSHADE/Alaska_Vector_Hillshade/7/1",
+      "type": "fill",
+      "source": "hillshade",
+      "source-layer": "Alaska_Vector_Hillshade",
+      "filter": [
+        "==",
+        "_symbol",
+        8
+      ],
+      "minzoom": 4,
+      "maxzoom": 12,
+      "layout": {},
+      "paint": {
+        "fill-color": "#FFFFFF",
+        "fill-opacity": 0.7
+      }
+    },
+    {
+      "id": "PARKS/Additional/Terrestrial/Overlay",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Additional",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 5,
+      "layout": {},
+      "paint": {
+        "fill-opacity": 0.2,
+        "fill-color": "#d4e6b8"
+      },
+      "maxzoom": 12
+    },
+    {
+      "id": "PARKS/Additional/Mixed/Overlay",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Additional",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 5,
+      "layout": {},
+      "paint": {
+        "fill-opacity": 0.2,
+        "fill-color": "#d4e6b8"
+      },
+      "maxzoom": 12
+    },
+    {
+      "id": "PARKS/National/Terrestrial/Overlay",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "National",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 5,
+      "layout": {},
+      "paint": {
+        "fill-opacity": 0.2,
+        "fill-color": "#d4e6b8"
+      },
+      "maxzoom": 12
+    },
+    {
+      "id": "PARKS/National/Marine/Overlay",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "National",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 4,
+      "layout": {},
+      "paint": {
+        "fill-opacity": 0.2,
+        "fill-color": "#d4e6b8"
+      },
+      "maxzoom": 12
+    },
+    {
+      "id": "PARKS/Provincial/Recreational Area/Overlay",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Provincial",
+      "filter": [
+        "==",
+        "_symbol",
+        2
+      ],
+      "minzoom": 5,
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "fill-opacity": 0.2,
+        "fill-color": "#9dc685",
+        "fill-antialias": true,
+        "fill-translate": [
+          0,
+          0
+        ],
+        "fill-translate-anchor": "map"
+      },
+      "maxzoom": 12
+    },
+    {
+      "id": "PARKS/Provincial/Terrestrial/Overlay",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Provincial",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 5,
+      "layout": {},
+      "paint": {
+        "fill-opacity": 0.2,
+        "fill-color": "#d4e6b8"
+      },
+      "maxzoom": 12
+    },
+    {
+      "id": "PARKS/Provincial/Marine/Overlay",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Provincial",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 5,
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "fill-opacity": 0.2,
+        "fill-color": "#d4e6b8",
+        "fill-antialias": true,
+        "fill-translate": [
+          0,
+          0
+        ],
+        "fill-translate-anchor": "map"
+      },
+      "maxzoom": 12
+    },
+    {
+      "id": "PARKS/Conservancies/Marine/Overlay",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Conservancies",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 4,
+      "layout": {},
+      "paint": {
+        "fill-opacity": 0.2,
+        "fill-color": "#c3dec8"
+      },
+      "maxzoom": 12
+    },
+    {
+      "id": "PARKS/Conservancies/Terrestrial/Overlay",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Conservancies",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 5,
+      "layout": {},
+      "paint": {
+        "fill-opacity": 0.2,
+        "fill-color": "#c3dec8"
+      },
+      "maxzoom": 12
+    },
+    {
+      "id": "PARKS/Regional/Overlay",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Regional",
+      "minzoom": 5,
+      "layout": {},
+      "paint": {
+        "fill-opacity": 0.2,
+        "fill-color": "#bfe6b8"
+      },
+      "maxzoom": 12,
+      "showProperties": false
+    },
+    {
+      "id": "TOPOGRAPHIC/BC Terrestrial/Overlay",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "BC Terrestrial (Overlay)",
+      "minzoom": 4,
+      "layout": {},
+      "paint": {
+        "fill-opacity": 0.2,
+        "fill-color": "#EFD4B3"
+      },
+      "maxzoom": 12
+    },
+    {
+      "id": "WATER/Ocean",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Ocean",
+      "layout": {},
+      "paint": {
+        "fill-color": "#B5CFE2"
+      }
+    },
+    {
+      "id": "PARKS/Conservancies/Terrestrial/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Conservancies",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 5,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#A3CCAB"
+      }
+    },
+    {
+      "id": "PARKS/Conservancies/Marine/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Conservancies",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 5,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#93BDDE"
+      }
+    },
+    {
+      "id": "PARKS/Provincial/Marine/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Provincial",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 5,
+      "layout": {
+        "visibility": "visible",
+        "line-miter-limit": 2,
+        "line-round-limit": 1.05,
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-opacity": 1,
+        "line-color": "#93BDDE",
+        "line-width": 1,
+        "line-gap-width": 0,
+        "line-blur": 0,
+        "line-translate-anchor": "map",
+        "line-offset": 0,
+        "line-translate": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "PARKS/Provincial/Terrestrial/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Provincial",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 5,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B0CC85"
+      }
+    },
+    {
+      "id": "PARKS/Provincial/Recreational Area/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Provincial",
+      "filter": [
+        "==",
+        "_symbol",
+        2
+      ],
+      "minzoom": 5,
+      "layout": {
+        "visibility": "visible",
+        "line-miter-limit": 2,
+        "line-round-limit": 1.05,
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-opacity": 1,
+        "line-color": "#b5dea0",
+        "line-width": 1,
+        "line-gap-width": 0,
+        "line-blur": 0,
+        "line-translate-anchor": "map",
+        "line-offset": 0,
+        "line-translate": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "PARKS/National/Marine/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "National",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 4,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#93BDDE"
+      }
+    },
+    {
+      "id": "PARKS/National/Terrestrial/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "National",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 5,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B0CC85"
+      }
+    },
+    {
+      "id": "PARKS/Additional/Mixed/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Additional",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 5,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#93BDDE"
+      }
+    },
+    {
+      "id": "PARKS/Additional/Terrestrial/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Additional",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 5,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B0CC85"
+      }
+    },
+    {
+      "id": "PARKS/Additional/Marine/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Additional",
+      "filter": [
+        "==",
+        "_symbol",
+        2
+      ],
+      "minzoom": 4,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#93BDDE",
+        "line-offset": -1.33333
+      }
+    },
+    {
+      "id": "WATER/Streams/Large",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Streams (L)",
+      "minzoom": 11,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B5CFE2",
+        "line-width": 1.33333
+      }
+    },
+    {
+      "id": "WATER/Streams/Small",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Streams (S)",
+      "minzoom": 5,
+      "maxzoom": 11,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B5CFE2",
+        "line-width": 1.33333
+      }
+    },
+    {
+      "id": "WATER/Wide Rivers/Fill",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Wide Rivers",
+      "minzoom": 7,
+      "layout": {},
+      "paint": {
+        "fill-color": "#B5CFE2"
+      }
+    },
+    {
+      "id": "WATER/Wide Rivers/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Wide Rivers",
+      "minzoom": 7,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B5CFE2",
+        "line-width": {
+          "stops": [
+            [
+              3,
+              1
+            ],
+            [
+              16,
+              1.33333
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "WATER/Wetlands/Fill",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Wetlands",
+      "minzoom": 9,
+      "layout": {},
+      "paint": {
+        "fill-color": "rgba(139,243,202,0.1)"
+      }
+    },
+    {
+      "id": "WATER/Wetlands/Overlay",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Wetlands",
+      "minzoom": 9,
+      "layout": {},
+      "paint": {
+        "fill-pattern": "Wetlands Fill"
+      }
+    },
+    {
+      "id": "WATER/Lakes/Large",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Lakes (L)",
+      "minzoom": 9,
+      "layout": {},
+      "paint": {
+        "fill-color": "#B5CFE2"
+      }
+    },
+    {
+      "id": "WATER/Lakes/Small",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "Lakes (S)",
+      "minzoom": 4,
+      "maxzoom": 9,
+      "layout": {},
+      "paint": {
+        "fill-color": "#B5CFE2"
+      }
+    },
+    {
+      "id": "WATER/Streams/label/Geom",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "(L) Streams (Line)",
+      "minzoom": 5,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "rgba(181,207,226,0.01)",
+        "line-width": 0.666667,
+        "line-opacity": 0.498
+      }
+    },
+    {
+      "id": "POLITICAL/OSM Buildings/Fill",
+      "type": "fill",
+      "source": "esri",
+      "source-layer": "OSM Buildings",
+      "minzoom": 14,
+      "layout": {},
+      "paint": {
+        "fill-color": "#E6E0DA",
+        "fill-outline-color": "#D9D2C8"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Outside BC/Ferries - USA",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Ferries - USA",
+      "minzoom": 4,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#6690A4",
+        "line-dasharray": [
+          30,
+          5
+        ],
+        "line-width": 0.266667
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Outside BC/Roads/ExLarge/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Outside BC Roads (L)",
+      "minzoom": 10,
+      "layout": {},
+      "paint": {
+        "line-color": "#AD9393",
+        "line-width": {
+          "stops": [
+            [
+              3,
+              2.66667
+            ],
+            [
+              11,
+              4
+            ],
+            [
+              13,
+              4
+            ],
+            [
+              14,
+              6
+            ],
+            [
+              16,
+              10
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Outside BC/Roads/ExLarge/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Outside BC Roads (L)",
+      "minzoom": 10,
+      "layout": {},
+      "paint": {
+        "line-color": "#FFFFFF",
+        "line-width": {
+          "stops": [
+            [
+              3,
+              1.77778
+            ],
+            [
+              11,
+              2.66667
+            ],
+            [
+              13,
+              2.66667
+            ],
+            [
+              14,
+              4
+            ],
+            [
+              16,
+              6.66667
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Outside BC/Roads/Large/Highway/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Outside BC Roads (S)",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 9,
+      "maxzoom": 10,
+      "layout": {},
+      "paint": {
+        "line-color": "#AD9393",
+        "line-width": {
+          "stops": [
+            [
+              9,
+              2.66667
+            ],
+            [
+              10,
+              4
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Outside BC/Roads/Large/Major Highway/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Outside BC Roads (S)",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 9,
+      "maxzoom": 10,
+      "layout": {},
+      "paint": {
+        "line-color": "#AD9393",
+        "line-width": {
+          "stops": [
+            [
+              9,
+              2.66667
+            ],
+            [
+              10,
+              4
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Outside BC/Roads/Large/Major Highway/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Outside BC Roads (S)",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 9,
+      "maxzoom": 10,
+      "layout": {},
+      "paint": {
+        "line-color": "#FFFFFF",
+        "line-width": {
+          "stops": [
+            [
+              9,
+              1.55556
+            ],
+            [
+              10,
+              2.33333
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Outside BC/Roads/Large/Highway/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Outside BC Roads (S)",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 9,
+      "maxzoom": 10,
+      "layout": {},
+      "paint": {
+        "line-color": "#FFFFFF",
+        "line-width": {
+          "stops": [
+            [
+              9,
+              1.55556
+            ],
+            [
+              10,
+              2.33333
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Outside BC/Roads/Medium/Highway/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Outside BC Roads (S)",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 7,
+      "maxzoom": 9,
+      "layout": {},
+      "paint": {
+        "line-color": "#AD9393",
+        "line-width": {
+          "base": 1,
+          "stops": [
+            [
+              0,
+              2.66667
+            ],
+            [
+              8,
+              2
+            ],
+            [
+              17,
+              2.66667
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Outside BC/Roads/Medium/Major Highway/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Outside BC Roads (S)",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 7,
+      "maxzoom": 9,
+      "layout": {},
+      "paint": {
+        "line-color": "#AD9393",
+        "line-width": 2.66667
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Outside BC/Roads/Medium/Highway/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Outside BC Roads (S)",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 7,
+      "maxzoom": 9,
+      "layout": {},
+      "paint": {
+        "line-color": "#FFFFFF",
+        "line-width": {
+          "base": 1,
+          "stops": [
+            [
+              0,
+              1.5
+            ],
+            [
+              8,
+              0.9
+            ],
+            [
+              17,
+              1.5
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Outside BC/Roads/Medium/Major Highway/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Outside BC Roads (S)",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 7,
+      "maxzoom": 9,
+      "layout": {},
+      "paint": {
+        "line-color": "#EFD2C4",
+        "line-width": 1.5
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Outside BC/Roads/Small/Major Highway",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Outside BC Roads (S)",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 5,
+      "maxzoom": 7,
+      "layout": {},
+      "paint": {
+        "line-color": "#CFC7C3",
+        "line-width": 2
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Railroads/Main/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Railroads",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 9,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#9C9C9C",
+        "line-width": 1.06667
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Railroads/Main/Hatch",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Railroads",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 9,
+      "layout": {
+        "visibility": "visible",
+        "text-size": 16,
+        "icon-size": 1.2,
+        "text-max-width": 10,
+        "text-line-height": 1.2,
+        "text-padding": 2,
+        "text-letter-spacing": 0,
+        "text-allow-overlap": false,
+        "text-ignore-placement": false,
+        "text-justify": "center",
+        "text-rotation-alignment": "auto",
+        "text-optional": false,
+        "icon-allow-overlap": true,
+        "icon-optional": false,
+        "icon-ignore-placement": true,
+        "icon-rotation-alignment": "map",
+        "symbol-placement": "line",
+        "symbol-avoid-edges": false,
+        "symbol-spacing": 10,
+        "text-anchor": "center",
+        "icon-anchor": "center",
+        "icon-offset": [
+          0,
+          0
+        ],
+        "text-offset": [
+          0,
+          0
+        ],
+        "icon-rotate": -90,
+        "text-rotate": 0,
+        "text-max-angle": 45,
+        "text-field": "",
+        "icon-image": "Rail Hatch",
+        "text-transform": "none"
+      },
+      "paint": {
+        "icon-opacity": 1,
+        "text-opacity": 1,
+        "text-halo-width": 0,
+        "text-halo-blur": 0,
+        "text-translate-anchor": "map",
+        "icon-translate-anchor": "map",
+        "icon-translate": [
+          0,
+          0
+        ],
+        "text-translate": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Railroads/Secondary/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Railroads",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 16,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#9C9C9C",
+        "line-width": 1.06667
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Railroads/Secondary/Hatch",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Railroads",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 16,
+      "layout": {
+        "visibility": "visible",
+        "text-size": 16,
+        "icon-size": 1.2,
+        "text-max-width": 10,
+        "text-line-height": 1.2,
+        "text-padding": 2,
+        "text-letter-spacing": 0,
+        "text-allow-overlap": false,
+        "text-ignore-placement": false,
+        "text-justify": "center",
+        "text-rotation-alignment": "auto",
+        "text-optional": false,
+        "icon-allow-overlap": true,
+        "icon-optional": false,
+        "icon-ignore-placement": false,
+        "icon-rotation-alignment": "map",
+        "symbol-placement": "line",
+        "symbol-avoid-edges": false,
+        "symbol-spacing": 10,
+        "text-anchor": "center",
+        "icon-anchor": "center",
+        "icon-offset": [
+          0,
+          0
+        ],
+        "text-offset": [
+          0,
+          0
+        ],
+        "icon-rotate": -90,
+        "text-rotate": 0,
+        "text-max-angle": 45,
+        "text-field": "",
+        "icon-image": "Rail Hatch",
+        "text-transform": "none"
+      },
+      "paint": {
+        "icon-opacity": 1,
+        "text-opacity": 1,
+        "text-halo-width": 0,
+        "text-halo-blur": 0,
+        "text-translate-anchor": "map",
+        "icon-translate-anchor": "map",
+        "icon-translate": [
+          0,
+          0
+        ],
+        "text-translate": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Railroads/Secondary/LineMed",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Railroads",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 13,
+      "maxzoom": 16,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#9C9C9C",
+        "line-width": 0.4
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Railroads/Other/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Railroads",
+      "filter": [
+        "==",
+        "_symbol",
+        2
+      ],
+      "minzoom": 9,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#9C9C9C",
+        "line-width": 1.06667
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Railroads/Other/Hatch",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Railroads",
+      "filter": [
+        "==",
+        "_symbol",
+        2
+      ],
+      "minzoom": 9,
+      "layout": {
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+        "icon-rotation-alignment": "map",
+        "symbol-placement": "line",
+        "symbol-spacing": 20,
+        "icon-rotate": -90,
+        "icon-image": "Rail Hatch"
+      },
+      "paint": {}
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Seasonal/Large/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Seasonal Roads",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 14,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#BFAB86",
+        "line-width": 2.66667
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Seasonal/Large/Dash",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Seasonal Roads",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 14,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FFFFFF",
+        "line-dasharray": [
+          5,
+          3
+        ],
+        "line-width": 1.33333
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Seasonal/Medium/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Seasonal Roads",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 12,
+      "maxzoom": 14,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#CCB58F",
+        "line-width": 1.2
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Small/Arterial",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (S)",
+      "filter": [
+        "==",
+        "_symbol",
+        2
+      ],
+      "minzoom": 9,
+      "maxzoom": 12,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#cbcbcb"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Small/Collector",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (S)",
+      "filter": [
+        "==",
+        "_symbol",
+        3
+      ],
+      "minzoom": 9,
+      "maxzoom": 12,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#d9d9d9",
+        "line-width": 0.666667
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Small/Ferry",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (S)",
+      "filter": [
+        "==",
+        "_symbol",
+        4
+      ],
+      "minzoom": 5,
+      "maxzoom": 12,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#6690A4",
+        "line-width": 0.8,
+        "line-dasharray": [
+          5,
+          3,
+          2,
+          3
+        ]
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Small/Highway/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (S)",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 9,
+      "maxzoom": 13,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#9C9C9C",
+        "line-width": {
+          "stops": [
+            [
+              3,
+              2.66667
+            ],
+            [
+              9,
+              2.66667
+            ],
+            [
+              10,
+              4
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Small/Major Highway/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (S)",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 7,
+      "maxzoom": 12,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#9C9C9C",
+        "line-width": {
+          "stops": [
+            [
+              3,
+              2.66667
+            ],
+            [
+              9,
+              2.66667
+            ],
+            [
+              10,
+              4
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Small/Highway/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (S)",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 9,
+      "maxzoom": 12,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FEBE17",
+        "line-width": {
+          "stops": [
+            [
+              3,
+              1.55556
+            ],
+            [
+              9,
+              1.55556
+            ],
+            [
+              10,
+              2.33333
+            ]
+          ]
+        }
+      },
+      "showProperties": false
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Small/Major Highway/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (S)",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 7,
+      "maxzoom": 12,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FEBE17",
+        "line-width": {
+          "stops": [
+            [
+              3,
+              1.55556
+            ],
+            [
+              9,
+              1.55556
+            ],
+            [
+              10,
+              2.33333
+            ]
+          ]
+        }
+      },
+      "showProperties": false
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Small/Highway/ExSmall/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (S)",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 6,
+      "maxzoom": 9,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B2B2B2",
+        "line-width": 2
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Small/Major Highway/ExSmall/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (S)",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 6,
+      "maxzoom": 7,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#9a9a9a",
+        "line-width": 2
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Small/Major Highway/ExSmall/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (S)",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 4,
+      "maxzoom": 7,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#d6ab3e",
+        "line-width": 1.5
+      },
+      "showProperties": false
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Small/Highway/ExSmall/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (S)",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 4,
+      "maxzoom": 9,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": {
+          "base": 1,
+          "stops": [
+            [
+              5,
+              "#ba9e57"
+            ],
+            [
+              6,
+              "#d6ab3e"
+            ],
+            [
+              17,
+              "#d6ab3e"
+            ]
+          ]
+        },
+        "line-width": 0.9
+      },
+      "showProperties": false
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Ferry",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        2
+      ],
+      "minzoom": 12,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#6690A4",
+        "line-width": 0.266667,
+        "line-dasharray": [
+          30,
+          5
+        ]
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Runway",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        10
+      ],
+      "minzoom": 12,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B2B2B2",
+        "line-width": {
+          "stops": [
+            [
+              11,
+              1.33333
+            ],
+            [
+              16,
+              4
+            ],
+            [
+              18,
+              6.66667
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Trail",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        11
+      ],
+      "minzoom": 12,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B2B2B2",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              1
+            ],
+            [
+              16,
+              1.33333
+            ],
+            [
+              18,
+              1.33333
+            ]
+          ]
+        },
+        "line-dasharray": [
+          3,
+          1
+        ]
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Trail Recreation",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        13
+      ],
+      "minzoom": 12,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B2B2B2",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              1
+            ],
+            [
+              16,
+              1.33333
+            ],
+            [
+              18,
+              1.33333
+            ]
+          ]
+        },
+        "line-dasharray": [
+          3,
+          1
+        ]
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Arterial/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 12,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B2B2B2",
+        "line-width": {
+          "stops": [
+            [
+              11,
+              3.33333
+            ],
+            [
+              14,
+              6
+            ],
+            [
+              16,
+              10
+            ],
+            [
+              18,
+              12.6667
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Collector/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 12,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B2B2B2",
+        "line-width": {
+          "stops": [
+            [
+              11,
+              3.33333
+            ],
+            [
+              14,
+              6
+            ],
+            [
+              16,
+              9.33333
+            ],
+            [
+              18,
+              12
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Highway/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        3
+      ],
+      "minzoom": 14,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FEBE17",
+        "line-width": {
+          "stops": [
+            [
+              11,
+              6
+            ],
+            [
+              13,
+              6
+            ],
+            [
+              14,
+              6
+            ],
+            [
+              16,
+              10
+            ],
+            [
+              18,
+              12.6667
+            ]
+          ]
+        }
+      },
+      "showProperties": false
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Highway Ramp/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        4
+      ],
+      "minzoom": 14,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FEBE17",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              4
+            ],
+            [
+              16,
+              6.66667
+            ],
+            [
+              18,
+              9.33333
+            ]
+          ]
+        }
+      },
+      "showProperties": false
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Pedestrian and Driveways/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        7
+      ],
+      "minzoom": 15,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "bevel"
+      },
+      "paint": {
+        "line-color": "#B2B2B2",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              1.33333
+            ],
+            [
+              16,
+              4
+            ],
+            [
+              18,
+              8
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Lanes and Alleyways/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        5
+      ],
+      "minzoom": 14,
+      "layout": {
+        "visibility": "visible",
+        "line-miter-limit": 2,
+        "line-round-limit": 1.05,
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-opacity": 1,
+        "line-color": "#B2B2B2",
+        "line-width": {
+          "stops": [
+            [
+              13,
+              2
+            ],
+            [
+              14,
+              3
+            ],
+            [
+              16,
+              5
+            ],
+            [
+              18,
+              8
+            ]
+          ]
+        },
+        "line-gap-width": 0,
+        "line-blur": 0,
+        "line-translate-anchor": "map",
+        "line-offset": 0,
+        "line-translate": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Local Roads/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        6
+      ],
+      "minzoom": 13,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B2B2B2",
+        "line-width": {
+          "stops": [
+            [
+              13,
+              2.66667
+            ],
+            [
+              14,
+              5.33333
+            ],
+            [
+              16,
+              8.66667
+            ],
+            [
+              18,
+              8.66667
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Ramp/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        8
+      ],
+      "minzoom": 13,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B2B2B2",
+        "line-width": {
+          "stops": [
+            [
+              11,
+              1.33333
+            ],
+            [
+              13,
+              2.66667
+            ],
+            [
+              14,
+              4
+            ],
+            [
+              16,
+              6.66667
+            ],
+            [
+              18,
+              9.33333
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Resource Roads/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        9
+      ],
+      "minzoom": 13,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B2B2B2",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              2.66667
+            ],
+            [
+              16,
+              4
+            ],
+            [
+              18,
+              8
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Trail Demographic/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        12
+      ],
+      "minzoom": 12,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#CCDEB4",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              2.66667
+            ],
+            [
+              16,
+              3.33333
+            ],
+            [
+              18,
+              3.33333
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Arterial/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 12,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FFFFFF",
+        "line-width": {
+          "stops": [
+            [
+              11,
+              2.44444
+            ],
+            [
+              14,
+              4.4
+            ],
+            [
+              16,
+              7.33333
+            ],
+            [
+              18,
+              9.28889
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Collector/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 12,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FFFFFF",
+        "line-width": {
+          "stops": [
+            [
+              11,
+              2.38095
+            ],
+            [
+              14,
+              4.28571
+            ],
+            [
+              16,
+              6.66667
+            ],
+            [
+              18,
+              8.57143
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Highway/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        3
+      ],
+      "minzoom": 14,
+      "layout": {
+        "visibility": "visible",
+        "line-miter-limit": 2,
+        "line-round-limit": 1.05,
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-opacity": 1,
+        "line-color": "#FFFFFF",
+        "line-width": {
+          "stops": [
+            [
+              11,
+              4
+            ],
+            [
+              13,
+              4
+            ],
+            [
+              14,
+              4
+            ],
+            [
+              16,
+              6.66667
+            ],
+            [
+              18,
+              8.44444
+            ]
+          ]
+        },
+        "line-gap-width": 0,
+        "line-blur": 0,
+        "line-translate-anchor": "map",
+        "line-offset": 0,
+        "line-translate": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Highway Ramp/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        4
+      ],
+      "minzoom": 14,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FFFFFF",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              2.4
+            ],
+            [
+              16,
+              4
+            ],
+            [
+              18,
+              5.6
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Lanes and Alleyways/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        5
+      ],
+      "minzoom": 14,
+      "layout": {
+        "visibility": "visible",
+        "line-miter-limit": 2,
+        "line-round-limit": 1.05,
+        "line-cap": "round",
+        "line-join": "miter"
+      },
+      "paint": {
+        "line-opacity": 1,
+        "line-color": "#FFFFFF",
+        "line-width": {
+          "stops": [
+            [
+              13,
+              1.2
+            ],
+            [
+              14,
+              1.8
+            ],
+            [
+              16,
+              3
+            ],
+            [
+              18,
+              4.8
+            ]
+          ]
+        },
+        "line-gap-width": 0,
+        "line-blur": 0,
+        "line-translate-anchor": "map",
+        "line-offset": 0,
+        "line-translate": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Pedestrian and Driveways/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        7
+      ],
+      "minzoom": 15,
+      "layout": {
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": "#D7B09E",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              0.666667
+            ],
+            [
+              16,
+              2
+            ],
+            [
+              18,
+              4
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Local Roads/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        6
+      ],
+      "minzoom": 13,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FFFFFF",
+        "line-width": {
+          "stops": [
+            [
+              13,
+              1.84615
+            ],
+            [
+              14,
+              3.69231
+            ],
+            [
+              16,
+              6
+            ],
+            [
+              18,
+              6
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Ramp/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        8
+      ],
+      "minzoom": 13,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FFFFFF",
+        "line-width": {
+          "stops": [
+            [
+              11,
+              0.8
+            ],
+            [
+              13,
+              1.6
+            ],
+            [
+              14,
+              2.4
+            ],
+            [
+              16,
+              4
+            ],
+            [
+              18,
+              5.6
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Resource Roads/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        9
+      ],
+      "minzoom": 13,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FFFFFF",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              1.33333
+            ],
+            [
+              16,
+              2
+            ],
+            [
+              18,
+              4
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Trail Demographic/Dash",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        12
+      ],
+      "minzoom": 12,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B2B2B2",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              1.06667
+            ],
+            [
+              16,
+              1.33333
+            ],
+            [
+              18,
+              1.33333
+            ]
+          ]
+        },
+        "line-dasharray": [
+          3,
+          1
+        ]
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Highway Ramp/Medium/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        4
+      ],
+      "minzoom": 12,
+      "maxzoom": 14,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#9C9C9C",
+        "line-width": 2.66667
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Highway/Medium/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        3
+      ],
+      "minzoom": 12,
+      "maxzoom": 14,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#9C9C9C",
+        "line-width": 4
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Highway Ramp/Medium/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        4
+      ],
+      "minzoom": 12,
+      "maxzoom": 14,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FEBE17",
+        "line-width": 1.33333
+      },
+      "showProperties": false
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Large/Highway/Medium/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Roads (L)",
+      "filter": [
+        "==",
+        "_symbol",
+        3
+      ],
+      "minzoom": 12,
+      "maxzoom": 14,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FEBE17",
+        "line-width": 2.33333
+      },
+      "showProperties": false
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Overpasses/Trail/TO",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Overpasses",
+      "filter": [
+        "==",
+        "_symbol",
+        11
+      ],
+      "minzoom": 14,
+      "layout": {
+        "icon-allow-overlap": true,
+        "icon-rotation-alignment": "map",
+        "symbol-placement": "line",
+        "icon-rotate": -90,
+        "icon-image": "TRANSPORTATION/DRA Overpasses/Trail TO"
+      },
+      "paint": {}
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Overpasses/Trail/OO",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Overpasses",
+      "filter": [
+        "==",
+        "_symbol",
+        10
+      ],
+      "minzoom": 14,
+      "layout": {
+        "icon-allow-overlap": true,
+        "icon-rotation-alignment": "map",
+        "symbol-placement": "line",
+        "icon-rotate": -90,
+        "icon-image": "TRANSPORTATION/DRA Overpasses/Trail OO"
+      },
+      "paint": {}
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Overpasses/Trail/FO",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Overpasses",
+      "filter": [
+        "==",
+        "_symbol",
+        9
+      ],
+      "minzoom": 14,
+      "layout": {
+        "icon-allow-overlap": true,
+        "icon-rotation-alignment": "map",
+        "symbol-placement": "line",
+        "icon-rotate": -90,
+        "icon-image": "TRANSPORTATION/DRA Overpasses/Trail FO"
+      },
+      "paint": {}
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Overpasses/Highway/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Overpasses",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 14,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FEBE17",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              6
+            ],
+            [
+              16,
+              10
+            ],
+            [
+              18,
+              12.6667
+            ]
+          ]
+        }
+      },
+      "showProperties": false
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Overpasses/Highway Ramp/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Overpasses",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 14,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FEBE17",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              4
+            ],
+            [
+              16,
+              6.66667
+            ],
+            [
+              18,
+              9.33333
+            ]
+          ]
+        }
+      },
+      "showProperties": false
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Overpasses/Ramp/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Overpasses",
+      "filter": [
+        "==",
+        "_symbol",
+        2
+      ],
+      "minzoom": 14,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B2B2B2",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              4
+            ],
+            [
+              16,
+              6.66667
+            ],
+            [
+              18,
+              9.33333
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Overpasses/Arterial/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Overpasses",
+      "filter": [
+        "==",
+        "_symbol",
+        3
+      ],
+      "minzoom": 14,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B2B2B2",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              6
+            ],
+            [
+              16,
+              10
+            ],
+            [
+              18,
+              12.6667
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Overpasses/Collector/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Overpasses",
+      "filter": [
+        "==",
+        "_symbol",
+        4
+      ],
+      "minzoom": 14,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B2B2B2",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              6
+            ],
+            [
+              16,
+              9.33333
+            ],
+            [
+              18,
+              12
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Overpasses/Local Roads/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Overpasses",
+      "filter": [
+        "==",
+        "_symbol",
+        5
+      ],
+      "minzoom": 14,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B2B2B2",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              6
+            ],
+            [
+              16,
+              8.66667
+            ],
+            [
+              18,
+              12
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Overpasses/Lanes and Alleyways/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Overpasses",
+      "filter": [
+        "==",
+        "_symbol",
+        6
+      ],
+      "minzoom": 15,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B2B2B2",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              3
+            ],
+            [
+              16,
+              5
+            ],
+            [
+              18,
+              8
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Overpasses/Pedestrian and Driveways/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Overpasses",
+      "filter": [
+        "==",
+        "_symbol",
+        7
+      ],
+      "minzoom": 15,
+      "layout": {
+        "line-join": "bevel"
+      },
+      "paint": {
+        "line-color": "#B2B2B2",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              1.33333
+            ],
+            [
+              16,
+              4
+            ],
+            [
+              18,
+              8
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Overpasses/Resource/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Overpasses",
+      "filter": [
+        "==",
+        "_symbol",
+        8
+      ],
+      "minzoom": 14,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#B2B2B2",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              2.66667
+            ],
+            [
+              16,
+              4
+            ],
+            [
+              18,
+              8
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Overpasses/Resource/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Overpasses",
+      "filter": [
+        "==",
+        "_symbol",
+        8
+      ],
+      "minzoom": 14,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FFFFFF",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              1.33333
+            ],
+            [
+              16,
+              2
+            ],
+            [
+              18,
+              4
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Overpasses/Pedestrian and Driveways/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Overpasses",
+      "filter": [
+        "==",
+        "_symbol",
+        7
+      ],
+      "minzoom": 15,
+      "layout": {
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": "#D7B09E",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              0.666667
+            ],
+            [
+              16,
+              2
+            ],
+            [
+              18,
+              4
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Overpasses/Lanes and Alleyways/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Overpasses",
+      "filter": [
+        "==",
+        "_symbol",
+        6
+      ],
+      "minzoom": 15,
+      "layout": {
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": "#FFFFFF",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              1.8
+            ],
+            [
+              16,
+              3
+            ],
+            [
+              18,
+              4.8
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Overpasses/Local Roads/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Overpasses",
+      "filter": [
+        "==",
+        "_symbol",
+        5
+      ],
+      "minzoom": 14,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FFFFFF",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              4.15385
+            ],
+            [
+              16,
+              6
+            ],
+            [
+              18,
+              8.30769
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Overpasses/Collector/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Overpasses",
+      "filter": [
+        "==",
+        "_symbol",
+        4
+      ],
+      "minzoom": 14,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FFFFFF",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              4.28571
+            ],
+            [
+              16,
+              6.66667
+            ],
+            [
+              18,
+              8.57143
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Overpasses/Arterial/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Overpasses",
+      "filter": [
+        "==",
+        "_symbol",
+        3
+      ],
+      "minzoom": 14,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FFFFFF",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              4.4
+            ],
+            [
+              16,
+              7.33333
+            ],
+            [
+              18,
+              9.28889
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Overpasses/Ramp/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Overpasses",
+      "filter": [
+        "==",
+        "_symbol",
+        2
+      ],
+      "minzoom": 14,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FFFFFF",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              2.4
+            ],
+            [
+              16,
+              4
+            ],
+            [
+              18,
+              5.6
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Overpasses/Highway Ramp/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Overpasses",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 14,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FFFFFF",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              2.4
+            ],
+            [
+              16,
+              4
+            ],
+            [
+              18,
+              5.6
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Overpasses/Highway/Fill",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "DRA Overpasses",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 14,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#FFFFFF",
+        "line-width": {
+          "stops": [
+            [
+              14,
+              4
+            ],
+            [
+              16,
+              6.66667
+            ],
+            [
+              18,
+              8.44444
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Skytrain/Other/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Skytrain",
+      "filter": [
+        "==",
+        "_symbol",
+        4
+      ],
+      "minzoom": 9,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#9c9c9c",
+        "line-width": 1.06667
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Skytrain/Other/Dash",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Skytrain",
+      "filter": [
+        "==",
+        "_symbol",
+        4
+      ],
+      "minzoom": 11,
+      "layout": {
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+        "icon-rotation-alignment": "map",
+        "symbol-placement": "line",
+        "symbol-spacing": 20,
+        "icon-rotate": -90,
+        "icon-image": "Rail Hatch"
+      },
+      "paint": {}
+    },
+    {
+      "id": "TRANSPORTATION/Skytrain/Evergreen Line/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Skytrain",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 9,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#71945A",
+        "line-width": 1.06667
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Skytrain/Evergreen Line/Dash",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Skytrain",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 11,
+      "layout": {
+        "icon-size": 1.3,
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+        "icon-rotation-alignment": "map",
+        "symbol-placement": "line",
+        "symbol-spacing": 14,
+        "icon-rotate": -90,
+        "icon-image": "Skytrain Hatch (Evergreen Line)"
+      },
+      "paint": {}
+    },
+    {
+      "id": "TRANSPORTATION/Skytrain/Canada Line/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Skytrain",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 9,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#4D8391",
+        "line-width": 1.06667
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Skytrain/Canada Line/Dash",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Skytrain",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 11,
+      "layout": {
+        "icon-size": 1.3,
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+        "icon-rotation-alignment": "map",
+        "symbol-placement": "line",
+        "symbol-spacing": 15,
+        "icon-rotate": -90,
+        "icon-image": "Skytrain Hatch (Canada Line)"
+      },
+      "paint": {}
+    },
+    {
+      "id": "TRANSPORTATION/Skytrain/Millenium Line/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Skytrain",
+      "filter": [
+        "==",
+        "_symbol",
+        3
+      ],
+      "minzoom": 8,
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#CCA300",
+        "line-width": 1.33333
+      },
+      "showProperties": false
+    },
+    {
+      "id": "TRANSPORTATION/Skytrain/Millenium Line/Dash",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Skytrain",
+      "filter": [
+        "==",
+        "_symbol",
+        3
+      ],
+      "minzoom": 11,
+      "layout": {
+        "icon-size": 1.3,
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+        "icon-rotation-alignment": "map",
+        "symbol-placement": "line",
+        "symbol-spacing": 15,
+        "icon-rotate": -90,
+        "icon-image": "Skytrain Hatch (Millennium Line)"
+      },
+      "paint": {}
+    },
+    {
+      "id": "TRANSPORTATION/Skytrain/Expo Line/Line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Skytrain",
+      "filter": [
+        "==",
+        "_symbol",
+        2
+      ],
+      "minzoom": 9,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#5B6D96",
+        "line-width": 1.06667
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Skytrain/Expo Line/Dash",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Skytrain",
+      "filter": [
+        "==",
+        "_symbol",
+        2
+      ],
+      "minzoom": 11,
+      "layout": {
+        "icon-size": 1.3,
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+        "icon-rotation-alignment": "map",
+        "symbol-placement": "line",
+        "symbol-spacing": 15,
+        "icon-rotate": -90,
+        "icon-image": "Skytrain Hatch (Expo Line)"
+      },
+      "paint": {}
+    },
+    {
+      "id": "TRANSPORTATION/Outside BC/Hwy Symbols/line",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Outside BC Hwy Symbols",
+      "minzoom": 4,
+      "maxzoom": 15,
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "rgba(255,255,255,0.01)",
+        "line-width": 0.666667
+      }
+    },
+    {
+      "id": "POLITICAL/Political Boundary/International",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Political Boundary",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "rgba(130,130,130,0.75)",
+        "line-width": 2
+      }
+    },
+    {
+      "id": "POLITICAL/Political Boundary/State",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Political Boundary",
+      "filter": [
+        "==",
+        "_symbol",
+        2
+      ],
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#4E4E4E",
+        "line-dasharray": [
+          10,
+          10
+        ],
+        "line-width": 0.533333
+      }
+    },
+    {
+      "id": "POLITICAL/Political Boundary/Provincial/1",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Political Boundary",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "rgba(204,204,204,0.5)",
+        "line-width": 4
+      }
+    },
+    {
+      "id": "POLITICAL/Political Boundary/Provincial/0",
+      "type": "line",
+      "source": "esri",
+      "source-layer": "Political Boundary",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "layout": {
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#4E4E4E",
+        "line-dasharray": [
+          10,
+          5
+        ],
+        "line-width": 0.533333
+      }
+    },
+    {
+      "id": "POLITICAL/Natural & Historic Sites/National Historic Site",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Natural & Historic Sites",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 11,
+      "layout": {
+        "icon-image": "POLITICAL/Natural & Historic Sites/National Historic Site",
+        "icon-rotation-alignment": "map",
+        "icon-allow-overlap": true
+      },
+      "paint": {
+        "icon-color": "#E69800"
+      },
+      "showProperties": false
+    },
+    {
+      "id": "POLITICAL/Populated Places/Medium/Cities",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Populated Places",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 10,
+      "maxzoom": 12,
+      "layout": {
+        "visibility": "visible",
+        "text-size": 16,
+        "icon-size": 1,
+        "text-max-width": 10,
+        "text-line-height": 1.2,
+        "text-padding": 2,
+        "text-letter-spacing": 0,
+        "text-allow-overlap": false,
+        "text-ignore-placement": false,
+        "text-justify": "center",
+        "text-rotation-alignment": "auto",
+        "text-optional": false,
+        "icon-allow-overlap": true,
+        "icon-optional": false,
+        "icon-ignore-placement": false,
+        "icon-rotation-alignment": "map",
+        "symbol-placement": "point",
+        "symbol-avoid-edges": false,
+        "symbol-spacing": 250,
+        "text-anchor": "center",
+        "icon-anchor": "center",
+        "icon-offset": [
+          0,
+          0
+        ],
+        "text-offset": [
+          0,
+          0
+        ],
+        "icon-rotate": 0,
+        "text-rotate": 0,
+        "text-max-angle": 45,
+        "text-field": "",
+        "icon-image": "POLITICAL/Populated Places/Cities",
+        "text-transform": "none"
+      },
+      "paint": {
+        "icon-opacity": 1,
+        "text-opacity": 1,
+        "text-halo-width": 0,
+        "text-halo-blur": 0,
+        "text-translate-anchor": "map",
+        "icon-translate-anchor": "map",
+        "icon-translate": [
+          0,
+          0
+        ],
+        "text-translate": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "POLITICAL/Populated Places/Small/Cities",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Populated Places",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 4,
+      "maxzoom": 10,
+      "layout": {
+        "visibility": "visible",
+        "text-size": 16,
+        "icon-size": 1,
+        "text-max-width": 10,
+        "text-line-height": 1.2,
+        "text-padding": 2,
+        "text-letter-spacing": 0,
+        "text-allow-overlap": false,
+        "text-ignore-placement": false,
+        "text-justify": "center",
+        "text-rotation-alignment": "auto",
+        "text-optional": false,
+        "icon-allow-overlap": true,
+        "icon-optional": false,
+        "icon-ignore-placement": false,
+        "icon-rotation-alignment": "map",
+        "symbol-placement": "point",
+        "symbol-avoid-edges": false,
+        "symbol-spacing": 250,
+        "text-anchor": "center",
+        "icon-anchor": "center",
+        "icon-offset": [
+          0,
+          0
+        ],
+        "text-offset": [
+          0,
+          0
+        ],
+        "icon-rotate": 0,
+        "text-rotate": 0,
+        "text-max-angle": 45,
+        "text-field": "",
+        "icon-image": "Cities Point",
+        "text-transform": "none"
+      },
+      "paint": {
+        "icon-opacity": 1,
+        "text-opacity": 1,
+        "text-halo-width": 0,
+        "text-halo-blur": 0,
+        "text-translate-anchor": "map",
+        "icon-translate-anchor": "map",
+        "icon-translate": [
+          0,
+          0
+        ],
+        "text-translate": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "POLITICAL/Populated Places/Medium/Towns Villages",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Populated Places",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 10,
+      "maxzoom": 12,
+      "layout": {
+        "visibility": "visible",
+        "text-size": 16,
+        "icon-size": 1,
+        "text-max-width": 10,
+        "text-line-height": 1.2,
+        "text-padding": 2,
+        "text-letter-spacing": 0,
+        "text-allow-overlap": false,
+        "text-ignore-placement": false,
+        "text-justify": "center",
+        "text-rotation-alignment": "auto",
+        "text-optional": false,
+        "icon-allow-overlap": true,
+        "icon-optional": false,
+        "icon-ignore-placement": false,
+        "icon-rotation-alignment": "map",
+        "symbol-placement": "point",
+        "symbol-avoid-edges": false,
+        "symbol-spacing": 250,
+        "text-anchor": "center",
+        "icon-anchor": "center",
+        "icon-offset": [
+          0,
+          0
+        ],
+        "text-offset": [
+          0,
+          0
+        ],
+        "icon-rotate": 0,
+        "text-rotate": 0,
+        "text-max-angle": 45,
+        "text-field": "",
+        "icon-image": "POLITICAL/Populated Places/Towns Villages",
+        "text-transform": "none"
+      },
+      "paint": {
+        "icon-opacity": 1,
+        "text-opacity": 1,
+        "text-halo-width": 0,
+        "text-halo-blur": 0,
+        "text-translate-anchor": "map",
+        "icon-translate-anchor": "map",
+        "icon-translate": [
+          0,
+          0
+        ],
+        "text-translate": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "POLITICAL/Populated Places/Small/Towns Villages Small",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Populated Places",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 5,
+      "maxzoom": 10,
+      "layout": {
+        "visibility": "visible",
+        "text-size": 16,
+        "icon-size": 1,
+        "text-max-width": 10,
+        "text-line-height": 1.2,
+        "text-padding": 2,
+        "text-letter-spacing": 0,
+        "text-allow-overlap": false,
+        "text-ignore-placement": false,
+        "text-justify": "center",
+        "text-rotation-alignment": "auto",
+        "text-optional": false,
+        "icon-allow-overlap": true,
+        "icon-optional": false,
+        "icon-ignore-placement": false,
+        "icon-rotation-alignment": "map",
+        "symbol-placement": "point",
+        "symbol-avoid-edges": false,
+        "symbol-spacing": 250,
+        "text-anchor": "center",
+        "icon-anchor": "center",
+        "icon-offset": [
+          0,
+          0
+        ],
+        "text-offset": [
+          0,
+          0
+        ],
+        "icon-rotate": 0,
+        "text-rotate": 0,
+        "text-max-angle": 45,
+        "text-field": "",
+        "icon-image": "Towns and Villages Point",
+        "text-transform": "none"
+      },
+      "paint": {
+        "icon-opacity": 1,
+        "text-opacity": 1,
+        "text-halo-width": 0,
+        "text-halo-blur": 0,
+        "text-translate-anchor": "map",
+        "icon-translate-anchor": "map",
+        "icon-translate": [
+          0,
+          0
+        ],
+        "text-translate": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "id": "POLITICAL/Natural & Historic Sites/label/National Historic Sites",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Natural & Historic Sites",
+      "filter": [
+        "==",
+        "_label_class2",
+        2
+      ],
+      "minzoom": 11,
+      "layout": {
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-size": 11.3333,
+        "text-anchor": "bottom-left",
+        "text-justify": "left",
+        "text-offset": [
+          0.44579,
+          -0.14579
+        ],
+        "text-letter-spacing": 0.01,
+        "text-field": "{_name2}",
+        "text-optional": true
+      },
+      "paint": {
+        "text-color": "#987B60"
+      }
+    },
+    {
+      "id": "POLITICAL/Natural & Historic Sites/label/Beaches, Bluffs, etc",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Natural & Historic Sites",
+      "filter": [
+        "==",
+        "_label_class",
+        0
+      ],
+      "minzoom": 11,
+      "layout": {
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-size": 11.3333,
+        "text-letter-spacing": 0.01,
+        "text-field": "{_name}",
+        "text-optional": true
+      },
+      "paint": {
+        "text-color": "#987B60"
+      }
+    },
+    {
+      "id": "POLITICAL/Natural & Historic Sites/label/Waterfalls",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Natural & Historic Sites",
+      "filter": [
+        "==",
+        "_label_class1",
+        1
+      ],
+      "minzoom": 11,
+      "layout": {
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-size": 11.3333,
+        "text-letter-spacing": 0.01,
+        "text-field": "{_name1}",
+        "text-optional": true
+      },
+      "paint": {
+        "text-color": "#6E96AE"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Road Names/label/Ferry",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Road Names/label",
+      "filter": [
+        "==",
+        "_label_class",
+        5
+      ],
+      "minzoom": 7,
+      "layout": {
+        "text-size": 11.3333,
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-padding": 40,
+        "text-letter-spacing": 0.35,
+        "text-optional": true,
+        "symbol-placement": "line",
+        "symbol-spacing": 1000,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#2A637D"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Road Names/label/Trail",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Road Names/label",
+      "filter": [
+        "==",
+        "_label_class",
+        4
+      ],
+      "minzoom": 15,
+      "layout": {
+        "text-size": 11.3333,
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-letter-spacing": 0.1,
+        "text-optional": true,
+        "symbol-placement": "line",
+        "symbol-spacing": 1000,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#6E635E",
+        "text-halo-color": "#EDDFC7",
+        "text-halo-width": 0.666667
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Road Names/label/Resource",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Road Names/label",
+      "filter": [
+        "==",
+        "_label_class",
+        3
+      ],
+      "minzoom": 13,
+      "layout": {
+        "text-size": 12,
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-letter-spacing": 0.1,
+        "text-optional": true,
+        "symbol-placement": "line",
+        "symbol-spacing": 1000,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#686868"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Road Names/label/Local",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Road Names/label",
+      "filter": [
+        "==",
+        "_label_class",
+        2
+      ],
+      "minzoom": 14,
+      "layout": {
+        "text-size": 12,
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-padding": 50,
+        "text-letter-spacing": 0.2,
+        "text-optional": true,
+        "symbol-placement": "line",
+        "symbol-spacing": 1000,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#6B6B6B",
+        "text-halo-color": "rgba(255,255,255,0.8)",
+        "text-halo-width": 1.33333
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Road Names/label/Collector",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Road Names/label",
+      "filter": [
+        "==",
+        "_label_class",
+        1
+      ],
+      "minzoom": 14,
+      "layout": {
+        "text-size": 11.3333,
+        "text-font": [
+          "BC Sans Regular"
+        ],
+        "text-padding": 20,
+        "text-letter-spacing": 0.2,
+        "text-optional": true,
+        "symbol-placement": "line",
+        "symbol-spacing": 1000,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#474747",
+        "text-halo-color": "rgba(255,255,255,0.8)",
+        "text-halo-width": 1.33333
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Road Names/label/Arterial",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Road Names/label",
+      "filter": [
+        "==",
+        "_label_class",
+        0
+      ],
+      "minzoom": 14,
+      "layout": {
+        "text-size": 11.3333,
+        "text-font": [
+          "BC Sans Bold"
+        ],
+        "text-padding": 20,
+        "text-letter-spacing": 0.2,
+        "text-optional": true,
+        "symbol-placement": "line",
+        "symbol-spacing": 1000,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#666666",
+        "text-halo-color": "rgba(255,255,255,0.8)",
+        "text-halo-width": 1.33333
+      }
+    },
+    {
+      "id": "TOPOGRAPHIC/Physiographic/label/Point",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "(L) Physiographic (Point)",
+      "minzoom": 5,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": {
+          "base": 1,
+          "stops": [
+            [
+              5,
+              15.6667
+            ],
+            [
+              16,
+              18.6667
+            ]
+          ]
+        },
+        "text-font": [
+          "Aboriginal Serif Bold",
+          "BC Sans Bold"
+        ],
+        "text-letter-spacing": 0.8,
+        "text-optional": true,
+        "icon-allow-overlap": true,
+        "icon-rotation-alignment": "map",
+        "text-field": "{_name}",
+        "icon-image": "TOPOGRAPHIC/(L) Physiographic (Point)"
+      },
+      "paint": {
+        "text-color": "rgba(140,115,84,0.6)"
+      }
+    },
+    {
+      "id": "POLITICAL/FN Villages/First Nation Village",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "FN Villages",
+      "filter": [
+        "==",
+        "_symbol",
+        0
+      ],
+      "minzoom": 11,
+      "layout": {
+        "text-size": 11.3333,
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-line-height": 1,
+        "text-justify": "left",
+        "text-optional": true,
+        "icon-allow-overlap": true,
+        "icon-rotation-alignment": "map",
+        "text-anchor": "bottom-left",
+        "text-offset": {
+          "property": "_symbol",
+          "type": "categorical",
+          "default": [
+            0.083189,
+            0.216811
+          ],
+          "stops": [
+            [
+              0,
+              [
+                0.399366,
+                -0.101571
+              ]
+            ],
+            [
+              1,
+              [
+                0.35966,
+                -0.060689
+              ]
+            ]
+          ]
+        },
+        "text-field": "{_name}",
+        "icon-image": "FN Village Point"
+      },
+      "paint": {
+        "text-color": "#828282",
+        "text-translate": [
+          -2,
+          2
+        ]
+      }
+    },
+    {
+      "id": "POLITICAL/FN Villages/Former First Nation Village",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "FN Villages",
+      "filter": [
+        "==",
+        "_symbol",
+        1
+      ],
+      "minzoom": 11,
+      "layout": {
+        "text-size": 12,
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-line-height": 1,
+        "text-letter-spacing": 0.05,
+        "text-justify": "left",
+        "text-optional": true,
+        "icon-allow-overlap": true,
+        "icon-rotation-alignment": "map",
+        "text-anchor": "bottom-left",
+        "text-offset": {
+          "property": "_symbol",
+          "type": "categorical",
+          "default": [
+            0.157135,
+            0.142865
+          ],
+          "stops": [
+            [
+              0,
+              [
+                0.455746,
+                -0.157829
+              ]
+            ],
+            [
+              1,
+              [
+                0.418246,
+                -0.119218
+              ]
+            ]
+          ]
+        },
+        "text-field": "{_name}",
+        "icon-image": "FN Village (Former) Point"
+      },
+      "paint": {
+        "text-color": "#686868",
+        "text-translate": [
+          -1,
+          2
+        ]
+      }
+    },
+    {
+      "id": "POLITICAL/Mountain Peaks/PointLabel",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Mountain Peaks",
+      "minzoom": 11,
+      "layout": {
+        "text-size": 12.6667,
+        "text-font": [
+          "Aboriginal Serif Regular",
+          "BC Sans Regular"
+        ],
+        "text-allow-overlap": true,
+        "text-justify": "left",
+        "text-optional": true,
+        "icon-rotation-alignment": "map",
+        "text-anchor": "bottom-left",
+        "text-offset": [
+          0.438011,
+          -0.113538
+        ],
+        "text-field": "{_name}",
+        "icon-image": "Mountain Peaks Point"
+      },
+      "paint": {
+        "text-color": "#AF7B67"
+      }
+    },
+    {
+      "id": "TOPOGRAPHIC/Islands/label/Island Groups",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "(L) Islands (Multi Outside)",
+      "minzoom": 5,
+      "layout": {
+        "text-size": {
+          "base": 1,
+          "stops": [
+            [
+              5,
+              12.6667
+            ],
+            [
+              11,
+              14.6667
+            ],
+            [
+              18,
+              14.6667
+            ]
+          ]
+        },
+        "text-font": [
+          "Aboriginal Serif Bold",
+          "BC Sans Bold"
+        ],
+        "text-letter-spacing": 0.25,
+        "text-optional": true,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "rgba(104,104,104,0.65)"
+      }
+    },
+    {
+      "id": "TOPOGRAPHIC/Islands/label/Single Island",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "(L) Islands (Single)",
+      "minzoom": 5,
+      "layout": {
+        "text-size": {
+          "base": 1,
+          "stops": [
+            [
+              5,
+              12.6667
+            ],
+            [
+              11,
+              14.6667
+            ],
+            [
+              18,
+              14.6667
+            ]
+          ]
+        },
+        "text-font": [
+          "Aboriginal Serif Bold",
+          "BC Sans Bold"
+        ],
+        "text-letter-spacing": 0.25,
+        "text-optional": true,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "rgba(104,104,104,0.65)"
+      }
+    },
+    {
+      "id": "TOPOGRAPHIC/Physiographic/label/Line",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "(L) Physiographic (Line)/label",
+      "minzoom": 5,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": {
+          "base": 1,
+          "stops": [
+            [
+              5,
+              15.6667
+            ],
+            [
+              16,
+              18.6667
+            ]
+          ]
+        },
+        "text-font": [
+          "Aboriginal Serif Bold",
+          "BC Sans Bold"
+        ],
+        "text-letter-spacing": 0.6,
+        "text-optional": true,
+        "symbol-placement": "line",
+        "symbol-spacing": 1000,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "rgba(140,115,84,0.6)"
+      }
+    },
+    {
+      "id": "TOPOGRAPHIC/Bays, Channels/label/Line",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "(L) Bays, Channels (Line)/label",
+      "minzoom": 5,
+      "layout": {
+        "text-size": 12.6667,
+        "text-font": [
+          "Aboriginal Serif Italic",
+          "BC Sans Italic"
+        ],
+        "text-letter-spacing": 0.13,
+        "text-allow-overlap": true,
+        "text-optional": true,
+        "symbol-placement": "line",
+        "symbol-spacing": 1000,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#4B64AA"
+      }
+    },
+    {
+      "id": "TOPOGRAPHIC/Bays, Channels/label/Point",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "(L) Bays, Channels (Point)",
+      "minzoom": 5,
+      "layout": {
+        "text-size": 12.6667,
+        "text-font": [
+          "Aboriginal Serif Italic",
+          "BC Sans Italic"
+        ],
+        "text-letter-spacing": 0.13,
+        "text-optional": true,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#4B64AA"
+      }
+    },
+    {
+      "id": "PARKS/Regional/label/Regional Parks",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "(L) Regional",
+      "minzoom": 9,
+      "layout": {
+        "text-size": 12.6667,
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-letter-spacing": 0.025,
+        "text-optional": true,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#5E9180"
+      }
+    },
+    {
+      "id": "PARKS/Conservancies/label/Conservancies",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "(L) Conservancies",
+      "minzoom": 8,
+      "layout": {
+        "text-size": 13.3333,
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-letter-spacing": 0.025,
+        "text-optional": true,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#468575"
+      }
+    },
+    {
+      "id": "PARKS/Provincial/label/Provincial Parks",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "(L) Provincial",
+      "minzoom": 7,
+      "layout": {
+        "text-size": 13.3333,
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-letter-spacing": 0.025,
+        "text-optional": true,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#638C4D"
+      }
+    },
+    {
+      "id": "PARKS/National/label/National Parks",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "(L) National",
+      "minzoom": 7,
+      "layout": {
+        "text-size": 13.33,
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-letter-spacing": 0.025,
+        "text-optional": true,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#638c4d"
+      }
+    },
+    {
+      "id": "PARKS/Additional/label/Marine Parks",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "(L) Additional",
+      "filter": [
+        "==",
+        "_label_class1",
+        1
+      ],
+      "minzoom": 6,
+      "layout": {
+        "text-font": [
+          "BC Sans Regular"
+        ],
+        "text-size": 12.6667,
+        "text-letter-spacing": 0.15,
+        "text-field": "{_name1}",
+        "text-optional": true
+      },
+      "paint": {
+        "text-color": "#5680BF",
+        "text-halo-color": "#B5CFE2",
+        "text-halo-width": 4
+      }
+    },
+    {
+      "id": "PARKS/Additional/label/Terrestrial Parks",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "(L) Additional",
+      "filter": [
+        "==",
+        "_label_class",
+        0
+      ],
+      "minzoom": 6,
+      "layout": {
+        "text-font": [
+          "BC Sans Regular"
+        ],
+        "text-size": 12.6667,
+        "text-letter-spacing": 0.15,
+        "text-field": "{_name}",
+        "text-optional": true
+      },
+      "paint": {
+        "text-color": "#66734C"
+      }
+    },
+    {
+      "id": "WATER/Streams/label/Streams Line",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "(L) Streams (Line)/label",
+      "minzoom": 5,
+      "layout": {
+        "text-size": 12,
+        "text-font": [
+          "Aboriginal Serif Italic",
+          "BC Sans Italic"
+        ],
+        "text-letter-spacing": 0.13,
+        "text-optional": true,
+        "symbol-placement": "line",
+        "symbol-spacing": 1000,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#5680BF",
+        "text-halo-color": "rgba(239,231,221,0.75)",
+        "text-halo-width": 1.33333
+      }
+    },
+    {
+      "id": "WATER/Lakes/label/Lakes Single Line",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "(L) Lakes (Single Line)/label",
+      "minzoom": 8,
+      "layout": {
+        "text-size": 11,
+        "text-font": [
+          "Aboriginal Serif Italic",
+          "BC Sans Italic"
+        ],
+        "text-letter-spacing": 0.13,
+        "text-optional": true,
+        "symbol-placement": "line",
+        "symbol-spacing": 1000,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#5B8C8C"
+      }
+    },
+    {
+      "id": "WATER/Lakes/label/Lakes Single Point",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "(L) Lakes (Single)",
+      "minzoom": 10,
+      "layout": {
+        "text-size": 11,
+        "text-font": [
+          "Aboriginal Serif Italic",
+          "BC Sans Italic"
+        ],
+        "text-letter-spacing": 0.13,
+        "text-optional": true,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#5B8C8C"
+      }
+    },
+    {
+      "id": "WATER/Lakes/label/Lake Groups Outside Point",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "(L) Lakes (Multi Outside)",
+      "minzoom": 9,
+      "maxzoom": 16,
+      "layout": {
+        "text-size": 11,
+        "text-font": [
+          "Aboriginal Serif Italic",
+          "BC Sans Italic"
+        ],
+        "text-letter-spacing": 0.13,
+        "text-allow-overlap": true,
+        "text-optional": true,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#5B8C8C"
+      }
+    },
+    {
+      "id": "WATER/Lakes/label/Lake Groups Inside Point",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "(L) Lakes (Multi Inside)",
+      "minzoom": 11,
+      "layout": {
+        "text-size": 11,
+        "text-font": [
+          "Aboriginal Serif Italic",
+          "BC Sans Italic"
+        ],
+        "text-letter-spacing": 0.13,
+        "text-allow-overlap": true,
+        "text-optional": true,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#5B8C8C"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Placeholders/Drive BC DRA Hwy Symbols/label/(R3) Hwy 1",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Drive BC DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          14
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 9,
+      "maxzoom": 15,
+      "layout": {
+        "text-font": [
+          "Arial Regular"
+        ],
+        "text-size": 10.6667,
+        "text-field": "{_name}",
+        "text-allow-overlap": true,
+        "icon-image": "TRANSPORTATION/Drive BC DRA Hwy Symbols/(R3) Hwy 1",
+        "icon-keep-upright": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "rgba(0,0,0,0.02)"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Placeholders/Drive BC DRA Hwy Symbols/label/(R3) Hwy 3",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Drive BC DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          13
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 9,
+      "maxzoom": 15,
+      "layout": {
+        "text-font": [
+          "Arial Bold"
+        ],
+        "text-size": 12,
+        "text-letter-spacing": 0.01,
+        "text-field": "{_name}",
+        "icon-image": "TRANSPORTATION/Drive BC DRA Hwy Symbols/(R3) Hwy 3",
+        "icon-keep-upright": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "rgba(0,0,0,0.02)"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Placeholders/Drive BC DRA Hwy Symbols/label/(R3) Hwy 5",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Drive BC DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          12
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 9,
+      "maxzoom": 15,
+      "layout": {
+        "text-font": [
+          "Arial Bold"
+        ],
+        "text-size": 12,
+        "text-letter-spacing": 0.01,
+        "text-field": "{_name}",
+        "icon-image": "TRANSPORTATION/Drive BC DRA Hwy Symbols/(R3) Hwy 5",
+        "icon-keep-upright": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "rgba(0,0,0,0.02)"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Placeholders/Drive BC DRA Hwy Symbols/label/(R3) Other >2",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Drive BC DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          11
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 9,
+      "maxzoom": 15,
+      "layout": {
+        "text-font": [
+          "Arial Narrow Bold"
+        ],
+        "text-size": 10,
+        "text-field": "{_name}",
+        "icon-image": "TRANSPORTATION/Drive BC DRA Hwy Symbols/(R3) Other >2",
+        "icon-keep-upright": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "#004DA8"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Placeholders/Drive BC DRA Hwy Symbols/label/(R3) Other < 3",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Drive BC DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          10
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 9,
+      "maxzoom": 15,
+      "layout": {
+        "text-font": [
+          "Arial Narrow Bold"
+        ],
+        "text-size": 10,
+        "text-letter-spacing": 0.01,
+        "text-field": "{_name}",
+        "icon-image": "TRANSPORTATION/Drive BC DRA Hwy Symbols/(R3) Other < 3",
+        "icon-keep-upright": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "#004DA8"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Placeholders/Drive BC DRA Hwy Symbols/label/(R2) Hwy 1",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Drive BC DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          9
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 9,
+      "maxzoom": 15,
+      "layout": {
+        "text-font": [
+          "Arial Regular"
+        ],
+        "text-size": 10.6667,
+        "text-field": "{_name}",
+        "text-allow-overlap": true,
+        "icon-image": "TRANSPORTATION/Drive BC DRA Hwy Symbols/(R2) Hwy 1",
+        "icon-keep-upright": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "rgba(0,0,0,0.02)"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Placeholders/Drive BC DRA Hwy Symbols/label/(R2) Hwy 3",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Drive BC DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          8
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 9,
+      "maxzoom": 15,
+      "layout": {
+        "text-font": [
+          "Arial Bold"
+        ],
+        "text-size": 12,
+        "text-letter-spacing": 0.01,
+        "text-field": "{_name}",
+        "icon-image": "TRANSPORTATION/Drive BC DRA Hwy Symbols/(R2) Hwy 3",
+        "icon-keep-upright": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "rgba(0,0,0,0.02)"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Placeholders/Drive BC DRA Hwy Symbols/label/(R2) Hwy 5",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Drive BC DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          7
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 9,
+      "maxzoom": 15,
+      "layout": {
+        "text-font": [
+          "Arial Bold"
+        ],
+        "text-size": 12,
+        "text-letter-spacing": 0.01,
+        "text-field": "{_name}",
+        "icon-image": "TRANSPORTATION/Drive BC DRA Hwy Symbols/(R2) Hwy 5",
+        "icon-keep-upright": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "rgba(0,0,0,0.02)"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Placeholders/Drive BC DRA Hwy Symbols/label/(R2) Other >2",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Drive BC DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          6
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 9,
+      "maxzoom": 15,
+      "layout": {
+        "text-font": [
+          "Arial Narrow Bold"
+        ],
+        "text-size": 10,
+        "text-field": "{_name}",
+        "icon-image": "TRANSPORTATION/Drive BC DRA Hwy Symbols/(R2) Other >2",
+        "icon-keep-upright": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "#004DA8"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Placeholders/Drive BC DRA Hwy Symbols/label/(R2) Other < 3",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Drive BC DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          5
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 9,
+      "maxzoom": 15,
+      "layout": {
+        "text-font": [
+          "Arial Narrow Bold"
+        ],
+        "text-size": 10,
+        "text-letter-spacing": 0.01,
+        "text-field": "{_name}",
+        "icon-image": "TRANSPORTATION/Drive BC DRA Hwy Symbols/(R2) Other < 3",
+        "icon-keep-upright": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "#004DA8"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Placeholders/Drive BC DRA Hwy Symbols/label/(R1) Hwy 1",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Drive BC DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          4
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 4,
+      "maxzoom": 15,
+      "layout": {
+        "text-font": [
+          "Arial Regular"
+        ],
+        "text-size": 10.6667,
+        "text-field": "{_name}",
+        "text-allow-overlap": true,
+        "icon-image": "TRANSPORTATION/Drive BC DRA Hwy Symbols/(R1) Hwy 1",
+        "icon-keep-upright": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "rgba(0,0,0,0.02)"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Placeholders/Drive BC DRA Hwy Symbols/label/(R1) Hwy 3",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Drive BC DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          3
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 4,
+      "maxzoom": 15,
+      "layout": {
+        "text-font": [
+          "Arial Bold"
+        ],
+        "text-size": 12,
+        "text-letter-spacing": 0.01,
+        "text-field": "{_name}",
+        "icon-image": "TRANSPORTATION/Drive BC DRA Hwy Symbols/(R1) Hwy 3",
+        "icon-keep-upright": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "rgba(0,0,0,0.02)"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Placeholders/Drive BC DRA Hwy Symbols/label/(R1) Hwy 5",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Drive BC DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          2
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 4,
+      "maxzoom": 15,
+      "layout": {
+        "text-font": [
+          "Arial Bold"
+        ],
+        "text-size": 12,
+        "text-letter-spacing": 0.01,
+        "text-field": "{_name}",
+        "icon-image": "TRANSPORTATION/Drive BC DRA Hwy Symbols/(R1) Hwy 5",
+        "icon-keep-upright": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "rgba(0,0,0,0.02)"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Placeholders/Drive BC DRA Hwy Symbols/label/(R1) Other > 2",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Drive BC DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          1
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 4,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": 10,
+        "text-font": [
+          "Arial Narrow Bold",
+          "Arial Bold"
+        ],
+        "text-field": "{_name}",
+        "icon-image": "Hwy Sheild (BC)",
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "#004DA8"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Placeholders/Drive BC DRA Hwy Symbols/label/(R1) Other < 3",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Drive BC DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          0
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 4,
+      "maxzoom": 15,
+      "layout": {
+        "text-font": [
+          "Arial Narrow Bold"
+        ],
+        "text-size": 10,
+        "text-letter-spacing": 0.01,
+        "text-field": "{_name}",
+        "icon-image": "TRANSPORTATION/Drive BC DRA Hwy Symbols/(R1) Other < 3",
+        "icon-keep-upright": true,
+        "visibility": "none"
+      },
+      "paint": {
+        "text-color": "#004DA8"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Skytrain/label/Millenium Line",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Skytrain/label",
+      "filter": [
+        "==",
+        "_label_class",
+        3
+      ],
+      "minzoom": 12,
+      "layout": {
+        "text-size": 12,
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-padding": 0,
+        "text-optional": true,
+        "symbol-placement": "line",
+        "symbol-spacing": 1000,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#B38F00",
+        "text-halo-color": "rgba(239,231,221,0.75)",
+        "text-halo-width": 2.66667
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Skytrain/label/Expo Line",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Skytrain/label",
+      "filter": [
+        "==",
+        "_label_class",
+        2
+      ],
+      "minzoom": 10,
+      "layout": {
+        "text-size": 12,
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-padding": 0,
+        "text-optional": true,
+        "symbol-placement": "line",
+        "symbol-spacing": 1000,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#5B6D96",
+        "text-halo-color": "rgba(239,231,221,0.75)",
+        "text-halo-width": 2.66667
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Skytrain/label/Evergreen Line",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Skytrain/label",
+      "filter": [
+        "==",
+        "_label_class",
+        1
+      ],
+      "minzoom": 10,
+      "layout": {
+        "text-size": 12,
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-padding": 0,
+        "text-optional": true,
+        "symbol-placement": "line",
+        "symbol-spacing": 1000,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#698A54",
+        "text-halo-color": "rgba(239,231,221,0.75)",
+        "text-halo-width": 2.66667
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Skytrain/label/Canada Line",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Skytrain/label",
+      "filter": [
+        "==",
+        "_label_class",
+        0
+      ],
+      "minzoom": 12,
+      "layout": {
+        "text-size": 12,
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-padding": 0,
+        "text-optional": true,
+        "symbol-placement": "line",
+        "symbol-spacing": 1000,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#497C8A",
+        "text-halo-color": "rgba(239,231,221,0.75)",
+        "text-halo-width": 2.66667
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Outside BC/Hwy Symbols/label/Other Canada",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Outside BC Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          3
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 5,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": 9.33333,
+        "text-font": [
+          "BC Sans Regular"
+        ],
+        "text-field": "{_name}",
+        "icon-image": "Hwy Sheild (Canada)"
+      },
+      "paint": {
+        "text-color": "#343434",
+        "text-translate": [
+          0,
+          -1
+        ]
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Outside BC/Hwy Symbols/label/Trans Canada 1",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Outside BC Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          2
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 5,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": 10.6667,
+        "icon-size": 0.8,
+        "text-font": [
+          "Arial Regular"
+        ],
+        "text-field": "{_name}",
+        "icon-image": "Hwy Sheild (Hwy 1)"
+      },
+      "paint": {
+        "text-color": "rgba(0,0,0,0.02)"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Outside BC/Hwy Symbols/label/US Interstate",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Outside BC Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          1
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 5,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": 9.33333,
+        "icon-size": 0.9,
+        "text-font": [
+          "BC Sans Regular"
+        ],
+        "icon-offset": [
+          0,
+          2
+        ],
+        "text-field": "{_name}",
+        "icon-image": "Hwy Sheild (US Interstate)"
+      },
+      "paint": {
+        "text-color": "#FFFFFF"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/Outside BC/Hwy Symbols/label/US Hwy",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Outside BC Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          0
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 5,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": 9.33333,
+        "text-font": [
+          "BC Sans Regular"
+        ],
+        "text-field": "{_name}",
+        "icon-image": "Hwy Sheild (USA)"
+      },
+      "paint": {
+        "text-color": "#343434",
+        "text-translate": [
+          0,
+          -1
+        ]
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Road Names/label/Collector 18K +",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Road Names/label",
+      "filter": [
+        "==",
+        "_label_class",
+        7
+      ],
+      "minzoom": 13,
+      "maxzoom": 14,
+      "layout": {
+        "text-size": 12,
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-padding": 20,
+        "text-letter-spacing": 0.35,
+        "text-optional": true,
+        "symbol-placement": "line",
+        "symbol-spacing": 1000,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#686868",
+        "text-halo-color": "rgba(255,255,255,0.8)",
+        "text-halo-width": 1.33333
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Road Names/label/Arterial 18K +",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Road Names/label",
+      "filter": [
+        "==",
+        "_label_class",
+        6
+      ],
+      "minzoom": 12,
+      "maxzoom": 14,
+      "layout": {
+        "text-size": 12.6667,
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-padding": 20,
+        "text-letter-spacing": 0.35,
+        "text-optional": true,
+        "symbol-placement": "line",
+        "symbol-spacing": 1000,
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#686868",
+        "text-halo-color": "rgba(255,255,255,0.8)",
+        "text-halo-width": 1.33333
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Hwy Symbols/label/(R3) Hwy 1",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          14
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 9,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": 10.6667,
+        "text-font": [
+          "Arial Regular"
+        ],
+        "text-allow-overlap": true,
+        "icon-ignore-placement": true,
+        "text-field": "{_name}",
+        "icon-image": "Hwy Sheild (Hwy 1)"
+      },
+      "paint": {
+        "text-color": "rgba(0,0,0,0.02)"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Hwy Symbols/label/(R3) Hwy 3",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          13
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 9,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": 12,
+        "text-font": [
+          "Arial Bold"
+        ],
+        "text-letter-spacing": 0.01,
+        "icon-ignore-placement": true,
+        "text-field": "{_name}",
+        "icon-image": "Hwy Sheild (Hwy 3)"
+      },
+      "paint": {
+        "text-color": "rgba(0,0,0,0.02)"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Hwy Symbols/label/(R3) Hwy 5",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          12
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 9,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": 12,
+        "text-font": [
+          "Arial Bold"
+        ],
+        "text-letter-spacing": 0.01,
+        "icon-ignore-placement": true,
+        "text-field": "{_name}",
+        "icon-image": "Hwy Sheild (Hwy 5)"
+      },
+      "paint": {
+        "text-color": "rgba(0,0,0,0.02)"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Hwy Symbols/label/(R3) Other >2",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          11
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 9,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": 9,
+        "text-font": [
+          "Arial Narrow Bold",
+          "Arial Bold"
+        ],
+        "icon-ignore-placement": true,
+        "text-field": "{_name}",
+        "icon-image": "Hwy Sheild (BC)"
+      },
+      "paint": {
+        "text-color": "#004DA8"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Hwy Symbols/label/(R3) Other < 3",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          10
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 9,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": 9,
+        "text-font": [
+          "Arial Bold"
+        ],
+        "text-letter-spacing": 0.01,
+        "icon-ignore-placement": true,
+        "text-field": "{_name}",
+        "icon-image": "Hwy Sheild (BC)"
+      },
+      "paint": {
+        "text-color": "#004DA8"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Hwy Symbols/label/(R2) Hwy 1",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          9
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 9,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": 10.6667,
+        "text-font": [
+          "Arial Regular"
+        ],
+        "text-allow-overlap": true,
+        "icon-ignore-placement": true,
+        "text-field": "{_name}",
+        "icon-image": "Hwy Sheild (Hwy 1)"
+      },
+      "paint": {
+        "text-color": "rgba(0,0,0,0.02)"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Hwy Symbols/label/(R2) Hwy 3",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          8
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 9,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": 12,
+        "text-font": [
+          "Arial Bold"
+        ],
+        "text-letter-spacing": 0.01,
+        "icon-ignore-placement": true,
+        "text-field": "{_name}",
+        "icon-image": "Hwy Sheild (Hwy 3)"
+      },
+      "paint": {
+        "text-color": "rgba(0,0,0,0.02)"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Hwy Symbols/label/(R2) Hwy 5",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          7
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 9,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": 12,
+        "text-font": [
+          "Arial Bold"
+        ],
+        "text-letter-spacing": 0.01,
+        "icon-ignore-placement": true,
+        "text-field": "{_name}",
+        "icon-image": "Hwy Sheild (Hwy 5)"
+      },
+      "paint": {
+        "text-color": "rgba(0,0,0,0.02)"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Hwy Symbols/label/(R2) Other >2",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          6
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 9,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": 9,
+        "text-font": [
+          "Arial Narrow Bold",
+          "Arial Bold"
+        ],
+        "icon-ignore-placement": true,
+        "text-field": "{_name}",
+        "icon-image": "Hwy Sheild (BC)"
+      },
+      "paint": {
+        "text-color": "#004DA8"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Hwy Symbols/label/(R2) Other < 3",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          5
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 9,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": 9,
+        "text-font": [
+          "Arial Bold"
+        ],
+        "text-letter-spacing": 0.01,
+        "icon-ignore-placement": true,
+        "text-field": "{_name}",
+        "icon-image": "Hwy Sheild (BC)"
+      },
+      "paint": {
+        "text-color": "#004DA8"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Hwy Symbols/label/(R1) Hwy 1",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          4
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 4,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": 10.6667,
+        "text-font": [
+          "Arial Regular"
+        ],
+        "text-allow-overlap": true,
+        "icon-ignore-placement": true,
+        "text-field": "{_name}",
+        "icon-image": "Hwy Sheild (Hwy 1)"
+      },
+      "paint": {
+        "text-color": "rgba(0,0,0,0.02)"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Hwy Symbols/label/(R1) Hwy 3",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          3
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 4,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": 12,
+        "text-font": [
+          "Arial Bold"
+        ],
+        "text-letter-spacing": 0.01,
+        "icon-ignore-placement": true,
+        "text-field": "{_name}",
+        "icon-image": "Hwy Sheild (Hwy 3)"
+      },
+      "paint": {
+        "text-color": "rgba(0,0,0,0.02)"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Hwy Symbols/label/(R1) Hwy 5",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          2
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 4,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": 12,
+        "text-font": [
+          "Arial Bold"
+        ],
+        "text-letter-spacing": 0.01,
+        "icon-ignore-placement": true,
+        "text-field": "{_name}",
+        "icon-image": "Hwy Sheild (Hwy 5)"
+      },
+      "paint": {
+        "text-color": "rgba(255,255,255,0)",
+        "text-halo-color": "rgba(255,255,255,0)"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Hwy Symbols/label/(R1) Other > 2",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          1
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 4,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": 9,
+        "text-font": [
+          "Arial Narrow Bold",
+          "Arial Bold"
+        ],
+        "text-line-height": 1,
+        "icon-ignore-placement": true,
+        "text-field": "{_name}",
+        "icon-image": "Hwy Sheild (BC)"
+      },
+      "paint": {
+        "text-color": "#004DA8"
+      }
+    },
+    {
+      "id": "TRANSPORTATION/DRA/Hwy Symbols/label/(R1) Other < 3",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "DRA Hwy Symbols/label",
+      "filter": [
+        "all",
+        [
+          "==",
+          "_label_class",
+          0
+        ],
+        [
+          "==",
+          "$type",
+          "Point"
+        ]
+      ],
+      "minzoom": 4,
+      "maxzoom": 15,
+      "layout": {
+        "text-size": 9,
+        "text-font": [
+          "Arial Bold"
+        ],
+        "text-line-height": 1,
+        "icon-ignore-placement": true,
+        "text-offset": [
+          -0.05,
+          0.1
+        ],
+        "text-field": "{_name}",
+        "icon-image": "Hwy Sheild (BC)"
+      },
+      "paint": {
+        "text-color": "#004DA8"
+      }
+    },
+    {
+      "id": "POLITICAL/Populated Places/Large/label/All Populated",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Populated Places",
+      "filter": [
+        "==",
+        "_label_class4",
+        4
+      ],
+      "minzoom": 12,
+      "maxzoom": 15,
+      "layout": {
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-size": 13.3333,
+        "text-letter-spacing": 0.05,
+        "text-field": "{_name4}",
+        "text-optional": true
+      },
+      "paint": {
+        "text-color": "#828282",
+        "text-halo-color": "rgba(239,231,221,0.5)",
+        "text-halo-width": 1.33333
+      }
+    },
+    {
+      "id": "POLITICAL/Populated Places/Medium/label/Town Village",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Populated Places",
+      "filter": [
+        "==",
+        "_label_class3",
+        3
+      ],
+      "minzoom": 10,
+      "maxzoom": 12,
+      "layout": {
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-size": 13.3333,
+        "text-letter-spacing": 0.05,
+        "text-field": "{_name3}",
+        "text-optional": true
+      },
+      "paint": {
+        "text-color": "#686868"
+      }
+    },
+    {
+      "id": "POLITICAL/Populated Places/Medium/label/Cities",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Populated Places",
+      "filter": [
+        "==",
+        "_label_class2",
+        2
+      ],
+      "minzoom": 10,
+      "maxzoom": 12,
+      "layout": {
+        "text-size": 14,
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-letter-spacing": 0.05,
+        "text-justify": "left",
+        "text-optional": true,
+        "text-anchor": "bottom-left",
+        "text-offset": {
+          "property": "_symbol",
+          "type": "categorical",
+          "default": [
+            0.0614875,
+            0.238512
+          ],
+          "stops": [
+            [
+              0,
+              [
+                0.295183,
+                0.00318637
+              ]
+            ],
+            [
+              1,
+              [
+                0.265835,
+                0.0334038
+              ]
+            ]
+          ]
+        },
+        "text-field": "{_name2}"
+      },
+      "paint": {
+        "text-color": "#686868"
+      }
+    },
+    {
+      "id": "POLITICAL/Populated Places/Small/label/Town Village",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Populated Places",
+      "filter": [
+        "==",
+        "_label_class1",
+        1
+      ],
+      "minzoom": 5,
+      "maxzoom": 10,
+      "layout": {
+        "text-size": {
+          "base": 1,
+          "stops": [
+            [
+              4,
+              11
+            ],
+            [
+              8,
+              12
+            ],
+            [
+              18,
+              12
+            ]
+          ]
+        },
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-letter-spacing": 0.05,
+        "text-justify": "left",
+        "text-optional": true,
+        "text-anchor": "bottom-left",
+        "text-offset": {
+          "property": "_symbol",
+          "type": "categorical",
+          "default": [
+            0.157135,
+            0.142865
+          ],
+          "stops": [
+            [
+              0,
+              [
+                0.455746,
+                -0.157829
+              ]
+            ],
+            [
+              1,
+              [
+                0.418246,
+                -0.119218
+              ]
+            ]
+          ]
+        },
+        "text-field": "{_name1}"
+      },
+      "paint": {
+        "text-color": "#686868",
+        "text-translate": [
+          -2,
+          4
+        ]
+      }
+    },
+    {
+      "id": "POLITICAL/Populated Places/Small/label/Cities",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Populated Places",
+      "filter": [
+        "==",
+        "_label_class",
+        0
+      ],
+      "minzoom": 4,
+      "maxzoom": 10,
+      "layout": {
+        "text-size": {
+          "base": 1,
+          "stops": [
+            [
+              4,
+              11
+            ],
+            [
+              8,
+              14
+            ],
+            [
+              18,
+              14
+            ]
+          ]
+        },
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-line-height": 1,
+        "text-letter-spacing": 0.05,
+        "text-justify": "left",
+        "text-optional": true,
+        "text-anchor": "bottom-left",
+        "text-offset": {
+          "property": "_symbol",
+          "type": "categorical",
+          "default": [
+            0.128565,
+            0.171435
+          ],
+          "stops": [
+            [
+              0,
+              [
+                0.372883,
+                -0.0745876
+              ]
+            ],
+            [
+              1,
+              [
+                0.342201,
+                -0.0429967
+              ]
+            ]
+          ]
+        },
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#686868",
+        "text-translate": [
+          -3,
+          3
+        ]
+      }
+    },
+    {
+      "id": "POLITICAL/Prov & States/label/Prov & States Labels",
+      "type": "symbol",
+      "source": "esri",
+      "source-layer": "Prov & States",
+      "maxzoom": 9,
+      "layout": {
+        "text-size": 12,
+        "text-font": [
+          "Aboriginal Sans Regular"
+        ],
+        "text-letter-spacing": 0.1,
+        "text-allow-overlap": true,
+        "text-optional": true,
+        "text-offset": [
+          -0.25,
+          0.5
+        ],
+        "text-field": "{_name}"
+      },
+      "paint": {
+        "text-color": "#828282"
+      }
+    },
+    {
+      "id": "PARKS/Additional/label/point",
+      "type": "circle",
+      "source": "esri",
+      "source-layer": "(L) Additional",
+      "minzoom": 6,
+      "layout": {
+        "visibility": "none"
+      },
+      "paint": {
+        "circle-radius": 0.666667,
+        "circle-color": "rgba(181,207,226,0.01)",
+        "circle-stroke-color": "rgba(0,0,0,0)"
+      }
+    }
+  ],
+  "_ssl": true,
+  "metadata": {
+    "arcgisStyleUrl": "https://www.arcgis.com/sharing/rest/content/items/bbe05270d3a642f5b62203d6c454f457/resources/styles/root.json",
+    "arcgisOriginalItemTitle": "BC Basemap Vector Tile Service (with hillshade)",
+    "arcgisQuickEditorWarning": true,
+    "arcgisEditorExtents": [
+      {
+        "spatialReference": {
+          "latestWkid": 3857,
+          "wkid": 102100
+        },
+        "xmin": -13657197.268089298,
+        "ymin": 6290646.819979469,
+        "xmax": -13654464.644328102,
+        "ymax": 6293761.628882089
+      },
+      {
+        "spatialReference": {
+          "wkid": 4326
+        },
+        "xmin": -146.196974233818,
+        "ymin": 42.52621162210244,
+        "xmax": -105.67939610882874,
+        "ymax": 65.07528216228737
+      },
+      {
+        "spatialReference": {
+          "wkid": 4326
+        },
+        "xmin": -146.196974233818,
+        "ymin": 42.52621162210244,
+        "xmax": -105.67939610882874,
+        "ymax": 65.07528216228737
+      },
+      {
+        "spatialReference": {
+          "wkid": 4326
+        },
+        "xmin": -146.196974233818,
+        "ymin": 42.52621162210244,
+        "xmax": -105.67939610882874,
+        "ymax": 65.07528216228737
+      }
+    ],
+    "arcgisMinimapVisibility": false
+  }
+}
