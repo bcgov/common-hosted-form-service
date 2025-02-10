@@ -9,6 +9,8 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/950b1d6c61567a1da227/test_coverage)](https://codeclimate.com/github/bcgov/common-hosted-form-service/test_coverage)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_common-hosted-form-service&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=bcgov_common-hosted-form-service)
 
+This is only... a test.
+
 ## Directory Structure
 
     .devcontainer              - Visual Studio Code devcontainer and local environment config
