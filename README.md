@@ -1,4 +1,4 @@
-# Common Hosted Form Service [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) [![img](https://img.shields.io/badge/Lifecycle-Stable-97ca00)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
+# Common Hosted Form Service [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) [![img](https://img.shields.io/badge/Lifecycle-Stable-97ca00)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md) [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
 
 [Common Hosted Form Service](https://submit.digital.gov.bc.ca/app) is a web-based application designed for creating web forms and managing collected data. It is a free service available to all B.C. government employees and contractors with an IDIR account. For more information, visit the [CHEFS documentation](https://developer.gov.bc.ca/docs/default/component/chefs-techdocs).
 
@@ -8,8 +8,6 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/950b1d6c61567a1da227/maintainability)](https://codeclimate.com/github/bcgov/common-hosted-form-service/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/950b1d6c61567a1da227/test_coverage)](https://codeclimate.com/github/bcgov/common-hosted-form-service/test_coverage)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_common-hosted-form-service&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=bcgov_common-hosted-form-service)
-
-This is only... a test.
 
 ## Directory Structure
 
