@@ -1212,30 +1212,26 @@ async function uploadQueuedFiles() {
 }
 
 async function deleteQueuedFiles() {
+  if (queuedDeleteFiles.value.length === 0) return false;
   let err = false;
-  for (let i = queuedDeleteFiles.value.length - 1; i >= 0; i--) {
-    const fileId = queuedDeleteFiles.value[i].file?.data?.id
-      ? queuedDeleteFiles.value[i].file.data.id
-      : queuedDeleteFiles.value[i].file?.id
-      ? queuedDeleteFiles.value[i].file.id
-      : undefined;
-    try {
-      await fileService.deleteFile(fileId);
-      queuedDeleteFiles.value[i].onSuccess();
-      queuedDeleteFiles.value.splice(i, 1);
-    } catch (error) {
-      err = true;
-      notificationStore.addNotification({
-        text: t('trans.formViewer.errorDeletingFile', {
-          fileName: queuedDeleteFiles.value[i].file.originalName,
-          error: error,
-        }),
-        consoleError: t('trans.formViewer.errorDeletingFile', {
-          fileName: queuedDeleteFiles.value[i].file.originalName,
-          error: error,
-        }),
-      });
+  try {
+    await fileService.deleteFiles(
+      queuedDeleteFiles.value.map((file) => file.file.data.id)
+    );
+    for (const file of queuedDeleteFiles.value) {
+      file.onSuccess();
     }
+    queuedDeleteFiles.value = [];
+  } catch (error) {
+    err = true;
+    notificationStore.addNotification({
+      text: t('trans.formViewer.errorDeletingFile', {
+        error: error,
+      }),
+      consoleError: t('trans.formViewer.errorDeletingFile', {
+        error: error,
+      }),
+    });
   }
   return err;
 }

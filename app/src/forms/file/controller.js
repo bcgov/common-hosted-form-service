@@ -61,4 +61,13 @@ module.exports = {
       next(error);
     }
   },
+
+  deleteFiles: async (req, res, next) => {
+    try {
+      await service.deleteFiles(req.body.fileIds);
+      res.sendStatus(202);
+    } catch (error) {
+      next(error);
+    }
+  },
 };

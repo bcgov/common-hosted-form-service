@@ -2282,8 +2282,8 @@ describe('FormViewer.vue', () => {
   });
 
   it('deleteQueuedFiles will call deleteFile and then the files onSuccess function', async () => {
-    const deleteFileSpy = vi.spyOn(fileService, 'deleteFile');
-    deleteFileSpy.mockImplementation(() => {});
+    const deleteFilesSpy = vi.spyOn(fileService, 'deleteFiles');
+    deleteFilesSpy.mockImplementation(() => {});
     const wrapper = shallowMount(FormViewer, {
       props: {
         formId: formId,
@@ -2305,21 +2305,23 @@ describe('FormViewer.vue', () => {
     wrapper.vm.queuedDeleteFiles = [
       {
         file: {
-          id: '123',
+          data: {
+            id: '123',
+          },
         },
         onSuccess: onSuccess,
       },
     ];
 
     await wrapper.vm.deleteQueuedFiles();
-    expect(deleteFileSpy).toBeCalledTimes(1);
+    expect(deleteFilesSpy).toBeCalledTimes(1);
     expect(onSuccess).toBeCalledTimes(1);
     expect(wrapper.vm.queuedDeleteFiles).toEqual([]);
   });
 
   it('deleteQueuedFiles will addNotification if an error occurs', async () => {
-    const deleteFileSpy = vi.spyOn(fileService, 'deleteFile');
-    deleteFileSpy.mockImplementation(() => {
+    const deleteFilesSpy = vi.spyOn(fileService, 'deleteFiles');
+    deleteFilesSpy.mockImplementation(() => {
       throw new Error();
     });
     const wrapper = shallowMount(FormViewer, {
@@ -2343,19 +2345,23 @@ describe('FormViewer.vue', () => {
     wrapper.vm.queuedDeleteFiles = [
       {
         file: {
-          id: '123',
+          data: {
+            id: '123',
+          },
         },
         onSuccess: onSuccess,
       },
     ];
 
     await wrapper.vm.deleteQueuedFiles();
-    expect(deleteFileSpy).toBeCalledTimes(1);
+    expect(deleteFilesSpy).toBeCalledTimes(1);
     expect(onSuccess).toBeCalledTimes(0);
     expect(wrapper.vm.queuedDeleteFiles).toEqual([
       {
         file: {
-          id: '123',
+          data: {
+            id: '123',
+          },
         },
         onSuccess: onSuccess,
       },

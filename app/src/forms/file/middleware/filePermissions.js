@@ -45,6 +45,58 @@ const hasFileCreate = (req, res, next) => {
 };
 
 /**
+ * @function hasFileDelete
+ * Middleware to determine if this user can delete an array of files from the system
+ * @returns {Function} a middleware function
+ */
+const hasFileDelete = async (req, res, next) => {
+  // You can't do this if you are not authenticated as a USER (not a public user)
+  // Can expand on this for API key access if ever needed
+  if (!req.currentUser || !req.currentUser.idpUserId) {
+    return next(new Problem(403, { detail: 'Invalid authorization credentials.' }));
+  }
+
+  const fileIds = req.body.fileIds;
+
+  if (!Array.isArray(fileIds)) {
+    return next(new Problem(403, { detail: 'File IDs must be an array of file UUIDs.' }));
+  }
+
+  let fileNotFound = false;
+  let permissionError = null;
+  for (const fileId of fileIds) {
+    const fileRecord = await service.read(fileId);
+    if (!fileRecord) {
+      fileNotFound = true;
+      break;
+    } else {
+      req.currentFileRecord = fileRecord;
+      req.query.formSubmissionId = req.currentFileRecord.formSubmissionId;
+      const subPermCheck = userAccess.hasSubmissionPermissions(['SUBMISSION_UPDATE']);
+      await subPermCheck(req, res, (err) => {
+        if (err) {
+          permissionError = err;
+        }
+      });
+      if (permissionError) {
+        break;
+      }
+    }
+  }
+
+  if (fileNotFound) {
+    // 403 on no auth or file not found (don't 404 for id discovery)
+    return next(new Problem(403, { detail: 'File access to this ID is unauthorized.' }));
+  }
+
+  if (permissionError) {
+    return next(permissionError);
+  }
+
+  next();
+};
+
+/**
  * @function hasFilePermissions
  * Middleware to determine if the current user can do a specific permission on a file
  * This is generally based on the SUBMISSION permissions that the file is attached to
@@ -82,5 +134,6 @@ const hasFilePermissions = (permissions) => {
 module.exports = {
   currentFileRecord,
   hasFileCreate,
+  hasFileDelete,
   hasFilePermissions,
 };
