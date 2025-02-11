@@ -4,10 +4,7 @@
 
   "build": {
     "dockerfile": "Dockerfile",
-    "context": "..",
-    "args": {
-      "VARIANT": "20.18.1-bookworm"
-    }
+    "context": ".."
   },
 
   "features": {
