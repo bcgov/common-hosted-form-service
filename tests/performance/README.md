@@ -8,6 +8,8 @@ The tests require an IDIR user's token. Each CHEFS environment should have a con
 
 k6 will require a lot of environment variables. When running the `dev container,` we have added [dotenv-cli](https://www.npmjs.com/package/dotenv-cli), allowing us to pass in an environment file instead of each variable.
 
+**IMPORTANT** CHEFS API is rate-limited. Whatever instance/environment you are performance/load testing, you will need to raise the "server.rateLimit.public.limitFrontend" value.
+
 ### Variables
 
 Review [sample-env](./sample-env) to see a local configuration example.
