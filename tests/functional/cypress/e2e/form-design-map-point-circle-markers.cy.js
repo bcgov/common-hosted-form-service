@@ -112,15 +112,24 @@ describe('Form Designer', () => {
         const interactive_btn=$el[1];
         cy.get(interactive_btn).click({ force: true });
       });
+      //First click
       cy.get('div[class="leaflet-marker-icon leaflet-mouse-marker leaflet-zoom-hide leaflet-interactive"]').click({ force: true });
       cy.get('.leaflet-interactive').then($el => {
         const interactive_btn=$el[1];
         cy.get(interactive_btn).click({ force: true });
       });
+      //second click
+      cy.get('div[class="leaflet-marker-icon leaflet-mouse-marker leaflet-zoom-hide leaflet-interactive"]').click({ force: true });
+      cy.get('.leaflet-interactive').then($el => {
+        const interactive_btn=$el[1];
+        cy.get(interactive_btn).click({ force: true });
+      });
+      //third click
       cy.get('div[class="leaflet-marker-icon leaflet-mouse-marker leaflet-zoom-hide leaflet-interactive"]').click({ force: true });
       cy.get('a[title="Finish drawing"]').click({ force: true });
+      //To verify line is drwan on map
       cy.get('g').find('path[fill="none"]').should('exist');
-      cy.get(5000);
+      cy.get(10000);
       // To view line drawn on map
       cy.get('div[class="leaflet-container leaflet-touch leaflet-fade-anim leaflet-touch-zoom leaflet-grab leaflet-touch-drag"]').then($el => {
       const scroll_in=$el[0];
@@ -130,9 +139,8 @@ describe('Form Designer', () => {
       cy.get('a[class="leaflet-control-zoom-in"]').then($el => {
         const zoom_in=$el[0];
       cy.get(zoom_in).click({ force: true });
-      
+      cy.get(zoom_in).dblclick({ force: true });
       });
-
       cy.get(9000);
       cy.get('button').contains('Save').click();
   // Form saving
