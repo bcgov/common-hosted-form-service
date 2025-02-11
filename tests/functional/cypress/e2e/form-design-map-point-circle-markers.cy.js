@@ -3,15 +3,10 @@ import 'cypress-drag-drop';
 import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
-
-
 Cypress.Commands.add('waitForLoad', () => {
   const loaderTimeout = 60000;
-
   cy.get('.nprogress-busy', { timeout: loaderTimeout }).should('not.exist');
 });
-
-
 
 describe('Form Designer', () => {
 
@@ -24,14 +19,9 @@ describe('Form Designer', () => {
     });
   });
   it('Visits the form settings page', () => {
-    
-    
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-    
     formsettings();
-    
-
   });  
 // Checks Map component functionalities
   it('Checks Map component for Point marker', () => {
@@ -43,7 +33,6 @@ describe('Form Designer', () => {
       cy.get('[data-type="map"]')
       .trigger('mousedown', { which: 1}, { force: true })
       .trigger('mousemove', coords.x, -550, { force: true })
-        //.trigger('mousemove', coords.y, +100, { force: true })
       .trigger('mouseup', { force: true });
       cy.waitForLoad();
       cy.get('input[name="data[label]"]').type('s'); 
@@ -59,8 +48,6 @@ describe('Form Designer', () => {
       cy.get('input[name="data[customClass]"').should('exist');
       cy.get(':nth-child(2) > .nav-link').click();
       cy.wait(2000);
-      //cy.get('a[title="Draw a marker"]').then($el => {
-      
       cy.get('a[title="Draw a marker"]').then($el => {
         const marker_elem=$el[0];
         cy.get(marker_elem).click({force: true});
@@ -70,7 +57,6 @@ describe('Form Designer', () => {
             cy.get(layer_del_btn)
             .trigger('mousedown', { which: 1}, { force: true })
         .trigger('mousemove', coords.x, -30, { force: true })
-          //.trigger('mousemove', coords.y, +100, { force: true })
         .trigger('mouseup', { force: true });
       });
       cy.get('img[alt="Marker"]').click({ force: true });
@@ -128,7 +114,6 @@ describe('Form Designer', () => {
       let shareFormButton = cy.get('[data-cy=shareFormButton]');
       expect(shareFormButton).to.not.be.null;
       shareFormButton.trigger('click').then(()=>{
-      //let shareFormLinkButton = cy.get('[data-cy=shareFormLinkButtonss]');
       let shareFormLinkButton=cy.get('.mx-2');
       expect(shareFormLinkButton).to.not.be.null;
       shareFormLinkButton.trigger('click');
