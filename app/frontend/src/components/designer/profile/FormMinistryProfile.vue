@@ -19,9 +19,9 @@ const form = computed(() => formStore.form);
 const isRTL = computed(() => formStore.isRTL);
 
 const MinistryList = computed(() => {
-  return Ministries.map((Ministry) => ({
-    id: Ministry.id,
-    text: t(`trans.ministries.${Ministry.id}`),
+  return Ministries.map((ministry) => ({
+    id: ministry.id,
+    text: t(`trans.ministries.${ministry.id}`),
   }));
 });
 </script>
