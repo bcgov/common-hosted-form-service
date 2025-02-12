@@ -20,8 +20,8 @@ const isRTL = computed(() => formStore.isRTL);
 
 const MinistryList = computed(() => {
   return Ministries.map((Ministry) => ({
-    id: Organization.id,
-    text: t(`trans.ministries.${Organization.id}`),
+    id: Ministry.id,
+    text: t(`trans.ministries.${Ministry.id}`),
   }));
 });
 </script>
