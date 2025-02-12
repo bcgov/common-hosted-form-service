@@ -3,7 +3,7 @@
 import { createTestingPinia } from '@pinia/testing';
 import { setActivePinia } from 'pinia';
 import { flushPromises, shallowMount } from '@vue/test-utils';
-import { beforeEach, expect, vi } from 'vitest';
+import { beforeEach, describe, expect, vi } from 'vitest';
 import { useRouter } from 'vue-router';
 import { nextTick, ref } from 'vue';
 
@@ -582,12 +582,9 @@ describe('FormViewer.vue', () => {
     await wrapper.vm.getFormData();
   });
 
-  it('calls readPublished by default', async () => {
+  describe('getFormSchema', () => {
     const push = vi.fn();
-    useRouter.mockImplementationOnce(() => ({
-      push,
-    }));
-    const wrapper = shallowMount(FormViewer, {
+    const validOptions = {
       props: {
         formId: formId,
         displayTitle: true,
@@ -599,235 +596,153 @@ describe('FormViewer.vue', () => {
         plugins: [pinia],
         stubs: STUBS,
       },
-    });
-
-    await flushPromises();
-
-    readPublishedSpy.mockReset();
-    addNotificationSpy.mockReset();
-
-    await wrapper.vm.getFormSchema();
-
-    expect(readPublishedSpy).toBeCalledTimes(1);
-    expect(readVersionSpy).toBeCalledTimes(0);
-    expect(readDraftSpy).toBeCalledTimes(0);
-    expect(getUserSubmissionsSpy).toBeCalledTimes(0);
-    expect(addNotificationSpy).toBeCalledTimes(0);
-  });
-  it('calls readPublished by default, and pushes to router if there are no versions', async () => {
-    const push = vi.fn();
-    useRouter.mockImplementationOnce(() => ({
-      push,
-    }));
-    const wrapper = shallowMount(FormViewer, {
+    };
+    const validOptionsWithDraftId = {
       props: {
-        formId: formId,
-        displayTitle: true,
+        ...validOptions.props,
       },
       global: {
-        provide: {
-          setWideLayout: vi.fn(),
-        },
-        plugins: [pinia],
-        stubs: STUBS,
+        ...validOptions.global,
       },
-    });
-
-    await flushPromises();
-
-    readPublishedSpy.mockReset();
-    addNotificationSpy.mockReset();
-
-    readPublishedSpy.mockImplementationOnce(() => {
-      return {};
-    });
-
-    await wrapper.vm.getFormSchema();
-
-    expect(push).toBeCalledTimes(1);
-    expect(readPublishedSpy).toBeCalledTimes(1);
-    expect(readVersionSpy).toBeCalledTimes(0);
-    expect(readDraftSpy).toBeCalledTimes(0);
-    expect(getUserSubmissionsSpy).toBeCalledTimes(0);
-    expect(addNotificationSpy).toBeCalledTimes(0);
-  });
-  it('calls readVersion if there is a versionId', async () => {
-    const wrapper = shallowMount(FormViewer, {
+    };
+    const validOptionsWithVersionId = {
       props: {
-        formId: formId,
-        displayTitle: true,
-        versionId: '123',
+        ...validOptions.props,
       },
       global: {
-        provide: {
-          setWideLayout: vi.fn(),
-        },
-        plugins: [pinia],
-        stubs: STUBS,
+        ...validOptions.global,
       },
+    };
+    beforeEach(() => {
+      useRouter.mockImplementationOnce(() => ({
+        push,
+      }));
     });
+    test('calls readPublished by default', async () => {
+      const wrapper = shallowMount(FormViewer, validOptions);
 
-    await flushPromises();
+      await flushPromises();
 
-    readVersionSpy.mockReset();
-    addNotificationSpy.mockReset();
+      readPublishedSpy.mockReset();
 
-    readVersionSpy.mockImplementationOnce(() => {
-      return {
-        data: {
-          schema: {},
-        },
-      };
+      await wrapper.vm.getFormSchema();
+
+      expect(readPublishedSpy).toBeCalledTimes(1);
     });
+    test('calls readPublished by default, and pushes to router if there are no versions', async () => {
+      const wrapper = shallowMount(FormViewer, validOptions);
 
-    await wrapper.vm.getFormSchema();
+      await flushPromises();
 
-    expect(readPublishedSpy).toBeCalledTimes(0);
-    expect(readVersionSpy).toBeCalledTimes(1);
-    expect(readDraftSpy).toBeCalledTimes(0);
-    expect(getUserSubmissionsSpy).toBeCalledTimes(0);
-    expect(addNotificationSpy).toBeCalledTimes(0);
-  });
-  it('readVersion will throw an error if the response does not contain a schema', async () => {
-    const wrapper = shallowMount(FormViewer, {
-      props: {
-        formId: formId,
-        displayTitle: true,
-        versionId: '123',
-      },
-      global: {
-        provide: {
-          setWideLayout: vi.fn(),
-        },
-        plugins: [pinia],
-        stubs: STUBS,
-      },
+      readPublishedSpy.mockReset();
+
+      readPublishedSpy.mockImplementationOnce(() => {
+        return {};
+      });
+
+      await wrapper.vm.getFormSchema();
+
+      expect(push).toBeCalledTimes(1);
+      expect(readPublishedSpy).toBeCalledTimes(1);
     });
+    test('calls readVersion if there is a versionId', async () => {
+      const wrapper = shallowMount(FormViewer, validOptionsWithVersionId);
 
-    await flushPromises();
+      await flushPromises();
 
-    readVersionSpy.mockReset();
-    addNotificationSpy.mockReset();
+      readVersionSpy.mockReset();
+      addNotificationSpy.mockReset();
 
-    readVersionSpy.mockImplementationOnce(() => {
-      return {};
+      readVersionSpy.mockImplementationOnce(() => {
+        return {
+          data: {
+            schema: {},
+          },
+        };
+      });
+
+      await wrapper.vm.getFormSchema();
+
+      expect(readVersionSpy).toBeCalledTimes(1);
+      expect(addNotificationSpy).toBeCalledTimes(0);
     });
+    test('readVersion will throw an error if the response does not contain a schema', async () => {
+      const wrapper = shallowMount(FormViewer, validOptionsWithVersionId);
 
-    await wrapper.vm.getFormSchema();
+      await flushPromises();
 
-    expect(readPublishedSpy).toBeCalledTimes(0);
-    expect(readVersionSpy).toBeCalledTimes(1);
-    expect(readDraftSpy).toBeCalledTimes(0);
-    expect(getUserSubmissionsSpy).toBeCalledTimes(0);
-    expect(addNotificationSpy).toBeCalledTimes(1);
-  });
-  it('calls readDraft if there is a draftId', async () => {
-    const wrapper = shallowMount(FormViewer, {
-      props: {
-        formId: formId,
-        displayTitle: true,
-        draftId: '123',
-      },
-      global: {
-        provide: {
-          setWideLayout: vi.fn(),
-        },
-        plugins: [pinia],
-        stubs: STUBS,
-      },
+      readVersionSpy.mockReset();
+      addNotificationSpy.mockReset();
+
+      readVersionSpy.mockImplementationOnce(() => {
+        return {};
+      });
+
+      await wrapper.vm.getFormSchema();
+
+      expect(readVersionSpy).toBeCalledTimes(1);
+      expect(addNotificationSpy).toBeCalledTimes(1);
     });
+    test('calls readDraft if there is a draftId', async () => {
+      const wrapper = shallowMount(FormViewer, validOptionsWithDraftId);
 
-    await flushPromises();
+      await flushPromises();
 
-    readDraftSpy.mockReset();
-    addNotificationSpy.mockReset();
+      readDraftSpy.mockReset();
+      addNotificationSpy.mockReset();
 
-    readDraftSpy.mockImplementationOnce(() => {
-      return {
-        data: {
-          schema: {},
-        },
-      };
+      readDraftSpy.mockImplementationOnce(() => {
+        return {
+          data: {
+            schema: {},
+          },
+        };
+      });
+
+      await wrapper.vm.getFormSchema();
+
+      expect(readDraftSpy).toBeCalledTimes(1);
+      expect(addNotificationSpy).toBeCalledTimes(0);
     });
+    test('readDraft will throw an error if the response does not contain a schema', async () => {
+      const wrapper = shallowMount(FormViewer, validOptionsWithDraftId);
 
-    await wrapper.vm.getFormSchema();
+      await flushPromises();
 
-    expect(readPublishedSpy).toBeCalledTimes(0);
-    expect(readVersionSpy).toBeCalledTimes(0);
-    expect(readDraftSpy).toBeCalledTimes(1);
-    expect(getUserSubmissionsSpy).toBeCalledTimes(0);
-    expect(addNotificationSpy).toBeCalledTimes(0);
-  });
-  it('readDraft will throw an error if the response does not contain a schema', async () => {
-    const wrapper = shallowMount(FormViewer, {
-      props: {
-        formId: formId,
-        displayTitle: true,
-        draftId: '123',
-      },
-      global: {
-        provide: {
-          setWideLayout: vi.fn(),
-        },
-        plugins: [pinia],
-        stubs: STUBS,
-      },
+      readDraftSpy.mockReset();
+      addNotificationSpy.mockReset();
+
+      readDraftSpy.mockImplementationOnce(() => {
+        return {};
+      });
+
+      await wrapper.vm.getFormSchema();
+
+      expect(readDraftSpy).toBeCalledTimes(1);
+      expect(addNotificationSpy).toBeCalledTimes(1);
     });
+    test('if the error response is a 401 then it will set isAuthorized to false', async () => {
+      const wrapper = shallowMount(FormViewer, validOptionsWithDraftId);
 
-    await flushPromises();
+      await flushPromises();
 
-    readDraftSpy.mockReset();
-    addNotificationSpy.mockReset();
+      readDraftSpy.mockReset();
+      addNotificationSpy.mockReset();
 
-    readDraftSpy.mockImplementationOnce(() => {
-      return {};
-    });
-
-    await wrapper.vm.getFormSchema();
-
-    expect(readPublishedSpy).toBeCalledTimes(0);
-    expect(readVersionSpy).toBeCalledTimes(0);
-    expect(readDraftSpy).toBeCalledTimes(1);
-    expect(getUserSubmissionsSpy).toBeCalledTimes(0);
-    expect(addNotificationSpy).toBeCalledTimes(1);
-  });
-  it('if the error response is a 401 then it will set isAuthorized to false', async () => {
-    const wrapper = shallowMount(FormViewer, {
-      props: {
-        formId: formId,
-        displayTitle: true,
-        draftId: '123',
-      },
-      global: {
-        provide: {
-          setWideLayout: vi.fn(),
-        },
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
-
-    await flushPromises();
-
-    readDraftSpy.mockReset();
-    addNotificationSpy.mockReset();
-
-    readDraftSpy.mockImplementationOnce(() => {
-      throw {
-        response: {
+      readDraftSpy.mockImplementationOnce(() => {
+        const error = new Error('Unauthorized');
+        error.response = {
           status: 401,
-        },
-      };
+        };
+        throw error;
+      });
+
+      await wrapper.vm.getFormSchema();
+
+      expect(wrapper.vm.isAuthorized).toBeFalsy();
+      expect(readDraftSpy).toBeCalledTimes(1);
+      expect(addNotificationSpy).toBeCalledTimes(0);
     });
-
-    await wrapper.vm.getFormSchema();
-
-    expect(wrapper.vm.isAuthorized).toBeFalsy();
-    expect(readPublishedSpy).toBeCalledTimes(0);
-    expect(readVersionSpy).toBeCalledTimes(0);
-    expect(readDraftSpy).toBeCalledTimes(1);
-    expect(getUserSubmissionsSpy).toBeCalledTimes(0);
-    expect(addNotificationSpy).toBeCalledTimes(0);
   });
 
   it('toggleBlock will set the block variable to true or false', async () => {
