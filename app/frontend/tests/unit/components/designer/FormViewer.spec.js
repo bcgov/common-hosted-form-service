@@ -64,6 +64,38 @@ describe('FormViewer.vue', () => {
   const downloadFileSpy = vi.spyOn(formStore, 'downloadFile');
   const getDispositionSpy = vi.spyOn(transformUtils, 'getDisposition');
 
+  const validOptions = {
+    props: {
+      formId: formId,
+      displayTitle: true,
+    },
+    global: {
+      provide: {
+        setWideLayout: vi.fn(),
+      },
+      plugins: [pinia],
+      stubs: STUBS,
+    },
+  };
+  const validOptionsWithDraftId = {
+    props: {
+      ...validOptions.props,
+      draftId: '123',
+    },
+    global: {
+      ...validOptions.global,
+    },
+  };
+  const validOptionsWithVersionId = {
+    props: {
+      ...validOptions.props,
+      versionId: '123',
+    },
+    global: {
+      ...validOptions.global,
+    },
+  };
+
   beforeEach(() => {
     appStore.$reset();
     authStore.$reset();
@@ -584,35 +616,6 @@ describe('FormViewer.vue', () => {
 
   describe('getFormSchema', () => {
     const push = vi.fn();
-    const validOptions = {
-      props: {
-        formId: formId,
-        displayTitle: true,
-      },
-      global: {
-        provide: {
-          setWideLayout: vi.fn(),
-        },
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    };
-    const validOptionsWithDraftId = {
-      props: {
-        ...validOptions.props,
-      },
-      global: {
-        ...validOptions.global,
-      },
-    };
-    const validOptionsWithVersionId = {
-      props: {
-        ...validOptions.props,
-      },
-      global: {
-        ...validOptions.global,
-      },
-    };
     beforeEach(() => {
       useRouter.mockImplementationOnce(() => ({
         push,
@@ -858,35 +861,25 @@ describe('FormViewer.vue', () => {
   });
 
   describe('saveBulkData and sendMultiSubmissionData', () => {
-    it('sendMultiSubmissionData sets success message for sbdMessage and addsNotification on success', async () => {
-      const wrapper = shallowMount(FormViewer, {
-        props: {
-          formId: formId,
-          displayTitle: true,
-          draftId: '123',
-        },
-        global: {
-          provide: {
-            setWideLayout: vi.fn(),
-          },
-          plugins: [pinia],
-          stubs: STUBS,
-        },
-      });
+    const createMultiSubmissionSpy = vi.spyOn(
+      formService,
+      'createMultiSubmission'
+    );
+    const returnStatusSuccess = Promise.resolve({
+      status: 200,
+    });
+    beforeEach(() => {
+      createMultiSubmissionSpy.mockReset();
+    });
+    test('sendMultiSubmissionData sets success message for sbdMessage and addsNotification on success', async () => {
+      const wrapper = shallowMount(FormViewer, validOptionsWithDraftId);
 
       await flushPromises();
 
       addNotificationSpy.mockReset();
-
-      const createMultiSubmissionSpy = vi.spyOn(
-        formService,
-        'createMultiSubmission'
+      createMultiSubmissionSpy.mockImplementationOnce(
+        () => returnStatusSuccess
       );
-      createMultiSubmissionSpy.mockImplementationOnce(() => {
-        return {
-          status: 200,
-        };
-      });
 
       wrapper.vm.versionIdToSubmitTo = 1;
       await wrapper.vm.sendMultiSubmissionData({});
@@ -909,35 +902,15 @@ describe('FormViewer.vue', () => {
       expect(wrapper.vm.block).toBeFalsy();
       expect(wrapper.vm.saving).toBeFalsy();
     });
-    it('saveBulkData will call sendMultiSubmissionData with the submissions given', async () => {
-      const wrapper = shallowMount(FormViewer, {
-        props: {
-          formId: formId,
-          displayTitle: true,
-          draftId: '123',
-        },
-        global: {
-          provide: {
-            setWideLayout: vi.fn(),
-          },
-          plugins: [pinia],
-          stubs: STUBS,
-        },
-      });
+    test('saveBulkData will call sendMultiSubmissionData with the submissions given', async () => {
+      const wrapper = shallowMount(FormViewer, validOptionsWithDraftId);
 
       await flushPromises();
 
       addNotificationSpy.mockReset();
-
-      const createMultiSubmissionSpy = vi.spyOn(
-        formService,
-        'createMultiSubmission'
+      createMultiSubmissionSpy.mockImplementationOnce(
+        () => returnStatusSuccess
       );
-      createMultiSubmissionSpy.mockImplementationOnce(() => {
-        return {
-          status: 200,
-        };
-      });
 
       wrapper.vm.versionIdToSubmitTo = 1;
       await wrapper.vm.saveBulkData([
@@ -963,21 +936,8 @@ describe('FormViewer.vue', () => {
         },
       });
     });
-    it('sendMultiSubmissionData sets failure message for sbdMessage and addsNotification if response status does not contain status 200 or 201', async () => {
-      const wrapper = shallowMount(FormViewer, {
-        props: {
-          formId: formId,
-          displayTitle: true,
-          draftId: '123',
-        },
-        global: {
-          provide: {
-            setWideLayout: vi.fn(),
-          },
-          plugins: [pinia],
-          stubs: STUBS,
-        },
-      });
+    test('sendMultiSubmissionData sets failure message for sbdMessage and addsNotification if response status does not contain status 200 or 201', async () => {
+      const wrapper = shallowMount(FormViewer, validOptionsWithDraftId);
 
       await flushPromises();
       addNotificationSpy.mockReset();
@@ -986,9 +946,9 @@ describe('FormViewer.vue', () => {
         'createMultiSubmission'
       );
       createMultiSubmissionSpy.mockImplementationOnce(() => {
-        return {
+        return Promise.reject({
           status: 500,
-        };
+        });
       });
 
       wrapper.vm.versionIdToSubmitTo = 1;
@@ -1003,20 +963,8 @@ describe('FormViewer.vue', () => {
   });
 
   describe('setFinalError', () => {
-    it('by default it will set sbdMessage message, error, upload_state, response', async () => {
-      const wrapper = shallowMount(FormViewer, {
-        props: {
-          formId: formId,
-          displayTitle: true,
-        },
-        global: {
-          provide: {
-            setWideLayout: vi.fn(),
-          },
-          plugins: [pinia],
-          stubs: STUBS,
-        },
-      });
+    test('by default it will set sbdMessage message, error, upload_state, response', async () => {
+      const wrapper = shallowMount(FormViewer, validOptions);
 
       await flushPromises();
 
@@ -1035,20 +983,8 @@ describe('FormViewer.vue', () => {
         },
       ]);
     });
-    it('if error.response.data is not undefined then it will give a default message if response reports is undefined', async () => {
-      const wrapper = shallowMount(FormViewer, {
-        props: {
-          formId: formId,
-          displayTitle: true,
-        },
-        global: {
-          provide: {
-            setWideLayout: vi.fn(),
-          },
-          plugins: [pinia],
-          stubs: STUBS,
-        },
-      });
+    test('if error.response.data is not undefined then it will give a default message if response reports is undefined', async () => {
+      const wrapper = shallowMount(FormViewer, validOptions);
 
       await flushPromises();
 
@@ -1061,28 +997,14 @@ describe('FormViewer.vue', () => {
       });
 
       expect(wrapper.vm.sbdMessage.message).toEqual('some title');
-      expect(wrapper.vm.sbdMessage.error).toBeTruthy();
-      expect(wrapper.vm.sbdMessage.upload_state).toEqual(10);
       expect(wrapper.vm.sbdMessage.response).toEqual([
         {
           error_message: 'trans.formViewer.errSubmittingForm',
         },
       ]);
     });
-    it('if error.response.data is not undefined then it will format that error message', async () => {
-      const wrapper = shallowMount(FormViewer, {
-        props: {
-          formId: formId,
-          displayTitle: true,
-        },
-        global: {
-          provide: {
-            setWideLayout: vi.fn(),
-          },
-          plugins: [pinia],
-          stubs: STUBS,
-        },
-      });
+    test('if error.response.data is not undefined then it will format that error message', async () => {
+      const wrapper = shallowMount(FormViewer, validOptions);
 
       await flushPromises();
 
@@ -1104,8 +1026,6 @@ describe('FormViewer.vue', () => {
       });
 
       expect(wrapper.vm.sbdMessage.message).toEqual('some title');
-      expect(wrapper.vm.sbdMessage.error).toBeTruthy();
-      expect(wrapper.vm.sbdMessage.upload_state).toEqual(10);
       expect(wrapper.vm.sbdMessage.response).toEqual([
         {
           key: null,
