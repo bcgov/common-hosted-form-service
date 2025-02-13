@@ -204,7 +204,7 @@
     "labelPrompt": "标签用作对可能属于共同组织或共享相关上下文的相似表单进行分类的手段。",
     "useCaseToolTip": "如果您没有看到您的特定用例，请联系CHEFS团队进一步讨论其他选项",
     "deploymentLevel": "部署级别",
-    "ministryName": "部门",
+    "ministryName": "组织",
     "label": "标签",
     "useCase": "用例类型",
     "development": "开发",
@@ -221,7 +221,7 @@
     "getLabelConsErr": "获取标签时出错：",
     "selectAPIErr": "请告诉我们您对API集成的选择",
     "selectDeploymentErr": "请选择部署级别",
-    "selectMinistryErr": "请选择您的部门",
+    "selectMinistryErr": "请选择您的组织",
     "selectUseCaseErr": "请输入您的表单用例",
     "labelSizeErr": "标签不能超过 25 个字符"
   },
