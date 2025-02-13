@@ -7,8 +7,8 @@ const idpData = require('../../fixtures/form/identity_providers.json');
 idpService.providers = idpData;
 idpService.activeProviders = idpData.filter((x) => x.active);
 // change these as appropriate if adding test case idps...
-const IDP_COUNT = 6;
-const IDP_ACTIVE_COUNT = 5;
+const IDP_COUNT = 7;
+const IDP_ACTIVE_COUNT = 6;
 
 jest.mock('../../../src/forms/common/models/tables/user', () => MockModel);
 
@@ -151,8 +151,8 @@ describe('idpService', () => {
     expect(MockModel.modify).toBeCalledTimes(9);
   });
 
-  it('should throw error when customized user search fails validation', async () => {
-    let e = undefined;
+  it('should throw error when customized user search fails validation for required > 1 (one of group required)', async () => {
+    let e;
     try {
       // needs one of email or username
       await idpService.userSearch({ idpCode: 'bceid-business' });
@@ -162,6 +162,41 @@ describe('idpService', () => {
     expect(e).toBeTruthy();
     expect(e).toBeInstanceOf(Error);
     expect(e.message).toBe('Could not retrieve BCeID users. Invalid options provided.');
+  });
+
+  it('should throw error when customized user search fails validation for required = 1 (all in group required, none passed in)', async () => {
+    let e;
+    try {
+      // needs both firstName, lastName, none should fail
+      await idpService.userSearch({ idpCode: 'searchtestonly' });
+    } catch (error) {
+      e = error;
+    }
+    expect(e).toBeTruthy();
+    expect(e).toBeInstanceOf(Error);
+    expect(e.message).toBe('searchtestonly userSearch failed.');
+  });
+
+  it('should throw error when customized user search fails validation for required = 1 (all in group required, one passed in)', async () => {
+    let e;
+    try {
+      // needs both firstName, lastName, only one should fail
+      await idpService.userSearch({ idpCode: 'searchtestonly', firstName: 'first' });
+    } catch (error) {
+      e = error;
+    }
+    expect(e).toBeTruthy();
+    expect(e).toBeInstanceOf(Error);
+    expect(e.message).toBe('searchtestonly userSearch failed.');
+  });
+
+  it('should throw pass when customized user searchfor required = 1 (all in group required, all passed in)', async () => {
+    // passing both should succeed
+    const s = await idpService.userSearch({ idpCode: 'searchtestonly', firstName: 'first', lastName: 'last' });
+    expect(s).toBeFalsy();
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.modify).toBeCalledWith('filterFirstName', 'first');
+    expect(MockModel.modify).toBeCalledWith('filterLastName', 'last');
   });
 
   it('should parse null token into public userInfo', async () => {
@@ -174,8 +209,8 @@ describe('idpService', () => {
 
   it('should return userInfo with known provider', async () => {
     const token = idirToken();
-    let r = undefined;
-    let e = undefined;
+    let r;
+    let e;
     try {
       r = await idpService.parseToken(token);
     } catch (error) {
@@ -190,8 +225,8 @@ describe('idpService', () => {
 
   it('should throw Problem parsing token without a provider', async () => {
     const token = {};
-    let r = undefined;
-    let e = undefined;
+    let r;
+    let e;
     try {
       r = await idpService.parseToken(token);
     } catch (error) {
@@ -204,8 +239,8 @@ describe('idpService', () => {
 
   it('should throw Problem parsing token with an unknown provider', async () => {
     const token = { identity_provider: 'doesnotexist' };
-    let r = undefined;
-    let e = undefined;
+    let r;
+    let e;
     try {
       r = await idpService.parseToken(token);
     } catch (error) {
@@ -218,8 +253,8 @@ describe('idpService', () => {
 
   it('should return userInfo with good digitalcredential token', async () => {
     const token = digitalCredentialToken();
-    let r = undefined;
-    let e = undefined;
+    let r;
+    let e;
     try {
       r = await idpService.parseToken(token);
     } catch (error) {
@@ -236,5 +271,7 @@ describe('idpService', () => {
     expect(r.email).toBe('patrick.swayze@gmail.com');
     expect(r.firstName).toBe('patrick');
     expect(r.lastName).toBe('swayze');
+    // test raw parsing
+    expect(r.fullName).toBe('placeholder');
   });
 });

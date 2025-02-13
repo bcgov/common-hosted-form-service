@@ -38,6 +38,21 @@ export const useIdpStore = defineStore('idps', {
       }
       return result;
     },
+    addTeamMemberButtons: (state) => {
+      const result = [];
+      if (state.providers) {
+        for (const p of state.providers) {
+          if (p.login && (p.primary || p.extra?.addTeamMemberSearch)) {
+            result.push({
+              code: p.code,
+              display: p.display,
+              hint: p.idp,
+            });
+          }
+        }
+      }
+      return result;
+    },
   },
   actions: {
     isPrimary(code) {
