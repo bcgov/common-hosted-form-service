@@ -85,6 +85,9 @@ class IdpService {
             throw new Error(`Value in token mapped to '${key}' cannot be converted from JSON.`);
           }
           break;
+        case 'raw':
+          tokenValue = k_fn[0]; // just take the key as value, no conversion, no lookup
+          break;
         default:
           throw new Error(`Value in token mapped to '${key}' specified unknown parsing routine: ${fn}.`);
       }

@@ -54,6 +54,18 @@ export const useIdpStore = defineStore('idps', {
       }
       return false;
     },
+    getLoginOptions(hint) {
+      let result = ''; // return empty string so no check needed to add to existing string.
+      if (hint && this.providers) {
+        const idp = this.providers.find((x) => x.idp === hint);
+        if (idp) {
+          if (idp.extra?.loginOptions) {
+            result = idp.extra?.loginOptions;
+          }
+        }
+      }
+      return result;
+    },
     hasFormAccessSettings(code, accessSettingsType) {
       let result = false;
       if (code && accessSettingsType && this.providers) {

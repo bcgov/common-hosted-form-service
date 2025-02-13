@@ -247,6 +247,8 @@ objects:
                 #   value: "/var/log/app.log"
               envFrom:
                 - configMapRef:
+                    name: "${APP_NAME}-bcsc-demo-oidc-config"
+                - configMapRef:
                     name: "${APP_NAME}-frontend-config"
                 - configMapRef:
                     name: "${APP_NAME}-sc-config"
