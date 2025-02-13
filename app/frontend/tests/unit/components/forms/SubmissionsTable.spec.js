@@ -788,7 +788,7 @@ describe('SubmissionsTable.vue', () => {
       itemsPerPage: 2,
       sortBy: [{ key: 'something', order: 'desc' }],
     });
-    it('should not refresh submissions if firstDataLoad is true', () => {
+  it('should not refresh submissions if firstDataLoad is true', () => {
     vi.clearAllMocks();  // Reset all mocks before the test
     // should not refresh submissions
     wrapper.vm.firstDataLoad = true;
