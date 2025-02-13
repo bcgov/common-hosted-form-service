@@ -243,6 +243,7 @@
       "email": "vc_presented_attributes,email::parseJsonField",
       "firstName": "vc_presented_attributes,name.first::parseJsonField",
       "lastName": "vc_presented_attributes,name.last::parseJsonField",
+      "fullName": "placeholder::raw",
       "idp": "identity_provider"
     },
     "extra": {}
@@ -259,5 +260,36 @@
     "permissions": [],
     "roles": null,
     "extra": {}
+  },
+  {
+    "code": "searchtestonly",
+    "display": "N/A",
+    "active": true,
+    "idp": "searchtestonly",
+    "createdBy": "searchtestonly",
+    "createdAt": "2024-03-08T22:02:34.399Z",
+    "updatedBy": null,
+    "login": false,
+    "permissions": [],
+    "roles": null,
+    "extra": {
+      "userSearch": {
+        "detail": "searchtestonly userSearch failed.",
+        "filters": [
+          {
+            "name": "filterFirstName",
+            "param": "firstName",
+            "required": 1,
+            "caseSensitive": false
+          },
+          {
+            "name": "filterLastName",
+            "param": "lastName",
+            "required": 1,
+            "caseSensitive": false
+          }
+        ]
+      }
+    }
   }
 ]
