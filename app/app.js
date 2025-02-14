@@ -59,6 +59,12 @@ app.use((_req, res, next) => {
 
 app.use(config.get('server.basePath') + config.get('server.apiPath'), rateLimiter);
 
+// Set the CSP header so that external media cannot be displayed in the forms.
+app.use((_req, res, next) => {
+  res.setHeader('Content-Security-Policy', "default-src 'self'");
+  next();
+});
+
 // Frontend configuration endpoint
 apiRouter.use('/config', (_req, res, next) => {
   try {
