@@ -243,8 +243,10 @@ describe('AdminAPIsTable.vue', () => {
   });
 
   it('saveItem should call updateExternalAPI and getExternalAPIs', async () => {
-    adminStore.getExternalAPIs.mockImplementation(() => {});
-    adminStore.updateExternalAPI.mockImplementation(() => {});
+    const updateExternalAPISpy = vi.spyOn(adminStore, 'updateExternalAPI');
+    updateExternalAPISpy.mockImplementation(() => {});
+    const getExternalAPIsSpy = vi.spyOn(adminStore, 'getExternalAPIs');
+    getExternalAPIsSpy.mockImplementation(() => {});
 
     const wrapper = shallowMount(AdminAPIsTable, {
       props: {},
@@ -255,10 +257,9 @@ describe('AdminAPIsTable.vue', () => {
     });
     await nextTick();
 
-    const updateExternalAPISpy = vi.spyOn(adminStore, 'updateExternalAPI');
-    updateExternalAPISpy.mockImplementation(() => {});
-    const getExternalAPIsSpy = vi.spyOn(adminStore, 'getExternalAPIs');
-    getExternalAPIsSpy.mockImplementation(() => {});
+    // Clear the spy counts to ignore any calls during mount
+    updateExternalAPISpy.mockClear();
+    getExternalAPIsSpy.mockClear();
 
     await wrapper.vm.saveItem();
     expect(updateExternalAPISpy).toBeCalledTimes(1);
