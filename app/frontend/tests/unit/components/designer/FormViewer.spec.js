@@ -293,8 +293,8 @@ describe('FormViewer.vue', () => {
     expect(wrapper.vm.canSaveDraft).toBeTruthy();
   });
 
-  it('onMounted', () => {
-    describe('will add event listener beforeunload will show modal and getFormSchema', async () => {
+  describe('onMounted', () => {
+    it('will add event listener beforeunload will show modal and getFormSchema', async () => {
       const wrapper = shallowMount(FormViewer, {
         props: {
           formId: formId,
@@ -317,7 +317,7 @@ describe('FormViewer.vue', () => {
       expect(addEventListenerSpy).toBeCalledTimes(1);
       expect(addNotificationSpy).toBeCalledTimes(0);
     });
-    describe('if submission id and it is not a duplicate, it should call getFormData', async () => {
+    it('if submission id and it is not a duplicate, it should call getFormData', async () => {
       const wrapper = shallowMount(FormViewer, {
         props: {
           formId: formId,

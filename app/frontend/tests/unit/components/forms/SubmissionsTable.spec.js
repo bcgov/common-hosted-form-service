@@ -788,12 +788,9 @@ describe('SubmissionsTable.vue', () => {
       itemsPerPage: 2,
       sortBy: [{ key: 'something', order: 'desc' }],
     });
-  it('should not refresh submissions if firstDataLoad is true', () => {
-    vi.clearAllMocks();  // Reset all mocks before the test
-    // should not refresh submissions
     wrapper.vm.firstDataLoad = true;
-    expect(getFormPreferencesForCurrentUserSpy).not.toHaveBeenCalled();
-    expect(fetchSubmissionsSpy).not.toHaveBeenCalled();
+    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(0);
+    expect(fetchSubmissionsSpy).toBeCalledTimes(0);
     expect(wrapper.vm.currentPage).toEqual(5);
     expect(wrapper.vm.sort).toEqual({
       column: 'something',
