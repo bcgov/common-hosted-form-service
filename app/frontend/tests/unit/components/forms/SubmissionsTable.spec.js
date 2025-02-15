@@ -740,19 +740,19 @@ describe('SubmissionsTable.vue', () => {
 
     getFormPreferencesForCurrentUserSpy.mockReset();
     fetchSubmissionsSpy.mockReset();
-
+    wrapper.vm.firstDataLoad = true;
     await wrapper.vm.updateTableOptions({
       page: 5,
       itemsPerPage: 2,
       sortBy: [{ key: 'date', order: 'desc' }],
     });
     // should not refresh submissions
-    wrapper.vm.firstDataLoad = true;
     expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(0);
     expect(fetchSubmissionsSpy).toBeCalledTimes(0);
     expect(wrapper.vm.currentPage).toEqual(5);
     expect(wrapper.vm.sort).toEqual({ column: 'createdAt', order: 'desc' });
     expect(wrapper.vm.itemsPP).toEqual(2);
+    wrapper.vm.firstDataLoad = true;
 
     await wrapper.vm.updateTableOptions({
       page: 5,
@@ -760,12 +760,12 @@ describe('SubmissionsTable.vue', () => {
       sortBy: [{ key: 'submitter', order: 'desc' }],
     });
     // should not refresh submissions
-    wrapper.vm.firstDataLoad = true;
     expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(0);
     expect(fetchSubmissionsSpy).toBeCalledTimes(0);
     expect(wrapper.vm.currentPage).toEqual(5);
     expect(wrapper.vm.sort).toEqual({ column: 'createdBy', order: 'desc' });
     expect(wrapper.vm.itemsPP).toEqual(2);
+    wrapper.vm.firstDataLoad = true;
 
     await wrapper.vm.updateTableOptions({
       page: 5,
@@ -773,7 +773,6 @@ describe('SubmissionsTable.vue', () => {
       sortBy: [{ key: 'status', order: 'desc' }],
     });
     // should not refresh submissions
-    wrapper.vm.firstDataLoad = true;
     expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(0);
     expect(fetchSubmissionsSpy).toBeCalledTimes(0);
     expect(wrapper.vm.currentPage).toEqual(5);
@@ -782,13 +781,12 @@ describe('SubmissionsTable.vue', () => {
       order: 'desc',
     });
     expect(wrapper.vm.itemsPP).toEqual(2);
-
+    wrapper.vm.firstDataLoad = true;
     await wrapper.vm.updateTableOptions({
       page: 5,
       itemsPerPage: 2,
       sortBy: [{ key: 'something', order: 'desc' }],
     });
-    wrapper.vm.firstDataLoad = true;
     expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(0);
     expect(fetchSubmissionsSpy).toBeCalledTimes(0);
     expect(wrapper.vm.currentPage).toEqual(5);
