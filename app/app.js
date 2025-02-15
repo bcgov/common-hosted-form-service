@@ -27,6 +27,13 @@ const state = {
 
 let probeId;
 const app = express();
+
+// Set the CSP header so that external media cannot be displayed in the forms.
+app.use((_req, res, next) => {
+  res.setHeader('Content-Security-Policy', "default-src 'self' " + "font-src 'self' https:");
+  next();
+});
+
 app.use(compression());
 app.use(express.json({ limit: config.get('server.bodyLimit') }));
 app.use(express.urlencoded({ extended: true }));
