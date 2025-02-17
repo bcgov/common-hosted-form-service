@@ -7,6 +7,7 @@ const CREATED_BY = 'idp_bcservicescard';
 // Our deployments (db and app container) explicitly run with NODE_ENV=production
 const BCSC_IDP = process.env.NODE_ENV === 'production' ? 'chefs-frontend-5299' : 'chefs-frontend-localhost-5300';
 
+const ACTIVE = false; // until this IDP has been approved for production consider it inactive.
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
@@ -18,7 +19,7 @@ exports.up = function (knex) {
         createdBy: CREATED_BY,
         code: 'bcservicescard',
         display: 'BC Services Card',
-        active: true,
+        active: ACTIVE,
         idp: BCSC_IDP,
         primary: false,
         login: true,
