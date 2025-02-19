@@ -35,6 +35,7 @@ app.use((_req, res, next) => {
     "default-src 'self'; " +
       "connect-src 'self' https://dev.loginproxy.gov.bc.ca; " +
       "font-src 'self' https://fonts.gstatic.com; " +
+      "script-src 'self' 'unsafe-eval'; " +
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com"
   );
   next();
