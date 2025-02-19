@@ -36,6 +36,7 @@ app.use((_req, res, next) => {
       "default-src 'self'; " +
       "font-src 'self' https://fonts.gstatic.com; " +
       "frame-src 'self' https://www.youtube.com; " +
+      "img-src 'self' data: ; " +
       "script-src 'self' 'unsafe-eval'; " +
       "script-src-elem 'self' https://cdn.form.io; " +
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com"
