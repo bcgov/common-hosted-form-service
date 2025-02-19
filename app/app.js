@@ -32,11 +32,12 @@ const app = express();
 app.use((_req, res, next) => {
   res.setHeader(
     'Content-Security-Policy',
-    "default-src 'self'; " +
-      "connect-src 'self' https://dev.loginproxy.gov.bc.ca; " +
+    "connect-src 'self' https://*.loginproxy.gov.bc.ca https://loginproxy.gov.bc.ca; " +
+      "default-src 'self'; " +
       "font-src 'self' https://fonts.gstatic.com; " +
       "frame-src 'self' https://www.youtube.com; " +
       "script-src 'self' 'unsafe-eval'; " +
+      "script-src-elem 'self' https://cdn.form.io; " +
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com"
   );
   next();
