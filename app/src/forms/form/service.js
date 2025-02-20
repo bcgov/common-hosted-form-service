@@ -127,7 +127,6 @@ const service = {
       await FormVersionDraft.query(trx).insert(draft);
 
       // Map all status codes to the form - hardcoded to include all states
-      // TODO: Could make this more dynamic and settable by the user if that feature is required
       const defaultStatuses = Object.values(Statuses).map((status) => ({
         id: uuid.v4(),
         formId: obj.id,
@@ -355,7 +354,7 @@ const service = {
     return DocumentTemplate.query().findById(documentTemplateId).modify('filterActive', true).throwIfNotFound();
   },
 
-  listFormSubmissions: async (formId, params) => {
+  _initFormSubmissionsListQuery: (formId, params) => {
     const query = SubmissionMetadata.query()
       .where('formId', formId)
       .modify('filterSubmissionId', params.submissionId)
@@ -366,11 +365,16 @@ const service = {
       .modify('filterFormVersionId', params.formVersionId)
       .modify('filterVersion', params.version)
       .modify('filterformSubmissionStatusCode', params.filterformSubmissionStatusCode)
-      .modify('orderDefault', params.sortBy && params.page ? true : false, params);
+      .modify('orderDefault', !!(params.sortBy && params.page), params);
 
     if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length === 2) {
       query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
     }
+    return query;
+  },
+
+  listFormSubmissions: async (formId, params) => {
+    const query = service._initFormSubmissionsListQuery(formId, params);
 
     const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
 
@@ -415,36 +419,29 @@ const service = {
   },
 
   async processPaginationData(query, page, itemsPerPage, totalSubmissions, search, searchEnabled) {
-    let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : searchEnabled !== undefined ? JSON.parse(searchEnabled) : false;
+    const isSearchEnabled = (x) => (x !== undefined ? JSON.parse(x) : false);
+    let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : isSearchEnabled(searchEnabled);
     if (isSearchAble) {
       let submissionsData = await query;
       let result = {
         results: [],
         total: 0,
       };
+
+      const isDateLike = (x, s) =>
+        !typeUtils.isBoolean(x) && !typeUtils.isNil(x) && typeUtils.isDate(x) && moment(new Date(x)).format('YYYY-MM-DD hh:mm:ss a').toString().includes(s);
+      const isStringLike = (x, s) => typeUtils.isString(x) && x.toLowerCase().includes(s.toLowerCase());
+      const isNumberLike = (x, s) => (typeUtils.isNil(x) || typeUtils.isBoolean(x) || (typeUtils.isNumeric(x) && typeUtils.isNumeric(s))) && parseFloat(x) === parseFloat(s);
+
       let searchedData = submissionsData.filter((data) => {
         return Object.keys(data).some((key) => {
           if (key !== 'submissionId' && key !== 'formVersionId' && key !== 'formId') {
             if (!Array.isArray(data[key]) && !typeUtils.isObject(data[key])) {
-              if (
-                !typeUtils.isBoolean(data[key]) &&
-                !typeUtils.isNil(data[key]) &&
-                typeUtils.isDate(data[key]) &&
-                moment(new Date(data[key])).format('YYYY-MM-DD hh:mm:ss a').toString().includes(search)
-              ) {
+              if (isDateLike(data[key], search) || isStringLike(data[key], search) || isNumberLike(data[key], search)) {
                 result.total = result.total + 1;
                 return true;
               }
-              if (typeUtils.isString(data[key]) && data[key].toLowerCase().includes(search.toLowerCase())) {
-                result.total = result.total + 1;
-                return true;
-              } else if (
-                (typeUtils.isNil(data[key]) || typeUtils.isBoolean(data[key]) || (typeUtils.isNumeric(data[key]) && typeUtils.isNumeric(search))) &&
-                parseFloat(data[key]) === parseFloat(search)
-              ) {
-                result.total = result.total + 1;
-                return true;
-              }
+              return false;
             }
             return false;
           }
@@ -455,16 +452,14 @@ const service = {
       let end = page * itemsPerPage + itemsPerPage;
       result.results = searchedData.slice(start, end);
       return result;
-    } else {
-      if (itemsPerPage && parseInt(itemsPerPage) === -1) {
-        return await query.page(parseInt(page), parseInt(totalSubmissions || 0));
-      } else if (itemsPerPage && parseInt(page) >= 0) {
-        return await query.page(parseInt(page), parseInt(itemsPerPage));
-      }
+    } else if (itemsPerPage && parseInt(itemsPerPage) === -1) {
+      return await query.page(parseInt(page), parseInt(totalSubmissions || 0));
+    } else if (itemsPerPage && parseInt(page) >= 0) {
+      return await query.page(parseInt(page), parseInt(itemsPerPage));
     }
   },
 
-  publishVersion: async (formId, formVersionId, params = {}, currentUser) => {
+  publishVersion: async (formId, formVersionId, currentUser, params = {}) => {
     let trx;
     let result;
     // allow an unpublish if they pass in unpublish parameter with an affirmative
@@ -507,7 +502,6 @@ const service = {
 
   readVersionFields: async (formVersionId) => {
     // Recursively find all field key names
-    // TODO: Consider if this should be a form utils function instead?
     const findFields = (obj) => {
       const fields = [];
       if (!obj.hidden) {
@@ -549,15 +543,13 @@ const service = {
       const createdBy = isPublicForm ? 'public' : currentUser.usernameIdp;
 
       const submissionId = uuid.v4();
-      const obj = Object.assign(
-        {
-          id: submissionId,
-          formVersionId: formVersion.id,
-          confirmationId: submissionId.substring(0, 8).toUpperCase(),
-          createdBy: createdBy,
-        },
-        data
-      );
+      const obj = {
+        id: submissionId,
+        formVersionId: formVersion.id,
+        confirmationId: submissionId.substring(0, 8).toUpperCase(),
+        createdBy: createdBy,
+        ...data,
+      };
 
       await FormSubmission.query(trx).insert(obj);
 
@@ -714,7 +706,7 @@ const service = {
       trx = await FormVersionDraft.startTransaction();
 
       // data.schema, maybe data.formVersionId
-      const obj = Object.assign({}, data);
+      const obj = { ...data };
       obj.id = uuid.v4();
       obj.formId = form.id;
       obj.createdBy = currentUser.usernameIdp;
@@ -971,7 +963,7 @@ const service = {
       jsonPayload.forEach(function (submission) {
         delete submission.submit;
         delete submission.lateEntry;
-        if (Object.prototype.hasOwnProperty.call(submission, 'form')) {
+        if (Object.hasOwn(submission, 'form')) {
           const propsToRemove = ['confirmationId', 'formName', 'version', 'createdAt', 'fullName', 'username', 'email', 'status', 'assignee', 'assigneeEmail'];
 
           propsToRemove.forEach((key) => delete submission.form[key]);
@@ -987,19 +979,15 @@ const service = {
 
   _getDefaultEmailTemplate: (formId, type) => {
     let template;
-
-    switch (type) {
-      case EmailTypes.SUBMISSION_CONFIRMATION:
-        template = {
-          body: 'Thank you for your {{ form.name }} submission. You can view your submission details by visiting the following links:',
-          formId: formId,
-          subject: '{{ form.name }} Accepted',
-          title: '{{ form.name }} Accepted',
-          type: type,
-        };
-        break;
+    if (EmailTypes.SUBMISSION_CONFIRMATION === type) {
+      template = {
+        body: 'Thank you for your {{ form.name }} submission. You can view your submission details by visiting the following links:',
+        formId: formId,
+        subject: '{{ form.name }} Accepted',
+        title: '{{ form.name }} Accepted',
+        type: type,
+      };
     }
-
     return template;
   },
 

@@ -979,7 +979,7 @@ describe('publishVersion', () => {
     eventService.publishFormEvent = jest.fn().mockResolvedValueOnce();
     eventStreamService.onPublish = jest.fn().mockResolvedValueOnce();
 
-    await service.publishVersion(formId, '123', {}, currentUser);
+    await service.publishVersion(formId, '123', currentUser, {});
 
     expect(eventService.publishFormEvent).toBeCalledTimes(1);
     expect(eventStreamService.onPublish).toBeCalledTimes(1);

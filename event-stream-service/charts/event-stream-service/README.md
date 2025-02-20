@@ -20,8 +20,10 @@ This current documentation will be very simple and make assumptions:
 
 ```
 oc login --token=sha256~yk5BCjn0syJV0qXEyPk12s09v-RIdmTeLVdQmQrQEBc --server=https://api.silver.devops.gov.bc.ca:6443
-helm upgrade --install event-stream-service ./charts/event-stream-service -f ./charts/event-stream-service/values.yaml
+helm upgrade --install event-stream-service ./charts/event-stream-service -f ./charts/event-stream-service/values.yaml -f ./charts/event-stream-service/authorizations.yaml
 ```
+
+**IMPORTANT** we always include the [authorizations](./authorizations.yaml) value file in the command. This will merge the authorized users list into the NATS configuration. The authorizations list will grow and it will be easier to maintain outside of the main values file.
 
 To set up a CHEFS instance to use this installation of Event Stream Service, you will need to know the server name and you will need the generated secret for the `chefs` account.
 
@@ -43,13 +45,13 @@ oc delete pvc -l 'app.kubernetes.io/instance=event-stream-service'
 oc delete secret -l 'app.kubernetes.io/instance=event-stream-service'
 ```
 
-## Future
+## Environment Specific
 
-We will need to create different param override (values) files for each instance. Each namespace and instance will have different resource allocation that we need to tune.
+Each namespace and instance will have different resource allocation that we need to tune.
 You can specify the '--values'/'-f' flag multiple times. The priority will be given to the last (right-most) file specified.
 
 ```
-helm upgrade --install event-stream-service ./charts/event-stream-service -f ./charts/event-stream-service/values.yaml -f ./charts/event-stream-service/values-prod.yaml
+helm upgrade --install event-stream-service ./charts/event-stream-service -f ./charts/event-stream-service/values.yaml -f ./charts/event-stream-service/values-prod.yaml -f ./charts/event-stream-service/authorizations.yaml
 ```
 
-This would apply our default values file (`values.yaml`) with any overrides found in `values-prod.yaml` taking priority.
+This would apply our default values file (`values.yaml`) with any overrides found in `values-prod.yaml` taking priority, followed by our authorizations (users) configuration.
