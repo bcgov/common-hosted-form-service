@@ -39,7 +39,7 @@ const app = express();
 app.use((_req, res, next) => {
   res.setHeader(
     'Content-Security-Policy',
-    "connect-src 'self' https://*.loginproxy.gov.bc.ca https://loginproxy.gov.bc.ca; " +
+    "connect-src 'self' https://*.loginproxy.gov.bc.ca https://loginproxy.gov.bc.ca https://orgbook.gov.bc.ca; " +
       "default-src 'self'; " +
       "font-src 'self' https://fonts.gstatic.com; " +
       "frame-src 'self' https://www.youtube.com; " +
