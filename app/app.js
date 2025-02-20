@@ -33,18 +33,20 @@ const app = express();
 //  "style": "background-image: url(https://dev.roadsafetybc.gov.bc.ca/img/chefs/bodychart/R_UPPERLIMB_1a.png);  background-repeat: no-repeat; background-position: 50% 50%; height: 171px;  width: 252px;  border: none;"
 // },
 
+// TODO TOO: don't really want to include unpkg.com for images, do we?
+
 // Set the CSP header so that external media cannot be displayed in the forms.
 app.use((_req, res, next) => {
   res.setHeader(
     'Content-Security-Policy',
-    "connect-src 'self' https://*.loginproxy.gov.bc.ca/ https://loginproxy.gov.bc.ca/; " +
+    "connect-src 'self' https://*.loginproxy.gov.bc.ca https://loginproxy.gov.bc.ca; " +
       "default-src 'self'; " +
-      "font-src 'self' https://fonts.gstatic.com/; " +
-      "frame-src 'self' https://www.youtube.com/; " +
-      "img-src 'self' data: https://*.tile.openstreetmap.org/; " +
+      "font-src 'self' https://fonts.gstatic.com; " +
+      "frame-src 'self' https://www.youtube.com; " +
+      "img-src 'self' data: https://*.tile.openstreetmap.org https://unpkg.com; " +
       "script-src 'self' 'unsafe-eval' blob:; " +
-      "script-src-elem 'self' https://cdn.form.io/; " +
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/"
+      "script-src-elem 'self' https://cdn.form.io; " +
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com"
   );
   next();
 });
