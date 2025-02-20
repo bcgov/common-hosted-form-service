@@ -21,8 +21,8 @@ exports.up = function (knex) {
     )
     .then(() => {
       const dummydata = {
-        accountName: 'development_user',
-        notes: { msg: 'this is not a valid ESS user, you cannot connect with this. It is only for development and testing of logic.', development: true },
+        accountName: 'UCT3KJ7BCOK3ZH5KSAJTHL3WRB5CX2MJ2XMKX2R7FRZUAUYC427TGESZ',
+        notes: { msg: 'A CHEFS developer ESS account. You will need to know the Seed (private key) to connect.' },
         createdBy: 'ess_allowlist_migration',
       };
       return knex('ess_allowlist').insert(dummydata);
