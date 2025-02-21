@@ -85,6 +85,9 @@ class IdpService {
             throw new Error(`Value in token mapped to '${key}' cannot be converted from JSON.`);
           }
           break;
+        case 'raw':
+          tokenValue = k_fn[0]; // just take the key as value, no conversion, no lookup
+          break;
         default:
           throw new Error(`Value in token mapped to '${key}' specified unknown parsing routine: ${fn}.`);
       }
@@ -93,6 +96,28 @@ class IdpService {
     }
     // errors if no value???
     return tokenValue;
+  }
+
+  async _populateFromToken(token, userInfo) {
+    // token needs `identity_provider` field
+    if (IDP_KEY in token) {
+      // can we find the idp?
+      const idp = await this.findByIdp(token[IDP_KEY]);
+      if (idp) {
+        // now do the mapping...
+        for (const key of Object.keys(userInfo)) {
+          const tokenKey = idp.tokenmap[key];
+          if (tokenKey) {
+            userInfo[key] = await this.getValue(key, tokenKey, token);
+          }
+        }
+        userInfo.public = false;
+      } else {
+        throw new Error(`Cannot find configuration for Identity Provider: '${token[IDP_KEY]}'.`);
+      }
+    } else {
+      throw new Error(`Token does not have an '${IDP_KEY}' value. Cannot parse token.`);
+    }
   }
 
   // given a token, determine idp and transform
@@ -110,30 +135,46 @@ class IdpService {
         public: true,
       };
       if (token) {
-        // token needs `identity_provider` field
-        if (IDP_KEY in token) {
-          // can we find the idp?
-          const idp = await this.findByIdp(token[IDP_KEY]);
-          if (idp) {
-            // now do the mapping...
-            for (const key of Object.keys(userInfo)) {
-              const tokenKey = idp.tokenmap[key];
-              if (tokenKey) {
-                userInfo[key] = await this.getValue(key, tokenKey, token);
-              }
-            }
-            userInfo.public = false;
-          } else {
-            throw new Error(`Cannot find configuration for Identity Provider: '${token[IDP_KEY]}'.`);
-          }
-        } else {
-          throw new Error(`Token does not have an '${IDP_KEY}' value. Cannot parse token.`);
-        }
+        await this._populateFromToken(token, userInfo);
       }
       return userInfo;
     } catch (e) {
       errorToProblem(SERVICE, e);
     }
+  }
+
+  _validateQueryGroups(idp, params, q) {
+    // find all the different groupings for required.
+    //   0 : not required
+    //   1 : required
+    // > 1 : params are grouped by number, one of each group is required.
+
+    let valid = false;
+    const requiredTypes = Array.from(new Set(idp.extra.userSearch.filters.map((x) => x.required)));
+    for (const reqd of requiredTypes) {
+      const filters = idp.extra.userSearch.filters.filter((x) => x.required === reqd);
+      let groupValid = reqd === 1;
+      for (const f of filters) {
+        // add the filter to the query...
+        this.applyUserSearchFilters(f, params, q);
+        //
+        // ok, check for required...
+        //
+        const value = params[f.param];
+        if (reqd < 1) {
+          // if required < 1, do nothing, always valid
+          groupValid = true;
+        } else if (reqd === 1 && isEmpty(value)) {
+          // if required = 1, all filters in this group are required.
+          groupValid = false;
+        } else {
+          // only one of the filters in this group is required.
+          groupValid = isNotEmpty(value);
+        }
+      }
+      valid = groupValid;
+    }
+    return valid;
   }
 
   async userSearch(params) {
@@ -143,39 +184,7 @@ class IdpService {
       if (idp && idp.extra?.userSearch) {
         // ok, this idp has specific requirements of user search...
         const q = User.query();
-
-        // find all the different groupings for required.
-        //   0 : not required
-        //   1 : required
-        // > 1 : params are grouped by number, one of each group is required.
-
-        const requiredTypes = Array.from(new Set(idp.extra.userSearch.filters.map((x) => x.required)));
-        let valid = false;
-        for (const reqd of requiredTypes) {
-          const filters = idp.extra.userSearch.filters.filter((x) => x.required === reqd);
-          let groupValid = reqd === 1 ? true : false;
-          for (const f of filters) {
-            // add the filter to the query...
-            this.applyUserSearchFilters(f, params, q);
-            //
-            // ok, check for required...
-            //
-            const value = params[f.param];
-            if (reqd < 1) {
-              // if required < 1, do nothing, always valid
-              groupValid = true;
-            } else if (reqd === 1 && isEmpty(value)) {
-              // if required = 1, all filters in this group are required.
-              groupValid = false;
-            } else {
-              // only one of the filters in this group is required.
-              if (isNotEmpty(value)) {
-                groupValid = true;
-              }
-            }
-          }
-          valid = groupValid ? true : false;
-        }
+        let valid = this._validateQueryGroups(idp, params, q);
         // ok, if not valid then we want to throw an error
         if (!valid) {
           throw new Error(idp.extra.userSearch.detail);

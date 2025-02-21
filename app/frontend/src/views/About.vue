@@ -80,7 +80,7 @@ const chefsTourVideoUrl = computed(() => import.meta.env.VITE_CHEFSTOURURL);
       <v-col cols="12" lg="4">
         <BaseImagePopout
           alt="Drag and Drop demo"
-          src="https://raw.githubusercontent.com/wiki/bcgov/common-hosted-form-service/images/quickstart.png"
+          src="images/quickstart.png"
           width="600px"
           :lang="locale"
         />
@@ -99,7 +99,7 @@ const chefsTourVideoUrl = computed(() => import.meta.env.VITE_CHEFSTOURURL);
       <v-col cols="12" lg="4">
         <BaseImagePopout
           alt="Drag and Drop demo"
-          src="https://raw.githubusercontent.com/wiki/bcgov/common-hosted-form-service/images/drag_drop.png"
+          src="images/drag_drop.png"
           width="600px"
           :lang="locale"
         />
@@ -121,7 +121,7 @@ const chefsTourVideoUrl = computed(() => import.meta.env.VITE_CHEFSTOURURL);
       <v-col cols="12" lg="4">
         <BaseImagePopout
           alt="Export demo"
-          src="https://raw.githubusercontent.com/wiki/bcgov/common-hosted-form-service/images/team-management.png"
+          src="images/team-management.png"
           width="600px"
           :lang="locale"
         />
