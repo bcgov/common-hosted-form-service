@@ -42,6 +42,8 @@ app.use((_req, res, next) => {
     "connect-src 'self' https://*.loginproxy.gov.bc.ca https://loginproxy.gov.bc.ca https://orgbook.gov.bc.ca; " +
       "default-src 'self'; " +
       "font-src 'self' https://fonts.gstatic.com; " +
+      "form-action 'self'; " +
+      "frame-ancestors 'self'; " +
       "frame-src 'self' https://www.youtube.com; " +
       "img-src 'self' data: https://*.tile.openstreetmap.org https://unpkg.com; " +
       "script-src 'self' 'unsafe-eval' blob:; " +
