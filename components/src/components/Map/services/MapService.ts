@@ -95,11 +95,7 @@ class MapService {
         options.onDrawnItemsChange(drawnItems.getLayers());
       });
       map.on(L.Draw.Event.EDITSTOP, (e) => {
-        //options.onDrawnItemsChange(drawnItems.getLayers());
-      });
-      map.on(L.Draw.Event.DELETESTOP, (e) => {
-        // Handle delete stop event
-        this.disableDeleteMode(); // Disable delete mode after deleting
+        options.onDrawnItemsChange(drawnItems.getLayers());
       });
       map.on('resize', () => {
         map.invalidateSize();
