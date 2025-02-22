@@ -54,6 +54,7 @@ export default class Component extends (FieldComponent as any) {
   }
 
   loadMap() {
+    console.log('Map Loading');
     const mapContainer = document.getElementById(`map-${this.componentID}`);
     const form = document.getElementsByClassName('formio');
 
@@ -122,6 +123,7 @@ export default class Component extends (FieldComponent as any) {
     // Load existing data if available
     if (this.dataValue && this.dataValue.features) {
       try {
+        console.log('Loading Drawn Items' + this.dataValue.features);
         this.mapService.loadDrawnItems(this.dataValue.features);
       } catch (error) {
         console.error('Failed to parse dataValue:', error);
@@ -159,13 +161,14 @@ export default class Component extends (FieldComponent as any) {
         };
       }
     });
-
+    console.log('Saving Drawn Items' + features);
     this.setValue({ features });
   }
 
   setValue(value) {
     super.setValue(value);
-
+    console.log('Setting Value' + value);
+    console.log('DrawnItems' + this.mapService.drawnItems?.getLayers());
     // Additional logic to render the saved data on the map if necessary
     if (this.mapService && value && value.features) {
       try {
