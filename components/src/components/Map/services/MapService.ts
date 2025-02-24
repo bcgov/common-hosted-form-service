@@ -226,19 +226,7 @@ class MapService {
     }
     return { map, drawnItems, drawControl };
   }
-  disableDeleteMode() {
-    if (this.drawControl && this.drawControl._toolbars?.edit) {
-      const editToolbar = this.drawControl._toolbars.edit;
-      const deleteHandler = editToolbar._modes.remove.handler;
-      if (deleteHandler.enabled()) {
-        deleteHandler.disable();
-      }
-      /*if (this.drawControl?._toolbars?.edit) {
-        console.log('Disabling edit/delete mode...', this.drawControl._toolbars, 'edit', this.drawControl._toolbars.edit);
-        // this.drawControl._toolbars.edit.disable();
-    }*/
-    }
-  }
+
   bindPopupToLayer(layer) {
     if (layer instanceof L.Marker) {
       layer
@@ -270,9 +258,7 @@ class MapService {
   }
 
   loadDrawnItems(items) {
-    console.log('Loading Drawn Items');
     const { drawnItems } = this;
-    console.log(drawnItems.getLayers());
     if (!drawnItems) {
       console.error('drawnItems is undefined');
       return;
@@ -280,7 +266,6 @@ class MapService {
     if (!Array.isArray(items)) {
       items = [items];
     }
-    console.log(items);
     //items are stored in a naive fashion for ease
     //of readability for CHEFS reviewers
     let features = this.arrayToFeatureGroup(items);
@@ -303,6 +288,17 @@ class MapService {
     return false;
   }
 
+  isDefaultFeature(feature): boolean {
+    if (
+      this.defaultFeatures.getLayers() === 0 ||
+      this.defaultFeatures === null
+    ) {
+      return false;
+    }
+
+    return this.isFeatureInArray(feature, this.defaultFeatures.getLayers());
+  }
+
   isFeatureInArray(feature, array): boolean {
     if (feature === null) return false;
     if (array.length === 0 || array === null) {
@@ -314,7 +310,6 @@ class MapService {
     }); // filter out the types that don't match
     if (sameTypes.length === 0) {
       //no matching types, no match
-      console.log('No matching type');
       return false;
     }
     return sameTypes.some((f) => {
@@ -360,16 +355,6 @@ class MapService {
     return features;
   }
 
-  isDefaultFeature(feature): boolean {
-    if (
-      this.defaultFeatures.getLayers() === 0 ||
-      this.defaultFeatures === null
-    ) {
-      return false;
-    }
-
-    return this.isFeatureInArray(feature, this.defaultFeatures.getLayers());
-  }
   getFeatureType(feature) {
     if (feature instanceof L.Marker) {
       return 'marker';
@@ -384,9 +369,6 @@ class MapService {
     }
   }
   coordinatesEqual(c1, c2) {
-    c1.lat === c2.lat && c1.lng === c2.lng
-      ? console.log('Coordinates Match')
-      : console.log("Coordinates Don't match");
     return c1.lat === c2.lat && c1.lng === c2.lng;
   }
   polyEqual(c1, c2) {
@@ -398,16 +380,13 @@ class MapService {
     }
     if (c1.length !== c2.length) {
       // different number of vertices, no match
-      console.log('Different Length of polygons');
       return false;
     } else {
       for (let i = 0; i < c1.length; i++) {
         if (!this.coordinatesEqual(c1[i], c2[i])) {
           return false; // if there's no match in one of the points, it's a new feature
         }
-        console.log(`${i}th point matches`);
       }
-      console.log('Polygons Are Equal');
       return true;
     }
   }
