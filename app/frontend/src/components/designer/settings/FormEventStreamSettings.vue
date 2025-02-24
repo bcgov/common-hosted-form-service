@@ -42,11 +42,6 @@ async function generateKey() {
   let generatedKey;
   // when we have more algorithms, move this into some kind of service...
   if (form.value.eventStreamConfig.encryptionKey.algorithm === 'aes-256-gcm') {
-    //const data = crypto.getRandomValues(new Uint8Array(16));
-    //const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
-    //generatedKey = Array.from(new Uint8Array(hashBuffer))
-    //  .map((b) => b.toString(16).padStart(2, '0'))
-    //  .join('');
     const key = await window.crypto.subtle.generateKey(
       {
         name: 'AES-GCM',
@@ -163,96 +158,150 @@ defineExpose({
       <h3>{{ $t('trans.formSettings.publishConfiguration') }}</h3>
     </div>
     <v-row class="pl-6 m-0">
-      <v-col cols="12" md="6" class="pl-0 pr-0 pb-0">
-        <v-checkbox
-          v-model="form.eventStreamConfig.enablePublicStream"
-          hide-details="auto"
-          class="my-0"
-        >
-          <template #label>
-            <span
-              :class="{ 'mr-2': isRTL }"
-              :lang="locale"
-              v-html="$t('trans.formSettings.enablePublicStream')"
-            ></span>
-          </template>
-        </v-checkbox>
+      <v-col cols="8" class="pl-0 pr-0 pb-0">
+        <v-text-field
+          v-model="form.eventStreamConfig.accountName"
+          density="compact"
+          solid
+          variant="outlined"
+          :label="$t('trans.formSettings.essAccountName')"
+          data-test="text-user"
+          :lang="locale"
+        />
       </v-col>
-    </v-row>
-    <v-row class="pl-6 m-0">
-      <v-col cols="12" md="6" class="pl-0 pr-0 pb-0">
-        <v-checkbox
-          v-model="form.eventStreamConfig.enablePrivateStream"
-          hide-details="auto"
-          class="my-0"
-        >
-          <template #label>
-            <span
+      <v-col cols="4" class="pl-0 pr-0 pb-0">
+        <v-tooltip location="bottom">
+          <template #activator="{ props }">
+            <v-icon
+              v-if="form.eventStreamConfig.enabled"
+              size="large"
+              color="primary"
+              class="ml-4 mt-2"
               :class="{ 'mr-2': isRTL }"
-              :lang="locale"
-              v-html="$t('trans.formSettings.enablePrivateStream')"
-            ></span>
+              v-bind="props"
+              icon="mdi:mdi-check-decagram"
+            />
+            <v-icon
+              v-else
+              size="large"
+              color="red"
+              class="ml-4 mt-2"
+              :class="{ 'mr-2': isRTL }"
+              v-bind="props"
+              icon="mdi:mdi-alert-circle"
+            />
           </template>
-        </v-checkbox>
-      </v-col>
-      <v-col cols="12" md="6" class="pl-0 pr-0 pb-0"> </v-col>
-    </v-row>
-    <v-expand-transition>
-      <v-row v-if="form.eventStreamConfig.enablePrivateStream" class="pl-6 m-0">
-        <v-col cols="12" md="8" class="pl-0 pr-0 pb-0">
-          <v-select
-            v-model="form.eventStreamConfig.encryptionKey.algorithm"
-            :items="algorithms"
-            item-title="display"
-            item-value="code"
-            :label="$t('trans.formSettings.encryptionKeyAlgorithm')"
-            density="compact"
-            solid
-            variant="outlined"
-            :lang="locale"
-            :rules="encryptionKeyRules"
-          ></v-select
-        ></v-col>
-        <v-col cols="12" md="8" class="pl-0 pr-0 pb-0">
-          <v-text-field
-            v-model="form.eventStreamConfig.encryptionKey.key"
-            density="compact"
-            solid
-            variant="outlined"
-            :label="$t('trans.formSettings.encryptionKey')"
-            :lang="locale"
-            :rules="encryptionKeyRules"
-          />
-        </v-col>
-        <v-col cols="12" md="4" class="pl-4 pr-0 pb-0 pt-4">
-          <v-tooltip location="bottom">
-            <template #activator="{ props }">
-              <v-btn
-                color="primary"
-                :disabled="!form.eventStreamConfig.enablePrivateStream"
-                v-bind="props"
-                size="x-small"
-                density="default"
-                :icon="'mdi:mdi-auto-fix'"
-                :title="$t('trans.formSettings.encryptionKeyGenerate')"
-                @click="generateKey"
-              />
-            </template>
-            <span :lang="locale">{{
-              $t('trans.formSettings.encryptionKeyGenerate')
+          <span>
+            <span v-if="form.eventStreamConfig.enabled" :lang="locale">{{
+              $t('trans.formSettings.essAccountApproved')
             }}</span>
-          </v-tooltip>
-          <BaseCopyToClipboard
-            :disabled="!form.eventStreamConfig.encryptionKey.key"
-            class="mx-2"
-            :text-to-copy="form.eventStreamConfig.encryptionKey.key"
-            :snack-bar-text="$t('trans.formSettings.encryptionKeyCopySnackbar')"
-            :tooltip-text="$t('trans.formSettings.encryptionKeyCopyTooltip')"
-            :lang="locale"
-          />
+            <span v-else :lang="locale">{{
+              $t('trans.formSettings.essAccountNotApproved')
+            }}</span>
+          </span>
+        </v-tooltip>
+      </v-col>
+    </v-row>
+    <v-div v-if="form.eventStreamConfig.enabled">
+      <v-row class="pl-6 m-0">
+        <v-col cols="12" md="6" class="pl-0 pr-0 pb-0">
+          <v-checkbox
+            v-model="form.eventStreamConfig.enablePublicStream"
+            hide-details="auto"
+            class="my-0"
+            :disabled="!form.eventStreamConfig.enabled"
+          >
+            <template #label>
+              <span
+                :class="{ 'mr-2': isRTL }"
+                :lang="locale"
+                v-html="$t('trans.formSettings.enablePublicStream')"
+              ></span>
+            </template>
+          </v-checkbox>
         </v-col>
       </v-row>
-    </v-expand-transition>
+      <v-row class="pl-6 m-0">
+        <v-col cols="12" md="6" class="pl-0 pr-0 pb-0">
+          <v-checkbox
+            v-model="form.eventStreamConfig.enablePrivateStream"
+            hide-details="auto"
+            class="my-0"
+            :disabled="!form.eventStreamConfig.enabled"
+          >
+            <template #label>
+              <span
+                :class="{ 'mr-2': isRTL }"
+                :lang="locale"
+                v-html="$t('trans.formSettings.enablePrivateStream')"
+              ></span>
+            </template>
+          </v-checkbox>
+        </v-col>
+        <v-col cols="12" md="6" class="pl-0 pr-0 pb-0"> </v-col>
+      </v-row>
+      <v-expand-transition>
+        <v-row
+          v-if="form.eventStreamConfig.enablePrivateStream"
+          class="pl-6 m-0"
+        >
+          <v-col cols="12" md="8" class="pl-0 pr-0 pb-0">
+            <v-select
+              v-model="form.eventStreamConfig.encryptionKey.algorithm"
+              :items="algorithms"
+              item-title="display"
+              item-value="code"
+              :label="$t('trans.formSettings.encryptionKeyAlgorithm')"
+              density="compact"
+              solid
+              variant="outlined"
+              :lang="locale"
+              :rules="encryptionKeyRules"
+            ></v-select
+          ></v-col>
+          <v-col cols="12" md="8" class="pl-0 pr-0 pb-0">
+            <v-text-field
+              v-model="form.eventStreamConfig.encryptionKey.key"
+              density="compact"
+              solid
+              variant="outlined"
+              :label="$t('trans.formSettings.encryptionKey')"
+              :lang="locale"
+              :rules="encryptionKeyRules"
+            />
+          </v-col>
+          <v-col cols="12" md="4" class="pl-4 pr-0 pb-0 pt-4">
+            <v-tooltip location="bottom">
+              <template #activator="{ props }">
+                <v-btn
+                  color="primary"
+                  :disabled="!form.eventStreamConfig.enablePrivateStream"
+                  v-bind="props"
+                  size="x-small"
+                  density="default"
+                  :icon="'mdi:mdi-auto-fix'"
+                  :title="$t('trans.formSettings.encryptionKeyGenerate')"
+                  @click="generateKey"
+                />
+              </template>
+              <span :lang="locale">{{
+                $t('trans.formSettings.encryptionKeyGenerate')
+              }}</span>
+            </v-tooltip>
+            <BaseCopyToClipboard
+              :disabled="!form.eventStreamConfig.encryptionKey.key"
+              class="mx-2"
+              :text-to-copy="form.eventStreamConfig.encryptionKey.key"
+              :snack-bar-text="
+                $t('trans.formSettings.encryptionKeyCopySnackbar')
+              "
+              :tooltip-text="$t('trans.formSettings.encryptionKeyCopyTooltip')"
+              :lang="locale"
+            />
+          </v-col>
+        </v-row>
+      </v-expand-transition>
+    </v-div>
     <v-row class="pl-6 m-0">
       <v-col cols="12" class="pl-0 pr-0 pb-0">
         <span v-if="form.eventStreamConfig.updatedBy">

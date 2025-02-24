@@ -41,7 +41,9 @@ const { form, isFormPublished, isRTL } = storeToRefs(useFormStore());
       <v-col cols="12" md="6">
         <FormMetadataSettings :disabled="disabled" />
       </v-col>
-      <v-col v-if="form.eventStreamConfig.enabled">
+    </v-row>
+    <v-row>
+      <v-col>
         <FormEventStreamSettings :disabled="disabled" />
       </v-col>
     </v-row>
