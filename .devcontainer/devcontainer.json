@@ -40,7 +40,8 @@
         "postman.postman-for-vscode", // Postman for integration tests
         "redocly.openapi-vs-code", // ReDocly to catch OpenAPI errors
         "vue.volar", // Vue 3 recommended extension
-        "SonarSource.sonarlint-vscode" // sonarqube static analysis
+        "SonarSource.sonarlint-vscode", // sonarqube static analysis
+        "k6.k6" // k6 for load testing
       ],
       "settings": {
         "database-client.telemetry.usesOnlineServices": false,

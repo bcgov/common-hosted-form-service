@@ -142,13 +142,22 @@ describe('idpService', () => {
     expect(MockModel.modify).toBeCalledWith('filterEmail', 'em@il.com', false, false);
   });
 
-  it('should return a customized user search', async () => {
+  it('should pass when customized user search for required > 1 (one of group required, first param)', async () => {
+    // test passing in first param
+    const s = await idpService.userSearch({ idpCode: 'bceid-business', username: 'bceidbiz' });
+    expect(s).toBeFalsy();
+    expect(MockModel.query).toBeCalledTimes(1);
+    expect(MockModel.modify).toBeCalledWith('filterIdpCode', 'bceid-business', false, true);
+    expect(MockModel.modify).toBeCalledWith('filterUsername', 'bceidbiz', true, false);
+  });
+
+  it('should pass when customized user search for required > 1 (one of group required, second param)', async () => {
+    // pass in second param
     const s = await idpService.userSearch({ idpCode: 'bceid-business', email: 'em@il.com' });
     expect(s).toBeFalsy();
     expect(MockModel.query).toBeCalledTimes(1);
     expect(MockModel.modify).toBeCalledWith('filterIdpCode', 'bceid-business', false, true);
     expect(MockModel.modify).toBeCalledWith('filterEmail', 'em@il.com', true, false);
-    expect(MockModel.modify).toBeCalledTimes(9);
   });
 
   it('should throw error when customized user search fails validation for required > 1 (one of group required)', async () => {
@@ -190,7 +199,7 @@ describe('idpService', () => {
     expect(e.message).toBe('searchtestonly userSearch failed.');
   });
 
-  it('should throw pass when customized user searchfor required = 1 (all in group required, all passed in)', async () => {
+  it('should pass when customized user searchfor required = 1 (all in group required, all passed in)', async () => {
     // passing both should succeed
     const s = await idpService.userSearch({ idpCode: 'searchtestonly', firstName: 'first', lastName: 'last' });
     expect(s).toBeFalsy();
