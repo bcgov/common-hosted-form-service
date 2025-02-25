@@ -43,7 +43,7 @@ const { form, isFormPublished, isRTL } = storeToRefs(useFormStore());
       </v-col>
     </v-row>
     <v-row>
-      <v-col>
+      <v-col v-if="form.id">
         <FormEventStreamSettings :disabled="disabled" />
       </v-col>
     </v-row>

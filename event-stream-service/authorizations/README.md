@@ -171,3 +171,7 @@ Commit and create a Pull request and this account will be included in the allowe
 When we have created the new authorization and pushed it to our namespaces, contact the initial requesting user (and whomever they have designated) with the nkey information. They should recieve both the `U` and `S` nkey pair values, as well as ESS environment configuration for the instances that include the new authorization.
 
 We must not save the `S` value in any location, we only need to retain the `U` value. Only the requestor needs the `S` value.
+
+Email all BC Goverment IDs included in the original request. Pass them along the Seed and User + acknowledge the requested production date. Make sure to CC the other owners of the CHEFS form including Project Manager and Scrum Master. The CHEFS form owners/reviewers will add notes as work progresses - at a minimum the notes should point to JIRA tickets.
+
+Create follow-up tickets in JIRA for the requested production date (once it is agreed on - there may be negotiation for feasibility and to ensure they have tested ESS and connections first.).

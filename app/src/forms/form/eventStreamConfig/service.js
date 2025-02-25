@@ -75,7 +75,8 @@ const service = {
       // let's create a default
       const rec = new FormEventStreamConfig();
       rec.formId = formId;
-      return await service.upsert(formId, rec, { usernameIdp: 'systemdefault' });
+      await service.upsert(formId, rec, { usernameIdp: 'systemdefault' });
+      result = await FormEventStreamConfig.query().modify('filterFormId', formId).first();
     }
     return result;
   },

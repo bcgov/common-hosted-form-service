@@ -202,7 +202,7 @@ defineExpose({
         </v-tooltip>
       </v-col>
     </v-row>
-    <v-div v-if="form.eventStreamConfig.enabled">
+    <v-container v-if="form.eventStreamConfig.enabled">
       <v-row class="pl-6 m-0">
         <v-col cols="12" md="6" class="pl-0 pr-0 pb-0">
           <v-checkbox
@@ -301,7 +301,7 @@ defineExpose({
           </v-col>
         </v-row>
       </v-expand-transition>
-    </v-div>
+    </v-container>
     <v-row class="pl-6 m-0">
       <v-col cols="12" class="pl-0 pr-0 pb-0">
         <span v-if="form.eventStreamConfig.updatedBy">
