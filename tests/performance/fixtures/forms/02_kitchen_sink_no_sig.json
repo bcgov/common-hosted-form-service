@@ -1,0 +1,33 @@
+{
+  "name": "02_kitchen_sink_no_sig",
+  "description": "IDIR protected form used for load and performance testing.",
+  "identityProviders": [{ "code": "idir" }],
+  "sendSubmissionReceivedEmail": false,
+  "enableSubmitterDraft": false,
+  "enableCopyExistingSubmission": false,
+  "wideFormLayout": false,
+  "enableStatusUpdates": false,
+  "showSubmissionConfirmation": true,
+  "submissionReceivedEmails": [],
+  "reminder_enabled": false,
+  "deploymentLevel": "development",
+  "ministry": "CITZ",
+  "apiIntegration": false,
+  "useCase": "collection",
+  "labels": [],
+  "formMetadata": { "id": null, "formId": null, "metadata": {} },
+  "eventStreamConfig": {
+    "id": null,
+    "formId": null,
+    "enabled": false,
+    "enablePublicStream": false,
+    "enablePrivateStream": false,
+    "encryptionKeyId": null,
+    "encryptionKey": {
+      "id": null,
+      "name": null,
+      "algorithm": null,
+      "key": null
+    }
+  }
+}
