@@ -92,30 +92,43 @@ export const IdentityMode = Object.freeze({
   TEAM: 'team', // Specific People
 });
 
-/** List of Ministries within BC Public Service */
+/** List of Ministries and Central Agencies within BC Public Service */
 export const Ministries = Object.freeze([
   { id: 'AF', text: 'trans.ministries.AF' },
   { id: 'AG', text: 'trans.ministries.AG' },
-  { id: 'MCF', text: 'trans.ministries.MCF' },
+  { id: 'CABRO', text: 'trans.ministries.CABRO' },
+  { id: 'CEC', text: 'trans.ministries.CEC' },
+  { id: 'CIRMO', text: 'trans.ministries.CIRMO' },
   { id: 'CITZ', text: 'trans.ministries.CITZ' },
+  { id: 'EBC', text: 'trans.ministries.EBC' },
+  { id: 'ECS', text: 'trans.ministries.ECS' }, // Updated from EMLI
   { id: 'ECC', text: 'trans.ministries.ECC' },
   { id: 'EMCR', text: 'trans.ministries.EMCR' },
-  { id: 'EMLI', text: 'trans.ministries.EMLI' },
-  { id: 'ENV', text: 'trans.ministries.ENV' },
+  { id: 'ENV', text: 'trans.ministries.ENV' }, // Updated text
   { id: 'FIN', text: 'trans.ministries.FIN' },
   { id: 'FOR', text: 'trans.ministries.FOR' },
+  { id: 'GCPE', text: 'trans.ministries.GCPE' },
+  { id: 'HMA', text: 'trans.ministries.HMA' }, // Added new
   { id: 'HLTH', text: 'trans.ministries.HLTH' },
-  { id: 'HOUS', text: 'trans.ministries.HOUS' },
+  { id: 'IGRS', text: 'trans.ministries.IGRS' },
+  { id: 'INFR', text: 'trans.ministries.INFR' }, // Added new
   { id: 'IRR', text: 'trans.ministries.IRR' },
   { id: 'JEDI', text: 'trans.ministries.JEDI' },
   { id: 'LBR', text: 'trans.ministries.LBR' },
-  { id: 'MMHA', text: 'trans.ministries.MMHA' },
-  { id: 'MUNI', text: 'trans.ministries.MUNI' },
+  { id: 'MCF', text: 'trans.ministries.MCF' },
+  { id: 'MCM', text: 'trans.ministries.MCM' }, // Added new
+  { id: 'OCG', text: 'trans.ministries.OCG' },
+  { id: 'OCIO', text: 'trans.ministries.OCIO' },
+  { id: 'PREM', text: 'trans.ministries.PREM' },
+  { id: 'PSA', text: 'trans.ministries.PSA' },
+  { id: 'PSECS', text: 'trans.ministries.PSECS' },
   { id: 'PSFS', text: 'trans.ministries.PSFS' },
   { id: 'PSSG', text: 'trans.ministries.PSSG' },
+  { id: 'PT', text: 'trans.ministries.PT' },
   { id: 'SDPR', text: 'trans.ministries.SDPR' },
   { id: 'TACS', text: 'trans.ministries.TACS' },
-  { id: 'MOTI', text: 'trans.ministries.MOTI' },
+  { id: 'TB', text: 'trans.ministries.TB' },
+  { id: 'TRAN', text: 'trans.ministries.TRAN' }, // Updated from MOTI
   { id: 'WLRS', text: 'trans.ministries.WLRS' },
 ]);
 
