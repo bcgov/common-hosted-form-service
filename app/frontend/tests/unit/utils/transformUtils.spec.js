@@ -69,19 +69,20 @@ describe('getSubmissionPeriodDates', () => {
       transformUtils.getSubmissionPeriodDates(
         5,
         'days',
-        moment('2024-05-08'),
+        moment.utc('2024-05-08'), // Use UTC
         0,
         'months',
         0,
         'years',
-        moment()
+        moment.utc() // Use UTC
       )
     ).toEqual([
       {
-        startDate: moment('2024-05-08').format('YYYY-MM-DD HH:MM:SS'),
-        closeDate: moment('2024-05-08')
+        startDate: moment.utc('2024-05-08').format('YYYY-MM-DD HH:mm:ss'),
+        closeDate: moment
+          .utc('2024-05-08')
           .add(5, 'days')
-          .format('YYYY-MM-DD HH:MM:SS'),
+          .format('YYYY-MM-DD HH:mm:ss'),
         graceDate: null,
       },
     ]);
@@ -92,23 +93,23 @@ describe('getSubmissionPeriodDates', () => {
       transformUtils.getSubmissionPeriodDates(
         5,
         'days',
-        moment('2024-05-08'),
+        moment.utc('2024-05-08'), // Use UTC
         0,
         'years',
         1,
         'months',
-        moment()
+        moment.utc() // Use UTC
       )
     ).toEqual([
       {
-        startDate: moment('2024-05-08').format('YYYY-MM-DD HH:MM:SS'),
+        startDate: moment('2024-05-08').format('YYYY-MM-DD HH:mm:ss'),
         closeDate: moment('2024-05-08')
           .add(5, 'days')
-          .format('YYYY-MM-DD HH:MM:SS'),
+          .format('YYYY-MM-DD HH:mm:ss'),
         graceDate: moment('2024-05-08')
           .add(5, 'days')
           .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
+          .format('YYYY-MM-DD HH:mm:ss'),
       },
     ]);
   });
@@ -118,54 +119,28 @@ describe('getSubmissionPeriodDates', () => {
       transformUtils.getSubmissionPeriodDates(
         5,
         'days',
-        moment('2024-05-08'),
+        moment.utc('2024-05-08'),
         1,
         'months',
         1,
         'months',
-        moment('2024-07-15')
+        moment.utc('2024-07-15')
       )
     ).toEqual([
       {
-        startDate: moment('2024-05-08').format('YYYY-MM-DD HH:MM:SS'),
-        closeDate: moment('2024-05-08')
-          .add(5, 'days')
-          .format('YYYY-MM-DD HH:MM:SS'),
-        graceDate: moment('2024-05-08')
-          .add(5, 'days')
-          .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
+        startDate: '2024-05-08 00:00:00',
+        closeDate: '2024-05-13 00:00:00',
+        graceDate: '2024-06-13 00:00:00',
       },
       {
-        startDate: moment('2024-05-08')
-          .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
-        closeDate: moment('2024-05-08')
-          .add(5, 'days')
-          .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
-        graceDate: moment('2024-05-08')
-          .add(5, 'days')
-          .add(1, 'months')
-          .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
+        startDate: '2024-06-08 00:00:00',
+        closeDate: '2024-06-13 00:00:00',
+        graceDate: '2024-07-13 00:00:00',
       },
       {
-        startDate: moment('2024-05-08')
-          .add(1, 'months')
-          .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
-        closeDate: moment('2024-05-08')
-          .add(5, 'days')
-          .add(1, 'months')
-          .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
-        graceDate: moment('2024-05-08')
-          .add(5, 'days')
-          .add(1, 'months')
-          .add(1, 'months')
-          .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
+        startDate: '2024-07-08 00:00:00',
+        closeDate: '2024-07-13 00:00:00',
+        graceDate: '2024-08-13 00:00:00',
       },
     ]);
   });
@@ -175,41 +150,43 @@ describe('getSubmissionPeriodDates', () => {
       transformUtils.getSubmissionPeriodDates(
         5,
         'days',
-        moment('2024-05-08'),
+        moment.utc('2024-05-08'), // Use UTC
         1,
         'months',
         0,
         'months',
-        moment('2024-07-15')
+        moment.utc('2024-07-15') // Use UTC
       )
     ).toEqual([
       {
-        startDate: moment('2024-05-08').format('YYYY-MM-DD HH:MM:SS'),
+        startDate: moment('2024-05-08').format('YYYY-MM-DD HH:mm:ss'),
         closeDate: moment('2024-05-08')
           .add(5, 'days')
-          .format('YYYY-MM-DD HH:MM:SS'),
+          .format('YYYY-MM-DD HH:mm:ss'),
         graceDate: null,
       },
       {
-        startDate: moment('2024-05-08')
+        startDate: moment
+          .utc('2024-05-08')
           .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
+          .format('YYYY-MM-DD HH:mm:ss'),
         closeDate: moment('2024-05-08')
           .add(5, 'days')
           .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
+          .format('YYYY-MM-DD HH:mm:ss'),
         graceDate: null,
       },
       {
-        startDate: moment('2024-05-08')
+        startDate: moment
+          .utc('2024-05-08')
           .add(1, 'months')
           .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
+          .format('YYYY-MM-DD HH:mm:ss'),
         closeDate: moment('2024-05-08')
           .add(5, 'days')
           .add(1, 'months')
           .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
+          .format('YYYY-MM-DD HH:mm:ss'),
         graceDate: null,
       },
     ]);

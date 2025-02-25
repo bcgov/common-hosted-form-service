@@ -99,13 +99,11 @@ export function getSubmissionPeriodDates(
   repeatSubmissionUntil
 ) {
   let submissionPeriodDates = [];
-  let openSubmissionDate = moment.isMoment(openSubmissionDateTime)
-    ? openSubmissionDateTime.clone()
-    : moment(new Date(openSubmissionDateTime));
+  // Force inputs to
+
+  let openSubmissionDate = moment.utc(openSubmissionDateTime).clone();
   let calculatedCloseDate = openSubmissionDate.clone();
-  repeatSubmissionUntil = moment.isMoment(repeatSubmissionUntil)
-    ? repeatSubmissionUntil.clone()
-    : moment(new Date(repeatSubmissionUntil));
+  repeatSubmissionUntil = moment.utc(repeatSubmissionUntil).clone();
   let graceDate = null;
 
   calculatedCloseDate.add(keepOpenForTerm, keepOpenForInterval);
@@ -113,12 +111,12 @@ export function getSubmissionPeriodDates(
     graceDate = calculatedCloseDate
       .clone()
       .add(allowLateTerm, allowLateInterval)
-      .format('YYYY-MM-DD HH:MM:SS');
+      .format('YYYY-MM-DD HH:mm:ss');
 
   // Always push through the first submission period
   submissionPeriodDates.push({
-    startDate: openSubmissionDate.clone().format('YYYY-MM-DD HH:MM:SS'),
-    closeDate: calculatedCloseDate.format('YYYY-MM-DD HH:MM:SS'),
+    startDate: openSubmissionDate.clone().format('YYYY-MM-DD HH:mm:ss'),
+    closeDate: calculatedCloseDate.format('YYYY-MM-DD HH:mm:ss'),
     graceDate: graceDate,
   });
 
@@ -150,12 +148,12 @@ export function getSubmissionPeriodDates(
         graceDate = calculatedCloseDate
           .clone()
           .add(allowLateTerm, allowLateInterval)
-          .format('YYYY-MM-DD HH:MM:SS');
+          .format('YYYY-MM-DD HH:mm:ss');
 
       // Add the calculated dates to the submission period array
       submissionPeriodDates.push({
-        startDate: openSubmissionDate.clone().format('YYYY-MM-DD HH:MM:SS'),
-        closeDate: calculatedCloseDate.format('YYYY-MM-DD HH:MM:SS'),
+        startDate: openSubmissionDate.clone().format('YYYY-MM-DD HH:mm:ss'),
+        closeDate: calculatedCloseDate.format('YYYY-MM-DD HH:mm:ss'),
         graceDate: graceDate,
       });
 

@@ -11,47 +11,104 @@ import {
   isDateValidForMailNotification,
 } from '~/utils/transformUtils';
 
+const { form, isRTL } = storeToRefs(useFormStore());
+
 const { t, locale } = useI18n({ useScope: 'global' });
+
+// Get user's timezone
+const userTimezone = form.value.userTimezone || moment.tz.guess();
+
+// Handle formatted Open Date (local timezone display)
+const formattedOpenDate = computed({
+  get: () => {
+    return form.value.schedule.openSubmissionDateTime
+      ? moment
+          .tz(form.value.schedule.openSubmissionDateTime, userTimezone)
+          .format('YYYY-MM-DD')
+      : '';
+  },
+  set: (newDate) => {
+    updateOpenDate(newDate); // Using the method to update the open date
+  },
+});
+
+// Handle formatted Close Date (local timezone display)
+const formattedCloseDate = computed({
+  get: () => {
+    return form.value.schedule.closeSubmissionDateTime
+      ? moment
+          .tz(form.value.schedule.closeSubmissionDateTime, userTimezone)
+          .format('YYYY-MM-DD')
+      : '';
+  },
+  set: (newDate) => {
+    updateCloseDate(newDate); // Using the method to update the close date
+  },
+});
+
+// Method to update close date in UTC end-of-day
+function updateCloseDate(newDate) {
+  form.value.schedule.closeSubmissionDateTime = moment
+    .tz(newDate, userTimezone)
+    .endOf('day')
+    .toISOString();
+}
+
+// Method to update open date in UTC start-of-day
+function updateOpenDate(newDate) {
+  form.value.schedule.openSubmissionDateTime = moment
+    .tz(newDate, userTimezone)
+    .startOf('day')
+    .toISOString();
+}
 
 const enableReminderDraw = ref(true);
 const githubLinkScheduleAndReminderFeature = ref(
   'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/Schedule-and-Reminder-notification/'
 );
-/* c8 ignore start */
-const intervalType = ref([(v) => !!v || t('trans.formSettings.fieldRequired')]);
+
+// Reusable validation functions
+const requiredField = (msgKey) => (v) => !!v || t(msgKey);
+const dateValidation = (msgKey) => (v) =>
+  (v && /^\d{4}[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])$/.test(v)) ||
+  t(msgKey);
+
+const intervalType = ref([requiredField('trans.formSettings.fieldRequired')]);
 const scheduleOpenDate = ref([
-  (v) => !!v || t('trans.formSettings.fieldRequired'),
-  (v) =>
-    (v &&
-      new RegExp(
-        /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
-      ).test(v)) ||
-    t('trans.formSettings.correctDateFormat'),
+  requiredField('trans.formSettings.fieldRequired'),
+  dateValidation('trans.formSettings.correctDateFormat'),
 ]);
 const scheduleCloseDate = ref([
-  (v) => !!v || t('trans.formSettings.fieldRequired'),
-  (v) =>
-    (v &&
-      new RegExp(
-        /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
-      ).test(v)) ||
-    t('trans.formSettings.correctDateFormat'),
-  (v) =>
-    moment(v).isAfter(form.value.schedule.openSubmissionDateTime, 'day') ||
-    t('trans.formSettings.dateDiffMsg'),
+  requiredField('trans.formSettings.fieldRequired'),
+  dateValidation('trans.formSettings.correctDateFormat'),
+  (v) => {
+    const userTimezone = form.value.userTimezone || moment.tz.guess(); // Get user's timezone
+    const closeDate = moment.tz(v, userTimezone).endOf('day'); // Convert to user's local midnight
+    const openDate = moment.tz(
+      form.value.schedule.openSubmissionDateTime,
+      userTimezone
+    );
+
+    return (
+      closeDate.isAfter(openDate, 'day') || t('trans.formSettings.dateDiffMsg')
+    );
+  },
 ]);
+
 const roundNumber = ref([
   (v) => !!v || t('trans.formSettings.fieldRequired'),
   (v) =>
     (v && new RegExp(/^[1-9]\d{0,5}(?:\.\d{1,2})?$/g).test(v)) ||
     t('trans.formSettings.valueMustBeNumber'),
 ]);
+
 const repeatTerm = ref([
   (v) => !!v || t('trans.formSettings.fieldRequired'),
   (v) =>
     (v && new RegExp(/^[1-9]\d{0,5}(?:\.\d{1,2})?$/g).test(v)) ||
     t('trans.formSettings.valueMustBeNumber'),
 ]);
+
 const scheduleTypedRules = ref([
   (v) => !!v || t('trans.formSettings.selectAnOptions'),
 ]);
@@ -61,22 +118,32 @@ const repeatIntervalType = ref([
     AVAILABLE_PERIOD_OPTIONS.value.includes(v) ||
     t('trans.formSettings.validInterval'),
 ]);
+
 const closeMessage = ref([(v) => !!v || t('trans.formSettings.fieldRequired')]);
+
 const repeatUntilDate = ref([
-  (v) => !!v || t('trans.formSettings.fieldRequired'),
+  (v) => !!v || t('trans.formSettings.fieldRequired'), // Required field check
   (v) =>
     (v &&
       new RegExp(
         /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
       ).test(v)) ||
-    t('trans.formSettings.correctDateFormat'),
-  (v) =>
-    moment(v).isAfter(form.value.schedule.openSubmissionDateTime, 'day') ||
-    t('trans.formSettings.dateGrtOpenSubmissnDate'),
-]);
-/* c8 ignore stop */
+    t('trans.formSettings.correctDateFormat'), // Ensure correct date format
+  (v) => {
+    const userTimezone = form.value.userTimezone || moment.tz.guess(); // Detect user's timezone
+    const repeatUntil = moment.tz(v, userTimezone).endOf('day'); // Convert to local end-of-day
+    const openDate = moment.tz(
+      form.value.schedule.openSubmissionDateTime,
+      userTimezone
+    );
 
-const { form, isRTL } = storeToRefs(useFormStore());
+    return repeatUntil.isAfter(openDate, 'day')
+      ? true
+      : t('trans.formSettings.dateGrtOpenSubmissnDate');
+  },
+]);
+
+/* c8 ignore stop */
 
 const AVAILABLE_DATES = computed(() => {
   return getSubmissionPeriodDates(
@@ -250,7 +317,7 @@ defineExpose({
     <v-row class="m-0">
       <v-col cols="8" md="8" class="pl-0 pr-0 pb-0">
         <v-text-field
-          v-model="form.schedule.openSubmissionDateTime"
+          v-model="formattedOpenDate"
           type="date"
           :placeholder="$t('trans.date.date')"
           :label="$t('trans.formSettings.opensubmissions')"
@@ -258,6 +325,7 @@ defineExpose({
           variant="outlined"
           :rules="scheduleOpenDate"
           :lang="locale"
+          @update:modelValue="updateOpenDate"
           @change="openDateTypeChanged"
         >
           <template v-if="isRTL" #prepend-inner>
@@ -326,14 +394,15 @@ defineExpose({
         class="pl-0 pr-0 pb-0"
       >
         <v-text-field
-          v-model="form.schedule.closeSubmissionDateTime"
-          data-test="closeSubmissionDateTime"
+          v-model="formattedCloseDate"
+          data-test="formattedCloseDate"
           type="date"
           :placeholder="$t('trans.date.date')"
           :label="$t('trans.formSettings.closeSubmissions')"
           density="compact"
           variant="outlined"
           :rules="scheduleCloseDate"
+          @update:modelValue="updateCloseDate"
         >
           <template v-if="isRTL" #prepend-inner>
             <v-icon icon="mdi:mdi-calendar"></v-icon>
@@ -557,7 +626,7 @@ defineExpose({
       >
         <span :lang="locale" data-test="submission-schedule-text">
           {{ $t('trans.formSettings.submissionsOpenDateRange') }}
-          <b>{{ form.schedule.openSubmissionDateTime }}</b>
+          <b>{{ form.schedule.openSubmissionDateTime.split('T')[0] }}</b>
           {{ $t('trans.formSettings.to') }}
           <b>
             {{
@@ -569,7 +638,7 @@ defineExpose({
                 : ''
             }}{{
               form.schedule.scheduleType === SCHEDULE_TYPE.CLOSINGDATE
-                ? form.schedule.closeSubmissionDateTime
+                ? form.schedule.closeSubmissionDateTime.split('T')[0]
                 : ''
             }}
           </b>
