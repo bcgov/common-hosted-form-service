@@ -169,7 +169,7 @@ class IdpService {
           groupValid = false;
         } else {
           // only one of the filters in this group is required.
-          groupValid = isNotEmpty(value);
+          groupValid = groupValid || isNotEmpty(value);
         }
       }
       valid = groupValid;
