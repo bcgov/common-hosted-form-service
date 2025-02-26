@@ -130,7 +130,10 @@ export const useAuthStore = defineStore('auth', {
 
         if (options.idpHint) {
           // Redirect to Keycloak if idpHint is available
-          window.location.replace(this.createLoginUrl(options));
+          (async () => {
+            const loginUrl = await this.createLoginUrl(options);
+            window.location.replace(loginUrl);
+          })();
         } else {
           // Navigate to internal login page if no idpHint specified
           const router = getRouter();
@@ -146,11 +149,12 @@ export const useAuthStore = defineStore('auth', {
       if (this.ready) {
         // if we have not specified a logoutUrl, then use default
         if (!this.logoutUrl) {
-          window.location.replace(
-            this.createLogoutUrl({
+          (async () => {
+            const redirectUrl = await this.createLogoutUrl({
               redirectUri: location.origin,
-            })
-          );
+            });
+            window.location.replace(redirectUrl);
+          })();
         } else {
           const appStore = useAppStore();
           const cli_param = `client_id=${this.keycloak.clientId}`;
