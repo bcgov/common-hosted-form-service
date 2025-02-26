@@ -317,13 +317,15 @@ class MapService {
           return this.coordinatesEqual(f.getLatLng(), feature.getLatLng());
         case 'rectangle':
           return f.getBounds() === feature.getBounds();
-        case 'circle':
+        case 'circle': {
           const radCheck = f.getRadius() === feature.getRadius();
           const pointCheck = this.coordinatesEqual(
             f.getLatLng(),
             feature.getLatLng()
           );
           return radCheck && pointCheck;
+        }
+
         case 'polygon':
           return this.polyEqual(f.getLatLngs(), feature.getLatLngs());
         case 'polyline':
