@@ -54,11 +54,12 @@ describe('Form Designer', () => {
 
 
     });
+    cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
     // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
-    cy.wait(3000);
+    cy.waitForLoad();
 
     // Verify Api key functionality
     cy.get('.mdi-cog').click();
@@ -124,3 +125,4 @@ describe('Form Designer', () => {
   })
 
 })
+

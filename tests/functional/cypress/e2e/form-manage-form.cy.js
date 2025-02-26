@@ -43,13 +43,26 @@ describe('Form Designer', () => {
       .trigger('mousedown', { which: 1}, { force: true })
       .trigger('mousemove', coords.x, -550, { force: true })
       .trigger('mouseup', { force: true });
-      cy.waitForLoad();  
+      cy.waitForLoad();
+      //cy.get('input[name="data[label]"]').type('s');  
       cy.get('button').contains('Save').click();
-      
+      //cy.get('.btn-success').click();
+
+
     });
+    cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
   // Form saving
+    
     cy.get('[data-cy=saveButton]').click();
-    cy.wait(2000);
+    cy.waitForLoad();
+
+
+  // Go to My forms  
+    cy.wait('@getForm').then(()=>{
+      let userFormsLinks = cy.get('[data-cy=userFormsLinks]');
+      expect(userFormsLinks).to.not.be.null;
+      userFormsLinks.trigger('click');
+    });
   // Filter the newly created form
     cy.location('search').then(search => {
       //let pathName = fullUrl.pathname
@@ -93,9 +106,9 @@ describe('Form Designer', () => {
       
       //Checking the  schedule of closing date settings
       cy.contains('Schedule a closing date').click();
-      cy.get('[data-test="formattedCloseDate"]').should('be.visible');
-      cy.get('[data-test="formattedCloseDate"]').click();
-      cy.get('[data-test="formattedCloseDate"]').type('2026-09-17');
+      cy.get('[data-test="closeSubmissionDateTime"]').should('be.visible');
+      cy.get('[data-test="closeSubmissionDateTime"]').click();
+      cy.get('[data-test="closeSubmissionDateTime"]').type('2026-09-17');
       cy.contains('Allow late submissions').click();
       cy.get('[data-test="afterCloseDateFor"]').should('be.visible');
       cy.get('[data-test="afterCloseDateFor"]').click();
@@ -188,7 +201,6 @@ describe('Form Designer', () => {
     it('Checks External API settings', () => {
       cy.viewport(1000, 1100);
       cy.waitForLoad();
-      
       cy.get(':nth-child(5) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
       cy.get('.mt-6 > :nth-child(2) > .mdi-help-circle-outline').should('exist');
       cy.get('.mdi-plus-circle').click({ force: true });

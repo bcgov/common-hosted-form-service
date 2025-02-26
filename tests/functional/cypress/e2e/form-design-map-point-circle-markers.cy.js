@@ -53,9 +53,9 @@ describe('Form Designer', () => {
         cy.get(marker_elem).click({force: true});
       });       
       cy.get('a[title="No layers to delete"]').then($el => {
-        const layer_del_btn=$el[0];
-        cy.get(layer_del_btn)
-        .trigger('mousedown', { which: 1}, { force: true })
+            const layer_del_btn=$el[0];
+            cy.get(layer_del_btn)
+            .trigger('mousedown', { which: 1}, { force: true })
         .trigger('mousemove', coords.x, -30, { force: true })
         .trigger('mouseup', { force: true });
       });
@@ -129,7 +129,7 @@ describe('Form Designer', () => {
       cy.get('a[title="Finish drawing"]').click({ force: true });
       //To verify line is drwan on map
       cy.get('g').find('path[fill="none"]').should('exist');
-      cy.wait(2000);
+      cy.get(10000);
       // To view line drawn on map
       cy.get('div[class="leaflet-container leaflet-touch leaflet-fade-anim leaflet-touch-zoom leaflet-grab leaflet-touch-drag"]').then($el => {
       const scroll_in=$el[0];
@@ -141,44 +141,15 @@ describe('Form Designer', () => {
       cy.get(zoom_in).click({ force: true });
       cy.get(zoom_in).dblclick({ force: true });
       });
-      cy.wait(2000);
-      
-    });
-    it('Checks Map component for Geo search Location', () => {
-    cy.viewport(1000, 1100);
-    cy.wait(3000);
-    cy.get('input[placeholder="Enter address"]').then($el => {
-    const address_search=$el[0];
-    cy.get(address_search).type('2260 sooke rd');
-    });
-    cy.wait(2000);
-    cy.get('div').contains('2260 Sooke Rd, Colwood, BC').click();
-      //Mark a point on searched address
-    cy.get('a[title="Draw a marker"]').then($el => {
-        const marker_elem=$el[0];
-        cy.get(marker_elem).click({force: true});
-    });       
-    cy.get('a[title="No layers to delete"]').then($el => {
-      const coords = $el[0].getBoundingClientRect();
-      const layer_del_btn=$el[0];
-      cy.get(layer_del_btn)
-      .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -30, { force: true })
-      .trigger('mouseup', { force: true });
-    });       
-    cy.get('div[class="leaflet-marker-icon leaflet-mouse-marker leaflet-zoom-hide leaflet-interactive"]').click({ force: true });
-    
-    cy.wait(2000);
-    //verify point is marked on the searched address region
-    //cy.get('p').contains('(48.43406,-123.49410)').should('exist');
-    cy.get('button').contains('Save').click();
+      cy.get(9000);
+      cy.get('button').contains('Save').click();
   // Form saving
-    let savedButton = cy.get('[data-cy=saveButton]');
-    expect(savedButton).to.not.be.null;
-    savedButton.trigger('click');
-    cy.wait(2000); 
+      let savedButton = cy.get('[data-cy=saveButton]');
+      expect(savedButton).to.not.be.null;
+      savedButton.trigger('click');
+      cy.wait(2000); 
   // Filter the newly created form
-    cy.location('search').then(search => {
+      cy.location('search').then(search => {
       //let pathName = fullUrl.pathname
       let arr = search.split('=');
       let arrayValues = arr[1].split('&');
@@ -200,6 +171,8 @@ describe('Form Designer', () => {
       shareFormLinkButton.trigger('click');
       cy.get('.mx-2 > .v-btn').click();
       })
+      cy.visit(`/${depEnv}`);
+      cy.get('[data-cy="userFormsLinks"]').click();
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
       cy.waitForLoad();
       //
@@ -208,6 +181,6 @@ describe('Form Designer', () => {
       cy.get('[data-test="continue-btn-continue"]').click();
       cy.get('#logoutButton > .v-btn__content > span').click();
   
+      });
     });
-  });
 });

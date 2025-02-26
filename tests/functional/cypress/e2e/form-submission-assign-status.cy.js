@@ -30,9 +30,9 @@ describe('Form Designer', () => {
         formsettings();
         
     }); 
-    it('Form Submission and Updation', () => {
+    it('Add some fields for submission', () => {
 
-    cy.viewport(1000, 1100);
+    cy.viewport(1000, 1800);
     cy.waitForLoad();
     cy.get('button').contains('Basic Fields').click();
     cy.get('div.formio-builder-form').then($el => {
@@ -44,14 +44,29 @@ describe('Form Designer', () => {
       .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
-    cy.wait(4000);
+    
+    });
+
+    it('Form Submission and Updation', () => {
+        cy.viewport(1000, 1100);
+        cy.wait(4000);
+        /*cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
+        */
         // Form saving
-    let savedButton = cy.get('[data-cy=saveButton]');
-    expect(savedButton).to.not.be.null;
-    savedButton.trigger('click');
-    cy.wait(4000);
+        let savedButton = cy.get('[data-cy=saveButton]');
+        expect(savedButton).to.not.be.null;
+        savedButton.trigger('click');
+        cy.waitForLoad();
+        cy.wait(4000);
+        // Go to My forms  
+        /*cy.wait('@getForm').then(()=>{
+        let userFormsLinks = cy.get('[data-cy=userFormsLinks]');
+        expect(userFormsLinks).to.not.be.null;
+        userFormsLinks.trigger('click');
+        });
+        */
         // Filter the newly created form
-    cy.location('search').then(search => {
+        cy.location('search').then(search => {
         
         let arr = search.split('=');
         let arrayValues = arr[1].split('&');
@@ -116,7 +131,7 @@ describe('Form Designer', () => {
          //view submission
         cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn > .v-btn__content > .mdi-eye').click();
         cy.wait(4000);
-      });
+        });
 
     });
     it('Submission status Assignment', () => {
