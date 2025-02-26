@@ -497,6 +497,9 @@ describe('DocumentTemplate.vue', () => {
     });
 
     await flushPromises();
+    windowOpenSpy.mockReset();
+    appendChildSpy.mockReset();
+    addNotificationSpy.mockReset();
 
     wrapper.vm.handleFileAction(
       { templateId: '1', filename: 'filename.txt' },
@@ -539,6 +542,9 @@ describe('DocumentTemplate.vue', () => {
     });
 
     await flushPromises();
+    windowOpenSpy.mockReset();
+    appendChildSpy.mockReset();
+    addNotificationSpy.mockReset();
 
     wrapper.vm.handleFileAction(
       { templateId: '1', filename: 'filename.txt' },
