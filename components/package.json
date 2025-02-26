@@ -43,7 +43,7 @@
   "dependencies": {
     "@types/leaflet": "^1.9.12",
     "@types/leaflet-draw": "^1.0.11",
-    "formiojs": "^4.14.6",
+    "formiojs": "4.17.4",
     "leaflet": "^1.9.4",
     "leaflet-draw": "^1.0.4",
     "leaflet-geosearch": "^4.0.0",
