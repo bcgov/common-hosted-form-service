@@ -48,14 +48,13 @@ class MapService {
       const { map, drawnItems, drawControl } = this.initializeMap(options);
       this.map = map;
 
-      // this.map = map;
       this.drawnItems = drawnItems;
       this.drawControl = drawControl; // Store the draw control globally
       if (this.options.defaultValue?.features.length !== 0) {
         this.defaultFeatures = this.arrayToFeatureGroup(
           this.options.defaultValue?.features
-          //defaultFeatures are stored in a naive fashion for ease
-          //of readability for CHEFS reviewers
+          // defaultFeatures are stored in a naive fashion for ease
+          // of readability for CHEFS reviewers
         );
       }
 
@@ -266,9 +265,9 @@ class MapService {
     if (!Array.isArray(items)) {
       items = [items];
     }
-    //items are stored in a naive fashion for ease
-    //of readability for CHEFS reviewers
-    let features = this.arrayToFeatureGroup(items);
+    // items are stored in a naive fashion for ease
+    // of readability for CHEFS reviewers
+    const features = this.arrayToFeatureGroup(items);
     features.getLayers().forEach((feature) => {
       if (!this.isFeatureInArray(feature, drawnItems.getLayers())) {
         drawnItems.addLayer(feature);
@@ -309,7 +308,7 @@ class MapService {
       return this.getFeatureType(d) === featureType;
     }); // filter out the types that don't match
     if (sameTypes.length === 0) {
-      //no matching types, no match
+      // no matching types, no match
       return false;
     }
     return sameTypes.some((f) => {
@@ -336,7 +335,7 @@ class MapService {
   }
 
   arrayToFeatureGroup(array) {
-    let features = new L.FeatureGroup();
+    const features = new L.FeatureGroup();
     array.forEach((item) => {
       let layer;
       if (item.type === 'marker') {
