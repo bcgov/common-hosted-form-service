@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
+import { useTenantStore } from '~/store/tenant';
 import { useIdpStore } from '~/store/identityProviders';
 import { preFlightAuth } from '~/utils/permissionUtils';
 
@@ -405,6 +406,14 @@ export default function getRouter(basePath = '/') {
         },
       },
       {
+        path: '/tenancy',
+        name: 'Tenancy',
+        component: () => import('~/views/Tenancy.vue'),
+        meta: {
+          requiresAuth: 'primary',
+        },
+      },
+      {
         path: '/:pathMatch(.*)*',
         name: 'NotFound',
         component: () => import('~/views/NotFound.vue'),
@@ -423,6 +432,7 @@ export default function getRouter(basePath = '/') {
 
     const authStore = useAuthStore();
     const idpStore = useIdpStore();
+    const tenantStore = useTenantStore();
 
     if (isFirstTransition) {
       // Always call rbac/current if authenticated and on first page load
@@ -430,7 +440,6 @@ export default function getRouter(basePath = '/') {
         const formStore = useFormStore();
         formStore.getFormsForCurrentUser();
       }
-
       // Handle proper redirections on first page load
       if (to.query.r) {
         router.replace({
@@ -439,7 +448,12 @@ export default function getRouter(basePath = '/') {
         });
       }
     }
-
+    if (authStore?.authenticated && !tenantStore.hasTenants) {
+      tenantStore.getTenantsForUser();
+    }
+    if (!tenantStore.selectedTenant && to.path !== '/tenancy') {
+      return next('/tenancy');
+    }
     // Force login redirect if not authenticated
     // Note some pages (Submit and Success) only require auth if the form being loaded is secured
     // in those cases, see the beforeEnter navigation guards for auth loop determination
