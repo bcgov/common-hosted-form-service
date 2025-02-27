@@ -180,8 +180,7 @@ describe('Form Designer', () => {
     cy.get('[data-test="showAssigneeList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').type('ch');
     cy.get('div').contains('CHEFS Testing').click();
     cy.get('[data-test="updateStatusToNew"] > .v-btn__content > span').click();
-    cy.waitForLoad();
-    cy.waitForLoad();
+    cy.wait(2000);
     cy.get('[data-test="showStatusList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click({force: true});
     cy.wait(2000);
     cy.contains('COMPLETED').click();
