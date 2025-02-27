@@ -182,7 +182,10 @@ defineExpose({
               icon="mdi:mdi-check-decagram"
             />
             <v-icon
-              v-else
+              v-if="
+                !form.eventStreamConfig.enabled &&
+                form.eventStreamConfig.accountName?.length
+              "
               size="large"
               color="red"
               class="ml-4 mt-2"
