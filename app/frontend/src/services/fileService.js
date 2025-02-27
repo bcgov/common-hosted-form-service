@@ -5,6 +5,9 @@ export default {
   async deleteFile(fileId) {
     return appAxios().delete(`${ApiRoutes.FILES}/${fileId}`);
   },
+  async deleteFiles(fileIds) {
+    return appAxios().delete(`${ApiRoutes.FILES}/`, { data: { fileIds } });
+  },
   async getFile(fileId, options = {}) {
     return appAxios().get(`${ApiRoutes.FILES}/${fileId}`, options);
   },

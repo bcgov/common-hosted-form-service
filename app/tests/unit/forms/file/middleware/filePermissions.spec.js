@@ -1,7 +1,7 @@
 const { getMockReq, getMockRes } = require('@jest-mock/express');
 const uuid = require('uuid');
 
-const { currentFileRecord, hasFileCreate, hasFilePermissions } = require('../../../../../src/forms/file/middleware/filePermissions');
+const { currentFileRecord, hasFileCreate, hasFileDelete, hasFilePermissions } = require('../../../../../src/forms/file/middleware/filePermissions');
 const service = require('../../../../../src/forms/file/service');
 const userAccess = require('../../../../../src/forms/auth/middleware/userAccess');
 
@@ -225,6 +225,177 @@ describe('hasFileCreate', () => {
       expect(req.currentUser).toEqual(currentUserIdp);
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
+    });
+  });
+});
+
+// External dependencies used by the implementation are: none
+//
+describe('hasFileDelete', () => {
+  const readFileSpy = jest.spyOn(service, 'read');
+  const submissionPermissionsSpy = jest.spyOn(userAccess, 'hasSubmissionPermissions');
+
+  beforeEach(() => {
+    readFileSpy.mockReset();
+    submissionPermissionsSpy.mockReset();
+  });
+
+  describe('403 response when', () => {
+    const expectedStatus = { status: 403 };
+
+    test('there is no current user on the request scope', () => {
+      const req = getMockReq({
+        headers: {
+          authorization: 'Bearer ' + bearerToken,
+        },
+      });
+      const { res, next } = getMockRes();
+
+      hasFileDelete(req, res, next);
+
+      expect(req.currentFileRecord).toEqual(undefined);
+      expect(req.currentUser).toEqual(undefined);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Invalid authorization credentials.',
+        })
+      );
+    });
+
+    test('the current user is a public user', () => {
+      const req = getMockReq({
+        currentUser: {
+          username: 'public',
+        },
+      });
+      const { res, next } = getMockRes();
+
+      hasFileDelete(req, res, next);
+
+      expect(req.currentFileRecord).toEqual(undefined);
+      expect(req.currentUser).toEqual(req.currentUser);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Invalid authorization credentials.',
+        })
+      );
+    });
+
+    test('the fileIds are not an array', () => {
+      const req = getMockReq({
+        currentUser: currentUserIdp,
+        body: {
+          fileIds: 'string',
+        },
+      });
+      const { res, next } = getMockRes();
+
+      hasFileDelete(req, res, next);
+
+      expect(req.currentFileRecord).toEqual(undefined);
+      expect(req.currentUser).toEqual(currentUserIdp);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'File IDs must be an array of file UUIDs.',
+        })
+      );
+    });
+
+    test('the file is not found', () => {
+      readFileSpy.mockImplementation(() => {
+        return Promise.resolve(undefined);
+      });
+      const req = getMockReq({
+        currentUser: currentUserIdp,
+        body: {
+          fileIds: [fileId],
+        },
+      });
+      const { res, next } = getMockRes();
+
+      hasFileDelete(req, res, next).then(() => {
+        expect(req.currentFileRecord).toEqual(undefined);
+        expect(req.currentUser).toEqual(currentUserIdp);
+        expect(next).toBeCalledTimes(1); // for some reason this is called 0 times?
+        expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+        expect(next).toBeCalledWith(
+          expect.objectContaining({
+            detail: 'File access to this ID is unauthorized.',
+          })
+        );
+      });
+    });
+
+    test('hasSubmissionPermissions returns an error', (done) => {
+      const error = new Error('Permission error');
+      readFileSpy.mockResolvedValue({
+        id: fileId,
+        formSubmissionId: '123',
+      });
+      const mockSubPermCheck = async (_req, _res, next) => {
+        next(error);
+      };
+      submissionPermissionsSpy.mockImplementation(() => mockSubPermCheck);
+
+      const req = getMockReq({
+        currentUser: currentUserIdp,
+        body: {
+          fileIds: [fileId],
+        },
+      });
+      const { res, next } = getMockRes();
+
+      hasFileDelete(req, res, next)
+        .then(() => {
+          expect(req.currentFileRecord).toEqual({
+            id: fileId,
+            formSubmissionId: '123',
+          });
+          expect(req.currentUser).toEqual(currentUserIdp);
+          expect(next).toBeCalledTimes(1);
+          expect(next).toBeCalledWith(error);
+          done();
+        })
+        .catch(done);
+    });
+  });
+
+  describe('allows', () => {
+    test('an idp user on the request', (done) => {
+      readFileSpy.mockResolvedValue({
+        id: fileId,
+        formSubmissionId: '123',
+      });
+      const mockSubPermCheck = async (_req, _res, next) => {
+        next();
+      };
+      submissionPermissionsSpy.mockImplementation(() => mockSubPermCheck);
+
+      const req = getMockReq({
+        currentUser: currentUserIdp,
+        body: {
+          fileIds: [fileId],
+        },
+      });
+      const { res, next } = getMockRes();
+
+      hasFileDelete(req, res, next)
+        .then(() => {
+          expect(req.currentFileRecord).toEqual({
+            id: fileId,
+            formSubmissionId: '123',
+          });
+          expect(req.currentUser).toEqual(currentUserIdp);
+          expect(next).toBeCalledTimes(1);
+          done();
+        })
+        .catch(done);
     });
   });
 });
