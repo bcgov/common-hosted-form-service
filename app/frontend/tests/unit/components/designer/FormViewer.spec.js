@@ -293,7 +293,7 @@ describe('FormViewer.vue', () => {
     expect(wrapper.vm.canSaveDraft).toBeTruthy();
   });
 
-  it('onMounted', () => {
+  describe('onMounted', () => {
     it('will add event listener beforeunload will show modal and getFormSchema', async () => {
       const wrapper = shallowMount(FormViewer, {
         props: {
