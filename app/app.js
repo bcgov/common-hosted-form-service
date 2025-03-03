@@ -46,9 +46,9 @@ app.use((_req, res, next) => {
       "frame-ancestors 'self'; " +
       "frame-src 'self' https://www.youtube.com; " +
       "img-src 'self' data: https://*.tile.openstreetmap.org https://unpkg.com; " +
-      "script-src 'self' 'unsafe-eval' blob:; " +
+      "script-src 'self' blob:; " +
       "script-src-elem 'self' https://cdn.form.io; " +
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com"
+      "style-src 'self' https://fonts.googleapis.com"
   );
   next();
 });
