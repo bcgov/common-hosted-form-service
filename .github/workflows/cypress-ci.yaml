@@ -23,12 +23,15 @@ jobs:
        with:
             path: "tests/functional"
             key: node-modules-${{ hashFiles('tests/functional/package.json') }}
-       
-        
+     - name: Install Chrome
+        run:|
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable   
      - name: cypress install
        uses: cypress-io/github-action@v6
        with:
           working-directory: '${{ github.workspace }}/tests/functional'
+          browser: chrome
        env:
           CYPRESS_keycloakUsername: ${{secrets.keycloakUsername}}
           CYPRESS_keycloakPassword: ${{secrets.keycloakPassword}}
