@@ -10,10 +10,6 @@ export const useTenantStore = defineStore('tenant', {
     hasTenants: (state) => state.tenants.length > 0,
   },
   actions: {
-    //
-    // Current User
-    //
-    //
     async getTenantsForUser() {
       try {
         // Get the forms based on the user's permissions

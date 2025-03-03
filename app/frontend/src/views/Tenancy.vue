@@ -1,144 +1,141 @@
-<template>
-  <div class="tenancy-container">
-    <div class="alert-box">
-      <span class="close-btn" @click="dismissAlert">&times;</span>
-      <h2>
-        <strong>New Feature Alert!</strong> CHEFS now supports Multi-Tenancy
-      </h2>
-      <p>
-        You can now manage forms across multiple teams (tenancies) while keeping
-        data, settings, and permissions separate.
-      </p>
-      <ul>
-        <li>
-          🔹 Switch Between Tenancies – Select the tenancy you want to work in
-          from your available list.
-        </li>
-        <li>
-          🔹 Access the Older Version – Choose "Non-tenanted CHEFS" to return to
-          the previous setup.
-        </li>
-      </ul>
-      <a href="#">Learn more about Multi-Tenancy</a>
-    </div>
-
-    <div class="selection-container">
-      <label for="tenantSelect">Choose a Tenancy</label>
-      <select id="tenantSelect" v-model="selectedTenant">
-        <option disabled value="">Select an option...</option>
-        <option
-          v-for="tenant in tenantStore.tenants"
-          :key="tenant.id"
-          :value="tenant"
-        >
-          {{ tenant.name }}
-        </option>
-      </select>
-      <button
-        :disabled="!selectedTenant"
-        class="confirm-btn"
-        @click="confirmTenantSelection"
-      >
-        Go to Tenanted CHEFS →
-      </button>
-      <a href="#" class="old-chefs-link">Non-tenanted CHEFS ("Old" CHEFS)</a>
-    </div>
-  </div>
-</template>
-
-<script>
+<script setup>
 import { useTenantStore } from '~/store/tenant';
 import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useFormStore } from '~/store/form';
+import { useI18n } from 'vue-i18n';
+const formStore = useFormStore();
 
-export default {
-  setup() {
-    const tenantStore = useTenantStore();
-    const router = useRouter();
-    const selectedTenant = ref(null);
+const { isRTL } = storeToRefs(formStore);
 
-    onMounted(async () => {
-      if (!tenantStore.hasTenants) {
-        await tenantStore.getTenantsForUser();
-      }
-    });
+const tenantStore = useTenantStore();
+const router = useRouter();
+const { locale } = useI18n({ useScope: 'global' });
 
-    const confirmTenantSelection = () => {
-      if (selectedTenant.value) {
-        tenantStore.setSelectedTenant(selectedTenant.value);
-        router.push('/'); // Redirect to the About page
-      }
-    };
+const selectedTenant = ref(tenantStore.selectedTenant);
+const showAlert = ref(true);
 
-    const dismissAlert = () => {
-      document.querySelector('.alert-box').style.display = 'none';
-    };
+onMounted(async () => {
+  if (!tenantStore.hasTenants) {
+    await tenantStore.getTenantsForUser();
+  }
+});
 
-    return {
-      tenantStore,
-      selectedTenant,
-      confirmTenantSelection,
-      dismissAlert,
-    };
-  },
+const confirmTenantSelection = () => {
+  if (selectedTenant.value) {
+    tenantStore.setSelectedTenant(selectedTenant.value);
+    router.push('/'); // Redirect after selection
+  }
+};
+
+const dismissAlert = () => {
+  showAlert.value = false;
 };
 </script>
+<template>
+  <div :class="{ 'dir-rtl': isRTL }">
+    <v-container class="tenancy-layout d-flex flex-column justify-end">
+      <v-sheet class="help-highlight pa-5" elevation="2">
+        <v-row justify="center">
+          <!-- Title and Close Button -->
+          <v-col cols="11">
+            <strong class="text-primary">New Feature Alert!</strong>
+            <span class="text-h6 font-weight-bold">
+              CHEFS now supports Multi-Tenancy</span
+            >
+          </v-col>
+          <v-col cols="1" class="text-right">
+            <v-btn icon @click="dismissAlert">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
 
-<style scoped>
-.tenancy-container {
-  max-width: 700px;
+        <!-- Description -->
+        <p class="mt-2">
+          You can now manage forms across multiple teams (tenancies) while
+          keeping data, settings, and permissions separate.
+        </p>
+
+        <!-- Bullet Points -->
+        <ul>
+          <li>
+            Switch Between Tenancies – Select the tenancy you want to work in
+            from your available list.
+          </li>
+          <li>
+            Access the Older Version – Choose
+            <strong>"Non-tenanted CHEFS"</strong> to return to the previous
+            setup.
+          </li>
+        </ul>
+
+        <!-- Learn More Link -->
+        <p :lang="locale">
+          <a
+            href="https://developer.gov.bc.ca/docs/default/component/chefs-techdocs"
+            target="_blank"
+            :lang="locale"
+            >Learn more about Multi-Tenancy</a
+          >
+        </p>
+      </v-sheet>
+    </v-container>
+    <!-- Tenancy Selection -->
+    <v-container class="tenancy-layout d-flex flex-column justify-end">
+      <v-row
+        ><v-col cols="12" md="4"><span>Choose a Tenancy</span></v-col></v-row
+      >
+      <v-row>
+        <!-- Dropdown for tenancy selection -->
+        <v-col cols="12" md="4">
+          <v-select
+            v-model="selectedTenant"
+            label="Select an option"
+            :items="tenantStore.tenants"
+            item-title="name"
+            item-value="id"
+            variant="outlined"
+            class="tenancy-dropdown"
+          ></v-select>
+        </v-col>
+      </v-row>
+      <v-row>
+        <!-- Button to proceed (Disabled when no tenancy is selected) -->
+        <v-col cols="12" md="4">
+          <v-btn
+            :disabled="!selectedTenant"
+            color="primary"
+            @click="confirmTenantSelection"
+          >
+            Go to Tenanted CHEFS →
+          </v-btn>
+        </v-col>
+
+        <!-- Non-tenanted CHEFS link -->
+        <v-col cols="12" md="4" class="text-right">
+          <a href="/old-chefs" class="non-tenanted-link"
+            >Non-tenanted CHEFS ("Old" CHEFS)</a
+          >
+        </v-col>
+      </v-row>
+    </v-container>
+  </div>
+</template>
+
+<style lang="scss" scoped>
+.tenancy-alert {
+  width: 90%;
+  max-width: 900px;
   margin: auto;
-  text-align: center;
-  padding: 20px;
 }
+.tenancy-layout {
+  width: 80%;
 
-.alert-box {
-  background: #eef5ff;
-  padding: 15px;
-  border-left: 5px solid #0053a0;
-  margin-bottom: 20px;
-  position: relative;
-  text-align: left;
-}
-
-.alert-box h2 {
-  color: #003366;
-}
-
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.selection-container {
-  margin-top: 20px;
-}
-
-select {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-}
-
-.confirm-btn {
-  background: #0053a0;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  cursor: pointer;
-}
-
-.confirm-btn:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-}
-
-.old-chefs-link {
-  display: block;
-  margin-top: 10px;
-  text-decoration: underline;
+  .example-text {
+    margin: 80px 0;
+    padding: 0 5px;
+  }
 }
 </style>

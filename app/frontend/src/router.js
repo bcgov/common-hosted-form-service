@@ -410,7 +410,7 @@ export default function getRouter(basePath = '/') {
         name: 'Tenancy',
         component: () => import('~/views/Tenancy.vue'),
         meta: {
-          requiresAuth: 'primary',
+          hasLogin: true,
         },
       },
       {
@@ -427,7 +427,7 @@ export default function getRouter(basePath = '/') {
     },
   });
 
-  router.beforeEach((to, from, next) => {
+  router.beforeEach(async (to, from, next) => {
     NProgress.start();
 
     const authStore = useAuthStore();
@@ -448,11 +448,13 @@ export default function getRouter(basePath = '/') {
         });
       }
     }
-    if (authStore?.authenticated && !tenantStore.hasTenants) {
-      tenantStore.getTenantsForUser();
-    }
-    if (!tenantStore.selectedTenant && to.path !== '/tenancy') {
-      return next('/tenancy');
+    if (authStore?.authenticated) {
+      if (!tenantStore.hasTenants) {
+        await tenantStore.getTenantsForUser(); // Ensure tenants are fetched before checking selection
+      }
+      if (!tenantStore.selectedTenant && to.path !== '/tenancy') {
+        return next('/tenancy');
+      }
     }
     // Force login redirect if not authenticated
     // Note some pages (Submit and Success) only require auth if the form being loaded is secured
