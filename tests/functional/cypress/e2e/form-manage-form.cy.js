@@ -93,9 +93,9 @@ describe('Form Designer', () => {
       
       //Checking the  schedule of closing date settings
       cy.contains('Schedule a closing date').click();
-      cy.get('[data-test="formattedCloseDate"]').should('be.visible');
-      cy.get('[data-test="formattedCloseDate"]').click();
-      cy.get('[data-test="formattedCloseDate"]').type('2026-09-17');
+      cy.get('[data-test="closeSubmissionDateTime"]').should('be.visible');
+      cy.get('[data-test="closeSubmissionDateTime"]').click();
+      cy.get('[data-test="closeSubmissionDateTime"]').type('2026-09-17');
       cy.contains('Allow late submissions').click();
       cy.get('[data-test="afterCloseDateFor"]').should('be.visible');
       cy.get('[data-test="afterCloseDateFor"]').click();
@@ -249,6 +249,3 @@ describe('Form Designer', () => {
        
           
       })  
-  
-    })
-})
