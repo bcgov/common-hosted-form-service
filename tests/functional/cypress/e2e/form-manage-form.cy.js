@@ -162,7 +162,7 @@ describe('Form Designer', () => {
       
       cy.contains('SEND Reminder email').click();
       cy.get('[data-test="canEditForm"]').click();
-    })
+    });
     it('Checks Event Subscription settings', () => {
       cy.viewport(1000, 1100);
       cy.waitForLoad();
@@ -184,7 +184,7 @@ describe('Form Designer', () => {
       cy.get('.v-col > .v-btn > .v-btn__content > span').click();
       // Verify form settings updation success message
       cy.get('.v-alert__content').contains('div','Subscription settings for this form has been saved.').should('be.visible');
-    })
+    });
     it('Checks External API settings', () => {
       cy.viewport(1000, 1100);
       cy.waitForLoad();
@@ -245,10 +245,8 @@ describe('Form Designer', () => {
       const delcontinue=$el[1];
       cy.get(delcontinue).click();
       cy.get('#logoutButton > .v-btn__content > span').click();
-            
-       
-          
-      })  
+              
+      });  
   
-    })
-})
+    });
+});
