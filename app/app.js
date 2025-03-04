@@ -1,6 +1,7 @@
 const compression = require('compression');
 const config = require('config');
 const express = require('express');
+const helmet = require('helmet');
 const path = require('path');
 const Problem = require('api-problem');
 const querystring = require('querystring');
@@ -27,6 +28,7 @@ const state = {
 
 let probeId;
 const app = express();
+app.use(helmet());
 app.use(compression());
 app.use(express.json({ limit: config.get('server.bodyLimit') }));
 app.use(express.urlencoded({ extended: true }));
