@@ -4,21 +4,13 @@ import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
 
-
 Cypress.Commands.add('waitForLoad', () => {
   const loaderTimeout = 60000;
-
   cy.get('.nprogress-busy', { timeout: loaderTimeout }).should('not.exist');
 });
-
-
-
 describe('Form Designer', () => {
 
   beforeEach(()=>{
-    
-    
-    
     cy.on('uncaught:exception', (err, runnable) => {
       // Form.io throws an uncaught exception for missing projectid
       // Cypress catches it as undefined: undefined so we can't get the text
@@ -28,13 +20,9 @@ describe('Form Designer', () => {
   });
   it('Visits the form settings page', () => {
     
-    
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-    
     formsettings();
-    
-
   });
   it('checks Apikey Settings', () => {
     cy.viewport(1000, 1100);
@@ -48,13 +36,12 @@ describe('Form Designer', () => {
       .trigger('mousemove', coords.x, -550, { force: true })
         //.trigger('mousemove', coords.y, +100, { force: true })
       .trigger('mouseup', { force: true });
-      cy.waitForLoad();  
+      cy.wait(2000);  
       cy.get('button').contains('Save').click();
       
-
-
     });
     // Form saving
+    cy.wait(2000);
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
