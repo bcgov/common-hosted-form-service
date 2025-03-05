@@ -28,7 +28,15 @@ const state = {
 
 let probeId;
 const app = express();
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        'connect-src': ["'self'", 'https://*.loginproxy.gov.bc.ca', 'https://loginproxy.gov.bc.ca', 'https://orgbook.gov.bc.ca'],
+      },
+    },
+  })
+);
 app.use(compression());
 app.use(express.json({ limit: config.get('server.bodyLimit') }));
 app.use(express.urlencoded({ extended: true }));
@@ -38,8 +46,6 @@ app.use(express.urlencoded({ extended: true }));
 // This gives the correct IP address in the logs and for the rate limiting.
 // See https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
 app.set('trust proxy', 1);
-
-app.set('x-powered-by', false);
 
 // Skip if running tests
 if (process.env.NODE_ENV !== 'test') {
