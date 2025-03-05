@@ -33,6 +33,7 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         'connect-src': ["'self'", 'https://*.loginproxy.gov.bc.ca', 'https://loginproxy.gov.bc.ca', 'https://orgbook.gov.bc.ca'],
+        'frame-src': ["'self'", 'https://www.youtube.com'],
       },
       reportOnly: true,
     },
