@@ -54,13 +54,23 @@ app.use(
           // For the custom Business Name Search component
           'https://orgbook.gov.bc.ca',
         ],
+        'font-src': [
+          "'self'",
+          // For the Roboto font
+          'https://fonts.gstatic.com',
+        ],
         'frame-src': [
           "'self'",
           // For the Youtube video on the About page
           'https://www.youtube.com',
         ],
         'script-src': ["'self'", (_req, res) => `'nonce-${res.locals.cspNonce}'`],
-        'style-src': ["'self'", (_req, res) => `'nonce-${res.locals.cspNonce}'`],
+        'style-src': [
+          "'self'",
+          // For the Material Icons stylesheet
+          'https://fonts.googleapis.com',
+          (_req, res) => `'nonce-${res.locals.cspNonce}'`,
+        ],
       },
     },
   })
