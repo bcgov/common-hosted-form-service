@@ -1,6 +1,8 @@
 const compression = require('compression');
 const config = require('config');
+const crypto = require('crypto');
 const express = require('express');
+const helmet = require('helmet');
 const path = require('path');
 const Problem = require('api-problem');
 const querystring = require('querystring');
@@ -27,6 +29,53 @@ const state = {
 
 let probeId;
 const app = express();
+
+app.use((_req, res, next) => {
+  // Generate the per-request content security policy nonce used in inline
+  // scripts and styles. Save it in the locals to replace the Vite placeholder
+  // after the Vue part of the request has completed.
+  res.locals.cspNonce = crypto.randomBytes(16).toString('base64');
+
+  next();
+});
+
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        'connect-src': [
+          "'self'",
+          // When running locally the API runs on a separate port: 5173
+          'http://localhost:5173',
+          // The login proxy (SSO) when running locally and dev and test
+          'https://*.loginproxy.gov.bc.ca',
+          // The login proxy (SSO) for production
+          'https://loginproxy.gov.bc.ca',
+          // For the custom Business Name Search component
+          'https://orgbook.gov.bc.ca',
+        ],
+        'font-src': [
+          "'self'",
+          // For the Roboto font
+          'https://fonts.gstatic.com',
+        ],
+        'frame-src': [
+          "'self'",
+          // For the Youtube video on the About page
+          'https://www.youtube.com',
+        ],
+        'script-src': ["'self'", (_req, res) => `'nonce-${res.locals.cspNonce}'`],
+        'style-src': [
+          "'self'",
+          // For the Material Icons stylesheet
+          'https://fonts.googleapis.com',
+          (_req, res) => `'nonce-${res.locals.cspNonce}'`,
+        ],
+      },
+    },
+  })
+);
+
 app.use(compression());
 app.use(express.json({ limit: config.get('server.bodyLimit') }));
 app.use(express.urlencoded({ extended: true }));
@@ -36,8 +85,6 @@ app.use(express.urlencoded({ extended: true }));
 // This gives the correct IP address in the logs and for the rate limiting.
 // See https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
 app.set('trust proxy', 1);
-
-app.set('x-powered-by', false);
 
 // Skip if running tests
 if (process.env.NODE_ENV !== 'test') {
