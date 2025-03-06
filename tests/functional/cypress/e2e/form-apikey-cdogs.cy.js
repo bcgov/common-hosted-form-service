@@ -6,7 +6,6 @@ const depEnv = Cypress.env('depEnv');
 
 Cypress.Commands.add('waitForLoad', () => {
   const loaderTimeout = 60000;
-
   cy.get('.nprogress-busy', { timeout: loaderTimeout }).should('not.exist');
 });
 
