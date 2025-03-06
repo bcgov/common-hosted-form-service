@@ -30,43 +30,41 @@ const state = {
 let probeId;
 const app = express();
 
-app.use('/api', (_req, res, next) => {
-  try {
-    // Generate the per-request content security policy nonce used in inline
-    // scripts and styles. Save it in the locals to replace the Vite placeholder
-    // after the Vue part of the request has completed.
-    res.locals.cspNonce = crypto.randomBytes(16).toString('base64');
+app.use((_req, res, next) => {
+  // Generate the per-request content security policy nonce used in inline
+  // scripts and styles. Save it in the locals to replace the Vite placeholder
+  // after the Vue part of the request has completed.
+  res.locals.cspNonce = crypto.randomBytes(16).toString('base64');
 
-    helmet({
-      contentSecurityPolicy: {
-        directives: {
-          'connect-src': [
-            "'self'",
-            // When running locally the API runs on a separate port: 5173
-            'http://localhost:5173',
-            // The login proxy (SSO) when running locally and dev and test
-            'https://*.loginproxy.gov.bc.ca',
-            // The login proxy (SSO) for production
-            'https://loginproxy.gov.bc.ca',
-            // For the custom Business Name Search component
-            'https://orgbook.gov.bc.ca',
-          ],
-          'frame-src': [
-            "'self'",
-            // For the Youtube video on the About page
-            'https://www.youtube.com',
-          ],
-          'script-src': ["'self'", `'nonce-${res.locals.cspNonce}'`],
-          'style-src': ["'self'", `'nonce-${res.locals.cspNonce}'`],
-        },
-      },
-    })(_req, res, next);
-
-    next();
-  } catch (err) {
-    next(err);
-  }
+  next();
 });
+
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        'connect-src': [
+          "'self'",
+          // When running locally the API runs on a separate port: 5173
+          'http://localhost:5173',
+          // The login proxy (SSO) when running locally and dev and test
+          'https://*.loginproxy.gov.bc.ca',
+          // The login proxy (SSO) for production
+          'https://loginproxy.gov.bc.ca',
+          // For the custom Business Name Search component
+          'https://orgbook.gov.bc.ca',
+        ],
+        'frame-src': [
+          "'self'",
+          // For the Youtube video on the About page
+          'https://www.youtube.com',
+        ],
+        'script-src': ["'self'", (_req, res) => `'nonce-${res.locals.cspNonce}'`],
+        'style-src': ["'self'", (_req, res) => `'nonce-${res.locals.cspNonce}'`],
+      },
+    },
+  })
+);
 
 app.use(compression());
 app.use(express.json({ limit: config.get('server.bodyLimit') }));
