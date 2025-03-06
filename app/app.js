@@ -123,22 +123,6 @@ app.use('/favicon.ico', (_req, res) => {
 });
 app.use(staticFilesPath, express.static(path.join(__dirname, 'frontend/dist')));
 
-// Catch-all route to serve index.html
-// app.get('*', (_req, res) => {
-//   // Read the index.html file
-//   const indexPath = path.join(__dirname, 'dist', 'index.html');
-//   fs.readFile(indexPath, 'utf8', (err, data) => {
-//     if (err) {
-//       return res.status(500).send('Error loading the application');
-//     }
-
-//     // Replace the nonce placeholder
-//     const html = data.replace(/__CSP_NONCE__/g, res.locals.cspNonce);
-
-//     return res.send(html);
-//   });
-// });
-
 // Handle 500
 // eslint-disable-next-line no-unused-vars
 app.use((err, _req, res, _next) => {
