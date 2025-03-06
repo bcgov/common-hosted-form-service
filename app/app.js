@@ -1,6 +1,8 @@
 const compression = require('compression');
 const config = require('config');
+const crypto = require('crypto');
 const express = require('express');
+const fs = require('fs');
 const helmet = require('helmet');
 const path = require('path');
 const Problem = require('api-problem');
@@ -28,16 +30,27 @@ const state = {
 
 let probeId;
 const app = express();
-app.use(
+
+app.use((_req, res, next) => {
+  // Generate the per-request content security policy nonce used in inline
+  // scripts and styles. Save it in the locals to replace the Vite placeholder
+  // after the Vue part of the request has completed.
+  res.locals.cspNonce = crypto.randomBytes(16).toString('base64');
+
   helmet({
     contentSecurityPolicy: {
       directives: {
         'connect-src': ["'self'", 'https://*.loginproxy.gov.bc.ca', 'https://loginproxy.gov.bc.ca', 'https://orgbook.gov.bc.ca'],
         'frame-src': ["'self'", 'https://www.youtube.com'],
+        'script-src': ["'self'", `'nonce-${res.locals.cspNonce}'`],
+        'style-src': ["'self'", `'nonce-${res.locals.cspNonce}'`],
       },
     },
-  })
-);
+  })(_req, res, next);
+
+  next();
+});
+
 app.use(compression());
 app.use(express.json({ limit: config.get('server.bodyLimit') }));
 app.use(express.urlencoded({ extended: true }));
@@ -109,6 +122,22 @@ app.use('/favicon.ico', (_req, res) => {
   res.redirect(`${staticFilesPath}/favicon.ico`);
 });
 app.use(staticFilesPath, express.static(path.join(__dirname, 'frontend/dist')));
+
+// Catch-all route to serve index.html
+// app.get('*', (_req, res) => {
+//   // Read the index.html file
+//   const indexPath = path.join(__dirname, 'dist', 'index.html');
+//   fs.readFile(indexPath, 'utf8', (err, data) => {
+//     if (err) {
+//       return res.status(500).send('Error loading the application');
+//     }
+
+//     // Replace the nonce placeholder
+//     const html = data.replace(/__CSP_NONCE__/g, res.locals.cspNonce);
+
+//     return res.send(html);
+//   });
+// });
 
 // Handle 500
 // eslint-disable-next-line no-unused-vars
