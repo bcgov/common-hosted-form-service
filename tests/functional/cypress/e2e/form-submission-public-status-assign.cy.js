@@ -53,7 +53,7 @@ describe('Form Designer', () => {
       .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
-   
+    cy.wait(2000);
   // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
