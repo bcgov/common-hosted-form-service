@@ -18,6 +18,9 @@ jobs:
     steps:
      - name: Checkout
        uses: actions/checkout@v4
+       with:
+        ref: main
+        fetch-depth: 0 # Ensures full history is fetched
      - name: Setup Node.js
        uses: actions/setup-node@v4
        with:
