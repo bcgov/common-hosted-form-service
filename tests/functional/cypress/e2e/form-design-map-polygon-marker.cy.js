@@ -46,7 +46,7 @@ describe('Form Designer', () => {
       cy.get('input[value="circle"]').click();
       cy.get('input[value="polygon"]').click();
       cy.get('input[name="data[numPoints]"').type('{selectall}{backspace}');
-      cy.get('input[name="data[numPoints]"').type('3');
+      cy.get('input[name="data[numPoints]"').type('4');
       cy.wait(2000);
       cy.get('a[title="Draw a marker"]').then($el => {
         const marker_elem=$el[0];
@@ -92,10 +92,30 @@ describe('Form Designer', () => {
       cy.get('g').find('path[stroke-linejoin="round"]').should('exist');
       
       });
-      cy.waitForLoad();
-      cy.get('button').contains('Save').click();
+      cy.wait(2000);
   });
-
+  it('Checks user location feature for a Map component', () => {
+    cy.viewport(1000, 1100);
+    cy.waitForLoad();
+    cy.get('div[title="Click to center the map on your location"]').should('exist');
+    cy.get('a[class="leaflet-control-button"]').then($el => {
+      const location_btn=$el[0];
+      cy.get(location_btn).click();
+    });
+    cy.wait(2000);
+    //verify local street map is loaded
+    cy.get('img[class="leaflet-tile leaflet-tile-loaded"]').should('exist');
+    cy.get('img[class="leaflet-tile leaflet-tile-loaded"]').should('have.attr', 'src').and('include', 'https://c.tile.openstreetmap.org');
+    //Mark a point on the current location
+    cy.get('a[title="Draw a marker"]').then($el => {
+      const marker_elem=$el[0];
+      cy.get(marker_elem).click({force: true});
+    });
+    cy.get('div[class="leaflet-marker-icon leaflet-mouse-marker leaflet-zoom-hide leaflet-interactive"]').click({ force: true });
+    cy.wait(2000);
+    cy.get('button').contains('Save').click();
+    
+  });
   it('Checks form submission for a Map component', () => {
         cy.viewport(1000, 1100);
         cy.waitForLoad();
@@ -142,7 +162,7 @@ describe('Form Designer', () => {
       });  
       cy.get('div[class="leaflet-draw-tooltip leaflet-draw-tooltip-single"]').click({ force: true });
       
-      cy.get('div[class="leaflet-popup-content"]').find('p').contains('Only 3 features per submission').should('be.visible');
+      cy.get('div[class="leaflet-popup-content"]').find('p').contains('Only 4 features per submission').should('be.visible');
       cy.get('button').contains('Submit').click();
       cy.wait(4000);
       cy.get('button').contains('Submit').click();
