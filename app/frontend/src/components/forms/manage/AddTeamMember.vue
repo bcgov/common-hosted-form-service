@@ -33,7 +33,7 @@ const showError = ref(false);
 const entries = ref([]);
 
 const { isRTL } = storeToRefs(useFormStore());
-const { loginButtons, primaryIdp } = storeToRefs(idpStore);
+const { addTeamMemberButtons, primaryIdp } = storeToRefs(idpStore);
 
 const FORM_ROLES = computed(() => {
   const idpRoles = idpStore.listRoles(selectedIdp.value);
@@ -195,7 +195,7 @@ defineExpose({
                 hide-details
               >
                 <v-radio
-                  v-for="button in loginButtons"
+                  v-for="button in addTeamMemberButtons"
                   :key="button.code"
                   :value="button.code"
                   :label="button.display"

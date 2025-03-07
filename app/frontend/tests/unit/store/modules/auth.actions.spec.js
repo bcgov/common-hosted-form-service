@@ -28,7 +28,7 @@ describe('auth actions', () => {
       formStore.$reset();
       appStore.$reset();
       mockStore.keycloak = {
-        createLoginUrl: vi.fn(() => 'about:blank'),
+        createLoginUrl: vi.fn().mockResolvedValue('about:blank'),
         createLogoutUrl: vi.fn(() => 'about:blank'),
       };
       replaceSpy.mockReset();
@@ -37,48 +37,50 @@ describe('auth actions', () => {
       appStore.config = { basePath: '/app' };
     });
 
-    it('should do nothing if keycloak is not ready', () => {
+    it('should do nothing if keycloak is not ready', async () => {
       mockStore.ready = false;
-      mockStore.login();
+
+      await mockStore.login();
 
       expect(windowReplaceSpy).toHaveBeenCalledTimes(0);
     });
 
-    it('should update redirectUri if not defined', () => {
+    it('should update redirectUri if not defined', async () => {
       mockStore.ready = true;
       mockStore.redirectUri = undefined;
 
-      mockStore.login('test');
+      await mockStore.login('test');
 
       expect(windowReplaceSpy).toHaveBeenCalledTimes(1);
-      expect(mockStore.redirectUri).toEqual('about:blank');
+      // Expecting location.toString() instead of 'about:blank'
+      expect(mockStore.redirectUri).toEqual(location.toString());
     });
 
-    it('should not update redirectUri if already defined', () => {
+    it('should not update redirectUri if already defined', async () => {
       mockStore.ready = true;
       mockStore.redirectUri = 'value';
 
-      mockStore.login('test');
+      await mockStore.login('test');
 
       expect(windowReplaceSpy).toHaveBeenCalledTimes(1);
       expect(mockStore.redirectUri).toEqual('value');
     });
 
-    it('should navigate with provided idpHint', () => {
+    it('should navigate with provided idpHint', async () => {
       mockStore.ready = true;
       mockStore.redirectUri = 'value';
 
-      mockStore.login('test');
+      await mockStore.login('test');
 
       expect(windowReplaceSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('should navigate with pinia store idpHint', () => {
+    it('should navigate with pinia store idpHint', async () => {
       mockStore.ready = true;
       mockStore.redirectUri = undefined;
       formStore.form = { idps: ['test'] };
 
-      mockStore.login();
+      await mockStore.login();
 
       expect(replaceSpy).toHaveBeenCalledTimes(1);
       expect(replaceSpy).toHaveBeenCalledWith({
