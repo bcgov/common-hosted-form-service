@@ -159,13 +159,11 @@ export default class Component extends (FieldComponent as any) {
         };
       }
     });
-
     this.setValue({ features });
   }
 
   setValue(value) {
     super.setValue(value);
-
     // Additional logic to render the saved data on the map if necessary
     if (this.mapService && value && value.features) {
       try {
