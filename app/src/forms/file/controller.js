@@ -61,4 +61,13 @@ module.exports = {
       next(error);
     }
   },
+
+  tempfix: async (req, res, next) => {
+    try {
+      await service.tempfix(req.params.submissionId);
+      res.sendStatus(200);
+    } catch (error) {
+      next(error);
+    }
+  },
 };

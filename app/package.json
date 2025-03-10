@@ -1,5 +1,6 @@
 {
   "name": "common-hosted-form-service-app",
+  "main": "app.js",
   "version": "1.5.0",
   "private": true,
   "license": "Apache-2.0",
