@@ -3,7 +3,6 @@ import { resolve } from 'path';
 import { defineConfig, loadEnv } from 'vite';
 import eslint from 'vite-plugin-eslint';
 import vuetify from 'vite-plugin-vuetify';
-import { defineConfig as vitestDefineConfig } from 'vitest/config';
 
 const proxyObject = {
   target: 'http://localhost:8080',
@@ -17,6 +16,9 @@ export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   return {
     base: env.VITE_FRONTEND_BASEPATH ? env.VITE_FRONTEND_BASEPATH : '/app',
+    html: {
+      cspNonce: '__VITE_CSP_NONCE__',
+    },
     server: {
       base: env.VITE_FRONTEND_BASEPATH ? env.VITE_FRONTEND_BASEPATH : '/app',
       proxy: {
