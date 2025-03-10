@@ -2,10 +2,8 @@ import { createTestingPinia } from '@pinia/testing';
 import { flushPromises, mount } from '@vue/test-utils';
 import { setActivePinia } from 'pinia';
 import moment from 'moment';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ref } from 'vue';
-import { useI18n } from 'vue-i18n';
-const { t } = useI18n({ useScope: 'global' });
 
 import { useFormStore } from '~/store/form';
 import FormScheduleSettings from '~/components/designer/settings/FormScheduleSettings.vue';
@@ -13,6 +11,20 @@ import { ScheduleType } from '~/utils/constants';
 import { getSubmissionPeriodDates } from '~/utils/transformUtils';
 import { useAppStore } from '~/store/app';
 
+// Mock vue-i18n globally
+vi.mock('vue-i18n', () => ({
+  useI18n: () => ({
+    t: (key) => key,
+    locale: 'en',
+  }),
+  createI18n: () => ({
+    global: {
+      t: (key) => key,
+      locale: 'en',
+    },
+  }),
+}));
+const t = (msg) => msg;
 describe('FormScheduleSettings.vue', () => {
   const pinia = createTestingPinia();
   setActivePinia(pinia);
@@ -137,13 +149,14 @@ describe('FormScheduleSettings.vue', () => {
         },
       },
     });
-
+    formStore.form.schedule.enabled = true;
+    formStore.form.schedule.openSubmissionDateTime = moment().toISOString();
     formStore.form.schedule.scheduleType = ScheduleType.CLOSINGDATE;
 
-    await flushPromises();
+    await wrapper.vm.$nextTick();
 
     expect(
-      wrapper.find('[data-test="closeSubmissionDateTime"]').exists()
+      wrapper.find('[data-test="formattedCloseDate"]').exists()
     ).toBeTruthy();
     expect(
       wrapper.find('[data-test="afterCloseDateFor"]').exists()
@@ -166,14 +179,15 @@ describe('FormScheduleSettings.vue', () => {
         },
       },
     });
-
+    formStore.form.schedule.enabled = true;
+    formStore.form.schedule.openSubmissionDateTime = moment().toISOString();
     formStore.form.schedule.scheduleType = ScheduleType.CLOSINGDATE;
     formStore.form.schedule.allowLateSubmissions.enabled = true;
 
-    await flushPromises();
+    await wrapper.vm.$nextTick();
 
     expect(
-      wrapper.find('[data-test="closeSubmissionDateTime"]').exists()
+      wrapper.find('[data-test="formattedCloseDate"]').exists()
     ).toBeTruthy();
     expect(
       wrapper.find('[data-test="afterCloseDateFor"]').exists()
@@ -196,14 +210,15 @@ describe('FormScheduleSettings.vue', () => {
         },
       },
     });
-
+    formStore.form.schedule.enabled = true;
+    formStore.form.schedule.openSubmissionDateTime = moment().toISOString();
     formStore.form.schedule.scheduleType = ScheduleType.CLOSINGDATE;
     formStore.form.schedule.closingMessageEnabled = true;
 
-    await flushPromises();
+    await wrapper.vm.$nextTick();
 
     expect(
-      wrapper.find('[data-test="closeSubmissionDateTime"]').exists()
+      wrapper.find('[data-test="formattedCloseDate"]').exists()
     ).toBeTruthy();
     expect(
       wrapper.find('[data-test="afterCloseDateFor"]').exists()
@@ -548,7 +563,7 @@ describe('FormScheduleSettings.vue', () => {
   });
 
   it('AVAILABLE_DATES should return the same values as the function..', async () => {
-    const TODAY = moment().format('YYYY-MM-DD HH:MM:SS');
+    const TODAY_UTC = moment.utc().startOf('day').toISOString(); // Current UTC date at 00:00:00
     const wrapper = mount(FormScheduleSettings, {
       global: {
         plugins: [pinia],
@@ -568,41 +583,36 @@ describe('FormScheduleSettings.vue', () => {
     const originalDates = await getSubmissionPeriodDates(
       2,
       'days',
-      moment(TODAY).format('YYYY-MM-DD HH:MM:SS'),
+      TODAY_UTC,
       2,
       'days',
-      // late term
       2,
-      // late term period
       'days',
-      moment(TODAY).add(1, 'days').format('YYYY-MM-DD HH:MM:SS')
+      moment.utc(TODAY_UTC).add(4, 'days').toISOString() // repeatUntil is 4 days from start
     );
 
     await flushPromises();
 
-    expect(originalDates.length).toEqual(1);
+    expect(originalDates.length).toEqual(2);
     expect(originalDates[0].startDate).toEqual(
-      moment(TODAY).format('YYYY-MM-DD HH:MM:SS')
+      moment.utc(TODAY_UTC).format('YYYY-MM-DD HH:mm:ss')
     );
     expect(originalDates[0].closeDate).toEqual(
-      moment(TODAY).add(2, 'days').format('YYYY-MM-DD HH:MM:SS')
+      moment.utc(TODAY_UTC).add(2, 'days').format('YYYY-MM-DD HH:mm:ss')
     );
-    // we specified 2 late days after closing which is 2 days
     expect(originalDates[0].graceDate).toEqual(
-      moment(TODAY).add(4, 'days').format('YYYY-MM-DD HH:MM:SS')
+      moment.utc(TODAY_UTC).add(4, 'days').format('YYYY-MM-DD HH:mm:ss')
     );
 
     formStore.form = {
       schedule: {
         keepOpenForTerm: 2,
         keepOpenForInterval: 'days',
-        openSubmissionDateTime: moment(TODAY).format('YYYY-MM-DD HH:MM:SS'),
+        openSubmissionDateTime: TODAY_UTC,
         repeatSubmission: {
           everyTerm: 2,
           everyIntervalType: 'days',
-          repeatUntil: moment(TODAY)
-            .add(2, 'days')
-            .format('YYYY-MM-DD HH:MM:SS'),
+          repeatUntil: moment.utc(TODAY_UTC).add(4, 'days').toISOString(),
         },
         allowLateSubmissions: {
           forNext: {
@@ -611,25 +621,24 @@ describe('FormScheduleSettings.vue', () => {
           },
         },
         scheduleType: ScheduleType.PERIOD,
-        closeSubmissionDateTime: moment(TODAY)
+        closeSubmissionDateTime: moment(TODAY_UTC)
           .add(1, 'days')
-          .format('YYYY-MM-DD HH:MM:SS'),
+          .format('YYYY-MM-DD HH:mm:ss'),
       },
     };
 
     await flushPromises();
 
     const availableDates = wrapper.vm.AVAILABLE_DATES;
-    expect(availableDates.length).toEqual(1);
+    expect(availableDates.length).toEqual(2);
     expect(availableDates[0].startDate).toEqual(
-      moment(TODAY).format('YYYY-MM-DD HH:MM:SS')
+      moment.utc(TODAY_UTC).format('YYYY-MM-DD HH:mm:ss')
     );
     expect(availableDates[0].closeDate).toEqual(
-      moment(TODAY).add(2, 'days').format('YYYY-MM-DD HH:MM:SS')
+      moment.utc(TODAY_UTC).add(2, 'days').format('YYYY-MM-DD HH:mm:ss')
     );
-    // we specified 2 days
     expect(availableDates[0].graceDate).toEqual(
-      moment(TODAY).add(4, 'days').format('YYYY-MM-DD HH:MM:SS')
+      moment.utc(TODAY_UTC).add(4, 'days').format('YYYY-MM-DD HH:mm:ss')
     );
   });
 
@@ -751,9 +760,8 @@ describe('FormScheduleSettings.vue', () => {
 
     expect(wrapper.vm.AVAILABLE_PERIOD_OPTIONS).toEqual(['quarters', 'years']);
   });
-
   it('renders submission schedule and late submission text with correct spacing', async () => {
-    const TODAY = moment().format('YYYY-MM-DD HH:MM:SS');
+    const TODAY_UTC = moment().utc().format('YYYY-MM-DD HH:mm:ss');
     const wrapper = mount(FormScheduleSettings, {
       global: {
         plugins: [pinia],
@@ -769,58 +777,72 @@ describe('FormScheduleSettings.vue', () => {
         },
       },
     });
-  
+
     // Set up the form store with necessary data
     const formStore = useFormStore();
     formStore.form = {
       schedule: {
         enabled: true,
-        openSubmissionDateTime: TODAY,
-        closeSubmissionDateTime: moment(TODAY).add(2, 'days').format('YYYY-MM-DD HH:MM:SS'),
+        openSubmissionDateTime: TODAY_UTC,
+        closeSubmissionDateTime: moment(TODAY_UTC)
+          .add(2, 'days')
+          .format('YYYY-MM-DD HH:mm:ss'),
         scheduleType: ScheduleType.CLOSINGDATE,
         allowLateSubmissions: {
           enabled: true,
-          forNext: {
-            term: 2,
-            intervalType: 'days'
-          }
-        }
-      }
+          forNext: { term: 2, intervalType: 'days' },
+        },
+      },
+      userTimezone: moment.tz.guess() || 'UTC', // Ensure fallback
     };
-  
+
     await flushPromises();
-  
+
     // Check submission schedule text
-    const submissionScheduleText = wrapper.find('[data-test="submission-schedule-text"]');
+    const submissionScheduleText = wrapper.find(
+      '[data-test="submission-schedule-text"]'
+    );
     expect(submissionScheduleText.exists()).toBe(true);
-    
+
     const scheduleTextContent = submissionScheduleText.text();
-    expect(scheduleTextContent).toContain(t('trans.formSettings.submissionsOpenDateRange'));
-    expect(scheduleTextContent).toContain(TODAY);
+    const userTimezone = formStore.form.userTimezone || 'UTC'; // Ensure fallback
+
+    expect(scheduleTextContent).toContain(
+      t('trans.formSettings.submissionsOpenDateRange')
+    );
+
+    expect(scheduleTextContent).toContain(TODAY_UTC);
     expect(scheduleTextContent).toContain(t('trans.formSettings.to'));
-    expect(scheduleTextContent).toContain(formStore.form.schedule.closeSubmissionDateTime);
-  
+    expect(scheduleTextContent).toContain(
+      formStore.form.schedule.closeSubmissionDateTime
+    );
+
     // Check that there's exactly one space before and after the "to" text
     const toIndex = scheduleTextContent.indexOf(t('trans.formSettings.to'));
     expect(scheduleTextContent[toIndex - 1]).toBe(' ');
-    expect(scheduleTextContent[toIndex + t('trans.formSettings.to').length]).toBe(' ');
-  
+    expect(
+      scheduleTextContent[toIndex + t('trans.formSettings.to').length]
+    ).toBe(' ');
+
     // Check late submission text
-    const lateSubmissionText = wrapper.find('[data-test="late-submission-text"]');
+    const lateSubmissionText = wrapper.find(
+      '[data-test="late-submission-text"]'
+    );
     expect(lateSubmissionText.exists()).toBe(true);
-  
+
     const lateTextContent = lateSubmissionText.text();
-    const expectedLateText = `${t('trans.formSettings.allowLateSubmissnInterval')} 2 days.`;
+    const expectedLateText = `${t(
+      'trans.formSettings.allowLateSubmissnInterval'
+    )} 2 days.`;
     expect(lateTextContent).toBe(expectedLateText);
-  
+
     // Check that there's exactly one space before and after the term and interval type
     const termIndex = lateTextContent.indexOf('2');
     expect(lateTextContent[termIndex - 1]).toBe(' ');
     expect(lateTextContent[termIndex + 1]).toBe(' ');
-  
+
     const intervalTypeIndex = lateTextContent.indexOf('days');
     expect(lateTextContent[intervalTypeIndex - 1]).toBe(' ');
     expect(lateTextContent[intervalTypeIndex + 4]).toBe('.');
   });
-  
 });
