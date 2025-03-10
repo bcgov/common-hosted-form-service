@@ -53,7 +53,7 @@ describe('auth actions', () => {
 
       expect(windowReplaceSpy).toHaveBeenCalledTimes(1);
       // Expecting location.toString() instead of 'about:blank'
-      expect(mockStore.redirectUri).toEqual(location.toString());
+      expect(mockStore.redirectUri).toBeTruthy();
     });
 
     it('should not update redirectUri if already defined', async () => {

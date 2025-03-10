@@ -651,6 +651,11 @@ describe('SubmissionsTable.vue', () => {
     wrapper.vm.onShowColumnDialog();
     expect(wrapper.vm.BASE_FILTER_HEADERS).toEqual([
       {
+        title: 'trans.submissionsTable.status',
+        align: 'start',
+        key: 'status',
+      },
+      {
         title: 'trans.submissionsTable.submitter',
         align: 'start',
         key: 'submitter',
@@ -659,11 +664,6 @@ describe('SubmissionsTable.vue', () => {
         align: 'start',
         title: 'trans.submissionsTable.submissionDate',
         key: 'date',
-      },
-      {
-        title: 'trans.submissionsTable.status',
-        align: 'start',
-        key: 'status',
       },
       {
         title: 'trans.formSubmission.updatedAt',

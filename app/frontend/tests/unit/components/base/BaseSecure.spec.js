@@ -27,6 +27,11 @@ describe('BaseSecure.vue', () => {
   const nonPrimaryIdp = idpStore.providers.find(
     (x) => x.active && x.login && !x.primary
   );
+  beforeEach(async () => {
+    // Ensure router's history is initialized before each test
+    await router.push('/'); // Reset to a known route
+    await router.isReady(); // Wait for router to be fully ready
+  });
 
   it('renders nothing if authenticated, user', () => {
     authStore.authenticated = true;
@@ -53,8 +58,8 @@ describe('BaseSecure.vue', () => {
       tokenParsed: {
         client_roles: [],
         identity_provider: nonPrimaryIdp.code,
-        },
-      };
+      },
+    };
 
     const wrapper = mount(BaseSecure, {
       props: {
@@ -145,9 +150,9 @@ describe('BaseSecure.vue', () => {
     authStore.ready = true;
     authStore.keycloak = {
       tokenParsed: {
-          client_roles: [],
-          identity_provider: 'fake', //nonPrimaryIdp.code,
-        },
+        client_roles: [],
+        identity_provider: 'fake', //nonPrimaryIdp.code,
+      },
     };
     const wrapper = mount(BaseSecure, {
       props: {

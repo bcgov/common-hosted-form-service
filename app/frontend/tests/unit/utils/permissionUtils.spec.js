@@ -7,7 +7,24 @@ import { useIdpStore } from '~/store/identityProviders';
 import { useNotificationStore } from '~/store/notification';
 import { FormPermissions, IdentityMode } from '~/utils/constants';
 import * as permissionUtils from '~/utils/permissionUtils';
+vi.mock('nprogress', () => {
+  return {
+    default: {
+      start: vi.fn(),
+      set: vi.fn(),
+      inc: vi.fn(),
+      done: vi.fn(),
+      isRendered: vi.fn(() => false),
+      render: vi.fn(),
+    },
+  };
+});
 
+// Cleanup after each test
+afterEach(() => {
+  vi.clearAllMocks();
+  vi.clearAllTimers(); // Still stops any stray timers
+});
 describe('checkFormSubmit', () => {
   it('should be false when userForm is undefined', () => {
     expect(permissionUtils.checkFormSubmit(undefined)).toBeFalsy();
