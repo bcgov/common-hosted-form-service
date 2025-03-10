@@ -231,3 +231,7 @@ export function fileToBase64(file) {
     reader.onerror = (error) => reject(error);
   });
 }
+
+export function multiuploadTemplateFilename(name, date = Date.now()) {
+  return `template_${name.replace(/\s/g, '_').toLowerCase()}_${date}`;
+}
