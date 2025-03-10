@@ -1,4 +1,4 @@
-const { AckPolicy, JSONCodec } = require("nats");
+const { AckPolicy, JSONCodec, nkeyAuthenticator } = require("nats");
 const Cryptr = require("cryptr");
 const falsey = require("falsey");
 const { v4: uuidv4 } = require("uuid");
@@ -9,11 +9,10 @@ const { v4: uuidv4 } = require("uuid");
  WEBSOCKET - connect via nats protocol or websockets. true/false (default false, connect via nats)
  ENCRYPTION_KEY - what encryption key to decrypt (Cryptr - aes-256-gcm) private payloads
  SOURCE - filter messages based on meta.source (default is none)
- USERNAME/PASSWORD - user and pass to connect to the stream (default is chefsConsumer/password)
+ NKEY_USER, NKEY_SEED - NKEY User and seed, defaults will work with localhost
  Examples:
-  SERVERS=stream-dev.apps.silver.devops.gov.bc.ca WEBSOCKETS=true DURABLE_NAME=pullConsumer ENCRYPTION_KEY=ad5520469720325d1694c87511afda28a0432dd974cb77b5b4b9f946a5af6985 SOURCE=pr-1444 node pullConsumer.js
-  SERVERS=stream-dev.apps.silver.devops.gov.bc.ca WEBSOCKETS=true ENCRYPTION_KEY=ad5520469720325d1694c87511afda28a0432dd974cb77b5b4b9f946a5af6985 SOURCE=pr-1444 PASSWORD=<chefsConsumer password> node pullConsumer.js  
-  SERVERS=stream-dev.apps.silver.devops.gov.bc.ca WEBSOCKETS=true ENCRYPTION_KEY=ad5520469720325d1694c87511afda28a0432dd974cb77b5b4b9f946a5af6985 node pullConsumer.js
+  SERVERS=stream-dev.apps.silver.devops.gov.bc.ca WEBSOCKETS=true DURABLE_NAME=pullConsumer ENCRYPTION_KEY=ad5520469720325d1694c87511afda28a0432dd974cb77b5b4b9f946a5af6985 SOURCE=pr-1444 NKEY_SEED=<your nkey user> NKEY_SEED=<your nkey seed>node pullConsumer.js
+  SERVERS=stream-dev.apps.silver.devops.gov.bc.ca WEBSOCKETS=true ENCRYPTION_KEY=ad5520469720325d1694c87511afda28a0432dd974cb77b5b4b9f946a5af6985 SOURCE=pr-1444 NKEY_SEED=<your nkey user> NKEY_SEED=<your nkey seed> node pullConsumer.js  
 
   // runs with all defaults against localhost
   node pullConsumer.js
@@ -44,10 +43,10 @@ if (process.env.SERVERS) {
   servers = "localhost:4222,localhost:4223,localhost:4224".split(",");
 }
 
-let nc = undefined; // nats connection
-let js = undefined; // jet stream
-let jsm = undefined; // jet stream manager
-let consumer = undefined; // pull consumer (ordered, ephemeral)
+let nc; // nats connection
+let js; // jet stream
+let jsm; // jet stream manager
+let consumer; // pull consumer (ordered, ephemeral)
 
 // stream info
 const STREAM_NAME = "CHEFS";
@@ -56,8 +55,17 @@ const MAX_MESSAGES = 2;
 const DURABLE_NAME = process.env.DURABLE_NAME || uuidv4();
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || undefined;
 const SOURCE_FILTER = process.env.SOURCE || false;
-const USERNAME = process.env.USERNAME || "chefsConsumer";
-const PASSWORD = process.env.PASSWORD || "password";
+
+// nkey is set in .devcontainer/chefs_local/config/jetstream.conf
+// this account is not authorized in any other environment.
+const NKEY_USER =
+  process.env.NKEY_USER ||
+  "UAG36HKWH3PZMLYAK5CAAVVXTXXBNA3YKUYMOF2J66UKHBVMTYMTM2ID";
+const NKEY_SEED_VALUE =
+  process.env.NKEY_SEED ||
+  "SUAJEDVLSUFPYFUCVNMEGT6Z6CVREEZMJOSIHLCZPSMYEZMLRNSNICIRNQ";
+
+const NKEY_SEED = new TextEncoder().encode(NKEY_SEED_VALUE);
 
 const printMsg = (m) => {
   // illustrate grabbing the sequence and timestamp from the nats message...
@@ -113,12 +121,11 @@ const init = async () => {
     try {
       // no credentials provided.
       // anonymous connections have read access to the stream
-      console.log(`connect to nats server(s) ${servers} as '${USERNAME}'...`);
+      console.log(`connect to nats server(s) ${servers} as '${NKEY_USER}'...`);
       nc = await natsConnect({
         servers: servers,
         reconnectTimeWait: 10 * 1000, // 10s
-        user: USERNAME,
-        pass: PASSWORD,
+        authenticator: nkeyAuthenticator(NKEY_SEED),
       });
 
       console.log("access jetstream...");
