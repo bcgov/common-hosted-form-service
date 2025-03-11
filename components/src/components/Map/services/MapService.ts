@@ -30,22 +30,33 @@ interface MapServiceOptions {
   viewMode?: boolean;
   myLocation?: boolean;
   bcGeocoder: boolean;
+  required: boolean;
+  defaultValue?: any;
 }
 
 class MapService {
   options;
   map;
   drawnItems;
+  drawControl;
+  defaultFeatures;
 
   constructor(options) {
     this.options = options;
 
     if (options.mapContainer) {
-      const { map, drawnItems } = this.initializeMap(options);
+      const { map, drawnItems, drawControl } = this.initializeMap(options);
       this.map = map;
 
-      // this.map = map;
       this.drawnItems = drawnItems;
+      this.drawControl = drawControl; // Store the draw control globally
+      if (this.options.defaultValue?.features.length !== 0) {
+        this.defaultFeatures = this.arrayToFeatureGroup(
+          this.options.defaultValue?.features
+          // defaultFeatures are stored in a naive fashion for ease
+          // of readability for CHEFS reviewers
+        );
+      }
 
       map.invalidateSize();
       // Triggering a resize event after map initialization
@@ -67,7 +78,19 @@ class MapService {
         this.bindPopupToLayer(layer);
         options.onDrawnItemsChange(drawnItems.getLayers());
       });
-      map.on(L.Draw.Event.DELETED, (e) => {
+
+      map.on(L.Draw.Event.DELETED, (e: any) => {
+        e.layers.eachLayer((layer) => {
+          const match = this.isDefaultFeature(layer as L.Layer);
+          if (match) {
+            // re-add the feature/layer to the map
+            drawnItems.addLayer(layer);
+            L.popup()
+              .setLatLng(map.getCenter())
+              .setContent('<p>Please do not delete pre-existing features</p>')
+              .addTo(map);
+          }
+        });
         options.onDrawnItemsChange(drawnItems.getLayers());
       });
       map.on(L.Draw.Event.EDITSTOP, (e) => {
@@ -171,12 +194,15 @@ class MapService {
     }
 
     // Add Drawing Controllers
+    let drawControl = null;
+
     if (!readOnlyMap) {
       if (!viewMode) {
-        const drawControl = new L.Control.Draw({
+        drawControl = new L.Control.Draw({
           draw: drawOptions,
           edit: {
             featureGroup: drawnItems,
+            remove: true,
           },
         });
         map.addControl(drawControl);
@@ -197,8 +223,9 @@ class MapService {
         }
       }
     }
-    return { map, drawnItems };
+    return { map, drawnItems, drawControl };
   }
+
   bindPopupToLayer(layer) {
     if (layer instanceof L.Marker) {
       layer
@@ -235,26 +262,15 @@ class MapService {
       console.error('drawnItems is undefined');
       return;
     }
-    drawnItems.clearLayers();
     if (!Array.isArray(items)) {
       items = [items];
     }
-    items.forEach((item) => {
-      let layer;
-      if (item.type === 'marker') {
-        layer = L.marker(item.coordinates);
-      } else if (item.type === 'rectangle') {
-        layer = L.rectangle(item.bounds);
-      } else if (item.type === 'circle') {
-        layer = L.circle(item.coordinates, { radius: item.radius });
-      } else if (item.type === 'polygon') {
-        layer = L.polygon(item.coordinates);
-      } else if (item.type === 'polyline') {
-        layer = L.polyline(item.coordinates);
-      }
-      if (layer) {
-        drawnItems.addLayer(layer);
-        this.bindPopupToLayer(layer);
+    // items are stored in a naive fashion for ease
+    // of readability for CHEFS reviewers
+    const features = this.arrayToFeatureGroup(items);
+    features.getLayers().forEach((feature) => {
+      if (!this.isFeatureInArray(feature, drawnItems.getLayers())) {
+        drawnItems.addLayer(feature);
       }
     });
   }
@@ -269,6 +285,111 @@ class MapService {
       }
     }
     return false;
+  }
+
+  isDefaultFeature(feature): boolean {
+    if (
+      this.defaultFeatures.getLayers() === 0 ||
+      this.defaultFeatures === null
+    ) {
+      return false;
+    }
+
+    return this.isFeatureInArray(feature, this.defaultFeatures.getLayers());
+  }
+
+  isFeatureInArray(feature, array): boolean {
+    if (feature === null) return false;
+    if (array.length === 0 || array === null) {
+      return false;
+    }
+    const featureType = this.getFeatureType(feature);
+    const sameTypes = array.filter((d) => {
+      return this.getFeatureType(d) === featureType;
+    }); // filter out the types that don't match
+    if (sameTypes.length === 0) {
+      // no matching types, no match
+      return false;
+    }
+    return sameTypes.some((f) => {
+      switch (featureType) {
+        case 'marker':
+          return this.coordinatesEqual(f.getLatLng(), feature.getLatLng());
+        case 'rectangle':
+          return f.getBounds() === feature.getBounds();
+        case 'circle': {
+          const radCheck = f.getRadius() === feature.getRadius();
+          const pointCheck = this.coordinatesEqual(
+            f.getLatLng(),
+            feature.getLatLng()
+          );
+          return radCheck && pointCheck;
+        }
+
+        case 'polygon':
+          return this.polyEqual(f.getLatLngs(), feature.getLatLngs());
+        case 'polyline':
+          return this.polyEqual(f.getLatLngs(), feature.getLatLngs());
+        default:
+          return false;
+      }
+    });
+  }
+
+  arrayToFeatureGroup(array) {
+    const features = new L.FeatureGroup();
+    array.forEach((item) => {
+      let layer;
+      if (item.type === 'marker') {
+        layer = L.marker(item.coordinates);
+      } else if (item.type === 'rectangle') {
+        layer = L.rectangle(item.bounds);
+      } else if (item.type === 'circle') {
+        layer = L.circle(item.coordinates, { radius: item.radius });
+      } else if (item.type === 'polygon') {
+        layer = L.polygon(item.coordinates);
+      } else if (item.type === 'polyline') {
+        layer = L.polyline(item.coordinates);
+      }
+      features.addLayer(layer);
+    });
+    return features;
+  }
+
+  getFeatureType(feature) {
+    if (feature instanceof L.Marker) {
+      return 'marker';
+    } else if (feature instanceof L.Rectangle) {
+      return 'rectangle';
+    } else if (feature instanceof L.Circle) {
+      return 'circle';
+    } else if (feature instanceof L.Polygon) {
+      return 'polygon';
+    } else if (feature instanceof L.Polyline) {
+      return 'polyline';
+    }
+  }
+  coordinatesEqual(c1, c2) {
+    return c1.lat === c2.lat && c1.lng === c2.lng;
+  }
+  polyEqual(c1, c2) {
+    if (c1[0] instanceof Array) {
+      c1 = c1[0];
+    }
+    if (c2[0] instanceof Array) {
+      c2 = c2[0];
+    }
+    if (c1.length !== c2.length) {
+      // different number of vertices, no match
+      return false;
+    } else {
+      for (let i = 0; i < c1.length; i++) {
+        if (!this.coordinatesEqual(c1[i], c2[i])) {
+          return false; // if there's no match in one of the points, it's a new feature
+        }
+      }
+      return true;
+    }
   }
 }
 export default MapService;
