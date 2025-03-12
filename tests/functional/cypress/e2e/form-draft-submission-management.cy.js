@@ -28,13 +28,9 @@ describe('Form Designer', () => {
   });
   it('Visits the form settings page', () => {
     
-    
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-    
     formsettings();
-    
-
   });  
 // Publish a simple form 
 it('Verify draft submission', () => {
@@ -51,6 +47,7 @@ it('Verify draft submission', () => {
       .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
+    
   // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
