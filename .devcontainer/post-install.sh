@@ -7,7 +7,6 @@ CHEFS_LOCAL_DIR=${WORKSPACE_DIR}/.devcontainer/chefs_local
 
 npm install knex -g
 npm install jest -g
-npm install dotenv-cli -g
 
 # install components/formio libraries, prepare for ux development and debugging...
 cd components

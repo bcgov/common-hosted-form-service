@@ -92,7 +92,7 @@
         "clientSecret": "CDOGS_CLIENT_SECRET"
       },
       "tenantManagementService": {
-        "endpoint": "http://localhost:4144/v1"
+        "endpoint": "https://tms-api-poc.apps.silver.devops.gov.bc.ca/v1"
       }
     }
   },
