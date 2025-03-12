@@ -894,7 +894,6 @@ describe('TeamManagement.vue', () => {
       },
     });
 
-    const addNotificationSpy = vi.spy
     const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
 
     await flushPromises();
