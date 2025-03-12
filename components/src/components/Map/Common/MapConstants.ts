@@ -1,6 +1,7 @@
 export const BASE_LAYER_URLS = {
   OpenStreetMap: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  Satellite: 'https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg',
+  Satellite:
+    'https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg',
   Topographic: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
   ESRIWorldImagery:
     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -27,3 +28,6 @@ export const BASE_LAYER_ATTRIBUTIONS = {
   BC_BASEMAP:
     '&copy; <a href="https://www2.gov.bc.ca/" target="_blank">Ministry of Land, Water, and Resource Stewardship - GeoBC Branch</a>',
 };
+
+export const ESRI_API_KEY =
+  'AAPK7afbdfe3cc4140a5906d6e5f7174b5c5AO-lNCXN1JFPmdZCgtn3Zx9oD4C3fLKZ5_wMnpr0X-TW7mMZ-vwL6NUkM3kmKYDC';

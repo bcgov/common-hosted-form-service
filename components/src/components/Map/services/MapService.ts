@@ -3,7 +3,7 @@ import * as GeoSearch from 'leaflet-geosearch';
 import { BCGeocoderProvider } from '../services/BCGeocoderProvider';
 import {
   BASE_LAYER_URLS,
-  BASE_LAYER_ATTRIBUTIONS,
+  BASE_LAYER_ATTRIBUTIONS
 } from '../Common/MapConstants';
 import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
@@ -14,7 +14,6 @@ import 'leaflet.vectorgrid';
 const DEFAULT_MAP_ZOOM = 5;
 const DECIMALS_LATLNG = 5; // the number of decimals of latitude and longitude to be displayed in the marker popup
 const COMPONENT_EDIT_CLASS = 'component-edit-tabs';
-const READ_ONLY_CLASS = 'formio-read-only';
 const CUSTOM_MARKER_PATH = 'https://unpkg.com/leaflet@1.9.4/dist/images/';
 
 L.Icon.Default.imagePath = CUSTOM_MARKER_PATH;
@@ -97,12 +96,12 @@ class MapService {
     }
     // Check to see if there is the formio read only class in the current page, and set notEditable to true if the map is inside a read-only page
     // if the user chooses it to be read-only, and the
-
+    const styleJson = await this.fetchStyleJson(BASE_LAYER_URLS.STYLE_JSON_URL);
+    const vectorTileOptions = this.getVectorTileOptions(styleJson||{});
     // Initialize the map
     const map = L.map(mapContainer, {
       zoomAnimation: viewMode,
     }).setView(center, defaultZoom || DEFAULT_MAP_ZOOM);
-
     // Define base layers
     const baseLayers = {
       OpenStreetMap: L.tileLayer(BASE_LAYER_URLS.OpenStreetMap, {
@@ -127,16 +126,7 @@ class MapService {
       }),
       BC_BASEMAP: L.vectorGrid.protobuf(
         `${BASE_LAYER_URLS.BC_BASEMAP}/tile/{z}/{y}/{x}.pbf`,
-        {
-          vectorTileLayerStyles: {
-            default: {
-              fillColor: '#ffffff',
-              color: '#000000',
-              weight: 1,
-            },
-          },
-          attribution: BASE_LAYER_ATTRIBUTIONS.BC_BASEMAP,
-        }
+         vectorTileOptions
       ),
       HILL_SHADE: L.vectorGrid.protobuf(
         `${BASE_LAYER_URLS.HILL_SHADE}/tile/{z}/{y}/{x}.pbf`,
@@ -177,43 +167,6 @@ class MapService {
 
     // Add default base layer to the map
     baseLayers.OpenStreetMap.addTo(map);
-    // Load and add vector tile layer from external server
-    try {
-      const response = await fetch(BASE_LAYER_URLS.STYLE_JSON_URL);
-      const styleJson = await response.json();
-      console.log('styleJson', styleJson, baseLayers);
-
-      // Dynamically add sources and layers
-      const sources = styleJson.sources;
-      const layers = styleJson.layers;
-
-      // Explicitly type the vectorTileLayers object as Record<string, L.VectorGrid>
-      const vectorTileLayers: Record<string, L.VectorGrid> = {}; // This will allow only L.VectorGrid instances
-
-      // Loop through sources and layers
-      Object.keys(sources).forEach((sourceKey) => {
-        const source = sources[sourceKey];
-        const vectorTileLayer = L.vectorGrid.protobuf(source.tiles[0], {
-          attribution: source.attribution,
-          vectorTileLayerStyles: this.createLayerStyles(layers),
-          bounds: source.bounds,
-          minZoom: source.minzoom,
-          maxZoom: source.maxzoom,
-        });
-
-        // Add the layer to the map layers object
-        vectorTileLayers[sourceKey] = vectorTileLayer;
-      });
-
-      // Add vector tile layers control
-      L.control.layers({}, vectorTileLayers).addTo(map);
-
-      // Add the first source by default
-      // Since vectorTileLayers is now typed, TypeScript will know that addTo is valid
-      vectorTileLayers[Object.keys(vectorTileLayers)[0]].addTo(map);
-    } catch (error) {
-      console.error('Error loading vector tile style JSON:', error);
-    }
 
     // Add Layer Control to the map
     L.control.layers(baseLayers).addTo(map);
@@ -314,19 +267,30 @@ class MapService {
   }
 
   // Helper function to create styles based on the JSON layers
-  createLayerStyles(layers) {
-    const styles = {};
-    layers.forEach((layer) => {
-      styles[layer.id] = {
-        // You can customize the style generation as per your needs
-        'text-color': layer.paint['text-color'],
-        'text-font': layer.layout['text-font'],
-        'text-size': layer.layout['text-size'],
-        'text-field': layer.layout['text-field'],
-        visibility: layer.layout.visibility,
-      };
-    });
-    return styles;
+  async fetchStyleJson(url) {
+    try {
+      const response = await fetch(url);
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching style JSON:', error);
+      return null;
+    }
+  }
+  getVectorTileOptions(styleJson) {
+    return {
+      rendererFactory: L.canvas.tile,
+      vectorTileLayerStyles: styleJson.layers.reduce((styles, layer) => {
+        styles[layer.id] = {
+          fill: !!layer.paint?.['fill-color'],
+          fillColor: layer.paint?.['fill-color'] || '#AAAAAA',
+          fillOpacity: layer.paint?.['fill-opacity'] || 0.6,
+          stroke: !!layer.paint?.['line-color'],
+          color: layer.paint?.['line-color'] || '#555555',
+          weight: layer.paint?.['line-width'] || 1
+        };
+        return styles;
+      }, {})
+    };
   }
   bindPopupToLayer(layer) {
     if (layer instanceof L.Marker) {
