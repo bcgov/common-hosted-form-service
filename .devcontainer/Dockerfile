@@ -1,4 +1,4 @@
-ARG VARIANT="20.18.2-bookworm"
+ARG VARIANT="20.18.3-bookworm"
 FROM node:${VARIANT}
 
 # Install some extras such as vim for interactive rebases. Also some
