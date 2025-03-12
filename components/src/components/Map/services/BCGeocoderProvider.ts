@@ -9,12 +9,12 @@ export class BCGeocoderProvider extends OpenStreetMapProvider {
   };
   parse = ({ data }) => {
     return data.features
-      .filter((feature) => {
+      .filter(function (feature) {
         if (!feature.geometry.coordinates) return false;
         if (feature.properties.fullAddress === 'BC') return false;
         return true;
       })
-      .map((feature) => {
+      .map(function (feature) {
         return {
           x: feature.geometry.coordinates[0],
           y: feature.geometry.coordinates[1],
