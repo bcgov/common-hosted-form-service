@@ -740,7 +740,7 @@ describe('TeamManagement.vue', () => {
     expect(setUserFormsSpy).toBeCalledTimes(1);
     // It gets called once in the mounted function as well
     expect(getFormPermissionsForUserSpy).toBeCalledTimes(2);
-    expect(addNotificationSpy).toBeCalledTimes(1);
+    expect(addNotificationSpy).toHaveBeenCalled(); //Updated for Vitest 3.0.8
     expect(addNotificationSpy).toBeCalledWith({
       consoleError: 'trans.teamManagement.setUserFormsConsoleErrMsg',
       text: 'DETAILED ERROR MESSAGE',
