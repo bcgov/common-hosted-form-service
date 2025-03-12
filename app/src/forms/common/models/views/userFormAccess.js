@@ -95,6 +95,14 @@ class UserFormAccess extends Model {
           }
         }
       },
+      filterTenantId(query, value) {
+        if (value) {
+          query.where('tenantId', value);
+        }
+      },
+      noTenantId(query) {
+        query.where('tenantId', null);
+      },
       orderFormNameAscending(builder) {
         builder.orderByRaw('lower("formName")');
       },

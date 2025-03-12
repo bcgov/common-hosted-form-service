@@ -452,7 +452,16 @@ export default function getRouter(basePath = '/') {
       if (!tenantStore.hasTenants) {
         await tenantStore.getTenantsForUser(); // Ensure tenants are fetched before checking selection
       }
-      if (!tenantStore.selectedTenant && to.path !== '/tenancy') {
+      if (
+        tenantStore.hasTenants &&
+        !tenantStore.selectedTenant &&
+        !tenantStore.nonTenantedMode &&
+        to.path !== '/tenancy' &&
+        !to.path.startsWith('/user') &&
+        to.path !== '/form/success' &&
+        to.path !== '/form/preview' &&
+        to.path !== '/form/submit'
+      ) {
         return next('/tenancy');
       }
     }

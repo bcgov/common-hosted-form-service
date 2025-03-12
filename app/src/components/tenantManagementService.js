@@ -1,5 +1,6 @@
 const config = require('config');
 const errorToProblem = require('./errorToProblem');
+const axios = require('axios');
 const SERVICE = 'tenantManagement';
 
 class tenantManagementService {
@@ -9,42 +10,63 @@ class tenantManagementService {
     }
     this.apiUrl = apiUrl;
   }
-
-  async getTenantsByUserId() {
+  async getTenantsByUserId(userId) {
     try {
-      const data = {
-        data: {
-          tenants: [
-            {
-              id: '31632dff-96f1-478e-bd77-24ebf2c93094',
-              name: 'Tenant 1',
-              ministryName: 'Ministry of Something',
-              createdDateTime: '2025-02-13T04:08:16.105Z',
-              updatedDateTime: '2025-02-13T04:08:16.105Z',
-            },
-            {
-              id: 'd46a6548-ba5e-47d8-b1b6-de2a6d447650',
-              name: 'Tenant 2',
-              ministryName: 'Ministry of Something',
-              createdDateTime: '2025-02-13T05:18:13.987Z',
-              updatedDateTime: '2025-02-13T05:18:13.987Z',
-            },
-            {
-              id: '8b802d2f-7001-47f4-ade8-b01ff868149b',
-              name: 'Tenant 3',
-              ministryName: 'Ministry of Something',
-              createdDateTime: '2025-02-13T05:31:41.749Z',
-              updatedDateTime: '2025-02-13T05:31:41.749Z',
-            },
-          ],
-        },
-      };
-
-      return data.data.tenants;
+      const { data } = await axios.get(`${endpoint}/users/${userId}/tenants`);
+      if (data && data.data && data.data.tenants && Array.isArray(data.data.tenants) && data.data.tenants.length > 0) {
+        return data.data.tenants;
+      }
     } catch (e) {
       errorToProblem(SERVICE, e);
-      return { data: { tenants: [] } };
     }
+    return [];
+  }
+
+  async getRolesForUserGivenTenant(tenantId, idpUserId) {
+    try {
+      const { data } = await axios.get(`${endpoint}/tenants/${tenantId}/ssousers/${idpUserId}/roles`);
+      if (data && data.data && data.data.roles && Array.isArray(data.data.roles) && data.data.roles.length > 0) {
+        return data.data.roles;
+      }
+    } catch (e) {
+      errorToProblem(SERVICE, e);
+    }
+    return [];
+
+    // try {
+    //   // Mock roles data
+    //   const roles = [
+    //     {
+    //       id: '3',
+    //       name: 'form_designer',
+    //       description: 'Can design and modify forms',
+    //       createdDateTime: new Date().toISOString(),
+    //       updatedDateTime: new Date().toISOString(),
+    //     },
+    //     {
+    //       id: '4',
+    //       name: 'submission_reviewer',
+    //       description: 'Can review form submissions',
+    //       createdDateTime: new Date().toISOString(),
+    //       updatedDateTime: new Date().toISOString(),
+    //     },
+    //     {
+    //       id: '5',
+    //       name: 'form_submitter',
+    //       description: 'Can submit forms',
+    //       createdDateTime: new Date().toISOString(),
+    //       updatedDateTime: new Date().toISOString(),
+    //     },
+    //   ];
+
+    //   // Returning the roles wrapped in the expected response format
+    //   return {
+    //     roles,
+    //   };
+    // } catch (error) {
+    //   errorToProblem(SERVICE, error);
+    //   throw new Error('Failed to fetch roles');
+    // }
   }
 }
 

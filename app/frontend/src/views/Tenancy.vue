@@ -32,6 +32,11 @@ const confirmTenantSelection = () => {
 const dismissAlert = () => {
   showAlert.value = false;
 };
+const setNonTenantedMode = () => {
+  tenantStore.selectedTenant = null; // Clear any selected tenant
+  tenantStore.nonTenantedMode = true; // Enable non-tenanted access
+  router.push('/'); // Redirect to home
+};
 </script>
 <template>
   <div :class="{ 'dir-rtl': isRTL }">
@@ -115,9 +120,9 @@ const dismissAlert = () => {
 
         <!-- Non-tenanted CHEFS link -->
         <v-col cols="12" md="4" class="text-right">
-          <a href="/old-chefs" class="non-tenanted-link"
-            >Non-tenanted CHEFS ("Old" CHEFS)</a
-          >
+          <a class="non-tenanted-link" @click="setNonTenantedMode">
+            Non-tenanted CHEFS ("Existing" CHEFS)
+          </a>
         </v-col>
       </v-row>
     </v-container>
@@ -125,6 +130,20 @@ const dismissAlert = () => {
 </template>
 
 <style lang="scss" scoped>
+.non-tenanted-link {
+  font-size: 1.1rem; /* Slightly larger text */
+  font-weight: bold; /* Make it stand out */
+  color: #1976d2 !important; /* Use a vibrant primary color */
+  text-decoration: underline; /* Ensure it's noticeable as a link */
+  padding: 10px; /* Add padding around the text */
+  display: inline-block; /* Make it flow naturally */
+  transition: color 0.3s ease-in-out; /* Smooth hover effect */
+
+  &:hover {
+    color: #0d47a1; /* Darker blue on hover */
+    text-decoration: none; /* Optional: Remove underline on hover */
+  }
+}
 .tenancy-alert {
   width: 90%;
   max-width: 900px;

@@ -29,6 +29,7 @@ module.exports = {
   FormMetadata: require('./tables/formMetadata'),
   FormEncryptionKey: require('./tables/formEncryptionKey'),
   FormEventStreamConfig: require('./tables/formEventStreamConfig'),
+  FormTenantMapping: require('./tables/formTenantMapping'),
 
   // Views
   FormSubmissionUserPermissions: require('./views/formSubmissionUserPermissions'),

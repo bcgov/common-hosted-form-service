@@ -5,6 +5,16 @@ const clone = require('lodash/clone');
 const _ = require('lodash');
 const { ScheduleType } = require('./constants');
 
+const expandUserRoles = (userRolesForTenantNames) => {
+  const roleMapping = {
+    form_designer: ['owner', 'team_manager', 'form_designer'],
+    submission_reviewer: ['submission_reviewer', 'submission_approver'],
+    form_submitter: ['form_submitter'],
+  };
+
+  return [...new Set(userRolesForTenantNames.flatMap((role) => roleMapping[role] || [role]))];
+};
+
 const setupMount = (type, app, routes) => {
   const p = `/${type}`;
   if (Array.isArray(routes)) {
@@ -767,4 +777,5 @@ module.exports = {
   submissionHeaders,
   encodeURI,
   validateScheduleObject,
+  expandUserRoles,
 };

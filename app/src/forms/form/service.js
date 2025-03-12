@@ -3,6 +3,8 @@ const { ref } = require('objection');
 const uuid = require('uuid');
 const { EmailTypes } = require('../common/constants');
 const eventService = require('../event/eventService');
+const tenantServie = require('../tms/service');
+
 const moment = require('moment');
 const {
   DocumentTemplate,
@@ -22,6 +24,7 @@ const {
   SubmissionMetadata,
   FormComponentsProactiveHelp,
   FormSubscription,
+  FormTenantMapping,
 } = require('../common/models');
 const { falsey, queryUtils, checkIsFormExpired, validateScheduleObject, typeUtils } = require('../common/utils');
 const { Permissions, Roles, Statuses } = require('../common/constants');
@@ -69,6 +72,7 @@ const service = {
 
   createForm: async (data, currentUser) => {
     let trx;
+
     const scheduleData = validateScheduleObject(data.schedule);
     if (scheduleData.status !== 'success') {
       throw new Problem(422, `${scheduleData.message}`);
@@ -112,10 +116,13 @@ const service = {
         await FormIdentityProvider.query(trx).insert(fips);
       }
       // make this user have ALL the roles...
-      const userRoles = Rolenames.map((r) => {
-        return { id: uuid.v4(), createdBy: currentUser.usernameIdp, userId: currentUser.id, formId: obj.id, role: r };
-      });
-      await FormRoleUser.query(trx).insert(userRoles);
+      //TODO: do this for personal form
+      if (!currentUser.tenantId) {
+        const userRoles = Rolenames.map((r) => {
+          return { id: uuid.v4(), createdBy: currentUser.usernameIdp, userId: currentUser.id, formId: obj.id, role: r };
+        });
+        await FormRoleUser.query(trx).insert(userRoles);
+      }
 
       // create a unpublished draft
       const draft = {
@@ -138,6 +145,17 @@ const service = {
 
       await formMetadataService.upsert(obj.id, data.formMetadata, currentUser, trx);
       await eventStreamConfigService.upsert(obj.id, data.eventStreamConfig, currentUser, trx);
+
+      // add tenant mapping only if tenantId exists.
+      if (currentUser.tenantId) {
+        const formTenantMapping = {
+          id: uuid.v4(),
+          formId: obj.id,
+          tenantId: currentUser.tenantId,
+          createdBy: currentUser.usernameIdp,
+        };
+        await FormTenantMapping.query(trx).insert(formTenantMapping);
+      }
 
       await trx.commit();
       const result = await service.readForm(obj.id);
