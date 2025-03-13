@@ -546,6 +546,13 @@ describe('TeamManagement.vue', () => {
       },
     });
 
+    const getRolesListSpy = vi.spyOn(roleService, 'list');
+    getRolesListSpy.mockImplementation(async () => {
+      return {
+        data: [],
+      };
+    });
+
     const getFormUsersSpy = vi.spyOn(rbacService, 'getFormUsers');
     getFormUsersSpy.mockImplementation(async () => {
       return {
@@ -565,13 +572,13 @@ describe('TeamManagement.vue', () => {
 
     // Check that no notification was shown
     expect(addNotificationSpy).not.toHaveBeenCalled();
-    
+
     // Check that the function was called
     expect(getFormUsersSpy).toHaveBeenCalled();
-    
+
     // Verify the result (formUsers has content)
     expect(wrapper.vm.formUsers.length).toBeGreaterThan(0);
-    
+
     // Check specific data content
     expect(wrapper.vm.formUsers).toEqual(
       [IDIR_USER].map((user) => {
@@ -905,7 +912,7 @@ describe('TeamManagement.vue', () => {
     ];
 
     wrapper.vm.addNewUsers([IDIR_USER], []);
-    
+
     // Check that notification was called with specific parameters
     expect(addNotificationSpy).toHaveBeenCalledWith({
       text: `${IDIR_USER.username}@${IDIR_USER.idpCode} trans.teamManagement.idpMessage`,
@@ -946,8 +953,6 @@ describe('TeamManagement.vue', () => {
         stubs: STUBS,
       },
     });
-
-    const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
 
     await flushPromises();
 
@@ -1501,4 +1506,3 @@ describe('TeamManagement.vue', () => {
     expect(wrapper.vm.showColumnsDialog).toBeFalsy();
   });
 });
-    
