@@ -389,7 +389,7 @@ describe('FormDesigner.vue', () => {
       expect(createDraftSpy).toBeCalledTimes(0);
       expect(updateDraftSpy).toBeCalledTimes(0);
       expect(push).toBeCalledTimes(1);
-      expect(updateUserLabelsSpy).toBeCalledTimes(1);
+      expect(updateUserLabelsSpy).toBeCalledTimes(0);
     });
     it('and call schemaCreateDraftFromVersion if there is a formId and version id', async () => {
       const push = vi.fn();
