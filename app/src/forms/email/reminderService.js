@@ -91,18 +91,24 @@ const service = {
     });
   },
   _listDates: (schedule) => {
-    if (schedule.scheduleType == ScheduleType.PERIOD) {
-      return getSubmissionPeriodDates(
-        schedule.keepOpenForTerm,
-        schedule.keepOpenForInterval,
-        schedule.openSubmissionDateTime,
-        schedule.repeatSubmission.everyTerm,
-        schedule.repeatSubmission.everyIntervalType,
-        schedule.allowLateSubmissions.forNext.term,
-        schedule.allowLateSubmissions.forNext.intervalType,
-        schedule.repeatSubmission.repeatUntil
-      );
+    // Handle legacy PERIOD forms by treating them as CLOSINGDATE
+    // with appropriate date calculations
+    if (schedule.scheduleType == 'period') {
+      // Call the simplified getSubmissionPeriodDates with open and calculated close date
+      const openDate = schedule.openSubmissionDateTime;
+      let closeDate = openDate;
+
+      // Calculate a close date based on keepOpenForTerm and keepOpenForInterval if available
+      if (schedule.keepOpenForTerm && schedule.keepOpenForInterval) {
+        closeDate = moment(openDate).add(schedule.keepOpenForTerm, schedule.keepOpenForInterval).format('YYYY-MM-DD HH:MM:SS');
+      } else {
+        // Default to 30 days if no specific term/interval
+        closeDate = moment(openDate).add(30, 'days').format('YYYY-MM-DD HH:MM:SS');
+      }
+
+      return getSubmissionPeriodDates(openDate, closeDate, schedule.allowLateSubmissions);
     }
+
     if (schedule.scheduleType == ScheduleType.MANUAL) {
       return [
         Object({
@@ -126,11 +132,12 @@ const service = {
     return [];
   },
   _getGraceDate: (schedule) => {
-    let substartDate = moment(schedule.openSubmissionDateTime);
-    let newDate = substartDate.clone();
-    return schedule.allowLateSubmissions.enabled
-      ? newDate.add(schedule.allowLateSubmissions.forNext.term, schedule.allowLateSubmissions.forNext.intervalType).format('YYYY-MM-DD HH:MM:SS')
-      : null;
+    if (!schedule.allowLateSubmissions || !schedule.allowLateSubmissions.enabled) {
+      return null;
+    }
+
+    const closeDate = schedule.closeSubmissionDateTime || schedule.openSubmissionDateTime;
+    return moment(closeDate).add(schedule.allowLateSubmissions.forNext.term, schedule.allowLateSubmissions.forNext.intervalType).format('YYYY-MM-DD HH:MM:SS');
   },
   _getForms: async () => {
     let fs = [];
@@ -155,21 +162,24 @@ const service = {
         continue;
       }
 
-      obj.report = service.getCurrentPeriod(obj.availableDate, toDay, forms[i].schedule.allowLateSubmissions.enabled);
+      obj.report = service.getCurrentPeriod(obj.availableDate, toDay, forms[i].schedule.allowLateSubmissions && forms[i].schedule.allowLateSubmissions.enabled);
 
       obj.form = forms[i];
 
-      obj.state = service._getMailType(obj.report, forms[i].schedule.allowLateSubmissions.enabled);
+      obj.state = service._getMailType(obj.report, forms[i].schedule.allowLateSubmissions && forms[i].schedule.allowLateSubmissions.enabled);
 
       if (obj.state == undefined) {
         reminder.push({ error: true, message: `Form ${forms[i].name} has no valid date` });
         continue;
       }
 
+      // Map 'period' to 'closingDate' for consistency in reporting
+      const reportPeriodType = forms[i].schedule.scheduleType === 'period' ? ScheduleType.CLOSINGDATE : forms[i].schedule.scheduleType;
+
       reminder.push({
         error: false,
         statement: obj,
-        periodType: forms[i].schedule.scheduleType,
+        periodType: reportPeriodType,
       });
     }
 
@@ -204,7 +214,6 @@ const service = {
   checkIfInMiddleOfThePeriod: (now, start_date, days_diff) => {
     if (days_diff < 6) return false;
     let interval = Math.floor(days_diff / 2);
-    // eslint-disable-next-line no-console
     let mail_date = moment(start_date).add(interval, 'days').format('YYYY-MM-DD');
     return moment(now).isSame(mail_date);
   },

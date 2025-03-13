@@ -3,18 +3,14 @@
 const reminderService = require('../../../../src/forms/email/reminderService');
 const moment = require('moment');
 
+// Updated schedule object to use closingDate
 const schedule = {
   enabled: true,
-  scheduleType: 'period',
+  scheduleType: 'closingDate',
   closingMessage: null,
-  keepOpenForTerm: '10',
-  repeatSubmission: {
-    enabled: true,
-    everyTerm: '1',
-    repeatUntil: '2023-08-10',
-    everyIntervalType: 'months',
-  },
-  keepOpenForInterval: 'days',
+  closingMessageEnabled: null,
+  openSubmissionDateTime: '2022-07-10',
+  closeSubmissionDateTime: '2022-07-20',
   allowLateSubmissions: {
     enabled: null,
     forNext: {
@@ -22,9 +18,6 @@ const schedule = {
       intervalType: null,
     },
   },
-  closingMessageEnabled: null,
-  openSubmissionDateTime: '2022-07-10',
-  closeSubmissionDateTime: null,
 };
 
 describe('_init', () => {
@@ -65,47 +58,45 @@ describe('getDifference', () => {
       expect(objs.length).toEqual(2);
       expect(objs[0].userId).toEqual(1);
     });
-    // eslint-disable-next-line no-console
   });
 });
 
 describe('getCurrentPeriod', () => {
-  it('should return the current period', () => {
-    let toDay = moment('2022-09-12');
-    let periodes = reminderService._listDates(schedule);
-    let periode = reminderService.getCurrentPeriod(periodes, toDay, schedule.allowLateSubmissions.enabled);
-    expect(periode.state).toEqual(1);
-    expect(periode.index).toEqual(2);
+  it('should return the current period when date is between open and close dates', () => {
+    let toDay = moment('2022-07-15'); // Date between open and close
+    let periods = reminderService._listDates(schedule);
+    let period = reminderService.getCurrentPeriod(periods, toDay, schedule.allowLateSubmissions.enabled);
+    expect(period.state).toEqual(1);
+    expect(period.index).toEqual(0);
   });
 
-  it('should return null', () => {
+  it('should return null for empty periods', () => {
     let toDay = moment('2022-11-12');
-    let periode = reminderService.getCurrentPeriod([], toDay, schedule.allowLateSubmissions.enabled);
-    expect(periode).toBe(null);
-    periode = reminderService.getCurrentPeriod([], toDay, schedule.allowLateSubmissions.enabled);
-    expect(periode).toBe(null);
-    // eslint-disable-next-line no-console
+    let period = reminderService.getCurrentPeriod([], toDay, schedule.allowLateSubmissions.enabled);
+    expect(period).toBe(null);
+    period = reminderService.getCurrentPeriod(null, toDay, schedule.allowLateSubmissions.enabled);
+    expect(period).toBe(null);
   });
 
-  it('should return any period but the current date is after the periodes', () => {
-    let toDay = moment('2023-11-12');
-    let periodes = reminderService._listDates(schedule);
-    let periode = reminderService.getCurrentPeriod(periodes, toDay, schedule.allowLateSubmissions.enabled);
-    expect(periode.state).toEqual(0);
-    expect(periode.index).toEqual(-1);
+  it('should return state 0 when current date is after the period', () => {
+    let toDay = moment('2022-08-01'); // After close date
+    let periods = reminderService._listDates(schedule);
+    let period = reminderService.getCurrentPeriod(periods, toDay, schedule.allowLateSubmissions.enabled);
+    expect(period.state).toEqual(0);
+    expect(period.index).toEqual(-1);
   });
 
-  it('should return any period  but the current date is before the periodes', () => {
-    let toDay = moment('2021-11-12');
-    let periodes = reminderService._listDates(schedule);
-    let periode = reminderService.getCurrentPeriod(periodes, toDay, schedule.allowLateSubmissions.enabled);
-    expect(periode.state).toEqual(-1);
-    expect(periode.index).toEqual(-1);
+  it('should return state -1 when current date is before the period', () => {
+    let toDay = moment('2022-07-05'); // Before open date
+    let periods = reminderService._listDates(schedule);
+    let period = reminderService.getCurrentPeriod(periods, toDay, schedule.allowLateSubmissions.enabled);
+    expect(period.state).toEqual(-1);
+    expect(period.index).toEqual(-1);
   });
 });
 
 describe('checkIfInMiddleOfThePeriod', () => {
-  it('should return the false', () => {
+  it('should return false for short periods', () => {
     const now = moment('2023-02-03');
     const days_diff = 5;
     const start_date = moment('2023-02-01');
@@ -113,11 +104,40 @@ describe('checkIfInMiddleOfThePeriod', () => {
     expect(result).toEqual(false);
   });
 
-  it('should return the true', () => {
+  it('should return true when date is in middle of period', () => {
     const now = moment('2023-02-06');
     const days_diff = 10;
     const start_date = moment('2023-02-01');
     const result = reminderService.checkIfInMiddleOfThePeriod(now, start_date, days_diff);
     expect(result).toEqual(true);
+  });
+});
+
+describe('_listDates', () => {
+  it('should handle MANUAL schedule type', () => {
+    const manualSchedule = {
+      enabled: true,
+      scheduleType: 'manual',
+      openSubmissionDateTime: '2022-07-10',
+    };
+
+    const dates = reminderService._listDates(manualSchedule);
+    expect(dates.length).toEqual(1);
+    expect(dates[0].startDate).toBeDefined();
+    expect(dates[0].closeDate).toBeNull();
+  });
+
+  it('should handle CLOSINGDATE schedule type', () => {
+    const closingSchedule = {
+      enabled: true,
+      scheduleType: 'closingDate',
+      openSubmissionDateTime: '2022-07-10',
+      closeSubmissionDateTime: '2022-07-20',
+    };
+
+    const dates = reminderService._listDates(closingSchedule);
+    expect(dates.length).toEqual(1);
+    expect(dates[0].startDate).toBeDefined();
+    expect(dates[0].closeDate).toBeDefined();
   });
 });
