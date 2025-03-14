@@ -6,6 +6,10 @@ on:
         description: Pull request number
         required: true
         type: string
+      pr_branch:
+        required: true
+        type: string
+
   secrets:
       Username: 
         required: true
@@ -19,8 +23,7 @@ jobs:
      - name: Checkout
        uses: actions/checkout@v4
        with:
-        ref: main
-        fetch-depth: 0 # Ensures full history is fetched
+        ref: ${{ inputs.pr_branch }}  # Uses the PR branch from input
      - name: Setup Node.js
        uses: actions/setup-node@v4
        with:
