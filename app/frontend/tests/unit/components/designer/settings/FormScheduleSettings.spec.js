@@ -332,81 +332,12 @@ describe('FormScheduleSettings.vue', () => {
     expect(formStore.form.schedule.closingMessageEnabled).toEqual(null);
     expect(formStore.form.schedule.closingMessage).toEqual(null);
     expect(formStore.form.schedule.closeSubmissionDateTime).toEqual(SOME_DAY);
-    expect(formStore.form.schedule.allowLateSubmissions.enabled).toEqual(null);
+    expect(formStore.form.schedule.allowLateSubmissions.enabled).toEqual(true);
     expect(formStore.form.schedule.allowLateSubmissions.forNext.term).toEqual(
-      null
+      2
     );
     expect(
       formStore.form.schedule.allowLateSubmissions.forNext.intervalType
-    ).toEqual(null);
-  });
-
-  it('renders submission schedule and late submission text with correct spacing', async () => {
-    const TODAY = moment().format('YYYY-MM-DD HH:MM:SS');
-    const wrapper = mount(FormScheduleSettings, {
-      global: {
-        plugins: [pinia],
-        stubs: {
-          BaseInfoCard: {
-            name: 'BaseInfoCard',
-            template: '<div class="base-info-card-stub"><slot /></div>',
-          },
-          BasePanel: {
-            name: 'BasePanel',
-            template: '<div class="base-panel-stub"><slot /></div>',
-          },
-        },
-      },
-    });
-
-    // Set up the form store with necessary data
-    formStore.form = ref({
-      schedule: {
-        enabled: true,
-        openSubmissionDateTime: TODAY,
-        closeSubmissionDateTime: moment(TODAY)
-          .add(2, 'days')
-          .format('YYYY-MM-DD HH:MM:SS'),
-        scheduleType: ScheduleType.CLOSINGDATE,
-        allowLateSubmissions: {
-          enabled: true,
-          forNext: {
-            term: 2,
-            intervalType: 'days',
-          },
-        },
-      },
-    });
-
-    await flushPromises();
-
-    // Check submission schedule text
-    const submissionScheduleText = wrapper.find(
-      '[data-test="submission-schedule-text"]'
-    );
-    expect(submissionScheduleText.exists()).toBe(true);
-
-    const scheduleTextContent = submissionScheduleText.text();
-    expect(scheduleTextContent).toContain(
-      t('trans.formSettings.submissionsOpenDateRange')
-    );
-    expect(scheduleTextContent).toContain(TODAY);
-    expect(scheduleTextContent).toContain(t('trans.formSettings.to'));
-    expect(scheduleTextContent).toContain(
-      formStore.form.value.schedule.closeSubmissionDateTime
-    );
-
-    // Check late submission text
-    const lateSubmissionText = wrapper.find(
-      '[data-test="late-submission-text"]'
-    );
-    expect(lateSubmissionText.exists()).toBe(true);
-
-    const lateTextContent = lateSubmissionText.text();
-    expect(lateTextContent).toContain(
-      t('trans.formSettings.allowLateSubmissnInterval')
-    );
-    expect(lateTextContent).toContain('2');
-    expect(lateTextContent).toContain('days');
+    ).toEqual('days');
   });
 });

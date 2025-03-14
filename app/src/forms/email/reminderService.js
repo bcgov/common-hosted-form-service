@@ -1,4 +1,4 @@
-const { getSubmissionPeriodDates, getBaseUrl } = require('../common/utils');
+const { getBaseUrl } = require('../common/utils');
 const emailService = require('./emailService');
 const moment = require('moment');
 const { EmailTypes, ScheduleType } = require('../common/constants');
@@ -55,8 +55,8 @@ const service = {
     // list periods is null
     if (dates.length == 0) return null;
 
-    // if period has no closed date
-    if (dates.length == 1 && dates[0].endDate == null) {
+    // if form has no closing date (MANUAL type)
+    if (dates.length == 1 && dates[0].closeDate == null) {
       return Object({
         state: 1,
         index: 0,
@@ -91,24 +91,6 @@ const service = {
     });
   },
   _listDates: (schedule) => {
-    // Handle legacy PERIOD forms by treating them as CLOSINGDATE
-    // with appropriate date calculations
-    if (schedule.scheduleType == 'period') {
-      // Call the simplified getSubmissionPeriodDates with open and calculated close date
-      const openDate = schedule.openSubmissionDateTime;
-      let closeDate = openDate;
-
-      // Calculate a close date based on keepOpenForTerm and keepOpenForInterval if available
-      if (schedule.keepOpenForTerm && schedule.keepOpenForInterval) {
-        closeDate = moment(openDate).add(schedule.keepOpenForTerm, schedule.keepOpenForInterval).format('YYYY-MM-DD HH:MM:SS');
-      } else {
-        // Default to 30 days if no specific term/interval
-        closeDate = moment(openDate).add(30, 'days').format('YYYY-MM-DD HH:MM:SS');
-      }
-
-      return getSubmissionPeriodDates(openDate, closeDate, schedule.allowLateSubmissions);
-    }
-
     if (schedule.scheduleType == ScheduleType.MANUAL) {
       return [
         Object({
@@ -124,6 +106,19 @@ const service = {
         Object({
           startDate: schedule.openSubmissionDateTime,
           closeDate: schedule.closeSubmissionDateTime,
+          graceDate: service._getGraceDate(schedule),
+        }),
+      ];
+    }
+
+    // Default to CLOSINGDATE for any other schedule type (including legacy PERIOD)
+    if (schedule.openSubmissionDateTime) {
+      const closeDate = schedule.closeSubmissionDateTime || moment(schedule.openSubmissionDateTime).add(30, 'days').format('YYYY-MM-DD HH:MM:SS');
+
+      return [
+        Object({
+          startDate: schedule.openSubmissionDateTime,
+          closeDate: closeDate,
           graceDate: service._getGraceDate(schedule),
         }),
       ];
@@ -173,8 +168,8 @@ const service = {
         continue;
       }
 
-      // Map 'period' to 'closingDate' for consistency in reporting
-      const reportPeriodType = forms[i].schedule.scheduleType === 'period' ? ScheduleType.CLOSINGDATE : forms[i].schedule.scheduleType;
+      // Map any non-standard schedule type to CLOSINGDATE
+      const reportPeriodType = forms[i].schedule.scheduleType !== ScheduleType.MANUAL ? ScheduleType.CLOSINGDATE : forms[i].schedule.scheduleType;
 
       reminder.push({
         error: false,
