@@ -126,6 +126,7 @@ jobs:
     uses: ./.github/workflows/cypress-ci.yaml 
     with:
       pr-number: ${{ github.event.inputs.pr-number }}
+      pr_branch: ${{ github.head_ref }} # Passes the PR branch
     secrets:
       Username: ${{ secrets.keycloakUsername }}
       Password: ${{ secrets.keycloakPassword }}
