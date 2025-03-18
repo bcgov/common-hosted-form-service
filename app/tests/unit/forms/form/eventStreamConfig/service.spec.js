@@ -7,6 +7,7 @@ const encryptionKeyService = require('../../../../../src/forms/form/encryptionKe
 
 jest.mock('../../../../../src/forms/common/models/tables/formEventStreamConfig', () => MockModel);
 jest.mock('../../../../../src/forms/common/models/tables/formEncryptionKey', () => MockModel);
+jest.mock('../../../../../src/forms/common/models/tables/essAllowlist', () => MockModel);
 
 const currentUser = {
   usernameIdp: 'TESTER',
@@ -21,6 +22,8 @@ const validData = {
   enablePublicStream: true,
   enablePrivateStream: true,
   encryptionKeyId: encryptionKeyId,
+  enabled: true,
+  accountName: 'testOnly',
 };
 
 beforeEach(() => {
@@ -73,8 +76,9 @@ describe('upsert', () => {
 
   it('should update valid data', async () => {
     encryptionKeyService.upsertForEventStreamConfig = jest.fn().mockResolvedValueOnce({ id: encryptionKeyId });
-    MockModel.first = jest.fn().mockResolvedValue(Object.assign({}, validData));
-    let data = Object.assign({}, validData);
+    service._setEnabledFlag = jest.fn().mockResolvedValueOnce(true);
+    MockModel.first = jest.fn().mockResolvedValue({ ...validData });
+    let data = { ...validData };
     data.enablePublicStream = false; // make a change, force the update
     await service.upsert(validData.formId, data, currentUser);
     expect(MockModel.update).toBeCalledTimes(1);
@@ -89,6 +93,7 @@ describe('upsert', () => {
 
   it('should create when not found', async () => {
     encryptionKeyService.upsertForEventStreamConfig = jest.fn().mockResolvedValueOnce({ id: encryptionKeyId });
+    service._setEnabledFlag = jest.fn().mockResolvedValueOnce(true);
     MockModel.first = jest.fn().mockResolvedValueOnce(null);
     service.initModel = jest.fn().mockReturnValue(validData);
     await service.upsert(validData.formId, validData, currentUser);
@@ -102,11 +107,29 @@ describe('upsert', () => {
     expect(MockTransaction.commit).toBeCalledTimes(1);
   });
 
+  it('should not be enabled when accountName not in allowed list', async () => {
+    encryptionKeyService.upsertForEventStreamConfig = jest.fn().mockResolvedValueOnce({ id: encryptionKeyId });
+    service._setEnabledFlag = jest.fn().mockResolvedValueOnce(false);
+    MockModel.first = jest.fn().mockResolvedValue({ ...validData });
+    let data = { ...validData };
+    data.accountName = 'shouldforceupdate'; // make a change, force the update
+    await service.upsert(validData.formId, data, currentUser);
+    expect(MockModel.update).toBeCalledTimes(1);
+    expect(MockModel.update).toBeCalledWith({
+      updatedBy: currentUser.usernameIdp,
+      enabled: false,
+      ...data,
+    });
+    expect(MockModel.startTransaction).toBeCalledTimes(1);
+    expect(MockTransaction.rollback).toBeCalledTimes(0);
+    expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+
   it('should raise errors on failed update', async () => {
     encryptionKeyService.upsertForEventStreamConfig = jest.fn().mockResolvedValueOnce({ id: encryptionKeyId });
-    MockModel.first = jest.fn().mockResolvedValue(Object.assign({}, validData));
+    MockModel.first = jest.fn().mockResolvedValue({ ...validData });
     MockModel.update = jest.fn().mockRejectedValueOnce(new Error('SQL Error'));
-    let data = Object.assign({}, validData);
+    let data = { ...validData };
     data.enablePublicStream = false; // make a change, force the update
     await expect(service.upsert(validData.formId, data, currentUser)).rejects.toThrow();
     expect(MockModel.startTransaction).toBeCalledTimes(1);
@@ -142,8 +165,8 @@ describe('upsert', () => {
   it('should remove encryption key when no private stream', async () => {
     encryptionKeyService.upsertForEventStreamConfig = jest.fn().mockResolvedValueOnce({ id: encryptionKeyId });
     encryptionKeyService.remove = jest.fn().mockResolvedValueOnce();
-    MockModel.first = jest.fn().mockResolvedValue(Object.assign({}, validData));
-    let data = Object.assign({}, validData);
+    MockModel.first = jest.fn().mockResolvedValue({ ...validData });
+    let data = { ...validData };
     data.enablePrivateStream = false; // make a change, force the update
     await service.upsert(validData.formId, data, currentUser);
     // should remove the encryption key
