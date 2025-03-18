@@ -108,9 +108,10 @@ describe('Form Designer', () => {
         cy.get('div').contains('1-2 of 2').should('be.visible');
         cy.get('.v-select__selection-text').contains('10');
         cy.get('.v-data-table-footer__items-per-page > .v-input > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
-        cy.contains('20').should('be.visible');
+        cy.contains('10').should('be.visible');
         cy.contains('25').should('be.visible');
         cy.contains('50').should('be.visible');
+        cy.contains('100').should('be.visible');
         cy.contains('All').should('be.visible');
         cy.get('button[title="Delete Submission"]').should('be.visible');
          //view submission

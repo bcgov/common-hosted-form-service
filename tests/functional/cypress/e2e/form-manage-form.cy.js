@@ -3,20 +3,15 @@ import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
 
-
 Cypress.Commands.add('waitForLoad', () => {
   const loaderTimeout = 60000;
 
   cy.get('.nprogress-busy', { timeout: loaderTimeout }).should('not.exist');
 });
 
-
-
 describe('Form Designer', () => {
 
   beforeEach(()=>{
-    
-    
     
     cy.on('uncaught:exception', (err, runnable) => {
       // Form.io throws an uncaught exception for missing projectid
@@ -43,7 +38,7 @@ describe('Form Designer', () => {
       .trigger('mousedown', { which: 1}, { force: true })
       .trigger('mousemove', coords.x, -550, { force: true })
       .trigger('mouseup', { force: true });
-      cy.waitForLoad();  
+      cy.wait(2000);  
       cy.get('button').contains('Save').click();
       
     });
