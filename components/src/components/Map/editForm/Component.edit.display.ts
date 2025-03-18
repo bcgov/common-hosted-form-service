@@ -1,7 +1,7 @@
 export default {
   key: 'customDisplay',
   label: 'Display',
-  weight: 10,
+  weight: 1,
   components: [
     {
       key: 'label',

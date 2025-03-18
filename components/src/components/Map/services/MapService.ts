@@ -50,7 +50,11 @@ class MapService {
 
       this.drawnItems = drawnItems;
       this.drawControl = drawControl; // Store the draw control globally
-      if (this.options.defaultValue?.features.length !== 0) {
+
+      if (
+        this.options.defaultValue !== null &&
+        this.options.defaultValue?.features.length !== 0
+      ) {
         this.defaultFeatures = this.arrayToFeatureGroup(
           this.options.defaultValue?.features
           // defaultFeatures are stored in a naive fashion for ease
@@ -289,8 +293,8 @@ class MapService {
 
   isDefaultFeature(feature): boolean {
     if (
-      this.defaultFeatures.getLayers() === 0 ||
-      this.defaultFeatures === null
+      this.defaultFeatures == null ||
+      this.defaultFeatures?.getLayers() === 0
     ) {
       return false;
     }
