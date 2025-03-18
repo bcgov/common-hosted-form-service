@@ -38,8 +38,9 @@ describe("Form Designer", () => {
         .trigger("mousemove", coords.x, -550, { force: true })
         //.trigger('mousemove', coords.y, +100, { force: true })
         .trigger("mouseup", { force: true });
-      cy.waitForLoad();
+      cy.wait(2000);
       cy.get("button").contains("Save").click();
+      cy.wait(2000);
     });
     // Form saving
     let savedButton = cy.get("[data-cy=saveButton]");
