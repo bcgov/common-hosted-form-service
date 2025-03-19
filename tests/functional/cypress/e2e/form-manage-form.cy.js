@@ -166,7 +166,7 @@ describe('Form Designer', () => {
         
       cy.get('input[type="text"]').then($el => {
 
-        const rem=$el[10];
+        const rem=$el[11];
         cy.get(rem).type('7');
         
         });
@@ -191,10 +191,10 @@ describe('Form Designer', () => {
       cy.get('input[type="text"]').then($el => {
         cy.get('.mdi-plus-circle').click();
 
-        const api_name=$el[12];
-        const api_endpoint=$el[13];
-        const api_header=$el[14];
-        const api_keyvalue=$el[15];
+        const api_name=$el[13];
+        const api_endpoint=$el[14];
+        const api_header=$el[15];
+        const api_keyvalue=$el[16];
         cy.get(api_name).click();
         cy.get(api_endpoint).click();
         
