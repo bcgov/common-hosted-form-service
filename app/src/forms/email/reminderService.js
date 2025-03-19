@@ -1,4 +1,4 @@
-const { getSubmissionPeriodDates, getBaseUrl } = require('../common/utils');
+const { getBaseUrl } = require('../common/utils');
 const emailService = require('./emailService');
 const moment = require('moment');
 const { EmailTypes, ScheduleType } = require('../common/constants');
@@ -55,8 +55,8 @@ const service = {
     // list periods is null
     if (dates.length == 0) return null;
 
-    // if period has no closed date
-    if (dates.length == 1 && dates[0].endDate == null) {
+    // if form has no closing date (MANUAL type)
+    if (dates.length == 1 && dates[0].closeDate == null) {
       return Object({
         state: 1,
         index: 0,
@@ -91,18 +91,6 @@ const service = {
     });
   },
   _listDates: (schedule) => {
-    if (schedule.scheduleType == ScheduleType.PERIOD) {
-      return getSubmissionPeriodDates(
-        schedule.keepOpenForTerm,
-        schedule.keepOpenForInterval,
-        schedule.openSubmissionDateTime,
-        schedule.repeatSubmission.everyTerm,
-        schedule.repeatSubmission.everyIntervalType,
-        schedule.allowLateSubmissions.forNext.term,
-        schedule.allowLateSubmissions.forNext.intervalType,
-        schedule.repeatSubmission.repeatUntil
-      );
-    }
     if (schedule.scheduleType == ScheduleType.MANUAL) {
       return [
         Object({
@@ -123,14 +111,28 @@ const service = {
       ];
     }
 
+    // Default to CLOSINGDATE for any other schedule type (including legacy PERIOD)
+    if (schedule.openSubmissionDateTime) {
+      const closeDate = schedule.closeSubmissionDateTime || moment(schedule.openSubmissionDateTime).add(30, 'days').format('YYYY-MM-DD HH:MM:SS');
+
+      return [
+        Object({
+          startDate: schedule.openSubmissionDateTime,
+          closeDate: closeDate,
+          graceDate: service._getGraceDate(schedule),
+        }),
+      ];
+    }
+
     return [];
   },
   _getGraceDate: (schedule) => {
-    let substartDate = moment(schedule.openSubmissionDateTime);
-    let newDate = substartDate.clone();
-    return schedule.allowLateSubmissions.enabled
-      ? newDate.add(schedule.allowLateSubmissions.forNext.term, schedule.allowLateSubmissions.forNext.intervalType).format('YYYY-MM-DD HH:MM:SS')
-      : null;
+    if (!schedule.allowLateSubmissions || !schedule.allowLateSubmissions.enabled) {
+      return null;
+    }
+
+    const closeDate = schedule.closeSubmissionDateTime || schedule.openSubmissionDateTime;
+    return moment(closeDate).add(schedule.allowLateSubmissions.forNext.term, schedule.allowLateSubmissions.forNext.intervalType).format('YYYY-MM-DD HH:MM:SS');
   },
   _getForms: async () => {
     let fs = [];
@@ -155,21 +157,24 @@ const service = {
         continue;
       }
 
-      obj.report = service.getCurrentPeriod(obj.availableDate, toDay, forms[i].schedule.allowLateSubmissions.enabled);
+      obj.report = service.getCurrentPeriod(obj.availableDate, toDay, forms[i].schedule.allowLateSubmissions && forms[i].schedule.allowLateSubmissions.enabled);
 
       obj.form = forms[i];
 
-      obj.state = service._getMailType(obj.report, forms[i].schedule.allowLateSubmissions.enabled);
+      obj.state = service._getMailType(obj.report, forms[i].schedule.allowLateSubmissions && forms[i].schedule.allowLateSubmissions.enabled);
 
       if (obj.state == undefined) {
         reminder.push({ error: true, message: `Form ${forms[i].name} has no valid date` });
         continue;
       }
 
+      // Map any non-standard schedule type to CLOSINGDATE
+      const reportPeriodType = forms[i].schedule.scheduleType !== ScheduleType.MANUAL ? ScheduleType.CLOSINGDATE : forms[i].schedule.scheduleType;
+
       reminder.push({
         error: false,
         statement: obj,
-        periodType: forms[i].schedule.scheduleType,
+        periodType: reportPeriodType,
       });
     }
 
@@ -204,7 +209,6 @@ const service = {
   checkIfInMiddleOfThePeriod: (now, start_date, days_diff) => {
     if (days_diff < 6) return false;
     let interval = Math.floor(days_diff / 2);
-    // eslint-disable-next-line no-console
     let mail_date = moment(start_date).add(interval, 'days').format('YYYY-MM-DD');
     return moment(now).isSame(mail_date);
   },
