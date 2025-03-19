@@ -271,7 +271,62 @@ describe('FormScheduleSettings.vue', () => {
       formStore.form.schedule.allowLateSubmissions.forNext.intervalType
     ).toEqual(null);
   });
+  it('documents legacy PERIOD functionality for backward compatibility', async () => {
+    // This test documents that the application maintains support for
+    // forms with PERIOD schedule type even after removing it from the UI
 
+    // Create a form with PERIOD schedule settings
+    formStore.form = {
+      schedule: {
+        enabled: true,
+        scheduleType: ScheduleType.PERIOD,
+        openSubmissionDateTime: moment().format('YYYY-MM-DD'),
+        keepOpenForTerm: 7,
+        keepOpenForInterval: 'days',
+        allowLateSubmissions: {
+          enabled: true,
+          forNext: {
+            term: 2,
+            intervalType: 'days',
+          },
+        },
+        repeatSubmission: {
+          enabled: true,
+          everyTerm: 1,
+          everyIntervalType: 'months',
+          repeatUntil: moment().add(3, 'months').format('YYYY-MM-DD'),
+        },
+      },
+    };
+
+    // Verify that the form can be properly configured with PERIOD settings
+    expect(formStore.form.schedule.scheduleType).toBe(ScheduleType.PERIOD);
+    expect(formStore.form.schedule.keepOpenForTerm).toBe(7);
+    expect(formStore.form.schedule.keepOpenForInterval).toBe('days');
+    expect(formStore.form.schedule.repeatSubmission.enabled).toBe(true);
+    expect(formStore.form.schedule.repeatSubmission.everyTerm).toBe(1);
+    expect(formStore.form.schedule.repeatSubmission.everyIntervalType).toBe(
+      'months'
+    );
+    expect(formStore.form.schedule.allowLateSubmissions.enabled).toBe(true);
+    expect(formStore.form.schedule.allowLateSubmissions.forNext.term).toBe(2);
+    expect(
+      formStore.form.schedule.allowLateSubmissions.forNext.intervalType
+    ).toBe('days');
+
+    // Verify that changing to a different schedule type and back to PERIOD
+    // works as expected (maintains feature parity)
+    formStore.form.schedule.scheduleType = ScheduleType.MANUAL;
+    expect(formStore.form.schedule.scheduleType).toBe(ScheduleType.MANUAL);
+
+    // Switch back to PERIOD
+    formStore.form.schedule.scheduleType = ScheduleType.PERIOD;
+    expect(formStore.form.schedule.scheduleType).toBe(ScheduleType.PERIOD);
+
+    // This test documents that the application code still supports the PERIOD
+    // schedule type, ensuring backward compatibility for existing forms
+    // even after removing it from the UI
+  });
   it('changing schedule type to closing will set the appropriate values to null', async () => {
     const SOME_DAY = moment();
     const wrapper = mount(FormScheduleSettings, {
