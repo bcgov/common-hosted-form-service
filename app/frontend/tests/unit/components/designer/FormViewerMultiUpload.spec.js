@@ -73,16 +73,25 @@ describe('FormViewerMultiUpload.vue', () => {
   const notificationStore = useNotificationStore();
   const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
 
-  const fileData = (sizeInByte) => {
-    // Generate fake file data
+  const pseudoRandom = (seed) => {
+    let value = seed;
+    return () => {
+      value = (value * 16807) % 2147483647; // Using LCG formula
+      return value / 2147483647; // Normalize to range [0, 1)
+    };
+  };
+
+  const fileData = (sizeInByte, seed = 12345) => {
+    const prng = pseudoRandom(seed); // Initialize PRNG with a seed
     const bytesPerItem = Math.floor(sizeInByte / 100); // adjust as needed
     const numItems = Math.floor(100 / bytesPerItem); // adjust as needed
     const fileData = [];
     for (let i = 0; i < numItems; i++) {
       const item = {};
       for (let j = 0; j < bytesPerItem / 2; j++) {
-        item[String.fromCharCode(65 + Math.floor(Math.random() * 26))] =
-          Math.floor(Math.random() * 10);
+        const randomLetter = String.fromCharCode(65 + Math.floor(prng() * 26));
+        const randomDigit = Math.floor(prng() * 10);
+        item[randomLetter] = randomDigit;
       }
       fileData.push(item);
     }
