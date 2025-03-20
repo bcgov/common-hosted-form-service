@@ -29,18 +29,17 @@ describe("Form Designer", () => {
   it("Checks team management before form publish", () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-
-    cy.get("button").contains("BC Government").click();
-    cy.get("div.formio-builder-form").then(($el) => {
+    cy.get('button').contains('Basic Fields').click();
+    cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
-      cy.get('[data-key="simplebcaddress"]')
-        .trigger("mousedown", { which: 1 }, { force: true })
-        .trigger("mousemove", coords.x, -550, { force: true })
-        //.trigger('mousemove', coords.y, +100, { force: true })
-        .trigger("mouseup", { force: true });
-      cy.waitForLoad();
-      cy.get("button").contains("Save").click();
+      cy.get('span.btn').contains('Text Field')
+      
+      .trigger('mousedown', { which: 1}, { force: true })
+      .trigger('mousemove', coords.x, -50, { force: true })
+      .trigger('mouseup', { force: true });
+      cy.get('button').contains('Save').click();
     });
+    cy.wait(2000);
     // Form saving
     let savedButton = cy.get("[data-cy=saveButton]");
     expect(savedButton).to.not.be.null;
