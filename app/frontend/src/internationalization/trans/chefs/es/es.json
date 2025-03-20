@@ -97,9 +97,9 @@
     "formAccess": "Acceso al formulario",
     "info": "Si utilizará este formulario para recopilar información del público en general sobre temas que son de interés general para el público, debe comunicarse con la GCPE para que su participación pueda incluirse en",
     "important": "IMPORTANTE",
-    "idimNotifyA": "Debe notificar al equipo de Gestión de Información de Identidad (IDIM) por correo electrónico",
-    "idimNotifyB": "su intención de aprovechar BCeID para verificar las identidades de los remitentes de su formulario.",
-    "referenceGuideA": "Por favor, consulte nuestro",
+    "idimNotifyA": "Debe <strong>NOTIFICAR</strong> al equipo de Identity Information Management (IDIM) por correo electrónico",
+    "idimNotifyB": "su intención de utilizar BCeID o BC Services Card para verificar las identidades de los remitentes de su formulario.",
+    "referenceGuideA": "Por favor, consulte nuestra",
     "referenceGuideB": "guía del usuario",
     "referenceGuideC": "para más detalles",
     "specificTeamMembers": "Miembros del equipo específicos",
@@ -490,13 +490,15 @@
     "download": "Descargar"
   },
   "formDisclaimer": {
-    "disclaimerAndStatement": "Descargo de responsabilidad y declaración de responsabilidad para los diseñadores de formularios:",
-    "privacyLaw": "Es su responsabilidad cumplir con las leyes de privacidad que rigen la recopilación, el uso y la divulgación de información de identificación personal.",
-    "disclosure": "El acceso a esta herramienta de diseño de formularios no otorga inherentemente permiso para recopilar, usar o divulgar ninguna información de identificación personal.",
+    "disclaimerAndStatement": "Descargo de responsabilidad y declaración de responsabilidad para diseñadores de formularios:",
+    "privacyLaw": "Es su responsabilidad cumplir con las leyes de privacidad que rigen la recopilación, el uso y la divulgación de información personal identificable.",
+    "disclosure": "El acceso a esta herramienta de diseño de formularios no otorga automáticamente permiso para recopilar, utilizar o divulgar información personal identificable.",
     "consent": "Es su responsabilidad obtener el consentimiento para recopilar información según lo exige la ley.",
     "formIntention": "Antes de publicar o distribuir su formulario, debe discutir la intención del formulario con su",
     "privacyOfficer": "Oficial de Privacidad del Ministerio",
-    "assement": "y para completar las evaluaciones según sea necesario."
+    "assement": "y completar las evaluaciones según sea necesario.",
+    "idimDisclaimerA": "Si utiliza BCeID o BC Services Card como opciones de acceso al formulario, <strong>DEBE</strong> notificar al equipo de Identity Information Management (IDIM) por correo electrónico",
+    "idimDisclaimerB": "su intención de utilizar BCeID o BC Services Card para verificar las identidades de los remitentes de su formulario. Es su responsabilidad completar estos requisitos adicionales antes de recopilar datos."
   },
   "requestReceipt": {
     "emailPriority": "Prioridad de correo electrónico",
