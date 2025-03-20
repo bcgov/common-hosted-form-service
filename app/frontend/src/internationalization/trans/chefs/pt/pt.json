@@ -97,11 +97,11 @@
     "formAccess": "Acesso ao formulário",
     "info": "Se você usar este formulário para coletar informações do público em geral sobre tópicos de interesse geral do público, deverá entrar em contato com o GCPE para que seu envolvimento possa ser listado no",
     "important": "IMPORTANTE",
-    "idimNotifyA": "Você deve notificar a equipe de gerenciamento de informações de identidade (IDIM) por e-mail",
-    "idimNotifyB": "sua intenção de aproveitar o BCeID para verificar as identidades de seus remetentes de formulário.",
-    "referenceGuideA": "Consulte nosso",
-    "referenceGuideB": "guia de usuario",
-    "referenceGuideC": "para mais detalhes",
+    "idimNotifyA": "Você <strong>DEVE</strong> notificar a equipe de Identity Information Management (IDIM) por e-mail",
+    "idimNotifyB": "sua intenção de utilizar BCeID ou BC Services Card para verificar a identidade dos remetentes do formulário.",
+    "referenceGuideA": "Por favor, consulte nosso",
+    "referenceGuideB": "guia do usuário",
+    "referenceGuideC": "para mais detalhes.",
     "specificTeamMembers": "Membros Específicos da Equipe",
     "teamMemberTooltip": "Adicione membros da equipe a partir das configurações de Gestão de Equipe após criar este formulário.",
     "formFunctionality": "Funcionalidade do formulário",
@@ -490,13 +490,15 @@
     "download": "Download"
   },
   "formDisclaimer": {
-    "disclaimerAndStatement": "Isenção de responsabilidade e declaração de responsabilidade para Form Designers:",
-    "privacyLaw": "É sua responsabilidade cumprir as leis de privacidade que regem a coleta, uso e divulgação de informações de identificação pessoal.",
-    "disclosure": "O acesso a esta ferramenta de criação de formulários não concede inerentemente permissão para coletar, usar ou divulgar qualquer informação de identificação pessoal.",
+    "disclaimerAndStatement": "Aviso de isenção de responsabilidade e declaração de responsabilidade para designers de formulários:",
+    "privacyLaw": "É sua responsabilidade cumprir as leis de privacidade que regem a coleta, uso e divulgação de informações pessoalmente identificáveis.",
+    "disclosure": "O acesso a esta ferramenta de design de formulários não concede automaticamente permissão para coletar, usar ou divulgar qualquer informação pessoalmente identificável.",
     "consent": "É sua responsabilidade obter consentimento para coletar informações conforme exigido por lei.",
-    "formIntention": "Antes de publicar ou distribuir seu formulário, você deve discutir a intenção do formulário com seu",
+    "formIntention": "Antes de publicar ou distribuir seu formulário, você deve discutir a intenção do formulário com o",
     "privacyOfficer": "Oficial de Privacidade do Ministério",
-    "assement": "e para completar as avaliações conforme necessário."
+    "assement": "e concluir as avaliações necessárias.",
+    "idimDisclaimerA": "Se você usar BCeID ou BC Services Card como opções de acesso ao formulário, <strong>DEVE</strong> notificar a equipe de Identity Information Management (IDIM) por e-mail",
+    "idimDisclaimerB": "sua intenção de utilizar BCeID ou BC Services Card para verificar a identidade dos remetentes do formulário. É sua responsabilidade concluir esses requisitos adicionais antes de coletar dados."
   },
   "requestReceipt": {
     "emailPriority": "Prioridade de e-mail",
