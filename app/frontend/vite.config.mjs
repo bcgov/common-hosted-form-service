@@ -64,8 +64,10 @@ export default defineConfig(({ command, mode }) => {
       },
       globals: true,
       environment: 'jsdom',
-      deps: {
-        inline: ['vuetify', 'i18n', 'vitest-canvas-mock'],
+      server: {
+        deps: {
+          inline: ['vuetify', 'i18n', 'vitest-canvas-mock'],
+        },
       },
     },
   };

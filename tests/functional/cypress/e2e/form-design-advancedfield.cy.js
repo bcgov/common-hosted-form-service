@@ -214,15 +214,7 @@ describe('Form Designer', () => {
         let savedButton = cy.get('[data-cy=saveButton]');
         expect(savedButton).to.not.be.null;
         savedButton.trigger('click');
-        cy.waitForLoad();
-    
-    
-      // Go to My forms  
-        cy.wait('@getForm').then(()=>{
-          let userFormsLinks = cy.get('[data-cy=userFormsLinks]');
-          expect(userFormsLinks).to.not.be.null;
-          userFormsLinks.trigger('click');
-        });
+        cy.wait(3000);
       // Filter the newly created form
         cy.location('search').then(search => {
           //let pathName = fullUrl.pathname

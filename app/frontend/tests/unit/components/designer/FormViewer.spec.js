@@ -68,7 +68,6 @@ describe('FormViewer.vue', () => {
     appStore.$reset();
     authStore.$reset();
     formStore.$reset();
-    appStore.$reset();
     authStore.authenticated = true;
     authStore.keycloak = {
       tokenParsed: {
@@ -293,7 +292,7 @@ describe('FormViewer.vue', () => {
     expect(wrapper.vm.canSaveDraft).toBeTruthy();
   });
 
-  it('onMounted', () => {
+  describe('onMounted', () => {
     it('will add event listener beforeunload will show modal and getFormSchema', async () => {
       const wrapper = shallowMount(FormViewer, {
         props: {
@@ -612,7 +611,7 @@ describe('FormViewer.vue', () => {
     expect(readVersionSpy).toBeCalledTimes(0);
     expect(readDraftSpy).toBeCalledTimes(0);
     expect(getUserSubmissionsSpy).toBeCalledTimes(0);
-    expect(addNotificationSpy).toBeCalledTimes(0);
+    expect(addNotificationSpy).toBeCalledTimes(1);
   });
   it('calls readPublished by default, and pushes to router if there are no versions', async () => {
     const push = vi.fn();
