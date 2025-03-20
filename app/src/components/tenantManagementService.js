@@ -1,4 +1,4 @@
-const config = require('config');
+//const config = require('config');
 const errorToProblem = require('./errorToProblem');
 const axios = require('axios');
 const SERVICE = 'tenantManagement';
@@ -32,45 +32,10 @@ class tenantManagementService {
       errorToProblem(SERVICE, e);
     }
     return [];
-
-    // try {
-    //   // Mock roles data
-    //   const roles = [
-    //     {
-    //       id: '3',
-    //       name: 'form_designer',
-    //       description: 'Can design and modify forms',
-    //       createdDateTime: new Date().toISOString(),
-    //       updatedDateTime: new Date().toISOString(),
-    //     },
-    //     {
-    //       id: '4',
-    //       name: 'submission_reviewer',
-    //       description: 'Can review form submissions',
-    //       createdDateTime: new Date().toISOString(),
-    //       updatedDateTime: new Date().toISOString(),
-    //     },
-    //     {
-    //       id: '5',
-    //       name: 'form_submitter',
-    //       description: 'Can submit forms',
-    //       createdDateTime: new Date().toISOString(),
-    //       updatedDateTime: new Date().toISOString(),
-    //     },
-    //   ];
-
-    //   // Returning the roles wrapped in the expected response format
-    //   return {
-    //     roles,
-    //   };
-    // } catch (error) {
-    //   errorToProblem(SERVICE, error);
-    //   throw new Error('Failed to fetch roles');
-    // }
   }
 }
 
-const endpoint = config.get('serviceClient.commonServices.tenantManagementService.endpoint');
+const endpoint = 'https://tms-api-poc.apps.silver.devops.gov.bc.ca/v1'; //config.get('serviceClient.commonServices.tenantManagementService.endpoint');
 
 let tmsService = new tenantManagementService(endpoint);
 module.exports = tmsService;
