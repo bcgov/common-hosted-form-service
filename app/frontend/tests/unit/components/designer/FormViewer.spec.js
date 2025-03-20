@@ -100,7 +100,6 @@ describe('FormViewer.vue', () => {
     appStore.$reset();
     authStore.$reset();
     formStore.$reset();
-    appStore.$reset();
     authStore.authenticated = true;
     authStore.keycloak = {
       tokenParsed: {
@@ -325,7 +324,7 @@ describe('FormViewer.vue', () => {
     expect(wrapper.vm.canSaveDraft).toBeTruthy();
   });
 
-  it('onMounted', () => {
+  describe('onMounted', () => {
     it('will add event listener beforeunload will show modal and getFormSchema', async () => {
       const wrapper = shallowMount(FormViewer, {
         props: {

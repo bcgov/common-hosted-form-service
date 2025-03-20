@@ -4330,33 +4330,6 @@ components:
                   type: string
                   description: This string contain custom closing message message set by form designer that shows on frontend when a form is expired for a particular period.
                   example: This Form is expired.
-                keepOpenForTerm:
-                  type: string
-                  description: This contain a value that can be used with combination to another key i.e. keepOpenForInterval to calculate a period. Thats tells a form to be keep open for particular period.  40 Days, 3 Weeks, 1 Years etc.
-                  example: '15'
-                keepOpenForInterval:
-                  type: string
-                  description: This contain a value that can be used with combination to another key i.e. keepOpenForTerm to calculate a period. Thats tells a form to be keep open for particular period.  40 Days, 3 Weeks, 1 Years etc.
-                  example: '15'
-                repeatSubmission:
-                  type: object
-                  properties:
-                    enabled:
-                      type: boolean
-                      description: Used to indicate if repeatition of scheduling a form enabled or not
-                      example: true
-                    everyTerm:
-                      type: string
-                      description: This contain a value that can be used with combination to another key i.e. everyIntervalType to calculate a period. Thats tells a form to be schedule a form repetition after particular period.  40 Days, 3 Weeks, 1 Years etc.
-                      example: '15'
-                    repeatUntil:
-                      type: string
-                      description: Contains end date for repeatition of form schedule.
-                      example: '2023-12-22'
-                    everyIntervalType:
-                      type: string
-                      description: This contain a value that can be used with combination to another key i.e. everyTerm to calculate a period. Thats tells a form to be schedule a form repetition after particular period.  40 Days, 3 Weeks, 1 Years etc.
-                      example: '15'
                 allowLateSubmissions:
                   type: object
                   properties:
@@ -4385,6 +4358,32 @@ components:
                   type: string
                   description: Contains closing date of form schedule system when type of ScheduleType set to closingDate.
                   example: '2022-12-22'
+                # The following fields are deprecated and only included for backward compatibility
+                keepOpenForTerm:
+                  type: string
+                  description: Deprecated. Previously used for PERIOD scheduling.
+                  deprecated: true
+                  keepOpenForInterval:
+                    type: string
+                    description: Deprecated. Previously used for PERIOD scheduling.
+                    deprecated: true
+                  repeatSubmission:
+                    type: object
+                    description: Deprecated. Previously used for PERIOD scheduling.
+                    deprecated: true
+                    properties:
+                      enabled:
+                        type: boolean
+                        description: Deprecated.
+                      everyTerm:
+                        type: string
+                        description: Deprecated.
+                      repeatUntil:
+                        type: string
+                        description: Deprecated.
+                      everyIntervalType:
+                        type: string
+                        description: Deprecated.
             subscribe:
               type: object
               description: Contains subscription related data - future storage of subscribed events

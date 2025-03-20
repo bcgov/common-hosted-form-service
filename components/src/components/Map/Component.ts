@@ -159,13 +159,11 @@ export default class Component extends (FieldComponent as any) {
         };
       }
     });
-
     this.setValue({ features });
   }
 
   setValue(value) {
     super.setValue(value);
-
     // Additional logic to render the saved data on the map if necessary
     if (this.mapService && value && value.features) {
       try {
@@ -178,5 +176,17 @@ export default class Component extends (FieldComponent as any) {
 
   getValue() {
     return this.dataValue;
+  }
+  isEmpty(value) {
+    if (!this.component.allowSubmissions) return false;
+    // If the map is supposed to be read-only, just override the required flag
+
+    // this is to ensure if the map designer doesnt set the number of features
+    // to be exactly equal to the number of default features the form would not submit
+
+    return (
+      value?.features.length === 0 ||
+      value?.features.length === this.defaultValue?.features.length
+    );
   }
 }

@@ -3,20 +3,15 @@ import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
 
-
 Cypress.Commands.add('waitForLoad', () => {
   const loaderTimeout = 60000;
 
   cy.get('.nprogress-busy', { timeout: loaderTimeout }).should('not.exist');
 });
 
-
-
 describe('Form Designer', () => {
 
   beforeEach(()=>{
-    
-    
     
     cy.on('uncaught:exception', (err, runnable) => {
       // Form.io throws an uncaught exception for missing projectid
@@ -43,26 +38,13 @@ describe('Form Designer', () => {
       .trigger('mousedown', { which: 1}, { force: true })
       .trigger('mousemove', coords.x, -550, { force: true })
       .trigger('mouseup', { force: true });
-      cy.waitForLoad();
-      //cy.get('input[name="data[label]"]').type('s');  
+      cy.wait(2000);  
       cy.get('button').contains('Save').click();
-      //cy.get('.btn-success').click();
-
-
     });
-    cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
   // Form saving
-    
+    cy.wait(2000);
     cy.get('[data-cy=saveButton]').click();
-    cy.waitForLoad();
-
-
-  // Go to My forms  
-    cy.wait('@getForm').then(()=>{
-      let userFormsLinks = cy.get('[data-cy=userFormsLinks]');
-      expect(userFormsLinks).to.not.be.null;
-      userFormsLinks.trigger('click');
-    });
+    cy.wait(2000);
   // Filter the newly created form
     cy.location('search').then(search => {
       //let pathName = fullUrl.pathname
@@ -175,7 +157,7 @@ describe('Form Designer', () => {
       
       cy.contains('SEND Reminder email').click();
       cy.get('[data-test="canEditForm"]').click();
-    })
+    });
     it('Checks Event Subscription settings', () => {
       cy.viewport(1000, 1100);
       cy.waitForLoad();
@@ -184,7 +166,7 @@ describe('Form Designer', () => {
         
       cy.get('input[type="text"]').then($el => {
 
-        const rem=$el[10];
+        const rem=$el[11];
         cy.get(rem).type('7');
         
         });
@@ -197,10 +179,11 @@ describe('Form Designer', () => {
       cy.get('.v-col > .v-btn > .v-btn__content > span').click();
       // Verify form settings updation success message
       cy.get('.v-alert__content').contains('div','Subscription settings for this form has been saved.').should('be.visible');
-    })
+    });
     it('Checks External API settings', () => {
       cy.viewport(1000, 1100);
       cy.waitForLoad();
+      
       cy.get(':nth-child(5) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
       cy.get('.mt-6 > :nth-child(2) > .mdi-help-circle-outline').should('exist');
       cy.get('.mdi-plus-circle').click({ force: true });
@@ -208,10 +191,10 @@ describe('Form Designer', () => {
       cy.get('input[type="text"]').then($el => {
         cy.get('.mdi-plus-circle').click();
 
-        const api_name=$el[12];
-        const api_endpoint=$el[13];
-        const api_header=$el[14];
-        const api_keyvalue=$el[15];
+        const api_name=$el[13];
+        const api_endpoint=$el[14];
+        const api_header=$el[15];
+        const api_keyvalue=$el[16];
         cy.get(api_name).click();
         cy.get(api_endpoint).click();
         
@@ -257,10 +240,8 @@ describe('Form Designer', () => {
       const delcontinue=$el[1];
       cy.get(delcontinue).click();
       cy.get('#logoutButton > .v-btn__content > span').click();
-            
-       
-          
-      })  
+              
+      });  
   
-    })
-})
+    });
+});

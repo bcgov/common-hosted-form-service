@@ -42,7 +42,7 @@
 - [Frontend Readme](app/frontend/README.md)
 - [Openshift Readme](openshift/README.md)
 - [Cypress Test Readme](tests/functional/cypress/README.md)
-- [CHEFS Load Test Readme](tests/load/load-test/README.md)
+- [CHEFS Performance Test Readme](tests/performance/README.md)
 - [Devops Tools Setup](https://github.com/bcgov/nr-showcase-devops-tools)
 - [Security Reporting](SECURITY.md)
 - [Product Roadmap](https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Product-Roadmap/)

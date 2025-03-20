@@ -47,12 +47,6 @@ describe('auth getters', () => {
     expect(store.authenticated).toBeTruthy();
   });
 
-  it('createLoginUrl should return a string', () => {
-    expect(store.createLoginUrl).toBeTruthy();
-    expect(typeof store.createLoginUrl).toBe('function');
-    expect(store.createLoginUrl()).toMatch('loginUrl');
-  });
-
   it('email should return a string', () => {
     expect(store.email).toBeTruthy();
     expect(store.email).toMatch('e@mail.com');

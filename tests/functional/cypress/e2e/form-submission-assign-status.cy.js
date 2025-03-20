@@ -30,9 +30,9 @@ describe('Form Designer', () => {
         formsettings();
         
     }); 
-    it('Add some fields for submission', () => {
+    it('Form Submission and Updation', () => {
 
-    cy.viewport(1000, 1800);
+    cy.viewport(1000, 1100);
     cy.waitForLoad();
     cy.get('button').contains('Basic Fields').click();
     cy.get('div.formio-builder-form').then($el => {
@@ -44,29 +44,14 @@ describe('Form Designer', () => {
       .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
-    
-    });
-
-    it('Form Submission and Updation', () => {
-        cy.viewport(1000, 1100);
-        cy.wait(4000);
-        /*cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
-        */
+    cy.wait(4000);
         // Form saving
-        let savedButton = cy.get('[data-cy=saveButton]');
-        expect(savedButton).to.not.be.null;
-        savedButton.trigger('click');
-        cy.waitForLoad();
-        cy.wait(4000);
-        // Go to My forms  
-        /*cy.wait('@getForm').then(()=>{
-        let userFormsLinks = cy.get('[data-cy=userFormsLinks]');
-        expect(userFormsLinks).to.not.be.null;
-        userFormsLinks.trigger('click');
-        });
-        */
+    let savedButton = cy.get('[data-cy=saveButton]');
+    expect(savedButton).to.not.be.null;
+    savedButton.trigger('click');
+    cy.wait(4000);
         // Filter the newly created form
-        cy.location('search').then(search => {
+    cy.location('search').then(search => {
         
         let arr = search.split('=');
         let arrayValues = arr[1].split('&');
@@ -123,15 +108,16 @@ describe('Form Designer', () => {
         cy.get('div').contains('1-2 of 2').should('be.visible');
         cy.get('.v-select__selection-text').contains('10');
         cy.get('.v-data-table-footer__items-per-page > .v-input > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
-        cy.contains('20').should('be.visible');
+        cy.contains('10').should('be.visible');
         cy.contains('25').should('be.visible');
         cy.contains('50').should('be.visible');
+        cy.contains('100').should('be.visible');
         cy.contains('All').should('be.visible');
         cy.get('button[title="Delete Submission"]').should('be.visible');
          //view submission
         cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn > .v-btn__content > .mdi-eye').click();
         cy.wait(4000);
-        });
+      });
 
     });
     it('Submission status Assignment', () => {

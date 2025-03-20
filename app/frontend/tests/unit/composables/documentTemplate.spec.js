@@ -113,15 +113,15 @@ describe('documentTemplate.js', () => {
 
   describe('readFile', () => {
     it('should return a valid file', async () => {
-      // no data
-      const mockInputElement = document.createElement('input');
-      mockInputElement.type = 'file';
-      const file = await readFile(mockInputElement);
+      const emptyFile = new File([], 'empty.txt', { type: 'text/plain' });
+
+      const file = await readFile(emptyFile);
+
       expect(file).toEqual('');
     });
 
     it('should reject if there was an error reading the file', async () => {
-      // This needs to be implemented
+      // TODO: This needs to be implemented
     });
   });
 });
