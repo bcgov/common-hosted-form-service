@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { describe, expect, it } from 'vitest';
 
-import { IdentityMode, ScheduleType } from '~/utils/constants';
+import { IdentityMode } from '~/utils/constants';
 import * as transformUtils from '~/utils/transformUtils';
 
 describe('generateIdps', () => {
@@ -64,152 +64,70 @@ describe('parseIdps', () => {
 });
 
 describe('getSubmissionPeriodDates', () => {
-  it('without late submissions or a repeat period, it should only stay open for the keep open period', () => {
+  it('should return submission period dates with open and close dates', () => {
+    const openDate = moment('2024-05-08');
+    const closeDate = moment('2024-05-15');
+
     expect(
-      transformUtils.getSubmissionPeriodDates(
-        5,
-        'days',
-        moment('2024-05-08'),
-        0,
-        'months',
-        0,
-        'years',
-        moment()
-      )
+      transformUtils.getSubmissionPeriodDates(openDate, closeDate)
     ).toEqual([
       {
         startDate: moment('2024-05-08').format('YYYY-MM-DD HH:MM:SS'),
-        closeDate: moment('2024-05-08')
-          .add(5, 'days')
-          .format('YYYY-MM-DD HH:MM:SS'),
+        closeDate: moment('2024-05-15').format('YYYY-MM-DD HH:MM:SS'),
         graceDate: null,
       },
     ]);
   });
 
-  it('with late submissions and no repeat period, it should only stay open for the keep open period and late submissions', () => {
+  it('should include grace period if late submissions are enabled', () => {
+    const openDate = moment('2024-05-08');
+    const closeDate = moment('2024-05-15');
+    const allowLateSubmissions = {
+      enabled: true,
+      forNext: {
+        term: 3,
+        intervalType: 'days',
+      },
+    };
+
     expect(
       transformUtils.getSubmissionPeriodDates(
-        5,
-        'days',
-        moment('2024-05-08'),
-        0,
-        'years',
-        1,
-        'months',
-        moment()
+        openDate,
+        closeDate,
+        allowLateSubmissions
       )
     ).toEqual([
       {
         startDate: moment('2024-05-08').format('YYYY-MM-DD HH:MM:SS'),
-        closeDate: moment('2024-05-08')
-          .add(5, 'days')
-          .format('YYYY-MM-DD HH:MM:SS'),
-        graceDate: moment('2024-05-08')
-          .add(5, 'days')
-          .add(1, 'months')
+        closeDate: moment('2024-05-15').format('YYYY-MM-DD HH:MM:SS'),
+        graceDate: moment('2024-05-15')
+          .add(3, 'days')
           .format('YYYY-MM-DD HH:MM:SS'),
       },
     ]);
   });
 
-  it('with late submissions and repeat period, it should stay open for 1 week then a month later it will add another keep open period of 1 week then add the late period', () => {
-    expect(
-      transformUtils.getSubmissionPeriodDates(
-        5,
-        'days',
-        moment('2024-05-08'),
-        1,
-        'months',
-        1,
-        'months',
-        moment('2024-07-15')
-      )
-    ).toEqual([
-      {
-        startDate: moment('2024-05-08').format('YYYY-MM-DD HH:MM:SS'),
-        closeDate: moment('2024-05-08')
-          .add(5, 'days')
-          .format('YYYY-MM-DD HH:MM:SS'),
-        graceDate: moment('2024-05-08')
-          .add(5, 'days')
-          .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
+  it('should not include grace period if late submissions are disabled', () => {
+    const openDate = moment('2024-05-08');
+    const closeDate = moment('2024-05-15');
+    const allowLateSubmissions = {
+      enabled: false,
+      forNext: {
+        term: 3,
+        intervalType: 'days',
       },
-      {
-        startDate: moment('2024-05-08')
-          .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
-        closeDate: moment('2024-05-08')
-          .add(5, 'days')
-          .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
-        graceDate: moment('2024-05-08')
-          .add(5, 'days')
-          .add(1, 'months')
-          .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
-      },
-      {
-        startDate: moment('2024-05-08')
-          .add(1, 'months')
-          .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
-        closeDate: moment('2024-05-08')
-          .add(5, 'days')
-          .add(1, 'months')
-          .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
-        graceDate: moment('2024-05-08')
-          .add(5, 'days')
-          .add(1, 'months')
-          .add(1, 'months')
-          .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
-      },
-    ]);
-  });
+    };
 
-  it('without late submissions and with a repeat period, it should stay open for 1 week then a month later it will add another keep open period of 1 week', () => {
     expect(
       transformUtils.getSubmissionPeriodDates(
-        5,
-        'days',
-        moment('2024-05-08'),
-        1,
-        'months',
-        0,
-        'months',
-        moment('2024-07-15')
+        openDate,
+        closeDate,
+        allowLateSubmissions
       )
     ).toEqual([
       {
         startDate: moment('2024-05-08').format('YYYY-MM-DD HH:MM:SS'),
-        closeDate: moment('2024-05-08')
-          .add(5, 'days')
-          .format('YYYY-MM-DD HH:MM:SS'),
-        graceDate: null,
-      },
-      {
-        startDate: moment('2024-05-08')
-          .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
-        closeDate: moment('2024-05-08')
-          .add(5, 'days')
-          .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
-        graceDate: null,
-      },
-      {
-        startDate: moment('2024-05-08')
-          .add(1, 'months')
-          .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
-        closeDate: moment('2024-05-08')
-          .add(5, 'days')
-          .add(1, 'months')
-          .add(1, 'months')
-          .format('YYYY-MM-DD HH:MM:SS'),
+        closeDate: moment('2024-05-15').format('YYYY-MM-DD HH:MM:SS'),
         graceDate: null,
       },
     ]);
