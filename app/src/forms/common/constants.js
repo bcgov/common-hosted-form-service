@@ -79,7 +79,6 @@ module.exports = Object.freeze({
   ScheduleType: {
     MANUAL: 'manual',
     CLOSINGDATE: 'closingDate',
-    PERIOD: 'period',
   },
   EXPORT_TYPES: {
     submissions: 'submissions',

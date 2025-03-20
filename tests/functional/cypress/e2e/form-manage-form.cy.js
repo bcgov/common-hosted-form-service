@@ -40,9 +40,9 @@ describe('Form Designer', () => {
       .trigger('mouseup', { force: true });
       cy.wait(2000);  
       cy.get('button').contains('Save').click();
-      
     });
   // Form saving
+    cy.wait(2000);
     cy.get('[data-cy=saveButton]').click();
     cy.wait(2000);
   // Filter the newly created form
