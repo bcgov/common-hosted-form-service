@@ -115,7 +115,7 @@ runs:
     - name: Wait on App
       shell: bash
       run: |
-        oc rollout --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} status dc/${{ inputs.acronym }}-app-${{ inputs.job_name }} --watch=true
+        oc rollout --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} status deployment/${{ inputs.acronym }}-app-${{ inputs.job_name }} --watch=true
 
     - name: Create Cron Jobs
       shell: bash
