@@ -1,12 +1,24 @@
 import { createTestingPinia } from '@pinia/testing';
 import { mount } from '@vue/test-utils';
 import { setActivePinia } from 'pinia';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ref } from 'vue';
 
 import { useAppStore } from '~/store/app';
 import { useFormStore } from '~/store/form';
 import FormEventStreamSettings from '~/components/designer/settings/FormEventStreamSettings.vue';
+import { encryptionKeyService } from '~/services';
+
+const STUBS = {
+  BasePanel: {
+    name: 'BasePanel',
+    template: '<div class="base-panel-stub"><slot /></div>',
+  },
+  BaseCopyToClipboard: {
+    name: 'BaseCopyToClipboard',
+    template: '<div class="base-copy-to-clipboard-stub"><slot /></div>',
+  },
+};
 
 describe('FormEventStreamSettings.vue', () => {
   const pinia = createTestingPinia();
@@ -14,10 +26,20 @@ describe('FormEventStreamSettings.vue', () => {
 
   const formStore = useFormStore(pinia);
   const appStore = useAppStore(pinia);
+  const listEncryptionAlgorithmsSpy = vi.spyOn(
+    encryptionKeyService,
+    'listEncryptionAlgorithms'
+  );
 
   beforeEach(() => {
     appStore.$reset();
     formStore.$reset();
+    listEncryptionAlgorithmsSpy.mockReset();
+    listEncryptionAlgorithmsSpy.mockImplementation(() => ({ data: [] }));
+  });
+
+  afterAll(() => {
+    listEncryptionAlgorithmsSpy.mockRestore();
   });
 
   it('renders eventStreamService configuration', async () => {
@@ -32,12 +54,7 @@ describe('FormEventStreamSettings.vue', () => {
     const wrapper = mount(FormEventStreamSettings, {
       global: {
         plugins: [pinia],
-        stubs: {
-          BasePanel: {
-            name: 'BasePanel',
-            template: '<div class="base-panel-stub"><slot /></div>',
-          },
-        },
+        stubs: STUBS,
       },
     });
     expect(wrapper.find('[data-test="consumerservers"]').text()).toContain(
@@ -61,12 +78,7 @@ describe('FormEventStreamSettings.vue', () => {
     const wrapper = mount(FormEventStreamSettings, {
       global: {
         plugins: [pinia],
-        stubs: {
-          BasePanel: {
-            name: 'BasePanel',
-            template: '<div class="base-panel-stub"><slot /></div>',
-          },
-        },
+        stubs: STUBS,
       },
     });
 
@@ -88,12 +100,7 @@ describe('FormEventStreamSettings.vue', () => {
     const wrapper = mount(FormEventStreamSettings, {
       global: {
         plugins: [pinia],
-        stubs: {
-          BasePanel: {
-            name: 'BasePanel',
-            template: '<div class="base-panel-stub"><slot /></div>',
-          },
-        },
+        stubs: STUBS,
       },
     });
 
@@ -117,12 +124,7 @@ describe('FormEventStreamSettings.vue', () => {
     const wrapper = mount(FormEventStreamSettings, {
       global: {
         plugins: [pinia],
-        stubs: {
-          BasePanel: {
-            name: 'BasePanel',
-            template: '<div class="base-panel-stub"><slot /></div>',
-          },
-        },
+        stubs: STUBS,
       },
     });
 
@@ -151,5 +153,59 @@ describe('FormEventStreamSettings.vue', () => {
     );
 
     expect(wrapper.vm.encryptionKeyRules[0]('aes-256-gcm')).toEqual(true); // some value should pass
+  });
+
+  it('hides stream config when not enabled', async () => {
+    formStore.form = ref({
+      eventStreamConfig: {
+        enablePublicStream: false,
+        enablePrivateStream: true,
+        encryptionKey: {
+          algorithm: null,
+          key: null,
+        },
+        accountName: null,
+        enabled: false,
+      },
+    });
+
+    const wrapper = mount(FormEventStreamSettings, {
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    const row1 = wrapper.find('[data-cy="enablePublicStreamRow"]');
+    expect(row1.exists()).toBeFalsy();
+    const row2 = wrapper.find('[data-cy="enablePrivateStreamRow"]');
+    expect(row2.exists()).toBeFalsy();
+  });
+
+  it('shows stream config when enabled', async () => {
+    formStore.form = ref({
+      eventStreamConfig: {
+        enablePublicStream: false,
+        enablePrivateStream: true,
+        encryptionKey: {
+          algorithm: null,
+          key: null,
+        },
+        accountName: 'testaccount', //accountName required to become enabled
+        enabled: true,
+      },
+    });
+
+    const wrapper = mount(FormEventStreamSettings, {
+      global: {
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    const row1 = wrapper.find('[data-cy="enablePublicStreamRow"]');
+    expect(row1.exists()).toBeTruthy();
+    const row2 = wrapper.find('[data-cy="enablePrivateStreamRow"]');
+    expect(row2.exists()).toBeTruthy();
   });
 });
