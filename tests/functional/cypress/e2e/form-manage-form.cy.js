@@ -155,7 +155,6 @@ describe('Form Designer', () => {
         const rem=$el[0];
         cy.get(rem).type('closed for some reasons');
       });
-      //cy.get('textarea').type('closed for some reasons')
       cy.contains('SEND Reminder email').click();
       
       cy.contains('SEND Reminder email').click();
@@ -166,14 +165,6 @@ describe('Form Designer', () => {
       cy.waitForLoad();
       cy.get(':nth-child(2) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
       cy.get('input[placeholder="https://endpoint.gov.bc.ca/api/v1/"]').click();
-        /*
-      cy.get('input[type="text"]').then($el => {
-
-        const rem=$el[9];
-        cy.get(rem).type('7');
-        
-        });
-      */
       cy.get('input[type="password"]').type('hi');
       
       cy.get('div').contains('Please enter a valid endpoint starting with https://').should('be.visible');
@@ -193,20 +184,11 @@ describe('Form Designer', () => {
       cy.wait(2000);
       cy.get('input[type="text"]').then($el => {
         cy.get('.mdi-plus-circle').click();
-
-        //const api_name=$el[9];
-        //const api_endpoint=$el[10];
-        //const api_header=$el[13];
-        //const api_keyvalue=$el[14];
-        //cy.get(api_name);
-        //cy.get('[data-test="text-name"]').then($el => {
         const api_name=$el[12];
-        
         cy.get(api_name).click();
         cy.get('[data-test="text-endpointUrl"]').click();
         
         cy.wait(2000);
-        //cy.get(api_header).click();
         cy.contains('div','Name is required.').should('be.visible');
         cy.get('[data-test="text-apiKeyHeader"]').click();
         cy.get('.v-messages__message').contains('div','Please enter a valid endpoint starting with http:// or https://').should('be.visible');
