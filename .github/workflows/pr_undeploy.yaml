@@ -36,6 +36,7 @@ jobs:
       - name: Remove PR Deployment
         shell: bash
         run: |
+          oc delete -n ${{ vars.NAMESPACE_PREFIX }}-dev job pre-${{ env.ACRONYM }}-app-pr-${{ github.event.inputs.pr-number }} --ignore-not-found=true
           oc delete -n ${{ vars.NAMESPACE_PREFIX }}-dev all,secret,networkpolicy,rolebinding --selector app=${{ env.ACRONYM }}-pr-${{ github.event.inputs.pr-number }}
           oc delete -n ${{ vars.NAMESPACE_PREFIX }}-dev all,svc,cm,sa,role,secret --selector cluster-name=pr-${{ github.event.inputs.pr-number }}
       - name: Remove Release Comment on PR
