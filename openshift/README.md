@@ -214,6 +214,7 @@ When a PR is closed the CI/CD pipeline will automatically clean up the resources
 export NAMESPACE=<yournamespace>
 export APP_NAME=<yourappshortname>
 
+oc delete job pre-$APP_NAME-app-pr-<PRNUMBER> -n $NAMESPACE --ignore-not-found=true
 oc delete all,secret,networkpolicy,rolebinding -n $NAMESPACE --selector app=$APP_NAME-pr-<PRNUMBER>
 oc delete all,svc,cm,sa,role,secret -n $NAMESPACE --selector cluster-name=pr-<PRNUMBER>
 ```
