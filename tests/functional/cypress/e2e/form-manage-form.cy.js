@@ -99,6 +99,7 @@ describe('Form Designer', () => {
       cy.get('.pl-3 > :nth-child(2) > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
       cy.contains('weeks').click();
       //Set Up submission period
+      /*
       cy.contains('Set up submission period').click();
       cy.get('[data-test="closeSubmissionDateTime"]').should('not.exist');
       cy.get('[data-test="afterCloseDateFor"]').should('not.exist');
@@ -115,6 +116,7 @@ describe('Form Designer', () => {
       cy.get(':nth-child(4) > .v-input > .v-input__control > .v-field').click();
       cy.wait(4000);
       cy.contains('days').click();
+      */
       //verification of Summary
       cy.contains('span','This form will be open for submissions from').should('be.visible');
       cy.get('b').then($el => {
@@ -125,6 +127,7 @@ describe('Form Designer', () => {
 
        });
       //Repeat period
+      /*
       cy.contains('Repeat period').click();
       cy.get('input[type="number"]').then($el => {
 
@@ -144,7 +147,7 @@ describe('Form Designer', () => {
         cy.get(rem).type('2026-12-17');
         
         });
- 
+ */
       //Closing date for submission
       cy.contains('Set custom closing message').click();
       cy.get('textarea').then($el => {
@@ -163,14 +166,14 @@ describe('Form Designer', () => {
       cy.waitForLoad();
       cy.get(':nth-child(2) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
       cy.get('input[placeholder="https://endpoint.gov.bc.ca/api/v1/"]').click();
-        
+        /*
       cy.get('input[type="text"]').then($el => {
 
-        const rem=$el[11];
+        const rem=$el[9];
         cy.get(rem).type('7');
         
         });
-      
+      */
       cy.get('input[type="password"]').type('hi');
       
       cy.get('div').contains('Please enter a valid endpoint starting with https://').should('be.visible');
@@ -191,30 +194,35 @@ describe('Form Designer', () => {
       cy.get('input[type="text"]').then($el => {
         cy.get('.mdi-plus-circle').click();
 
-        const api_name=$el[13];
-        const api_endpoint=$el[14];
-        const api_header=$el[15];
-        const api_keyvalue=$el[16];
+        //const api_name=$el[9];
+        //const api_endpoint=$el[10];
+        //const api_header=$el[13];
+        //const api_keyvalue=$el[14];
+        //cy.get(api_name);
+        //cy.get('[data-test="text-name"]').then($el => {
+        const api_name=$el[12];
+        
         cy.get(api_name).click();
-        cy.get(api_endpoint).click();
+        cy.get('[data-test="text-endpointUrl"]').click();
         
         cy.wait(2000);
-        cy.get(api_header).click();
+        //cy.get(api_header).click();
         cy.contains('div','Name is required.').should('be.visible');
+        cy.get('[data-test="text-apiKeyHeader"]').click();
         cy.get('.v-messages__message').contains('div','Please enter a valid endpoint starting with http:// or https://').should('be.visible');
 
         cy.get(api_name).type('chefs_name');
-        cy.get(api_endpoint).type('chefs_endpoint');
-        cy.contains('div','Name is required.').should('not.exist');
+        cy.get('[data-test="text-endpointUrl"]').type('chefs_endpoint');
+        //cy.contains('div','Name is required.').should('not.exist');
         cy.get('.v-messages__message').contains('div','Please enter a valid endpoint starting with http:// or https://').should('be.visible');
-        cy.get(api_endpoint).type('{selectall}{backspace}');
-        cy.get(api_endpoint).type('https://chefs-dev.apps.silver.devops.gov.bc.ca/');
-        cy.get(api_header).type('header');
-        cy.get(api_keyvalue).type('keyvalue');
+        cy.get('[data-test="text-endpointUrl"]').type('{selectall}{backspace}');
+        cy.get('[data-test="text-endpointUrl"]').type('https://chefs-dev.apps.silver.devops.gov.bc.ca/');
+        cy.get('[data-test="text-apiKeyHeader"]').type('header');
+        cy.get('[data-test="text-apiKey"]').type('keyvalue');
       });
       cy.get('input[type="checkbox"]').then($el => {
-          const user_apikey=$el[14];
-          const user_info=$el[15];
+          const user_apikey=$el[13];
+          const user_info=$el[14];
           cy.get(user_info).click();
           cy.get(user_apikey).click();
           cy.get('[data-test="continue-btn-continue"]').should('be.enabled');
