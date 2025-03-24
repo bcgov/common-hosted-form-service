@@ -1006,6 +1006,7 @@ async function onSubmitDone() {
       name: 'FormSuccess',
       query: {
         s: submissionRecord.value.id,
+        f: properties.formId,
       },
     });
   }

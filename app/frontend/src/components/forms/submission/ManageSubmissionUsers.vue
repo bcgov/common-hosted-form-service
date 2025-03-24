@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import map from 'lodash/map';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { rbacService, userService } from '~/services';
@@ -22,6 +23,10 @@ const properties = defineProps({
     type: String,
     required: true,
   },
+  formId: {
+    type: String,
+    required: true,
+  },
 });
 
 const dialog = ref(false);
@@ -39,7 +44,7 @@ const formStore = useFormStore();
 const idpStore = useIdpStore();
 const notificationStore = useNotificationStore();
 
-const { isRTL } = storeToRefs(formStore);
+const { isRTL, form } = storeToRefs(formStore);
 
 const autocompleteLabel = computed(() => {
   return idpStore.isPrimary(selectedIdp.value)
@@ -109,6 +114,24 @@ function initializeSelectedIdp() {
 async function addUser() {
   // If the end user selected a user
   if (userSearchSelection.value) {
+    if (form.value.enableTeamMemberDraftShare) {
+      const formUsersResponse = await rbacService.getFormUsers({
+        formId: properties.formId,
+        roles: '*',
+      });
+      let allFormUsers = map(formUsersResponse.data, 'email');
+      if (
+        Array.isArray(allFormUsers) &&
+        allFormUsers.length > 0 &&
+        !allFormUsers.includes(userSearchSelection.value.email)
+      ) {
+        notificationStore.addNotification({
+          ...NotificationTypes.ERROR,
+          text: `You can't share the draft with users who haven't been added to the form. Please contact the admin to add them.`,
+        });
+        return;
+      }
+    }
     const id = userSearchSelection.value.id;
     // If a selected user is already on the team
     if (formSubmissionUsers.value.some((u) => u.id === id)) {
@@ -245,9 +268,9 @@ defineExpose({
           <v-icon icon="mdi:mdi-account-multiple"></v-icon>
         </v-btn>
       </template>
-      <span :lang="locale">{{
-        $t('trans.manageSubmissionUsers.manageTeamMembers')
-      }}</span>
+      <span :lang="locale"
+        >{{ $t('trans.manageSubmissionUsers.manageTeamMembers') }}
+      </span>
     </v-tooltip>
     <v-dialog v-model="dialog" width="600">
       <v-card :class="{ 'dir-rtl': isRTL }">

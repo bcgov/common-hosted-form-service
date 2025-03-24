@@ -318,5 +318,19 @@ defineExpose({
         </div>
       </template>
     </v-checkbox>
+    <v-checkbox
+      v-model="form.enableTeamMemberDraftShare"
+      data-test="canUpdateStatusOfFormCheckbox"
+      hide-details="auto"
+      class="my-0"
+    >
+      <template #label>
+        <span
+          :class="{ 'mr-2': isRTL }"
+          :lang="locale"
+          v-html="'Share draft with form team members only'"
+        ></span>
+      </template>
+    </v-checkbox>
   </BasePanel>
 </template>

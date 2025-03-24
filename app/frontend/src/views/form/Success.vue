@@ -14,6 +14,10 @@ defineProps({
     type: String,
     required: true,
   },
+  f: {
+    type: String,
+    required: true,
+  },
 });
 
 const { email } = storeToRefs(useAuthStore());
@@ -48,6 +52,7 @@ const { form, isRTL } = storeToRefs(useFormStore());
               :email="email"
               :form-name="form.name"
               :submission-id="s"
+              :form-id="f"
             />
           </div>
           <hr />
