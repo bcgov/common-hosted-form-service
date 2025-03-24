@@ -149,8 +149,11 @@ defineExpose({ idpType, userTypeChanged, updateLoginType });
                   {{ $t('trans.formSettings.important') }}!
                 </h4>
                 <p class="my-2" :lang="locale">
-                  {{ $t('trans.formSettings.idimNotifyA') }} (<a
-                    href="mailto:IDIM.Consulting@gov.bc.ca"
+                  <span
+                    :lang="locale"
+                    v-html="$t('trans.formSettings.idimNotifyA')"
+                  ></span
+                  >&nbsp;(<a href="mailto:IDIM.Consulting@gov.bc.ca"
                     >IDIM.Consulting@gov.bc.ca</a
                   >) {{ $t('trans.formSettings.idimNotifyB') }}
                 </p>
