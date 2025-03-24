@@ -177,7 +177,9 @@ describe('Form Designer', () => {
     cy.wait(2000);
     cy.get('[data-test="showStatusList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click({force: true});
     cy.wait(2000);
+    cy.contains('COMPLETED');
     cy.contains('COMPLETED').click();
+    cy.wait(2000);
     cy.get('button').contains('COMPLETE').click();
     //Adding notes to submission
     cy.get('.mdi-plus').click();
