@@ -78,14 +78,12 @@ describe('Form Designer', () => {
 
       cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
       //Enable submission schedule and event subscription
-      
       cy.contains('Form Submissions Schedule').click();
       cy.contains('Allow event subscription').click();
       cy.get(':nth-child(5) > .v-card > .v-card-text').should('be.visible');
       cy.get('input[placeholder="yyyy-mm-dd"]').click();
       // Select date for open submission
-      cy.get('input[placeholder="yyyy-mm-dd"]').type('2026-06-17');
-      
+      cy.get('input[placeholder="yyyy-mm-dd"]').type('2026-06-17'); 
       //Checking the  schedule of closing date settings
       cy.contains('Schedule a closing date').click();
       cy.get('[data-test="closeSubmissionDateTime"]').should('be.visible');
@@ -98,25 +96,7 @@ describe('Form Designer', () => {
 
       cy.get('.pl-3 > :nth-child(2) > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
       cy.contains('weeks').click();
-      //Set Up submission period
-      /*
-      cy.contains('Set up submission period').click();
-      cy.get('[data-test="closeSubmissionDateTime"]').should('not.exist');
-      cy.get('[data-test="afterCloseDateFor"]').should('not.exist');
-      cy.waitForLoad();
-      cy.get('input[type="number"]').then($el => {
-
-        const rem=$el[0];
-        rem.click();
-        cy.get(':nth-child(4) > .v-input > .v-input__control > .v-field').click();
-        cy.contains('div','This field is required.').should('be.visible');
-        cy.get(rem).type('5');
-        
-        });
-      cy.get(':nth-child(4) > .v-input > .v-input__control > .v-field').click();
-      cy.wait(4000);
-      cy.contains('days').click();
-      */
+      
       //verification of Summary
       cy.contains('span','This form will be open for submissions from').should('be.visible');
       cy.get('b').then($el => {
@@ -126,28 +106,6 @@ describe('Form Designer', () => {
         cy.get(rem).contains('2026-06-17').should('exist');
 
        });
-      //Repeat period
-      /*
-      cy.contains('Repeat period').click();
-      cy.get('input[type="number"]').then($el => {
-
-        const rem=$el[1];
-        cy.get(rem).type('6');
-        
-        });
-      
-      cy.get(':nth-child(4) > :nth-child(2) > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
-      cy.contains('quarters').click();
-      cy.get('input[type="date"]').then($el => {
-
-        const rem=$el[1];
-        rem.click();
-        //checking validation message
-        
-        cy.get(rem).type('2026-12-17');
-        
-        });
- */
       //Closing date for submission
       cy.contains('Set custom closing message').click();
       cy.get('textarea').then($el => {
