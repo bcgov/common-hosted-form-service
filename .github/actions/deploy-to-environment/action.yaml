@@ -108,6 +108,11 @@ runs:
       run: |
         oc delete job pre-${{ inputs.acronym }}-app-${{ inputs.job_name }} -n ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} --ignore-not-found=true
 
+    - name: Delete old DeploymentConfig if it exists
+      shell: bash
+      run: |
+        oc delete deploymentconfig ${{ inputs.acronym }}-app-${{ inputs.job_name }} -n ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} --ignore-not-found=true
+
     - name: Deploy App
       shell: bash
       run: |
