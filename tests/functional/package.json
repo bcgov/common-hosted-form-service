@@ -21,9 +21,7 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "cypress-drag-drop": "^1.1.1",
-    "date-fns": "^2.26.0",
-    "har-validator": "^5.1.5"
+    "date-fns": "^2.26.0"
   },
   "devDependencies": {
     "cypress": "^13.17.0",
