@@ -76,95 +76,52 @@ export function attachAttributesToLinks(formSchemaComponents) {
 
 /**
  * @function getSubmissionPeriodDates
- * Gets all possible dates for a submission period
+ * Gets the submission period dates based on the form's schedule
  *
- * @param {Integer} keepOpenForTerm A submission period's number of period intervals
- * @param {String} keepOpenForInterval A submission period's intervals which can be days, weeks, months, or years
- * @param {Object} openSubmissionDateTime A moment object of the day the form will be open for submissions
- * @param {Integer} repeatSubmissionTerm A submission period's number of repeat intervals
- * @param {String} repeatSubmissionInterval A submission period's repeat intervals which can be days, weeks, months, or years
- * @param {Integer} allowLateTerm A late submission's number of period intervals
- * @param {String} allowLateInterval A late submission's intervals which can be days, weeks, months, or years
- * @param {Object} repeatSubmissionUntil A moment of the day that a submission period will stop repeat intervals
- * @returns {Object} An object array of available dates in given period
+ * @param {String|Object} openDate The form's opening date (string or moment object)
+ * @param {String|Object} closeDate The form's closing date (string or moment object)
+ * @param {Object} allowLateSubmissions The late submissions configuration
+ * @returns {Array} An array with the calculated date period
  */
 export function getSubmissionPeriodDates(
-  keepOpenForTerm = 0,
-  keepOpenForInterval = 'days',
-  openSubmissionDateTime,
-  repeatSubmissionTerm = null,
-  repeatSubmissionInterval = null,
-  allowLateTerm = null,
-  allowLateInterval = null,
-  repeatSubmissionUntil
+  openDate,
+  closeDate,
+  allowLateSubmissions = null
 ) {
-  let submissionPeriodDates = [];
-  let openSubmissionDate = moment.isMoment(openSubmissionDateTime)
-    ? openSubmissionDateTime.clone()
-    : moment(new Date(openSubmissionDateTime));
-  let calculatedCloseDate = openSubmissionDate.clone();
-  repeatSubmissionUntil = moment.isMoment(repeatSubmissionUntil)
-    ? repeatSubmissionUntil.clone()
-    : moment(new Date(repeatSubmissionUntil));
+  let openSubmissionDate = moment.isMoment(openDate)
+    ? openDate.clone()
+    : moment(new Date(openDate));
+
+  let calculatedCloseDate = moment.isMoment(closeDate)
+    ? closeDate.clone()
+    : moment(new Date(closeDate));
+
   let graceDate = null;
 
-  calculatedCloseDate.add(keepOpenForTerm, keepOpenForInterval);
-  if (allowLateTerm && allowLateInterval)
+  // If late submissions are enabled, calculate the grace date
+  if (
+    allowLateSubmissions &&
+    allowLateSubmissions.enabled &&
+    allowLateSubmissions.forNext &&
+    allowLateSubmissions.forNext.term &&
+    allowLateSubmissions.forNext.intervalType
+  ) {
     graceDate = calculatedCloseDate
       .clone()
-      .add(allowLateTerm, allowLateInterval)
+      .add(
+        allowLateSubmissions.forNext.term,
+        allowLateSubmissions.forNext.intervalType
+      )
       .format('YYYY-MM-DD HH:MM:SS');
-
-  // Always push through the first submission period
-  submissionPeriodDates.push({
-    startDate: openSubmissionDate.clone().format('YYYY-MM-DD HH:MM:SS'),
-    closeDate: calculatedCloseDate.format('YYYY-MM-DD HH:MM:SS'),
-    graceDate: graceDate,
-  });
-
-  // If repeat periods are enabled
-  if (
-    repeatSubmissionTerm &&
-    repeatSubmissionInterval &&
-    repeatSubmissionUntil
-  ) {
-    // Reset the calculated closing date to the open date
-    calculatedCloseDate = openSubmissionDate.clone();
-    // This checks that we're not repeating it again if the close date is before
-    // the repeat end date.
-    while (
-      calculatedCloseDate
-        .clone()
-        .add(repeatSubmissionTerm, repeatSubmissionInterval)
-        .isBefore(repeatSubmissionUntil)
-    ) {
-      // Add the repeat period to the open submission date to determine the open submission date
-      openSubmissionDate.add(repeatSubmissionTerm, repeatSubmissionInterval);
-      // Calculated closing date is now the openSubmission date with the keep open period
-      calculatedCloseDate = openSubmissionDate
-        .clone()
-        .add(keepOpenForTerm, keepOpenForInterval);
-      // If late submissions are enabled, set the grace period equal to the closing date
-      // with the addition of the late period
-      if (allowLateTerm && allowLateInterval)
-        graceDate = calculatedCloseDate
-          .clone()
-          .add(allowLateTerm, allowLateInterval)
-          .format('YYYY-MM-DD HH:MM:SS');
-
-      // Add the calculated dates to the submission period array
-      submissionPeriodDates.push({
-        startDate: openSubmissionDate.clone().format('YYYY-MM-DD HH:MM:SS'),
-        closeDate: calculatedCloseDate.format('YYYY-MM-DD HH:MM:SS'),
-        graceDate: graceDate,
-      });
-
-      // Set the calculated closing date equal to the open date again for the repeat submission check
-      calculatedCloseDate = openSubmissionDate.clone();
-    }
   }
 
-  return submissionPeriodDates;
+  return [
+    {
+      startDate: openSubmissionDate.format('YYYY-MM-DD HH:MM:SS'),
+      closeDate: calculatedCloseDate.format('YYYY-MM-DD HH:MM:SS'),
+      graceDate: graceDate,
+    },
+  ];
 }
 
 /**
