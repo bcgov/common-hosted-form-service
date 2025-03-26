@@ -104,7 +104,6 @@ defineExpose({
       data-test="canUploadDraftCheckbox"
       hide-details="auto"
       class="my-0"
-      :disabled="form.userType === ID_MODE.PUBLIC"
       @update:model-value="allowSubmitterToUploadFileChanged"
     >
       <template #label>

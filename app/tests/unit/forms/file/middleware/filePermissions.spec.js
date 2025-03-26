@@ -166,63 +166,67 @@ describe('currentFileRecord', () => {
 // External dependencies used by the implementation are: none
 //
 describe('hasFileCreate', () => {
-  describe('403 response when', () => {
-    const expectedStatus = { status: 403 };
+  const formId = uuid.v4();
 
-    test('there is no current user on the request scope', () => {
+  describe('400 response when', () => {
+    const expectedStatus = { status: 400 };
+
+    test('there is no formId in the request', async () => {
       const req = getMockReq({
-        headers: {
-          authorization: 'Bearer ' + bearerToken,
-        },
+        query: {}, // No formId
       });
       const { res, next } = getMockRes();
 
-      hasFileCreate(req, res, next);
+      await hasFileCreate(req, res, next);
 
-      expect(req.currentFileRecord).toEqual(undefined);
-      expect(req.currentUser).toEqual(undefined);
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
       expect(next).toBeCalledWith(
         expect.objectContaining({
-          detail: 'Invalid authorization credentials.',
-        })
-      );
-    });
-
-    test('the current user is a public user', () => {
-      const req = getMockReq({
-        currentUser: {
-          username: 'public',
-        },
-      });
-      const { res, next } = getMockRes();
-
-      hasFileCreate(req, res, next);
-
-      expect(req.currentFileRecord).toEqual(undefined);
-      expect(req.currentUser).toEqual(req.currentUser);
-      expect(next).toBeCalledTimes(1);
-      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
-      expect(next).toBeCalledWith(
-        expect.objectContaining({
-          detail: 'Invalid authorization credentials.',
+          detail: 'formId is required',
         })
       );
     });
   });
 
   describe('allows', () => {
-    test('an idp user on the request', async () => {
+    test('an idp user on the request with valid formId', async () => {
       const req = getMockReq({
         currentUser: currentUserIdp,
+        query: { formId },
       });
       const { res, next } = getMockRes();
 
-      hasFileCreate(req, res, next);
+      await hasFileCreate(req, res, next);
 
-      expect(req.currentFileRecord).toEqual(undefined);
-      expect(req.currentUser).toEqual(currentUserIdp);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
+    });
+
+    test('a public user on the request with valid formId', async () => {
+      const req = getMockReq({
+        currentUser: { username: 'public' },
+        query: { formId },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFileCreate(req, res, next);
+
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith();
+    });
+
+    test('no current user on the request with valid formId', async () => {
+      const req = getMockReq({
+        headers: {
+          authorization: 'Bearer ' + bearerToken,
+        },
+        query: { formId },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFileCreate(req, res, next);
+
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith();
     });

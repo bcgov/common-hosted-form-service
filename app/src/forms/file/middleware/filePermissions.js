@@ -35,13 +35,12 @@ const currentFileRecord = async (req, _res, next) => {
  * Middleware to determine if this user can upload a file to the system
  * @returns {Function} a middleware function
  */
-const hasFileCreate = (req, res, next) => {
-  // You can't do this if you are not authenticated as a USER (not a public user)
-  // Can expand on this for API key access if ever needed
-  if (!req.currentUser || !req.currentUser.idpUserId) {
-    return next(new Problem(403, { detail: 'Invalid authorization credentials.' }));
+const hasFileCreate = async (req, res, next) => {
+  const formId = req.query.formId;
+  if (!formId) {
+    return next(new Problem(400, { detail: 'formId is required' }));
   }
-  next();
+  return next(); // Allow all uploads with a formId
 };
 
 /**
