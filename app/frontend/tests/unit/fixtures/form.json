@@ -16,17 +16,9 @@
     "enabled": null,
     "scheduleType": null,
     "openSubmissionDateTime": null,
-    "keepOpenForTerm": null,
-    "keepOpenForInterval": null,
     "closingMessageEnabled": null,
     "closingMessage": null,
     "closeSubmissionDateTime": null,
-    "repeatSubmission": {
-      "enabled": null,
-      "repeatUntil": null,
-      "everyTerm": null,
-      "everyIntervalType": null
-    },
     "allowLateSubmissions": {
       "enabled": null,
       "forNext": {

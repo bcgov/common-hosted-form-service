@@ -76,7 +76,7 @@ describe('Form Designer', () => {
         const draw_circle=$el[0];
       cy.get(draw_circle).click();
       });
-      cy.get('img[alt="Marker"]').then($el => {
+      cy.get('div[class="leaflet-draw-tooltip leaflet-draw-tooltip-single"]').then($el => {
         const mark_cir=$el[0];
         const coords = $el[0].getBoundingClientRect();
         cy.get(mark_cir)
