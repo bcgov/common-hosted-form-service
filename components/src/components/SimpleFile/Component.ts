@@ -215,7 +215,7 @@ export default class Component extends (ParentComponent as any) {
                 fileUpload.status = 'progress';
                 // @ts-ignore
                 fileUpload.progress = parseInt(
-                  (100.0 * evt.loaded) / evt.total
+                  ((100.0 * evt.loaded) / evt.total).toString()
                 );
                 delete fileUpload.message;
                 this.redraw();
