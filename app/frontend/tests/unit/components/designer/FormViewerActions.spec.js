@@ -170,7 +170,7 @@ describe('FormDisclaimer.vue', () => {
       },
     });
 
-    expect(wrapper.text()).toContain('trans.formViewerActions.saveAsADraft');
+    expect(wrapper.text()).toContain('trans.formViewerActions.saveAsDraft');
   });
 
   it('renders if showEditToggle, isDraft, and draftEnabled is true', () => {
