@@ -65,27 +65,6 @@ describe("Form Designer", () => {
     ).click();
     cy.get('.v-col > .v-btn--variant-outlined > .v-btn__content > span').click();
     cy.wait(3000);
-    /*
-    cy.get(
-      ".v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input"
-    ).type("NIM");
-    cy.get(":nth-child(2) > .v-chip__content").should("be.visible");
-    cy.get(":nth-child(4) > .v-chip__content").should("be.visible");
-    cy.get(":nth-child(5) > .v-chip__content").should("be.visible");
-    cy.contains("John, Nimya 1 CITZ:EX (nimya.1.john@gov.bc.ca)").click();
-    cy.get(":nth-child(2) > .v-chip__content").click();
-    cy.get(":nth-child(4) > .v-chip__content").click();
-    cy.get(":nth-child(5) > .v-chip__content").click();
-    cy.get(".v-btn--elevated > .v-btn__content > span").click();
-    // Verify member is added with proper roles
-    cy.get('[data-test="ApproverRoleCheckbox"]').should("be.visible");
-    cy.get('[data-test="ReviewerRoleCheckbox"]').should("exist");
-    cy.get('[data-test="TeamManagerRoleCheckbox"]').should("be.visible");
-    cy.get('[data-test="ApproverRoleCheckbox"]').click({
-      multiple: true,
-      force: true,
-    });
-    */
     //Manage column views
 
     cy.get(".mdi-view-column").click();
@@ -105,18 +84,6 @@ describe("Form Designer", () => {
     cy.get("table").contains("td", "Designer").should("be.visible");
     cy.get('[data-test="save-btn"] > .v-btn__content').click();
     cy.waitForLoad();
-
-    //Remove a user from Roles
-     /*
-    cy.get('tbody > :nth-child(1) > [style="width: 1rem;"] > .v-btn').click();
-    cy.waitForLoad();
-    //cy.contains('REMOVE').click();
-    cy.get(
-      '[data-test="continue-btn-continue"] > .v-btn__content > span'
-    ).click();
-    cy.waitForLoad();
-    cy.contains("NIMJOHN").should("not.exist");
-    */
     cy.get('[data-test="OwnerRoleCheckbox"]').click();
     cy.wait(1000);
     cy.get(".v-alert__content")
@@ -178,38 +145,6 @@ describe("Form Designer", () => {
     cy.get(
       ".v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input"
     ).click();
-    /*
-    cy.get(
-      ".v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input"
-    ).type("NIM");
-    cy.get(":nth-child(2) > .v-chip__content").should("be.visible");
-    cy.get(":nth-child(4) > .v-chip__content").should("be.visible");
-    cy.get(":nth-child(5) > .v-chip__content").should("be.visible");
-    cy.contains("John, Nimya 1 CITZ:EX (nimya.1.john@gov.bc.ca)").click();
-    cy.get(":nth-child(2) > .v-chip__content").click();
-    cy.wait(3000);
-    cy.get(":nth-child(3) > .v-chip__content").click();
-    cy.wait(3000);
-    cy.get(":nth-child(4) > .v-chip__content").click();
-    cy.wait(3000);
-    cy.get(":nth-child(5) > .v-chip__content").click();
-    cy.wait(3000);
-    cy.get(".v-btn--elevated > .v-btn__content > span").click();
-    
-    /*
-    cy.get('[data-test="OwnerRoleCheckbox"]').then(($el) => {
-      const ownercheck = $el[0];
-      const ownercheck1 = $el[1];
-
-      cy.get(ownercheck).click();
-      cy.get(ownercheck1).click();
-
-
-    });
-    cy.get(".v-alert__content")
-      .contains("You can't update an owner's roles.")
-      .should("be.visible");
-      */
     cy.get('.v-col > .v-btn--variant-outlined > .v-btn__content > span').click();
     cy.wait(3000);
     cy.get(".mdi-cog").click();
