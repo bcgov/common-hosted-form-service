@@ -9,6 +9,7 @@ import { useFormStore } from '~/store/form';
 
 const { locale } = useI18n({ useScope: 'global' });
 
+
 defineProps({
   s: {
     type: String,

@@ -99,3 +99,29 @@ describe('getCurrentUserForms', () => {
     expect(authService.filterForms).toBeCalledWith(userInfo, [], []); // current user, forms, no access level filters
   });
 });
+
+describe('getCurrentUser', () => {
+  it('should return true if user exists as a form member', async () => {
+    const param = {
+      idpUserId: undefined,
+      keycloakId: undefined,
+      username: 'public',
+      firstName: undefined,
+      lastName: undefined,
+      fullName: 'public',
+      email: 'test@gmail.com',
+      idp: 'public',
+      public: true,
+    };
+    const result = await service.isUserPartOfFormTeams(param);
+    expect(result).toBeTruthy();
+    expect(result).toMatchObject(userInfo);
+  });
+
+  it('should return false if user does not exist as a form member', async () => {
+    const userInfo = undefined;
+    const result = await service.getCurrentUser(userInfo);
+    expect(result).toBeTruthy();
+    expect(result).toMatchObject({});
+  });
+});

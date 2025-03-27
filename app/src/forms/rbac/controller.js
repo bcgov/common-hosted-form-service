@@ -140,4 +140,12 @@ module.exports = {
       next(error);
     }
   },
+  isUserPartOfFormTeams: async (req, res, next) => {
+    try {
+      const response = await service.isUserPartOfFormTeams(req.query);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
 };

@@ -2,7 +2,6 @@
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
 import { onMounted, ref } from 'vue';
-import map from 'lodash/map';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { formService, rbacService } from '~/services';
@@ -51,16 +50,12 @@ async function requestReceipt() {
     const notificationStore = useNotificationStore();
     try {
       if (form.value.enableTeamMemberDraftShare) {
-        const formUsersResponse = await rbacService.getFormUsers({
+        const formUsersResponse = await rbacService.isUserAssignedToFormTeams({
           formId: properties.formId,
+          email: to.value,
           roles: '*',
         });
-        let allFormUsers = map(formUsersResponse.data, 'email');
-        if (
-          Array.isArray(allFormUsers) &&
-          allFormUsers.length > 0 &&
-          !allFormUsers.includes(to.value.email)
-        ) {
+        if (formUsersResponse && !formUsersResponse.data) {
           notificationStore.addNotification({
             ...NotificationTypes.ERROR,
             text: `You can't share the draft with users who haven't been added to the form. Please contact the admin to add them.`,

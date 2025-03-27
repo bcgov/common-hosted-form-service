@@ -2,7 +2,6 @@
 import { storeToRefs } from 'pinia';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import map from 'lodash/map';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
 import { rbacService, userService } from '~/services';
@@ -115,16 +114,12 @@ async function addUser() {
   // If the end user selected a user
   if (userSearchSelection.value) {
     if (form.value.enableTeamMemberDraftShare) {
-      const formUsersResponse = await rbacService.getFormUsers({
+      const formUsersResponse = await rbacService.isUserAssignedToFormTeams({
         formId: properties.formId,
+        email: userSearchSelection.value.email,
         roles: '*',
       });
-      let allFormUsers = map(formUsersResponse.data, 'email');
-      if (
-        Array.isArray(allFormUsers) &&
-        allFormUsers.length > 0 &&
-        !allFormUsers.includes(userSearchSelection.value.email)
-      ) {
+      if (formUsersResponse && !formUsersResponse.data) {
         notificationStore.addNotification({
           ...NotificationTypes.ERROR,
           text: `You can't share the draft with users who haven't been added to the form. Please contact the admin to add them.`,
