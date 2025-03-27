@@ -1114,44 +1114,70 @@ async function deleteFile(file) {
 }
 
 async function getFile(fileId, options = {}) {
-  await formStore.downloadFile(fileId, options);
-  if (downloadedFile.value && downloadedFile.value.headers) {
-    let data;
+  // Validate fileId - should be a string now
+  if (!fileId || typeof fileId !== 'string') {
+    notificationStore.addNotification({
+      text: 'Unable to download file: Invalid file identifier',
+      consoleError: 'Invalid fileId',
+    });
+    return;
+  }
 
-    if (
-      downloadedFile.value.headers['content-type'].includes('application/json')
-    ) {
-      data = JSON.stringify(downloadedFile.value.data);
-    } else {
-      data = downloadedFile.value.data;
-    }
+  try {
+    await formStore.downloadFile(fileId, options);
 
-    if (typeof data === 'string') {
-      data = new Blob([data], {
+    if (downloadedFile.value && downloadedFile.value.headers) {
+      const data = downloadedFile.value.headers['content-type'].includes(
+        'application/json'
+      )
+        ? JSON.stringify(downloadedFile.value.data)
+        : downloadedFile.value.data;
+
+      const blob = new Blob([data], {
         type: downloadedFile.value.headers['content-type'],
       });
-    }
+      // don't need to blob because it's already a blob
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = getDisposition(
+        downloadedFile.value.headers['content-disposition']
+      );
+      a.style.display = 'none';
+      a.classList.add('hiddenDownloadTextElement');
+      document.body.appendChild(a);
+      a.click();
 
-    // don't need to blob because it's already a blob
-    const url = window.URL.createObjectURL(data);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = getDisposition(
-      downloadedFile.value.headers['content-disposition']
-    );
-    a.style.display = 'none';
-    a.classList.add('hiddenDownloadTextElement');
-    document.body.appendChild(a);
-    a.click();
-    downloadTimeout.value = setTimeout(() => {
-      document.body.removeChild(a);
-      URL.revokeObjectURL(a.href);
+      downloadTimeout.value = setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+      });
+    }
+  } catch (error) {
+    notificationStore.addNotification({
+      text: 'Error downloading file',
+      consoleError: error.message || 'Unknown error',
     });
   }
 }
-
 async function uploadFile(file, config = {}) {
-  return fileService.uploadFile(file, config);
+  const uploadConfig = {
+    ...config,
+    formId: properties.formId || form.value.id,
+  };
+  if (!uploadConfig.formId) throw new Error('Form ID is required');
+  try {
+    const response = await fileService.uploadFile(file, uploadConfig);
+    if (!response.data || typeof response.data !== 'object')
+      throw new Error('Invalid response');
+    return response;
+  } catch (error) {
+    notificationStore.addNotification({
+      text: 'Upload failed',
+      consoleError: error.message,
+    });
+    throw error;
+  }
 }
 </script>
 
