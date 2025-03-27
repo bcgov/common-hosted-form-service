@@ -67,6 +67,7 @@ defineExpose({
         $t('trans.formSettings.formFunctionality')
       }}</span></template
     >
+
     <v-checkbox
       v-model="form.enableSubmitterDraft"
       data-test="canSaveAndEditDraftsCheckbox"
@@ -320,9 +321,11 @@ defineExpose({
     </v-checkbox>
     <v-checkbox
       v-model="form.enableTeamMemberDraftShare"
+      :disabled="!form.enableSubmitterDraft"
       data-test="canUpdateStatusOfFormCheckbox"
       hide-details="auto"
       class="my-0"
+      @update:model-value="enableTeamMemberDraftChanged"
     >
       <template #label>
         <span
