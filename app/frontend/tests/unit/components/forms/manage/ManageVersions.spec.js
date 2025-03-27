@@ -34,11 +34,35 @@ describe('ManageVersions.vue', () => {
   const formStore = useFormStore(pinia);
   const notificationStore = useNotificationStore(pinia);
   const appStore = useAppStore(pinia);
+  const readVersionSpy = vi.spyOn(formService, 'readVersion');
+  const readDraftSpy = vi.spyOn(formService, 'readDraft');
 
   beforeEach(() => {
     formStore.$reset();
     notificationStore.$reset();
     appStore.$reset();
+    readVersionSpy.mockReset();
+    readVersionSpy.mockImplementationOnce(() => {
+      return {
+        data: {
+          schema: {
+            id: '1',
+            projectId: '123',
+          },
+        },
+      };
+    });
+    readDraftSpy.mockReset();
+    readDraftSpy.mockImplementationOnce(() => {
+      return {
+        data: {
+          schema: {
+            id: '1',
+            projectId: '123',
+          },
+        },
+      };
+    });
   });
 
   it('renders', async () => {
@@ -546,28 +570,6 @@ describe('ManageVersions.vue', () => {
 
   it('getFormSchema should set the form schema for a version', async () => {
     const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
-    const readVersionSpy = vi.spyOn(formService, 'readVersion');
-    readVersionSpy.mockImplementationOnce(() => {
-      return {
-        data: {
-          schema: {
-            id: '1',
-            projectId: '123',
-          },
-        },
-      };
-    });
-    const readDraftSpy = vi.spyOn(formService, 'readDraft');
-    readDraftSpy.mockImplementationOnce(() => {
-      return {
-        data: {
-          schema: {
-            id: '1',
-            projectId: '123',
-          },
-        },
-      };
-    });
     let VERSION_ONE = {
       version: 1,
       published: true,
@@ -613,28 +615,6 @@ describe('ManageVersions.vue', () => {
 
   it('getFormSchema should set the form schema for a draft', async () => {
     const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
-    const readVersionSpy = vi.spyOn(formService, 'readVersion');
-    readVersionSpy.mockImplementationOnce(() => {
-      return {
-        data: {
-          schema: {
-            id: '1',
-            projectId: '123',
-          },
-        },
-      };
-    });
-    const readDraftSpy = vi.spyOn(formService, 'readDraft');
-    readDraftSpy.mockImplementationOnce(() => {
-      return {
-        data: {
-          schema: {
-            id: '1',
-            projectId: '123',
-          },
-        },
-      };
-    });
     let VERSION_ONE = {
       version: 1,
       published: true,
