@@ -8,3 +8,4 @@ export { default as fileService } from './fileService';
 export { default as utilsService } from './utilsService';
 export { default as encryptionKeyService } from './encryptionKeyService';
 export { default as eventStreamConfigService } from './eventStreamConfigService';
+export { default as tenantService } from './tenantService';
