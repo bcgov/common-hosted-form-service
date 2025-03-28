@@ -380,7 +380,7 @@ describe('ExportSubmissions.vue', () => {
     await flushPromises();
 
     const exportSubmissionsSpy = vi.spyOn(formService, 'exportSubmissions');
-    exportSubmissionsSpy.mockImplementationOnce(() => {
+    exportSubmissionsSpy.mockImplementation(() => {
       return {
         data: {
           simpletextfield: 'some data',
