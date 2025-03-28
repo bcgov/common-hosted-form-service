@@ -395,4 +395,63 @@ describe('FormScheduleSettings.vue', () => {
       formStore.form.schedule.allowLateSubmissions.forNext.intervalType
     ).toEqual('days');
   });
+  it('saves UTC timestamps when times are selected', async () => {
+    const wrapper = mount(FormScheduleSettings, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          BasePanel: {
+            name: 'BasePanel',
+            template: '<div class="base-panel-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    // Set up test dates and times
+    const testOpenDate = '2025-03-15';
+    const testOpenTime = '09:30';
+    const testCloseDate = '2025-03-20';
+    const testCloseTime = '17:45';
+
+    // Set closing date schedule type
+    formStore.form.schedule.scheduleType = ScheduleType.CLOSINGDATE;
+    formStore.form.schedule.openSubmissionDateTime = testOpenDate;
+    formStore.form.schedule.closeSubmissionDateTime = testCloseDate;
+
+    // Enable time selection
+    wrapper.vm.showOpenTimeSelection = true;
+    wrapper.vm.showCloseTimeSelection = true;
+    await flushPromises();
+
+    // Set times
+    formStore.form.schedule.openSubmissionTime = testOpenTime;
+    formStore.form.schedule.closeSubmissionTime = testCloseTime;
+
+    // Call the functions to save timezone info
+    wrapper.vm.saveTimezoneWithOpenDate();
+    wrapper.vm.saveTimezoneWithCloseDate();
+
+    // Verify UTC timestamps were saved
+    expect(formStore.form.schedule.openSubmissionUTC).toBeTruthy();
+    expect(formStore.form.schedule.closeSubmissionUTC).toBeTruthy();
+
+    // Verify timestamps are in ISO format
+    const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
+    expect(formStore.form.schedule.openSubmissionUTC).toMatch(isoRegex);
+    expect(formStore.form.schedule.closeSubmissionUTC).toMatch(isoRegex);
+
+    // Verify timezone offset was saved
+    expect(formStore.form.schedule.timezoneOffset).toBeDefined();
+    expect(typeof formStore.form.schedule.timezoneOffset).toBe('number');
+
+    // Verify schedule type change clears closeSubmissionUTC but may not clear time fields
+    formStore.form.schedule.scheduleType = ScheduleType.MANUAL;
+    wrapper.vm.scheduleTypeChanged();
+    await flushPromises();
+
+    // We only need to check if closeSubmissionUTC is cleared
+    expect(formStore.form.schedule.closeSubmissionUTC).toBeNull();
+    expect(wrapper.vm.showCloseTimeSelection).toBe(false);
+  });
 });

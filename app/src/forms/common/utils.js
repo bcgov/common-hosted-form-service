@@ -111,10 +111,25 @@ const checkIsFormExpired = (formSchedule = {}) => {
     return result;
   }
 
-  // Check if the form has started yet
-  const startDate = moment(formSchedule.openSubmissionDateTime).startOf('day');
   const currentMoment = moment();
-  const isFormStartedAlready = currentMoment.diff(startDate, 'seconds') >= 0;
+
+  // Determine the form's opening moment with proper timezone handling
+  let openingMoment;
+
+  if (formSchedule.openSubmissionUTC) {
+    // CASE 1: We have a saved UTC date/time (most precise)
+    openingMoment = moment(formSchedule.openSubmissionUTC);
+  } else if (formSchedule.openSubmissionTime) {
+    // CASE 2: We have separate date and time
+    const openDateTime = `${formSchedule.openSubmissionDateTime}T${formSchedule.openSubmissionTime}`;
+    openingMoment = moment(openDateTime);
+  } else {
+    // CASE 3: Default to start of day (legacy behavior)
+    openingMoment = moment(formSchedule.openSubmissionDateTime).startOf('day');
+  }
+
+  // Check if the form has started yet
+  const isFormStartedAlready = currentMoment.isSameOrAfter(openingMoment);
 
   // If the form hasn't started yet
   if (!isFormStartedAlready) {
@@ -154,11 +169,29 @@ const checkIsFormExpired = (formSchedule = {}) => {
         return result;
       }
 
-      // Check if we're within the open period
-      const closingDate = moment(formSchedule.closeSubmissionDateTime).endOf('day');
-      const isBeforeClosingDate = currentMoment.isSameOrBefore(closingDate);
+      // Determine the form's closing moment with proper timezone handling
+      let closingMoment;
 
-      if (isBeforeClosingDate) {
+      if (formSchedule.closeSubmissionUTC) {
+        // CASE 1: We have a saved UTC date/time (most precise)
+        closingMoment = moment(formSchedule.closeSubmissionUTC);
+      } else if (formSchedule.closeSubmissionTime) {
+        // CASE 2: We have separate date and time
+        const closeDateTime = `${formSchedule.closeSubmissionDateTime}T${formSchedule.closeSubmissionTime}`;
+        closingMoment = moment(closeDateTime);
+      } else if (formSchedule.timezoneOffset !== undefined) {
+        // CASE 3: We have timezone offset but no time (current fix)
+        const userTimezoneOffset = formSchedule.timezoneOffset;
+        closingMoment = moment(formSchedule.closeSubmissionDateTime).utcOffset(-userTimezoneOffset).endOf('day').utcOffset(0);
+      } else {
+        // CASE 4: Legacy behavior for old forms
+        closingMoment = moment(formSchedule.closeSubmissionDateTime).endOf('day');
+      }
+
+      // Check if current time is before closing time
+      const isBeforeClosingMoment = currentMoment.isBefore(closingMoment);
+
+      if (isBeforeClosingMoment) {
         // Form is still open
         return result;
       }
@@ -169,11 +202,11 @@ const checkIsFormExpired = (formSchedule = {}) => {
 
         // Check for valid late submission configuration
         if (lateSubmissionConfig && lateSubmissionConfig.term && lateSubmissionConfig.intervalType) {
-          // Calculate grace period end date
-          const gracePeriodDate = moment(closingDate).add(lateSubmissionConfig.term, lateSubmissionConfig.intervalType);
+          // Calculate grace period end date, respecting timezone
+          const gracePeriodMoment = closingMoment.clone().add(lateSubmissionConfig.term, lateSubmissionConfig.intervalType);
 
           // Check if we're still within the grace period
-          const isWithinGracePeriod = currentMoment.isBefore(gracePeriodDate);
+          const isWithinGracePeriod = currentMoment.isBefore(gracePeriodMoment);
 
           return {
             ...result,
