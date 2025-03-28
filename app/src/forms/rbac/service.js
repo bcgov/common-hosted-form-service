@@ -300,6 +300,7 @@ const service = {
 
   // Verify if user is a form team member.
   isUserPartOfFormTeams: async (params) => {
+    let result = true;
     params = queryUtils.defaultActiveOnly(params);
     const items = await UserFormAccess.query()
       .modify('filterEmail', params.email)
@@ -308,9 +309,9 @@ const service = {
       .modify('filterByAccess', params.idps, params.roles, params.permissions)
       .modify('orderDefault');
     if (Array.isArray(items) && items.length === 0) {
-      return false;
+      result = false;
     }
-    return true;
+    return result;
   },
 };
 

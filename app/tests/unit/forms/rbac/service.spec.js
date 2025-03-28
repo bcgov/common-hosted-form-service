@@ -154,7 +154,6 @@ describe('isUserPartOfFormTeams', () => {
       then: (cb) => cb(fakeFormMember),
     }));
 
-    // Simulate `.query().modify().then(...)` chain
     const result = await service.isUserPartOfFormTeams(params);
     expect(result).toBe(true);
     expect(UserFormAccess.query).toHaveBeenCalled();
@@ -165,14 +164,11 @@ describe('isUserPartOfFormTeams', () => {
   });
 
   it('should return false if user does not exist as a form member', async () => {
-    //const fakeFormMember = [];
-
     UserFormAccess.query = jest.fn(() => ({
       modify: modifyMock,
       then: (cb) => cb([]),
     }));
 
-    // Simulate `.query().modify().then(...)` chain
     const result = await service.isUserPartOfFormTeams(params);
     expect(result).toBe(false);
     expect(UserFormAccess.query).toHaveBeenCalled();
