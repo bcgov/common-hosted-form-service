@@ -200,7 +200,7 @@
     "every": "Every",
     "repeatUntil": "Repeat until",
     "summary": "Summary",
-
+    "timezoneIndicator": "All times are in your local timezone ({timezone})",
     "openTime": "Open time",
     "closeTime": "Close time",
     "at": "at",

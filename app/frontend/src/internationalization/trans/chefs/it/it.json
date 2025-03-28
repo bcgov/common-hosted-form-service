@@ -139,6 +139,7 @@
     "repeatUntil": "Ripetere fino a",
     "summary": "Riepilogo",
     "submissionsOpenDateRange": "Questo modulo sarà aperto per l'invio da parte di",
+    "timezoneIndicator": "Tutti gli orari sono nel tuo fuso orario locale ({timezone})",
     "to": "A",
     "openTime": "Orario di apertura",
     "closeTime": "Orario di chiusura",

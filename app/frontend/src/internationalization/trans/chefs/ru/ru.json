@@ -139,6 +139,7 @@
     "repeatUntil": "Повторять до",
     "summary": "Итог",
     "submissionsOpenDateRange": "Эта форма будет открыта для отправки от",
+    "timezoneIndicator": "Все времена указаны в вашем местном часовом поясе ({timezone})",
     "to": "к",
     "openTime": "Время открытия",
     "closeTime": "Время закрытия",

@@ -139,6 +139,7 @@
     "repeatUntil": "Lặp lại cho đến khi",
     "summary": "Bản tóm tắt",
     "submissionsOpenDateRange": "Biểu mẫu này sẽ được mở để gửi từ",
+    "timezoneIndicator": "Tất cả thời gian đều theo múi giờ địa phương của bạn ({timezone})",
     "to": "ĐẾN",
     "openTime": "Thời gian mở",
     "closeTime": "Thời gian đóng",

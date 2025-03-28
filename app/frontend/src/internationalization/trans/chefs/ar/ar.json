@@ -140,6 +140,7 @@
     "summary": "ملخص",
     "submissionsOpenDateRange": "سيتم فتح هذا النموذج لتقديم الطلبات من",
     "to": "ل",
+    "timezoneIndicator": "جميع الأوقات هي في منطقتك الزمنية المحلية ({timezone})",
     "openTime": "وقت الفتح",
     "closeTime": "وقت الإغلاق",
     "at": "في",

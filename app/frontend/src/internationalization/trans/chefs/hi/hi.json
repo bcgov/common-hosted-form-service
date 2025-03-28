@@ -139,6 +139,7 @@
     "repeatUntil": "दोहराओ जब तक",
     "summary": "सारांश",
     "submissionsOpenDateRange": "यह फॉर्म सबमिशन के लिए खुला रहेगा",
+    "timezoneIndicator": "सभी समय आपके स्थानीय समय क्षेत्र में हैं ({timezone})",
     "to": "को",
     "openTime": "खुलने का समय",
     "closeTime": "बंद होने का समय",

@@ -140,6 +140,7 @@
     "summary": "Zusammenfassung",
     "submissionsOpenDateRange": "Dieses Formular ist für Einsendungen geöffnet",
     "to": "Zu",
+    "timezoneIndicator": "Alle Zeiten sind in Ihrer lokalen Zeitzone ({timezone})",
     "openTime": "Öffnungszeit",
     "closeTime": "Schließzeit",
     "at": "um",

@@ -139,6 +139,7 @@
     "repeatUntil": "重複直到",
     "summary": "概括",
     "submissionsOpenDateRange": "此表格將開放供提交",
+    "timezoneIndicator": "所有時間均為您的本地時區 ({timezone})",
     "to": "到",
     "openTime": "開始時間",
     "closeTime": "結束時間",

@@ -162,6 +162,9 @@ watch(
   },
   { immediate: true }
 );
+const currentTimezone = computed(() => {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone;
+});
 
 defineExpose({
   enableReminderDraw,
@@ -171,6 +174,7 @@ defineExpose({
   saveTimezoneWithOpenDate,
   showOpenTimeSelection,
   showCloseTimeSelection,
+  currentTimezone,
 });
 </script>
 
@@ -227,6 +231,13 @@ defineExpose({
                 <v-icon icon="mdi:mdi-clock-outline"></v-icon>
               </template>
             </v-text-field>
+            <div class="mt-1 text-caption text-grey-darken-1">
+              {{
+                $t('trans.formSettings.timezoneIndicator', {
+                  timezone: currentTimezone,
+                })
+              }}
+            </div>
           </div>
         </v-expand-transition>
       </v-col>
@@ -320,6 +331,13 @@ defineExpose({
                 <v-icon icon="mdi:mdi-clock-outline"></v-icon>
               </template>
             </v-text-field>
+            <div class="mt-1 text-caption text-grey-darken-1">
+              {{
+                $t('trans.formSettings.timezoneIndicator', {
+                  timezone: currentTimezone,
+                })
+              }}
+            </div>
           </div>
         </v-expand-transition>
       </v-col>
@@ -424,7 +442,7 @@ defineExpose({
           {{ $t('trans.formSettings.submissionsOpenDateRange') }}
           <b>{{ form.schedule.openSubmissionDateTime }}</b>
           <span v-if="form.schedule.openSubmissionTime">
-            {{ $t('trans.formSettings.at') }}
+            {{ ' ' + $t('trans.formSettings.at') }}
             {{ form.schedule.openSubmissionTime }}</span
           >
           {{ $t('trans.formSettings.to') }}
@@ -432,7 +450,7 @@ defineExpose({
             {{ form.schedule.closeSubmissionDateTime }}
           </b>
           <span v-if="form.schedule.closeSubmissionTime">
-            {{ $t('trans.formSettings.at') }}
+            {{ ' ' + $t('trans.formSettings.at') }}
             {{ form.schedule.closeSubmissionTime }}</span
           >
           <span v-else>{{ $t('trans.formSettings.closingTimeInfo') }}</span>

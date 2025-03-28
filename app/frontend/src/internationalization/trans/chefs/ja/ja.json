@@ -139,6 +139,7 @@
     "repeatUntil": "まで繰り返します",
     "summary": "まとめ",
     "submissionsOpenDateRange": "このフォームは以下からの送信を受け付けます。",
+    "timezoneIndicator": "すべての時刻はあなたの現地タイムゾーンです ({timezone})",
     "to": "に",
     "openTime": "開始時間",
     "closeTime": "終了時間",

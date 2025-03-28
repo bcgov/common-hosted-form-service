@@ -139,6 +139,7 @@
     "repeatUntil": "ਤੱਕ ਦੁਹਰਾਓ",
     "summary": "ਸੰਖੇਪ",
     "submissionsOpenDateRange": "ਇਹ ਫਾਰਮ ਸਬਮਿਸ਼ਨ ਲਈ ਖੁੱਲ੍ਹਾ ਹੋਵੇਗਾ",
+    "timezoneIndicator": "ਸਾਰਾ ਸਮਾਂ ਤੁਹਾਡੇ ਸਥਾਨਕ ਸਮੇਂ ਦੇ ਖੇਤਰ ਵਿੱਚ ਹੈ ({timezone})",
     "to": "ਨੂੰ",
     "openTime": "ਖੁੱਲ੍ਹਣ ਦਾ ਸਮਾਂ",
     "closeTime": "ਬੰਦ ਹੋਣ ਦਾ ਸਮਾਂ",

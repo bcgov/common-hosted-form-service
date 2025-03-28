@@ -139,6 +139,7 @@
     "repeatUntil": "까지 반복",
     "summary": "요약",
     "submissionsOpenDateRange": "이 양식은",
+    "timezoneIndicator": "모든 시간은 귀하의 현지 시간대입니다 ({timezone})",
     "to": "에게",
     "openTime": "시작 시간",
     "closeTime": "종료 시간",

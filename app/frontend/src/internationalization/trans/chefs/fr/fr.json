@@ -139,6 +139,7 @@
     "repeatUntil": "Répète jusqu'à",
     "summary": "Résumé",
     "submissionsOpenDateRange": "Ce formulaire sera ouvert aux soumissions de",
+    "timezoneIndicator": "Toutes les heures sont dans votre fuseau horaire local ({timezone})",
     "to": "pour",
     "openTime": "Heure d'ouverture",
     "closeTime": "Heure de fermeture",

@@ -139,6 +139,7 @@
     "repeatUntil": "Ulitin hanggang",
     "summary": "Buod",
     "submissionsOpenDateRange": "Ang form na ito ay bukas para sa mga pagsusumite mula sa",
+    "timezoneIndicator": "Lahat ng oras ay nasa iyong lokal na time zone ({timezone})",
     "to": "sa",
     "openTime": "Oras ng pagbubukas",
     "closeTime": "Oras ng pagsasara",
