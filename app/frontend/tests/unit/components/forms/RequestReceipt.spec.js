@@ -98,7 +98,7 @@ describe('RequestReceipt.vue', () => {
       },
     });
 
-    wrapper.vm.form = {
+    wrapper.vm.forms = {
       validate: vi.fn().mockImplementation(() => {
         return { valid: true };
       }),
@@ -134,7 +134,7 @@ describe('RequestReceipt.vue', () => {
       },
     });
 
-    wrapper.vm.form = {
+    wrapper.vm.forms = {
       validate: vi.fn().mockImplementation(() => {
         return { valid: true };
       }),

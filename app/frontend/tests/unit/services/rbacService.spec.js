@@ -14,6 +14,7 @@ vi.mock('~/services/interceptors', () => {
   };
 });
 
+
 describe('RBAC Service', () => {
   beforeEach(() => {
     mockAxios.reset();
@@ -102,6 +103,26 @@ describe('RBAC Service', () => {
       expect(result.data).toEqual(data);
       expect(mockAxios.history.put).toHaveLength(1);
       expect(Object.keys(mockAxios.history.put[0].params)).toEqual(['idp']);
+    });
+  });
+  describe('rbac/form/user', () => {
+    const endpoint = `${ApiRoutes.RBAC}/form/user`;
+
+    it('calls rbac/form/user endpoint', async () => {
+      mockAxios.onGet(endpoint).reply(200);
+
+      const result = await rbacService.isUserAssignedToFormTeams({
+        formId: '3d338420-b272-4b4b-8b08-756ed5b1576c',
+        email: 'test@gg.com',
+        roles: '*',
+      });
+      expect(result).toBeTruthy();
+      expect(mockAxios.history.get).toHaveLength(1);
+      expect(Object.keys(mockAxios.history.get[0].params)).toEqual([
+        'formId',
+        'email',
+        'roles',
+      ]);
     });
   });
 });
