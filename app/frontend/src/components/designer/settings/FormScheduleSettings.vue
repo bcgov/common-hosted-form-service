@@ -1,7 +1,7 @@
 <script setup>
 import moment from 'moment';
 import { storeToRefs } from 'pinia';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useFormStore } from '~/store/form';
@@ -11,6 +11,8 @@ import { isDateValidForMailNotification } from '~/utils/transformUtils';
 const { t, locale } = useI18n({ useScope: 'global' });
 
 const enableReminderDraw = ref(true);
+const showOpenTimeSelection = ref(false);
+const showCloseTimeSelection = ref(false);
 const githubLinkScheduleAndReminderFeature = ref(
   'https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Functionalities/Schedule-and-Reminder-notification/'
 );
@@ -64,6 +66,44 @@ function openDateTypeChanged() {
   }
 }
 
+function saveTimezoneWithOpenDate() {
+  if (form.value.schedule.openSubmissionDateTime) {
+    // If time is specified, create a full ISO date
+    if (form.value.schedule.openSubmissionTime) {
+      // Create local date time string
+      const localDateTimeStr = `${form.value.schedule.openSubmissionDateTime}T${form.value.schedule.openSubmissionTime}`;
+
+      // Create Date object (as local time)
+      const localDateTime = new Date(localDateTimeStr);
+
+      // Store the exact timestamp of when this form should open
+      form.value.schedule.openSubmissionUTC = localDateTime.toISOString();
+    }
+  }
+}
+
+// Update the close date/time function
+function saveTimezoneWithCloseDate() {
+  if (form.value.schedule.closeSubmissionDateTime) {
+    // Get the user's current timezone offset in minutes
+    const timezoneOffset = new Date().getTimezoneOffset();
+    // Store the timezone information in the form
+    form.value.schedule.timezoneOffset = timezoneOffset;
+
+    // If time is specified, create a full ISO date
+    if (form.value.schedule.closeSubmissionTime) {
+      // Create local date time string
+      const localDateTimeStr = `${form.value.schedule.closeSubmissionDateTime}T${form.value.schedule.closeSubmissionTime}`;
+
+      // Create Date object (as local time)
+      const localDateTime = new Date(localDateTimeStr);
+
+      // Store the exact timestamp of when this form should close
+      form.value.schedule.closeSubmissionUTC = localDateTime.toISOString();
+    }
+  }
+}
+
 function scheduleTypeChanged() {
   if (form.value.schedule.scheduleType === ScheduleType.MANUAL) {
     form.value.schedule.keepOpenForTerm = null;
@@ -71,6 +111,8 @@ function scheduleTypeChanged() {
     form.value.schedule.closingMessageEnabled = null;
     form.value.schedule.closingMessage = null;
     form.value.schedule.closeSubmissionDateTime = null;
+    form.value.schedule.closeSubmissionTime = null; // Clear time as well
+    form.value.schedule.closeSubmissionUTC = null; // Clear UTC timestamp
     form.value.schedule.repeatSubmission = {
       enabled: null,
       repeatUntil: null,
@@ -84,6 +126,7 @@ function scheduleTypeChanged() {
         intervalType: null,
       },
     };
+    showCloseTimeSelection.value = false; // Hide time selection
   }
   if (form.value.schedule.scheduleType === ScheduleType.CLOSINGDATE) {
     form.value.schedule.keepOpenForTerm = null;
@@ -99,10 +142,35 @@ function scheduleTypeChanged() {
   }
 }
 
+// Add watchers to detect if times are already set when loading forms
+watch(
+  () => form.value.schedule.openSubmissionTime,
+  (newValue) => {
+    if (newValue && newValue !== '00:00') {
+      showOpenTimeSelection.value = true;
+    }
+  },
+  { immediate: true }
+);
+
+watch(
+  () => form.value.schedule.closeSubmissionTime,
+  (newValue) => {
+    if (newValue && newValue !== '23:59') {
+      showCloseTimeSelection.value = true;
+    }
+  },
+  { immediate: true }
+);
+
 defineExpose({
   enableReminderDraw,
   openDateTypeChanged,
   scheduleTypeChanged,
+  saveTimezoneWithCloseDate,
+  saveTimezoneWithOpenDate,
+  showOpenTimeSelection,
+  showCloseTimeSelection,
 });
 </script>
 
@@ -133,6 +201,34 @@ defineExpose({
             <v-icon icon="mdi:mdi-calendar"></v-icon>
           </template>
         </v-text-field>
+
+        <!-- Add checkbox for open time selection -->
+        <v-checkbox
+          v-model="showOpenTimeSelection"
+          class="mt-1"
+          density="compact"
+          :label="$t('trans.formSettings.specifyOpenTime')"
+        ></v-checkbox>
+
+        <!-- Add expandable time input for open time -->
+        <v-expand-transition>
+          <div v-if="showOpenTimeSelection">
+            <v-text-field
+              v-model="form.schedule.openSubmissionTime"
+              type="time"
+              :placeholder="Time"
+              :label="$t('trans.formSettings.openTime')"
+              density="compact"
+              variant="outlined"
+              :lang="locale"
+              @change="saveTimezoneWithOpenDate"
+            >
+              <template v-if="!isRTL" #append>
+                <v-icon icon="mdi:mdi-clock-outline"></v-icon>
+              </template>
+            </v-text-field>
+          </div>
+        </v-expand-transition>
       </v-col>
 
       <v-col cols="12" md="12" class="p-0">
@@ -189,6 +285,7 @@ defineExpose({
           density="compact"
           variant="outlined"
           :rules="scheduleCloseDate"
+          @change="saveTimezoneWithCloseDate"
         >
           <template v-if="isRTL" #prepend-inner>
             <v-icon icon="mdi:mdi-calendar"></v-icon>
@@ -197,6 +294,34 @@ defineExpose({
             <v-icon icon="mdi:mdi-calendar"></v-icon>
           </template>
         </v-text-field>
+
+        <!-- Add checkbox for close time selection -->
+        <v-checkbox
+          v-model="showCloseTimeSelection"
+          class="mt-1"
+          density="compact"
+          :label="$t('trans.formSettings.specifyCloseTime')"
+        ></v-checkbox>
+
+        <!-- Add expandable time input for close time -->
+        <v-expand-transition>
+          <div v-if="showCloseTimeSelection">
+            <v-text-field
+              v-model="form.schedule.closeSubmissionTime"
+              type="time"
+              :placeholder="Time"
+              :label="$t('trans.formSettings.closeTime')"
+              density="compact"
+              variant="outlined"
+              :lang="locale"
+              @change="saveTimezoneWithCloseDate"
+            >
+              <template v-if="!isRTL" #append>
+                <v-icon icon="mdi:mdi-clock-outline"></v-icon>
+              </template>
+            </v-text-field>
+          </div>
+        </v-expand-transition>
       </v-col>
     </v-row>
 
@@ -298,10 +423,19 @@ defineExpose({
         <span :lang="locale" data-test="submission-schedule-text">
           {{ $t('trans.formSettings.submissionsOpenDateRange') }}
           <b>{{ form.schedule.openSubmissionDateTime }}</b>
+          <span v-if="form.schedule.openSubmissionTime">
+            {{ $t('trans.formSettings.at') }}
+            {{ form.schedule.openSubmissionTime }}</span
+          >
           {{ $t('trans.formSettings.to') }}
           <b>
             {{ form.schedule.closeSubmissionDateTime }}
           </b>
+          <span v-if="form.schedule.closeSubmissionTime">
+            {{ $t('trans.formSettings.at') }}
+            {{ form.schedule.closeSubmissionTime }}</span
+          >
+          <span v-else>{{ $t('trans.formSettings.closingTimeInfo') }}</span>
         </span>
 
         <span :lang="locale" data-test="late-submission-text">{{
