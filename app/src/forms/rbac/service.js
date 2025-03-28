@@ -301,12 +301,15 @@ const service = {
   // Verify if user is a form team member.
   isUserPartOfFormTeams: async (params) => {
     params = queryUtils.defaultActiveOnly(params);
+    console.log('params---->>', params);
+
     const items = await UserFormAccess.query()
       .modify('filterEmail', params.email)
       .modify('filterFormId', params.formId)
       .modify('filterActive', params.active)
       .modify('filterByAccess', params.idps, params.roles, params.permissions)
       .modify('orderDefault');
+    console.log('params---->>', items);
     if (Array.isArray(items) && items.length === 0) {
       return false;
     }
@@ -315,4 +318,3 @@ const service = {
 };
 
 module.exports = service;
-

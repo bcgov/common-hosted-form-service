@@ -322,10 +322,9 @@ defineExpose({
     <v-checkbox
       v-model="form.enableTeamMemberDraftShare"
       :disabled="!form.enableSubmitterDraft"
-      data-test="canUpdateStatusOfFormCheckbox"
+      data-test="enableTeamMemberDraftShare"
       hide-details="auto"
       class="my-0"
-      @update:model-value="enableTeamMemberDraftChanged"
     >
       <template #label>
         <span
