@@ -37,7 +37,7 @@ const { isRTL, form } = storeToRefs(useFormStore());
 
 onMounted(() => {
   resetDialog();
-  formStore.fetchForm(properties.formId);
+  formStore.fetchSubmission({ submissionId: properties.submissionId });
 });
 
 function displayDialog() {
@@ -62,16 +62,15 @@ async function requestReceipt() {
           });
           return;
         }
-      } else {
-        await formService.requestReceiptEmail(properties.submissionId, {
-          priority: priority.value,
-          to: to.value,
-        });
-        notificationStore.addNotification({
-          text: t('trans.requestReceipt.emailSent', { to: to.value }),
-          ...NotificationTypes.SUCCESS,
-        });
       }
+      await formService.requestReceiptEmail(properties.submissionId, {
+        priority: priority.value,
+        to: to.value,
+      });
+      notificationStore.addNotification({
+        text: t('trans.requestReceipt.emailSent', { to: to.value }),
+        ...NotificationTypes.SUCCESS,
+      });
     } catch (error) {
       notificationStore.addNotification({
         text: t('trans.requestReceipt.sendingEmailErrMsg'),

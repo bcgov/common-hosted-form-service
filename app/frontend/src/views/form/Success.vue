@@ -9,7 +9,6 @@ import { useFormStore } from '~/store/form';
 
 const { locale } = useI18n({ useScope: 'global' });
 
-
 defineProps({
   s: {
     type: String,
@@ -24,6 +23,7 @@ defineProps({
 const { email } = storeToRefs(useAuthStore());
 const { form, isRTL } = storeToRefs(useFormStore());
 </script>
+
 
 <template>
   <div>
@@ -53,7 +53,6 @@ const { form, isRTL } = storeToRefs(useFormStore());
               :email="email"
               :form-name="form.name"
               :submission-id="s"
-              :form-id="f"
             />
           </div>
           <hr />
