@@ -297,6 +297,22 @@ const service = {
   getIdentityProviders: (params) => {
     return idpService.getIdentityProviders(params.active);
   },
+
+  // Verify if user is a form team member.
+  isUserPartOfFormTeams: async (params) => {
+    let result = true;
+    params = queryUtils.defaultActiveOnly(params);
+    const items = await UserFormAccess.query()
+      .modify('filterEmail', params.email)
+      .modify('filterFormId', params.formId)
+      .modify('filterActive', params.active)
+      .modify('filterByAccess', params.idps, params.roles, params.permissions)
+      .modify('orderDefault');
+    if (Array.isArray(items) && items.length === 0) {
+      result = false;
+    }
+    return result;
+  },
 };
 
 module.exports = service;

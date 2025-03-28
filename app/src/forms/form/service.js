@@ -162,6 +162,7 @@ const service = {
         name: data.name,
         description: data.description,
         labels: data.labels ? data.labels : [],
+        enableTeamMemberDraftShare: data.enableTeamMemberDraftShare,
         showSubmissionConfirmation: data.showSubmissionConfirmation,
         sendSubmissionReceivedEmail: data.sendSubmissionReceivedEmail,
         submissionReceivedEmails: data.submissionReceivedEmails ? data.submissionReceivedEmails : [],
