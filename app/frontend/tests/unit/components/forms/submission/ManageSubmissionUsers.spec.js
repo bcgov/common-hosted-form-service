@@ -131,9 +131,6 @@ describe('ManageSubmissionUsers.vue', () => {
   });
 
   it('onChangeUserSearchInput should get the userSearchResults', async () => {
-    const consoleErrorSpy = vi
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
     const pinia = createTestingPinia({ stubActions: false });
     const idpStore = useIdpStore(pinia);
     setActivePinia(pinia);
@@ -150,24 +147,24 @@ describe('ManageSubmissionUsers.vue', () => {
 
     // no input returns nothing
     wrapper.vm.onChangeUserSearchInput();
+    expect(wrapper.vm.userSearchResults).toEqual([]);
 
-    // errors should be caught and console.error should be called
+    // errors should be caught and swallowed, no results
     getUsersSpy.mockImplementationOnce(async () => {
       throw new Error();
     });
     wrapper.vm.onChangeUserSearchInput('search');
-    await flushPromises();
-    expect(consoleErrorSpy).toHaveBeenCalledExactlyOnceWith(
-      'trans.manageSubmissionUsers.getUsersErrMsg'
-    );
-    consoleErrorSpy.mockReset();
-    getUsersSpy.mockReset();
+    expect(wrapper.vm.userSearchResults).toEqual([]);
 
+    await flushPromises();
+
+    getUsersSpy.mockReset();
     getUsersSpy.mockImplementation(async () => {
       return {
         data: ['something'],
       };
     });
+    wrapper.vm.onChangeUserSearchInput('search');
     expect(wrapper.vm.userSearchResults).toEqual([]);
 
     // idir means no teamMembershipConfig, getUsers should be called with just the search
@@ -186,10 +183,7 @@ describe('ManageSubmissionUsers.vue', () => {
       throw new Error();
     });
     wrapper.vm.onChangeUserSearchInput('jon');
-    expect(consoleErrorSpy).toHaveBeenCalledExactlyOnceWith(
-      'trans.manageSubmissionUsers.getUsersErrMsg'
-    );
-    consoleErrorSpy.mockReset();
+    expect(wrapper.vm.userSearchResults).toEqual([]);
     getUsersSpy.mockReset();
 
     // should throw an error if search input is not a valid email specified by teamMebershipConfig
@@ -197,10 +191,7 @@ describe('ManageSubmissionUsers.vue', () => {
       throw new Error();
     });
     wrapper.vm.onChangeUserSearchInput('john@email.');
-    expect(consoleErrorSpy).toHaveBeenCalledExactlyOnceWith(
-      'trans.manageSubmissionUsers.getUsersErrMsg'
-    );
-    consoleErrorSpy.mockReset();
+    expect(wrapper.vm.userSearchResults).toEqual([]);
     getUsersSpy.mockReset();
 
     // should return email in the params if it is a valid email

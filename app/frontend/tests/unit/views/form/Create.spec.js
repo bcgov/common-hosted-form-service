@@ -49,6 +49,10 @@ describe('Create.vue', () => {
             name: 'FormSettings',
             template: '<div class="form-settings-stub"><slot /></div>',
           },
+          FormProfile: {
+            name: 'FormProfile',
+            template: '<div class="form-profile-stub"><slot /></div>',
+          },
           BasePanel: {
             name: 'BasePanel',
             template: '<div class="base-panel-stub"><slot /></div>',
@@ -119,6 +123,10 @@ describe('Create.vue', () => {
             name: 'FormSettings',
             template: '<div class="form-settings-stub"><slot /></div>',
           },
+          FormProfile: {
+            name: 'FormProfile',
+            template: '<div class="form-profile-stub"><slot /></div>',
+          },
           BasePanel: {
             name: 'BasePanel',
             template: '<div class="base-panel-stub"><slot /></div>',
@@ -178,6 +186,10 @@ describe('Create.vue', () => {
           FormSettings: {
             name: 'FormSettings',
             template: '<div class="form-settings-stub"><slot /></div>',
+          },
+          FormProfile: {
+            name: 'FormProfile',
+            template: '<div class="form-profile-stub"><slot /></div>',
           },
           BasePanel: {
             name: 'BasePanel',
@@ -243,6 +255,10 @@ describe('Create.vue', () => {
           FormSettings: {
             name: 'FormSettings',
             template: '<div class="form-settings-stub"><slot /></div>',
+          },
+          FormProfile: {
+            name: 'FormProfile',
+            template: '<div class="form-profile-stub"><slot /></div>',
           },
           BasePanel: {
             name: 'BasePanel',

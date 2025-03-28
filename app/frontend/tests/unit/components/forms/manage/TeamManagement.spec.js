@@ -293,6 +293,12 @@ describe('TeamManagement.vue', () => {
     notificationStore.$reset();
     fetchFormSpy.mockReset();
     listRolesSpy.mockReset();
+
+    listRolesSpy.mockImplementation(async () => {
+      return {
+        data: ROLES,
+      };
+    });
   });
 
   it('renders', () => {
@@ -311,11 +317,6 @@ describe('TeamManagement.vue', () => {
     });
     getFormPermissionsForUserSpy.mockImplementationOnce(async () => {
       return [FormPermissions.TEAM_UPDATE];
-    });
-    listRolesSpy.mockImplementationOnce(async () => {
-      return {
-        data: ROLES,
-      };
     });
     getFormUsersSpy.mockImplementationOnce(async () => {
       return {
@@ -428,6 +429,15 @@ describe('TeamManagement.vue', () => {
         data: [IDIR_USER],
       };
     });
+
+    // don't include roles in this test, only testing DEFAULT_HEADERS
+    listRolesSpy.mockReset();
+    listRolesSpy.mockImplementationOnce(async () => {
+      return {
+        data: [],
+      };
+    });
+
     const wrapper = shallowMount(TeamManagement, {
       props: {
         formId: formId,
@@ -502,11 +512,6 @@ describe('TeamManagement.vue', () => {
   });
 
   it('getFormUsers should throw an error if the user can not manage the team', async () => {
-    listRolesSpy.mockImplementationOnce(async () => {
-      return {
-        data: ROLES,
-      };
-    });
     formStore.permissions = [];
     const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
     const getFormPermissionsForUserSpy = vi.spyOn(
@@ -624,11 +629,6 @@ describe('TeamManagement.vue', () => {
 
   it('disableRole returns false if the header is not in the IDPs roles', async () => {
     idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
-    listRolesSpy.mockImplementationOnce(async () => {
-      return {
-        data: ROLES,
-      };
-    });
     const idpStoreListRolesSpy = vi.spyOn(idpStore, 'listRoles');
     idpStoreListRolesSpy.mockImplementationOnce(() => {
       return [FormRoleCodes.OWNER];
@@ -704,11 +704,6 @@ describe('TeamManagement.vue', () => {
   });
 
   it('setUserForms should addNotification with detailed error if an error is thrown', async () => {
-    listRolesSpy.mockImplementationOnce(async () => {
-      return {
-        data: ROLES,
-      };
-    });
     idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
     const setUserFormsSpy = vi.spyOn(rbacService, 'setUserForms');
     setUserFormsSpy.mockImplementationOnce(async () => {
@@ -760,11 +755,6 @@ describe('TeamManagement.vue', () => {
   });
 
   it('setUserForms should addNotification if an error is thrown', async () => {
-    listRolesSpy.mockImplementationOnce(async () => {
-      return {
-        data: ROLES,
-      };
-    });
     idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
     const setUserFormsSpy = vi.spyOn(rbacService, 'setUserForms');
     setUserFormsSpy.mockImplementationOnce(async () => {
@@ -879,11 +869,6 @@ describe('TeamManagement.vue', () => {
   });
 
   it('addNewUsers will addNotification if user is already in the table', async () => {
-    listRolesSpy.mockImplementationOnce(async () => {
-      return {
-        data: ROLES,
-      };
-    });
     idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
     const getFormUsersSpy = vi.spyOn(rbacService, 'getFormUsers');
     getFormUsersSpy.mockImplementation(async () => {
@@ -920,11 +905,6 @@ describe('TeamManagement.vue', () => {
   });
 
   it('addNewUsers will add users to the table if they are not there using roles', async () => {
-    listRolesSpy.mockImplementationOnce(async () => {
-      return {
-        data: ROLES,
-      };
-    });
     formStore.permissions = [FormPermissions.TEAM_UPDATE];
     idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
     const setUserFormsSpy = vi.spyOn(rbacService, 'setUserForms');
@@ -973,11 +953,6 @@ describe('TeamManagement.vue', () => {
   });
 
   it('addNewUsers will add users to the table if they are not there', async () => {
-    listRolesSpy.mockImplementationOnce(async () => {
-      return {
-        data: ROLES,
-      };
-    });
     formStore.permissions = [FormPermissions.TEAM_UPDATE];
     idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
     const setUserFormsSpy = vi.spyOn(rbacService, 'setUserForms');
@@ -1018,11 +993,6 @@ describe('TeamManagement.vue', () => {
   });
 
   it('onShowColumnDialog will sort FILTER_HEADERS then set showColumnsDialog to true', async () => {
-    listRolesSpy.mockImplementationOnce(async () => {
-      return {
-        data: ROLES,
-      };
-    });
     formStore.permissions = [FormPermissions.TEAM_UPDATE];
     idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
     const setUserFormsSpy = vi.spyOn(rbacService, 'setUserForms');
@@ -1152,11 +1122,6 @@ describe('TeamManagement.vue', () => {
   });
 
   it('onRemoveClick will addNotification if there is only 1 user to remove', async () => {
-    listRolesSpy.mockImplementationOnce(async () => {
-      return {
-        data: ROLES,
-      };
-    });
     formStore.permissions = [FormPermissions.TEAM_UPDATE];
     idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
     const setUserFormsSpy = vi.spyOn(rbacService, 'setUserForms');
@@ -1197,11 +1162,6 @@ describe('TeamManagement.vue', () => {
   });
 
   it('onRemoveClick will set itemsToDelete', async () => {
-    listRolesSpy.mockImplementationOnce(async () => {
-      return {
-        data: ROLES,
-      };
-    });
     formStore.permissions = [FormPermissions.TEAM_UPDATE];
     idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
     const setUserFormsSpy = vi.spyOn(rbacService, 'setUserForms');
@@ -1247,11 +1207,6 @@ describe('TeamManagement.vue', () => {
   });
 
   it('onRemoveClick will set itemsToDelete to the item', async () => {
-    listRolesSpy.mockImplementationOnce(async () => {
-      return {
-        data: ROLES,
-      };
-    });
     formStore.permissions = [FormPermissions.TEAM_UPDATE];
     idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
     const setUserFormsSpy = vi.spyOn(rbacService, 'setUserForms');
@@ -1295,11 +1250,6 @@ describe('TeamManagement.vue', () => {
   });
 
   it('removeUser will call removeMultiUsers, getFormPermissionsForUser', async () => {
-    listRolesSpy.mockImplementationOnce(async () => {
-      return {
-        data: ROLES,
-      };
-    });
     formStore.permissions = [FormPermissions.TEAM_UPDATE];
     idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
     const setUserFormsSpy = vi.spyOn(rbacService, 'setUserForms');
@@ -1343,11 +1293,6 @@ describe('TeamManagement.vue', () => {
   });
 
   it('removeUser will addNotification with detailed message if an error occurs', async () => {
-    listRolesSpy.mockImplementationOnce(async () => {
-      return {
-        data: ROLES,
-      };
-    });
     formStore.permissions = [FormPermissions.TEAM_UPDATE];
     idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
     const setUserFormsSpy = vi.spyOn(rbacService, 'setUserForms');
@@ -1399,11 +1344,6 @@ describe('TeamManagement.vue', () => {
   });
 
   it('removeUser will addNotification if an error occurs', async () => {
-    listRolesSpy.mockImplementationOnce(async () => {
-      return {
-        data: ROLES,
-      };
-    });
     formStore.permissions = [FormPermissions.TEAM_UPDATE];
     idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
     const setUserFormsSpy = vi.spyOn(rbacService, 'setUserForms');
@@ -1449,11 +1389,6 @@ describe('TeamManagement.vue', () => {
   });
 
   it('updateFilter sets filterData and hides the columns dialog', async () => {
-    listRolesSpy.mockImplementationOnce(async () => {
-      return {
-        data: ROLES,
-      };
-    });
     formStore.permissions = [FormPermissions.TEAM_UPDATE];
     idpStore.providers = [IDIR, BCEIDBASIC, BCEIDBUSINESS, PUBLIC];
     const setUserFormsSpy = vi.spyOn(rbacService, 'setUserForms');
