@@ -24,7 +24,6 @@ const { email } = storeToRefs(useAuthStore());
 const { form, isRTL } = storeToRefs(useFormStore());
 </script>
 
-
 <template>
   <div>
     <FormViewer :submission-id="s" :read-only="true" display-title>
