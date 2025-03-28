@@ -206,7 +206,7 @@ defineExpose({
       </v-col>
     </v-row>
     <v-container v-if="form.eventStreamConfig.enabled">
-      <v-row class="pl-6 m-0">
+      <v-row class="pl-6 m-0" data-cy="enablePublicStreamRow">
         <v-col cols="12" md="6" class="pl-0 pr-0 pb-0">
           <v-checkbox
             v-model="form.eventStreamConfig.enablePublicStream"
@@ -224,7 +224,7 @@ defineExpose({
           </v-checkbox>
         </v-col>
       </v-row>
-      <v-row class="pl-6 m-0">
+      <v-row class="pl-6 m-0" data-cy="enablePrivateStreamRow">
         <v-col cols="12" md="6" class="pl-0 pr-0 pb-0">
           <v-checkbox
             v-model="form.eventStreamConfig.enablePrivateStream"
