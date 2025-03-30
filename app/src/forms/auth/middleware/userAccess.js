@@ -422,7 +422,6 @@ const hasSubmissionPermissions = (permissions) => {
       // access to all submissions for the form.
       if (req.currentUser) {
         const formFromCurrentUser = await _getForm(req.currentUser, submissionForm.form.id, false);
-
         // Do they have the submission permissions requested on this form?
         if (_hasAllPermissions(formFromCurrentUser?.permissions, permissions)) {
           req.formIdWithDeletePermission = submissionForm.form.id;
@@ -430,7 +429,20 @@ const hasSubmissionPermissions = (permissions) => {
 
           return;
         }
+        const users = await rbacService.getFormUsers({ userId: req.currentUser.id, formId: submissionForm.form.id });
+        //Users who have been removed from the form's user list in team management should no longer have access to its submissions."
+        if (Array.isArray(users) && users.length === 1) {
+          const [{ roles }] = users;
+          if (roles && roles.length === 0) {
+            throw new Problem(401, {
+              detail: 'You do not have access to this submission.',
+            });
+          }
+        }
       }
+
+      // If the current user has elevated permissions on the form, they may have
+      // access to all submissions for the form.
 
       // Deleted submissions are only accessible to users with the form
       // permissions above.

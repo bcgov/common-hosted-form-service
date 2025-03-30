@@ -114,7 +114,7 @@ async function addUser() {
     if (formSubmissionUsers.value.some((u) => u.id === id)) {
       notificationStore.addNotification({
         ...NotificationTypes.WARNING,
-        text: t('trans.manageSubmissionUsers.remove', {
+        text: t('trans.manageSubmissionUsers.userExistInListMsg', {
           username: userSearchSelection.value.username,
         }),
       });
