@@ -431,6 +431,7 @@ const hasSubmissionPermissions = (permissions) => {
         }
         const users = await rbacService.getFormUsers({ userId: req.currentUser.id, formId: submissionForm.form.id });
         //Users who have been removed from the form's user list in team management should no longer have access to its submissions."
+        //
         if (Array.isArray(users) && users.length === 1) {
           const [{ roles }] = users;
           if (roles && roles.length === 0) {
