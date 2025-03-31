@@ -97,11 +97,11 @@
     "formAccess": "フォームアクセス",
     "info": "このフォームを使用して、一般の関心のあるトピックについて一般の人々から情報を収集する場合は、GCPE に連絡して、あなたの取り組みを掲載できるようにする必要があります。",
     "important": "重要",
-    "idimNotifyA": "IDIM (IDIM) チームに電子メールで通知する必要があります。",
-    "idimNotifyB": "BCeID を利用してフォーム送信者の身元を確認するという意図。",
-    "referenceGuideA": "ご参照ください。",
+    "idimNotifyA": "あなたは<strong>必ず</strong>Identity Information Management（IDIM）チームにメールで通知する必要があります",
+    "idimNotifyB": "BCeID または BC Services Card を使用してフォーム送信者の身元を確認する意図を伝えてください。",
+    "referenceGuideA": "詳細については、",
     "referenceGuideB": "ユーザーガイド",
-    "referenceGuideC": "詳細については",
+    "referenceGuideC": "をご参照ください",
     "specificTeamMembers": "特定のチームメンバー",
     "teamMemberTooltip": "このフォームを作成した後、チーム管理設定からチームメンバーを追加してください。",
     "formFunctionality": "フォーム機能",
@@ -490,13 +490,15 @@
     "download": "ダウンロード"
   },
   "formDisclaimer": {
-    "disclaimerAndStatement": "フォームデザイナーに対する免責事項と責任声明:",
-    "privacyLaw": "個人を特定できる情報の収集、使用、開示を規定するプライバシー法を遵守するのはあなたの責任です。",
-    "disclosure": "このフォーム デザイナー ツールへのアクセスは、本質的に個人を特定できる情報を収集、使用、または開示する許可を与えるものではありません。",
-    "consent": "法律で義務付けられているように情報を収集することに同意を得るのはあなたの責任です。",
-    "formIntention": "フォームを公開または配布する前に、フォームの意図について担当者と話し合う必要があります。",
-    "privacyOfficer": "省のプライバシー担当官",
-    "assement": "必要に応じて評価を完了します。"
+    "disclaimerAndStatement": "フォームデザイナー向けの免責事項および責任声明:",
+    "privacyLaw": "個人情報の収集、使用、および開示を管理するプライバシー法を遵守するのはあなたの責任です。",
+    "disclosure": "このフォームデザインツールへのアクセスは、個人情報の収集、使用、または開示の許可を自動的に付与するものではありません。",
+    "consent": "法律で要求される情報を収集するための同意を得るのはあなたの責任です。",
+    "formIntention": "フォームを公開または配布する前に、フォームの意図について",
+    "privacyOfficer": "省庁のプライバシー担当官",
+    "assement": "と相談し、必要な評価を完了する必要があります。",
+    "idimDisclaimerA": "BCeID または BC Services Card をフォームアクセスオプションとして使用する場合、<strong>必ず</strong>Identity Information Management（IDIM）チームにメールで通知する必要があります",
+    "idimDisclaimerB": "BCeID または BC Services Card を使用してフォーム送信者の身元を確認する意図を伝えてください。データを収集する前に、これらの追加のオンボーディング要件を完了するのはあなたの責任です。"
   },
   "requestReceipt": {
     "emailPriority": "電子メールの優先順位",
