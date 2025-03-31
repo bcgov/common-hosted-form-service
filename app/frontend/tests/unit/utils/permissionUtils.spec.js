@@ -198,6 +198,7 @@ describe('preFlightAuth', () => {
 
       throw error;
     });
+    alertNavigateSpy.mockImplementation(() => {});
 
     await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
 
@@ -223,6 +224,7 @@ describe('preFlightAuth', () => {
 
       throw error;
     });
+    alertNavigateSpy.mockImplementation(() => {});
 
     await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
 
@@ -278,6 +280,7 @@ describe('preFlightAuth', () => {
 
       throw error;
     });
+    getSubmissionOptionsSpy.mockImplementation(() => {});
 
     await permissionUtils.preFlightAuth({ submissionId: 's' }, mockNext);
 
