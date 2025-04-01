@@ -87,6 +87,9 @@
         "tokenEndpoint": "SC_CS_CDOGS_TOKEN_ENDPOINT",
         "clientId": "SC_CS_CDOGS_CLIENT_ID",
         "clientSecret": "SC_CS_CDOGS_CLIENT_SECRET"
+      },
+      "tenantManagementService": {
+        "endpoint": "SC_CS_TMS_ENDPOINT"
       }
     }
   }
