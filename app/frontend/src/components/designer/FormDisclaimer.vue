@@ -25,6 +25,15 @@ const { isRTL } = storeToRefs(useFormStore());
         {{ $t('trans.formDisclaimer.consent') }}
       </li>
       <li :lang="locale">
+        <span
+          :lang="locale"
+          v-html="$t('trans.formDisclaimer.idimDisclaimerA')"
+        ></span
+        >&nbsp;(<a href="mailto:IDIM.Consulting@gov.bc.ca"
+          >IDIM.Consulting@gov.bc.ca</a
+        >) {{ $t('trans.formDisclaimer.idimDisclaimerB') }}
+      </li>
+      <li :lang="locale">
         {{ $t('trans.formDisclaimer.formIntention') }}
         <a
           href="https://www2.gov.bc.ca/gov/content/governments/services-for-government/information-management-technology/privacy/resources/privacy-officers"

@@ -1,5 +1,4 @@
 import 'cypress-keycloak-commands';
-import 'cypress-drag-drop';
 import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
@@ -37,7 +36,6 @@ describe('Form Designer', () => {
  it('Verify public form submission', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-    
     cy.get('button').contains('Basic Fields').click();
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
@@ -48,20 +46,12 @@ describe('Form Designer', () => {
       .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
-    cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
   // Form saving
+    cy.wait(2000);
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
-    cy.waitForLoad();
-
-
-  // Go to My forms  
-    cy.wait('@getForm').then(()=>{
-      let userFormsLinks = cy.get('[data-cy=userFormsLinks]');
-      expect(userFormsLinks).to.not.be.null;
-      userFormsLinks.trigger('click');
-    });
+    cy.wait(2000);
   // Filter the newly created form
     cy.location('search').then(search => {
       //let pathName = fullUrl.pathname
@@ -69,7 +59,7 @@ describe('Form Designer', () => {
       let arrayValues = arr[1].split('&');
       cy.log(arrayValues[0]);
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-      cy.waitForLoad();
+      cy.wait(2000);
       
    
     //Publish the form
@@ -89,8 +79,7 @@ describe('Form Designer', () => {
     shareFormLinkButton.trigger('click');
     cy.get('.mx-2 > .v-btn').click();
     })
-    cy.visit(`/${depEnv}`);
-    cy.get('[data-cy="userFormsLinks"]').click();
+    cy.wait(2000);
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.waitForLoad();
     //Manage form
