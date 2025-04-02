@@ -867,6 +867,8 @@ describe('hasSubmissionPermissions', () => {
         form: { id: formId },
         submission: { deleted: true, id: formSubmissionId },
       });
+      rbacService.getFormUsers = jest.fn().mockReturnValue();
+      rbacService.getFormUsers.mockReturnValueOnce([]);
       const req = getMockReq({
         currentUser: {},
         params: {
@@ -889,6 +891,8 @@ describe('hasSubmissionPermissions', () => {
         form: { id: formId },
         submission: { deleted: true, id: formSubmissionId },
       });
+      rbacService.getFormUsers = jest.fn().mockReturnValue();
+      rbacService.getFormUsers.mockReturnValueOnce([]);
       const req = getMockReq({
         currentUser: {},
         params: {
@@ -923,6 +927,9 @@ describe('hasSubmissionPermissions', () => {
           formSubmissionId: formSubmissionId,
         },
       });
+
+      rbacService.getFormUsers = jest.fn().mockReturnValue();
+      rbacService.getFormUsers.mockReturnValueOnce([]);
       const { res, next } = getMockRes();
 
       await hasSubmissionPermissions(['submission_read'])(req, res, next);
@@ -951,6 +958,9 @@ describe('hasSubmissionPermissions', () => {
           formSubmissionId: formSubmissionId,
         },
       });
+
+      rbacService.getFormUsers = jest.fn().mockReturnValue();
+      rbacService.getFormUsers.mockReturnValueOnce([]);
       const { res, next } = getMockRes();
 
       await hasSubmissionPermissions(['submission_read', 'submission_update'])(req, res, next);
