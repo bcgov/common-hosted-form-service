@@ -22,6 +22,7 @@ interface MapServiceOptions {
   mapContainer: HTMLElement;
   center: [number, number]; // Ensure center is a tuple with exactly two elements
   drawOptions: any;
+  drawControl:any;
   form: HTMLCollectionOf<Element>;
   numPoints: number;
   defaultZoom?: number;
@@ -42,7 +43,7 @@ class MapService {
   defaultFeatures;
 
   async initialize(options) {
-      const { map, drawnItems, drawControl } = options;
+      const { map, drawnItems, drawControl } = await this.initializeMap(options);
       this.map = map;
       this.drawnItems = drawnItems;
       this.drawControl = drawControl; // Store the draw control globally
