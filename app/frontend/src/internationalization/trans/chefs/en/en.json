@@ -159,8 +159,8 @@
     "formAccess": "Form Access",
     "info": "If you will be using this form to gather information from the general public on topics that are of general interest to the public, you are required to contact the GCPE so that your engagement can be listed on",
     "important": "IMPORTANT",
-    "idimNotifyA": "You must notify the Identity Information Management (IDIM) team by email",
-    "idimNotifyB": "your intent to leverage BCeID to verify the identities of your form submitters.",
+    "idimNotifyA": "You <strong>MUST</strong> notify the Identity Information Management (IDIM) team by email",
+    "idimNotifyB": "your intent to leverage BCeID or BC Services Card to verify the identities of your form submitters.",
     "referenceGuideA": "Please reference our",
     "referenceGuideB": "user guide",
     "referenceGuideC": "for more details",
@@ -241,6 +241,9 @@
     "eventStreamMessage": "Event Stream Service will publish notifications about form publishing and submissions. The underlying technology is NATS.io which allows consumers to subscribe or pull the event messages and process them in external systems. Private messages will contain encrypted payloads with the key configured here.",
     "natsConfiguration": "NATS Configuration and Message Metadata",
     "publishConfiguration": "Event Publishing Configuration",
+    "essAccountName": "ESS Account Name",
+    "essAccountApproved": "ESS Account approved",
+    "essAccountNotApproved": "ESS Account unknown or not approved",
     "enablePublicStream": "Enable Public Stream",
     "enablePrivateStream": "Enable Private Stream",
     "encryptionKeyAlgorithm": "Encryption Key Algorithm",
@@ -570,7 +573,9 @@
     "consent": "It is your responsibility to obtain consent to collect information as required by law.",
     "formIntention": "Before publishing or distributing your form you are required to discuss the intention of the form with your",
     "privacyOfficer": "Ministry Privacy Officer",
-    "assement": "and to complete assessments as required."
+    "assement": "and to complete assessments as required.",
+    "idimDisclaimerA": "If you use BCeID or BC Services Card as form access options, you <strong>MUST</strong> notify the Identity Information Management (IDIM) team by email",
+    "idimDisclaimerB": "your intent to leverage BCeID or BC Services Card to verify the identities of your form submitters. It is your responsibility to complete theses additional onboarding requirements before collecting data."
   },
   "requestReceipt": {
     "emailPriority": "Email Priority",
