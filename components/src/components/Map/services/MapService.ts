@@ -42,7 +42,7 @@ class MapService {
   defaultFeatures;
 
   async initialize(options) {
-      const { map, drawnItems, drawControl } = this.initializeMap(options);
+      const { map, drawnItems, drawControl } = options;
       this.map = map;
       this.drawnItems = drawnItems;
       this.drawControl = drawControl; // Store the draw control globally
