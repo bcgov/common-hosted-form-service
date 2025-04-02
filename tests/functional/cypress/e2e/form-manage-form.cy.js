@@ -159,16 +159,11 @@ describe('Form Designer', () => {
         cy.get('[data-test="text-apiKeyHeader"]').type('header');
         cy.get('[data-test="text-apiKey"]').type('keyvalue');
       });
-      cy.get('input[type="checkbox"]').then($el => {
-          const user_apikey=$el[13];
-          const user_info=$el[14];
-          cy.get(user_info).click();
-          cy.get(user_apikey).click();
-          cy.get('[data-test="continue-btn-continue"]').should('be.enabled');
-          cy.get('[data-test="continue-btn-cancel"]').should('be.enabled');
-          cy.get('[data-test="continue-btn-continue"]').click();
-      })
-          
+      cy.get('span').contains('Send API Key').click();
+      cy.get('span').contains('Send User Information').click();
+      cy.get('[data-test="continue-btn-continue"]').should('be.enabled');
+      cy.get('[data-test="continue-btn-cancel"]').should('be.enabled');
+      cy.get('[data-test="continue-btn-continue"]').click(); 
       cy.get('.v-data-table__tbody > .v-data-table__tr > :nth-child(3)').contains('Submitted');
       cy.get(':nth-child(1) > .v-btn > .v-btn__content > .mdi-pencil').click();
       cy.get('span').contains('Submitted').should('exist');
