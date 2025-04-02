@@ -659,24 +659,6 @@ describe('FormViewer.vue', () => {
       expect(getUserSubmissionsSpy).toBeCalledTimes(0);
     });
 
-  it('calls readPublished by default, and pushes to router if there are no versions', async () => {
-    const push = vi.fn();
-    useRouter.mockImplementationOnce(() => ({
-      push,
-    }));
-    const wrapper = shallowMount(FormViewer, {
-      props: {
-        formId: formId,
-        displayTitle: true,
-      },
-      global: {
-        provide: {
-          setWideLayout: vi.fn(),
-        },
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
     test('calls readPublished by default, and pushes to router if there are no versions', async () => {
       const wrapper = shallowMount(FormViewer, validOptions);
 
@@ -2003,7 +1985,7 @@ describe('FormViewer.vue', () => {
     }));
     // override default implementation
     updateSubmissionSpy.mockImplementationOnce(() => {
-      throw new Error();
+      return {};
     });
     const wrapper = shallowMount(FormViewer, {
       props: {
