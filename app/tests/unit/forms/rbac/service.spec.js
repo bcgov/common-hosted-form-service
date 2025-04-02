@@ -1,6 +1,6 @@
 const service = require('../../../../src/forms/rbac/service');
 const authService = require('../../../../src/forms/auth/service');
-const { UserFormAccess } = require('~/forms/common/models');
+
 jest.mock('~/forms/common/models');
 
 afterEach(() => {
@@ -99,82 +99,5 @@ describe('getCurrentUserForms', () => {
     expect(result).toMatchObject([]);
     expect(authService.getUserForms).toBeCalledWith(userInfo, { ...params, active: true }); // current user, params + active
     expect(authService.filterForms).toBeCalledWith(userInfo, [], []); // current user, forms, no access level filters
-  });
-});
-
-describe('isUserPartOfFormTeams', () => {
-  let modifyMock;
-
-  const params = {
-    formId: '3d338420-b272-4b4b-8b08-756ed5b1576c',
-    email: 'test@gg.com',
-    roles: '*',
-    active: true,
-  };
-
-  beforeEach(() => {
-    modifyMock = jest.fn().mockReturnThis();
-
-    UserFormAccess.query = jest.fn().mockReturnValue({
-      modify: modifyMock,
-      then: (cb) => cb([]), // We'll override this in each test if needed
-    });
-  });
-
-  it('should return true if user exists as a form member', async () => {
-    const fakeFormMember = [
-      {
-        userId: 'b7e2c5f3-0e77-4dc3-9a6e-d20bbdaf31c8',
-        idpUserId: 'A1F47C98E5B1447D91C8EAB6237D0F2B',
-        username: 'AXIWODY',
-        fullName: 'XT:Bob, Barb X WLRS:IN',
-        firstName: 'Bob',
-        lastName: 'Barb',
-        email: 'test@gg.com',
-        formId: 'e9b75a12-4f3a-4f97-a6b3-39d82c7e91f4',
-        formName: 'CanShareDraft',
-        labels: [],
-        user_idpCode: 'idir',
-        identityProviders: [],
-        form_login_required: [],
-        idps: [],
-        active: true,
-        formVersionId: 'f4a9d3c1-8e6b-4e5a-91d7-3c8e0b2fa781',
-        version: 1,
-        roles: ['form_submitter'],
-        permissions: ['document_template_read', 'form_read', 'submission_create'],
-        published: true,
-        versionUpdatedAt: '2025-03-24T00:46:26.895Z',
-        formDescription: '',
-      },
-    ];
-
-    UserFormAccess.query = jest.fn(() => ({
-      modify: modifyMock,
-      then: (cb) => cb(fakeFormMember),
-    }));
-
-    const result = await service.isUserPartOfFormTeams(params);
-    expect(result).toBe(fakeFormMember);
-    expect(UserFormAccess.query).toHaveBeenCalled();
-    expect(modifyMock).toHaveBeenCalledWith('filterEmail', params.email);
-    expect(modifyMock).toHaveBeenCalledWith('filterFormId', params.formId);
-    expect(modifyMock).toHaveBeenCalledWith('filterByAccess', params.idps, params.roles, params.permissions);
-    expect(modifyMock).toHaveBeenCalledWith('orderDefault');
-  });
-
-  it('should return false if user does not exist as a form member', async () => {
-    UserFormAccess.query = jest.fn(() => ({
-      modify: modifyMock,
-      then: (cb) => cb([]),
-    }));
-
-    const result = await service.isUserPartOfFormTeams(params);
-    expect(result).toEqual([]);
-    expect(UserFormAccess.query).toHaveBeenCalled();
-    expect(modifyMock).toHaveBeenCalledWith('filterEmail', params.email);
-    expect(modifyMock).toHaveBeenCalledWith('filterFormId', params.formId);
-    expect(modifyMock).toHaveBeenCalledWith('filterByAccess', params.idps, params.roles, params.permissions);
-    expect(modifyMock).toHaveBeenCalledWith('orderDefault');
   });
 });

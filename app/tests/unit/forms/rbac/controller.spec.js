@@ -98,11 +98,11 @@ describe('controller.isUserPartOfFormTeams', () => {
 
   it('responds with 200 and the service result', async () => {
     const mockResult = true;
-    service.isUserPartOfFormTeams.mockResolvedValue(mockResult);
+    service.getFormUsers.mockResolvedValue(mockResult);
 
     await controller.isUserPartOfFormTeams(req, res, next);
 
-    expect(service.isUserPartOfFormTeams).toHaveBeenCalledWith(req.query);
+    expect(service.getFormUsers).toHaveBeenCalledWith(req.query);
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(mockResult);
     expect(next).not.toHaveBeenCalled();
@@ -110,7 +110,7 @@ describe('controller.isUserPartOfFormTeams', () => {
 
   it('calls next with error on failure', async () => {
     const error = new Error('Oops');
-    service.isUserPartOfFormTeams.mockRejectedValue(error);
+    service.getFormUsers.mockRejectedValue(error);
 
     await controller.isUserPartOfFormTeams(req, res, next);
 

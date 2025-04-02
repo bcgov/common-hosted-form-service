@@ -143,7 +143,7 @@ module.exports = {
   isUserPartOfFormTeams: async (req, res, next) => {
     let result = true;
     try {
-      const response = await service.isUserPartOfFormTeams(req.query);
+      const response = await service.getFormUsers(req.query);
       if (Array.isArray(response) && response.length === 0) {
         result = false;
       }
