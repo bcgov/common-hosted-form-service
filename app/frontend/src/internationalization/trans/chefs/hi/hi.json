@@ -1210,5 +1210,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "आप उन उपयोगकर्ताओं के साथ ड्राफ्ट साझा नहीं कर सकते जिन्हें फ़ॉर्म में नहीं जोड़ा गया है। उन्हें जोड़ने के लिए कृपया व्यवस्थापक से संपर्क करें।",
+    "shareDraftMessage":"ड्राफ़्ट को केवल फ़ॉर्म टीम के सदस्यों के साथ साझा करें"
   }
 }

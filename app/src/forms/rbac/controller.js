@@ -140,4 +140,16 @@ module.exports = {
       next(error);
     }
   },
+  isUserPartOfFormTeams: async (req, res, next) => {
+    let result = true;
+    try {
+      const response = await service.getFormUsers(req.query);
+      if (Array.isArray(response) && response.length === 0) {
+        result = false;
+      }
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  },
 };

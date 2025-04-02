@@ -1210,5 +1210,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "Ви не можете поділитися чернеткою з користувачами, які не були додані до форми. Щоб додати їх, зверніться до адміністратора.",
+    "shareDraftMessage":"Діліться чернеткою лише з членами команди форми"
   }
 }
