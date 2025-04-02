@@ -122,7 +122,7 @@ async function addUser() {
       if (formUsersResponse && !formUsersResponse.data) {
         notificationStore.addNotification({
           ...NotificationTypes.ERROR,
-          text: `You can't share the draft with users who haven't been added to the form. Please contact the admin to add them.`,
+          text: t('trans.canShareDraft.canShareMessage'),
         });
         return;
       }

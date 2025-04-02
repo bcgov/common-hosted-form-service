@@ -167,7 +167,7 @@ describe('FormFunctionalitySettings.vue', () => {
     );
     expect(wrapper.text()).toMatch('trans.formSettings.allowEventSubscription');
     expect(wrapper.text()).toMatch('trans.formSettings.wideFormLayout');
-    expect(wrapper.text()).toMatch('Share draft with form team members only');
+    expect(wrapper.text()).toMatch('trans.canShareDraft.shareDraftMessage');
   });
 
   it('submitters can not upload files if drafts are disabled', async () => {

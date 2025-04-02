@@ -330,7 +330,7 @@ defineExpose({
         <span
           :class="{ 'mr-2': isRTL }"
           :lang="locale"
-          v-html="'Share draft with form team members only'"
+          v-html="$t('trans.canShareDraft.shareDraftMessage')"
         ></span>
       </template>
     </v-checkbox>

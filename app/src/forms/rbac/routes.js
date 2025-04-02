@@ -52,7 +52,7 @@ routes.delete('/users', hasFormPermissions([P.TEAM_UPDATE]), hasFormRoles([R.OWN
   await controller.removeMultiUsers(req, res, next);
 });
 
-routes.get('/form/user', hasFormPermissions([P.SUBMISSION_CREATE, P.SUBMISSION_DELETE, P.SUBMISSION_READ, P.SUBMISSION_REVIEW, P.SUBMISSION_REVIEW]), async (req, res, next) => {
+routes.get('/form/user', hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.isUserPartOfFormTeams(req, res, next);
 });
 

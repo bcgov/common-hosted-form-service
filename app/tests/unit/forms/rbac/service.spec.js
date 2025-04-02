@@ -155,7 +155,7 @@ describe('isUserPartOfFormTeams', () => {
     }));
 
     const result = await service.isUserPartOfFormTeams(params);
-    expect(result).toBe(true);
+    expect(result).toBe(fakeFormMember);
     expect(UserFormAccess.query).toHaveBeenCalled();
     expect(modifyMock).toHaveBeenCalledWith('filterEmail', params.email);
     expect(modifyMock).toHaveBeenCalledWith('filterFormId', params.formId);
@@ -170,7 +170,7 @@ describe('isUserPartOfFormTeams', () => {
     }));
 
     const result = await service.isUserPartOfFormTeams(params);
-    expect(result).toBe(false);
+    expect(result).toEqual([]);
     expect(UserFormAccess.query).toHaveBeenCalled();
     expect(modifyMock).toHaveBeenCalledWith('filterEmail', params.email);
     expect(modifyMock).toHaveBeenCalledWith('filterFormId', params.formId);
