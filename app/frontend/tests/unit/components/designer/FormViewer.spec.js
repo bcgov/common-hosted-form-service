@@ -775,7 +775,7 @@ describe('FormViewer.vue', () => {
     });
   });
 
-  it('toggleBlock will set the block variable to true or false', async () => {
+  it('isProcessingMultiUpload will set the block variable to true or false', async () => {
     const wrapper = shallowMount(FormViewer, {
       props: {
         formId: formId,
@@ -792,9 +792,9 @@ describe('FormViewer.vue', () => {
 
     await flushPromises();
 
-    wrapper.vm.toggleBlock(true);
+    wrapper.vm.isProcessingMultiUpload(true);
     expect(wrapper.vm.block).toBeTruthy();
-    wrapper.vm.toggleBlock(false);
+    wrapper.vm.isProcessingMultiUpload(false);
     expect(wrapper.vm.block).toBeFalsy();
   });
 
