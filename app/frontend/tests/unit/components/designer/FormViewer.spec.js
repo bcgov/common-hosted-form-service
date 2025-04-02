@@ -3,7 +3,7 @@
 import { createTestingPinia } from '@pinia/testing';
 import { setActivePinia } from 'pinia';
 import { flushPromises, shallowMount } from '@vue/test-utils';
-import { beforeEach, expect, vi } from 'vitest';
+import { beforeEach, describe, expect, vi } from 'vitest';
 import { useRouter } from 'vue-router';
 import { nextTick, ref } from 'vue';
 
@@ -65,6 +65,38 @@ describe('FormViewer.vue', () => {
   const getDispositionSpy = vi.spyOn(transformUtils, 'getDisposition');
   const createSubmissionSpy = vi.spyOn(formService, 'createSubmission');
   const updateSubmissionSpy = vi.spyOn(formService, 'updateSubmission');
+
+  const validOptions = {
+    props: {
+      formId: formId,
+      displayTitle: true,
+    },
+    global: {
+      provide: {
+        setWideLayout: vi.fn(),
+      },
+      plugins: [pinia],
+      stubs: STUBS,
+    },
+  };
+  const validOptionsWithDraftId = {
+    props: {
+      ...validOptions.props,
+      draftId: '123',
+    },
+    global: {
+      ...validOptions.global,
+    },
+  };
+  const validOptionsWithVersionId = {
+    props: {
+      ...validOptions.props,
+      versionId: '123',
+    },
+    global: {
+      ...validOptions.global,
+    },
+  };
 
   beforeEach(() => {
     appStore.$reset();
@@ -601,256 +633,146 @@ describe('FormViewer.vue', () => {
     await wrapper.vm.getFormData();
   });
 
-  it('calls readPublished by default', async () => {
+  describe('getFormSchema', () => {
     const push = vi.fn();
-    useRouter.mockImplementationOnce(() => ({
-      push,
-    }));
-    const wrapper = shallowMount(FormViewer, {
-      props: {
-        formId: formId,
-        displayTitle: true,
-      },
-      global: {
-        provide: {
-          setWideLayout: vi.fn(),
-        },
-        plugins: [pinia],
-        stubs: STUBS,
-      },
+    beforeEach(() => {
+      useRouter.mockImplementationOnce(() => ({
+        push,
+      }));
+    });
+    test('calls readPublished by default', async () => {
+      const wrapper = shallowMount(FormViewer, validOptions);
+
+      await flushPromises();
+
+      readPublishedSpy.mockReset();
+
+      readPublishedSpy.mockImplementationOnce(() => {
+        return {};
+      });
+
+      await wrapper.vm.getFormSchema();
+
+      expect(readPublishedSpy).toBeCalledTimes(1);
+      expect(readVersionSpy).toBeCalledTimes(0);
+      expect(readDraftSpy).toBeCalledTimes(0);
+      expect(getUserSubmissionsSpy).toBeCalledTimes(0);
     });
 
-    await flushPromises();
+    test('calls readPublished by default, and pushes to router if there are no versions', async () => {
+      const wrapper = shallowMount(FormViewer, validOptions);
 
-    readPublishedSpy.mockReset();
-    addNotificationSpy.mockReset();
+      await flushPromises();
 
-    readPublishedSpy.mockImplementationOnce(() => {
-      return {};
+      readPublishedSpy.mockReset();
+
+      readPublishedSpy.mockImplementationOnce(() => {
+        return {};
+      });
+
+      await wrapper.vm.getFormSchema();
+
+      expect(push).toBeCalledTimes(1);
+      expect(readPublishedSpy).toBeCalledTimes(1);
     });
+    test('calls readVersion if there is a versionId', async () => {
+      const wrapper = shallowMount(FormViewer, validOptionsWithVersionId);
 
-    await wrapper.vm.getFormSchema();
+      await flushPromises();
 
-    expect(readPublishedSpy).toBeCalledTimes(1);
-    expect(readVersionSpy).toBeCalledTimes(0);
-    expect(readDraftSpy).toBeCalledTimes(0);
-    expect(getUserSubmissionsSpy).toBeCalledTimes(0);
-  });
+      readVersionSpy.mockReset();
+      addNotificationSpy.mockReset();
 
-  it('calls readPublished by default, and pushes to router if there are no versions', async () => {
-    const push = vi.fn();
-    useRouter.mockImplementationOnce(() => ({
-      push,
-    }));
-    const wrapper = shallowMount(FormViewer, {
-      props: {
-        formId: formId,
-        displayTitle: true,
-      },
-      global: {
-        provide: {
-          setWideLayout: vi.fn(),
-        },
-        plugins: [pinia],
-        stubs: STUBS,
-      },
+      readVersionSpy.mockImplementationOnce(() => {
+        return {
+          data: {
+            schema: {},
+          },
+        };
+      });
+
+      await wrapper.vm.getFormSchema();
+
+      expect(readVersionSpy).toBeCalledTimes(1);
+      expect(addNotificationSpy).toBeCalledTimes(0);
     });
+    test('readVersion will throw an error if the response does not contain a schema', async () => {
+      const wrapper = shallowMount(FormViewer, validOptionsWithVersionId);
 
-    await flushPromises();
+      await flushPromises();
 
-    readPublishedSpy.mockReset();
-    addNotificationSpy.mockReset();
+      readVersionSpy.mockReset();
+      addNotificationSpy.mockReset();
 
-    readPublishedSpy.mockImplementationOnce(() => {
-      return {};
+      readVersionSpy.mockImplementationOnce(() => {
+        return {};
+      });
+
+      await wrapper.vm.getFormSchema();
+
+      expect(readVersionSpy).toBeCalledTimes(1);
+      expect(addNotificationSpy).toBeCalledTimes(1);
     });
+    test('calls readDraft if there is a draftId', async () => {
+      const wrapper = shallowMount(FormViewer, validOptionsWithDraftId);
 
-    await wrapper.vm.getFormSchema();
+      await flushPromises();
 
-    expect(push).toBeCalledTimes(1);
-    expect(readPublishedSpy).toBeCalledTimes(1);
-    expect(readVersionSpy).toBeCalledTimes(0);
-    expect(readDraftSpy).toBeCalledTimes(0);
-    expect(getUserSubmissionsSpy).toBeCalledTimes(0);
-    expect(addNotificationSpy).toBeCalledTimes(0);
-  });
-  it('calls readVersion if there is a versionId', async () => {
-    const wrapper = shallowMount(FormViewer, {
-      props: {
-        formId: formId,
-        displayTitle: true,
-        versionId: '123',
-      },
-      global: {
-        provide: {
-          setWideLayout: vi.fn(),
-        },
-        plugins: [pinia],
-        stubs: STUBS,
-      },
+      readDraftSpy.mockReset();
+      addNotificationSpy.mockReset();
+
+      readDraftSpy.mockImplementationOnce(() => {
+        return {
+          data: {
+            schema: {},
+          },
+        };
+      });
+
+      await wrapper.vm.getFormSchema();
+
+      expect(readDraftSpy).toBeCalledTimes(1);
+      expect(addNotificationSpy).toBeCalledTimes(0);
     });
+    test('readDraft will throw an error if the response does not contain a schema', async () => {
+      const wrapper = shallowMount(FormViewer, validOptionsWithDraftId);
 
-    await flushPromises();
+      await flushPromises();
 
-    readVersionSpy.mockReset();
-    addNotificationSpy.mockReset();
+      readDraftSpy.mockReset();
+      addNotificationSpy.mockReset();
 
-    readVersionSpy.mockImplementationOnce(() => {
-      return {
-        data: {
-          schema: {},
-        },
-      };
+      readDraftSpy.mockImplementationOnce(() => {
+        return {};
+      });
+
+      await wrapper.vm.getFormSchema();
+
+      expect(readDraftSpy).toBeCalledTimes(1);
+      expect(addNotificationSpy).toBeCalledTimes(1);
     });
+    test('if the error response is a 401 then it will set isAuthorized to false', async () => {
+      const wrapper = shallowMount(FormViewer, validOptionsWithDraftId);
 
-    await wrapper.vm.getFormSchema();
+      await flushPromises();
 
-    expect(readPublishedSpy).toBeCalledTimes(0);
-    expect(readVersionSpy).toBeCalledTimes(1);
-    expect(readDraftSpy).toBeCalledTimes(0);
-    expect(getUserSubmissionsSpy).toBeCalledTimes(0);
-    expect(addNotificationSpy).toBeCalledTimes(0);
-  });
-  it('readVersion will throw an error if the response does not contain a schema', async () => {
-    const wrapper = shallowMount(FormViewer, {
-      props: {
-        formId: formId,
-        displayTitle: true,
-        versionId: '123',
-      },
-      global: {
-        provide: {
-          setWideLayout: vi.fn(),
-        },
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
+      readDraftSpy.mockReset();
+      addNotificationSpy.mockReset();
 
-    await flushPromises();
-
-    readVersionSpy.mockReset();
-    addNotificationSpy.mockReset();
-
-    readVersionSpy.mockImplementationOnce(() => {
-      return {};
-    });
-
-    await wrapper.vm.getFormSchema();
-
-    expect(readPublishedSpy).toBeCalledTimes(0);
-    expect(readVersionSpy).toBeCalledTimes(1);
-    expect(readDraftSpy).toBeCalledTimes(0);
-    expect(getUserSubmissionsSpy).toBeCalledTimes(0);
-    expect(addNotificationSpy).toBeCalledTimes(1);
-  });
-  it('calls readDraft if there is a draftId', async () => {
-    const wrapper = shallowMount(FormViewer, {
-      props: {
-        formId: formId,
-        displayTitle: true,
-        draftId: '123',
-      },
-      global: {
-        provide: {
-          setWideLayout: vi.fn(),
-        },
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
-
-    await flushPromises();
-
-    readDraftSpy.mockReset();
-    addNotificationSpy.mockReset();
-
-    readDraftSpy.mockImplementationOnce(() => {
-      return {
-        data: {
-          schema: {},
-        },
-      };
-    });
-
-    await wrapper.vm.getFormSchema();
-
-    expect(readPublishedSpy).toBeCalledTimes(0);
-    expect(readVersionSpy).toBeCalledTimes(0);
-    expect(readDraftSpy).toBeCalledTimes(1);
-    expect(getUserSubmissionsSpy).toBeCalledTimes(0);
-    expect(addNotificationSpy).toBeCalledTimes(0);
-  });
-  it('readDraft will throw an error if the response does not contain a schema', async () => {
-    const wrapper = shallowMount(FormViewer, {
-      props: {
-        formId: formId,
-        displayTitle: true,
-        draftId: '123',
-      },
-      global: {
-        provide: {
-          setWideLayout: vi.fn(),
-        },
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
-
-    await flushPromises();
-
-    readDraftSpy.mockReset();
-    addNotificationSpy.mockReset();
-
-    readDraftSpy.mockImplementationOnce(() => {
-      return {};
-    });
-
-    await wrapper.vm.getFormSchema();
-
-    expect(readPublishedSpy).toBeCalledTimes(0);
-    expect(readVersionSpy).toBeCalledTimes(0);
-    expect(readDraftSpy).toBeCalledTimes(1);
-    expect(getUserSubmissionsSpy).toBeCalledTimes(0);
-    expect(addNotificationSpy).toBeCalledTimes(1);
-  });
-  it('if the error response is a 401 then it will set isAuthorized to false', async () => {
-    const wrapper = shallowMount(FormViewer, {
-      props: {
-        formId: formId,
-        displayTitle: true,
-        draftId: '123',
-      },
-      global: {
-        provide: {
-          setWideLayout: vi.fn(),
-        },
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
-
-    await flushPromises();
-
-    readDraftSpy.mockReset();
-    addNotificationSpy.mockReset();
-
-    readDraftSpy.mockImplementationOnce(() => {
-      throw {
-        response: {
+      readDraftSpy.mockImplementationOnce(() => {
+        const error = new Error('Unauthorized');
+        error.response = {
           status: 401,
-        },
-      };
+        };
+        throw error;
+      });
+
+      await wrapper.vm.getFormSchema();
+
+      expect(wrapper.vm.isAuthorized).toBeFalsy();
+      expect(readDraftSpy).toBeCalledTimes(1);
+      expect(addNotificationSpy).toBeCalledTimes(0);
     });
-
-    await wrapper.vm.getFormSchema();
-
-    expect(wrapper.vm.isAuthorized).toBeFalsy();
-    expect(readPublishedSpy).toBeCalledTimes(0);
-    expect(readVersionSpy).toBeCalledTimes(0);
-    expect(readDraftSpy).toBeCalledTimes(1);
-    expect(getUserSubmissionsSpy).toBeCalledTimes(0);
-    expect(addNotificationSpy).toBeCalledTimes(0);
   });
 
   it('isProcessingMultiUpload will set the block variable to true or false', async () => {
@@ -1561,6 +1483,7 @@ describe('FormViewer.vue', () => {
       props: {
         formId: formId,
         submissionId: '123',
+        isDuplicate: false,
       },
       global: {
         provide: {
@@ -1573,7 +1496,7 @@ describe('FormViewer.vue', () => {
 
     await flushPromises();
 
-    wrapper.vm.yes();
+    await wrapper.vm.yes();
 
     expect(updateSubmissionSpy).toBeCalledTimes(1);
   });
@@ -1843,12 +1766,13 @@ describe('FormViewer.vue', () => {
     }));
     // override default implementation
     updateSubmissionSpy.mockImplementationOnce(() => {
-      throw new Error();
+      return {};
     });
     const wrapper = shallowMount(FormViewer, {
       props: {
         formId: formId,
         submissionId: '123',
+        isDuplicate: false,
       },
       global: {
         provide: {
@@ -1863,7 +1787,7 @@ describe('FormViewer.vue', () => {
 
     addNotificationSpy.mockReset();
 
-    wrapper.vm.saveDraftFromModal({});
+    await wrapper.vm.saveDraftFromModal({});
 
     expect(updateSubmissionSpy).toBeCalledTimes(1);
     expect(addNotificationSpy).toBeCalledTimes(0);
@@ -1956,7 +1880,7 @@ describe('FormViewer.vue', () => {
     expect(preventDefault).toBeCalledTimes(1);
   });
 
-  it('deleteFile will call fileServices deleteFile', async () => {
+  it('deleteFile will add the file to queuedDeleteFiles', async () => {
     const deleteFileSpy = vi.spyOn(fileService, 'deleteFile');
     deleteFileSpy.mockImplementation(() => {});
     const wrapper = shallowMount(FormViewer, {
@@ -1975,12 +1899,103 @@ describe('FormViewer.vue', () => {
 
     await flushPromises();
 
-    await wrapper.vm.deleteFile('asdf');
-    expect(deleteFileSpy).toBeCalledWith(undefined);
-    await wrapper.vm.deleteFile({ id: '123' });
-    expect(deleteFileSpy).toBeCalledWith('123');
-    await wrapper.vm.deleteFile({ data: { id: '123' } });
-    expect(deleteFileSpy).toBeCalledWith('123');
+    const onSuccess = vi.fn();
+
+    await wrapper.vm.deleteFile({}, { onSuccess: onSuccess });
+    expect(wrapper.vm.queuedDeleteFiles).toEqual([
+      {
+        file: {},
+        onSuccess: onSuccess,
+      },
+    ]);
+  });
+
+  it('deleteQueuedFiles will call deleteFile and then the files onSuccess function', async () => {
+    const deleteFilesSpy = vi.spyOn(fileService, 'deleteFiles');
+    deleteFilesSpy.mockImplementation(() => {});
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    const onSuccess = vi.fn();
+
+    wrapper.vm.queuedDeleteFiles = [
+      {
+        file: {
+          data: {
+            id: '123',
+          },
+        },
+        onSuccess: onSuccess,
+      },
+    ];
+
+    await wrapper.vm.deleteQueuedFiles();
+    expect(deleteFilesSpy).toBeCalledTimes(1);
+    expect(onSuccess).toBeCalledTimes(1);
+    expect(wrapper.vm.queuedDeleteFiles).toEqual([]);
+  });
+
+  it('deleteQueuedFiles will addNotification if an error occurs', async () => {
+    const deleteFilesSpy = vi.spyOn(fileService, 'deleteFiles');
+    deleteFilesSpy.mockImplementation(() => {
+      throw new Error();
+    });
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    const onSuccess = vi.fn();
+
+    wrapper.vm.queuedDeleteFiles = [
+      {
+        file: {
+          data: {
+            id: '123',
+          },
+        },
+        onSuccess: onSuccess,
+      },
+    ];
+
+    await wrapper.vm.deleteQueuedFiles();
+    expect(deleteFilesSpy).toBeCalledTimes(1);
+    expect(onSuccess).toBeCalledTimes(0);
+    expect(wrapper.vm.queuedDeleteFiles).toEqual([
+      {
+        file: {
+          data: {
+            id: '123',
+          },
+        },
+        onSuccess: onSuccess,
+      },
+    ]);
+    expect(addNotificationSpy).toBeCalledTimes(1);
   });
 
   it('getFile will call form stores downloadFile for json', async () => {
@@ -2051,7 +2066,7 @@ describe('FormViewer.vue', () => {
     expect(getDispositionSpy).toBeCalledTimes(1);
   });
 
-  it('uploadFile will call fileServices uploadFile', async () => {
+  it('uploadFile will add the file and config to queuedUploadFiles', async () => {
     const uploadFileSpy = vi.spyOn(fileService, 'uploadFile');
     uploadFileSpy.mockImplementation(() => {});
     const wrapper = shallowMount(FormViewer, {
@@ -2070,7 +2085,128 @@ describe('FormViewer.vue', () => {
 
     await flushPromises();
 
-    await wrapper.vm.uploadFile('this is a file object');
+    const onError = vi.fn();
+    const onUploaded = vi.fn();
+    const onUploadProgress = vi.fn();
+
+    await wrapper.vm.uploadFile(
+      {},
+      {
+        onError: onError,
+        onUploadProgress: onUploadProgress,
+        onUploaded: onUploaded,
+        headers: {},
+      }
+    );
+    expect(wrapper.vm.queuedUploadFiles).toEqual([
+      {
+        file: {},
+        config: {
+          onUploadProgress: onUploadProgress,
+          headers: {},
+        },
+        onUploaded: onUploaded,
+        onError: onError,
+      },
+    ]);
+  });
+
+  it('uploadQueuedFiles will call fileServices uploadFile', async () => {
+    const uploadFileSpy = vi.spyOn(fileService, 'uploadFile');
+    uploadFileSpy.mockImplementation(() => {});
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    const onError = vi.fn();
+    const onUploaded = vi.fn();
+    const onUploadProgress = vi.fn();
+
+    wrapper.vm.queuedUploadFiles = [
+      {
+        file: {},
+        config: {
+          onUploadProgress: onUploadProgress,
+          headers: {},
+        },
+        onError: onError,
+        onUploaded: onUploaded,
+      },
+    ];
+
+    await wrapper.vm.uploadQueuedFiles();
     expect(uploadFileSpy).toBeCalledTimes(1);
+    expect(onUploaded).toBeCalledTimes(1);
+    expect(wrapper.vm.queuedUploadFiles).toEqual([]);
+  });
+
+  it('uploadQueuedFiles will addNotification if an error is thrown', async () => {
+    const uploadFileSpy = vi.spyOn(fileService, 'uploadFile');
+    uploadFileSpy.mockImplementation(() => {
+      throw new Error();
+    });
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    const onError = vi.fn();
+    const onUploaded = vi.fn();
+    const onUploadProgress = vi.fn();
+
+    wrapper.vm.queuedUploadFiles = [
+      {
+        file: {
+          originalName: 'test.txt',
+        },
+        config: {
+          onUploadProgress: onUploadProgress,
+          headers: {},
+        },
+        onError: onError,
+        onUploaded: onUploaded,
+      },
+    ];
+
+    await wrapper.vm.uploadQueuedFiles();
+    expect(uploadFileSpy).toBeCalledTimes(1);
+    expect(onUploaded).toBeCalledTimes(0);
+    expect(wrapper.vm.queuedUploadFiles).toEqual([
+      {
+        file: {
+          originalName: 'test.txt',
+        },
+        config: {
+          onUploadProgress: onUploadProgress,
+          headers: {},
+        },
+        onError: onError,
+        onUploaded: onUploaded,
+      },
+    ]);
+    expect(addNotificationSpy).toBeCalledTimes(1);
   });
 });

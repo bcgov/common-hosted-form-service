@@ -59,6 +59,29 @@ const service = {
     }
   },
 
+  deleteFiles: async (ids) => {
+    let trx;
+    try {
+      trx = await FileStorage.startTransaction();
+
+      for (const id of ids) {
+        const obj = await service.read(id);
+
+        await FileStorage.query(trx).deleteById(id).throwIfNotFound();
+
+        const result = await storageService.delete(obj);
+        if (!result) {
+          throw new Error(`Failed to delete file with id ${id}`);
+        }
+      }
+
+      await trx.commit();
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
   /**
    * Move a submission file from the "upload" storage location to the
    * "submission" location. This is used when a submission is either saved as
