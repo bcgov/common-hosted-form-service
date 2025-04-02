@@ -991,7 +991,6 @@ async function doSubmit() {
       );
     }
   } catch (error) {
-    console.error(error); // eslint-disable-line no-console
     errMsg = t('trans.formViewer.errMsg');
   } finally {
     confirmSubmit.value = false;
