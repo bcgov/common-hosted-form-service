@@ -92,13 +92,7 @@ async function onChangeUserSearchInput(input) {
     const response = await userService.getUsers(params);
     userSearchResults.value = response.data;
   } catch (error) {
-    // userSearchResults.value = [];
-    /* eslint-disable no-console */
-    console.error(
-      t('trans.manageSubmissionUsers.getUsersErrMsg', {
-        error: error,
-      })
-    ); // eslint-disable-line no-console
+    userSearchResults.value = [];
   } finally {
     isLoadingDropdown.value = false;
   }
