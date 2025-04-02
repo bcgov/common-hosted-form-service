@@ -67,6 +67,7 @@ defineExpose({
         $t('trans.formSettings.formFunctionality')
       }}</span></template
     >
+
     <v-checkbox
       v-model="form.enableSubmitterDraft"
       data-test="canSaveAndEditDraftsCheckbox"
@@ -316,6 +317,21 @@ defineExpose({
             ></span>
           </v-tooltip>
         </div>
+      </template>
+    </v-checkbox>
+    <v-checkbox
+      v-model="form.enableTeamMemberDraftShare"
+      :disabled="!form.enableSubmitterDraft"
+      data-test="enableTeamMemberDraftShare"
+      hide-details="auto"
+      class="my-0"
+    >
+      <template #label>
+        <span
+          :class="{ 'mr-2': isRTL }"
+          :lang="locale"
+          v-html="$t('trans.canShareDraft.shareDraftMessage')"
+        ></span>
       </template>
     </v-checkbox>
   </BasePanel>

@@ -1210,5 +1210,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "Non puoi condividere la bozza con utenti che non sono stati aggiunti al modulo. Contatta l'amministratore per aggiungerli.",
+    "shareDraftMessage":"Condividi la bozza solo con i membri del team del modulo"
   }
 }
