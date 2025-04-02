@@ -1,7 +1,7 @@
+const Problem = require('api-problem');
 const config = require('config');
 
 const ClientConnection = require('./clientConnection');
-const errorToProblem = require('./errorToProblem');
 const log = require('./log')(module.filename);
 
 const SERVICE = 'CHES';
@@ -28,7 +28,7 @@ class ChesService {
       });
       return response.data;
     } catch (e) {
-      errorToProblem(SERVICE, e);
+      this.chesError(e, 'healthcheck');
     }
   }
 
@@ -42,7 +42,7 @@ class ChesService {
       });
       return response.data;
     } catch (e) {
-      errorToProblem(SERVICE, e);
+      this.chesError(e, 'status');
     }
   }
 
@@ -55,7 +55,7 @@ class ChesService {
       });
       return response.data;
     } catch (e) {
-      errorToProblem(SERVICE, e);
+      this.chesError(e, 'emailMerge.preview');
     }
   }
 
@@ -69,7 +69,7 @@ class ChesService {
       });
       return response.data;
     } catch (e) {
-      errorToProblem(SERVICE, e);
+      this.chesError(e, 'cancelQuery');
     }
   }
 
@@ -84,7 +84,7 @@ class ChesService {
       });
       return response.data;
     } catch (e) {
-      errorToProblem(SERVICE, e);
+      this.chesError(e, 'send');
     }
   }
 
@@ -100,7 +100,7 @@ class ChesService {
       });
       return response.data;
     } catch (e) {
-      errorToProblem(SERVICE, e);
+      this.chesError(e, 'emailMerge');
     }
   }
 
@@ -115,7 +115,20 @@ class ChesService {
       });
       return response.data;
     } catch (e) {
-      errorToProblem(SERVICE, e);
+      this.chesError(e, 'emailMerge.preview');
+    }
+  }
+  chesError(e, endpoint, msgId) {
+    if (e.respose) {
+      const status = e.response.status;
+      const errorData = JSON.stringify(e.response.data);
+      if (status === 422) {
+        log.warn(`Validation Error during ${SERVICE + '.' + endpoint}. ${SERVICE} returned status ${status} - ${msgId ? 'messageID: ' + msgId : ''} - ${errorData}`);
+        throw new Problem(status, { message: 'Validation Failed', details: e.response.data });
+      } else {
+        log.error(`Error During ${SERVICE}.${endpoint} . ${SERVICE} returned status = ${e.response.status} ${msgId ? 'messageID: ' + msgId : ''} - ${errorData}`);
+      }
+      throw new Problem(status, e.response.data);
     }
   }
 }
