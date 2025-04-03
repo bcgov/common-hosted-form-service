@@ -1221,5 +1221,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "Hindi mo maibabahagi ang draft sa mga user na hindi pa naidagdag sa form. Mangyaring makipag-ugnayan sa admin para idagdag sila.",
+    "shareDraftMessage":"Ibahagi ang draft sa mga miyembro ng form ng koponan lamang"
   }
 }

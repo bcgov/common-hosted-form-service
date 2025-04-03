@@ -1217,5 +1217,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "양식에 추가되지 않은 사용자와 초안을 공유할 수 없습니다. 관리자에게 연락하여 추가하세요.",
+    "shareDraftMessage":"초안을 양식 팀원과만 공유하세요"
   }
 }

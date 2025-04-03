@@ -1217,5 +1217,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "フォームに追加されていないユーザーとは下書きを共有できません。管理者に連絡して追加してください。",
+    "shareDraftMessage":"フォームチームのメンバーとのみドラフトを共有する"
   }
 }

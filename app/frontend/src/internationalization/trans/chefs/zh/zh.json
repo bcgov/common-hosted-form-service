@@ -1217,5 +1217,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "您无法与尚未添加到表单的用户共享草稿。请联系管理员添加他们。",
+    "shareDraftMessage":"仅与表单团队成员共享草稿"
   }
 }

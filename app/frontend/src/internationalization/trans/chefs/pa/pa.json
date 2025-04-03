@@ -1217,5 +1217,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਉਪਭੋਗਤਾਵਾਂ ਨਾਲ ਡਰਾਫਟ ਸਾਂਝਾ ਨਹੀਂ ਕਰ ਸਕਦੇ ਜਿਨ੍ਹਾਂ ਨੂੰ ਫਾਰਮ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਉਹਨਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।",
+    "shareDraftMessage":"ਡਰਾਫਟ ਸਿਰਫ਼ ਫਾਰਮ ਟੀਮ ਮੈਂਬਰਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰੋ"
   }
 }

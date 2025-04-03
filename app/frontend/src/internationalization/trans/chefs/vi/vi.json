@@ -1221,5 +1221,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "Bạn không thể chia sẻ bản nháp với những người dùng chưa được thêm vào biểu mẫu. Vui lòng liên hệ với quản trị viên để thêm họ.",
+    "shareDraftMessage":"Chỉ chia sẻ bản nháp với các thành viên nhóm biểu mẫu"
   }
 }

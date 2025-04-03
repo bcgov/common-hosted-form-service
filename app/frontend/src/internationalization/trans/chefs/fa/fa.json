@@ -1217,5 +1217,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "شما نمی توانید پیش نویس را با کاربرانی که به فرم اضافه نشده اند به اشتراک بگذارید. لطفا با ادمین تماس بگیرید تا آنها را اضافه کنید.",
+    "shareDraftMessage":"پیش نویس را فقط با اعضای تیم فرم به اشتراک بگذارید"
   }
 }

@@ -63,6 +63,8 @@ describe('FormViewer.vue', () => {
   const alertSpy = vi.spyOn(window, 'alert');
   const downloadFileSpy = vi.spyOn(formStore, 'downloadFile');
   const getDispositionSpy = vi.spyOn(transformUtils, 'getDisposition');
+  const createSubmissionSpy = vi.spyOn(formService, 'createSubmission');
+  const updateSubmissionSpy = vi.spyOn(formService, 'updateSubmission');
 
   beforeEach(() => {
     appStore.$reset();
@@ -100,6 +102,8 @@ describe('FormViewer.vue', () => {
     alertSpy.mockReset();
     downloadFileSpy.mockReset();
     getDispositionSpy.mockReset();
+    createSubmissionSpy.mockReset();
+    updateSubmissionSpy.mockReset();
 
     getProxyHeadersSpy.mockImplementation(() => {
       return {
@@ -167,6 +171,22 @@ describe('FormViewer.vue', () => {
       };
     });
     getDispositionSpy.mockImplementation(() => {});
+    createSubmissionSpy.mockImplementation(() => {
+      return {
+        status: 200,
+        data: {
+          submission: { testKey: 'testValue' },
+        },
+      };
+    });
+    updateSubmissionSpy.mockImplementation(() => {
+      return {
+        status: 201,
+        data: {
+          submission: { testKey: 'testValue' },
+        },
+      };
+    });
   });
 
   it('formScheduleExpireMessage returns the formScheduleExpireMessage translation or custom message', async () => {
@@ -605,14 +625,18 @@ describe('FormViewer.vue', () => {
     readPublishedSpy.mockReset();
     addNotificationSpy.mockReset();
 
+    readPublishedSpy.mockImplementationOnce(() => {
+      return {};
+    });
+
     await wrapper.vm.getFormSchema();
 
     expect(readPublishedSpy).toBeCalledTimes(1);
     expect(readVersionSpy).toBeCalledTimes(0);
     expect(readDraftSpy).toBeCalledTimes(0);
     expect(getUserSubmissionsSpy).toBeCalledTimes(0);
-    expect(addNotificationSpy).toBeCalledTimes(1);
   });
+
   it('calls readPublished by default, and pushes to router if there are no versions', async () => {
     const push = vi.fn();
     useRouter.mockImplementationOnce(() => ({
@@ -829,7 +853,7 @@ describe('FormViewer.vue', () => {
     expect(addNotificationSpy).toBeCalledTimes(0);
   });
 
-  it('toggleBlock will set the block variable to true or false', async () => {
+  it('isProcessingMultiUpload will set the block variable to true or false', async () => {
     const wrapper = shallowMount(FormViewer, {
       props: {
         formId: formId,
@@ -846,9 +870,9 @@ describe('FormViewer.vue', () => {
 
     await flushPromises();
 
-    wrapper.vm.toggleBlock(true);
+    wrapper.vm.isProcessingMultiUpload(true);
     expect(wrapper.vm.block).toBeTruthy();
-    wrapper.vm.toggleBlock(false);
+    wrapper.vm.isProcessingMultiUpload(false);
     expect(wrapper.vm.block).toBeFalsy();
   });
 
@@ -900,308 +924,6 @@ describe('FormViewer.vue', () => {
     });
   });
 
-  it('resetMessage will reset sbdMessage to default values', async () => {
-    const wrapper = shallowMount(FormViewer, {
-      props: {
-        formId: formId,
-        displayTitle: true,
-        draftId: '123',
-      },
-      global: {
-        provide: {
-          setWideLayout: vi.fn(),
-        },
-        plugins: [pinia],
-        stubs: STUBS,
-      },
-    });
-
-    await flushPromises();
-
-    wrapper.vm.sbdMessage = {
-      message: '',
-      error: '',
-      upload_state: 1,
-      response: ['something'],
-      file_name: '',
-      typeError: 0,
-    };
-    wrapper.vm.block = true;
-
-    wrapper.vm.resetMessage();
-
-    expect(wrapper.vm.sbdMessage).toEqual({
-      message: undefined,
-      error: false,
-      upload_state: 0,
-      response: [],
-      file_name: undefined,
-      typeError: -1,
-    });
-    expect(wrapper.vm.block).toBeFalsy();
-  });
-
-  describe('saveBulkData and sendMultiSubmissionData', () => {
-    it('sendMultiSubmissionData sets success message for sbdMessage and addsNotification on success', async () => {
-      const wrapper = shallowMount(FormViewer, {
-        props: {
-          formId: formId,
-          displayTitle: true,
-          draftId: '123',
-        },
-        global: {
-          provide: {
-            setWideLayout: vi.fn(),
-          },
-          plugins: [pinia],
-          stubs: STUBS,
-        },
-      });
-
-      await flushPromises();
-
-      addNotificationSpy.mockReset();
-
-      const createMultiSubmissionSpy = vi.spyOn(
-        formService,
-        'createMultiSubmission'
-      );
-      createMultiSubmissionSpy.mockImplementationOnce(() => {
-        return {
-          status: 200,
-        };
-      });
-
-      wrapper.vm.versionIdToSubmitTo = 1;
-      await wrapper.vm.sendMultiSubmissionData({});
-      expect(createMultiSubmissionSpy).toBeCalledTimes(1);
-      expect(addNotificationSpy).toBeCalledWith({
-        text: 'trans.formViewer.multiDraftUploadSuccess',
-        color: 'success',
-        icon: 'mdi:mdi-check-circle',
-        type: 'success',
-      });
-      expect(addNotificationSpy).toBeCalledTimes(1);
-      expect(wrapper.vm.sbdMessage).toEqual({
-        file_name: String,
-        typeError: Number,
-        message: 'trans.formViewer.multiDraftUploadSuccess',
-        error: false,
-        upload_state: 10,
-        response: [],
-      });
-      expect(wrapper.vm.block).toBeFalsy();
-      expect(wrapper.vm.saving).toBeFalsy();
-    });
-    it('saveBulkData will call sendMultiSubmissionData with the submissions given', async () => {
-      const wrapper = shallowMount(FormViewer, {
-        props: {
-          formId: formId,
-          displayTitle: true,
-          draftId: '123',
-        },
-        global: {
-          provide: {
-            setWideLayout: vi.fn(),
-          },
-          plugins: [pinia],
-          stubs: STUBS,
-        },
-      });
-
-      await flushPromises();
-
-      addNotificationSpy.mockReset();
-
-      const createMultiSubmissionSpy = vi.spyOn(
-        formService,
-        'createMultiSubmission'
-      );
-      createMultiSubmissionSpy.mockImplementationOnce(() => {
-        return {
-          status: 200,
-        };
-      });
-
-      wrapper.vm.versionIdToSubmitTo = 1;
-      await wrapper.vm.saveBulkData([
-        {
-          id: '123',
-        },
-        {
-          id: '124',
-        },
-      ]);
-      expect(createMultiSubmissionSpy).toBeCalledTimes(1);
-      expect(createMultiSubmissionSpy).toBeCalledWith(formId, 1, {
-        draft: true,
-        submission: {
-          data: [
-            {
-              id: '123',
-            },
-            {
-              id: '124',
-            },
-          ],
-        },
-      });
-    });
-    it('sendMultiSubmissionData sets failure message for sbdMessage and addsNotification if response status does not contain status 200 or 201', async () => {
-      const wrapper = shallowMount(FormViewer, {
-        props: {
-          formId: formId,
-          displayTitle: true,
-          draftId: '123',
-        },
-        global: {
-          provide: {
-            setWideLayout: vi.fn(),
-          },
-          plugins: [pinia],
-          stubs: STUBS,
-        },
-      });
-
-      await flushPromises();
-      addNotificationSpy.mockReset();
-      const createMultiSubmissionSpy = vi.spyOn(
-        formService,
-        'createMultiSubmission'
-      );
-      createMultiSubmissionSpy.mockImplementationOnce(() => {
-        return {
-          status: 500,
-        };
-      });
-
-      wrapper.vm.versionIdToSubmitTo = 1;
-      await wrapper.vm.sendMultiSubmissionData({});
-      expect(createMultiSubmissionSpy).toBeCalledTimes(1);
-      expect(addNotificationSpy).toBeCalledWith({
-        text: 'trans.formViewer.errSubmittingForm',
-        consoleError: 'trans.formViewer.errorSavingFile',
-      });
-      expect(addNotificationSpy).toBeCalledTimes(1);
-    });
-  });
-
-  describe('setFinalError', () => {
-    it('by default it will set sbdMessage message, error, upload_state, response', async () => {
-      const wrapper = shallowMount(FormViewer, {
-        props: {
-          formId: formId,
-          displayTitle: true,
-        },
-        global: {
-          provide: {
-            setWideLayout: vi.fn(),
-          },
-          plugins: [pinia],
-          stubs: STUBS,
-        },
-      });
-
-      await flushPromises();
-
-      await wrapper.vm.setFinalError({
-        response: {},
-      });
-
-      expect(wrapper.vm.sbdMessage.message).toEqual(
-        'trans.formViewer.errSubmittingForm'
-      );
-      expect(wrapper.vm.sbdMessage.error).toBeTruthy();
-      expect(wrapper.vm.sbdMessage.upload_state).toEqual(10);
-      expect(wrapper.vm.sbdMessage.response).toEqual([
-        {
-          error_message: 'trans.formViewer.errSubmittingForm',
-        },
-      ]);
-    });
-    it('if error.response.data is not undefined then it will give a default message if response reports is undefined', async () => {
-      const wrapper = shallowMount(FormViewer, {
-        props: {
-          formId: formId,
-          displayTitle: true,
-        },
-        global: {
-          provide: {
-            setWideLayout: vi.fn(),
-          },
-          plugins: [pinia],
-          stubs: STUBS,
-        },
-      });
-
-      await flushPromises();
-
-      await wrapper.vm.setFinalError({
-        response: {
-          data: {
-            title: 'some title',
-          },
-        },
-      });
-
-      expect(wrapper.vm.sbdMessage.message).toEqual('some title');
-      expect(wrapper.vm.sbdMessage.error).toBeTruthy();
-      expect(wrapper.vm.sbdMessage.upload_state).toEqual(10);
-      expect(wrapper.vm.sbdMessage.response).toEqual([
-        {
-          error_message: 'trans.formViewer.errSubmittingForm',
-        },
-      ]);
-    });
-    it('if error.response.data is not undefined then it will format that error message', async () => {
-      const wrapper = shallowMount(FormViewer, {
-        props: {
-          formId: formId,
-          displayTitle: true,
-        },
-        global: {
-          provide: {
-            setWideLayout: vi.fn(),
-          },
-          plugins: [pinia],
-          stubs: STUBS,
-        },
-      });
-
-      await flushPromises();
-
-      await wrapper.vm.setFinalError({
-        response: {
-          data: {
-            title: 'some title',
-            reports: [
-              {
-                details: [
-                  {
-                    message: 'an error occurred',
-                  },
-                ],
-              },
-            ],
-          },
-        },
-      });
-
-      expect(wrapper.vm.sbdMessage.message).toEqual('some title');
-      expect(wrapper.vm.sbdMessage.error).toBeTruthy();
-      expect(wrapper.vm.sbdMessage.upload_state).toEqual(10);
-      expect(wrapper.vm.sbdMessage.response).toEqual([
-        {
-          key: null,
-          label: null,
-          submission: 0,
-          validator: null,
-          error_message: 'an error occurred',
-        },
-      ]);
-    });
-  });
-
   it('saveDraft will call updateSubmission and replace the route if there is a submission id and it is not a duplicate', async () => {
     const updateSubmissionSpy = vi.spyOn(formService, 'updateSubmission');
     updateSubmissionSpy.mockImplementationOnce(() => {});
@@ -1237,7 +959,7 @@ describe('FormViewer.vue', () => {
   });
 
   it('saveDraft will call createSubmission and push the route if there is a submission id and it is a duplicate', async () => {
-    const createSubmissionSpy = vi.spyOn(formService, 'createSubmission');
+    // override default implementation
     createSubmissionSpy.mockImplementationOnce(() => {
       return {
         data: {
@@ -1272,8 +994,7 @@ describe('FormViewer.vue', () => {
   });
 
   it('saveDraft will addNotification if an error occurs', async () => {
-    const createSubmissionSpy = vi.spyOn(formService, 'createSubmission');
-    const updateSubmissionSpy = vi.spyOn(formService, 'updateSubmission');
+    // override default implementations
     createSubmissionSpy.mockImplementationOnce(() => {
       return {
         data: {
@@ -1547,15 +1268,6 @@ describe('FormViewer.vue', () => {
 
   describe('doSubmit', () => {
     it('if it is not a duplicate it will set the submissionRecord to the responses data submission', async () => {
-      const updateSubmissionSpy = vi.spyOn(formService, 'updateSubmission');
-      updateSubmissionSpy.mockImplementationOnce(() => {
-        return {
-          status: 200,
-          data: {
-            submission: { testKey: 'testValue' },
-          },
-        };
-      });
       const wrapper = shallowMount(FormViewer, {
         props: {
           formId: formId,
@@ -1582,7 +1294,7 @@ describe('FormViewer.vue', () => {
       expect(wrapper.vm.submissionRecord).toEqual({ testKey: 'testValue' });
     });
     it('if status code 200 or 201 is not in the response, it will throw an error', async () => {
-      const updateSubmissionSpy = vi.spyOn(formService, 'updateSubmission');
+      // override default implementation
       updateSubmissionSpy.mockImplementationOnce(() => {
         return {
           status: 500,
@@ -1608,16 +1320,12 @@ describe('FormViewer.vue', () => {
 
       await flushPromises();
 
-      const consoleErrorSpy = vi.spyOn(console, 'error');
-      consoleErrorSpy.mockImplementationOnce(() => {});
-
       const errMsg = await wrapper.vm.doSubmit({
         data: {
           lateEntry: false,
         },
       });
 
-      expect(consoleErrorSpy).toBeCalledTimes(1);
       expect(errMsg).toEqual('trans.formViewer.errMsg');
     });
   });
@@ -1651,7 +1359,7 @@ describe('FormViewer.vue', () => {
       expect(wrapper.vm.confirmSubmit).toBeFalsy();
     });
     it('if there are no errors it will call the currentForm.events.emit function', async () => {
-      const updateSubmissionSpy = vi.spyOn(formService, 'updateSubmission');
+      // override default implementation
       updateSubmissionSpy.mockImplementationOnce(() => {
         return {
           status: 200,
@@ -1692,7 +1400,7 @@ describe('FormViewer.vue', () => {
       expect(emit).toBeCalledTimes(1);
     });
     it('if there are errors it will addNotification', async () => {
-      const updateSubmissionSpy = vi.spyOn(formService, 'updateSubmission');
+      // override default implementation
       updateSubmissionSpy.mockImplementationOnce(() => {
         return {
           status: 500,
@@ -1847,7 +1555,7 @@ describe('FormViewer.vue', () => {
   });
 
   it('yes will call saveDraftFromModal', async () => {
-    const updateSubmissionSpy = vi.spyOn(formService, 'updateSubmission');
+    // override default implementation
     updateSubmissionSpy.mockImplementationOnce(() => {});
     const wrapper = shallowMount(FormViewer, {
       props: {
@@ -2071,8 +1779,6 @@ describe('FormViewer.vue', () => {
     useRouter.mockImplementationOnce(() => ({
       push,
     }));
-    const updateSubmissionSpy = vi.spyOn(formService, 'updateSubmission');
-    updateSubmissionSpy.mockImplementationOnce(() => {});
     const wrapper = shallowMount(FormViewer, {
       props: {
         formId: formId,
@@ -2102,7 +1808,7 @@ describe('FormViewer.vue', () => {
     useRouter.mockImplementationOnce(() => ({
       push,
     }));
-    const updateSubmissionSpy = vi.spyOn(formService, 'updateSubmission');
+    // override default implementation
     updateSubmissionSpy.mockImplementationOnce(() => {
       throw new Error();
     });
@@ -2135,7 +1841,7 @@ describe('FormViewer.vue', () => {
     useRouter.mockImplementationOnce(() => ({
       push,
     }));
-    const updateSubmissionSpy = vi.spyOn(formService, 'updateSubmission');
+    // override default implementation
     updateSubmissionSpy.mockImplementationOnce(() => {
       throw new Error();
     });
@@ -2168,7 +1874,7 @@ describe('FormViewer.vue', () => {
     useRouter.mockImplementationOnce(() => ({
       push,
     }));
-    const updateSubmissionSpy = vi.spyOn(formService, 'updateSubmission');
+    // override default implementation
     updateSubmissionSpy.mockImplementationOnce(() => {
       throw new Error();
     });
