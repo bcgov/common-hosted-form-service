@@ -1210,5 +1210,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "No puedes compartir el borrador con usuarios que no se hayan añadido al formulario. Contacta con el administrador para añadirlos.",
+    "shareDraftMessage":"Compartir borrador solo con miembros del equipo del formulario"
   }
 }

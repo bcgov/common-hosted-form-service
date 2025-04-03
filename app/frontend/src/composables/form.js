@@ -1,3 +1,5 @@
+import { onUnmounted } from 'vue';
+
 export function exportFormSchema(formName, formSchema, snake) {
   let snek = snake;
   if (!snek) {
@@ -29,5 +31,17 @@ export function importFormSchemaFromFile(file) {
     };
     fileReader.onerror = reject;
     fileReader.readAsText(file);
+  });
+}
+
+export function delay(ms) {
+  let timeout;
+  onUnmounted(() => clearTimeout(timeout));
+
+  return new Promise((resolve) => {
+    timeout = setTimeout(() => {
+      clearTimeout(timeout);
+      resolve();
+    }, ms);
   });
 }
