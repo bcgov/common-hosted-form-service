@@ -11,6 +11,8 @@ const fileUpload = require('./middleware/upload').fileUpload;
 routes.use(currentUser);
 
 routes.param('fileId', validateParameter.validateFileId);
+// Initialize Multer to expect the 'file' field from FormData
+fileUpload.init({ fieldName: 'file' });
 
 routes.post('/', hasFileCreate, fileUpload.upload, async (req, res, next) => {
   await controller.create(req, res, next);
