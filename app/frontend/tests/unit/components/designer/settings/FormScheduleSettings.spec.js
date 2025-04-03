@@ -1,7 +1,7 @@
 import { createTestingPinia } from '@pinia/testing';
 import { flushPromises, mount } from '@vue/test-utils';
 import { setActivePinia } from 'pinia';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -419,9 +419,6 @@ describe('FormScheduleSettings.vue', () => {
     formStore.form.schedule.openSubmissionDateTime = testOpenDate;
     formStore.form.schedule.closeSubmissionDateTime = testCloseDate;
 
-    // Enable time selection
-    wrapper.vm.showOpenTimeSelection = true;
-    wrapper.vm.showCloseTimeSelection = true;
     await flushPromises();
 
     // Set times
@@ -441,17 +438,17 @@ describe('FormScheduleSettings.vue', () => {
     expect(formStore.form.schedule.openSubmissionUTC).toMatch(isoRegex);
     expect(formStore.form.schedule.closeSubmissionUTC).toMatch(isoRegex);
 
-    // Verify timezone offset was saved
-    expect(formStore.form.schedule.timezoneOffset).toBeDefined();
-    expect(typeof formStore.form.schedule.timezoneOffset).toBe('number');
+    // Verify timezone was saved
+    expect(formStore.form.schedule.timezone).toBeDefined();
+    expect(formStore.form.schedule.timezone).toBe(wrapper.vm.timezone);
 
-    // Verify schedule type change clears closeSubmissionUTC but may not clear time fields
+    // Verify schedule type change clears closeSubmissionUTC
     formStore.form.schedule.scheduleType = ScheduleType.MANUAL;
     wrapper.vm.scheduleTypeChanged();
     await flushPromises();
 
-    // We only need to check if closeSubmissionUTC is cleared
+    // Check if closeSubmissionUTC is cleared and hasCloseTime is reset
     expect(formStore.form.schedule.closeSubmissionUTC).toBeNull();
-    expect(wrapper.vm.showCloseTimeSelection).toBe(false);
+    expect(formStore.form.schedule.closeSubmissionTime).toBeNull();
   });
 });
