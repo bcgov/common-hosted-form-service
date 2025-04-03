@@ -55,7 +55,7 @@ class ChesService {
       });
       return response.data;
     } catch (e) {
-      this.chesError(e, 'emailMerge.preview');
+      this.chesError(e, 'cancelMsg', msgId);
     }
   }
 
