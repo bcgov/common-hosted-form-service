@@ -26,22 +26,23 @@ describe('Form Designer', () => {
     cy.waitForLoad();
     formsettings();
   });  
-// Publish a simple form with Simplebc Address component
- it('Checks simplebcaddress and form submission', () => {
+// Publish a simple form with Hidden component
+ it('Checks Hidden component and form submission', () => {
     cy.viewport(1000, 1100);
-    cy.waitForLoad();
-    
-    cy.get('button').contains('BC Government').click();
+    cy.wait(2000);
+    cy.get('button').contains('Advanced Data').click();
+    cy.wait(2000);
     cy.get('div.formio-builder-form').then($el => {
-      const coords = $el[0].getBoundingClientRect();
-      cy.get('[data-key="simplebcaddress"]')
-      .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -550, { force: true }) 
-      .trigger('mouseup', { force: true });
-      cy.waitForLoad();
-      cy.get('button').contains('Save').click();
-      cy.wait(2000);
+        const coords = $el[0].getBoundingClientRect();
+        cy.get('span.btn').contains('Hidden')
+        
+        .trigger('mousedown', { which: 1}, { force: true })
+        .trigger('mousemove', coords.x, -400, { force: true })
+        .trigger('mouseup', { force: true });
+        cy.get('input[name="data[label]"]').clear().type('Application');
+        cy.get('button').contains('Save').click();
     });
+    cy.wait(2000);
   // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
@@ -112,7 +113,19 @@ describe('Form Designer', () => {
       //Delete form after test run
     cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
     cy.get('[data-test="continue-btn-continue"]').click();
-    cy.get('#logoutButton > .v-btn__content > span').click();
-  }); 
     
+  }); 
+  it("Validate admin tab", () => {
+    cy.wait(5000);
+    cy.get('[data-cy="admin"]').click({ force: true });
+    cy.get('[value="developer"] > .v-btn__content').should('exist');
+    cy.get('[value="forms"] > .v-btn__content').should('exist');
+    cy.get('[value="users"] > .v-btn__content').should('exist');
+    cy.get('[value="apis"] > .v-btn__content').should('exist');
+    cy.get('[value="infoLinks"] > .v-btn__content').should('exist');
+    cy.get('[value="dashboard"] > .v-btn__content').should('exist');
+    //Logout after test run
+    cy.get('#logoutButton > .v-btn__content > span').click();
+
+  });  
 });
