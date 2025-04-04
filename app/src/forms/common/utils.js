@@ -1,6 +1,6 @@
 const config = require('config');
 const falsey = require('falsey');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const clone = require('lodash/clone');
 const _ = require('lodash');
 const { ScheduleType } = require('./constants');
@@ -111,93 +111,58 @@ const checkIsFormExpired = (formSchedule = {}) => {
     return result;
   }
 
-  // Check if the form has started yet
-  const startDate = moment(formSchedule.openSubmissionDateTime).startOf('day');
-  const currentMoment = moment();
-  const isFormStartedAlready = currentMoment.diff(startDate, 'seconds') >= 0;
+  const currentMoment = moment.utc();
 
-  // If the form hasn't started yet
-  if (!isFormStartedAlready) {
-    return {
-      ...result,
-      expire: true,
-      message: 'This form is not yet available for submission.',
-    };
+  // Apply defaults for missing fields
+  const defaults = {
+    openSubmissionTime: formSchedule.openSubmissionTime || '00:00',
+    closeSubmissionTime: formSchedule.closeSubmissionTime || (formSchedule.closeSubmissionDateTime ? '23:59' : null),
+    timezone: formSchedule.timezone || 'America/Vancouver',
+  };
+  const schedule = { ...formSchedule, ...defaults };
+
+  // Opening Time
+  const openDateTime = `${schedule.openSubmissionDateTime} ${schedule.openSubmissionTime}`;
+  const openingMoment = moment.tz(openDateTime, 'YYYY-MM-DD HH:mm', schedule.timezone).utc();
+  if (currentMoment.isBefore(openingMoment)) {
+    return { ...result, expire: true, message: 'This form is not yet available for submission.' };
   }
 
-  // Handle legacy PERIOD schedule type by treating it as CLOSINGDATE
-  if (formSchedule.scheduleType === 'period') {
-    // Convert PERIOD to CLOSINGDATE for processing
-    formSchedule = {
-      ...formSchedule,
-      scheduleType: ScheduleType.CLOSINGDATE,
-      // Use calculated close date if available
-      closeSubmissionDateTime: formSchedule.closeSubmissionDateTime || calculateCloseDateFromPeriod(formSchedule),
-    };
+  // Handle legacy PERIOD type
+  if (schedule.scheduleType === 'period') {
+    schedule.scheduleType = ScheduleType.CLOSINGDATE;
+    schedule.closeSubmissionDateTime = schedule.closeSubmissionDateTime || calculateCloseDateFromPeriod(schedule);
   }
 
-  // Handle different schedule types using switch with block scoping
-  switch (formSchedule.scheduleType) {
-    case ScheduleType.MANUAL: {
-      // Manual schedule never expires
+  // Closing Time
+  switch (schedule.scheduleType) {
+    case ScheduleType.MANUAL:
+      return result;
+    case ScheduleType.CLOSINGDATE: {
+      // Wrap the case logic in a block to scope const declarations
+      if (schedule.closingMessageEnabled && schedule.closingMessage) {
+        result.message = schedule.closingMessage;
+      }
+      if (!schedule.closeSubmissionDateTime) {
+        return result;
+      }
+      const closeDateTime = `${schedule.closeSubmissionDateTime} ${schedule.closeSubmissionTime}`;
+      const closingMoment = moment.tz(closeDateTime, 'YYYY-MM-DD HH:mm', schedule.timezone).utc();
+      if (currentMoment.isAfter(closingMoment)) {
+        if (schedule.allowLateSubmissions && schedule.allowLateSubmissions.enabled) {
+          const lateConfig = schedule.allowLateSubmissions.forNext;
+          if (lateConfig && lateConfig.term && lateConfig.intervalType) {
+            const gracePeriodMoment = closingMoment.clone().add(lateConfig.term, lateConfig.intervalType);
+            const isWithinGracePeriod = currentMoment.isBefore(gracePeriodMoment);
+            return { ...result, expire: true, allowLateSubmissions: isWithinGracePeriod };
+          }
+        }
+        return { ...result, expire: true };
+      }
       return result;
     }
-
-    case ScheduleType.CLOSINGDATE: {
-      // Set custom closing message if provided
-      if (formSchedule.closingMessageEnabled && formSchedule.closingMessage) {
-        result = { ...result, message: formSchedule.closingMessage };
-      }
-
-      // No closing date means it stays open
-      if (!formSchedule.closeSubmissionDateTime) {
-        return result;
-      }
-
-      // Check if we're within the open period
-      const closingDate = moment(formSchedule.closeSubmissionDateTime).endOf('day');
-      const isBeforeClosingDate = currentMoment.isSameOrBefore(closingDate);
-
-      if (isBeforeClosingDate) {
-        // Form is still open
-        return result;
-      }
-
-      // Form is past closing date, check for late submissions
-      if (formSchedule.allowLateSubmissions && formSchedule.allowLateSubmissions.enabled) {
-        const lateSubmissionConfig = formSchedule.allowLateSubmissions.forNext;
-
-        // Check for valid late submission configuration
-        if (lateSubmissionConfig && lateSubmissionConfig.term && lateSubmissionConfig.intervalType) {
-          // Calculate grace period end date
-          const gracePeriodDate = moment(closingDate).add(lateSubmissionConfig.term, lateSubmissionConfig.intervalType);
-
-          // Check if we're still within the grace period
-          const isWithinGracePeriod = currentMoment.isBefore(gracePeriodDate);
-
-          return {
-            ...result,
-            expire: true,
-            allowLateSubmissions: isWithinGracePeriod,
-          };
-        }
-      }
-
-      // Form is closed and no late submissions allowed or configured
-      return {
-        ...result,
-        expire: true,
-        allowLateSubmissions: false,
-      };
-    }
-
-    default: {
-      // Unrecognized schedule type, treat as expired
-      return {
-        ...result,
-        expire: true,
-      };
-    }
+    default:
+      return { ...result, expire: true };
   }
 };
 
@@ -270,8 +235,8 @@ const getSubmissionPeriodDates = (openDate, closeDate, allowLateSubmissions = nu
 
   return [
     {
-      startDate: openSubmissionDate.format('YYYY-MM-DD HH:MM:SS'),
-      closeDate: calculatedCloseDate.format('YYYY-MM-DD HH:MM:SS'),
+      startDate: openSubmissionDate.format('YYYY-MM-DD HH:mm:ss'),
+      closeDate: calculatedCloseDate.format('YYYY-MM-DD HH:mm:ss'),
       graceDate: graceDate,
     },
   ];

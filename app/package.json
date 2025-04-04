@@ -73,6 +73,7 @@
     "lodash": "^4.17.21",
     "mime-types": "^2.1.35",
     "moment": "^2.29.4",
+    "moment-timezone": "^0.5.48",
     "multer": "^1.4.5-lts.1",
     "nats": "^2.28.0",
     "nats.ws": "^1.29.2",

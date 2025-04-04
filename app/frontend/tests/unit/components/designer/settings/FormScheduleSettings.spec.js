@@ -1,7 +1,7 @@
 import { createTestingPinia } from '@pinia/testing';
 import { flushPromises, mount } from '@vue/test-utils';
 import { setActivePinia } from 'pinia';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -394,5 +394,50 @@ describe('FormScheduleSettings.vue', () => {
     expect(
       formStore.form.schedule.allowLateSubmissions.forNext.intervalType
     ).toEqual('days');
+  });
+  it('saves UTC timestamps when times are selected', async () => {
+    const wrapper = mount(FormScheduleSettings, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          BasePanel: {
+            name: 'BasePanel',
+            template: '<div class="base-panel-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    // Set up test dates and times
+    const testOpenDate = '2025-03-15';
+    const testOpenTime = '09:30';
+    const testCloseDate = '2025-03-20';
+    const testCloseTime = '17:45';
+
+    // Set closing date schedule type
+    formStore.form.schedule.scheduleType = ScheduleType.CLOSINGDATE;
+    formStore.form.schedule.openSubmissionDateTime = testOpenDate;
+    formStore.form.schedule.closeSubmissionDateTime = testCloseDate;
+
+    await flushPromises();
+
+    // Set times
+    formStore.form.schedule.openSubmissionTime = testOpenTime;
+    formStore.form.schedule.closeSubmissionTime = testCloseTime;
+
+    // Call the functions to save timezone info
+    wrapper.vm.saveTimezoneWithOpenDate();
+    wrapper.vm.saveTimezoneWithCloseDate();
+
+    // Verify timezone was saved
+    expect(formStore.form.schedule.timezone).toBeDefined();
+    expect(formStore.form.schedule.timezone).toBe(wrapper.vm.timezone);
+
+    // Verify schedule type change clears closeSubmissionUTC
+    formStore.form.schedule.scheduleType = ScheduleType.MANUAL;
+    wrapper.vm.scheduleTypeChanged();
+    await flushPromises();
+
+    expect(formStore.form.schedule.closeSubmissionTime).toBeNull();
   });
 });

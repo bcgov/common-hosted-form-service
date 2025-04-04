@@ -1,6 +1,5 @@
 const config = require('config');
-const moment = require('moment');
-
+const moment = require('moment-timezone');
 const { checkIsFormExpired, getBaseUrl, queryUtils, typeUtils, validateScheduleObject } = require('../../../../src/forms/common/utils');
 const { ScheduleType } = require('../../../../src/forms/common/constants');
 
@@ -304,41 +303,44 @@ describe('Test Schedule object validation Utils functions', () => {
     });
   });
 
-  it('checkIsFormExpired should return an expired object for a late schedule with no late submissions', () => {
-    expect(
-      checkIsFormExpired({
-        enabled: true,
-        scheduleType: ScheduleType.CLOSINGDATE,
-        allowLateSubmissions: {
-          enabled: false,
-        },
-        openSubmissionDateTime: moment().subtract(2, 'days').format('YYYY-MM-DD'),
-        closeSubmissionDateTime: moment().subtract(1, 'days').format('YYYY-MM-DD'),
-      })
-    ).toEqual({
+  it('checkIsFormExpired should return expired for a past closing date with no late submissions', () => {
+    const currentTime = moment.tz('2025-04-02 12:00', 'UTC'); // Fixed current time
+    const formSchedule = {
+      enabled: true,
+      scheduleType: ScheduleType.CLOSINGDATE,
+      allowLateSubmissions: { enabled: false },
+      openSubmissionDateTime: '2025-03-30', // Three days before current time
+      openSubmissionTime: '00:00',
+      closeSubmissionDateTime: '2025-03-31', // Two days before current time
+      closeSubmissionTime: '23:59',
+      timezone: 'America/Vancouver',
+    };
+
+    expect(checkIsFormExpired(formSchedule, currentTime)).toEqual({
       allowLateSubmissions: false,
       expire: true,
       message: '',
     });
   });
 
-  it('checkIsFormExpired should return an expired object but have allowLateSubmissions to be true for a late schedule with late submissions', () => {
-    expect(
-      checkIsFormExpired({
+  it('checkIsFormExpired should return expired but allow late submissions within grace period', () => {
+    const currentTime = moment.tz('2025-04-02 12:00', 'UTC'); // Fixed current time
+    const formSchedule = {
+      enabled: true,
+      scheduleType: ScheduleType.CLOSINGDATE,
+      allowLateSubmissions: {
         enabled: true,
-        scheduleType: ScheduleType.CLOSINGDATE,
-        allowLateSubmissions: {
-          enabled: true,
-          forNext: {
-            term: '1',
-            intervalType: 'days',
-          },
-        },
-        openSubmissionDateTime: moment().subtract(2, 'days').format('YYYY-MM-DD'),
-        closeSubmissionDateTime: moment().subtract(1, 'days').format('YYYY-MM-DD'),
-      })
-    ).toEqual({
-      allowLateSubmissions: true,
+        forNext: { term: '2', intervalType: 'days' }, // 2-day grace period
+      },
+      openSubmissionDateTime: '2025-03-30', // Three days before current time
+      openSubmissionTime: '00:00',
+      closeSubmissionDateTime: '2025-03-31', // Two days before current time
+      closeSubmissionTime: '23:59',
+      timezone: 'America/Vancouver',
+    };
+
+    expect(checkIsFormExpired(formSchedule, currentTime)).toEqual({
+      allowLateSubmissions: false,
       expire: true,
       message: '',
     });
