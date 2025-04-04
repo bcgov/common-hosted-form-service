@@ -69,12 +69,6 @@ function openDateTypeChanged() {
 
 function saveTimezoneWithOpenDate() {
   if (form.value.schedule.openSubmissionDateTime) {
-    const time = form.value.schedule.openSubmissionTime || '00:00';
-    const dateTimeStr = `${form.value.schedule.openSubmissionDateTime} ${time}`;
-    form.value.schedule.openSubmissionUTC = moment
-      .tz(dateTimeStr, 'YYYY-MM-DD HH:mm', timezone.value)
-      .utc()
-      .toISOString();
     form.value.schedule.timezone = timezone.value;
   }
 }
@@ -84,18 +78,10 @@ function saveTimezoneWithCloseDate() {
     form.value.schedule.scheduleType === SCHEDULE_TYPE.value.CLOSINGDATE &&
     form.value.schedule.closeSubmissionDateTime
   ) {
-    // Always use close time when provided or default to 23:59
-    const time = form.value.schedule.closeSubmissionTime || '23:59';
-    const dateTimeStr = `${form.value.schedule.closeSubmissionDateTime} ${time}`;
-    form.value.schedule.closeSubmissionUTC = moment
-      .tz(dateTimeStr, 'YYYY-MM-DD HH:mm', timezone.value)
-      .utc()
-      .toISOString();
     form.value.schedule.timezone = timezone.value;
   } else {
     form.value.schedule.closeSubmissionDateTime = null;
     form.value.schedule.closeSubmissionTime = null;
-    form.value.schedule.closeSubmissionUTC = null;
   }
 }
 
@@ -107,7 +93,6 @@ function scheduleTypeChanged() {
     form.value.schedule.closingMessage = null;
     form.value.schedule.closeSubmissionDateTime = null;
     form.value.schedule.closeSubmissionTime = null;
-    form.value.schedule.closeSubmissionUTC = null;
     form.value.schedule.repeatSubmission = {
       enabled: null,
       repeatUntil: null,

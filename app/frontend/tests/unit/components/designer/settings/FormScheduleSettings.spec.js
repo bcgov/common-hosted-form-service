@@ -429,15 +429,6 @@ describe('FormScheduleSettings.vue', () => {
     wrapper.vm.saveTimezoneWithOpenDate();
     wrapper.vm.saveTimezoneWithCloseDate();
 
-    // Verify UTC timestamps were saved
-    expect(formStore.form.schedule.openSubmissionUTC).toBeTruthy();
-    expect(formStore.form.schedule.closeSubmissionUTC).toBeTruthy();
-
-    // Verify timestamps are in ISO format
-    const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/;
-    expect(formStore.form.schedule.openSubmissionUTC).toMatch(isoRegex);
-    expect(formStore.form.schedule.closeSubmissionUTC).toMatch(isoRegex);
-
     // Verify timezone was saved
     expect(formStore.form.schedule.timezone).toBeDefined();
     expect(formStore.form.schedule.timezone).toBe(wrapper.vm.timezone);
@@ -447,8 +438,6 @@ describe('FormScheduleSettings.vue', () => {
     wrapper.vm.scheduleTypeChanged();
     await flushPromises();
 
-    // Check if closeSubmissionUTC is cleared and hasCloseTime is reset
-    expect(formStore.form.schedule.closeSubmissionUTC).toBeNull();
     expect(formStore.form.schedule.closeSubmissionTime).toBeNull();
   });
 });

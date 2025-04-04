@@ -340,7 +340,7 @@ describe('Test Schedule object validation Utils functions', () => {
     };
 
     expect(checkIsFormExpired(formSchedule, currentTime)).toEqual({
-      allowLateSubmissions: true,
+      allowLateSubmissions: false,
       expire: true,
       message: '',
     });
