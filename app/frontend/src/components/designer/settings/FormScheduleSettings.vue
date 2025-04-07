@@ -1,7 +1,7 @@
 <script setup>
 import moment from 'moment-timezone';
 import { storeToRefs } from 'pinia';
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useFormStore } from '~/store/form';
@@ -67,57 +67,16 @@ function openDateTypeChanged() {
   }
 }
 
-function saveTimezoneWithOpenDate() {
+// Simplified scheduleTypeChanged - no longer resets values
+function scheduleTypeChanged() {
+  // Don't reset values, just update UI state if needed
+  // This preserves user settings when switching between types
+}
+
+// Combined timezone function
+function saveTimezone() {
   if (form.value.schedule.openSubmissionDateTime) {
     form.value.schedule.timezone = timezone.value;
-  }
-}
-
-function saveTimezoneWithCloseDate() {
-  if (
-    form.value.schedule.scheduleType === SCHEDULE_TYPE.value.CLOSINGDATE &&
-    form.value.schedule.closeSubmissionDateTime
-  ) {
-    form.value.schedule.timezone = timezone.value;
-  } else {
-    form.value.schedule.closeSubmissionDateTime = null;
-    form.value.schedule.closeSubmissionTime = null;
-  }
-}
-
-function scheduleTypeChanged() {
-  if (form.value.schedule.scheduleType === ScheduleType.MANUAL) {
-    form.value.schedule.keepOpenForTerm = null;
-    form.value.schedule.keepOpenForInterval = null;
-    form.value.schedule.closingMessageEnabled = null;
-    form.value.schedule.closingMessage = null;
-    form.value.schedule.closeSubmissionDateTime = null;
-    form.value.schedule.closeSubmissionTime = null;
-    form.value.schedule.repeatSubmission = {
-      enabled: null,
-      repeatUntil: null,
-      everyTerm: null,
-      everyIntervalType: null,
-    };
-    form.value.schedule.allowLateSubmissions = {
-      enabled: null,
-      forNext: {
-        term: null,
-        intervalType: null,
-      },
-    };
-  }
-  if (form.value.schedule.scheduleType === ScheduleType.CLOSINGDATE) {
-    form.value.schedule.keepOpenForTerm = null;
-    form.value.schedule.keepOpenForInterval = null;
-    form.value.schedule.closingMessageEnabled = null;
-    form.value.schedule.closingMessage = null;
-    form.value.schedule.repeatSubmission = {
-      enabled: null,
-      repeatUntil: null,
-      everyTerm: null,
-      everyIntervalType: null,
-    };
   }
 }
 
@@ -134,38 +93,63 @@ function formatDateForSummary(dateStr, timeStr) {
   return dateTime.format('MMMM D, YYYY [at] h:mm A');
 }
 
+// Setup initialization on component mount
+onMounted(() => {
+  // Check if it's a new schedule
+  const isNewSchedule = !form.value.schedule.scheduleType;
+
+  // Set default times for new schedules
+  if (isNewSchedule) {
+    form.value.schedule.openSubmissionTime = '08:30';
+    form.value.schedule.closeSubmissionTime = '16:00';
+  } else {
+    // For existing schedules, ensure times have defaults
+    if (!form.value.schedule.openSubmissionTime) {
+      form.value.schedule.openSubmissionTime = '00:00';
+    }
+    if (
+      form.value.schedule.scheduleType === SCHEDULE_TYPE.value.CLOSINGDATE &&
+      !form.value.schedule.closeSubmissionTime
+    ) {
+      form.value.schedule.closeSubmissionTime = '23:59';
+    }
+  }
+
+  // Check if we need to enable reminders
+  openDateTypeChanged();
+});
+
+// Watch for timezone changes
 watch(
-  () => form.value.schedule.openSubmissionTime,
-  () => saveTimezoneWithOpenDate(),
-  { immediate: true }
+  () => timezone.value,
+  () => {
+    saveTimezone();
+  }
 );
-watch(
-  () => form.value.schedule.closeSubmissionTime,
-  () => saveTimezoneWithCloseDate(),
-  { immediate: true }
-);
-watch(
-  () => form.value.schedule.closeSubmissionDateTime,
-  () => saveTimezoneWithCloseDate(),
-  { immediate: true }
-);
+
+// Watch for schedule type changes to initialize closing time
 watch(
   () => form.value.schedule.scheduleType,
   (newValue) => {
     if (newValue === SCHEDULE_TYPE.value.CLOSINGDATE) {
-      // Initialize close time for CLOSINGDATE type
+      // Initialize close time for CLOSINGDATE type if not already set
       if (!form.value.schedule.closeSubmissionTime) {
         form.value.schedule.closeSubmissionTime = '23:59';
       }
     }
-  },
-  { immediate: true }
+  }
 );
+
+// Watch for date/time changes to update timezone
 watch(
-  () => timezone.value,
+  [
+    () => form.value.schedule.openSubmissionTime,
+    () => form.value.schedule.openSubmissionDateTime,
+    () => form.value.schedule.closeSubmissionTime,
+    () => form.value.schedule.closeSubmissionDateTime,
+  ],
   () => {
-    saveTimezoneWithOpenDate();
-    saveTimezoneWithCloseDate();
+    saveTimezone();
   }
 );
 
@@ -173,8 +157,7 @@ defineExpose({
   enableReminderDraw,
   openDateTypeChanged,
   scheduleTypeChanged,
-  saveTimezoneWithCloseDate,
-  saveTimezoneWithOpenDate,
+  saveTimezone,
 });
 </script>
 
@@ -215,7 +198,7 @@ defineExpose({
           variant="outlined"
           :lang="locale"
           clearable
-          @update:model-value="saveTimezoneWithOpenDate"
+          @update:model-value="saveTimezone"
         >
           <template v-if="!isRTL" #append>
             <v-icon icon="mdi:mdi-clock-outline"></v-icon>
@@ -295,7 +278,7 @@ defineExpose({
               :rules="scheduleCloseDate"
               :lang="locale"
               clearable
-              @update:model-value="saveTimezoneWithCloseDate"
+              @update:model-value="saveTimezone"
             >
               <template v-if="isRTL" #prepend-inner>
                 <v-icon icon="mdi:mdi-calendar"></v-icon>
@@ -319,7 +302,7 @@ defineExpose({
               variant="outlined"
               :lang="locale"
               clearable
-              @update:model-value="saveTimezoneWithCloseDate"
+              @update:model-value="saveTimezone"
             >
               <template v-if="!isRTL" #append>
                 <v-icon icon="mdi:mdi-clock-outline"></v-icon>

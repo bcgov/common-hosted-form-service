@@ -203,7 +203,7 @@ describe('FormScheduleSettings.vue', () => {
     expect(wrapper.find('[data-test="text-name"]').exists()).toBeTruthy();
   });
 
-  it('changing schedule type to manual will set the appropriate values to null', async () => {
+  it('changing schedule type preserves values when switching between types', async () => {
     const SOME_DAY = moment();
     const wrapper = mount(FormScheduleSettings, {
       global: {
@@ -221,6 +221,7 @@ describe('FormScheduleSettings.vue', () => {
       },
     });
 
+    // Setup initial CLOSINGDATE values
     formStore.form.schedule = {
       ...formStore.form.schedule,
       scheduleType: ScheduleType.CLOSINGDATE,
@@ -236,6 +237,7 @@ describe('FormScheduleSettings.vue', () => {
       },
     };
 
+    // Verify initial values
     expect(formStore.form.schedule.scheduleType).toEqual(
       ScheduleType.CLOSINGDATE
     );
@@ -252,25 +254,53 @@ describe('FormScheduleSettings.vue', () => {
       formStore.form.schedule.allowLateSubmissions.forNext.intervalType
     ).toEqual('days');
 
-    // Change it to MANUAL
+    // Change to MANUAL
     formStore.form.schedule.scheduleType = ScheduleType.MANUAL;
 
     await flushPromises();
 
     wrapper.vm.scheduleTypeChanged();
 
+    // values should be preserved
     expect(formStore.form.schedule.scheduleType).toEqual(ScheduleType.MANUAL);
-    expect(formStore.form.schedule.closingMessageEnabled).toEqual(null);
-    expect(formStore.form.schedule.closingMessage).toEqual(null);
-    expect(formStore.form.schedule.closeSubmissionDateTime).toEqual(null);
-    expect(formStore.form.schedule.allowLateSubmissions.enabled).toEqual(null);
+    expect(formStore.form.schedule.closingMessageEnabled).toBeTruthy();
+    expect(formStore.form.schedule.closingMessage).toEqual(
+      'This is a closing message'
+    );
+    expect(formStore.form.schedule.closeSubmissionDateTime).toEqual(SOME_DAY);
+    expect(formStore.form.schedule.allowLateSubmissions.enabled).toBeTruthy();
     expect(formStore.form.schedule.allowLateSubmissions.forNext.term).toEqual(
-      null
+      2
     );
     expect(
       formStore.form.schedule.allowLateSubmissions.forNext.intervalType
-    ).toEqual(null);
+    ).toEqual('days');
+
+    // Change back to CLOSINGDATE
+    formStore.form.schedule.scheduleType = ScheduleType.CLOSINGDATE;
+
+    await flushPromises();
+
+    wrapper.vm.scheduleTypeChanged();
+
+    // Values should still be preserved
+    expect(formStore.form.schedule.scheduleType).toEqual(
+      ScheduleType.CLOSINGDATE
+    );
+    expect(formStore.form.schedule.closingMessageEnabled).toBeTruthy();
+    expect(formStore.form.schedule.closingMessage).toEqual(
+      'This is a closing message'
+    );
+    expect(formStore.form.schedule.closeSubmissionDateTime).toEqual(SOME_DAY);
+    expect(formStore.form.schedule.allowLateSubmissions.enabled).toBeTruthy();
+    expect(formStore.form.schedule.allowLateSubmissions.forNext.term).toEqual(
+      2
+    );
+    expect(
+      formStore.form.schedule.allowLateSubmissions.forNext.intervalType
+    ).toEqual('days');
   });
+
   it('documents legacy PERIOD functionality for backward compatibility', async () => {
     // This test documents that the application maintains support for
     // forms with PERIOD schedule type even after removing it from the UI
@@ -327,75 +357,8 @@ describe('FormScheduleSettings.vue', () => {
     // schedule type, ensuring backward compatibility for existing forms
     // even after removing it from the UI
   });
-  it('changing schedule type to closing will set the appropriate values to null', async () => {
-    const SOME_DAY = moment();
-    const wrapper = mount(FormScheduleSettings, {
-      global: {
-        plugins: [pinia],
-        stubs: {
-          BaseInfoCard: {
-            name: 'BaseInfoCard',
-            template: '<div class="base-info-card-stub"><slot /></div>',
-          },
-          BasePanel: {
-            name: 'BasePanel',
-            template: '<div class="base-panel-stub"><slot /></div>',
-          },
-        },
-      },
-    });
 
-    formStore.form.schedule = {
-      ...formStore.form.schedule,
-      scheduleType: ScheduleType.MANUAL,
-      closingMessageEnabled: true,
-      closingMessage: 'This is a closing message',
-      closeSubmissionDateTime: SOME_DAY,
-      allowLateSubmissions: {
-        enabled: true,
-        forNext: {
-          term: 2,
-          intervalType: 'days',
-        },
-      },
-    };
-
-    expect(formStore.form.schedule.scheduleType).toEqual(ScheduleType.MANUAL);
-    expect(formStore.form.schedule.closingMessageEnabled).toBeTruthy();
-    expect(formStore.form.schedule.closingMessage).toEqual(
-      'This is a closing message'
-    );
-    expect(formStore.form.schedule.closeSubmissionDateTime).toEqual(SOME_DAY);
-    expect(formStore.form.schedule.allowLateSubmissions.enabled).toBeTruthy();
-    expect(formStore.form.schedule.allowLateSubmissions.forNext.term).toEqual(
-      2
-    );
-    expect(
-      formStore.form.schedule.allowLateSubmissions.forNext.intervalType
-    ).toEqual('days');
-
-    // Change it to CLOSINGDATE
-    formStore.form.schedule.scheduleType = ScheduleType.CLOSINGDATE;
-
-    await flushPromises();
-
-    wrapper.vm.scheduleTypeChanged();
-
-    expect(formStore.form.schedule.scheduleType).toEqual(
-      ScheduleType.CLOSINGDATE
-    );
-    expect(formStore.form.schedule.closingMessageEnabled).toEqual(null);
-    expect(formStore.form.schedule.closingMessage).toEqual(null);
-    expect(formStore.form.schedule.closeSubmissionDateTime).toEqual(SOME_DAY);
-    expect(formStore.form.schedule.allowLateSubmissions.enabled).toEqual(true);
-    expect(formStore.form.schedule.allowLateSubmissions.forNext.term).toEqual(
-      2
-    );
-    expect(
-      formStore.form.schedule.allowLateSubmissions.forNext.intervalType
-    ).toEqual('days');
-  });
-  it('saves UTC timestamps when times are selected', async () => {
+  it('saves timezone when times are selected', async () => {
     const wrapper = mount(FormScheduleSettings, {
       global: {
         plugins: [pinia],
@@ -425,19 +388,66 @@ describe('FormScheduleSettings.vue', () => {
     formStore.form.schedule.openSubmissionTime = testOpenTime;
     formStore.form.schedule.closeSubmissionTime = testCloseTime;
 
-    // Call the functions to save timezone info
-    wrapper.vm.saveTimezoneWithOpenDate();
-    wrapper.vm.saveTimezoneWithCloseDate();
+    // Call the new combined timezone function
+    wrapper.vm.saveTimezone();
 
     // Verify timezone was saved
     expect(formStore.form.schedule.timezone).toBeDefined();
     expect(formStore.form.schedule.timezone).toBe(wrapper.vm.timezone);
 
-    // Verify schedule type change clears closeSubmissionUTC
+    // Verify changing schedule type doesn't affect times
     formStore.form.schedule.scheduleType = ScheduleType.MANUAL;
     wrapper.vm.scheduleTypeChanged();
     await flushPromises();
 
-    expect(formStore.form.schedule.closeSubmissionTime).toBeNull();
+    // Times should be preserved with our new implementation
+    expect(formStore.form.schedule.openSubmissionTime).toBe(testOpenTime);
+    expect(formStore.form.schedule.closeSubmissionTime).toBe(testCloseTime);
+  });
+
+  it('initializes default times for new schedules on mount', async () => {
+    // Ensure we're testing a new schedule (scheduleType is null)
+    formStore.form.schedule.scheduleType = null;
+    formStore.form.schedule.openSubmissionTime = null;
+    formStore.form.schedule.closeSubmissionTime = null;
+
+    const wrapper = mount(FormScheduleSettings, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          BasePanel: {
+            name: 'BasePanel',
+            template: '<div class="base-panel-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    // Verify default times were set for new schedules
+    expect(formStore.form.schedule.openSubmissionTime).toBe('08:30');
+    expect(formStore.form.schedule.closeSubmissionTime).toBe('16:00');
+  });
+
+  it('initializes default times for existing schedules on mount', async () => {
+    // Setup an existing schedule with missing times
+    formStore.form.schedule.scheduleType = ScheduleType.CLOSINGDATE;
+    formStore.form.schedule.openSubmissionTime = null;
+    formStore.form.schedule.closeSubmissionTime = null;
+
+    const wrapper = mount(FormScheduleSettings, {
+      global: {
+        plugins: [pinia],
+        stubs: {
+          BasePanel: {
+            name: 'BasePanel',
+            template: '<div class="base-panel-stub"><slot /></div>',
+          },
+        },
+      },
+    });
+
+    // Verify default times were set for existing schedules
+    expect(formStore.form.schedule.openSubmissionTime).toBe('00:00');
+    expect(formStore.form.schedule.closeSubmissionTime).toBe('23:59');
   });
 });
