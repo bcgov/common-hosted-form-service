@@ -50,6 +50,8 @@ const BCSC_EXTRAS_OLD = {
   formAccessSettings: 'idim',
 };
 
+const UPDATED_BY = 'idp_sort_order';
+
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
@@ -62,6 +64,7 @@ exports.up = function (knex) {
           .where({ code: 'idir' })
           .update({
             extra: { sortOrder: 10 },
+            updatedBy: UPDATED_BY,
           })
       )
       .then(() =>
@@ -72,6 +75,7 @@ exports.up = function (knex) {
               sortOrder: 20,
               ...BCSC_EXTRAS_OLD,
             },
+            updatedBy: UPDATED_BY,
           })
       )
       .then(() =>
@@ -79,6 +83,7 @@ exports.up = function (knex) {
           .where({ code: 'bceid-basic' })
           .update({
             extra: { sortOrder: 30, ...BCEID_EXTRAS_NEW },
+            updatedBy: UPDATED_BY,
           })
       )
       .then(() =>
@@ -86,6 +91,7 @@ exports.up = function (knex) {
           .where({ code: 'bceid-business' })
           .update({
             extra: { sortOrder: 40, ...BCEID_EXTRAS_NEW },
+            updatedBy: UPDATED_BY,
           })
       )
   );
@@ -99,24 +105,36 @@ exports.down = function (knex) {
   return Promise.resolve().then(() =>
     knex.schema
       .then(() =>
-        knex('identity_provider').where({ code: 'idir' }).update({
-          extra: {},
-        })
+        knex('identity_provider')
+          .where({ code: 'idir' })
+          .update({
+            extra: {},
+            updatedBy: `${UPDATED_BY}_rollback`,
+          })
       )
       .then(() =>
-        knex('identity_provider').where({ code: 'bcservicescard' }).update({
-          extra: BCSC_EXTRAS_OLD,
-        })
+        knex('identity_provider')
+          .where({ code: 'bcservicescard' })
+          .update({
+            extra: BCSC_EXTRAS_OLD,
+            updatedBy: `${UPDATED_BY}_rollback`,
+          })
       )
       .then(() =>
-        knex('identity_provider').where({ code: 'bceid-basic' }).update({
-          extra: BCEID_EXTRAS_OLD,
-        })
+        knex('identity_provider')
+          .where({ code: 'bceid-basic' })
+          .update({
+            extra: BCEID_EXTRAS_OLD,
+            updatedBy: `${UPDATED_BY}_rollback`,
+          })
       )
       .then(() =>
-        knex('identity_provider').where({ code: 'bceid-business' }).update({
-          extra: BCEID_EXTRAS_OLD,
-        })
+        knex('identity_provider')
+          .where({ code: 'bceid-business' })
+          .update({
+            extra: BCEID_EXTRAS_OLD,
+            updatedBy: `${UPDATED_BY}_rollback`,
+          })
       )
   );
 };
