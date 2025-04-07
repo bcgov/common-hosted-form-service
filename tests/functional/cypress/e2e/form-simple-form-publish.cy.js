@@ -3,7 +3,6 @@ import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
 
-
 Cypress.Commands.add('waitForLoad', () => {
   const loaderTimeout = 80000;
 
@@ -24,7 +23,6 @@ it('Visits the form settings page', () => {
   cy.waitForLoad();
   formsettings();
 });
-
   // Form design page for Field set components
 it('Checks Content', () => {
 
@@ -41,10 +39,8 @@ it('Checks Content', () => {
     cy.waitForLoad();
     cy.get('button').contains('Save').click();
     });
-
 });
 it('Checks the well', () => {
-
 cy.viewport(1000, 1800);
 cy.waitForLoad();
 // using Advance Layout components
@@ -82,7 +78,6 @@ it('Checks the Button', () => {
         cy.get('input[name="data[label]"]').clear().type('Submit');
         cy.get('button').contains('Save').click();
     });
-
 });
 it('Checks the Survey', () => {
     cy.viewport(1000, 1800);
@@ -106,7 +101,6 @@ it('Checks the Survey', () => {
         cy.get('input[name="data[questions][1][label]"]').type('Female');
         cy.get('button').contains('Save').click();
     });
-
 });
 it('Checks the Signature', () => {
     cy.viewport(1000, 1800);
@@ -124,18 +118,27 @@ it('Checks the Signature', () => {
         cy.wait(2000);
         cy.get('button').contains('Save').click();
     });
-
     // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
     cy.wait(2000);
     // Filter the newly created form
-    cy.location('search').then(search => {
-        //let pathName = fullUrl.pathname
+   cy.location('search').then(search => {
     let arr = search.split('=');
     let arrayValues = arr[1].split('&');
     cy.log(arrayValues[0]);
+    let dval=arr[2].split('&');
+    cy.log(dval);
+    // Form preview
+    cy.visit(`/${depEnv}/form/preview?f=${arrayValues[0]}&d=${dval[0]}`);
+    cy.wait(2000);
+    //Verify added components presence in the form
+    cy.get('.v-skeleton-loader > .v-container').should('be.visible');
+    cy.get('.card').should('be.visible');
+    cy.get('button[name="data[simplebuttonadvanced1]"]').should('be.visible');
+    cy.get('label').contains('Survey').should('be.visible');
+    cy.get('.signature-pad-canvas').should('be.visible');
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.wait(2000);
     });
@@ -194,8 +197,7 @@ it('Validate Ministry list', () => {
       cy.contains('Continue').trigger('click');
         //Delete form after test run
       cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
-      cy.get('[data-test="continue-btn-continue"]').click();
-      
+      cy.get('[data-test="continue-btn-continue"]').click();    
 }); 
 it("Validate admin tab", () => {
       cy.wait(5000);
@@ -208,6 +210,5 @@ it("Validate admin tab", () => {
       cy.get('[value="dashboard"] > .v-btn__content').should('exist');
       //Logout after test run
       cy.get('#logoutButton > .v-btn__content > span').click();
-  
 });  
 });
