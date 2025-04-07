@@ -107,10 +107,7 @@ onMounted(() => {
     if (!form.value.schedule.openSubmissionTime) {
       form.value.schedule.openSubmissionTime = '00:00';
     }
-    if (
-      form.value.schedule.scheduleType === SCHEDULE_TYPE.value.CLOSINGDATE &&
-      !form.value.schedule.closeSubmissionTime
-    ) {
+    if (!form.value.schedule.closeSubmissionTime) {
       form.value.schedule.closeSubmissionTime = '23:59';
     }
   }

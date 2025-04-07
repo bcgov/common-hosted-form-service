@@ -411,7 +411,7 @@ describe('FormScheduleSettings.vue', () => {
     formStore.form.schedule.openSubmissionTime = null;
     formStore.form.schedule.closeSubmissionTime = null;
 
-    const wrapper = mount(FormScheduleSettings, {
+    mount(FormScheduleSettings, {
       global: {
         plugins: [pinia],
         stubs: {
@@ -434,7 +434,7 @@ describe('FormScheduleSettings.vue', () => {
     formStore.form.schedule.openSubmissionTime = null;
     formStore.form.schedule.closeSubmissionTime = null;
 
-    const wrapper = mount(FormScheduleSettings, {
+    mount(FormScheduleSettings, {
       global: {
         plugins: [pinia],
         stubs: {
