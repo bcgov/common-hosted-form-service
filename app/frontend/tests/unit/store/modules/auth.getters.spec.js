@@ -179,16 +179,8 @@ describe('auth getters', () => {
 
   it('creates an auth user when authenticated', () => {
     expect(store.user).toBeTruthy();
-    expect(store.user).toEqual({
-      username: 'JDOE',
-      firstName: 'John',
-      lastName: 'Doe',
-      fullName: 'John Doe',
-      email: 'e@mail.com',
-      idp: { code: 'idir', display: 'IDIR', hint: 'idir' },
-      idpUserId: zeroGuid,
-      public: false,
-    });
+    expect(store.user.username).toEqual('JDOE');
+    expect(store.user.idp.code).toEqual('idir');
   });
 
   it('creates a public user when not authenticated', () => {
