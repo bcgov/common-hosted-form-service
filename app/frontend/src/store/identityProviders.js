@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia';
 
+const getOrder = (p) => (p.extra?.sortOrder ? p.extra.sortOrder : 100);
+
 export const useIdpStore = defineStore('idps', {
   state: () => ({
     providers: null,
@@ -14,7 +16,7 @@ export const useIdpStore = defineStore('idps', {
               code: p.code,
               display: p.display,
               hint: p.idp,
-              order: p.extra?.sortOrder ? p.extra.sortOrder : 100,
+              order: getOrder(p),
             });
           }
         }
@@ -48,7 +50,7 @@ export const useIdpStore = defineStore('idps', {
               code: p.code,
               display: p.display,
               hint: p.idp,
-              order: p.extra?.sortOrder ? p.extra.sortOrder : 100,
+              order: getOrder(p),
             });
           }
         }
@@ -136,7 +138,7 @@ export const useIdpStore = defineStore('idps', {
             code: idp.code,
             display: idp.display,
             hint: idp.idp,
-            order: idp.extra?.sortOrder ? idp.extra.sortOrder : 100,
+            order: getOrder(idp),
           };
         }
       }
@@ -150,7 +152,7 @@ export const useIdpStore = defineStore('idps', {
             code: idp.code,
             display: idp.display,
             hint: idp.idp,
-            order: idp.extra?.sortOrder ? idp.extra.sortOrder : 100,
+            order: getOrder(idp),
           };
         }
       }
