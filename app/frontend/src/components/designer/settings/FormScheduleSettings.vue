@@ -100,7 +100,11 @@ onMounted(() => {
 
   // Set default times for new schedules
   if (isNewSchedule) {
+    const today = moment().format('YYYY-MM-DD');
+    form.value.schedule.openSubmissionDateTime = today;
     form.value.schedule.openSubmissionTime = '08:30';
+    const oneWeekLater = moment().add(7, 'days').format('YYYY-MM-DD');
+    form.value.schedule.closeSubmissionDateTime = oneWeekLater;
     form.value.schedule.closeSubmissionTime = '16:00';
   } else {
     // For existing schedules, ensure times have defaults
