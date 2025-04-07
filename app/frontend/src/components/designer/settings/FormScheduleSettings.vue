@@ -36,9 +36,22 @@ const scheduleCloseDate = ref([
         /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
       ).test(v)) ||
     t('trans.formSettings.correctDateFormat'),
-  (v) =>
-    moment(v).isAfter(form.value.schedule.openSubmissionDateTime, 'day') ||
-    t('trans.formSettings.dateDiffMsg'),
+  (v) => {
+    // If dates are different, ensure close date is after open date
+    if (v !== form.value.schedule.openSubmissionDateTime) {
+      return (
+        moment(v).isAfter(form.value.schedule.openSubmissionDateTime) ||
+        t('trans.formSettings.dateDiffMsg')
+      );
+    }
+
+    // If same day, ensure close time is after open time
+    return (
+      moment(form.value.schedule.closeSubmissionTime, 'HH:mm').isAfter(
+        moment(form.value.schedule.openSubmissionTime, 'HH:mm')
+      ) || t('trans.formSettings.dateDiffMsg')
+    );
+  },
 ]);
 const roundNumber = ref([
   (v) => !!v || t('trans.formSettings.fieldRequired'),
