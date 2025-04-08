@@ -1,8 +1,10 @@
 const uuid = require('uuid');
-const { Form, FormSubmissionUserPermissions, PublicFormAccess, SubmissionMetadata, User, UserFormAccess } = require('../common/models');
-const { queryUtils } = require('../common/utils');
+const { Form, FormSubmissionUserPermissions, PublicFormAccess, SubmissionMetadata, User, UserFormAccess, FormTenantMapping } = require('../common/models');
+const { queryUtils, expandUserRoles } = require('../common/utils');
 
 const idpService = require('../../components/idpService');
+const tenantService = require('../tms/service');
+const roleService = require('../role/service');
 
 const FORM_SUBMITTER = require('../common/constants').Permissions.FORM_SUBMITTER;
 
@@ -98,9 +100,57 @@ const service = {
       items = await PublicFormAccess.query().modify('filterFormId', params.formId).modify('filterActive', params.active);
       // ignore any passed in accessLevel params, only return public
       return service.filterForms(userInfo, items, ['public']);
+    } else if (userInfo.tenantId) {
+      // if user has an tenantId, then we fetch whatever forms match the tenantId
+      items = await UserFormAccess.query()
+        .modify('filterTenantId', userInfo.tenantId)
+        .modify('filterUserId', userInfo.id)
+        .modify('filterFormId', params.formId)
+        .modify('filterActive', params.active);
+      const roles = await roleService.list();
+
+      const userRolesForTenant = await tenantService.getRolesForUserGivenTenant(userInfo);
+      const userRoles = userRolesForTenant ? userRolesForTenant : [];
+
+      const expandedUserRolesForTenant = expandUserRoles(userRoles.map((userRole) => userRole.name));
+      const userRolesForTenantSet = new Set(expandedUserRolesForTenant);
+
+      items.forEach((form) => {
+        const userPermissions = roles.filter((role) => userRolesForTenantSet.has(role.code)).flatMap((role) => role.permissions.map((permission) => permission.code));
+
+        // Remove duplicates
+        form.permissions = [...new Set(userPermissions)];
+        form.roles = expandedUserRolesForTenant;
+      });
+
+      return service.filterForms(userInfo, items, params.accessLevels);
     } else {
       // if user has an id, then we fetch whatever forms match the query params
-      items = await UserFormAccess.query().modify('filterUserId', userInfo.id).modify('filterFormId', params.formId).modify('filterActive', params.active);
+      items = await UserFormAccess.query()
+        .modify('filterUserId', userInfo.id) /** .modify('noTenantId')**/
+        .modify('filterFormId', params.formId)
+        .modify('filterActive', params.active);
+      if (items.length == 1 && !items[0].roles.length) {
+        let formTenantMapping = await FormTenantMapping.query().modify('filterFormId', params.formId);
+        if (formTenantMapping && formTenantMapping.length > 0) {
+          const firstFormTenantMapping = formTenantMapping[0];
+          const userRolesForTenant = await tenantService.getRolesForUserIdGivenTenantId(firstFormTenantMapping.tenantId, userInfo.idpUserId);
+          const roles = await roleService.list();
+
+          const userRoles = userRolesForTenant ? userRolesForTenant : [];
+
+          const expandedUserRolesForTenant = expandUserRoles(userRoles.map((userRole) => userRole.name));
+          const userRolesForTenantSet = new Set(expandedUserRolesForTenant);
+
+          items.forEach((form) => {
+            const userPermissions = roles.filter((role) => userRolesForTenantSet.has(role.code)).flatMap((role) => role.permissions.map((permission) => permission.code));
+
+            // Remove duplicates
+            form.permissions = [...new Set(userPermissions)];
+            form.roles = expandedUserRolesForTenant;
+          });
+        }
+      }
       return service.filterForms(userInfo, items, params.accessLevels);
     }
   },

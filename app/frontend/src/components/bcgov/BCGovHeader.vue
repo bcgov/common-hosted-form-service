@@ -1,8 +1,10 @@
 <script setup>
 import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
 import BCLogo from '~/assets/images/bc_logo.svg';
 import PrintLogo from '~/assets/images/bc_logo_print.svg';
 import { useFormStore } from '~/store/form';
+import { useTenantStore } from '~/store/tenant';
 
 defineProps({
   formSubmitMode: {
@@ -16,6 +18,8 @@ defineProps({
 });
 
 const { isRTL } = storeToRefs(useFormStore());
+const { getTenantName } = storeToRefs(useTenantStore());
+const tenantName = computed(() => getTenantName.value);
 </script>
 
 <template>
@@ -39,7 +43,8 @@ const { isRTL } = storeToRefs(useFormStore());
         data-test="btn-header-title"
         class="font-weight-bold text-h6 d-none d-md-inline pl-4"
       >
-        {{ appTitle }}
+        {{ appTitle }} <span v-if="tenantName" class="ml-4"> | </span>
+        <span v-if="tenantName" class="ml-4">Tenant: {{ tenantName }}</span>
       </h1>
     </div>
 
@@ -64,7 +69,8 @@ const { isRTL } = storeToRefs(useFormStore());
         data-test="btn-header-title"
         class="font-weight-bold text-h6 d-none d-md-flex pl-4"
       >
-        {{ appTitle }}
+        {{ appTitle }} <span v-if="tenantName" class="ml-4"> | </span>
+        <span v-if="tenantName" class="ml-4">Tenant: {{ tenantName }}</span>
       </h1>
       <v-spacer />
       <BaseAuthButton data-test="base-auth-btn" />
@@ -103,6 +109,9 @@ const { isRTL } = storeToRefs(useFormStore());
     margin-bottom: 0;
     @media #{map-get($display-breakpoints, 'sm-and-down')} {
       font-size: 1rem !important;
+    }
+    span {
+      margin-left: 8px;
     }
   }
 }

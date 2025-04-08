@@ -6,6 +6,8 @@ const Permissions = require('../../common/constants').Permissions;
 const Roles = require('../../common/constants').Roles;
 const service = require('../service');
 const rbacService = require('../../rbac/service');
+const tenantService = require('../../tms/service');
+const roleService = require('../../role/service');
 
 /**
  * Gets the form metadata for the given formId from the forms available to the
@@ -37,8 +39,32 @@ const _getForm = async (currentUser, formId, includeDeleted) => {
     });
     form = deletedForms.find((f) => f.formId === formId);
   }
-
+  if (currentUser.tenantId) {
+    getUserRolesAndPermissions(currentUser, form);
+  }
   return form;
+};
+const getUserRolesAndPermissions = async (currentUser, form) => {
+  const roles = await roleService.list();
+  const userRolesForTenant = await tenantService.getRolesForUserGivenTenant(currentUser);
+  const userRoles = userRolesForTenant ? userRolesForTenant : [];
+
+  const expandedUserRolesForTenant = expandUserRoles(userRoles.map((userRole) => userRole.name));
+  const userRolesForTenantSet = new Set(expandedUserRolesForTenant);
+
+  const userPermissions = roles.filter((role) => userRolesForTenantSet.has(role.code)).flatMap((role) => role.permissions.map((permission) => permission.code));
+  // Remove duplicates
+  form.permissions = [...new Set(userPermissions)];
+  form.roles = expandedUserRolesForTenant;
+};
+const expandUserRoles = (userRolesForTenantNames) => {
+  const roleMapping = {
+    form_designer: ['owner', 'team_manager', 'form_designer'],
+    submission_reviewer: ['submission_reviewer', 'submission_approver'],
+    form_submitter: ['form_submitter'],
+  };
+
+  return [...new Set(userRolesForTenantNames.flatMap((role) => roleMapping[role] || [role]))];
 };
 
 /**
@@ -114,7 +140,7 @@ const currentUser = async (req, _res, next) => {
     // is ok if the access token isn't defined: then we'll have a public user.
     const accessToken = await jwtService.getTokenPayload(req);
     req.currentUser = await service.login(accessToken);
-
+    req.currentUser.tenantId = req.headers['x-tenant-id'];
     next();
   } catch (error) {
     next(error);
@@ -291,7 +317,15 @@ const hasRoleDeletePermissions = async (req, _res, next) => {
         }
 
         // Convert to an array of role strings, rather than the objects.
-        const userRoles = (await rbacService.readUserRole(userId, form.formId)).map((userRole) => userRole.role);
+        let userRoles = [];
+        if (!currentUser.tenantId) {
+          userRoles = (await rbacService.readUserRole(userId, form.formId)).map((userRole) => userRole.role);
+        } else {
+          const userRolesForTenant = await tenantService.getRolesForUserGivenTenant(currentUser);
+          const userRolesArr = userRolesForTenant ? userRolesForTenant.roles : [];
+
+          userRoles = expandUserRoles(userRolesArr.map((userRole) => userRole.name));
+        }
 
         // A non-owner can't delete an owner.
         if (userRoles.includes(Roles.OWNER) && userId !== currentUser.id) {
