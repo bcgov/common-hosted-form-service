@@ -140,6 +140,13 @@
     "summary": "Zusammenfassung",
     "submissionsOpenDateRange": "Dieses Formular ist für Einsendungen geöffnet",
     "to": "Zu",
+    "timezoneIndicator": "Alle Zeiten sind in Ihrer lokalen Zeitzone ({timezone})",
+    "openTime": "Öffnungszeit",
+    "closeTime": "Schließzeit",
+    "at": "um",
+    "specifyOpenTime": "Öffnungszeit angeben (optional)",
+    "specifyCloseTime": "Schließzeit angeben (optional)",
+    "closingTimeInfo": "(Das Formular wird um 23:59 Uhr in Ihrer lokalen Zeitzone am Schließungsdatum geschlossen)",
     "scheduleRepetition": "Der Zeitplan wiederholt sich alle",
     "allowLateSubmissnInterval": "Zulassen verspäteter Einreichungen für",
     "until": "bis",
@@ -1210,5 +1217,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "Sie können den Entwurf nicht mit Benutzern teilen, die nicht zum Formular hinzugefügt wurden. Wenden Sie sich an den Administrator, um sie hinzuzufügen.",
+    "shareDraftMessage":"Geben Sie den Entwurf nur an die Mitglieder des Formularteams weiter"
   }
 }

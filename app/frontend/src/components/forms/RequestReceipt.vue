@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import { onMounted, ref } from 'vue';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
-import { formService } from '~/services';
+import { formService, rbacService } from '~/services';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
 import { NotificationTypes } from '~/utils/constants';
@@ -20,18 +20,24 @@ const properties = defineProps({
     type: String,
     required: true,
   },
+  formId: {
+    type: String,
+    required: true,
+  },
 });
 
 const emailRules = ref([(v) => !!v || 'E-mail is required']);
-const form = ref(null);
+const forms = ref(null);
 const priority = ref('normal');
 const showDialog = ref(false);
 const to = ref('');
+const formStore = useFormStore();
 
-const { isRTL } = storeToRefs(useFormStore());
+const { isRTL, form } = storeToRefs(useFormStore());
 
 onMounted(() => {
   resetDialog();
+  formStore.fetchSubmission({ submissionId: properties.submissionId });
 });
 
 function displayDialog() {
@@ -39,10 +45,25 @@ function displayDialog() {
 }
 
 async function requestReceipt() {
-  const { valid } = await form.value.validate();
+  const { valid } = await forms.value.validate();
   if (valid) {
     const notificationStore = useNotificationStore();
     try {
+      if (form.value.enableTeamMemberDraftShare) {
+        const formUsersResponse = await rbacService.isUserAssignedToFormTeams({
+          formId: properties.formId,
+          email: to.value,
+          roles: '*',
+        });
+
+        if (formUsersResponse && !formUsersResponse.data) {
+          notificationStore.addNotification({
+            ...NotificationTypes.ERROR,
+            text: t('trans.canShareDraft.canShareMessage'),
+          });
+          return;
+        }
+      }
       await formService.requestReceiptEmail(properties.submissionId, {
         priority: priority.value,
         to: to.value,
@@ -69,7 +90,7 @@ function resetDialog() {
   to.value = properties.email;
 }
 
-defineExpose({ displayDialog, form, showDialog });
+defineExpose({ displayDialog, forms, showDialog });
 </script>
 
 <template>
@@ -94,7 +115,7 @@ defineExpose({ displayDialog, form, showDialog });
       @continue-dialog="requestReceipt()"
     >
       <template #text>
-        <v-form ref="form" @submit="requestReceipt()" @submit.prevent>
+        <v-form ref="forms" @submit="requestReceipt()" @submit.prevent>
           <v-text-field
             v-model="to"
             density="compact"

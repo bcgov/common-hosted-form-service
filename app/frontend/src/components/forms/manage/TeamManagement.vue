@@ -153,7 +153,6 @@ async function getFormUsers() {
       formId: properties.formId,
       roles: '*',
     });
-
     formUsers.value = formUsersResponse?.data?.map((user) => {
       user.idp = idpStore.findByCode(user.user_idpCode);
       return user;

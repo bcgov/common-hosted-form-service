@@ -139,7 +139,14 @@
     "repeatUntil": "ਤੱਕ ਦੁਹਰਾਓ",
     "summary": "ਸੰਖੇਪ",
     "submissionsOpenDateRange": "ਇਹ ਫਾਰਮ ਸਬਮਿਸ਼ਨ ਲਈ ਖੁੱਲ੍ਹਾ ਹੋਵੇਗਾ",
+    "timezoneIndicator": "ਸਾਰਾ ਸਮਾਂ ਤੁਹਾਡੇ ਸਥਾਨਕ ਸਮੇਂ ਦੇ ਖੇਤਰ ਵਿੱਚ ਹੈ ({timezone})",
     "to": "ਨੂੰ",
+    "openTime": "ਖੁੱਲ੍ਹਣ ਦਾ ਸਮਾਂ",
+    "closeTime": "ਬੰਦ ਹੋਣ ਦਾ ਸਮਾਂ",
+    "at": "ਵਜੇ",
+    "specifyOpenTime": "ਖੁੱਲ੍ਹਣ ਦਾ ਸਮਾਂ ਨਿਰਧਾਰਿਤ ਕਰੋ (ਵਿਕਲਪਿਕ)",
+    "specifyCloseTime": "ਬੰਦ ਹੋਣ ਦਾ ਸਮਾਂ ਨਿਰਧਾਰਿਤ ਕਰੋ (ਵਿਕਲਪਿਕ)",
+    "closingTimeInfo": "(ਫਾਰਮ ਬੰਦ ਹੋਣ ਦੀ ਮਿਤੀ 'ਤੇ ਤੁਹਾਡੇ ਸਥਾਨਕ ਸਮੇਂ ਜ਼ੋਨ ਵਿੱਚ ਰਾਤ 11:59 ਵਜੇ ਬੰਦ ਹੋ ਜਾਵੇਗਾ)",
     "scheduleRepetition": "ਅਨੁਸੂਚੀ ਹਰ ਵਾਰ ਦੁਹਰਾਈ ਜਾਵੇਗੀ",
     "allowLateSubmissnInterval": "ਲਈ ਦੇਰ ਨਾਲ ਸਬਮਿਸ਼ਨ ਦੀ ਇਜਾਜ਼ਤ ਦੇ ਰਿਹਾ ਹੈ",
     "until": "ਜਦ ਤੱਕ",
@@ -1210,5 +1217,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਉਪਭੋਗਤਾਵਾਂ ਨਾਲ ਡਰਾਫਟ ਸਾਂਝਾ ਨਹੀਂ ਕਰ ਸਕਦੇ ਜਿਨ੍ਹਾਂ ਨੂੰ ਫਾਰਮ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਉਹਨਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।",
+    "shareDraftMessage":"ਡਰਾਫਟ ਸਿਰਫ਼ ਫਾਰਮ ਟੀਮ ਮੈਂਬਰਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰੋ"
   }
 }
