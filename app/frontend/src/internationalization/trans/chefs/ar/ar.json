@@ -140,6 +140,13 @@
     "summary": "ملخص",
     "submissionsOpenDateRange": "سيتم فتح هذا النموذج لتقديم الطلبات من",
     "to": "ل",
+    "timezoneIndicator": "جميع الأوقات هي في منطقتك الزمنية المحلية ({timezone})",
+    "openTime": "وقت الفتح",
+    "closeTime": "وقت الإغلاق",
+    "at": "في",
+    "specifyOpenTime": "تحديد وقت الفتح (اختياري)",
+    "specifyCloseTime": "تحديد وقت الإغلاق (اختياري)",
+    "closingTimeInfo": "(سيتم إغلاق النموذج في الساعة 11:59 مساءً بالتوقيت المحلي الخاص بك في تاريخ الإغلاق)",
     "scheduleRepetition": "الجدول الزمني سوف يتكرر كل",
     "allowLateSubmissnInterval": "السماح بتقديم الطلبات المتأخرة لـ",
     "until": "حتى",
@@ -1210,5 +1217,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "لا يُمكنك مشاركة المسودة مع المستخدمين الذين لم تتم إضافتهم إلى النموذج. يُرجى التواصل مع المشرف لإضافتهم.",
+    "shareDraftMessage":"مشاركة المسودة مع أعضاء فريق النموذج فقط"
   }
 }

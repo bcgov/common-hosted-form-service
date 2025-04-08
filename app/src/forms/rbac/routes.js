@@ -52,4 +52,8 @@ routes.delete('/users', hasFormPermissions([P.TEAM_UPDATE]), hasFormRoles([R.OWN
   await controller.removeMultiUsers(req, res, next);
 });
 
+routes.get('/form/user', hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+  await controller.isUserPartOfFormTeams(req, res, next);
+});
+
 module.exports = routes;

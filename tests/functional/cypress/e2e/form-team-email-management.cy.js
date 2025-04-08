@@ -1,5 +1,4 @@
 import "cypress-keycloak-commands";
-import "cypress-drag-drop";
 import { formsettings } from "../support/login.js";
 
 const depEnv = Cypress.env("depEnv");
@@ -25,7 +24,6 @@ describe("Form Designer", () => {
 
     formsettings();
   });
-  // Publish a simple form with Simplebc Address component
   it("Checks team management before form publish", () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
@@ -65,6 +63,7 @@ describe("Form Designer", () => {
     ).click();
     cy.get('.v-col > .v-btn--variant-outlined > .v-btn__content > span').click();
     cy.wait(3000);
+    
     //Manage column views
 
     cy.get(".mdi-view-column").click();
@@ -145,6 +144,7 @@ describe("Form Designer", () => {
     cy.get(
       ".v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input"
     ).click();
+    
     cy.get('.v-col > .v-btn--variant-outlined > .v-btn__content > span').click();
     cy.wait(3000);
     cy.get(".mdi-cog").click();

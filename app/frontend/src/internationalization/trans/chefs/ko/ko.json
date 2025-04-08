@@ -139,7 +139,14 @@
     "repeatUntil": "까지 반복",
     "summary": "요약",
     "submissionsOpenDateRange": "이 양식은",
+    "timezoneIndicator": "모든 시간은 귀하의 현지 시간대입니다 ({timezone})",
     "to": "에게",
+    "openTime": "시작 시간",
+    "closeTime": "종료 시간",
+    "at": "에",
+    "specifyOpenTime": "시작 시간 지정 (선택사항)",
+    "specifyCloseTime": "종료 시간 지정 (선택사항)",
+    "closingTimeInfo": "(양식은 마감일 현지 시간대 오후 11시 59분에 마감됩니다)",
     "scheduleRepetition": "일정은 매주 반복됩니다.",
     "allowLateSubmissnInterval": "늦은 제출 허용",
     "until": "~까지",
@@ -1210,5 +1217,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "양식에 추가되지 않은 사용자와 초안을 공유할 수 없습니다. 관리자에게 연락하여 추가하세요.",
+    "shareDraftMessage":"초안을 양식 팀원과만 공유하세요"
   }
 }
