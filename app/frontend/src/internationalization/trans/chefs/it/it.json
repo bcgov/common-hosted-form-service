@@ -139,7 +139,14 @@
     "repeatUntil": "Ripetere fino a",
     "summary": "Riepilogo",
     "submissionsOpenDateRange": "Questo modulo sarà aperto per l'invio da parte di",
+    "timezoneIndicator": "Tutti gli orari sono nel tuo fuso orario locale ({timezone})",
     "to": "A",
+    "openTime": "Orario di apertura",
+    "closeTime": "Orario di chiusura",
+    "at": "alle",
+    "specifyOpenTime": "Specificare orario di apertura (opzionale)",
+    "specifyCloseTime": "Specificare orario di chiusura (opzionale)",
+    "closingTimeInfo": "(Il modulo verrà chiuso alle 23:59 nel tuo fuso orario locale alla data di chiusura)",
     "scheduleRepetition": "Il programma si ripeterà ogni",
     "allowLateSubmissnInterval": "consentire invii tardivi per",
     "until": "Fino a",
@@ -1210,5 +1217,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "Non puoi condividere la bozza con utenti che non sono stati aggiunti al modulo. Contatta l'amministratore per aggiungerli.",
+    "shareDraftMessage":"Condividi la bozza solo con i membri del team del modulo"
   }
 }

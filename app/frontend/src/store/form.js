@@ -85,6 +85,7 @@ const genInitialForm = () => ({
   userType: IdentityMode.TEAM,
   versions: [],
   enableCopyExistingSubmission: false,
+  enableTeamMemberDraftShare: false,
   deploymentLevel: null,
   ministry: null,
   labels: [],
@@ -465,6 +466,7 @@ export const useFormStore = defineStore('form', {
           description: this.form.description,
           enableSubmitterDraft: this.form.enableSubmitterDraft,
           enableStatusUpdates: this.form.enableStatusUpdates,
+          enableTeamMemberDraftShare: this.form.enableTeamMemberDraftShare,
           wideFormLayout: this.form.wideFormLayout,
           identityProviders: generateIdps({
             idps: this.form.idps,

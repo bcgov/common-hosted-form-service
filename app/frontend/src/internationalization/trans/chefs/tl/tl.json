@@ -139,7 +139,14 @@
     "repeatUntil": "Ulitin hanggang",
     "summary": "Buod",
     "submissionsOpenDateRange": "Ang form na ito ay bukas para sa mga pagsusumite mula sa",
+    "timezoneIndicator": "Lahat ng oras ay nasa iyong lokal na time zone ({timezone})",
     "to": "sa",
+    "openTime": "Oras ng pagbubukas",
+    "closeTime": "Oras ng pagsasara",
+    "at": "sa",
+    "specifyOpenTime": "Tukuyin ang oras ng pagbubukas (opsyonal)",
+    "specifyCloseTime": "Tukuyin ang oras ng pagsasara (opsyonal)",
+    "closingTimeInfo": "(Ang form ay magsasara sa 11:59 PM sa iyong lokal na time zone sa petsa ng pagsasara)",
     "scheduleRepetition": "Uulitin ang iskedyul tuwing",
     "allowLateSubmissnInterval": "na nagpapahintulot sa mga huli na pagsusumite para sa",
     "until": "hanggang",
@@ -1214,5 +1221,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "Hindi mo maibabahagi ang draft sa mga user na hindi pa naidagdag sa form. Mangyaring makipag-ugnayan sa admin para idagdag sila.",
+    "shareDraftMessage":"Ibahagi ang draft sa mga miyembro ng form ng koponan lamang"
   }
 }

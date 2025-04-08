@@ -139,7 +139,14 @@
     "repeatUntil": "تکرار کنید تا",
     "summary": "خلاصه",
     "submissionsOpenDateRange": "این فرم برای ارسال از",
+    "timezoneIndicator": "همه زمان‌ها در منطقه زمانی محلی شما هستند ({timezone})",
     "to": "به",
+    "openTime": "زمان باز شدن",
+    "closeTime": "زمان بسته شدن",
+    "at": "در",
+    "specifyOpenTime": "تعیین زمان باز شدن (اختیاری)",
+    "specifyCloseTime": "تعیین زمان بسته شدن (اختیاری)",
+    "closingTimeInfo": "(این فرم در ساعت 11:59 شب به وقت محلی شما در تاریخ بسته شدن، بسته خواهد شد)",
     "scheduleRepetition": "برنامه هر بار تکرار خواهد شد",
     "allowLateSubmissnInterval": "اجازه ارسال دیرهنگام برای",
     "until": "تا زمان",
@@ -1210,5 +1217,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "شما نمی توانید پیش نویس را با کاربرانی که به فرم اضافه نشده اند به اشتراک بگذارید. لطفا با ادمین تماس بگیرید تا آنها را اضافه کنید.",
+    "shareDraftMessage":"پیش نویس را فقط با اعضای تیم فرم به اشتراک بگذارید"
   }
 }
