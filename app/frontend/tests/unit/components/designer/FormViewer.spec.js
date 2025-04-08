@@ -2053,7 +2053,9 @@ describe('FormViewer.vue', () => {
 
   it('uploadFile will call fileServices uploadFile', async () => {
     const uploadFileSpy = vi.spyOn(fileService, 'uploadFile');
-    uploadFileSpy.mockImplementation(() => {});
+    uploadFileSpy.mockImplementation(() => {
+      return { data: {} };
+    });
     const wrapper = shallowMount(FormViewer, {
       props: {
         formId: formId,

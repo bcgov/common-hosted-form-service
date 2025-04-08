@@ -15,7 +15,7 @@ import { formService, userService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
-import { FormDesignerBuilderOptions, IdentityMode } from '~/utils/constants';
+import { FormDesignerBuilderOptions } from '~/utils/constants';
 import { generateIdps } from '~/utils/transformUtils';
 
 const { locale, t } = useI18n({ useScope: 'global' });
@@ -117,7 +117,8 @@ const designerOptions = computed(() => {
         ...FormDesignerBuilderOptions.customControls,
         components: {
           ...FormDesignerBuilderOptions.customControls.components,
-          simplefile: form.value.userType !== ID_MODE.value.PUBLIC,
+          //simplefile: form.value.userType !== ID_MODE.value.PUBLIC,
+          simplefile: true,
         },
       },
     },
@@ -134,8 +135,7 @@ const designerOptions = computed(() => {
 const DISPLAY_VERSION = computed(() =>
   form.value?.versions?.length ? form.value.versions.length + 1 : 1
 );
-
-const ID_MODE = computed(() => IdentityMode);
+//const ID_MODE = computed(() => IdentityMode);
 
 // ---------------------------------------------------------------------------------------------------
 // FormIO event handlers
@@ -394,6 +394,7 @@ async function schemaCreateNew() {
     }),
     sendSubmissionReceivedEmail: form.value.sendSubmissionReceivedEmail,
     enableSubmitterDraft: form.value.enableSubmitterDraft,
+    allowSubmitterToUploadFile: form.value.allowSubmitterToUploadFile,
     enableCopyExistingSubmission: form.value.enableCopyExistingSubmission,
     wideFormLayout: form.value.wideFormLayout,
     enableStatusUpdates: form.value.enableStatusUpdates,
