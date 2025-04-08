@@ -101,10 +101,11 @@ describe('Form Designer', () => {
       cy.get('b').then($el => {
 
         const rem=$el[0];
-        const rem1=$el[1];
-        cy.get(rem).contains('2026-06-17').should('exist');
+        //const rem1=$el[1];
+        cy.get(rem).contains('June 17, 2026 at 8:30 AM').should('exist');
 
        });
+       cy.get('span').contains(' allowing late submissions for 5 weeks.').should('exist');
       //Closing date for submission
       cy.contains('Set custom closing message').click();
       cy.get('textarea').then($el => {
@@ -141,15 +142,15 @@ describe('Form Designer', () => {
       cy.wait(2000);
       cy.get('input[type="text"]').then($el => {
         cy.get('.mdi-plus-circle').click();
-        const api_name=$el[12];
-        cy.get(api_name).click();
+        const api_name=$el[13];
+        cy.get(api_name).click({ force: true });
         cy.get('[data-test="text-endpointUrl"]').click();
         
         cy.wait(2000);
         cy.contains('div','Name is required.').should('be.visible');
         cy.get('[data-test="text-apiKeyHeader"]').click();
         cy.get('.v-messages__message').contains('div','Please enter a valid endpoint starting with http:// or https://').should('be.visible');
-
+        cy.get(api_name).click({ force: true });
         cy.get(api_name).type('chefs_name');
         cy.get('[data-test="text-endpointUrl"]').type('chefs_endpoint');
         //cy.contains('div','Name is required.').should('not.exist');
@@ -163,7 +164,8 @@ describe('Form Designer', () => {
       cy.get('span').contains('Send User Information').click();
       cy.get('[data-test="continue-btn-continue"]').should('be.enabled');
       cy.get('[data-test="continue-btn-cancel"]').should('be.enabled');
-      cy.get('[data-test="continue-btn-continue"]').click(); 
+      cy.get('[data-test="continue-btn-continue"]').click();
+          
       cy.get('.v-data-table__tbody > .v-data-table__tr > :nth-child(3)').contains('Submitted');
       cy.get(':nth-child(1) > .v-btn > .v-btn__content > .mdi-pencil').click();
       cy.get('span').contains('Submitted').should('exist');
