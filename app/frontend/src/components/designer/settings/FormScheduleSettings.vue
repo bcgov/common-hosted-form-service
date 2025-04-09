@@ -6,7 +6,6 @@ import { useI18n } from 'vue-i18n';
 
 import { useFormStore } from '~/store/form';
 import { ScheduleType } from '~/utils/constants';
-import { isDateValidForMailNotification } from '~/utils/transformUtils';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
@@ -68,6 +67,21 @@ const closeMessage = ref([(v) => !!v || t('trans.formSettings.fieldRequired')]);
 const { form, isRTL } = storeToRefs(useFormStore());
 
 const SCHEDULE_TYPE = computed(() => ScheduleType);
+
+/**
+ * @function isDateValidForMailNotification
+ * Check if date is equal or less than today
+ *
+ * @param {String} parseDate A string of start date period
+ */
+function isDateValidForMailNotification(parseDate) {
+  const formDate = moment(parseDate, 'YYYY-MM-DD');
+  const now = moment();
+  if (now.isSameOrAfter(formDate, 'day')) {
+    return true;
+  }
+  return false;
+}
 
 function openDateTypeChanged() {
   if (
