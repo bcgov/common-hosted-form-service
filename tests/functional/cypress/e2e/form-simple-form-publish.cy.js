@@ -23,7 +23,23 @@ it('Visits the form settings page', () => {
   cy.waitForLoad();
   formsettings();
 });
-  // Form design page for Field set components
+it('Checks Hidden component',() => {
+  cy.viewport(1000, 1100);
+  cy.wait(2000);
+  cy.get('button').contains('Advanced Data').click();
+  cy.wait(2000);
+  cy.get('div.formio-builder-form').then($el => {
+      const coords = $el[0].getBoundingClientRect();
+      cy.get('span.btn').contains('Hidden')
+      
+      .trigger('mousedown', { which: 1}, { force: true })
+      .trigger('mousemove', coords.x, -400, { force: true })
+      .trigger('mouseup', { force: true });
+      cy.get('input[name="data[label]"]').clear().type('Application');
+      cy.get('button').contains('Save').click();
+      cy.wait(2000);
+  });
+});
 it('Checks Content', () => {
 
   cy.viewport(1000, 1800);
