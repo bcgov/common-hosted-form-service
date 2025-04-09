@@ -47,7 +47,7 @@ const SELECTED_LANGUAGE_TITLE = computed(
   <div class="text-center">
     <v-select
       v-model="$i18n.locale"
-      class="ml-3"
+      class="ml-3 opacity-100"
       :items="$i18n.availableLocales"
       prepend-inner-icon="mdi:mdi-web"
       variant="outlined"
@@ -71,3 +71,12 @@ const SELECTED_LANGUAGE_TITLE = computed(
     </v-select>
   </div>
 </template>
+
+<style scoped>
+:deep(.v-icon) {
+  opacity: 1;
+}
+:deep(.v-field__input) {
+  opacity: 1 !important;
+}
+</style>
