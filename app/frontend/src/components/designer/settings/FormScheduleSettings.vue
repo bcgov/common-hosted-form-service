@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n';
 
 import { useFormStore } from '~/store/form';
 import { ScheduleType } from '~/utils/constants';
+// Removed import for isDateValidForMailNotification since we're implementing it here
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
@@ -38,9 +39,18 @@ const scheduleCloseDate = ref([
   (v) => {
     // If dates are different, ensure close date is after open date
     if (v !== form.value.schedule.openSubmissionDateTime) {
+      // Use timezone-aware comparison
+      const tz = timezone.value || 'America/Vancouver';
       return (
-        moment(v).isAfter(form.value.schedule.openSubmissionDateTime) ||
-        t('trans.formSettings.dateDiffMsg')
+        moment
+          .tz(v, 'YYYY-MM-DD', tz)
+          .isAfter(
+            moment.tz(
+              form.value.schedule.openSubmissionDateTime,
+              'YYYY-MM-DD',
+              tz
+            )
+          ) || t('trans.formSettings.dateDiffMsg')
       );
     }
 
@@ -68,25 +78,28 @@ const { form, isRTL } = storeToRefs(useFormStore());
 
 const SCHEDULE_TYPE = computed(() => ScheduleType);
 
-/**
- * @function isDateValidForMailNotification
- * Check if date is equal or less than today
- *
- * @param {String} parseDate A string of start date period
- */
-function isDateValidForMailNotification(parseDate) {
-  const formDate = moment(parseDate, 'YYYY-MM-DD');
-  const now = moment();
-  if (now.isSameOrAfter(formDate, 'day')) {
-    return true;
-  }
-  return false;
-}
+// Create a computed property for date validation that respects timezone
+const isOpenDateInPast = computed(() => {
+  if (!form.value.schedule.openSubmissionDateTime) return false;
 
+  // Use the component's timezone
+  const tz = timezone.value || 'America/Vancouver';
+
+  // Parse dates with timezone awareness
+  const formDate = moment.tz(
+    form.value.schedule.openSubmissionDateTime,
+    'YYYY-MM-DD',
+    tz
+  );
+  const now = moment().tz(tz);
+
+  // Compare dates using same timezone
+  return now.isSameOrAfter(formDate, 'day');
+});
+
+// Update the function to use the computed property
 function openDateTypeChanged() {
-  if (
-    isDateValidForMailNotification(form.value.schedule.openSubmissionDateTime)
-  ) {
+  if (isOpenDateInPast.value) {
     enableReminderDraw.value = false;
     form.value.reminder_enabled = false;
   } else {
@@ -107,7 +120,7 @@ function saveTimezone() {
   }
 }
 
-// Format date for summary display
+// Format date for summary display with timezone awareness
 function formatDateForSummary(dateStr, timeStr) {
   if (!dateStr) return '';
 
@@ -143,7 +156,15 @@ onMounted(() => {
     }
   }
 
-  // Check if we need to enable reminders
+  // Initialize timezone if not set
+  if (!form.value.schedule.timezone) {
+    form.value.schedule.timezone = timezone.value;
+  } else {
+    // Sync the component's timezone with the form's timezone
+    timezone.value = form.value.schedule.timezone;
+  }
+
+  // Check if we need to enable reminders based on computed property
   openDateTypeChanged();
 });
 
@@ -152,6 +173,8 @@ watch(
   () => timezone.value,
   () => {
     saveTimezone();
+    // Re-evaluate reminder eligibility when timezone changes
+    openDateTypeChanged();
   }
 );
 
@@ -168,7 +191,7 @@ watch(
   }
 );
 
-// Watch for date/time changes to update timezone
+// Watch for date/time changes to update timezone and re-evaluate reminder eligibility
 watch(
   [
     () => form.value.schedule.openSubmissionTime,
@@ -178,6 +201,8 @@ watch(
   ],
   () => {
     saveTimezone();
+    // Re-evaluate reminder eligibility when dates change
+    openDateTypeChanged();
   }
 );
 
