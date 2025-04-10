@@ -6,11 +6,9 @@ import { useI18n } from 'vue-i18n';
 
 import { useFormStore } from '~/store/form';
 import { ScheduleType } from '~/utils/constants';
-// Removed import for isDateValidForMailNotification since we're implementing it here
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
-const enableReminderDraw = ref(true);
 // Timezone setup
 const timezone = ref(moment.tz.guess(true));
 const timezoneOptions = computed(() => moment.tz.zonesForCountry('CA'));
@@ -39,16 +37,15 @@ const scheduleCloseDate = ref([
   (v) => {
     // If dates are different, ensure close date is after open date
     if (v !== form.value.schedule.openSubmissionDateTime) {
-      // Use timezone-aware comparison
-      const tz = timezone.value || 'America/Vancouver';
+      // Use timezone for consistent comparison
       return (
         moment
-          .tz(v, 'YYYY-MM-DD', tz)
+          .tz(v, 'YYYY-MM-DD', timezone.value)
           .isAfter(
             moment.tz(
               form.value.schedule.openSubmissionDateTime,
               'YYYY-MM-DD',
-              tz
+              timezone.value
             )
           ) || t('trans.formSettings.dateDiffMsg')
       );
@@ -78,34 +75,19 @@ const { form, isRTL } = storeToRefs(useFormStore());
 
 const SCHEDULE_TYPE = computed(() => ScheduleType);
 
-// Create a computed property for date validation that respects timezone
-const isOpenDateInPast = computed(() => {
+// Computed property for checking if open date is in the future
+const isOpenDateInFuture = computed(() => {
   if (!form.value.schedule.openSubmissionDateTime) return false;
 
-  // Use the component's timezone
-  const tz = timezone.value || 'America/Vancouver';
-
-  // Parse dates with timezone awareness
   const formDate = moment.tz(
     form.value.schedule.openSubmissionDateTime,
     'YYYY-MM-DD',
-    tz
+    timezone.value
   );
-  const now = moment().tz(tz);
+  const now = moment().tz(timezone.value);
 
-  // Compare dates using same timezone
-  return now.isSameOrAfter(formDate, 'day');
+  return now.isBefore(formDate, 'day');
 });
-
-// Update the function to use the computed property
-function openDateTypeChanged() {
-  if (isOpenDateInPast.value) {
-    enableReminderDraw.value = false;
-    form.value.reminder_enabled = false;
-  } else {
-    enableReminderDraw.value = true;
-  }
-}
 
 // Simplified scheduleTypeChanged - no longer resets values
 function scheduleTypeChanged() {
@@ -113,11 +95,9 @@ function scheduleTypeChanged() {
   // This preserves user settings when switching between types
 }
 
-// Combined timezone function
+// Simplified timezone function
 function saveTimezone() {
-  if (form.value.schedule.openSubmissionDateTime) {
-    form.value.schedule.timezone = timezone.value;
-  }
+  form.value.schedule.timezone = timezone.value;
 }
 
 // Format date for summary display with timezone awareness
@@ -164,8 +144,10 @@ onMounted(() => {
     timezone.value = form.value.schedule.timezone;
   }
 
-  // Check if we need to enable reminders based on computed property
-  openDateTypeChanged();
+  // Disable reminders if open date is in the past
+  if (!isOpenDateInFuture.value && form.value.reminder_enabled) {
+    form.value.reminder_enabled = false;
+  }
 });
 
 // Watch for timezone changes
@@ -173,8 +155,6 @@ watch(
   () => timezone.value,
   () => {
     saveTimezone();
-    // Re-evaluate reminder eligibility when timezone changes
-    openDateTypeChanged();
   }
 );
 
@@ -191,7 +171,7 @@ watch(
   }
 );
 
-// Watch for date/time changes to update timezone and re-evaluate reminder eligibility
+// Watch for date/time changes to update timezone
 watch(
   [
     () => form.value.schedule.openSubmissionTime,
@@ -201,16 +181,24 @@ watch(
   ],
   () => {
     saveTimezone();
-    // Re-evaluate reminder eligibility when dates change
-    openDateTypeChanged();
+  }
+);
+
+// Watch for changes that affect reminder eligibility
+watch(
+  [() => form.value.schedule.openSubmissionDateTime, () => timezone.value],
+  () => {
+    // Disable reminders if the date is in the past
+    if (!isOpenDateInFuture.value && form.value.reminder_enabled) {
+      form.value.reminder_enabled = false;
+    }
   }
 );
 
 defineExpose({
-  enableReminderDraw,
-  openDateTypeChanged,
   scheduleTypeChanged,
   saveTimezone,
+  isOpenDateInFuture,
 });
 </script>
 
@@ -233,7 +221,6 @@ defineExpose({
           :rules="scheduleOpenDate"
           :lang="locale"
           clearable
-          @update:model-value="openDateTypeChanged"
         >
           <template v-if="isRTL" #prepend-inner>
             <v-icon icon="mdi:mdi-calendar"></v-icon>
@@ -364,7 +351,7 @@ defineExpose({
           </v-col>
         </v-row>
 
-        <!-- Allow Late Submissions (Moved to after Close Date/Time) -->
+        <!-- Allow Late Submissions -->
         <v-row class="m-0 align-center">
           <v-col cols="6" md="6" class="pl-0 pr-0">
             <v-checkbox
@@ -575,7 +562,7 @@ defineExpose({
             v-if="
               form.userType === 'team' &&
               form.schedule.scheduleType !== null &&
-              enableReminderDraw &&
+              isOpenDateInFuture &&
               form.schedule.openSubmissionDateTime
             "
           >
