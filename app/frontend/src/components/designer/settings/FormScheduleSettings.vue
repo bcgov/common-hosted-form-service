@@ -89,12 +89,6 @@ const isOpenDateInFuture = computed(() => {
   return now.isBefore(formDate, 'day');
 });
 
-// Simplified scheduleTypeChanged - no longer resets values
-function scheduleTypeChanged() {
-  // Don't reset values, just update UI state if needed
-  // This preserves user settings when switching between types
-}
-
 // Simplified timezone function
 function saveTimezone() {
   form.value.schedule.timezone = timezone.value;
@@ -196,7 +190,6 @@ watch(
 );
 
 defineExpose({
-  scheduleTypeChanged,
   saveTimezone,
   isOpenDateInFuture,
 });
@@ -268,7 +261,6 @@ defineExpose({
             v-model="form.schedule.scheduleType"
             class="my-0"
             :rules="scheduleTypedRules"
-            @update:modelValue="scheduleTypeChanged"
           >
             <v-radio
               class="mx-2"
@@ -352,7 +344,7 @@ defineExpose({
 
         <!-- Allow Late Submissions -->
         <v-row class="m-0 align-center">
-          <v-col cols="6" md="6" class="pl-0 pr-0">
+          <v-col cols="12" md="12" class="pl-0 pr-0">
             <v-checkbox
               v-model="form.schedule.allowLateSubmissions.enabled"
               class="my-0 m-0 p-0"

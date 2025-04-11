@@ -205,6 +205,7 @@ describe('FormScheduleSettings.vue', () => {
 
   it('changing schedule type preserves values when switching between types', async () => {
     const SOME_DAY = moment();
+    // eslint-disable-next-line no-unused-vars
     const wrapper = mount(FormScheduleSettings, {
       global: {
         plugins: [pinia],
@@ -259,8 +260,6 @@ describe('FormScheduleSettings.vue', () => {
 
     await flushPromises();
 
-    wrapper.vm.scheduleTypeChanged();
-
     // values should be preserved
     expect(formStore.form.schedule.scheduleType).toEqual(ScheduleType.MANUAL);
     expect(formStore.form.schedule.closingMessageEnabled).toBeTruthy();
@@ -280,8 +279,6 @@ describe('FormScheduleSettings.vue', () => {
     formStore.form.schedule.scheduleType = ScheduleType.CLOSINGDATE;
 
     await flushPromises();
-
-    wrapper.vm.scheduleTypeChanged();
 
     // Values should still be preserved
     expect(formStore.form.schedule.scheduleType).toEqual(
@@ -397,7 +394,6 @@ describe('FormScheduleSettings.vue', () => {
 
     // Verify changing schedule type doesn't affect times
     formStore.form.schedule.scheduleType = ScheduleType.MANUAL;
-    wrapper.vm.scheduleTypeChanged();
     await flushPromises();
 
     // Times should be preserved with our new implementation
