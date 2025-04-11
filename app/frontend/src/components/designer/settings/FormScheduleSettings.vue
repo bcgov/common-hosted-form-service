@@ -6,11 +6,9 @@ import { useI18n } from 'vue-i18n';
 
 import { useFormStore } from '~/store/form';
 import { ScheduleType } from '~/utils/constants';
-import { isDateValidForMailNotification } from '~/utils/transformUtils';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
-const enableReminderDraw = ref(true);
 // Timezone setup
 const timezone = ref(moment.tz.guess(true));
 const timezoneOptions = computed(() => moment.tz.zonesForCountry('CA'));
@@ -39,9 +37,17 @@ const scheduleCloseDate = ref([
   (v) => {
     // If dates are different, ensure close date is after open date
     if (v !== form.value.schedule.openSubmissionDateTime) {
+      // Use timezone for consistent comparison
       return (
-        moment(v).isAfter(form.value.schedule.openSubmissionDateTime) ||
-        t('trans.formSettings.dateDiffMsg')
+        moment
+          .tz(v, 'YYYY-MM-DD', timezone.value)
+          .isAfter(
+            moment.tz(
+              form.value.schedule.openSubmissionDateTime,
+              'YYYY-MM-DD',
+              timezone.value
+            )
+          ) || t('trans.formSettings.dateDiffMsg')
       );
     }
 
@@ -69,31 +75,26 @@ const { form, isRTL } = storeToRefs(useFormStore());
 
 const SCHEDULE_TYPE = computed(() => ScheduleType);
 
-function openDateTypeChanged() {
-  if (
-    isDateValidForMailNotification(form.value.schedule.openSubmissionDateTime)
-  ) {
-    enableReminderDraw.value = false;
-    form.value.reminder_enabled = false;
-  } else {
-    enableReminderDraw.value = true;
-  }
-}
+// Computed property for checking if open date is in the future
+const isOpenDateInFuture = computed(() => {
+  if (!form.value.schedule.openSubmissionDateTime) return false;
 
-// Simplified scheduleTypeChanged - no longer resets values
-function scheduleTypeChanged() {
-  // Don't reset values, just update UI state if needed
-  // This preserves user settings when switching between types
-}
+  const formDate = moment.tz(
+    form.value.schedule.openSubmissionDateTime,
+    'YYYY-MM-DD',
+    timezone.value
+  );
+  const now = moment().tz(timezone.value);
 
-// Combined timezone function
+  return now.isBefore(formDate, 'day');
+});
+
+// Simplified timezone function
 function saveTimezone() {
-  if (form.value.schedule.openSubmissionDateTime) {
-    form.value.schedule.timezone = timezone.value;
-  }
+  form.value.schedule.timezone = timezone.value;
 }
 
-// Format date for summary display
+// Format date for summary display with timezone awareness
 function formatDateForSummary(dateStr, timeStr) {
   if (!dateStr) return '';
 
@@ -129,8 +130,18 @@ onMounted(() => {
     }
   }
 
-  // Check if we need to enable reminders
-  openDateTypeChanged();
+  // Initialize timezone if not set
+  if (!form.value.schedule.timezone) {
+    form.value.schedule.timezone = timezone.value;
+  } else {
+    // Sync the component's timezone with the form's timezone
+    timezone.value = form.value.schedule.timezone;
+  }
+
+  // Disable reminders if open date is in the past
+  if (!isOpenDateInFuture.value && form.value.reminder_enabled) {
+    form.value.reminder_enabled = false;
+  }
 });
 
 // Watch for timezone changes
@@ -167,11 +178,20 @@ watch(
   }
 );
 
+// Watch for changes that affect reminder eligibility
+watch(
+  [() => form.value.schedule.openSubmissionDateTime, () => timezone.value],
+  () => {
+    // Disable reminders if the date is in the past
+    if (!isOpenDateInFuture.value && form.value.reminder_enabled) {
+      form.value.reminder_enabled = false;
+    }
+  }
+);
+
 defineExpose({
-  enableReminderDraw,
-  openDateTypeChanged,
-  scheduleTypeChanged,
   saveTimezone,
+  isOpenDateInFuture,
 });
 </script>
 
@@ -194,7 +214,6 @@ defineExpose({
           :rules="scheduleOpenDate"
           :lang="locale"
           clearable
-          @update:model-value="openDateTypeChanged"
         >
           <template v-if="isRTL" #prepend-inner>
             <v-icon icon="mdi:mdi-calendar"></v-icon>
@@ -237,41 +256,39 @@ defineExpose({
         <p class="font-weight-black" :lang="locale">
           {{ $t('trans.formSettings.submissionsDeadline') }}
         </p>
-        <v-expand-transition>
-          <v-row>
-            <v-radio-group
-              v-model="form.schedule.scheduleType"
-              class="my-0"
-              :rules="scheduleTypedRules"
-              @update:modelValue="scheduleTypeChanged"
+        <v-row>
+          <v-radio-group
+            v-model="form.schedule.scheduleType"
+            class="my-0"
+            :rules="scheduleTypedRules"
+          >
+            <v-radio
+              class="mx-2"
+              :class="{ 'mr-2': isRTL }"
+              :value="SCHEDULE_TYPE.MANUAL"
             >
-              <v-radio
-                class="mx-2"
-                :class="{ 'mr-2': isRTL }"
-                :value="SCHEDULE_TYPE.MANUAL"
-              >
-                <template #label>
-                  <span :class="{ 'mr-2': isRTL }" :lang="locale"
-                    >{{ $t('trans.formSettings.keepSubmissnOpenTilUnplished') }}
-                  </span>
-                </template>
-              </v-radio>
-              <v-radio
-                class="mx-2"
-                :class="{ 'mr-2': isRTL }"
-                :value="SCHEDULE_TYPE.CLOSINGDATE"
-              >
-                <template #label>
-                  <span :class="{ 'mr-2': isRTL }" :lang="locale"
-                    >{{ $t('trans.formSettings.submissionsClosingDate') }}
-                  </span>
-                </template>
-              </v-radio>
-            </v-radio-group>
-          </v-row>
-        </v-expand-transition>
+              <template #label>
+                <span :class="{ 'mr-2': isRTL }" :lang="locale"
+                  >{{ $t('trans.formSettings.keepSubmissnOpenTilUnplished') }}
+                </span>
+              </template>
+            </v-radio>
+            <v-radio
+              class="mx-2"
+              :class="{ 'mr-2': isRTL }"
+              :value="SCHEDULE_TYPE.CLOSINGDATE"
+            >
+              <template #label>
+                <span :class="{ 'mr-2': isRTL }" :lang="locale"
+                  >{{ $t('trans.formSettings.submissionsClosingDate') }}
+                </span>
+              </template>
+            </v-radio>
+          </v-radio-group>
+        </v-row>
       </v-col>
 
+      <!-- Close date and time settings (only for CLOSINGDATE) -->
       <v-col
         v-if="form.schedule.scheduleType === SCHEDULE_TYPE.CLOSINGDATE"
         cols="12"
@@ -304,7 +321,7 @@ defineExpose({
           </v-col>
         </v-row>
 
-        <!-- Close Time (Always visible when closing date is selected) -->
+        <!-- Close Time -->
         <v-row class="m-0">
           <v-col cols="8" md="8" class="pl-0 pr-0">
             <v-text-field
@@ -325,9 +342,9 @@ defineExpose({
           </v-col>
         </v-row>
 
-        <!-- Allow Late Submissions (Moved to after Close Date/Time) -->
+        <!-- Allow Late Submissions -->
         <v-row class="m-0 align-center">
-          <v-col cols="6" md="6" class="pl-0 pr-0">
+          <v-col cols="12" md="12" class="pl-0 pr-0">
             <v-checkbox
               v-model="form.schedule.allowLateSubmissions.enabled"
               class="my-0 m-0 p-0"
@@ -357,6 +374,7 @@ defineExpose({
           </v-col>
         </v-row>
 
+        <!-- Late submission configuration -->
         <v-expand-transition
           v-if="
             form.schedule.allowLateSubmissions.enabled &&
@@ -399,8 +417,8 @@ defineExpose({
         </v-expand-transition>
       </v-col>
 
-      <!-- Summary -->
-      <v-row
+      <!-- Summary - only for CLOSINGDATE -->
+      <v-col
         v-if="
           form.schedule.enabled &&
           form.schedule.openSubmissionDateTime &&
@@ -409,190 +427,142 @@ defineExpose({
           form.schedule.closeSubmissionDateTime &&
           form.schedule.closeSubmissionDateTime.length
         "
-        class="p-0 m-0"
+        cols="12"
+        md="12"
+        class="pa-0"
       >
-        <v-col class="p-0 m-0" cols="12" md="12">
-          <p class="font-weight-black m-0" :lang="locale">
-            {{ $t('trans.formSettings.summary') }}
-          </p>
-        </v-col>
-        <v-col
-          v-if="
-            form.schedule.openSubmissionDateTime &&
-            form.schedule.openSubmissionDateTime.length
-          "
-          class="p-0 m-0"
-          cols="12"
-          md="12"
-        >
-          <span :lang="locale" data-test="submission-schedule-text">
-            {{ $t('trans.formSettings.submissionsOpenDateRange') }}
+        <p class="font-weight-black m-0" :lang="locale">
+          {{ $t('trans.formSettings.summary') }}
+        </p>
+        <span :lang="locale" data-test="submission-schedule-text">
+          {{ $t('trans.formSettings.submissionsOpenDateRange') }}
+          <b>{{
+            formatDateForSummary(
+              form.schedule.openSubmissionDateTime,
+              form.schedule.openSubmissionTime
+            )
+          }}</b>
+          <span v-if="form.schedule.closeSubmissionDateTime">
+            {{ ' ' + $t('trans.formSettings.to') }}
             <b>{{
               formatDateForSummary(
-                form.schedule.openSubmissionDateTime,
-                form.schedule.openSubmissionTime
+                form.schedule.closeSubmissionDateTime,
+                form.schedule.closeSubmissionTime
               )
             }}</b>
-            <span v-if="form.schedule.closeSubmissionDateTime">
-              {{ ' ' + $t('trans.formSettings.to') }}
-              <b>{{
-                formatDateForSummary(
-                  form.schedule.closeSubmissionDateTime,
-                  form.schedule.closeSubmissionTime
-                )
-              }}</b>
-            </span>
           </span>
-          <span :lang="locale" data-test="late-submission-text">{{
-            form.schedule.allowLateSubmissions.enabled &&
-            form.schedule.allowLateSubmissions.forNext.intervalType &&
-            form.schedule.allowLateSubmissions.forNext.term
-              ? ' ' +
-                $t('trans.formSettings.allowLateSubmissnInterval') +
-                ' ' +
-                form.schedule.allowLateSubmissions.forNext.term +
-                ' ' +
-                form.schedule.allowLateSubmissions.forNext.intervalType +
-                '.'
-              : '. '
-          }}</span>
-        </v-col>
-      </v-row>
+        </span>
+        <span :lang="locale" data-test="late-submission-text">{{
+          form.schedule.allowLateSubmissions.enabled &&
+          form.schedule.allowLateSubmissions.forNext.intervalType &&
+          form.schedule.allowLateSubmissions.forNext.term
+            ? ' ' +
+              $t('trans.formSettings.allowLateSubmissnInterval') +
+              ' ' +
+              form.schedule.allowLateSubmissions.forNext.term +
+              ' ' +
+              form.schedule.allowLateSubmissions.forNext.intervalType +
+              '.'
+            : '. '
+        }}</span>
+      </v-col>
+    </v-row>
 
-      <hr
-        v-if="
-          form.schedule.scheduleType === SCHEDULE_TYPE.CLOSINGDATE ||
-          (form.userType === 'team' &&
-            form.schedule.scheduleType !== null &&
-            enableReminderDraw &&
-            form.schedule.openSubmissionDateTime)
-        "
-      />
-
-      <!-- Closing Message -->
-      <v-row
-        v-if="form.schedule.scheduleType === SCHEDULE_TYPE.CLOSINGDATE"
-        class="p-0 m-0"
-      >
-        <v-col cols="12" md="12" class="p-0">
-          <v-checkbox
-            v-model="form.schedule.closingMessageEnabled"
-            class="my-0 pt-0"
-          >
-            <template #label>
-              <div>
-                <span :class="{ 'mr-2': isRTL }" :lang="locale">
-                  {{ $t('trans.formSettings.customClosingMessage') }}
+    <!-- SEPARATE SECTION FOR CLOSING MESSAGE -->
+    <v-row
+      v-if="form.schedule.scheduleType === SCHEDULE_TYPE.CLOSINGDATE"
+      class="mt-4"
+    >
+      <v-col cols="12" class="pa-0">
+        <v-checkbox
+          v-model="form.schedule.closingMessageEnabled"
+          class="my-0"
+          hide-details
+        >
+          <template #label>
+            <div>
+              <span :class="{ 'mr-2': isRTL }" :lang="locale">
+                {{ $t('trans.formSettings.customClosingMessage') }}
+              </span>
+              <v-tooltip location="bottom">
+                <template #activator="{ props }">
+                  <v-icon
+                    color="primary"
+                    class="ml-3"
+                    :class="{ 'mr-2': isRTL }"
+                    v-bind="props"
+                    icon="mdi:mdi-help-circle-outline"
+                  />
+                </template>
+                <span :lang="locale">
+                  {{ $t('trans.formSettings.customClosingMessageToolTip') }}
                 </span>
-                <v-tooltip location="bottom">
-                  <template #activator="{ props }">
-                    <v-icon
-                      color="primary"
-                      class="ml-3"
-                      :class="{ 'mr-2': isRTL }"
-                      v-bind="props"
-                      icon="mdi:mdi-help-circle-outline"
-                    />
-                  </template>
-                  <span :lang="locale">
-                    {{ $t('trans.formSettings.customClosingMessageToolTip') }}
-                  </span>
-                </v-tooltip>
-              </div>
-            </template>
-          </v-checkbox>
-        </v-col>
-        <v-col cols="12" md="12" class="p-0">
-          <v-expand-transition v-if="form.schedule.closingMessageEnabled">
-            <v-row class="mb-0 mt-0">
-              <v-col class="mb-0 mt-0 pb-0 pt-0">
-                <template #title>
-                  <span :lang="locale">{{
-                    $t('trans.formSettings.closingMessage')
-                  }}</span>
-                </template>
-                <v-textarea
-                  v-model="form.schedule.closingMessage"
-                  density="compact"
-                  rows="2"
-                  solid
-                  variant="outlined"
-                  :label="$t('trans.formSettings.closingMessage')"
-                  data-test="text-name"
-                  :rules="closeMessage"
-                  :class="{ 'dir-rtl': isRTL, label: isRTL }"
-                  :lang="locale"
-                />
-              </v-col>
-            </v-row>
-          </v-expand-transition>
-        </v-col>
-      </v-row>
+              </v-tooltip>
+            </div>
+          </template>
+        </v-checkbox>
 
-      <!-- Reminder -->
-      <v-row class="p-0 m-0">
-        <v-col cols="12" md="12" class="p-0">
-          <v-expand-transition
-            v-if="
-              form.userType === 'team' &&
-              form.schedule.scheduleType !== null &&
-              enableReminderDraw &&
-              form.schedule.openSubmissionDateTime
-            "
-          >
-            <v-row class="mb-0 mt-0">
-              <v-col class="mb-0 mt-0 pb-0 pt-0">
-                <template #title>
-                  <span :lang="locale">{{
-                    $t('trans.formSettings.sendReminderEmail')
-                  }}</span>
+        <v-expand-transition v-if="form.schedule.closingMessageEnabled">
+          <v-textarea
+            v-model="form.schedule.closingMessage"
+            density="compact"
+            rows="2"
+            solid
+            variant="outlined"
+            :label="$t('trans.formSettings.closingMessage')"
+            data-test="text-name"
+            :rules="closeMessage"
+            :class="{ 'dir-rtl': isRTL, label: isRTL }"
+            :lang="locale"
+            class="mt-2"
+          />
+        </v-expand-transition>
+      </v-col>
+    </v-row>
+
+    <!--REMINDER -->
+    <v-row
+      v-if="
+        form.userType === 'team' &&
+        form.schedule.scheduleType !== null &&
+        isOpenDateInFuture
+      "
+      class="mt-4"
+    >
+      <v-col cols="12" class="pa-0">
+        <v-checkbox v-model="form.reminder_enabled" class="my-0" hide-details>
+          <template #label>
+            <div :class="{ 'mr-2': isRTL }">
+              <span :lang="locale">
+                {{ $t('trans.formSettings.sendReminderEmail') }}
+              </span>
+              <v-tooltip close-delay="2500" location="bottom">
+                <template #activator="{ props }">
+                  <v-icon
+                    color="primary"
+                    class="ml-3"
+                    :class="{ 'mr-2': isRTL }"
+                    v-bind="props"
+                    icon="mdi:mdi-help-circle-outline"
+                  />
                 </template>
-                <v-checkbox
-                  v-model="form.reminder_enabled"
-                  class="my-0 m-0 p-0"
-                >
-                  <template #label>
-                    <div :class="{ 'mr-2': isRTL }">
-                      <span :lang="locale">
-                        {{ $t('trans.formSettings.sendReminderEmail') }}
-                      </span>
-                      <v-tooltip close-delay="2500" location="bottom">
-                        <template #activator="{ props }">
-                          <v-icon
-                            color="primary"
-                            class="ml-3"
-                            v-bind="props"
-                            icon="mdi:mdi-help-circle-outline"
-                            :class="{ 'mr-2': isRTL }"
-                          />
-                        </template>
-                        <span :lang="locale">
-                          {{
-                            $t(
-                              'trans.formSettings.autoReminderNotificatnToolTip'
-                            )
-                          }}
-                          <a
-                            :href="githubLinkScheduleAndReminderFeature"
-                            class="preview_info_link_field_white"
-                            :target="'_blank'"
-                            :lang="locale"
-                          >
-                            {{ $t('trans.formSettings.learnMore') }}
-                            <v-icon
-                              icon="mdi:mdi-arrow-top-right-bold-box-outline"
-                            />
-                          </a>
-                        </span>
-                      </v-tooltip>
-                    </div>
-                  </template>
-                </v-checkbox>
-              </v-col>
-            </v-row>
-          </v-expand-transition>
-        </v-col>
-      </v-row>
+                <span :lang="locale">
+                  {{ $t('trans.formSettings.autoReminderNotificatnToolTip') }}
+                  <a
+                    :href="githubLinkScheduleAndReminderFeature"
+                    class="preview_info_link_field_white"
+                    :target="'_blank'"
+                    :lang="locale"
+                  >
+                    {{ $t('trans.formSettings.learnMore') }}
+                    <v-icon icon="mdi:mdi-arrow-top-right-bold-box-outline" />
+                  </a>
+                </span>
+              </v-tooltip>
+            </div>
+          </template>
+        </v-checkbox>
+      </v-col>
     </v-row>
   </BasePanel>
 </template>
