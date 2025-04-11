@@ -21,14 +21,18 @@ const scheduleOpenDate = ref([
   (v) => !!v || t('trans.formSettings.fieldRequired'),
   (v) =>
     (v &&
-      new RegExp(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/).test(v)) ||
+      new RegExp(
+        /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
+      ).test(v)) ||
     t('trans.formSettings.correctDateFormat'),
 ]);
 const scheduleCloseDate = ref([
   (v) => !!v || t('trans.formSettings.fieldRequired'),
   (v) =>
     (v &&
-      new RegExp(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/).test(v)) ||
+      new RegExp(
+        /^(19|20)\d\d[- /.](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01])/g
+      ).test(v)) ||
     t('trans.formSettings.correctDateFormat'),
   (v) => {
     // If dates are different, ensure close date is after open date
