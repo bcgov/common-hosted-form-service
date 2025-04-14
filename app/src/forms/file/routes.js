@@ -7,12 +7,13 @@ const validateParameter = require('../common/middleware/validateParameter');
 const controller = require('./controller');
 const { currentFileRecord, hasFileCreate, hasFilePermissions } = require('./middleware/filePermissions');
 const fileUpload = require('./middleware/upload').fileUpload;
+const virusScan = require('./middleware/virusScan').virusScan;
 
 routes.use(currentUser);
 
 routes.param('fileId', validateParameter.validateFileId);
 
-routes.post('/', hasFileCreate, fileUpload.upload, async (req, res, next) => {
+routes.post('/', hasFileCreate, fileUpload.upload, virusScan, async (req, res, next) => {
   await controller.create(req, res, next);
 });
 

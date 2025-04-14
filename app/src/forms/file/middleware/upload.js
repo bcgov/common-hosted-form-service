@@ -82,57 +82,62 @@ module.exports.fileUpload = {
 
       uploader(req, res, (error) => {
         // Detect multer errors, send back nicer through the middleware stack.
+        let problem;
         if (error instanceof multer.MulterError) {
           switch (error.code) {
             case 'LIMIT_FILE_SIZE':
-              throw new Problem(400, {
+              problem = new Problem(400, {
                 detail: `Upload file size is limited to ${maxFileSize} bytes`,
               });
+              break;
 
             case 'LIMIT_FILE_COUNT':
-              throw new Problem(400, {
+              problem = new Problem(400, {
                 detail: `Upload is limited to ${maxFileCount} files`,
               });
-
+              break;
             case 'LIMIT_UNEXPECTED_FILE':
-              throw new Problem(400, {
+              problem = new Problem(400, {
                 detail: 'Upload encountered an unexpected file',
               });
-
+              break;
             // We don't expect that we will encounter these in our api/app, but
             // here for completeness.
 
             case 'LIMIT_PART_COUNT':
-              throw new Problem(400, {
+              problem = new Problem(400, {
                 detail: 'Upload rejected: upload form has too many parts',
               });
-
+              break;
             case 'LIMIT_FIELD_KEY':
-              throw new Problem(400, {
+              problem = new Problem(400, {
                 detail: 'Upload rejected: upload field name for the files is too long',
               });
-
+              break;
             case 'LIMIT_FIELD_VALUE':
-              throw new Problem(400, {
+              problem = new Problem(400, {
                 detail: 'Upload rejected: upload field is too long',
               });
-
+              break;
             case 'LIMIT_FIELD_COUNT':
-              throw new Problem(400, {
+              problem = new Problem(400, {
                 detail: 'Upload rejected: too many fields',
               });
-
+              break;
             default:
-              throw new Problem(400, {
+              problem = new Problem(400, {
                 detail: `Upload failed with the following error: ${error.message}`,
               });
           }
         }
 
         if (error) {
-          throw new Problem(400, {
+          problem = new Problem(400, {
             detail: error.message,
           });
+        }
+        if (problem) {
+          next(problem);
         }
 
         next();
