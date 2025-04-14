@@ -1,5 +1,4 @@
 import formioUtils from 'formiojs/utils';
-import moment from 'moment';
 import { IdentityMode } from '~/utils/constants';
 
 //
@@ -72,71 +71,6 @@ export function attachAttributesToLinks(formSchemaComponents) {
       );
     }
   });
-}
-
-/**
- * @function getSubmissionPeriodDates
- * Gets the submission period dates based on the form's schedule
- *
- * @param {String|Object} openDate The form's opening date (string or moment object)
- * @param {String|Object} closeDate The form's closing date (string or moment object)
- * @param {Object} allowLateSubmissions The late submissions configuration
- * @returns {Array} An array with the calculated date period
- */
-export function getSubmissionPeriodDates(
-  openDate,
-  closeDate,
-  allowLateSubmissions = null
-) {
-  let openSubmissionDate = moment.isMoment(openDate)
-    ? openDate.clone()
-    : moment(new Date(openDate));
-
-  let calculatedCloseDate = moment.isMoment(closeDate)
-    ? closeDate.clone()
-    : moment(new Date(closeDate));
-
-  let graceDate = null;
-
-  // If late submissions are enabled, calculate the grace date
-  if (
-    allowLateSubmissions &&
-    allowLateSubmissions.enabled &&
-    allowLateSubmissions.forNext &&
-    allowLateSubmissions.forNext.term &&
-    allowLateSubmissions.forNext.intervalType
-  ) {
-    graceDate = calculatedCloseDate
-      .clone()
-      .add(
-        allowLateSubmissions.forNext.term,
-        allowLateSubmissions.forNext.intervalType
-      )
-      .format('YYYY-MM-DD HH:MM:SS');
-  }
-
-  return [
-    {
-      startDate: openSubmissionDate.format('YYYY-MM-DD HH:MM:SS'),
-      closeDate: calculatedCloseDate.format('YYYY-MM-DD HH:MM:SS'),
-      graceDate: graceDate,
-    },
-  ];
-}
-
-/**
- * @function isDateValidForMailNotification
- * Check if date is equal or less than today
- *
- * @param {String} parseDate A string of start date period
- */
-export function isDateValidForMailNotification(parseDate) {
-  const formDate = moment(parseDate, 'YYYY-MM-DD');
-  const now = moment();
-  if (now.isSameOrAfter(formDate, 'day')) {
-    return true;
-  }
-  return false;
 }
 
 // disposition retrieval from https://stackoverflow.com/a/40940790
