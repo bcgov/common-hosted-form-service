@@ -97,10 +97,10 @@
     "formAccess": "Accès au formulaire",
     "info": "Si vous utilisez ce formulaire pour recueillir des informations auprès du grand public sur des sujets d'intérêt général pour le public, vous devez contacter le GCPE afin que votre engagement soit répertorié sur",
     "important": "IMPORTANT",
-    "idimNotifyA": "Vous devez informer l'équipe de gestion des informations d'identité (IDIM) par e-mail",
-    "idimNotifyB": "votre intention d'utiliser BCeID pour vérifier l'identité de vos expéditeurs de formulaires.",
-    "referenceGuideA": "Veuillez vous référer à notre",
-    "referenceGuideB": "mode d'emploi",
+    "idimNotifyA": "Vous <strong>DEVEZ</strong> notifier l'équipe de Identity Information Management (IDIM) par e-mail",
+    "idimNotifyB": "votre intention d'utiliser BCeID ou BC Services Card pour vérifier l'identité des soumissionnaires de votre formulaire.",
+    "referenceGuideA": "Veuillez consulter notre",
+    "referenceGuideB": "guide d'utilisateur",
     "referenceGuideC": "pour plus de détails",
     "specificTeamMembers": "Membres spécifiques de l'équipe",
     "teamMemberTooltip": "Ajoutez des membres de l'équipe depuis les paramètres de Gestion d'Équipe après avoir créé ce formulaire.",
@@ -139,7 +139,14 @@
     "repeatUntil": "Répète jusqu'à",
     "summary": "Résumé",
     "submissionsOpenDateRange": "Ce formulaire sera ouvert aux soumissions de",
+    "timezoneIndicator": "Toutes les heures sont dans votre fuseau horaire local ({timezone})",
     "to": "pour",
+    "openTime": "Heure d'ouverture",
+    "closeTime": "Heure de fermeture",
+    "at": "à",
+    "specifyOpenTime": "Préciser l'heure d'ouverture (facultatif)",
+    "specifyCloseTime": "Préciser l'heure de fermeture (facultatif)",
+    "closingTimeInfo": "(Le formulaire sera fermé à 23 h 59 dans votre fuseau horaire local à la date de clôture)",
     "scheduleRepetition": "Le programme se répétera tous les",
     "allowLateSubmissnInterval": "autoriser les soumissions tardives pour",
     "until": "jusqu'à",
@@ -179,6 +186,9 @@
     "eventStreamMessage": "Le service de flux d'événements publiera des notifications sur la publication et les soumissions de formulaires. La technologie sous-jacente est NATS.io qui permet aux consommateurs de s'abonner ou d'extraire les messages d'événements et de les traiter dans des systèmes externes. Les messages privés contiendront des charges utiles chiffrées avec la clé configurée ici.",
     "natsConfiguration": "Configuration NATS et métadonnées des messages",
     "publishConfiguration": "Configuration de la publication d'événements",
+    "essAccountName": "Nom du compte ESS",
+    "essAccountApproved": "Compte ESS approuvé",
+    "essAccountNotApproved": "Compte ESS inconnu ou non approuvé",
     "enablePublicStream": "Activer le flux public",
     "enablePrivateStream": "Activer le flux privé",
     "encryptionKeyAlgorithm": "Algorithme de clé de chiffrement",
@@ -487,13 +497,15 @@
     "download": "Télécharger"
   },
   "formDisclaimer": {
-    "disclaimerAndStatement": "Clause de non-responsabilité et déclaration de responsabilité pour les concepteurs de formulaire :",
-    "privacyLaw": "Il est de votre responsabilité de vous conformer aux lois sur la confidentialité régissant la collecte, l'utilisation et la divulgation d'informations personnellement identifiables.",
-    "disclosure": "L'accès à cet outil de conception de formulaire n'autorise pas intrinsèquement la collecte, l'utilisation ou la divulgation d'informations personnellement identifiables.",
+    "disclaimerAndStatement": "Clause de non-responsabilité et déclaration de responsabilité pour les concepteurs de formulaires :",
+    "privacyLaw": "Il est de votre responsabilité de vous conformer aux lois sur la confidentialité régissant la collecte, l'utilisation et la divulgation des informations personnelles identifiables.",
+    "disclosure": "L'accès à cet outil de conception de formulaires ne vous accorde pas automatiquement l'autorisation de collecter, d'utiliser ou de divulguer des informations personnelles identifiables.",
     "consent": "Il est de votre responsabilité d'obtenir le consentement pour collecter des informations conformément à la loi.",
-    "formIntention": "Avant de publier ou de distribuer votre formulaire, vous devez discuter de l'intention du formulaire avec votre",
-    "privacyOfficer": "Agent de la protection de la vie privée du ministère",
-    "assement": "et effectuer les évaluations nécessaires."
+    "formIntention": "Avant de publier ou de distribuer votre formulaire, vous devez discuter de son intention avec votre",
+    "privacyOfficer": "Responsable de la confidentialité du ministère",
+    "assement": "et compléter les évaluations requises.",
+    "idimDisclaimerA": "Si vous utilisez BCeID ou BC Services Card comme options d'accès au formulaire, vous <strong>DEVEZ</strong> notifier l'équipe de Identity Information Management (IDIM) par e-mail",
+    "idimDisclaimerB": "votre intention d'utiliser BCeID ou BC Services Card pour vérifier l'identité des soumissionnaires de votre formulaire. Il est de votre responsabilité de compléter ces exigences supplémentaires avant de collecter des données."
   },
   "requestReceipt": {
     "emailPriority": "Priorité aux e-mails",
@@ -1205,5 +1217,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "Vous ne pouvez pas partager le brouillon avec des utilisateurs qui n'ont pas été ajoutés au formulaire. Veuillez contacter l'administrateur pour les ajouter.",
+    "shareDraftMessage":"Partager le brouillon uniquement avec les membres de l'équipe du formulaire"
   }
 }

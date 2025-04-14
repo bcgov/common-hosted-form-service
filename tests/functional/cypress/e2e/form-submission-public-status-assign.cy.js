@@ -1,5 +1,4 @@
 import 'cypress-keycloak-commands';
-import 'cypress-drag-drop';
 import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
@@ -51,22 +50,16 @@ describe('Form Designer', () => {
       .trigger('mousedown', { which: 1}, { force: true })
       .trigger('mousemove', coords.x, -50, { force: true })
       .trigger('mouseup', { force: true });
+      cy.wait(2000);
       cy.get('button').contains('Save').click();
+      cy.wait(2000);
     });
-    cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
+    cy.wait(2000);
   // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
-    cy.waitForLoad();
-
-
-  // Go to My forms  
-    cy.wait('@getForm').then(()=>{
-      let userFormsLinks = cy.get('[data-cy=userFormsLinks]');
-      expect(userFormsLinks).to.not.be.null;
-      userFormsLinks.trigger('click');
-    });
+    cy.wait(2000);
   // Filter the newly created form
     cy.location('search').then(search => {
       //let pathName = fullUrl.pathname
@@ -180,11 +173,12 @@ describe('Form Designer', () => {
     cy.get('[data-test="showAssigneeList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').type('ch');
     cy.get('div').contains('CHEFS Testing').click();
     cy.get('[data-test="updateStatusToNew"] > .v-btn__content > span').click();
-    cy.waitForLoad();
-    cy.waitForLoad();
+    cy.wait(2000);
     cy.get('[data-test="showStatusList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click({force: true});
     cy.wait(2000);
+    cy.contains('COMPLETED');
     cy.contains('COMPLETED').click();
+    cy.wait(2000);
     cy.get('button').contains('COMPLETE').click();
     //Adding notes to submission
     cy.get('.mdi-plus').click();

@@ -52,6 +52,16 @@ export default {
   },
 
   /**
+   * @function isUserAssignedToFormTeams
+   * Determine if user is in form team
+   * @param {Object} [params={}] The query parameters
+   * @returns {Promise} An axios response
+   */
+  isUserAssignedToFormTeams(params = {}) {
+    return appAxios().get(`${ApiRoutes.RBAC}/form/user`, { params });
+  },
+
+  /**
    * @function setFormUsers
    * Set relationships between forms, roles, users
    * @param {Object} requestBody The request body for the relationships

@@ -1,7 +1,7 @@
 export default {
   key: 'customData',
   label: 'Data',
-  weight: 20,
+  weight: 2,
   components: [
     {
       html: '<h2>Default Values</h2>',

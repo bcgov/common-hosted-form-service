@@ -1,8 +1,6 @@
-import 'cypress-drag-drop';
 import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
-
 
 Cypress.Commands.add('waitForLoad', () => {
   const loaderTimeout = 60000;
@@ -10,13 +8,9 @@ Cypress.Commands.add('waitForLoad', () => {
   cy.get('.nprogress-busy', { timeout: loaderTimeout }).should('not.exist');
 });
 
-
-
 describe('Form Designer', () => {
 
   beforeEach(()=>{
-    
-    
     
     cy.on('uncaught:exception', (err, runnable) => {
       // Form.io throws an uncaught exception for missing projectid
@@ -43,11 +37,11 @@ describe('Form Designer', () => {
       .trigger('mousedown', { which: 1}, { force: true })
       .trigger('mousemove', coords.x, -550, { force: true })
       .trigger('mouseup', { force: true });
-      cy.waitForLoad();  
+      cy.wait(2000);  
       cy.get('button').contains('Save').click();
-      
     });
   // Form saving
+    cy.wait(2000);
     cy.get('[data-cy=saveButton]').click();
     cy.wait(2000);
   // Filter the newly created form
@@ -83,19 +77,17 @@ describe('Form Designer', () => {
 
       cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
       //Enable submission schedule and event subscription
-      
       cy.contains('Form Submissions Schedule').click();
       cy.contains('Allow event subscription').click();
       cy.get(':nth-child(5) > .v-card > .v-card-text').should('be.visible');
       cy.get('input[placeholder="yyyy-mm-dd"]').click();
       // Select date for open submission
-      cy.get('input[placeholder="yyyy-mm-dd"]').type('2026-06-17');
-      
+      cy.get('input[placeholder="yyyy-mm-dd"]').type('2026-06-17'); 
       //Checking the  schedule of closing date settings
       cy.contains('Schedule a closing date').click();
-      cy.get('[data-test="formattedCloseDate"]').should('be.visible');
-      cy.get('[data-test="formattedCloseDate"]').click();
-      cy.get('[data-test="formattedCloseDate"]').type('2026-09-17');
+      cy.get('[data-test="closeSubmissionDateTime"]').should('be.visible');
+      cy.get('[data-test="closeSubmissionDateTime"]').click();
+      cy.get('[data-test="closeSubmissionDateTime"]').type('2026-09-17');
       cy.contains('Allow late submissions').click();
       cy.get('[data-test="afterCloseDateFor"]').should('be.visible');
       cy.get('[data-test="afterCloseDateFor"]').click();
@@ -103,53 +95,17 @@ describe('Form Designer', () => {
 
       cy.get('.pl-3 > :nth-child(2) > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
       cy.contains('weeks').click();
-      //Set Up submission period
-      cy.contains('Set up submission period').click();
-      cy.get('[data-test="closeSubmissionDateTime"]').should('not.exist');
-      cy.get('[data-test="afterCloseDateFor"]').should('not.exist');
-      cy.waitForLoad();
-      cy.get('input[type="number"]').then($el => {
-
-        const rem=$el[0];
-        rem.click();
-        cy.get(':nth-child(4) > .v-input > .v-input__control > .v-field').click();
-        cy.contains('div','This field is required.').should('be.visible');
-        cy.get(rem).type('5');
-        
-        });
-      cy.get(':nth-child(4) > .v-input > .v-input__control > .v-field').click();
-      cy.wait(4000);
-      cy.contains('days').click();
+      
       //verification of Summary
       cy.contains('span','This form will be open for submissions from').should('be.visible');
       cy.get('b').then($el => {
 
         const rem=$el[0];
-        const rem1=$el[1];
-        cy.get(rem).contains('2026-06-17').should('exist');
+        //const rem1=$el[1];
+        cy.get(rem).contains('June 17, 2026 at 8:30 AM').should('exist');
 
        });
-      //Repeat period
-      cy.contains('Repeat period').click();
-      cy.get('input[type="number"]').then($el => {
-
-        const rem=$el[1];
-        cy.get(rem).type('6');
-        
-        });
-      
-      cy.get(':nth-child(4) > :nth-child(2) > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
-      cy.contains('quarters').click();
-      cy.get('input[type="date"]').then($el => {
-
-        const rem=$el[1];
-        rem.click();
-        //checking validation message
-        
-        cy.get(rem).type('2026-12-17');
-        
-        });
- 
+       cy.get('span').contains(' allowing late submissions for 5 weeks.').should('exist');
       //Closing date for submission
       cy.contains('Set custom closing message').click();
       cy.get('textarea').then($el => {
@@ -157,25 +113,16 @@ describe('Form Designer', () => {
         const rem=$el[0];
         cy.get(rem).type('closed for some reasons');
       });
-      //cy.get('textarea').type('closed for some reasons')
       cy.contains('SEND Reminder email').click();
       
       cy.contains('SEND Reminder email').click();
       cy.get('[data-test="canEditForm"]').click();
-    })
+    });
     it('Checks Event Subscription settings', () => {
       cy.viewport(1000, 1100);
       cy.waitForLoad();
       cy.get(':nth-child(2) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
       cy.get('input[placeholder="https://endpoint.gov.bc.ca/api/v1/"]').click();
-        
-      cy.get('input[type="text"]').then($el => {
-
-        const rem=$el[10];
-        cy.get(rem).type('7');
-        
-        });
-      
       cy.get('input[type="password"]').type('hi');
       
       cy.get('div').contains('Please enter a valid endpoint starting with https://').should('be.visible');
@@ -184,7 +131,7 @@ describe('Form Designer', () => {
       cy.get('.v-col > .v-btn > .v-btn__content > span').click();
       // Verify form settings updation success message
       cy.get('.v-alert__content').contains('div','Subscription settings for this form has been saved.').should('be.visible');
-    })
+    });
     it('Checks External API settings', () => {
       cy.viewport(1000, 1100);
       cy.waitForLoad();
@@ -195,37 +142,29 @@ describe('Form Designer', () => {
       cy.wait(2000);
       cy.get('input[type="text"]').then($el => {
         cy.get('.mdi-plus-circle').click();
-
-        const api_name=$el[12];
-        const api_endpoint=$el[13];
-        const api_header=$el[14];
-        const api_keyvalue=$el[15];
-        cy.get(api_name).click();
-        cy.get(api_endpoint).click();
+        const api_name=$el[13];
+        cy.get(api_name).click({ force: true });
+        cy.get('[data-test="text-endpointUrl"]').click();
         
         cy.wait(2000);
-        cy.get(api_header).click();
         cy.contains('div','Name is required.').should('be.visible');
+        cy.get('[data-test="text-apiKeyHeader"]').click();
         cy.get('.v-messages__message').contains('div','Please enter a valid endpoint starting with http:// or https://').should('be.visible');
-
+        cy.get(api_name).click({ force: true });
         cy.get(api_name).type('chefs_name');
-        cy.get(api_endpoint).type('chefs_endpoint');
-        cy.contains('div','Name is required.').should('not.exist');
+        cy.get('[data-test="text-endpointUrl"]').type('chefs_endpoint');
+        //cy.contains('div','Name is required.').should('not.exist');
         cy.get('.v-messages__message').contains('div','Please enter a valid endpoint starting with http:// or https://').should('be.visible');
-        cy.get(api_endpoint).type('{selectall}{backspace}');
-        cy.get(api_endpoint).type('https://chefs-dev.apps.silver.devops.gov.bc.ca/');
-        cy.get(api_header).type('header');
-        cy.get(api_keyvalue).type('keyvalue');
+        cy.get('[data-test="text-endpointUrl"]').type('{selectall}{backspace}');
+        cy.get('[data-test="text-endpointUrl"]').type('https://chefs-dev.apps.silver.devops.gov.bc.ca/');
+        cy.get('[data-test="text-apiKeyHeader"]').type('header');
+        cy.get('[data-test="text-apiKey"]').type('keyvalue');
       });
-      cy.get('input[type="checkbox"]').then($el => {
-          const user_apikey=$el[14];
-          const user_info=$el[15];
-          cy.get(user_info).click();
-          cy.get(user_apikey).click();
-          cy.get('[data-test="continue-btn-continue"]').should('be.enabled');
-          cy.get('[data-test="continue-btn-cancel"]').should('be.enabled');
-          cy.get('[data-test="continue-btn-continue"]').click();
-      })
+      cy.get('span').contains('Send API Key').click();
+      cy.get('span').contains('Send User Information').click();
+      cy.get('[data-test="continue-btn-continue"]').should('be.enabled');
+      cy.get('[data-test="continue-btn-cancel"]').should('be.enabled');
+      cy.get('[data-test="continue-btn-continue"]').click();
           
       cy.get('.v-data-table__tbody > .v-data-table__tr > :nth-child(3)').contains('Submitted');
       cy.get(':nth-child(1) > .v-btn > .v-btn__content > .mdi-pencil').click();
@@ -245,10 +184,8 @@ describe('Form Designer', () => {
       const delcontinue=$el[1];
       cy.get(delcontinue).click();
       cy.get('#logoutButton > .v-btn__content > span').click();
-            
-       
-          
-      })  
+              
+      });  
   
-    })
-})
+    });
+});

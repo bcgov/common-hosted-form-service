@@ -1,5 +1,4 @@
 import 'cypress-keycloak-commands';
-import 'cypress-drag-drop';
 import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
@@ -48,9 +47,10 @@ describe('Form Designer', () => {
       .trigger('mousemove', coords.x, -550, { force: true })
         //.trigger('mousemove', coords.y, +100, { force: true })
       .trigger('mouseup', { force: true });
-      cy.waitForLoad();
+      cy.wait(2000);
       //cy.get('input[name="data[label]"]').type('s');  
       cy.get('button').contains('Save').click();
+      cy.wait(2000);
       //cy.get('.btn-success').click();
 
 

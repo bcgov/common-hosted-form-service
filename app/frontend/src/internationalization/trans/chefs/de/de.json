@@ -97,11 +97,11 @@
     "formAccess": "Formularzugriff",
     "info": "Wenn Sie dieses Formular verwenden, um Informationen von der Öffentlichkeit zu Themen zu sammeln, die für die Öffentlichkeit von allgemeinem Interesse sind, müssen Sie sich an die GCPE wenden, damit Ihr Engagement auf aufgeführt werden kann",
     "important": "WICHTIG",
-    "idimNotifyA": "Sie müssen das Identity Information Management (IDIM)-Team per E-Mail benachrichtigen",
-    "idimNotifyB": "Ihre Absicht, BCeID zu nutzen, um die Identität Ihrer Formularabsender zu überprüfen.",
-    "referenceGuideA": "Bitte verweisen Sie auf unsere",
+    "idimNotifyA": "Sie <strong>MÜSSEN</strong> das Identity Information Management (IDIM)-Team per E-Mail benachrichtigen",
+    "idimNotifyB": "Ihre Absicht, BCeID oder BC Services Card zu nutzen, um die Identitäten Ihrer Formularabsender zu überprüfen.",
+    "referenceGuideA": "Bitte beachten Sie unser",
     "referenceGuideB": "Benutzerhandbuch",
-    "referenceGuideC": "für mehr Details",
+    "referenceGuideC": "für weitere Details",
     "specificTeamMembers": "Spezifische Teammitglieder",
     "teamMemberTooltip": "Fügen Sie Teammitglieder aus den Teamverwaltungseinstellungen hinzu, nachdem Sie dieses Formular erstellt haben.",
     "formFunctionality": "Formularfunktionalität",
@@ -140,6 +140,13 @@
     "summary": "Zusammenfassung",
     "submissionsOpenDateRange": "Dieses Formular ist für Einsendungen geöffnet",
     "to": "Zu",
+    "timezoneIndicator": "Alle Zeiten sind in Ihrer lokalen Zeitzone ({timezone})",
+    "openTime": "Öffnungszeit",
+    "closeTime": "Schließzeit",
+    "at": "um",
+    "specifyOpenTime": "Öffnungszeit angeben (optional)",
+    "specifyCloseTime": "Schließzeit angeben (optional)",
+    "closingTimeInfo": "(Das Formular wird um 23:59 Uhr in Ihrer lokalen Zeitzone am Schließungsdatum geschlossen)",
     "scheduleRepetition": "Der Zeitplan wiederholt sich alle",
     "allowLateSubmissnInterval": "Zulassen verspäteter Einreichungen für",
     "until": "bis",
@@ -179,6 +186,9 @@
     "eventStreamMessage": "Der Event Stream Service veröffentlicht Benachrichtigungen über die Veröffentlichung und Übermittlung von Formularen. Die zugrundeliegende Technologie ist NATS.io, mit der Verbraucher die Ereignisnachrichten abonnieren oder abrufen und in externen Systemen verarbeiten können. Private Nachrichten enthalten verschlüsselte Nutzdaten mit dem hier konfigurierten Schlüssel.",
     "natsConfiguration": "NATS-Konfiguration und Nachrichtenmetadaten",
     "publishConfiguration": "Konfiguration der Ereignisveröffentlichung",
+    "essAccountName": "ESS-Kontoname",
+    "essAccountApproved": "ESS-Konto genehmigt",
+    "essAccountNotApproved": "ESS-Konto unbekannt oder nicht genehmigt",
     "enablePublicStream": "Öffentlichen Stream aktivieren",
     "enablePrivateStream": "Privaten Stream aktivieren",
     "encryptionKeyAlgorithm": "Verschlüsselungsschlüsselalgorithmus",
@@ -487,13 +497,15 @@
     "download": "Herunterladen"
   },
   "formDisclaimer": {
-    "disclaimerAndStatement": "Haftungsausschluss und Haftungsausschluss für Form Designers:",
-    "privacyLaw": "Es liegt in Ihrer Verantwortung, die Datenschutzgesetze einzuhalten, die die Erhebung, Nutzung und Offenlegung personenbezogener Daten regeln.",
-    "disclosure": "Der Zugriff auf dieses Formulardesigner-Tool gewährt grundsätzlich keine Erlaubnis zur Erfassung, Nutzung oder Offenlegung personenbezogener Daten.",
-    "consent": "Es liegt in Ihrer Verantwortung, die gesetzlich vorgeschriebene Einwilligung zur Erhebung von Daten einzuholen.",
-    "formIntention": "Bevor Sie Ihr Formular veröffentlichen oder verteilen, müssen Sie die Absicht des Formulars mit Ihnen besprechen",
-    "privacyOfficer": "Datenschutzbeauftragter des Ministeriums",
-    "assement": "und bei Bedarf Beurteilungen durchzuführen."
+    "disclaimerAndStatement": "Haftungsausschluss und Verantwortungserklärung für Formulardesigner:",
+    "privacyLaw": "Es liegt in Ihrer Verantwortung, die Datenschutzgesetze zur Erhebung, Nutzung und Offenlegung personenbezogener Daten einzuhalten.",
+    "disclosure": "Der Zugriff auf dieses Formular-Design-Tool gewährt Ihnen nicht automatisch die Erlaubnis, personenbezogene Daten zu erfassen, zu verwenden oder offenzulegen.",
+    "consent": "Es liegt in Ihrer Verantwortung, die erforderliche Zustimmung zur Datenerfassung gemäß den gesetzlichen Anforderungen einzuholen.",
+    "formIntention": "Bevor Sie Ihr Formular veröffentlichen oder verbreiten, müssen Sie den Zweck des Formulars mit Ihrem",
+    "privacyOfficer": "Ministeriums-Datenschutzbeauftragten",
+    "assement": "besprechen und die erforderlichen Bewertungen abschließen.",
+    "idimDisclaimerA": "Wenn Sie BCeID oder BC Services Card als Zugangsoptionen für das Formular verwenden, <strong>MÜSSEN</strong> Sie das Identity Information Management (IDIM)-Team per E-Mail benachrichtigen",
+    "idimDisclaimerB": "Ihre Absicht, BCeID oder BC Services Card zu nutzen, um die Identitäten Ihrer Formularabsender zu überprüfen. Es liegt in Ihrer Verantwortung, diese zusätzlichen Onboarding-Anforderungen vor der Datenerfassung abzuschließen."
   },
   "requestReceipt": {
     "emailPriority": "E-Mail-Priorität",
@@ -1205,5 +1217,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "Sie können den Entwurf nicht mit Benutzern teilen, die nicht zum Formular hinzugefügt wurden. Wenden Sie sich an den Administrator, um sie hinzuzufügen.",
+    "shareDraftMessage":"Geben Sie den Entwurf nur an die Mitglieder des Formularteams weiter"
   }
 }

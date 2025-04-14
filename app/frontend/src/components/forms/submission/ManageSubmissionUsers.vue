@@ -22,6 +22,10 @@ const properties = defineProps({
     type: String,
     required: true,
   },
+  formId: {
+    type: String,
+    required: true,
+  },
 });
 
 const dialog = ref(false);
@@ -39,7 +43,7 @@ const formStore = useFormStore();
 const idpStore = useIdpStore();
 const notificationStore = useNotificationStore();
 
-const { isRTL } = storeToRefs(formStore);
+const { isRTL, form } = storeToRefs(formStore);
 
 const autocompleteLabel = computed(() => {
   return idpStore.isPrimary(selectedIdp.value)
@@ -88,13 +92,7 @@ async function onChangeUserSearchInput(input) {
     const response = await userService.getUsers(params);
     userSearchResults.value = response.data;
   } catch (error) {
-    // userSearchResults.value = [];
-    /* eslint-disable no-console */
-    console.error(
-      t('trans.manageSubmissionUsers.getUsersErrMsg', {
-        error: error,
-      })
-    ); // eslint-disable-line no-console
+    userSearchResults.value = [];
   } finally {
     isLoadingDropdown.value = false;
   }
@@ -109,6 +107,20 @@ function initializeSelectedIdp() {
 async function addUser() {
   // If the end user selected a user
   if (userSearchSelection.value) {
+    if (form.value.enableTeamMemberDraftShare) {
+      const formUsersResponse = await rbacService.isUserAssignedToFormTeams({
+        formId: properties.formId,
+        email: userSearchSelection.value.email,
+        roles: '*',
+      });
+      if (formUsersResponse && !formUsersResponse.data) {
+        notificationStore.addNotification({
+          ...NotificationTypes.ERROR,
+          text: t('trans.canShareDraft.canShareMessage'),
+        });
+        return;
+      }
+    }
     const id = userSearchSelection.value.id;
     // If a selected user is already on the team
     if (formSubmissionUsers.value.some((u) => u.id === id)) {
@@ -245,9 +257,9 @@ defineExpose({
           <v-icon icon="mdi:mdi-account-multiple"></v-icon>
         </v-btn>
       </template>
-      <span :lang="locale">{{
-        $t('trans.manageSubmissionUsers.manageTeamMembers')
-      }}</span>
+      <span :lang="locale"
+        >{{ $t('trans.manageSubmissionUsers.manageTeamMembers') }}
+      </span>
     </v-tooltip>
     <v-dialog v-model="dialog" width="600">
       <v-card :class="{ 'dir-rtl': isRTL }">

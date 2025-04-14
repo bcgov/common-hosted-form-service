@@ -8,9 +8,9 @@ labels:
   app.kubernetes.io/name: nodejs
   app.kubernetes.io/part-of: "${APP_NAME}-${JOB_NAME}"
   app: "${APP_NAME}-${JOB_NAME}"
-  template: "${REPO_NAME}-app-dc-template"
+  template: "${REPO_NAME}-app-deployment-template"
 metadata:
-  name: "${REPO_NAME}-app-dc"
+  name: "${REPO_NAME}-app-deployment"
 objects:
   - apiVersion: networking.k8s.io/v1
     kind: NetworkPolicy
@@ -23,7 +23,7 @@ objects:
             - podSelector:
                 matchLabels:
                   app: "${APP_NAME}-${JOB_NAME}"
-                  deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
+                  app.kubernetes.io/name: "${APP_NAME}-app-${JOB_NAME}"
                   role: app
           ports:
             - port: 5432
@@ -43,7 +43,7 @@ objects:
         - from:
             - podSelector:
                 matchLabels:
-                  openshift.io/deployer-pod.type: hook-pre
+                  job-name: "pre-${APP_NAME}-app-${JOB_NAME}"
           ports:
             - port: 5432
               protocol: TCP
@@ -52,32 +52,27 @@ objects:
           cluster-name: "${JOB_NAME}"
           statefulset: "patroni-${JOB_NAME}"
           role: master
-  - apiVersion: v1
-    kind: DeploymentConfig
+  - apiVersion: batch/v1
+    kind: Job
     metadata:
+      name: "pre-${APP_NAME}-app-${JOB_NAME}"
       annotations:
-        app.openshift.io/connects-to: '[{"apiVersion":"apps/v1","kind":"StatefulSet","name":"patroni-${JOB_NAME}"}]'
-      name: "${APP_NAME}-app-${JOB_NAME}"
+        "helm.sh/hook": pre-install,pre-upgrade
+        "helm.sh/hook-weight": "-5"
+        "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
     spec:
-      replicas: ${{REPLICAS}}
-      revisionHistoryLimit: 10
-      selector:
-        app: "${APP_NAME}-${JOB_NAME}"
-        deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
-        role: app
-      strategy:
-        type: Rolling
-        resources: {}
-        rollingParams:
-          timeoutSeconds: 600
-          pre:
-            failurePolicy: Retry
-            execNewPod:
+      template:
+        metadata:
+          labels:
+            job-name: "pre-${APP_NAME}-app-${JOB_NAME}"
+        spec:
+          containers:
+            - name: app
+              image: "${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/${REPO_NAME}:${IMAGE_TAG}"
               command:
                 - npm
                 - run
                 - migrate
-              containerName: "app"
               env:
                 - name: NODE_ENV
                   value: production
@@ -100,11 +95,35 @@ objects:
                       name: "patroni-${JOB_NAME}-secret"
                 - name: SERVER_BASEPATH
                   value: "${ROUTE_PATH}"
+          restartPolicy: OnFailure
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        app.openshift.io/connects-to: '[{"apiVersion":"apps/v1","kind":"StatefulSet","name":"patroni-${JOB_NAME}"}]'
+      name: "${APP_NAME}-app-${JOB_NAME}"
+      labels:
+        app: "${APP_NAME}-${JOB_NAME}"
+        app.kubernetes.io/name: "${APP_NAME}-app-${JOB_NAME}"
+        role: app
+    spec:
+      replicas: ${{REPLICAS}}
+      revisionHistoryLimit: 10
+      selector:
+        matchLabels:
+          app: "${APP_NAME}-${JOB_NAME}"
+          app.kubernetes.io/name: "${APP_NAME}-app-${JOB_NAME}"
+          role: app
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 25%
+          maxUnavailable: 25%
       template:
         metadata:
           labels:
             app: "${APP_NAME}-${JOB_NAME}"
-            deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
+            app.kubernetes.io/name: "${APP_NAME}-app-${JOB_NAME}"
             role: app
         spec:
           containers:
@@ -267,18 +286,6 @@ objects:
           volumes:
             - name: log-storage
               emptyDir: {}
-      test: false
-      triggers:
-        - type: ConfigChange
-        # - imageChangeParams:
-        #     automatic: true
-        #     containerNames:
-        #       - app
-        #     from:
-        #       kind: ImageStreamTag
-        #       name: "${REPO_NAME}-app:${JOB_NAME}"
-        #       namespace: "${NAMESPACE}"
-        #   type: ImageChange
   - apiVersion: v1
     kind: Service
     metadata:
@@ -291,10 +298,10 @@ objects:
           targetPort: 8080
       selector:
         app: "${APP_NAME}-${JOB_NAME}"
-        deploymentconfig: "${APP_NAME}-app-${JOB_NAME}"
+        app.kubernetes.io/name: "${APP_NAME}-app-${JOB_NAME}"
         role: app
       sessionAffinity: None
-  - apiVersion: v1
+  - apiVersion: route.openshift.io/v1
     kind: Route
     metadata:
       name: "${APP_NAME}-app-${JOB_NAME}"

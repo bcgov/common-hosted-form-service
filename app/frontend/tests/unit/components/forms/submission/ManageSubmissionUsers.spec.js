@@ -17,18 +17,35 @@ const providers = require('../../../fixtures/identityProviders.json');
 
 describe('ManageSubmissionUsers.vue', () => {
   const SUBMISSION_ID = '1111111111-1111-1111-111111111111';
+  // mock out all the service calls that may be called in this component
   const getSubmissionUsersSpy = vi.spyOn(rbacService, 'getSubmissionUsers');
+  const setSubmissionUserPermissionsSpy = vi.spyOn(
+    rbacService,
+    'setSubmissionUserPermissions'
+  );
+  const getUsersSpy = vi.spyOn(userService, 'getUsers');
   const router = createRouter({
     history: createWebHistory(),
     routes: getRouter().getRoutes(),
   });
 
   beforeEach(() => {
+    // we need to reset and give a base implementation
+    // without a base implementation we could see Error: connect ECONNREFUSED 127.0.0.1:3000
+    // messages in the logs as it tries to make a call to non-running host
     getSubmissionUsersSpy.mockReset();
+    setSubmissionUserPermissionsSpy.mockReset();
+    getUsersSpy.mockReset();
+    getSubmissionUsersSpy.mockImplementation(() => ({ data: [] }));
+    setSubmissionUserPermissionsSpy.mockImplementation(() => ({ data: [] }));
+    getUsersSpy.mockImplementation(() => ({ data: [] }));
   });
 
   afterAll(() => {
+    // restore all the call spies.
     getSubmissionUsersSpy.mockRestore();
+    setSubmissionUserPermissionsSpy.mockRestore();
+    getUsersSpy.mockRestore();
   });
 
   it('renders', () => {
@@ -114,14 +131,10 @@ describe('ManageSubmissionUsers.vue', () => {
   });
 
   it('onChangeUserSearchInput should get the userSearchResults', async () => {
-    const consoleErrorSpy = vi
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
     const pinia = createTestingPinia({ stubActions: false });
     const idpStore = useIdpStore(pinia);
     setActivePinia(pinia);
     idpStore.providers = providers;
-    const getUsersSpy = vi.spyOn(userService, 'getUsers');
     const wrapper = shallowMount(ManageSubmissionUsers, {
       props: {
         isDraft: false,
@@ -134,22 +147,24 @@ describe('ManageSubmissionUsers.vue', () => {
 
     // no input returns nothing
     wrapper.vm.onChangeUserSearchInput();
+    expect(wrapper.vm.userSearchResults).toEqual([]);
 
-    // errors should be caught and console.error should be called
+    // errors should be caught and swallowed, no results
     getUsersSpy.mockImplementationOnce(async () => {
       throw new Error();
     });
     wrapper.vm.onChangeUserSearchInput('search');
-    await flushPromises();
-    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
-    consoleErrorSpy.mockReset();
-    getUsersSpy.mockReset();
+    expect(wrapper.vm.userSearchResults).toEqual([]);
 
+    await flushPromises();
+
+    getUsersSpy.mockReset();
     getUsersSpy.mockImplementation(async () => {
       return {
         data: ['something'],
       };
     });
+    wrapper.vm.onChangeUserSearchInput('search');
     expect(wrapper.vm.userSearchResults).toEqual([]);
 
     // idir means no teamMembershipConfig, getUsers should be called with just the search
@@ -164,39 +179,41 @@ describe('ManageSubmissionUsers.vue', () => {
     wrapper.vm.selectedIdp = 'bceid-basic';
 
     // should throw an error if search input is shorter than the min length specified by teamMebershipConfig
+    getUsersSpy.mockImplementationOnce(async () => {
+      throw new Error();
+    });
     wrapper.vm.onChangeUserSearchInput('jon');
-    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
-    consoleErrorSpy.mockReset();
+    expect(wrapper.vm.userSearchResults).toEqual([]);
+    getUsersSpy.mockReset();
 
     // should throw an error if search input is not a valid email specified by teamMebershipConfig
+    getUsersSpy.mockImplementationOnce(async () => {
+      throw new Error();
+    });
     wrapper.vm.onChangeUserSearchInput('john@email.');
-    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
-    consoleErrorSpy.mockReset();
+    expect(wrapper.vm.userSearchResults).toEqual([]);
+    getUsersSpy.mockReset();
 
     // should return email in the params if it is a valid email
+    getUsersSpy.mockImplementationOnce(() => ({ data: [] }));
     wrapper.vm.onChangeUserSearchInput('john@email.com');
     expect(getUsersSpy).toHaveBeenCalledWith({
       idpCode: 'bceid-basic',
       email: 'john@email.com',
     });
+    getUsersSpy.mockReset();
 
     // should return username in the params if it is a valid username
+    getUsersSpy.mockImplementationOnce(() => ({ data: [] }));
     wrapper.vm.onChangeUserSearchInput('johndoe');
     expect(getUsersSpy).toHaveBeenCalledWith({
       idpCode: 'bceid-basic',
       username: 'johndoe',
     });
+    getUsersSpy.mockReset();
   });
 
   it('addUser will add user if they are not on the team otherwise addNotification', async () => {
-    vi.spyOn(rbacService, 'getSubmissionUsers').mockImplementation(() => []);
-    const setSubmissionUserPermissionsSpy = vi
-      .spyOn(rbacService, 'setSubmissionUserPermissions')
-      .mockImplementationOnce(() => {
-        return {
-          data: [],
-        };
-      });
     const pinia = createTestingPinia({ stubActions: false });
     const notificationStore = useNotificationStore(pinia);
     setActivePinia(pinia);
@@ -232,9 +249,6 @@ describe('ManageSubmissionUsers.vue', () => {
   });
 
   it('modifyPermissions will give a success message depending on permissions length', async () => {
-    const setSubmissionUserPermissionsSpy = vi
-      .spyOn(rbacService, 'setSubmissionUserPermissions')
-      .mockImplementation(() => []);
     const pinia = createTestingPinia({ stubActions: false });
     const notificationStore = useNotificationStore(pinia);
     setActivePinia(pinia);
