@@ -263,9 +263,9 @@ objects:
                       key: password
                       name: "${APP_NAME}-event-stream-service"
                 - name: FILES_CLAMAV_HOST
-                  value: 10.98.34.116
+                  value: "10.98.34.116"
                 - name: FILES_CLAMAV_PORT
-                  value: 3310
+                  value: "3310"
                 # - name: SERVER_LOGFILE
                 #   value: "/var/log/app.log"
               envFrom:
