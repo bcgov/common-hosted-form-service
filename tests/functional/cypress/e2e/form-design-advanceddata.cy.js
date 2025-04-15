@@ -30,10 +30,12 @@ it('Checks the Container component', () => {
 
   cy.viewport(1000, 1100);
     formsettings();
- 
+    cy.intercept('POST', '**/forms/*', (req) => {
+      console.log(req);
+    }).as('formCreate');
+    
     cy.get('button').contains('Advanced Data').click();
-    cy.waitForLoad();
-    cy.waitForLoad();
+    cy.wait(2000);
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
         cy.get('span.btn').contains('Container')
