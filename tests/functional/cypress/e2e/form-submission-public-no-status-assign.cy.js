@@ -46,7 +46,7 @@ describe('Form Designer', () => {
       cy.get('button').contains('Save').click();
     });
   // Form saving
-    cy.wait(2000);
+    cy.waitForLoad();
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
@@ -58,9 +58,7 @@ describe('Form Designer', () => {
       let arrayValues = arr[1].split('&');
       cy.log(arrayValues[0]);
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-      cy.wait(2000);
-      
-   
+      cy.waitForLoad();
     //Publish the form
     cy.get('.v-label > span').click();
 
