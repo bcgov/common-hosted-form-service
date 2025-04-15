@@ -3,6 +3,7 @@ import { resolve } from 'path';
 import { defineConfig, loadEnv } from 'vite';
 import eslint from 'vite-plugin-eslint';
 import vuetify from 'vite-plugin-vuetify';
+// eslint-disable-next-line no-unused-vars
 import { defineConfig as vitestDefineConfig } from 'vitest/config';
 
 const proxyObject = {
@@ -17,6 +18,7 @@ export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   return {
     base: env.VITE_FRONTEND_BASEPATH ? env.VITE_FRONTEND_BASEPATH : '/app',
+    define: { __INTLIFY_JIT_COMPILATION__: true },
     server: {
       base: env.VITE_FRONTEND_BASEPATH ? env.VITE_FRONTEND_BASEPATH : '/app',
       proxy: {
