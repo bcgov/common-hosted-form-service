@@ -18,7 +18,6 @@ export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   return {
     base: env.VITE_FRONTEND_BASEPATH ? env.VITE_FRONTEND_BASEPATH : '/app',
-    define: { __INTLIFY_JIT_COMPILATION__: true },
     server: {
       base: env.VITE_FRONTEND_BASEPATH ? env.VITE_FRONTEND_BASEPATH : '/app',
       proxy: {
