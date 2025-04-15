@@ -108,7 +108,7 @@ describe('Form Designer', () => {
     cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span', { timeout: 15000 }).should('be.visible').click();
     //Form submission and verification for public forms
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
-    cy.wait(5000);
+    cy.wait(2000);
     cy.get('button').contains('Submit').should('be.visible');
     cy.wait(2000);
     cy.contains('Text Field').click();
