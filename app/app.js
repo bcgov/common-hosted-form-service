@@ -40,7 +40,10 @@ app.set('trust proxy', 1);
 app.set('x-powered-by', false);
 
 app.use(function (req, res, next) {
-  res.setHeader('Content-Security-Policy', "default-src 'self'; font-src 'self'; img-src 'self'; script-src 'self'; style-src 'self'; frame-src 'self'; frame-ancestors 'self'");
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; font-src 'self'; img-src 'self'; script-src 'self'; style-src 'self'; frame-src 'self'; frame-ancestors 'self'; form-action 'self'"
+  );
   next();
 });
 
