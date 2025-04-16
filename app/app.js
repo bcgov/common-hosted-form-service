@@ -42,7 +42,7 @@ app.set('x-powered-by', false);
 app.use(function (req, res, next) {
   res.setHeader(
     'Content-Security-Policy-Report-Only',
-    "default-src 'self'; font-src 'self' https://fonts.gstatic.com; img-src 'self'; script-src 'self' https://cdn.form.io unsafe-eval; style-src 'self' https://fonts.googleapis.com; frame-src 'self'; frame-ancestors 'self'; form-action 'self'; connect-src 'self' https:// loginproxy.gov.bc.ca/ https://test.loginproxy.gov.bc.ca/ https://dev.loginproxy.gov.bc.ca/"
+    "default-src 'self'; font-src 'self' https://fonts.gstatic.com; img-src 'self'; script-src 'self' https://cdn.form.io 'unsafe-eval'; style-src 'self' https://fonts.googleapis.com; frame-src 'self'; frame-ancestors 'self'; form-action 'self'; connect-src 'self' https:// loginproxy.gov.bc.ca/ https://test.loginproxy.gov.bc.ca/ https://dev.loginproxy.gov.bc.ca/"
   );
   next();
 });
