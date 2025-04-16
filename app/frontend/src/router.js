@@ -457,12 +457,14 @@ export default function getRouter(basePath = '/') {
         !tenantStore.selectedTenant &&
         !tenantStore.nonTenantedMode &&
         to.path !== '/tenancy' &&
-        !to.path.startsWith('/user') &&
+        !(to.path.startsWith('/user') && to.path !== '/user/forms') &&
         to.path !== '/form/success' &&
         to.path !== '/form/preview' &&
         to.path !== '/form/submit'
       ) {
         return next('/tenancy');
+      } else if (!tenantStore.selectedTenant && !tenantStore.nonTenantedMode) {
+        tenantStore.setNonTenantedMode();
       }
     }
     // Force login redirect if not authenticated
