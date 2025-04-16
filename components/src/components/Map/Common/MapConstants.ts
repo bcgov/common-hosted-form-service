@@ -14,6 +14,8 @@ export const BASE_LAYER_URLS = {
     'https://tiles.arcgis.com/tiles/ubm4tcTYICKBpist/arcgis/rest/services/BC_BASEMAP_20240307/VectorTileServer',
   STYLE_JSON_URL:
     'https://www.arcgis.com/sharing/rest/content/items/bbe05270d3a642f5b62203d6c454f457/resources/styles/root.json?f=pjson',
+  BC_MAP:
+    'https://openmaps.gov.bc.ca/geo/pub/WHSE_IMAGERY_AND_BASE_MAPS.GBA_50K_GRID/ows',
 };
 
 export const BASE_LAYER_ATTRIBUTIONS = {
