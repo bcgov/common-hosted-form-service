@@ -130,8 +130,6 @@ class MapService {
       availableBaseLayers,
       selectedBaseLayer
     } = options;
-    // tslint:disable-next-line:no-console
-   console.log('allowBaseLayerSwitch',allowBaseLayerSwitch,'selectedBaseLayer', selectedBaseLayer,'availableBaseLayers',availableBaseLayers );
     if (drawOptions.rectangle) {
       drawOptions.rectangle.showArea = false;
     }
@@ -172,10 +170,8 @@ class MapService {
         )
       )
       : allLayers;
-    // tslint:disable-next-line:no-console
-    console.log(this.baseLayers);
 
-// Pick the initial base layer
+    // Pick the initial base layer
     const selectedLayerKey = this.baseLayers[selectedBaseLayer]
       ? selectedBaseLayer
       : Object.keys(this.baseLayers)[0]; // fallback to first available if default is missing

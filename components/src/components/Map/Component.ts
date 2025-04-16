@@ -113,8 +113,6 @@ export default class Component extends (FieldComponent as any) {
     } else {
       initialCenter = DEFAULT_CENTER;
     }
-    // tslint:disable-next-line:no-console
-    console.log("Defaultbaselayer", defaultBaseLayer);
     const selectedBaseLayer = this.dataValue?.selectedBaseLayer ?? defaultBaseLayer ?? 'OpenStreetMap';
     this.mapService = new MapService({
       mapContainer,
