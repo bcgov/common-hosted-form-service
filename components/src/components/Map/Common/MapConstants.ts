@@ -1,8 +1,10 @@
 export const BASE_LAYER_URLS = {
   OpenStreetMap: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  Topographic: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+  Light: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+  Dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
   Satellite:
     'https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg',
-  Topographic: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
   ESRIWorldImagery:
     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
   BC_BASEMAP:
@@ -29,6 +31,8 @@ export const BASE_LAYER_ATTRIBUTIONS = {
     'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
   BC_BASEMAP:
     '&copy; <a href="https://www2.gov.bc.ca/" target="_blank">Ministry of Land, Water, and Resource Stewardship - GeoBC Branch</a>',
+  CARTO:'&copy; OpenStreetMap contributors &copy; CARTO',
+  GEO_BC:'&copy; Government of British Columbia, Data from <a href="https://openmaps.gov.bc.ca" target="_blank">GeoBC</a>'
 };
 
 export const ESRI_API_KEY =

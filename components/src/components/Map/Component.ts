@@ -98,7 +98,7 @@ export default class Component extends (FieldComponent as any) {
     const { readOnly: viewMode } = this.options;
 
     let initialCenter;
-    if (center && center.features && center.features[0]) {
+    if (center?.features?.[0]?.coordinates) {
       initialCenter = center.features[0].coordinates;
     } else {
       initialCenter = DEFAULT_CENTER;
@@ -117,6 +117,8 @@ export default class Component extends (FieldComponent as any) {
       viewMode,
       myLocation,
       bcGeocoder,
+      selectedBaseLayer: this.dataValue?.selectedBaseLayer || 'OpenStreetMap', // Load saved baselayer
+      onBaseLayerChange: (layerName) => this.saveBaseLayer(layerName),
     });
 
     // Load existing data if available
@@ -159,20 +161,38 @@ export default class Component extends (FieldComponent as any) {
         };
       }
     });
-    this.setValue({ features });
+    // Store features and currently active base layer
+    this.setValue({
+      features,
+      selectedBaseLayer: this.mapService?.currentBaseLayer || 'OpenStreetMap',
+    });
   }
 
   setValue(value) {
+    const currentValue = this.getValue();
+    const isSame =
+      JSON.stringify(currentValue?.features) === JSON.stringify(value?.features) &&
+      currentValue?.selectedBaseLayer === value?.selectedBaseLayer;
+
+    if (isSame) return;
+
     super.setValue(value);
-    // Additional logic to render the saved data on the map if necessary
-    if (this.mapService && value && value.features) {
+
+    if (this.mapService && value) {
       try {
-        this.mapService.loadDrawnItems(value.features);
+        if (value.features) {
+          this.mapService.loadDrawnItems(value.features);
+        }
+
+        if (value.selectedBaseLayer) {
+          this.mapService.setBaseLayer(value.selectedBaseLayer);
+        }
       } catch (error) {
-        console.error('Failed to parse value:', error);
+        console.error('Failed to apply map value:', error);
       }
     }
   }
+
 
   getValue() {
     return this.dataValue;
@@ -188,5 +208,15 @@ export default class Component extends (FieldComponent as any) {
       value?.features.length === 0 ||
       value?.features.length === this.defaultValue?.features.length
     );
+  }
+  saveBaseLayer(layerName: string) {
+    const newValue = {
+      ...this.getValue(),
+      selectedBaseLayer: layerName,
+    };
+
+    if (this.getValue()?.selectedBaseLayer !== layerName) {
+      this.setValue(newValue);
+    }
   }
 }

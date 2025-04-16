@@ -101,6 +101,53 @@ export default {
       input: true,
     },
     {
+      label: 'Default Base Layer',
+      key: 'defaultBaseLayer',
+      type: 'select',
+      input: true,
+      defaultValue: 'OpenStreetMap',
+      data: {
+        values: [
+          { label: 'OpenStreetMap', value: 'OpenStreetMap' },
+          { label: 'Satellite', value: 'Satellite' },
+          { label: 'Topographic', value: 'Topographic' },
+          { label: 'ESRI World Imagery', value: 'ESRIWorldImagery' },
+        ]
+      },
+      description: 'Select which base layer is shown by default when the map loads.'
+    },
+    {
+      label: 'Allow Submitter to Switch Base Layers',
+      key: 'allowBaseLayerSwitch',
+      type: 'checkbox',
+      input: true,
+      defaultValue: true,
+      description: 'If checked, submitters can toggle between available base layers.'
+    },
+    {
+      label: 'Available Base Layers for Submitter',
+      key: 'availableBaseLayers',
+      type: 'selectboxes',
+      input: true,
+      defaultValue: {
+        OpenStreetMap: true,
+        Light:false,
+        Dark:false,
+        Satellite: true,
+        Topographic: false,
+        ESRIWorldImagery: false,
+      },
+      values: [
+        { label: 'OpenStreetMap', value: 'OpenStreetMap' },
+        { label: 'Light', value: 'Light' },
+        { label: 'Dark', value: 'Dark' },
+        { label: 'Satellite', value: 'Satellite' },
+        { label: 'Topographic', value: 'Topographic' },
+        { label: 'ESRI World Imagery', value: 'ESRIWorldImagery' },
+      ],
+      description: 'Select which base layers the submitter can toggle between.'
+    },
+    {
       label: 'Enable Submitter "My Location" button',
       description:
         'This allows for the user to center the map on their location.',

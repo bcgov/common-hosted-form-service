@@ -33,6 +33,8 @@ interface MapServiceOptions {
   bcGeocoder: boolean;
   required: boolean;
   defaultValue?: any;
+  selectedBaseLayer?: string;
+  onBaseLayerChange?: (layerName: string) => void;
 }
 
 class MapService {
@@ -41,6 +43,8 @@ class MapService {
   drawnItems;
   drawControl;
   defaultFeatures;
+  currentBaseLayer: string;
+  baseLayers;
 
   async initialize(options) {
       const { map, drawnItems, drawControl } = await this.initializeMap(options);
@@ -134,9 +138,15 @@ class MapService {
       zoomAnimation: viewMode,
     }).setView(center, defaultZoom || DEFAULT_MAP_ZOOM);
     // Define base layers
-    const baseLayers = {
+    this.baseLayers = {
       OpenStreetMap: L.tileLayer(BASE_LAYER_URLS.OpenStreetMap, {
         attribution: BASE_LAYER_ATTRIBUTIONS.OpenStreetMap,
+      }),
+      Light: L.tileLayer(BASE_LAYER_URLS.Light, {
+        attribution: BASE_LAYER_ATTRIBUTIONS.CARTO,
+      }),
+      Dark: L.tileLayer(BASE_LAYER_URLS.Dark, {
+        attribution: BASE_LAYER_ATTRIBUTIONS.CARTO,
       }),
       Satellite: L.tileLayer(BASE_LAYER_URLS.Satellite, {
         attribution: BASE_LAYER_ATTRIBUTIONS.Satellite,
@@ -155,53 +165,31 @@ class MapService {
         attribution:
           '&copy; <a href="https://www.terrestris.de/en">Terrestris</a> contributors',
       }),
-      BC_BASEMAP: L.vectorGrid.protobuf(
-        `${BASE_LAYER_URLS.BC_BASEMAP}/tile/{z}/{y}/{x}.pbf`,
-         vectorTileOptions
-      ),
-      HILL_SHADE: L.vectorGrid.protobuf(
-        `${BASE_LAYER_URLS.HILL_SHADE}/tile/{z}/{y}/{x}.pbf`,
-        {
-          vectorTileLayerStyles: {
-            // Style for different layers in the tile
-            default: {
-              weight: 1,
-              color: '#3388ff',
-              fillColor: '#66c2a5',
-              fillOpacity: 0.4,
-            },
-            water: {
-              weight: 0,
-              fillColor: '#aadaff',
-              fillOpacity: 0.6,
-            },
-            land: {
-              weight: 0,
-              fillColor: '#f0e7c0',
-              fillOpacity: 0.8,
-            },
-            'POLITICAL/Placeholders/TIR BC FN Reserves': {
-              weight: 2,
-              color: '#C500FF',
-              fillOpacity: 0.5,
-            },
-            'POLITICAL/Placeholders/BC Treaty Lands': {
-              weight: 2,
-              color: '#C500FF',
-              fillOpacity: 0.5,
-            },
-          },
-          attribution: BASE_LAYER_ATTRIBUTIONS.BC_BASEMAP,
-        }
-      ),
+      // WMS Layer (for example, OpenStreetMap WMS)
+      BC_MAP: L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_IMAGERY_AND_BASE_MAPS.GBA_50K_GRID/ows', {
+        layers: 'WHSE_IMAGERY_AND_BASE_MAPS.GBA_50K_GRID',
+        format: 'image/png',
+        transparent: true,
+        version: '1.3.0',
+        crs: L.CRS.EPSG3857,
+        attribution:BASE_LAYER_ATTRIBUTIONS.GEO_BC
+      }),
     };
 
-    // Add default base layer to the map
-    baseLayers.OpenStreetMap.addTo(map);
+    const selectedLayerName = this.options.selectedBaseLayer || 'OpenStreetMap';
+    const selectedLayer = this.baseLayers[selectedLayerName] || this.baseLayers.OpenStreetMap;
 
-    // Add Layer Control to the map
-    L.control.layers(baseLayers).addTo(map);
+    selectedLayer.addTo(map);
+    this.currentBaseLayer = selectedLayerName;
 
+    const layerControl = L.control.layers(this.baseLayers).addTo(map);
+
+    map.on('baselayerchange', (e: any) => {
+      this.currentBaseLayer = e.name;
+      if (this.options.onBaseLayerChange) {
+        this.options.onBaseLayerChange(e.name);
+      }
+    });
     // Initialize Draw Layer
     const drawnItems = new L.FeatureGroup();
 
@@ -354,6 +342,22 @@ class MapService {
           )})</p>`
         )
         .openPopup();
+    }
+  }
+
+  setBaseLayer(layerName: string) {
+    if (this.map && this.baseLayers && this.baseLayers[layerName]) {
+      const newLayer = this.baseLayers[layerName];
+
+      // Remove any existing base layer
+      Object.values(this.baseLayers).forEach(layer => {
+        if (this.map.hasLayer(layer)) {
+          this.map.removeLayer(layer);
+        }
+      });
+
+      newLayer.addTo(this.map);
+      this.currentBaseLayer = layerName;
     }
   }
 
