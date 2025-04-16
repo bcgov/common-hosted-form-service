@@ -106,14 +106,14 @@ describe('Form Designer', () => {
     cy.get('.v-col > .v-btn--variant-outlined > .v-btn__content > span').click();
     cy.wait(3000);
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-    cy.wait(2000);
+    cy.waitForLoad();
       //Logout to submit the public form
     cy.get('#logoutButton > .v-btn__content > span').should('be.visible').click({ force: true });
     cy.log('Page visited, checking for logout button');
     cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
         //Form submission and verification for public forms
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
-    cy.wait(2000);
+    cy.waitForLoad();
     cy.get('button').contains('Submit').should('be.visible');
     cy.wait(2000);
     cy.contains('Text Field').click();

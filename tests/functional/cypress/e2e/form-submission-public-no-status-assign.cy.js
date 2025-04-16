@@ -100,7 +100,7 @@ describe('Form Designer', () => {
     cy.get('[data-test="canEditForm"]').click();
     
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-    cy.wait(2000);
+    cy.waitForLoad();
     //Logout to submit the public form
     cy.get('#logoutButton > .v-btn__content > span').should('be.visible').click({ force: true });
     cy.log('Page visited, checking for logout button');
@@ -108,7 +108,7 @@ describe('Form Designer', () => {
     cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span', { timeout: 15000 }).should('be.visible').click();
     //Form submission and verification for public forms
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
-    cy.wait(2000);
+    cy.waitForLoad();
     cy.get('button').contains('Submit').should('be.visible');
     cy.wait(2000);
     cy.contains('Text Field').click();
