@@ -109,6 +109,8 @@ export default {
       data: {
         values: [
           { label: 'OpenStreetMap', value: 'OpenStreetMap' },
+          { label: 'Light', value: 'Light' },
+          { label: 'Dark', value: 'Dark' },
           { label: 'Satellite', value: 'Satellite' },
           { label: 'Topographic', value: 'Topographic' },
           { label: 'ESRI World Imagery', value: 'ESRIWorldImagery' },
