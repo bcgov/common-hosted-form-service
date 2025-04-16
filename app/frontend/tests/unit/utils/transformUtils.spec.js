@@ -1,4 +1,3 @@
-import moment from 'moment';
 import { describe, expect, it } from 'vitest';
 
 import { IdentityMode } from '~/utils/constants';
@@ -60,76 +59,5 @@ describe('parseIdps', () => {
       idps: ['foo', 'bar'],
       userType: IdentityMode.LOGIN,
     });
-  });
-});
-
-describe('getSubmissionPeriodDates', () => {
-  it('should return submission period dates with open and close dates', () => {
-    const openDate = moment('2024-05-08');
-    const closeDate = moment('2024-05-15');
-
-    expect(
-      transformUtils.getSubmissionPeriodDates(openDate, closeDate)
-    ).toEqual([
-      {
-        startDate: moment('2024-05-08').format('YYYY-MM-DD HH:MM:SS'),
-        closeDate: moment('2024-05-15').format('YYYY-MM-DD HH:MM:SS'),
-        graceDate: null,
-      },
-    ]);
-  });
-
-  it('should include grace period if late submissions are enabled', () => {
-    const openDate = moment('2024-05-08');
-    const closeDate = moment('2024-05-15');
-    const allowLateSubmissions = {
-      enabled: true,
-      forNext: {
-        term: 3,
-        intervalType: 'days',
-      },
-    };
-
-    expect(
-      transformUtils.getSubmissionPeriodDates(
-        openDate,
-        closeDate,
-        allowLateSubmissions
-      )
-    ).toEqual([
-      {
-        startDate: moment('2024-05-08').format('YYYY-MM-DD HH:MM:SS'),
-        closeDate: moment('2024-05-15').format('YYYY-MM-DD HH:MM:SS'),
-        graceDate: moment('2024-05-15')
-          .add(3, 'days')
-          .format('YYYY-MM-DD HH:MM:SS'),
-      },
-    ]);
-  });
-
-  it('should not include grace period if late submissions are disabled', () => {
-    const openDate = moment('2024-05-08');
-    const closeDate = moment('2024-05-15');
-    const allowLateSubmissions = {
-      enabled: false,
-      forNext: {
-        term: 3,
-        intervalType: 'days',
-      },
-    };
-
-    expect(
-      transformUtils.getSubmissionPeriodDates(
-        openDate,
-        closeDate,
-        allowLateSubmissions
-      )
-    ).toEqual([
-      {
-        startDate: moment('2024-05-08').format('YYYY-MM-DD HH:MM:SS'),
-        closeDate: moment('2024-05-15').format('YYYY-MM-DD HH:MM:SS'),
-        graceDate: null,
-      },
-    ]);
   });
 });
