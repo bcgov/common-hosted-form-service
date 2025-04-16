@@ -43,7 +43,7 @@ app.use(function (req, res, next) {
   res.setHeader(
     'Content-Security-Policy',
     //"default-src *;frame-src *;img-src: *;child-src: * blob: data;worker-src * blob: data;img-src * blob: data;media-src *;script-src *;style-src *;font-src * blob:data;connect-src *;base-uri 'self';block-all-mixed-content;form-action 'self';frame-anscestors 'self';object-src 'none';script-src-attr 'none"
-    "default-src 'self'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' https://cdn.form.io 'unsafe-eval'; worker-src 'self' blob: ; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; frame-src 'self'; frame-ancestors 'self'; form-action 'self'; connect-src 'self' https://loginproxy.gov.bc.ca/ https://test.loginproxy.gov.bc.ca/ https://dev.loginproxy.gov.bc.ca/; sandbox allow-scripts;"
+    "default-src 'self'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; script-src 'self' https://cdn.form.io 'unsafe-eval'; worker-src 'self' blob: ; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; frame-src 'self'; frame-ancestors 'self'; form-action 'self'; connect-src 'self' https://loginproxy.gov.bc.ca/ https://test.loginproxy.gov.bc.ca/ https://dev.loginproxy.gov.bc.ca/;"
   );
   next();
 });
