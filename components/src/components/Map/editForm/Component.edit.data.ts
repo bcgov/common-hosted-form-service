@@ -133,11 +133,11 @@ export default {
       input: true,
       defaultValue: {
         OpenStreetMap: true,
-        Light:false,
-        Dark:false,
+        Light:true,
+        Dark:true,
         Satellite: true,
-        Topographic: false,
-        ESRIWorldImagery: false,
+        Topographic: true,
+        ESRIWorldImagery: true,
       },
       values: [
         { label: 'OpenStreetMap', value: 'OpenStreetMap' },
@@ -148,6 +148,31 @@ export default {
         { label: 'ESRI World Imagery', value: 'ESRIWorldImagery' },
       ],
       description: 'Select which base layers the submitter can toggle between.'
+    },
+    {
+      label: 'Available Base Layers(TODO)',
+      key: 'availableBaseLayersTodo',
+      type: 'datagrid',
+      input: true,
+      defaultValue: [
+        { label: 'OpenStreetMap', value: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png' }
+      ],
+      components: [
+        {
+          label: 'Label',
+          key: 'label',
+          input: true,
+          type: 'textfield'
+        },
+        {
+          label: 'Tile URL Template',
+          key: 'value',
+          input: true,
+          type: 'textfield',
+          placeholder: 'https://{s}.tile.provider.com/{z}/{x}/{y}.png'
+        }
+      ],
+      description: 'Add or remove available base layers. Each requires a label and a tile URL template.'
     },
     {
       label: 'Enable Submitter "My Location" button',

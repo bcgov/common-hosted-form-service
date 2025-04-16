@@ -17,6 +17,13 @@ export default class Component extends (FieldComponent as any) {
       key: 'map',
       input: true,
       defaultvalue: { features: [] },
+      defaultBaseLayer: 'OpenStreetMap',  // ✅ Add this
+      allowBaseLayerSwitch: true,         // ✅ And any other props you need
+      availableBaseLayers: {              // ✅ Optional default options
+        OpenStreetMap: true,
+        Satellite: false,
+        Terrain: false,
+      },
       ...extend,
     });
   }
@@ -93,6 +100,9 @@ export default class Component extends (FieldComponent as any) {
       defaultValue,
       myLocation,
       bcGeocoder,
+      defaultBaseLayer,
+      allowBaseLayerSwitch,
+      availableBaseLayers,
     } = this.component;
 
     const { readOnly: viewMode } = this.options;
@@ -103,7 +113,9 @@ export default class Component extends (FieldComponent as any) {
     } else {
       initialCenter = DEFAULT_CENTER;
     }
-
+    // tslint:disable-next-line:no-console
+    console.log("Defaultbaselayer", defaultBaseLayer);
+    const selectedBaseLayer = this.dataValue?.selectedBaseLayer ?? defaultBaseLayer ?? 'OpenStreetMap';
     this.mapService = new MapService({
       mapContainer,
       drawOptions,
@@ -117,8 +129,10 @@ export default class Component extends (FieldComponent as any) {
       viewMode,
       myLocation,
       bcGeocoder,
-      selectedBaseLayer: this.dataValue?.selectedBaseLayer || 'OpenStreetMap', // Load saved baselayer
+      selectedBaseLayer, // Load saved baselayer
       onBaseLayerChange: (layerName) => this.saveBaseLayer(layerName),
+      allowBaseLayerSwitch,
+      availableBaseLayers: Object.keys(availableBaseLayers || {}).filter((k) => availableBaseLayers[k]),
     });
 
     // Load existing data if available
@@ -183,10 +197,8 @@ export default class Component extends (FieldComponent as any) {
         if (value.features) {
           this.mapService.loadDrawnItems(value.features);
         }
-
-        if (value.selectedBaseLayer) {
-          this.mapService.setBaseLayer(value.selectedBaseLayer);
-        }
+        const baseLayer = value.selectedBaseLayer ?? this.component.defaultBaseLayer ?? 'OpenStreetMap';
+        this.mapService.setBaseLayer(baseLayer);
       } catch (error) {
         console.error('Failed to apply map value:', error);
       }
@@ -205,8 +217,8 @@ export default class Component extends (FieldComponent as any) {
     // to be exactly equal to the number of default features the form would not submit
 
     return (
-      value?.features.length === 0 ||
-      value?.features.length === this.defaultValue?.features.length
+      value?.features?.length === 0 ||
+      value?.features?.length === this.defaultValue?.features?.length
     );
   }
   saveBaseLayer(layerName: string) {

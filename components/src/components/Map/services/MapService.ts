@@ -33,8 +33,10 @@ interface MapServiceOptions {
   bcGeocoder: boolean;
   required: boolean;
   defaultValue?: any;
+  allowBaseLayerSwitch?: boolean;
   selectedBaseLayer?: string;
   onBaseLayerChange?: (layerName: string) => void;
+  availableBaseLayers?: string[];
 }
 
 class MapService {
@@ -124,8 +126,12 @@ class MapService {
       viewMode,
       myLocation,
       bcGeocoder,
+      allowBaseLayerSwitch = true,
+      availableBaseLayers,
+      selectedBaseLayer
     } = options;
-
+    // tslint:disable-next-line:no-console
+   console.log('allowBaseLayerSwitch',allowBaseLayerSwitch,'selectedBaseLayer', selectedBaseLayer,'availableBaseLayers',availableBaseLayers );
     if (drawOptions.rectangle) {
       drawOptions.rectangle.showArea = false;
     }
@@ -138,7 +144,7 @@ class MapService {
       zoomAnimation: viewMode,
     }).setView(center, defaultZoom || DEFAULT_MAP_ZOOM);
     // Define base layers
-    this.baseLayers = {
+   const allLayers = {
       OpenStreetMap: L.tileLayer(BASE_LAYER_URLS.OpenStreetMap, {
         attribution: BASE_LAYER_ATTRIBUTIONS.OpenStreetMap,
       }),
@@ -157,39 +163,38 @@ class MapService {
       ESRIWorldImagery: L.tileLayer(BASE_LAYER_URLS.ESRIWorldImagery, {
         attribution: BASE_LAYER_ATTRIBUTIONS.ESRIWorldImagery,
       }),
-      // WMS Layer (for example, OpenStreetMap WMS)
-      OSM_WMS: L.tileLayer.wms('https://ows.terrestris.de/osm/service?', {
-        layers: 'OSM-WMS',
-        format: 'image/png',
-        transparent: true,
-        attribution:
-          '&copy; <a href="https://www.terrestris.de/en">Terrestris</a> contributors',
-      }),
-      // WMS Layer (for example, OpenStreetMap WMS)
-      BC_MAP: L.tileLayer.wms('https://openmaps.gov.bc.ca/geo/pub/WHSE_IMAGERY_AND_BASE_MAPS.GBA_50K_GRID/ows', {
-        layers: 'WHSE_IMAGERY_AND_BASE_MAPS.GBA_50K_GRID',
-        format: 'image/png',
-        transparent: true,
-        version: '1.3.0',
-        crs: L.CRS.EPSG3857,
-        attribution:BASE_LAYER_ATTRIBUTIONS.GEO_BC
-      }),
     };
 
-    const selectedLayerName = this.options.selectedBaseLayer || 'OpenStreetMap';
-    const selectedLayer = this.baseLayers[selectedLayerName] || this.baseLayers.OpenStreetMap;
+    this.baseLayers = availableBaseLayers
+      ? Object.fromEntries(
+        Object.entries(allLayers).filter(([key]) =>
+          availableBaseLayers.includes(key)
+        )
+      )
+      : allLayers;
+    // tslint:disable-next-line:no-console
+    console.log(this.baseLayers);
 
+// Pick the initial base layer
+    const selectedLayerKey = this.baseLayers[selectedBaseLayer]
+      ? selectedBaseLayer
+      : Object.keys(this.baseLayers)[0]; // fallback to first available if default is missing
+
+    const selectedLayer = this.baseLayers[selectedLayerKey];
     selectedLayer.addTo(map);
-    this.currentBaseLayer = selectedLayerName;
+    // Track the base layer that is initially selected
+    this.currentBaseLayer = selectedLayerKey;
 
-    const layerControl = L.control.layers(this.baseLayers).addTo(map);
-
-    map.on('baselayerchange', (e: any) => {
-      this.currentBaseLayer = e.name;
-      if (this.options.onBaseLayerChange) {
-        this.options.onBaseLayerChange(e.name);
-      }
-    });
+    // Only show layer control if allowed and multiple layers exist
+    if (allowBaseLayerSwitch && Object.keys(this.baseLayers).length > 1) {
+      const layerControl = L.control.layers(this.baseLayers).addTo(map);
+      map.on('baselayerchange', (e: any) => {
+        this.currentBaseLayer = e.name;
+        if (this.options.onBaseLayerChange) {
+          this.options.onBaseLayerChange(e.name);
+        }
+      });
+    }
     // Initialize Draw Layer
     const drawnItems = new L.FeatureGroup();
 
