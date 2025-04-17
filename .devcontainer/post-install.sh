@@ -36,5 +36,9 @@ cd .. # back to app dir
 npm run migrate
 # npm run seed:run
 
+# install cypress libraries
+cd ../tests/functional/cypress
+npm ci
+
 # take down postgres, do not need them running all the time.
 docker compose -f ${CHEFS_LOCAL_DIR}/docker-compose.yml down

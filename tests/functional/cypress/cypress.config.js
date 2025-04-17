@@ -14,9 +14,9 @@ module.exports = defineConfig({
   },
   chromeWebSecurity: false,
   video: false,
-  fixturesFolder: 'cypress/fixtures',
+  fixturesFolder: 'fixtures',
   screenshotsFolder: 'screenshots',
-  downloadsFolder:  'cypress/downloads',
+  downloadsFolder:  'downloads',
   videosFolder: 'videos',
   
   e2e: {
@@ -27,10 +27,9 @@ module.exports = defineConfig({
     
     //baseUrl: 'http://localhost:5173',
     baseUrl:'https://chefs-dev.apps.silver.devops.gov.bc.ca',
-    specPattern: 'cypress/e2e/*.cy.{js,jsx,ts,tsx}',
+    specPattern: 'e2e/*.cy.{js,jsx,ts,tsx}',
     testIsolation: false,
-    
-    //supportFile: 'support/index.js',
+    supportFile: 'support/index.js',
   }
   },
 )

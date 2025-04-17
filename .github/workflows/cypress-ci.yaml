@@ -32,7 +32,8 @@ jobs:
      - name: cypress install
        uses: cypress-io/github-action@v6
        with:
-          working-directory: 'tests/functional'
+          working-directory: 'tests/functional/cypress'
+          browser:  chrome
        env:
           CYPRESS_keycloakUsername: ${{ secrets.Username }}
           CYPRESS_keycloakPassword: ${{ secrets.Password }}

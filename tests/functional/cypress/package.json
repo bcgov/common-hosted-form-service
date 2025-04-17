@@ -24,7 +24,7 @@
     "date-fns": "^2.26.0"
   },
   "devDependencies": {
-    "cypress": "^13.17.0",
+    "cypress": "14.2.0",
     "cypress-file-upload": "^5.0.8",
     "cypress-keycloak-commands": "^1.2.0"
   }
