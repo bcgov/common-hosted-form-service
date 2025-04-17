@@ -16,10 +16,10 @@ export default class Component extends (FieldComponent as any) {
       label: 'Map',
       key: 'map',
       input: true,
-      defaultvalue: { features: [] },
-      defaultBaseLayer: 'OpenStreetMap',  // ✅ Add this
-      allowBaseLayerSwitch: true,         // ✅ And any other props you need
-      availableBaseLayers: {              // ✅ Optional default options
+      defaultvalue: { features: [], selectedBaseLayer: 'OpenStreetMap' },
+      defaultBaseLayer: 'OpenStreetMap',
+      allowBaseLayerSwitch: true,
+      availableBaseLayers: {
         OpenStreetMap: true,
         Satellite: false,
         Terrain: false,
@@ -113,7 +113,8 @@ export default class Component extends (FieldComponent as any) {
     } else {
       initialCenter = DEFAULT_CENTER;
     }
-    const selectedBaseLayer = this.dataValue?.selectedBaseLayer ?? defaultBaseLayer ?? 'OpenStreetMap';
+    const selectedBaseLayer =
+      this.dataValue?.selectedBaseLayer ?? defaultBaseLayer ?? 'OpenStreetMap';
     this.mapService = new MapService({
       mapContainer,
       drawOptions,
@@ -130,7 +131,9 @@ export default class Component extends (FieldComponent as any) {
       selectedBaseLayer, // Load saved baselayer
       onBaseLayerChange: (layerName) => this.saveBaseLayer(layerName),
       allowBaseLayerSwitch,
-      availableBaseLayers: Object.keys(availableBaseLayers || {}).filter((k) => availableBaseLayers[k]),
+      availableBaseLayers: Object.keys(availableBaseLayers || {}).filter(
+        (k) => availableBaseLayers[k]
+      ),
     });
 
     // Load existing data if available
@@ -183,7 +186,8 @@ export default class Component extends (FieldComponent as any) {
   setValue(value) {
     const currentValue = this.getValue();
     const isSame =
-      JSON.stringify(currentValue?.features) === JSON.stringify(value?.features) &&
+      JSON.stringify(currentValue?.features) ===
+        JSON.stringify(value?.features) &&
       currentValue?.selectedBaseLayer === value?.selectedBaseLayer;
 
     if (isSame) return;
@@ -195,14 +199,16 @@ export default class Component extends (FieldComponent as any) {
         if (value.features) {
           this.mapService.loadDrawnItems(value.features);
         }
-        const baseLayer = value.selectedBaseLayer ?? this.component.defaultBaseLayer ?? 'OpenStreetMap';
+        const baseLayer =
+          value.selectedBaseLayer ??
+          this.component.defaultBaseLayer ??
+          'OpenStreetMap';
         this.mapService.setBaseLayer(baseLayer);
       } catch (error) {
         console.error('Failed to apply map value:', error);
       }
     }
   }
-
 
   getValue() {
     return this.dataValue;
