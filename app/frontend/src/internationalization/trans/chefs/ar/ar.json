@@ -452,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "تصميم النموذج",
-    "exportDesign": "تصميم التصدير",
-    "importDesign": "تصميم الاستيراد",
+    "downloadJson": "تنزيل JSON",
+    "uploadJson": "تحميل JSON",
     "important": "مهم",
     "formDesignInfoA": "استخدم زر <strong>حفظ التصميم</strong> عند الانتهاء من بناء هذا النموذج.",
     "formDesignInfoB": "يتم توفير زر <strong>إرسال</strong> للمستخدم لإرسال هذا النموذج وسيتم تنشيطه بعد حفظه.",
@@ -1220,6 +1220,6 @@
   },
   "canShareDraft": {
     "canShareMessage": "لا يُمكنك مشاركة المسودة مع المستخدمين الذين لم تتم إضافتهم إلى النموذج. يُرجى التواصل مع المشرف لإضافتهم.",
-    "shareDraftMessage":"مشاركة المسودة مع أعضاء فريق النموذج فقط"
+    "shareDraftMessage": "مشاركة المسودة مع أعضاء فريق النموذج فقط"
   }
 }

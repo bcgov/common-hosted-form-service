@@ -452,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "Formulardesign",
-    "exportDesign": "Design exportieren",
-    "importDesign": "Design importieren",
+    "downloadJson": "JSON herunterladen",
+    "uploadJson": "JSON hochladen",
     "important": "WICHTIG",
     "formDesignInfoA": "Verwenden Sie die Schaltfläche <strong>„DESIGN SPEICHERN“</strong> , wenn Sie mit der Erstellung dieses Formulars fertig sind.",
     "formDesignInfoB": "Die Schaltfläche <strong>SENDEN</strong> steht Ihrem Benutzer zum Absenden dieses Formulars zur Verfügung und wird nach dem Speichern aktiviert.",
@@ -1220,6 +1220,6 @@
   },
   "canShareDraft": {
     "canShareMessage": "Sie können den Entwurf nicht mit Benutzern teilen, die nicht zum Formular hinzugefügt wurden. Wenden Sie sich an den Administrator, um sie hinzuzufügen.",
-    "shareDraftMessage":"Geben Sie den Entwurf nur an die Mitglieder des Formularteams weiter"
+    "shareDraftMessage": "Geben Sie den Entwurf nur an die Mitglieder des Formularteams weiter"
   }
 }
