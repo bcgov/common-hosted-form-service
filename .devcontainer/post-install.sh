@@ -37,7 +37,7 @@ npm run migrate
 # npm run seed:run
 
 # install cypress libraries
-cd ../tests/functional
+cd ../tests/functional/cypress
 npm ci
 
 # take down postgres, do not need them running all the time.
