@@ -50,6 +50,16 @@ export default {
       allowSubmissions: true,
       description:
         'Please select the desired default center using a single marker',
+      defaultBaseLayer: 'OpenStreetMap',
+      allowBaseLayerSwitch: false,
+      availableBaseLayers: {
+        OpenStreetMap: true,
+        Light: true,
+        Dark: true,
+        Satellite: true,
+        Topographic: true,
+        ESRIWorldImagery: true,
+      },
     },
     {
       html: '<h2>Submitter Options</h2>',
