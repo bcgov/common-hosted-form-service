@@ -16,7 +16,7 @@ export default class Component extends (FieldComponent as any) {
       label: 'Map',
       key: 'map',
       input: true,
-      defaultvalue: { features: [], selectedBaseLayer: 'OpenStreetMap' },
+      defaultValue: { features: [], selectedBaseLayer: 'OpenStreetMap' },
       defaultBaseLayer: 'OpenStreetMap',
       allowBaseLayerSwitch: true,
       availableBaseLayers: {

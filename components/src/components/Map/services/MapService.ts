@@ -9,7 +9,6 @@ import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw-src.css';
 import 'leaflet-geosearch/dist/geosearch.css';
-import 'leaflet.vectorgrid';
 
 const DEFAULT_MAP_ZOOM = 5;
 const DECIMALS_LATLNG = 5; // the number of decimals of latitude and longitude to be displayed in the marker popup
@@ -133,7 +132,6 @@ class MapService {
     if (drawOptions.rectangle) {
       drawOptions.rectangle.showArea = false;
     }
-    
     // Initialize the map
     const map = L.map(mapContainer, {
       zoomAnimation: viewMode,

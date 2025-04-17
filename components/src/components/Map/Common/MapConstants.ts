@@ -7,17 +7,6 @@ export const BASE_LAYER_URLS = {
     'https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg',
   ESRIWorldImagery:
     'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-  BC_BASEMAP:
-    'https://tiles.arcgis.com/tiles/ubm4tcTYICKBpist/arcgis/rest/services/BC_BASEMAP_20240307/VectorTileServer',
-  HILL_SHADE:
-    'https://tiles.arcgis.com/tiles/ubm4tcTYICKBpist/arcgis/rest/services/BC_Basemap_Vector_Hillshade/VectorTileServer',
-  // Define ArcGIS vector tile service URLs
-  VECTOR_TILE_SERVER:
-    'https://tiles.arcgis.com/tiles/ubm4tcTYICKBpist/arcgis/rest/services/BC_BASEMAP_20240307/VectorTileServer',
-  STYLE_JSON_URL:
-    'https://www.arcgis.com/sharing/rest/content/items/bbe05270d3a642f5b62203d6c454f457/resources/styles/root.json?f=pjson',
-  BC_MAP:
-    'https://openmaps.gov.bc.ca/geo/pub/WHSE_IMAGERY_AND_BASE_MAPS.GBA_50K_GRID/ows',
 };
 
 export const BASE_LAYER_ATTRIBUTIONS = {
@@ -34,6 +23,3 @@ export const BASE_LAYER_ATTRIBUTIONS = {
   CARTO:'&copy; OpenStreetMap contributors &copy; CARTO',
   GEO_BC:'&copy; Government of British Columbia, Data from <a href="https://openmaps.gov.bc.ca" target="_blank">GeoBC</a>'
 };
-
-export const ESRI_API_KEY =
-  'AAPK7afbdfe3cc4140a5906d6e5f7174b5c5AO-lNCXN1JFPmdZCgtn3Zx9oD4C3fLKZ5_wMnpr0X-TW7mMZ-vwL6NUkM3kmKYDC';
