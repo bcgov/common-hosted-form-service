@@ -50,10 +50,20 @@ export default {
       allowSubmissions: true,
       description:
         'Please select the desired default center using a single marker',
+      defaultBaseLayer: 'OpenStreetMap',
+      allowBaseLayerSwitch: false,
+      availableBaseLayers: {
+        OpenStreetMap: true,
+        Light: true,
+        Dark: true,
+        Satellite: true,
+        Topographic: true,
+        ESRIWorldImagery: true,
+      },
     },
     {
       html: '<h2>Submitter Options</h2>',
-      key: 'simplecontent1',
+      key: 'simplecontent2',
       type: 'content',
       input: false,
       tableView: false,
@@ -99,6 +109,119 @@ export default {
       type: 'number',
       defaultValue: 1,
       input: true,
+    },
+    {
+      label: 'Default Base Layer',
+      key: 'defaultBaseLayer',
+      type: 'select',
+      input: true,
+      defaultValue: 'OpenStreetMap',
+      data: {
+        values: [
+          { label: 'OpenStreetMap', value: 'OpenStreetMap' },
+          { label: 'Light', value: 'Light' },
+          { label: 'Dark', value: 'Dark' },
+          { label: 'Satellite', value: 'Satellite' },
+          { label: 'Topographic', value: 'Topographic' },
+          { label: 'ESRI World Imagery', value: 'ESRIWorldImagery' },
+        ],
+      },
+      description:
+        'Select which base layer is shown by default when the map loads.',
+    },
+    {
+      label: 'Allow Submitter to Switch Base Layers',
+      key: 'allowBaseLayerSwitch',
+      type: 'checkbox',
+      input: true,
+      defaultValue: true,
+      description:
+        'If checked, submitters can toggle between available base layers.',
+    },
+    {
+      label: 'Available Base Layers for Submitter',
+      key: 'availableBaseLayers',
+      type: 'selectboxes',
+      input: true,
+      defaultValue: {
+        OpenStreetMap: true,
+        Light: true,
+        Dark: true,
+        Satellite: true,
+        Topographic: true,
+        ESRIWorldImagery: true,
+      },
+      values: [
+        { label: 'OpenStreetMap', value: 'OpenStreetMap' },
+        { label: 'Light', value: 'Light' },
+        { label: 'Dark', value: 'Dark' },
+        { label: 'Satellite', value: 'Satellite' },
+        { label: 'Topographic', value: 'Topographic' },
+        { label: 'ESRI World Imagery', value: 'ESRIWorldImagery' },
+      ],
+      description: 'Select which base layers the submitter can toggle between.',
+      validate: {
+        custom:
+          'valid = Object.values(input).filter(v => v).length > 0 ? true : "At least one base layer must be selected.";',
+      },
+    },
+    {
+      label: 'Custom Base Layers',
+      key: 'availableBaseLayersCustom',
+      type: 'datagrid',
+      input: true,
+      reorder: true,
+      defaultValue: [
+        {
+          label: 'OpenStreetMap',
+          value: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          attribution: '&copy; OpenStreetMap contributors',
+        },
+      ],
+      components: [
+        {
+          label: 'Label',
+          key: 'label',
+          input: true,
+          type: 'textfield',
+          placeholder: 'e.g., OpenStreetMap',
+          validate: {
+            custom: `valid = !input || (typeof input === 'string' && input.length <= 100)? true: 'Label must be under 100 characters.';`,
+          },
+        },
+        {
+          label: 'Tile URL Template',
+          key: 'value',
+          input: true,
+          type: 'textfield',
+          placeholder: 'https://{s}.tile.provider.com/{z}/{x}/{y}.png',
+          validate: {
+            custom: `
+          valid = !input || (
+            typeof input === 'string' &&
+            input.includes('{z}') &&
+            input.includes('{x}') &&
+            input.includes('{y}') &&
+            /^https?:\\/\\//.test(input)
+          ) ? true : 'Must be a valid URL containing {z}, {x}, and {y}.';
+        `,
+          },
+        },
+        {
+          label: 'Attribution',
+          key: 'attribution',
+          input: true,
+          type: 'textfield',
+          placeholder: 'e.g., © OpenStreetMap contributors',
+          tooltip:
+            'The attribution text that appears on the map when this layer is active.',
+          validate: {
+            custom: `valid = !input || (typeof input === 'string') ? true : 'Attribution must be a text string.';`,
+          },
+        },
+      ],
+      description:
+        'Add custom base layers with a name, tile URL template (must include {z}, {x}, and {y}), and attribution. These layers can be dynamically loaded into the map.',
     },
     {
       label: 'Enable Submitter "My Location" button',

@@ -1,19 +1,18 @@
 import * as L from 'leaflet';
 import * as GeoSearch from 'leaflet-geosearch';
 import { BCGeocoderProvider } from '../services/BCGeocoderProvider';
+import {
+  BASE_LAYER_URLS,
+  BASE_LAYER_ATTRIBUTIONS
+} from '../Common/MapConstants';
 import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw-src.css';
 import 'leaflet-geosearch/dist/geosearch.css';
 
-const DEFAULT_MAP_LAYER_URL =
-  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-const DEFAULT_LAYER_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 const DEFAULT_MAP_ZOOM = 5;
 const DECIMALS_LATLNG = 5; // the number of decimals of latitude and longitude to be displayed in the marker popup
 const COMPONENT_EDIT_CLASS = 'component-edit-tabs';
-const READ_ONLY_CLASS = 'formio-read-only';
 const CUSTOM_MARKER_PATH = 'https://unpkg.com/leaflet@1.9.4/dist/images/';
 
 L.Icon.Default.imagePath = CUSTOM_MARKER_PATH;
@@ -22,6 +21,7 @@ interface MapServiceOptions {
   mapContainer: HTMLElement;
   center: [number, number]; // Ensure center is a tuple with exactly two elements
   drawOptions: any;
+  drawControl:any;
   form: HTMLCollectionOf<Element>;
   numPoints: number;
   defaultZoom?: number;
@@ -32,6 +32,10 @@ interface MapServiceOptions {
   bcGeocoder: boolean;
   required: boolean;
   defaultValue?: any;
+  allowBaseLayerSwitch?: boolean;
+  selectedBaseLayer?: string;
+  onBaseLayerChange?: (layerName: string) => void;
+  availableBaseLayers?: string[];
 }
 
 class MapService {
@@ -40,14 +44,12 @@ class MapService {
   drawnItems;
   drawControl;
   defaultFeatures;
+  currentBaseLayer: string;
+  baseLayers;
 
-  constructor(options) {
-    this.options = options;
-
-    if (options.mapContainer) {
-      const { map, drawnItems, drawControl } = this.initializeMap(options);
+  async initialize(options) {
+      const { map, drawnItems, drawControl } = await this.initializeMap(options);
       this.map = map;
-
       this.drawnItems = drawnItems;
       this.drawControl = drawControl; // Store the draw control globally
 
@@ -103,10 +105,16 @@ class MapService {
       map.on('resize', () => {
         map.invalidateSize();
       });
+  }
+  constructor(options) {
+    this.options = options;
+
+    if (options.mapContainer) {
+      this.initialize(options);
     }
   }
 
-  initializeMap(options: MapServiceOptions) {
+  async initializeMap(options: MapServiceOptions) {
     const {
       mapContainer,
       center,
@@ -117,21 +125,67 @@ class MapService {
       viewMode,
       myLocation,
       bcGeocoder,
+      allowBaseLayerSwitch = true,
+      availableBaseLayers,
+      selectedBaseLayer
     } = options;
-
     if (drawOptions.rectangle) {
       drawOptions.rectangle.showArea = false;
     }
-    // Check to see if there is the formio read only class in the current page, and set notEditable to true if the map is inside a read-only page
-
-    // if the user chooses it to be read-only, and the
+    // Initialize the map
     const map = L.map(mapContainer, {
       zoomAnimation: viewMode,
     }).setView(center, defaultZoom || DEFAULT_MAP_ZOOM);
-    L.tileLayer(DEFAULT_MAP_LAYER_URL, {
-      attribution: DEFAULT_LAYER_ATTRIBUTION,
-    }).addTo(map);
+    // Define base layers
+   const allLayers = {
+      OpenStreetMap: L.tileLayer(BASE_LAYER_URLS.OpenStreetMap, {
+        attribution: BASE_LAYER_ATTRIBUTIONS.OpenStreetMap,
+      }),
+      Light: L.tileLayer(BASE_LAYER_URLS.Light, {
+        attribution: BASE_LAYER_ATTRIBUTIONS.CARTO,
+      }),
+      Dark: L.tileLayer(BASE_LAYER_URLS.Dark, {
+        attribution: BASE_LAYER_ATTRIBUTIONS.CARTO,
+      }),
+      Satellite: L.tileLayer(BASE_LAYER_URLS.Satellite, {
+        attribution: BASE_LAYER_ATTRIBUTIONS.Satellite,
+      }),
+      Topographic: L.tileLayer(BASE_LAYER_URLS.Topographic, {
+        attribution: BASE_LAYER_ATTRIBUTIONS.Topographic,
+      }),
+      ESRIWorldImagery: L.tileLayer(BASE_LAYER_URLS.ESRIWorldImagery, {
+        attribution: BASE_LAYER_ATTRIBUTIONS.ESRIWorldImagery,
+      }),
+    };
 
+    this.baseLayers = availableBaseLayers
+      ? Object.fromEntries(
+        Object.entries(allLayers).filter(([key]) =>
+          availableBaseLayers.includes(key)
+        )
+      )
+      : allLayers;
+
+    // Pick the initial base layer
+    const selectedLayerKey = this.baseLayers[selectedBaseLayer]
+      ? selectedBaseLayer
+      : Object.keys(this.baseLayers)[0]; // fallback to first available if default is missing
+
+    const selectedLayer = this.baseLayers[selectedLayerKey];
+    selectedLayer.addTo(map);
+    // Track the base layer that is initially selected
+    this.currentBaseLayer = selectedLayerKey;
+
+    // Only show layer control if allowed and multiple layers exist
+    if (allowBaseLayerSwitch && Object.keys(this.baseLayers).length > 1) {
+      const layerControl = L.control.layers(this.baseLayers).addTo(map);
+      map.on('baselayerchange', (e: any) => {
+        this.currentBaseLayer = e.name;
+        if (this.options.onBaseLayerChange) {
+          this.options.onBaseLayerChange(e.name);
+        }
+      });
+    }
     // Initialize Draw Layer
     const drawnItems = new L.FeatureGroup();
 
@@ -257,6 +311,22 @@ class MapService {
           )})</p>`
         )
         .openPopup();
+    }
+  }
+
+  setBaseLayer(layerName: string) {
+    if (this.map && this.baseLayers && this.baseLayers[layerName]) {
+      const newLayer = this.baseLayers[layerName];
+
+      // Remove any existing base layer
+      Object.values(this.baseLayers).forEach(layer => {
+        if (this.map.hasLayer(layer)) {
+          this.map.removeLayer(layer);
+        }
+      });
+
+      newLayer.addTo(this.map);
+      this.currentBaseLayer = layerName;
     }
   }
 

@@ -16,7 +16,14 @@ export default class Component extends (FieldComponent as any) {
       label: 'Map',
       key: 'map',
       input: true,
-      defaultvalue: { features: [] },
+      defaultValue: { features: [], selectedBaseLayer: 'OpenStreetMap' },
+      defaultBaseLayer: 'OpenStreetMap',
+      allowBaseLayerSwitch: true,
+      availableBaseLayers: {
+        OpenStreetMap: true,
+        Satellite: false,
+        Terrain: false,
+      },
       ...extend,
     });
   }
@@ -93,17 +100,21 @@ export default class Component extends (FieldComponent as any) {
       defaultValue,
       myLocation,
       bcGeocoder,
+      defaultBaseLayer,
+      allowBaseLayerSwitch,
+      availableBaseLayers,
     } = this.component;
 
     const { readOnly: viewMode } = this.options;
 
     let initialCenter;
-    if (center && center.features && center.features[0]) {
+    if (center?.features?.[0]?.coordinates) {
       initialCenter = center.features[0].coordinates;
     } else {
       initialCenter = DEFAULT_CENTER;
     }
-
+    const selectedBaseLayer =
+      this.dataValue?.selectedBaseLayer ?? defaultBaseLayer ?? 'OpenStreetMap';
     this.mapService = new MapService({
       mapContainer,
       drawOptions,
@@ -117,6 +128,12 @@ export default class Component extends (FieldComponent as any) {
       viewMode,
       myLocation,
       bcGeocoder,
+      selectedBaseLayer, // Load saved baselayer
+      onBaseLayerChange: (layerName) => this.saveBaseLayer(layerName),
+      allowBaseLayerSwitch,
+      availableBaseLayers: Object.keys(availableBaseLayers || {}).filter(
+        (k) => availableBaseLayers[k]
+      ),
     });
 
     // Load existing data if available
@@ -159,17 +176,36 @@ export default class Component extends (FieldComponent as any) {
         };
       }
     });
-    this.setValue({ features });
+    // Store features and currently active base layer
+    this.setValue({
+      features,
+      selectedBaseLayer: this.mapService?.currentBaseLayer || 'OpenStreetMap',
+    });
   }
 
   setValue(value) {
+    const currentValue = this.getValue();
+    const isSame =
+      JSON.stringify(currentValue?.features) ===
+        JSON.stringify(value?.features) &&
+      currentValue?.selectedBaseLayer === value?.selectedBaseLayer;
+
+    if (isSame) return;
+
     super.setValue(value);
-    // Additional logic to render the saved data on the map if necessary
-    if (this.mapService && value && value.features) {
+
+    if (this.mapService && value) {
       try {
-        this.mapService.loadDrawnItems(value.features);
+        if (value.features) {
+          this.mapService.loadDrawnItems(value.features);
+        }
+        const baseLayer =
+          value.selectedBaseLayer ??
+          this.component.defaultBaseLayer ??
+          'OpenStreetMap';
+        this.mapService.setBaseLayer(baseLayer);
       } catch (error) {
-        console.error('Failed to parse value:', error);
+        console.error('Failed to apply map value:', error);
       }
     }
   }
@@ -185,8 +221,18 @@ export default class Component extends (FieldComponent as any) {
     // to be exactly equal to the number of default features the form would not submit
 
     return (
-      value?.features.length === 0 ||
-      value?.features.length === this.defaultValue?.features.length
+      value?.features?.length === 0 ||
+      value?.features?.length === this.defaultValue?.features?.length
     );
+  }
+  saveBaseLayer(layerName: string) {
+    const newValue = {
+      ...this.getValue(),
+      selectedBaseLayer: layerName,
+    };
+
+    if (this.getValue()?.selectedBaseLayer !== layerName) {
+      this.setValue(newValue);
+    }
   }
 }
