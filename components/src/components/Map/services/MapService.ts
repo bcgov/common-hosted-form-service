@@ -133,10 +133,7 @@ class MapService {
     if (drawOptions.rectangle) {
       drawOptions.rectangle.showArea = false;
     }
-    // Check to see if there is the formio read only class in the current page, and set notEditable to true if the map is inside a read-only page
-    // if the user chooses it to be read-only, and the
-    const styleJson = await this.fetchStyleJson(BASE_LAYER_URLS.STYLE_JSON_URL);
-    const vectorTileOptions = this.getVectorTileOptions(styleJson||{});
+    
     // Initialize the map
     const map = L.map(mapContainer, {
       zoomAnimation: viewMode,
@@ -289,33 +286,6 @@ class MapService {
     return { map, drawnItems, drawControl };
   }
 
-
-  // Helper function to create styles based on the JSON layers
-  async fetchStyleJson(url) {
-    try {
-      const response = await fetch(url);
-      return await response.json();
-    } catch (error) {
-      console.error('Error fetching style JSON:', error);
-      return null;
-    }
-  }
-  getVectorTileOptions(styleJson) {
-    return {
-      rendererFactory: L.canvas.tile,
-      vectorTileLayerStyles: styleJson.layers.reduce((styles, layer) => {
-        styles[layer.id] = {
-          fill: !!layer.paint?.['fill-color'],
-          fillColor: layer.paint?.['fill-color'] || '#AAAAAA',
-          fillOpacity: layer.paint?.['fill-opacity'] || 0.6,
-          stroke: !!layer.paint?.['line-color'],
-          color: layer.paint?.['line-color'] || '#555555',
-          weight: layer.paint?.['line-width'] || 1
-        };
-        return styles;
-      }, {})
-    };
-  }
   bindPopupToLayer(layer) {
     if (layer instanceof L.Marker) {
       layer
