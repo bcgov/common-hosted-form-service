@@ -452,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "Progettazione della forma",
-    "exportDesign": "Esporta disegno",
-    "importDesign": "Importa disegno",
+    "downloadJson": "Scarica JSON",
+    "uploadJson": "Carica JSON",
     "important": "IMPORTANTE",
     "formDesignInfoA": "Usa il pulsante <strong>SALVA PROGETTO</strong> quando hai finito di costruire questo modulo.",
     "formDesignInfoB": "Il pulsante <strong>INVIA</strong> viene fornito all'utente per inviare questo modulo e verrà attivato dopo che è stato salvato.",
@@ -1220,6 +1220,6 @@
   },
   "canShareDraft": {
     "canShareMessage": "Non puoi condividere la bozza con utenti che non sono stati aggiunti al modulo. Contatta l'amministratore per aggiungerli.",
-    "shareDraftMessage":"Condividi la bozza solo con i membri del team del modulo"
+    "shareDraftMessage": "Condividi la bozza solo con i membri del team del modulo"
   }
 }

@@ -452,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "thiết kế biểu mẫu",
-    "exportDesign": "Thiết kế xuất khẩu",
-    "importDesign": "Thiết kế nhập khẩu",
+    "downloadJson": "Tải xuống JSON",
+    "uploadJson": "Tải lên JSON",
     "important": "QUAN TRỌNG",
     "formDesignInfoA": "Sử dụng nút <strong>LƯU THIẾT KẾ</strong> khi bạn hoàn thành việc xây dựng biểu mẫu này.",
     "formDesignInfoB": "Nút <strong>GỬI</strong> được cung cấp để người dùng của bạn gửi biểu mẫu này và sẽ được kích hoạt sau khi được lưu.",
@@ -1224,6 +1224,6 @@
   },
   "canShareDraft": {
     "canShareMessage": "Bạn không thể chia sẻ bản nháp với những người dùng chưa được thêm vào biểu mẫu. Vui lòng liên hệ với quản trị viên để thêm họ.",
-    "shareDraftMessage":"Chỉ chia sẻ bản nháp với các thành viên nhóm biểu mẫu"
+    "shareDraftMessage": "Chỉ chia sẻ bản nháp với các thành viên nhóm biểu mẫu"
   }
 }

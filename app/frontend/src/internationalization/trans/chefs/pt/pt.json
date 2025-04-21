@@ -452,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "Design de formulário",
-    "exportDesign": "Projeto de exportação",
-    "importDesign": "Design de Importação",
+    "downloadJson": "Baixar JSON",
+    "uploadJson": "Enviar JSON",
     "important": "IMPORTANTE",
     "formDesignInfoA": "Use o botão <strong>SALVAR DESIGN</strong> quando terminar de criar este formulário.",
     "formDesignInfoB": "O botão <strong>ENVIAR</strong> é fornecido para o usuário enviar este formulário e será ativado após ser salvo.",
@@ -1220,6 +1220,6 @@
   },
   "canShareDraft": {
     "canShareMessage": "Você não pode compartilhar o rascunho com usuários que não foram adicionados ao formulário. Entre em contato com o administrador para adicioná-los.",
-    "shareDraftMessage":"Compartilhar rascunho somente com membros da equipe do formulário"
+    "shareDraftMessage": "Compartilhar rascunho somente com membros da equipe do formulário"
   }
 }

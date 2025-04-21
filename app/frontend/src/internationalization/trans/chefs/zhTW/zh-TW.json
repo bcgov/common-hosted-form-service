@@ -452,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "表格設計",
-    "exportDesign": "出口設計",
-    "importDesign": "導入設計",
+    "downloadJson": "下載 JSON",
+    "uploadJson": "上傳 JSON",
     "important": "重要的",
     "formDesignInfoA": "完成此表單的構建後，請使用<strong>“保存設計”</strong>按鈕。",
     "formDesignInfoB": "<strong>提交</strong>按鈕供您的用戶提交此表單，並將在保存後激活。",
@@ -1220,6 +1220,6 @@
   },
   "canShareDraft": {
     "canShareMessage": "您無法與尚未新增至表單的使用者共用草稿。請聯絡管理員新增它們。",
-    "shareDraftMessage":"僅與表單團隊成員分享草稿"
+    "shareDraftMessage": "僅與表單團隊成員分享草稿"
   }
 }
