@@ -20,8 +20,19 @@ export default {
       tooltip:
         'This will be the value for this field, before user interaction.',
       input: true,
+      allowSubmissions: true,
+      defaultBaseLayer: 'OpenStreetMap',
+      allowBaseLayerSwitch: true,
+      availableBaseLayers: {
+        OpenStreetMap: true,
+        Light: true,
+        Dark: true,
+        Satellite: true,
+        Topographic: true,
+        ESRIWorldImagery: true,
+      },
+      defaultValue: { features: [], selectedBaseLayer: 'OpenStreetMap' },
     },
-
     {
       label: 'Default Zoom Level',
       description:
@@ -109,25 +120,6 @@ export default {
       type: 'number',
       defaultValue: 1,
       input: true,
-    },
-    {
-      label: 'Default Base Layer',
-      key: 'defaultBaseLayer',
-      type: 'select',
-      input: true,
-      defaultValue: 'OpenStreetMap',
-      data: {
-        values: [
-          { label: 'OpenStreetMap', value: 'OpenStreetMap' },
-          { label: 'Light', value: 'Light' },
-          { label: 'Dark', value: 'Dark' },
-          { label: 'Satellite', value: 'Satellite' },
-          { label: 'Topographic', value: 'Topographic' },
-          { label: 'ESRI World Imagery', value: 'ESRIWorldImagery' },
-        ],
-      },
-      description:
-        'Select which base layer is shown by default when the map loads.',
     },
     {
       label: 'Allow Submitter to Switch Base Layers',

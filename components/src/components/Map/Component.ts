@@ -17,7 +17,6 @@ export default class Component extends (FieldComponent as any) {
       key: 'map',
       input: true,
       defaultValue: { features: [], selectedBaseLayer: 'OpenStreetMap' },
-      defaultBaseLayer: 'OpenStreetMap',
       allowBaseLayerSwitch: true,
       availableBaseLayers: {
         OpenStreetMap: true,
@@ -100,7 +99,6 @@ export default class Component extends (FieldComponent as any) {
       defaultValue,
       myLocation,
       bcGeocoder,
-      defaultBaseLayer,
       allowBaseLayerSwitch,
       availableBaseLayers,
     } = this.component;
@@ -114,7 +112,7 @@ export default class Component extends (FieldComponent as any) {
       initialCenter = DEFAULT_CENTER;
     }
     const selectedBaseLayer =
-      this.dataValue?.selectedBaseLayer ?? defaultBaseLayer ?? 'OpenStreetMap';
+      this.dataValue?.selectedBaseLayer ?? 'OpenStreetMap';
     this.mapService = new MapService({
       mapContainer,
       drawOptions,
@@ -201,7 +199,6 @@ export default class Component extends (FieldComponent as any) {
         }
         const baseLayer =
           value.selectedBaseLayer ??
-          this.component.defaultBaseLayer ??
           'OpenStreetMap';
         this.mapService.setBaseLayer(baseLayer);
       } catch (error) {
