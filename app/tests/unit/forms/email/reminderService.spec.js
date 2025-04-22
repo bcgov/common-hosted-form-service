@@ -1,12 +1,14 @@
 /* eslint-disable quotes */
 
 const reminderService = require('../../../../src/forms/email/reminderService');
-const moment = require('moment');
+const scheduleService = require('../../../../src/forms/common/scheduleService');
+const moment = require('moment-timezone');
+const { ScheduleType } = require('../../../../src/forms/common/constants');
 
 // Updated schedule object to use closingDate
 const schedule = {
   enabled: true,
-  scheduleType: 'closingDate',
+  scheduleType: ScheduleType.CLOSINGDATE,
   closingMessage: null,
   closingMessageEnabled: null,
   openSubmissionDateTime: '2022-07-10',
@@ -31,50 +33,30 @@ describe('_init', () => {
 });
 
 describe('getDifference', () => {
-  it('should return the difference between 2 arrays of object', () => {
-    let obj1 = [
-      {
-        userId: 1,
-      },
-      {
-        userId: 2,
-      },
-      {
-        userId: 3,
-      },
-      {
-        userId: 4,
-      },
-    ];
-    let obj2 = [
-      {
-        userId: 4,
-      },
-      {
-        userId: 2,
-      },
-    ];
-    reminderService.getDifference(obj1, obj2).then((objs) => {
-      expect(objs.length).toEqual(2);
-      expect(objs[0].userId).toEqual(1);
-    });
+  it('should return the difference between 2 arrays of object', async () => {
+    let obj1 = [{ userId: 1 }, { userId: 2 }, { userId: 3 }, { userId: 4 }];
+    let obj2 = [{ userId: 4 }, { userId: 2 }];
+    const objs = await reminderService.getDifference(obj1, obj2);
+    expect(objs.length).toEqual(2);
+    expect(objs[0].userId).toEqual(1);
+    expect(objs[1].userId).toEqual(3);
   });
 });
 
 describe('getCurrentPeriod', () => {
   it('should return the current period when date is between open and close dates', () => {
     let toDay = moment('2022-07-15'); // Date between open and close
-    let periods = reminderService._listDates(schedule);
-    let period = reminderService.getCurrentPeriod(periods, toDay, schedule.allowLateSubmissions.enabled);
+    let periods = scheduleService.getSubmissionPeriodDates(schedule);
+    let period = scheduleService.getCurrentPeriod(periods, toDay, schedule.allowLateSubmissions?.enabled);
     expect(period.state).toEqual(1);
     expect(period.index).toEqual(0);
   });
 
   it('should return null for empty periods', () => {
     let toDay = moment('2022-11-12');
-    let period = reminderService.getCurrentPeriod([], toDay, schedule.allowLateSubmissions.enabled);
+    let period = scheduleService.getCurrentPeriod([], toDay, schedule.allowLateSubmissions?.enabled);
     expect(period).toBe(null);
-    period = reminderService.getCurrentPeriod(null, toDay, schedule.allowLateSubmissions.enabled);
+    period = scheduleService.getCurrentPeriod(null, toDay, schedule.allowLateSubmissions?.enabled);
     expect(period).toBe(null);
   });
 
@@ -82,14 +64,14 @@ describe('getCurrentPeriod', () => {
     // Create a schedule with dates in the past
     const pastSchedule = {
       enabled: true,
-      scheduleType: 'closingDate',
+      scheduleType: ScheduleType.CLOSINGDATE,
       openSubmissionDateTime: '2022-01-01',
       closeSubmissionDateTime: '2022-01-31',
     };
 
     let toDay = moment('2022-02-15'); // After close date
-    let periods = reminderService._listDates(pastSchedule);
-    let period = reminderService.getCurrentPeriod(periods, toDay, false);
+    let periods = scheduleService.getSubmissionPeriodDates(pastSchedule);
+    let period = scheduleService.getCurrentPeriod(periods, toDay, false);
 
     // The important thing to test is that it identifies a date after the period
     expect(period.state).toEqual(0);
@@ -99,14 +81,14 @@ describe('getCurrentPeriod', () => {
     // Create a schedule with dates in the future
     const futureSchedule = {
       enabled: true,
-      scheduleType: 'closingDate',
+      scheduleType: ScheduleType.CLOSINGDATE,
       openSubmissionDateTime: '2023-01-01',
       closeSubmissionDateTime: '2023-01-31',
     };
 
     let toDay = moment('2022-12-15'); // Before open date
-    let periods = reminderService._listDates(futureSchedule);
-    let period = reminderService.getCurrentPeriod(periods, toDay, false);
+    let periods = scheduleService.getSubmissionPeriodDates(futureSchedule);
+    let period = scheduleService.getCurrentPeriod(periods, toDay, false);
 
     // The important thing to test is that it identifies a date before the period
     expect(period.state).toEqual(-1);
@@ -131,32 +113,34 @@ describe('checkIfInMiddleOfThePeriod', () => {
   });
 });
 
-describe('_listDates', () => {
+describe('getSubmissionPeriodDates', () => {
   it('should handle MANUAL schedule type', () => {
     const manualSchedule = {
       enabled: true,
-      scheduleType: 'manual',
+      scheduleType: ScheduleType.MANUAL,
       openSubmissionDateTime: '2022-07-10',
     };
 
-    const dates = reminderService._listDates(manualSchedule);
+    const dates = scheduleService.getSubmissionPeriodDates(manualSchedule);
     expect(dates.length).toEqual(1);
     expect(dates[0].startDate).toBeDefined();
     expect(dates[0].closeDate).toBeNull();
+    expect(dates[0].graceDate).toBeNull();
   });
 
   it('should handle CLOSINGDATE schedule type', () => {
     const closingSchedule = {
       enabled: true,
-      scheduleType: 'closingDate',
+      scheduleType: ScheduleType.CLOSINGDATE,
       openSubmissionDateTime: '2022-07-10',
       closeSubmissionDateTime: '2022-07-20',
     };
 
-    const dates = reminderService._listDates(closingSchedule);
+    const dates = scheduleService.getSubmissionPeriodDates(closingSchedule);
     expect(dates.length).toEqual(1);
     expect(dates[0].startDate).toBeDefined();
     expect(dates[0].closeDate).toBeDefined();
+    expect(dates[0].graceDate).toBeNull();
   });
 
   it('should handle unknown schedule types by falling back to default behavior', () => {
@@ -166,16 +150,17 @@ describe('_listDates', () => {
       openSubmissionDateTime: '2022-07-10',
     };
 
-    const dates = reminderService._listDates(unknownSchedule);
+    const dates = scheduleService.getSubmissionPeriodDates(unknownSchedule);
     expect(dates.length).toEqual(1);
     expect(dates[0].startDate).toBeDefined();
     expect(dates[0].closeDate).toBeDefined();
+    expect(dates[0].graceDate).toBeNull();
   });
 
   it('should handle late submissions configuration for CLOSINGDATE', () => {
     const lateSubmissionSchedule = {
       enabled: true,
-      scheduleType: 'closingDate',
+      scheduleType: ScheduleType.CLOSINGDATE,
       openSubmissionDateTime: '2022-07-10',
       closeSubmissionDateTime: '2022-07-20',
       allowLateSubmissions: {
@@ -187,15 +172,15 @@ describe('_listDates', () => {
       },
     };
 
-    const dates = reminderService._listDates(lateSubmissionSchedule);
+    const dates = scheduleService.getSubmissionPeriodDates(lateSubmissionSchedule);
     expect(dates.length).toEqual(1);
     expect(dates[0].startDate).toBeDefined();
     expect(dates[0].closeDate).toBeDefined();
-    expect(dates[0].graceDate).toBeDefined();
+    expect(dates[0].graceDate).toEqual('2022-07-22');
   });
 });
 
-describe('_getGraceDate', () => {
+describe('getGracePeriodEndDate', () => {
   it('should return null when late submissions are not enabled', () => {
     const schedule = {
       closeSubmissionDateTime: '2022-07-20',
@@ -204,7 +189,7 @@ describe('_getGraceDate', () => {
       },
     };
 
-    const graceDate = reminderService._getGraceDate(schedule);
+    const graceDate = scheduleService.getGracePeriodEndDate(schedule);
     expect(graceDate).toBeNull();
   });
 
@@ -220,11 +205,8 @@ describe('_getGraceDate', () => {
       },
     };
 
-    const graceDate = reminderService._getGraceDate(schedule);
+    const graceDate = scheduleService.getGracePeriodEndDate(schedule);
     expect(graceDate).toBeDefined();
-
-    // The grace date should be 3 days after the close date
-    const expectedDate = moment('2022-07-20').add(3, 'days').format('YYYY-MM-DD HH:MM:SS');
-    expect(graceDate).toEqual(expectedDate);
+    expect(graceDate).toEqual('2022-07-23');
   });
 });
