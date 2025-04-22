@@ -107,6 +107,7 @@ describe('FormFunctionalitySettings.vue', () => {
   const pinia = createTestingPinia();
   setActivePinia(pinia);
 
+
   const authStore = useAuthStore(pinia);
   const formStore = useFormStore(pinia);
   const idpStore = useIdpStore(pinia);
@@ -166,6 +167,7 @@ describe('FormFunctionalitySettings.vue', () => {
     );
     expect(wrapper.text()).toMatch('trans.formSettings.allowEventSubscription');
     expect(wrapper.text()).toMatch('trans.formSettings.wideFormLayout');
+    expect(wrapper.text()).toMatch('trans.canShareDraft.shareDraftMessage');
   });
 
   it('submitters can not upload files if drafts are disabled', async () => {
@@ -216,6 +218,7 @@ describe('FormFunctionalitySettings.vue', () => {
 
     expect(formStore.form.enableSubmitterDraft).toBeTruthy();
     expect(formStore.form.allowSubmitterToUploadFile).toBeTruthy();
+    expect(formStore.form.enableTeamMemberDraftShare).toBeFalsy();
 
     formStore.form.enableSubmitterDraft = false;
 

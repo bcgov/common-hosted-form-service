@@ -139,7 +139,14 @@
     "repeatUntil": "重複直到",
     "summary": "概括",
     "submissionsOpenDateRange": "此表格將開放供提交",
+    "timezoneIndicator": "所有時間均為您的本地時區 ({timezone})",
     "to": "到",
+    "openTime": "開始時間",
+    "closeTime": "結束時間",
+    "at": "於",
+    "specifyOpenTime": "指定開始時間（選填）",
+    "specifyCloseTime": "指定結束時間（選填）",
+    "closingTimeInfo": "(表單將於截止日期當天您當地時區的晚上11:59關閉)",
     "scheduleRepetition": "該時間表將重複每個",
     "allowLateSubmissnInterval": "允許延遲提交",
     "until": "直到",
@@ -1215,5 +1222,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "您無法與尚未新增至表單的使用者共用草稿。請聯絡管理員新增它們。",
+    "shareDraftMessage":"僅與表單團隊成員分享草稿"
   }
 }

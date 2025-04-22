@@ -139,7 +139,14 @@
     "repeatUntil": "दोहराओ जब तक",
     "summary": "सारांश",
     "submissionsOpenDateRange": "यह फॉर्म सबमिशन के लिए खुला रहेगा",
+    "timezoneIndicator": "सभी समय आपके स्थानीय समय क्षेत्र में हैं ({timezone})",
     "to": "को",
+    "openTime": "खुलने का समय",
+    "closeTime": "बंद होने का समय",
+    "at": "पर",
+    "specifyOpenTime": "खुलने का समय निर्दिष्ट करें (वैकल्पिक)",
+    "specifyCloseTime": "बंद होने का समय निर्दिष्ट करें (वैकल्पिक)",
+    "closingTimeInfo": "(फॉर्म समापन तिथि को आपके स्थानीय समय क्षेत्र में रात 11:59 बजे बंद हो जाएगा)",
     "scheduleRepetition": "शेड्यूल हर बार दोहराया जाएगा",
     "allowLateSubmissnInterval": "के लिए देर से सबमिशन की अनुमति देना",
     "until": "जब तक",
@@ -1215,5 +1222,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "आप उन उपयोगकर्ताओं के साथ ड्राफ्ट साझा नहीं कर सकते जिन्हें फ़ॉर्म में नहीं जोड़ा गया है। उन्हें जोड़ने के लिए कृपया व्यवस्थापक से संपर्क करें।",
+    "shareDraftMessage":"ड्राफ़्ट को केवल फ़ॉर्म टीम के सदस्यों के साथ साझा करें"
   }
 }

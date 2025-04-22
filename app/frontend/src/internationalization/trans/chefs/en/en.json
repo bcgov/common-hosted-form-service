@@ -200,8 +200,15 @@
     "every": "Every",
     "repeatUntil": "Repeat until",
     "summary": "Summary",
+    "timezoneIndicator": "All times are in your local timezone ({timezone})",
+    "openTime": "Open time",
+    "closeTime": "Close time",
+    "at": "at",
+    "specifyOpenTime": "Specify open time (optional)",
+    "specifyCloseTime": "Specify close time (optional)",
     "submissionsOpenDateRange": "This form will be open for submissions from",
     "to": "to",
+    "closingTimeInfo": "(The form will close at 11:59 PM in your local time zone on the closing date)",
     "scheduleRepetition": "The schedule will repeat every",
     "allowLateSubmissnInterval": "allowing late submissions for",
     "until": "until",
@@ -648,6 +655,7 @@
     "formSubmission": "form submission",
     "delete": "Delete"
   },
+  
   "manageSubmissionUsers": {
     "manageTeamMembers": "Manage Team Members",
     "add": "Add",
@@ -674,6 +682,10 @@
     "getUsersErrMsg": "Error getting users: {error}",
     "exactEmailOrUsername": "Enter an exact email or username.",
     "requiredField": "Enter a name, email, or username"
+  },
+  "canShareDraft": {
+    "canShareMessage": "You can't share the draft with users who haven't been added to the form. Please contact the admin to add them.",
+    "shareDraftMessage":"Share draft with form team members only"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "View This Submission",

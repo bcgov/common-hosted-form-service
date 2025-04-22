@@ -139,7 +139,14 @@
     "repeatUntil": "Répète jusqu'à",
     "summary": "Résumé",
     "submissionsOpenDateRange": "Ce formulaire sera ouvert aux soumissions de",
+    "timezoneIndicator": "Toutes les heures sont dans votre fuseau horaire local ({timezone})",
     "to": "pour",
+    "openTime": "Heure d'ouverture",
+    "closeTime": "Heure de fermeture",
+    "at": "à",
+    "specifyOpenTime": "Préciser l'heure d'ouverture (facultatif)",
+    "specifyCloseTime": "Préciser l'heure de fermeture (facultatif)",
+    "closingTimeInfo": "(Le formulaire sera fermé à 23 h 59 dans votre fuseau horaire local à la date de clôture)",
     "scheduleRepetition": "Le programme se répétera tous les",
     "allowLateSubmissnInterval": "autoriser les soumissions tardives pour",
     "until": "jusqu'à",
@@ -1215,5 +1222,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "Vous ne pouvez pas partager le brouillon avec des utilisateurs qui n'ont pas été ajoutés au formulaire. Veuillez contacter l'administrateur pour les ajouter.",
+    "shareDraftMessage":"Partager le brouillon uniquement avec les membres de l'équipe du formulaire"
   }
 }

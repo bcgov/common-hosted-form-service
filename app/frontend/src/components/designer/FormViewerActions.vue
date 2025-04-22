@@ -217,6 +217,7 @@ watch(
         <ManageSubmissionUsers
           :is-draft="isDraft"
           :submission-id="submissionId"
+          :form-id="formId"
         />
       </span>
     </div>
