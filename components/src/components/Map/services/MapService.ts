@@ -3,7 +3,7 @@ import * as GeoSearch from 'leaflet-geosearch';
 import { BCGeocoderProvider } from '../services/BCGeocoderProvider';
 import {
   BASE_LAYER_URLS,
-  BASE_LAYER_ATTRIBUTIONS
+  BASE_LAYER_ATTRIBUTIONS,
 } from '../Common/MapConstants';
 import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
@@ -21,7 +21,7 @@ interface MapServiceOptions {
   mapContainer: HTMLElement;
   center: [number, number]; // Ensure center is a tuple with exactly two elements
   drawOptions: any;
-  drawControl:any;
+  drawControl: any;
   form: HTMLCollectionOf<Element>;
   numPoints: number;
   defaultZoom?: number;
@@ -48,63 +48,63 @@ class MapService {
   baseLayers;
 
   async initialize(options) {
-      const { map, drawnItems, drawControl } = await this.initializeMap(options);
-      this.map = map;
-      this.drawnItems = drawnItems;
-      this.drawControl = drawControl; // Store the draw control globally
+    const { map, drawnItems, drawControl } = await this.initializeMap(options);
+    this.map = map;
+    this.drawnItems = drawnItems;
+    this.drawControl = drawControl; // Store the draw control globally
 
-      if (
-        this.options.defaultValue !== null &&
-        this.options.defaultValue?.features.length !== 0
-      ) {
-        this.defaultFeatures = this.arrayToFeatureGroup(
-          this.options.defaultValue?.features
-          // defaultFeatures are stored in a naive fashion for ease
-          // of readability for CHEFS reviewers
-        );
+    if (
+      this.options.defaultValue !== null &&
+      this.options.defaultValue?.features.length !== 0
+    ) {
+      this.defaultFeatures = this.arrayToFeatureGroup(
+        this.options.defaultValue?.features
+        // defaultFeatures are stored in a naive fashion for ease
+        // of readability for CHEFS reviewers
+      );
+    }
+
+    map.invalidateSize();
+    // Triggering a resize event after map initialization
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 0);
+    // Event listener for drawn objects
+    map.on('draw:created', (e) => {
+      const layer = e.layer;
+      if (drawnItems.getLayers().length === options.numPoints) {
+        map.closePopup();
+        L.popup()
+          .setLatLng(map.getCenter())
+          .setContent(
+            `<p>Only ${options.numPoints} features per submission</p>`
+          )
+          .addTo(map);
+      } else {
+        drawnItems.addLayer(layer);
       }
+      this.bindPopupToLayer(layer);
+      options.onDrawnItemsChange(drawnItems.getLayers());
+    });
 
-      map.invalidateSize();
-      // Triggering a resize event after map initialization
-      setTimeout(() => window.dispatchEvent(new Event('resize')), 0);
-      // Event listener for drawn objects
-      map.on('draw:created', (e) => {
-        const layer = e.layer;
-        if (drawnItems.getLayers().length === options.numPoints) {
-          map.closePopup();
+    map.on(L.Draw.Event.DELETED, (e: any) => {
+      e.layers.eachLayer((layer) => {
+        const match = this.isDefaultFeature(layer as L.Layer);
+        if (match) {
+          // re-add the feature/layer to the map
+          drawnItems.addLayer(layer);
           L.popup()
             .setLatLng(map.getCenter())
-            .setContent(
-              `<p>Only ${options.numPoints} features per submission</p>`
-            )
+            .setContent('<p>Please do not delete pre-existing features</p>')
             .addTo(map);
-        } else {
-          drawnItems.addLayer(layer);
         }
-        this.bindPopupToLayer(layer);
-        options.onDrawnItemsChange(drawnItems.getLayers());
       });
-
-      map.on(L.Draw.Event.DELETED, (e: any) => {
-        e.layers.eachLayer((layer) => {
-          const match = this.isDefaultFeature(layer as L.Layer);
-          if (match) {
-            // re-add the feature/layer to the map
-            drawnItems.addLayer(layer);
-            L.popup()
-              .setLatLng(map.getCenter())
-              .setContent('<p>Please do not delete pre-existing features</p>')
-              .addTo(map);
-          }
-        });
-        options.onDrawnItemsChange(drawnItems.getLayers());
-      });
-      map.on(L.Draw.Event.EDITSTOP, (e) => {
-        options.onDrawnItemsChange(drawnItems.getLayers());
-      });
-      map.on('resize', () => {
-        map.invalidateSize();
-      });
+      options.onDrawnItemsChange(drawnItems.getLayers());
+    });
+    map.on(L.Draw.Event.EDITSTOP, (e) => {
+      options.onDrawnItemsChange(drawnItems.getLayers());
+    });
+    map.on('resize', () => {
+      map.invalidateSize();
+    });
   }
   constructor(options) {
     this.options = options;
@@ -127,7 +127,7 @@ class MapService {
       bcGeocoder,
       allowBaseLayerSwitch = true,
       availableBaseLayers,
-      selectedBaseLayer
+      selectedBaseLayer,
     } = options;
     if (drawOptions.rectangle) {
       drawOptions.rectangle.showArea = false;
@@ -137,7 +137,7 @@ class MapService {
       zoomAnimation: viewMode,
     }).setView(center, defaultZoom || DEFAULT_MAP_ZOOM);
     // Define base layers
-   const allLayers = {
+    const allLayers = {
       OpenStreetMap: L.tileLayer(BASE_LAYER_URLS.OpenStreetMap, {
         attribution: BASE_LAYER_ATTRIBUTIONS.OpenStreetMap,
       }),
@@ -153,17 +153,14 @@ class MapService {
       Topographic: L.tileLayer(BASE_LAYER_URLS.Topographic, {
         attribution: BASE_LAYER_ATTRIBUTIONS.Topographic,
       }),
-      ESRIWorldImagery: L.tileLayer(BASE_LAYER_URLS.ESRIWorldImagery, {
-        attribution: BASE_LAYER_ATTRIBUTIONS.ESRIWorldImagery,
-      }),
     };
 
     this.baseLayers = availableBaseLayers
       ? Object.fromEntries(
-        Object.entries(allLayers).filter(([key]) =>
-          availableBaseLayers.includes(key)
+          Object.entries(allLayers).filter(([key]) =>
+            availableBaseLayers.includes(key)
+          )
         )
-      )
       : allLayers;
 
     // Pick the initial base layer
@@ -319,7 +316,7 @@ class MapService {
       const newLayer = this.baseLayers[layerName];
 
       // Remove any existing base layer
-      Object.values(this.baseLayers).forEach(layer => {
+      Object.values(this.baseLayers).forEach((layer) => {
         if (this.map.hasLayer(layer)) {
           this.map.removeLayer(layer);
         }

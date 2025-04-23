@@ -22,7 +22,7 @@ export default {
       input: true,
       allowSubmissions: true,
       defaultBaseLayer: 'OpenStreetMap',
-      allowBaseLayerSwitch: true,
+      allowBaseLayerSwitch: false,
       availableBaseLayers: {
         OpenStreetMap: true,
         Light: true,
@@ -69,7 +69,6 @@ export default {
         Dark: true,
         Satellite: true,
         Topographic: true,
-        ESRIWorldImagery: true,
       },
     },
     {
@@ -126,7 +125,7 @@ export default {
       key: 'allowBaseLayerSwitch',
       type: 'checkbox',
       input: true,
-      defaultValue: true,
+      defaultValue: false,
       description:
         'If checked, submitters can toggle between available base layers.',
     },
@@ -141,7 +140,6 @@ export default {
         Dark: true,
         Satellite: true,
         Topographic: true,
-        ESRIWorldImagery: true,
       },
       values: [
         { label: 'OpenStreetMap', value: 'OpenStreetMap' },
@@ -149,7 +147,6 @@ export default {
         { label: 'Dark', value: 'Dark' },
         { label: 'Satellite', value: 'Satellite' },
         { label: 'Topographic', value: 'Topographic' },
-        { label: 'ESRI World Imagery', value: 'ESRIWorldImagery' },
       ],
       description: 'Select which base layers the submitter can toggle between.',
       validate: {
