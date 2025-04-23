@@ -1,0 +1,90 @@
+# Default values for clamav.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# nameOverride -- override the name of the clamav chart
+nameOverride: ""
+
+# fullnameOverride -- override the full name of the clamav chart
+fullnameOverride: ""
+
+service:
+  # service.port -- The port to be used by the clamav service
+  port: 3310
+
+clamav:
+  # clamav.image -- The clamav docker image
+  image: clamav/clamav
+  # clamav.version -- The clamav docker image version - defaults to .Chart.appVersion
+  tag: "1.0.5"
+  # clamav.imagePullPolicy -- IfNotPresent
+  imagePullPolicy: IfNotPresent
+  replicaCount: 1
+
+  freshclam:
+    # clamav.freshclam.mirrors -- A list of clamav mirrors to be used by the clamav service. By default, use the ClamAV Mirror provided in OCP4 Silver cluster
+    mirrors:
+      - https://clamav-mirror.apps.silver.devops.gov.bc.ca
+
+  limits:
+    # clamav.limits.fileSize -- The largest file size scanable by clamav, in MB
+    fileSize: 30
+    # clamav.limits.scanSize -- The largest scan size permitted in clamav, in MB
+    scanSize: 150
+    # clamav.limits.connectionQueueLength -- Maximum length the queue of pending connections may grow to
+    connectionQueueLength: 100
+    # clamav.limits.maxThreads --Maximum number of threads running at the same time.
+    maxThreads: 4
+    # clamav.sendBufTimeout -- This option specifies how long to wait (in milliseconds) if the send buffer is full, keep low to avoid clamd hanging
+    sendBufTimeout: 500
+
+  resources:
+    # clamav.resources -- The resource requests and limits for the clamav service
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 2048Mi
+
+## Pod Security Context
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+## @param provisioning.podSecurityContext.enabled Enable pod Security Context
+## @param provisioning.podSecurityContext.fsGroup Group ID for the container
+##
+podSecurityContext:
+  enabled: true
+  #  fsGroup: 1000660000
+  seccompProfile:
+    type: RuntimeDefault
+
+## Container Security Context
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+## @param provisioning.containerSecurityContext.enabled Enable container Security Context
+## @param provisioning.containerSecurityContext.runAsUser User ID for the container
+## @param provisioning.containerSecurityContext.runAsNonRoot Avoid running as root User
+##
+containerSecurityContext:
+  enabled: true
+  #  runAsUser: 1000660000
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - "ALL"
+
+## Redis&reg; Pod Disruption Budget configuration
+## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+##
+pdb:
+  ## @param pdb.create Specifies whether a PodDisruptionBudget should be created. Requires replicaCount > 1
+  ##
+  create: false
+  ## @param pdb.minAvailable Min number of pods that must still be available after the eviction
+  ##
+  minAvailable: 1
+  ## @param pdb.maxUnavailable Max number of pods that can be unavailable after the eviction
+  ##
+  maxUnavailable: ""
