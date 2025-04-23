@@ -566,10 +566,10 @@ defineExpose({ designerOptions, reRenderFormIo });
             color="primary"
             :lang="locale"
             prepend-icon="mdi:mdi-publish"
-            :title="$t('trans.formDesigner.importDesign')"
+            :title="$t('trans.formDesigner.uploadJson')"
             @click="$refs.uploader.click()"
           >
-            {{ $t('trans.formDesigner.importDesign') }}
+            {{ $t('trans.formDesigner.uploadJson') }}
             <input
               ref="uploader"
               class="d-none"
