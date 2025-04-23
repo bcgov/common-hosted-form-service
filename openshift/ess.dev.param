@@ -9,4 +9,4 @@ DUPLICATEWINDOW="60000"
 NUMREPLICAS="3"
 SERVERS=ess-nats.a191b5-dev.svc.cluster.local
 WEBSOCKETS=false
-CONSUMERSERVERS=stream-dev.apps.silver.devops.gov.bc.ca
+CONSUMERSERVERS=stream-dev.apps.silver.devops.gov.bc.ca/streams
