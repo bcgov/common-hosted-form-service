@@ -119,15 +119,17 @@ describe('Form Designer', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     cy.get(':nth-child(1) > .v-card > .v-card-text > .mb-6.font-weight-bold > .mdi-help-circle-outline').should('be.visible');
+    //Validate help link
     cy.get('a.preview_info_link_field_white').then($el => {
       const ESS=$el[5];
       cy.get(ESS).should("have.attr","href","https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Integrations/Event-Stream-Service/");
     });
+    //Add ESS name
     cy.get('input[type="text"]').then($el => {
       
       const ESS_name=$el[6];
       cy.get(ESS_name).click({ force: true });
-      //cy.get(ESS_name).type('ESS name');
+      cy.get(ESS_name).type('ESS name');
       cy.get('[data-test="canEditForm"]').click();
       });
         
