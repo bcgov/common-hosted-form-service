@@ -29,15 +29,14 @@ describe('Form Designer', () => {
  it('Checks manage form settings', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-    
-    cy.get('button').contains('BC Government').click();
+    cy.get('button').contains('Basic Fields').click();
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
-      cy.get('[data-key="simplebcaddress"]')
+      cy.get('span.btn').contains('Text Field')
+      
       .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -550, { force: true })
+      .trigger('mousemove', coords.x, -50, { force: true })
       .trigger('mouseup', { force: true });
-      cy.wait(2000);  
       cy.get('button').contains('Save').click();
     });
   // Form saving
@@ -114,10 +113,26 @@ describe('Form Designer', () => {
         cy.get(rem).type('closed for some reasons');
       });
       cy.contains('SEND Reminder email').click();
-      
       cy.contains('SEND Reminder email').click();
-      cy.get('[data-test="canEditForm"]').click();
     });
+    it('Checks Event Stream settings', () => {
+    cy.viewport(1000, 1100);
+    cy.waitForLoad();
+    cy.get(':nth-child(1) > .v-card > .v-card-text > .mb-6.font-weight-bold > .mdi-help-circle-outline').should('be.visible');
+    cy.get('a.preview_info_link_field_white').then($el => {
+      const ESS=$el[5];
+      cy.get(ESS).should("have.attr","href","https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Capabilities/Integrations/Event-Stream-Service/");
+    });
+    cy.get('input[type="text"]').then($el => {
+      
+      const ESS_name=$el[6];
+      cy.get(ESS_name).click({ force: true });
+      //cy.get(ESS_name).type('ESS name');
+      cy.get('[data-test="canEditForm"]').click();
+      });
+        
+    });
+    
     it('Checks Event Subscription settings', () => {
       cy.viewport(1000, 1100);
       cy.waitForLoad();
