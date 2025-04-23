@@ -1,10 +1,27 @@
 const moment = require('moment-timezone');
-const { ScheduleType, EmailTypes } = require('./constants');
+const { ScheduleType } = require('./constants');
+
+/**
+ * Constants for date formats and timezone
+ */
+const DEFAULT_TIMEZONE = 'America/Vancouver';
+const DATE_FORMAT = 'YYYY-MM-DD';
+const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm';
 
 /**
  * Core date calculation functions
  * These don't know about schedule objects, just work with raw dates
  */
+
+/**
+ * Get current date with optional reference date
+ * @param {String|Date} referenceDate Optional reference date (defaults to now)
+ * @param {String} timezone The timezone to use
+ * @returns {Object} Moment object for the current date
+ */
+function getCurrentDate(referenceDate = null, timezone = DEFAULT_TIMEZONE) {
+  return referenceDate ? moment.tz(referenceDate, timezone) : moment().tz(timezone);
+}
 
 /**
  * Check if a date is in the future
@@ -14,12 +31,12 @@ const { ScheduleType, EmailTypes } = require('./constants');
  * @param {Boolean} ignoreTime Whether to ignore time component (defaults to true)
  * @returns {Boolean} True if the date is in the future
  */
-function isDateInFuture(date, timezone = 'America/Vancouver', referenceDate = null, ignoreTime = true) {
+function isDateInFuture(date, timezone = DEFAULT_TIMEZONE, referenceDate = null, ignoreTime = true) {
   if (!date) return false;
 
   // Parse dates with timezone
   let targetDate = moment.tz(date, timezone);
-  let now = referenceDate ? moment.tz(referenceDate, timezone) : moment().tz(timezone);
+  let now = getCurrentDate(referenceDate, timezone);
 
   // Optionally ignore time component
   if (ignoreTime) {
@@ -39,19 +56,27 @@ function isDateInFuture(date, timezone = 'America/Vancouver', referenceDate = nu
  * @param {Boolean} ignoreTime Whether to ignore time component (defaults to true)
  * @returns {Boolean} True if date is within the range (inclusive)
  */
-function isDateInRange(date, startDate, endDate, timezone = 'America/Vancouver', ignoreTime = true) {
+function isDateInRange(date, startDate, endDate, timezone = DEFAULT_TIMEZONE, ignoreTime = true) {
   if (!date || !startDate) return false;
-  if (!endDate) return true; // No end date means infinite range
 
   // Parse dates with timezone
   let targetDate = moment.tz(date, timezone);
   let start = moment.tz(startDate, timezone);
-  let end = moment.tz(endDate, timezone);
 
   // Optionally ignore time component
   if (ignoreTime) {
     targetDate = targetDate.startOf('day');
     start = start.startOf('day');
+  }
+
+  // If no endDate, check if date is on or after startDate
+  if (!endDate) {
+    return targetDate.isSameOrAfter(start);
+  }
+
+  // Check if date is between start and end
+  let end = moment.tz(endDate, timezone);
+  if (ignoreTime) {
     end = end.startOf('day');
   }
 
@@ -68,7 +93,7 @@ function isDateInRange(date, startDate, endDate, timezone = 'America/Vancouver',
  * @param {Boolean} ignoreTime Whether to ignore time component (defaults to true)
  * @returns {String|Object} The calculated date as string or moment object
  */
-function calculateDatePlus(baseDate, value, unit, timezone = 'America/Vancouver', format = 'YYYY-MM-DD', ignoreTime = true) {
+function calculateDatePlus(baseDate, value, unit, timezone = DEFAULT_TIMEZONE, format = DATE_FORMAT, ignoreTime = true) {
   if (!baseDate || value === undefined || unit === undefined) return null;
 
   const date = moment.tz(baseDate, timezone);
@@ -89,7 +114,7 @@ function calculateDatePlus(baseDate, value, unit, timezone = 'America/Vancouver'
  * @param {Boolean} ignoreTime Whether to ignore time component (defaults to true)
  * @returns {String|Object|null} The middle date or null if range is too short
  */
-function calculateMiddleDate(startDate, endDate, timezone = 'America/Vancouver', format = null, ignoreTime = true) {
+function calculateMiddleDate(startDate, endDate, timezone = DEFAULT_TIMEZONE, format = null, ignoreTime = true) {
   if (!startDate || !endDate) return null;
 
   let start = moment.tz(startDate, timezone);
@@ -128,7 +153,7 @@ function isDateValid(date) {
  * @param {Boolean} compareTime Whether to compare exact time (false = day only)
  * @returns {Boolean} True if dates are the same (day or exact time based on compareTime)
  */
-function isSameDay(date1, date2, timezone = 'America/Vancouver', compareTime = false) {
+function isSameDay(date1, date2, timezone = DEFAULT_TIMEZONE, compareTime = false) {
   if (!date1 || !date2) return false;
 
   const d1 = moment.tz(date1, timezone);
@@ -149,7 +174,7 @@ function isSameDay(date1, date2, timezone = 'America/Vancouver', compareTime = f
  * @param {Boolean} ignoreTime Whether to ignore time component (defaults to true)
  * @returns {Number} Number of days between the dates
  */
-function daysBetween(startDate, endDate, timezone = 'America/Vancouver', ignoreTime = true) {
+function daysBetween(startDate, endDate, timezone = DEFAULT_TIMEZONE, ignoreTime = true) {
   if (!startDate || !endDate) return 0;
 
   let start = moment.tz(startDate, timezone);
@@ -194,14 +219,15 @@ const checkIsFormExpired = (formSchedule = {}) => {
   const defaults = {
     openSubmissionTime: formSchedule.openSubmissionTime || '00:00',
     closeSubmissionTime: formSchedule.closeSubmissionTime || (formSchedule.closeSubmissionDateTime ? '23:59' : null),
-    timezone: formSchedule.timezone || 'America/Vancouver',
+    timezone: formSchedule.timezone || DEFAULT_TIMEZONE,
   };
   const schedule = { ...formSchedule, ...defaults };
 
   // Opening Time
   const openDateTime = `${schedule.openSubmissionDateTime} ${schedule.openSubmissionTime}`;
-  const openingMoment = moment.tz(openDateTime, 'YYYY-MM-DD HH:mm', schedule.timezone).utc();
-  if (currentMoment.isBefore(openingMoment)) {
+  const openingMoment = moment.tz(openDateTime, DATE_TIME_FORMAT, schedule.timezone);
+  // Only convert to UTC if specifically needed for comparison with currentMoment
+  if (currentMoment.isBefore(openingMoment.clone().utc())) {
     return { ...result, expire: true, message: 'This form is not yet available for submission.' };
   }
 
@@ -224,13 +250,13 @@ const checkIsFormExpired = (formSchedule = {}) => {
         return result;
       }
       const closeDateTime = `${schedule.closeSubmissionDateTime} ${schedule.closeSubmissionTime}`;
-      const closingMoment = moment.tz(closeDateTime, 'YYYY-MM-DD HH:mm', schedule.timezone).utc();
-      if (currentMoment.isAfter(closingMoment)) {
+      const closingMoment = moment.tz(closeDateTime, DATE_TIME_FORMAT, schedule.timezone);
+      if (currentMoment.isAfter(closingMoment.clone().utc())) {
         if (schedule.allowLateSubmissions && schedule.allowLateSubmissions.enabled) {
           const lateConfig = schedule.allowLateSubmissions.forNext;
           if (lateConfig && lateConfig.term && lateConfig.intervalType) {
             const gracePeriodMoment = closingMoment.clone().add(lateConfig.term, lateConfig.intervalType);
-            const isWithinGracePeriod = currentMoment.isBefore(gracePeriodMoment);
+            const isWithinGracePeriod = currentMoment.isBefore(gracePeriodMoment.utc());
             return { ...result, expire: true, allowLateSubmissions: isWithinGracePeriod };
           }
         }
@@ -258,11 +284,11 @@ const calculateCloseDateFromPeriod = (formSchedule) => {
 
   // If we have keepOpenForTerm and keepOpenForInterval, use those to calculate
   if (formSchedule.keepOpenForTerm && formSchedule.keepOpenForInterval) {
-    return openDate.clone().add(formSchedule.keepOpenForTerm, formSchedule.keepOpenForInterval).format('YYYY-MM-DD');
+    return openDate.clone().add(formSchedule.keepOpenForTerm, formSchedule.keepOpenForInterval).format(DATE_FORMAT);
   }
 
   // Otherwise default to 7 days from open date
-  return openDate.clone().add(7, 'days').format('YYYY-MM-DD');
+  return openDate.clone().add(7, 'days').format(DATE_FORMAT);
 };
 
 /**
@@ -293,10 +319,10 @@ const isEligibleLateSubmission = (date, term, interval) => {
  */
 function extractScheduleDates(schedule) {
   if (!schedule || !schedule.enabled || !schedule.openSubmissionDateTime) {
-    return { openDate: null, closeDate: null, graceDate: null, timezone: 'America/Vancouver' };
+    return { openDate: null, closeDate: null, graceDate: null, timezone: DEFAULT_TIMEZONE };
   }
 
-  const timezone = schedule.timezone || 'America/Vancouver';
+  const timezone = schedule.timezone || DEFAULT_TIMEZONE;
   const closeDate = schedule.scheduleType === ScheduleType.CLOSINGDATE ? schedule.closeSubmissionDateTime : null;
 
   // Calculate grace period date if late submissions are allowed
@@ -325,7 +351,7 @@ function getGracePeriodEndDate(schedule) {
     return null;
   }
 
-  const timezone = schedule.timezone || 'America/Vancouver';
+  const timezone = schedule.timezone || DEFAULT_TIMEZONE;
   return calculateDatePlus(schedule.closeSubmissionDateTime, term, intervalType, timezone);
 }
 
@@ -363,13 +389,13 @@ function getCurrentPeriod(datesOrSchedule, referenceDate = null, respectTimeComp
   // Extract dates from schedule if needed
   let dates;
   let allowLateSubmissions = false;
-  let timezone = 'America/Vancouver';
+  let timezone = DEFAULT_TIMEZONE;
 
   if (datesOrSchedule && datesOrSchedule.scheduleType !== undefined) {
     const schedule = datesOrSchedule;
     dates = getSubmissionPeriodDates(schedule);
     allowLateSubmissions = schedule.allowLateSubmissions && schedule.allowLateSubmissions.enabled;
-    timezone = schedule.timezone || 'America/Vancouver';
+    timezone = schedule.timezone || DEFAULT_TIMEZONE;
   } else {
     dates = datesOrSchedule;
     // Try to extract timezone if available
@@ -434,141 +460,15 @@ function getCurrentPeriod(datesOrSchedule, referenceDate = null, respectTimeComp
   };
 }
 
-/**
- * Determines what type of reminder email should be sent based on current date and schedule
- * @param {Object} scheduleOrReport The form schedule or period report
- * @param {Date|String} referenceDate Optional reference date (defaults to now)
- * @param {Boolean} respectTimeComponent Whether to respect time components in dates (defaults to false)
- * @returns {String|undefined} Email type constant or undefined if no reminder should be sent
- */
-function getEmailReminderType(scheduleOrReport, referenceDate = null, respectTimeComponent = false) {
-  // Get the current period if a schedule was provided
-  const report = scheduleOrReport.scheduleType !== undefined ? getCurrentPeriod(scheduleOrReport, referenceDate, respectTimeComponent) : scheduleOrReport;
-
-  if (!report || !report.dates) return undefined;
-
-  const now = referenceDate || new Date();
-  const timezone = report.dates.timezone || 'America/Vancouver';
-  const compareTime = respectTimeComponent;
-
-  // Form opens today - exact date match required
-  if (isSameDay(now, report.dates.startDate, timezone, compareTime)) {
-    return EmailTypes.REMINDER_FORM_OPEN;
-  }
-
-  // No close date or period is too short for mid-reminders
-  if (!report.dates.closeDate) return undefined;
-
-  const daysBetweenDates = daysBetween(report.dates.startDate, report.dates.closeDate, timezone, !respectTimeComponent);
-
-  if (daysBetweenDates <= 3) return undefined;
-
-  // Form closes tomorrow - exact date match required
-  const dayBeforeClose = calculateDatePlus(report.dates.closeDate, -1, 'days', timezone, null, !respectTimeComponent);
-  if (isSameDay(now, dayBeforeClose, timezone, compareTime)) {
-    return EmailTypes.REMINDER_FORM_WILL_CLOSE;
-  }
-
-  // Middle of the period reminder - exact date match required
-  const middleDate = calculateMiddleDate(report.dates.startDate, report.dates.closeDate, timezone, null, !respectTimeComponent);
-  if (middleDate && isSameDay(now, middleDate, timezone, compareTime)) {
-    return EmailTypes.REMINDER_FORM_NOT_FILL;
-  }
-
-  return undefined;
-}
-
-/**
- * Validate a form schedule object
- * @param {Object} schedule The schedule object to validate
- * @returns {Object} Validation result {message, status}
- */
-function validateScheduleObject(schedule = {}) {
-  // If scheduling is not enabled, return success
-  if (!schedule.enabled) {
-    return { message: '', status: 'success' };
-  }
-
-  // Validate opening date
-  if (!isDateValid(schedule.openSubmissionDateTime)) {
-    return {
-      message: 'Invalid open submission date.',
-      status: 'error',
-    };
-  }
-
-  // Validate based on schedule type
-  if (schedule.scheduleType === ScheduleType.CLOSINGDATE) {
-    // Validate closing date
-    if (!isDateValid(schedule.closeSubmissionDateTime)) {
-      return {
-        message: 'Invalid closed submission date.',
-        status: 'error',
-      };
-    }
-
-    // Validate late submissions
-    if (!isLateSubmissionConfigValid(schedule)) {
-      return {
-        message: 'Invalid late submission data.',
-        status: 'error',
-      };
-    }
-
-    // Validate closing message
-    if (!isClosingMessageValid(schedule)) {
-      return {
-        message: 'Invalid closing message.',
-        status: 'error',
-      };
-    }
-  } else if (schedule.scheduleType !== ScheduleType.MANUAL) {
-    // Invalid schedule type
-    return {
-      message: 'Invalid schedule type.',
-      status: 'error',
-    };
-  }
-
-  return { message: '', status: 'success' };
-}
-
-/**
- * Validate late submission configuration
- * @param {Object} schedule Form schedule object
- * @returns {Boolean} True if late submission config is valid
- */
-function isLateSubmissionConfigValid(schedule) {
-  const lateSubmissionsEnabled = schedule && schedule.allowLateSubmissions && schedule.allowLateSubmissions.enabled;
-
-  if (lateSubmissionsEnabled) {
-    const hasValidTerm = schedule.allowLateSubmissions.forNext && schedule.allowLateSubmissions.forNext.term;
-
-    const hasValidInterval = schedule.allowLateSubmissions.forNext && schedule.allowLateSubmissions.forNext.intervalType;
-
-    if (!hasValidTerm || !hasValidInterval) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-/**
- * Validate closing message configuration
- * @param {Object} schedule Form schedule object
- * @returns {Boolean} True if closing message is valid
- */
-function isClosingMessageValid(schedule) {
-  if (schedule.closingMessageEnabled) {
-    return !!schedule.closingMessage;
-  }
-  return true;
-}
-
 // Export all functions grouped by feature area
 module.exports = {
+  // Constants
+  DEFAULT_TIMEZONE,
+  DATE_FORMAT,
+  DATE_TIME_FORMAT,
+
   // Core date utilities (used everywhere)
+  getCurrentDate,
   isDateInFuture,
   isDateInRange,
   calculateDatePlus,
@@ -584,14 +484,8 @@ module.exports = {
   // Form structure and validation
   extractScheduleDates,
   getGracePeriodEndDate,
-  validateScheduleObject,
 
   // Reminder service related
   getCurrentPeriod,
   getSubmissionPeriodDates,
-  getEmailReminderType,
-
-  // Helper validation functions (internal use)
-  isLateSubmissionConfigValid,
-  isClosingMessageValid,
 };

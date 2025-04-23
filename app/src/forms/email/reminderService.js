@@ -4,7 +4,61 @@ const moment = require('moment-timezone');
 const { EmailTypes, ScheduleType } = require('../common/constants');
 const { SubmissionData, UserFormAccess, Form } = require('../common/models');
 const { Roles } = require('../common/constants');
-const { getCurrentPeriod, getSubmissionPeriodDates, getEmailReminderType, getGracePeriodEndDate } = require('../common/scheduleService');
+const {
+  getCurrentPeriod,
+  getSubmissionPeriodDates,
+  getGracePeriodEndDate,
+  isSameDay,
+  daysBetween,
+  calculateDatePlus,
+  calculateMiddleDate,
+  DEFAULT_TIMEZONE,
+} = require('../common/scheduleService');
+
+/**
+ * Determines what type of reminder email should be sent based on current date and schedule
+ * @param {Object} scheduleOrReport The form schedule or period report
+ * @param {Date|String} referenceDate Optional reference date (defaults to now)
+ * @param {Boolean} respectTimeComponent Whether to respect time components in dates (defaults to false)
+ * @returns {String|undefined} Email type constant or undefined if no reminder should be sent
+ */
+function getEmailReminderType(scheduleOrReport, referenceDate = null, respectTimeComponent = false) {
+  // Get the current period if a schedule was provided
+  const report = scheduleOrReport.scheduleType !== undefined ? getCurrentPeriod(scheduleOrReport, referenceDate, respectTimeComponent) : scheduleOrReport;
+
+  if (!report || !report.dates) return undefined;
+
+  const now = referenceDate || new Date();
+  const timezone = report.dates.timezone || DEFAULT_TIMEZONE;
+  const compareTime = respectTimeComponent;
+
+  // Form opens today - exact date match required
+  if (isSameDay(now, report.dates.startDate, timezone, compareTime)) {
+    return EmailTypes.REMINDER_FORM_OPEN;
+  }
+
+  // No close date or period is too short for mid-reminders
+  if (!report.dates.closeDate) return undefined;
+
+  const daysBetweenDates = daysBetween(report.dates.startDate, report.dates.closeDate, timezone, !respectTimeComponent);
+
+  if (daysBetweenDates <= 3) return undefined;
+
+  // Form closes tomorrow - exact date match required
+  const dayBeforeClose = calculateDatePlus(report.dates.closeDate, -1, 'days', timezone, null, !respectTimeComponent);
+  if (isSameDay(now, dayBeforeClose, timezone, compareTime)) {
+    return EmailTypes.REMINDER_FORM_WILL_CLOSE;
+  }
+
+  // Middle of the period reminder - exact date match required
+  const middleDate = calculateMiddleDate(report.dates.startDate, report.dates.closeDate, timezone, null, !respectTimeComponent);
+  if (middleDate && isSameDay(now, middleDate, timezone, compareTime)) {
+    return EmailTypes.REMINDER_FORM_NOT_FILL;
+  }
+
+  return undefined;
+}
+
 const service = {
   _init: async () => {
     const forms = await service._getForms();
