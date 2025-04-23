@@ -3,6 +3,7 @@ const Problem = require('api-problem');
 const userAccess = require('../../auth/middleware/userAccess');
 const log = require('../../../components/log')(module.filename);
 const service = require('../service');
+const { Permissions } = require('../../common/constants');
 
 /**
  * @function currentFileRecord
@@ -72,7 +73,7 @@ const hasFileDelete = async (req, res, next) => {
     } else {
       req.currentFileRecord = fileRecord;
       req.query.formSubmissionId = req.currentFileRecord.formSubmissionId;
-      const subPermCheck = userAccess.hasSubmissionPermissions(['SUBMISSION_UPDATE']);
+      const subPermCheck = userAccess.hasSubmissionPermissions([Permissions.SUBMISSION_UPDATE]);
       await subPermCheck(req, res, (err) => {
         if (err) {
           permissionError = err;
