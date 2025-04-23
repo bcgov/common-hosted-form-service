@@ -832,32 +832,43 @@ function uploadFile(file, cfg = {}) {
 
 async function uploadQueuedFiles() {
   let err = false;
-  for (let i = queuedUploadFiles.value.length - 1; i >= 0; i--) {
-    let response;
-    try {
-      response = await fileService.uploadFile(
-        queuedUploadFiles.value[i].file,
-        queuedUploadFiles.value[i].config
-      );
-      queuedUploadFiles.value[i].onUploaded(response);
-      queuedUploadFiles.value.splice(i, 1);
-    } catch (error) {
-      err = true;
-      queuedUploadFiles.value[i].onError({
-        detail: error?.message ? error.message : error,
-      });
-      notificationStore.addNotification({
-        text: t('trans.formViewer.errorSavingFile', {
-          fileName: queuedUploadFiles.value[i].file.originalName,
-          error: error,
-        }),
-        consoleError: t('trans.formViewer.errorSavingFile', {
-          fileName: queuedUploadFiles.value[i].file.originalName,
-          error: error,
-        }),
-      });
-    }
-  }
+
+  queuedUploadFiles.value = await Promise.all(
+    queuedUploadFiles.value.map(async (fileObj) => {
+      try {
+        const response = await fileService.uploadFile(
+          fileObj.file,
+          fileObj.config
+        );
+        fileObj.onUploaded(response);
+        return null; // Mark for removal
+      } catch (error) {
+        err = true;
+        fileObj.onError({
+          detail: error?.message ? error.message : error,
+        });
+
+        notificationStore.addNotification({
+          text: t('trans.formViewer.errorSavingFile', {
+            fileName: fileObj.file.originalName,
+            error: error,
+          }),
+          consoleError: t('trans.formViewer.errorSavingFile', {
+            fileName: fileObj.file.originalName,
+            error: error,
+          }),
+        });
+
+        return fileObj; // Keep failed uploads in the array
+      }
+    })
+  );
+
+  // Remove successfully uploaded files
+  queuedUploadFiles.value = queuedUploadFiles.value.filter(
+    (fileObj) => fileObj !== null
+  );
+
   return err;
 }
 
