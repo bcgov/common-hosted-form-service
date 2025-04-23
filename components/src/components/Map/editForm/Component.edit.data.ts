@@ -21,16 +21,6 @@ export default {
         'This will be the value for this field, before user interaction.',
       input: true,
       allowSubmissions: true,
-      defaultBaseLayer: 'OpenStreetMap',
-      allowBaseLayerSwitch: false,
-      availableBaseLayers: {
-        OpenStreetMap: true,
-        Light: true,
-        Dark: true,
-        Satellite: true,
-        Topographic: true,
-        ESRIWorldImagery: true,
-      },
       defaultValue: { features: [], selectedBaseLayer: 'OpenStreetMap' },
     },
     {
@@ -61,15 +51,7 @@ export default {
       allowSubmissions: true,
       description:
         'Please select the desired default center using a single marker',
-      defaultBaseLayer: 'OpenStreetMap',
       allowBaseLayerSwitch: false,
-      availableBaseLayers: {
-        OpenStreetMap: true,
-        Light: true,
-        Dark: true,
-        Satellite: true,
-        Topographic: true,
-      },
     },
     {
       html: '<h2>Submitter Options</h2>',
@@ -162,7 +144,7 @@ export default {
       reorder: true,
       defaultValue: [
         {
-          label: 'OpenStreetMap',
+          label: 'SampleOpenStreetMap',
           value: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
           attribution: '&copy; OpenStreetMap contributors',
         },
