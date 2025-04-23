@@ -875,10 +875,12 @@
     "failedResSubmissn": "فشل الرد من نقطة نهاية الإرسال. رمز الاستجابة: {status}",
     "errSubmittingForm": "حدث خطأ أثناء إرسال هذا النموذج",
     "errorSavingFile": "خطأ في حفظ الملفات. اسم الملف: {fileName}. خطأ: {error}",
+    "errorDeletingFile": "خطأ في حذف الملفات. اسم الملف: {fileName}. الخطأ: {error}",
     "submittingDraftErrMsg": "حدث خطأ أثناء حفظ المسودة",
     "submittingDraftConsErrMsg": "خطأ في حفظ المسودة. معرف التقديم: {submitId}. خطأ: {error}",
     "formDraftAccessErrMsg": "تم إرسال طلب التقديم بالفعل ، مع إعادة التوجيه إلى صفحة العرض",
-    "formUnauthorizedMessage": "غير مخول لك مشاهدة هذا النموذج، يرجى الاتصال بمالك النموذج للحصول على الوصول."
+    "formUnauthorizedMessage": "غير مخول لك مشاهدة هذا النموذج، يرجى الاتصال بمالك النموذج للحصول على الوصول.",
+    "fileUploadWarning": "لتحميل المرفقات، يجب عليك إما النقر على زر \"حفظ كمسودة\" أو إرسال النموذج. إذا انتقلت بعيدًا عن هذه الشاشة، فستفقد مرفقاتك."
   },
   "bCGovFooter": {
     "home": "بيت",
@@ -955,7 +957,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "عرض المسودة / التقديمات الخاصة بي",
-    "saveAsADraft": "احفظ كمسودة",
+    "saveAsDraft": "احفظ كمسودة",
     "editThisDraft": "قم بتحرير هذه المسودة",
     "switchSingleSubmssn": "التبديل إلى الإرسال الفردي",
     "switchMultiSubmssn": "التبديل إلى تقديمات متعددة",
@@ -1133,6 +1135,9 @@
       "history": "تاريخ",
       "user": "مستخدم"
     }
+  },
+  "alert": {
+    "warning": "تحذير"
   },
   "eventStreamConfig": {
     "info": "قم بتكوين تدفق الحدث للنموذج الخاص بك.",

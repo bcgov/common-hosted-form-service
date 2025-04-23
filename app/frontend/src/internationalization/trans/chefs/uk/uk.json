@@ -875,10 +875,12 @@
     "failedResSubmissn": "Помилка відповіді від кінцевої точки надсилання. Код відповіді: {status}",
     "errSubmittingForm": "Під час надсилання цієї форми сталася помилка",
     "errorSavingFile": "Помилка збереження файлів. Ім'я файлу: {fileName}. Помилка: {error}",
+    "errorDeletingFile": "Error sa pagtanggal ng mga file. Filename: {fileName}. Error: {error}",
     "submittingDraftErrMsg": "Під час збереження чернетки сталася помилка",
     "submittingDraftConsErrMsg": "Помилка збереження чернетки. SubmissionId: {submissionId}. Помилка: {error}",
     "formDraftAccessErrMsg": "Запитане подання вже подано, переспрямовує на сторінку перегляду",
-    "formUnauthorizedMessage": "Ви не маєте права переглядати цю форму, будь ласка, зв'яжіться з власником форми для доступу."
+    "formUnauthorizedMessage": "Ви не маєте права переглядати цю форму, будь ласка, зв'яжіться з власником форми для доступу.",
+    "fileUploadWarning": "Щоб завантажити вкладені файли, ви повинні або натиснути кнопку «Зберегти як чернетку», або надіслати форму. Якщо ви перейдете з цього екрана, ви втратите вкладені файли"
   },
   "bCGovFooter": {
     "home": "додому",
@@ -955,7 +957,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "Переглянути мої чернетки/подання",
-    "saveAsADraft": "Зберегти як чернетку",
+    "saveAsDraft": "Зберегти як чернетку",
     "editThisDraft": "Відредагуйте цю чернетку",
     "switchSingleSubmssn": "Перейти до одноразової подачі",
     "switchMultiSubmssn": "Переключитися на кілька повідомлень",
@@ -1133,6 +1135,9 @@
       "history": "ІСТОРІЯ",
       "user": "Користувач"
     }
+  },
+  "alert": {
+    "warning": "УВАГА"
   },
   "eventStreamConfig": {
     "info": "Налаштуйте потік подій для своєї форми.",

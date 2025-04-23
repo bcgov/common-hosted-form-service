@@ -875,10 +875,12 @@
     "failedResSubmissn": "Falha na resposta do endpoint de envio. Código de resposta: {status}",
     "errSubmittingForm": "Ocorreu um erro ao enviar este formulário",
     "errorSavingFile": "Erro ao salvar arquivos. Nome do arquivo: {fileName}. Erro: {error}",
+    "errorDeletingFile": "Erro ao excluir arquivos. Nome do arquivo: {fileName}. Erro: {error}",
     "submittingDraftErrMsg": "Ocorreu um erro ao salvar um rascunho",
     "submittingDraftConsErrMsg": "Erro ao salvar rascunho. SubmissãoId: {submissionId}. Erro: {error}",
     "formDraftAccessErrMsg": "O envio solicitado já foi enviado, redirecionando para a página Exibir",
-    "formUnauthorizedMessage": "Você não está autorizado a visualizar este formulário, por favor, contate o proprietário do formulário para acesso."
+    "formUnauthorizedMessage": "Você não está autorizado a visualizar este formulário, por favor, contate o proprietário do formulário para acesso.",
+    "fileUploadWarning": "Para enviar os seus anexos, deve clicar no botão 'Guardar como rascunho' ou enviar o seu formulário. Se sair deste ecrã, perderá os seus anexos"
   },
   "bCGovFooter": {
     "home": "Lar",
@@ -955,7 +957,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "Ver meus rascunhos/envios",
-    "saveAsADraft": "Salve como um rascunho",
+    "saveAsDraft": "Salve como um rascunho",
     "editThisDraft": "Editar este rascunho",
     "switchSingleSubmssn": "Alternar para envio único",
     "switchMultiSubmssn": "Mudar para vários envios",
@@ -1133,6 +1135,9 @@
       "history": "HISTÓRIA",
       "user": "Do utilizador"
     }
+  },
+  "alert": {
+    "warning": "Aviso"
   },
   "eventStreamConfig": {
     "info": "Configure o Event Stream para seu formulário.",

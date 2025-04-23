@@ -875,10 +875,12 @@
     "failedResSubmissn": "Échec de la réponse du point de terminaison de soumission. Code de réponse : {status}",
     "errSubmittingForm": "Une erreur s'est produite lors de la soumission de ce formulaire",
     "errorSavingFile": "Erreur lors de l'enregistrement des fichiers. Nom de fichier : {fileName}. Erreur : {error}",
+    "errorDeletingFile": "Erreur lors de la suppression des fichiers. Nom de fichier : {fileName}. Erreur : {error}",
     "submittingDraftErrMsg": "Une erreur s'est produite lors de l'enregistrement d'un brouillon",
     "submittingDraftConsErrMsg": "Erreur lors de l'enregistrement du brouillon. ID de soumission : {submissionId}. Erreur : {error}",
     "formDraftAccessErrMsg": "La soumission demandée est déjà soumise, redirigeant vers la page Afficher",
-    "formUnauthorizedMessage": "Vous n'êtes pas autorisé à voir ce formulaire, veuillez contacter le propriétaire du formulaire pour accéder."
+    "formUnauthorizedMessage": "Vous n'êtes pas autorisé à voir ce formulaire, veuillez contacter le propriétaire du formulaire pour accéder.",
+    "fileUploadWarning": "Pour télécharger vos pièces jointes, vous devez cliquer sur le bouton « Enregistrer comme brouillon » ou soumettre votre formulaire. Si vous quittez cet écran, vous perdrez vos pièces jointes."
   },
   "bCGovFooter": {
     "home": "Maison",
@@ -955,7 +957,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "Afficher mes brouillons/soumissions",
-    "saveAsADraft": "Enregistrer en tant que projet",
+    "saveAsDraft": "Enregistrer en tant que projet",
     "editThisDraft": "Modifier ce brouillon",
     "switchSingleSubmssn": "Passer à la soumission unique",
     "switchMultiSubmssn": "Passer à plusieurs soumissions",
@@ -1133,6 +1135,9 @@
       "history": "HISTOIRE",
       "user": "Utilisateur"
     }
+  },
+  "alert": {
+    "warning": "Avertissement"
   },
   "eventStreamConfig": {
     "info": "Configurez le flux d’événements pour votre formulaire.",

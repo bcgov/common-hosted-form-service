@@ -875,10 +875,12 @@
     "failedResSubmissn": "Respuesta fallida desde el punto final de envío. Código de respuesta: {status}",
     "errSubmittingForm": "Ocurrió un error al enviar este formulario",
     "errorSavingFile": "Error al guardar archivos. Nombre de archivo: {fileName}. Error: {error}",
+    "errorDeletingFile": "Error al eliminar archivos. Nombre de archivo: {fileName}. Error: {error}",
     "submittingDraftErrMsg": "Se produjo un error al guardar un borrador",
     "submittingDraftConsErrMsg": "Error al guardar el borrador. Id de envío: {submissionId}. Error: {error}",
     "formDraftAccessErrMsg": "El envío solicitado ya se envió, redirigiendo a la página Ver",
-    "formUnauthorizedMessage": "No tienes autorización para ver este formulario, por favor contacta al propietario del formulario para acceder."
+    "formUnauthorizedMessage": "No tienes autorización para ver este formulario, por favor contacta al propietario del formulario para acceder.",
+    "fileUploadWarning": "Para cargar sus archivos adjuntos, debe hacer clic en el botón \"Guardar como borrador\" o enviar su formulario. Si sale de esta pantalla, perderá sus archivos adjuntos."
   },
   "bCGovFooter": {
     "home": "Hogar",
@@ -955,7 +957,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "Ver mis borradores/presentaciones",
-    "saveAsADraft": "Guardar como borrador",
+    "saveAsDraft": "Guardar como borrador",
     "editThisDraft": "Editar este borrador",
     "switchSingleSubmssn": "Cambiar a envío único",
     "switchMultiSubmssn": "Cambiar a envíos múltiples",
@@ -1133,6 +1135,9 @@
       "history": "HISTORIA",
       "user": "Usuario"
     }
+  },
+  "alert": {
+    "warning": "Advertencia"
   },
   "eventStreamConfig": {
     "info": "Configure el flujo de eventos para su formulario.",

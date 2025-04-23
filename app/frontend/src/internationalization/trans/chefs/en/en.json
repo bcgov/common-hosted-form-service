@@ -968,10 +968,12 @@
     "failedResSubmissn": "Failed response from submission endpoint. Response code: {status}",
     "errSubmittingForm": "An error occurred submitting this form",
     "errorSavingFile": "Error saving files. Filename: {fileName}. Error: {error}",
+    "errorDeletingFile": "Error deleting files. Filename: {fileName}. Error: {error}",
     "submittingDraftErrMsg": "An error occurred while saving a draft",
     "submittingDraftConsErrMsg": "Error saving draft. SubmissionId: {submissionId}. Error: {error}",
     "formDraftAccessErrMsg": "Requested submission is already submitted, redirecting to View page",
-    "formUnauthorizedMessage": "You are not authorized to view this form, please contact the form owner for access."
+    "formUnauthorizedMessage": "You are not authorized to view this form, please contact the form owner for access.",
+    "fileUploadWarning": "To upload your attachments, you must either click on the 'Save as draft' button or submit your form. If you navigate away from this screen, you will lose your attachments."
   },
   "bCGovFooter": {
     "home": "Home",
@@ -1048,7 +1050,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "View My Drafts/Submissions",
-    "saveAsADraft": "Save as a Draft",
+    "saveAsDraft": "Save as Draft",
     "editThisDraft": "Edit this Draft",
     "switchSingleSubmssn": "Switch to single submission",
     "switchMultiSubmssn": "Switch to multiple submissions",
@@ -1222,5 +1224,8 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "alert": {
+    "warning": "Warning"
   }
 }

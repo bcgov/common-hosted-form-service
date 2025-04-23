@@ -875,10 +875,12 @@
     "failedResSubmissn": "Phản hồi không thành công từ điểm cuối gửi. Mã phản hồi: {status}",
     "errSubmittingForm": "Đã xảy ra lỗi khi gửi biểu mẫu này",
     "errorSavingFile": "Lỗi khi lưu tệp. Tên tệp: {fileName}. Lỗi: {error}",
+    "errorDeletingFile": "Lỗi khi xóa tệp. Tên tệp: {fileName}. Lỗi: {error}",
     "submittingDraftErrMsg": "Đã xảy ra lỗi khi lưu bản nháp",
     "submittingDraftConsErrMsg": "Lỗi khi lưu bản nháp. Đệ trìnhId: {submissionId}. Lỗi: {error}",
     "formDraftAccessErrMsg": "Yêu cầu gửi đã được gửi, chuyển hướng đến Xem trang",
-    "formUnauthorizedMessage": "Bạn không được phép xem mẫu này, vui lòng liên hệ với chủ sở hữu mẫu để được truy cập."
+    "formUnauthorizedMessage": "Bạn không được phép xem mẫu này, vui lòng liên hệ với chủ sở hữu mẫu để được truy cập.",
+    "fileUploadWarning": "Để tải lên tệp đính kèm của bạn, bạn phải nhấp vào nút 'Lưu dưới dạng bản nháp' hoặc gửi biểu mẫu của bạn. Nếu bạn thoát khỏi màn hình này, bạn sẽ mất tệp đính kèm của mình"
   },
   "bCGovFooter": {
     "home": "Trang chủ",
@@ -955,7 +957,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "Xem bản nháp/bài nộp của tôi",
-    "saveAsADraft": "Lưu dưới dạng Bản nháp",
+    "saveAsDraft": "Lưu dưới dạng Bản nháp",
     "editThisDraft": "Chỉnh sửa Bản nháp này",
     "switchSingleSubmssn": "Chuyển sang gửi một lần",
     "switchMultiSubmssn": "Chuyển sang nhiều bài nộp",
@@ -1131,6 +1133,9 @@
       "history": "LỊCH SỬ",
       "user": "Người dùng"
     }
+  },
+  "alert": {
+    "warning": "Cảnh báo"
   },
   "eventStreamConfig": {
     "info": "Cấu hình Luồng sự kiện cho biểu mẫu của bạn.",
