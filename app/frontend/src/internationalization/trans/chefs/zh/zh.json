@@ -875,10 +875,12 @@
     "failedResSubmissn": "提交端点响应失败。响应代码：{status}",
     "errSubmittingForm": "提交此表单时出错",
     "errorSavingFile": "保存文件时出错。文件名：{fileName}。错误：{error}",
+    "errorDeletingFile": "删除文件时出错。文件名：{fileName}。错误：{error}",
     "submittingDraftErrMsg": "保存草稿时出错",
     "submittingDraftConsErrMsg": "保存草稿时出错。提交 ID：{submissionId}。错误：{error}",
     "formDraftAccessErrMsg": "请求的提交已提交，正在重定向到查看页面",
-    "formUnauthorizedMessage": "您无权查看此表单，请联系表单所有者以获取访问权限。"
+    "formUnauthorizedMessage": "您无权查看此表单，请联系表单所有者以获取访问权限。",
+    "fileUploadWarning": "要上传附件，您必须点击“另存为草稿”按钮或提交表单。如果您离开此屏幕，您将丢失附件"
   },
   "bCGovFooter": {
     "home": "家",
@@ -955,7 +957,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "查看我的草稿/提交内容",
-    "saveAsADraft": "另存为草稿",
+    "saveAsDraft": "另存为草稿",
     "editThisDraft": "编辑本草稿",
     "switchSingleSubmssn": "切换到单一提交",
     "switchMultiSubmssn": "切换到多次提交",
@@ -1133,6 +1135,9 @@
       "history": "历史",
       "user": "用户"
     }
+  },
+  "alert": {
+    "warning": "警告"
   },
   "eventStreamConfig": {
     "info": "为您的表单配置事件流。",
