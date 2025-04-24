@@ -13,6 +13,7 @@ const {
   calculateDatePlus,
   calculateMiddleDate,
   DEFAULT_TIMEZONE,
+  getCurrentDate,
 } = require('../common/scheduleService');
 
 /**
@@ -24,12 +25,13 @@ const {
  */
 function getEmailReminderType(scheduleOrReport, referenceDate = null, respectTimeComponent = false) {
   // Get the current period if a schedule was provided
+  if (!scheduleOrReport || (scheduleOrReport.scheduleType !== undefined && (!scheduleOrReport.enabled || !scheduleOrReport.openSubmissionDateTime))) {
+    return undefined;
+  }
   const report = scheduleOrReport.scheduleType !== undefined ? getCurrentPeriod(scheduleOrReport, referenceDate, respectTimeComponent) : scheduleOrReport;
-
   if (!report || !report.dates) return undefined;
-
-  const now = referenceDate || new Date();
   const timezone = report.dates.timezone || DEFAULT_TIMEZONE;
+  const now = getCurrentDate(referenceDate, timezone);
   const compareTime = respectTimeComponent;
 
   // Form opens today - exact date match required
@@ -117,7 +119,7 @@ const service = {
   },
   _getReminders: async (forms) => {
     let reminder = [];
-    let toDay = moment();
+    let toDay = getCurrentDate();
     for (let i = 0; i < forms.length; i++) {
       let obj = {};
 

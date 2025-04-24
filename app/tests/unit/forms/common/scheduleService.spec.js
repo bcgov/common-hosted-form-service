@@ -148,6 +148,7 @@ describe('ScheduleService', () => {
           startDate: '2023-03-01',
           closeDate: null,
           graceDate: null,
+          timezone: 'America/Vancouver',
         },
       ]);
     });
@@ -168,6 +169,7 @@ describe('ScheduleService', () => {
           startDate: '2023-03-01',
           closeDate: '2023-03-31',
           graceDate: '2023-04-05',
+          timezone: 'America/Vancouver',
         },
       ]);
     });

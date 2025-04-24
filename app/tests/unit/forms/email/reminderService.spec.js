@@ -210,3 +210,75 @@ describe('getGracePeriodEndDate', () => {
     expect(graceDate).toEqual('2022-07-23');
   });
 });
+describe('getEmailReminderType', () => {
+  it('should return undefined for empty schedule', () => {
+    const emptySchedule = {};
+    const result = reminderService._getMailType(emptySchedule);
+    expect(result).toBeUndefined();
+  });
+
+  it('should return undefined when schedule.enabled is false', () => {
+    const disabledSchedule = {
+      enabled: false,
+      scheduleType: ScheduleType.CLOSINGDATE,
+      openSubmissionDateTime: '2022-07-10',
+      closeSubmissionDateTime: '2022-07-20',
+    };
+    const result = reminderService._getMailType(disabledSchedule);
+    expect(result).toBeUndefined();
+  });
+
+  it('should process schedule when enabled is true', () => {
+    // Create a schedule object that would trigger a reminder
+    const enabledSchedule = {
+      enabled: true,
+      scheduleType: ScheduleType.CLOSINGDATE,
+      openSubmissionDateTime: moment().format('YYYY-MM-DD'), // Today
+      closeSubmissionDateTime: moment().add(10, 'days').format('YYYY-MM-DD'),
+    };
+
+    // This should return REMINDER_FORM_OPEN since we're using today's date
+    const result = reminderService._getMailType(enabledSchedule);
+    expect(result).toBeDefined();
+  });
+});
+
+describe('_getReminders', () => {
+  it('should filter out forms with empty schedules', async () => {
+    const forms = [
+      { id: '1', name: 'Form With Schedule', schedule: { enabled: true, openSubmissionDateTime: '2022-07-10' } },
+      { id: '2', name: 'Form With Empty Schedule', schedule: {} },
+    ];
+
+    reminderService._listDates = jest.fn().mockImplementation((schedule) => {
+      // Return empty array for empty schedule, valid dates for non-empty
+      return schedule && schedule.enabled ? [{ startDate: '2022-07-10' }] : [];
+    });
+
+    const reminders = await reminderService._getReminders(forms);
+
+    // It should mark the form with empty schedule as error
+    expect(reminders.length).toBe(2);
+    expect(reminders[1].error).toBe(true);
+    expect(reminders[1].message).toContain('has no available date');
+  });
+
+  it('should filter out forms with disabled schedules', async () => {
+    const forms = [
+      { id: '1', name: 'Form With Enabled Schedule', schedule: { enabled: true, openSubmissionDateTime: '2022-07-10' } },
+      { id: '2', name: 'Form With Disabled Schedule', schedule: { enabled: false, openSubmissionDateTime: '2022-07-10' } },
+    ];
+
+    reminderService._listDates = jest.fn().mockImplementation((schedule) => {
+      // Return empty array for disabled schedule, valid dates for enabled
+      return schedule && schedule.enabled ? [{ startDate: '2022-07-10' }] : [];
+    });
+
+    const reminders = await reminderService._getReminders(forms);
+
+    // It should mark the form with disabled schedule as error
+    expect(reminders.length).toBe(2);
+    expect(reminders[1].error).toBe(true);
+    expect(reminders[1].message).toContain('has no available date');
+  });
+});

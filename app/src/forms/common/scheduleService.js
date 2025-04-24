@@ -195,6 +195,55 @@ function daysBetween(startDate, endDate, timezone = DEFAULT_TIMEZONE, ignoreTime
  */
 
 /**
+ * Check if form is before opening time
+ * @param {Object} schedule The schedule configuration
+ * @param {Object} currentMoment Current time as moment object
+ * @returns {Boolean} True if form is not yet open
+ */
+function isBeforeOpeningTime(schedule, currentMoment) {
+  const openDateTime = `${schedule.openSubmissionDateTime} ${schedule.openSubmissionTime}`;
+  const openingMoment = moment.tz(openDateTime, DATE_TIME_FORMAT, schedule.timezone);
+  return currentMoment.isBefore(openingMoment.clone().utc());
+}
+
+/**
+ * Check if the current time is after closing time
+ * @param {Object} schedule The schedule configuration
+ * @param {Object} currentMoment Current time as moment object
+ * @returns {Boolean} True if current time is after closing time
+ */
+function isAfterClosingTime(schedule, currentMoment) {
+  if (!schedule.closeSubmissionDateTime) {
+    return false;
+  }
+  const closeDateTime = `${schedule.closeSubmissionDateTime} ${schedule.closeSubmissionTime}`;
+  const closingMoment = moment.tz(closeDateTime, DATE_TIME_FORMAT, schedule.timezone);
+  return currentMoment.isAfter(closingMoment.clone().utc());
+}
+
+/**
+ * Check if current time is within grace period
+ * @param {Object} schedule The schedule configuration
+ * @param {Object} currentMoment Current time as moment object
+ * @returns {Boolean} True if within grace period
+ */
+function isWithinGracePeriod(schedule, currentMoment) {
+  if (!schedule.allowLateSubmissions || !schedule.allowLateSubmissions.enabled) {
+    return false;
+  }
+
+  const lateConfig = schedule.allowLateSubmissions.forNext;
+  if (!lateConfig || !lateConfig.term || !lateConfig.intervalType) {
+    return false;
+  }
+
+  const closeDateTime = `${schedule.closeSubmissionDateTime} ${schedule.closeSubmissionTime}`;
+  const closingMoment = moment.tz(closeDateTime, DATE_TIME_FORMAT, schedule.timezone);
+  const gracePeriodMoment = closingMoment.clone().add(lateConfig.term, lateConfig.intervalType);
+  return currentMoment.isBefore(gracePeriodMoment.utc());
+}
+
+/**
  * @function checkIsFormExpired
  * Checks if a form is expired based on its schedule settings
  * @param {Object} formSchedule - The form's schedule configuration
@@ -202,7 +251,7 @@ function daysBetween(startDate, endDate, timezone = DEFAULT_TIMEZONE, ignoreTime
  */
 const checkIsFormExpired = (formSchedule = {}) => {
   // Default result
-  let result = {
+  const result = {
     allowLateSubmissions: false,
     expire: false,
     message: '',
@@ -213,23 +262,13 @@ const checkIsFormExpired = (formSchedule = {}) => {
     return result;
   }
 
-  const currentMoment = moment.utc();
-
   // Apply defaults for missing fields
-  const defaults = {
+  const schedule = {
+    ...formSchedule,
     openSubmissionTime: formSchedule.openSubmissionTime || '00:00',
     closeSubmissionTime: formSchedule.closeSubmissionTime || (formSchedule.closeSubmissionDateTime ? '23:59' : null),
     timezone: formSchedule.timezone || DEFAULT_TIMEZONE,
   };
-  const schedule = { ...formSchedule, ...defaults };
-
-  // Opening Time
-  const openDateTime = `${schedule.openSubmissionDateTime} ${schedule.openSubmissionTime}`;
-  const openingMoment = moment.tz(openDateTime, DATE_TIME_FORMAT, schedule.timezone);
-  // Only convert to UTC if specifically needed for comparison with currentMoment
-  if (currentMoment.isBefore(openingMoment.clone().utc())) {
-    return { ...result, expire: true, message: 'This form is not yet available for submission.' };
-  }
 
   // Handle legacy PERIOD type
   if (schedule.scheduleType === 'period') {
@@ -237,38 +276,50 @@ const checkIsFormExpired = (formSchedule = {}) => {
     schedule.closeSubmissionDateTime = schedule.closeSubmissionDateTime || calculateCloseDateFromPeriod(schedule);
   }
 
-  // Closing Time
-  switch (schedule.scheduleType) {
-    case ScheduleType.MANUAL:
-      return result;
-    case ScheduleType.CLOSINGDATE: {
-      // Wrap the case logic in a block to scope const declarations
-      if (schedule.closingMessageEnabled && schedule.closingMessage) {
-        result.message = schedule.closingMessage;
-      }
-      if (!schedule.closeSubmissionDateTime) {
-        return result;
-      }
-      const closeDateTime = `${schedule.closeSubmissionDateTime} ${schedule.closeSubmissionTime}`;
-      const closingMoment = moment.tz(closeDateTime, DATE_TIME_FORMAT, schedule.timezone);
-      if (currentMoment.isAfter(closingMoment.clone().utc())) {
-        if (schedule.allowLateSubmissions && schedule.allowLateSubmissions.enabled) {
-          const lateConfig = schedule.allowLateSubmissions.forNext;
-          if (lateConfig && lateConfig.term && lateConfig.intervalType) {
-            const gracePeriodMoment = closingMoment.clone().add(lateConfig.term, lateConfig.intervalType);
-            const isWithinGracePeriod = currentMoment.isBefore(gracePeriodMoment.utc());
-            return { ...result, expire: true, allowLateSubmissions: isWithinGracePeriod };
-          }
-        }
-        return { ...result, expire: true };
-      }
-      return result;
-    }
-    default:
-      return { ...result, expire: true };
-  }
-};
+  const currentMoment = moment.utc();
 
+  // Check if form is not yet open
+  if (isBeforeOpeningTime(schedule, currentMoment)) {
+    return {
+      ...result,
+      expire: true,
+      message: 'This form is not yet available for submission.',
+    };
+  }
+
+  // Process based on schedule type
+  if (schedule.scheduleType === ScheduleType.MANUAL) {
+    return result;
+  }
+
+  if (schedule.scheduleType !== ScheduleType.CLOSINGDATE) {
+    return { ...result, expire: true };
+  }
+
+  // Handle CLOSINGDATE schedule type
+  let updatedResult = { ...result };
+
+  // Add closing message if enabled
+  if (schedule.closingMessageEnabled && schedule.closingMessage) {
+    updatedResult.message = schedule.closingMessage;
+  }
+
+  if (!schedule.closeSubmissionDateTime) {
+    return updatedResult;
+  }
+
+  // Check if past closing time
+  if (isAfterClosingTime(schedule, currentMoment)) {
+    updatedResult.expire = true;
+
+    // Check for late submissions
+    if (isWithinGracePeriod(schedule, currentMoment)) {
+      updatedResult.allowLateSubmissions = true;
+    }
+  }
+
+  return updatedResult;
+};
 /**
  * Helper function to calculate a closing date from PERIOD form settings
  * Used for backward compatibility with legacy forms
@@ -365,7 +416,7 @@ function getSubmissionPeriodDates(schedule) {
     return [];
   }
 
-  const { openDate, closeDate, graceDate } = extractScheduleDates(schedule);
+  const { openDate, closeDate, graceDate, timezone } = extractScheduleDates(schedule);
 
   if (!openDate) return [];
 
@@ -374,19 +425,17 @@ function getSubmissionPeriodDates(schedule) {
       startDate: openDate,
       closeDate: closeDate,
       graceDate: graceDate,
+      timezone: timezone,
     },
   ];
 }
 
 /**
- * Get current period information for a form based on today's date
+ * Extract date information from input
  * @param {Object|Array} datesOrSchedule The form schedule or array of period dates
- * @param {Date|String} referenceDate Optional reference date (defaults to now)
- * @param {Boolean} respectTimeComponent Whether to respect time components in dates (defaults to false)
- * @returns {Object|null} Current period information or null if not available
+ * @returns {Object} Extracted dates information
  */
-function getCurrentPeriod(datesOrSchedule, referenceDate = null, respectTimeComponent = false) {
-  // Extract dates from schedule if needed
+function extractDateInfo(datesOrSchedule) {
   let dates;
   let allowLateSubmissions = false;
   let timezone = DEFAULT_TIMEZONE;
@@ -404,60 +453,73 @@ function getCurrentPeriod(datesOrSchedule, referenceDate = null, respectTimeComp
     }
   }
 
+  return { dates, allowLateSubmissions, timezone };
+}
+
+/**
+ * Create a period result object
+ * @param {Number} state The period state
+ * @param {Number} index The period index
+ * @param {Object} datesObj The dates object
+ * @param {Number} late The late status
+ * @returns {Object} Formatted period result
+ */
+function createPeriodResult(state, index, datesObj, late) {
+  return {
+    state,
+    index,
+    dates: datesObj,
+    old_dates: null,
+    late,
+  };
+}
+
+/**
+ * Get current period information for a form based on today's date
+ * @param {Object|Array} datesOrSchedule The form schedule or array of period dates
+ * @param {Date|String} referenceDate Optional reference date (defaults to now)
+ * @param {Boolean} respectTimeComponent Whether to respect time components in dates (defaults to false)
+ * @returns {Object|null} Current period information or null if not available
+ */
+function getCurrentPeriod(datesOrSchedule, referenceDate = null, respectTimeComponent = false) {
+  // Extract dates info
+  const { dates, allowLateSubmissions, timezone } = extractDateInfo(datesOrSchedule);
+
   // No dates, return null
   if (!dates || dates.length === 0) return null;
 
-  const { openDate, closeDate, graceDate } =
+  // Get period dates
+  const dateProps =
     dates[0].scheduleType !== undefined
       ? extractScheduleDates(dates[0])
       : {
           openDate: dates[0].startDate,
           closeDate: dates[0].closeDate,
           graceDate: dates[0].graceDate,
+          timezone: dates[0].timezone || DEFAULT_TIMEZONE,
         };
+
+  const { openDate, closeDate, graceDate } = dateProps;
 
   // Manual schedule type (no closing date)
   if (!closeDate) {
-    return {
-      state: 1,
-      index: 0,
-      dates: dates[0],
-      old_dates: null,
-      late: 0,
-    };
+    return createPeriodResult(1, 0, dates[0], 0);
   }
 
-  // Today's date
+  // Today's date and time settings
   const today = referenceDate || new Date();
   const ignoreTime = !respectTimeComponent;
-
-  // End date is grace date if late submissions allowed, otherwise close date
   const endDate = allowLateSubmissions && graceDate ? graceDate : closeDate;
 
   // Check if today is within period
   if (isDateInRange(today, openDate, endDate, timezone, ignoreTime)) {
-    // Check if in late submission period
     const isLate = allowLateSubmissions && closeDate && !isDateInRange(today, openDate, closeDate, timezone, ignoreTime);
-
-    return {
-      state: 1,
-      index: 0,
-      dates: dates[0],
-      old_dates: null,
-      late: isLate ? 1 : 0,
-    };
+    return createPeriodResult(1, 0, dates[0], isLate ? 1 : 0);
   }
 
   // Not in period, determine if before or after
   const isBeforePeriod = isDateInFuture(openDate, timezone, today, ignoreTime);
-
-  return {
-    state: isBeforePeriod ? -1 : 0,
-    index: -1,
-    dates: dates[0], // Return the period as a reference
-    old_dates: null,
-    late: -1,
-  };
+  return createPeriodResult(isBeforePeriod ? -1 : 0, -1, dates[0], -1);
 }
 
 // Export all functions grouped by feature area
