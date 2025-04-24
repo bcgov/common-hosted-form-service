@@ -1,0 +1,12 @@
+apiVersion: v2
+name: clamav
+description: Chart for deploying a Clam AV on kubernetes
+type: application
+version: 1.0.0
+appVersion: 1.0.5
+keywords:
+  - clamav
+maintainers:
+  - name: BC Gov
+    url: https://github.com/bcgov/clamav
+kubeVersion: ">= 1.18.0"

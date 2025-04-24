@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "clamav.fullname" . }}-network-policy
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "clamav.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "clamav.selectorLabels" . | nindent 6 }}
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              role: {{ .Values.nsp.role }}
+          namespaceSelector:
+            matchLabels:
+              environment: {{ .Values.nsp.environment }}
+              name: {{ .Values.nsp.name }}
+  policyTypes:
+    - Ingress
