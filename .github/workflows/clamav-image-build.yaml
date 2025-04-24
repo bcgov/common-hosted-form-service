@@ -17,8 +17,6 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-
-    using: composite
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -35,7 +33,7 @@ jobs:
             git fetch origin ${{ inputs.ref }}
             echo "SHA=sha-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
             echo "IMAGE_REVISION=$(git rev-parse HEAD)" >> $GITHUB_ENV
-            echo "IMAGE_VERSION=pr-${{ inputs.pr_number }}" >> $GITHUB_ENV
+            echo "IMAGE_VERSION=ref-${{ inputs.ref }}" >> $GITHUB_ENV
           fi
 
       - name: Parse Input Values
@@ -64,7 +62,18 @@ jobs:
             type=raw,value=${{ env.IMAGE_VERSION }}
             type=raw,value=${{ env.SHA }}
           labels: |
+            org.opencontainers.image.description=Clam AV for CHEFS
+            org.opencontainers.image.licenses=Apache-2.0
             org.opencontainers.image.revision=${{ env.IMAGE_REVISION }}
+            org.opencontainers.image.source=https://github.com/bcgov/common-hosted-form-service/clamav
+            org.opencontainers.image.title=${{ inputs.image_name }}
+            org.opencontainers.image.version=${{ env.IMAGE_VERSION }}
+          annotations: |
+            org.opencontainers.image.description=Clam AV for CHEFS
+            org.opencontainers.image.licenses=Apache-2.0
+            org.opencontainers.image.revision=${{ env.IMAGE_REVISION }}
+            org.opencontainers.image.source=https://github.com/bcgov/common-hosted-form-service/clamav
+            org.opencontainers.image.title=${{ inputs.image_name }}
             org.opencontainers.image.version=${{ env.IMAGE_VERSION }}
 
       - name: Build and Push to Container Registry
@@ -80,3 +89,5 @@ jobs:
         shell: bash
         run: |
           docker image inspect ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:latest
+          docker image inspect ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:sha-$(git rev-parse --short HEAD)
+          docker image inspect ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:ref-${{ inputs.ref }}
