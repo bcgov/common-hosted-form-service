@@ -63,10 +63,10 @@ describe('ScheduleService', () => {
         enabled: false,
       },
       openSubmissionDateTime: yesterday,
-      openSubmissionTime: '00:00', // Add explicit times
+      openSubmissionTime: '00:00',
       closeSubmissionDateTime: tomorrow,
-      closeSubmissionTime: '23:59', // Add explicit times
-      timezone: 'UTC', // Use UTC to avoid timezone issues
+      closeSubmissionTime: '23:59',
+      timezone: 'UTC',
     });
 
     expect(result).toEqual({
@@ -85,7 +85,7 @@ describe('ScheduleService', () => {
       openSubmissionTime: '00:00',
       closeSubmissionDateTime: '2025-03-31',
       closeSubmissionTime: '23:59',
-      timezone: 'UTC', // Use UTC for consistency
+      timezone: 'UTC',
     };
 
     // Use a reference time that's clearly after the closing date in UTC
@@ -103,7 +103,6 @@ describe('ScheduleService', () => {
     const realNow = moment.now;
 
     try {
-      // Mock moment.now() to return April 2, 2025 at 12:00 UTC
       moment.now = () => new Date('2025-04-02T12:00:00Z').getTime();
 
       const formSchedule = {
@@ -289,8 +288,161 @@ describe('ScheduleService', () => {
       const expiredResult = scheduleService.checkIsFormExpired(schedule);
       expect(expiredResult.expire).toBe(true);
     } finally {
-      // Restore the original moment.now function
       moment.now = realNow;
     }
+  });
+
+  describe('daysBetween', () => {
+    it('should return 0 for invalid or missing dates', () => {
+      expect(scheduleService.daysBetween(null, '2023-06-15', 'UTC')).toBe(0);
+      expect(scheduleService.daysBetween('2023-06-15', null, 'UTC')).toBe(0);
+      expect(scheduleService.daysBetween(null, null, 'UTC')).toBe(0);
+    });
+
+    it('should calculate days between two dates ignoring time', () => {
+      expect(scheduleService.daysBetween('2023-06-15', '2023-06-20', 'UTC')).toBe(5);
+      expect(scheduleService.daysBetween('2023-06-15T12:00:00', '2023-06-15T23:59:59', 'UTC', true)).toBe(0);
+    });
+
+    it('should calculate days with time component', () => {
+      expect(scheduleService.daysBetween('2023-06-15T00:00:00', '2023-06-16T00:00:00', 'UTC', false)).toBe(1);
+    });
+  });
+
+  describe('isSameDay', () => {
+    it('should return false for invalid or missing dates', () => {
+      expect(scheduleService.isSameDay(null, '2023-06-15', 'UTC')).toBe(false);
+      expect(scheduleService.isSameDay('2023-06-15', null, 'UTC')).toBe(false);
+    });
+
+    it('should compare same day ignoring time', () => {
+      expect(scheduleService.isSameDay('2023-06-15T12:00:00', '2023-06-15T23:59:59', 'UTC', false)).toBe(true);
+      expect(scheduleService.isSameDay('2023-06-15', '2023-06-16', 'UTC', false)).toBe(false);
+    });
+
+    it('should compare exact time when requested', () => {
+      expect(scheduleService.isSameDay('2023-06-15T12:00:00', '2023-06-15T12:00:00', 'UTC', true)).toBe(true);
+      expect(scheduleService.isSameDay('2023-06-15T12:00:00', '2023-06-15T12:01:00', 'UTC', true)).toBe(false);
+    });
+  });
+
+  describe('isDateValid', () => {
+    it('should validate dates correctly', () => {
+      expect(scheduleService.isDateValid('2023-06-15')).toBe(true);
+      expect(scheduleService.isDateValid('invalid-date')).toBe(false);
+      expect(scheduleService.isDateValid(null)).toBe(false);
+    });
+  });
+
+  describe('checkIsFormExpired additional cases', () => {
+    it('should handle legacy period schedule type', () => {
+      const schedule = {
+        enabled: true,
+        scheduleType: 'period',
+        openSubmissionDateTime: '2023-06-15',
+        keepOpenForTerm: 7,
+        keepOpenForInterval: 'days',
+        timezone: 'UTC',
+      };
+      const realNow = moment.now;
+      try {
+        moment.now = () => new Date('2023-06-20T12:00:00Z').getTime();
+        expect(scheduleService.checkIsFormExpired(schedule)).toEqual({
+          allowLateSubmissions: false,
+          expire: false,
+          message: '',
+        });
+      } finally {
+        moment.now = realNow;
+      }
+    });
+
+    it('should handle missing allowLateSubmissions in grace period', () => {
+      const schedule = {
+        enabled: true,
+        scheduleType: ScheduleType.CLOSINGDATE,
+        openSubmissionDateTime: '2023-06-15',
+        openSubmissionTime: '00:00',
+        closeSubmissionDateTime: '2023-06-20',
+        closeSubmissionTime: '23:59',
+        timezone: 'UTC',
+      };
+      const realNow = moment.now;
+      try {
+        moment.now = () => new Date('2023-06-21T12:00:00Z').getTime();
+        expect(scheduleService.checkIsFormExpired(schedule)).toEqual({
+          allowLateSubmissions: false,
+          expire: true,
+          message: '',
+        });
+      } finally {
+        moment.now = realNow;
+      }
+    });
+
+    it('should handle invalid schedule type', () => {
+      const schedule = {
+        enabled: true,
+        scheduleType: 'INVALID',
+        openSubmissionDateTime: '2023-06-15',
+        timezone: 'UTC',
+      };
+      expect(scheduleService.checkIsFormExpired(schedule)).toEqual({
+        allowLateSubmissions: false,
+        expire: true,
+        message: '',
+      });
+    });
+  });
+
+  describe('calculateCloseDateFromPeriod', () => {
+    it('should return null for invalid schedule', () => {
+      expect(scheduleService.calculateCloseDateFromPeriod({})).toBeNull();
+    });
+
+    it('should calculate default 7-day close date', () => {
+      const schedule = { openSubmissionDateTime: '2023-06-15' };
+      expect(scheduleService.calculateCloseDateFromPeriod(schedule)).toBe('2023-06-22');
+    });
+
+    it('should calculate close date with keepOpenForTerm', () => {
+      const schedule = {
+        openSubmissionDateTime: '2023-06-15',
+        keepOpenForTerm: 10,
+        keepOpenForInterval: 'days',
+      };
+      expect(scheduleService.calculateCloseDateFromPeriod(schedule)).toBe('2023-06-25');
+    });
+  });
+
+  describe('isWithinGracePeriod', () => {
+    it('should return false for disabled late submissions', () => {
+      const schedule = {
+        allowLateSubmissions: { enabled: false },
+        closeSubmissionDateTime: '2023-06-20',
+        closeSubmissionTime: '23:59',
+        timezone: 'UTC',
+      };
+      const currentMoment = moment.utc('2023-06-21T12:00:00');
+      expect(scheduleService.isWithinGracePeriod(schedule, currentMoment)).toBe(false);
+    });
+
+    it('should return false for missing late submission config', () => {
+      const schedule = {
+        allowLateSubmissions: { enabled: true },
+        closeSubmissionDateTime: '2023-06-20',
+        closeSubmissionTime: '23:59',
+        timezone: 'UTC',
+      };
+      const currentMoment = moment.utc('2023-06-21T12:00:00');
+      expect(scheduleService.isWithinGracePeriod(schedule, currentMoment)).toBe(false);
+    });
+  });
+
+  describe('calculateMiddleDate additional cases', () => {
+    it('should return null for invalid dates', () => {
+      expect(scheduleService.calculateMiddleDate(null, '2023-06-15', 'UTC')).toBeNull();
+      expect(scheduleService.calculateMiddleDate('2023-06-15', null, 'UTC')).toBeNull();
+    });
   });
 });

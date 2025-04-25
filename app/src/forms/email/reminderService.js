@@ -13,7 +13,7 @@ const {
   calculateDatePlus,
   calculateMiddleDate,
   DEFAULT_TIMEZONE,
-  getCurrentDate,
+  getDateWithTimezone,
 } = require('../common/scheduleService');
 
 /**
@@ -31,7 +31,7 @@ function getEmailReminderType(scheduleOrReport, referenceDate = null, respectTim
   const report = scheduleOrReport.scheduleType !== undefined ? getCurrentPeriod(scheduleOrReport, referenceDate, respectTimeComponent) : scheduleOrReport;
   if (!report || !report.dates) return undefined;
   const timezone = report.dates.timezone || DEFAULT_TIMEZONE;
-  const now = getCurrentDate(referenceDate, timezone);
+  const now = getDateWithTimezone(referenceDate, timezone);
   const compareTime = respectTimeComponent;
 
   // Form opens today - exact date match required

@@ -19,7 +19,7 @@ const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm';
  * @param {String} timezone The timezone to use
  * @returns {Object} Moment object for the current date
  */
-function getCurrentDate(referenceDate = null, timezone = DEFAULT_TIMEZONE) {
+function getDateWithTimezone(referenceDate = null, timezone = DEFAULT_TIMEZONE) {
   return referenceDate ? moment.tz(referenceDate, timezone) : moment().tz(timezone);
 }
 
@@ -35,8 +35,8 @@ function isDateInFuture(date, timezone = DEFAULT_TIMEZONE, referenceDate = null,
   if (!date) return false;
 
   // Parse dates with timezone
-  let targetDate = getCurrentDate(date, timezone);
-  let now = getCurrentDate(referenceDate, timezone);
+  let targetDate = getDateWithTimezone(date, timezone);
+  let now = getDateWithTimezone(referenceDate, timezone);
 
   // Optionally ignore time component
   if (ignoreTime) {
@@ -60,8 +60,8 @@ function isDateInRange(date, startDate, endDate, timezone = DEFAULT_TIMEZONE, ig
   if (!date || !startDate) return false;
 
   // Parse dates with timezone
-  let targetDate = getCurrentDate(date, timezone);
-  let start = getCurrentDate(startDate, timezone);
+  let targetDate = getDateWithTimezone(date, timezone);
+  let start = getDateWithTimezone(startDate, timezone);
 
   // Optionally ignore time component
   if (ignoreTime) {
@@ -75,7 +75,7 @@ function isDateInRange(date, startDate, endDate, timezone = DEFAULT_TIMEZONE, ig
   }
 
   // Check if date is between start and end
-  let end = getCurrentDate(endDate, timezone);
+  let end = getDateWithTimezone(endDate, timezone);
   if (ignoreTime) {
     end = end.startOf('day');
   }
@@ -96,7 +96,7 @@ function isDateInRange(date, startDate, endDate, timezone = DEFAULT_TIMEZONE, ig
 function calculateDatePlus(baseDate, value, unit, timezone = DEFAULT_TIMEZONE, format = DATE_FORMAT, ignoreTime = true) {
   if (!baseDate || value === undefined || unit === undefined) return null;
 
-  const date = getCurrentDate(baseDate, timezone);
+  const date = getDateWithTimezone(baseDate, timezone);
   if (ignoreTime) {
     date.startOf('day');
   }
@@ -117,8 +117,8 @@ function calculateDatePlus(baseDate, value, unit, timezone = DEFAULT_TIMEZONE, f
 function calculateMiddleDate(startDate, endDate, timezone = DEFAULT_TIMEZONE, format = null, ignoreTime = true) {
   if (!startDate || !endDate) return null;
 
-  let start = getCurrentDate(startDate, timezone);
-  let end = getCurrentDate(endDate, timezone);
+  let start = getDateWithTimezone(startDate, timezone);
+  let end = getDateWithTimezone(endDate, timezone);
 
   if (ignoreTime) {
     start = start.startOf('day');
@@ -142,7 +142,7 @@ function calculateMiddleDate(startDate, endDate, timezone = DEFAULT_TIMEZONE, fo
  * @returns {Boolean} True if the date is valid
  */
 function isDateValid(date) {
-  return date && !isNaN(Date.parse(date));
+  return date != null && !isNaN(Date.parse(date));
 }
 
 /**
@@ -156,8 +156,8 @@ function isDateValid(date) {
 function isSameDay(date1, date2, timezone = DEFAULT_TIMEZONE, compareTime = false) {
   if (!date1 || !date2) return false;
 
-  const d1 = getCurrentDate(date1, timezone);
-  const d2 = getCurrentDate(date2, timezone);
+  const d1 = getDateWithTimezone(date1, timezone);
+  const d2 = getDateWithTimezone(date2, timezone);
 
   if (compareTime) {
     return d1.isSame(d2);
@@ -177,8 +177,8 @@ function isSameDay(date1, date2, timezone = DEFAULT_TIMEZONE, compareTime = fals
 function daysBetween(startDate, endDate, timezone = DEFAULT_TIMEZONE, ignoreTime = true) {
   if (!startDate || !endDate) return 0;
 
-  let start = getCurrentDate(startDate, timezone);
-  let end = getCurrentDate(endDate, timezone);
+  let start = getDateWithTimezone(startDate, timezone);
+  let end = getDateWithTimezone(endDate, timezone);
 
   if (ignoreTime) {
     start = start.startOf('day');
@@ -509,7 +509,7 @@ module.exports = {
   DATE_TIME_FORMAT,
 
   // Core date utilities (used everywhere)
-  getCurrentDate,
+  getDateWithTimezone,
   isDateInFuture,
   isDateInRange,
   calculateDatePlus,
@@ -520,6 +520,8 @@ module.exports = {
 
   // Form submission related
   checkIsFormExpired,
+  calculateCloseDateFromPeriod,
+  isWithinGracePeriod,
 
   // Form structure and validation
   extractScheduleDates,
