@@ -257,13 +257,7 @@ describe('Form Designer', () => {
         // for print option verification
         cy.get(':nth-child(2) > .d-print-none > :nth-child(1) > .v-btn').should('be.visible');
         cy.get('.mdi-printer').should('be.visible');
-        cy.get('.mdi-content-save').should('be.visible');
-        cy.waitForLoad();
-
-        cy.waitForLoad();
-        cy.waitForLoad();
-        cy.waitForLoad();
-        cy.waitForLoad();
+        cy.get('.ml-auto > :nth-child(3) > .v-btn').should('be.visible');
         cy.waitForLoad();
         cy.waitForLoad();
         cy.get('input[type="radio"]').click();
@@ -286,16 +280,19 @@ describe('Form Designer', () => {
         let fileUploadInputField = cy.get('input[type=file]');
         cy.get('input[type=file]').should('not.to.be.null');
         fileUploadInputField.attachFile('add1.png');
+        cy.get('.ml-auto > :nth-child(3) > .v-btn').click();
         cy.waitForLoad();
         cy.waitForLoad();
         //verify file uploads to object storage
 
         cy.get('.col-md-9 > a').should('have.attr', 'ref').and('include', 'fileLink');
         cy.get('div.col-md-2').contains('61.48 kB');
-
+        //Close the upload warning message
+        cy.get('.v-alert__close > .v-btn').click();
+        cy.waitForLoad();
         //form submission
         cy.get('button').contains('Submit').click();
-        cy.waitForLoad();
+        cy.wait(2000);
         cy.get('button').contains('Submit').click();
        // verify the components after submission
         cy.get('span').contains('Canadian').should('be.visible');
