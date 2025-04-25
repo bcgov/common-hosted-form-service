@@ -77,3 +77,20 @@ services:
     command: sh
     networks:
       - nats
+
+  clamav:
+    image: ghcr.io/bcgov/chefs-clamav:latest
+    container_name: chefs-clamav
+    restart: always
+    ports:
+      - "3310:3310"
+    environment:
+      CLAMAV_NO_CLAMD: "yes"
+      CLAMAV_NO_MILTERD: "true"
+    healthcheck:
+      test: ["CMD", "/opt/app-root/clamdcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - ./config/freshclam.conf:/usr/local/etc/freshclam.conf
