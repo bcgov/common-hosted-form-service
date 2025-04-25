@@ -14,7 +14,7 @@ service:
 
 clamav:
   # clamav.image -- The clamav docker image
-  image: ghcr.io/bcgov/clamav
+  image: ghcr.io/bcgov/chefs-clamav
   # clamav.version -- The clamav docker image version - defaults to .Chart.appVersion
   tag: latest
   # clamav.imagePullPolicy -- IfNotPresent
