@@ -1,7 +1,7 @@
 const Problem = require('api-problem');
 const { ref } = require('objection');
 const uuid = require('uuid');
-const { EmailTypes } = require('../common/constants');
+const { EmailTypes, ScheduleType } = require('../common/constants');
 const eventService = require('../event/eventService');
 const moment = require('moment');
 const {
@@ -23,14 +23,108 @@ const {
   FormComponentsProactiveHelp,
   FormSubscription,
 } = require('../common/models');
-const { falsey, queryUtils, checkIsFormExpired, validateScheduleObject, typeUtils } = require('../common/utils');
+const { falsey, queryUtils, typeUtils } = require('../common/utils');
+const { checkIsFormExpired, isDateValid } = require('../common/scheduleService');
 const { Permissions, Roles, Statuses } = require('../common/constants');
 const formMetadataService = require('./formMetadata/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
 const eventStreamConfigService = require('./eventStreamConfig/service');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER, Roles.SUBMISSION_APPROVER];
 
+/**
+ * Validate a form schedule object
+ * @param {Object} schedule The schedule object to validate
+ * @returns {Object} Validation result {message, status}
+ */
+function validateScheduleObject(schedule = {}) {
+  // If scheduling is not enabled, return success
+  if (!schedule.enabled) {
+    return { message: '', status: 'success' };
+  }
+
+  // Validate opening date
+  if (!isDateValid(schedule.openSubmissionDateTime)) {
+    return {
+      message: 'Invalid open submission date.',
+      status: 'error',
+    };
+  }
+
+  // Validate based on schedule type
+  if (schedule.scheduleType === ScheduleType.CLOSINGDATE) {
+    // Validate closing date
+    if (!isDateValid(schedule.closeSubmissionDateTime)) {
+      return {
+        message: 'Invalid closed submission date.',
+        status: 'error',
+      };
+    }
+
+    // Validate late submissions
+    if (!isLateSubmissionConfigValid(schedule)) {
+      return {
+        message: 'Invalid late submission data.',
+        status: 'error',
+      };
+    }
+
+    // Validate closing message
+    if (!isClosingMessageValid(schedule)) {
+      return {
+        message: 'Invalid closing message.',
+        status: 'error',
+      };
+    }
+  } else if (schedule.scheduleType !== ScheduleType.MANUAL) {
+    // Invalid schedule type
+    return {
+      message: 'Invalid schedule type.',
+      status: 'error',
+    };
+  }
+
+  return { message: '', status: 'success' };
+}
+
+/**
+ * Validate late submission configuration
+ * @param {Object} schedule Form schedule object
+ * @returns {Boolean} True if late submission config is valid
+ */
+function isLateSubmissionConfigValid(schedule) {
+  const lateSubmissionsEnabled = schedule && schedule.allowLateSubmissions && schedule.allowLateSubmissions.enabled;
+
+  if (lateSubmissionsEnabled) {
+    const hasValidTerm = schedule.allowLateSubmissions.forNext && schedule.allowLateSubmissions.forNext.term;
+
+    const hasValidInterval = schedule.allowLateSubmissions.forNext && schedule.allowLateSubmissions.forNext.intervalType;
+
+    if (!hasValidTerm || !hasValidInterval) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Validate closing message configuration
+ * @param {Object} schedule Form schedule object
+ * @returns {Boolean} True if closing message is valid
+ */
+function isClosingMessageValid(schedule) {
+  if (schedule.closingMessageEnabled) {
+    return !!schedule.closingMessage;
+  }
+  return true;
+}
+
 const service = {
+  // Form schedule validation functions moved from scheduleService
+  validateScheduleObject,
+  isLateSubmissionConfigValid,
+  isClosingMessageValid,
+
   _findFileIds: (schema, data) => {
     const findFiles = (currentData) => {
       let fileIds = [];
@@ -69,7 +163,7 @@ const service = {
 
   createForm: async (data, currentUser) => {
     let trx;
-    const scheduleData = validateScheduleObject(data.schedule);
+    const scheduleData = service.validateScheduleObject(data.schedule);
     if (scheduleData.status !== 'success') {
       throw new Problem(422, `${scheduleData.message}`);
     }
@@ -154,7 +248,7 @@ const service = {
       const obj = await service.readForm(formId);
       trx = await Form.startTransaction();
       // do not update the active flag, that should be done via DELETE
-      const scheduleData = validateScheduleObject(data.schedule);
+      const scheduleData = service.validateScheduleObject(data.schedule);
       if (scheduleData.status !== 'success') {
         throw new Problem(422, `${scheduleData.message}`);
       }
