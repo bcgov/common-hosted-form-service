@@ -229,16 +229,14 @@ describe('getEmailReminderType', () => {
   });
 
   it('should process schedule when enabled is true', () => {
-    // Create a schedule object that would trigger a reminder
+    const today = moment.tz('2025-04-24', 'America/Vancouver');
     const enabledSchedule = {
       enabled: true,
       scheduleType: ScheduleType.CLOSINGDATE,
-      openSubmissionDateTime: moment().format('YYYY-MM-DD'), // Today
-      closeSubmissionDateTime: moment().add(10, 'days').format('YYYY-MM-DD'),
+      openSubmissionDateTime: today.format('YYYY-MM-DD'),
+      closeSubmissionDateTime: today.clone().add(10, 'days').format('YYYY-MM-DD'),
     };
-
-    // This should return REMINDER_FORM_OPEN since we're using today's date
-    const result = reminderService._getMailType(enabledSchedule);
+    const result = reminderService._getMailType(enabledSchedule, today);
     expect(result).toBeDefined();
   });
 });

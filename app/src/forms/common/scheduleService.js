@@ -35,7 +35,7 @@ function isDateInFuture(date, timezone = DEFAULT_TIMEZONE, referenceDate = null,
   if (!date) return false;
 
   // Parse dates with timezone
-  let targetDate = moment.tz(date, timezone);
+  let targetDate = getCurrentDate(date, timezone);
   let now = getCurrentDate(referenceDate, timezone);
 
   // Optionally ignore time component
@@ -60,8 +60,8 @@ function isDateInRange(date, startDate, endDate, timezone = DEFAULT_TIMEZONE, ig
   if (!date || !startDate) return false;
 
   // Parse dates with timezone
-  let targetDate = moment.tz(date, timezone);
-  let start = moment.tz(startDate, timezone);
+  let targetDate = getCurrentDate(date, timezone);
+  let start = getCurrentDate(startDate, timezone);
 
   // Optionally ignore time component
   if (ignoreTime) {
@@ -75,7 +75,7 @@ function isDateInRange(date, startDate, endDate, timezone = DEFAULT_TIMEZONE, ig
   }
 
   // Check if date is between start and end
-  let end = moment.tz(endDate, timezone);
+  let end = getCurrentDate(endDate, timezone);
   if (ignoreTime) {
     end = end.startOf('day');
   }
@@ -96,7 +96,7 @@ function isDateInRange(date, startDate, endDate, timezone = DEFAULT_TIMEZONE, ig
 function calculateDatePlus(baseDate, value, unit, timezone = DEFAULT_TIMEZONE, format = DATE_FORMAT, ignoreTime = true) {
   if (!baseDate || value === undefined || unit === undefined) return null;
 
-  const date = moment.tz(baseDate, timezone);
+  const date = getCurrentDate(baseDate, timezone);
   if (ignoreTime) {
     date.startOf('day');
   }
@@ -117,8 +117,8 @@ function calculateDatePlus(baseDate, value, unit, timezone = DEFAULT_TIMEZONE, f
 function calculateMiddleDate(startDate, endDate, timezone = DEFAULT_TIMEZONE, format = null, ignoreTime = true) {
   if (!startDate || !endDate) return null;
 
-  let start = moment.tz(startDate, timezone);
-  let end = moment.tz(endDate, timezone);
+  let start = getCurrentDate(startDate, timezone);
+  let end = getCurrentDate(endDate, timezone);
 
   if (ignoreTime) {
     start = start.startOf('day');
@@ -156,8 +156,8 @@ function isDateValid(date) {
 function isSameDay(date1, date2, timezone = DEFAULT_TIMEZONE, compareTime = false) {
   if (!date1 || !date2) return false;
 
-  const d1 = moment.tz(date1, timezone);
-  const d2 = moment.tz(date2, timezone);
+  const d1 = getCurrentDate(date1, timezone);
+  const d2 = getCurrentDate(date2, timezone);
 
   if (compareTime) {
     return d1.isSame(d2);
@@ -177,8 +177,8 @@ function isSameDay(date1, date2, timezone = DEFAULT_TIMEZONE, compareTime = fals
 function daysBetween(startDate, endDate, timezone = DEFAULT_TIMEZONE, ignoreTime = true) {
   if (!startDate || !endDate) return 0;
 
-  let start = moment.tz(startDate, timezone);
-  let end = moment.tz(endDate, timezone);
+  let start = getCurrentDate(startDate, timezone);
+  let end = getCurrentDate(endDate, timezone);
 
   if (ignoreTime) {
     start = start.startOf('day');
@@ -340,27 +340,6 @@ const calculateCloseDateFromPeriod = (formSchedule) => {
 
   // Otherwise default to 7 days from open date
   return openDate.clone().add(7, 'days').format(DATE_FORMAT);
-};
-
-/**
- * @function isEligibleLateSubmission
- * Check if the current date is between the close date and grace period end date
- *
- * @param {Object|String} date A Moment JS date or date string
- * @param {Integer|String} term Number of days/weeks/months for late submissions
- * @param {String} interval The interval type ('days', 'weeks', 'months', etc.)
- * @returns {Boolean} True if form is available for late submission
- */
-const isEligibleLateSubmission = (date, term, interval) => {
-  if (!date || !term || !interval) {
-    return false;
-  }
-
-  const closeDate = moment(date);
-  const gracePeriodDate = closeDate.clone().add(term, interval);
-  const currentMoment = moment();
-
-  return currentMoment.isAfter(closeDate) && currentMoment.isBefore(gracePeriodDate);
 };
 
 /**
@@ -541,7 +520,6 @@ module.exports = {
 
   // Form submission related
   checkIsFormExpired,
-  isEligibleLateSubmission,
 
   // Form structure and validation
   extractScheduleDates,

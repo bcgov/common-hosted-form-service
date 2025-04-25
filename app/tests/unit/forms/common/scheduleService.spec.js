@@ -131,6 +131,95 @@ describe('ScheduleService', () => {
     }
   });
 
+  // Critical date calculations
+  it('isDateInRange should accurately determine if a date is within range across timezone boundaries', () => {
+    // Using the entire day as the range
+    const startDate = '2023-06-15T00:00:00';
+    const endDate = '2023-06-15T23:59:59';
+
+    // A time that's within the day in Vancouver
+    const vancouverDate = '2023-06-15T08:00:00';
+
+    // In Vancouver timezone, this should be in range
+    expect(scheduleService.isDateInRange(vancouverDate, startDate, endDate, 'America/Vancouver', false)).toBe(true);
+
+    // A time that would be the next day in Tokyo
+    const tokyoLocalTime = '2023-06-16T00:30:00';
+
+    // In Tokyo timezone, this should be outside range (it's the next day)
+    expect(scheduleService.isDateInRange(tokyoLocalTime, startDate, endDate, 'Asia/Tokyo', false)).toBe(false);
+  });
+
+  it('getCurrentPeriod should properly handle date comparisons with timezone awareness', () => {
+    // Create a schedule with a specific timezone
+    const schedule = {
+      scheduleType: ScheduleType.CLOSINGDATE,
+      enabled: true,
+      openSubmissionDateTime: '2023-06-15',
+      closeSubmissionDateTime: '2023-06-20',
+      timezone: 'Europe/London',
+    };
+
+    const beforeOpeningDate = moment.tz('2023-06-14T12:00:00', 'Europe/London');
+
+    // Test period state correctly identifies before/during/after
+    const beforePeriod = scheduleService.getCurrentPeriod(schedule, beforeOpeningDate, true);
+    expect(beforePeriod.state).toBe(-1); // Before period
+
+    const duringPeriod = scheduleService.getCurrentPeriod(schedule, '2023-06-17', false);
+    expect(duringPeriod.state).toBe(1); // During period
+
+    const afterPeriod = scheduleService.getCurrentPeriod(schedule, '2023-06-21', false);
+    expect(afterPeriod.state).toBe(0); // After period
+  });
+
+  it('should handle late submission grace periods correctly', () => {
+    // Create a schedule with late submissions enabled
+    const schedule = {
+      scheduleType: ScheduleType.CLOSINGDATE,
+      enabled: true,
+      openSubmissionDateTime: '2023-06-15',
+      closeSubmissionDateTime: '2023-06-20',
+      allowLateSubmissions: {
+        enabled: true,
+        forNext: {
+          term: 2,
+          intervalType: 'days',
+        },
+      },
+      timezone: 'UTC',
+    };
+
+    // Test with a date during the grace period
+    const gracePeriodDate = '2023-06-21';
+    const period = scheduleService.getCurrentPeriod(schedule, gracePeriodDate, false);
+
+    // Should be active but in late submission mode
+    expect(period.state).toBe(1);
+    expect(period.late).toBe(1);
+
+    // Test after grace period has ended
+    const afterGracePeriod = '2023-06-23';
+    const expiredPeriod = scheduleService.getCurrentPeriod(schedule, afterGracePeriod, false);
+
+    // Should be inactive
+    expect(expiredPeriod.state).toBe(0);
+  });
+
+  it('middle date calculation should be correct for various period lengths', () => {
+    // Short period (5 days) - should return null
+    expect(scheduleService.calculateMiddleDate('2023-06-01', '2023-06-05', 'UTC')).toBeNull();
+
+    // Medium period (10 days) - should return day 5
+    const mediumResult = scheduleService.calculateMiddleDate('2023-06-01', '2023-06-10', 'UTC', 'YYYY-MM-DD');
+    expect(mediumResult).toBe('2023-06-05');
+
+    // Long period (30 days) - should return day 15
+    const longResult = scheduleService.calculateMiddleDate('2023-06-01', '2023-06-30', 'UTC', 'YYYY-MM-DD');
+    expect(longResult).toBe('2023-06-15');
+  });
+
+  // Period dates extraction
   describe('getSubmissionPeriodDates', () => {
     it('returns empty array for disabled or invalid schedule', () => {
       expect(scheduleService.getSubmissionPeriodDates()).toEqual([]);
@@ -173,5 +262,35 @@ describe('ScheduleService', () => {
         },
       ]);
     });
+  });
+  it('should handle submissions at timezone boundaries correctly', () => {
+    // Create a schedule that closes at midnight
+    const schedule = {
+      enabled: true,
+      scheduleType: ScheduleType.CLOSINGDATE,
+      openSubmissionDateTime: '2023-08-01',
+      openSubmissionTime: '00:00',
+      closeSubmissionDateTime: '2023-08-31',
+      closeSubmissionTime: '23:59',
+      timezone: 'America/Vancouver',
+    };
+
+    // Mock the current time
+    const realNow = moment.now;
+    try {
+      // Set current time to 11:30pm on the closing date in Vancouver
+      moment.now = () => new Date('2023-08-31T23:30:00-07:00').getTime(); // Vancouver time
+
+      const result = scheduleService.checkIsFormExpired(schedule);
+      expect(result.expire).toBe(false);
+
+      // Test after closing time
+      moment.now = () => new Date('2023-09-01T00:01:00-07:00').getTime(); // Just past midnight
+      const expiredResult = scheduleService.checkIsFormExpired(schedule);
+      expect(expiredResult.expire).toBe(true);
+    } finally {
+      // Restore the original moment.now function
+      moment.now = realNow;
+    }
   });
 });

@@ -119,7 +119,7 @@ const service = {
   },
   _getReminders: async (forms) => {
     let reminder = [];
-    let toDay = getCurrentDate();
+    let toDay = moment.tz('America/Vancouver');
     for (let i = 0; i < forms.length; i++) {
       let obj = {};
 
@@ -133,9 +133,7 @@ const service = {
       obj.report = service.getCurrentPeriod(obj.availableDate, toDay, forms[i].schedule.allowLateSubmissions && forms[i].schedule.allowLateSubmissions.enabled);
 
       obj.form = forms[i];
-
-      obj.state = service._getMailType(obj.report, forms[i].schedule.allowLateSubmissions && forms[i].schedule.allowLateSubmissions.enabled);
-
+      obj.state = service._getMailType(obj.report, toDay, forms[i].schedule.allowLateSubmissions && forms[i].schedule.allowLateSubmissions.enabled);
       if (obj.state == undefined) {
         reminder.push({ error: true, message: `Form ${forms[i].name} has no valid date` });
         continue;
