@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { onBeforeMount, onBeforeUnmount } from 'vue';
+import { computed, onBeforeMount, onBeforeUnmount } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useFormStore } from '~/store/form';
@@ -18,6 +18,18 @@ const properties = defineProps({
 let timeout = null;
 
 const { isRTL } = storeToRefs(useFormStore());
+
+const TITLE = computed(() =>
+  properties.notification?.translate
+    ? t(properties.notification.title)
+    : properties.notification.title
+);
+
+const TEXT = computed(() =>
+  properties.notification?.translate
+    ? t(properties.notification.text)
+    : properties.notification.text
+);
 
 function alertClosed() {
   const notificationStore = useNotificationStore();
@@ -58,12 +70,14 @@ onBeforeMount(() => {
     );
   }
   const notificationStore = useNotificationStore();
-  timeout = setTimeout(
-    () => notificationStore.deleteNotification(properties.notification),
-    properties.notification.timeout
-      ? properties.notification.timeout * 1000
-      : 10000
-  );
+  if (!properties.notification.retain) {
+    timeout = setTimeout(
+      () => notificationStore.deleteNotification(properties.notification),
+      properties.notification.timeout
+        ? properties.notification.timeout * 1000
+        : 10000
+    );
+  }
 });
 
 onBeforeUnmount(() => {
@@ -84,8 +98,8 @@ onBeforeUnmount(() => {
     prominent
     closable
     class="mb-3"
-    :title="notification.title"
-    :text="$t(notification.text)"
+    :title="TITLE"
+    :text="TEXT"
     @update:model-value="alertClosed"
   ></v-alert>
 </template>
@@ -93,5 +107,13 @@ onBeforeUnmount(() => {
 <style scoped>
 .target-notification :deep(.v-alert__icon.v-icon):after {
   display: none;
+}
+
+.v-alert {
+  color: white !important;
+}
+
+.v-alert-title {
+  font-weight: bold !important;
 }
 </style>
