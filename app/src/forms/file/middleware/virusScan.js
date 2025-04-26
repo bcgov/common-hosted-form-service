@@ -1,7 +1,31 @@
 const fs = require('fs').promises;
+const path = require('path');
+const os = require('os');
 const Problem = require('api-problem');
 const clamAvScanner = require('../../../components/clamAvScanner');
 const log = require('../../../components/log')(module.filename);
+
+/**
+ * Validates that a file path is within a specified base directory.
+ * @param {string} filePath - The file path to validate.
+ * @param {string} [baseDirectory=os.tmpdir()] - The base directory to restrict file operations.
+ * @returns {string} - The resolved and validated file path.
+ * @throws {Error} - Throws an error if the file path is outside the base directory.
+ */
+const validateFilePath = (filePath, baseDirectory = os.tmpdir()) => {
+  // Resolve the absolute path of the base directory
+  const resolvedBaseDir = path.resolve(baseDirectory);
+
+  // Resolve the absolute path of the file
+  const resolvedFilePath = path.resolve(resolvedBaseDir, filePath);
+
+  // Ensure the resolved file path is within the base directory
+  if (!resolvedFilePath.startsWith(resolvedBaseDir)) {
+    throw new Error(`Invalid file path: ${filePath} is outside the allowed directory.`);
+  }
+
+  return resolvedFilePath;
+};
 
 /**
  * Removes an infected file from the filesystem.
@@ -9,8 +33,10 @@ const log = require('../../../components/log')(module.filename);
  */
 const removeInfected = async (filePath) => {
   try {
-    await fs.unlink(filePath);
-    log.info(`Deleted infected file: ${filePath}`);
+    if (validateFilePath(filePath)) {
+      await fs.unlink(filePath);
+      log.info(`Deleted infected file: ${filePath}`);
+    }
   } catch (error) {
     log.error(`Could not delete infected file: ${filePath}. ${error.message}`);
   }
@@ -58,4 +84,4 @@ const scanFile = async (req, res, next) => {
   }
 };
 
-module.exports = { scanFile, removeInfected, createVirusProblem };
+module.exports = { scanFile, removeInfected, createVirusProblem, validateFilePath };

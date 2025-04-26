@@ -20,6 +20,54 @@ describe('virusScan middleware', () => {
     jest.clearAllMocks();
   });
 
+  describe('validateFilePath', () => {
+    it('should return the resolved file path if it is within the base directory', () => {
+      const filePath = 'test-file.txt';
+      const baseDirectory = '/tmp/uploads';
+
+      const result = virusScan.validateFilePath(filePath, baseDirectory);
+
+      expect(result).toBe('/tmp/uploads/test-file.txt');
+    });
+
+    it('should throw an error if the file path is outside the base directory', () => {
+      const filePath = '../outside-dir/test-file.txt';
+      const baseDirectory = '/tmp/uploads';
+
+      expect(() => {
+        virusScan.validateFilePath(filePath, baseDirectory);
+      }).toThrowError(new Error('Invalid file path: ../outside-dir/test-file.txt is outside the allowed directory.'));
+    });
+
+    it('should handle absolute file paths within the base directory', () => {
+      const filePath = '/tmp/uploads/test-file.txt';
+      const baseDirectory = '/tmp/uploads';
+
+      const result = virusScan.validateFilePath(filePath, baseDirectory);
+
+      expect(result).toBe('/tmp/uploads/test-file.txt');
+    });
+
+    it('should throw an error for absolute file paths outside the base directory', () => {
+      const filePath = '/etc/passwd';
+      const baseDirectory = '/tmp/uploads';
+
+      expect(() => {
+        virusScan.validateFilePath(filePath, baseDirectory);
+      }).toThrowError(new Error('Invalid file path: /etc/passwd is outside the allowed directory.'));
+    });
+
+    it('should default to os.tmpdir() if no base directory is provided', () => {
+      const filePath = 'test-file.txt';
+      const os = require('os');
+      const baseDirectory = os.tmpdir();
+
+      const result = virusScan.validateFilePath(filePath);
+
+      expect(result).toBe(`${baseDirectory}/test-file.txt`);
+    });
+  });
+
   describe('removeInfected', () => {
     it('should delete the infected file successfully', async () => {
       jest.spyOn(fs, 'unlink').mockResolvedValue();
