@@ -73,7 +73,8 @@ const scanFile = async (req, res, next) => {
     log.info(`${fileName} scanned. Is infected? ${scanResult.isInfected}. Viruses: ${scanResult.viruses || 'None'}`);
 
     if (scanResult.isInfected) {
-      await removeInfected(filePath);
+      const validatedPath = validateFilePath(filePath);
+      await removeInfected(validatedPath);
       return next(createVirusProblem(fileName, scanResult.viruses));
     }
 
