@@ -875,10 +875,12 @@
     "failedResSubmissn": "Fehlgeschlagene Antwort vom Übermittlungsendpunkt. Antwortcode: {status}",
     "errSubmittingForm": "Beim Absenden dieses Formulars ist ein Fehler aufgetreten",
     "errorSavingFile": "Fehler beim Speichern der Dateien. Dateiname: {fileName}. Fehler: {error}",
+    "errorDeletingFile": "Fehler beim Löschen der Dateien. Dateiname: {fileName}. Fehler: {error}",
     "submittingDraftErrMsg": "Beim Speichern eines Entwurfs ist ein Fehler aufgetreten",
     "submittingDraftConsErrMsg": "Fehler beim Speichern des Entwurfs. Einreichungs-ID: {submissionId}. Fehler: {error}",
     "formDraftAccessErrMsg": "Die angeforderte Übermittlung wurde bereits übermittelt und wird zur Ansichtsseite weitergeleitet",
-    "formUnauthorizedMessage": "Sie sind nicht berechtigt, dieses Formular anzusehen. Bitte kontaktieren Sie den Formulareigentümer für den Zugang."
+    "formUnauthorizedMessage": "Sie sind nicht berechtigt, dieses Formular anzusehen. Bitte kontaktieren Sie den Formulareigentümer für den Zugang.",
+    "fileUploadWarning": "Um Ihre Anhänge hochzuladen, müssen Sie entweder auf die Schaltfläche „Als Entwurf speichern“ klicken oder Ihr Formular absenden. Wenn Sie diesen Bildschirm verlassen, gehen Ihre Anhänge verloren."
   },
   "bCGovFooter": {
     "home": "Heim",
@@ -955,7 +957,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "Meine Entwürfe/Einreichungen ansehen",
-    "saveAsADraft": "Als einen Entwurf sichern",
+    "saveAsDraft": "Als einen Entwurf sichern",
     "editThisDraft": "Bearbeiten Sie diesen Entwurf",
     "switchSingleSubmssn": "Wechseln Sie zur Einzeleinreichung",
     "switchMultiSubmssn": "Wechseln Sie zu mehreren Einreichungen",
@@ -1133,6 +1135,9 @@
       "history": "GESCHICHTE",
       "user": "Benutzer"
     }
+  },
+  "alert": {
+    "warning": "Warnung"
   },
   "eventStreamConfig": {
     "info": "Konfigurieren Sie Event Stream für Ihr Formular.",
