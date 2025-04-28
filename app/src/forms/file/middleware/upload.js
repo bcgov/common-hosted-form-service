@@ -12,6 +12,15 @@ let maxFileCount = 1;
 let storage;
 let uploader;
 
+/**
+ * Helper function to create a Problem instance with status code 400.
+ * @param {string} detail - The detail message for the Problem.
+ * @returns {Problem} - A Problem instance with status code 400.
+ */
+const createBadRequestProblem = (detail) => {
+  return new Problem(400, { detail });
+};
+
 const fileSetup = (options) => {
   fileUploadsDir = (options && options.dir) || process.env.FILE_UPLOADS_DIR || fs.realpathSync(os.tmpdir());
   try {
@@ -35,7 +44,7 @@ const fileSetup = (options) => {
   return { fileUploadsDir, maxFileSize, maxFileCount };
 };
 
-module.exports.fileUpload = {
+const fileUpload = {
   init(options) {
     let { fileUploadsDir, maxFileSize, maxFileCount } = fileSetup(options);
 
@@ -75,64 +84,58 @@ module.exports.fileUpload = {
   async upload(req, res, next) {
     try {
       if (!uploader) {
-        throw new Problem(500, {
+        const problem = new Problem(500, {
           detail: 'File Upload middleware has not been configured.',
         });
+        next(problem);
+        return;
       }
 
       uploader(req, res, (error) => {
+        let problem;
+
         // Detect multer errors, send back nicer through the middleware stack.
         if (error instanceof multer.MulterError) {
           switch (error.code) {
             case 'LIMIT_FILE_SIZE':
-              throw new Problem(400, {
-                detail: `Upload file size is limited to ${maxFileSize} bytes`,
-              });
+              problem = createBadRequestProblem(`Upload file size is limited to ${maxFileSize} bytes`);
+              break;
 
             case 'LIMIT_FILE_COUNT':
-              throw new Problem(400, {
-                detail: `Upload is limited to ${maxFileCount} files`,
-              });
+              problem = createBadRequestProblem(`Upload is limited to ${maxFileCount} files`);
+              break;
 
             case 'LIMIT_UNEXPECTED_FILE':
-              throw new Problem(400, {
-                detail: 'Upload encountered an unexpected file',
-              });
-
-            // We don't expect that we will encounter these in our api/app, but
-            // here for completeness.
+              problem = createBadRequestProblem('Upload encountered an unexpected file');
+              break;
 
             case 'LIMIT_PART_COUNT':
-              throw new Problem(400, {
-                detail: 'Upload rejected: upload form has too many parts',
-              });
+              problem = createBadRequestProblem('Upload rejected: upload form has too many parts');
+              break;
 
             case 'LIMIT_FIELD_KEY':
-              throw new Problem(400, {
-                detail: 'Upload rejected: upload field name for the files is too long',
-              });
+              problem = createBadRequestProblem('Upload rejected: upload field name for the files is too long');
+              break;
 
             case 'LIMIT_FIELD_VALUE':
-              throw new Problem(400, {
-                detail: 'Upload rejected: upload field is too long',
-              });
+              problem = createBadRequestProblem('Upload rejected: upload field is too long');
+              break;
 
             case 'LIMIT_FIELD_COUNT':
-              throw new Problem(400, {
-                detail: 'Upload rejected: too many fields',
-              });
+              problem = createBadRequestProblem('Upload rejected: too many fields');
+              break;
 
             default:
-              throw new Problem(400, {
-                detail: `Upload failed with the following error: ${error.message}`,
-              });
+              problem = createBadRequestProblem(`Upload failed with the following error: ${error.message}`);
+              break;
           }
+        } else if (error) {
+          problem = createBadRequestProblem(error.message);
         }
 
-        if (error) {
-          throw new Problem(400, {
-            detail: error.message,
-          });
+        if (problem) {
+          next(problem);
+          return;
         }
 
         next();
@@ -142,3 +145,4 @@ module.exports.fileUpload = {
     }
   },
 };
+module.exports = { fileUpload, fileSetup, createBadRequestProblem };
