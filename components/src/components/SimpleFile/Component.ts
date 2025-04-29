@@ -244,9 +244,7 @@ export default class Component extends (ParentComponent as any) {
               ) {
                 message = 'File could not be uploaded.';
               }
-              fileUpload.message = this.t(
-                `${message}: ${JSON.stringify(response)}`
-              );
+              fileUpload.message = this.t(message);
               // @ts-ignore
               delete fileUpload.progress;
               this.redraw();
