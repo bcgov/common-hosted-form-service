@@ -133,9 +133,6 @@ const fileUpload = {
           }
         } else if (error) {
           problem = createBadRequestProblem(error.message);
-        } else {
-          // add a dummy exception here for testing...
-          problem = createBadRequestProblem('Upload failed due to manual testing requirements.');
         }
 
         if (problem) {
