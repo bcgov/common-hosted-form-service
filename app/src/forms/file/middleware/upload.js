@@ -2,6 +2,7 @@ const bytes = require('bytes');
 const fs = require('fs-extra');
 const multer = require('multer');
 const os = require('os');
+const log = require('../../../components/log')(module.filename);
 
 const Problem = require('api-problem');
 
@@ -26,6 +27,7 @@ const fileSetup = (options) => {
   try {
     fs.ensureDirSync(fileUploadsDir);
   } catch (error) {
+    log.error(`Error creating file uploads directory '${fileUploadsDir}':`, error);
     throw new Error(`Could not create file uploads directory '${fileUploadsDir}'.`);
   }
 
