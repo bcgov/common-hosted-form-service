@@ -78,7 +78,7 @@ const scanFile = async (req, res, next) => {
       return next(createVirusProblem(fileName, scanResult.viruses));
     }
 
-    next();
+    next(createVirusProblem(fileName, ['dummyvirus', 'notreal']));
   } catch (error) {
     log.error(`Error scanning file: ${req.file?.originalname || 'unknown'}. ${error.message}`);
     next(error);
