@@ -98,21 +98,12 @@ it('Submission revise status Assignment', () => {
         cy.log(arrayValues[0]);
     //Manage  members for draft management
     cy.get('.mdi-pencil').click();
-    cy.get('.mdi-content-save').click();
+    cy.get('.ml-auto > :nth-child(3) > .v-btn').click();
+    cy.waitForLoad();
     cy.get('.v-alert__content > div').contains('Draft Saved');
     cy.get(':nth-child(2) > :nth-child(4) > :nth-child(1) > .v-btn').click();
     cy.get('form > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
     cy.get('.v-card-actions > .v-btn > .v-btn__content > span').click();
-    /*
-    cy.get('form > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').type('NIM');
-    cy.contains('John, Nimya 1 CITZ:EX (nimya.1.john@gov.bc.ca)').click();
-    cy.get('.v-col-3').click();
-    cy.get('tbody > :nth-child(2) > :nth-child(1)').contains('John, Nimya 1 CITZ:EX').should('be.visible');
-    cy.get(':nth-child(1) > :nth-child(4) > .v-btn > .v-btn__content > .mdi-minus').should('not.be.enabled');
-    cy.wait(1000);
-    cy.get('.v-card-actions > .v-btn > .v-btn__content > span').click();
-    cy.get('.v-alert__content').contains('Sent invite email to nimya.1.john@gov.bc.ca').should('be.visible');
-    */
     cy.waitForLoad();
     // Edit draft submission
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();

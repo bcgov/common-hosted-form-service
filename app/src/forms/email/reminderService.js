@@ -1,9 +1,65 @@
 const { getBaseUrl } = require('../common/utils');
 const emailService = require('./emailService');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const { EmailTypes, ScheduleType } = require('../common/constants');
 const { SubmissionData, UserFormAccess, Form } = require('../common/models');
 const { Roles } = require('../common/constants');
+const {
+  getCurrentPeriod,
+  getSubmissionPeriodDates,
+  getGracePeriodEndDate,
+  isSameDay,
+  daysBetween,
+  calculateDatePlus,
+  calculateMiddleDate,
+  DEFAULT_TIMEZONE,
+  getDateWithTimezone,
+} = require('../common/scheduleService');
+
+/**
+ * Determines what type of reminder email should be sent based on current date and schedule
+ * @param {Object} scheduleOrReport The form schedule or period report
+ * @param {Date|String} referenceDate Optional reference date (defaults to now)
+ * @param {Boolean} respectTimeComponent Whether to respect time components in dates (defaults to false)
+ * @returns {String|undefined} Email type constant or undefined if no reminder should be sent
+ */
+function getEmailReminderType(scheduleOrReport, referenceDate = null, respectTimeComponent = false) {
+  // Get the current period if a schedule was provided
+  if (!scheduleOrReport || (scheduleOrReport.scheduleType !== undefined && (!scheduleOrReport.enabled || !scheduleOrReport.openSubmissionDateTime))) {
+    return undefined;
+  }
+  const report = scheduleOrReport.scheduleType !== undefined ? getCurrentPeriod(scheduleOrReport, referenceDate, respectTimeComponent) : scheduleOrReport;
+  if (!report || !report.dates) return undefined;
+  const timezone = report.dates.timezone || DEFAULT_TIMEZONE;
+  const now = getDateWithTimezone(referenceDate, timezone);
+  const compareTime = respectTimeComponent;
+
+  // Form opens today - exact date match required
+  if (isSameDay(now, report.dates.startDate, timezone, compareTime)) {
+    return EmailTypes.REMINDER_FORM_OPEN;
+  }
+
+  // No close date or period is too short for mid-reminders
+  if (!report.dates.closeDate) return undefined;
+
+  const daysBetweenDates = daysBetween(report.dates.startDate, report.dates.closeDate, timezone, !respectTimeComponent);
+
+  if (daysBetweenDates <= 3) return undefined;
+
+  // Form closes tomorrow - exact date match required
+  const dayBeforeClose = calculateDatePlus(report.dates.closeDate, -1, 'days', timezone, null, !respectTimeComponent);
+  if (isSameDay(now, dayBeforeClose, timezone, compareTime)) {
+    return EmailTypes.REMINDER_FORM_WILL_CLOSE;
+  }
+
+  // Middle of the period reminder - exact date match required
+  const middleDate = calculateMiddleDate(report.dates.startDate, report.dates.closeDate, timezone, null, !respectTimeComponent);
+  if (middleDate && isSameDay(now, middleDate, timezone, compareTime)) {
+    return EmailTypes.REMINDER_FORM_NOT_FILL;
+  }
+
+  return undefined;
+}
 
 const service = {
   _init: async () => {
@@ -48,92 +104,9 @@ const service = {
       };
     }
   },
-  getCurrentPeriod(dates, toDay, late) {
-    // if send and empty date
-    if (dates == null || dates == undefined) return null;
-
-    // list periods is null
-    if (dates.length == 0) return null;
-
-    // if form has no closing date (MANUAL type)
-    if (dates.length == 1 && dates[0].closeDate == null) {
-      return Object({
-        state: 1,
-        index: 0,
-        dates: dates[0],
-        old_dates: null,
-        late: 0,
-      });
-    }
-
-    // check for the current period
-    for (let i = 0; i < dates.length; i++) {
-      let startDate = moment(dates[i].startDate).format('YYYY-MM-DD');
-      let graceDate = late ? moment(dates[i].graceDate).format('YYYY-MM-DD') : moment(dates[i].closeDate).format('YYYY-MM-DD');
-      if (toDay.isBetween(startDate, graceDate)) {
-        return Object({
-          state: 1,
-          index: i,
-          dates: dates[i],
-          old_dates: i == 0 ? null : dates[i - 1],
-          late: toDay.isBetween(dates[i].closeDate, dates[i].graceDate) ? 1 : 0,
-        });
-      }
-    }
-
-    let first = dates[0];
-    return Object({
-      state: toDay.isBefore(first.startDate) ? -1 : 0,
-      index: -1,
-      dates: false,
-      old_dates: false,
-      late: -1,
-    });
-  },
-  _listDates: (schedule) => {
-    if (schedule.scheduleType == ScheduleType.MANUAL) {
-      return [
-        Object({
-          startDate: schedule.openSubmissionDateTime,
-          closeDate: null,
-          graceDate: null,
-        }),
-      ];
-    }
-
-    if (schedule.scheduleType == ScheduleType.CLOSINGDATE) {
-      return [
-        Object({
-          startDate: schedule.openSubmissionDateTime,
-          closeDate: schedule.closeSubmissionDateTime,
-          graceDate: service._getGraceDate(schedule),
-        }),
-      ];
-    }
-
-    // Default to CLOSINGDATE for any other schedule type (including legacy PERIOD)
-    if (schedule.openSubmissionDateTime) {
-      const closeDate = schedule.closeSubmissionDateTime || moment(schedule.openSubmissionDateTime).add(30, 'days').format('YYYY-MM-DD HH:MM:SS');
-
-      return [
-        Object({
-          startDate: schedule.openSubmissionDateTime,
-          closeDate: closeDate,
-          graceDate: service._getGraceDate(schedule),
-        }),
-      ];
-    }
-
-    return [];
-  },
-  _getGraceDate: (schedule) => {
-    if (!schedule.allowLateSubmissions || !schedule.allowLateSubmissions.enabled) {
-      return null;
-    }
-
-    const closeDate = schedule.closeSubmissionDateTime || schedule.openSubmissionDateTime;
-    return moment(closeDate).add(schedule.allowLateSubmissions.forNext.term, schedule.allowLateSubmissions.forNext.intervalType).format('YYYY-MM-DD HH:MM:SS');
-  },
+  getCurrentPeriod,
+  _listDates: getSubmissionPeriodDates,
+  _getGraceDate: getGracePeriodEndDate,
   _getForms: async () => {
     let fs = [];
     await Form.query()
@@ -146,7 +119,7 @@ const service = {
   },
   _getReminders: async (forms) => {
     let reminder = [];
-    let toDay = moment();
+    let toDay = moment.tz('America/Vancouver');
     for (let i = 0; i < forms.length; i++) {
       let obj = {};
 
@@ -160,9 +133,7 @@ const service = {
       obj.report = service.getCurrentPeriod(obj.availableDate, toDay, forms[i].schedule.allowLateSubmissions && forms[i].schedule.allowLateSubmissions.enabled);
 
       obj.form = forms[i];
-
-      obj.state = service._getMailType(obj.report, forms[i].schedule.allowLateSubmissions && forms[i].schedule.allowLateSubmissions.enabled);
-
+      obj.state = service._getMailType(obj.report, toDay, forms[i].schedule.allowLateSubmissions && forms[i].schedule.allowLateSubmissions.enabled);
       if (obj.state == undefined) {
         reminder.push({ error: true, message: `Form ${forms[i].name} has no valid date` });
         continue;
@@ -180,32 +151,7 @@ const service = {
 
     return reminder;
   },
-  _getMailType: (report, late) => {
-    let state = undefined;
-
-    const now = moment().format('YYYY-MM-DD');
-    const start_date = moment(report.dates.startDate).format('YYYY-MM-DD');
-    const end_date = late ? moment(report.dates.graceDate).format('YYYY-MM-DD') : moment(report.dates.closeDate).format('YYYY-MM-DD');
-    const days_diff = moment(end_date).diff(start_date, 'days');
-
-    if (moment(now).isSame(start_date)) {
-      return EmailTypes.REMINDER_FORM_OPEN;
-    }
-
-    if (report.dates.closeDate == null || days_diff <= 3) return state;
-
-    if (service.checkIfInMiddleOfThePeriod(now, start_date, days_diff)) {
-      return EmailTypes.REMINDER_FORM_NOT_FILL;
-    }
-
-    const yend_date = moment(end_date).subtract(1, 'day');
-
-    if (moment(now).isSame(yend_date)) {
-      return EmailTypes.REMINDER_FORM_WILL_CLOSE;
-    }
-
-    return state;
-  },
+  _getMailType: getEmailReminderType,
   checkIfInMiddleOfThePeriod: (now, start_date, days_diff) => {
     if (days_diff < 6) return false;
     let interval = Math.floor(days_diff / 2);

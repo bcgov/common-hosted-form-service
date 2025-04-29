@@ -106,7 +106,8 @@ it('Verify draft submission', () => {
     cy.get('[data-test="save-btn"] > .v-btn__content').click();
     cy.get('.v-data-table__tr > :nth-child(4)').contains('DRAFT').should('not.exist');
     cy.get('.mdi-pencil').click();
-    cy.get('.mdi-content-save').click();
+    cy.get('.ml-auto > :nth-child(3) > .v-btn').click();
+    cy.waitForLoad();
     cy.get('.v-alert__content > div').contains('Draft Saved');
     // Edit draft submission
     cy.wait(4000);

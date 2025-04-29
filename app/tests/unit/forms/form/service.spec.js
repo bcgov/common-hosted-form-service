@@ -2,7 +2,7 @@ const { MockModel, MockTransaction } = require('../../../common/dbHelper');
 
 const uuid = require('uuid');
 
-const { EmailTypes } = require('../../../../src/forms/common/constants');
+const { EmailTypes, ScheduleType } = require('../../../../src/forms/common/constants');
 const service = require('../../../../src/forms/form/service');
 
 jest.mock('../../../../src/forms/common/models/tables/documentTemplate', () => MockModel);
@@ -776,6 +776,35 @@ describe('popFormLevelInfo', () => {
 
     const response = service.popFormLevelInfo(givenArrayOfSubmission);
     expect(response).toEqual(expectedArrayOfSubmission);
+  });
+});
+describe('Validation Functions', () => {
+  it('validateScheduleObject should return status = success for empty object passed as parameter', () => {
+    let result = service.validateScheduleObject({});
+    expect(result).toBeDefined();
+    expect(result).toHaveProperty('status', 'success');
+    expect(result).toHaveProperty('message', '');
+  });
+
+  it('validateScheduleObject should return status = success for schedule type manual and with its required data', () => {
+    let testPayload = { enabled: true, scheduleType: ScheduleType.MANUAL, openSubmissionDateTime: '2023-03-31' };
+    let result = service.validateScheduleObject(testPayload);
+    expect(result).toBeDefined();
+    expect(result).toHaveProperty('status', 'success');
+    expect(result).toHaveProperty('message', '');
+  });
+
+  it('validateScheduleObject should return status = success for schedule type closingDate and with its required data', () => {
+    let testPayload = {
+      enabled: true,
+      scheduleType: ScheduleType.CLOSINGDATE,
+      openSubmissionDateTime: '2023-03-31',
+      closeSubmissionDateTime: '2023-09-31',
+    };
+    let result = service.validateScheduleObject(testPayload);
+    expect(result).toBeDefined();
+    expect(result).toHaveProperty('status', 'success');
+    expect(result).toHaveProperty('message', '');
   });
 });
 
