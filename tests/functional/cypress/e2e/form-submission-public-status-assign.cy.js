@@ -47,7 +47,7 @@ describe('Form Designer', () => {
   // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
-    savedButton.trigger('click');
+    cy.get('.mdi-content-save').should('be.visible').trigger('click');
     cy.wait(2000);
   // Filter the newly created form
     cy.location('search').then(search => {
@@ -57,8 +57,6 @@ describe('Form Designer', () => {
       cy.log(arrayValues[0]);
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
       cy.waitForLoad();
-      
-   
     //Publish the form
     cy.get('.v-label > span').click();
 
