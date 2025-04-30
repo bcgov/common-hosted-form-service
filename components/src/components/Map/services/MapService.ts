@@ -126,7 +126,7 @@ class MapService {
       viewMode,
       myLocation,
       bcGeocoder,
-      allowBaseLayerSwitch = true,
+      allowBaseLayerSwitch,
       availableBaseLayers,
       selectedBaseLayer,
       availableBaseLayersCustom,
@@ -148,9 +148,6 @@ class MapService {
       }),
       Dark: L.tileLayer(BASE_LAYER_URLS.Dark, {
         attribution: BASE_LAYER_ATTRIBUTIONS.CARTO,
-      }),
-      Satellite: L.tileLayer(BASE_LAYER_URLS.Satellite, {
-        attribution: BASE_LAYER_ATTRIBUTIONS.Satellite,
       }),
       Topographic: L.tileLayer(BASE_LAYER_URLS.Topographic, {
         attribution: BASE_LAYER_ATTRIBUTIONS.Topographic,

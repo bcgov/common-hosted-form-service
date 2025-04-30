@@ -22,7 +22,6 @@ export default class Component extends (FieldComponent as any) {
         OpenStreetMap: true,
         Light: true,
         Dark: true,
-        Satellite: true,
         Topographic: true,
       },
       availableBaseLayersCustom: [],
