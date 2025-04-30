@@ -12,30 +12,21 @@ Cypress.Commands.add('waitForLoad', () => {
   cy.get('.nprogress-busy', { timeout: loaderTimeout }).should('not.exist');
 });
 
-
-
 describe('Form Designer', () => {
 
   beforeEach(()=>{
-    
-    
-    
-    cy.on('uncaught:exception', (err, runnable) => {
-      // Form.io throws an uncaught exception for missing projectid
-      // Cypress catches it as undefined: undefined so we can't get the text
-      console.log(err);
-      return false;
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.window().then((win) => {
+      win.sessionStorage.clear();
     });
   });
   it('Visits the form settings page', () => {
     
-    
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-    
     formsettings();
     
-
   });  
 // Publish a simple form with Simplebc Address component
  it('Verify public form submission', () => {
@@ -50,15 +41,13 @@ describe('Form Designer', () => {
       .trigger('mousedown', { which: 1}, { force: true })
       .trigger('mousemove', coords.x, -50, { force: true })
       .trigger('mouseup', { force: true });
-      cy.wait(2000);
       cy.get('button').contains('Save').click();
-      cy.wait(2000);
+      cy.waitForLoad();
     });
-    cy.wait(2000);
   // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
-    savedButton.trigger('click');
+    cy.get('.mdi-content-save').should('be.visible').trigger('click');
     cy.wait(2000);
   // Filter the newly created form
     cy.location('search').then(search => {
@@ -68,8 +57,6 @@ describe('Form Designer', () => {
       cy.log(arrayValues[0]);
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
       cy.waitForLoad();
-      
-   
     //Publish the form
     cy.get('.v-label > span').click();
 
@@ -117,12 +104,14 @@ describe('Form Designer', () => {
     cy.get('.v-col > .v-btn--variant-outlined > .v-btn__content > span').click();
     cy.wait(3000);
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-    cy.wait(2000);
+    cy.waitForLoad();
       //Logout to submit the public form
-    cy.get('#logoutButton > .v-btn__content > span').click();
+    cy.get('#logoutButton > .v-btn__content > span').should('be.visible').click({ force: true });
+    cy.log('Page visited, checking for logout button');
+    cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
         //Form submission and verification for public forms
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
-    cy.wait(2000);
+    cy.waitForLoad();
     cy.get('button').contains('Submit').should('be.visible');
     cy.wait(2000);
     cy.contains('Text Field').click();

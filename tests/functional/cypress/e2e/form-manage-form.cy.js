@@ -54,19 +54,22 @@ describe('Form Designer', () => {
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
       cy.waitForLoad();
       })
+
+    });  
+    // Manage form settings
+    it('Checks form scheduler settings', () => {
+      cy.viewport(1000, 1100);
+      cy.waitForLoad();
       cy.get(':nth-child(1) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
       cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
       cy.get('[data-test="text-description"]').clear();
       cy.get('[data-test="text-description"]').type('test description edit');
       cy.get('[data-test="canSaveAndEditDraftsCheckbox"]').click();
       //Verify form schedule settings is not present
-      
       cy.get('span').contains('Form Schedule Settings').should('not.exist');
       //cy.get('span').contains('UPDATE').click();
       cy.get('.mb-5 > .v-btn--elevated').click();
-
       //Publish the form
-      
       cy.get('[data-cy="formPublishedSwitch"] > .v-input__control > .v-selection-control > .v-label > span').click();
       cy.get('span').contains('Publish Version 1');
 
@@ -91,7 +94,43 @@ describe('Form Designer', () => {
       cy.get('[data-test="afterCloseDateFor"]').should('be.visible');
       cy.get('[data-test="afterCloseDateFor"]').click();
       cy.get('[data-test="afterCloseDateFor"]').type('5');
+      //Add time for open/close submission
+      
+      cy.get(':nth-child(1) > :nth-child(1) > :nth-child(2) > .v-input__control > .v-field').should('be.visible').click();
+      cy.get(':nth-child(2) > .v-input__control > .v-field > .v-field__clearable > .mdi-close-circle').should('be.visible').click();
+      cy.get('input[placeholder="Open time"]').type('09:00');
+      cy.get(':nth-child(2) > .v-col-md-8 > .v-input > .v-input__control > .v-field > .v-field__clearable > .mdi-close-circle').click();
+      cy.get('input[placeholder="Close time"]').type('17:00');
 
+      cy.get('span[class="v-select__selection-text"]').contains('America/Vancouver').should('be.visible');
+      //Verify all time zones present
+      cy.get(':nth-child(1) > :nth-child(2) > .v-input > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
+      cy.get('div.v-list-item-title').contains('America/Atikokan').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Blanc-Sablon').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Cambridge_Bay').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Creston').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Dawson').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Dawson_Creek').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Edmonton').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Fort_Nelson').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Glace_Bay').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Goose_Bay').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Halifax').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Inuvik').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Iqaluit').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Moncton').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Phoenix').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Puerto_Rico').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Rankin_Inlet').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Panama').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Regina').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Resolute').should('exist');
+      cy.get('div.v-list-item-title').contains('America/St_Johns').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Swift_Current').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Toronto').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Whitehorse').should('exist');
+      cy.get('div.v-list-item-title').contains('America/Winnipeg').should('exist');
+    //Verify amount of late submission
       cy.get('.pl-3 > :nth-child(2) > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
       cy.contains('weeks').click();
       
@@ -100,8 +139,10 @@ describe('Form Designer', () => {
       cy.get('b').then($el => {
 
         const rem=$el[0];
-        //const rem1=$el[1];
-        cy.get(rem).contains('June 17, 2026 at 8:30 AM').should('exist');
+        const rem1=$el[1];
+        cy.get(rem).contains('June 17, 2026 at 9:00 AM').should('exist');
+        cy.get('span').contains(' to ').should('exist');
+        cy.get(rem1).contains('September 17, 2026 at 5:00 PM').should('exist');
 
        });
        cy.get('span').contains(' allowing late submissions for 5 weeks.').should('exist');
