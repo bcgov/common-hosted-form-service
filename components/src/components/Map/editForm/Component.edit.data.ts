@@ -146,7 +146,7 @@ export default {
       key: 'availableBaseLayersCustom',
       type: 'datagrid',
       input: true,
-      reorder: true,
+      reorder: false,
       addAnother: 'Add New Base Layer',
       defaultValue: [
         {
