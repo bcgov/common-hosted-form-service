@@ -864,7 +864,10 @@ async function uploadQueuedFiles() {
           simpleFileComponents.value.forEach((component) => {
             const key = component.key;
 
-            if (submission.value.data[key][0]) {
+            if (
+              submission.value.data[key][0] &&
+              submission.value.data[key][0].data.id === fileObj.file.id
+            ) {
               submission.value.data[key][0] = {
                 ...submission.value.data[key][0],
                 data: { id: response.data.id },
