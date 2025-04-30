@@ -1,4 +1,5 @@
 const config = require('config');
+const uuid = require('uuid');
 
 const StorageTypes = require('../../common/constants').StorageTypes;
 const _isLocal = (x) => StorageTypes.LOCAL_STORES.includes(x.storage);
@@ -41,6 +42,15 @@ const service = {
     }
   },
 
+  _cloneFile: async (fileStorage) => {
+    const id = uuid.v4();
+    if (PERMANENT_STORAGE === StorageTypes.LOCAL_STORAGE) {
+      return localStorageService.cloneFile(fileStorage, id);
+    } else if (PERMANENT_STORAGE === StorageTypes.OBJECT_STORAGE) {
+      return objectStorageService.cloneFile(fileStorage, id);
+    }
+  },
+
   delete: async (fileStorage) => {
     return service._deleteFile(fileStorage);
   },
@@ -55,6 +65,10 @@ const service = {
 
   upload: async (fileStorage) => {
     return service._uploadFile(fileStorage);
+  },
+
+  clone: async (fileStorage) => {
+    return service._cloneFile(fileStorage);
   },
 };
 
