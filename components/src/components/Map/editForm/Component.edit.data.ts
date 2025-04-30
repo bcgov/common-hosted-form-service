@@ -51,7 +51,15 @@ export default {
       allowSubmissions: true,
       description:
         'Please select the desired default center using a single marker',
+      defaultValue: { features: [], selectedBaseLayer: 'OpenStreetMap' },
       allowBaseLayerSwitch: false,
+      availableBaseLayers: {
+        OpenStreetMap: true,
+        Light: true,
+        Dark: true,
+        Satellite: true,
+        Topographic: true,
+      },
     },
     {
       html: '<h2>Submitter Options</h2>',
@@ -69,6 +77,15 @@ export default {
       type: 'checkbox',
       defaultValue: true,
       input: true,
+    },
+    {
+      label: 'Allow Submitters to Switch Base Layers',
+      key: 'allowBaseLayerSwitch',
+      type: 'checkbox',
+      input: true,
+      defaultValue: false,
+      description:
+        'If checked, submitters can toggle between available base layers.',
     },
     {
       label: 'Marker Type ',
@@ -103,16 +120,7 @@ export default {
       input: true,
     },
     {
-      label: 'Allow Submitter to Switch Base Layers',
-      key: 'allowBaseLayerSwitch',
-      type: 'checkbox',
-      input: true,
-      defaultValue: false,
-      description:
-        'If checked, submitters can toggle between available base layers.',
-    },
-    {
-      label: 'Available Base Layers for Submitter',
+      label: 'Available Base Layers for Submitters',
       key: 'availableBaseLayers',
       type: 'selectboxes',
       input: true,
@@ -142,6 +150,7 @@ export default {
       type: 'datagrid',
       input: true,
       reorder: true,
+      addAnother: 'Add New Base Layer',
       defaultValue: [
         {
           label: 'SampleOpenStreetMap',
@@ -155,7 +164,7 @@ export default {
           key: 'label',
           input: true,
           type: 'textfield',
-          placeholder: 'e.g., OpenStreetMap',
+          placeholder: 'e.g., SampleOpenStreetMap',
           validate: {
             custom: `valid = !input || (typeof input === 'string' && input.length <= 100)? true: 'Label must be under 100 characters.';`,
           },

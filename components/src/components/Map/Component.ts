@@ -17,11 +17,13 @@ export default class Component extends (FieldComponent as any) {
       key: 'map',
       input: true,
       defaultValue: { features: [], selectedBaseLayer: 'OpenStreetMap' },
-      allowBaseLayerSwitch: true,
+      allowBaseLayerSwitch: false,
       availableBaseLayers: {
         OpenStreetMap: true,
-        Satellite: false,
-        Terrain: false,
+        Light: true,
+        Dark: true,
+        Satellite: true,
+        Topographic: true,
       },
       ...extend,
     });
