@@ -160,10 +160,10 @@ describe('Form Designer', () => {
         cy.get(marker_elem).click({force: true});
       });  
       cy.get('div[class="leaflet-draw-tooltip leaflet-draw-tooltip-single"]').click({ force: true });
-      
+      cy.wait(2000);
       cy.get('div[class="leaflet-popup-content"]').find('p').contains('Only 4 features per submission').should('be.visible');
       cy.get('button').contains('Submit').click();
-      cy.wait(4000);
+      cy.wait(2000);
       cy.get('button').contains('Submit').click();
       cy.waitForLoad();
       cy.location('pathname').should('eq', `/${depEnv}/form/success`);
