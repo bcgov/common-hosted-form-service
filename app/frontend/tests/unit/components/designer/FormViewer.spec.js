@@ -2104,6 +2104,7 @@ describe('FormViewer.vue', () => {
         config: {
           onUploadProgress: onUploadProgress,
           headers: {},
+          isDuplicate: false,
         },
         onUploaded: onUploaded,
         onError: onError,
