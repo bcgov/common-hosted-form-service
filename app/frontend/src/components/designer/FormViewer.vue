@@ -1,5 +1,6 @@
 <script setup>
 import { Form } from '@formio/vue';
+import formioUtils from 'formiojs/utils';
 import _ from 'lodash';
 import { storeToRefs } from 'pinia';
 import {
@@ -105,6 +106,7 @@ const saveDraftState = ref(0);
 const saving = ref(false);
 const showModal = ref(false);
 const showSubmitConfirmDialog = ref(false);
+const simpleFileComponents = ref([]);
 const submission = ref({ data: { lateEntry: false } });
 const submissionRecord = ref({});
 const version = ref(0);
@@ -182,6 +184,22 @@ onMounted(async () => {
     // published version of form, and then get the submission data.
     await getFormSchema();
     await getFormData();
+    // To ensure we duplicate a file, we flag an already uploaded file for upload
+    simpleFileComponents.value = formioUtils.findComponents(
+      formSchema.value.components,
+      {
+        type: 'simplefile',
+      }
+    );
+    simpleFileComponents.value.forEach((component) => {
+      const key = component.key;
+
+      if (submission.value.data[key]) {
+        uploadFile({
+          id: submission.value.data[key][0].data.id,
+        });
+      }
+    });
   } else if (properties.submissionId && !properties.isDuplicate) {
     await getFormData();
   } else {
@@ -810,15 +828,19 @@ async function getFile(fileId, options = {}) {
 }
 
 function uploadFile(file, cfg = {}) {
-  queuedUploadFiles.value.push({
+  let fileUpload = {
     file: file,
     config: {
-      onUploadProgress: cfg.onUploadProgress,
-      headers: cfg.headers,
+      isDuplicate: properties.isDuplicate,
     },
-    onUploaded: cfg.onUploaded,
-    onError: cfg.onError,
-  });
+  };
+  if (properties.isDuplicate === false) {
+    fileUpload.config.onUploadProgress = cfg.onUploadProgress;
+    fileUpload.config.headers = cfg.headers;
+    fileUpload.onUploaded = cfg.onUploaded;
+    fileUpload.onError = cfg.onError;
+  }
+  queuedUploadFiles.value.push(fileUpload);
 
   notificationStore.addNotification({
     ...NotificationTypes.WARNING,
@@ -835,31 +857,66 @@ async function uploadQueuedFiles() {
 
   queuedUploadFiles.value = await Promise.all(
     queuedUploadFiles.value.map(async (fileObj) => {
-      try {
-        const response = await fileService.uploadFile(
-          fileObj.file,
-          fileObj.config
-        );
-        fileObj.onUploaded(response);
-        return null; // Mark for removal
-      } catch (error) {
-        err = true;
-        fileObj.onError({
-          detail: error?.message ? error.message : error,
-        });
+      if (properties.isDuplicate) {
+        try {
+          const response = await fileService.cloneFile(fileObj.file.id);
+          // Update the submissions to use the new file id
+          simpleFileComponents.value.forEach((component) => {
+            const key = component.key;
 
-        notificationStore.addNotification({
-          text: t('trans.formViewer.errorSavingFile', {
-            fileName: fileObj.file.originalName,
-            error: error,
-          }),
-          consoleError: t('trans.formViewer.errorSavingFile', {
-            fileName: fileObj.file.originalName,
-            error: error,
-          }),
-        });
+            if (submission.value.data[key][0]) {
+              submission.value.data[key][0] = {
+                ...submission.value.data[key][0],
+                data: { id: response.data.id },
+                url: `/app/api/v1/files/${response.data.id}`,
+              };
+            }
+          });
+          return null; // Mark for removal
+        } catch (error) {
+          err = true;
+          notificationStore.addNotification({
+            text: t('trans.formViewer.errorSavingFile', {
+              fileName: fileObj.file.originalName,
+              error: error,
+            }),
+            consoleError: t('trans.formViewer.errorSavingFile', {
+              fileName: fileObj.file.originalName,
+              error: error,
+            }),
+          });
 
-        return fileObj; // Keep failed uploads in the array
+          return fileObj; // Keep failed uploads in the array
+        }
+      } else {
+        try {
+          const response = await fileService.uploadFile(
+            fileObj.file,
+            fileObj.config
+          );
+          if (fileObj.onUploaded) await fileObj.onUploaded(response);
+          return null; // Mark for removal
+        } catch (error) {
+          err = true;
+          if (fileObj.onError) {
+            fileObj.onError({
+              detail: error?.message ? error.message : error,
+            });
+          }
+
+          notificationStore.addNotification({
+            text: t('trans.formViewer.errorSavingFile', {
+              fileName: fileObj.file.originalName,
+              error: error,
+            }),
+            consoleError: t('trans.formViewer.errorSavingFile', {
+              fileName: fileObj.file.originalName,
+              error: error,
+            }),
+          });
+
+          return fileObj; // Keep failed uploads in the array
+        }
       }
     })
   );
@@ -880,7 +937,7 @@ async function deleteQueuedFiles() {
       queuedDeleteFiles.value.map((file) => file.file.data.id)
     );
     for (const file of queuedDeleteFiles.value) {
-      file.onSuccess();
+      await file.onSuccess();
     }
     queuedDeleteFiles.value = [];
   } catch (error) {

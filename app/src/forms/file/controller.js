@@ -73,7 +73,7 @@ module.exports = {
 
   clone: async (req, res, next) => {
     try {
-      const response = await service.clone(req.file, req.currentUser);
+      const response = await service.clone(req.params.fileId, req.currentUser);
       res.status(201).json(_trim(response));
     } catch (error) {
       next(error);

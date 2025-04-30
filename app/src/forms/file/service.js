@@ -140,7 +140,7 @@ const service = {
     try {
       trx = await FileStorage.startTransaction();
 
-      const file = FileStorage.query().findById(data.id).throwIfNotFound();
+      const file = await FileStorage.query().findById(data).throwIfNotFound();
 
       // Remove the ID to avoid conflicts when inserting
       const obj = { ...file };
