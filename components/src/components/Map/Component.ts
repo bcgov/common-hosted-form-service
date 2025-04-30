@@ -25,6 +25,7 @@ export default class Component extends (FieldComponent as any) {
         Satellite: true,
         Topographic: true,
       },
+      availableBaseLayersCustom: [],
       ...extend,
     });
   }
@@ -103,6 +104,7 @@ export default class Component extends (FieldComponent as any) {
       bcGeocoder,
       allowBaseLayerSwitch,
       availableBaseLayers,
+      availableBaseLayersCustom,
     } = this.component;
 
     const { readOnly: viewMode } = this.options;
@@ -134,6 +136,7 @@ export default class Component extends (FieldComponent as any) {
       availableBaseLayers: Object.keys(availableBaseLayers || {}).filter(
         (k) => availableBaseLayers[k]
       ),
+      availableBaseLayersCustom,
     });
 
     // Load existing data if available
@@ -199,9 +202,7 @@ export default class Component extends (FieldComponent as any) {
         if (value.features) {
           this.mapService.loadDrawnItems(value.features);
         }
-        const baseLayer =
-          value.selectedBaseLayer ??
-          'OpenStreetMap';
+        const baseLayer = value.selectedBaseLayer ?? 'OpenStreetMap';
         this.mapService.setBaseLayer(baseLayer);
       } catch (error) {
         console.error('Failed to apply map value:', error);

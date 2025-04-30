@@ -154,8 +154,9 @@ export default {
       defaultValue: [
         {
           label: 'SampleOpenStreetMap',
-          value: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
           attribution: '&copy; OpenStreetMap contributors',
+          enabled: false,
         },
       ],
       components: [
@@ -171,7 +172,7 @@ export default {
         },
         {
           label: 'Tile URL Template',
-          key: 'value',
+          key: 'url',
           input: true,
           type: 'textfield',
           placeholder: 'https://{s}.tile.provider.com/{z}/{x}/{y}.png',
@@ -198,6 +199,15 @@ export default {
           validate: {
             custom: `valid = !input || (typeof input === 'string') ? true : 'Attribution must be a text string.';`,
           },
+        },
+        {
+          label: 'Include this layer?',
+          key: 'enabled',
+          type: 'checkbox',
+          input: true,
+          defaultValue: false,
+          tooltip:
+            'Check this box to include this custom base layer in the map.',
         },
       ],
       description:

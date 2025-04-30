@@ -36,6 +36,7 @@ interface MapServiceOptions {
   selectedBaseLayer?: string;
   onBaseLayerChange?: (layerName: string) => void;
   availableBaseLayers?: string[];
+  availableBaseLayersCustom: any;
 }
 
 class MapService {
@@ -128,6 +129,7 @@ class MapService {
       allowBaseLayerSwitch = true,
       availableBaseLayers,
       selectedBaseLayer,
+      availableBaseLayersCustom,
     } = options;
     if (drawOptions.rectangle) {
       drawOptions.rectangle.showArea = false;
@@ -155,14 +157,27 @@ class MapService {
       }),
     };
 
-    this.baseLayers = availableBaseLayers
+    // Start with built-in base layers
+    const selectedBaseLayers = availableBaseLayers
       ? Object.fromEntries(
           Object.entries(allLayers).filter(([key]) =>
             availableBaseLayers.includes(key)
           )
         )
-      : allLayers;
+      : { ...allLayers };
 
+    // Add enabled custom base layers
+    if (availableBaseLayersCustom && Array.isArray(availableBaseLayersCustom)) {
+      for (const custom of availableBaseLayersCustom) {
+        if (custom.enabled && custom.label && custom.url) {
+          selectedBaseLayers[custom.label] = L.tileLayer(custom.url, {
+            attribution:
+              custom.attribution || BASE_LAYER_ATTRIBUTIONS.OpenStreetMap,
+          });
+        }
+      }
+    }
+    this.baseLayers = selectedBaseLayers;
     // Pick the initial base layer
     const selectedLayerKey = this.baseLayers[selectedBaseLayer]
       ? selectedBaseLayer
