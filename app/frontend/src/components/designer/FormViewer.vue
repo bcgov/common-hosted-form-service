@@ -871,7 +871,10 @@ async function uploadQueuedFiles() {
               submission.value.data[key][0] = {
                 ...submission.value.data[key][0],
                 data: { id: response.data.id },
-                url: `/app/api/v1/files/${response.data.id}`,
+                url: submission.value.data[key][0].replace(
+                  /\/files\/[^/]+$/,
+                  `/files/${response.data.id}`
+                ),
               };
             }
           });
