@@ -47,4 +47,4 @@ jobs:
        if: failure()
        with:
           name: cypress-screenshots
-          path: '${{ github.workspace }}/tests/functional/screenshots'
+          path: '${{ github.workspace }}/tests/functional/cypress/screenshots'
