@@ -103,7 +103,7 @@ describe('Form Designer', () => {
           cy.wait(2000);
           cy.get(rem).click({ force: true });
           //submission delete verification
-          cy.get('.v-data-table__tr > :nth-child(7) > span[data-v-1cd101d8=""] > .v-btn > .v-btn__content > .mdi-minus').click();
+          cy.get('button[title="Delete Submission"]').click();
           cy.get('[data-test="continue-btn-continue"]').click();
           cy.get('.v-alert__content').contains('div','Submission deleted successfully.').should('be.visible');
           cy.get(rem).click({ force: true });
