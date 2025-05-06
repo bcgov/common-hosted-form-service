@@ -109,9 +109,9 @@ describe('clone', () => {
       const req = getMockReq(validRequest);
       const { res, next } = getMockRes();
 
-      await controller.create(req, res, next);
+      await controller.clone(req, res, next);
 
-      expect(service.create).toBeCalledWith(validRequest.file, validRequest.currentUser);
+      expect(service.clone).toBeCalledWith(validRequest.params.fileId, validRequest.currentUser);
       expect(res.json).toBeCalledWith({
         createdAt: fileStorage.createdAt,
         createdBy: fileStorage.createdBy,
