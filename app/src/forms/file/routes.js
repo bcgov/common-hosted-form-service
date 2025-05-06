@@ -25,6 +25,10 @@ routes.get('/:fileId', apiAccess, currentFileRecord, hasFilePermissions([P.SUBMI
   await controller.read(req, res, next);
 });
 
+routes.get('/:fileId/clone', apiAccess, currentFileRecord, hasFilePermissions([P.SUBMISSION_READ]), async (req, res, next) => {
+  await controller.clone(req, res, next);
+});
+
 routes.delete('/:fileId', currentFileRecord, hasFilePermissions([P.SUBMISSION_UPDATE]), async (req, res, next) => {
   await controller.delete(req, res, next);
 });

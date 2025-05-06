@@ -62,6 +62,30 @@ const service = {
       storage: fileStorage.storage,
     };
   },
+
+  cloneFile: async (fileStorage, newId) => {
+    if (!fs.existsSync(fileStorage.path)) {
+      throw new Error(`File not found: ${fileStorage.path}`);
+    }
+
+    // Define the new file path
+    const newPath = `${BASE_PATH}${path.sep}${newId}`;
+
+    try {
+      // Copy the file to the new location
+      fs.copyFileSync(fileStorage.path, newPath);
+
+      // Return a new file object with updated details
+      return {
+        ...fileStorage,
+        id: newId,
+        path: newPath,
+        storage: fileStorage.storage,
+      };
+    } catch (error) {
+      throw new Error(`Error cloning file: ${error.message}`);
+    }
+  },
 };
 
 module.exports = service;

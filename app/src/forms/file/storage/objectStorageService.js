@@ -169,6 +169,7 @@ class ObjectStorageService {
     }
   }
 
+  // Copies the file to a new location, not the same directory, keeps the same id.
   async copyFile(fileStorage, ...subdirs) {
     try {
       const key = this._join(this._key, ...subdirs, fileStorage.id);
@@ -182,6 +183,26 @@ class ObjectStorageService {
       return await this._s3.send(new CopyObjectCommand(params));
     } catch (e) {
       errorToProblem(SERVICE, e);
+    }
+  }
+
+  async cloneFile(fileStorage, newId) {
+    try {
+      // Construct the new key using the new ID
+      const newKey = this._join(this._key, newId);
+
+      // Perform the copy operation
+      await this.copyFile({ ...fileStorage, id: newId }, newKey);
+
+      // Return the newly cloned file details
+      return {
+        ...fileStorage,
+        id: newId,
+        path: newKey,
+        storage: StorageTypes.OBJECT_STORAGE,
+      };
+    } catch (error) {
+      errorToProblem(SERVICE, error);
     }
   }
 }
