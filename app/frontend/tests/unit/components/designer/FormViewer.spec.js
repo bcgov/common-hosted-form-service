@@ -393,7 +393,234 @@ describe('FormViewer.vue', () => {
       expect(addNotificationSpy).toBeCalledTimes(0);
     });
   });
-  it('if submission id and it is a duplicate, it should call getFormSchema and getFormData', async () => {
+  it('if submission id and it is a duplicate, it should call getFormSchema, getFormData, and copy files for cloning', async () => {
+    readPublishedSpy.mockReset();
+    readPublishedSpy.mockImplementationOnce(() => {
+      return {
+        data: {
+          versions: [
+            {
+              version: 1,
+              id: '123',
+              schema: {
+                components: [
+                  {
+                    id: 'e3r866e',
+                    key: 'simplefile',
+                    url: '/files',
+                    type: 'simplefile',
+                    image: false,
+                    input: true,
+                    label: 'File Upload',
+                    addons: [],
+                    hidden: false,
+                    prefix: '',
+                    suffix: '',
+                    unique: false,
+                    webcam: false,
+                    widget: null,
+                    dbIndex: false,
+                    fileKey: 'files',
+                    overlay: {
+                      top: '',
+                      left: '',
+                      style: '',
+                      width: '',
+                      height: '',
+                    },
+                    storage: 'chefs',
+                    tooltip: '',
+                    disabled: false,
+                    multiple: false,
+                    redrawOn: '',
+                    tabindex: '',
+                    validate: {
+                      custom: '',
+                      unique: false,
+                      multiple: false,
+                      required: false,
+                      isUseForCopy: true,
+                      customMessage: '',
+                      customPrivate: false,
+                      strictDateValidation: false,
+                    },
+                    autofocus: false,
+                    encrypted: false,
+                    fileTypes: [
+                      {
+                        label: '',
+                        value: '',
+                      },
+                    ],
+                    hideLabel: false,
+                    imageSize: '200',
+                    modalEdit: false,
+                    protected: false,
+                    refreshOn: '',
+                    tableView: false,
+                    attributes: {},
+                    errorLabel: '',
+                    persistent: true,
+                    properties: {},
+                    uploadOnly: false,
+                    validateOn: 'change',
+                    webcamSize: 320,
+                    clearOnHide: true,
+                    conditional: {
+                      eq: '',
+                      json: '',
+                      show: '',
+                      when: '',
+                    },
+                    customClass: 'formio-component-file',
+                    description: '',
+                    fileMaxSize: '1GB',
+                    fileMinSize: '0KB',
+                    filePattern: '*',
+                    placeholder: '',
+                    defaultValue: null,
+                    dataGridLabel: false,
+                    labelPosition: 'top',
+                    showCharCount: false,
+                    showWordCount: false,
+                    calculateValue: '',
+                    calculateServer: false,
+                    privateDownload: false,
+                    fileNameTemplate: '{{fileName}}',
+                    customConditional: '',
+                    allowMultipleMasks: false,
+                    customDefaultValue: '',
+                    allowCalculateOverride: false,
+                  },
+                  {
+                    id: 'e3ctpt',
+                    key: 'submit',
+                    size: 'md',
+                    type: 'button',
+                    block: false,
+                    input: true,
+                    label: 'Submit',
+                    theme: 'primary',
+                    action: 'submit',
+                    addons: [],
+                    hidden: false,
+                    prefix: '',
+                    suffix: '',
+                    unique: false,
+                    widget: {
+                      type: 'input',
+                    },
+                    dbIndex: false,
+                    overlay: {
+                      top: '',
+                      left: '',
+                      style: '',
+                      width: '',
+                      height: '',
+                    },
+                    tooltip: '',
+                    disabled: false,
+                    leftIcon: '',
+                    multiple: false,
+                    redrawOn: '',
+                    tabindex: '',
+                    validate: {
+                      custom: '',
+                      unique: false,
+                      multiple: false,
+                      required: false,
+                      customPrivate: false,
+                      strictDateValidation: false,
+                    },
+                    autofocus: false,
+                    encrypted: false,
+                    hideLabel: false,
+                    modalEdit: false,
+                    protected: false,
+                    refreshOn: '',
+                    rightIcon: '',
+                    tableView: false,
+                    attributes: {},
+                    errorLabel: '',
+                    persistent: false,
+                    properties: {},
+                    validateOn: 'change',
+                    clearOnHide: true,
+                    conditional: {
+                      eq: '',
+                      show: null,
+                      when: null,
+                    },
+                    customClass: '',
+                    description: '',
+                    placeholder: '',
+                    defaultValue: null,
+                    dataGridLabel: true,
+                    labelPosition: 'top',
+                    showCharCount: false,
+                    showWordCount: false,
+                    calculateValue: '',
+                    calculateServer: false,
+                    disableOnInvalid: true,
+                    allowMultipleMasks: false,
+                    customDefaultValue: '',
+                    allowCalculateOverride: false,
+                  },
+                ],
+                display: 'form',
+                type: 'form',
+              },
+            },
+          ],
+          schedule: {
+            expire: true,
+            allowLateSubmissions: false,
+            message: 'schedule status message',
+          },
+        },
+      };
+    });
+    getSubmissionSpy.mockReset();
+    getSubmissionSpy.mockImplementation(() => {
+      return {
+        data: {
+          submission: {
+            submission: {
+              data: {
+                submit: true,
+                state: 'submitted',
+                simplefile: [
+                  {
+                    data: {
+                      id: '123',
+                    },
+                    originalName: 'test.jpg',
+                    size: 1234,
+                    storage: 'chefs',
+                    url: '/app/api/v1/files/123',
+                  },
+                ],
+              },
+            },
+            draft: false,
+          },
+          form: {
+            identityProviders: [
+              {
+                code: IdentityMode.PUBLIC,
+              },
+            ],
+          },
+          version: {
+            id: '123',
+            schema: {
+              components: [],
+            },
+            version: 1,
+          },
+        },
+      };
+    });
     const wrapper = shallowMount(FormViewer, {
       props: {
         formId: formId,
@@ -419,6 +646,16 @@ describe('FormViewer.vue', () => {
     expect(wrapper.vm.showModal).toBeFalsy();
     expect(addEventListenerSpy).toBeCalledTimes(1);
     expect(addNotificationSpy).toBeCalledTimes(0);
+    expect(wrapper.vm.queuedUploadFiles).toEqual([
+      {
+        file: {
+          id: '123',
+        },
+        config: {
+          isDuplicate: true,
+        },
+      },
+    ]);
   });
 
   it('onBeforeUnmount should call window removeEventListener', async () => {
@@ -1911,12 +2148,13 @@ describe('FormViewer.vue', () => {
   });
 
   it('deleteQueuedFiles will call deleteFile and then the files onSuccess function', async () => {
-    const deleteFilesSpy = vi.spyOn(fileService, 'deleteFiles');
+    const deleteFilesSpy = vi.spyOn(fileService, 'deleteFile');
     deleteFilesSpy.mockImplementation(() => {});
     const wrapper = shallowMount(FormViewer, {
       props: {
         formId: formId,
         submissionId: '123',
+        isDuplicate: false,
       },
       global: {
         provide: {
@@ -1949,7 +2187,7 @@ describe('FormViewer.vue', () => {
   });
 
   it('deleteQueuedFiles will addNotification if an error occurs', async () => {
-    const deleteFilesSpy = vi.spyOn(fileService, 'deleteFiles');
+    const deleteFilesSpy = vi.spyOn(fileService, 'deleteFile');
     deleteFilesSpy.mockImplementation(() => {
       throw new Error();
     });
@@ -1957,6 +2195,7 @@ describe('FormViewer.vue', () => {
       props: {
         formId: formId,
         submissionId: '123',
+        isDuplicate: false,
       },
       global: {
         provide: {
@@ -2104,20 +2343,67 @@ describe('FormViewer.vue', () => {
         config: {
           onUploadProgress: onUploadProgress,
           headers: {},
+          isDuplicate: false,
         },
         onUploaded: onUploaded,
         onError: onError,
       },
     ]);
   });
-
-  it('uploadQueuedFiles will call fileServices uploadFile', async () => {
+  it('uploadFile will add the file without config or with event handlers to queuedUploadFiles if it is a duplicate', async () => {
     const uploadFileSpy = vi.spyOn(fileService, 'uploadFile');
     uploadFileSpy.mockImplementation(() => {});
     const wrapper = shallowMount(FormViewer, {
       props: {
         formId: formId,
         submissionId: '123',
+        isDuplicate: true,
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    const onError = vi.fn();
+    const onUploaded = vi.fn();
+    const onUploadProgress = vi.fn();
+
+    await wrapper.vm.uploadFile(
+      {},
+      {
+        onError: onError,
+        onUploadProgress: onUploadProgress,
+        onUploaded: onUploaded,
+        headers: {},
+      }
+    );
+    expect(wrapper.vm.queuedUploadFiles).toEqual([
+      {
+        file: {},
+        config: {
+          isDuplicate: true,
+        },
+      },
+    ]);
+  });
+  it('uploadQueuedFiles will call fileServices uploadFile if it is not a duplicate', async () => {
+    const uploadFileSpy = vi.spyOn(fileService, 'uploadFile');
+    uploadFileSpy.mockImplementation(() => {
+      return {
+        status: 200,
+      };
+    });
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+        isDuplicate: false,
       },
       global: {
         provide: {
@@ -2150,6 +2436,96 @@ describe('FormViewer.vue', () => {
     expect(uploadFileSpy).toBeCalledTimes(1);
     expect(onUploaded).toBeCalledTimes(1);
     expect(wrapper.vm.queuedUploadFiles).toEqual([]);
+  });
+
+  it('uploadQueuedFiles will call fileServices cloneFile if it is a duplicate', async () => {
+    const uploadFileSpy = vi.spyOn(fileService, 'uploadFile');
+    uploadFileSpy.mockImplementation(() => {});
+    const cloneFileSpy = vi.spyOn(fileService, 'cloneFile');
+    cloneFileSpy.mockImplementation(() => {
+      return {
+        status: 200,
+        data: {
+          id: '456',
+        },
+      };
+    });
+    const wrapper = shallowMount(FormViewer, {
+      props: {
+        formId: formId,
+        submissionId: '123',
+        isDuplicate: true,
+      },
+      global: {
+        provide: {
+          setWideLayout: vi.fn(),
+        },
+        plugins: [pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    const onUploaded = vi.fn();
+
+    wrapper.vm.simpleFileComponents = [
+      {
+        key: 'simplefile',
+      },
+    ];
+    wrapper.vm.submission = {
+      data: {
+        simplefile: [
+          {
+            data: {
+              id: '123',
+            },
+            url: '/files/123',
+          },
+        ],
+      },
+    };
+    wrapper.vm.queuedUploadFiles = [
+      {
+        file: {
+          id: '123',
+        },
+        config: {
+          isDuplicate: true,
+        },
+      },
+    ];
+
+    expect(wrapper.vm.submission).toEqual({
+      data: {
+        simplefile: [
+          {
+            data: {
+              id: '123',
+            },
+            url: '/files/123',
+          },
+        ],
+      },
+    });
+    await wrapper.vm.uploadQueuedFiles();
+    expect(uploadFileSpy).toBeCalledTimes(0);
+    expect(cloneFileSpy).toBeCalledTimes(1);
+    expect(onUploaded).toBeCalledTimes(0);
+    expect(wrapper.vm.queuedUploadFiles).toEqual([]);
+    expect(wrapper.vm.submission).toEqual({
+      data: {
+        simplefile: [
+          {
+            data: {
+              id: '456',
+            },
+            url: `/files/456`,
+          },
+        ],
+      },
+    });
   });
 
   it('uploadQueuedFiles will addNotification if an error is thrown', async () => {

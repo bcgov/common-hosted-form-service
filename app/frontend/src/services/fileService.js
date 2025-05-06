@@ -14,4 +14,7 @@ export default {
   async uploadFile(file, config = {}) {
     return appAxios().post(`${ApiRoutes.FILES}`, file, config);
   },
+  async cloneFile(fileId) {
+    return appAxios().get(`${ApiRoutes.FILES}/${fileId}/clone`);
+  },
 };
