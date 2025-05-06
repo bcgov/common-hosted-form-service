@@ -70,4 +70,13 @@ module.exports = {
       next(error);
     }
   },
+
+  clone: async (req, res, next) => {
+    try {
+      const response = await service.clone(req.params.fileId, req.currentUser);
+      res.status(201).json(_trim(response));
+    } catch (error) {
+      next(error);
+    }
+  },
 };
