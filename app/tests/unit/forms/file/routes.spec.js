@@ -139,3 +139,25 @@ describe(`${basePath}/:id`, () => {
     expect(validateParameter.validateFileId).toBeCalledTimes(1);
   });
 });
+
+describe(`${basePath}/:id/clone`, () => {
+  const fileId = uuid.v4();
+  const path = `${basePath}/${fileId}/clone`;
+
+  it('should have correct middleware for GET', async () => {
+    controller.clone = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
+    await appRequest.get(path);
+
+    expect(apiAccess).toBeCalledTimes(1);
+    expect(controller.clone).toBeCalledTimes(1);
+    expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
+    expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
+    expect(hasFilePermissionsMock).toBeCalledTimes(1);
+    expect(upload.fileUpload.upload).toBeCalledTimes(0);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateFileId).toBeCalledTimes(1);
+  });
+});
