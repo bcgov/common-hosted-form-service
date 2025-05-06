@@ -8,6 +8,21 @@ import { useIdpStore } from '~/store/identityProviders';
 const zeroUuid = '00000000-0000-0000-0000-000000000000';
 const zeroGuid = '00000000000000000000000000000000';
 
+const defaultUser = {
+  idpUserId: '',
+  username: '',
+  firstName: '',
+  lastName: '',
+  fullName: '',
+  email: '',
+  idp: {
+    code: 'public',
+    display: 'Public',
+    hint: 'public',
+  },
+  public: true,
+};
+
 describe('auth getters', () => {
   let roles;
   const app = createApp({});
@@ -41,6 +56,20 @@ describe('auth getters', () => {
       },
       userName: 'uName',
     };
+    store.currentUser = {
+      idpUserId: zeroGuid,
+      username: 'JDOE',
+      firstName: 'John',
+      lastName: 'Doe',
+      fullName: 'John Doe',
+      email: 'e@mail.com',
+      idp: {
+        code: 'idir',
+        display: 'IDIR',
+        hint: 'idir',
+      },
+      public: false,
+    };
   });
 
   it('authenticated should return a boolean', () => {
@@ -54,6 +83,8 @@ describe('auth getters', () => {
 
   it('email should return an empty string', () => {
     store.keycloak.tokenParsed = undefined;
+    store.currentUser = defaultUser;
+
     expect(store.email).toBeFalsy();
     expect(store.email).toEqual('');
   });
@@ -65,6 +96,7 @@ describe('auth getters', () => {
 
   it('hasResourceRoles should return false if unauthenticated', () => {
     store.authenticated = false;
+    store.currentUser = defaultUser;
 
     expect(store.authenticated).toBeFalsy();
     expect(store.hasResourceRoles(roles)).toBeFalsy();
@@ -186,6 +218,8 @@ describe('auth getters', () => {
   it('creates a public user when not authenticated', () => {
     store.authenticated = false;
     store.keycloak.tokenParsed = undefined;
+    // default unauthenticated user...
+    store.currentUser = defaultUser;
 
     expect(store.user).toBeTruthy();
     expect(store.user).toEqual({
