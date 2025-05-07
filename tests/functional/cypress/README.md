@@ -14,7 +14,11 @@ npm ci
 
 ### Run Cypress Tests
 
-By default, these Cypress tests will target our deployed Test environment of CHEFS.
+By default, these Cypress tests run on Electron browser. But for version 14 or above,since there is a stability issue, run tests on chrome/edge browser
+
+ ```sh
+npm run test -- --browser chrome
+```
 
 ```sh
 # CLI Mode
