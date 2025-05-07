@@ -67,7 +67,7 @@ class MapService {
     if (options.mapContainer) {
       // Check if the container already has a map (cleanup first if needed)
       if (options.mapContainer._leaflet_id) {
-        console.log('Cleaning up existing map before initializing');
+        // console.log('Cleaning up existing map before initializing');
         this.cleanup();
       }
 
@@ -80,8 +80,6 @@ class MapService {
     try {
       // Remove the map if it exists
       if (this.map) {
-        console.log('Removing existing map');
-
         // Remove event listeners to prevent memory leaks
         this.map.off();
         this.map.remove();
@@ -251,7 +249,7 @@ class MapService {
       // Ensure cleanup happened before continuing
       const existingMap = L.DomUtil.get(mapContainer);
       if (existingMap && existingMap._leaflet_id) {
-        console.log('Removing existing leaflet instance from DOM element');
+       // console.log('Removing existing leaflet instance from DOM element');
         delete existingMap._leaflet_id;
       }
     }

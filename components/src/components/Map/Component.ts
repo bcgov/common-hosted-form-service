@@ -301,7 +301,7 @@ export default class Component extends (FieldComponent as any) {
   saveDrawnItems(drawnItems: L.Layer[]) {
     try {
       if (this.updatingFromMapService) {
-        console.log('Skipping saveDrawnItems call during value update');
+        //console.log('Skipping saveDrawnItems call during value update');
         return;
       }
 
@@ -355,11 +355,9 @@ export default class Component extends (FieldComponent as any) {
 
       // Skip if no actual change
       if (this.lastSavedValue === newValueStr) {
-        console.log('No change in drawn items, skipping update');
+        // console.log('No change in drawn items, skipping update');
         return;
       }
-
-      console.log('Saving drawn items:', features);
 
       // Update the value
       this.skipNextUpdate = true;
@@ -377,7 +375,7 @@ export default class Component extends (FieldComponent as any) {
     try {
       // Skip this update if flagged (prevents loops)
       if (this.skipNextUpdate) {
-        console.log('Skipping setValue due to skipNextUpdate flag');
+        // console.log('Skipping setValue due to skipNextUpdate flag');
         this.skipNextUpdate = false;
         return super.setValue(value);
       }
@@ -399,7 +397,7 @@ export default class Component extends (FieldComponent as any) {
 
       // If values are exactly the same, do nothing
       if (currentValueStr === newValueStr) {
-        console.log('Values are identical, skipping setValue');
+        // console.log('Values are identical, skipping setValue');
         return;
       }
 
@@ -416,7 +414,7 @@ export default class Component extends (FieldComponent as any) {
 
         // Update features if they changed
         if (newValue.features && currentValueStr !== newValueStr) {
-          console.log('Loading new features onto map:', newValue.features);
+         // console.log('Loading new features onto map:', newValue.features);
           this.mapService.loadDrawnItems(newValue.features);
         }
 
@@ -430,7 +428,7 @@ export default class Component extends (FieldComponent as any) {
           this.updatingFromMapService = false;
         }, 10);
       } else {
-        console.log('Map not initialized yet, value will be applied when ready');
+        // console.log('Map not initialized yet, value will be applied when ready');
       }
 
       return result;
@@ -472,7 +470,7 @@ export default class Component extends (FieldComponent as any) {
     try {
       // Skip if we're currently updating from map service
       if (this.updatingFromMapService) {
-        console.log('Skipping saveBaseLayer call during value update');
+        // console.log('Skipping saveBaseLayer call during value update');
         return;
       }
 
