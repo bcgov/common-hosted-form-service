@@ -124,7 +124,7 @@ export default class Component extends (FieldComponent as any) {
 
     // Check if container already has a map instance
     if (this.mapContainer._leaflet_id) {
-      console.log('Map container already has a map. Cleaning up first.');
+      // console.log('Map container already has a map. Cleaning up first.');
       this.cleanupMap();
 
       // Delete the leaflet ID from the container element
@@ -194,16 +194,15 @@ export default class Component extends (FieldComponent as any) {
 
     try {
       // Determine what default value to use
-      const effectiveDefaultValue = this.dataValue && this.dataValue.features
-        ? this.dataValue
-        : defaultValue && defaultValue.features
+      const effectiveDefaultValue =
+        this.dataValue && this.dataValue.features
+          ? this.dataValue
+          : defaultValue && defaultValue.features
           ? defaultValue
           : { features: [], selectedBaseLayer };
 
       // Store the initial value to avoid unnecessary updates
       this.lastSavedValue = JSON.stringify(effectiveDefaultValue);
-
-      console.log('Initializing map with default value:', effectiveDefaultValue);
 
       this.mapService = new MapService({
         mapContainer: this.mapContainer,
@@ -228,11 +227,13 @@ export default class Component extends (FieldComponent as any) {
       });
 
       // Force load drawn items manually after MapService is fully initialized
-      if (effectiveDefaultValue?.features && effectiveDefaultValue.features.length > 0) {
+      if (
+        effectiveDefaultValue?.features &&
+        effectiveDefaultValue.features.length > 0
+      ) {
         try {
           // Add a small delay to ensure the map is ready before loading features
           setTimeout(() => {
-            console.log('Loading drawn items:', effectiveDefaultValue.features);
             if (this.mapService) {
               this.skipNextUpdate = true; // Prevent update loop when loading initial features
               this.mapService.loadDrawnItems(effectiveDefaultValue.features);
@@ -261,33 +262,39 @@ export default class Component extends (FieldComponent as any) {
     try {
       // Create a simplified representation for comparison
       const simplifiedValue = {
-        features: value.features ? value.features.map(feature => {
-          const result = { type: feature.type };
+        features: value.features
+          ? value.features.map((feature) => {
+              const result: any = { type: feature.type };
 
-          if (feature.coordinates) {
-            if (feature.type === 'marker' || feature.type === 'circle') {
-              // For point features, just store lat/lng as strings
-              result.coordinates = `${feature.coordinates.lat},${feature.coordinates.lng}`;
-            } else if (feature.type === 'polyline' || feature.type === 'polygon') {
-              // For line/polygon features, create a string hash of coordinates
-              result.coordinates = JSON.stringify(feature.coordinates)
-                .replace(/[{}"]/g, ''); // Remove JSON syntax characters
-            }
-          }
+              if (feature.coordinates) {
+                if (feature.type === 'marker' || feature.type === 'circle') {
+                  // For point features, just store lat/lng as strings
+                  result.coordinates = `${feature.coordinates.lat},${feature.coordinates.lng}`;
+                } else if (
+                  feature.type === 'polyline' ||
+                  feature.type === 'polygon'
+                ) {
+                  // For line/polygon features, create a string hash of coordinates
+                  result.coordinates = JSON.stringify(
+                    feature.coordinates
+                  ).replace(/[{}"]/g, ''); // Remove JSON syntax characters
+                }
+              }
 
-          if (feature.bounds) {
-            // For rectangles, create a string representation of bounds
-            const bounds = feature.bounds;
-            result.bounds = `${bounds._southWest.lat},${bounds._southWest.lng},${bounds._northEast.lat},${bounds._northEast.lng}`;
-          }
+              if (feature.bounds) {
+                // For rectangles, create a string representation of bounds
+                const bounds = feature.bounds;
+                result.bounds = `${bounds._southWest.lat},${bounds._southWest.lng},${bounds._northEast.lat},${bounds._northEast.lng}`;
+              }
 
-          if (feature.radius) {
-            result.radius = feature.radius;
-          }
+              if (feature.radius) {
+                result.radius = feature.radius;
+              }
 
-          return result;
-        }) : [],
-        selectedBaseLayer: value.selectedBaseLayer || DEFAULT_BASE_LAYER
+              return result;
+            })
+          : [],
+        selectedBaseLayer: value.selectedBaseLayer || DEFAULT_BASE_LAYER,
       };
 
       return JSON.stringify(simplifiedValue);
@@ -301,7 +308,7 @@ export default class Component extends (FieldComponent as any) {
   saveDrawnItems(drawnItems: L.Layer[]) {
     try {
       if (this.updatingFromMapService) {
-        //console.log('Skipping saveDrawnItems call during value update');
+        // console.log('Skipping saveDrawnItems call during value update');
         return;
       }
 
@@ -388,7 +395,8 @@ export default class Component extends (FieldComponent as any) {
       // Ensure we have valid structures
       const newValue = {
         features: value.features || [],
-        selectedBaseLayer: value.selectedBaseLayer || currentValue.selectedBaseLayer,
+        selectedBaseLayer:
+          value.selectedBaseLayer || currentValue.selectedBaseLayer,
       };
 
       // Serialize for comparison using our safe method
@@ -414,7 +422,7 @@ export default class Component extends (FieldComponent as any) {
 
         // Update features if they changed
         if (newValue.features && currentValueStr !== newValueStr) {
-         // console.log('Loading new features onto map:', newValue.features);
+          // console.log('Loading new features onto map:', newValue.features);
           this.mapService.loadDrawnItems(newValue.features);
         }
 
@@ -500,7 +508,12 @@ export default class Component extends (FieldComponent as any) {
     const result = super.updateValue(flags);
 
     // Force redraw when in builder mode, but avoid loops
-    if (this.options.builder && this.initialized && this.mapService && !this.updatingFromMapService) {
+    if (
+      this.options.builder &&
+      this.initialized &&
+      this.mapService &&
+      !this.updatingFromMapService
+    ) {
       try {
         this.mapService.refresh();
       } catch (error) {
