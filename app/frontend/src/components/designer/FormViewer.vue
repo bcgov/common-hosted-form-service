@@ -907,17 +907,18 @@ async function uploadQueuedFiles() {
         return null; // Mark for removal
       } catch (error) {
         err = true;
-        notificationStore.addNotification({
-          text: t('trans.formViewer.errorSavingFile', {
-            fileName: fileObj.file.originalName,
-            error: error,
-          }),
-          consoleError: t('trans.formViewer.errorSavingFile', {
-            fileName: fileObj.file.originalName,
-            error: error,
-          }),
-        });
-
+        if (fileObj.file.originalName) {
+          notificationStore.addNotification({
+            text: t('trans.formViewer.errorSavingFile', {
+              fileName: fileObj.file.originalName,
+              error: error,
+            }),
+            consoleError: t('trans.formViewer.errorSavingFile', {
+              fileName: fileObj.file.originalName,
+              error: error,
+            }),
+          });
+        }
         return fileObj; // Keep failed uploads in the array
       }
     })
