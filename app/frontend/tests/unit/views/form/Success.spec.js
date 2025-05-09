@@ -12,6 +12,7 @@ describe('Success.vue', () => {
     const wrapper = mount(Success, {
       props: {
         s: 's',
+        f: 'f',
       },
       global: {
         plugins: [pinia],
