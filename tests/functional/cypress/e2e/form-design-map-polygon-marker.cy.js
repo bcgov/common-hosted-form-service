@@ -118,11 +118,12 @@ describe('Form Designer', () => {
   it('Checks form submission for a Map component', () => {
         cy.viewport(1000, 1100);
         cy.waitForLoad();
+        cy.wait(2000);
   // Form saving
       let savedButton = cy.get('[data-cy=saveButton]');
       expect(savedButton).to.not.be.null;
       savedButton.trigger('click');
-      cy.wait(2000); 
+      cy.wait(3000); 
   // Filter the newly created form
       cy.location('search').then(search => {
       //let pathName = fullUrl.pathname
@@ -161,7 +162,25 @@ describe('Form Designer', () => {
       });  
       cy.get('div[class="leaflet-draw-tooltip leaflet-draw-tooltip-single"]').click({ force: true });
       cy.wait(2000);
+      //Verify marker limit validation message
       cy.get('div[class="leaflet-popup-content"]').find('p').contains('Only 4 features per submission').should('be.visible');
+      //Validate the feature of deleting existing markers not possible
+      cy.get('.leaflet-draw-edit-remove').click();
+      cy.get('g').find('path[stroke-linejoin="round"]').then($el => {
+        const del_polygon=$el[0];
+        cy.get(del_polygon).click({force: true});
+      });  
+      cy.get(':nth-child(2) > .leaflet-draw-actions > :nth-child(1) > a').click();
+      //verify validation message
+      cy.get('div[class="leaflet-popup-content"]').find('p').contains('Please do not delete pre-existing features').should('be.visible');
+      //Delete the circle drawn by the submitter
+      cy.get('.leaflet-draw-edit-remove').click();
+      cy.get('g').find('path[stroke-linejoin="round"]').then($el => {
+        const del_polygon=$el[1];
+        cy.get(del_polygon).click({force: true});
+      });
+      //validate submitter is able to delete the marker drawn and save it
+      cy.get(':nth-child(2) > .leaflet-draw-actions > :nth-child(1) > a').click();
       cy.get('button').contains('Submit').click();
       cy.wait(2000);
       cy.get('button').contains('Submit').click();
