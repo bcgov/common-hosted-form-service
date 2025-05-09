@@ -623,9 +623,17 @@ async function doSubmit(sub) {
         {},
         properties.submissionId && properties.isDuplicate //Check if this submission is creating with the existing one
           ? response.data
-          : properties.submissionId && !properties.isDuplicate
-          ? response.data.submission
-          : response.data
+          : (() => {
+              let result;
+              if (properties.submissionId && properties.isDuplicate) {
+                result = response.data;
+              } else if (properties.submissionId && !properties.isDuplicate) {
+                result = response.data.submission;
+              } else {
+                result = response.data;
+              }
+              return result;
+            })()
       );
     } else {
       throw new Error(
@@ -759,7 +767,14 @@ function beforeWindowUnload(e) {
 }
 
 async function deleteFile(file) {
-  const fileId = file?.data?.id ? file.data.id : file?.id ? file.id : undefined;
+  let fileId;
+  if (file?.data?.id) {
+    fileId = file.data.id;
+  } else if (file?.id) {
+    fileId = file.id;
+  } else {
+    fileId = undefined;
+  }
   return fileService.deleteFile(fileId);
 }
 

@@ -53,29 +53,27 @@ export default class Component extends (ParentComponent as any) {
 
   constructor(...args) {
     super(...args);
-    try {
-      if (this.options && this.options.componentOptions) {
-        // componentOptions are passed in from the viewer, basically runtime configuration
-        const opts = this.options.componentOptions[ID];
-        this.component.options = { ...this.component.options, ...opts };
-        // the config.uploads object will say what size our server can handle and what path to use.
-        if (opts.config && opts.config.uploads) {
-          const remSlash = (s) => s.replace(/^\s*\/*\s*|\s*\/*\s*$/gm, '');
+    if (this.options?.componentOptions) {
+      // componentOptions are passed in from the viewer, basically runtime configuration
+      const opts = this.options.componentOptions[ID];
+      this.component.options = { ...this.component.options, ...opts };
+      // the config.uploads object will say what size our server can handle and what path to use.
+      if (opts.config?.uploads) {
+        const remSlash = (s) => s.replace(/^\s*\/*\s*|\s*\/*\s*$/gm, '');
 
-          const cfg = opts.config;
-          const uploads = cfg.uploads;
+        const cfg = opts.config;
+        const uploads = cfg.uploads;
 
-          this.component.fileMinSize = uploads.fileMinSize;
-          this.component.fileMaxSize = uploads.fileMaxSize;
-          // set the default url to be for uploads.
-          this.component.url = `/${remSlash(cfg.basePath)}/${remSlash(
-            cfg.apiPath
-          )}/${remSlash(uploads.path)}`;
-          // no idea what to do with this yet...
-          this._enabled = uploads.enabled;
-        }
+        this.component.fileMinSize = uploads.fileMinSize;
+        this.component.fileMaxSize = uploads.fileMaxSize;
+        // set the default url to be for uploads.
+        this.component.url = `/${remSlash(cfg.basePath)}/${remSlash(
+          cfg.apiPath
+        )}/${remSlash(uploads.path)}`;
+        // no idea what to do with this yet...
+        this._enabled = uploads.enabled;
       }
-    } catch (e) {}
+    }
   }
 
   deleteFile(fileInfo) {
@@ -90,7 +88,7 @@ export default class Component extends (ParentComponent as any) {
     if (!this.component.multiple) {
       files = Array.prototype.slice.call(files, 0, 1);
     }
-    if (this.component && files && files.length) {
+    if (this.component?.files?.length) {
       // files is not really an array and does not have a forEach method, so fake it.
       Array.prototype.forEach.call(files, async (file) => {
         const fileName = uniqueName(
@@ -149,7 +147,7 @@ export default class Component extends (ParentComponent as any) {
         }
 
         // Get a unique name for this file to keep file collisions from occurring.
-        const dir = this.interpolate(this.component.dir || '');
+        const dir = this.interpolate(this.component.dir ?? '');
         const { fileService } = this;
         if (!fileService) {
           fileUpload.status = 'error';
@@ -165,35 +163,8 @@ export default class Component extends (ParentComponent as any) {
           }
           const { options = {} } = this.component;
           const url = this.interpolate(this.component.url);
-          let groupKey = null;
-          let groupPermissions = null;
 
-          //Iterate through form components to find group resource if one exists
-          this.root.everyComponent((element) => {
-            if (
-              element.component?.submissionAccess ||
-              element.component?.defaultPermission
-            ) {
-              groupPermissions = !element.component.submissionAccess
-                ? [
-                    {
-                      type: element.component.defaultPermission,
-                      roles: [],
-                    },
-                  ]
-                : element.component.submissionAccess;
-
-              groupPermissions.forEach((permission) => {
-                groupKey = ['admin', 'write', 'create'].includes(
-                  permission.type
-                )
-                  ? element.component.key
-                  : null;
-              });
-            }
-          });
-
-          const fileKey = this.component.fileKey || 'file';
+          const fileKey = this.component.fileKey ?? 'file';
 
           const blob = new Blob([file], { type: file.type });
           const fileFromBlob = new File([blob], file.name, {
@@ -224,7 +195,7 @@ export default class Component extends (ParentComponent as any) {
               },
             })
             .then((response) => {
-              response.data = response.data || {};
+              response.data = response.data ?? {};
               const index = this.statuses.indexOf(fileUpload);
               if (index !== -1) {
                 this.statuses.splice(index, 1);
@@ -270,7 +241,7 @@ export default class Component extends (ParentComponent as any) {
   }
 
   getFile(fileInfo) {
-    const fileId = fileInfo?.data?.id ? fileInfo.data.id : fileInfo.id;
+    const fileId = fileInfo?.data?.id ?? fileInfo.id;
     const { options = {} } = this.component;
     options.getFile(fileId, { responseType: 'blob' }).catch((response) => {
       // Is alert the best way to do this?

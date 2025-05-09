@@ -836,11 +836,9 @@ describe('FormViewer.vue', () => {
     addNotificationSpy.mockReset();
 
     readDraftSpy.mockImplementationOnce(() => {
-      throw {
-        response: {
-          status: 401,
-        },
-      };
+      const error = new Error('Unauthorized');
+      error.response = { status: 401 };
+      throw error;
     });
 
     await wrapper.vm.getFormSchema();
