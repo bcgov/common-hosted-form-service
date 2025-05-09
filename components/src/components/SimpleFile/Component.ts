@@ -88,7 +88,7 @@ export default class Component extends (ParentComponent as any) {
     if (!this.component.multiple) {
       files = Array.prototype.slice.call(files, 0, 1);
     }
-    if (this.component?.files?.length) {
+    if (this.component && files?.length) {
       // files is not really an array and does not have a forEach method, so fake it.
       Array.prototype.forEach.call(files, async (file) => {
         const fileName = uniqueName(
