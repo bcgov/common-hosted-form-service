@@ -53,50 +53,35 @@ export default class Component extends (ParentComponent as any) {
 
   constructor(...args) {
     super(...args);
-    if (this.options?.componentOptions) {
-      // componentOptions are passed in from the viewer, basically runtime configuration
-      const opts = this.options.componentOptions[ID];
-      this.component.options = { ...this.component.options, ...opts };
-      // the config.uploads object will say what size our server can handle and what path to use.
-      if (opts.config?.uploads) {
-        const remSlash = (s) => s.replace(/^\s*\/*\s*|\s*\/*\s*$/gm, '');
+    try {
+      if (this.options && this.options.componentOptions) {
+        // componentOptions are passed in from the viewer, basically runtime configuration
+        const opts = this.options.componentOptions[ID];
+        this.component.options = { ...this.component.options, ...opts };
+        // the config.uploads object will say what size our server can handle and what path to use.
+        if (opts.config && opts.config.uploads) {
+          const remSlash = (s) => s.replace(/^\s*\/*\s*|\s*\/*\s*$/gm, '');
 
-        const cfg = opts.config;
-        const uploads = cfg.uploads;
+          const cfg = opts.config;
+          const uploads = cfg.uploads;
 
-        this.component.fileMinSize = uploads.fileMinSize;
-        this.component.fileMaxSize = uploads.fileMaxSize;
-        // set the default url to be for uploads.
-        this.component.url = `/${remSlash(cfg.basePath)}/${remSlash(
-          cfg.apiPath
-        )}/${remSlash(uploads.path)}`;
-        // no idea what to do with this yet...
-        this._enabled = uploads.enabled;
+          this.component.fileMinSize = uploads.fileMinSize;
+          this.component.fileMaxSize = uploads.fileMaxSize;
+          // set the default url to be for uploads.
+          this.component.url = `/${remSlash(cfg.basePath)}/${remSlash(
+            cfg.apiPath
+          )}/${remSlash(uploads.path)}`;
+          // no idea what to do with this yet...
+          this._enabled = uploads.enabled;
+        }
       }
-    }
+    } catch (e) {}
   }
 
   deleteFile(fileInfo) {
     const { options = {} } = this.component;
     if (fileInfo) {
-      return new Promise((resolve, reject) => {
-        options.deleteFile(fileInfo, {
-          onSuccess: () => {
-            this.redraw();
-            this.triggerChange();
-            resolve(fileInfo);
-          },
-          onError: (error) => {
-            this.redraw();
-            this.triggerChange();
-            reject(error);
-            this.statuses.push({
-              status: 'error',
-              message: error.detail,
-            });
-          },
-        });
-      });
+      options.deleteFile(fileInfo);
     }
   }
 
@@ -105,7 +90,7 @@ export default class Component extends (ParentComponent as any) {
     if (!this.component.multiple) {
       files = Array.prototype.slice.call(files, 0, 1);
     }
-    if (this.component && files?.length) {
+    if (this.component && files && files.length) {
       // files is not really an array and does not have a forEach method, so fake it.
       Array.prototype.forEach.call(files, async (file) => {
         const fileName = uniqueName(
@@ -118,7 +103,7 @@ export default class Component extends (ParentComponent as any) {
           name: fileName,
           size: file.size,
           status: 'info',
-          message: '',
+          message: this.t('Starting upload'),
         };
 
         // Check file pattern
@@ -180,6 +165,34 @@ export default class Component extends (ParentComponent as any) {
           }
           const { options = {} } = this.component;
           const url = this.interpolate(this.component.url);
+          let groupKey = null;
+          let groupPermissions = null;
+
+          //Iterate through form components to find group resource if one exists
+          this.root.everyComponent((element) => {
+            if (
+              element.component?.submissionAccess ||
+              element.component?.defaultPermission
+            ) {
+              groupPermissions = !element.component.submissionAccess
+                ? [
+                    {
+                      type: element.component.defaultPermission,
+                      roles: [],
+                    },
+                  ]
+                : element.component.submissionAccess;
+
+              groupPermissions.forEach((permission) => {
+                groupKey = ['admin', 'write', 'create'].includes(
+                  permission.type
+                )
+                  ? element.component.key
+                  : null;
+              });
+            }
+          });
+
           const fileKey = this.component.fileKey || 'file';
 
           const blob = new Blob([file], { type: file.type });
@@ -196,19 +209,21 @@ export default class Component extends (ParentComponent as any) {
           for (const key in data) {
             formData.append(key, data[key]);
           }
-          options.uploadFile(formData, {
-            onUploadProgress: (evt) => {
-              fileUpload.status = 'progress';
-              fileUpload.message = this.t('Starting upload');
-              // @ts-ignore
-              fileUpload.progress = parseInt((100.0 * evt.loaded) / evt.total);
-              delete fileUpload.message;
-              this.redraw();
-            },
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-            onUploaded: (response) => {
+          options
+            .uploadFile(formData, {
+              onUploadProgress: (evt) => {
+                fileUpload.status = 'progress';
+                const p = (100.0 * evt.loaded) / evt.total;
+                // @ts-ignore
+                fileUpload.progress = p;
+                delete fileUpload.message;
+                this.redraw();
+              },
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            })
+            .then((response) => {
               response.data = response.data || {};
               const index = this.statuses.indexOf(fileUpload);
               if (index !== -1) {
@@ -230,8 +245,8 @@ export default class Component extends (ParentComponent as any) {
               this.dataValue.push(fileInfo);
               this.redraw();
               this.triggerChange();
-            },
-            onError: (response) => {
+            })
+            .catch((response) => {
               fileUpload.status = 'error';
               // we do not get API Problem objects, only http error
               // not much information to provide our users.
@@ -248,8 +263,7 @@ export default class Component extends (ParentComponent as any) {
               // @ts-ignore
               delete fileUpload.progress;
               this.redraw();
-            },
-          });
+            });
         }
       });
     }
