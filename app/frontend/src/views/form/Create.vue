@@ -112,7 +112,6 @@ formStore.resetForm();
           </v-btn>
         </v-stepper-window-item>
         <v-stepper-window-item value="2">
-          <FormDesigner ref="formDesigner" />
           <v-btn
             variant="outlined"
             data-test="back-btn"
@@ -121,6 +120,7 @@ formStore.resetForm();
           >
             <span :lang="locale">{{ $t('trans.create.back') }}</span>
           </v-btn>
+          <FormDesigner ref="formDesigner" />
         </v-stepper-window-item>
       </v-stepper-window>
     </v-stepper>

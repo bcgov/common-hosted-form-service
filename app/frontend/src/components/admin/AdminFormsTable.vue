@@ -125,39 +125,34 @@ async function refreshForms() {
         {{ item.updatedBy }}
       </template>
       <template #item.actions="{ item }">
-        <router-link :to="{ name: 'AdministerForm', query: { f: item.id } }">
-          <v-btn
-            color="primary"
-            variant="text"
-            size="small"
-            :title="$t('trans.adminFormsTable.admin')"
-          >
-            <v-icon class="mr-1" icon="mdi:mdi-wrench"></v-icon>
-            <span class="d-none d-sm-flex" :lang="locale">{{
-              t('trans.adminFormsTable.admin')
-            }}</span>
-          </v-btn>
-        </router-link>
-
-        <router-link
+        <v-btn
+          color="primary"
+          variant="text"
+          size="small"
+          :to="{ name: 'AdministerForm', query: { f: item.id } }"
+          :title="$t('trans.adminFormsTable.admin')"
+        >
+          <v-icon class="mr-1" icon="mdi:mdi-wrench"></v-icon>
+          <span class="d-none d-sm-flex" :lang="locale">{{
+            t('trans.adminFormsTable.admin')
+          }}</span>
+        </v-btn>
+        <v-btn
+          color="primary"
+          variant="text"
+          size="small"
           :to="{
             name: 'FormSubmit',
             query: { f: item.id },
           }"
           target="_blank"
+          :title="$t('trans.adminFormsTable.launch')"
         >
-          <v-btn
-            color="primary"
-            variant="text"
-            size="small"
-            :title="$t('trans.adminFormsTable.launch')"
-          >
-            <v-icon class="mr-1" icon="mdi:mdi-note-plus"></v-icon>
-            <span class="d-none d-sm-flex" :lang="locale">{{
-              t('trans.adminFormsTable.launch')
-            }}</span>
-          </v-btn>
-        </router-link>
+          <v-icon class="mr-1" icon="mdi:mdi-note-plus"></v-icon>
+          <span class="d-none d-sm-flex" :lang="locale">{{
+            t('trans.adminFormsTable.launch')
+          }}</span>
+        </v-btn>
       </template>
     </v-data-table>
   </div>

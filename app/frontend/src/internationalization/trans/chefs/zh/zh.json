@@ -452,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "表格设计",
-    "exportDesign": "出口设计",
-    "importDesign": "导入设计",
+    "downloadJson": "下载 JSON",
+    "uploadJson": "上传 JSON",
     "important": "重要的",
     "formDesignInfoA": "完成此表单的构建后，请使用<strong>“保存设计”</strong>按钮。",
     "formDesignInfoB": "<strong>提交</strong>按钮供您的用户提交此表单，并将在保存后激活。",
@@ -1225,6 +1225,6 @@
   },
   "canShareDraft": {
     "canShareMessage": "您无法与尚未添加到表单的用户共享草稿。请联系管理员添加他们。",
-    "shareDraftMessage":"仅与表单团队成员共享草稿"
+    "shareDraftMessage": "仅与表单团队成员共享草稿"
   }
 }

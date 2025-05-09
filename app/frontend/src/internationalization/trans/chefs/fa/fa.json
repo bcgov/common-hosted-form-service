@@ -452,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "طراحی فرم",
-    "exportDesign": "طراحی صادرات",
-    "importDesign": "طراحی واردات",
+    "downloadJson": "طراحی صادرات",
+    "uploadJson": "طراحی واردات",
     "important": "مهم",
     "formDesignInfoA": "پس از اتمام ساخت این فرم، از دکمه <strong>SAVE DESIGN</strong> استفاده کنید.",
     "formDesignInfoB": "دکمه <strong>SUBMIT</strong> برای ارسال این فرم توسط کاربر شما در نظر گرفته شده است و پس از ذخیره فعال خواهد شد.",
@@ -1225,6 +1225,6 @@
   },
   "canShareDraft": {
     "canShareMessage": "شما نمی توانید پیش نویس را با کاربرانی که به فرم اضافه نشده اند به اشتراک بگذارید. لطفا با ادمین تماس بگیرید تا آنها را اضافه کنید.",
-    "shareDraftMessage":"پیش نویس را فقط با اعضای تیم فرم به اشتراک بگذارید"
+    "shareDraftMessage": "پیش نویس را فقط با اعضای تیم فرم به اشتراک بگذارید"
   }
 }

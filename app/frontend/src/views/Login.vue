@@ -46,18 +46,17 @@ const { loginButtons } = storeToRefs(idpStore);
       <h1 class="my-6" :lang="locale">
         {{ $t('trans.login.alreadyLoggedIn') }}
       </h1>
-      <router-link :to="{ name: 'About' }">
-        <v-btn
-          class="ma-2"
-          color="primary"
-          size="large"
-          :lang="locale"
-          :title="$t('trans.login.about')"
-        >
-          <v-icon start icon="mdi-home"></v-icon>
-          <span :lang="locale">{{ $t('trans.login.about') }}</span>
-        </v-btn>
-      </router-link>
+      <v-btn
+        class="ma-2"
+        color="primary"
+        size="large"
+        :lang="locale"
+        :to="{ name: 'About' }"
+        :title="$t('trans.login.about')"
+      >
+        <v-icon start icon="mdi-home"></v-icon>
+        <span :lang="locale">{{ $t('trans.login.about') }}</span>
+      </v-btn>
     </div>
     <div v-else>
       <h1 class="my-6">

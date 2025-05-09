@@ -157,12 +157,6 @@ defineExpose({
 
 <template>
   <div class="d-flex flex-column float-button">
-    <div class="fab d-flex flex-column">
-      <span :lang="locale">{{ SCROLL_TEXT }}</span>
-      <v-btn class="ma-2" density="compact" icon @click="onClickScroll">
-        <v-icon :icon="SCROLL_ICON"></v-icon>
-      </v-btn>
-    </div>
     <div v-if="!isCollapsed">
       <div class="fab d-flex flex-column" data-cy="saveButton">
         <span :lang="locale">{{ SAVE_TEXT }}</span>
@@ -283,6 +277,12 @@ defineExpose({
         @click="onClickCollapse"
       >
         <v-icon :icon="COLLAPSE_ICON"></v-icon>
+      </v-btn>
+    </div>
+    <div class="fab d-flex flex-column">
+      <span :lang="locale">{{ SCROLL_TEXT }}</span>
+      <v-btn class="ma-2" density="compact" icon @click="onClickScroll">
+        <v-icon :icon="SCROLL_ICON"></v-icon>
       </v-btn>
     </div>
   </div>

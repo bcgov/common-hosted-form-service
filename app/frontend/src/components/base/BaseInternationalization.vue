@@ -71,3 +71,12 @@ const SELECTED_LANGUAGE_TITLE = computed(
     </v-select>
   </div>
 </template>
+
+<style scoped>
+:deep(.v-icon) {
+  opacity: 1;
+}
+:deep(.v-field__input) {
+  opacity: 1 !important;
+}
+</style>

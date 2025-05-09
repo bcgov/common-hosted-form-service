@@ -591,18 +591,17 @@ defineExpose({
           </v-tooltip>
           <v-tooltip v-if="showFormManage" location="bottom">
             <template #activator="{ props }">
-              <router-link :to="{ name: 'FormManage', query: { f: formId } }">
-                <v-btn
-                  class="mx-1"
-                  color="primary"
-                  v-bind="props"
-                  :disabled="!formId"
-                  size="x-small"
-                  density="default"
-                  icon="mdi:mdi-cog"
-                  :title="$t('trans.submissionsTable.manageForm')"
-                />
-              </router-link>
+              <v-btn
+                class="mx-1"
+                color="primary"
+                v-bind="props"
+                :disabled="!formId"
+                size="x-small"
+                density="default"
+                icon="mdi:mdi-cog"
+                :to="{ name: 'FormManage', query: { f: formId } }"
+                :title="$t('trans.submissionsTable.manageForm')"
+              />
             </template>
             <span :lang="locale">{{
               $t('trans.submissionsTable.manageForm')
