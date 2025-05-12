@@ -32,6 +32,7 @@ const STUBS = {
 describe('RequestReceipt.vue', () => {
   const submissionId = '123-456';
   const email = 'email@email.com';
+  const formId = '123';
 
   const pinia = createTestingPinia();
 
@@ -53,6 +54,7 @@ describe('RequestReceipt.vue', () => {
       props: {
         submissionId: submissionId,
         email: email,
+        formId: formId,
       },
       global: {
         plugins: [pinia],
@@ -70,6 +72,7 @@ describe('RequestReceipt.vue', () => {
       props: {
         submissionId: submissionId,
         email: email,
+        formId: formId,
       },
       global: {
         plugins: [pinia],
@@ -91,6 +94,7 @@ describe('RequestReceipt.vue', () => {
       props: {
         submissionId: submissionId,
         email: email,
+        formId: formId,
       },
       global: {
         plugins: [pinia],
@@ -127,6 +131,7 @@ describe('RequestReceipt.vue', () => {
       props: {
         submissionId: submissionId,
         email: email,
+        formId: formId,
       },
       global: {
         plugins: [pinia],

@@ -10,18 +10,14 @@
       "name": "Attach by Process ID",
       "processId": "${command:PickProcess}",
       "request": "attach",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "type": "node"
     },
     {
       "name": "Attach by Process ID",
       "processId": "${command:PickProcess}",
       "request": "attach",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "type": "node"
     },
     {
@@ -72,7 +68,7 @@
         "${file}",
         "--config",
         "${workspaceFolder}/app/jest.config.js",
-        "--coverage=false"
+        "--coverage=true"
       ],
       "console": "integratedTerminal",
       "windows": {

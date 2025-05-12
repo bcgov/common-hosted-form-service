@@ -14,12 +14,14 @@ const v1Router = require('./src/routes/v1');
 const DataConnection = require('./src/db/dataConnection');
 const dataConnection = new DataConnection();
 const { eventStreamService } = require('./src/components/eventStreamService');
+const clamAvScanner = require('./src/components/clamAvScanner');
 
 const apiRouter = express.Router();
 const state = {
   connections: {
     data: false,
     eventStreamService: false,
+    clamAvScanner: false,
   },
   ready: false,
   shutdown: false,
@@ -186,7 +188,7 @@ function cleanup() {
  */
 function initializeConnections() {
   // Initialize connections and exit if unsuccessful
-  const tasks = [dataConnection.checkAll(), eventStreamService.checkConnection()];
+  const tasks = [dataConnection.checkAll(), eventStreamService.checkConnection(), clamAvScanner.checkConnection()];
 
   Promise.all(tasks)
     .then((results) => {
@@ -202,10 +204,16 @@ function initializeConnections() {
       log.info(`EventStreamService ${reachable}`, {
         function: 'initializeConnections',
       });
+
+      state.connections.clamAvScanner = results[2];
+      log.info('ClamAvScanner Reachable', {
+        function: 'initializeConnections',
+      });
     })
     .catch((error) => {
       log.error(`Initialization failed: Database OK = ${state.connections.data}`, { function: 'initializeConnections' });
       log.error(`Initialization failed: EventStreamService OK = ${state.connections.eventStreamService}`, { function: 'initializeConnections' });
+      log.error(`Initialization failed: ClamAvScanner OK = ${state.connections.clamAvScanner}`, { function: 'initializeConnections' });
       log.error('Connection initialization failure', error.message, {
         function: 'initializeConnections',
       });
@@ -234,11 +242,12 @@ function initializeConnections() {
 function checkConnections() {
   const wasReady = state.ready;
   if (!state.shutdown) {
-    const tasks = [dataConnection.checkConnection(), eventStreamService.checkConnection()];
+    const tasks = [dataConnection.checkConnection(), eventStreamService.checkConnection(), clamAvScanner.checkConnection()];
 
     Promise.all(tasks).then((results) => {
       state.connections.data = results[0];
       state.connections.eventStreamService = results[1];
+      state.connections.clamAvScanner = results[2];
 
       state.ready = state.connections.data; // only want no db to halt application
       if (!wasReady && state.ready)
@@ -249,6 +258,7 @@ function checkConnections() {
       if (!state.ready) {
         log.error(`Database connected = ${state.connections.data}`, { function: 'checkConnections' });
         log.error(`EventStreamService connected = ${state.connections.eventStreamService}`, { function: 'checkConnections' });
+        log.error(`ClamAvScanner connected = ${state.connections.clamAvScanner}`, { function: 'checkConnections' });
         process.exitCode = 1;
         shutdown();
       }
