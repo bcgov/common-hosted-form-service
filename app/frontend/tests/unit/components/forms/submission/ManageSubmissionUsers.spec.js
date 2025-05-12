@@ -60,6 +60,7 @@ describe('ManageSubmissionUsers.vue', () => {
       props: {
         isDraft: false,
         submissionId: SUBMISSION_ID,
+        formId: '123',
       },
       global: {
         plugins: [router, pinia],
@@ -91,6 +92,7 @@ describe('ManageSubmissionUsers.vue', () => {
       props: {
         isDraft: false,
         submissionId: SUBMISSION_ID,
+        formId: '123',
       },
       global: {
         plugins: [router, pinia],
@@ -115,6 +117,7 @@ describe('ManageSubmissionUsers.vue', () => {
       props: {
         isDraft: false,
         submissionId: SUBMISSION_ID,
+        formId: '123',
       },
       global: {
         plugins: [router],
@@ -139,6 +142,7 @@ describe('ManageSubmissionUsers.vue', () => {
       props: {
         isDraft: false,
         submissionId: SUBMISSION_ID,
+        formId: '123',
       },
       global: {
         plugins: [router, pinia],
@@ -224,6 +228,7 @@ describe('ManageSubmissionUsers.vue', () => {
       props: {
         isDraft: false,
         submissionId: SUBMISSION_ID,
+        formId: '123',
       },
       global: {
         plugins: [router, pinia],
@@ -256,6 +261,7 @@ describe('ManageSubmissionUsers.vue', () => {
       props: {
         isDraft: false,
         submissionId: SUBMISSION_ID,
+        formId: '123',
       },
       global: {
         plugins: [router, pinia],
@@ -318,6 +324,7 @@ describe('ManageSubmissionUsers.vue', () => {
       props: {
         isDraft: false,
         submissionId: SUBMISSION_ID,
+        formId: '123',
       },
       global: {
         plugins: [router],

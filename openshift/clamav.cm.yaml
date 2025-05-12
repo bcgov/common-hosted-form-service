@@ -1,0 +1,39 @@
+---
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  app.kubernetes.io/component: app
+  app.kubernetes.io/instance: "${APP_NAME}-${JOB_NAME}"
+  app.kubernetes.io/managed-by: github
+  app.kubernetes.io/name: nodejs
+  app.kubernetes.io/part-of: "${APP_NAME}-${JOB_NAME}"
+  app: "${APP_NAME}-${JOB_NAME}"
+  template: "chefs-app-clamav-template"
+metadata:
+  name: "chefs-app-clamav"
+objects:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: "${APP_NAME}-${JOB_NAME}-clamav"
+    data:
+      FILES_CLAMAV_HOST: ${HOST}
+      FILES_CLAMAV_PORT: ${PORT}
+parameters:
+  - name: APP_NAME
+    description: Application name
+    displayName: Application name
+    required: true
+  - name: JOB_NAME
+    description: Job identifier (i.e. 'pr-5' OR 'master')
+    displayName: Job Branch Name
+    required: true
+  - name: HOST
+    description: ClamAV Host address
+    displayName: ClamAV Host
+    required: true
+  - name: PORT
+    description: ClamAV Port
+    displayName: ClamAV Port
+    required: true
+    default: 3310
