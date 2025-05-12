@@ -337,7 +337,7 @@ parameters:
       resides.
     displayName: ImageStream Namespace
     required: true
-    value: bcgov-docker-local
+    value: bb16-n1dc-common-docker
   - name: IMAGE_STREAM_TAG
     description: Patroni ImageTag
     displayName: ImageStream Tag
