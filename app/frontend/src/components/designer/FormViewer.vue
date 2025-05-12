@@ -1,6 +1,5 @@
 <script setup>
 import { Form } from '@formio/vue';
-import formioUtils from 'formiojs/utils';
 import _ from 'lodash';
 import { storeToRefs } from 'pinia';
 import {
@@ -98,15 +97,12 @@ const json_csv = ref({
 });
 const loadingSubmission = ref(false);
 const permissions = ref([]);
-const queuedDeleteFiles = ref([]);
-const queuedUploadFiles = ref([]);
 const reRenderFormIo = ref(0);
 const saveDraftDialog = ref(false);
 const saveDraftState = ref(0);
 const saving = ref(false);
 const showModal = ref(false);
 const showSubmitConfirmDialog = ref(false);
-const simpleFileComponents = ref([]);
 const submission = ref({ data: { lateEntry: false } });
 const submissionRecord = ref({});
 const version = ref(0);
@@ -184,22 +180,6 @@ onMounted(async () => {
     // published version of form, and then get the submission data.
     await getFormSchema();
     await getFormData();
-    // To ensure we duplicate a file, we flag an already uploaded file for upload
-    simpleFileComponents.value = formioUtils.findComponents(
-      formSchema.value.components,
-      {
-        type: 'simplefile',
-      }
-    );
-    simpleFileComponents.value.forEach((component) => {
-      const key = component.key;
-
-      if (submission.value.data[key]) {
-        uploadFile({
-          id: submission.value.data[key][0].data.id,
-        });
-      }
-    });
   } else if (properties.submissionId && !properties.isDuplicate) {
     await getFormData();
   } else {
@@ -469,13 +449,7 @@ async function saveDraft() {
   try {
     saving.value = true;
 
-    const response = await sendSubmission(true);
-    if (
-      queuedUploadFiles.value.length > 0 ||
-      queuedDeleteFiles.value.length > 0
-    ) {
-      return;
-    }
+    const response = await sendSubmission(true, submission.value);
     if (properties.submissionId && properties.submissionId !== null) {
       // Editing an existing draft
       // Update this route with saved flag
@@ -485,6 +459,7 @@ async function saveDraft() {
           query: { ...router.currentRoute.value.query, sv: true },
         });
       }
+      saving.value = false;
     } else {
       // Creating a new submission in draft state
       // Go to the user form draft page
@@ -496,6 +471,8 @@ async function saveDraft() {
         },
       });
     }
+    showSubmitConfirmDialog.value = false;
+    saveDraftDialog.value = false;
   } catch (error) {
     notificationStore.addNotification({
       text: t('trans.formViewer.savingDraftErrMsg'),
@@ -504,19 +481,10 @@ async function saveDraft() {
         error: error,
       }),
     });
-  } finally {
-    saving.value = false;
-    showSubmitConfirmDialog.value = false;
-    saveDraftDialog.value = false;
   }
 }
 
-async function sendSubmission(isDraft) {
-  const deleteError = await deleteQueuedFiles();
-  const uploadError = await uploadQueuedFiles();
-
-  if (uploadError || deleteError) return;
-
+async function sendSubmission(isDraft, sub) {
   submission.value.data.lateEntry =
     form.value?.schedule?.expire !== undefined &&
     form.value.schedule.expire === true
@@ -524,7 +492,7 @@ async function sendSubmission(isDraft) {
       : false;
   const body = {
     draft: isDraft,
-    submission: submission.value,
+    submission: sub,
   };
 
   let response;
@@ -616,14 +584,14 @@ async function onBeforeSubmit(submission, next) {
 
 // FormIO submit event
 // eslint-disable-next-line no-unused-vars
-async function onSubmit() {
+async function onSubmit(sub) {
   if (properties.preview) {
     alert(t('trans.formViewer.submissionsPreviewAlert'));
     confirmSubmit.value = false;
     return;
   }
 
-  const errors = await doSubmit();
+  const errors = await doSubmit(sub);
 
   // if we are here, the submission has been saved to our db
   // the passed in submission is the formio submission, not our db persisted submission record...
@@ -641,12 +609,12 @@ async function onSubmit() {
 }
 
 // Not a formIO event, our saving routine to POST the submission to our API
-async function doSubmit() {
+async function doSubmit(sub) {
   // since we are not using formio api
   // we should do the actual submit here, and return any error that occurrs to handle in the submit event
   let errMsg = undefined;
   try {
-    const response = await sendSubmission(false);
+    const response = await sendSubmission(false, sub);
 
     if ([200, 201].includes(response.status)) {
       // all is good, flag no errors and carry on...
@@ -655,9 +623,17 @@ async function doSubmit() {
         {},
         properties.submissionId && properties.isDuplicate //Check if this submission is creating with the existing one
           ? response.data
-          : properties.submissionId && !properties.isDuplicate
-          ? response.data.submission
-          : response.data
+          : (() => {
+              let result;
+              if (properties.submissionId && properties.isDuplicate) {
+                result = response.data;
+              } else if (properties.submissionId && !properties.isDuplicate) {
+                result = response.data.submission;
+              } else {
+                result = response.data;
+              }
+              return result;
+            })()
       );
     } else {
       throw new Error(
@@ -762,16 +738,12 @@ async function saveDraftFromModal(event) {
 async function saveDraftFromModalNow() {
   try {
     saving.value = true;
-    await sendSubmission(true);
-    if (
-      queuedUploadFiles.value.length > 0 ||
-      queuedDeleteFiles.value.length > 0
-    ) {
-      return;
-    }
+    await sendSubmission(true, submission.value);
+    saving.value = false;
     // Creating a new submission in draft state
     // Go to the user form draft page
     leaveThisPage();
+    showSubmitConfirmDialog.value = false;
   } catch (error) {
     notificationStore.addNotification({
       text: t('trans.formViewer.submittingDraftErrMsg'),
@@ -780,9 +752,6 @@ async function saveDraftFromModalNow() {
         error: error,
       }),
     });
-  } finally {
-    saving.value = false;
-    showSubmitConfirmDialog.value = false;
   }
 }
 
@@ -797,11 +766,16 @@ function beforeWindowUnload(e) {
   }
 }
 
-function deleteFile(file, cfg) {
-  queuedDeleteFiles.value.push({
-    file: file,
-    onSuccess: cfg.onSuccess,
-  });
+async function deleteFile(file) {
+  let fileId;
+  if (file?.data?.id) {
+    fileId = file.data.id;
+  } else if (file?.id) {
+    fileId = file.id;
+  } else {
+    fileId = undefined;
+  }
+  return fileService.deleteFile(fileId);
 }
 
 async function getFile(fileId, options = {}) {
@@ -841,139 +815,8 @@ async function getFile(fileId, options = {}) {
   }
 }
 
-function uploadFile(file, cfg = {}) {
-  let fileUpload = {
-    file: file,
-    config: {
-      isDuplicate: properties.isDuplicate,
-    },
-  };
-  if (properties.isDuplicate === false) {
-    fileUpload.config.onUploadProgress = cfg.onUploadProgress;
-    fileUpload.config.headers = cfg.headers;
-    fileUpload.onUploaded = cfg.onUploaded;
-    fileUpload.onError = cfg.onError;
-  }
-  queuedUploadFiles.value.push(fileUpload);
-
-  notificationStore.addNotification({
-    ...NotificationTypes.WARNING,
-    title: 'trans.alert.warning',
-    text: 'trans.formViewer.fileUploadWarning',
-    retain: true,
-    unique: true,
-    translate: true,
-  });
-}
-
-async function uploadQueuedFiles() {
-  let err = false;
-
-  queuedUploadFiles.value = await Promise.all(
-    queuedUploadFiles.value.map(async (fileObj) => {
-      try {
-        if (properties.isDuplicate) {
-          const response = await fileService.cloneFile(fileObj.file.id);
-          if ([500].includes(response.status)) {
-            throw new Error(response.detail);
-          }
-          // Update the submissions to use the new file id
-          simpleFileComponents.value.forEach((component) => {
-            const key = component.key;
-            if (
-              submission.value.data[key][0] &&
-              submission.value.data[key][0].data.id === fileObj.file.id
-            ) {
-              submission.value.data[key][0] = {
-                ...submission.value.data[key][0],
-                data: { id: response.data.id },
-                url: submission.value.data[key][0].url.replace(
-                  /\/[^/]+$/,
-                  `/${response.data.id}`
-                ),
-              };
-            }
-          });
-        } else {
-          const response = await fileService.uploadFile(
-            fileObj.file,
-            fileObj.config
-          );
-          if ([500].includes(response.status)) {
-            throw new Error(response.detail);
-          }
-          if (fileObj.onUploaded) await fileObj.onUploaded(response);
-        }
-        return null; // Mark for removal
-      } catch (error) {
-        err = true;
-        if (fileObj.file.originalName) {
-          notificationStore.addNotification({
-            text: t('trans.formViewer.errorSavingFile', {
-              fileName: fileObj.file.originalName,
-              error: error,
-            }),
-            consoleError: t('trans.formViewer.errorSavingFile', {
-              fileName: fileObj.file.originalName,
-              error: error,
-            }),
-          });
-        }
-        return fileObj; // Keep failed uploads in the array
-      }
-    })
-  );
-
-  // Remove successfully uploaded files
-  queuedUploadFiles.value = queuedUploadFiles.value.filter(
-    (fileObj) => fileObj !== null
-  );
-
-  return err;
-}
-
-async function deleteQueuedFiles() {
-  if (queuedDeleteFiles.value.length === 0) return false;
-  let err = false;
-
-  queuedDeleteFiles.value = await Promise.all(
-    queuedDeleteFiles.value.map(async (fileObj) => {
-      try {
-        if (!properties.isDuplicate) {
-          // We only call delete file on an actual submission.
-          // Not when we are trying to duplicate a submission since
-          // files are no longer uploaded until they are submitted/saved.
-          await fileService.deleteFile(fileObj.file.data.id);
-          if (fileObj.onSuccess) await fileObj.onSuccess();
-        }
-        // If the file exists in the upload queue, remove it
-        const index = queuedUploadFiles.value.findIndex(
-          (file) => file.file.get('files').name === fileObj.file.originalName
-        );
-        if (index !== -1) {
-          queuedUploadFiles.value.splice(index, 1);
-        }
-        return null; // Mark for removal
-      } catch (error) {
-        err = true;
-        notificationStore.addNotification({
-          text: t('trans.formViewer.errorDeletingFile', {
-            error: error,
-          }),
-          consoleError: t('trans.formViewer.errorDeletingFile', {
-            error: error,
-          }),
-        });
-        return fileObj;
-      }
-    })
-  );
-
-  queuedDeleteFiles.value = queuedDeleteFiles.value.filter(
-    (fileObj) => fileObj !== null
-  );
-
-  return err;
+async function uploadFile(file, config = {}) {
+  return fileService.uploadFile(file, config);
 }
 </script>
 
