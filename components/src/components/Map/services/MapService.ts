@@ -324,12 +324,50 @@ class MapService {
     // Track the base layer that is initially selected
     this.currentBaseLayer = selectedLayerKey;
 
+    // Add geocoder control first (if enabled)
+    let geocoderControl = null;
+    if (bcGeocoder) {
+      try {
+        geocoderControl = new (GeoSearch.GeoSearchControl as any)({
+          provider: new BCGeocoderProvider(),
+          style: 'bar',
+          position: 'bottomleft',
+          showMarker: false,
+          zIndex: 998, // Set a lower z-index
+        });
+        map.addControl(geocoderControl);
+
+        // After adding to the map, adjust styling if needed
+        const controlContainer = geocoderControl.getContainer();
+        if (controlContainer) {
+          // Make sure z-index is set properly
+          controlContainer.style.zIndex = '998'; // Lower than the baselayer control
+          controlContainer.style.pointerEvents = 'auto'; // Enable interaction
+        }
+
+        map.on('geosearch/showlocation', (e) => {
+          L.popup()
+            .setLatLng([(e as any).location.y, (e as any).location.x])
+            .setContent(`${(e as any).location.label}`)
+            .openOn(map);
+        });
+      } catch (error) {
+        // console.error('Error initializing geocoder:', error);
+      }
+    }
+
     // Only show layer control if allowed and multiple layers exist
     if (allowBaseLayerSwitch && Object.keys(this.baseLayers).length > 1) {
       const layerControl = L.control.layers(this.baseLayers).addTo(map);
-      // Add custom class to the basemap control container
-      L.DomUtil.addClass(layerControl.getContainer(), 'leaflet-control');
-      L.DomUtil.addClass(layerControl.getContainer(), 'basemap-selector');
+      const controlContainer = layerControl.getContainer();
+      if (controlContainer) {
+        // Set z-index higher than geocoder
+        controlContainer.style.zIndex = '1005'; // Higher than geocoder
+        controlContainer.style.pointerEvents = 'auto';
+      }
+
+      // Apply CSS to ensure the layer control is above all others
+      this.addLayerControlStyle();
 
       // Modify event handler to prevent loops
       map.on('baselayerchange', (e: any) => {
@@ -398,26 +436,6 @@ class MapService {
       myLocationControl.addTo(map);
     }
 
-    if (bcGeocoder) {
-      try {
-        const geocoderControl = new (GeoSearch.GeoSearchControl as any)({
-          provider: new BCGeocoderProvider(),
-          style: 'bar',
-          position: 'bottomleft',
-          showMarker: false,
-        });
-        map.addControl(geocoderControl);
-        map.on('geosearch/showlocation', (e) => {
-          L.popup()
-            .setLatLng([(e as any).location.y, (e as any).location.x])
-            .setContent(`${(e as any).location.label}`)
-            .openOn(map);
-        });
-      } catch (error) {
-       // console.error('Error initializing geocoder:', error);
-      }
-    }
-
     // Add Drawing Controllers
     let drawControl = null;
 
@@ -449,6 +467,36 @@ class MapService {
       }
     }
     return {map, drawnItems, drawControl};
+  }
+
+  // Helper method to add CSS for layer control
+  addLayerControlStyle() {
+    // Check if style already exists
+    const styleId = 'leaflet-layer-control-style';
+    if (document.getElementById(styleId)) {
+      return; // Style already exists
+    }
+
+    // Create a style element
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.innerHTML = `
+      .leaflet-control-layers {
+        z-index: 1005 !important;
+      }
+      .leaflet-top, .leaflet-right {
+        z-index: 1005 !important;
+      }
+      .leaflet-control-container .leaflet-top.leaflet-right {
+        z-index: 1005 !important;
+      }
+      .leaflet-control-geosearch {
+        z-index: 998 !important;
+      }
+    `;
+
+    // Add the style to the document head
+    document.head.appendChild(style);
   }
 
   bindPopupToLayer(layer) {
