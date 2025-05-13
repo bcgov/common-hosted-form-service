@@ -74,15 +74,7 @@ runs:
         values_file: openshift/crunchydb/charts/crunchy-postgres/values.yaml
         triggers: |
           .github/**
-          app/**
-          clamav/**
-          components/**
-          docs/**
-          event-stream-service/**
-          openshift/**
-          tests/**
-          .codeclimate.yml
-          Dockerfile
+          openshift/crunchydb/charts/crunchy-postgres/**
 
     - name: Deploy App Secret
       shell: bash
