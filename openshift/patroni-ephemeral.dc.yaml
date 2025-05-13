@@ -18,7 +18,7 @@ labels:
   app.kubernetes.io/name: patroni
   app.kubernetes.io/managed-by: template
   app.kubernetes.io/part-of: "${APP_NAME}-${INSTANCE}"
-  app.kubernetes.io/version: "16"
+  app.kubernetes.io/version: "16.4"
   app.openshift.io/runtime: postgresql
   cluster-name: "${INSTANCE}"
 objects:
@@ -235,6 +235,8 @@ objects:
           volumes:
             - name: postgresql
               emptyDir: {}
+          imagePullSecrets:
+            - name: artifact-chefs-service-account
       updateStrategy:
         type: RollingUpdate
   - apiVersion: v1
