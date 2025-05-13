@@ -17,3 +17,8 @@ export const BASE_LAYER_ATTRIBUTIONS = {
 };
 
 export const DEFAULT_BASE_LAYER= 'OpenStreetMap';
+
+export const DEFAULT_MAP_ZOOM = 5;
+export const DECIMALS_LATLNG = 5; // the number of decimals of latitude and longitude to be displayed in the marker popup
+export const COMPONENT_EDIT_CLASS = 'component-edit-tabs';
+export const CUSTOM_MARKER_PATH = 'https://unpkg.com/leaflet@1.9.4/dist/images/';

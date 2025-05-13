@@ -5,6 +5,10 @@ import {
   BASE_LAYER_URLS,
   BASE_LAYER_ATTRIBUTIONS,
   DEFAULT_BASE_LAYER,
+  DEFAULT_MAP_ZOOM,
+  CUSTOM_MARKER_PATH,
+  DECIMALS_LATLNG,
+  COMPONENT_EDIT_CLASS
 } from '../Common/MapConstants';
 import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
@@ -17,11 +21,6 @@ declare global {
     _leaflet_id?: number;
   }
 }
-
-const DEFAULT_MAP_ZOOM = 5;
-const DECIMALS_LATLNG = 5; // the number of decimals of latitude and longitude to be displayed in the marker popup
-const COMPONENT_EDIT_CLASS = 'component-edit-tabs';
-const CUSTOM_MARKER_PATH = 'https://unpkg.com/leaflet@1.9.4/dist/images/';
 
 L.Icon.Default.imagePath = CUSTOM_MARKER_PATH;
 
@@ -171,18 +170,23 @@ class MapService {
           return;
         }
 
-        e.layers.eachLayer((layer) => {
-          const match = this.isDefaultFeature(layer as L.Layer);
-          if (match) {
-            // re-add the feature/layer to the map
-            this.drawnItems?.addLayer(layer);
-            L.popup()
-              .setLatLng(map.getCenter())
-              .setContent('<p>Please do not delete pre-existing features</p>')
-              .addTo(map);
-          }
-        });
+        const form = document.getElementsByClassName('formio')[0];
+        const isDesigner =
+          form && form.classList.contains('formbuilder');
 
+        if (!isDesigner) {
+          e.layers.eachLayer((layer) => {
+            const match = this.isDefaultFeature(layer as L.Layer);
+            if (match) {
+              // re-add the feature/layer to the map
+              this.drawnItems?.addLayer(layer);
+              L.popup()
+                .setLatLng(map.getCenter())
+                .setContent('<p>Please do not delete pre-existing features</p>')
+                .addTo(map);
+            }
+          });
+        }
         // Notify parent component of changes
         if (options.onDrawnItemsChange) {
           this.isUpdating = true;
