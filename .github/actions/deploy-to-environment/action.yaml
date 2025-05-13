@@ -64,25 +64,18 @@ runs:
         openshift_token: ${{ inputs.openshift_token }}
         insecure_skip_tls_verify: true
         namespace: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }}
-
-    - name: Deploy Patroni Secret
-      shell: bash
-      run: >-
-        oc get --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} secret patroni-${{ inputs.job_name }}-secret || oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/patroni.secret.yaml -p APP_DB_NAME=${{ inputs.acronym }} -p INSTANCE=${{ inputs.job_name }} | oc create --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
-
-    - name: Deploy Patroni
-      shell: bash
-      run: |
-        if [[ "${{ inputs.job_name }}" == pr-* ]]; then
-          oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/patroni-ephemeral.dc.yaml -p APP_NAME=${{ inputs.acronym }} -p INSTANCE=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
-        else
-          oc process --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f openshift/patroni.dc.yaml -p INSTANCE=${{ inputs.job_name }} -p NAMESPACE=${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} --param-file=openshift/patroni.${{ inputs.namespace_environment }}.param | oc apply --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} -f -
-        fi
-
-    - name: Wait on Patroni
-      shell: bash
-      run: |
-        oc rollout --namespace ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment }} status statefulset/patroni-${{ inputs.job_name }} --watch=true
+    - name: Deploy Crunchy
+      uses: bcgov/action-crunchy@v1.1.0
+      id: deploy_crunchy
+      with:
+        oc_namespace: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment}}
+        oc_token: ${{ inputs.openshift_token }}
+        environment: ${{ inputs.namespace_environment }}
+        values_file: openshift/crunchydb/charts/crunchy-postgres/values.yaml
+        triggers: |
+          *
+          !.devcontainer/**
+          !.vscode/**
 
     - name: Deploy App Secret
       shell: bash
