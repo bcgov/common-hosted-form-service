@@ -83,9 +83,7 @@ runs:
         oc_token: ${{ inputs.openshift_token }}
         environment: ${{ inputs.namespace_environment }}
         values_file: openshift/crunchydb/charts/crunchy-postgres/values.yaml
-        triggers: |
-          .github/**
-          openshift/crunchydb/charts/crunchy-postgres/**
+        triggers: .github/**,openshift/crunchydb/charts/crunchy-postgres/**
 
     - name: Deploy App Secret
       shell: bash
