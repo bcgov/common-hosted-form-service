@@ -134,7 +134,6 @@ class MapService {
 
         const layer = e.layer;
         if (!this.drawnItems) {
-         // console.error('drawnItems is undefined in draw:created event');
           return;
         }
 
@@ -166,7 +165,6 @@ class MapService {
         if (this.isUpdating) return;
 
         if (!this.drawnItems) {
-         // console.error('drawnItems is undefined in DELETED event');
           return;
         }
 
@@ -202,7 +200,6 @@ class MapService {
         if (this.isUpdating) return;
 
         if (!this.drawnItems) {
-         // console.error('drawnItems is undefined in EDITSTOP event');
           return;
         }
 
@@ -222,7 +219,6 @@ class MapService {
 
       this.initialized = true;
     } catch (error) {
-     // console.error('Error initializing map:', error);
       if (options.mapContainer) {
         options.mapContainer.innerHTML =
           '<div class="alert alert-danger">Error initializing map. Please check console for details.</div>';
@@ -253,13 +249,9 @@ class MapService {
 
     // Check if container already has a map instance
     if (mapContainer._leaflet_id) {
-      // console.warn(
-      //   'Map container already has a map instance. This should have been cleaned up.'
-      // );
       // Ensure cleanup happened before continuing
       const existingMap = L.DomUtil.get(mapContainer);
       if (existingMap && existingMap._leaflet_id) {
-        // console.log('Removing existing leaflet instance from DOM element');
         delete existingMap._leaflet_id;
       }
     }
@@ -321,10 +313,7 @@ class MapService {
     const selectedLayer = this.baseLayers[selectedLayerKey];
     if (selectedLayer) {
       selectedLayer.addTo(map);
-    } else {
-      // console.warn('No base layer available to display');
     }
-
     // Track the base layer that is initially selected
     this.currentBaseLayer = selectedLayerKey;
 
@@ -356,7 +345,7 @@ class MapService {
             .openOn(map);
         });
       } catch (error) {
-        // console.error('Error initializing geocoder:', error);
+         console.error('Error initializing geocoder:', error);
       }
     }
 
@@ -415,7 +404,6 @@ class MapService {
               navigator.geolocation.getCurrentPosition((position) => {
                 const mapInstance = this.map;
                 if (!mapInstance) {
-                  // console.warn('Map instance not available');
                   return;
                 }
                 const latlng = [
@@ -506,7 +494,6 @@ class MapService {
   bindPopupToLayer(layer) {
     try {
       if (!layer) {
-        // console.warn('Cannot bind popup to undefined layer');
         return;
       }
 
@@ -538,22 +525,18 @@ class MapService {
           .openPopup();
       }
     } catch (error) {
-     // console.error('Error binding popup to layer:', error);
+      console.error('Error binding popup to layer:', error);
     }
   }
 
   setBaseLayer(layerName: string) {
     try {
       if (!layerName || !this.map || !this.baseLayers) {
-        // console.warn(
-        //   'Cannot set base layer: missing map, layers, or layer name'
-        // );
         return;
       }
 
       const newLayer = this.baseLayers[layerName];
       if (!newLayer) {
-        // console.warn(`Base layer "${layerName}" not found`);
         return;
       }
 
@@ -572,14 +555,14 @@ class MapService {
         this.map.invalidateSize();
       }
     } catch (error) {
-     // console.error('Error setting base layer:', error);
+      console.error('Error setting base layer:', error);
     }
   }
 
   loadDrawnItems(items) {
     try {
       if (!this.drawnItems) {
-        // console.error('drawnItems is undefined in loadDrawnItems');
+        console.error('drawnItems is undefined in loadDrawnItems');
         return;
       }
 
@@ -611,7 +594,7 @@ class MapService {
         }
       }
     } catch (error) {
-      // console.error('Error loading drawn items:', error);
+      console.error('Error loading drawn items:', error);
     }
   }
 
@@ -684,7 +667,7 @@ class MapService {
             return false;
         }
       } catch (error) {
-        // console.error('Error comparing features:', error);
+        console.error('Error comparing features:', error);
         return false;
       }
     });
@@ -694,7 +677,6 @@ class MapService {
     const features = new L.FeatureGroup();
 
     if (!array || !Array.isArray(array)) {
-     // console.warn('Invalid array passed to arrayToFeatureGroup');
       return features;
     }
 
@@ -718,7 +700,7 @@ class MapService {
           this.bindPopupToLayer(layer);
         }
       } catch (error) {
-        // console.error('Error creating layer from item:', item, error);
+        console.error('Error creating layer from item:', item, error);
       }
     });
 
@@ -795,7 +777,7 @@ class MapService {
         }
       }
     } catch (error) {
-     // console.error('Error refreshing map:', error);
+     console.error('Error refreshing map:', error);
     }
   }
 }

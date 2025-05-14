@@ -72,7 +72,6 @@ export default class Component extends (FieldComponent as any) {
     try {
       this.loadMap();
     } catch (error) {
-      // console.error('Error loading map:', error);
       const mapContainer = document.getElementById(`map-${this.componentID}`);
       if (mapContainer) {
         mapContainer.innerHTML = '<div class="alert alert-danger">Error loading map. Please check console for details.</div>';
@@ -84,7 +83,7 @@ export default class Component extends (FieldComponent as any) {
     try {
       this.mapService?.cleanup?.();
     } catch (error) {
-      // console.error('Error cleaning up map:', error);
+      console.error('Error cleaning up map:', error);
     }
     this.mapService = null;
     this.initialized = false;
@@ -96,17 +95,13 @@ export default class Component extends (FieldComponent as any) {
     if (!this.mapContainer) {
       if (this.mapInitializationAttempts++ < this.maxInitializationAttempts) {
         setTimeout(() => this.loadMap(), 200);
-      } else {
-        // console.error(`Map container with ID map-${this.componentID} not found`);
       }
       return;
     }
 
     // Check if container already has a map instance
     if (this.mapContainer._leaflet_id) {
-      // console.log('Map container already has a map. Cleaning up first.');
       this.cleanupMap();
-
       // Delete the leaflet ID from the container element
       delete this.mapContainer._leaflet_id;
     }
@@ -184,7 +179,7 @@ export default class Component extends (FieldComponent as any) {
         defaults.rectangle = { showArea: false };
       }
     } catch (error) {
-      // console.error('Error setting marker types:', error);
+        console.error('Error setting marker types:', error);
     }
 
     return defaults;
@@ -210,7 +205,7 @@ export default class Component extends (FieldComponent as any) {
         selectedBaseLayer: value.selectedBaseLayer || DEFAULT_BASE_LAYER,
       });
     } catch (error) {
-      // console.error('Error serializing value:', error);
+      console.error('Error serializing value:', error);
       return '';
     }
   }
