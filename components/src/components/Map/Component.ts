@@ -2,7 +2,12 @@ import { Components } from 'formiojs';
 import MapService from './services/MapService';
 import baseEditForm from './Component.form';
 import * as L from 'leaflet';
-import { DEFAULT_BASE_LAYER } from './Common/MapConstants';
+import {
+  DEFAULT_AVAILABLE_BASELAYERS,
+  DEFAULT_BASE_LAYER,
+  MAP_INIT_DELAY,
+  MAX_INIT_ATTEMPTS
+} from './Common/MapConstants';
 
 const FieldComponent = (Components as any).components.field;
 
@@ -18,12 +23,7 @@ export default class Component extends (FieldComponent as any) {
       input: true,
       defaultValue: { features: [], selectedBaseLayer: DEFAULT_BASE_LAYER },
       allowBaseLayerSwitch: false,
-      availableBaseLayers: {
-        OpenStreetMap: true,
-        Light: true,
-        Dark: true,
-        Topographic: true,
-      },
+      availableBaseLayers: DEFAULT_AVAILABLE_BASELAYERS,
       availableBaseLayersCustom: [],
       ...extend,
     });
@@ -46,7 +46,7 @@ export default class Component extends (FieldComponent as any) {
   initialized = false;
   mapContainer: HTMLElement | null = null;
   mapInitializationAttempts = 0;
-  maxInitializationAttempts = 3;
+  maxInitializationAttempts = MAX_INIT_ATTEMPTS;
   updatingFromMapService = false;
   skipNextUpdate = false;
   lastSavedValue: string | null = null;
@@ -64,7 +64,7 @@ export default class Component extends (FieldComponent as any) {
     const superAttach = super.attach(element);
     this.mapInitializationAttempts = 0;
     this.cleanupMap();
-    setTimeout(() => this.tryLoadMap(), 100);
+    setTimeout(() => this.tryLoadMap(), MAP_INIT_DELAY);
     return superAttach;
   }
 
@@ -72,6 +72,7 @@ export default class Component extends (FieldComponent as any) {
     try {
       this.loadMap();
     } catch (error) {
+      console.warn('Error loading Map',error);
       const mapContainer = document.getElementById(`map-${this.componentID}`);
       if (mapContainer) {
         mapContainer.innerHTML = '<div class="alert alert-danger">Error loading map. Please check console for details.</div>';
@@ -154,7 +155,7 @@ export default class Component extends (FieldComponent as any) {
       setTimeout(() => {
         this.skipNextUpdate = true;
         this.mapService?.loadDrawnItems(effectiveDefaultValue.features);
-      }, 100);
+      }, MAP_INIT_DELAY);
     }
 
     this.initialized = true;
