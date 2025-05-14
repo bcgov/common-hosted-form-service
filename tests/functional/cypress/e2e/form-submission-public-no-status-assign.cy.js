@@ -8,18 +8,17 @@ const password=Cypress.env('keycloakPassword');
 
 Cypress.Commands.add('waitForLoad', () => {
   const loaderTimeout = 60000;
-
   cy.get('.nprogress-busy', { timeout: loaderTimeout }).should('not.exist');
 });
 
 describe('Form Designer', () => {
 
   beforeEach(()=>{
-    cy.on('uncaught:exception', (err, runnable) => {
-      // Form.io throws an uncaught exception for missing projectid
-      // Cypress catches it as undefined: undefined so we can't get the text
-      console.log(err);
-      return false;
+    
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.window().then((win) => {
+      win.sessionStorage.clear();
     });
   });
   it('Visits the form settings page', () => {
@@ -47,7 +46,7 @@ describe('Form Designer', () => {
       cy.get('button').contains('Save').click();
     });
   // Form saving
-    cy.wait(2000);
+    cy.waitForLoad();
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
@@ -59,9 +58,7 @@ describe('Form Designer', () => {
       let arrayValues = arr[1].split('&');
       cy.log(arrayValues[0]);
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-      cy.wait(2000);
-      
-   
+      cy.waitForLoad();
     //Publish the form
     cy.get('.v-label > span').click();
 
@@ -103,12 +100,15 @@ describe('Form Designer', () => {
     cy.get('[data-test="canEditForm"]').click();
     
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-    cy.wait(2000);
-        //Logout to submit the public form
-    cy.get('#logoutButton > .v-btn__content > span').click();
+    cy.waitForLoad();
+    //Logout to submit the public form
+    cy.get('#logoutButton > .v-btn__content > span').should('be.visible').click({ force: true });
+    cy.log('Page visited, checking for logout button');
+    cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
+    cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span', { timeout: 15000 }).should('be.visible').click();
     //Form submission and verification for public forms
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
-    cy.wait(2000);
+    cy.waitForLoad();
     cy.get('button').contains('Submit').should('be.visible');
     cy.wait(2000);
     cy.contains('Text Field').click();

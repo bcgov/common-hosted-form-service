@@ -377,7 +377,7 @@ async function getSubmissionData() {
       const fields = {
         confirmationId: s.confirmationId,
         date: s.createdAt,
-        updatedAt: s.updatedBy ? s.updatedAt : null,
+        updatedAt: s.updatedAt,
         updatedBy: s.updatedBy,
         formId: s.formId,
         status: s.formSubmissionStatusCode,
@@ -754,6 +754,9 @@ defineExpose({
 
       <template #item.date="{ item }">
         {{ $filters.formatDateLong(item.date) }}
+      </template>
+      <template #item.updatedAt="{ item }">
+        {{ item.updatedAt ? $filters.formatDateLong(item.updatedAt) : '' }}
       </template>
       <template #item.status="{ item }">
         {{ item.status }}

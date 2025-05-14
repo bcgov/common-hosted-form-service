@@ -289,11 +289,11 @@ describe('Form Designer', () => {
         cy.get('div.col-md-2').contains('61.48 kB');
         //Close the upload warning message
         cy.get('.v-alert__close > .v-btn').click();
-        cy.waitForLoad();
+        cy.wait(2000);
         //form submission
         cy.get('button').contains('Submit').click();
         cy.wait(2000);
-        cy.get('button').contains('Submit').click();
+        cy.get('[data-test="continue-btn-continue"]').click();
        // verify the components after submission
         cy.get('span').contains('Canadian').should('be.visible');
         cy.get('span').contains('Eligible').should('be.visible');

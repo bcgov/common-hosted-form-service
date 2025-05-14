@@ -523,13 +523,15 @@ async function sendMultiSubmissionData(body) {
     }
   } catch (error) {
     setFinalError(error);
-    notificationStore.addNotification({
-      text: sbdMessage.value.message,
-      consoleError: t('trans.formViewer.errorSavingFile', {
-        fileName: file.value.name,
-        error: error,
-      }),
-    });
+    if (file.value.name) {
+      notificationStore.addNotification({
+        text: sbdMessage.value.message,
+        consoleError: t('trans.formViewer.errorSavingFile', {
+          fileName: file.value.name,
+          error: error,
+        }),
+      });
+    }
   } finally {
     isProcessing.value = false;
   }

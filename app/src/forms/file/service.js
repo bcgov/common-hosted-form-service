@@ -134,6 +134,33 @@ const service = {
       throw err;
     }
   },
+
+  clone: async (data, currentUser) => {
+    let trx;
+    try {
+      trx = await FileStorage.startTransaction();
+
+      const file = await FileStorage.query().findById(data).throwIfNotFound();
+
+      // Remove the ID to avoid conflicts when inserting
+      const obj = { ...file };
+
+      const uploadResult = await storageService.clone(obj);
+      obj.id = uploadResult.id;
+      obj.path = uploadResult.path;
+      obj.storage = uploadResult.storage;
+      obj.createdBy = currentUser.usernameIdp;
+
+      await FileStorage.query(trx).insert(obj);
+
+      await trx.commit();
+      const result = await service.read(obj.id);
+      return result;
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
 };
 
 module.exports = service;
