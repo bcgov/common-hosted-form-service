@@ -246,21 +246,82 @@ class MapService {
       drawOptions.rectangle.showArea = false;
     }
 
-    // Check if container already has a map instance
+    this.cleanupMapContainer(mapContainer);
+
+    const map = this.createMapInstance(
+      mapContainer,
+      center,
+      defaultZoom,
+      viewMode
+    );
+
+    this.baseLayers = this.setupBaseLayers(
+      availableBaseLayers,
+      availableBaseLayersCustom
+    );
+    const selectedLayerKey = this.pickInitialBaseLayer(selectedBaseLayer);
+    this.currentBaseLayer = selectedLayerKey;
+
+    this.baseLayers[selectedLayerKey]?.addTo(map);
+
+    this.setupGeocoderControl(map, bcGeocoder);
+    this.setupBaseLayerSwitchControl(map, allowBaseLayerSwitch);
+
+    const drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+    if (myLocation) {
+      this.addMyLocationControl(map);
+    }
+
+    const drawControl = this.addDrawControl(
+      map,
+      drawOptions,
+      readOnlyMap,
+      viewMode,
+      drawnItems
+    );
+    this.handleFormInteractions(
+      Array.from(form ?? []) as HTMLElement[],
+      map,
+      mapContainer
+    );
+
+    return { map, drawnItems, drawControl };
+  }
+
+  // --- Helper functions ---
+
+  private cleanupMapContainer(mapContainer: HTMLElement) {
     if (mapContainer._leaflet_id) {
-      // Ensure cleanup happened before continuing
       const existingMap = L.DomUtil.get(mapContainer);
       if (existingMap?._leaflet_id) {
         delete existingMap._leaflet_id;
       }
     }
+  }
 
-    // Initialize the map
-    const map = L.map(mapContainer, {
-      zoomAnimation: viewMode || false,
-    }).setView(center, defaultZoom || DEFAULT_MAP_ZOOM);
+  private createMapInstance(
+    mapContainer: HTMLElement,
+    center: L.LatLngExpression,
+    defaultZoom?: number,
+    viewMode?: boolean
+  ) {
+    return L.map(mapContainer, { zoomAnimation: viewMode || false }).setView(
+      center,
+      defaultZoom || DEFAULT_MAP_ZOOM
+    );
+  }
 
-    // Define base layers
+  private setupBaseLayers(
+    availableBaseLayers?: string[],
+    availableBaseLayersCustom?: {
+      enabled: boolean;
+      label: string;
+      url: string;
+      attribution?: string;
+    }[]
+  ) {
     const allLayers = {
       OpenStreetMap: L.tileLayer(BASE_LAYER_URLS.OpenStreetMap, {
         attribution: BASE_LAYER_ATTRIBUTIONS.OpenStreetMap,
@@ -276,7 +337,6 @@ class MapService {
       }),
     };
 
-    // Start with built-in base layers
     const selectedBaseLayers = availableBaseLayers
       ? Object.fromEntries(
           Object.entries(allLayers).filter(([key]) =>
@@ -285,7 +345,6 @@ class MapService {
         )
       : { ...allLayers };
 
-    // Add enabled custom base layers
     if (availableBaseLayersCustom && Array.isArray(availableBaseLayersCustom)) {
       for (const custom of availableBaseLayersCustom) {
         if (custom?.enabled && custom?.label && custom?.url) {
@@ -296,155 +355,148 @@ class MapService {
         }
       }
     }
-    this.baseLayers = selectedBaseLayers;
 
-    // Pick the initial base layer
-    let selectedLayerKey = DEFAULT_BASE_LAYER; // Default fallback
+    return selectedBaseLayers;
+  }
 
-    // First check if specified layer exists in available layers
+  private pickInitialBaseLayer(selectedBaseLayer?: string) {
     if (this.baseLayers[selectedBaseLayer]) {
-      selectedLayerKey = selectedBaseLayer;
-    } else if (Object.keys(this.baseLayers).length > 0) {
-      // Otherwise use first available
-      selectedLayerKey = Object.keys(this.baseLayers)[0];
+      return selectedBaseLayer;
     }
+    const keys = Object.keys(this.baseLayers);
+    return keys.length > 0 ? keys[0] : DEFAULT_BASE_LAYER;
+  }
 
-    const selectedLayer = this.baseLayers[selectedLayerKey];
-    if (selectedLayer) {
-      selectedLayer.addTo(map);
-    }
-    // Track the base layer that is initially selected
-    this.currentBaseLayer = selectedLayerKey;
+  private setupGeocoderControl(map: L.Map, bcGeocoder?: boolean) {
+    if (!bcGeocoder) return;
 
-    // Add geocoder control first (if enabled)
-    let geocoderControl = null;
-    if (bcGeocoder) {
-      try {
-        geocoderControl = new (GeoSearch.GeoSearchControl as any)({
-          provider: new BCGeocoderProvider(),
-          style: 'bar',
-          position: 'bottomleft',
-          showMarker: false,
-          zIndex: 998, // Set a lower z-index
-        });
-        map.addControl(geocoderControl);
+    try {
+      const geocoderControl = new (GeoSearch.GeoSearchControl as any)({
+        provider: new BCGeocoderProvider(),
+        style: 'bar',
+        position: 'bottomleft',
+        showMarker: false,
+        zIndex: 998,
+      });
+      map.addControl(geocoderControl);
 
-        // After adding to the map, adjust styling if needed
-        const controlContainer = geocoderControl.getContainer();
-        if (controlContainer) {
-          // Make sure z-index is set properly
-          controlContainer.style.zIndex = '998'; // Lower than the baselayer control
-          controlContainer.style.pointerEvents = 'auto'; // Enable interaction
-        }
-
-        map.on('geosearch/showlocation', (e) => {
-          L.popup()
-            .setLatLng([(e as any).location.y, (e as any).location.x])
-            .setContent(`${(e as any).location.label}`)
-            .openOn(map);
-        });
-      } catch (error) {
-        console.error('Error initializing geocoder:', error);
-      }
-    }
-
-    // Only show layer control if allowed and multiple layers exist
-    if (allowBaseLayerSwitch && Object.keys(this.baseLayers).length > 1) {
-      const layerControl = L.control.layers(this.baseLayers).addTo(map);
-      const controlContainer = layerControl.getContainer();
+      const controlContainer = geocoderControl.getContainer();
       if (controlContainer) {
-        // Set z-index higher than geocoder
-        controlContainer.style.zIndex = '1005'; // Higher than geocoder
+        controlContainer.style.zIndex = '998';
         controlContainer.style.pointerEvents = 'auto';
       }
 
-      // Apply CSS to ensure the layer control is above all others
-      this.addLayerControlStyle();
-
-      // Modify event handler to prevent loops
-      map.on('baselayerchange', (e: any) => {
-        // Skip if updating through API
-        if (this.isUpdating) return;
-
-        this.currentBaseLayer = e.name;
-        if (this.options.onBaseLayerChange) {
-          this.isUpdating = true;
-          this.options.onBaseLayerChange(e.name);
-          setTimeout(() => {
-            this.isUpdating = false;
-          }, 10);
-        }
+      map.on('geosearch/showlocation', (e: any) => {
+        L.popup()
+          .setLatLng([e.location.y, e.location.x])
+          .setContent(`${e.location.label}`)
+          .openOn(map);
       });
+    } catch (error) {
+      console.error('Error initializing geocoder:', error);
+    }
+  }
+
+  private setupBaseLayerSwitchControl(
+    map: L.Map,
+    allowBaseLayerSwitch?: boolean
+  ) {
+    if (!allowBaseLayerSwitch || Object.keys(this.baseLayers).length <= 1)
+      return;
+
+    const layerControl = L.control.layers(this.baseLayers).addTo(map);
+    const controlContainer = layerControl.getContainer();
+
+    if (controlContainer) {
+      controlContainer.style.zIndex = '1005';
+      controlContainer.style.pointerEvents = 'auto';
     }
 
-    // Initialize Draw Layer
-    const drawnItems = new L.FeatureGroup();
-    map.addLayer(drawnItems);
+    this.addLayerControlStyle();
 
-    if (myLocation) {
-      const myLocationButton = L.Control.extend({
-        options: {
-          position: 'bottomright',
-        },
-        onAdd: () => {
-          const container = L.DomUtil.create(
-            'div',
-            'leaflet-bar leaflet-control'
-          );
-          const button = L.DomUtil.create(
-            'a',
-            'leaflet-control-button',
-            container
-          );
-          button.innerHTML = '<i class="fa fa-location-arrow"></i>';
-          L.DomEvent.disableClickPropagation(button);
+    map.on('baselayerchange', (e: any) => {
+      if (this.isUpdating) return;
 
-          L.DomEvent.on(button, 'click', () => {
-            if ('geolocation' in navigator) {
-              navigator.geolocation.getCurrentPosition((position) => {
-                const mapInstance = this.map;
-                if (!mapInstance) {
-                  return;
-                }
-                const latlng = [
-                  position.coords.latitude,
-                  position.coords.longitude,
-                ] as [number, number];
-
-                mapInstance.setView(latlng, 14);
-                L.popup()
-                  .setLatLng(latlng)
-                  .setContent(`(${latlng[0]}, ${latlng[1]})`)
-                  .openOn(mapInstance);
-              });
-            }
-          });
-
-          container.title = 'Click to center the map on your location';
-          return container;
-        },
-      });
-      const myLocationControl = new myLocationButton();
-      myLocationControl.addTo(map);
-    }
-
-    // Add Drawing Controllers
-    let drawControl = null;
-
-    if (!readOnlyMap) {
-      if (!viewMode) {
-        drawControl = new L.Control.Draw({
-          draw: drawOptions,
-          edit: {
-            featureGroup: drawnItems,
-            remove: true,
-          },
-        });
-        map.addControl(drawControl);
+      this.currentBaseLayer = e.name;
+      if (this.options.onBaseLayerChange) {
+        this.isUpdating = true;
+        this.options.onBaseLayerChange(e.name);
+        setTimeout(() => {
+          this.isUpdating = false;
+        }, 10);
       }
-    }
+    });
+  }
 
-    // Checking to see if the map should be interactable
+  private addMyLocationControl(map: L.Map) {
+    const myLocationButton = L.Control.extend({
+      options: {
+        position: 'bottomright',
+      },
+      onAdd: () => {
+        const container = L.DomUtil.create(
+          'div',
+          'leaflet-bar leaflet-control'
+        );
+        const button = L.DomUtil.create(
+          'a',
+          'leaflet-control-button',
+          container
+        );
+        button.innerHTML = '<i class="fa fa-location-arrow"></i>';
+        L.DomEvent.disableClickPropagation(button);
+
+        L.DomEvent.on(button, 'click', () => {
+          if ('geolocation' in navigator) {
+            navigator.geolocation.getCurrentPosition((position) => {
+              const mapInstance = this.map;
+              if (!mapInstance) return;
+
+              const latlng: [number, number] = [
+                position.coords.latitude,
+                position.coords.longitude,
+              ];
+              mapInstance.setView(latlng, 14);
+              L.popup()
+                .setLatLng(latlng)
+                .setContent(`(${latlng[0]}, ${latlng[1]})`)
+                .openOn(mapInstance);
+            });
+          }
+        });
+
+        container.title = 'Click to center the map on your location';
+        return container;
+      },
+    });
+    new myLocationButton().addTo(map);
+  }
+
+  private addDrawControl(
+    map: L.Map,
+    drawOptions: L.Control.DrawOptions,
+    readOnlyMap?: boolean,
+    viewMode?: boolean,
+    drawnItems?: L.FeatureGroup
+  ) {
+    if (readOnlyMap || viewMode) return null;
+
+    const drawControl = new L.Control.Draw({
+      draw: drawOptions,
+      edit: {
+        featureGroup: drawnItems,
+        remove: true,
+      },
+    });
+    map.addControl(drawControl);
+    return drawControl;
+  }
+
+  private handleFormInteractions(
+    form: HTMLElement[],
+    map: L.Map,
+    mapContainer: HTMLElement
+  ) {
     const componentEditNode =
       document.getElementsByClassName(COMPONENT_EDIT_CLASS);
     if (form) {
@@ -452,13 +504,13 @@ class MapService {
         map.invalidateSize();
         map.dragging.disable();
         map.scrollWheelZoom.disable();
+
         if (this.hasChildNode(componentEditNode[0], mapContainer)) {
           map.dragging.enable();
           map.scrollWheelZoom.enable();
         }
       }
     }
-    return { map, drawnItems, drawControl };
   }
 
   // Helper method to add CSS for layer control
