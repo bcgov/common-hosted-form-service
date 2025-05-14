@@ -6,12 +6,14 @@ import {
   DEFAULT_AVAILABLE_BASELAYERS,
   DEFAULT_BASE_LAYER,
   MAP_INIT_DELAY,
-  MAX_INIT_ATTEMPTS
+  MAX_INIT_ATTEMPTS,
 } from './Common/MapConstants';
 
 const FieldComponent = (Components as any).components.field;
 
-const DEFAULT_CENTER: [number, number] = [53.96717190097409, -123.98320425388914];
+const DEFAULT_CENTER: [number, number] = [
+  53.96717190097409, -123.98320425388914,
+];
 const DEFAULT_CONTAINER_HEIGHT = '400px';
 
 export default class Component extends (FieldComponent as any) {
@@ -57,7 +59,9 @@ export default class Component extends (FieldComponent as any) {
   }
 
   render() {
-    return super.render(`<div id="map-${this.componentID}" style="height:${DEFAULT_CONTAINER_HEIGHT}; z-index:1;"></div>`);
+    return super.render(
+      `<div id="map-${this.componentID}" style="height:${DEFAULT_CONTAINER_HEIGHT}; z-index:1;"></div>`
+    );
   }
 
   attach(element) {
@@ -68,14 +72,15 @@ export default class Component extends (FieldComponent as any) {
     return superAttach;
   }
 
-  tryLoadMap() {
+  async tryLoadMap() {
     try {
-      this.loadMap();
+      await this.loadMap();
     } catch (error) {
-      console.warn('Error loading Map',error);
+      console.warn('Error loading Map', error);
       const mapContainer = document.getElementById(`map-${this.componentID}`);
       if (mapContainer) {
-        mapContainer.innerHTML = '<div class="alert alert-danger">Error loading map. Please check console for details.</div>';
+        mapContainer.innerHTML =
+          '<div class="alert alert-danger">Error loading map. Please check console for details.</div>';
       }
     }
   }
@@ -90,7 +95,7 @@ export default class Component extends (FieldComponent as any) {
     this.initialized = false;
   }
 
-  loadMap() {
+  async loadMap() {
     this.mapContainer = document.getElementById(`map-${this.componentID}`);
 
     if (!this.mapContainer) {
@@ -124,10 +129,22 @@ export default class Component extends (FieldComponent as any) {
     const drawOptions = this.getDrawOptions(markerType);
     const viewMode = this.options.readOnly;
 
-    const initialCenter = center?.features?.[0]?.coordinates || DEFAULT_CENTER;
-    const selectedBaseLayer = this.dataValue?.selectedBaseLayer || DEFAULT_BASE_LAYER;
+    const initialCenter = center?.features?.[0]?.coordinates ?? DEFAULT_CENTER;
+    const selectedBaseLayer =
+      this.dataValue?.selectedBaseLayer ?? DEFAULT_BASE_LAYER;
 
-    const effectiveDefaultValue = this.dataValue?.features ? this.dataValue : defaultValue?.features ? defaultValue : { features: [], selectedBaseLayer };
+    let effectiveDefaultValue: { features: any; selectedBaseLayer?: any };
+
+    if (this.dataValue?.features?.length) {
+      effectiveDefaultValue = this.dataValue;
+    } else if (defaultValue?.features?.length) {
+      effectiveDefaultValue = defaultValue;
+    } else {
+      effectiveDefaultValue = {
+        features: [],
+        selectedBaseLayer: selectedBaseLayer ?? DEFAULT_BASE_LAYER,
+      };
+    }
 
     this.lastSavedValue = this.serializeValue(effectiveDefaultValue);
 
@@ -147,9 +164,14 @@ export default class Component extends (FieldComponent as any) {
       selectedBaseLayer,
       onBaseLayerChange: (layerName) => this.saveBaseLayer(layerName),
       allowBaseLayerSwitch,
-      availableBaseLayers: Object.keys(availableBaseLayers || {}).filter(k => availableBaseLayers[k]),
+      availableBaseLayers: Object.keys(availableBaseLayers ?? {}).filter(
+        (k) => availableBaseLayers[k]
+      ),
       availableBaseLayersCustom,
     });
+
+    // Now explicitly call async initialize outside constructor
+    await this.mapService.init();
 
     if (effectiveDefaultValue.features.length > 0) {
       setTimeout(() => {
@@ -172,7 +194,7 @@ export default class Component extends (FieldComponent as any) {
     };
 
     try {
-      Object.entries(markerType || {}).forEach(([key, value]) => {
+      Object.entries(markerType ?? {}).forEach(([key, value]) => {
         defaults[key] = value;
       });
 
@@ -180,30 +202,41 @@ export default class Component extends (FieldComponent as any) {
         defaults.rectangle = { showArea: false };
       }
     } catch (error) {
-        console.error('Error setting marker types:', error);
+      console.error('Error setting marker types:', error);
     }
 
     return defaults;
   }
 
-  serializeValue(value) {
+  serializeValue(value: any): string {
     try {
-      return JSON.stringify({
-        features: value.features?.map(feature => {
-          const result: any = { type: feature.type };
-          if (feature.coordinates) {
-            result.coordinates = ['marker', 'circle'].includes(feature.type)
-              ? `${feature.coordinates.lat},${feature.coordinates.lng}`
-              : JSON.stringify(feature.coordinates).replace(/[{}"]+/g, '');
+      const serializedFeatures =
+        value.features?.map((feature: any) => {
+          const { type, coordinates, bounds, radius } = feature;
+          const result: any = { type };
+
+          if (coordinates) {
+            result.coordinates = ['marker', 'circle'].includes(type)
+              ? `${coordinates.lat},${coordinates.lng}`
+              : JSON.stringify(coordinates).replace(/[{}"]+/g, '');
           }
-          if (feature.bounds) {
-            const b = feature.bounds;
-            result.bounds = `${b._southWest.lat},${b._southWest.lng},${b._northEast.lat},${b._northEast.lng}`;
+
+          if (bounds?._southWest && bounds?._northEast) {
+            const sw = bounds._southWest;
+            const ne = bounds._northEast;
+            result.bounds = `${sw.lat},${sw.lng},${ne.lat},${ne.lng}`;
           }
-          if (feature.radius) result.radius = feature.radius;
+
+          if (radius !== undefined) {
+            result.radius = radius;
+          }
+
           return result;
-        }) || [],
-        selectedBaseLayer: value.selectedBaseLayer || DEFAULT_BASE_LAYER,
+        }) ?? [];
+
+      return JSON.stringify({
+        features: serializedFeatures,
+        selectedBaseLayer: value.selectedBaseLayer ?? DEFAULT_BASE_LAYER,
       });
     } catch (error) {
       console.error('Error serializing value:', error);
@@ -214,17 +247,34 @@ export default class Component extends (FieldComponent as any) {
   saveDrawnItems(drawnItems: L.Layer[]) {
     if (this.updatingFromMapService) return;
 
-    const features = drawnItems.map((layer: any) => {
-      if (layer instanceof L.Marker) return { type: 'marker', coordinates: layer.getLatLng() };
-      if (layer instanceof L.Rectangle) return { type: 'rectangle', bounds: layer.getBounds() };
-      if (layer instanceof L.Circle) return { type: 'circle', coordinates: layer.getLatLng(), radius: layer.getRadius() };
-      if (layer instanceof L.Polygon) return { type: 'polygon', coordinates: layer.getLatLngs() };
-      if (layer instanceof L.Polyline) return { type: 'polyline', coordinates: layer.getLatLngs() };
-      return null;
-    }).filter(Boolean);
+    const features = drawnItems
+      .map((layer: any) => {
+        if (layer instanceof L.Marker)
+          return { type: 'marker', coordinates: layer.getLatLng() };
+        if (layer instanceof L.Rectangle)
+          return { type: 'rectangle', bounds: layer.getBounds() };
+        if (layer instanceof L.Circle)
+          return {
+            type: 'circle',
+            coordinates: layer.getLatLng(),
+            radius: layer.getRadius(),
+          };
+        if (layer instanceof L.Polygon)
+          return { type: 'polygon', coordinates: layer.getLatLngs() };
+        if (layer instanceof L.Polyline)
+          return { type: 'polyline', coordinates: layer.getLatLngs() };
+        return null;
+      })
+      .filter(Boolean);
 
-    const currentValue = this.getValue() || { features: [], selectedBaseLayer: DEFAULT_BASE_LAYER };
-    const newValue = { features, selectedBaseLayer: currentValue.selectedBaseLayer };
+    const currentValue = this.getValue() ?? {
+      features: [],
+      selectedBaseLayer: DEFAULT_BASE_LAYER,
+    };
+    const newValue = {
+      features,
+      selectedBaseLayer: currentValue.selectedBaseLayer,
+    };
     const newValueStr = this.serializeValue(newValue);
 
     if (this.lastSavedValue === newValueStr) return;
@@ -243,10 +293,14 @@ export default class Component extends (FieldComponent as any) {
       return super.setValue(value);
     }
 
-    const currentValue = this.getValue() || { features: [], selectedBaseLayer: DEFAULT_BASE_LAYER };
+    const currentValue = this.getValue() ?? {
+      features: [],
+      selectedBaseLayer: DEFAULT_BASE_LAYER,
+    };
     const newValue = {
-      features: value.features || [],
-      selectedBaseLayer: value.selectedBaseLayer || currentValue.selectedBaseLayer,
+      features: value.features ?? [],
+      selectedBaseLayer:
+        value.selectedBaseLayer ?? currentValue.selectedBaseLayer,
     };
 
     const currentStr = this.serializeValue(currentValue);
@@ -267,7 +321,10 @@ export default class Component extends (FieldComponent as any) {
   }
 
   saveBaseLayer(layerName) {
-    const currentValue = this.getValue() || { features: [], selectedBaseLayer: DEFAULT_BASE_LAYER };
+    const currentValue = this.getValue() ?? {
+      features: [],
+      selectedBaseLayer: DEFAULT_BASE_LAYER,
+    };
     const newValue = { ...currentValue, selectedBaseLayer: layerName };
     this.setValue(newValue);
   }

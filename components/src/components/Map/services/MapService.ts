@@ -1,6 +1,6 @@
 import * as L from 'leaflet';
 import * as GeoSearch from 'leaflet-geosearch';
-import {BCGeocoderProvider} from '../services/BCGeocoderProvider';
+import { BCGeocoderProvider } from '../services/BCGeocoderProvider';
 import {
   BASE_LAYER_URLS,
   BASE_LAYER_ATTRIBUTIONS,
@@ -8,7 +8,7 @@ import {
   DEFAULT_MAP_ZOOM,
   CUSTOM_MARKER_PATH,
   DECIMALS_LATLNG,
-  COMPONENT_EDIT_CLASS
+  COMPONENT_EDIT_CLASS,
 } from '../Common/MapConstants';
 import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
@@ -62,15 +62,14 @@ class MapService {
   constructor(options: MapServiceOptions) {
     this.options = options;
     this.mapContainer = options.mapContainer;
-
-    if (options.mapContainer) {
-      // Check if the container already has a map (cleanup first if needed)
-      if (options.mapContainer._leaflet_id) {
-        // console.log('Cleaning up existing map before initializing');
-        this.cleanup();
-      }
-
-      this.initialize(options);
+    if (options.mapContainer?._leaflet_id) {
+      this.cleanup();
+    }
+  }
+  // New async initialization method, to be called explicitly after creation
+  async init(): Promise<void> {
+    if (this.mapContainer) {
+      await this.initialize(this.options);
     }
   }
 
@@ -92,11 +91,11 @@ class MapService {
       this.initialized = false;
 
       // Remove the leaflet ID from the container if it exists
-      if (this.mapContainer && this.mapContainer._leaflet_id) {
+      if (this.mapContainer?.['_leaflet_id']) {
         delete this.mapContainer._leaflet_id;
       }
     } catch (error) {
-     // console.error('Error during map cleanup:', error);
+      console.error('Error during map cleanup:', error);
     }
   }
 
@@ -105,7 +104,7 @@ class MapService {
       // First clean up any existing map
       this.cleanup();
 
-      const {map, drawnItems, drawControl} = await this.initializeMap(
+      const { map, drawnItems, drawControl } = await this.initializeMap(
         options
       );
       this.map = map;
@@ -169,8 +168,7 @@ class MapService {
         }
 
         const form = document.getElementsByClassName('formio')[0];
-        const isDesigner =
-          form && form.classList.contains('formbuilder');
+        const isDesigner = form?.classList.contains('formbuilder') ?? false;
 
         if (!isDesigner) {
           e.layers.eachLayer((layer) => {
@@ -219,6 +217,7 @@ class MapService {
 
       this.initialized = true;
     } catch (error) {
+      console.error('Error initializing map:', error);
       if (options.mapContainer) {
         options.mapContainer.innerHTML =
           '<div class="alert alert-danger">Error initializing map. Please check console for details.</div>';
@@ -251,7 +250,7 @@ class MapService {
     if (mapContainer._leaflet_id) {
       // Ensure cleanup happened before continuing
       const existingMap = L.DomUtil.get(mapContainer);
-      if (existingMap && existingMap._leaflet_id) {
+      if (existingMap?._leaflet_id) {
         delete existingMap._leaflet_id;
       }
     }
@@ -280,11 +279,11 @@ class MapService {
     // Start with built-in base layers
     const selectedBaseLayers = availableBaseLayers
       ? Object.fromEntries(
-        Object.entries(allLayers).filter(([key]) =>
-          availableBaseLayers.includes(key)
+          Object.entries(allLayers).filter(([key]) =>
+            availableBaseLayers.includes(key)
+          )
         )
-      )
-      : {...allLayers};
+      : { ...allLayers };
 
     // Add enabled custom base layers
     if (availableBaseLayersCustom && Array.isArray(availableBaseLayersCustom)) {
@@ -292,7 +291,7 @@ class MapService {
         if (custom?.enabled && custom?.label && custom?.url) {
           selectedBaseLayers[custom.label] = L.tileLayer(custom.url, {
             attribution:
-              custom.attribution || BASE_LAYER_ATTRIBUTIONS.OpenStreetMap,
+              custom.attribution ?? BASE_LAYER_ATTRIBUTIONS.OpenStreetMap,
           });
         }
       }
@@ -345,7 +344,7 @@ class MapService {
             .openOn(map);
         });
       } catch (error) {
-         console.error('Error initializing geocoder:', error);
+        console.error('Error initializing geocoder:', error);
       }
     }
 
@@ -386,7 +385,8 @@ class MapService {
       const myLocationButton = L.Control.extend({
         options: {
           position: 'bottomright',
-        }, onAdd: () => {
+        },
+        onAdd: () => {
           const container = L.DomUtil.create(
             'div',
             'leaflet-bar leaflet-control'
@@ -422,7 +422,7 @@ class MapService {
 
           container.title = 'Click to center the map on your location';
           return container;
-        }
+        },
       });
       const myLocationControl = new myLocationButton();
       myLocationControl.addTo(map);
@@ -458,7 +458,7 @@ class MapService {
         }
       }
     }
-    return {map, drawnItems, drawControl};
+    return { map, drawnItems, drawControl };
   }
 
   // Helper method to add CSS for layer control
@@ -493,35 +493,22 @@ class MapService {
 
   bindPopupToLayer(layer) {
     try {
-      if (!layer) {
-        return;
-      }
+      if (!layer) return;
 
-      if (layer instanceof L.Marker) {
+      const getFormattedCoordinates = (latLng) =>
+        `(${latLng.lat.toFixed(DECIMALS_LATLNG)},${latLng.lng.toFixed(
+          DECIMALS_LATLNG
+        )})`;
+
+      if (layer instanceof L.Marker || layer instanceof L.Circle) {
+        const latLng = layer.getLatLng();
         layer
-          .bindPopup(
-            `<p>(${layer.getLatLng().lat.toFixed(DECIMALS_LATLNG)},${layer
-              .getLatLng()
-              .lng.toFixed(DECIMALS_LATLNG)})</p>`
-          )
-          .openPopup();
-      } else if (layer instanceof L.Circle) {
-        layer
-          .bindPopup(
-            `<p>(${layer.getLatLng().lat.toFixed(DECIMALS_LATLNG)},${layer
-              .getLatLng()
-              .lng.toFixed(DECIMALS_LATLNG)})</p>`
-          )
+          .bindPopup(`<p>${getFormattedCoordinates(latLng)}</p>`)
           .openPopup();
       } else if (layer instanceof L.Rectangle || layer instanceof L.Polygon) {
-        const bounds = layer.getBounds();
-        const center = bounds.getCenter();
+        const center = layer.getBounds().getCenter();
         layer
-          .bindPopup(
-            `<p>(${center.lat.toFixed(DECIMALS_LATLNG)},${center.lng.toFixed(
-              DECIMALS_LATLNG
-            )})</p>`
-          )
+          .bindPopup(`<p>${getFormattedCoordinates(center)}</p>`)
           .openPopup();
       }
     } catch (error) {
@@ -540,12 +527,17 @@ class MapService {
         return;
       }
 
-      // Remove any existing base layer
-      Object.values(this.baseLayers).forEach((layer) => {
-        if (this.map && this.map.hasLayer(layer)) {
-          this.map.removeLayer(layer);
-        }
-      });
+      // Check if map exists before proceeding
+      if (this.map && this.baseLayers) {
+        // Remove any existing base layer
+        Object.values(this.baseLayers).forEach((layer) => {
+          if (this.map.hasLayer?.(layer)) {
+            this.map.removeLayer(layer);
+          }
+        });
+      } else {
+        console.warn('Map or baseLayers not initialized.');
+      }
 
       // Add the new layer and update current base layer name
       if (this.map) {
@@ -615,11 +607,7 @@ class MapService {
   isDefaultFeature(feature): boolean {
     if (!feature) return false;
 
-    if (
-      !this.defaultFeatures ||
-      !this.defaultFeatures.getLayers ||
-      this.defaultFeatures.getLayers().length === 0
-    ) {
+    if (!this.defaultFeatures?.getLayers?.()?.length) {
       return false;
     }
 
@@ -688,7 +676,7 @@ class MapService {
         } else if (item.type === 'rectangle' && item.bounds) {
           layer = L.rectangle(item.bounds);
         } else if (item.type === 'circle' && item.coordinates && item.radius) {
-          layer = L.circle(item.coordinates, {radius: item.radius});
+          layer = L.circle(item.coordinates, { radius: item.radius });
         } else if (item.type === 'polygon' && item.coordinates) {
           layer = L.polygon(item.coordinates);
         } else if (item.type === 'polyline' && item.coordinates) {
@@ -777,7 +765,7 @@ class MapService {
         }
       }
     } catch (error) {
-     console.error('Error refreshing map:', error);
+      console.error('Error refreshing map:', error);
     }
   }
 }
