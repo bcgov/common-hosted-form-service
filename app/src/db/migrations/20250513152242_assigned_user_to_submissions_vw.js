@@ -67,7 +67,7 @@ exports.up = async function (knex) {
 
     // Step 5: Recreate submissions_data_vw with the new column
     await trx.schema.raw(`
-      CREATE VIEW public.submissions_data_vw AS
+      CREATE VIEW submissions_data_vw AS
       SELECT 
           s."confirmationId",
           s."formName",
@@ -177,7 +177,7 @@ exports.down = async function (knex) {
 
     // Recreate submissions_data_vw without assigneeUserId
     await trx.schema.raw(`
-      CREATE VIEW public.submissions_data_vw AS
+      CREATE VIEW submissions_data_vw AS
       SELECT 
           s."confirmationId",
           s."formName",
@@ -206,13 +206,26 @@ exports.down = async function (knex) {
           u."lastName",
           s."formSubmissionStatusCode" AS status,
           s."formSubmissionAssignedToFullName" AS assignee,
-          s."formSubmissionAssignedToEmail" AS "assigneeEmail"
+          s."formSubmissionAssignedToEmail" AS "assigneeEmail",
+          fss."createdAt" AS "submittedAt"
       FROM submissions_vw s
           JOIN form_submission fs ON s."submissionId" = fs.id
           LEFT JOIN form_submission_user fsu 
               ON s."submissionId" = fsu."formSubmissionId"
               AND fsu.permission = 'submission_create'
           LEFT JOIN "user" u ON fsu."userId" = u.id
+          JOIN (
+              SELECT 
+                  "submissionId",
+                  "createdAt",
+                  ROW_NUMBER() OVER (
+                      PARTITION BY "submissionId" 
+                      ORDER BY "createdAt" DESC
+                  ) AS rn
+              FROM form_submission_status
+              WHERE code = 'SUBMITTED'
+          ) fss ON s."submissionId" = fss."submissionId"
+          WHERE fss.rn = 1
       ORDER BY s."createdAt", s."formName", s.version
     `);
 
