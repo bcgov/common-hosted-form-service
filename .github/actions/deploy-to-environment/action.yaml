@@ -75,9 +75,19 @@ runs:
     - name: Validate Helm Values File
       shell: bash
       run: helm template --values openshift/crunchydb/charts/crunchy-postgres/values.yaml openshift/crunchydb/charts/crunchy-postgres/ --debug
-    - name: Deploy Crunchy
+    - name: Deploy Database (PR)
+      if: inputs.namespace_environment == 'pr'
       uses: bcgov/action-crunchy@v1.1.0
-      id: deploy_crunchy
+      id: deploy-db-pr
+      with:
+        oc_namespace: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment}}
+        oc_token: ${{ inputs.openshift_token }}
+        values_file: openshift/crunchydb/charts/crunchy-postgres/values.yaml
+        triggers: .github/**,openshift/crunchydb/charts/crunchy-postgres/**
+    - name: Deploy Database (Non-PR)
+      if: inputs.namespace_environment != 'pr'
+      uses: bcgov/action-crunchy@v1.1.0
+      id: deploy-db
       with:
         oc_namespace: ${{ inputs.namespace_prefix }}-${{ inputs.namespace_environment}}
         oc_token: ${{ inputs.openshift_token }}
