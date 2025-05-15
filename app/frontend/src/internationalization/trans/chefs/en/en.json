@@ -529,8 +529,8 @@
   },
   "formDesigner": {
     "formDesign": "Form Design",
-    "exportDesign": "Export Design",
-    "importDesign": "Import Design",
+    "downloadJson": "Download JSON",
+    "uploadJson": "Upload JSON",
     "important": "IMPORTANT",
     "formDesignInfoA": "Use the <strong>SAVE DESIGN</strong> button when you are done building this form.",
     "formDesignInfoB": "The <strong>SUBMIT</strong> button is provided for your user to submit this form and will be activated after it is saved.",
@@ -655,7 +655,7 @@
     "formSubmission": "form submission",
     "delete": "Delete"
   },
-  
+
   "manageSubmissionUsers": {
     "manageTeamMembers": "Manage Team Members",
     "add": "Add",
@@ -685,7 +685,7 @@
   },
   "canShareDraft": {
     "canShareMessage": "You can't share the draft with users who haven't been added to the form. Please contact the admin to add them.",
-    "shareDraftMessage":"Share draft with form team members only"
+    "shareDraftMessage": "Share draft with form team members only"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "View This Submission",

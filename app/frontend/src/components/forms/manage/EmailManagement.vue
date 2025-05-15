@@ -45,20 +45,19 @@ Promise.all([
       <div style="z-index: 50">
         <v-tooltip location="bottom">
           <template #activator="{ props }">
-            <router-link :to="{ name: 'FormManage', query: { f: formId } }">
-              <v-btn
-                class="mx-1"
-                color="primary"
-                size="x-small"
-                density="default"
-                icon
-                :disabled="!formId"
-                v-bind="props"
-                :title="$t('trans.emailManagement.manageForm')"
-              >
-                <v-icon icon="mdi:mdi-cog"></v-icon>
-              </v-btn>
-            </router-link>
+            <v-btn
+              class="mx-1"
+              color="primary"
+              size="x-small"
+              density="default"
+              icon
+              :disabled="!formId"
+              v-bind="props"
+              :to="{ name: 'FormManage', query: { f: formId } }"
+              :title="$t('trans.emailManagement.manageForm')"
+            >
+              <v-icon icon="mdi:mdi-cog"></v-icon>
+            </v-btn>
           </template>
           <span :lang="locale">{{
             $t('trans.emailManagement.manageForm')

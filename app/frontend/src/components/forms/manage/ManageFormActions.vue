@@ -72,18 +72,17 @@ defineExpose({
     <span v-if="canViewSubmissions">
       <v-tooltip location="bottom">
         <template #activator="{ props }">
-          <router-link :to="{ name: 'FormSubmissions', query: { f: form.id } }">
-            <v-btn
-              class="mx-1"
-              color="primary"
-              v-bind="props"
-              size="x-small"
-              density="default"
-              icon="mdi:mdi-list-box-outline"
-              data-test="canViewFormSubmissions"
-              :title="$t('trans.manageFormActions.viewSubmissions')"
-            />
-          </router-link>
+          <v-btn
+            class="mx-1"
+            color="primary"
+            v-bind="props"
+            size="x-small"
+            density="default"
+            icon="mdi:mdi-list-box-outline"
+            data-test="canViewFormSubmissions"
+            :to="{ name: 'FormSubmissions', query: { f: form.id } }"
+            :title="$t('trans.manageFormActions.viewSubmissions')"
+          />
         </template>
         <span :lang="locale">{{
           $t('trans.manageFormActions.viewSubmissions')
@@ -94,18 +93,17 @@ defineExpose({
     <span v-if="canManageTeam">
       <v-tooltip location="bottom">
         <template #activator="{ props }">
-          <router-link :to="{ name: 'FormTeams', query: { f: form.id } }">
-            <v-btn
-              class="mx-1"
-              color="primary"
-              v-bind="props"
-              size="x-small"
-              density="default"
-              icon="mdi:mdi-account-multiple"
-              data-test="canManageTeammembers"
-              :title="$t('trans.manageFormActions.teamManagement')"
-            />
-          </router-link>
+          <v-btn
+            class="mx-1"
+            color="primary"
+            v-bind="props"
+            size="x-small"
+            density="default"
+            icon="mdi:mdi-account-multiple"
+            data-test="canManageTeammembers"
+            :to="{ name: 'FormTeams', query: { f: form.id } }"
+            :title="$t('trans.manageFormActions.teamManagement')"
+          />
         </template>
         <span :lang="locale">{{
           $t('trans.manageFormActions.teamManagement')
@@ -116,18 +114,17 @@ defineExpose({
     <span v-if="canManageEmail">
       <v-tooltip location="bottom">
         <template #activator="{ props }">
-          <router-link :to="{ name: 'FormEmails', query: { f: form.id } }">
-            <v-btn
-              class="mx-1"
-              color="primary"
-              v-bind="props"
-              size="x-small"
-              density="default"
-              icon="mdi:mdi-email"
-              data-test="canUpdateEmail"
-              :title="$t('trans.manageFormActions.emailManagement')"
-            />
-          </router-link>
+          <v-btn
+            class="mx-1"
+            color="primary"
+            v-bind="props"
+            size="x-small"
+            density="default"
+            icon="mdi:mdi-email"
+            data-test="canUpdateEmail"
+            :to="{ name: 'FormEmails', query: { f: form.id } }"
+            :title="$t('trans.manageFormActions.emailManagement')"
+          />
         </template>
         <span :lang="locale">
           {{ $t('trans.manageFormActions.emailManagement') }}

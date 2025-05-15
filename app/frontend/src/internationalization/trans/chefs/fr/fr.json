@@ -452,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "Conception de formulaire",
-    "exportDesign": "Conception d'exportation",
-    "importDesign": "Importer la conception",
+    "downloadJson": "Télécharger JSON",
+    "uploadJson": "Importer JSON",
     "important": "IMPORTANT",
     "formDesignInfoA": "Utilisez le bouton <strong>ENREGISTRER LA CONCEPTION</strong> lorsque vous avez terminé de créer ce formulaire.",
     "formDesignInfoB": "Le bouton <strong>SOUMETTRE</strong> est fourni à votre utilisateur pour soumettre ce formulaire et sera activé après son enregistrement.",
@@ -1225,6 +1225,6 @@
   },
   "canShareDraft": {
     "canShareMessage": "Vous ne pouvez pas partager le brouillon avec des utilisateurs qui n'ont pas été ajoutés au formulaire. Veuillez contacter l'administrateur pour les ajouter.",
-    "shareDraftMessage":"Partager le brouillon uniquement avec les membres de l'équipe du formulaire"
+    "shareDraftMessage": "Partager le brouillon uniquement avec les membres de l'équipe du formulaire"
   }
 }
