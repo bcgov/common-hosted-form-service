@@ -30,6 +30,9 @@ module.exports = defineConfig({
     specPattern: 'e2e/*.cy.{js,jsx,ts,tsx}',
     testIsolation: false,
     supportFile: 'support/index.js',
+    numTestsKeptInMemory: 5,
+    experimentalMemoryManagement: true,
   }
+  
   },
 )
