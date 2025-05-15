@@ -280,15 +280,15 @@ describe('Form Designer', () => {
         let fileUploadInputField = cy.get('input[type=file]');
         cy.get('input[type=file]').should('not.to.be.null');
         fileUploadInputField.attachFile('add1.png');
-        cy.get('.ml-auto > :nth-child(3) > .v-btn').click();
-        cy.waitForLoad();
         cy.waitForLoad();
         //verify file uploads to object storage
-
         cy.get('.col-md-9 > a').should('have.attr', 'ref').and('include', 'fileLink');
         cy.get('div.col-md-2').contains('61.48 kB');
+        cy.get('.ml-auto > :nth-child(3) > .v-btn').click();
+        cy.waitForLoad();
+        cy.wait(2000);
         //Close the upload warning message
-        cy.get('.v-alert__close > .v-btn').click();
+        //cy.get('.v-alert__close > .v-btn').click();
         cy.wait(2000);
         //form submission
         cy.get('button').contains('Submit').click();
