@@ -45,6 +45,11 @@ class SubmissionData extends Model {
           query.where('draft', false);
         }
       },
+      filterAssignedToUserId(query, shouldFilter, userId) {
+        if (shouldFilter && userId) {
+          query.where('assigneeUserId', userId);
+        }
+      },
       orderDefault(builder) {
         builder.orderBy('createdAt', 'DESC');
       },
