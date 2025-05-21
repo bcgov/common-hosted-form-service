@@ -24,6 +24,7 @@
     │   └── forms/             - Models, Controllers, Routes for the forms
     └── tests/                 - Node.js backend web application tests
     components/                - Form.io Custom Components Library
+    clamav/                    - ClamAV Virus Scanner image and helm charts
     openshift/                 - OpenShift-deployment and shared pipeline files
     tests/                     - External test frameworks
     ├── functional/            - Supporting functional tests
