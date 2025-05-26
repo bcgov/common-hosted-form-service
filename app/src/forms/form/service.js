@@ -475,7 +475,17 @@ const service = {
   listFormSubmissions: async (formId, params) => {
     const query = service._initFormSubmissionsListQuery(formId, params, currentUser);
 
-    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId', 'assigneeUserId'];
+    const selection = [
+      'confirmationId',
+      'createdAt',
+      'formId',
+      'formSubmissionStatusCode',
+      'submissionId',
+      'deleted',
+      'createdBy',
+      'formVersionId',
+      'formSubmissionAssignedToUserId',
+    ];
 
     let fields = [];
     if (params.fields && params.fields.length) {
