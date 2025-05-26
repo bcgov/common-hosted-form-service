@@ -27,7 +27,6 @@ const debounceTime = ref(300);
 const deleteItem = ref({});
 // Show only deleted items
 const deletedOnly = ref(false);
-//const assignedToCurrentUser = ref(false);
 const search = ref('');
 const filterIgnore = ref([
   {
@@ -371,7 +370,6 @@ async function getSubmissionData() {
     createdBy: currentUserOnly.value
       ? `${user.value.username}@${user.value.idp?.code}`
       : '',
-    //filterAssignedToCurrentUser: assignedToCurrentUser.value,
   };
   await formStore.fetchSubmissions(criteria);
   if (submissionList.value) {
@@ -528,7 +526,6 @@ async function handleSearch(value) {
 }
 
 defineExpose({
-  //assignedToCurrentUser,
   BASE_FILTER_HEADERS,
   BASE_HEADERS,
   debounceInput,
@@ -664,22 +661,6 @@ defineExpose({
           </template>
         </v-checkbox>
       </div>
-      <!--
-      <div>
-        <v-checkbox
-          v-model="assignedToCurrentUser"
-          class="pl-3"
-          @click="refreshSubmissions"
-        >
-          <template #label>
-            <span :class="{ 'mr-2': isRTL }" :lang="locale">
-              Assigned to me
-            </span>
-          </template>
-        </v-checkbox>
-      </div>
-    -->
-
       <div>
         <!-- search input -->
         <div class="submissions-search">
