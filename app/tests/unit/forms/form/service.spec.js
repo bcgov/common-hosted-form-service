@@ -539,14 +539,19 @@ describe('_findFileIds', () => {
 });
 
 describe('listFormSubmissions', () => {
+  const mockCurrentUser = { id: 'user-123', usernameIdp: 'TEST_USER' };
   describe('400 response when', () => {
     test('sort by column not in select', async () => {
       await expect(
-        service.listFormSubmissions(formId, {
-          sortBy: {
-            column: 'x',
+        service.listFormSubmissions(
+          formId,
+          {
+            sortBy: {
+              column: 'x',
+            },
           },
-        })
+          mockCurrentUser
+        )
       ).rejects.toThrow('400');
     });
   });
@@ -557,7 +562,9 @@ describe('listFormSubmissions', () => {
     expect(MockModel.select).toBeCalledTimes(1);
   });
 });
-describe('listFormSubmissions - assignment filtering', () => {
+describe('listFormSubmissions - assignment filtering logic', () => {
+  const mockCurrentUser = { id: 'user-123', usernameIdp: 'TEST_USER' };
+
   beforeEach(() => {
     MockModel.mockReset();
     MockTransaction.mockReset();
@@ -568,45 +575,53 @@ describe('listFormSubmissions - assignment filtering', () => {
     jest.restoreAllMocks();
   });
 
-  it('should return all submissions when filterAssignedToCurrentUser is false', async () => {
+  it('should NOT call filterAssignedToUserId modifier when filterAssignedToCurrentUser is false', async () => {
     const params = {
       filterAssignedToCurrentUser: false,
       fields: ['field1'],
     };
 
-    await service.listFormSubmissions(formId, params);
+    await service.listFormSubmissions(formId, params, mockCurrentUser);
 
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.where).toHaveBeenCalledWith('formId', formId);
+    // Should NOT call the assignment filter modifier
+    expect(MockModel.modify).not.toHaveBeenCalledWith('filterAssignedToUserId', true, 'user-123');
   });
 
-  it('should handle filterAssignedToCurrentUser parameter', async () => {
-    // Test with filterAssignedToCurrentUser = true
+  it('should call filterAssignedToUserId modifier when filterAssignedToCurrentUser is true and currentUser exists', async () => {
     const params = {
       filterAssignedToCurrentUser: true,
       fields: ['field1'],
     };
 
-    await service.listFormSubmissions(formId, params);
+    await service.listFormSubmissions(formId, params, mockCurrentUser);
 
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.where).toHaveBeenCalledWith('formId', formId);
-    // The actual assignment filtering logic is tested implicitly
-    // since the method completes without throwing errors
+    // Should call the assignment filter modifier with the current user's ID
+    expect(MockModel.modify).toHaveBeenCalledWith('filterAssignedToUserId', true, 'user-123');
   });
 
-  it('should handle filterAssignedToCurrentUser with different field combinations', async () => {
+  it('should NOT call filterAssignedToUserId modifier when filterAssignedToCurrentUser is true but currentUser is null', async () => {
     const params = {
       filterAssignedToCurrentUser: true,
-      fields: ['field1', 'field2'],
-      submissionId: 'test-id',
+      fields: ['field1'],
     };
 
-    await service.listFormSubmissions(formId, params);
+    await service.listFormSubmissions(formId, params, null);
 
-    expect(MockModel.query).toHaveBeenCalledTimes(1);
-    expect(MockModel.where).toHaveBeenCalledWith('formId', formId);
-    expect(MockModel.modify).toHaveBeenCalledWith('filterSubmissionId', 'test-id');
+    // Should NOT call the assignment filter modifier when currentUser is null
+    expect(MockModel.modify).not.toHaveBeenCalledWith('filterAssignedToUserId', true, expect.anything());
+  });
+
+  it('should NOT call filterAssignedToUserId modifier when filterAssignedToCurrentUser is true but currentUser.id is undefined', async () => {
+    const mockUserWithoutId = { usernameIdp: 'TEST_USER' }; // No id property
+    const params = {
+      filterAssignedToCurrentUser: true,
+      fields: ['field1'],
+    };
+
+    await service.listFormSubmissions(formId, params, mockUserWithoutId);
+
+    // Should NOT call the assignment filter modifier when currentUser.id is undefined
+    expect(MockModel.modify).not.toHaveBeenCalledWith('filterAssignedToUserId', true, expect.anything());
   });
 });
 describe('readVersionFields', () => {

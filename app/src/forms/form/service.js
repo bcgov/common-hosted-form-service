@@ -29,7 +29,6 @@ const { Permissions, Roles, Statuses } = require('../common/constants');
 const formMetadataService = require('./formMetadata/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
 const eventStreamConfigService = require('./eventStreamConfig/service');
-const { currentUser } = require('../auth/middleware/userAccess');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER, Roles.SUBMISSION_APPROVER];
 
 /**
@@ -450,7 +449,7 @@ const service = {
     return DocumentTemplate.query().findById(documentTemplateId).modify('filterActive', true).throwIfNotFound();
   },
 
-  _initFormSubmissionsListQuery: (formId, params) => {
+  _initFormSubmissionsListQuery: (formId, params, currentUser) => {
     const query = SubmissionMetadata.query()
       .where('formId', formId)
       .modify('filterSubmissionId', params.submissionId)
@@ -472,7 +471,7 @@ const service = {
     return query;
   },
 
-  listFormSubmissions: async (formId, params) => {
+  listFormSubmissions: async (formId, params, currentUser) => {
     const query = service._initFormSubmissionsListQuery(formId, params, currentUser);
 
     const selection = [
@@ -485,6 +484,8 @@ const service = {
       'createdBy',
       'formVersionId',
       'formSubmissionAssignedToUserId',
+      'formSubmissionAssignedToFullName',
+      'formSubmissionAssignedToEmail',
     ];
 
     let fields = [];
