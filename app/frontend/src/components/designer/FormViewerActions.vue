@@ -77,6 +77,10 @@ const showEditToggle = computed(
     properties.readOnly &&
     properties.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
 );
+const loading = ref(false);
+function toggleLoading() {
+  loading.value = !loading.value;
+}
 
 function toggleWideLayout() {
   isWideLayout.value = !isWideLayout.value;
@@ -101,9 +105,13 @@ watch(
     <div v-if="formId && !publicForm">
       <v-btn
         color="primary"
+        :loading="loading"
         variant="outlined"
         :title="$t('trans.formViewerActions.viewMyDraftOrSubmissions')"
-        @click="$emit('showdoYouWantToSaveTheDraftModal')"
+        @click="
+          toggleLoading();
+          $emit('showdoYouWantToSaveTheDraftModal');
+        "
       >
         <span :lang="locale">{{
           $t('trans.formViewerActions.viewMyDraftOrSubmissions')
