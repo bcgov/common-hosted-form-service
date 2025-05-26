@@ -452,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "フォームデザイン",
-    "exportDesign": "デザインのエクスポート",
-    "importDesign": "デザインのインポート",
+    "downloadJson": "JSON をダウンロード",
+    "uploadJson": "JSON をアップロード",
     "important": "重要",
     "formDesignInfoA": "このフォームの作成が完了したら、 <strong>[デザインを保存]</strong>ボタンを使用します。",
     "formDesignInfoB": "<strong>[送信]</strong>ボタンは、ユーザーがこのフォームを送信するために提供されており、保存後にアクティブになります。",
@@ -1225,6 +1225,6 @@
   },
   "canShareDraft": {
     "canShareMessage": "フォームに追加されていないユーザーとは下書きを共有できません。管理者に連絡して追加してください。",
-    "shareDraftMessage":"フォームチームのメンバーとのみドラフトを共有する"
+    "shareDraftMessage": "フォームチームのメンバーとのみドラフトを共有する"
   }
 }
