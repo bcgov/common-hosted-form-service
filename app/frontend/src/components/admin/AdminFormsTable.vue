@@ -11,16 +11,20 @@ const { t, locale } = useI18n({ useScope: 'global' });
 const showDeleted = ref(false);
 const loading = ref(false);
 const search = ref('');
+const firstDataLoad = ref(true);
 
 const adminStore = useAdminStore();
 const formStore = useFormStore();
 
-const { formList } = storeToRefs(adminStore);
+const { formList, formTotal } = storeToRefs(adminStore);
 const { isRTL } = storeToRefs(formStore);
 
 const calcHeaders = computed(() =>
   headers.value.filter((x) => x.key !== 'updatedAt' || showDeleted.value)
 );
+
+const currentPage = ref(1);
+const itemsPP = ref(10);
 
 const headers = computed(() => [
   {
@@ -57,8 +61,27 @@ onMounted(async () => {
 
 async function refreshForms() {
   loading.value = true;
-  await adminStore.getForms(!showDeleted.value);
+  await adminStore.getForms({
+    activeOnly: !showDeleted.value,
+    paginationEnabled: true,
+    page: currentPage.value - 1,
+    itemsPerPage: itemsPP.value,
+  });
   loading.value = false;
+}
+async function updateOptions(options) {
+  console.log(options);
+  const { page, itemsPerPage } = options;
+  if (page) {
+    currentPage.value = page;
+  }
+  if (itemsPerPage) {
+    itemsPP.value = itemsPerPage;
+  }
+  if (!firstDataLoad.value) {
+    await refreshForms();
+  }
+  firstDataLoad.value = false;
 }
 </script>
 
@@ -104,17 +127,20 @@ async function refreshForms() {
     </v-row>
 
     <!-- table header -->
-    <v-data-table
+    <v-data-table-server
       class="submissions-table"
       hover
       :headers="calcHeaders"
       item-key="title"
       :items="formList"
+      :items-per-page="itemsPP"
+      :items-length="formTotal"
       :search="search"
       :loading="loading"
       :lang="locale"
       :loading-text="t('trans.adminFormsTable.loadingText')"
       :no-data-text="t('trans.adminFormsTable.noDataText')"
+      @update:options="updateOptions"
     >
       <template #item.createdAt="{ item }">
         {{ $filters.formatDateLong(item.createdAt) }} -
@@ -159,7 +185,7 @@ async function refreshForms() {
           </v-btn>
         </router-link>
       </template>
-    </v-data-table>
+    </v-data-table-server>
   </div>
 </template>
 <style scoped>

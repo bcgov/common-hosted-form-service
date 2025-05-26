@@ -10,9 +10,11 @@ export const useAdminStore = defineStore('admin', {
     apiKey: undefined,
     form: {},
     formList: [],
+    formTotal: undefined,
     roles: [],
     user: {},
     userList: [],
+    userTotal: undefined,
     externalAPIList: [],
     externalAPIStatusCodes: [],
     fcProactiveHelp: {}, // Form Component Proactive Help
@@ -71,12 +73,17 @@ export const useAdminStore = defineStore('admin', {
         });
       }
     },
-    async getForms(activeOnly) {
+    async getForms(params) {
+      console.log(params);
       try {
         this.formList = [];
         // Get all forms
-        const response = await adminService.listForms(activeOnly);
-        this.formList = response.data;
+        const response = await adminService.listForms(params);
+        console.log(response);
+        this.formList = response.data.results;
+        this.formTotal = response.data.total;
+        console.log(this.formList);
+        console.log(this.formTotal);
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({

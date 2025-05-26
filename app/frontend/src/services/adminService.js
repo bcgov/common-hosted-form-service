@@ -44,9 +44,9 @@ export default {
    * @param {Boolean} active Don't show deleted forms
    * @returns {Promise} An axios response
    */
-  listForms(active = true) {
+  listForms(params) {
     return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.FORMS}`, {
-      params: { active: active },
+      params: params,
     });
   },
 
