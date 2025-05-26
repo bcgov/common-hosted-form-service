@@ -90,19 +90,18 @@ onMounted(async () => {
         {{ $filters.formatDate(item.createdAt) }}
       </template>
       <template #item.actions="{ item }">
-        <router-link :to="{ name: 'AdministerUser', query: { u: item.id } }">
-          <v-btn
-            color="primary"
-            variant="text"
-            size="small"
-            :title="$t('trans.adminUsersTable.admin')"
-          >
-            <v-icon class="mr-1" icon="mdi:mdi-wrench"></v-icon>
-            <span class="d-none d-sm-flex" :lang="locale">{{
-              $t('trans.adminUsersTable.admin')
-            }}</span>
-          </v-btn>
-        </router-link>
+        <v-btn
+          color="primary"
+          variant="text"
+          size="small"
+          :to="{ name: 'AdministerUser', query: { u: item.id } }"
+          :title="$t('trans.adminUsersTable.admin')"
+        >
+          <v-icon class="mr-1" icon="mdi:mdi-wrench"></v-icon>
+          <span class="d-none d-sm-flex" :lang="locale">{{
+            $t('trans.adminUsersTable.admin')
+          }}</span>
+        </v-btn>
       </template>
     </v-data-table>
   </div>

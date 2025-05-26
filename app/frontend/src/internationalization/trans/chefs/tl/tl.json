@@ -452,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "Disenyo ng Form",
-    "exportDesign": "I-export ang Disenyo",
-    "importDesign": "Import na Disenyo",
+    "downloadJson": "I-download ang JSON",
+    "uploadJson": "I-upload ang JSON",
     "important": "MAHALAGA",
     "formDesignInfoA": "Gamitin ang <strong>SAVE DESIGN</strong> button kapag tapos ka nang buuin ang form na ito.",
     "formDesignInfoB": "Ang <strong>SUBMIT</strong> button ay ibinibigay para sa iyong user na isumite ang form na ito at isaaktibo pagkatapos itong ma-save.",
@@ -1229,6 +1229,6 @@
   },
   "canShareDraft": {
     "canShareMessage": "Hindi mo maibabahagi ang draft sa mga user na hindi pa naidagdag sa form. Mangyaring makipag-ugnayan sa admin para idagdag sila.",
-    "shareDraftMessage":"Ibahagi ang draft sa mga miyembro ng form ng koponan lamang"
+    "shareDraftMessage": "Ibahagi ang draft sa mga miyembro ng form ng koponan lamang"
   }
 }
