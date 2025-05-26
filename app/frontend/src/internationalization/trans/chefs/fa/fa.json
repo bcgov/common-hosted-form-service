@@ -342,7 +342,7 @@
   "adminFormsTable": {
     "showDeletedForms": "نمایش فرم های حذف شده",
     "search": "جستجو کردن",
-    "loadingText": "بارگذاری متن",
+    "loadingText": "لطفاً صبر کنید",
     "noDataText": "هیچ فرمی در سیستم شما وجود ندارد",
     "admin": "مدیر",
     "launch": "راه اندازی",

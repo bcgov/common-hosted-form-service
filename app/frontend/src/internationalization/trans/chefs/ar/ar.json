@@ -342,7 +342,7 @@
   "adminFormsTable": {
     "showDeletedForms": "إظهار النماذج المحذوفة",
     "search": "يبحث",
-    "loadingText": "نص التحميل",
+    "loadingText": "من فضلك انتظر",
     "noDataText": "لا توجد نماذج في نظامك",
     "admin": "مسؤل",
     "launch": "يطلق",

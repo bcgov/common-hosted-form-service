@@ -342,7 +342,7 @@
   "adminFormsTable": {
     "showDeletedForms": "Mostrar formulários excluídos",
     "search": "Procurar",
-    "loadingText": "carregando-texto",
+    "loadingText": "Por favor, aguarde",
     "noDataText": "Não há formulários em seu sistema",
     "admin": "Administrador",
     "launch": "Lançar",

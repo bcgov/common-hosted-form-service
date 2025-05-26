@@ -342,7 +342,7 @@
   "adminFormsTable": {
     "showDeletedForms": "삭제된 양식 표시",
     "search": "찾다",
-    "loadingText": "로딩 텍스트",
+    "loadingText": "잠시만 기다려 주세요",
     "noDataText": "시스템에 양식이 없습니다.",
     "admin": "관리자",
     "launch": "시작하다",

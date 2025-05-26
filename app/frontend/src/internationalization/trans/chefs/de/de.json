@@ -342,7 +342,7 @@
   "adminFormsTable": {
     "showDeletedForms": "Gelöschte Formulare anzeigen",
     "search": "Suchen",
-    "loadingText": "Ladetext",
+    "loadingText": "Bitte warten",
     "noDataText": "In Ihrem System sind keine Formulare vorhanden",
     "admin": "Administrator",
     "launch": "Start",
