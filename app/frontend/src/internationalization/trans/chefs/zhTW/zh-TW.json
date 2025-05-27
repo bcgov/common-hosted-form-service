@@ -342,7 +342,7 @@
   "adminFormsTable": {
     "showDeletedForms": "顯示已刪除的表單",
     "search": "搜索",
-    "loadingText": "加載文本",
+    "loadingText": "請稍候",
     "noDataText": "您的系統中沒有表格",
     "admin": "行政",
     "launch": "發射",

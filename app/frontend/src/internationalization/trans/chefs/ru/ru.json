@@ -342,7 +342,7 @@
   "adminFormsTable": {
     "showDeletedForms": "Показать удаленные формы",
     "search": "Поиск",
-    "loadingText": "Загрузка, пожалуйста подождите",
+    "loadingText": "Пожалуйста, подождите",
     "noDataText": "В вашей системе нет форм",
     "admin": "Админ",
     "launch": "Запуск",
