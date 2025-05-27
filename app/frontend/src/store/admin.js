@@ -74,16 +74,12 @@ export const useAdminStore = defineStore('admin', {
       }
     },
     async getForms(params) {
-      console.log(params);
       try {
         this.formList = [];
         // Get all forms
         const response = await adminService.listForms(params);
-        console.log(response);
         this.formList = response.data.results;
         this.formTotal = response.data.total;
-        console.log(this.formList);
-        console.log(this.formTotal);
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({

@@ -1,4 +1,5 @@
 <script setup>
+import _ from 'lodash';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -12,6 +13,9 @@ const showDeleted = ref(false);
 const loading = ref(false);
 const search = ref('');
 const firstDataLoad = ref(true);
+const forceTableRefresh = ref(0);
+const debounceInput = ref(null);
+const debounceTime = ref(300);
 
 const adminStore = useAdminStore();
 const formStore = useFormStore();
@@ -56,7 +60,10 @@ watch(showDeleted, async () => {
 });
 
 onMounted(async () => {
-  await refreshForms();
+  debounceInput.value = _.debounce(async () => {
+    forceTableRefresh.value += 1;
+  }, debounceTime.value);
+  refreshForms();
 });
 
 async function refreshForms() {
@@ -66,11 +73,12 @@ async function refreshForms() {
     paginationEnabled: true,
     page: currentPage.value - 1,
     itemsPerPage: itemsPP.value,
+    search: search.value,
+    searchEnabled: search.value.length > 0 ? true : false,
   });
   loading.value = false;
 }
 async function updateOptions(options) {
-  console.log(options);
   const { page, itemsPerPage } = options;
   if (page) {
     currentPage.value = page;
@@ -82,6 +90,14 @@ async function updateOptions(options) {
     await refreshForms();
   }
   firstDataLoad.value = false;
+}
+async function handleSearch(value) {
+  search.value = value;
+  if (value === '') {
+    await refreshForms();
+  } else {
+    debounceInput.value();
+  }
 }
 </script>
 
@@ -121,6 +137,7 @@ async function updateOptions(options) {
             hide-details
             class="pb-5"
             :class="{ 'dir-rtl': isRTL, label: isRTL }"
+            @update:modelValue="handleSearch"
           />
         </div>
       </v-col>
