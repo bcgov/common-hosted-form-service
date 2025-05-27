@@ -485,6 +485,8 @@ const service = {
       'createdBy',
       'formVersionId',
       'formSubmissionAssignedToUserId',
+      'formSubmissionAssignedToUsernameIdp',
+      'formSubmissionAssignedToEmail',
     ];
 
     let fields = [];
