@@ -49,7 +49,7 @@ describe('Form Designer', () => {
     cy.waitForLoad();
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
-    savedButton.trigger('click');
+    savedButton.should('be.visible').trigger('click');
     cy.wait(2000);
   // Filter the newly created form
     cy.location('search').then(search => {
