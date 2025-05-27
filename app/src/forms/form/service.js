@@ -29,6 +29,7 @@ const { Permissions, Roles, Statuses } = require('../common/constants');
 const formMetadataService = require('./formMetadata/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
 const eventStreamConfigService = require('./eventStreamConfig/service');
+const { currentUser } = require('../auth/middleware/userAccess');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER, Roles.SUBMISSION_APPROVER];
 
 /**
@@ -462,6 +463,9 @@ const service = {
       .modify('filterformSubmissionStatusCode', params.filterformSubmissionStatusCode)
       .modify('orderDefault', !!(params.sortBy && params.page), params);
 
+    if (params.filterAssignedToCurrentUser && currentUser && currentUser.id) {
+      query.modify('filterAssignedToUserId', true, currentUser.id);
+    }
     if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length === 2) {
       query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
     }
@@ -469,9 +473,19 @@ const service = {
   },
 
   listFormSubmissions: async (formId, params) => {
-    const query = service._initFormSubmissionsListQuery(formId, params);
+    const query = service._initFormSubmissionsListQuery(formId, params, currentUser);
 
-    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
+    const selection = [
+      'confirmationId',
+      'createdAt',
+      'formId',
+      'formSubmissionStatusCode',
+      'submissionId',
+      'deleted',
+      'createdBy',
+      'formVersionId',
+      'formSubmissionAssignedToUserId',
+    ];
 
     let fields = [];
     if (params.fields && params.fields.length) {
