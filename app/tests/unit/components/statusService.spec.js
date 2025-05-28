@@ -26,7 +26,7 @@ describe('StatusService', () => {
   });
 
   it('registers a connection and initializes it', async () => {
-    statusService.registerConnection('mock', mockInstance, 'startup', 'check', 100);
+    statusService.registerConnection('mock', 'Mock', mockInstance, 'startup', 'check', 100);
     await statusService.initializeAllConnections();
 
     expect(mockInstance.startup).toHaveBeenCalled();
@@ -36,18 +36,18 @@ describe('StatusService', () => {
 
   it('throws if instance or function names are invalid', () => {
     // Missing instance
-    expect(() => statusService.registerConnection('bad1', null, 'startup', 'check')).toThrow(/Invalid instance or function names/);
+    expect(() => statusService.registerConnection('bad1', 'Bad 1', null, 'startup', 'check')).toThrow(/Invalid instance or function names/);
 
     // Missing startup function
-    expect(() => statusService.registerConnection('bad2', {}, 'startup', 'check')).toThrow(/Invalid instance or function names/);
+    expect(() => statusService.registerConnection('bad2', 'Bad 2', {}, 'startup', 'check')).toThrow(/Invalid instance or function names/);
 
     // Startup or check is not a function
     const badInstance = { startup: true, check: () => true };
-    expect(() => statusService.registerConnection('bad3', badInstance, 'startup', 'check')).toThrow(/Invalid function types/);
+    expect(() => statusService.registerConnection('bad3', 'Bad 3', badInstance, 'startup', 'check')).toThrow(/Invalid function types/);
 
     // Invalid interval
     const goodInstance = { startup: () => Promise.resolve(), check: () => Promise.resolve() };
-    expect(() => statusService.registerConnection('bad4', goodInstance, 'startup', 'check', -1)).toThrow(/Invalid interval/);
+    expect(() => statusService.registerConnection('bad4', 'Bad 4', goodInstance, 'startup', 'check', -1)).toThrow(/Invalid interval/);
   });
 
   it('handles errors in initializeAllConnections when startupFn throws', async () => {
@@ -55,7 +55,7 @@ describe('StatusService', () => {
       startup: jest.fn().mockRejectedValue(new Error('Startup failed')),
       check: jest.fn().mockResolvedValue(true),
     };
-    statusService.registerConnection('badStartup', badStartupInstance, 'startup', 'check', 100);
+    statusService.registerConnection('badStartup', 'Bad Startup', badStartupInstance, 'startup', 'check', 100);
 
     await statusService.initializeAllConnections();
 
@@ -68,7 +68,7 @@ describe('StatusService', () => {
     jest.useFakeTimers();
     mockInstance.check = jest.fn().mockResolvedValueOnce(true).mockResolvedValueOnce(false);
 
-    statusService.registerConnection('mock', mockInstance, 'startup', 'check', 50);
+    statusService.registerConnection('mock', 'Mock', mockInstance, 'startup', 'check', 50);
     await statusService.initializeAllConnections();
 
     // Initial check
@@ -94,7 +94,7 @@ describe('StatusService', () => {
         }), // Next check throws
     };
 
-    statusService.registerConnection('errorConn', errorInstance, 'startup', 'check', 50);
+    statusService.registerConnection('errorConn', 'Error Conn', errorInstance, 'startup', 'check', 50);
     await statusService.initializeAllConnections();
 
     // Initial check
@@ -109,7 +109,7 @@ describe('StatusService', () => {
   });
 
   it('getStatus returns correct structure', async () => {
-    statusService.registerConnection('mock', mockInstance, 'startup', 'check', 100);
+    statusService.registerConnection('mock', 'Mock', mockInstance, 'startup', 'check', 100);
     await statusService.initializeAllConnections();
     const status = statusService.getStatus();
 
@@ -129,6 +129,6 @@ describe('StatusService', () => {
 
   it('throws if registering after stopAll', () => {
     statusService.stopAll();
-    expect(() => statusService.registerConnection('mock', mockInstance, 'startup', 'check')).toThrow(/after shutdown/);
+    expect(() => statusService.registerConnection('mock', 'Mock', mockInstance, 'startup', 'check')).toThrow(/after shutdown/);
   });
 });

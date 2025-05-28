@@ -655,7 +655,7 @@
     "formSubmission": "form submission",
     "delete": "Delete"
   },
-  
+
   "manageSubmissionUsers": {
     "manageTeamMembers": "Manage Team Members",
     "add": "Add",
@@ -685,7 +685,7 @@
   },
   "canShareDraft": {
     "canShareMessage": "You can't share the draft with users who haven't been added to the form. Please contact the admin to add them.",
-    "shareDraftMessage":"Share draft with form team members only"
+    "shareDraftMessage": "Share draft with form team members only"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "View This Submission",
@@ -1227,5 +1227,20 @@
   },
   "alert": {
     "warning": "Warning"
+  },
+  "statusOverlay": {
+    "chefsUnavailableBoilerplate": "CHEFS is currently unavailable. Please check back later or contact support if the issue persists.",
+    "connections": "Connections",
+    "name": "Name",
+    "status": "Status",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "contact": "Contact",
+    "msTeamsChannel": "MS Teams Channel",
+    "rocketChatChannel": "Rocket.Chat Channel",
+    "defaultStatusMessage": "Service is temporarily unavailable (503). Please try again later.",
+    "shuttingDown": "CHEFS is shutting down.",
+    "notReady": "CHEFS cannot connect to all required services.",
+    "unableToReachBackend": "Unable to reach backend service."
   }
 }

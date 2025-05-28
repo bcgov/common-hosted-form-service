@@ -13,13 +13,14 @@ class StatusService {
   /**
    * Register a new connection type.
    * @param {string} name - Unique name for the connection.
+   * @param {string} displayName - User friendly name for the connection.
    * @param {object} instance - The instance of the connection.
    * @param {string} startupFnName - Name of the async function to initialize the connection.
    * @param {string} checkFnName - Name of the async function that returns true if connected, false otherwise.
    * @param {number} intervalMs - How often to check (ms).
    */
-  registerConnection(name, instance, startupFnName, checkFnName, intervalMs = 10000) {
-    log.info(`Registering connection: ${name}`);
+  registerConnection(name, displayName, instance, startupFnName, checkFnName, intervalMs = 10000) {
+    log.info(`Registering connection: ${name} (${displayName})`);
     if (this.connections[name]) return;
     if (!instance || !instance[startupFnName] || !instance[checkFnName]) {
       throw new Error(`Invalid instance or function names for connection: ${name}`);
@@ -37,6 +38,7 @@ class StatusService {
       throw new Error(`Cannot register connection ${name} after server is ready.`);
     }
     this.connections[name] = {
+      displayName: displayName || name,
       connected: false,
       instance,
       startupFnName,
@@ -96,6 +98,7 @@ class StatusService {
     this.ready = true;
     for (const [name, conn] of Object.entries(this.connections)) {
       status[name] = {
+        displayName: conn.displayName,
         connected: conn.connected,
         started: conn.started,
       };
