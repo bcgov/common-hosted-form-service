@@ -89,4 +89,7 @@ onMounted(async () => {
     padding-right: 65px;
   }
 }
+:deep(.v-btn--icon) {
+  border-radius: 0px;
+}
 </style>
