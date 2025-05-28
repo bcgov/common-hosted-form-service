@@ -87,8 +87,6 @@ function setStatusOverlay(data, errorMsg = null) {
       msg = t('trans.statusOverlay.notReady');
     } else if (errorMsg) {
       msg = errorMsg;
-    } else {
-      msg = '';
     }
     contactInfo = data.contact || '';
     status.value = data;

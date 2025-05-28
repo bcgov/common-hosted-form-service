@@ -2,12 +2,13 @@ const log = require('./log')(module.filename);
 
 class StatusService {
   constructor() {
-    if (StatusService.instance) return StatusService.instance;
-    this.connections = {};
-    this.checkIntervals = {};
-    this.ready = false;
-    this.stopped = false;
-    StatusService.instance = this;
+    if (!StatusService.instance) {
+      this.connections = {};
+      this.checkIntervals = {};
+      this.ready = false;
+      this.stopped = false;
+      StatusService.instance = this;
+    }
   }
 
   /**
@@ -61,6 +62,7 @@ class StatusService {
         conn.started = true;
         this._startChecking(name, conn.intervalMs);
       } catch (err) {
+        log.error(`Failed to initialize connection ${name}:`, err);
         conn.connected = false;
         conn.started = false;
       }
@@ -126,4 +128,6 @@ class StatusService {
   }
 }
 
-module.exports = new StatusService();
+const instance = new StatusService();
+
+module.exports = instance;
