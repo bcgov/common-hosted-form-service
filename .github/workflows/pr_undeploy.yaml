@@ -1,5 +1,5 @@
 name: PR Undeploy
-run-name: Undeploy PR-${{ github.event.inputs.pr-number }}
+run-name: Undeploy PR-${{ env.PR_NUMBER }}
 
 env:
   ACRONYM: chefs
@@ -11,6 +11,8 @@ on:
         description: Pull request number
         required: true
         type: string
+  pull_request:
+    types: [closed]
 
 jobs:
   remove-pr-dev:
@@ -19,6 +21,8 @@ jobs:
       name: pr
     runs-on: ubuntu-latest
     timeout-minutes: 12
+    env:
+      PR_NUMBER: ${{ github.event.inputs.pr-number || github.event.pull_request.number }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -36,13 +40,14 @@ jobs:
       - name: Remove PR Deployment
         shell: bash
         run: |
-          oc delete deploymentconfig ${{ env.ACRONYM }}-app-pr-${{ github.event.inputs.pr-number }} -n ${{ vars.NAMESPACE_PREFIX }}-dev --ignore-not-found=true
-          oc delete -n ${{ vars.NAMESPACE_PREFIX }}-dev job pre-${{ env.ACRONYM }}-app-pr-${{ github.event.inputs.pr-number }} --ignore-not-found=true
-          oc delete -n ${{ vars.NAMESPACE_PREFIX }}-dev all,secret,networkpolicy,rolebinding --selector app=${{ env.ACRONYM }}-pr-${{ github.event.inputs.pr-number }}
-          oc delete -n ${{ vars.NAMESPACE_PREFIX }}-dev all,svc,cm,sa,role,secret --selector cluster-name=pr-${{ github.event.inputs.pr-number }}
+          oc delete deploymentconfig ${{ env.ACRONYM }}-app-pr-${{ env.PR_NUMBER }} -n ${{ vars.NAMESPACE_PREFIX }}-dev --ignore-not-found=true
+          oc delete -n ${{ vars.NAMESPACE_PREFIX }}-dev job pre-${{ env.ACRONYM }}-app-pr-${{ env.PR_NUMBER }} --ignore-not-found=true
+          oc delete -n ${{ vars.NAMESPACE_PREFIX }}-dev all,secret,networkpolicy,rolebinding --selector app=${{ env.ACRONYM }}-pr-${{ env.PR_NUMBER }}
+          oc delete -n ${{ vars.NAMESPACE_PREFIX }}-dev all,svc,cm,sa,role,secret --selector cluster-name=pr-${{ env.PR_NUMBER }}
       - name: Remove Release Comment on PR
+        if: github.event_name == 'workflow_dispatch'
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: release
           delete: true
-          number: ${{ github.event.inputs.pr-number }}
+          number: ${{ env.PR_NUMBER }}
