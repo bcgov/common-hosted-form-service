@@ -132,6 +132,16 @@ function onClickScroll() {
   });
 }
 
+const canPreview = computed(() => {
+  return !!(properties.formId && properties.draftId);
+});
+
+function handlePreviewClick() {
+  if (canPreview.value) {
+    goToPreview();
+  }
+}
+
 function goToPreview() {
   let route = router.resolve({
     name: 'FormPreview',
@@ -157,12 +167,6 @@ defineExpose({
 
 <template>
   <div class="d-flex flex-column float-button">
-    <div class="fab d-flex flex-column">
-      <span :lang="locale">{{ SCROLL_TEXT }}</span>
-      <v-btn class="ma-2" density="compact" icon @click="onClickScroll">
-        <v-icon :icon="SCROLL_ICON"></v-icon>
-      </v-btn>
-    </div>
     <div v-if="!isCollapsed">
       <div class="fab d-flex flex-column" data-cy="saveButton">
         <span :lang="locale">{{ SAVE_TEXT }}</span>
@@ -182,19 +186,12 @@ defineExpose({
       </div>
       <div
         class="fab d-flex flex-column"
-        :class="{
-          'disabled-router': !properties.formId || !properties.draftId,
-        }"
+        :class="{ 'disabled-router': !canPreview }"
         data-cy="previewRouterLink"
-        @click="goToPreview"
+        @click="handlePreviewClick"
       >
         <span :lang="locale">{{ $t('trans.floatButton.preview') }}</span>
-        <v-btn
-          :disabled="!(!properties.formId || !properties.draftId)"
-          class="ma-2"
-          density="compact"
-          icon
-        >
+        <v-btn :disabled="!canPreview" class="ma-2" density="compact" icon>
           <v-icon icon="mdi:mdi-eye"></v-icon>
         </v-btn>
       </div>
@@ -283,6 +280,12 @@ defineExpose({
         @click="onClickCollapse"
       >
         <v-icon :icon="COLLAPSE_ICON"></v-icon>
+      </v-btn>
+    </div>
+    <div class="fab d-flex flex-column">
+      <span :lang="locale">{{ SCROLL_TEXT }}</span>
+      <v-btn class="ma-2" density="compact" icon @click="onClickScroll">
+        <v-icon :icon="SCROLL_ICON"></v-icon>
       </v-btn>
     </div>
   </div>

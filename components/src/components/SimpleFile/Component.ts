@@ -79,24 +79,7 @@ export default class Component extends (ParentComponent as any) {
   deleteFile(fileInfo) {
     const { options = {} } = this.component;
     if (fileInfo) {
-      return new Promise((resolve, reject) => {
-        options.deleteFile(fileInfo, {
-          onSuccess: () => {
-            this.redraw();
-            this.triggerChange();
-            resolve(fileInfo);
-          },
-          onError: (error) => {
-            this.redraw();
-            this.triggerChange();
-            reject(error);
-            this.statuses.push({
-              status: 'error',
-              message: error.detail,
-            });
-          },
-        });
-      });
+      options.deleteFile(fileInfo);
     }
   }
 
@@ -118,7 +101,7 @@ export default class Component extends (ParentComponent as any) {
           name: fileName,
           size: file.size,
           status: 'info',
-          message: '',
+          message: this.t('Starting upload'),
         };
 
         // Check file pattern
@@ -164,7 +147,7 @@ export default class Component extends (ParentComponent as any) {
         }
 
         // Get a unique name for this file to keep file collisions from occurring.
-        const dir = this.interpolate(this.component.dir || '');
+        const dir = this.interpolate(this.component.dir ?? '');
         const { fileService } = this;
         if (!fileService) {
           fileUpload.status = 'error';
@@ -180,7 +163,8 @@ export default class Component extends (ParentComponent as any) {
           }
           const { options = {} } = this.component;
           const url = this.interpolate(this.component.url);
-          const fileKey = this.component.fileKey || 'file';
+
+          const fileKey = this.component.fileKey ?? 'file';
 
           const blob = new Blob([file], { type: file.type });
           const fileFromBlob = new File([blob], file.name, {
@@ -196,20 +180,22 @@ export default class Component extends (ParentComponent as any) {
           for (const key in data) {
             formData.append(key, data[key]);
           }
-          options.uploadFile(formData, {
-            onUploadProgress: (evt) => {
-              fileUpload.status = 'progress';
-              fileUpload.message = this.t('Starting upload');
-              // @ts-ignore
-              fileUpload.progress = parseInt((100.0 * evt.loaded) / evt.total);
-              delete fileUpload.message;
-              this.redraw();
-            },
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-            onUploaded: (response) => {
-              response.data = response.data || {};
+          options
+            .uploadFile(formData, {
+              onUploadProgress: (evt) => {
+                fileUpload.status = 'progress';
+                const p = (100.0 * evt.loaded) / evt.total;
+                // @ts-ignore
+                fileUpload.progress = p;
+                delete fileUpload.message;
+                this.redraw();
+              },
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            })
+            .then((response) => {
+              response.data = response.data ?? {};
               const index = this.statuses.indexOf(fileUpload);
               if (index !== -1) {
                 this.statuses.splice(index, 1);
@@ -230,8 +216,8 @@ export default class Component extends (ParentComponent as any) {
               this.dataValue.push(fileInfo);
               this.redraw();
               this.triggerChange();
-            },
-            onError: (response) => {
+            })
+            .catch((response) => {
               fileUpload.status = 'error';
               // we do not get API Problem objects, only http error
               // not much information to provide our users.
@@ -248,15 +234,14 @@ export default class Component extends (ParentComponent as any) {
               // @ts-ignore
               delete fileUpload.progress;
               this.redraw();
-            },
-          });
+            });
         }
       });
     }
   }
 
   getFile(fileInfo) {
-    const fileId = fileInfo?.data?.id ? fileInfo.data.id : fileInfo.id;
+    const fileId = fileInfo?.data?.id ?? fileInfo.id;
     const { options = {} } = this.component;
     options.getFile(fileId, { responseType: 'blob' }).catch((response) => {
       // Is alert the best way to do this?

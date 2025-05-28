@@ -87,29 +87,24 @@ describe('Form Designer', () => {
     cy.get('[data-cy="redoButton"] > .v-btn').should('be.enabled');
     cy.get('[data-cy="redoButton"] > .v-btn').click();
     //Verify  existence of page top/bottom move button
-    /*
     cy.get('.float-button > :nth-child(3) > .v-btn').should('be.enabled');
     cy.get('.float-button > :nth-child(3) > .v-btn').click();
     cy.get('.mdi-arrow-down').should('not.exist');
-
     cy.get('.mdi-arrow-up').should('exist');
-    */
     cy.get('.mdi-close').click();
     cy.get('[data-cy="saveButton"] > .v-btn').should('not.exist');
     cy.get('.mdi-undo').should('not.exist');
     cy.get('.mdi-redo').should('not.exist');
     cy.get('.mdi-menu').should('be.visible');
-    //cy.get('.mdi-arrow-up').should('be.visible');
+    cy.get('.mdi-arrow-up').should('be.visible');
     cy.get('.mdi-menu').click();
     
-
     // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
     cy.wait(2000);
     //cy.get('[data-cy="previewRouterLink"] > .v-btn').should('be.enabled');
-    
     // Filter the newly created form
     cy.location('search').then(search => {
     let arr = search.split('=');

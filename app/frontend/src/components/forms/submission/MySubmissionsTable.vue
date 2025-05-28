@@ -357,22 +357,19 @@ defineExpose({
           </v-tooltip>
           <v-tooltip location="bottom">
             <template #activator="{ props }">
-              <router-link
+              <v-btn
+                class="mx-1"
+                color="primary"
+                v-bind="props"
+                size="x-small"
+                density="default"
+                icon="mdi:mdi-plus"
                 :to="{
                   name: 'FormSubmit',
                   query: { f: form.id },
                 }"
-              >
-                <v-btn
-                  class="mx-1"
-                  color="primary"
-                  v-bind="props"
-                  size="x-small"
-                  density="default"
-                  icon="mdi:mdi-plus"
-                  :title="$t('trans.mySubmissionsTable.createNewSubmission')"
-                />
-              </router-link>
+                :title="$t('trans.mySubmissionsTable.createNewSubmission')"
+              />
             </template>
             <span :lang="locale">{{
               $t('trans.mySubmissionsTable.createNewSubmission')

