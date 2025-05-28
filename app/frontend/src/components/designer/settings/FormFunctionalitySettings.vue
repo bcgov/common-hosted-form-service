@@ -99,6 +99,19 @@ defineExpose({
         ></span>
       </template>
     </v-checkbox>
+    <v-checkbox
+      v-if="form.enableStatusUpdates && form.userType !== ID_MODE.PUBLIC"
+      v-model="form.allowSubmittersToSeeAssignee"
+      data-test="allowSubmittersToSeeAssigneeCheckbox"
+      hide-details="auto"
+      class="my-0 ml-6"
+    >
+      <template #label>
+        <span :class="{ 'mr-2': isRTL }">
+          Allow submitters to see assignee information
+        </span>
+      </template>
+    </v-checkbox>
 
     <v-checkbox
       v-model="form.allowSubmitterToUploadFile"

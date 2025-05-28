@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n';
 import BaseFilter from '~/components/base/BaseFilter.vue';
 import MySubmissionsActions from '~/components/forms/submission/MySubmissionsActions.vue';
 import { useFormStore } from '~/store/form';
+import { IdentityMode } from '~/utils/constants';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
@@ -60,12 +61,28 @@ const BASE_HEADERS = computed(() => {
       key: 'status',
       sortable: true,
     },
-    {
-      title: t('trans.mySubmissionsTable.submissionDate'),
-      key: 'submittedDate',
-      sortable: true,
-    },
   ];
+
+  // Only show assignee column if the form allows it AND has proper conditions
+  const shouldShowAssigneeColumn =
+    form.value &&
+    form.value.enableStatusUpdates &&
+    form.value.userType !== IdentityMode.PUBLIC &&
+    form.value.allowSubmittersToSeeAssignee;
+
+  if (shouldShowAssigneeColumn) {
+    headers.push({
+      title: t('trans.mySubmissionsTable.assignee'),
+      key: 'assignee',
+      sortable: true,
+    });
+  }
+
+  headers.push({
+    title: t('trans.mySubmissionsTable.submissionDate'),
+    key: 'submittedDate',
+    sortable: true,
+  });
 
   if (showDraftLastEdited.value) {
     headers.splice(headers.length - 1, 0, {
@@ -263,6 +280,7 @@ async function populateSubmissionsTable() {
         createdBy: s.submission.createdBy,
         updatedBy: s.draft ? s.submission.updatedBy : undefined,
         lastEdited: s.draft ? s.submission.updatedAt : undefined,
+        assignee: s.formSubmissionAssignedToUsernameIdp || '',
         username:
           s.submissionStatus && s.submissionStatus.length > 0
             ? s.submissionStatus[0].createdBy

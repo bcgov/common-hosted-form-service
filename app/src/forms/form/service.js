@@ -193,6 +193,7 @@ const service = {
       obj.ministry = data.ministry;
       obj.apiIntegration = data.apiIntegration;
       obj.useCase = data.useCase;
+      obj.allowSubmittersToSeeAssignee = data.allowSubmittersToSeeAssignee || false;
 
       await Form.query(trx).insert(obj);
       if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
@@ -274,6 +275,7 @@ const service = {
         ministry: data.ministry,
         apiIntegration: data.apiIntegration,
         useCase: data.useCase,
+        allowSubmittersToSeeAssignee: data.allowSubmittersToSeeAssignee,
       };
 
       await Form.query(trx).patchAndFetchById(formId, upd);

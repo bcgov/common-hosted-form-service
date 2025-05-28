@@ -1,6 +1,6 @@
 const Problem = require('api-problem');
 const uuid = require('uuid');
-const { FormRoleUser, FormSubmissionUser, User, UserFormAccess, UserSubmissions } = require('../common/models');
+const { FormRoleUser, FormSubmissionUser, User, UserFormAccess, UserSubmissions, Form, SubmissionMetadata } = require('../common/models');
 const { Roles } = require('../common/constants');
 const { queryUtils } = require('../common/utils');
 const authService = require('../auth/service');
@@ -93,10 +93,11 @@ const service = {
       return [];
     }
   },
-
   getCurrentUserSubmissions: async (currentUser, params) => {
     params = queryUtils.defaultActiveOnly(params);
-    return UserSubmissions.query()
+
+    // Get base user submissions with existing structure
+    const submissions = await UserSubmissions.query()
       .withGraphFetched('submissionStatus(orderDescending)')
       .withGraphFetched('submission')
       .modify('filterFormId', params.formId)
@@ -104,6 +105,48 @@ const service = {
       .modify('filterUserId', currentUser.id)
       .modify('filterActive', params.active)
       .modify('orderDefault');
+
+    // If we have submissions, enhance them with assignee data where allowed
+    if (submissions && submissions.length > 0) {
+      // Get unique form IDs from submissions (with null check)
+      const formIds = [...new Set(submissions.map((s) => s.formId).filter((id) => id))];
+
+      if (formIds.length > 0) {
+        // Get forms that allow submitters to see assignee info
+        const formsWithAssigneeVisibility = await Form.query().whereIn('id', formIds).where('allowSubmittersToSeeAssignee', true).select('id');
+
+        const allowedFormIds = new Set(formsWithAssigneeVisibility.map((f) => f.id));
+
+        // If any forms allow assignee visibility, get the assignee data
+        if (allowedFormIds.size > 0) {
+          const submissionIdsForAssigneeData = submissions
+            .filter((s) => allowedFormIds.has(s.formId) && s.submissionId) // ← Added null check here
+            .map((s) => s.submissionId);
+
+          if (submissionIdsForAssigneeData.length > 0) {
+            // Get assignee data using existing model pattern
+            const assigneeData = await SubmissionMetadata.query().select('submissionId', 'formSubmissionAssignedToUsernameIdp');
+
+            // Create lookup map for quick access
+            const assigneeMap = new Map();
+            assigneeData.forEach((item) => {
+              if (item.formSubmissionAssignedToUsernameIdp) {
+                assigneeMap.set(item.submissionId, item.formSubmissionAssignedToUsernameIdp);
+              }
+            });
+
+            // Enhance submissions with assignee data where allowed
+            submissions.forEach((submission) => {
+              if (allowedFormIds.has(submission.formId) && submission.submissionId) {
+                submission.formSubmissionAssignedToUsernameIdp = assigneeMap.get(submission.submissionId) || null;
+              }
+            });
+          }
+        }
+      }
+    }
+
+    return submissions;
   },
 
   getFormUsers: async (params) => {

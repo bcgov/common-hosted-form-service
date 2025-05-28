@@ -7,11 +7,12 @@ import {
   fileService,
   rbacService,
   userService,
+  encryptionKeyService,
+  eventStreamConfigService,
 } from '~/services';
 import { useNotificationStore } from '~/store/notification';
 import { IdentityMode, NotificationTypes } from '~/utils/constants';
 import { generateIdps, parseIdps } from '~/utils/transformUtils';
-import { encryptionKeyService, eventStreamConfigService } from '~/services';
 
 const genInitialSchedule = () => ({
   enabled: null,
@@ -71,6 +72,7 @@ const genInitialForm = () => ({
   enableSubmitterDraft: false,
   enableStatusUpdates: false,
   allowSubmitterToUploadFile: false,
+  allowSubmittersToSeeAssignee: false,
   id: '',
   idps: [],
   isDirty: false,
@@ -467,6 +469,7 @@ export const useFormStore = defineStore('form', {
           enableSubmitterDraft: this.form.enableSubmitterDraft,
           enableStatusUpdates: this.form.enableStatusUpdates,
           enableTeamMemberDraftShare: this.form.enableTeamMemberDraftShare,
+          allowSubmittersToSeeAssignee: this.form.allowSubmittersToSeeAssignee,
           wideFormLayout: this.form.wideFormLayout,
           identityProviders: generateIdps({
             idps: this.form.idps,

@@ -693,6 +693,7 @@
     "editThisDraft": "Edit This Draft"
   },
   "mySubmissionsTable": {
+    "assignee": "Assignee",
     "noMatchingRecordText": "No matching records found",
     "previousSubmissions": "Previous Submissions",
     "selectColumns": "Select Columns",
