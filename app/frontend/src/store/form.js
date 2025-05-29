@@ -72,7 +72,7 @@ const genInitialForm = () => ({
   enableSubmitterDraft: false,
   enableStatusUpdates: false,
   allowSubmitterToUploadFile: false,
-  allowSubmittersToSeeAssignee: false,
+  showAssigneeInSubmissionsTable: false,
   id: '',
   idps: [],
   isDirty: false,
@@ -469,7 +469,8 @@ export const useFormStore = defineStore('form', {
           enableSubmitterDraft: this.form.enableSubmitterDraft,
           enableStatusUpdates: this.form.enableStatusUpdates,
           enableTeamMemberDraftShare: this.form.enableTeamMemberDraftShare,
-          allowSubmittersToSeeAssignee: this.form.allowSubmittersToSeeAssignee,
+          showAssigneeInSubmissionsTable:
+            this.form.showAssigneeInSubmissionsTable,
           wideFormLayout: this.form.wideFormLayout,
           identityProviders: generateIdps({
             idps: this.form.idps,

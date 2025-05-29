@@ -101,14 +101,14 @@ defineExpose({
     </v-checkbox>
     <v-checkbox
       v-if="form.enableStatusUpdates && form.userType !== ID_MODE.PUBLIC"
-      v-model="form.allowSubmittersToSeeAssignee"
-      data-test="allowSubmittersToSeeAssigneeCheckbox"
+      v-model="form.showAssigneeInSubmissionsTable"
+      data-test="showAssigneeInSubmissionsTableCheckbox"
       hide-details="auto"
       class="my-0 ml-6"
     >
       <template #label>
         <span :class="{ 'mr-2': isRTL }">
-          Allow submitters to see assignee information
+          Display assignee column for reviewers
         </span>
       </template>
     </v-checkbox>
