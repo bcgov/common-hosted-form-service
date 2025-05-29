@@ -32,5 +32,19 @@ export function appAxios(timeout = 60000) {
     }
   );
 
+  instance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response && error.response.status === 503) {
+        window.dispatchEvent(
+          new CustomEvent('service-unavailable', {
+            detail: error.response?.data?.details || error,
+          })
+        );
+      }
+      return Promise.reject(error);
+    }
+  );
+
   return instance;
 }

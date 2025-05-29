@@ -1227,5 +1227,20 @@
   },
   "alert": {
     "warning": "Warning"
+  },
+  "statusOverlay": {
+    "chefsUnavailableBoilerplate": "CHEFS is currently unavailable. Please check back later or contact support if the issue persists.",
+    "connections": "Connections",
+    "name": "Name",
+    "status": "Status",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "contact": "Contact",
+    "msTeamsChannel": "MS Teams Channel",
+    "rocketChatChannel": "Rocket.Chat Channel",
+    "defaultStatusMessage": "Service is temporarily unavailable (503). Please try again later.",
+    "shuttingDown": "CHEFS is shutting down.",
+    "notReady": "CHEFS cannot connect to all required services.",
+    "unableToReachBackend": "Unable to reach backend service."
   }
 }

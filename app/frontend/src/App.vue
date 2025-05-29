@@ -1,12 +1,14 @@
 <script setup>
 import BaseNotificationContainer from '~/components/base/BaseNotificationContainer.vue';
+import GlobalStatusOverlay from '~/components/base/GlobalStatusOverlay.vue';
 import BCGovHeader from '~/components/bcgov/BCGovHeader.vue';
 import BCGovNavBar from './components/bcgov/BCGovNavBar.vue';
 import BCGovFooter from '~/components/bcgov/BCGovFooter.vue';
-import { computed, provide, ref } from 'vue';
+import { computed, provide, ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
 const isWideLayout = ref(false);
+const ready = ref(false);
 const route = useRoute();
 
 const appTitle = computed(() => {
@@ -41,6 +43,10 @@ defineExpose({
   isFormSubmitMode,
   isWideLayout,
 });
+
+onMounted(async () => {
+  ready.value = true;
+});
 </script>
 
 <template>
@@ -49,6 +55,7 @@ defineExpose({
       <BaseNotificationContainer />
       <BCGovHeader :app-title="appTitle" :form-submit-mode="isFormSubmitMode" />
       <BCGovNavBar :form-submit-mode="isFormSubmitMode" />
+      <GlobalStatusOverlay :parent-ready="ready" />
       <RouterView v-slot="{ Component }">
         <transition name="component-fade" mode="out-in">
           <component :is="Component" :class="isWidePage" />
