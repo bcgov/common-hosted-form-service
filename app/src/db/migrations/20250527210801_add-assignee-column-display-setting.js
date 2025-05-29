@@ -7,7 +7,7 @@ exports.up = async function (knex) {
   try {
     // Add the new column to the form table
     await trx.schema.alterTable('form', function (table) {
-      table.boolean('allowSubmittersToSeeAssignee').defaultTo(false);
+      table.boolean('showAssigneeInSubmissionsTable').defaultTo(false);
     });
     await trx.commit();
   } catch (error) {
@@ -25,7 +25,7 @@ exports.down = async function (knex) {
   try {
     // Remove the column from the form table
     await trx.schema.alterTable('form', function (table) {
-      table.dropColumn('allowSubmittersToSeeAssignee');
+      table.dropColumn('showAssigneeInSubmissionsTable');
     });
     await trx.commit();
   } catch (error) {
