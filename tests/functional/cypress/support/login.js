@@ -55,10 +55,15 @@ export function formsettings(){
     cy.get(email_notify).click({force: true});
     cy.contains('Send a notification to your specified email address when any user submits this form').should('be.visible');
     });
+    //validate share draft with team is not enabled
+    cy.get('[data-test="enableTeamMemberDraftShare"]').should('not.be.enabled');
     cy.get('[data-test="canSaveAndEditDraftsCheckbox"]').click();
+     //validate share draft with team is enabled
+    cy.get('[data-test="enableTeamMemberDraftShare"]').should('be.visible').and('not.be.disabled');
     cy.get(':nth-child(3) > .v-card > .v-card-text > :nth-child(2) > .v-input__control > .v-selection-control > .v-label > span').click();//Update the status of the form
     cy.get(':nth-child(5) > .v-input__control > .v-selection-control > .v-label > div > span > strong').click();//Copy existing submission
     cy.get(':nth-child(7) > .v-input__control > .v-selection-control > .v-label > div').click();//Wide form Layout
+    cy.get('[data-test="enableTeamMemberDraftShare"]').click();//share form drafts with team members only
     cy.get('[data-test="email-test"] > .v-input__control > .v-selection-control > .v-label > div > span').click({force: true});
     cy.get('[data-test="email-test"] > .v-input__control > .v-selection-control > .v-label > div > span').click();
     cy.get(':nth-child(4) > .v-card > .v-card-text > .v-text-field > .v-input__control > .v-field > .v-field__field > .v-field__input').type('abc@gmail.com');
@@ -97,15 +102,14 @@ export function formsettings(){
     cy.get('.v-list').should('contain','Reporting usually on a repeating schedule or event driven like follow-ups');
     cy.get('.v-list').should('contain','Feedback Form to determine satisfaction, agreement, likelihood, or other qualitative questions');
     cy.contains('Reporting usually on a repeating schedule or event driven like follow-ups').click();
-    
     cy.get('input[value="test"]').click();
-    ;
     cy.get('[data-test="api-true"] > .v-label > span').click();
     cy.get('.mt-3 > .mdi-help-circle-outline').should('be.visible');
     cy.get('.mt-3 > .mdi-help-circle-outline').click();
     cy.contains('Labels serve as a means to categorize similar forms that may belong to a common organization or share a related context.').should('be.visible');
     cy.get('.d-flex > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
     cy.get('.d-flex > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').type('test label');
+    //Disclaimer declaration
     cy.get(':nth-child(4) > .v-card-text > .v-input > .v-input__control > .v-selection-control > .v-label > span').click();
     cy.get('button').contains('Continue').click();
 
