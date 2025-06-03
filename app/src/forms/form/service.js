@@ -29,7 +29,6 @@ const { Permissions, Roles, Statuses } = require('../common/constants');
 const formMetadataService = require('./formMetadata/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
 const eventStreamConfigService = require('./eventStreamConfig/service');
-const { currentUser } = require('../auth/middleware/userAccess');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER, Roles.SUBMISSION_APPROVER];
 
 /**
@@ -126,6 +125,44 @@ const service = {
   isLateSubmissionConfigValid,
   isClosingMessageValid,
 
+  _validateAssigneeVisibilitySettings: (formData, existingForm = null) => {
+    // Only validate if trying to enable the setting
+    if (formData.showAssigneeInSubmissionsTable !== true) {
+      return true;
+    }
+
+    // Extract nested ternary into clear statements
+    let identityProviders = [];
+    if (existingForm && existingForm.identityProviders) {
+      identityProviders = existingForm.identityProviders;
+    } else if (formData.identityProviders) {
+      identityProviders = formData.identityProviders;
+    }
+
+    // Check if this is a public form
+    const isPublicForm = identityProviders.some((idp) => idp.code === 'public');
+
+    // Rule 1: Cannot enable for public forms
+    if (isPublicForm) {
+      throw new Problem(422, 'Assignee visibility cannot be enabled for public forms');
+    }
+
+    // Extract status updates check into clear logic
+    let statusUpdatesEnabled;
+    if (existingForm) {
+      statusUpdatesEnabled = formData.enableStatusUpdates !== undefined ? formData.enableStatusUpdates : existingForm.enableStatusUpdates;
+    } else {
+      statusUpdatesEnabled = formData.enableStatusUpdates;
+    }
+
+    // Rule 2: Status updates must be enabled
+    if (!statusUpdatesEnabled) {
+      throw new Problem(422, 'Assignee visibility requires status updates to be enabled');
+    }
+
+    return true;
+  },
+
   _findFileIds: (schema, data) => {
     const findFiles = (currentData) => {
       let fileIds = [];
@@ -194,6 +231,7 @@ const service = {
       obj.apiIntegration = data.apiIntegration;
       obj.useCase = data.useCase;
       obj.showAssigneeInSubmissionsTable = data.showAssigneeInSubmissionsTable || false;
+      service._validateAssigneeVisibilitySettings(data);
 
       await Form.query(trx).insert(obj);
       if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
@@ -248,6 +286,7 @@ const service = {
     let trx;
     try {
       const obj = await service.readForm(formId);
+      service._validateAssigneeVisibilitySettings(data, obj);
       trx = await Form.startTransaction();
       // do not update the active flag, that should be done via DELETE
       const scheduleData = service.validateScheduleObject(data.schedule);
@@ -452,7 +491,7 @@ const service = {
     return DocumentTemplate.query().findById(documentTemplateId).modify('filterActive', true).throwIfNotFound();
   },
 
-  _initFormSubmissionsListQuery: (formId, params) => {
+  _initFormSubmissionsListQuery: (formId, params, currentUser) => {
     const query = SubmissionMetadata.query()
       .where('formId', formId)
       .modify('filterSubmissionId', params.submissionId)
@@ -466,30 +505,30 @@ const service = {
       .modify('orderDefault', !!(params.sortBy && params.page), params);
 
     if (params.filterAssignedToCurrentUser && currentUser && currentUser.id) {
-      query.modify('filterAssignedToUserId', true, currentUser.id);
+      query.where('formSubmissionAssignedToUserId', currentUser.id);
     }
+
     if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length === 2) {
       query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
     }
     return query;
   },
+  listFormSubmissions: async (formId, params, currentUser) => {
+    // First, get form settings to check if assignee data should be included
+    const form = await service.readForm(formId);
 
-  listFormSubmissions: async (formId, params) => {
+    // Determine if assignee data should be included in response
+    const shouldIncludeAssignee = form.showAssigneeInSubmissionsTable && form.enableStatusUpdates && !form.identityProviders.some((idp) => idp.code === 'public');
+
     const query = service._initFormSubmissionsListQuery(formId, params, currentUser);
 
-    const selection = [
-      'confirmationId',
-      'createdAt',
-      'formId',
-      'formSubmissionStatusCode',
-      'submissionId',
-      'deleted',
-      'createdBy',
-      'formVersionId',
-      'formSubmissionAssignedToUserId',
-      'formSubmissionAssignedToUsernameIdp',
-      'formSubmissionAssignedToEmail',
-    ];
+    // Base selection - always include these fields
+    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
+
+    // Conditionally add assignee fields only if allowed
+    if (shouldIncludeAssignee) {
+      selection.push('formSubmissionAssignedToUserId', 'formSubmissionAssignedToUsernameIdp', 'formSubmissionAssignedToEmail');
+    }
 
     let fields = [];
     if (params.fields && params.fields.length) {

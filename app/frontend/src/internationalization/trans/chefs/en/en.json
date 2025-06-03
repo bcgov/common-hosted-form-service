@@ -598,6 +598,8 @@
     "emailRequired": "Email is required"
   },
   "submissionsTable": {
+    "assignee": "Assignee",
+    "showAssignedToMe": "Assigned to me",
     "noMatchingRecordText": "No matching records found",
     "submissions": "Submissions",
     "submissionsTable": "SubmissionsTable",

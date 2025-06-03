@@ -372,6 +372,9 @@ export const useFormStore = defineStore('form', {
         const evntSrvCfg = await this.fetchEventStreamConfig(formId);
         data.eventStreamConfig = evntSrvCfg;
 
+        // Add default value for showAssigneeInSubmissionsTable if it doesn't exist
+        data.showAssigneeInSubmissionsTable =
+          data.showAssigneeInSubmissionsTable ?? false;
         this.form = data;
       } catch (error) {
         const notificationStore = useNotificationStore();
@@ -690,6 +693,7 @@ export const useFormStore = defineStore('form', {
       sortBy: sortBy,
       search: search,
       searchEnabled: searchEnabled,
+      filterAssignedToCurrentUser = false,
     }) {
       try {
         this.submissionList = [];
@@ -715,6 +719,7 @@ export const useFormStore = defineStore('form', {
               sortBy: sortBy,
               search: search,
               searchEnabled: searchEnabled,
+              filterAssignedToCurrentUser: filterAssignedToCurrentUser,
             });
         if (paginationEnabled) {
           this.submissionList = response.data.results;
