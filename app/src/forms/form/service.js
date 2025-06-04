@@ -125,7 +125,7 @@ const service = {
   isLateSubmissionConfigValid,
   isClosingMessageValid,
 
-  __setAssigneeInSubmissionsTable: (formData) => {
+  _setAssigneeInSubmissionsTable: (formData) => {
     const identityProviders = formData.identityProviders || [];
     const isPublicForm = identityProviders.some((idp) => idp.code === 'public');
 
