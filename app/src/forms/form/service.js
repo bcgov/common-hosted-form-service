@@ -125,30 +125,12 @@ const service = {
   isLateSubmissionConfigValid,
   isClosingMessageValid,
 
-  _setAssigneeInSubmissionsTable: (formData) => {
-    // If not explicitly trying to enable, return false
-    if (formData.showAssigneeInSubmissionsTable !== true) {
-      return false;
-    }
-
-    // Check if this is a public form
+  __setAssigneeInSubmissionsTable: (formData) => {
     const identityProviders = formData.identityProviders || [];
     const isPublicForm = identityProviders.some((idp) => idp.code === 'public');
 
-    // Rule 1: Cannot enable for public forms
-    if (isPublicForm) {
-      return false;
-    }
-
-    // Rule 2: Status updates must be enabled
-    if (!formData.enableStatusUpdates) {
-      return false;
-    }
-
-    // All conditions met, can enable assignee visibility
-    return true;
+    return formData.showAssigneeInSubmissionsTable === true && !isPublicForm && formData.enableStatusUpdates;
   },
-
   _findFileIds: (schema, data) => {
     const findFiles = (currentData) => {
       let fileIds = [];
@@ -501,14 +483,15 @@ const service = {
     }
     return query;
   },
-
+  _shouldIncludeAssignee: (form) => {
+    return form.showAssigneeInSubmissionsTable && form.enableStatusUpdates && !form.identityProviders.some((idp) => idp.code === 'public');
+  },
   listFormSubmissions: async (formId, params, currentUser) => {
     // First, get form settings to check if assignee data should be included
     const form = await service.readForm(formId);
 
     // Determine if assignee data should be included in response
-    const shouldIncludeAssignee = form.showAssigneeInSubmissionsTable && form.enableStatusUpdates && !form.identityProviders.some((idp) => idp.code === 'public');
-
+    const shouldIncludeAssignee = service._shouldIncludeAssignee(form);
     const query = service._initFormSubmissionsListQuery(formId, params, currentUser, shouldIncludeAssignee);
 
     // Base selection - always include these fields
