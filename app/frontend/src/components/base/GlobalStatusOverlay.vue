@@ -4,50 +4,64 @@
       <div class="status-header">
         {{ viteTitle }}
       </div>
-      <p class="chefs-unavailable-message">
+      <p v-if="!showMore" class="chefs-unavailable-message">
         {{ t('trans.statusOverlay.chefsUnavailableBoilerplate') }}
       </p>
-      <h2>{{ statusMessage }}</h2>
-      <div v-if="status?.connections">
-        <strong>{{ t('trans.statusOverlay.connections') }}:</strong>
-        <table class="status-connections-table">
-          <thead>
-            <tr>
-              <th>{{ t('trans.statusOverlay.name') }}</th>
-              <th>{{ t('trans.statusOverlay.status') }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(conn, name) in status.connections" :key="name">
-              <td>{{ conn.displayName }}</td>
-              <td>
-                <span :style="{ color: conn.connected ? 'green' : 'red' }">
-                  {{
-                    conn.connected
-                      ? t('trans.statusOverlay.connected')
-                      : t('trans.statusOverlay.disconnected')
-                  }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div v-else>
+        <h3>{{ msg }}</h3>
+        <div v-if="status?.connections">
+          <p class="moreinfo-intro">
+            {{ t('trans.statusOverlay.moreInfoIntro') }}
+          </p>
+          <table class="status-connections-table">
+            <thead>
+              <tr>
+                <th>{{ t('trans.statusOverlay.name') }}</th>
+                <th>{{ t('trans.statusOverlay.status') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(conn, name) in status.connections" :key="name">
+                <td>{{ conn.displayName }}</td>
+                <td>
+                  <span :style="{ color: conn.connected ? 'green' : 'red' }">
+                    {{
+                      conn.connected
+                        ? t('trans.statusOverlay.connected')
+                        : t('trans.statusOverlay.disconnected')
+                    }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="moreinfo-outro">
+          <i18n-t keypath="trans.statusOverlay.moreInfoOutro">
+            <template #linkOne>
+              <a :href="msTeamsUrl" target="_blank">{{
+                t('trans.statusOverlay.msTeamsChannel')
+              }}</a>
+            </template>
+            <template #linkTwo>
+              <a :href="rocketChatUrl" target="_blank">{{
+                t('trans.statusOverlay.rocketChatChannel')
+              }}</a>
+            </template>
+          </i18n-t>
+        </p>
       </div>
-      <p v-if="contact">
-        {{ t('trans.statusOverlay.contact') }}: {{ contact }}
-      </p>
-      <div v-if="msTeamsUrl || rocketChatUrl" class="status-links">
-        <span v-if="msTeamsUrl">
-          <a :href="msTeamsUrl" target="_blank" rel="noopener">
-            {{ t('trans.statusOverlay.msTeamsChannel') }}
-          </a>
-        </span>
-        <span v-if="rocketChatUrl" style="margin-left: 1em">
-          <a :href="rocketChatUrl" target="_blank" rel="noopener">
-            {{ t('trans.statusOverlay.rocketChatChannel') }}
-          </a>
-        </span>
-      </div>
+      <button
+        class="info-links"
+        style="margin-top: 1em"
+        @click="showMore = !showMore"
+      >
+        {{
+          showMore
+            ? t('trans.statusOverlay.lessInfo')
+            : t('trans.statusOverlay.moreInfo')
+        }}
+      </button>
     </div>
   </div>
 </template>
@@ -63,8 +77,8 @@ const props = defineProps({ parentReady: Boolean });
 
 const showOverlay = ref(false);
 const status = ref({});
-const statusMessage = ref('');
-const contact = ref('');
+const showMore = ref(false);
+const msg = ref('');
 
 // Get VITE_TITLE from environment variables
 const viteTitle = import.meta.env.VITE_TITLE || t('app.title');
@@ -77,27 +91,23 @@ const defaultStatusMessage = t('trans.statusOverlay.defaultStatusMessage');
 
 function setStatusOverlay(data, errorMsg = null) {
   // Handles both status objects and error data
-  let msg = '';
-  let contactInfo = '';
+  msg.value = '';
 
   if (data && typeof data === 'object') {
     if (data.stopped) {
-      msg = t('trans.statusOverlay.shuttingDown');
+      msg.value = t('trans.statusOverlay.shuttingDown');
     } else if (!data.ready) {
-      msg = t('trans.statusOverlay.notReady');
+      msg.value = t('trans.statusOverlay.notReady');
     } else if (errorMsg) {
-      msg = errorMsg;
+      msg.value = errorMsg;
     }
-    contactInfo = data.contact || '';
     status.value = data;
   } else {
-    msg = errorMsg || defaultStatusMessage;
+    msg.value = errorMsg || defaultStatusMessage;
     status.value = {};
   }
 
-  showOverlay.value = !!msg;
-  statusMessage.value = msg;
-  contact.value = contactInfo;
+  showOverlay.value = !!msg.value;
 }
 
 function handleServiceUnavailable(event) {
@@ -119,7 +129,7 @@ async function pollStatus() {
 
 onMounted(() => {
   pollStatus();
-  intervalId = setInterval(pollStatus, 10 * 1000); // Poll every 10 seconds
+  intervalId = setInterval(pollStatus, 60 * 1000); // Poll every 10 seconds
   window.addEventListener('service-unavailable', handleServiceUnavailable);
 });
 

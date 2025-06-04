@@ -10,114 +10,93 @@
   align-items: center;
   justify-content: center;
   pointer-events: all;
-}
 
-.status-content {
-  background: #fff;
-  border: 2px solid #bbb;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  padding: 0 0 2em 0;
-  width: 95vw;
-  max-width: 800px;
-  min-width: 320px;
-  height: auto;
-  max-height: 80vh;
-  min-height: 180px;
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  position: relative;
-}
+  .status-content {
+    background: #fff;
+    border: 1px solid #000;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    padding: 0 0 2em 0;
+    width: 95vw;
+    max-width: 800px;
+    min-width: 320px;
+    max-height: 80vh;
+    min-height: 180px;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
 
-.status-header {
-  background: #003366;
-  color: #fff;
-  font-size: 1.25rem;
-  font-weight: bold;
-  padding: 1em 0.5em;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-  margin-bottom: 1.5em;
-  text-align: center;
-  letter-spacing: 0.5px;
-}
+    .status-header {
+      background: #003366;
+      color: #fff;
+      font-size: 1.25rem;
+      font-weight: bold;
+      padding: 1em 0.5em;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      margin-bottom: 1.5em;
+      text-align: center;
+      letter-spacing: 0.5px;
+    }
 
-.status-links {
-  margin-top: 1em;
-  a {
-    color: #003366;
-    text-decoration: underline;
-    &:hover {
-      color: #005b96;
+    .chefs-unavailable-message,
+    .moreinfo-intro,
+    .moreinfo-outro {
+      margin: 1em 0.75em;
+      font-size: 1.1em;
+      padding: 0.75em 1em;
+    }
+
+    .moreinfo-outro {
+      font-size: 0.95em;
+      background: #fff3f3;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    .info-links {
+      margin-top: 1em;
+      font-size: 0.75em;
+      a {
+        color: #003366;
+        text-decoration: underline;
+        &:hover {
+          color: #005b96;
+        }
+      }
+    }
+
+    .status-connections-table {
+      width: 90%;
+      margin: 1em auto;
+      border-collapse: collapse;
+      font-size: 16px !important;
+      th,
+      td {
+        padding: 0.5em 1em;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+      }
+      th {
+        background: #f6f8fa;
+        font-weight: bold;
+        color: #003366 !important;
+        font-size: 1.1em !important;
+      }
+      tr:hover td {
+        background-color: #eee !important;
+      }
     }
   }
 }
 
-/* Scope the following styles to only affect GlobalStatusOverlay */
-.status-overlay .status-content h2 {
-  margin-top: 0;
-}
-
-.status-overlay .status-content .chefs-unavailable-message {
-  margin: 1em 0.75em;
-  color: #b71c1c;
-  font-size: 1.1em;
-  background: #fff3f3;
-  border-left: 4px solid #b71c1c;
-  padding: 0.75em 1em;
-  border-radius: 4px;
-}
-
-.status-overlay .status-content pre {
-  background-color: #f6f8fa;
-  padding: 10px;
-  border-radius: 4px;
-  overflow-x: auto;
-  text-align: left;
-  margin: 0 auto 1em auto;
-  max-width: 90%;
-}
-
-.status-overlay .status-content ul {
-  padding-left: 20px;
-  text-align: left;
-  margin: 0 auto 1em auto;
-  max-width: 90%;
-}
-
-.status-overlay .status-content strong {
-  display: inline-block;
-  margin-top: 10px;
-  margin-bottom: 5px;
-}
-
-.status-connections-table {
-  width: 90%;
-  margin: 1em auto;
-  border-collapse: collapse;
-  font-size: 16px !important;
-  th,
-  td {
-    padding: 0.5em 1em;
-    border-bottom: 1px solid #eee;
-    text-align: left;
-  }
-  th {
-    background: #f6f8fa;
-    font-weight: bold;
-    color: #003366 !important;
-    font-size: 1.1em !important;
-  }
-  tr:hover td {
-    background-color: #eee !important;
-  }
-}
-
 @media (min-width: 600px) {
-  .status-content {
+  .status-overlay .status-content {
     width: 600px;
     min-width: 400px;
     max-width: 900px;
@@ -127,7 +106,7 @@
 }
 
 @media (min-width: 900px) {
-  .status-content {
+  .status-overlay .status-content {
     width: 800px;
     min-width: 600px;
     max-width: 1100px;
