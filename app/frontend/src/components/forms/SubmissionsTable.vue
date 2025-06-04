@@ -10,6 +10,7 @@ import BaseFilter from '~/components/base/BaseFilter.vue';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { checkFormManage, checkSubmissionView } from '~/utils/permissionUtils';
+import { IdentityMode } from '~/utils/constants';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
@@ -106,7 +107,9 @@ const showAssigneeColumn = computed(() => {
     form.value &&
     form.value.enableStatusUpdates &&
     form.value.showAssigneeInSubmissionsTable &&
-    !form.value.identityProviders?.some((idp) => idp.code === 'public')
+    !form.value.identityProviders?.some(
+      (idp) => idp.code === IdentityMode.PUBLIC
+    )
   );
 });
 

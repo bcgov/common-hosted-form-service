@@ -178,6 +178,7 @@
     "loginRequired": "Log-in Required",
     "canSaveAndEditDraftLabel": "Submitters can <strong>Save and Edit Drafts</strong>",
     "canUpdateStatusAsReviewer": "Reviewers can <strong>Update the Status</strong> of this form (i.e. Submitted, Assigned, Completed)",
+    "displayAssigneeColumn": "Display assignee column for reviewers",
     "submitterCanCopyExistingSubmissn": "Submitters can<strong> Copy an existing submission</strong>",
     "submissionConfirmationToolTip": "Selecting this option controls what the submitting user of this form will see on successful submission. <br /> If checked, it will display",
     "emailNotificatnToTeam": "Send my team a notification email",

@@ -106,9 +106,11 @@ defineExpose({
       class="my-0 ml-6"
     >
       <template #label>
-        <span :class="{ 'mr-2': isRTL }">
-          Display assignee column for reviewers
-        </span>
+        <span
+          :class="{ 'mr-2': isRTL }"
+          :lang="locale"
+          v-html="$t('trans.formSettings.displayAssigneeColumn')"
+        ></span>
       </template>
     </v-checkbox>
 

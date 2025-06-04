@@ -2,7 +2,6 @@ import { createTestingPinia } from '@pinia/testing';
 import { mount } from '@vue/test-utils';
 import { setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { ref } from 'vue';
 
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
@@ -10,6 +9,7 @@ import { useIdpStore } from '~/store/identityProviders';
 import FormFunctionalitySettings from '~/components/designer/settings/FormFunctionalitySettings.vue';
 import { FormRoleCodes, AppPermissions, IdentityMode } from '~/utils/constants';
 import { useAppStore } from '~/store/app';
+import { ref, nextTick } from 'vue';
 
 const IDIR = {
   active: true,
@@ -282,7 +282,7 @@ describe('FormFunctionalitySettings.vue', () => {
     expect(assigneeCheckbox.exists()).toBe(true);
 
     // Verify the text content is correct
-    expect(wrapper.text()).toMatch('Display assignee column for reviewers');
+    expect(wrapper.text()).toMatch('trans.formSettings.displayAssigneeColumn');
   });
 
   it('does not display assignee checkbox when status updates is disabled', async () => {
@@ -380,7 +380,8 @@ describe('FormFunctionalitySettings.vue', () => {
 
     await wrapper.vm.$nextTick();
 
-    const assigneeCheckbox = wrapper.find(
+    // Use findComponent instead of find, following the working pattern
+    const assigneeCheckbox = wrapper.findComponent(
       '[data-test="showAssigneeInSubmissionsTableCheckbox"]'
     );
     expect(assigneeCheckbox.exists()).toBe(true);
@@ -388,17 +389,18 @@ describe('FormFunctionalitySettings.vue', () => {
     // Initial state should be false
     expect(formStore.form.showAssigneeInSubmissionsTable).toBe(false);
 
-    formStore.form.showAssigneeInSubmissionsTable = true;
-    await wrapper.vm.$nextTick();
+    // Test: User checks the checkbox -> should update the form store
+    assigneeCheckbox.setValue(true);
+    await nextTick; // Use nextTick like the working pattern
 
-    // Should be true after changing
+    // Verify that checking the box updated the form store
     expect(formStore.form.showAssigneeInSubmissionsTable).toBe(true);
 
-    // Change back to false
-    formStore.form.showAssigneeInSubmissionsTable = false;
-    await wrapper.vm.$nextTick();
+    // Test: User unchecks the checkbox -> should update the form store
+    assigneeCheckbox.setValue(false);
+    await nextTick; // Use nextTick like the working pattern
 
-    // Should be false again
+    // Verify that unchecking the box updated the form store
     expect(formStore.form.showAssigneeInSubmissionsTable).toBe(false);
   });
 });

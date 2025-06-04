@@ -125,41 +125,27 @@ const service = {
   isLateSubmissionConfigValid,
   isClosingMessageValid,
 
-  _validateAssigneeVisibilitySettings: (formData, existingForm = null) => {
-    // Only validate if trying to enable the setting
+  _setAssigneeInSubmissionsTable: (formData) => {
+    // If not explicitly trying to enable, return false
     if (formData.showAssigneeInSubmissionsTable !== true) {
-      return true;
-    }
-
-    // Extract nested ternary into clear statements
-    let identityProviders = [];
-    if (existingForm && existingForm.identityProviders) {
-      identityProviders = existingForm.identityProviders;
-    } else if (formData.identityProviders) {
-      identityProviders = formData.identityProviders;
+      return false;
     }
 
     // Check if this is a public form
+    const identityProviders = formData.identityProviders || [];
     const isPublicForm = identityProviders.some((idp) => idp.code === 'public');
 
     // Rule 1: Cannot enable for public forms
     if (isPublicForm) {
-      throw new Problem(422, 'Assignee visibility cannot be enabled for public forms');
-    }
-
-    // Extract status updates check into clear logic
-    let statusUpdatesEnabled;
-    if (existingForm) {
-      statusUpdatesEnabled = formData.enableStatusUpdates !== undefined ? formData.enableStatusUpdates : existingForm.enableStatusUpdates;
-    } else {
-      statusUpdatesEnabled = formData.enableStatusUpdates;
+      return false;
     }
 
     // Rule 2: Status updates must be enabled
-    if (!statusUpdatesEnabled) {
-      throw new Problem(422, 'Assignee visibility requires status updates to be enabled');
+    if (!formData.enableStatusUpdates) {
+      return false;
     }
 
+    // All conditions met, can enable assignee visibility
     return true;
   },
 
@@ -230,8 +216,7 @@ const service = {
       obj.ministry = data.ministry;
       obj.apiIntegration = data.apiIntegration;
       obj.useCase = data.useCase;
-      obj.showAssigneeInSubmissionsTable = data.showAssigneeInSubmissionsTable || false;
-      service._validateAssigneeVisibilitySettings(data);
+      obj.showAssigneeInSubmissionsTable = service._setAssigneeInSubmissionsTable(data);
 
       await Form.query(trx).insert(obj);
       if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
@@ -286,7 +271,6 @@ const service = {
     let trx;
     try {
       const obj = await service.readForm(formId);
-      service._validateAssigneeVisibilitySettings(data, obj);
       trx = await Form.startTransaction();
       // do not update the active flag, that should be done via DELETE
       const scheduleData = service.validateScheduleObject(data.schedule);
@@ -314,7 +298,10 @@ const service = {
         ministry: data.ministry,
         apiIntegration: data.apiIntegration,
         useCase: data.useCase,
-        showAssigneeInSubmissionsTable: data.showAssigneeInSubmissionsTable,
+        showAssigneeInSubmissionsTable: service._setAssigneeInSubmissionsTable({
+          ...data,
+          identityProviders: data.identityProviders,
+        }),
       };
 
       await Form.query(trx).patchAndFetchById(formId, upd);
@@ -491,7 +478,7 @@ const service = {
     return DocumentTemplate.query().findById(documentTemplateId).modify('filterActive', true).throwIfNotFound();
   },
 
-  _initFormSubmissionsListQuery: (formId, params, currentUser) => {
+  _initFormSubmissionsListQuery: (formId, params, currentUser, shouldIncludeAssignee = false) => {
     const query = SubmissionMetadata.query()
       .where('formId', formId)
       .modify('filterSubmissionId', params.submissionId)
@@ -504,7 +491,8 @@ const service = {
       .modify('filterformSubmissionStatusCode', params.filterformSubmissionStatusCode)
       .modify('orderDefault', !!(params.sortBy && params.page), params);
 
-    if (params.filterAssignedToCurrentUser && currentUser && currentUser.id) {
+    // Only apply assigned user filter if both conditions are true
+    if (shouldIncludeAssignee && params.filterAssignedToCurrentUser && currentUser && currentUser.id) {
       query.where('formSubmissionAssignedToUserId', currentUser.id);
     }
 
@@ -513,6 +501,7 @@ const service = {
     }
     return query;
   },
+
   listFormSubmissions: async (formId, params, currentUser) => {
     // First, get form settings to check if assignee data should be included
     const form = await service.readForm(formId);
@@ -520,7 +509,7 @@ const service = {
     // Determine if assignee data should be included in response
     const shouldIncludeAssignee = form.showAssigneeInSubmissionsTable && form.enableStatusUpdates && !form.identityProviders.some((idp) => idp.code === 'public');
 
-    const query = service._initFormSubmissionsListQuery(formId, params, currentUser);
+    const query = service._initFormSubmissionsListQuery(formId, params, currentUser, shouldIncludeAssignee);
 
     // Base selection - always include these fields
     const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
