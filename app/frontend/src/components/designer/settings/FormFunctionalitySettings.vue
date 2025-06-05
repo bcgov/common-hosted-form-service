@@ -1,7 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { computed } from 'vue';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useAuthStore } from '~/store/auth';
@@ -96,6 +95,21 @@ defineExpose({
           :class="{ 'mr-2': isRTL }"
           :lang="locale"
           v-html="$t('trans.formSettings.canUpdateStatusAsReviewer')"
+        ></span>
+      </template>
+    </v-checkbox>
+    <v-checkbox
+      v-if="form.enableStatusUpdates && form.userType !== ID_MODE.PUBLIC"
+      v-model="form.showAssigneeInSubmissionsTable"
+      data-test="showAssigneeInSubmissionsTableCheckbox"
+      hide-details="auto"
+      class="my-0 ml-6"
+    >
+      <template #label>
+        <span
+          :class="{ 'mr-2': isRTL }"
+          :lang="locale"
+          v-html="$t('trans.formSettings.displayAssigneeColumn')"
         ></span>
       </template>
     </v-checkbox>
