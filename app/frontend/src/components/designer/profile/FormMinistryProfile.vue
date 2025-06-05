@@ -22,7 +22,7 @@ const MinistryList = computed(() => {
   return Ministries.map((ministry) => ({
     id: ministry.id,
     text: t(`trans.ministries.${ministry.id}`),
-  }));
+  })).sort((a, b) => a.text.localeCompare(b.text));
 });
 </script>
 
