@@ -397,6 +397,7 @@ async function schemaCreateNew() {
     enableCopyExistingSubmission: form.value.enableCopyExistingSubmission,
     wideFormLayout: form.value.wideFormLayout,
     enableStatusUpdates: form.value.enableStatusUpdates,
+    showAssigneeInSubmissionsTable: form.value.showAssigneeInSubmissionsTable,
     showSubmissionConfirmation: form.value.showSubmissionConfirmation,
     submissionReceivedEmails: form.value.submissionReceivedEmails,
     reminder_enabled: false,
