@@ -1,5 +1,4 @@
 import 'cypress-keycloak-commands';
-import 'cypress-drag-drop';
 import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
@@ -48,21 +47,6 @@ describe('Form Designer', () => {
       cy.get('input[name="data[numPoints]"').type('{selectall}{backspace}');
       cy.get('input[name="data[numPoints]"').type('3');
       cy.wait(2000);
-      cy.get('a[title="Draw a marker"]').then($el => {
-        const marker_elem=$el[0];
-        cy.get(marker_elem).click({force: true});
-      });
-        
-      cy.get('a[title="No layers to delete"]').then($el => {
-            const layer_del_btn=$el[0];
-            cy.get(layer_del_btn)
-            .trigger('mousedown', { which: 1}, { force: true })
-        //.trigger('mousemove', coords.x, -30, { force: true })
-          .trigger('mousemove', coords.y, +450, { force: true })
-        .trigger('mouseup', { force: true });
-      });
-      cy.get('img[alt="Marker"]').click({ force: true });
-      cy.wait(2000);
       cy.get('a.leaflet-draw-draw-polygon').then($el => {
         const draw_polygon=$el[0];
     
@@ -92,18 +76,61 @@ describe('Form Designer', () => {
       cy.get('g').find('path[stroke-linejoin="round"]').should('exist');
       
       });
-      cy.waitForLoad();
-      cy.get('button').contains('Save').click();
+      cy.wait(2000);
   });
+  it('Checks user location feature for a Map component', () => {
+    cy.viewport(1000, 1100);
+    cy.waitForLoad();
+    cy.get('div[title="Click to center the map on your location"]').should('exist');
+    cy.get('a[class="leaflet-control-button"]').then($el => {
+      const location_btn=$el[0];
+      cy.get(location_btn).click();
+    });
+    cy.wait(2000);
+    //verify local street map is loaded
+    cy.get('img[class="leaflet-tile leaflet-tile-loaded"]').should('exist');
+    cy.get('img[class="leaflet-tile leaflet-tile-loaded"]').should('have.attr', 'src').and('include', 'https://c.tile.openstreetmap.org');
+    //Mark a point on the current location
+    cy.get('a[title="Draw a marker"]').then($el => {
+      const marker_elem=$el[0];
+      cy.get(marker_elem).click({force: true});
+    });
+    cy.get('div[class="leaflet-marker-icon leaflet-mouse-marker leaflet-zoom-hide leaflet-interactive"]').click({ force: true });
+    cy.wait(2000);
+  });
+  it('Checks base map layers for a Map component', () => {
+      cy.viewport(1000, 1100);
+      cy.waitForLoad();
+      cy.get('input[name="data[allowBaseLayerSwitch]"').click();
+      cy.get('input[value="OpenStreetMap"]').should('be.checked');
+      cy.get('input[value="Light"]').should('be.checked');
+      cy.get('input[value="Dark"]').should('be.checked');
+      cy.get('input[value="Topographic"]').should('be.checked');
+      cy.get('a[class="leaflet-control-layers-toggle"').then($el => {
+        const base_map_btn=$el[0];
+        cy.get(base_map_btn).trigger('mouseover');
+        cy.contains('span', 'OpenStreetMap')     // Find the span with the text
+        .prev('input[type="radio"]')           // Get the radio input just before it
+        .should('be.checked');                 // Assert that it's checked
+      cy.contains('span', ' Light').prev('input[type="radio"]')         
+          .should('not.have.attr', 'checked');  
+      cy.contains('span', ' Dark').prev('input[type="radio"]')          
+          .should('not.have.attr', 'checked');  
+      cy.contains('span', ' Topographic').prev('input[type="radio"]')
+          .should('not.have.attr', 'checked');  
+      cy.get('button').contains('Save').click();   
 
+      });
+  });
   it('Checks form submission for a Map component', () => {
         cy.viewport(1000, 1100);
         cy.waitForLoad();
+        cy.wait(2000);
   // Form saving
       let savedButton = cy.get('[data-cy=saveButton]');
       expect(savedButton).to.not.be.null;
       savedButton.trigger('click');
-      cy.wait(2000); 
+      cy.wait(3000); 
   // Filter the newly created form
       cy.location('search').then(search => {
       //let pathName = fullUrl.pathname
@@ -141,10 +168,28 @@ describe('Form Designer', () => {
         cy.get(marker_elem).click({force: true});
       });  
       cy.get('div[class="leaflet-draw-tooltip leaflet-draw-tooltip-single"]').click({ force: true });
-      
+      cy.wait(2000);
+      //Verify marker limit validation message
       cy.get('div[class="leaflet-popup-content"]').find('p').contains('Only 3 features per submission').should('be.visible');
+      //Validate the feature of deleting existing markers not possible
+      cy.get('.leaflet-draw-edit-remove').click();
+      cy.get('g').find('path[stroke-linejoin="round"]').then($el => {
+        const del_polygon=$el[0];
+        cy.get(del_polygon).click({force: true});
+      });  
+      cy.get(':nth-child(2) > .leaflet-draw-actions > :nth-child(1) > a').click();
+      //verify validation message
+      cy.get('div[class="leaflet-popup-content"]').find('p').contains('Please do not delete pre-existing features').should('be.visible');
+      //Delete the circle drawn by the submitter
+      cy.get('.leaflet-draw-edit-remove').click();
+      cy.get('g').find('path[stroke-linejoin="round"]').then($el => {
+        const del_polygon=$el[1];
+        cy.get(del_polygon).click({force: true});
+      });
+      //validate submitter is able to delete the marker drawn and save it
+      cy.get(':nth-child(2) > .leaflet-draw-actions > :nth-child(1) > a').click();
       cy.get('button').contains('Submit').click();
-      cy.wait(4000);
+      cy.wait(2000);
       cy.get('button').contains('Submit').click();
       cy.waitForLoad();
       cy.location('pathname').should('eq', `/${depEnv}/form/success`);
@@ -163,5 +208,3 @@ describe('Form Designer', () => {
   });
 
 });
-
-    

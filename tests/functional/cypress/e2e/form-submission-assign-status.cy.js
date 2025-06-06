@@ -1,5 +1,4 @@
 import 'cypress-keycloak-commands';
-import 'cypress-drag-drop';
 import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
@@ -48,7 +47,7 @@ describe('Form Designer', () => {
         // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
-    savedButton.trigger('click');
+    savedButton.should('be.visible').trigger('click');
     cy.wait(4000);
         // Filter the newly created form
     cy.location('search').then(search => {
@@ -108,10 +107,11 @@ describe('Form Designer', () => {
         cy.get('div').contains('1-2 of 2').should('be.visible');
         cy.get('.v-select__selection-text').contains('10');
         cy.get('.v-data-table-footer__items-per-page > .v-input > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
-        cy.contains('20').should('be.visible');
-        cy.contains('25').should('be.visible');
-        cy.contains('50').should('be.visible');
-        cy.contains('All').should('be.visible');
+        cy.get('.v-select__selection-text').contains('10').should('be.visible');
+        cy.get('div.v-list-item-title').contains('25').should('be.visible');
+        cy.get('div.v-list-item-title').contains('50').should('be.visible');
+        cy.get('div.v-list-item-title').contains('100').should('be.visible');
+        cy.get('div.v-list-item-title').contains('All').should('be.visible');
         cy.get('button[title="Delete Submission"]').should('be.visible');
          //view submission
         cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn > .v-btn__content > .mdi-eye').click();

@@ -24,6 +24,7 @@
     │   └── forms/             - Models, Controllers, Routes for the forms
     └── tests/                 - Node.js backend web application tests
     components/                - Form.io Custom Components Library
+    clamav/                    - ClamAV Virus Scanner image and helm charts
     openshift/                 - OpenShift-deployment and shared pipeline files
     tests/                     - External test frameworks
     ├── functional/            - Supporting functional tests
@@ -39,6 +40,7 @@
 ## Documentation
 
 - [Application Readme](app/README.md)
+- [CHEFS Development with Dev Container](https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Developer/Contributors/CHEFS-Development-with-Dev-Container/)
 - [Frontend Readme](app/frontend/README.md)
 - [Openshift Readme](openshift/README.md)
 - [Cypress Test Readme](tests/functional/cypress/README.md)

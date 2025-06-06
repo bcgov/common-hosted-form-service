@@ -10,6 +10,7 @@ import BaseFilter from '~/components/base/BaseFilter.vue';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { checkFormManage, checkSubmissionView } from '~/utils/permissionUtils';
+import { IdentityMode } from '~/utils/constants';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
@@ -22,6 +23,8 @@ const properties = defineProps({
 
 // Show only items for the current logged in user
 const currentUserOnly = ref(false);
+// Show only items assigned to current user
+const assignedToMeOnly = ref(false);
 const debounceInput = ref(null);
 const debounceTime = ref(300);
 const deleteItem = ref({});
@@ -97,6 +100,19 @@ const showSubmissionsExport = computed(() =>
   // submissions. In the future it should be its own set of permissions.
   checkFormManage(permissions.value)
 );
+
+// Computed property to determine if assignee column should be shown
+const showAssigneeColumn = computed(() => {
+  return (
+    form.value &&
+    form.value.enableStatusUpdates &&
+    form.value.showAssigneeInSubmissionsTable &&
+    !form.value.identityProviders?.some(
+      (idp) => idp.code === IdentityMode.PUBLIC
+    )
+  );
+});
+
 const userColumns = computed(() => {
   if (
     userFormPreferences.value &&
@@ -139,7 +155,17 @@ const BASE_HEADERS = computed(() => {
       key: 'status',
     },
   ];
-
+  if (
+    form.value &&
+    form.value.enableStatusUpdates &&
+    form.value.showAssigneeInSubmissionsTable
+  ) {
+    headers.push({
+      title: t('trans.submissionsTable.assignee'),
+      align: 'start',
+      key: 'assignee',
+    });
+  }
   if (form.value && form.value.schedule && form.value.schedule.enabled) {
     //push new header for late submission if Form is setup for scheduling
     headers = [
@@ -370,6 +396,8 @@ async function getSubmissionData() {
     createdBy: currentUserOnly.value
       ? `${user.value.username}@${user.value.idp?.code}`
       : '',
+    // Filter for assigned to me
+    filterAssignedToCurrentUser: assignedToMeOnly.value,
   };
   await formStore.fetchSubmissions(criteria);
   if (submissionList.value) {
@@ -377,7 +405,7 @@ async function getSubmissionData() {
       const fields = {
         confirmationId: s.confirmationId,
         date: s.createdAt,
-        updatedAt: s.updatedBy ? s.updatedAt : null,
+        updatedAt: s.updatedAt,
         updatedBy: s.updatedBy,
         formId: s.formId,
         status: s.formSubmissionStatusCode,
@@ -386,6 +414,7 @@ async function getSubmissionData() {
         versionId: s.formVersionId,
         deleted: s.deleted,
         lateEntry: s.lateEntry,
+        assignee: s.formSubmissionAssignedToUsernameIdp || ' ',
       };
       // Add any custom columns
       userColumns.value.forEach((col) => {
@@ -446,6 +475,11 @@ async function refreshSubmissions() {
     .finally(() => {
       selectedSubmissions.value = [];
     });
+}
+
+// Function to handle the assigned to me filter
+async function handleAssignedToMeFilter() {
+  await refreshSubmissions();
 }
 
 async function delSub() {
@@ -556,6 +590,9 @@ defineExpose({
   updateFilter,
   userColumns,
   USER_PREFERENCES,
+  assignedToMeOnly,
+  showAssigneeColumn,
+  handleAssignedToMeFilter,
 });
 </script>
 
@@ -591,18 +628,17 @@ defineExpose({
           </v-tooltip>
           <v-tooltip v-if="showFormManage" location="bottom">
             <template #activator="{ props }">
-              <router-link :to="{ name: 'FormManage', query: { f: formId } }">
-                <v-btn
-                  class="mx-1"
-                  color="primary"
-                  v-bind="props"
-                  :disabled="!formId"
-                  size="x-small"
-                  density="default"
-                  icon="mdi:mdi-cog"
-                  :title="$t('trans.submissionsTable.manageForm')"
-                />
-              </router-link>
+              <v-btn
+                class="mx-1"
+                color="primary"
+                v-bind="props"
+                :disabled="!formId"
+                size="x-small"
+                density="default"
+                icon="mdi:mdi-cog"
+                :to="{ name: 'FormManage', query: { f: formId } }"
+                :title="$t('trans.submissionsTable.manageForm')"
+              />
             </template>
             <span :lang="locale">{{
               $t('trans.submissionsTable.manageForm')
@@ -658,6 +694,21 @@ defineExpose({
           <template #label>
             <span :class="{ 'mr-2': isRTL }" :lang="locale">
               {{ $t('trans.submissionsTable.showMySubmissions') }}
+            </span>
+          </template>
+        </v-checkbox>
+      </div>
+
+      <!-- Assigned to Me checkbox -->
+      <div v-if="showAssigneeColumn">
+        <v-checkbox
+          v-model="assignedToMeOnly"
+          class="pl-3"
+          @click="refreshSubmissions"
+        >
+          <template #label>
+            <span :class="{ 'mr-2': isRTL }" :lang="locale">
+              {{ $t('trans.submissionsTable.showAssignedToMe') }}
             </span>
           </template>
         </v-checkbox>
@@ -755,6 +806,9 @@ defineExpose({
 
       <template #item.date="{ item }">
         {{ $filters.formatDateLong(item.date) }}
+      </template>
+      <template #item.updatedAt="{ item }">
+        {{ item.updatedAt ? $filters.formatDateLong(item.updatedAt) : '' }}
       </template>
       <template #item.status="{ item }">
         {{ item.status }}

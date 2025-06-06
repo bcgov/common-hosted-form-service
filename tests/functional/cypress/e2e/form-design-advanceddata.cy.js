@@ -1,5 +1,4 @@
 import 'cypress-keycloak-commands';
-import 'cypress-drag-drop';
 import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
@@ -31,10 +30,11 @@ it('Checks the Container component', () => {
 
   cy.viewport(1000, 1100);
     formsettings();
- 
+    cy.intercept('POST', '**/forms/*', (req) => {
+      console.log(req);
+    }).as('formCreate');
+    cy.get('div.builder-components.drag-container.formio-builder-form', { timeout: 30000 }).should('be.visible');
     cy.get('button').contains('Advanced Data').click();
-    cy.waitForLoad();
-    cy.waitForLoad();
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
         cy.get('span.btn').contains('Container')
@@ -44,14 +44,12 @@ it('Checks the Container component', () => {
         .trigger('mouseup', { force: true });
         cy.get('input[name="data[label]"]').clear().type('Application');
         cy.get('input[name="data[customClass]"]').type('bg-primary');
-        cy.waitForLoad();
-        
+        cy.waitForLoad(); 
         cy.get('button').contains('Save').click();
     });
 
   });
   // Checks the Data Grid component
-  
   
   it('Checks Day component', () => {
 
@@ -66,7 +64,6 @@ it('Checks the Container component', () => {
             .trigger('mouseup', { force: true });
             cy.get('button').contains('Save').click();
     });
-
 
   });
 // Checks Data Map component
@@ -155,6 +152,9 @@ it('Checks the Container component', () => {
   it('Checks the Edit Grid Component', () => {
 
     cy.viewport(1000, 1100);
+    cy.intercept('POST', '**/forms/*', (req) => {
+      console.log(req);
+    }).as('formCreate');
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('span.btn').contains('Edit Grid')
@@ -166,11 +166,10 @@ it('Checks the Container component', () => {
       cy.get('input[name="data[label]"]').clear().type('Add more days');
       cy.get('input[name="data[customClass]"]').type('bg-primary');
       cy.waitForLoad();
-      
       cy.get('button').contains('Save').click();
     });
-  
- // Form saving
+    
+// Form saving
    let savedButton = cy.get('[data-cy=saveButton]');
    expect(savedButton).to.not.be.null;
    savedButton.trigger('click');

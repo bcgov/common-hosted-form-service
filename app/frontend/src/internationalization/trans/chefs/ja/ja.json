@@ -97,11 +97,11 @@
     "formAccess": "フォームアクセス",
     "info": "このフォームを使用して、一般の関心のあるトピックについて一般の人々から情報を収集する場合は、GCPE に連絡して、あなたの取り組みを掲載できるようにする必要があります。",
     "important": "重要",
-    "idimNotifyA": "IDIM (IDIM) チームに電子メールで通知する必要があります。",
-    "idimNotifyB": "BCeID を利用してフォーム送信者の身元を確認するという意図。",
-    "referenceGuideA": "ご参照ください。",
+    "idimNotifyA": "あなたは<strong>必ず</strong>Identity Information Management（IDIM）チームにメールで通知する必要があります",
+    "idimNotifyB": "BCeID または BC Services Card を使用してフォーム送信者の身元を確認する意図を伝えてください。",
+    "referenceGuideA": "詳細については、",
     "referenceGuideB": "ユーザーガイド",
-    "referenceGuideC": "詳細については",
+    "referenceGuideC": "をご参照ください",
     "specificTeamMembers": "特定のチームメンバー",
     "teamMemberTooltip": "このフォームを作成した後、チーム管理設定からチームメンバーを追加してください。",
     "formFunctionality": "フォーム機能",
@@ -139,7 +139,14 @@
     "repeatUntil": "まで繰り返します",
     "summary": "まとめ",
     "submissionsOpenDateRange": "このフォームは以下からの送信を受け付けます。",
+    "timezoneIndicator": "すべての時刻はあなたの現地タイムゾーンです ({timezone})",
     "to": "に",
+    "openTime": "開始時間",
+    "closeTime": "終了時間",
+    "at": "に",
+    "specifyOpenTime": "開始時間を指定 (任意)",
+    "specifyCloseTime": "終了時間を指定 (任意)",
+    "closingTimeInfo": "(フォームは終了日の現地時間午後11時59分に閉じられます)",
     "scheduleRepetition": "スケジュールは毎回繰り返されます",
     "allowLateSubmissnInterval": "遅れての提出を許可する",
     "until": "それまで",
@@ -179,6 +186,9 @@
     "eventStreamMessage": "イベント ストリーム サービスは、フォームの公開と送信に関する通知を発行します。基盤となるテクノロジーは NATS.io で、これによりコンシューマーはイベント メッセージをサブスクライブまたはプルし、外部システムで処理できます。プライベート メッセージには、ここで設定されたキーを使用して暗号化されたペイロードが含まれます。",
     "natsConfiguration": "NATS 構成とメッセージ メタデータ",
     "publishConfiguration": "イベント公開設定",
+    "essAccountName": "ESSアカウント名",
+    "essAccountApproved": "ESSアカウント承認済み",
+    "essAccountNotApproved": "ESSアカウント不明または未承認",
     "enablePublicStream": "パブリックストリームを有効にする",
     "enablePrivateStream": "プライベートストリームを有効にする",
     "encryptionKeyAlgorithm": "暗号化キーアルゴリズム",
@@ -442,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "フォームデザイン",
-    "exportDesign": "デザインのエクスポート",
-    "importDesign": "デザインのインポート",
+    "downloadJson": "JSON をダウンロード",
+    "uploadJson": "JSON をアップロード",
     "important": "重要",
     "formDesignInfoA": "このフォームの作成が完了したら、 <strong>[デザインを保存]</strong>ボタンを使用します。",
     "formDesignInfoB": "<strong>[送信]</strong>ボタンは、ユーザーがこのフォームを送信するために提供されており、保存後にアクティブになります。",
@@ -487,13 +497,15 @@
     "download": "ダウンロード"
   },
   "formDisclaimer": {
-    "disclaimerAndStatement": "フォームデザイナーに対する免責事項と責任声明:",
-    "privacyLaw": "個人を特定できる情報の収集、使用、開示を規定するプライバシー法を遵守するのはあなたの責任です。",
-    "disclosure": "このフォーム デザイナー ツールへのアクセスは、本質的に個人を特定できる情報を収集、使用、または開示する許可を与えるものではありません。",
-    "consent": "法律で義務付けられているように情報を収集することに同意を得るのはあなたの責任です。",
-    "formIntention": "フォームを公開または配布する前に、フォームの意図について担当者と話し合う必要があります。",
-    "privacyOfficer": "省のプライバシー担当官",
-    "assement": "必要に応じて評価を完了します。"
+    "disclaimerAndStatement": "フォームデザイナー向けの免責事項および責任声明:",
+    "privacyLaw": "個人情報の収集、使用、および開示を管理するプライバシー法を遵守するのはあなたの責任です。",
+    "disclosure": "このフォームデザインツールへのアクセスは、個人情報の収集、使用、または開示の許可を自動的に付与するものではありません。",
+    "consent": "法律で要求される情報を収集するための同意を得るのはあなたの責任です。",
+    "formIntention": "フォームを公開または配布する前に、フォームの意図について",
+    "privacyOfficer": "省庁のプライバシー担当官",
+    "assement": "と相談し、必要な評価を完了する必要があります。",
+    "idimDisclaimerA": "BCeID または BC Services Card をフォームアクセスオプションとして使用する場合、<strong>必ず</strong>Identity Information Management（IDIM）チームにメールで通知する必要があります",
+    "idimDisclaimerB": "BCeID または BC Services Card を使用してフォーム送信者の身元を確認する意図を伝えてください。データを収集する前に、これらの追加のオンボーディング要件を完了するのはあなたの責任です。"
   },
   "requestReceipt": {
     "emailPriority": "電子メールの優先順位",
@@ -863,10 +875,12 @@
     "failedResSubmissn": "送信エンドポイントからの応答が失敗しました。レスポンスコード: {status}",
     "errSubmittingForm": "このフォームの送信中にエラーが発生しました",
     "errorSavingFile": "ファイルの保存中にエラーが発生しました。ファイル名: {fileName}。エラー: {error}",
+    "errorDeletingFile": "ファイルの削除中にエラーが発生しました。ファイル名: {fileName}。エラー: {error}",
     "submittingDraftErrMsg": "下書きの保存中にエラーが発生しました",
     "submittingDraftConsErrMsg": "下書きの保存中にエラーが発生しました。送信 ID: {submissionId}。エラー: {error}",
     "formDraftAccessErrMsg": "リクエストされた送信はすでに送信されており、[表示] ページにリダイレクトされます。",
-    "formUnauthorizedMessage": "このフォームを表示する権限がありません。アクセスするにはフォームの所有者に連絡してください。"
+    "formUnauthorizedMessage": "このフォームを表示する権限がありません。アクセスするにはフォームの所有者に連絡してください。",
+    "fileUploadWarning": "添付ファイルをアップロードするには、「下書きとして保存」ボタンをクリックするか、フォームを送信する必要があります。この画面から移動すると、添付ファイルは失われます。"
   },
   "bCGovFooter": {
     "home": "家",
@@ -943,7 +957,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "私のドラフト/提出物を表示する",
-    "saveAsADraft": "下書きとして保存",
+    "saveAsDraft": "下書きとして保存",
     "editThisDraft": "この下書きを編集する",
     "switchSingleSubmssn": "単一の提出に切り替える",
     "switchMultiSubmssn": "複数の提出に切り替える",
@@ -1122,6 +1136,9 @@
       "user": "ユーザー"
     }
   },
+  "alert": {
+    "warning": "警告"
+  },
   "eventStreamConfig": {
     "info": "フォームのイベント ストリームを構成します。",
     "create": "新しいイベントストリーム構成を作成する",
@@ -1205,5 +1222,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "フォームに追加されていないユーザーとは下書きを共有できません。管理者に連絡して追加してください。",
+    "shareDraftMessage": "フォームチームのメンバーとのみドラフトを共有する"
   }
 }

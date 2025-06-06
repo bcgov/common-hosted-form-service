@@ -302,9 +302,13 @@ describe('form actions', () => {
         deleted: false,
         createdBy: '',
         fields: undefined,
+        filterAssignedToCurrentUser: false,
         filterformSubmissionStatusCode: undefined,
         itemsPerPage: undefined,
         page: undefined,
+        paginationEnabled: undefined,
+        search: undefined,
+        searchEnabled: undefined,
         sortBy: undefined,
         totalSubmissions: 0,
       });
@@ -327,9 +331,13 @@ describe('form actions', () => {
         deleted: false,
         createdBy: '',
         fields: undefined,
+        filterAssignedToCurrentUser: false,
         filterformSubmissionStatusCode: undefined,
         itemsPerPage: undefined,
         page: undefined,
+        paginationEnabled: undefined,
+        search: undefined,
+        searchEnabled: undefined,
         sortBy: undefined,
         totalSubmissions: 0,
       });
@@ -366,9 +374,13 @@ describe('form actions', () => {
         deleted: false,
         createdBy: '',
         fields: undefined,
+        filterAssignedToCurrentUser: false,
         filterformSubmissionStatusCode: undefined,
         itemsPerPage: undefined,
         page: undefined,
+        paginationEnabled: undefined,
+        search: undefined,
+        searchEnabled: undefined,
         sortBy: undefined,
         totalSubmissions: 0,
       });
@@ -444,5 +456,50 @@ describe('form actions', () => {
 
     expect(addNotificationSpy).toHaveBeenCalledTimes(1);
     expect(addNotificationSpy).toHaveBeenCalledWith(expect.any(Object));
+  });
+  it('fetchSubmissions should pass filterAssignedToCurrentUser parameter correctly', async () => {
+    formService.listSubmissions.mockResolvedValue({
+      data: [],
+    });
+
+    // Test with filterAssignedToCurrentUser: true
+    await mockStore.fetchSubmissions({
+      formId: 'fId',
+      filterAssignedToCurrentUser: true,
+    });
+
+    expect(listSubmissionsSpy).toHaveBeenCalledWith('fId', {
+      createdAt: undefined,
+      deleted: false,
+      createdBy: '',
+      fields: undefined,
+      filterformSubmissionStatusCode: undefined,
+      filterAssignedToCurrentUser: true, // Should pass through the true value
+      itemsPerPage: undefined,
+      page: undefined,
+      sortBy: undefined,
+      totalSubmissions: 0,
+    });
+
+    listSubmissionsSpy.mockReset();
+
+    // Test with filterAssignedToCurrentUser: false
+    await mockStore.fetchSubmissions({
+      formId: 'fId',
+      filterAssignedToCurrentUser: false,
+    });
+
+    expect(listSubmissionsSpy).toHaveBeenCalledWith('fId', {
+      createdAt: undefined,
+      deleted: false,
+      createdBy: '',
+      fields: undefined,
+      filterformSubmissionStatusCode: undefined,
+      filterAssignedToCurrentUser: false, // Should pass through the false value
+      itemsPerPage: undefined,
+      page: undefined,
+      sortBy: undefined,
+      totalSubmissions: 0,
+    });
   });
 });

@@ -1,6 +1,8 @@
 const service = require('../../../../src/forms/rbac/service');
 const authService = require('../../../../src/forms/auth/service');
 
+jest.mock('~/forms/common/models');
+
 afterEach(() => {
   jest.restoreAllMocks();
 });

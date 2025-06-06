@@ -2,6 +2,8 @@ const { getMockReq, getMockRes } = require('@jest-mock/express');
 const fs = require('fs-extra');
 const multer = require('multer');
 const os = require('os');
+const { fileSetup, createBadRequestProblem } = require('../../../../../src/forms/file/middleware/upload');
+const Problem = require('api-problem');
 
 jest.mock('fs-extra');
 jest.mock('multer');
@@ -14,225 +16,120 @@ const multerImpl = {
 multer.mockImplementation(() => multerImpl);
 
 // This module has global variables so it needs to be re-loaded for each test.
-var fileUpload;
+let fileUpload;
 
 beforeEach(() => {
-  // Clear out all the environment variables set during testing.
   delete process.env.FILE_UPLOADS_DIR;
   delete process.env.FILE_UPLOADS_MAX_FILE_COUNT;
   delete process.env.FILE_UPLOADS_MAX_FILE_SIZE;
 
+  jest.clearAllMocks();
   jest.isolateModules(() => {
     fileUpload = require('../../../../../src/forms/file/middleware/upload').fileUpload;
   });
 });
 
-// This is very tightly tied to the implementation - is there a better way?
-describe('fileUpload.init', () => {
-  describe('fileUploadsDir', () => {
-    const mockConfig = '/config_uploads_dir';
-    const mockEnvironment = '/mock_file_uploads_dir';
-    const mockOs = '/mock_os_tmpdir';
+describe('createBadRequestProblem', () => {
+  test('should create a Problem instance with status 400 and the provided detail', () => {
+    const detail = 'This is a bad request';
+    const problem = createBadRequestProblem(detail);
 
-    test('uses os.tmpdir when there is no config or environment variable', async () => {
-      fs.realpathSync.mockReturnValueOnce(mockOs);
-      os.tmpdir.mockReturnValueOnce(mockOs);
-      const callback = jest.fn();
+    expect(problem).toBeInstanceOf(Problem);
+    expect(problem.status).toBe(400);
+    expect(problem.detail).toBe(detail);
+  });
+});
 
-      fileUpload.init();
+describe('fileSetup', () => {
+  const mockOsTmpDir = '/mock_os_tmpdir';
+  const mockConfigDir = '/mock_config_dir';
 
-      expect(multer.diskStorage).toBeCalledTimes(1);
-      const internalFunction = multer.diskStorage.mock.calls[0][0].destination;
-      internalFunction(undefined, undefined, callback);
-      expect(callback).toBeCalledWith(null, mockOs);
-    });
-
-    test('uses environment variable when there is no config', async () => {
-      fs.realpathSync.mockReturnValueOnce(mockOs);
-      os.tmpdir.mockReturnValueOnce(mockOs);
-      process.env.FILE_UPLOADS_DIR = mockEnvironment;
-      const callback = jest.fn();
-
-      fileUpload.init();
-
-      expect(multer.diskStorage).toBeCalledTimes(1);
-      const internalFunction = multer.diskStorage.mock.calls[0][0].destination;
-      internalFunction(undefined, undefined, callback);
-      expect(callback).toBeCalledWith(null, mockEnvironment);
-    });
-
-    test('uses the config', async () => {
-      fs.realpathSync.mockReturnValueOnce(mockOs);
-      os.tmpdir.mockReturnValueOnce(mockOs);
-      process.env.FILE_UPLOADS_DIR = mockEnvironment;
-      const callback = jest.fn();
-
-      fileUpload.init({ dir: mockConfig });
-
-      expect(multer.diskStorage).toBeCalledTimes(1);
-      const internalFunction = multer.diskStorage.mock.calls[0][0].destination;
-      internalFunction(undefined, undefined, callback);
-      expect(callback).toBeCalledWith(null, mockConfig);
-    });
-
-    test('uses the config but fails on the ensure', async () => {
-      fs.realpathSync.mockReturnValueOnce(mockOs);
-      os.tmpdir.mockReturnValueOnce(mockOs);
-      process.env.FILE_UPLOADS_DIR = mockEnvironment;
-      fs.ensureDirSync.mockImplementationOnce(() => {
-        throw new Error();
-      });
-
-      expect(() =>
-        fileUpload.init({
-          dir: mockConfig,
-        })
-      ).toThrow(
-        expect.objectContaining({
-          message: `Could not create file uploads directory '${mockConfig}'.`,
-        })
-      );
-
-      expect(multer.diskStorage).toBeCalledTimes(0);
-    });
+  beforeEach(() => {
+    os.tmpdir.mockReturnValue(mockOsTmpDir);
+    fs.realpathSync.mockReturnValue(mockOsTmpDir);
   });
 
-  describe('maxFileSize', () => {
-    const mockConfig = '15MB';
-    const mockConfigBytes = 15728640;
-    const mockEnvironment = '20MB';
-    const mockEnvironmentBytes = 20971520;
-    const defaultValueBytes = 26214400;
+  test('should use os.tmpdir when no config or environment variable is provided', () => {
+    const result = fileSetup();
 
-    test('uses default when there is no config or environment variable', async () => {
-      fileUpload.init();
-
-      expect(multer).toBeCalledTimes(1);
-      expect(multer).toBeCalledWith(
-        expect.objectContaining({
-          limits: expect.objectContaining({
-            fileSize: defaultValueBytes,
-          }),
-        })
-      );
-    });
-
-    test('uses environment variable when there is no config', async () => {
-      process.env.FILE_UPLOADS_MAX_FILE_SIZE = mockEnvironment;
-
-      fileUpload.init();
-
-      expect(multer).toBeCalledTimes(1);
-      expect(multer).toBeCalledWith(
-        expect.objectContaining({
-          limits: expect.objectContaining({
-            fileSize: mockEnvironmentBytes,
-          }),
-        })
-      );
-    });
-
-    test('uses the config', async () => {
-      process.env.FILE_UPLOADS_MAX_FILE_SIZE = mockEnvironment;
-
-      fileUpload.init({ maxFileSize: mockConfig });
-
-      expect(multer).toBeCalledTimes(1);
-      expect(multer).toBeCalledWith(
-        expect.objectContaining({
-          limits: expect.objectContaining({
-            fileSize: mockConfigBytes,
-          }),
-        })
-      );
-    });
-
-    test('uses the config but fails on conversion', async () => {
-      expect(() =>
-        fileUpload.init({
-          maxFileSize: 'qwerty',
-        })
-      ).toThrow(
-        expect.objectContaining({
-          message: 'Could not determine max file size (bytes) for file uploads.',
-        })
-      );
-
-      expect(multer).toBeCalledTimes(0);
-    });
+    expect(result.fileUploadsDir).toBe(mockOsTmpDir);
+    expect(result.maxFileSize).toBe(26214400); // Default 25MB in bytes
+    expect(result.maxFileCount).toBe(1);
+    expect(fs.ensureDirSync).toHaveBeenCalledWith(mockOsTmpDir);
   });
 
-  describe('maxFileCount', () => {
-    const mockConfig = 3;
-    const mockEnvironment = 2;
-    const defaultValue = 1;
+  test('should use environment variable for fileUploadsDir when no config is provided', () => {
+    process.env.FILE_UPLOADS_DIR = mockConfigDir;
 
-    test('uses default when there is no config or environment variable', async () => {
-      fileUpload.init();
+    const result = fileSetup();
 
-      expect(multer).toBeCalledTimes(1);
-      expect(multerImpl.array).toBeCalledTimes(0);
-      expect(multerImpl.single).toBeCalledTimes(1);
-      expect(multer).toBeCalledWith(
-        expect.objectContaining({
-          limits: expect.objectContaining({
-            files: defaultValue,
-          }),
-        })
-      );
+    expect(result.fileUploadsDir).toBe(mockConfigDir);
+    expect(fs.ensureDirSync).toHaveBeenCalledWith(mockConfigDir);
+  });
+
+  test('should use config for fileUploadsDir', () => {
+    const result = fileSetup({ dir: mockConfigDir });
+
+    expect(result.fileUploadsDir).toBe(mockConfigDir);
+    expect(fs.ensureDirSync).toHaveBeenCalledWith(mockConfigDir);
+  });
+
+  test('should throw an error if ensureDirSync fails', () => {
+    fs.ensureDirSync.mockImplementationOnce(() => {
+      throw new Error('Directory creation failed');
     });
 
-    test('uses environment variable when there is no config', async () => {
-      process.env.FILE_UPLOADS_MAX_FILE_COUNT = mockEnvironment;
+    expect(() => fileSetup({ dir: mockConfigDir })).toThrow(new Error(`Could not create file uploads directory '${mockConfigDir}'.`));
+  });
 
-      fileUpload.init();
+  test('should use default maxFileSize when no config or environment variable is provided', () => {
+    const result = fileSetup();
 
-      expect(multer).toBeCalledTimes(1);
-      expect(multerImpl.array).toBeCalledTimes(1);
-      expect(multerImpl.single).toBeCalledTimes(0);
-      expect(multer).toBeCalledWith(
-        expect.objectContaining({
-          limits: expect.objectContaining({
-            files: mockEnvironment,
-          }),
-        })
-      );
-    });
+    expect(result.maxFileSize).toBe(26214400); // Default 25MB in bytes
+  });
 
-    test('uses the config', async () => {
-      process.env.FILE_UPLOADS_MAX_FILE_COUNT = mockEnvironment;
+  test('should use environment variable for maxFileSize when no config is provided', () => {
+    process.env.FILE_UPLOADS_MAX_FILE_SIZE = '15MB';
 
-      fileUpload.init({ maxFileCount: mockConfig });
+    const result = fileSetup();
 
-      expect(multer).toBeCalledTimes(1);
-      expect(multerImpl.array).toBeCalledTimes(1);
-      expect(multerImpl.single).toBeCalledTimes(0);
-      expect(multer).toBeCalledWith(
-        expect.objectContaining({
-          limits: expect.objectContaining({
-            files: mockConfig,
-          }),
-        })
-      );
-    });
+    expect(result.maxFileSize).toBe(15728640); // 15MB in bytes
+  });
 
-    // TODO: this works, even though parseInt does not throw exceptions.
-    test('uses the config but fails on conversion', async () => {
-      process.env.FILE_UPLOADS_MAX_FILE_COUNT = mockEnvironment;
+  test('should use config for maxFileSize', () => {
+    const result = fileSetup({ maxFileSize: '10MB' });
 
-      fileUpload.init({ maxFileCount: 'qwerty' });
+    expect(result.maxFileSize).toBe(10485760); // 10MB in bytes
+  });
 
-      expect(multer).toBeCalledTimes(1);
-      expect(multerImpl.array).toBeCalledTimes(0);
-      expect(multerImpl.single).toBeCalledTimes(1);
-      expect(multer).toBeCalledWith(
-        expect.objectContaining({
-          limits: expect.objectContaining({
-            files: 1,
-          }),
-        })
-      );
-    });
+  test('should throw an error if maxFileSize cannot be parsed', () => {
+    expect(() => fileSetup({ maxFileSize: 'invalid' })).toThrow(new Error('Could not determine max file size (bytes) for file uploads.'));
+  });
+
+  test('should use default maxFileCount when no config or environment variable is provided', () => {
+    const result = fileSetup();
+
+    expect(result.maxFileCount).toBe(1);
+  });
+
+  test('should use environment variable for maxFileCount when no config is provided', () => {
+    process.env.FILE_UPLOADS_MAX_FILE_COUNT = '5';
+
+    const result = fileSetup();
+
+    expect(result.maxFileCount).toBe(5);
+  });
+
+  test('should use config for maxFileCount', () => {
+    const result = fileSetup({ maxFileCount: 3 });
+
+    expect(result.maxFileCount).toBe(3);
+  });
+
+  test('should default maxFileCount to 1 if config is invalid', () => {
+    const result = fileSetup({ maxFileCount: 'invalid' });
+
+    expect(result.maxFileCount).toBe(1);
   });
 });
 
@@ -267,12 +164,13 @@ describe('fileUpload.upload', () => {
     ];
 
     test.each(cases)('error is %p', async (code, detail) => {
-      multerImpl.single.mockImplementationOnce(() => (_req, _res, callback) => {
+      const mockMulterError = (_req, _res, callback) => {
         const error = new multer.MulterError();
         error.code = code;
         error.message = 'some message';
         callback(error);
-      });
+      };
+      multerImpl.single.mockImplementationOnce(() => mockMulterError);
       fileUpload.init();
       const req = getMockReq();
       const { res, next } = getMockRes();
@@ -289,9 +187,10 @@ describe('fileUpload.upload', () => {
     });
 
     test('non-multer error', async () => {
-      multerImpl.single.mockImplementationOnce(() => (_req, _res, callback) => {
+      const mockError = (_req, _res, callback) => {
         callback(new Error('error message'));
-      });
+      };
+      multerImpl.single.mockImplementationOnce(() => mockError);
       fileUpload.init();
       const req = getMockReq();
       const { res, next } = getMockRes();
@@ -308,9 +207,10 @@ describe('fileUpload.upload', () => {
     });
 
     test('no error', async () => {
-      multerImpl.single.mockImplementationOnce(() => (_req, _res, callback) => {
+      const mockNoError = (_req, _res, callback) => {
         callback();
-      });
+      };
+      multerImpl.single.mockImplementationOnce(() => mockNoError);
       fileUpload.init();
       const req = getMockReq();
       const { res, next } = getMockRes();

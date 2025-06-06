@@ -97,11 +97,11 @@
     "formAccess": "Acesso ao formulário",
     "info": "Se você usar este formulário para coletar informações do público em geral sobre tópicos de interesse geral do público, deverá entrar em contato com o GCPE para que seu envolvimento possa ser listado no",
     "important": "IMPORTANTE",
-    "idimNotifyA": "Você deve notificar a equipe de gerenciamento de informações de identidade (IDIM) por e-mail",
-    "idimNotifyB": "sua intenção de aproveitar o BCeID para verificar as identidades de seus remetentes de formulário.",
-    "referenceGuideA": "Consulte nosso",
-    "referenceGuideB": "guia de usuario",
-    "referenceGuideC": "para mais detalhes",
+    "idimNotifyA": "Você <strong>DEVE</strong> notificar a equipe de Identity Information Management (IDIM) por e-mail",
+    "idimNotifyB": "sua intenção de utilizar BCeID ou BC Services Card para verificar a identidade dos remetentes do formulário.",
+    "referenceGuideA": "Por favor, consulte nosso",
+    "referenceGuideB": "guia do usuário",
+    "referenceGuideC": "para mais detalhes.",
     "specificTeamMembers": "Membros Específicos da Equipe",
     "teamMemberTooltip": "Adicione membros da equipe a partir das configurações de Gestão de Equipe após criar este formulário.",
     "formFunctionality": "Funcionalidade do formulário",
@@ -139,7 +139,14 @@
     "repeatUntil": "Repetir até",
     "summary": "Resumo",
     "submissionsOpenDateRange": "Este formulário estará aberto para envios de",
+    "timezoneIndicator": "Todos os horários estão no seu fuso horário local ({timezone})",
     "to": "para",
+    "openTime": "Hora de abertura",
+    "closeTime": "Hora de encerramento",
+    "at": "às",
+    "specifyOpenTime": "Especificar hora de abertura (opcional)",
+    "specifyCloseTime": "Especificar hora de encerramento (opcional)",
+    "closingTimeInfo": "(O formulário será fechado às 23:59 no seu fuso horário local na data de encerramento)",
     "scheduleRepetition": "A programação se repetirá a cada",
     "allowLateSubmissnInterval": "permitindo submissões tardias para",
     "until": "até",
@@ -179,6 +186,9 @@
     "eventStreamMessage": "O Event Stream Service publicará notificações sobre publicação e envios de formulários. A tecnologia subjacente é NATS.io, que permite que os consumidores assinem ou puxem as mensagens de eventos e as processem em sistemas externos. As mensagens privadas conterão payloads criptografados com a chave configurada aqui.",
     "natsConfiguration": "Configuração NATS e metadados de mensagens",
     "publishConfiguration": "Configuração de publicação de eventos",
+    "essAccountName": "Nome da conta ESS",
+    "essAccountApproved": "Conta ESS aprovada",
+    "essAccountNotApproved": "Conta ESS desconhecida ou não aprovada",
     "enablePublicStream": "Habilitar fluxo público",
     "enablePrivateStream": "Habilitar transmissão privada",
     "encryptionKeyAlgorithm": "Algoritmo de chave de criptografia",
@@ -442,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "Design de formulário",
-    "exportDesign": "Projeto de exportação",
-    "importDesign": "Design de Importação",
+    "downloadJson": "Baixar JSON",
+    "uploadJson": "Enviar JSON",
     "important": "IMPORTANTE",
     "formDesignInfoA": "Use o botão <strong>SALVAR DESIGN</strong> quando terminar de criar este formulário.",
     "formDesignInfoB": "O botão <strong>ENVIAR</strong> é fornecido para o usuário enviar este formulário e será ativado após ser salvo.",
@@ -487,13 +497,15 @@
     "download": "Download"
   },
   "formDisclaimer": {
-    "disclaimerAndStatement": "Isenção de responsabilidade e declaração de responsabilidade para Form Designers:",
-    "privacyLaw": "É sua responsabilidade cumprir as leis de privacidade que regem a coleta, uso e divulgação de informações de identificação pessoal.",
-    "disclosure": "O acesso a esta ferramenta de criação de formulários não concede inerentemente permissão para coletar, usar ou divulgar qualquer informação de identificação pessoal.",
+    "disclaimerAndStatement": "Aviso de isenção de responsabilidade e declaração de responsabilidade para designers de formulários:",
+    "privacyLaw": "É sua responsabilidade cumprir as leis de privacidade que regem a coleta, uso e divulgação de informações pessoalmente identificáveis.",
+    "disclosure": "O acesso a esta ferramenta de design de formulários não concede automaticamente permissão para coletar, usar ou divulgar qualquer informação pessoalmente identificável.",
     "consent": "É sua responsabilidade obter consentimento para coletar informações conforme exigido por lei.",
-    "formIntention": "Antes de publicar ou distribuir seu formulário, você deve discutir a intenção do formulário com seu",
+    "formIntention": "Antes de publicar ou distribuir seu formulário, você deve discutir a intenção do formulário com o",
     "privacyOfficer": "Oficial de Privacidade do Ministério",
-    "assement": "e para completar as avaliações conforme necessário."
+    "assement": "e concluir as avaliações necessárias.",
+    "idimDisclaimerA": "Se você usar BCeID ou BC Services Card como opções de acesso ao formulário, <strong>DEVE</strong> notificar a equipe de Identity Information Management (IDIM) por e-mail",
+    "idimDisclaimerB": "sua intenção de utilizar BCeID ou BC Services Card para verificar a identidade dos remetentes do formulário. É sua responsabilidade concluir esses requisitos adicionais antes de coletar dados."
   },
   "requestReceipt": {
     "emailPriority": "Prioridade de e-mail",
@@ -863,10 +875,12 @@
     "failedResSubmissn": "Falha na resposta do endpoint de envio. Código de resposta: {status}",
     "errSubmittingForm": "Ocorreu um erro ao enviar este formulário",
     "errorSavingFile": "Erro ao salvar arquivos. Nome do arquivo: {fileName}. Erro: {error}",
+    "errorDeletingFile": "Erro ao excluir arquivos. Nome do arquivo: {fileName}. Erro: {error}",
     "submittingDraftErrMsg": "Ocorreu um erro ao salvar um rascunho",
     "submittingDraftConsErrMsg": "Erro ao salvar rascunho. SubmissãoId: {submissionId}. Erro: {error}",
     "formDraftAccessErrMsg": "O envio solicitado já foi enviado, redirecionando para a página Exibir",
-    "formUnauthorizedMessage": "Você não está autorizado a visualizar este formulário, por favor, contate o proprietário do formulário para acesso."
+    "formUnauthorizedMessage": "Você não está autorizado a visualizar este formulário, por favor, contate o proprietário do formulário para acesso.",
+    "fileUploadWarning": "Para enviar os seus anexos, deve clicar no botão 'Guardar como rascunho' ou enviar o seu formulário. Se sair deste ecrã, perderá os seus anexos"
   },
   "bCGovFooter": {
     "home": "Lar",
@@ -943,7 +957,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "Ver meus rascunhos/envios",
-    "saveAsADraft": "Salve como um rascunho",
+    "saveAsDraft": "Salve como um rascunho",
     "editThisDraft": "Editar este rascunho",
     "switchSingleSubmssn": "Alternar para envio único",
     "switchMultiSubmssn": "Mudar para vários envios",
@@ -1122,6 +1136,9 @@
       "user": "Do utilizador"
     }
   },
+  "alert": {
+    "warning": "Aviso"
+  },
   "eventStreamConfig": {
     "info": "Configure o Event Stream para seu formulário.",
     "create": "Criar nova configuração de fluxo de eventos",
@@ -1205,5 +1222,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "Você não pode compartilhar o rascunho com usuários que não foram adicionados ao formulário. Entre em contato com o administrador para adicioná-los.",
+    "shareDraftMessage": "Compartilhar rascunho somente com membros da equipe do formulário"
   }
 }

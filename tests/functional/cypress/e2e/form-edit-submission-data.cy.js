@@ -1,5 +1,4 @@
 import 'cypress-keycloak-commands';
-import 'cypress-drag-drop';
 import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
@@ -23,8 +22,6 @@ describe('Form Designer', () => {
       });
     });
     it('Visits the form settings page', () => {
-    
-    
         cy.viewport(1000, 1100);
         cy.waitForLoad();
         formsettings();
@@ -48,23 +45,12 @@ describe('Form Designer', () => {
     });
     it('Form Submission and Updation', () => {
       cy.viewport(1000, 1100);
-      cy.waitForLoad();
-      cy.waitForLoad();
-      cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
+      cy.wait(2000);
       // Form saving
       let savedButton = cy.get('[data-cy=saveButton]');
       expect(savedButton).to.not.be.null;
       savedButton.trigger('click');
-      cy.waitForLoad();
-
-
-
-      // Go to My forms  
-      cy.wait('@getForm').then(()=>{
-      let userFormsLinks = cy.get('[data-cy=userFormsLinks]');
-      expect(userFormsLinks).to.not.be.null;
-      userFormsLinks.trigger('click');
-      });
+      cy.wait(2000);
       // Filter the newly created form
       cy.location('search').then(search => {
           
@@ -82,21 +68,16 @@ describe('Form Designer', () => {
         cy.contains('Continue').trigger('click');
         //Submit the form
         cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
-        cy.waitForLoad();
-        cy.waitForLoad();
-        cy.waitForLoad();
+        cy.wait(2000);
         cy.get('button').contains('Submit').should('be.visible');
-        cy.waitForLoad();
-        cy.waitForLoad();
+        cy.wait(2000);
         cy.contains('Text Field').click();
         cy.contains('Text Field').type('Alex');
          //form submission
         cy.get('button').contains('Submit').click();
         cy.waitForLoad();
         cy.get('[data-test="continue-btn-continue"]').click({force: true});
-        cy.waitForLoad();
-        cy.waitForLoad();
-        cy.waitForLoad();
+        cy.wait(2000);
         cy.get('label').contains('Text Field').should('be.visible');
         cy.get('label').contains('Text Field').should('be.visible');
         cy.location('pathname').should('eq', `/${depEnv}/form/success`);
@@ -122,7 +103,7 @@ describe('Form Designer', () => {
           cy.wait(2000);
           cy.get(rem).click({ force: true });
           //submission delete verification
-          cy.get('.v-data-table__tr > :nth-child(7) > span[data-v-1cd101d8=""] > .v-btn > .v-btn__content > .mdi-minus').click();
+          cy.get('button[title="Delete Submission"]').click();
           cy.get('[data-test="continue-btn-continue"]').click();
           cy.get('.v-alert__content').contains('div','Submission deleted successfully.').should('be.visible');
           cy.get(rem).click({ force: true });
@@ -152,10 +133,7 @@ describe('Form Designer', () => {
         cy.get('button').contains('Submit').click();
         cy.waitForLoad();
         cy.get('[data-test="continue-btn-continue"]').click();
-        
-        cy.waitForLoad();
-        cy.waitForLoad();
-        cy.waitForLoad();
+        cy.wait(2000);
         
         //Adding notes to submission
         cy.get('.mdi-plus').click();

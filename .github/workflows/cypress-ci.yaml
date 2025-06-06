@@ -6,6 +6,10 @@ on:
         description: Pull request number
         required: true
         type: string
+      pr_branch:
+        required: true
+        type: string
+
   secrets:
       Username: 
         required: true
@@ -18,22 +22,22 @@ jobs:
     steps:
      - name: Checkout
        uses: actions/checkout@v4
+       with:
+        ref: ${{ inputs.pr_branch }}  # Uses the PR branch from input
+        fetch-depth: 0 # Ensures the full history is fetched
+        
      - name: Setup Node.js
        uses: actions/setup-node@v4
        with:
-         node-version: '20'
+         node-version: '20' 
+         cache: 'npm'
+         cache-dependency-path: 'tests/functional/cypress/package-lock.json'
          
-     - name: cache
-       uses: actions/cache@v4
-       with:
-            path: "tests/functional"
-            key: node-modules-${{ hashFiles('tests/functional/package.json') }}
-       
-        
      - name: cypress install
        uses: cypress-io/github-action@v6
        with:
-          working-directory: '${{ github.workspace }}/tests/functional'
+          working-directory: 'tests/functional/cypress'
+          browser:  chrome
        env:
           CYPRESS_keycloakUsername: ${{ secrets.Username }}
           CYPRESS_keycloakPassword: ${{ secrets.Password }}
@@ -43,4 +47,4 @@ jobs:
        if: failure()
        with:
           name: cypress-screenshots
-          path: '${{ github.workspace }}/tests/functional/screenshots'
+          path: '${{ github.workspace }}/tests/functional/cypress/screenshots'

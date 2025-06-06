@@ -61,4 +61,22 @@ module.exports = {
       next(error);
     }
   },
+
+  deleteFiles: async (req, res, next) => {
+    try {
+      await service.deleteFiles(req.body.fileIds);
+      res.sendStatus(202);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  clone: async (req, res, next) => {
+    try {
+      const response = await service.clone(req.params.fileId, req.currentUser);
+      res.status(201).json(_trim(response));
+    } catch (error) {
+      next(error);
+    }
+  },
 };
