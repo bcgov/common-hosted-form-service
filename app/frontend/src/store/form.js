@@ -7,11 +7,12 @@ import {
   fileService,
   rbacService,
   userService,
+  encryptionKeyService,
+  eventStreamConfigService,
 } from '~/services';
 import { useNotificationStore } from '~/store/notification';
 import { IdentityMode, NotificationTypes } from '~/utils/constants';
 import { generateIdps, parseIdps } from '~/utils/transformUtils';
-import { encryptionKeyService, eventStreamConfigService } from '~/services';
 
 const genInitialSchedule = () => ({
   enabled: null,
@@ -71,6 +72,7 @@ const genInitialForm = () => ({
   enableSubmitterDraft: false,
   enableStatusUpdates: false,
   allowSubmitterToUploadFile: false,
+  showAssigneeInSubmissionsTable: false,
   id: '',
   idps: [],
   isDirty: false,
@@ -370,6 +372,9 @@ export const useFormStore = defineStore('form', {
         const evntSrvCfg = await this.fetchEventStreamConfig(formId);
         data.eventStreamConfig = evntSrvCfg;
 
+        // Add default value for showAssigneeInSubmissionsTable if it doesn't exist
+        data.showAssigneeInSubmissionsTable =
+          data.showAssigneeInSubmissionsTable ?? false;
         this.form = data;
       } catch (error) {
         const notificationStore = useNotificationStore();
@@ -467,6 +472,8 @@ export const useFormStore = defineStore('form', {
           enableSubmitterDraft: this.form.enableSubmitterDraft,
           enableStatusUpdates: this.form.enableStatusUpdates,
           enableTeamMemberDraftShare: this.form.enableTeamMemberDraftShare,
+          showAssigneeInSubmissionsTable:
+            this.form.showAssigneeInSubmissionsTable,
           wideFormLayout: this.form.wideFormLayout,
           identityProviders: generateIdps({
             idps: this.form.idps,
@@ -686,6 +693,7 @@ export const useFormStore = defineStore('form', {
       sortBy: sortBy,
       search: search,
       searchEnabled: searchEnabled,
+      filterAssignedToCurrentUser = false,
     }) {
       try {
         this.submissionList = [];
@@ -711,6 +719,7 @@ export const useFormStore = defineStore('form', {
               sortBy: sortBy,
               search: search,
               searchEnabled: searchEnabled,
+              filterAssignedToCurrentUser: filterAssignedToCurrentUser,
             });
         if (paginationEnabled) {
           this.submissionList = response.data.results;

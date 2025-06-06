@@ -65,7 +65,7 @@ oc create -n $NAMESPACE configmap $APP_NAME-server-config \
   --from-literal=SERVER_PORT=8080
 ```
 
-_Note:_ OIDC config is for moving from a custom Keycloak realm into the BC Gov standard realm a managed SSO platform. Other KC configuration will be deprecated. Urls and Client IDs will change from environment to environment.
+_Note:_ OIDC config is for the BC Gov standard realm a managed SSO platform. Urls and Client IDs will change from environment to environment.
 
 ```sh
 oc create -n $NAMESPACE configmap $APP_NAME-oidc-config \
@@ -199,7 +199,9 @@ export APP_NAME=<yourappshortname>
 
 oc process -n $NAMESPACE -f openshift/app.deployment.yaml -p REPO_NAME=common-hosted-form-service -p JOB_NAME=master -p NAMESPACE=$NAMESPACE -p APP_NAME=$APP_NAME -p ROUTE_HOST=$APP_NAME-dev.apps.silver.devops.gov.bc.ca -p ROUTE_PATH=master -o yaml | oc apply -n $NAMESPACE -f -
 ```
+
 Due to the settings in the Deployment, the deployment will begin automatically. However, you can deploy manually by use the following command for example:
+
 ```sh
 oc rollout -n $NAMESPACE latest dc/<buildname>-master
 ```
