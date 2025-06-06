@@ -42,6 +42,11 @@ export default {
    * @function listForms
    * Read all the forms in the DB
    * @param {Boolean} active Don't show deleted forms
+   * @param {boolean} paginationEnabled if pagination is enabled for this request
+   * @param {number} page the page for the request
+   * @param {number} itemsPerPage the number of items to be returned
+   * @param {boolean} searchEnabled if the results should be searched
+   * @param {string} search the search string for the query
    * @returns {Promise} An axios response
    */
   listForms(params) {
@@ -115,10 +120,17 @@ export default {
   /**
    * @function listUsers
    * Read all the users in the DB
+   * @param {boolean} paginationEnabled if pagination is enabled for this request
+   * @param {number} page the page for the request
+   * @param {number} itemsPerPage the number of items to be returned
+   * @param {boolean} searchEnabled if the results should be searched
+   * @param {string} search the search string for the query
    * @returns {Promise} An axios response
    */
-  listUsers() {
-    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.USERS}`);
+  listUsers(params) {
+    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.USERS}`, {
+      params: params,
+    });
   },
 
   /**
@@ -137,10 +149,17 @@ export default {
   /**
    * @function listExternalAPIs
    * Read all the external apis in the DB
+   * @param {boolean} paginationEnabled if pagination is enabled for this request
+   * @param {number} page the page for the request
+   * @param {number} itemsPerPage the number of items to be returned
+   * @param {boolean} searchEnabled if the results should be searched
+   * @param {string} search the search string for the query
    * @returns {Promise} An axios response
    */
-  listExternalAPIs() {
-    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.EXTERNAL_APIS}`);
+  listExternalAPIs(params) {
+    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.EXTERNAL_APIS}`, {
+      params: params,
+    });
   },
   /**
    * @function updateExternalAPI

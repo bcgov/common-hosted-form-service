@@ -96,12 +96,24 @@ const service = {
    * @returns {Promise} An objection query promise
    */
   getUsers: async (params) => {
-    return User.query()
+    console.log('params');
+    console.log(params);
+    const query = User.query()
       .modify('filterUsername', params.username)
       .modify('filterFirstName', params.firstName)
       .modify('filterLastName', params.lastName)
       .modify('filterEmail', params.email)
       .modify('orderLastFirstAscending');
+    if (params.paginationEnabled) {
+      return await service._processPagination(query, {
+        page: parseInt(params.page),
+        itemsPerPage: parseInt(params.itemsPerPage),
+        totalItems: params.totalItems,
+        search: params.search,
+        searchEnabled: params.searchEnabled,
+      });
+    }
+    return query;
   },
 
   /**
@@ -138,12 +150,22 @@ const service = {
    * @returns {Promise} An objection query promise
    */
   getExternalAPIs: async (params) => {
-    return AdminExternalAPI.query()
+    const query = AdminExternalAPI.query()
       .modify('filterMinistry', params.ministry)
       .modify('filterFormName', params.formName)
       .modify('filterName', params.name)
       .modify('filterDisplay', params.display)
       .modify('orderDefault');
+    if (params.paginationEnabled) {
+      return await service._processPagination(query, {
+        page: parseInt(params.page),
+        itemsPerPage: parseInt(params.itemsPerPage),
+        totalItems: params.totalItems,
+        search: params.search,
+        searchEnabled: params.searchEnabled,
+      });
+    }
+    return query;
   },
   updateExternalAPI: async (id, data) => {
     await ExternalAPI.query().findById(id).throwIfNotFound();

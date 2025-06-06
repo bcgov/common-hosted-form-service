@@ -16,6 +16,8 @@ const firstDataLoad = ref(true);
 const forceTableRefresh = ref(0);
 const debounceInput = ref(null);
 const debounceTime = ref(300);
+const currentPage = ref(1);
+const itemsPP = ref(10);
 
 const adminStore = useAdminStore();
 const formStore = useFormStore();
@@ -26,9 +28,6 @@ const { isRTL } = storeToRefs(formStore);
 const calcHeaders = computed(() =>
   headers.value.filter((x) => x.key !== 'updatedAt' || showDeleted.value)
 );
-
-const currentPage = ref(1);
-const itemsPP = ref(10);
 
 const headers = computed(() => [
   {
