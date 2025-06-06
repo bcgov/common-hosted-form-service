@@ -352,7 +352,7 @@
   "adminFormsTable": {
     "showDeletedForms": "हटाए गए फॉर्म दिखाएं",
     "search": "खोज",
-    "loadingText": "लोड हो रहा है-पाठ",
+    "loadingText": "कृपया प्रतीक्षा करें",
     "noDataText": "आपके सिस्टम में कोई फॉर्म नहीं हैं",
     "admin": "व्यवस्थापक",
     "launch": "शुरू करना",

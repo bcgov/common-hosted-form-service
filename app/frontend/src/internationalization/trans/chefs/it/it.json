@@ -352,7 +352,7 @@
   "adminFormsTable": {
     "showDeletedForms": "Mostra i moduli eliminati",
     "search": "Ricerca",
-    "loadingText": "caricamento del testo",
+    "loadingText": "Attendere prego",
     "noDataText": "Non ci sono moduli nel tuo sistema",
     "admin": "Amministratore",
     "launch": "Lancio",

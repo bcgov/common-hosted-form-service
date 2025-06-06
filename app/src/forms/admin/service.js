@@ -1,6 +1,7 @@
 const { ExternalAPIStatuses } = require('../common/constants');
 const { Form, FormVersion, User, UserFormAccess, FormComponentsProactiveHelp, AdminExternalAPI, ExternalAPI, ExternalAPIStatusCode } = require('../common/models');
-const { queryUtils } = require('../common/utils');
+const { queryUtils, typeUtils } = require('../common/utils');
+const moment = require('moment');
 const uuid = require('uuid');
 const service = {
   //
@@ -15,12 +16,22 @@ const service = {
    */
   listForms: async (params) => {
     params = queryUtils.defaultActiveOnly(params);
-    return Form.query()
+    const query = Form.query()
       .modify('filterActive', params.active)
       .allowGraph('[identityProviders,versions]')
       .withGraphFetched('identityProviders(orderDefault)')
       .withGraphFetched('versions(selectWithoutSchema, orderVersionDescending)')
       .modify('orderNameAscending');
+    if (params.paginationEnabled) {
+      return await service._processPagination(query, {
+        page: parseInt(params.page),
+        itemsPerPage: parseInt(params.itemsPerPage),
+        totalItems: params.totalItems,
+        search: params.search,
+        searchEnabled: params.searchEnabled,
+      });
+    }
+    return query;
   },
 
   /**
@@ -85,12 +96,24 @@ const service = {
    * @returns {Promise} An objection query promise
    */
   getUsers: async (params) => {
-    return User.query()
+    console.log('params');
+    console.log(params);
+    const query = User.query()
       .modify('filterUsername', params.username)
       .modify('filterFirstName', params.firstName)
       .modify('filterLastName', params.lastName)
       .modify('filterEmail', params.email)
       .modify('orderLastFirstAscending');
+    if (params.paginationEnabled) {
+      return await service._processPagination(query, {
+        page: parseInt(params.page),
+        itemsPerPage: parseInt(params.itemsPerPage),
+        totalItems: params.totalItems,
+        search: params.search,
+        searchEnabled: params.searchEnabled,
+      });
+    }
+    return query;
   },
 
   /**
@@ -127,12 +150,22 @@ const service = {
    * @returns {Promise} An objection query promise
    */
   getExternalAPIs: async (params) => {
-    return AdminExternalAPI.query()
+    const query = AdminExternalAPI.query()
       .modify('filterMinistry', params.ministry)
       .modify('filterFormName', params.formName)
       .modify('filterName', params.name)
       .modify('filterDisplay', params.display)
       .modify('orderDefault');
+    if (params.paginationEnabled) {
+      return await service._processPagination(query, {
+        page: parseInt(params.page),
+        itemsPerPage: parseInt(params.itemsPerPage),
+        totalItems: params.totalItems,
+        search: params.search,
+        searchEnabled: params.searchEnabled,
+      });
+    }
+    return query;
   },
   updateExternalAPI: async (id, data) => {
     await ExternalAPI.query().findById(id).throwIfNotFound();
@@ -162,6 +195,57 @@ const service = {
   },
   getExternalAPIStatusCodes: async () => {
     return ExternalAPIStatusCode.query();
+  },
+  _processPagination: async (query, { page, itemsPerPage, totalItems, search, searchEnabled }) => {
+    let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : searchEnabled !== undefined ? JSON.parse(searchEnabled) : false;
+    if (isSearchAble) {
+      let submissionsData = await query;
+      let result = {
+        results: [],
+        total: 0,
+      };
+      let searchedData = submissionsData.filter((data) => {
+        return Object.keys(data).some((key) => {
+          if (key !== 'submissionId' && key !== 'formVersionId' && key !== 'formId') {
+            if (!Array.isArray(data[key]) && !typeUtils.isObject(data[key])) {
+              if (
+                !typeUtils.isBoolean(data[key]) &&
+                !typeUtils.isNil(data[key]) &&
+                typeUtils.isDate(data[key]) &&
+                moment(new Date(data[key])).format('YYYY-MM-DD hh:mm:ss a').toString().includes(search)
+              ) {
+                result.total = result.total + 1;
+                return true;
+              }
+              if (typeUtils.isString(data[key]) && data[key].toLowerCase().includes(search.toLowerCase())) {
+                result.total = result.total + 1;
+                return true;
+              } else if (
+                (typeUtils.isNil(data[key]) || typeUtils.isBoolean(data[key]) || (typeUtils.isNumeric(data[key]) && typeUtils.isNumeric(search))) &&
+                parseFloat(data[key]) === parseFloat(search)
+              ) {
+                result.total = result.total + 1;
+                return true;
+              }
+            }
+            return false;
+          }
+          return false;
+        });
+      });
+      let start = page * itemsPerPage;
+      let end = page * itemsPerPage + itemsPerPage;
+      result.results = searchedData.slice(start, end);
+      return result;
+    } else {
+      if (itemsPerPage && parseInt(itemsPerPage) === -1) {
+        return await query.page(parseInt(page), parseInt(totalItems || 0));
+      } else if (itemsPerPage && parseInt(page) >= 0) {
+        return await query.page(parseInt(page), parseInt(itemsPerPage));
+      }
+    }
+
+    //}
   },
   _approveMany: async (id, data, trx) => {
     // if we are setting to approved, approve all similar endpoints.

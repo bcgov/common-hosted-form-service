@@ -146,15 +146,31 @@ describe('admin actions', () => {
 
     it('getForms should commit to SET_FORMLIST', async () => {
       mockStore.formList = undefined;
-      adminService.listForms.mockResolvedValue({ data: [{ form: { id: 1 } }] });
-      await mockStore.getForms(true);
+      adminService.listForms.mockResolvedValue({
+        data: { results: [{ form: { id: 1 } }], total: 1 },
+      });
+      await mockStore.getForms({
+        activeOnly: true,
+        itemsPerPage: 10,
+        page: 0,
+        paginationEnabled: true,
+        search: '',
+        searchEnabled: false,
+      });
 
       expect(mockStore.formList).toEqual([{ form: { id: 1 } }]);
     });
 
     it('fetchDrafts should dispatch to notifications/addNotification', async () => {
       adminService.listForms.mockRejectedValue('');
-      await mockStore.getForms(true);
+      await mockStore.getForms({
+        activeOnly: true,
+        itemsPerPage: 10,
+        page: 0,
+        paginationEnabled: true,
+        search: '',
+        searchEnabled: false,
+      });
 
       expect(addNotificationSpy).toHaveBeenCalledTimes(1);
       expect(addNotificationSpy).toHaveBeenCalledWith({
@@ -184,8 +200,16 @@ describe('admin actions', () => {
 
     it('getUsers should commit to SET_USERLIST', async () => {
       mockStore.userList = undefined;
-      adminService.listUsers.mockResolvedValue({ data: [] });
-      await mockStore.getUsers();
+      adminService.listUsers.mockResolvedValue({
+        data: { results: [], total: 0 },
+      });
+      await mockStore.getUsers({
+        itemsPerPage: 10,
+        page: 0,
+        paginationEnabled: true,
+        search: '',
+        searchEnabled: false,
+      });
 
       expect(mockStore.userList).toEqual([]);
     });
@@ -253,16 +277,28 @@ describe('admin actions', () => {
     it('getExternalAPIs should commit to SET_EXTERNAL_API_LIST', async () => {
       mockStore.externalAPIList = undefined;
       adminService.listExternalAPIs.mockResolvedValue({
-        data: [{ name: 'a' }, { name: 'b' }],
+        data: { results: [{ name: 'a' }, { name: 'b' }], total: 2 },
       });
-      await mockStore.getExternalAPIs();
+      await mockStore.getExternalAPIs({
+        itemsPerPage: 10,
+        page: 0,
+        paginationEnabled: true,
+        search: '',
+        searchEnabled: false,
+      });
 
       expect(mockStore.externalAPIList).toEqual([{ name: 'a' }, { name: 'b' }]);
     });
 
     it('getExternalAPIs should dispatch to notifications/addNotification', async () => {
       adminService.listExternalAPIs.mockRejectedValue('');
-      await mockStore.getExternalAPIs();
+      await mockStore.getExternalAPIs({
+        itemsPerPage: 10,
+        page: 0,
+        paginationEnabled: true,
+        search: '',
+        searchEnabled: false,
+      });
 
       expect(addNotificationSpy).toHaveBeenCalledTimes(1);
       expect(addNotificationSpy).toHaveBeenCalledWith({

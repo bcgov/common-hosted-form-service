@@ -352,7 +352,7 @@
   "adminFormsTable": {
     "showDeletedForms": "削除されたフォームを表示する",
     "search": "検索",
-    "loadingText": "ローディングテキスト",
+    "loadingText": "しばらくお待ちください",
     "noDataText": "システムにフォームがありません",
     "admin": "管理者",
     "launch": "発売",
