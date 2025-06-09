@@ -36,15 +36,15 @@ describe('Form Designer', () => {
       cy.get('input[name="data[label]"]').type('s'); 
       cy.get('textarea[name="data[description]"]').should("have.attr","placeholder","This will appear below the map");
       cy.get('textarea[name="data[description]"]').type('Map location above');
-      cy.wait(2000);
+      cy.wait(1000);
       cy.get('textarea[placeholder="Add a tooltip beside the label"]').type('Add your desired location');
-      cy.wait(2000);
+      cy.wait(1000);
       cy.get(':nth-child(2) > .nav-link').click();
-      cy.wait(2000);
       cy.wait(2000);
       cy.get('input[value="circle"]').click();
       cy.get('input[value="polygon"]').click();
       cy.get('input[name="data[numPoints]"').type('{selectall}{backspace}');
+      cy.get('input[name="data[numPoints]"').type('3');
       cy.get('input[name="data[numPoints]"').type('3');
       cy.wait(2000);
       cy.get('a.leaflet-draw-draw-polygon').then($el => {
@@ -76,7 +76,7 @@ describe('Form Designer', () => {
       cy.get('g').find('path[stroke-linejoin="round"]').should('exist');
       
       });
-      cy.wait(2000);
+      cy.wait(1000);
   });
   it('Checks user location feature for a Map component', () => {
     cy.viewport(1000, 1100);
@@ -98,6 +98,21 @@ describe('Form Designer', () => {
     cy.get('div[class="leaflet-marker-icon leaflet-mouse-marker leaflet-zoom-hide leaflet-interactive"]').click({ force: true });
     cy.wait(2000);
   });
+  //validate custom base map layers
+  it('Validate custom base map layers for  Map component', () => {
+        cy.viewport(1000, 1100);
+        cy.waitForLoad();
+        cy.wait(2000);
+        cy.get('tfoot > tr > td > .btn').click();
+        cy.get('input[name="data[availableBaseLayersCustom][0][label]"]').click();
+        cy.get('input[name="data[availableBaseLayersCustom][0][label]"]').type('test');
+        cy.get('input[name="data[availableBaseLayersCustom][0][url]"]').click();
+        const customUrl = 'https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png';
+        cy.get('input[name="data[availableBaseLayersCustom][0][url]"]').type(customUrl,{ parseSpecialCharSequences: false });
+        cy.get('input[name="data[availableBaseLayersCustom][0][attribution]"]').click();
+        cy.get('input[name="data[availableBaseLayersCustom][0][attribution]"]').type('&copy; OpenStreetMap France | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors');
+        cy.get('input[name="data[availableBaseLayersCustom][0][enabled]"]').click();
+  });
   it('Checks base map layers for a Map component', () => {
       cy.viewport(1000, 1100);
       cy.waitForLoad();
@@ -106,6 +121,7 @@ describe('Form Designer', () => {
       cy.get('input[value="Light"]').should('be.checked');
       cy.get('input[value="Dark"]').should('be.checked');
       cy.get('input[value="Topographic"]').should('be.checked');
+      cy.wait(2000);
       cy.get('a[class="leaflet-control-layers-toggle"').then($el => {
         const base_map_btn=$el[0];
         cy.get(base_map_btn).trigger('mouseover');
@@ -135,6 +151,7 @@ describe('Form Designer', () => {
         const base_select_light=$el[1];
         const base_select_dark=$el[2];
         const base_select_topographic=$el[3];
+        const base_select_test_custom=$el[4];
         cy.get(base_select_dark).closest('span').contains(' Dark').click({ force: true });
         cy.get(base_select_dark).check();
         cy.wait(2000);
@@ -150,11 +167,14 @@ describe('Form Designer', () => {
         cy.get(base_select_topographic).check();
         cy.wait(2000);
         cy.get('img[src*="https://b.tile.opentopomap.org/"]').should('be.visible');
+        cy.wait(2000);
+        cy.get(base_select_test_custom).check();
+        cy.wait(2000);
+        cy.get(base_select_test_custom).closest('span').contains('test').should('exist');
         });
       });
-      cy.waitForLoad();
-      cy.get('button').contains('Save').click();
-      
+      cy.waitForLoad();   
+      cy.get('button').contains('Save').click();  
   });
   it('Checks form submission for a Map component', () => {
         cy.viewport(1000, 1100);
@@ -257,7 +277,7 @@ describe('Form Designer', () => {
       cy.waitForLoad();
       cy.location('pathname').should('eq', `/${depEnv}/form/success`);
       cy.contains('h1', 'Your form has been submitted successfully');
-      cy.wait(4000);
+      cy.wait(2000);
       cy.get('g').find('path[stroke-linejoin="round"]').should('exist');
       //Delete form after test run
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
