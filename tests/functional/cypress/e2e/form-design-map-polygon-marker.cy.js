@@ -109,6 +109,7 @@ describe('Form Designer', () => {
       cy.get('a[class="leaflet-control-layers-toggle"').then($el => {
         const base_map_btn=$el[0];
         cy.get(base_map_btn).trigger('mouseover');
+      });
         cy.contains('span', 'OpenStreetMap')     // Find the span with the text
         .prev('input[type="radio"]')           // Get the radio input just before it
         .should('be.checked');                 // Assert that it's checked
@@ -117,10 +118,43 @@ describe('Form Designer', () => {
       cy.contains('span', ' Dark').prev('input[type="radio"]')          
           .should('not.have.attr', 'checked');  
       cy.contains('span', ' Topographic').prev('input[type="radio"]')
-          .should('not.have.attr', 'checked');  
-      cy.get('button').contains('Save').click();   
-
+          .should('not.have.attr', 'checked'); 
+          cy.wait(2000);
+      cy.get('a[title="Draw a marker"]').then($el => {
+        const marker_elem=$el[0];
+        cy.get(marker_elem).click({force: true});
+      }); 
+      cy.get('a[title="Cancel drawing"').click();   
+      //validate visiility of different layers
+      cy.get('a[class="leaflet-control-layers-toggle"').then($el => {
+        const base_map_btn=$el[0];
+        cy.get(base_map_btn).trigger('mouseover',{force: true});
+      
+        cy.get('input[class="leaflet-control-layers-selector"]')
+        .then($el => {
+        const base_select_light=$el[1];
+        const base_select_dark=$el[2];
+        const base_select_topographic=$el[3];
+        cy.get(base_select_dark).closest('span').contains(' Dark').click({ force: true });
+        cy.get(base_select_dark).check();
+        cy.wait(2000);
+        cy.get('img[src*="https://b.basemaps.cartocdn.com/dark_all/"]').should('be.visible');
+        cy.get(base_select_light).closest('span').contains(' Light').click({ force: true });
+        cy.wait(1000);
+        cy.get(base_select_light).check();
+        cy.wait(2000);
+        cy.get('img[src*="https://b.basemaps.cartocdn.com/light_all/"]').should('be.visible');
+        cy.get(base_map_btn).trigger('mouseover',{force: true});
+        cy.get(base_select_topographic).closest('span').contains(' Topographic').click({ force: true });
+        cy.waitForLoad();
+        cy.get(base_select_topographic).check();
+        cy.wait(2000);
+        cy.get('img[src*="https://b.tile.opentopomap.org/"]').should('be.visible');
+        });
       });
+      cy.waitForLoad();
+      cy.get('button').contains('Save').click();
+      
   });
   it('Checks form submission for a Map component', () => {
         cy.viewport(1000, 1100);
@@ -163,6 +197,34 @@ describe('Form Designer', () => {
         .trigger('mouseup', coords.x, -5, { force: true })
         cy.wait(2000);
       });
+      //validate different basic layers existence on submitter view
+      cy.get('a[class="leaflet-control-layers-toggle"').then($el => {
+        const base_map_btn=$el[0];
+        cy.get(base_map_btn).trigger('mouseover',{force: true});
+      
+        cy.get('input[class="leaflet-control-layers-selector"]')
+        .then($el => {
+        const base_select_light=$el[1];
+        const base_select_dark=$el[2];
+        const base_select_topographic=$el[3];
+        cy.get(base_select_dark).closest('span').contains(' Dark').click({ force: true });
+        cy.get(base_select_dark).check();
+        cy.wait(2000);
+        cy.get('img[src*="https://b.basemaps.cartocdn.com/dark_all/"]').should('be.visible');
+        cy.get(base_select_light).closest('span').contains(' Light').click({ force: true });
+        cy.wait(1000);
+        cy.get(base_select_light).check();
+        cy.wait(2000);
+        cy.get('img[src*="https://b.basemaps.cartocdn.com/light_all/"]').should('be.visible');
+        cy.get(base_map_btn).trigger('mouseover',{force: true});
+        cy.get(base_select_topographic).closest('span').contains(' Topographic').click({ force: true });
+        cy.waitForLoad();
+        cy.get(base_select_topographic).check();
+        cy.wait(2000);
+        cy.get('img[src*="https://b.tile.opentopomap.org/"]').should('be.visible');
+        });
+      });
+      cy.waitForLoad();
       cy.get('a[title="Draw a marker"]').then($el => {
         const marker_elem=$el[0];
         cy.get(marker_elem).click({force: true});
@@ -171,6 +233,7 @@ describe('Form Designer', () => {
       cy.wait(2000);
       //Verify marker limit validation message
       cy.get('div[class="leaflet-popup-content"]').find('p').contains('Only 3 features per submission').should('be.visible');
+
       //Validate the feature of deleting existing markers not possible
       cy.get('.leaflet-draw-edit-remove').click();
       cy.get('g').find('path[stroke-linejoin="round"]').then($el => {
@@ -204,7 +267,6 @@ describe('Form Designer', () => {
       cy.get('#logoutButton > .v-btn__content > span').click();
    
       });
-
   });
 
 });

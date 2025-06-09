@@ -29,7 +29,6 @@ const { Permissions, Roles, Statuses } = require('../common/constants');
 const formMetadataService = require('./formMetadata/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
 const eventStreamConfigService = require('./eventStreamConfig/service');
-const { currentUser } = require('../auth/middleware/userAccess');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER, Roles.SUBMISSION_APPROVER];
 
 /**
@@ -126,6 +125,12 @@ const service = {
   isLateSubmissionConfigValid,
   isClosingMessageValid,
 
+  _setAssigneeInSubmissionsTable: (formData) => {
+    const identityProviders = formData.identityProviders || [];
+    const isPublicForm = identityProviders.some((idp) => idp.code === 'public');
+
+    return formData.showAssigneeInSubmissionsTable === true && !isPublicForm && formData.enableStatusUpdates;
+  },
   _findFileIds: (schema, data) => {
     const findFiles = (currentData) => {
       let fileIds = [];
@@ -193,6 +198,7 @@ const service = {
       obj.ministry = data.ministry;
       obj.apiIntegration = data.apiIntegration;
       obj.useCase = data.useCase;
+      obj.showAssigneeInSubmissionsTable = service._setAssigneeInSubmissionsTable(data);
 
       await Form.query(trx).insert(obj);
       if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
@@ -274,6 +280,10 @@ const service = {
         ministry: data.ministry,
         apiIntegration: data.apiIntegration,
         useCase: data.useCase,
+        showAssigneeInSubmissionsTable: service._setAssigneeInSubmissionsTable({
+          ...data,
+          identityProviders: data.identityProviders,
+        }),
       };
 
       await Form.query(trx).patchAndFetchById(formId, upd);
@@ -450,7 +460,7 @@ const service = {
     return DocumentTemplate.query().findById(documentTemplateId).modify('filterActive', true).throwIfNotFound();
   },
 
-  _initFormSubmissionsListQuery: (formId, params) => {
+  _initFormSubmissionsListQuery: (formId, params, currentUser, shouldIncludeAssignee = false) => {
     const query = SubmissionMetadata.query()
       .where('formId', formId)
       .modify('filterSubmissionId', params.submissionId)
@@ -463,31 +473,34 @@ const service = {
       .modify('filterformSubmissionStatusCode', params.filterformSubmissionStatusCode)
       .modify('orderDefault', !!(params.sortBy && params.page), params);
 
-    if (params.filterAssignedToCurrentUser && currentUser && currentUser.id) {
-      query.modify('filterAssignedToUserId', true, currentUser.id);
+    // Only apply assigned user filter if both conditions are true
+    if (shouldIncludeAssignee && params.filterAssignedToCurrentUser && currentUser && currentUser.id) {
+      query.where('formSubmissionAssignedToUserId', currentUser.id);
     }
+
     if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length === 2) {
       query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
     }
     return query;
   },
+  _shouldIncludeAssignee: (form) => {
+    return form.showAssigneeInSubmissionsTable && form.enableStatusUpdates && !form.identityProviders.some((idp) => idp.code === 'public');
+  },
+  listFormSubmissions: async (formId, params, currentUser) => {
+    // First, get form settings to check if assignee data should be included
+    const form = await service.readForm(formId);
 
-  listFormSubmissions: async (formId, params) => {
-    const query = service._initFormSubmissionsListQuery(formId, params, currentUser);
+    // Determine if assignee data should be included in response
+    const shouldIncludeAssignee = service._shouldIncludeAssignee(form);
+    const query = service._initFormSubmissionsListQuery(formId, params, currentUser, shouldIncludeAssignee);
 
-    const selection = [
-      'confirmationId',
-      'createdAt',
-      'formId',
-      'formSubmissionStatusCode',
-      'submissionId',
-      'deleted',
-      'createdBy',
-      'formVersionId',
-      'formSubmissionAssignedToUserId',
-      'formSubmissionAssignedToUsernameIdp',
-      'formSubmissionAssignedToEmail',
-    ];
+    // Base selection - always include these fields
+    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
+
+    // Conditionally add assignee fields only if allowed
+    if (shouldIncludeAssignee) {
+      selection.push('formSubmissionAssignedToUserId', 'formSubmissionAssignedToUsernameIdp', 'formSubmissionAssignedToEmail');
+    }
 
     let fields = [];
     if (params.fields && params.fields.length) {

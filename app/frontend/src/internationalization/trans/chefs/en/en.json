@@ -178,6 +178,7 @@
     "loginRequired": "Log-in Required",
     "canSaveAndEditDraftLabel": "Submitters can <strong>Save and Edit Drafts</strong>",
     "canUpdateStatusAsReviewer": "Reviewers can <strong>Update the Status</strong> of this form (i.e. Submitted, Assigned, Completed)",
+    "displayAssigneeColumn": "Display assignee column for reviewers",
     "submitterCanCopyExistingSubmissn": "Submitters can<strong> Copy an existing submission</strong>",
     "submissionConfirmationToolTip": "Selecting this option controls what the submitting user of this form will see on successful submission. <br /> If checked, it will display",
     "emailNotificatnToTeam": "Send my team a notification email",
@@ -598,6 +599,8 @@
     "emailRequired": "Email is required"
   },
   "submissionsTable": {
+    "assignee": "Assignee",
+    "showAssignedToMe": "Assigned to me",
     "noMatchingRecordText": "No matching records found",
     "submissions": "Submissions",
     "submissionsTable": "SubmissionsTable",
@@ -777,7 +780,6 @@
     "loadingText": "Loading... Please wait",
     "status": "Status",
     "dateStatusChanged": "Date Status Changed",
-    "assignee": "Assignee",
     "updatedBy": "Updated By",
     "getSubmissionStatusErr": "An error occurred while trying to fetch statuses.",
     "getSubmissionStatusConsErr": "Error adding note:"
