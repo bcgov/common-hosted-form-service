@@ -45,7 +45,6 @@ describe('Form Designer', () => {
       cy.get('input[value="polygon"]').click();
       cy.get('input[name="data[numPoints]"').type('{selectall}{backspace}');
       cy.get('input[name="data[numPoints]"').type('3');
-      cy.get('input[name="data[numPoints]"').type('3');
       cy.wait(2000);
       cy.get('a.leaflet-draw-draw-polygon').then($el => {
         const draw_polygon=$el[0];
