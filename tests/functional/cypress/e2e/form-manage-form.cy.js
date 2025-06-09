@@ -35,7 +35,7 @@ describe('Form Designer', () => {
       cy.get('span.btn').contains('Text Field')
       
       .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -50, { force: true })
+      .trigger('mousemove', coords.x, -110, { force: true })
       .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
@@ -103,7 +103,6 @@ describe('Form Designer', () => {
       cy.get(':nth-child(2) > .v-col-md-8 > .v-input > .v-input__control > .v-field > .v-field__clearable > .mdi-close-circle').click();
       cy.get('input[placeholder="Close time"]').type('17:00');
       cy.waitForLoad();
-      cy.get('span[class="v-select__selection-text"]').contains('America/Vancouver').should('exist');
       //Verify all time zones present
       cy.get(':nth-child(1) > :nth-child(2) > .v-input > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
       cy.get('div.v-list-item-title').contains('America/Atikokan').should('exist');

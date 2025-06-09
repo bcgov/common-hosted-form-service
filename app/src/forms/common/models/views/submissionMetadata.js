@@ -58,6 +58,11 @@ class SubmissionMetadata extends Model {
           query.where('version', value);
         }
       },
+      filterAssignedToUserId(query, shouldFilter, userId) {
+        if (shouldFilter && userId) {
+          query.where('formSubmissionAssignedToUserId', userId);
+        }
+      },
       orderDefault(builder, pagination, params) {
         if (!pagination) {
           builder.orderBy('createdAt', 'DESC');

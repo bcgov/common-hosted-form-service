@@ -147,7 +147,7 @@ describe('Form Designer', () => {
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.get('.mdi-list-box-outline').click();
     cy.waitForLoad();
-    cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn > .v-btn__content > .mdi-eye').click();
+    cy.get(':nth-child(6) > a > .v-btn').click();
 
     });
     //Assign status submission

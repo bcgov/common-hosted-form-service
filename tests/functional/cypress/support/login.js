@@ -60,10 +60,11 @@ export function formsettings(){
     cy.get('[data-test="canSaveAndEditDraftsCheckbox"]').click();
      //validate share draft with team is enabled
     cy.get('[data-test="enableTeamMemberDraftShare"]').should('be.visible').and('not.be.disabled');
-    cy.get(':nth-child(3) > .v-card > .v-card-text > :nth-child(2) > .v-input__control > .v-selection-control > .v-label > span').click();//Update the status of the form
-    cy.get(':nth-child(5) > .v-input__control > .v-selection-control > .v-label > div > span > strong').click();//Copy existing submission
-    cy.get(':nth-child(7) > .v-input__control > .v-selection-control > .v-label > div').click();//Wide form Layout
+    cy.get('[data-test="canUpdateStatusOfFormCheckbox"]').click();//Update the status of the form
+    cy.get('[data-test="canCopyExistingSubmissionCheckbox"]').click();//Copy existing submission
+    cy.get('[data-test="canAllowWideFormLayoutCheckbox"]').click();//Wide form Layout
     cy.get('[data-test="enableTeamMemberDraftShare"]').click();//share form drafts with team members only
+    cy.get('[data-test="showAssigneeInSubmissionsTableCheckbox"]').click();//display assignee column for reviewers
     cy.get('[data-test="email-test"] > .v-input__control > .v-selection-control > .v-label > div > span').click({force: true});
     cy.get('[data-test="email-test"] > .v-input__control > .v-selection-control > .v-label > div > span').click();
     cy.get(':nth-child(4) > .v-card > .v-card-text > .v-text-field > .v-input__control > .v-field > .v-field__field > .v-field__input').type('abc@gmail.com');

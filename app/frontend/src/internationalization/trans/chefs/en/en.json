@@ -178,6 +178,7 @@
     "loginRequired": "Log-in Required",
     "canSaveAndEditDraftLabel": "Submitters can <strong>Save and Edit Drafts</strong>",
     "canUpdateStatusAsReviewer": "Reviewers can <strong>Update the Status</strong> of this form (i.e. Submitted, Assigned, Completed)",
+    "displayAssigneeColumn": "Display assignee column for reviewers",
     "submitterCanCopyExistingSubmissn": "Submitters can<strong> Copy an existing submission</strong>",
     "submissionConfirmationToolTip": "Selecting this option controls what the submitting user of this form will see on successful submission. <br /> If checked, it will display",
     "emailNotificatnToTeam": "Send my team a notification email",
@@ -529,8 +530,8 @@
   },
   "formDesigner": {
     "formDesign": "Form Design",
-    "exportDesign": "Export Design",
-    "importDesign": "Import Design",
+    "downloadJson": "Download JSON",
+    "uploadJson": "Upload JSON",
     "important": "IMPORTANT",
     "formDesignInfoA": "Use the <strong>SAVE DESIGN</strong> button when you are done building this form.",
     "formDesignInfoB": "The <strong>SUBMIT</strong> button is provided for your user to submit this form and will be activated after it is saved.",
@@ -598,6 +599,8 @@
     "emailRequired": "Email is required"
   },
   "submissionsTable": {
+    "assignee": "Assignee",
+    "showAssignedToMe": "Assigned to me",
     "noMatchingRecordText": "No matching records found",
     "submissions": "Submissions",
     "submissionsTable": "SubmissionsTable",
@@ -655,7 +658,7 @@
     "formSubmission": "form submission",
     "delete": "Delete"
   },
-  
+
   "manageSubmissionUsers": {
     "manageTeamMembers": "Manage Team Members",
     "add": "Add",
@@ -685,7 +688,7 @@
   },
   "canShareDraft": {
     "canShareMessage": "You can't share the draft with users who haven't been added to the form. Please contact the admin to add them.",
-    "shareDraftMessage":"Share draft with form team members only"
+    "shareDraftMessage": "Share draft with form team members only"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "View This Submission",
@@ -777,7 +780,6 @@
     "loadingText": "Loading... Please wait",
     "status": "Status",
     "dateStatusChanged": "Date Status Changed",
-    "assignee": "Assignee",
     "updatedBy": "Updated By",
     "getSubmissionStatusErr": "An error occurred while trying to fetch statuses.",
     "getSubmissionStatusConsErr": "Error adding note:"
