@@ -60,7 +60,7 @@ class SubmissionMetadata extends Model {
       },
       filterAssignedToUserId(query, shouldFilter, userId) {
         if (shouldFilter && userId) {
-          query.where('assigneeUserId', userId);
+          query.where('formSubmissionAssignedToUserId', userId);
         }
       },
       orderDefault(builder, pagination, params) {

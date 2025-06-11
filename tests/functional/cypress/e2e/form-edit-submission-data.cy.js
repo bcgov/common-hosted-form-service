@@ -119,7 +119,7 @@ describe('Form Designer', () => {
 
         });
         
-        cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn > .v-btn__content > .mdi-eye').click();
+        cy.get(':nth-child(1) > :nth-child(7) > a > .v-btn').click();
         //Edit submission
         cy.get('.mdi-pencil').click();
         //check visibility of cancel button
