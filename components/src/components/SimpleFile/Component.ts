@@ -219,8 +219,18 @@ export default class Component extends ParentComponent {
             })
             .catch((response) => {
               fileUpload.status = 'error';
-              // grab the detail out our api-problem response.
-              fileUpload.message = response.detail;
+              // we do not get API Problem objects, only http error
+              // not much information to provide our users.
+              let message = 'An unexpected error occured during file upload.';
+              if (response.status === 409 || response.detail.includes('409')) {
+                message = 'File did not pass the virus scanner.';
+              } else if (
+                response.status === 400 ||
+                response.detail.includes('400')
+              ) {
+                message = 'File could not be uploaded.';
+              }
+              fileUpload.message = this.t(message);
               // @ts-ignore
               delete fileUpload.progress;
               this.redraw();
