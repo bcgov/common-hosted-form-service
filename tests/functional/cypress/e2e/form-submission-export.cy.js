@@ -180,7 +180,7 @@ describe("Form Designer", () => {
     cy.waitForLoad();
     cy.get(".mdi-list-box-outline").click();
     cy.wait(2000);
-    cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn').click();
+    cy.get(':nth-child(1) > :nth-child(7) > a > .v-btn').click();
      //print option
     cy.get('.mdi-printer').click();
     cy.get('.flex-container > .v-btn--elevated').should('be.enabled');
