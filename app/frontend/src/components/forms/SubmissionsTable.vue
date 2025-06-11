@@ -114,14 +114,10 @@ const showAssigneeColumn = computed(() => {
 });
 
 const userColumns = computed(() => {
-  if (
-    userFormPreferences.value &&
-    userFormPreferences.value.preferences &&
-    userFormPreferences.value.preferences.columns
-  ) {
+  if (userFormPreferences.value?.preferences?.submissionsTable?.columns) {
     // if we have any objects inside o
     // Compare saved user prefs against the current form versions component names and remove any discrepancies
-    return userFormPreferences.value.preferences.columns.filter(
+    return userFormPreferences.value.preferences.submissionsTable.columns.filter(
       (x) => formFields.value.indexOf(x) !== -1
     );
   } else {
@@ -266,8 +262,9 @@ const HEADERS = computed(() => {
 // that they wish to see in the table in this view.
 const USER_PREFERENCES = computed(() => {
   let preselectedData = [];
-  if (userFormPreferences.value?.preferences?.columns) {
-    preselectedData = userFormPreferences.value.preferences.columns;
+  if (userFormPreferences.value?.preferences?.submissionsTable?.columns) {
+    preselectedData =
+      userFormPreferences.value.preferences.submissionsTable.columns;
   }
   return preselectedData;
 });
@@ -335,20 +332,27 @@ async function updateTableOptions({ page, itemsPerPage, sortBy }) {
   if (page) {
     currentPage.value = page;
   }
+  let s = userFormPreferences.value?.preferences?.submissionsTable?.sort || {};
   if (sortBy?.length > 0) {
     if (sortBy[0].key === 'date') {
-      sort.value.column = 'createdAt';
+      s.column = 'createdAt';
     } else if (sortBy[0].key === 'submitter') {
-      sort.value.column = 'createdBy';
+      s.column = 'createdBy';
     } else if (sortBy[0].key === 'status') {
-      sort.value.column = 'formSubmissionStatusCode';
+      s.column = 'formSubmissionStatusCode';
     } else {
-      sort.value.column = sortBy[0].key;
+      s.column = sortBy[0].key;
     }
-    sort.value.order = sortBy[0].order;
-  } else {
-    sort.value = {};
+    s.order = sortBy[0].order;
   }
+  sort.value = s;
+  // save the sort...
+  await updateFormPreferences(
+    properties.formId,
+    userFormPreferences.value?.preferences?.submissionsTable?.columns,
+    userFormPreferences.value?.preferences?.submissionsTable?.filters,
+    s
+  );
   if (itemsPerPage) {
     itemsPP.value = itemsPerPage;
   }
@@ -369,28 +373,22 @@ async function getSubmissionData() {
     search: search.value,
     searchEnabled: search.value.length > 0 ? true : false,
     createdAt: Object.values({
-      minDate:
-        userFormPreferences.value &&
-        userFormPreferences.value.preferences &&
-        userFormPreferences.value.preferences.filter
-          ? moment(
-              userFormPreferences.value.preferences.filter[0],
-              'YYYY-MM-DD'
-            )
-              .utc()
-              .format()
-          : moment().subtract(50, 'years').utc().format('YYYY-MM-DD'), //Get User filter Criteria (Min Date)
-      maxDate:
-        userFormPreferences.value &&
-        userFormPreferences.value.preferences &&
-        userFormPreferences.value.preferences.filter
-          ? moment(
-              userFormPreferences.value.preferences.filter[1],
-              'YYYY-MM-DD'
-            )
-              .utc()
-              .format()
-          : moment().add(50, 'years').utc().format('YYYY-MM-DD'), //Get User filter Criteria (Max Date)
+      minDate: userFormPreferences.value?.preferences?.submissionsTable?.filter
+        ? moment(
+            userFormPreferences.value.preferences.submissionsTable.filter[0],
+            'YYYY-MM-DD'
+          )
+            .utc()
+            .format()
+        : moment().subtract(50, 'years').utc().format('YYYY-MM-DD'), //Get User filter Criteria (Min Date)
+      maxDate: userFormPreferences.value?.preferences?.submissionsTable?.filter
+        ? moment(
+            userFormPreferences.value.preferences.submissionsTable.filter[1],
+            'YYYY-MM-DD'
+          )
+            .utc()
+            .format()
+        : moment().add(50, 'years').utc().format('YYYY-MM-DD'), //Get User filter Criteria (Max Date)
     }),
     deletedOnly: deletedOnly.value,
     createdBy: currentUserOnly.value
@@ -536,18 +534,31 @@ async function restoreMultipleSubs() {
 
 async function updateFilter(data) {
   showColumnsDialog.value = false;
-  let preferences = {
-    columns: [],
-  };
+  let columns = [];
   data.forEach((d) => {
-    preferences.columns.push(d);
+    columns.push(d);
   });
-
-  await formStore.updateFormPreferencesForCurrentUser({
-    formId: form.value.id,
-    preferences: preferences,
-  });
+  await updateFormPreferences(
+    form.value.id,
+    columns,
+    userFormPreferences.value?.preferences?.submissionsTable?.filters,
+    userFormPreferences.value?.preferences?.submissionsTable?.sort
+  );
   await populateSubmissionsTable();
+}
+
+async function updateFormPreferences(id, columns, filters, sort) {
+  await formStore.getFormPreferencesForCurrentUser(id);
+  const prefs = userFormPreferences.value?.preferences || {};
+  prefs.submissionsTable = {
+    columns: columns || [],
+    filters: filters || [],
+    sort: sort || {},
+  };
+  await formStore.updateFormPreferencesForCurrentUser({
+    formId: id,
+    preferences: prefs,
+  });
 }
 
 async function handleSearch(value) {
