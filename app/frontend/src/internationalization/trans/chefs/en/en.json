@@ -1229,5 +1229,22 @@
   },
   "alert": {
     "warning": "Warning"
+  },
+  "statusOverlay": {
+    "chefsUnavailableBoilerplate": "The Common Hosted Forms Service is temporarily unavailable. Please wait a few moments and try again, or contact your team's IT support or system administrator if the problem persists.",
+    "moreInfo": "Show More Info...",
+    "lessInfo": "Show Less Info...",
+    "moreInfoIntro": "This issue may be caused by interruption of one or more of the following services:",
+    "moreInfoOutro": "We are actively working to restore access. If you need further assistance, please have your IT support/System Admin contact us at {linkOne} or {linkTwo}.",
+    "name": "Service",
+    "status": "Status",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "msTeamsChannel": "MS Teams Channel",
+    "rocketChatChannel": "Rocket.Chat Channel",
+    "defaultStatusMessage": "Service is temporarily unavailable (503). Please try again later.",
+    "shuttingDown": "CHEFS is shutting down.",
+    "notReady": "CHEFS cannot connect to all required services.",
+    "unableToReachBackend": "Unable to reach backend service."
   }
 }
