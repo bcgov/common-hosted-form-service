@@ -81,7 +81,7 @@ describe('Form Designer', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     cy.get('div[title="Click to center the map on your location"]').should('exist');
-    cy.get('a[class="leaflet-control-button"]').then($el => {
+    cy.get('i[class="fa fa-location-arrow"]').then($el => {
       const location_btn=$el[0];
       cy.get(location_btn).click();
     });
