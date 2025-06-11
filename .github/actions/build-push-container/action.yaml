@@ -52,6 +52,14 @@ inputs:
     description: Proxy URL to BC Geo Address API URL
     required: true
     default: "../api/v1/bcgeoaddress/advance/address"
+  app_msteams_url:
+    description: URL to CHEFS MS Teams Channel
+    required: true
+    default: "https://teams.microsoft.com/l/channel/19%3A34b9d4b4deb54eebaa9be8bc1ccf02f7%40thread.tacv2/CHEFS%20(Exchange%20Lab%20Team)?groupId=bef8086f-20c7-43a4-bd07-29ce764e818c&tenantId=6fdb5200-3d0d-4a8a-b036-d3685e359adc"
+  app_rocketchat_url:
+    description: URL to CHEFS Rocket Chat Channel
+    required: true
+    default: "https://chat.developer.gov.bc.ca/channel/common-components"
   ref:
     description: The checkout ref id
     required: false
@@ -95,6 +103,8 @@ runs:
         VITE_FRONTEND_BASEPATH: ${{ inputs.route_path }}
         VITE_CHEFS_GEO_ADDRESS_APIURL: ${{ inputs.app_chefs_geo_address_apiurl }}
         VITE_BC_GEO_ADDRESS_APIURL: ${{ inputs.app_bc_geo_address_apiurl }}
+        VITE_MSTEAMS_URL: ${{ inputs.app_msteams_url }}
+        VITE_ROCKETCHAT_URL: ${{ inputs.app_rocketchat_url }}
         ENV_PATH: ./app/frontend/.env
       shell: bash
       run: |
@@ -105,6 +115,8 @@ runs:
         echo VITE_CHEFSTOURURL=$VITE_CHEFSTOURURL >> $ENV_PATH
         echo VITE_CHEFS_GEO_ADDRESS_APIURL=$VITE_CHEFS_GEO_ADDRESS_APIURL >> $ENV_PATH
         echo VITE_BC_GEO_ADDRESS_APIURL=$VITE_BC_GEO_ADDRESS_APIURL >> $ENV_PATH
+        echo VITE_MSTEAMS_URL=$VITE_MSTEAMS_URL >> $ENV_PATH
+        echo VITE_ROCKETCHAT_URL=$VITE_ROCKETCHAT_URL >> $ENV_PATH
         echo VITE_FRONTEND_BASEPATH=$VITE_FRONTEND_BASEPATH >> $ENV_PATH
 
         echo "cat $ENV_PATH"

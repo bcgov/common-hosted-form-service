@@ -17,6 +17,8 @@ const utils = require('../forms/utils');
 const index = require('../forms/public');
 const proxy = require('../forms/proxy');
 
+const statusService = require('../components/statusService');
+
 admin.mount(router);
 const bcaddress = bcgeoaddress.mount(router);
 const filePath = file.mount(router);
@@ -41,7 +43,7 @@ const getSpec = () => {
 // Base v1 Responder
 router.get('/', (_req, res) => {
   res.status(200).json({
-    endpoints: ['/docs', proxyPath, filePath, formPath, permissionPath, rbacPath, rolePath, submissionPath, userPath, bcaddress, publicPath, utilsPath],
+    endpoints: ['/docs', '/status', proxyPath, filePath, formPath, permissionPath, rbacPath, rolePath, submissionPath, userPath, bcaddress, publicPath, utilsPath],
   });
 });
 
@@ -59,6 +61,15 @@ router.get('/api-spec.yaml', (_req, res) => {
 /** OpenAPI JSON Spec */
 router.get('/api-spec.json', (_req, res) => {
   res.status(200).json(getSpec());
+});
+
+router.get('/status', (_req, res, next) => {
+  try {
+    const status = statusService.getStatus();
+    res.status(200).json(status);
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = router;
