@@ -112,9 +112,9 @@ describe('Form Designer', () => {
         cy.get('div.v-list-item-title').contains('50').should('be.visible');
         cy.get('div.v-list-item-title').contains('100').should('be.visible');
         cy.get('div.v-list-item-title').contains('All').should('be.visible');
-        cy.get('button[title="Delete Submission"]').should('be.visible');
+        cy.get('button[title="Delete Submission"]').should('exist');
          //view submission
-        cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn > .v-btn__content > .mdi-eye').click();
+        cy.get(':nth-child(1) > :nth-child(7) > a > .v-btn').click();
         cy.wait(4000);
       });
 

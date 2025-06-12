@@ -145,7 +145,7 @@ describe('Form Designer', () => {
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.get('.mdi-list-box-outline').click();
     cy.wait(2000);
-    cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn > .v-btn__content > .mdi-eye').click();
+    cy.get(':nth-child(6) > a > .v-btn').click();
     cy.waitForLoad();
     //Verify status option is not available for this
     cy.get('.status-heading > .mdi-chevron-right').should('not.exist');
