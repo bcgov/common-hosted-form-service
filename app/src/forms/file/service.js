@@ -18,7 +18,7 @@ const service = {
       obj.mimeType = data.mimetype;
       obj.size = data.size;
       obj.path = data.path;
-      obj.createdBy = currentUser.usernameIdp;
+      obj.createdBy = currentUser?.usernameIdp || 'public';
 
       const uploadResult = await storageService.upload(obj);
       obj.path = uploadResult.path;

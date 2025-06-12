@@ -12,6 +12,8 @@ const virusScan = require('./middleware/virusScan');
 routes.use(currentUser);
 
 routes.param('fileId', validateParameter.validateFileId);
+// Initialize Multer to expect the 'files' field from FormData
+fileUpload.init({ fieldName: 'files' });
 
 routes.post('/', hasFileCreate, fileUpload.upload, virusScan.scanFile, async (req, res, next) => {
   await controller.create(req, res, next);

@@ -3,6 +3,7 @@ const Problem = require('api-problem');
 const userAccess = require('../../auth/middleware/userAccess');
 const log = require('../../../components/log')(module.filename);
 const service = require('../service');
+const formService = require('../../form/service');
 const { Permissions } = require('../../common/constants');
 
 /**
@@ -34,15 +35,47 @@ const currentFileRecord = async (req, _res, next) => {
 /**
  * @function hasFileCreate
  * Middleware to determine if this user can upload a file to the system
+ * Allows authenticated users always, and public users for public forms
  * @returns {Function} a middleware function
  */
-const hasFileCreate = (req, res, next) => {
-  // You can't do this if you are not authenticated as a USER (not a public user)
-  // Can expand on this for API key access if ever needed
-  if (!req.currentUser || !req.currentUser.idpUserId) {
-    return next(new Problem(403, { detail: 'Invalid authorization credentials.' }));
+const hasFileCreate = async (req, res, next) => {
+  try {
+    // If authenticated user, always allow
+    if (req.currentUser && req.currentUser.idpUserId) {
+      return next();
+    }
+
+    // For public users, check if they can upload to this form
+    const formId = req.query.formId;
+
+    if (!formId) {
+      return next(new Problem(400, { detail: 'formId is required as query parameter for file uploads' }));
+    }
+
+    // Get form configuration with identity providers
+    const form = await formService.readForm(formId);
+    if (!form) {
+      return next(new Problem(404, { detail: 'Form not found' }));
+    }
+
+    // Check if form is active
+    if (!form.active) {
+      return next(new Problem(403, { detail: 'Form is not active' }));
+    }
+
+    // Check if form allows public access - using the exact same logic as userAccess.js
+    const publicAllowed = form.identityProviders.find((p) => p.code === 'public') !== undefined;
+
+    if (!publicAllowed) {
+      return next(new Problem(403, { detail: 'Authentication required for file uploads on this form' }));
+    }
+
+    // If we get here: public user + public form = allow upload
+    return next();
+  } catch (error) {
+    log.error('Error in hasFileCreate middleware:', error);
+    return next(new Problem(500, { detail: 'Unable to upload file at this time. Please try again later.' }));
   }
-  next();
 };
 
 /**

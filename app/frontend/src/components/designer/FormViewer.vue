@@ -816,7 +816,11 @@ async function getFile(fileId, options = {}) {
 }
 
 async function uploadFile(file, config = {}) {
-  return fileService.uploadFile(file, config);
+  const uploadConfig = {
+    ...config,
+    formId: properties.formId,
+  };
+  return fileService.uploadFile(file, uploadConfig);
 }
 </script>
 
