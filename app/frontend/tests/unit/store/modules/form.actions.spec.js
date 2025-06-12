@@ -301,7 +301,7 @@ describe('form actions', () => {
         createdAt: undefined,
         deleted: false,
         createdBy: '',
-        fields: undefined,
+        fields: [],
         filterAssignedToCurrentUser: false,
         filterformSubmissionStatusCode: undefined,
         itemsPerPage: undefined,
@@ -330,7 +330,7 @@ describe('form actions', () => {
         createdAt: undefined,
         deleted: false,
         createdBy: '',
-        fields: undefined,
+        fields: [],
         filterAssignedToCurrentUser: false,
         filterformSubmissionStatusCode: undefined,
         itemsPerPage: undefined,
@@ -373,7 +373,7 @@ describe('form actions', () => {
         createdAt: undefined,
         deleted: false,
         createdBy: '',
-        fields: undefined,
+        fields: [],
         filterAssignedToCurrentUser: false,
         filterformSubmissionStatusCode: undefined,
         itemsPerPage: undefined,
@@ -472,13 +472,16 @@ describe('form actions', () => {
       createdAt: undefined,
       deleted: false,
       createdBy: '',
-      fields: undefined,
+      fields: [],
       filterformSubmissionStatusCode: undefined,
       filterAssignedToCurrentUser: true, // Should pass through the true value
       itemsPerPage: undefined,
       page: undefined,
       sortBy: undefined,
       totalSubmissions: 0,
+      paginationEnabled: undefined,
+      search: undefined,
+      searchEnabled: undefined,
     });
 
     listSubmissionsSpy.mockReset();
@@ -493,7 +496,7 @@ describe('form actions', () => {
       createdAt: undefined,
       deleted: false,
       createdBy: '',
-      fields: undefined,
+      fields: [],
       filterformSubmissionStatusCode: undefined,
       filterAssignedToCurrentUser: false, // Should pass through the false value
       itemsPerPage: undefined,

@@ -305,7 +305,7 @@ describe('SubmissionsTable.vue', () => {
 
     formStore.userFormPreferences = {
       preferences: {
-        columns: ['firstName', 'lastName'],
+        submissionsTable: { columns: ['firstName', 'lastName'] },
       },
     };
     formStore.formFields = ['firstName'];
@@ -357,7 +357,7 @@ describe('SubmissionsTable.vue', () => {
 
     formStore.userFormPreferences = {
       preferences: {
-        columns: ['firstName', 'lastName'],
+        submissionsTable: { columns: ['firstName', 'lastName'] },
       },
     };
     formStore.formFields = ['firstName'];
@@ -574,7 +574,7 @@ describe('SubmissionsTable.vue', () => {
 
     formStore.userFormPreferences = {
       preferences: {
-        columns: ['submitter'],
+        submissionsTable: { columns: ['submitter'] },
       },
     };
 
@@ -732,7 +732,7 @@ describe('SubmissionsTable.vue', () => {
 
     await wrapper.vm.updateTableOptions({});
     // should refresh submissions
-    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(0);
+    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(1);
     expect(fetchSubmissionsSpy).toBeCalledTimes(0);
     expect(wrapper.vm.currentPage).toEqual(1);
     expect(wrapper.vm.sort).toEqual({});
@@ -747,7 +747,7 @@ describe('SubmissionsTable.vue', () => {
       sortBy: [{ key: 'date', order: 'desc' }],
     });
     // should not refresh submissions
-    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(0);
+    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(1);
     expect(fetchSubmissionsSpy).toBeCalledTimes(0);
     expect(wrapper.vm.currentPage).toEqual(5);
     expect(wrapper.vm.sort).toEqual({ column: 'createdAt', order: 'desc' });
@@ -760,7 +760,7 @@ describe('SubmissionsTable.vue', () => {
       sortBy: [{ key: 'submitter', order: 'desc' }],
     });
     // should not refresh submissions
-    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(0);
+    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(2);
     expect(fetchSubmissionsSpy).toBeCalledTimes(0);
     expect(wrapper.vm.currentPage).toEqual(5);
     expect(wrapper.vm.sort).toEqual({ column: 'createdBy', order: 'desc' });
@@ -773,7 +773,7 @@ describe('SubmissionsTable.vue', () => {
       sortBy: [{ key: 'status', order: 'desc' }],
     });
     // should not refresh submissions
-    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(0);
+    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(3);
     expect(fetchSubmissionsSpy).toBeCalledTimes(0);
     expect(wrapper.vm.currentPage).toEqual(5);
     expect(wrapper.vm.sort).toEqual({
@@ -787,7 +787,7 @@ describe('SubmissionsTable.vue', () => {
       itemsPerPage: 2,
       sortBy: [{ key: 'something', order: 'desc' }],
     });
-    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(0);
+    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(4);
     expect(fetchSubmissionsSpy).toBeCalledTimes(0);
     expect(wrapper.vm.currentPage).toEqual(5);
     expect(wrapper.vm.sort).toEqual({
@@ -865,7 +865,7 @@ describe('SubmissionsTable.vue', () => {
     fetchSubmissionsSpy.mockImplementationOnce(() => {});
     formStore.userFormPreferences = {
       preferences: {
-        filter: ['2024-08-07', '2024-08-10'],
+        submissionsTable: { filter: ['2024-08-07', '2024-08-10'] },
       },
     };
     await wrapper.vm.getSubmissionData();
@@ -914,7 +914,9 @@ describe('SubmissionsTable.vue', () => {
     // also if it's a duplicate column, then we just add an _X to the end of the key X being some incremental number
     formStore.userFormPreferences = {
       preferences: {
-        columns: ['firstName', 'customColumn', 'date', 'date'],
+        submissionsTable: {
+          columns: ['firstName', 'customColumn', 'date', 'date'],
+        },
       },
     };
     // userFormPreferences only gets used if they are in formFields
@@ -1078,7 +1080,7 @@ describe('SubmissionsTable.vue', () => {
 
     await wrapper.vm.updateFilter(['firstName', 'customColumn']);
     // should refresh submissions
-    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(1);
+    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(2);
     expect(fetchSubmissionsSpy).toBeCalledTimes(1);
   });
 

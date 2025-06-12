@@ -690,18 +690,17 @@ export const useFormStore = defineStore('form', {
       paginationEnabled,
       itemsPerPage,
       filterformSubmissionStatusCode,
-      sortBy: sortBy,
-      search: search,
-      searchEnabled: searchEnabled,
+      sortBy,
+      search,
+      searchEnabled,
       filterAssignedToCurrentUser = false,
     }) {
       try {
         this.submissionList = [];
         // Get list of active submissions for this form (for either all submissions, or just single user)
         const fields =
-          this.userFormPreferences && this.userFormPreferences.preferences
-            ? this.userFormPreferences.preferences.columns
-            : undefined;
+          this.userFormPreferences?.preferences?.submissionsTable?.columns ||
+          [];
         const response = userView
           ? await rbacService.getUserSubmissions({
               formId: formId,
@@ -740,7 +739,6 @@ export const useFormStore = defineStore('form', {
     },
     async fetchVersion({ formId, versionId }) {
       try {
-        // TODO: need a better 'set back to initial state' ability
         this.formSubmission = {
           submission: {
             data: {},

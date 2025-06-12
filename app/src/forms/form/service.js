@@ -483,9 +483,42 @@ const service = {
     }
     return query;
   },
+
   _shouldIncludeAssignee: (form) => {
     return form.showAssigneeInSubmissionsTable && form.enableStatusUpdates && !form.identityProviders.some((idp) => idp.code === 'public');
   },
+
+  _buildSelectionAndFields: (params, shouldIncludeAssignee) => {
+    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
+    let fields = [];
+
+    if (shouldIncludeAssignee) {
+      selection.push('formSubmissionAssignedToUserId', 'formSubmissionAssignedToUsernameIdp', 'formSubmissionAssignedToEmail');
+    }
+
+    if (params.fields && params.fields.length) {
+      fields = Array.isArray(params.fields) ? params.fields.flatMap((f) => f.split(',').map((s) => s.trim())) : params.fields.split(',').map((s) => s.trim());
+      if (fields.includes('updatedAt')) selection.push('updatedAt');
+      if (fields.includes('updatedBy')) selection.push('updatedBy');
+
+      fields = fields.filter((f) => !['updatedAt', 'updatedBy', ''].includes(f));
+      if (shouldIncludeAssignee) {
+        fields = fields.filter((f) => f !== 'assignee');
+      }
+    }
+
+    fields.push('lateEntry');
+    return { selection, fields };
+  },
+
+  _validateSortBy: (params, selection, fields) => {
+    if (params.sortBy?.column && !selection.includes(params.sortBy.column) && !fields.includes(params.sortBy.column)) {
+      throw new Problem(400, {
+        details: `orderBy column '${params.sortBy.column}' not in selected columns`,
+      });
+    }
+  },
+
   listFormSubmissions: async (formId, params, currentUser) => {
     // First, get form settings to check if assignee data should be included
     const form = await service.readForm(formId);
@@ -493,42 +526,8 @@ const service = {
     // Determine if assignee data should be included in response
     const shouldIncludeAssignee = service._shouldIncludeAssignee(form);
     const query = service._initFormSubmissionsListQuery(formId, params, currentUser, shouldIncludeAssignee);
-
-    // Base selection - always include these fields
-    const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
-
-    // Conditionally add assignee fields only if allowed
-    if (shouldIncludeAssignee) {
-      selection.push('formSubmissionAssignedToUserId', 'formSubmissionAssignedToUsernameIdp', 'formSubmissionAssignedToEmail');
-    }
-
-    let fields = [];
-    if (params.fields && params.fields.length) {
-      if (typeof params.fields !== 'string' && params.fields.includes('updatedAt')) {
-        selection.push('updatedAt');
-      }
-      if (typeof params.fields !== 'string' && params.fields.includes('updatedBy')) {
-        selection.push('updatedBy');
-      }
-      if (Array.isArray(params.fields)) {
-        fields = params.fields.flatMap((f) => f.split(',').map((s) => s.trim()));
-      } else {
-        fields = params.fields.split(',').map((s) => s.trim());
-      }
-
-      // Remove updatedAt and updatedBy so they won't be pulled from submission
-      // columns. Also remove empty values to handle the case of trailing commas
-      // and other malformed data too.
-      fields = fields.filter((f) => f !== 'updatedAt' && f !== 'updatedBy' && f.trim() !== '');
-    }
-
-    fields.push('lateEntry');
-
-    if (params.sortBy?.column && !selection.includes(params.sortBy.column) && !fields.includes(params.sortBy.column)) {
-      throw new Problem(400, {
-        details: `orderBy column '${params.sortBy.column}' not in selected columns`,
-      });
-    }
+    const { selection, fields } = service._buildSelectionAndFields(params, shouldIncludeAssignee);
+    service._validateSortBy(params, selection, fields);
 
     query.select(
       selection,
