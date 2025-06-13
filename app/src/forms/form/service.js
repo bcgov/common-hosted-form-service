@@ -520,6 +520,9 @@ const service = {
       // columns. Also remove empty values to handle the case of trailing commas
       // and other malformed data too.
       fields = fields.filter((f) => f !== 'updatedAt' && f !== 'updatedBy' && f.trim() !== '');
+      if (shouldIncludeAssignee) {
+        fields = fields.filter((f) => f !== 'assignee');
+      }
     }
 
     fields.push('lateEntry');
