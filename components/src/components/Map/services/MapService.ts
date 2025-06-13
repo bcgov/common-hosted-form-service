@@ -44,6 +44,7 @@ interface MapServiceOptions {
   onBaseLayerChange?: (layerName: string) => void;
   availableBaseLayers?: string[];
   availableBaseLayersCustom?: any[];
+  recenterButton?: boolean; // New option for recenter button
 }
 
 class MapService {
@@ -58,10 +59,15 @@ class MapService {
   mapContainer: HTMLElement | null = null;
   // Add flag to prevent event triggering during updates
   isUpdating: boolean = false;
+  // Store default center and zoom for recenter functionality
+  defaultCenter: [number, number];
+  defaultZoom: number;
 
   constructor(options: MapServiceOptions) {
     this.options = options;
     this.mapContainer = options.mapContainer;
+    this.defaultCenter = options.center;
+    this.defaultZoom = options.defaultZoom || DEFAULT_MAP_ZOOM;
     if (options.mapContainer?._leaflet_id) {
       this.cleanup();
     }
@@ -240,6 +246,7 @@ class MapService {
       availableBaseLayers,
       selectedBaseLayer,
       availableBaseLayersCustom,
+      recenterButton,
     } = options;
 
     if (drawOptions?.rectangle) {
@@ -272,6 +279,11 @@ class MapService {
 
     if (myLocation) {
       this.addMyLocationControl(map);
+    }
+
+    // Add recenter button if enabled
+    if (recenterButton) {
+      this.addRecenterControl(map);
     }
 
     const drawControl = this.addDrawControl(
@@ -470,6 +482,48 @@ class MapService {
       },
     });
     new myLocationButton().addTo(map);
+  }
+
+  private addRecenterControl(map: L.Map) {
+    const recenterButton = L.Control.extend({
+      options: {
+        position: 'bottomright',
+      },
+      onAdd: () => {
+        const container = L.DomUtil.create(
+          'div',
+          'leaflet-bar leaflet-control'
+        );
+        const button = L.DomUtil.create(
+          'a',
+          'leaflet-control-button',
+          container
+        );
+        button.innerHTML = '<i class="fa fa-home"></i>';
+        L.DomEvent.disableClickPropagation(button);
+
+        L.DomEvent.on(button, 'click', () => {
+          const mapInstance = this.map;
+          if (!mapInstance) return;
+
+          // Reset map to default center and zoom
+          mapInstance.setView(this.defaultCenter, this.defaultZoom);
+          // Optional: Show a brief popup indicating the map was recentered
+          L.popup()
+            .setLatLng(this.defaultCenter)
+            .setContent('<p>Map recentered to default view</p>')
+            .addTo(mapInstance);
+          // Auto-close the popup after 2 seconds
+          setTimeout(() => {
+            mapInstance.closePopup();
+          }, 2000);
+        });
+
+        container.title = 'Click to recenter the map to default view';
+        return container;
+      },
+    });
+    new recenterButton().addTo(map);
   }
 
   private addDrawControl(
