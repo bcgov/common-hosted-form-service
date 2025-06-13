@@ -746,7 +746,9 @@ describe('MySubmissionsTable.vue', () => {
 
     wrapper.vm.updateFilter(['createdBy']);
 
-    expect(formStore.mySubmissionPreferences.preferences.columns).toEqual(['createdBy']);
+    expect(formStore.mySubmissionPreferences.preferences.columns).toEqual([
+      'createdBy',
+    ]);
     expect(wrapper.vm.showColumnsDialog).toBeFalsy();
   });
 });
