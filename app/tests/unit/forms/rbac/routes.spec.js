@@ -83,6 +83,27 @@ describe(`${basePath}/current`, () => {
   });
 });
 
+describe(`${basePath}/current/forms`, () => {
+  const path = `${basePath}/current/forms`;
+
+  it('should have correct middleware for GET', async () => {
+    controller.getCurrentUserForms = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
+    await appRequest.get(path);
+
+    expect(controller.getCurrentUserForms).toBeCalledTimes(1);
+    expect(hasFormPermissionsMock).toBeCalledTimes(0);
+    expect(hasFormRolesMock).toBeCalledTimes(0);
+    expect(hasSubmissionPermissionsMock).toBeCalledTimes(0);
+    expect(mockJwtServiceProtect).toBeCalledTimes(1);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(userAccess.hasRoleDeletePermissions).toBeCalledTimes(0);
+    expect(userAccess.hasRoleModifyPermissions).toBeCalledTimes(0);
+  });
+});
+
 describe(`${basePath}/current/submissions`, () => {
   const path = `${basePath}/current/submissions`;
 
@@ -253,5 +274,23 @@ describe(`${basePath}/users`, () => {
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(userAccess.hasRoleDeletePermissions).toBeCalledTimes(0);
     expect(userAccess.hasRoleModifyPermissions).toBeCalledTimes(1);
+  });
+});
+
+describe(`${basePath}/form/user`, () => {
+  const path = `${basePath}/form/user`;
+
+  it('should have correct middleware for GET - isUserPartOfFormTeams', async () => {
+    controller.isUserPartOfFormTeams = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
+    await appRequest.get(path);
+
+    expect(controller.isUserPartOfFormTeams).toBeCalledTimes(1);
+    expect(hasFormPermissionsMock).toBeCalledTimes(1);
+    expect(hasFormRolesMock).toBeCalledTimes(0);
+    expect(hasSubmissionPermissionsMock).toBeCalledTimes(0);
+    expect(mockJwtServiceProtect).toBeCalledTimes(0);
   });
 });

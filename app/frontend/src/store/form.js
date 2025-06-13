@@ -7,39 +7,26 @@ import {
   fileService,
   rbacService,
   userService,
+  encryptionKeyService,
+  eventStreamConfigService,
 } from '~/services';
 import { useNotificationStore } from '~/store/notification';
 import { IdentityMode, NotificationTypes } from '~/utils/constants';
 import { generateIdps, parseIdps } from '~/utils/transformUtils';
-import { encryptionKeyService, eventStreamConfigService } from '~/services';
 
 const genInitialSchedule = () => ({
   enabled: null,
-  // Manual, Schedule closing, Submission Period
+  // Manual or Schedule closing
   scheduleType: null,
   // The day that submissions are open
   openSubmissionDateTime: null,
-  // The number of periods in a submission period
-  keepOpenForTerm: null,
-  // The period type in a submission period (days, weeks, months, quarters, years)
-  keepOpenForInterval: null,
-  // Enables or disables the closing message for a schedule or submission period
+  // Enables or disables the closing message for a schedule
   closingMessageEnabled: null,
-  // The closing message for a schedule or submission period
+  // The closing message for a schedule
   closingMessage: null,
   // The closing date for a scheduled closing
   closeSubmissionDateTime: null,
-  // In a submission period, the repeat object
-  repeatSubmission: {
-    enabled: null,
-    // When to end the repeat
-    repeatUntil: null,
-    // The number of periods in the repeat object
-    everyTerm: null,
-    // The period type in the repeat object
-    everyIntervalType: null,
-  },
-  // In a schedule closing or submission period, the allow late submissions object
+  // In a schedule closing, the allow late submissions object
   allowLateSubmissions: {
     enabled: null,
     forNext: {
@@ -85,6 +72,7 @@ const genInitialForm = () => ({
   enableSubmitterDraft: false,
   enableStatusUpdates: false,
   allowSubmitterToUploadFile: false,
+  showAssigneeInSubmissionsTable: false,
   id: '',
   idps: [],
   isDirty: false,
@@ -99,6 +87,7 @@ const genInitialForm = () => ({
   userType: IdentityMode.TEAM,
   versions: [],
   enableCopyExistingSubmission: false,
+  enableTeamMemberDraftShare: false,
   deploymentLevel: null,
   ministry: null,
   labels: [],
@@ -156,10 +145,10 @@ export const useFormStore = defineStore('form', {
     async getFormsForCurrentUser() {
       try {
         // Get the forms based on the user's permissions
-        const response = await rbacService.getCurrentUser();
+        const response = await rbacService.getCurrentUserForms();
         const data = response.data;
         // Build up the list of forms for the table
-        const forms = data.forms.map((f) => ({
+        const forms = data.map((f) => ({
           currentVersionId: f.formVersionId,
           id: f.formId,
           idps: f.idps,
@@ -183,10 +172,12 @@ export const useFormStore = defineStore('form', {
       try {
         this.permissions = [];
         // Get the forms based on the user's permissions
-        const response = await rbacService.getCurrentUser({ formId: formId });
+        const response = await rbacService.getCurrentUserForms({
+          formId: formId,
+        });
         const data = response.data;
-        if (data.forms[0]) {
-          this.permissions = data.forms[0].permissions;
+        if (data[0]) {
+          this.permissions = data[0].permissions;
         } else {
           throw new Error('No form found');
         }
@@ -205,10 +196,12 @@ export const useFormStore = defineStore('form', {
       try {
         this.roles = [];
         // Get the forms based on the user's permissions
-        const response = await rbacService.getCurrentUser({ formId: formId });
+        const response = await rbacService.getCurrentUserForms({
+          formId: formId,
+        });
         const data = response.data;
-        if (data.forms[0]) {
-          this.roles = data.forms[0].roles;
+        if (data[0]) {
+          this.roles = data[0].roles;
         } else {
           throw new Error('No form found');
         }
@@ -379,6 +372,9 @@ export const useFormStore = defineStore('form', {
         const evntSrvCfg = await this.fetchEventStreamConfig(formId);
         data.eventStreamConfig = evntSrvCfg;
 
+        // Add default value for showAssigneeInSubmissionsTable if it doesn't exist
+        data.showAssigneeInSubmissionsTable =
+          data.showAssigneeInSubmissionsTable ?? false;
         this.form = data;
       } catch (error) {
         const notificationStore = useNotificationStore();
@@ -475,6 +471,9 @@ export const useFormStore = defineStore('form', {
           description: this.form.description,
           enableSubmitterDraft: this.form.enableSubmitterDraft,
           enableStatusUpdates: this.form.enableStatusUpdates,
+          enableTeamMemberDraftShare: this.form.enableTeamMemberDraftShare,
+          showAssigneeInSubmissionsTable:
+            this.form.showAssigneeInSubmissionsTable,
           wideFormLayout: this.form.wideFormLayout,
           identityProviders: generateIdps({
             idps: this.form.idps,
@@ -694,6 +693,7 @@ export const useFormStore = defineStore('form', {
       sortBy: sortBy,
       search: search,
       searchEnabled: searchEnabled,
+      filterAssignedToCurrentUser = false,
     }) {
       try {
         this.submissionList = [];
@@ -719,6 +719,7 @@ export const useFormStore = defineStore('form', {
               sortBy: sortBy,
               search: search,
               searchEnabled: searchEnabled,
+              filterAssignedToCurrentUser: filterAssignedToCurrentUser,
             });
         if (paginationEnabled) {
           this.submissionList = response.data.results;

@@ -5,10 +5,16 @@ export default {
   async deleteFile(fileId) {
     return appAxios().delete(`${ApiRoutes.FILES}/${fileId}`);
   },
+  async deleteFiles(fileIds) {
+    return appAxios().delete(`${ApiRoutes.FILES}/`, { data: { fileIds } });
+  },
   async getFile(fileId, options = {}) {
     return appAxios().get(`${ApiRoutes.FILES}/${fileId}`, options);
   },
   async uploadFile(file, config = {}) {
     return appAxios().post(`${ApiRoutes.FILES}`, file, config);
+  },
+  async cloneFile(fileId) {
+    return appAxios().get(`${ApiRoutes.FILES}/${fileId}/clone`);
   },
 };

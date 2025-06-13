@@ -77,42 +77,6 @@ describe(`${basePath}`, () => {
       expect(response.body).toBeTruthy();
     });
   });
-
-  describe('POST', () => {
-    it('should return 201', async () => {
-      // mock a success return value...
-      service.create = jest.fn().mockReturnValue({});
-
-      const response = await appRequest.post(path);
-
-      expect(response.statusCode).toBe(201);
-      expect(response.body).toBeTruthy();
-    });
-
-    it('should handle 401', async () => {
-      // mock an authentication/permission issue...
-      service.create = jest.fn(() => {
-        throw new Problem(401);
-      });
-
-      const response = await appRequest.post(path);
-
-      expect(response.statusCode).toBe(401);
-      expect(response.body).toBeTruthy();
-    });
-
-    it('should handle 500', async () => {
-      // mock an unexpected error...
-      service.create = jest.fn(() => {
-        throw new Error();
-      });
-
-      const response = await appRequest.post(path);
-
-      expect(response.statusCode).toBe(500);
-      expect(response.body).toBeTruthy();
-    });
-  });
 });
 
 describe(`${basePath}/:code`, () => {
@@ -148,42 +112,6 @@ describe(`${basePath}/:code`, () => {
       });
 
       const response = await appRequest.get(path);
-
-      expect(response.statusCode).toBe(500);
-      expect(response.body).toBeTruthy();
-    });
-  });
-
-  describe('PUT', () => {
-    it('should return 200', async () => {
-      // mock a success return value...
-      service.update = jest.fn().mockReturnValue([]);
-
-      const response = await appRequest.put(path);
-
-      expect(response.statusCode).toBe(200);
-      expect(response.body).toBeTruthy();
-    });
-
-    it('should handle 401', async () => {
-      // mock an authentication/permission issue...
-      service.update = jest.fn(() => {
-        throw new Problem(401);
-      });
-
-      const response = await appRequest.put(path);
-
-      expect(response.statusCode).toBe(401);
-      expect(response.body).toBeTruthy();
-    });
-
-    it('should handle 500', async () => {
-      // mock an unexpected error...
-      service.update = jest.fn(() => {
-        throw new Error();
-      });
-
-      const response = await appRequest.put(path);
 
       expect(response.statusCode).toBe(500);
       expect(response.body).toBeTruthy();

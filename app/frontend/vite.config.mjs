@@ -33,8 +33,6 @@ export default defineConfig(({ command, mode }) => {
         '~formiojs': resolve(__dirname, './node_modules/formiojs'),
         '~font-awesome': resolve(__dirname, './node_modules/font-awesome'),
         '~vuetify': resolve(__dirname, './node_modules/vuetify'),
-        // no clue why crypto is required, but unit tests will not run without it
-        crypto: 'crypto-js',
       },
     },
     test: {
@@ -66,8 +64,10 @@ export default defineConfig(({ command, mode }) => {
       },
       globals: true,
       environment: 'jsdom',
-      deps: {
-        inline: ['vuetify', 'i18n', 'vitest-canvas-mock'],
+      server: {
+        deps: {
+          inline: ['vuetify', 'i18n', 'vitest-canvas-mock'],
+        },
       },
     },
   };

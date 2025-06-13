@@ -44,9 +44,15 @@ module.exports = {
   },
   getCurrentUser: async (req, res, next) => {
     try {
-      const response = await service.getCurrentUser(req.currentUser, req.query);
-      // don't want this going out, only need deleted forms on current user in middleware.
-      delete response.deletedForms;
+      const response = await service.getCurrentUser(req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  getCurrentUserForms: async (req, res, next) => {
+    try {
+      const response = await service.getCurrentUserForms(req.currentUser, req.query);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -130,6 +136,18 @@ module.exports = {
     try {
       const response = await service.getIdentityProviders(req.query);
       res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  isUserPartOfFormTeams: async (req, res, next) => {
+    let result = true;
+    try {
+      const response = await service.getFormUsers(req.query);
+      if (Array.isArray(response) && response.length === 0) {
+        result = false;
+      }
+      res.status(200).json(result);
     } catch (error) {
       next(error);
     }

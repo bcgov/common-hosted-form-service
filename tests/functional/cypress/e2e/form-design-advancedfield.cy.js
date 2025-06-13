@@ -1,5 +1,4 @@
 import 'cypress-keycloak-commands';
-import 'cypress-drag-drop';
 import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
@@ -214,15 +213,7 @@ describe('Form Designer', () => {
         let savedButton = cy.get('[data-cy=saveButton]');
         expect(savedButton).to.not.be.null;
         savedButton.trigger('click');
-        cy.waitForLoad();
-    
-    
-      // Go to My forms  
-        cy.wait('@getForm').then(()=>{
-          let userFormsLinks = cy.get('[data-cy=userFormsLinks]');
-          expect(userFormsLinks).to.not.be.null;
-          userFormsLinks.trigger('click');
-        });
+        cy.wait(3000);
       // Filter the newly created form
         cy.location('search').then(search => {
           //let pathName = fullUrl.pathname
@@ -266,13 +257,7 @@ describe('Form Designer', () => {
         // for print option verification
         cy.get(':nth-child(2) > .d-print-none > :nth-child(1) > .v-btn').should('be.visible');
         cy.get('.mdi-printer').should('be.visible');
-        cy.get('.mdi-content-save').should('be.visible');
-        cy.waitForLoad();
-
-        cy.waitForLoad();
-        cy.waitForLoad();
-        cy.waitForLoad();
-        cy.waitForLoad();
+        cy.get('.ml-auto > :nth-child(3) > .v-btn').should('be.visible');
         cy.waitForLoad();
         cy.waitForLoad();
         cy.get('input[type="radio"]').click();
@@ -296,16 +281,19 @@ describe('Form Designer', () => {
         cy.get('input[type=file]').should('not.to.be.null');
         fileUploadInputField.attachFile('add1.png');
         cy.waitForLoad();
-        cy.waitForLoad();
         //verify file uploads to object storage
-
         cy.get('.col-md-9 > a').should('have.attr', 'ref').and('include', 'fileLink');
         cy.get('div.col-md-2').contains('61.48 kB');
-
+        cy.get('.ml-auto > :nth-child(3) > .v-btn').click();
+        cy.waitForLoad();
+        cy.wait(2000);
+        //Close the upload warning message
+        //cy.get('.v-alert__close > .v-btn').click();
+        cy.wait(2000);
         //form submission
         cy.get('button').contains('Submit').click();
-        cy.waitForLoad();
-        cy.get('button').contains('Submit').click();
+        cy.wait(2000);
+        cy.get('[data-test="continue-btn-continue"]').click();
        // verify the components after submission
         cy.get('span').contains('Canadian').should('be.visible');
         cy.get('span').contains('Eligible').should('be.visible');

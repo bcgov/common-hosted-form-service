@@ -24,6 +24,10 @@
       "bucket": "chefs",
       "endpoint": "https://commonservices.objectstore.gov.bc.ca",
       "key": "chefs/dev/"
+    },
+    "clamav": {
+      "host": "127.0.0.1",
+      "port": "3310"
     }
   },
   "frontend": {
@@ -65,6 +69,7 @@
   "eventStreamService": {
     "servers": "localhost:4222,localhost:4223,localhost:4224",
     "websockets": "false",
+    "consumerservers": "localhost:4222,localhost:4223,localhost:4224",
     "streamName": "CHEFS",
     "source": "chefs-local",
     "domain": "forms",

@@ -26,6 +26,10 @@
       "endpoint": "FILES_OBJECTSTORAGE_ENDPOINT",
       "key": "FILES_OBJECTSTORAGE_KEY",
       "secretAccessKey": "FILES_OBJECTSTORAGE_SECRETACCESSKEY"
+    },
+    "clamav": {
+      "host": "FILES_CLAMAV_HOST",
+      "port": "FILES_CLAMAV_PORT"
     }
   },
   "frontend": {
@@ -61,6 +65,7 @@
   "eventStreamService": {
     "servers": "EVENTSTREAMSERVICE_SERVERS",
     "websockets": "EVENTSTREAMSERVICE_WEBSOCKETS",
+    "consumerservers": "EVENTSTREAMSERVICE_CONSUMERSERVERS",
     "streamName": "EVENTSTREAMSERVICE_STREAMNAME",
     "source": "EVENTSTREAMSERVICE_SOURCE",
     "domain": "EVENTSTREAMSERVICE_DOMAIN",

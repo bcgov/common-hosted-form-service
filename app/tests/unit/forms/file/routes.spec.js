@@ -28,6 +28,9 @@ filePermissions.currentFileRecord = jest.fn((_req, _res, next) => {
 filePermissions.hasFileCreate = jest.fn((_req, _res, next) => {
   next();
 });
+filePermissions.hasFileDelete = jest.fn((_req, _res, next) => {
+  next();
+});
 const hasFilePermissionsMock = jest.fn((_req, _res, next) => {
   next();
 });
@@ -79,6 +82,23 @@ describe(`${basePath}`, () => {
     expect(userAccess.currentUser).toBeCalledTimes(1);
     expect(validateParameter.validateFileId).toBeCalledTimes(0);
   });
+
+  it('should have correct middleware for DELETE', async () => {
+    controller.deleteFiles = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
+    await appRequest.delete(path);
+
+    expect(apiAccess).toBeCalledTimes(0);
+    expect(controller.deleteFiles).toBeCalledTimes(1);
+    expect(filePermissions.currentFileRecord).toBeCalledTimes(0);
+    expect(filePermissions.hasFileDelete).toBeCalledTimes(1);
+    expect(hasFilePermissionsMock).toBeCalledTimes(0);
+    expect(upload.fileUpload.upload).toBeCalledTimes(0);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateFileId).toBeCalledTimes(0);
+  });
 });
 
 describe(`${basePath}/:id`, () => {
@@ -111,6 +131,28 @@ describe(`${basePath}/:id`, () => {
 
     expect(apiAccess).toBeCalledTimes(1);
     expect(controller.read).toBeCalledTimes(1);
+    expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
+    expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
+    expect(hasFilePermissionsMock).toBeCalledTimes(1);
+    expect(upload.fileUpload.upload).toBeCalledTimes(0);
+    expect(userAccess.currentUser).toBeCalledTimes(1);
+    expect(validateParameter.validateFileId).toBeCalledTimes(1);
+  });
+});
+
+describe(`${basePath}/:id/clone`, () => {
+  const fileId = uuid.v4();
+  const path = `${basePath}/${fileId}/clone`;
+
+  it('should have correct middleware for GET', async () => {
+    controller.clone = jest.fn((_req, res) => {
+      res.sendStatus(200);
+    });
+
+    await appRequest.get(path);
+
+    expect(apiAccess).toBeCalledTimes(1);
+    expect(controller.clone).toBeCalledTimes(1);
     expect(filePermissions.currentFileRecord).toBeCalledTimes(1);
     expect(filePermissions.hasFileCreate).toBeCalledTimes(0);
     expect(hasFilePermissionsMock).toBeCalledTimes(1);

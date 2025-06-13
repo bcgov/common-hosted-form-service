@@ -1,6 +1,5 @@
 const config = require('config');
-const { v4: uuidv4 } = require('uuid');
-
+const uuid = require('uuid');
 const { FileStorage } = require('../common/models');
 const storageService = require('./storage/storageService');
 
@@ -13,7 +12,7 @@ const service = {
       trx = await FileStorage.startTransaction();
 
       const obj = {};
-      obj.id = uuidv4();
+      obj.id = uuid.v4();
       obj.storage = folder;
       obj.originalName = data.originalname;
       obj.mimeType = data.mimetype;
@@ -54,6 +53,29 @@ const service = {
       }
       await trx.commit();
       return result;
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  deleteFiles: async (ids) => {
+    let trx;
+    try {
+      trx = await FileStorage.startTransaction();
+
+      for (const id of ids) {
+        const obj = await service.read(id);
+
+        await FileStorage.query(trx).deleteById(id).throwIfNotFound();
+
+        const result = await storageService.delete(obj);
+        if (!result) {
+          throw new Error(`Failed to delete file with id ${id}`);
+        }
+      }
+
+      await trx.commit();
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;
@@ -107,6 +129,33 @@ const service = {
         });
       }
       await trx.commit();
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  clone: async (data, currentUser) => {
+    let trx;
+    try {
+      trx = await FileStorage.startTransaction();
+
+      const file = await FileStorage.query().findById(data).throwIfNotFound();
+
+      // Remove the ID to avoid conflicts when inserting
+      const obj = { ...file };
+
+      const uploadResult = await storageService.clone(obj);
+      obj.id = uploadResult.id;
+      obj.path = uploadResult.path;
+      obj.storage = uploadResult.storage;
+      obj.createdBy = currentUser.usernameIdp;
+
+      await FileStorage.query(trx).insert(obj);
+
+      await trx.commit();
+      const result = await service.read(obj.id);
+      return result;
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;

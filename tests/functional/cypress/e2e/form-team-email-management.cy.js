@@ -1,5 +1,4 @@
 import "cypress-keycloak-commands";
-import "cypress-drag-drop";
 import { formsettings } from "../support/login.js";
 
 const depEnv = Cypress.env("depEnv");
@@ -25,22 +24,20 @@ describe("Form Designer", () => {
 
     formsettings();
   });
-  // Publish a simple form with Simplebc Address component
   it("Checks team management before form publish", () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-
-    cy.get("button").contains("BC Government").click();
-    cy.get("div.formio-builder-form").then(($el) => {
+    cy.get('button').contains('Basic Fields').click();
+    cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
-      cy.get('[data-key="simplebcaddress"]')
-        .trigger("mousedown", { which: 1 }, { force: true })
-        .trigger("mousemove", coords.x, -550, { force: true })
-        //.trigger('mousemove', coords.y, +100, { force: true })
-        .trigger("mouseup", { force: true });
-      cy.waitForLoad();
-      cy.get("button").contains("Save").click();
+      cy.get('span.btn').contains('Text Field')
+      
+      .trigger('mousedown', { which: 1}, { force: true })
+      .trigger('mousemove', coords.x, -50, { force: true })
+      .trigger('mouseup', { force: true });
+      cy.get('button').contains('Save').click();
     });
+    cy.wait(2000);
     // Form saving
     let savedButton = cy.get("[data-cy=saveButton]");
     expect(savedButton).to.not.be.null;
@@ -64,25 +61,9 @@ describe("Form Designer", () => {
     cy.get(
       ".v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input"
     ).click();
-    cy.get(
-      ".v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input"
-    ).type("NIM");
-    cy.get(":nth-child(2) > .v-chip__content").should("be.visible");
-    cy.get(":nth-child(4) > .v-chip__content").should("be.visible");
-    cy.get(":nth-child(5) > .v-chip__content").should("be.visible");
-    cy.contains("John, Nimya 1 CITZ:EX (nimya.1.john@gov.bc.ca)").click();
-    cy.get(":nth-child(2) > .v-chip__content").click();
-    cy.get(":nth-child(4) > .v-chip__content").click();
-    cy.get(":nth-child(5) > .v-chip__content").click();
-    cy.get(".v-btn--elevated > .v-btn__content > span").click();
-    // Verify member is added with proper roles
-    cy.get('[data-test="ApproverRoleCheckbox"]').should("be.visible");
-    cy.get('[data-test="ReviewerRoleCheckbox"]').should("exist");
-    cy.get('[data-test="TeamManagerRoleCheckbox"]').should("be.visible");
-    cy.get('[data-test="ApproverRoleCheckbox"]').click({
-      multiple: true,
-      force: true,
-    });
+    cy.get('.v-col > .v-btn--variant-outlined > .v-btn__content > span').click();
+    cy.wait(3000);
+    
     //Manage column views
 
     cy.get(".mdi-view-column").click();
@@ -102,17 +83,6 @@ describe("Form Designer", () => {
     cy.get("table").contains("td", "Designer").should("be.visible");
     cy.get('[data-test="save-btn"] > .v-btn__content').click();
     cy.waitForLoad();
-
-    //Remove a user from Roles
-
-    cy.get('tbody > :nth-child(1) > [style="width: 1rem;"] > .v-btn').click();
-    cy.waitForLoad();
-    //cy.contains('REMOVE').click();
-    cy.get(
-      '[data-test="continue-btn-continue"] > .v-btn__content > span'
-    ).click();
-    cy.waitForLoad();
-    cy.contains("NIMJOHN").should("not.exist");
     cy.get('[data-test="OwnerRoleCheckbox"]').click();
     cy.wait(1000);
     cy.get(".v-alert__content")
@@ -174,37 +144,9 @@ describe("Form Designer", () => {
     cy.get(
       ".v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input"
     ).click();
-    cy.get(
-      ".v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input"
-    ).type("NIM");
-    cy.get(":nth-child(2) > .v-chip__content").should("be.visible");
-    cy.get(":nth-child(4) > .v-chip__content").should("be.visible");
-    cy.get(":nth-child(5) > .v-chip__content").should("be.visible");
-    cy.contains("John, Nimya 1 CITZ:EX (nimya.1.john@gov.bc.ca)").click();
-    cy.get(":nth-child(2) > .v-chip__content").click();
+    
+    cy.get('.v-col > .v-btn--variant-outlined > .v-btn__content > span').click();
     cy.wait(3000);
-    cy.get(":nth-child(3) > .v-chip__content").click();
-    cy.wait(3000);
-    cy.get(":nth-child(4) > .v-chip__content").click();
-    cy.wait(3000);
-    cy.get(":nth-child(5) > .v-chip__content").click();
-    cy.wait(3000);
-    cy.get(".v-btn--elevated > .v-btn__content > span").click();
-    cy.wait(3000);
-    /*
-    cy.get('[data-test="OwnerRoleCheckbox"]').then(($el) => {
-      const ownercheck = $el[0];
-      const ownercheck1 = $el[1];
-
-      cy.get(ownercheck).click();
-      cy.get(ownercheck1).click();
-
-
-    });
-    cy.get(".v-alert__content")
-      .contains("You can't update an owner's roles.")
-      .should("be.visible");
-      */
     cy.get(".mdi-cog").click();
     
     cy.waitForLoad();

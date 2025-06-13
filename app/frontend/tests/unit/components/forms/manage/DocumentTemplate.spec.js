@@ -1,6 +1,5 @@
 // @vitest-environment happy-dom
-// happy-dom is required to access window.URL
-
+// happy-dom is required to access window.open
 import { createTestingPinia } from '@pinia/testing';
 import { flushPromises, mount } from '@vue/test-utils';
 import moment from 'moment';
@@ -35,31 +34,26 @@ const STUBS = {
 
 describe('DocumentTemplate.vue', () => {
   let router, pinia, formStore, notificationStore, appStore;
-  let createObjectURLSpy = vi.spyOn(window.URL, 'createObjectURL');
+  pinia = createTestingPinia();
+  setActivePinia(pinia);
+
+  router = createRouter({
+    history: createWebHistory(),
+    routes: getRouter().getRoutes(),
+  });
+
+  formStore = useFormStore(pinia);
+  notificationStore = useNotificationStore(pinia);
+  appStore = useAppStore(pinia);
 
   beforeEach(() => {
-    pinia = createTestingPinia();
-    setActivePinia(pinia);
-
-    router = createRouter({
-      history: createWebHistory(),
-      routes: getRouter().getRoutes(),
-    });
-
-    formStore = useFormStore(pinia);
-    notificationStore = useNotificationStore(pinia);
-    appStore = useAppStore(pinia);
-
     formStore.$reset();
     notificationStore.$reset();
     appStore.$reset();
-
-    // Explicitly mock/spy on global functions
-    createObjectURLSpy.mockImplementation(() => '#');
   });
 
-  afterEach(() => {
-    createObjectURLSpy.mockRestore();
+  afterEach(async () => {
+    await flushPromises();
   });
 
   it('calls fetchDocumentTemplates on mount', async () => {
@@ -386,7 +380,7 @@ describe('DocumentTemplate.vue', () => {
       documentTemplateComposables,
       'fetchDocumentTemplates'
     );
-    fetchDocumentTemplatesSpy.mockImplementationOnce(async () => {
+    fetchDocumentTemplatesSpy.mockImplementation(async () => {
       return Array.from(mockDatabase);
     });
     const documentTemplateDeleteSpy = vi.spyOn(
@@ -398,6 +392,7 @@ describe('DocumentTemplate.vue', () => {
         (item) => !(item.formId === formId && item.templateId === templateId)
       );
     });
+
     const wrapper = mount(DocumentTemplate, {
       global: {
         plugins: [router, pinia],
@@ -410,7 +405,9 @@ describe('DocumentTemplate.vue', () => {
     wrapper.vm.documentTemplates = ref(Array.from(mockDatabase));
 
     await wrapper.vm.handleDelete({ templateId: '1' });
+
     await flushPromises();
+
     expect(
       mockDatabase.find((item) => item.templateId === '1')
     ).toBeUndefined();
@@ -484,10 +481,11 @@ describe('DocumentTemplate.vue', () => {
       return '#';
     });
     const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
-
     const windowOpenSpy = vi.spyOn(window, 'open');
-    windowOpenSpy.mockImplementation(() => {});
     const appendChildSpy = vi.spyOn(document.body, 'appendChild');
+    addNotificationSpy.mockImplementation(() => {});
+    windowOpenSpy.mockImplementation(() => {});
+    appendChildSpy.mockImplementation(() => {});
 
     const wrapper = mount(DocumentTemplate, {
       global: {
@@ -497,6 +495,12 @@ describe('DocumentTemplate.vue', () => {
     });
 
     await flushPromises();
+    windowOpenSpy.mockReset();
+    appendChildSpy.mockReset();
+    addNotificationSpy.mockReset();
+    addNotificationSpy.mockImplementation(() => {});
+    windowOpenSpy.mockImplementation(() => {});
+    appendChildSpy.mockImplementation(() => {});
 
     wrapper.vm.handleFileAction(
       { templateId: '1', filename: 'filename.txt' },
@@ -515,21 +519,22 @@ describe('DocumentTemplate.vue', () => {
       documentTemplateComposables,
       'fetchDocumentTemplates'
     );
-    fetchDocumentTemplatesSpy.mockImplementationOnce(async () => {
+    fetchDocumentTemplatesSpy.mockImplementation(async () => {
       return [];
     });
     const getDocumentTemplateSpy = vi.spyOn(
       documentTemplateComposables,
       'getDocumentTemplate'
     );
-    getDocumentTemplateSpy.mockImplementationOnce(async () => {
+    getDocumentTemplateSpy.mockImplementation(async () => {
       return '#';
     });
     const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
-
     const windowOpenSpy = vi.spyOn(window, 'open');
-    windowOpenSpy.mockImplementation(() => {});
     const appendChildSpy = vi.spyOn(document.body, 'appendChild');
+    addNotificationSpy.mockImplementation(() => {});
+    windowOpenSpy.mockImplementation(() => {});
+    appendChildSpy.mockImplementation(() => {});
 
     const wrapper = mount(DocumentTemplate, {
       global: {
@@ -537,14 +542,22 @@ describe('DocumentTemplate.vue', () => {
         stubs: STUBS,
       },
     });
-
     await flushPromises();
+    windowOpenSpy.mockReset();
+    appendChildSpy.mockReset();
+    addNotificationSpy.mockReset();
+    getDocumentTemplateSpy.mockReset();
+    addNotificationSpy.mockImplementation(() => {});
+    windowOpenSpy.mockImplementation(() => {});
+    appendChildSpy.mockImplementation(() => {});
+    getDocumentTemplateSpy.mockImplementation(async () => {
+      return '#';
+    });
 
     wrapper.vm.handleFileAction(
       { templateId: '1', filename: 'filename.txt' },
       'download'
     );
-
     await flushPromises();
 
     expect(windowOpenSpy).toHaveBeenCalledTimes(0);

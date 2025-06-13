@@ -1,7 +1,7 @@
 const Problem = require('api-problem');
 const { ref } = require('objection');
-const { v4: uuidv4 } = require('uuid');
-const { EmailTypes } = require('../common/constants');
+const uuid = require('uuid');
+const { EmailTypes, ScheduleType } = require('../common/constants');
 const eventService = require('../event/eventService');
 const moment = require('moment');
 const {
@@ -23,14 +23,114 @@ const {
   FormComponentsProactiveHelp,
   FormSubscription,
 } = require('../common/models');
-const { falsey, queryUtils, checkIsFormExpired, validateScheduleObject, typeUtils } = require('../common/utils');
+const { falsey, queryUtils, typeUtils } = require('../common/utils');
+const { checkIsFormExpired, isDateValid } = require('../common/scheduleService');
 const { Permissions, Roles, Statuses } = require('../common/constants');
 const formMetadataService = require('./formMetadata/service');
 const { eventStreamService, SUBMISSION_EVENT_TYPES } = require('../../components/eventStreamService');
 const eventStreamConfigService = require('./eventStreamConfig/service');
 const Rolenames = [Roles.OWNER, Roles.TEAM_MANAGER, Roles.FORM_DESIGNER, Roles.SUBMISSION_REVIEWER, Roles.FORM_SUBMITTER, Roles.SUBMISSION_APPROVER];
 
+/**
+ * Validate a form schedule object
+ * @param {Object} schedule The schedule object to validate
+ * @returns {Object} Validation result {message, status}
+ */
+function validateScheduleObject(schedule = {}) {
+  // If scheduling is not enabled, return success
+  if (!schedule.enabled) {
+    return { message: '', status: 'success' };
+  }
+
+  // Validate opening date
+  if (!isDateValid(schedule.openSubmissionDateTime)) {
+    return {
+      message: 'Invalid open submission date.',
+      status: 'error',
+    };
+  }
+
+  // Validate based on schedule type
+  if (schedule.scheduleType === ScheduleType.CLOSINGDATE) {
+    // Validate closing date
+    if (!isDateValid(schedule.closeSubmissionDateTime)) {
+      return {
+        message: 'Invalid closed submission date.',
+        status: 'error',
+      };
+    }
+
+    // Validate late submissions
+    if (!isLateSubmissionConfigValid(schedule)) {
+      return {
+        message: 'Invalid late submission data.',
+        status: 'error',
+      };
+    }
+
+    // Validate closing message
+    if (!isClosingMessageValid(schedule)) {
+      return {
+        message: 'Invalid closing message.',
+        status: 'error',
+      };
+    }
+  } else if (schedule.scheduleType !== ScheduleType.MANUAL) {
+    // Invalid schedule type
+    return {
+      message: 'Invalid schedule type.',
+      status: 'error',
+    };
+  }
+
+  return { message: '', status: 'success' };
+}
+
+/**
+ * Validate late submission configuration
+ * @param {Object} schedule Form schedule object
+ * @returns {Boolean} True if late submission config is valid
+ */
+function isLateSubmissionConfigValid(schedule) {
+  const lateSubmissionsEnabled = schedule && schedule.allowLateSubmissions && schedule.allowLateSubmissions.enabled;
+
+  if (lateSubmissionsEnabled) {
+    const hasValidTerm = schedule.allowLateSubmissions.forNext && schedule.allowLateSubmissions.forNext.term;
+
+    const hasValidInterval = schedule.allowLateSubmissions.forNext && schedule.allowLateSubmissions.forNext.intervalType;
+
+    if (!hasValidTerm || !hasValidInterval) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Validate closing message configuration
+ * @param {Object} schedule Form schedule object
+ * @returns {Boolean} True if closing message is valid
+ */
+function isClosingMessageValid(schedule) {
+  if (schedule.closingMessageEnabled) {
+    return !!schedule.closingMessage;
+  }
+  return true;
+}
+
 const service = {
+  // Form schedule validation functions moved from scheduleService
+  validateScheduleObject,
+  isLateSubmissionConfigValid,
+  isClosingMessageValid,
+
+  _setAssigneeInSubmissionsTable: (formData) => {
+    const identityProviders = formData.identityProviders || [];
+    const isPublicForm = identityProviders.some((idp) => idp.code === 'public');
+
+    return formData.showAssigneeInSubmissionsTable === true && !isPublicForm && formData.enableStatusUpdates;
+  },
   _findFileIds: (schema, data) => {
     const findFiles = (currentData) => {
       let fileIds = [];
@@ -69,7 +169,7 @@ const service = {
 
   createForm: async (data, currentUser) => {
     let trx;
-    const scheduleData = validateScheduleObject(data.schedule);
+    const scheduleData = service.validateScheduleObject(data.schedule);
     if (scheduleData.status !== 'success') {
       throw new Problem(422, `${scheduleData.message}`);
     }
@@ -77,7 +177,7 @@ const service = {
     try {
       trx = await Form.startTransaction();
       const obj = {};
-      obj.id = uuidv4();
+      obj.id = uuid.v4();
       obj.name = data.name;
       obj.description = data.description;
       obj.active = true;
@@ -98,6 +198,7 @@ const service = {
       obj.ministry = data.ministry;
       obj.apiIntegration = data.apiIntegration;
       obj.useCase = data.useCase;
+      obj.showAssigneeInSubmissionsTable = service._setAssigneeInSubmissionsTable(data);
 
       await Form.query(trx).insert(obj);
       if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
@@ -107,19 +208,19 @@ const service = {
           if (!exists) {
             throw new Problem(422, `${p.code} is not a valid Identity Provider code`);
           }
-          fips.push({ id: uuidv4(), formId: obj.id, code: p.code, createdBy: currentUser.usernameIdp });
+          fips.push({ id: uuid.v4(), formId: obj.id, code: p.code, createdBy: currentUser.usernameIdp });
         }
         await FormIdentityProvider.query(trx).insert(fips);
       }
       // make this user have ALL the roles...
       const userRoles = Rolenames.map((r) => {
-        return { id: uuidv4(), createdBy: currentUser.usernameIdp, userId: currentUser.id, formId: obj.id, role: r };
+        return { id: uuid.v4(), createdBy: currentUser.usernameIdp, userId: currentUser.id, formId: obj.id, role: r };
       });
       await FormRoleUser.query(trx).insert(userRoles);
 
       // create a unpublished draft
       const draft = {
-        id: uuidv4(),
+        id: uuid.v4(),
         formId: obj.id,
         createdBy: currentUser.usernameIdp,
         schema: data.schema,
@@ -127,9 +228,8 @@ const service = {
       await FormVersionDraft.query(trx).insert(draft);
 
       // Map all status codes to the form - hardcoded to include all states
-      // TODO: Could make this more dynamic and settable by the user if that feature is required
       const defaultStatuses = Object.values(Statuses).map((status) => ({
-        id: uuidv4(),
+        id: uuid.v4(),
         formId: obj.id,
         code: status,
         createdBy: currentUser.usernameIdp,
@@ -155,7 +255,7 @@ const service = {
       const obj = await service.readForm(formId);
       trx = await Form.startTransaction();
       // do not update the active flag, that should be done via DELETE
-      const scheduleData = validateScheduleObject(data.schedule);
+      const scheduleData = service.validateScheduleObject(data.schedule);
       if (scheduleData.status !== 'success') {
         throw new Problem(422, `${scheduleData.message}`);
       }
@@ -163,6 +263,7 @@ const service = {
         name: data.name,
         description: data.description,
         labels: data.labels ? data.labels : [],
+        enableTeamMemberDraftShare: data.enableTeamMemberDraftShare,
         showSubmissionConfirmation: data.showSubmissionConfirmation,
         sendSubmissionReceivedEmail: data.sendSubmissionReceivedEmail,
         submissionReceivedEmails: data.submissionReceivedEmails ? data.submissionReceivedEmails : [],
@@ -179,6 +280,10 @@ const service = {
         ministry: data.ministry,
         apiIntegration: data.apiIntegration,
         useCase: data.useCase,
+        showAssigneeInSubmissionsTable: service._setAssigneeInSubmissionsTable({
+          ...data,
+          identityProviders: data.identityProviders,
+        }),
       };
 
       await Form.query(trx).patchAndFetchById(formId, upd);
@@ -188,7 +293,7 @@ const service = {
 
       // insert any new identity providers
       const fIdps = data.identityProviders.map((p) => ({
-        id: uuidv4(),
+        id: uuid.v4(),
         formId: obj.id,
         code: p.code,
         createdBy: currentUser.usernameIdp,
@@ -286,7 +391,7 @@ const service = {
 
     try {
       const documentTemplate = {
-        id: uuidv4(),
+        id: uuid.v4(),
         formId: formId,
         filename: data.filename,
         template: data.template,
@@ -355,7 +460,7 @@ const service = {
     return DocumentTemplate.query().findById(documentTemplateId).modify('filterActive', true).throwIfNotFound();
   },
 
-  listFormSubmissions: async (formId, params) => {
+  _initFormSubmissionsListQuery: (formId, params, currentUser, shouldIncludeAssignee = false) => {
     const query = SubmissionMetadata.query()
       .where('formId', formId)
       .modify('filterSubmissionId', params.submissionId)
@@ -366,13 +471,36 @@ const service = {
       .modify('filterFormVersionId', params.formVersionId)
       .modify('filterVersion', params.version)
       .modify('filterformSubmissionStatusCode', params.filterformSubmissionStatusCode)
-      .modify('orderDefault', params.sortBy && params.page ? true : false, params);
+      .modify('orderDefault', !!(params.sortBy && params.page), params);
+
+    // Only apply assigned user filter if both conditions are true
+    if (shouldIncludeAssignee && params.filterAssignedToCurrentUser && currentUser && currentUser.id) {
+      query.where('formSubmissionAssignedToUserId', currentUser.id);
+    }
 
     if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length === 2) {
       query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
     }
+    return query;
+  },
+  _shouldIncludeAssignee: (form) => {
+    return form.showAssigneeInSubmissionsTable && form.enableStatusUpdates && !form.identityProviders.some((idp) => idp.code === 'public');
+  },
+  listFormSubmissions: async (formId, params, currentUser) => {
+    // First, get form settings to check if assignee data should be included
+    const form = await service.readForm(formId);
 
+    // Determine if assignee data should be included in response
+    const shouldIncludeAssignee = service._shouldIncludeAssignee(form);
+    const query = service._initFormSubmissionsListQuery(formId, params, currentUser, shouldIncludeAssignee);
+
+    // Base selection - always include these fields
     const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
+
+    // Conditionally add assignee fields only if allowed
+    if (shouldIncludeAssignee) {
+      selection.push('formSubmissionAssignedToUserId', 'formSubmissionAssignedToUsernameIdp', 'formSubmissionAssignedToEmail');
+    }
 
     let fields = [];
     if (params.fields && params.fields.length) {
@@ -392,6 +520,9 @@ const service = {
       // columns. Also remove empty values to handle the case of trailing commas
       // and other malformed data too.
       fields = fields.filter((f) => f !== 'updatedAt' && f !== 'updatedBy' && f.trim() !== '');
+      if (shouldIncludeAssignee) {
+        fields = fields.filter((f) => f !== 'assignee');
+      }
     }
 
     fields.push('lateEntry');
@@ -415,36 +546,29 @@ const service = {
   },
 
   async processPaginationData(query, page, itemsPerPage, totalSubmissions, search, searchEnabled) {
-    let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : searchEnabled !== undefined ? JSON.parse(searchEnabled) : false;
+    const isSearchEnabled = (x) => (x !== undefined ? JSON.parse(x) : false);
+    let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : isSearchEnabled(searchEnabled);
     if (isSearchAble) {
       let submissionsData = await query;
       let result = {
         results: [],
         total: 0,
       };
+
+      const isDateLike = (x, s) =>
+        !typeUtils.isBoolean(x) && !typeUtils.isNil(x) && typeUtils.isDate(x) && moment(new Date(x)).format('YYYY-MM-DD hh:mm:ss a').toString().includes(s);
+      const isStringLike = (x, s) => typeUtils.isString(x) && x.toLowerCase().includes(s.toLowerCase());
+      const isNumberLike = (x, s) => (typeUtils.isNil(x) || typeUtils.isBoolean(x) || (typeUtils.isNumeric(x) && typeUtils.isNumeric(s))) && parseFloat(x) === parseFloat(s);
+
       let searchedData = submissionsData.filter((data) => {
         return Object.keys(data).some((key) => {
           if (key !== 'submissionId' && key !== 'formVersionId' && key !== 'formId') {
             if (!Array.isArray(data[key]) && !typeUtils.isObject(data[key])) {
-              if (
-                !typeUtils.isBoolean(data[key]) &&
-                !typeUtils.isNil(data[key]) &&
-                typeUtils.isDate(data[key]) &&
-                moment(new Date(data[key])).format('YYYY-MM-DD hh:mm:ss a').toString().includes(search)
-              ) {
+              if (isDateLike(data[key], search) || isStringLike(data[key], search) || isNumberLike(data[key], search)) {
                 result.total = result.total + 1;
                 return true;
               }
-              if (typeUtils.isString(data[key]) && data[key].toLowerCase().includes(search.toLowerCase())) {
-                result.total = result.total + 1;
-                return true;
-              } else if (
-                (typeUtils.isNil(data[key]) || typeUtils.isBoolean(data[key]) || (typeUtils.isNumeric(data[key]) && typeUtils.isNumeric(search))) &&
-                parseFloat(data[key]) === parseFloat(search)
-              ) {
-                result.total = result.total + 1;
-                return true;
-              }
+              return false;
             }
             return false;
           }
@@ -455,16 +579,14 @@ const service = {
       let end = page * itemsPerPage + itemsPerPage;
       result.results = searchedData.slice(start, end);
       return result;
-    } else {
-      if (itemsPerPage && parseInt(itemsPerPage) === -1) {
-        return await query.page(parseInt(page), parseInt(totalSubmissions || 0));
-      } else if (itemsPerPage && parseInt(page) >= 0) {
-        return await query.page(parseInt(page), parseInt(itemsPerPage));
-      }
+    } else if (itemsPerPage && parseInt(itemsPerPage) === -1) {
+      return await query.page(parseInt(page), parseInt(totalSubmissions || 0));
+    } else if (itemsPerPage && parseInt(page) >= 0) {
+      return await query.page(parseInt(page), parseInt(itemsPerPage));
     }
   },
 
-  publishVersion: async (formId, formVersionId, params = {}, currentUser) => {
+  publishVersion: async (formId, formVersionId, currentUser, params = {}) => {
     let trx;
     let result;
     // allow an unpublish if they pass in unpublish parameter with an affirmative
@@ -507,7 +629,6 @@ const service = {
 
   readVersionFields: async (formVersionId) => {
     // Recursively find all field key names
-    // TODO: Consider if this should be a form utils function instead?
     const findFields = (obj) => {
       const fields = [];
       if (!obj.hidden) {
@@ -548,16 +669,14 @@ const service = {
       const isPublicForm = identityProviders.some((idp) => idp.code === 'public');
       const createdBy = isPublicForm ? 'public' : currentUser.usernameIdp;
 
-      const submissionId = uuidv4();
-      const obj = Object.assign(
-        {
-          id: submissionId,
-          formVersionId: formVersion.id,
-          confirmationId: submissionId.substring(0, 8).toUpperCase(),
-          createdBy: createdBy,
-        },
-        data
-      );
+      const submissionId = uuid.v4();
+      const obj = {
+        id: submissionId,
+        formVersionId: formVersion.id,
+        confirmationId: submissionId.substring(0, 8).toUpperCase(),
+        createdBy: createdBy,
+        ...data,
+      };
 
       await FormSubmission.query(trx).insert(obj);
 
@@ -573,7 +692,7 @@ const service = {
         }
 
         const itemsToInsert = perms.map((perm) => ({
-          id: uuidv4(),
+          id: uuid.v4(),
           userId: currentUser.id,
           formSubmissionId: submissionId,
           permission: perm,
@@ -586,7 +705,7 @@ const service = {
       if (!data.draft) {
         // Add a SUBMITTED status if it's not a draft
         const stObj = {
-          id: uuidv4(),
+          id: uuid.v4(),
           submissionId: submissionId,
           code: Statuses.SUBMITTED,
           createdBy: createdBy,
@@ -644,7 +763,7 @@ const service = {
         let submissionId;
         // let's create multiple submissions with same metadata
         service.popFormLevelInfo(submissionDataArray).map((singleData) => {
-          submissionId = uuidv4();
+          submissionId = uuid.v4();
           recordsToInsert.push({
             ...recordWithoutData,
             id: submissionId,
@@ -666,7 +785,7 @@ const service = {
         result.map((singleSubmission) => {
           itemsToInsert.push(
             ...perms.map((perm) => ({
-              id: uuidv4(),
+              id: uuid.v4(),
               userId: currentUser.id,
               formSubmissionId: singleSubmission.id,
               permission: perm,
@@ -714,8 +833,8 @@ const service = {
       trx = await FormVersionDraft.startTransaction();
 
       // data.schema, maybe data.formVersionId
-      const obj = Object.assign({}, data);
-      obj.id = uuidv4();
+      const obj = { ...data };
+      obj.id = uuid.v4();
       obj.formId = form.id;
       obj.createdBy = currentUser.usernameIdp;
 
@@ -762,7 +881,7 @@ const service = {
       trx = await FormVersionDraft.startTransaction();
 
       version = {
-        id: uuidv4(),
+        id: uuid.v4(),
         formId: form.id,
         version: form.versions.length ? form.versions[0].version + 1 : 1,
         createdBy: currentUser.usernameIdp,
@@ -819,7 +938,7 @@ const service = {
         // Replace API key for the form
         await FormApiKey.query(trx).modify('filterFormId', formId).update({
           formId: formId,
-          secret: uuidv4(),
+          secret: uuid.v4(),
           updatedBy: currentUser.usernameIdp,
           filesApiAccess: false,
         });
@@ -827,7 +946,7 @@ const service = {
         // Add new API key for the form
         await FormApiKey.query(trx).insert({
           formId: formId,
-          secret: uuidv4(),
+          secret: uuid.v4(),
           createdBy: currentUser.usernameIdp,
           filesApiAccess: false,
         });
@@ -942,7 +1061,7 @@ const service = {
       } else {
         // Add new subscription settings for the form
         await FormSubscription.query(trx).insert({
-          id: uuidv4(),
+          id: uuid.v4(),
           ...subscriptionData,
           createdBy: currentUser.usernameIdp,
         });
@@ -971,7 +1090,7 @@ const service = {
       jsonPayload.forEach(function (submission) {
         delete submission.submit;
         delete submission.lateEntry;
-        if (Object.prototype.hasOwnProperty.call(submission, 'form')) {
+        if (Object.hasOwn(submission, 'form')) {
           const propsToRemove = ['confirmationId', 'formName', 'version', 'createdAt', 'fullName', 'username', 'email', 'status', 'assignee', 'assigneeEmail'];
 
           propsToRemove.forEach((key) => delete submission.form[key]);
@@ -987,19 +1106,15 @@ const service = {
 
   _getDefaultEmailTemplate: (formId, type) => {
     let template;
-
-    switch (type) {
-      case EmailTypes.SUBMISSION_CONFIRMATION:
-        template = {
-          body: 'Thank you for your {{ form.name }} submission. You can view your submission details by visiting the following links:',
-          formId: formId,
-          subject: '{{ form.name }} Accepted',
-          title: '{{ form.name }} Accepted',
-          type: type,
-        };
-        break;
+    if (EmailTypes.SUBMISSION_CONFIRMATION === type) {
+      template = {
+        body: 'Thank you for your {{ form.name }} submission. You can view your submission details by visiting the following links:',
+        formId: formId,
+        subject: '{{ form.name }} Accepted',
+        title: '{{ form.name }} Accepted',
+        type: type,
+      };
     }
-
     return template;
   },
 
@@ -1048,7 +1163,7 @@ const service = {
       } else {
         // Add new email template settings for the form
         await FormEmailTemplate.query(transaction).insert({
-          id: uuidv4(),
+          id: uuid.v4(),
           ...data,
           createdBy: currentUser.usernameIdp,
         });

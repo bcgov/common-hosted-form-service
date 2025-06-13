@@ -155,6 +155,7 @@ describe('createExternalAPI', () => {
   });
 
   it('should insert valid data', async () => {
+    service._updateAllPreApproved = jest.fn().mockResolvedValueOnce(0);
     validData.id = null;
     validData.code = null;
     await service.createExternalAPI(validData.formId, validData, user);
@@ -164,6 +165,7 @@ describe('createExternalAPI', () => {
       code: ExternalAPIStatuses.SUBMITTED,
       ...validData,
     });
+    expect(service._updateAllPreApproved).toBeCalledWith(validData.formId, validData, expect.anything());
   });
 
   it('should raise errors', async () => {
@@ -205,7 +207,8 @@ describe('updateExternalAPI', () => {
   });
 
   it('should update valid data', async () => {
-    MockModel.throwIfNotFound = jest.fn().mockResolvedValueOnce(Object.assign({}, validData));
+    service._updateAllPreApproved = jest.fn().mockResolvedValueOnce(0);
+    MockModel.throwIfNotFound = jest.fn().mockResolvedValueOnce({ ...validData });
 
     // we do not update (status) code - must stay SUBMITTED
     validData.code = ExternalAPIStatuses.APPROVED;
@@ -215,8 +218,19 @@ describe('updateExternalAPI', () => {
     expect(MockModel.update).toBeCalledWith({
       updatedBy: user.usernameIdp,
       code: ExternalAPIStatuses.SUBMITTED,
-      ...validData,
+      formId: validData.formId,
+      name: validData.name,
+      endpointUrl: validData.endpointUrl,
+      sendApiKey: validData.sendApiKey,
+      apiKeyHeader: validData.apiKeyHeader,
+      apiKey: validData.apiKey,
+      allowSendUserToken: validData.allowSendUserToken,
+      sendUserToken: validData.sendUserToken,
+      userTokenHeader: validData.userTokenHeader,
+      userTokenBearer: validData.userTokenBearer,
+      sendUserInfo: validData.sendUserInfo,
     });
+    expect(service._updateAllPreApproved).toBeCalledWith(validData.formId, validData, expect.anything());
   });
 
   it('should update user token fields when allowed', async () => {
@@ -225,34 +239,54 @@ describe('updateExternalAPI', () => {
     validData.sendUserToken = true;
     validData.userTokenHeader = 'Authorization';
     validData.userTokenBearer = true;
-    MockModel.throwIfNotFound = jest.fn().mockResolvedValueOnce(Object.assign({}, validData));
+    validData.sendUserInfo = false;
+    MockModel.throwIfNotFound = jest.fn().mockResolvedValueOnce({ ...validData });
+    service._updateAllPreApproved = jest.fn().mockResolvedValueOnce(0);
 
     await service.updateExternalAPI(validData.formId, validData.id, validData, user);
     expect(MockModel.update).toBeCalledTimes(1);
     expect(MockModel.update).toBeCalledWith({
       updatedBy: user.usernameIdp,
       code: ExternalAPIStatuses.SUBMITTED,
-      ...validData,
+      formId: validData.formId,
+      name: validData.name,
+      endpointUrl: validData.endpointUrl,
+      sendApiKey: validData.sendApiKey,
+      apiKeyHeader: validData.apiKeyHeader,
+      apiKey: validData.apiKey,
+      allowSendUserToken: validData.allowSendUserToken,
+      sendUserToken: validData.sendUserToken,
+      userTokenHeader: validData.userTokenHeader,
+      userTokenBearer: validData.userTokenBearer,
+      sendUserInfo: validData.sendUserInfo,
     });
   });
 
   it('should blank out user token fields when not allowed', async () => {
     // mark as allowed by admin, and set some user token config values...
-    validData.allowSendUserToken = true;
+    validData.allowSendUserToken = false;
     validData.sendUserToken = false; // don't want to throw a 422...
     validData.userTokenHeader = 'Authorization';
     validData.userTokenBearer = true;
-    MockModel.throwIfNotFound = jest.fn().mockResolvedValueOnce(Object.assign({}, validData));
+    MockModel.throwIfNotFound = jest.fn().mockResolvedValueOnce({ ...validData });
+    service._updateAllPreApproved = jest.fn().mockResolvedValueOnce(0);
 
     await service.updateExternalAPI(validData.formId, validData.id, validData, user);
     expect(MockModel.update).toBeCalledTimes(1);
     expect(MockModel.update).toBeCalledWith({
       updatedBy: user.usernameIdp,
       code: ExternalAPIStatuses.SUBMITTED,
+      allowSendUserToken: false,
       sendUserToken: false,
       userTokenHeader: null,
       userTokenBearer: false,
-      ...validData,
+      formId: validData.formId,
+      name: validData.name,
+      endpointUrl: validData.endpointUrl,
+      sendApiKey: validData.sendApiKey,
+      apiKeyHeader: validData.apiKeyHeader,
+      apiKey: validData.apiKey,
+      sendUserInfo: validData.sendUserInfo,
     });
   });
 

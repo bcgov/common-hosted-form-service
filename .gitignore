@@ -47,9 +47,7 @@ yarn-error.log*
 !.vscode/README.md
 
 # devcontainer files
-!.devcontainer/chefs_local/*.sample
-.devcontainer/chefs_local/local.json
-.devcontainer/chefs_local/realm-export.json
+!.devcontainer/chefs_local/local.sample.json
 
 # temp office files
 ~$*

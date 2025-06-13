@@ -25,7 +25,8 @@ onBeforeMount(async () => {
 async function getUser() {
   try {
     const user = await rbacService.getCurrentUser();
-    apiRes.value = user.data;
+    const forms = await rbacService.getCurrentUserForms();
+    apiRes.value = { ...user.data, forms: forms.data };
   } catch (error) {
     notificationStore.addNotification({
       text: t('trans.developer.notificationMsg'),

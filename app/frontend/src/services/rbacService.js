@@ -15,8 +15,16 @@ export default {
    * Get the current user details from the rbac endpoint
    * @returns {Promise} An axios response
    */
-  getCurrentUser(params = {}) {
-    return appAxios().get(`${ApiRoutes.RBAC}/current`, { params });
+  getCurrentUser() {
+    return appAxios().get(`${ApiRoutes.RBAC}/current`, {});
+  },
+  /**
+   * @function getCurrentUserForms
+   * Get the current user's forms from the rbac endpoint
+   * @returns {Promise} An axios response
+   */
+  getCurrentUserForms(params = {}) {
+    return appAxios().get(`${ApiRoutes.RBAC}/current/forms`, { params });
   },
 
   /**
@@ -41,6 +49,16 @@ export default {
    */
   getFormUsers(params = {}) {
     return appAxios().get(`${ApiRoutes.RBAC}/forms`, { params });
+  },
+
+  /**
+   * @function isUserAssignedToFormTeams
+   * Determine if user is in form team
+   * @param {Object} [params={}] The query parameters
+   * @returns {Promise} An axios response
+   */
+  isUserAssignedToFormTeams(params = {}) {
+    return appAxios().get(`${ApiRoutes.RBAC}/form/user`, { params });
   },
 
   /**

@@ -97,9 +97,9 @@
     "formAccess": "Acceso al formulario",
     "info": "Si utilizará este formulario para recopilar información del público en general sobre temas que son de interés general para el público, debe comunicarse con la GCPE para que su participación pueda incluirse en",
     "important": "IMPORTANTE",
-    "idimNotifyA": "Debe notificar al equipo de Gestión de Información de Identidad (IDIM) por correo electrónico",
-    "idimNotifyB": "su intención de aprovechar BCeID para verificar las identidades de los remitentes de su formulario.",
-    "referenceGuideA": "Por favor, consulte nuestro",
+    "idimNotifyA": "Debe <strong>NOTIFICAR</strong> al equipo de Identity Information Management (IDIM) por correo electrónico",
+    "idimNotifyB": "su intención de utilizar BCeID o BC Services Card para verificar las identidades de los remitentes de su formulario.",
+    "referenceGuideA": "Por favor, consulte nuestra",
     "referenceGuideB": "guía del usuario",
     "referenceGuideC": "para más detalles",
     "specificTeamMembers": "Miembros del equipo específicos",
@@ -140,6 +140,13 @@
     "summary": "Resumen",
     "submissionsOpenDateRange": "Este formulario estará abierto para envíos de",
     "to": "a",
+    "timezoneIndicator": "Todas las horas están en tu zona horaria local ({timezone})",
+    "openTime": "Hora de apertura",
+    "closeTime": "Hora de cierre",
+    "at": "a las",
+    "specifyOpenTime": "Especificar hora de apertura (opcional)",
+    "specifyCloseTime": "Especificar hora de cierre (opcional)",
+    "closingTimeInfo": "(El formulario se cerrará a las 11:59 PM en su zona horaria local en la fecha de cierre)",
     "scheduleRepetition": "El horario se repetirá cada",
     "allowLateSubmissnInterval": "permitir envíos tardíos para",
     "until": "hasta",
@@ -179,6 +186,9 @@
     "eventStreamMessage": "El servicio Event Stream Service publicará notificaciones sobre la publicación y el envío de formularios. La tecnología subyacente es NATS.io, que permite a los consumidores suscribirse o extraer los mensajes de eventos y procesarlos en sistemas externos. Los mensajes privados contendrán cargas útiles cifradas con la clave configurada aquí.",
     "natsConfiguration": "Configuración de NATS y metadatos de mensajes",
     "publishConfiguration": "Configuración de publicación de eventos",
+    "essAccountName": "Nombre de cuenta ESS",
+    "essAccountApproved": "Cuenta ESS aprobada",
+    "essAccountNotApproved": "Cuenta ESS desconocida o no aprobada",
     "enablePublicStream": "Habilitar transmisión pública",
     "enablePrivateStream": "Habilitar transmisión privada",
     "encryptionKeyAlgorithm": "Algoritmo de clave de cifrado",
@@ -197,14 +207,14 @@
   },
   "formProfile": {
     "message": "El equipo de CHEFS está recopilando y organizando información para servir como entrada crucial para la elaboración de casos de negocio integrales. Estos casos jugarán un papel fundamental en la guía de la operación estratégica y la mejora continua de CHEFS en los próximos años. Esta iniciativa de recopilación de datos es esencial para informar decisiones críticas y dar forma a la trayectoria de CHEFS, asegurando su adaptabilidad y efectividad para abordar necesidades y desafíos en constante evolución.",
-    "ministryPrompt": "Elija el ministerio con el que está asociado",
+    "ministryPrompt": "Elija la organización a la que está asociado",
     "useCasePrompt": "Seleccione el propósito de su formulario",
     "deploymentPrompt": "Por favor, especifique su nivel de implementación",
     "APIPrompt": "Especifique si tiene la intención de utilizar la API proporcionada para integrarla en una aplicación de terceros",
     "labelPrompt": "Las etiquetas sirven como un medio para categorizar formularios similares que pueden pertenecer a una organización común o compartir un contexto relacionado.",
     "useCaseToolTip": "Si no ves tu caso de uso específico, contacta al equipo de CHEFS para discutir opciones adicionales",
     "deploymentLevel": "Nivel de Implementación",
-    "ministryName": "Ministerio",
+    "ministryName": "organización",
     "label": "Etiquetas",
     "useCase": "Tipo de Caso de Uso",
     "development": "Desarrollo",
@@ -221,33 +231,46 @@
     "getLabelConsErr": "Error al obtener etiquetas: ",
     "selectAPIErr": "Por favor, infórmenos su elección con respecto al uso de la Integración de API",
     "selectDeploymentErr": "Por favor, seleccione un nivel de implementación",
-    "selectMinistryErr": "Por favor, seleccione su ministerio",
+    "selectMinistryErr": "Por favor, seleccione su organización",
     "selectUseCaseErr": "Por favor, ingrese el caso de uso de su formulario",
     "labelSizeErr": "Las etiquetas no pueden exceder los 25 caracteres"
   },
   "ministries": {
     "AF": "Agricultura y Alimentación (AF)",
     "AG": "Fiscalía General (AG)",
-    "MCF": "Desarrollo Infantil y Familiar (MCF)",
+    "CABRO": "Oficina de Agencias de la Corona y Recursos de la Junta (CABRO)",
+    "CEC": "Colaboración para el Cumplimiento y la Ejecución (CEC)",
+    "CIRMO": "Oficina de Gestión de Información y Registros Corporativos (CIRMO)",
     "CITZ": "Servicios Ciudadanos (CITZ)",
     "ECC": "Educación y Cuidado Infantil (ECC)",
+    "ECS": "Soluciones Energéticas y Climáticas (ECS)",
     "EMCR": "Gestión de Emergencias y Preparación Climática (EMCR)",
-    "EMLI": "Energía, Minas e Innovación de Bajas Emisiones (EMLI)",
-    "ENV": "Estrategia de Medio Ambiente y Cambio Climático (ENV)",
+    "ENV": "Medio Ambiente y Parques (ENV)",
+    "EBC": "Elecciones BC (EBC)",
     "FIN": "Finanzas (FIN)",
     "FOR": "Bosques (FOR)",
+    "GCPE": "Comunicación Gubernamental y Participación Pública (GCPE)",
+    "HMA": "Vivienda y Asuntos Municipales (HMA)",
     "HLTH": "Salud (HLTH)",
-    "HOUS": "Vivienda (HOUS)",
+    "IGRS": "Secretaría de Relaciones Intergubernamentales (IGRS)",
+    "INFR": "Ministerio de Infraestructura (INFR)",
     "IRR": "Relaciones Indígenas y Reconciliación (IRR)",
     "JEDI": "Empleo, Desarrollo Económico e Innovación (JEDI)",
     "LBR": "Trabajo (LBR)",
-    "MMHA": "Salud Mental y Adicciones (MMHA)",
-    "MUNI": "Asuntos Municipales (MUNI)",
+    "MCM": "Minería y Materiales Críticos (MCM)",
+    "MCF": "Desarrollo Infantil y Familiar (MCF)",
+    "OCG": "Oficina del Contralor General (OCG)",
+    "OCIO": "Oficina del Director de Información (OCIO)",
+    "PREM": "Oficina del Primer Ministro (PREM)",
+    "PSA": "Agencia de Servicio Público de BC (PSA)",
+    "PSECS": "Secretaría del Consejo de Empleadores del Sector Público (PSECS)",
     "PSFS": "Educación Superior y Habilidades Futuras (PSFS)",
     "PSSG": "Seguridad Pública y Fiscal General (PSSG)",
+    "PT": "Tesorería Provincial (PT)",
     "SDPR": "Desarrollo Social y Reducción de la Pobreza (SDPR)",
     "TACS": "Turismo, Artes, Cultura y Deporte (TACS)",
-    "MOTI": "Transporte e Infraestructura (MOTI)",
+    "TB": "Personal de la Junta del Tesoro (TB)",
+    "TRAN": "Transporte y Tránsito (TRAN)",
     "WLRS": "Cuidado del Agua, Tierra y Recursos (WLRS)"
   },
   "subscribeEvent": {
@@ -429,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "Diseño de formularios",
-    "exportDesign": "Diseño de exportación",
-    "importDesign": "Diseño de importación",
+    "downloadJson": "Descargar JSON",
+    "uploadJson": "Subir JSON",
     "important": "IMPORTANTE",
     "formDesignInfoA": "Utilice el botón <strong>GUARDAR DISEÑO</strong> cuando haya terminado de crear este formulario.",
     "formDesignInfoB": "El botón <strong>ENVIAR</strong> se proporciona para que su usuario envíe este formulario y se activará después de guardarlo.",
@@ -474,13 +497,15 @@
     "download": "Descargar"
   },
   "formDisclaimer": {
-    "disclaimerAndStatement": "Descargo de responsabilidad y declaración de responsabilidad para los diseñadores de formularios:",
-    "privacyLaw": "Es su responsabilidad cumplir con las leyes de privacidad que rigen la recopilación, el uso y la divulgación de información de identificación personal.",
-    "disclosure": "El acceso a esta herramienta de diseño de formularios no otorga inherentemente permiso para recopilar, usar o divulgar ninguna información de identificación personal.",
+    "disclaimerAndStatement": "Descargo de responsabilidad y declaración de responsabilidad para diseñadores de formularios:",
+    "privacyLaw": "Es su responsabilidad cumplir con las leyes de privacidad que rigen la recopilación, el uso y la divulgación de información personal identificable.",
+    "disclosure": "El acceso a esta herramienta de diseño de formularios no otorga automáticamente permiso para recopilar, utilizar o divulgar información personal identificable.",
     "consent": "Es su responsabilidad obtener el consentimiento para recopilar información según lo exige la ley.",
     "formIntention": "Antes de publicar o distribuir su formulario, debe discutir la intención del formulario con su",
     "privacyOfficer": "Oficial de Privacidad del Ministerio",
-    "assement": "y para completar las evaluaciones según sea necesario."
+    "assement": "y completar las evaluaciones según sea necesario.",
+    "idimDisclaimerA": "Si utiliza BCeID o BC Services Card como opciones de acceso al formulario, <strong>DEBE</strong> notificar al equipo de Identity Information Management (IDIM) por correo electrónico",
+    "idimDisclaimerB": "su intención de utilizar BCeID o BC Services Card para verificar las identidades de los remitentes de su formulario. Es su responsabilidad completar estos requisitos adicionales antes de recopilar datos."
   },
   "requestReceipt": {
     "emailPriority": "Prioridad de correo electrónico",
@@ -638,7 +663,7 @@
     "display": "mostrar",
     "statusIsRequired": "Se requiere estado",
     "assignTo": "Asignar a",
-    "noDataText": "No se encontraron revisores de formularios con la búsqueda. Agregue revisores de formularios en la página Administrar.",
+    "noDataText": "No se encontraron resultados. Agregue miembros del equipo en la página de administración de borradores/envíos.",
     "assigneeIsRequired": "Se requiere cesionario",
     "assignToMe": "ASIGNARME",
     "recipientEmail": "Receptor de E-mail",
@@ -850,10 +875,12 @@
     "failedResSubmissn": "Respuesta fallida desde el punto final de envío. Código de respuesta: {status}",
     "errSubmittingForm": "Ocurrió un error al enviar este formulario",
     "errorSavingFile": "Error al guardar archivos. Nombre de archivo: {fileName}. Error: {error}",
+    "errorDeletingFile": "Error al eliminar archivos. Nombre de archivo: {fileName}. Error: {error}",
     "submittingDraftErrMsg": "Se produjo un error al guardar un borrador",
     "submittingDraftConsErrMsg": "Error al guardar el borrador. Id de envío: {submissionId}. Error: {error}",
     "formDraftAccessErrMsg": "El envío solicitado ya se envió, redirigiendo a la página Ver",
-    "formUnauthorizedMessage": "No tienes autorización para ver este formulario, por favor contacta al propietario del formulario para acceder."
+    "formUnauthorizedMessage": "No tienes autorización para ver este formulario, por favor contacta al propietario del formulario para acceder.",
+    "fileUploadWarning": "Para cargar sus archivos adjuntos, debe hacer clic en el botón \"Guardar como borrador\" o enviar su formulario. Si sale de esta pantalla, perderá sus archivos adjuntos."
   },
   "bCGovFooter": {
     "home": "Hogar",
@@ -930,7 +957,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "Ver mis borradores/presentaciones",
-    "saveAsADraft": "Guardar como borrador",
+    "saveAsDraft": "Guardar como borrador",
     "editThisDraft": "Editar este borrador",
     "switchSingleSubmssn": "Cambiar a envío único",
     "switchMultiSubmssn": "Cambiar a envíos múltiples",
@@ -1109,6 +1136,9 @@
       "user": "Usuario"
     }
   },
+  "alert": {
+    "warning": "Advertencia"
+  },
   "eventStreamConfig": {
     "info": "Configure el flujo de eventos para su formulario.",
     "create": "Crear nueva configuración de flujo de eventos",
@@ -1192,5 +1222,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "No puedes compartir el borrador con usuarios que no se hayan añadido al formulario. Contacta con el administrador para añadirlos.",
+    "shareDraftMessage": "Compartir borrador solo con miembros del equipo del formulario"
   }
 }

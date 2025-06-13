@@ -161,7 +161,17 @@ module.exports = {
       if (!validate(formId)) {
         res.status(400).json({ detail: `Bad formId "${formId}".` });
       } else {
-        const response = await service.listFormSubmissions(formId, req.query);
+        // Extract the filterAssignedToCurrentUser parameter
+        const { filterAssignedToCurrentUser, ...restQuery } = req.query;
+
+        // Create a new params object with the filter parameter
+        const params = {
+          ...restQuery,
+          filterAssignedToCurrentUser: filterAssignedToCurrentUser === 'true',
+        };
+
+        // Pass the params and current user to the service
+        const response = await service.listFormSubmissions(formId, params, req.currentUser);
         res.status(200).json(response);
       }
     } catch (error) {
@@ -186,7 +196,7 @@ module.exports = {
   },
   publishVersion: async (req, res, next) => {
     try {
-      const response = await service.publishVersion(req.params.formId, req.params.formVersionId, req.query, req.currentUser);
+      const response = await service.publishVersion(req.params.formId, req.params.formVersionId, req.currentUser, req.query);
       res.status(200).json(response);
     } catch (error) {
       next(error);

@@ -119,3 +119,14 @@ jobs:
     uses: ./.github/workflows/reusable-owasp-zap.yaml
     with:
       url: ${{ needs.set-vars.outputs.URL }}
+
+  Tests:
+    name: Automation Tests
+    needs: [deploy, set-vars]
+    uses: ./.github/workflows/cypress-ci.yaml 
+    with:
+      pr-number: ${{ github.event.inputs.pr-number }}
+      pr_branch: ${{ needs.set-vars.outputs.ref }} # Passes the PR branch
+    secrets:
+      Username: ${{ secrets.keycloakUsername }}
+      Password: ${{ secrets.keycloakPassword }}

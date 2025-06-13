@@ -59,6 +59,10 @@ const properties = defineProps({
     type: Boolean,
     default: false,
   },
+  publicForm: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const isWideLayout = ref(properties.wideFormLayout);
@@ -73,6 +77,10 @@ const showEditToggle = computed(
     properties.readOnly &&
     properties.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
 );
+const loading = ref(false);
+function toggleLoading() {
+  loading.value = !loading.value;
+}
 
 function toggleWideLayout() {
   isWideLayout.value = !isWideLayout.value;
@@ -94,21 +102,28 @@ watch(
     class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
     :class="{ 'dir-rtl': isRTL }"
   >
-    <div v-if="formId">
+    <div v-if="formId && !publicForm">
       <v-btn
         color="primary"
+        :loading="loading"
         variant="outlined"
         :title="$t('trans.formViewerActions.viewMyDraftOrSubmissions')"
-        @click="$emit('showdoYouWantToSaveTheDraftModal')"
+        @click="
+          toggleLoading();
+          $emit('showdoYouWantToSaveTheDraftModal');
+        "
       >
         <span :lang="locale">{{
           $t('trans.formViewerActions.viewMyDraftOrSubmissions')
         }}</span>
       </v-btn>
     </div>
-    <div>
+    <div class="ml-auto d-flex">
       <!-- Bulk button -->
-      <span v-if="allowSubmitterToUploadFile && !block" class="ml-2">
+      <span
+        v-if="allowSubmitterToUploadFile && !block && !publicForm"
+        class="ml-2"
+      >
         <v-tooltip location="bottom">
           <template #activator="{ props }">
             <v-btn
@@ -163,28 +178,22 @@ watch(
       </span>
 
       <!-- Save a draft -->
-      <span v-if="canSaveDraft && draftEnabled && !bulkFile" class="ml-2">
-        <v-tooltip location="bottom">
-          <template #activator="{ props }">
-            <v-btn
-              color="primary"
-              icon
-              v-bind="props"
-              size="x-small"
-              :title="$t('trans.formViewerActions.saveAsADraft')"
-              @click="$emit('save-draft')"
-            >
-              <v-icon icon="mdi:mdi-content-save"></v-icon>
-            </v-btn>
-          </template>
+      <span
+        v-if="canSaveDraft && draftEnabled && !bulkFile && !publicForm"
+        class="ml-2"
+      >
+        <v-btn color="primary" variant="outlined" @click="$emit('save-draft')">
           <span :lang="locale">{{
-            $t('trans.formViewerActions.saveAsADraft')
+            $t('trans.formViewerActions.saveAsDraft')
           }}</span>
-        </v-tooltip>
+        </v-btn>
       </span>
 
       <!-- Go to draft edit -->
-      <span v-if="showEditToggle && isDraft && draftEnabled" class="ml-2">
+      <span
+        v-if="showEditToggle && isDraft && draftEnabled && !publicForm"
+        class="ml-2"
+      >
         <router-link
           :to="{
             name: 'UserFormDraftEdit',
@@ -212,10 +221,11 @@ watch(
       </span>
 
       <!-- Go to draft edit -->
-      <span v-if="submissionId && draftEnabled" class="ml-2">
+      <span v-if="submissionId && draftEnabled && !publicForm" class="ml-2">
         <ManageSubmissionUsers
           :is-draft="isDraft"
           :submission-id="submissionId"
+          :form-id="formId"
         />
       </span>
     </div>

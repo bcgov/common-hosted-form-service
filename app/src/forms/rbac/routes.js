@@ -12,6 +12,10 @@ routes.get('/current', jwtService.protect(), async (req, res, next) => {
   await controller.getCurrentUser(req, res, next);
 });
 
+routes.get('/current/forms', jwtService.protect(), async (req, res, next) => {
+  await controller.getCurrentUserForms(req, res, next);
+});
+
 routes.get('/current/submissions', jwtService.protect(), async (req, res, next) => {
   await controller.getCurrentUserSubmissions(req, res, next);
 });
@@ -46,6 +50,10 @@ routes.put('/users', hasFormPermissions([P.TEAM_UPDATE]), hasFormRoles([R.OWNER,
 
 routes.delete('/users', hasFormPermissions([P.TEAM_UPDATE]), hasFormRoles([R.OWNER, R.TEAM_MANAGER]), hasRoleDeletePermissions, async (req, res, next) => {
   await controller.removeMultiUsers(req, res, next);
+});
+
+routes.get('/form/user', hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+  await controller.isUserPartOfFormTeams(req, res, next);
 });
 
 module.exports = routes;

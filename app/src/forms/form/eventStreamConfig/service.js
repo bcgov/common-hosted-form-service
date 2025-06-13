@@ -1,8 +1,7 @@
 const Problem = require('api-problem');
 
-const { v4: uuidv4 } = require('uuid');
-
-const { FormEventStreamConfig } = require('../../common/models');
+const uuid = require('uuid');
+const { FormEventStreamConfig, EssAllowlist } = require('../../common/models');
 
 const encryptionKeyService = require('../encryptionKey/service');
 
@@ -11,6 +10,11 @@ const service = {
     if (!data) {
       throw new Problem(422, `'EventStreamConfig record' cannot be empty.`);
     }
+  },
+
+  _setEnabledFlag: async (accountName) => {
+    const allowList = await EssAllowlist.query().modify('findByAccountName', accountName).first();
+    return allowList && allowList.accountName === accountName;
   },
 
   upsert: async (formId, data, currentUser, transaction) => {
@@ -26,16 +30,18 @@ const service = {
       data.encryptionKeyId = encKey && data.enablePrivateStream ? encKey.id : null;
       data.encryptionKey = null; // only want the id for config upsert
 
+      // enabled only if accountName is in allowlist
+      data.enabled = await service._setEnabledFlag(data.accountName);
       if (existing) {
         // do we need to update?
         if (
           existing.enablePrivateStream != data.enablePrivateStream ||
           existing.enablePublicStream != data.enablePublicStream ||
-          existing.encryptionKeyId != data.encryptionKeyId
+          existing.encryptionKeyId != data.encryptionKeyId ||
+          existing.enabled != data.enabled ||
+          existing.accountName != data.accountName
         ) {
           // yes... update.
-          // except the enabled field... do not allow change via API (yet)
-          data.enabled = existing.enabled;
           await FormEventStreamConfig.query(trx)
             .findById(existing.id)
             .update({
@@ -45,7 +51,7 @@ const service = {
         }
       } else {
         // add a new configuration.
-        data.id = uuidv4();
+        data.id = uuid.v4();
         data.formId = formId;
         await FormEventStreamConfig.query(trx).insert({
           ...data,
@@ -69,7 +75,8 @@ const service = {
       // let's create a default
       const rec = new FormEventStreamConfig();
       rec.formId = formId;
-      return await service.upsert(formId, rec, { usernameIdp: 'systemdefault' });
+      await service.upsert(formId, rec, { usernameIdp: 'systemdefault' });
+      result = await FormEventStreamConfig.query().modify('filterFormId', formId).first();
     }
     return result;
   },

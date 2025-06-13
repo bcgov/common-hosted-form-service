@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import getRouter from '~/router';
 import { useIdpStore } from '~/store/identityProviders';
 import { useAppStore } from '~/store/app';
+import { rbacService } from '../services';
 
 /**
  * @function hasRoles
@@ -16,6 +17,21 @@ function hasRoles(tokenRoles, roles = []) {
     .every((x) => x === true);
 }
 
+const defaultUser = {
+  idpUserId: '',
+  username: '',
+  firstName: '',
+  lastName: '',
+  fullName: '',
+  email: '',
+  idp: {
+    code: 'public',
+    display: 'Public',
+    hint: 'public',
+  },
+  public: true,
+};
+
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     keycloak: undefined,
@@ -23,15 +39,13 @@ export const useAuthStore = defineStore('auth', {
     ready: false,
     authenticated: false,
     logoutUrl: undefined,
+    currentUser: defaultUser,
   }),
   getters: {
-    createLoginUrl: (state) => (options) =>
-      state.keycloak.createLoginUrl(options),
     createLogoutUrl: (state) => (options) =>
       state.keycloak.createLogoutUrl(options),
-    email: (state) =>
-      state.keycloak.tokenParsed ? state.keycloak.tokenParsed.email : '',
-    fullName: (state) => state.keycloak.tokenParsed.name,
+    email: (state) => state.currentUser?.email,
+    fullName: (state) => state.currentUser?.fullName,
     /**
      * Checks if the state has the required resource roles
      * @returns (T/F) Whether the state has the required roles
@@ -72,52 +86,43 @@ export const useAuthStore = defineStore('auth', {
     tokenParsed: (state) => state.keycloak.tokenParsed,
     userName: (state) => state.keycloak.tokenParsed.preferred_username,
     user: (state) => {
-      const idpStore = useIdpStore();
-      const user = {
-        idpUserId: '',
-        username: '',
-        firstName: '',
-        lastName: '',
-        fullName: '',
-        email: '',
-        idp: {
-          code: 'public',
-          display: 'Public',
-          hint: 'public',
-        },
-        public: !state.authenticated,
-      };
-      if (state.authenticated) {
-        user.firstName = state.tokenParsed.given_name;
-        user.lastName = state.tokenParsed.family_name;
-        user.fullName = state.tokenParsed.name;
-        user.email = state.tokenParsed.email;
-        const idp = idpStore.findByHint(state.tokenParsed.identity_provider);
-        user.idp = idp;
-        user.username = idpStore.getTokenMapValue(
-          state.tokenParsed.identity_provider,
-          'username',
-          state.tokenParsed
-        );
-        user.idpUserId = idpStore.getTokenMapValue(
-          state.tokenParsed.identity_provider,
-          'idpUserId',
-          state.tokenParsed
-        );
-        if (!user.username) {
-          user.username = state.tokenParsed.preferred_username;
-        }
-      }
-
-      return user;
+      return state.currentUser;
     },
   },
   actions: {
+    async createLoginUrl(options) {
+      return await this.keycloak.createLoginUrl(options);
+    },
     updateKeycloak(keycloak, isAuthenticated) {
       this.keycloak = keycloak;
       this.authenticated = isAuthenticated;
+      if (this.authenticated) {
+        rbacService
+          .getCurrentUser()
+          .then((response) => {
+            const user = response.data;
+            const idpStore = useIdpStore();
+            const idpObject = idpStore.findByCode(user.idp);
+            // only populate these specific attributes.
+            this.currentUser = {
+              idpUserId: user.idpUserId,
+              username: user.username,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              fullName: user.fullName,
+              email: user.email,
+              idp: idpObject,
+              public: user.public,
+            };
+          })
+          .catch(() => {
+            this.currentUser = defaultUser;
+          });
+      } else {
+        this.currentUser = defaultUser;
+      }
     },
-    login(idpHint) {
+    async login(idpHint) {
       if (this.ready) {
         if (!this.redirectUri) this.redirectUri = location.toString();
 
@@ -130,7 +135,7 @@ export const useAuthStore = defineStore('auth', {
 
         if (options.idpHint) {
           // Redirect to Keycloak if idpHint is available
-          window.location.replace(this.createLoginUrl(options));
+          window.location.replace(await this.createLoginUrl(options));
         } else {
           // Navigate to internal login page if no idpHint specified
           const router = getRouter();

@@ -4,10 +4,10 @@
 
 [Watch a series of short videos](https://www.youtube.com/playlist?list=PL9CV_8JBQHirsQAShw45PZeU1CkU88Q53) to learn how to build your first form.
 
-
 ![Tests](https://github.com/bcgov/common-hosted-form-service/workflows/Tests/badge.svg)
 [![Maintainability](https://api.codeclimate.com/v1/badges/950b1d6c61567a1da227/maintainability)](https://codeclimate.com/github/bcgov/common-hosted-form-service/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/950b1d6c61567a1da227/test_coverage)](https://codeclimate.com/github/bcgov/common-hosted-form-service/test_coverage)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_common-hosted-form-service&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=bcgov_common-hosted-form-service)
 
 ## Directory Structure
 
@@ -24,6 +24,7 @@
     │   └── forms/             - Models, Controllers, Routes for the forms
     └── tests/                 - Node.js backend web application tests
     components/                - Form.io Custom Components Library
+    clamav/                    - ClamAV Virus Scanner image and helm charts
     openshift/                 - OpenShift-deployment and shared pipeline files
     tests/                     - External test frameworks
     ├── functional/            - Supporting functional tests
@@ -39,10 +40,11 @@
 ## Documentation
 
 - [Application Readme](app/README.md)
+- [CHEFS Development with Dev Container](https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Developer/Contributors/CHEFS-Development-with-Dev-Container/)
 - [Frontend Readme](app/frontend/README.md)
 - [Openshift Readme](openshift/README.md)
 - [Cypress Test Readme](tests/functional/cypress/README.md)
-- [CHEFS Load Test Readme](tests/load/load-test/README.md)
+- [CHEFS Performance Test Readme](tests/performance/README.md)
 - [Devops Tools Setup](https://github.com/bcgov/nr-showcase-devops-tools)
 - [Security Reporting](SECURITY.md)
 - [Product Roadmap](https://developer.gov.bc.ca/docs/default/component/chefs-techdocs/Product-Roadmap/)

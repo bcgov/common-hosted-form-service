@@ -11,6 +11,7 @@ import Developer from '~/components/admin/Developer.vue';
 describe('Developer.vue', () => {
   const mockConsoleError = vi.spyOn(console, 'error');
   const getCurrentUserSpy = vi.spyOn(rbacService, 'getCurrentUser');
+  const getCurrentUserFormsSpy = vi.spyOn(rbacService, 'getCurrentUserForms');
 
   const pinia = createTestingPinia();
   setActivePinia(pinia);
@@ -28,7 +29,12 @@ describe('Developer.vue', () => {
   });
 
   it('renders without error', async () => {
-    const data = {};
+    const userData = { id: 'a' };
+    const formsData = [];
+    const resData = {
+      ...userData,
+      forms: formsData,
+    };
     authStore.keycloak = {
       tokenParsed: {
         email: 'email@email.com',
@@ -38,7 +44,8 @@ describe('Developer.vue', () => {
       token: 'token',
       fullName: 'fullName',
     };
-    getCurrentUserSpy.mockImplementation(() => ({ data: data }));
+    getCurrentUserSpy.mockImplementation(() => ({ data: userData }));
+    getCurrentUserFormsSpy.mockImplementation(() => ({ data: formsData }));
     const wrapper = mount(Developer, {
       global: {
         props: {
@@ -56,7 +63,7 @@ describe('Developer.vue', () => {
 
     expect(wrapper.text()).toMatch('Developer Resources');
     expect(getCurrentUserSpy).toHaveBeenCalledTimes(1);
-    expect(wrapper.vm.apiRes).toEqual(data);
+    expect(wrapper.vm.apiRes).toEqual(resData);
   });
 
   it('renders with error', async () => {

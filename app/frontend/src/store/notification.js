@@ -44,6 +44,12 @@ export const useNotificationStore = defineStore('notification', {
       if (!notification.type)
         notification = { ...notification, ...NotificationTypes.ERROR };
 
+      if (notification.unique) {
+        const ntfcation = this.notifications.find(
+          (n) => n.text === notification.text
+        );
+        if (ntfcation) return;
+      }
       this.notifications.push({
         ...notification,
         id: this.notificationId++,

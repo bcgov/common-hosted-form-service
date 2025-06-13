@@ -1,5 +1,4 @@
 import 'cypress-keycloak-commands';
-import 'cypress-drag-drop';
 import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
@@ -48,9 +47,10 @@ describe('Form Designer', () => {
       .trigger('mousemove', coords.x, -550, { force: true })
         //.trigger('mousemove', coords.y, +100, { force: true })
       .trigger('mouseup', { force: true });
-      cy.waitForLoad();
+      cy.wait(2000);
       //cy.get('input[name="data[label]"]').type('s');  
       cy.get('button').contains('Save').click();
+      cy.wait(2000);
       //cy.get('.btn-success').click();
 
 
@@ -80,16 +80,16 @@ describe('Form Designer', () => {
     });
     //Verify visibility of right side buttons on design page
     cy.get('[data-cy="saveButton"] > .v-btn').should('be.enabled');
-    cy.get('[data-cy="previewRouterLink"] > .v-btn').should('be.enabled');
+    //cy.get('[data-cy="previewRouterLink"] > .v-btn').should('be.enabled');
     cy.get('[data-cy="undoButton"] > .v-btn').should('be.enabled');
     cy.get('[data-cy="redoButton"] > .v-btn').should('not.be.enabled');
     cy.get('.mdi-undo').click();
     cy.get('[data-cy="redoButton"] > .v-btn').should('be.enabled');
     cy.get('[data-cy="redoButton"] > .v-btn').click();
-    cy.get('.float-button > :nth-child(1) > .v-btn').should('be.enabled');
-    cy.get('.float-button > :nth-child(1) > .v-btn').click();
+    //Verify  existence of page top/bottom move button
+    cy.get('.float-button > :nth-child(3) > .v-btn').should('be.enabled');
+    cy.get('.float-button > :nth-child(3) > .v-btn').click();
     cy.get('.mdi-arrow-down').should('not.exist');
-
     cy.get('.mdi-arrow-up').should('exist');
     cy.get('.mdi-close').click();
     cy.get('[data-cy="saveButton"] > .v-btn').should('not.exist');
@@ -99,13 +99,12 @@ describe('Form Designer', () => {
     cy.get('.mdi-arrow-up').should('be.visible');
     cy.get('.mdi-menu').click();
     
-
     // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
     cy.wait(2000);
-    
+    //cy.get('[data-cy="previewRouterLink"] > .v-btn').should('be.enabled');
     // Filter the newly created form
     cy.location('search').then(search => {
     let arr = search.split('=');

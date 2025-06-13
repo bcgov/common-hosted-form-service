@@ -1,5 +1,4 @@
 import 'cypress-keycloak-commands';
-import 'cypress-drag-drop';
 import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
@@ -28,13 +27,9 @@ describe('Form Designer', () => {
   });
   it('Visits the form settings page', () => {
     
-    
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-    
     formsettings();
-    
-
   });  
 // Publish a simple form 
 it('Verify draft submission', () => {
@@ -51,20 +46,12 @@ it('Verify draft submission', () => {
       .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
-    cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
+    
   // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
-    savedButton.trigger('click');
-    cy.waitForLoad();
-
-
-  // Go to My forms  
-    cy.wait('@getForm').then(()=>{
-      let userFormsLinks = cy.get('[data-cy=userFormsLinks]');
-      expect(userFormsLinks).to.not.be.null;
-      userFormsLinks.trigger('click');
-    });
+    savedButton.should('be.visible').trigger('click');
+    cy.wait(2000);
   // Filter the newly created form
     cy.location('search').then(search => {
       //let pathName = fullUrl.pathname
@@ -119,24 +106,9 @@ it('Verify draft submission', () => {
     cy.get('[data-test="save-btn"] > .v-btn__content').click();
     cy.get('.v-data-table__tr > :nth-child(4)').contains('DRAFT').should('not.exist');
     cy.get('.mdi-pencil').click();
-    cy.get('.mdi-content-save').click();
-    cy.get('.v-alert__content > div').contains('Draft Saved');
-    cy.get(':nth-child(2) > :nth-child(4) > :nth-child(1) > .v-btn').click();
-    //Manage  members for draft management
-    cy.get('form > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
-    cy.get('form > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').type('NIM');
-    cy.contains('John, Nimya 1 CITZ:EX (nimya.1.john@gov.bc.ca)').click();
-    cy.get('.v-col-3').click();
-    cy.get('tbody > :nth-child(2) > :nth-child(1)').contains('John, Nimya 1 CITZ:EX').should('be.visible');
-    cy.get(':nth-child(1) > :nth-child(4) > .v-btn > .v-btn__content > .mdi-minus').should('not.be.enabled');
-    //Remove added member
-    cy.get(':nth-child(2) > :nth-child(4) > .v-btn > .v-btn__content > .mdi-minus').click();
-    cy.get('[data-test="continue-btn-continue"] > .v-btn__content > span').click();
-    cy.get('tbody > :nth-child(2) > :nth-child(1)').should('not.exist');
-    cy.wait(4000);
-
-    cy.get('.v-card-actions > .v-btn > .v-btn__content > span').click();
+    cy.get('.ml-auto > :nth-child(3) > .v-btn').click();
     cy.waitForLoad();
+    cy.get('.v-alert__content > div').contains('Draft Saved');
     // Edit draft submission
     cy.wait(4000);
     cy.get('.mt-6 > :nth-child(1) > .v-btn > .v-btn__content > span').click();

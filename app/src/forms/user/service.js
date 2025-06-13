@@ -1,5 +1,5 @@
 const Problem = require('api-problem');
-const { v4: uuidv4 } = require('uuid');
+const uuid = require('uuid');
 const { User, UserFormPreferences, Label } = require('../common/models');
 const idpService = require('../../components/idpService');
 
@@ -52,7 +52,7 @@ const service = {
 
         if (!existingLabel) {
           await Label.query(trx).insert({
-            id: uuidv4(),
+            id: uuid.v4(),
             userId: currentUser.id,
             labelText: labelText,
           });

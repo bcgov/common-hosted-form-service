@@ -1,7 +1,6 @@
 const Problem = require('api-problem');
 
-const { v4: uuidv4 } = require('uuid');
-
+const uuid = require('uuid');
 const { FormMetadata } = require('../../common/models');
 const { typeUtils } = require('../../common/utils');
 
@@ -17,7 +16,7 @@ const service = {
 
   initModel: (formId, data) => {
     return {
-      id: uuidv4(),
+      id: uuid.v4(),
       formId: formId,
       metadata: data.metadata ? data.metadata : {},
     };
