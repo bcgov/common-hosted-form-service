@@ -221,7 +221,7 @@ async function handleSearch(value) {
       item-key="title"
       :items="items"
       :items-per-page="itemsPP"
-      :items-length="totalAPI"
+      :items-length="totalAPI === undefined ? 0 : totalAPI"
       :search="search"
       :loading="loading"
       :loading-text="$t('trans.adminAPIsTable.loadingText')"

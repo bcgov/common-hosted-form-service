@@ -127,7 +127,7 @@ onMounted(async () => {
       item-key="title"
       :items="userList"
       :items-per-page="itemsPP"
-      :items-length="userTotal"
+      :items-length="userTotal === undefined ? 0 : userTotal"
       :search="search"
       :loading="loading"
       :loading-text="$t('trans.adminUsersTable.loadingText')"

@@ -150,7 +150,7 @@ async function handleSearch(value) {
       item-key="title"
       :items="formList"
       :items-per-page="itemsPP"
-      :items-length="formTotal"
+      :items-length="formTotal === undefined ? 0 : formTotal"
       :search="search"
       :loading="loading"
       :lang="locale"
