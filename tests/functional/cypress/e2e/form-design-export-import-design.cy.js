@@ -3,20 +3,14 @@ import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
 
-
 Cypress.Commands.add('waitForLoad', () => {
   const loaderTimeout = 60000;
-
   cy.get('.nprogress-busy', { timeout: loaderTimeout }).should('not.exist');
 });
-
-
 
 describe('Form Designer', () => {
 
   beforeEach(()=>{
-    
-    
     
     cy.on('uncaught:exception', (err, runnable) => {
       // Form.io throws an uncaught exception for missing projectid
@@ -27,49 +21,37 @@ describe('Form Designer', () => {
   });
   it('Visits the form settings page', () => {
     
-    
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     formsettings();
-    
-
   });  
 // Publish a simple form with Simplebc Address component
  it('Checks Export/Import design functionality', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-    
     cy.get('button').contains('BC Government').click();
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('[data-key="simplebcaddress"]')
       .trigger('mousedown', { which: 1}, { force: true })
       .trigger('mousemove', coords.x, -550, { force: true })
-        //.trigger('mousemove', coords.y, +100, { force: true })
       .trigger('mouseup', { force: true });
       cy.wait(2000);
-      //cy.get('input[name="data[label]"]').type('s');  
       cy.get('button').contains('Save').click();
       cy.wait(2000);
-      //cy.get('.btn-success').click();
-
-
     });
-
     cy.get('.mdi-publish').click();
     let fileUploadInputField = cy.get('input[type=file]');
     cy.get('input[type=file]').should('not.to.be.null');
     fileUploadInputField.attachFile('test_schema.json');
     cy.wait(2000);
     cy.get('input[name="data[simplebcaddress]"]').should('not.exist'); 
-    
     cy.get('.mdi-download').click();
     cy.wait(2000);
     //Verifies design downloads into download folder
     cy.get("h3").then(($elem) => {
         const rem = $elem.text();
         let arr = rem.split(':');
-
         cy.log(arr);
         let remname = arr[1] + "_schema.json";
         cy.wait(2000);
@@ -80,7 +62,8 @@ describe('Form Designer', () => {
     });
     //Verify visibility of right side buttons on design page
     cy.get('[data-cy="saveButton"] > .v-btn').should('be.enabled');
-    //cy.get('[data-cy="previewRouterLink"] > .v-btn').should('be.enabled');
+    //Preview button disabled before form saving
+    cy.get('[data-cy="previewRouterLink"] > .v-btn').should('not.be.enabled');
     cy.get('[data-cy="undoButton"] > .v-btn').should('be.enabled');
     cy.get('[data-cy="redoButton"] > .v-btn').should('not.be.enabled');
     cy.get('.mdi-undo').click();
@@ -98,13 +81,13 @@ describe('Form Designer', () => {
     cy.get('.mdi-menu').should('be.visible');
     cy.get('.mdi-arrow-up').should('be.visible');
     cy.get('.mdi-menu').click();
-    
     // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
     savedButton.trigger('click');
     cy.wait(2000);
-    //cy.get('[data-cy="previewRouterLink"] > .v-btn').should('be.enabled');
+    //Preview button enabled
+    cy.get('[data-cy="previewRouterLink"] > .v-btn').should('be.enabled');
     // Filter the newly created form
     cy.location('search').then(search => {
     let arr = search.split('=');
@@ -117,7 +100,6 @@ describe('Form Designer', () => {
     cy.waitForLoad();
     //Verify new design is updated in the form
     cy.get('label').contains('Select List').should('be.visible');
-
     //Delete form after test run
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
      cy.waitForLoad();
@@ -125,10 +107,7 @@ describe('Form Designer', () => {
     cy.get('[data-test="continue-btn-continue"]').click();
     cy.get('#logoutButton > .v-btn__content > span').click();
     });
-    
-    
-    
+       
 });
-
 
 });
