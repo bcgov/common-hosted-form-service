@@ -4,8 +4,6 @@ import { setActivePinia } from 'pinia';
 import moment from 'moment-timezone';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ref } from 'vue';
-import { useI18n } from 'vue-i18n';
-const { t } = useI18n({ useScope: 'global' });
 
 import { useFormStore } from '~/store/form';
 import FormScheduleSettings from '~/components/designer/settings/FormScheduleSettings.vue';
@@ -165,9 +163,20 @@ describe('FormScheduleSettings.vue', () => {
     expect(
       wrapper.find('[data-test="closeSubmissionDateTime"]').exists()
     ).toBeTruthy();
-    expect(
-      wrapper.find('[data-test="afterCloseDateFor"]').exists()
-    ).toBeTruthy();
+
+    // Test that the late submission term field exists
+    const termField = wrapper.find('[data-test="afterCloseDateFor"]');
+    expect(termField.exists()).toBeTruthy();
+
+    // Test validation rules work correctly
+    const roundNumberRules = wrapper.vm.roundNumber;
+    expect(roundNumberRules[1]('5')).toBe(true); // Valid input (1-999)
+    expect(roundNumberRules[1]('0')).toBe(
+      'trans.formSettings.valueMustBeNumber'
+    ); // Invalid (below minimum)
+    expect(roundNumberRules[1]('1000')).toBe(
+      'trans.formSettings.valueMustBeNumber'
+    ); // Invalid (above maximum)
   });
 
   it('schedule a closing date renders with a closing message', async () => {

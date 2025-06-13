@@ -168,7 +168,7 @@
     "fieldRequired": "Kinakailangan ang field na ito.",
     "correctDateFormat": "Dapat nasa tamang format ang petsa. ibig sabihin. yyyy-mm-dd",
     "dateDiffMsg": "Ang petsa ng pagsasara ng pagsusumite ay dapat na mas malaki kaysa sa bukas na petsa ng pagsusumite.",
-    "valueMustBeNumber": "Ang halaga ay dapat na isang numero. ibig sabihin. 1,2,3,5,99",
+    "valueMustBeNumber": "Ang halaga ay dapat na buong numero sa pagitan ng 1 at 999",
     "selectAnOptions": "Mangyaring pumili ng hindi bababa sa 1 opsyon",
     "validInterval": "Ito ay dapat na isang wastong agwat.",
     "fieldRequiredAndInterval": "Kinakailangan ang field na ito at dapat na isang pagitan.",
