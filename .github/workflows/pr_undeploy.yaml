@@ -1,8 +1,8 @@
 name: PR Undeploy
-run-name: Undeploy PR-${{ env.PR_NUMBER }}
-
-env:
-  ACRONYM: chefs
+run-name: Undeploy PR
+description: |
+  This workflow is triggered when a pull request is closed or manually via the workflow_dispatch event.
+  It removes the deployment and associated resources for the specified pull request in the development namespace.
 
 on:
   workflow_dispatch:
@@ -22,6 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
+      ACRONYM: chefs
       PR_NUMBER: ${{ github.event.inputs.pr-number || github.event.pull_request.number }}
     steps:
       - name: Checkout
