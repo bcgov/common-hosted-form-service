@@ -228,5 +228,14 @@ export default {
       input: true,
       defaultValue: true,
     },
+    {
+      label: 'Show "Recenter Map" Button',
+      description:
+        'This allows users to recenter the map to the default center location.',
+      key: 'recenterButton',
+      type: 'checkbox',
+      input: true,
+      defaultValue: true,
+    },
   ],
 };
