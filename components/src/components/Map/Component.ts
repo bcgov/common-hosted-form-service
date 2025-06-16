@@ -7,14 +7,12 @@ import {
   DEFAULT_BASE_LAYER,
   MAP_INIT_DELAY,
   MAX_INIT_ATTEMPTS,
+  DEFAULT_CENTER,
+  DEFAULT_CONTAINER_HEIGHT,
+  tabComponentKeys,
 } from './Common/MapConstants';
 
 const FieldComponent = (Components as any).components.field;
-
-const DEFAULT_CENTER: [number, number] = [
-  53.96717190097409, -123.98320425388914,
-];
-const DEFAULT_CONTAINER_HEIGHT = '400px';
 
 export default class Component extends (FieldComponent as any) {
   static schema(...extend) {
@@ -70,6 +68,18 @@ export default class Component extends (FieldComponent as any) {
     this.mapInitializationAttempts = 0;
     this.cleanupMap();
     setTimeout(() => this.tryLoadMap(), MAP_INIT_DELAY);
+    this.on('change', (event) => {
+      if (
+        event.changed &&
+        tabComponentKeys.includes(event.changed.component.key)
+      ) {
+        setTimeout(() => {
+          if (this.mapService && this.mapService.map) {
+            this.mapService.map.invalidateSize();
+          }
+        }, MAP_INIT_DELAY);
+      }
+    });
     return superAttach;
   }
 
