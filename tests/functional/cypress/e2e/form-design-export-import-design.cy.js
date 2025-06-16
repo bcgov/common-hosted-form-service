@@ -63,6 +63,7 @@ describe('Form Designer', () => {
     //Verify visibility of right side buttons on design page
     cy.get('[data-cy="saveButton"] > .v-btn').should('be.enabled');
     //Preview button disabled before form saving
+    cy.get('[data-cy="previewRouterLink"] > .v-btn').should('be.visible');
     cy.get('[data-cy="previewRouterLink"] > .v-btn').should('not.be.enabled');
     cy.get('[data-cy="undoButton"] > .v-btn').should('be.enabled');
     cy.get('[data-cy="redoButton"] > .v-btn').should('not.be.enabled');
@@ -87,6 +88,7 @@ describe('Form Designer', () => {
     savedButton.trigger('click');
     cy.wait(2000);
     //Preview button enabled
+    cy.get('[data-cy="previewRouterLink"] > .v-btn').should('be.visible');
     cy.get('[data-cy="previewRouterLink"] > .v-btn').should('be.enabled');
     // Filter the newly created form
     cy.location('search').then(search => {
