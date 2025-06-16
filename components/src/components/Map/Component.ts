@@ -25,6 +25,7 @@ export default class Component extends (FieldComponent as any) {
       allowBaseLayerSwitch: false,
       availableBaseLayers: DEFAULT_AVAILABLE_BASELAYERS,
       availableBaseLayersCustom: [],
+      recenterButton: true, // Default to true for recenter button
       ...extend,
     });
   }
@@ -134,6 +135,7 @@ export default class Component extends (FieldComponent as any) {
       availableBaseLayers,
       availableBaseLayersCustom,
       markerType,
+      recenterButton, // Extract recenter button setting
     } = this.component;
 
     const drawOptions = this.getDrawOptions(markerType);
@@ -178,6 +180,7 @@ export default class Component extends (FieldComponent as any) {
         (k) => availableBaseLayers[k]
       ),
       availableBaseLayersCustom,
+      recenterButton, // Pass recenter button setting to MapService
     });
 
     // Now explicitly call async initialize outside constructor
