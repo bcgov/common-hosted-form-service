@@ -356,6 +356,7 @@ async function updateTableOptions({ page, itemsPerPage, sortBy }) {
       s.column = 'formSubmissionStatusCode';
     } else if (sortBy[0].key === 'assignee') {
       s.column = 'formSubmissionAssignedToUsernameIdp';
+      sort.value.column = 'formSubmissionAssignedToUsernameIdp';
     } else {
       s.column = sortBy[0].key;
     }

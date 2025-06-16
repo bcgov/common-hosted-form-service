@@ -501,7 +501,10 @@ const service = {
       if (fields.includes('updatedAt')) selection.push('updatedAt');
       if (fields.includes('updatedBy')) selection.push('updatedBy');
 
-      fields = fields.filter((f) => !['updatedAt', 'updatedBy', ''].includes(f));
+      // Remove updatedAt and updatedBy so they won't be pulled from submission
+      // columns. Also remove empty values to handle the case of trailing commas
+      // and other malformed data too.
+      fields = fields.filter((f) => f !== 'updatedAt' && f !== 'updatedBy' && f.trim() !== '');
       if (shouldIncludeAssignee) {
         fields = fields.filter((f) => f !== 'assignee');
       }
