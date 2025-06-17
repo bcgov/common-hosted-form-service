@@ -2,7 +2,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 import { storeToRefs } from 'pinia';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, onBeforeMount } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BaseDialog from '~/components/base/BaseDialog.vue';
@@ -63,6 +63,8 @@ const tableFilterIgnore = ref([
   { key: 'lateEntry' },
 ]);
 
+const loadingRefs = ref(true);
+
 const authStore = useAuthStore();
 const formStore = useFormStore();
 
@@ -114,14 +116,10 @@ const showAssigneeColumn = computed(() => {
 });
 
 const userColumns = computed(() => {
-  if (
-    userFormPreferences.value &&
-    userFormPreferences.value.preferences &&
-    userFormPreferences.value.preferences.columns
-  ) {
+  if (userFormPreferences.value?.preferences?.submissionsTable?.columns) {
     // if we have any objects inside o
     // Compare saved user prefs against the current form versions component names and remove any discrepancies
-    return userFormPreferences.value.preferences.columns.filter(
+    return userFormPreferences.value.preferences.submissionsTable.columns.filter(
       (x) => formFields.value.indexOf(x) !== -1
     );
   } else {
@@ -266,8 +264,9 @@ const HEADERS = computed(() => {
 // that they wish to see in the table in this view.
 const USER_PREFERENCES = computed(() => {
   let preselectedData = [];
-  if (userFormPreferences.value?.preferences?.columns) {
-    preselectedData = userFormPreferences.value.preferences.columns;
+  if (userFormPreferences.value?.preferences?.submissionsTable?.columns) {
+    preselectedData =
+      userFormPreferences.value.preferences.submissionsTable.columns;
   }
   return preselectedData;
 });
@@ -314,6 +313,18 @@ const PRESELECTED_DATA = computed(() => {
 });
 //------------------------ END FILTER COLUMNS
 
+onBeforeMount(async () => {
+  // we need to reset all the storedToRef values before we render the components
+  // bound components or computed values could initialize with "old" data if we don't.
+  Promise.all([
+    formStore.getFormPreferencesForCurrentUser(properties.formId),
+    formStore.getFormRolesForUser(properties.formId),
+    formStore.getFormPermissionsForUser(properties.formId),
+  ]).then(() => {
+    loadingRefs.value = false;
+  });
+});
+
 onMounted(async () => {
   debounceInput.value = _.debounce(async () => {
     forceTableRefresh.value += 1;
@@ -335,22 +346,30 @@ async function updateTableOptions({ page, itemsPerPage, sortBy }) {
   if (page) {
     currentPage.value = page;
   }
+  let s = userFormPreferences.value?.preferences?.submissionsTable?.sort || {};
   if (sortBy?.length > 0) {
     if (sortBy[0].key === 'date') {
-      sort.value.column = 'createdAt';
+      s.column = 'createdAt';
     } else if (sortBy[0].key === 'submitter') {
-      sort.value.column = 'createdBy';
+      s.column = 'createdBy';
     } else if (sortBy[0].key === 'status') {
-      sort.value.column = 'formSubmissionStatusCode';
+      s.column = 'formSubmissionStatusCode';
     } else if (sortBy[0].key === 'assignee') {
+      s.column = 'formSubmissionAssignedToUsernameIdp';
       sort.value.column = 'formSubmissionAssignedToUsernameIdp';
     } else {
-      sort.value.column = sortBy[0].key;
+      s.column = sortBy[0].key;
     }
-    sort.value.order = sortBy[0].order;
-  } else {
-    sort.value = {};
+    s.order = sortBy[0].order;
   }
+  sort.value = s;
+  // save the sort...
+  await updateFormPreferences(
+    properties.formId,
+    userFormPreferences.value?.preferences?.submissionsTable?.columns,
+    userFormPreferences.value?.preferences?.submissionsTable?.filters,
+    s
+  );
   if (itemsPerPage) {
     itemsPP.value = itemsPerPage;
   }
@@ -369,30 +388,24 @@ async function getSubmissionData() {
     paginationEnabled: true,
     sortBy: sort.value,
     search: search.value,
-    searchEnabled: search.value.length > 0 ? true : false,
+    searchEnabled: search.value.length > 0,
     createdAt: Object.values({
-      minDate:
-        userFormPreferences.value &&
-        userFormPreferences.value.preferences &&
-        userFormPreferences.value.preferences.filter
-          ? moment(
-              userFormPreferences.value.preferences.filter[0],
-              'YYYY-MM-DD'
-            )
-              .utc()
-              .format()
-          : moment().subtract(50, 'years').utc().format('YYYY-MM-DD'), //Get User filter Criteria (Min Date)
-      maxDate:
-        userFormPreferences.value &&
-        userFormPreferences.value.preferences &&
-        userFormPreferences.value.preferences.filter
-          ? moment(
-              userFormPreferences.value.preferences.filter[1],
-              'YYYY-MM-DD'
-            )
-              .utc()
-              .format()
-          : moment().add(50, 'years').utc().format('YYYY-MM-DD'), //Get User filter Criteria (Max Date)
+      minDate: userFormPreferences.value?.preferences?.submissionsTable?.filter
+        ? moment(
+            userFormPreferences.value.preferences.submissionsTable.filter[0],
+            'YYYY-MM-DD'
+          )
+            .utc()
+            .format()
+        : moment().subtract(50, 'years').utc().format('YYYY-MM-DD'), //Get User filter Criteria (Min Date)
+      maxDate: userFormPreferences.value?.preferences?.submissionsTable?.filter
+        ? moment(
+            userFormPreferences.value.preferences.submissionsTable.filter[1],
+            'YYYY-MM-DD'
+          )
+            .utc()
+            .format()
+        : moment().add(50, 'years').utc().format('YYYY-MM-DD'), //Get User filter Criteria (Max Date)
     }),
     deletedOnly: deletedOnly.value,
     createdBy: currentUserOnly.value
@@ -450,7 +463,8 @@ async function populateSubmissionsTable() {
     await getSubmissionData();
     // Build up the list of forms for the table
   } catch (error) {
-    // Handled in state fetchSubmissions
+    // eslint-disable-next-line no-console
+    console.error('Failed to populate submissions table:', error);
   } finally {
     loading.value = false;
   }
@@ -538,18 +552,31 @@ async function restoreMultipleSubs() {
 
 async function updateFilter(data) {
   showColumnsDialog.value = false;
-  let preferences = {
-    columns: [],
-  };
+  let columns = [];
   data.forEach((d) => {
-    preferences.columns.push(d);
+    columns.push(d);
   });
-
-  await formStore.updateFormPreferencesForCurrentUser({
-    formId: form.value.id,
-    preferences: preferences,
-  });
+  await updateFormPreferences(
+    form.value.id,
+    columns,
+    userFormPreferences.value?.preferences?.submissionsTable?.filters,
+    userFormPreferences.value?.preferences?.submissionsTable?.sort
+  );
   await populateSubmissionsTable();
+}
+
+async function updateFormPreferences(id, columns, filters, sort) {
+  await formStore.getFormPreferencesForCurrentUser(id);
+  const prefs = userFormPreferences.value?.preferences || {};
+  prefs.submissionsTable = {
+    columns: columns || [],
+    filters: filters || [],
+    sort: sort || {},
+  };
+  await formStore.updateFormPreferencesForCurrentUser({
+    formId: id,
+    preferences: prefs,
+  });
 }
 
 async function handleSearch(value) {
@@ -599,363 +626,377 @@ defineExpose({
 </script>
 
 <template>
-  <div :class="{ 'dir-rtl': isRTL }">
-    <div
-      class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
-    >
-      <!-- page title -->
-      <div>
-        <h1 :lang="locale">{{ $t('trans.formsTable.submissions') }}</h1>
-        <h3>{{ formId ? form.name : 'All Forms' }}</h3>
-      </div>
-      <!-- buttons -->
-      <div>
-        <span>
-          <v-tooltip v-if="showSelectColumns" location="bottom">
-            <template #activator="{ props }">
-              <v-btn
-                class="mx-1"
-                color="primary"
-                v-bind="props"
-                size="x-small"
-                density="default"
-                icon="mdi:mdi-view-column"
-                :title="$t('trans.submissionsTable.selectColumns')"
-                @click="onShowColumnDialog"
-              />
-            </template>
-            <span :lang="locale">{{
-              $t('trans.submissionsTable.selectColumns')
-            }}</span>
-          </v-tooltip>
-          <v-tooltip v-if="showFormManage" location="bottom">
-            <template #activator="{ props }">
-              <v-btn
-                class="mx-1"
-                color="primary"
-                v-bind="props"
-                :disabled="!formId"
-                size="x-small"
-                density="default"
-                icon="mdi:mdi-cog"
-                :to="{ name: 'FormManage', query: { f: formId } }"
-                :title="$t('trans.submissionsTable.manageForm')"
-              />
-            </template>
-            <span :lang="locale">{{
-              $t('trans.submissionsTable.manageForm')
-            }}</span>
-          </v-tooltip>
-          <v-tooltip v-if="showSubmissionsExport" location="bottom">
-            <template #activator="{ props }">
-              <router-link
-                :to="{ name: 'SubmissionsExport', query: { f: formId } }"
-              >
+  <div v-if="loadingRefs">
+    <!-- show nothing until we've reset the storedToRefs... -->
+  </div>
+  <div v-else>
+    <div :class="{ 'dir-rtl': isRTL }">
+      <div
+        class="mt-6 d-flex flex-md-row justify-space-between flex-sm-column-reverse flex-xs-column-reverse gapRow"
+      >
+        <!-- page title -->
+        <div>
+          <h1 :lang="locale">{{ $t('trans.formsTable.submissions') }}</h1>
+          <h3>{{ formId ? form.name : 'All Forms' }}</h3>
+        </div>
+        <!-- buttons -->
+        <div>
+          <span>
+            <v-tooltip v-if="showSelectColumns" location="bottom">
+              <template #activator="{ props }">
                 <v-btn
                   class="mx-1"
                   color="primary"
                   v-bind="props"
                   size="x-small"
                   density="default"
-                  icon="mdi:mdi-download"
-                  :title="$t('trans.submissionsTable.submissionsToFiles')"
+                  icon="mdi:mdi-view-column"
+                  :title="$t('trans.submissionsTable.selectColumns')"
+                  @click="onShowColumnDialog"
                 />
+              </template>
+              <span :lang="locale">{{
+                $t('trans.submissionsTable.selectColumns')
+              }}</span>
+            </v-tooltip>
+            <v-tooltip v-if="showFormManage" location="bottom">
+              <template #activator="{ props }">
+                <v-btn
+                  class="mx-1"
+                  color="primary"
+                  v-bind="props"
+                  :disabled="!formId"
+                  size="x-small"
+                  density="default"
+                  icon="mdi:mdi-cog"
+                  :to="{ name: 'FormManage', query: { f: formId } }"
+                  :title="$t('trans.submissionsTable.manageForm')"
+                />
+              </template>
+              <span :lang="locale">{{
+                $t('trans.submissionsTable.manageForm')
+              }}</span>
+            </v-tooltip>
+            <v-tooltip v-if="showSubmissionsExport" location="bottom">
+              <template #activator="{ props }">
+                <router-link
+                  :to="{ name: 'SubmissionsExport', query: { f: formId } }"
+                >
+                  <v-btn
+                    class="mx-1"
+                    color="primary"
+                    v-bind="props"
+                    size="x-small"
+                    density="default"
+                    icon="mdi:mdi-download"
+                    :title="$t('trans.submissionsTable.submissionsToFiles')"
+                  />
+                </router-link>
+              </template>
+              <span :lang="locale">{{
+                $t('trans.submissionsTable.submissionsToFiles')
+              }}</span>
+            </v-tooltip>
+          </span>
+        </div>
+      </div>
+
+      <div
+        class="mt-5 mb-5 d-flex flex-md-row justify-space-between flex-sm-column flex-xs-column"
+      >
+        <div>
+          <v-checkbox
+            v-model="deletedOnly"
+            class="pl-3"
+            @click="refreshSubmissions"
+          >
+            <template #label>
+              <span :class="{ 'mr-2': isRTL }" :lang="locale">
+                {{ $t('trans.submissionsTable.showDeletedSubmissions') }}
+              </span>
+            </template>
+          </v-checkbox>
+        </div>
+
+        <div>
+          <v-checkbox
+            v-model="currentUserOnly"
+            class="pl-3"
+            @click="refreshSubmissions"
+          >
+            <template #label>
+              <span :class="{ 'mr-2': isRTL }" :lang="locale">
+                {{ $t('trans.submissionsTable.showMySubmissions') }}
+              </span>
+            </template>
+          </v-checkbox>
+        </div>
+
+        <!-- Assigned to Me checkbox -->
+        <div v-if="showAssigneeColumn">
+          <v-checkbox
+            v-model="assignedToMeOnly"
+            class="pl-3"
+            @click="refreshSubmissions"
+          >
+            <template #label>
+              <span :class="{ 'mr-2': isRTL }" :lang="locale">
+                {{ $t('trans.submissionsTable.showAssignedToMe') }}
+              </span>
+            </template>
+          </v-checkbox>
+        </div>
+
+        <div>
+          <!-- search input -->
+          <div class="submissions-search">
+            <v-text-field
+              density="compact"
+              variant="underlined"
+              :label="$t('trans.submissionsTable.search')"
+              append-inner-icon="mdi-magnify"
+              single-line
+              hide-details
+              class="pb-5"
+              :class="{ label: isRTL }"
+              :lang="locale"
+              @update:modelValue="handleSearch"
+            ></v-text-field>
+          </div>
+        </div>
+      </div>
+
+      <!-- table header -->
+      <v-data-table-server
+        :key="forceTableRefresh"
+        v-model="selectedSubmissions"
+        hover
+        :items-length="totalSubmissions"
+        class="submissions-table"
+        :items-per-page="itemsPP"
+        :headers="HEADERS"
+        item-value="submissionId"
+        :items="serverItems"
+        show-select
+        :loading="loading"
+        :loading-text="$t('trans.submissionsTable.loadingText')"
+        :no-data-text="
+          search.length > 0
+            ? $t('trans.submissionsTable.noMatchingRecordText')
+            : $t('trans.submissionsTable.noDataText')
+        "
+        :lang="locale"
+        return-object
+        @update:options="updateTableOptions"
+      >
+        <template #header.event>
+          <span v-if="!deletedOnly">
+            <v-btn
+              color="red"
+              :disabled="selectedSubmissions.length === 0"
+              icon="mdi:mdi-minus"
+              size="x-small"
+              :title="$t('trans.submissionsTable.delSelectedSubmissions')"
+              @click="
+                (showDeleteDialog = true), (singleSubmissionDelete = false)
+              "
+            >
+              <v-tooltip location="bottom">
+                <template #activator="{ props }">
+                  <v-icon color="white" dark v-bind="props" />
+                </template>
+                <span :lang="locale">{{
+                  $t('trans.submissionsTable.delSelectedSubmissions')
+                }}</span>
+              </v-tooltip>
+            </v-btn>
+          </span>
+          <span v-if="deletedOnly">
+            <v-btn
+              :disabled="selectedSubmissions.length === 0"
+              icon
+              size="x-small"
+              :title="$t('trans.submissionsTable.resSelectedSubmissions')"
+              @click="
+                (showRestoreDialog = true), (singleSubmissionRestore = false)
+              "
+            >
+              <v-tooltip location="bottom">
+                <template #activator="{ props }">
+                  <v-icon
+                    color="green"
+                    dark
+                    v-bind="props"
+                    icon="mdi:mdi-delete-restore"
+                    size="24"
+                  />
+                </template>
+                <span :lang="locale">{{
+                  $t('trans.submissionsTable.resSelectedSubmissions')
+                }}</span>
+              </v-tooltip>
+            </v-btn>
+          </span>
+        </template>
+
+        <template #item.date="{ item }">
+          {{ $filters.formatDateLong(item.date) }}
+        </template>
+        <template #item.updatedAt="{ item }">
+          {{ item.updatedAt ? $filters.formatDateLong(item.updatedAt) : '' }}
+        </template>
+        <template #item.status="{ item }">
+          {{ item.status }}
+        </template>
+        <template #item.lateEntry="{ item }">
+          <span :lang="locale">
+            {{
+              item.lateEntry === true
+                ? $t('trans.submissionsTable.yes')
+                : $t('trans.submissionsTable.no')
+            }}
+          </span>
+        </template>
+        <template #item.actions="{ item }">
+          <v-tooltip location="bottom">
+            <template #activator="{ props }">
+              <router-link
+                :to="{
+                  name: 'FormView',
+                  query: {
+                    s: item.submissionId,
+                  },
+                }"
+              >
+                <v-btn
+                  color="primary"
+                  icon
+                  size="x-small"
+                  v-bind="props"
+                  :title="$t('trans.submissionsTable.viewSubmission')"
+                >
+                  <v-icon icon="mdi:mdi-eye"></v-icon>
+                </v-btn>
               </router-link>
             </template>
             <span :lang="locale">{{
-              $t('trans.submissionsTable.submissionsToFiles')
+              $t('trans.submissionsTable.viewSubmission')
             }}</span>
           </v-tooltip>
-        </span>
-      </div>
-    </div>
-
-    <div
-      class="mt-5 mb-5 d-flex flex-md-row justify-space-between flex-sm-column flex-xs-column"
-    >
-      <div>
-        <v-checkbox
-          v-model="deletedOnly"
-          class="pl-3"
-          @click="refreshSubmissions"
-        >
-          <template #label>
-            <span :class="{ 'mr-2': isRTL }" :lang="locale">
-              {{ $t('trans.submissionsTable.showDeletedSubmissions') }}
-            </span>
-          </template>
-        </v-checkbox>
-      </div>
-
-      <div>
-        <v-checkbox
-          v-model="currentUserOnly"
-          class="pl-3"
-          @click="refreshSubmissions"
-        >
-          <template #label>
-            <span :class="{ 'mr-2': isRTL }" :lang="locale">
-              {{ $t('trans.submissionsTable.showMySubmissions') }}
-            </span>
-          </template>
-        </v-checkbox>
-      </div>
-
-      <!-- Assigned to Me checkbox -->
-      <div v-if="showAssigneeColumn">
-        <v-checkbox
-          v-model="assignedToMeOnly"
-          class="pl-3"
-          @click="refreshSubmissions"
-        >
-          <template #label>
-            <span :class="{ 'mr-2': isRTL }" :lang="locale">
-              {{ $t('trans.submissionsTable.showAssignedToMe') }}
-            </span>
-          </template>
-        </v-checkbox>
-      </div>
-
-      <div>
-        <!-- search input -->
-        <div class="submissions-search">
-          <v-text-field
-            density="compact"
-            variant="underlined"
-            :label="$t('trans.submissionsTable.search')"
-            append-inner-icon="mdi-magnify"
-            single-line
-            hide-details
-            class="pb-5"
-            :class="{ label: isRTL }"
-            :lang="locale"
-            @update:modelValue="handleSearch"
-          ></v-text-field>
-        </div>
-      </div>
-    </div>
-
-    <!-- table header -->
-    <v-data-table-server
-      :key="forceTableRefresh"
-      v-model="selectedSubmissions"
-      hover
-      :items-length="totalSubmissions"
-      class="submissions-table"
-      :items-per-page="itemsPP"
-      :headers="HEADERS"
-      item-value="submissionId"
-      :items="serverItems"
-      show-select
-      :loading="loading"
-      :loading-text="$t('trans.submissionsTable.loadingText')"
-      :no-data-text="
-        search.length > 0
-          ? $t('trans.submissionsTable.noMatchingRecordText')
-          : $t('trans.submissionsTable.noDataText')
-      "
-      :lang="locale"
-      return-object
-      @update:options="updateTableOptions"
-    >
-      <template #header.event>
-        <span v-if="!deletedOnly">
-          <v-btn
-            color="red"
-            :disabled="selectedSubmissions.length === 0"
-            icon="mdi:mdi-minus"
-            size="x-small"
-            :title="$t('trans.submissionsTable.delSelectedSubmissions')"
-            @click="(showDeleteDialog = true), (singleSubmissionDelete = false)"
-          >
-            <v-tooltip location="bottom">
+        </template>
+        <template #item.event="{ item }">
+          <span>
+            <v-tooltip v-if="!item.deleted" location="bottom">
               <template #activator="{ props }">
-                <v-icon color="white" dark v-bind="props" />
-              </template>
-              <span :lang="locale">{{
-                $t('trans.submissionsTable.delSelectedSubmissions')
-              }}</span>
-            </v-tooltip>
-          </v-btn>
-        </span>
-        <span v-if="deletedOnly">
-          <v-btn
-            :disabled="selectedSubmissions.length === 0"
-            icon
-            size="x-small"
-            :title="$t('trans.submissionsTable.resSelectedSubmissions')"
-            @click="
-              (showRestoreDialog = true), (singleSubmissionRestore = false)
-            "
-          >
-            <v-tooltip location="bottom">
-              <template #activator="{ props }">
-                <v-icon
-                  color="green"
-                  dark
+                <v-btn
+                  color="red"
+                  icon
+                  size="x-small"
                   v-bind="props"
-                  icon="mdi:mdi-delete-restore"
-                  size="24"
-                />
+                  :title="$t('trans.submissionsTable.deleteSubmission')"
+                  @click="
+                    (showDeleteDialog = true),
+                      (deleteItem = item),
+                      (singleSubmissionDelete = true)
+                  "
+                >
+                  <v-icon icon="mdi:mdi-minus" color="white"></v-icon>
+                </v-btn>
               </template>
               <span :lang="locale">{{
-                $t('trans.submissionsTable.resSelectedSubmissions')
+                $t('trans.submissionsTable.deleteSubmission')
               }}</span>
             </v-tooltip>
-          </v-btn>
-        </span>
-      </template>
+          </span>
+          <span v-if="item.deleted">
+            <v-tooltip location="bottom">
+              <template #activator="{ props }">
+                <v-btn
+                  icon
+                  size="x-small"
+                  v-bind="props"
+                  :title="$t('trans.submissionsTable.restore')"
+                  @click="
+                    restoreItem = item;
+                    showRestoreDialog = true;
+                    singleSubmissionRestore = true;
+                  "
+                >
+                  <v-icon
+                    color="green"
+                    icon="mdi:mdi-delete-restore"
+                    size="24"
+                  />
+                </v-btn>
+              </template>
+              <span :lang="locale">{{
+                $t('trans.submissionsTable.restore')
+              }}</span>
+            </v-tooltip>
+          </span>
+        </template>
+      </v-data-table-server>
 
-      <template #item.date="{ item }">
-        {{ $filters.formatDateLong(item.date) }}
-      </template>
-      <template #item.updatedAt="{ item }">
-        {{ item.updatedAt ? $filters.formatDateLong(item.updatedAt) : '' }}
-      </template>
-      <template #item.status="{ item }">
-        {{ item.status }}
-      </template>
-      <template #item.lateEntry="{ item }">
-        <span :lang="locale">
+      <BaseDialog
+        v-model="showDeleteDialog"
+        type="CONTINUE"
+        @close-dialog="showDeleteDialog = false"
+        @continue-dialog="delSub"
+      >
+        <template #title>{{
+          $t('trans.submissionsTable.confirmDeletion')
+        }}</template>
+        <template #text>
           {{
-            item.lateEntry === true
-              ? $t('trans.submissionsTable.yes')
-              : $t('trans.submissionsTable.no')
+            singleSubmissionDelete ? singleDeleteMessage : multiDeleteMessage
           }}
-        </span>
-      </template>
-      <template #item.actions="{ item }">
-        <v-tooltip location="bottom">
-          <template #activator="{ props }">
-            <router-link
-              :to="{
-                name: 'FormView',
-                query: {
-                  s: item.submissionId,
-                },
-              }"
-            >
-              <v-btn
-                color="primary"
-                icon
-                size="x-small"
-                v-bind="props"
-                :title="$t('trans.submissionsTable.viewSubmission')"
-              >
-                <v-icon icon="mdi:mdi-eye"></v-icon>
-              </v-btn>
-            </router-link>
-          </template>
-          <span :lang="locale">{{
-            $t('trans.submissionsTable.viewSubmission')
-          }}</span>
-        </v-tooltip>
-      </template>
-      <template #item.event="{ item }">
-        <span>
-          <v-tooltip v-if="!item.deleted" location="bottom">
-            <template #activator="{ props }">
-              <v-btn
-                color="red"
-                icon
-                size="x-small"
-                v-bind="props"
-                :title="$t('trans.submissionsTable.deleteSubmission')"
-                @click="
-                  (showDeleteDialog = true),
-                    (deleteItem = item),
-                    (singleSubmissionDelete = true)
-                "
-              >
-                <v-icon icon="mdi:mdi-minus" color="white"></v-icon>
-              </v-btn>
-            </template>
-            <span :lang="locale">{{
-              $t('trans.submissionsTable.deleteSubmission')
-            }}</span>
-          </v-tooltip>
-        </span>
-        <span v-if="item.deleted">
-          <v-tooltip location="bottom">
-            <template #activator="{ props }">
-              <v-btn
-                icon
-                size="x-small"
-                v-bind="props"
-                :title="$t('trans.submissionsTable.restore')"
-                @click="
-                  restoreItem = item;
-                  showRestoreDialog = true;
-                  singleSubmissionRestore = true;
-                "
-              >
-                <v-icon color="green" icon="mdi:mdi-delete-restore" size="24" />
-              </v-btn>
-            </template>
-            <span :lang="locale">{{
-              $t('trans.submissionsTable.restore')
-            }}</span>
-          </v-tooltip>
-        </span>
-      </template>
-    </v-data-table-server>
-
-    <BaseDialog
-      v-model="showDeleteDialog"
-      type="CONTINUE"
-      @close-dialog="showDeleteDialog = false"
-      @continue-dialog="delSub"
-    >
-      <template #title>{{
-        $t('trans.submissionsTable.confirmDeletion')
-      }}</template>
-      <template #text>
-        {{ singleSubmissionDelete ? singleDeleteMessage : multiDeleteMessage }}
-      </template>
-      <template #button-text-continue>
-        <span :lang="locale">{{ $t('trans.submissionsTable.delete') }}</span>
-      </template>
-    </BaseDialog>
-    <BaseDialog
-      v-model="showRestoreDialog"
-      type="CONTINUE"
-      @close-dialog="showRestoreDialog = false"
-      @continue-dialog="restoreSub"
-    >
-      <template #title
-        ><span :lang="locale">
-          {{ $t('trans.submissionsTable.confirmRestoration') }}</span
-        ></template
+        </template>
+        <template #button-text-continue>
+          <span :lang="locale">{{ $t('trans.submissionsTable.delete') }}</span>
+        </template>
+      </BaseDialog>
+      <BaseDialog
+        v-model="showRestoreDialog"
+        type="CONTINUE"
+        @close-dialog="showRestoreDialog = false"
+        @continue-dialog="restoreSub"
       >
-      <template #text>
-        {{
-          singleSubmissionRestore ? singleRestoreMessage : multiRestoreMessage
-        }}
-      </template>
-      <template #button-text-continue>
-        <span :lang="locale">{{ $t('trans.submissionsTable.restore') }}</span>
-      </template>
-    </BaseDialog>
-
-    <v-dialog v-model="showColumnsDialog" width="700">
-      <BaseFilter
-        :input-filter-placeholder="
-          $t('trans.submissionsTable.searchSubmissionFields')
-        "
-        :input-data="BASE_FILTER_HEADERS"
-        :preselected-data="PRESELECTED_DATA.map((pd) => pd.key)"
-        :reset-data="RESET_HEADERS"
-        :input-save-button-text="$t('trans.submissionsTable.save')"
-        @saving-filter-data="updateFilter"
-        @cancel-filter-data="showColumnsDialog = false"
-      >
-        <template #filter-title
+        <template #title
           ><span :lang="locale">
-            {{ $t('trans.submissionsTable.searchTitle') }}
-          </span></template
+            {{ $t('trans.submissionsTable.confirmRestoration') }}</span
+          ></template
         >
-      </BaseFilter>
-    </v-dialog>
+        <template #text>
+          {{
+            singleSubmissionRestore ? singleRestoreMessage : multiRestoreMessage
+          }}
+        </template>
+        <template #button-text-continue>
+          <span :lang="locale">{{ $t('trans.submissionsTable.restore') }}</span>
+        </template>
+      </BaseDialog>
+
+      <v-dialog v-model="showColumnsDialog" width="700">
+        <BaseFilter
+          :input-filter-placeholder="
+            $t('trans.submissionsTable.searchSubmissionFields')
+          "
+          :input-data="BASE_FILTER_HEADERS"
+          :preselected-data="PRESELECTED_DATA.map((pd) => pd.key)"
+          :reset-data="RESET_HEADERS"
+          :input-save-button-text="$t('trans.submissionsTable.save')"
+          @saving-filter-data="updateFilter"
+          @cancel-filter-data="showColumnsDialog = false"
+        >
+          <template #filter-title
+            ><span :lang="locale">
+              {{ $t('trans.submissionsTable.searchTitle') }}
+            </span></template
+          >
+        </BaseFilter>
+      </v-dialog>
+    </div>
+    <!-- Render your table and content that depends on userFormPreferences -->
   </div>
 </template>
 
