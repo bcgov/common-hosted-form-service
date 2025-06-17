@@ -210,6 +210,20 @@ a,
     word-break: break-word;
   }
 
+  //FORMS-1640 Update contrast for accessibility
+  .btn.btn-danger {
+    background-color: #e35f6c;
+    border-color: #e35f6c;
+  }
+  .btn.btn-secondary {
+    background-color: #848d94;
+    border-color: #848d94;
+  }
+  .btn.btn-success {
+    background-color: #1d9f63;
+    border-color: #1d9f63;
+  }
+
   // tabs component
   .formio-component-simpletabs {
     & > .card {
@@ -554,7 +568,9 @@ a,
   background-color: #eee !important;
 }
 
-.v-data-table, .v-data-table-server, .v-table {
+.v-data-table,
+.v-data-table-server,
+.v-table {
   font-size: 16px !important;
 }
 
