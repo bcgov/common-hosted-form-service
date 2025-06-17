@@ -10,7 +10,7 @@ const formSubmissionId = uuid.v4();
 const idpUserId = uuid.v4();
 
 const bearerToken = Math.random().toString(36).substring(2);
-
+const formService = require('../../../../../src/forms/form/service');
 const currentUserIdp = {
   idpUserId: idpUserId,
 };
@@ -163,74 +163,224 @@ describe('currentFileRecord', () => {
   });
 });
 
-// External dependencies used by the implementation are: none
-//
 describe('hasFileCreate', () => {
-  describe('403 response when', () => {
-    const expectedStatus = { status: 403 };
+  const formId = uuid.v4();
 
-    test('there is no current user on the request scope', () => {
+  // Mock the form service
+  const readFormSpy = jest.spyOn(formService, 'readForm');
+
+  beforeEach(() => {
+    readFormSpy.mockReset();
+  });
+
+  describe('400 response when', () => {
+    const expectedStatus = { status: 400 };
+
+    test('there is no formId in the request', async () => {
       const req = getMockReq({
-        headers: {
-          authorization: 'Bearer ' + bearerToken,
-        },
+        query: {}, // No formId
       });
       const { res, next } = getMockRes();
 
-      hasFileCreate(req, res, next);
+      await hasFileCreate(req, res, next);
 
-      expect(req.currentFileRecord).toEqual(undefined);
-      expect(req.currentUser).toEqual(undefined);
       expect(next).toBeCalledTimes(1);
       expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
       expect(next).toBeCalledWith(
         expect.objectContaining({
-          detail: 'Invalid authorization credentials.',
-        })
-      );
-    });
-
-    test('the current user is a public user', () => {
-      const req = getMockReq({
-        currentUser: {
-          username: 'public',
-        },
-      });
-      const { res, next } = getMockRes();
-
-      hasFileCreate(req, res, next);
-
-      expect(req.currentFileRecord).toEqual(undefined);
-      expect(req.currentUser).toEqual(req.currentUser);
-      expect(next).toBeCalledTimes(1);
-      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
-      expect(next).toBeCalledWith(
-        expect.objectContaining({
-          detail: 'Invalid authorization credentials.',
+          detail: 'formId is required as query parameter for file uploads',
         })
       );
     });
   });
 
-  describe('allows', () => {
-    test('an idp user on the request', async () => {
+  describe('404 response when', () => {
+    const expectedStatus = { status: 404 };
+
+    test('form does not exist', async () => {
+      readFormSpy.mockResolvedValue(null);
+
       const req = getMockReq({
-        currentUser: currentUserIdp,
+        query: { formId },
       });
       const { res, next } = getMockRes();
 
-      hasFileCreate(req, res, next);
+      await hasFileCreate(req, res, next);
 
-      expect(req.currentFileRecord).toEqual(undefined);
-      expect(req.currentUser).toEqual(currentUserIdp);
+      expect(readFormSpy).toBeCalledWith(formId);
       expect(next).toBeCalledTimes(1);
-      expect(next).toBeCalledWith();
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Form not found',
+        })
+      );
+    });
+  });
+
+  describe('403 response when', () => {
+    const expectedStatus = { status: 403 };
+
+    test('form is not active', async () => {
+      const mockForm = {
+        id: formId,
+        active: false,
+        identityProviders: [{ code: 'public' }],
+      };
+
+      readFormSpy.mockResolvedValue(mockForm);
+
+      const req = getMockReq({
+        query: { formId },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFileCreate(req, res, next);
+
+      expect(readFormSpy).toBeCalledWith(formId);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Form is not active',
+        })
+      );
+    });
+
+    test('public user but form does not allow public access', async () => {
+      const mockForm = {
+        id: formId,
+        active: true,
+        identityProviders: [{ code: 'idir' }], // No public provider
+      };
+
+      readFormSpy.mockResolvedValue(mockForm);
+
+      const req = getMockReq({
+        currentUser: { username: 'public' }, // Public user, no idpUserId
+        query: { formId },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFileCreate(req, res, next);
+
+      expect(readFormSpy).toBeCalledWith(formId);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining(expectedStatus));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Authentication required for file uploads on this form',
+        })
+      );
+    });
+  });
+
+  describe('allows upload when', () => {
+    test('authenticated user with idpUserId (skips form validation)', async () => {
+      const req = getMockReq({
+        currentUser: { idpUserId: 'some-id' }, // Has idpUserId
+        query: { formId },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFileCreate(req, res, next);
+
+      // Should skip form validation entirely
+      expect(readFormSpy).toBeCalledTimes(0);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(); // Success - no error
+    });
+
+    test('public user on public form', async () => {
+      const mockForm = {
+        id: formId,
+        active: true,
+        identityProviders: [{ code: 'public' }],
+      };
+
+      readFormSpy.mockResolvedValue(mockForm);
+
+      const req = getMockReq({
+        currentUser: { username: 'public' }, // Public user, no idpUserId
+        query: { formId },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFileCreate(req, res, next);
+
+      expect(readFormSpy).toBeCalledWith(formId);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(); // Success - no error
+    });
+
+    test('no currentUser (public access) on public form', async () => {
+      const mockForm = {
+        id: formId,
+        active: true,
+        identityProviders: [{ code: 'public' }],
+      };
+
+      readFormSpy.mockResolvedValue(mockForm);
+
+      const req = getMockReq({
+        // No currentUser at all
+        query: { formId },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFileCreate(req, res, next);
+
+      expect(readFormSpy).toBeCalledWith(formId);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(); // Success - no error
+    });
+
+    test('form with multiple identity providers including public', async () => {
+      const mockForm = {
+        id: formId,
+        active: true,
+        identityProviders: [{ code: 'idir' }, { code: 'public' }, { code: 'bceid' }],
+      };
+
+      readFormSpy.mockResolvedValue(mockForm);
+
+      const req = getMockReq({
+        currentUser: { username: 'public' },
+        query: { formId },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFileCreate(req, res, next);
+
+      expect(readFormSpy).toBeCalledWith(formId);
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(); // Success - found public in the list
+    });
+  });
+
+  describe('handles errors', () => {
+    test('form service throws error', async () => {
+      const error = new Error('Database connection failed');
+      readFormSpy.mockRejectedValue(error);
+
+      const req = getMockReq({
+        query: { formId },
+      });
+      const { res, next } = getMockRes();
+
+      await hasFileCreate(req, res, next);
+
+      expect(next).toBeCalledTimes(1);
+      expect(next).toBeCalledWith(expect.objectContaining({ status: 500 }));
+      expect(next).toBeCalledWith(
+        expect.objectContaining({
+          detail: 'Unable to upload file at this time. Please try again later.',
+        })
+      );
     });
   });
 });
 
-// External dependencies used by the implementation are: none
-//
 describe('hasFileDelete', () => {
   const readFileSpy = jest.spyOn(service, 'read');
   const submissionPermissionsSpy = jest.spyOn(userAccess, 'hasSubmissionPermissions');
