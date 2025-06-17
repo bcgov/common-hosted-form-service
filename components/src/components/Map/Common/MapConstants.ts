@@ -29,3 +29,8 @@ export const DEFAULT_AVAILABLE_BASELAYERS = {
   Dark: true,
   Topographic: true,
 };
+export const DEFAULT_CENTER: [number, number] = [
+  53.96717190097409, -123.98320425388914,
+];
+export const DEFAULT_CONTAINER_HEIGHT = '400px';
+export const tabComponentKeys = ['tabs', 'simpletabs']; // Add all keys you use
