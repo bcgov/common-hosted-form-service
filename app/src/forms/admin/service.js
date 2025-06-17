@@ -194,6 +194,17 @@ const service = {
   getExternalAPIStatusCodes: async () => {
     return ExternalAPIStatusCode.query();
   },
+
+  matchDate: (data, search) => {
+    return !typeUtils.isBoolean(data) && !typeUtils.isNil(data) && typeUtils.isDate(data) && moment(new Date(data)).format('YYYY-MM-DD hh:mm:ss a').toString().includes(search);
+  },
+  matchString: (data, search) => {
+    return typeUtils.isString(data) && data.toLowerCase().includes(search.toLowerCase());
+  },
+  matchNum: (data, search) => {
+    return (typeUtils.isNil(data) || typeUtils.isBoolean(data) || (typeUtils.isNumeric(data) && typeUtils.isNumeric(search))) && parseFloat(data) === parseFloat(search);
+  },
+
   _processPagination: async (query, { page, itemsPerPage, totalItems, search, searchEnabled }) => {
     let parsedIsSearchAble = searchEnabled !== undefined ? JSON.parse(searchEnabled) : false;
     let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : parsedIsSearchAble;
@@ -208,25 +219,17 @@ const service = {
           if (key !== 'submissionId' && key !== 'formVersionId' && key !== 'formId') {
             if (!Array.isArray(data[key]) && !typeUtils.isObject(data[key])) {
               //Search for date/time match in properties
-              if (
-                !typeUtils.isBoolean(data[key]) &&
-                !typeUtils.isNil(data[key]) &&
-                typeUtils.isDate(data[key]) &&
-                moment(new Date(data[key])).format('YYYY-MM-DD hh:mm:ss a').toString().includes(search)
-              ) {
+              if (this.matchDate(data[key], search)) {
                 result.total = result.total + 1;
                 return true;
               }
               //Search for string match in properties
-              if (typeUtils.isString(data[key]) && data[key].toLowerCase().includes(search.toLowerCase())) {
+              if (this.matchString(data[key], search)) {
                 result.total = result.total + 1;
                 return true;
               }
               //Search to match numeric values in properties
-              if (
-                (typeUtils.isNil(data[key]) || typeUtils.isBoolean(data[key]) || (typeUtils.isNumeric(data[key]) && typeUtils.isNumeric(search))) &&
-                parseFloat(data[key]) === parseFloat(search)
-              ) {
+              if (this.matchNum(data[key], search)) {
                 result.total = result.total + 1;
                 return true;
               }
@@ -240,17 +243,13 @@ const service = {
       let end = page * itemsPerPage + itemsPerPage;
       result.results = searchedData.slice(start, end);
       return result;
+    } else if (itemsPerPage && parseInt(itemsPerPage) === -1) {
+      return await query.page(parseInt(page), parseInt(totalItems || 0));
+    } else if (itemsPerPage && parseInt(page) >= 0) {
+      return await query.page(parseInt(page), parseInt(itemsPerPage));
     } else {
-      if (itemsPerPage && parseInt(itemsPerPage) === -1) {
-        return await query.page(parseInt(page), parseInt(totalItems || 0));
-      } else if (itemsPerPage && parseInt(page) >= 0) {
-        return await query.page(parseInt(page), parseInt(itemsPerPage));
-      } else {
-        return await query;
-      }
+      return await query;
     }
-
-    //}
   },
   _approveMany: async (id, data, trx) => {
     // if we are setting to approved, approve all similar endpoints.
