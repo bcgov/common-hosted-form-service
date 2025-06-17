@@ -1,5 +1,4 @@
 import 'cypress-keycloak-commands';
-import 'cypress-drag-drop';
 import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
@@ -31,22 +30,20 @@ describe('Form Designer', () => {
   /*});
   */it('Visits the form settings page', () => {
     
-    
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-    
     formsettings();
-    
 
   });
     
 // Verifying fields in the form settings page
-  it('DesignTextbox components', () => {
+  it('Basic Fields components', () => {
     cy.viewport(1000, 1100);
     cy.get('button').contains('Basic Fields').click();
     let textFields = ["First Name", "Middle Name", "Last Name"];
 
     for(let i=0; i<textFields.length; i++) {
+      //Text Field component
       cy.get('button').contains('Basic Fields').click();
       cy.get('div.formio-builder-form').then($el => {
       const bounds = $el[0].getBoundingClientRect();
@@ -61,12 +58,7 @@ describe('Form Designer', () => {
         cy.get('button').contains('Save').click();
       });
     }
-
-  });
-    
-
-  it('Design Multi-line text components', () => {
-    cy.viewport(1000, 1100);
+    //Multiline Text
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
         cy.get('span.btn').contains('Multi-line Text')
@@ -79,11 +71,7 @@ describe('Form Designer', () => {
         cy.get('input[name="data[label]"]').clear().type('Question');
         cy.get('button').contains('Save').click();
     });
-
-  });
-
-  it('Design SelectList components', () => {
-    cy.viewport(1000, 1100);
+    //Select List
     cy.get('div.formio-builder-form').then($el => {
         const coords1 = $el[0].getBoundingClientRect();
         cy.get('span.btn').contains('Select List')
@@ -104,10 +92,7 @@ describe('Form Designer', () => {
         cy.get('button').contains('Save').click();
 
     });
-
-  });
-  it('Design Checkbox components', () => {
-    cy.viewport(1000, 1100);
+    //Checkbox
     cy.get('div.formio-builder-form').then($el => {
         const coords2 = $el[0].getBoundingClientRect();
         cy.get('span.btn').contains('Checkbox')
@@ -121,10 +106,7 @@ describe('Form Designer', () => {
         cy.get('input[name="data[label]"]').type('Applying for self');
         cy.get('button').contains('Save').click();
     });
-
-  });
-  it('Design Checkbox Group components', () => {
-    cy.viewport(1000, 1100);
+    //Checkbox Group
     cy.get('div.formio-builder-form').then($el => {
         const coords3 = $el[0].getBoundingClientRect();
         cy.get('span.btn').contains('Checkbox Group')
@@ -144,14 +126,9 @@ describe('Form Designer', () => {
         cy.get('tbody > tr > :nth-child(2)').type('Javascript');
         cy.get('tfoot > tr > td > .btn').click();
         cy.get('tbody > :nth-child(2) > :nth-child(2)').type('python');
-        
-
         cy.get('button').contains('Save').click();
     });
-
-  });
-  it('Design Number components', () => {
-    cy.viewport(1000, 1100);  
+    //Number
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
         cy.get('span.btn').contains('Number')
@@ -163,9 +140,7 @@ describe('Form Designer', () => {
         
         cy.get('button').contains('Save').click();
     });
-  });
-  it('Design Phone Number components', () => {
-    cy.viewport(1000, 1100);
+    //Phone Number
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
         cy.get('span.btn').contains('Phone Number')
@@ -179,15 +154,16 @@ describe('Form Designer', () => {
         cy.get('input[name="data[label]"]').type('Phone Number');
         cy.get('button').contains('Save').click();
     });
-  });
-  it('Design Email components', () => {
-    cy.viewport(1000, 1100);
-    
-
-  });
-
-  it('Design date/Time components', () => {
-    cy.viewport(1000, 1100);
+    //Email
+    cy.get('div.formio-builder-form').then($el => {
+        const coords = $el[0].getBoundingClientRect();
+        cy.get('[data-type="simpleemail"]')
+        .trigger('mousedown', { which: 1}, { force: true })
+        .trigger('mousemove', coords.x, -40, { force: true })
+        .trigger('mouseup', { force: true });
+        cy.get('button').contains('Save').click();
+    });
+    //Date/Time
     cy.get('div.formio-builder-form').then($el => {
         const coords = $el[0].getBoundingClientRect();
         cy.get('span.btn').contains('Date / Time')
@@ -206,9 +182,6 @@ describe('Form Designer', () => {
       cy.waitForLoad();
 
   });
-    
-    
-    
     // Form Editing 
   it('Form Edit', () => {
       cy.viewport(1000, 1100);

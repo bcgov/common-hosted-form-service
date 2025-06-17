@@ -9,6 +9,11 @@ import {
   NotificationTypes,
 } from '~/utils/constants';
 
+import { i18n } from '~/internationalization';
+const t = (key) => {
+  return i18n.t(key);
+};
+
 //
 // Utility Functions for determining permissions
 //
@@ -83,7 +88,7 @@ function getErrorMessage(options, error) {
   if (options.formId) {
     const status = error?.response?.status;
     if (status === 404 || status === 422) {
-      errorMessage = 'trans.permissionUtils.formNotAvailable';
+      errorMessage = t('trans.permissionUtils.formNotAvailable');
     }
   }
   return errorMessage;
@@ -116,7 +121,7 @@ export async function preFlightAuth(options = {}, next) {
       );
       idpHint = getIdpHint(data.form.idpHints);
     } else {
-      throw new Error('trans.permissionUtils.missingFormIdAndSubmssId');
+      throw new Error(t('trans.permissionUtils.missingFormIdAndSubmssId'));
     }
   } catch (error) {
     // Halt user with error page, use alertNavigate for "friendly" messages.
@@ -125,11 +130,11 @@ export async function preFlightAuth(options = {}, next) {
       // Don't display the 'An error has occurred...' popup notification.
       notificationStore.alertNavigate(
         NotificationTypes.ERROR.type,
-        'trans.permissionUtils.formNotAvailable'
+        t('trans.permissionUtils.formNotAvailable')
       );
     } else {
       notificationStore.addNotification({
-        text: 'trans.permissionUtils.loadingFormErrMsg',
+        text: t('trans.permissionUtils.loadingFormErrMsg'),
         consoleError: {
           text: 'trans.permissionUtils.loadingForm',
           options: {
@@ -161,7 +166,10 @@ export async function preFlightAuth(options = {}, next) {
         },
       };
       notificationStore.addNotification({
-        ...msg,
+        text: t('trans.permissionUtils.idpHintMsg'),
+        options: {
+          idpHint: idpHint.toUpperCase(),
+        },
         consoleError: msg,
       });
       notificationStore.errorNavigate(msg);

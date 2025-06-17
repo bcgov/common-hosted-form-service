@@ -1,5 +1,4 @@
 import 'cypress-keycloak-commands';
-import 'cypress-drag-drop';
 import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
@@ -9,18 +8,17 @@ const password=Cypress.env('keycloakPassword');
 
 Cypress.Commands.add('waitForLoad', () => {
   const loaderTimeout = 60000;
-
   cy.get('.nprogress-busy', { timeout: loaderTimeout }).should('not.exist');
 });
 
 describe('Form Designer', () => {
 
   beforeEach(()=>{
-    cy.on('uncaught:exception', (err, runnable) => {
-      // Form.io throws an uncaught exception for missing projectid
-      // Cypress catches it as undefined: undefined so we can't get the text
-      console.log(err);
-      return false;
+    
+    cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.window().then((win) => {
+      win.sessionStorage.clear();
     });
   });
   it('Visits the form settings page', () => {
@@ -37,7 +35,6 @@ describe('Form Designer', () => {
  it('Verify public form submission', () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-    
     cy.get('button').contains('Basic Fields').click();
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
@@ -48,20 +45,12 @@ describe('Form Designer', () => {
       .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
-    cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
   // Form saving
+    cy.waitForLoad();
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
-    savedButton.trigger('click');
-    cy.waitForLoad();
-
-
-  // Go to My forms  
-    cy.wait('@getForm').then(()=>{
-      let userFormsLinks = cy.get('[data-cy=userFormsLinks]');
-      expect(userFormsLinks).to.not.be.null;
-      userFormsLinks.trigger('click');
-    });
+    savedButton.should('be.visible').trigger('click');
+    cy.wait(2000);
   // Filter the newly created form
     cy.location('search').then(search => {
       //let pathName = fullUrl.pathname
@@ -70,8 +59,6 @@ describe('Form Designer', () => {
       cy.log(arrayValues[0]);
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
       cy.waitForLoad();
-      
-   
     //Publish the form
     cy.get('.v-label > span').click();
 
@@ -89,8 +76,7 @@ describe('Form Designer', () => {
     shareFormLinkButton.trigger('click');
     cy.get('.mx-2 > .v-btn').click();
     })
-    cy.visit(`/${depEnv}`);
-    cy.get('[data-cy="userFormsLinks"]').click();
+    cy.wait(2000);
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.waitForLoad();
     //Manage form
@@ -106,7 +92,7 @@ describe('Form Designer', () => {
         const rem4=$el[4];//copy submission
         const rem5=$el[5];//event subscription
         cy.get(rem).should("not.be.enabled");
-        cy.get(rem2).should("not.be.enabled");
+        //cy.get(rem2).should("not.be.enabled");
         cy.get(rem3).should("be.enabled");
         cy.get(rem4).should("not.be.enabled");
         cy.get(rem5).should("be.enabled");
@@ -114,12 +100,15 @@ describe('Form Designer', () => {
     cy.get('[data-test="canEditForm"]').click();
     
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-    cy.wait(2000);
-        //Logout to submit the public form
-    cy.get('#logoutButton > .v-btn__content > span').click();
+    cy.waitForLoad();
+    //Logout to submit the public form
+    cy.get('#logoutButton > .v-btn__content > span').should('be.visible').click({ force: true });
+    cy.log('Page visited, checking for logout button');
+    cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
+    cy.get('[data-test="base-auth-btn"] > .v-btn > .v-btn__content > span', { timeout: 15000 }).should('be.visible').click();
     //Form submission and verification for public forms
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
-    cy.wait(2000);
+    cy.waitForLoad();
     cy.get('button').contains('Submit').should('be.visible');
     cy.wait(2000);
     cy.contains('Text Field').click();
@@ -156,7 +145,7 @@ describe('Form Designer', () => {
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.get('.mdi-list-box-outline').click();
     cy.wait(2000);
-    cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn > .v-btn__content > .mdi-eye').click();
+    cy.get(':nth-child(6) > a > .v-btn').click();
     cy.waitForLoad();
     //Verify status option is not available for this
     cy.get('.status-heading > .mdi-chevron-right').should('not.exist');

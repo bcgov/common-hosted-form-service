@@ -1,5 +1,4 @@
 import "cypress-keycloak-commands";
-import "cypress-drag-drop";
 import { formsettings } from "../support/login.js";
 
 const depEnv = Cypress.env("depEnv");
@@ -43,26 +42,19 @@ describe("Form Designer", () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     cy.waitForLoad();
-    cy.intercept("GET", `/${depEnv}/api/v1/forms/*`).as("getForm");
+    //cy.intercept("GET", `/${depEnv}/api/v1/forms/*`).as("getForm");
     // Form saving
-    let savedButton = cy.get("[data-cy=saveButton]");
+    let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
-    savedButton.trigger("click");
-    cy.waitForLoad();
-
-    // Go to My forms
-    cy.wait("@getForm").then(() => {
-      let userFormsLinks = cy.get("[data-cy=userFormsLinks]");
-      expect(userFormsLinks).to.not.be.null;
-      userFormsLinks.trigger("click");
-    });
+    savedButton.should('be.visible').trigger('click');
+    cy.wait(2000);
     // Filter the newly created form
     cy.location("search").then((search) => {
       let arr = search.split("=");
       let arrayValues = arr[1].split("&");
       cy.log(arrayValues[0]);
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-      cy.wait(6000);
+      cy.wait(2000);
       //Publish the form
       cy.get(".v-label > span").click();
 
@@ -188,7 +180,7 @@ describe("Form Designer", () => {
     cy.waitForLoad();
     cy.get(".mdi-list-box-outline").click();
     cy.wait(2000);
-    cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn').click();
+    cy.get(':nth-child(1) > :nth-child(7) > a > .v-btn').click();
      //print option
     cy.get('.mdi-printer').click();
     cy.get('.flex-container > .v-btn--elevated').should('be.enabled');

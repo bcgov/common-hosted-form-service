@@ -2,7 +2,7 @@ const { MockModel, MockTransaction } = require('../../../common/dbHelper');
 
 const uuid = require('uuid');
 
-const { EmailTypes } = require('../../../../src/forms/common/constants');
+const { EmailTypes, ScheduleType } = require('../../../../src/forms/common/constants');
 const service = require('../../../../src/forms/form/service');
 
 jest.mock('../../../../src/forms/common/models/tables/documentTemplate', () => MockModel);
@@ -57,7 +57,6 @@ const emailTemplate = {
   title: 'title',
   type: EmailTypes.SUBMISSION_CONFIRMATION,
 };
-
 function resetModels() {
   Form.query = jest.fn().mockReturnThis();
   Form.where = jest.fn().mockReturnThis();
@@ -66,7 +65,19 @@ function resetModels() {
   Form.insert = jest.fn().mockReturnThis();
   Form.startTransaction = jest.fn().mockResolvedValue(MockTransaction);
   Form.patchAndFetchById = jest.fn().mockReturnThis();
+  Form.findById = jest.fn().mockReturnThis();
+  Form.allowGraph = jest.fn().mockReturnThis();
+  Form.withGraphFetched = jest.fn().mockReturnThis();
+  Form.throwIfNotFound = jest.fn().mockResolvedValue({
+    id: formId,
+    name: 'Test Form',
+    showAssigneeInSubmissionsTable: true,
+    enableStatusUpdates: true,
+    identityProviders: [{ code: 'idir' }],
+    versions: [],
+  });
 
+  // FormVersion model setup
   FormVersion.query = jest.fn().mockReturnThis();
   FormVersion.where = jest.fn().mockReturnThis();
   FormVersion.modify = jest.fn().mockReturnThis();
@@ -75,13 +86,20 @@ function resetModels() {
   FormVersion.patch = jest.fn().mockReturnThis();
   FormVersion.findById = jest.fn().mockReturnThis();
   FormVersion.startTransaction = jest.fn().mockResolvedValue(MockTransaction);
+  FormVersion.throwIfNotFound = jest.fn().mockResolvedValue({
+    id: uuid.v4(),
+    formId: formId,
+    schema: { components: [] },
+  });
 
+  // IdentityProvider model setup
   IdentityProvider.query = jest.fn().mockReturnThis();
   IdentityProvider.where = jest.fn().mockReturnThis();
   IdentityProvider.modify = jest.fn().mockReturnThis();
-  IdentityProvider.first = jest.fn().mockReturnThis();
+  IdentityProvider.first = jest.fn().mockResolvedValue({ code: 'idir', active: true });
   IdentityProvider.insert = jest.fn().mockReturnThis();
 
+  // FormIdentityProvider model setup
   FormIdentityProvider.query = jest.fn().mockReturnThis();
   FormIdentityProvider.where = jest.fn().mockReturnThis();
   FormIdentityProvider.modify = jest.fn().mockReturnThis();
@@ -89,18 +107,21 @@ function resetModels() {
   FormIdentityProvider.insert = jest.fn().mockReturnThis();
   FormIdentityProvider.delete = jest.fn().mockReturnThis();
 
+  // FormRoleUser model setup
   FormRoleUser.query = jest.fn().mockReturnThis();
   FormRoleUser.where = jest.fn().mockReturnThis();
   FormRoleUser.modify = jest.fn().mockReturnThis();
   FormRoleUser.first = jest.fn().mockReturnThis();
   FormRoleUser.insert = jest.fn().mockReturnThis();
 
+  // FormStatusCode model setup
   FormStatusCode.query = jest.fn().mockReturnThis();
   FormStatusCode.where = jest.fn().mockReturnThis();
   FormStatusCode.modify = jest.fn().mockReturnThis();
   FormStatusCode.first = jest.fn().mockReturnThis();
   FormStatusCode.insert = jest.fn().mockReturnThis();
 
+  // FormVersionDraft model setup
   FormVersionDraft.query = jest.fn().mockReturnThis();
   FormVersionDraft.where = jest.fn().mockReturnThis();
   FormVersionDraft.modify = jest.fn().mockReturnThis();
@@ -108,7 +129,14 @@ function resetModels() {
   FormVersionDraft.insert = jest.fn().mockReturnThis();
   FormVersionDraft.startTransaction = jest.fn().mockResolvedValue(MockTransaction);
   FormVersionDraft.deleteById = jest.fn().mockResolvedValue(MockTransaction);
+  FormVersionDraft.findById = jest.fn().mockReturnThis();
+  FormVersionDraft.throwIfNotFound = jest.fn().mockResolvedValue({
+    id: uuid.v4(),
+    formId: formId,
+    schema: { components: [] },
+  });
 
+  // FormSubmission model setup
   FormSubmission.query = jest.fn().mockReturnThis();
   FormSubmission.where = jest.fn().mockReturnThis();
   FormSubmission.modify = jest.fn().mockReturnThis();
@@ -116,13 +144,21 @@ function resetModels() {
   FormSubmission.insert = jest.fn().mockReturnThis();
   FormSubmission.startTransaction = jest.fn().mockResolvedValue(MockTransaction);
   FormSubmission.deleteById = jest.fn().mockResolvedValue(MockTransaction);
+  FormSubmission.findById = jest.fn().mockReturnThis();
+  FormSubmission.throwIfNotFound = jest.fn().mockResolvedValue({
+    id: uuid.v4(),
+    formVersionId: uuid.v4(),
+    submission: { data: {} },
+  });
 
+  // FormSubmissionUser model setup
   FormSubmissionUser.query = jest.fn().mockReturnThis();
   FormSubmissionUser.where = jest.fn().mockReturnThis();
   FormSubmissionUser.modify = jest.fn().mockReturnThis();
   FormSubmissionUser.first = jest.fn().mockReturnThis();
   FormSubmissionUser.insert = jest.fn().mockReturnThis();
 
+  // FormSubmissionStatus model setup
   FormSubmissionStatus.query = jest.fn().mockReturnThis();
   FormSubmissionStatus.where = jest.fn().mockReturnThis();
   FormSubmissionStatus.modify = jest.fn().mockReturnThis();
@@ -139,6 +175,29 @@ beforeEach(() => {
 afterEach(() => {
   jest.restoreAllMocks();
 });
+// Mock external services at the top of the file
+jest.mock('../../../../src/forms/form/formMetadata/service', () => ({
+  upsert: jest.fn().mockResolvedValue({}),
+}));
+
+jest.mock('../../../../src/forms/form/eventStreamConfig/service', () => ({
+  upsert: jest.fn().mockResolvedValue({}),
+}));
+
+jest.mock('../../../../src/forms/event/eventService', () => ({
+  publishFormEvent: jest.fn(),
+  formSubmissionEventReceived: jest.fn(),
+}));
+
+jest.mock('../../../../src/components/eventStreamService', () => ({
+  eventStreamService: {
+    onPublish: jest.fn().mockResolvedValue({}),
+    onSubmit: jest.fn().mockResolvedValue({}),
+  },
+  SUBMISSION_EVENT_TYPES: {
+    CREATED: 'created',
+  },
+}));
 
 describe('Document Templates', () => {
   describe('documentTemplateCreate', () => {
@@ -539,6 +598,27 @@ describe('_findFileIds', () => {
 });
 
 describe('listFormSubmissions', () => {
+  beforeEach(() => {
+    MockModel.mockReset();
+    MockTransaction.mockReset();
+    resetModels();
+
+    // Mock the form that readForm will return
+    const mockForm = {
+      id: formId,
+      name: 'Test Form',
+      showAssigneeInSubmissionsTable: false,
+      enableStatusUpdates: true,
+      identityProviders: [{ code: 'idir' }],
+      versions: [],
+    };
+
+    Form.throwIfNotFound.mockResolvedValue(mockForm);
+
+    // Mock the submission metadata query
+    MockModel.mockResolvedValue([]);
+  });
+
   describe('400 response when', () => {
     test('sort by column not in select', async () => {
       await expect(
@@ -551,10 +631,126 @@ describe('listFormSubmissions', () => {
     });
   });
 
-  it('should not error if fields has a trailing commma', async () => {
+  it('should not error if fields has a trailing comma', async () => {
     await service.listFormSubmissions(formId, { fields: 'x,' });
 
     expect(MockModel.select).toBeCalledTimes(1);
+  });
+});
+
+describe('listFormSubmissions - assignment filtering', () => {
+  beforeEach(() => {
+    MockModel.mockReset();
+    MockTransaction.mockReset();
+    resetModels();
+
+    // Mock the form that readForm will return
+    const mockForm = {
+      id: formId,
+      name: 'Test Form',
+      showAssigneeInSubmissionsTable: false,
+      enableStatusUpdates: true,
+      identityProviders: [{ code: 'idir' }],
+      versions: [],
+    };
+
+    Form.throwIfNotFound.mockResolvedValue(mockForm);
+
+    // Mock submission metadata query
+    MockModel.mockResolvedValue([]);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('should return all submissions when filterAssignedToCurrentUser is false', async () => {
+    const params = {
+      filterAssignedToCurrentUser: false,
+      fields: ['field1'],
+    };
+
+    await service.listFormSubmissions(formId, params);
+
+    // Check that Form.findById was called (from readForm)
+    expect(Form.findById).toHaveBeenCalledWith(formId);
+
+    // Check that MockModel.query was called (from submission metadata query)
+    expect(MockModel.query).toHaveBeenCalledTimes(1);
+  });
+
+  it('should handle filterAssignedToCurrentUser parameter', async () => {
+    const params = {
+      filterAssignedToCurrentUser: true,
+      fields: ['field1'],
+    };
+
+    await service.listFormSubmissions(formId, params);
+
+    expect(Form.findById).toHaveBeenCalledWith(formId);
+    expect(MockModel.query).toHaveBeenCalledTimes(1);
+  });
+
+  it('should handle filterAssignedToCurrentUser with different field combinations', async () => {
+    const params = {
+      filterAssignedToCurrentUser: true,
+      fields: ['field1', 'field2'],
+      submissionId: 'test-id',
+    };
+
+    await service.listFormSubmissions(formId, params);
+
+    expect(Form.findById).toHaveBeenCalledWith(formId);
+    expect(MockModel.query).toHaveBeenCalledTimes(1);
+    expect(MockModel.modify).toHaveBeenCalledWith('filterSubmissionId', 'test-id');
+  });
+
+  it('should include assignee fields when form allows it', async () => {
+    // Override the mock to return a form that allows assignee visibility
+    const mockFormWithAssignee = {
+      id: formId,
+      name: 'Test Form',
+      showAssigneeInSubmissionsTable: true,
+      enableStatusUpdates: true,
+      identityProviders: [{ code: 'idir' }],
+      versions: [],
+    };
+
+    Form.throwIfNotFound.mockResolvedValue(mockFormWithAssignee);
+
+    const params = { fields: ['field1'] };
+    await service.listFormSubmissions(formId, params);
+
+    expect(Form.findById).toHaveBeenCalledWith(formId);
+    expect(MockModel.select).toHaveBeenCalledWith(
+      expect.arrayContaining(['formSubmissionAssignedToUserId', 'formSubmissionAssignedToUsernameIdp', 'formSubmissionAssignedToEmail']),
+      expect.any(Array)
+    );
+  });
+
+  it('should not include assignee fields for public forms', async () => {
+    // Override the mock to return a public form
+    const mockPublicForm = {
+      id: formId,
+      name: 'Test Form',
+      showAssigneeInSubmissionsTable: true,
+      enableStatusUpdates: true,
+      identityProviders: [{ code: 'public' }],
+      versions: [],
+    };
+
+    Form.throwIfNotFound.mockResolvedValue(mockPublicForm);
+
+    const params = { fields: ['field1'] };
+    await service.listFormSubmissions(formId, params);
+
+    expect(Form.findById).toHaveBeenCalledWith(formId);
+
+    // Should NOT include assignee fields for public forms
+    expect(MockModel.select).toHaveBeenCalledWith(
+      expect.not.arrayContaining(['formSubmissionAssignedToUserId', 'formSubmissionAssignedToUsernameIdp', 'formSubmissionAssignedToEmail']),
+      expect.any(Array)
+    );
   });
 });
 
@@ -779,6 +975,36 @@ describe('popFormLevelInfo', () => {
   });
 });
 
+describe('Validation Functions', () => {
+  it('validateScheduleObject should return status = success for empty object passed as parameter', () => {
+    let result = service.validateScheduleObject({});
+    expect(result).toBeDefined();
+    expect(result).toHaveProperty('status', 'success');
+    expect(result).toHaveProperty('message', '');
+  });
+
+  it('validateScheduleObject should return status = success for schedule type manual and with its required data', () => {
+    let testPayload = { enabled: true, scheduleType: ScheduleType.MANUAL, openSubmissionDateTime: '2023-03-31' };
+    let result = service.validateScheduleObject(testPayload);
+    expect(result).toBeDefined();
+    expect(result).toHaveProperty('status', 'success');
+    expect(result).toHaveProperty('message', '');
+  });
+
+  it('validateScheduleObject should return status = success for schedule type closingDate and with its required data', () => {
+    let testPayload = {
+      enabled: true,
+      scheduleType: ScheduleType.CLOSINGDATE,
+      openSubmissionDateTime: '2023-03-31',
+      closeSubmissionDateTime: '2023-09-31',
+    };
+    let result = service.validateScheduleObject(testPayload);
+    expect(result).toBeDefined();
+    expect(result).toHaveProperty('status', 'success');
+    expect(result).toHaveProperty('message', '');
+  });
+});
+
 describe('_getDefaultEmailTemplate', () => {
   it('should return a template', async () => {
     const formId = uuid.v4();
@@ -979,7 +1205,7 @@ describe('publishVersion', () => {
     eventService.publishFormEvent = jest.fn().mockResolvedValueOnce();
     eventStreamService.onPublish = jest.fn().mockResolvedValueOnce();
 
-    await service.publishVersion(formId, '123', {}, currentUser);
+    await service.publishVersion(formId, '123', currentUser, {});
 
     expect(eventService.publishFormEvent).toBeCalledTimes(1);
     expect(eventStreamService.onPublish).toBeCalledTimes(1);
@@ -1039,5 +1265,225 @@ describe('createSubmission', () => {
     expect(eventService.formSubmissionEventReceived).toBeCalledTimes(1);
     expect(eventStreamService.onSubmit).toBeCalledTimes(1);
     expect(MockTransaction.commit).toBeCalledTimes(1);
+  });
+});
+describe('Assignee Visibility Feature Tests', () => {
+  describe('_setAssigneeInSubmissionsTable', () => {
+    it('should return false when showAssigneeInSubmissionsTable is not true', () => {
+      const formData = {
+        showAssigneeInSubmissionsTable: false,
+        enableStatusUpdates: true,
+        identityProviders: [{ code: 'idir' }],
+      };
+
+      const result = service._setAssigneeInSubmissionsTable(formData);
+      expect(result).toBe(false);
+    });
+
+    it('should return false when showAssigneeInSubmissionsTable is undefined', () => {
+      const formData = {
+        enableStatusUpdates: true,
+        identityProviders: [{ code: 'idir' }],
+      };
+
+      const result = service._setAssigneeInSubmissionsTable(formData);
+      expect(result).toBe(false);
+    });
+
+    it('should return false for public forms even when other conditions are met', () => {
+      const formData = {
+        showAssigneeInSubmissionsTable: true,
+        enableStatusUpdates: true,
+        identityProviders: [{ code: 'public' }, { code: 'idir' }],
+      };
+
+      const result = service._setAssigneeInSubmissionsTable(formData);
+      expect(result).toBe(false);
+    });
+
+    it('should return false when status updates are not enabled', () => {
+      const formData = {
+        showAssigneeInSubmissionsTable: true,
+        enableStatusUpdates: false,
+        identityProviders: [{ code: 'idir' }],
+      };
+
+      const result = service._setAssigneeInSubmissionsTable(formData);
+      expect(result).toBe(false);
+    });
+
+    it('should return true when all conditions are met', () => {
+      const formData = {
+        showAssigneeInSubmissionsTable: true,
+        enableStatusUpdates: true,
+        identityProviders: [{ code: 'idir' }],
+      };
+
+      const result = service._setAssigneeInSubmissionsTable(formData);
+      expect(result).toBe(true);
+    });
+
+    it('should handle empty identityProviders array', () => {
+      const formData = {
+        showAssigneeInSubmissionsTable: true,
+        enableStatusUpdates: true,
+        identityProviders: [],
+      };
+
+      const result = service._setAssigneeInSubmissionsTable(formData);
+      expect(result).toBe(true);
+    });
+
+    it('should handle missing identityProviders', () => {
+      const formData = {
+        showAssigneeInSubmissionsTable: true,
+        enableStatusUpdates: true,
+      };
+
+      const result = service._setAssigneeInSubmissionsTable(formData);
+      expect(result).toBe(true);
+    });
+  });
+
+  describe('createForm with assignee validation', () => {
+    beforeEach(() => {
+      MockModel.mockReset();
+      MockTransaction.mockReset();
+      resetModels();
+
+      service.validateScheduleObject = jest.fn().mockReturnValue({ status: 'success' });
+      formMetadataService.upsert = jest.fn().mockResolvedValue();
+      eventStreamConfigService.upsert = jest.fn().mockResolvedValue();
+
+      // Mock the form creation flow
+      const mockCreatedForm = {
+        id: formId,
+        name: 'Test Form',
+        identityProviders: [{ code: 'idir' }],
+        versions: [],
+        showAssigneeInSubmissionsTable: false, // Will be set by the function
+      };
+
+      Form.insert.mockResolvedValue(mockCreatedForm);
+      service.readForm = jest.fn().mockResolvedValue(mockCreatedForm);
+    });
+
+    it('should set assignee to false for public forms', async () => {
+      const data = {
+        name: 'Test Form',
+        identityProviders: [{ code: 'public' }],
+        enableStatusUpdates: true,
+        showAssigneeInSubmissionsTable: true, // Trying to enable
+        schema: { components: [] },
+      };
+
+      const result = await service.createForm(data, currentUser);
+
+      // Should create form successfully but with assignee visibility set to false
+      expect(result).toBeDefined();
+      expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+      // The actual showAssigneeInSubmissionsTable value will be determined by the function
+    });
+
+    it('should set assignee to true when conditions met', async () => {
+      const data = {
+        name: 'Test Form',
+        identityProviders: [{ code: 'idir' }],
+        enableStatusUpdates: true,
+        showAssigneeInSubmissionsTable: true,
+        schema: { components: [] },
+      };
+
+      const result = await service.createForm(data, currentUser);
+
+      expect(result).toBeDefined();
+      expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+    });
+
+    it('should allow assignee setting to be false', async () => {
+      const data = {
+        name: 'Test Form',
+        identityProviders: [{ code: 'idir' }],
+        enableStatusUpdates: true,
+        showAssigneeInSubmissionsTable: false,
+        schema: { components: [] },
+      };
+
+      const result = await service.createForm(data, currentUser);
+
+      expect(result).toBeDefined();
+      expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('updateForm with assignee validation', () => {
+    beforeEach(() => {
+      MockModel.mockReset();
+      MockTransaction.mockReset();
+      resetModels();
+
+      service.validateScheduleObject = jest.fn().mockReturnValue({ status: 'success' });
+      formMetadataService.upsert = jest.fn().mockResolvedValue();
+      eventStreamConfigService.upsert = jest.fn().mockResolvedValue();
+    });
+
+    it('should set assignee to false when updating to public form', async () => {
+      // Mock existing form
+      const mockExistingForm = {
+        id: formId,
+        name: 'Test Form',
+        identityProviders: [{ code: 'idir' }],
+        enableStatusUpdates: true,
+        showAssigneeInSubmissionsTable: true,
+      };
+
+      const mockUpdatedForm = {
+        ...mockExistingForm,
+        identityProviders: [{ code: 'public' }],
+        showAssigneeInSubmissionsTable: false, // Should be set to false
+      };
+
+      service.readForm = jest.fn().mockResolvedValue(mockUpdatedForm);
+
+      const updateData = {
+        name: 'Test Form',
+        identityProviders: [{ code: 'public' }],
+        enableStatusUpdates: true,
+        showAssigneeInSubmissionsTable: true, // Try to enable
+      };
+
+      const result = await service.updateForm(formId, updateData, currentUser);
+
+      // Should update successfully
+      expect(result).toBeDefined();
+      expect(service.readForm).toHaveBeenCalledWith(formId);
+      expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle non-public forms correctly', async () => {
+      const mockExistingForm = {
+        id: formId,
+        name: 'Test Form',
+        identityProviders: [{ code: 'idir' }],
+        enableStatusUpdates: true,
+        showAssigneeInSubmissionsTable: false,
+      };
+
+      service.readForm = jest.fn().mockResolvedValue(mockExistingForm);
+
+      const updateData = {
+        name: 'Updated Form',
+        showAssigneeInSubmissionsTable: true,
+        enableStatusUpdates: true,
+        identityProviders: [{ code: 'idir' }],
+      };
+
+      await service.updateForm(formId, updateData, currentUser);
+
+      expect(service.readForm).toHaveBeenCalledWith(formId);
+      expect(formMetadataService.upsert).toHaveBeenCalledTimes(1);
+      expect(eventStreamConfigService.upsert).toHaveBeenCalledTimes(1);
+      expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
+    });
   });
 });

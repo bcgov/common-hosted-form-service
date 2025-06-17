@@ -2,11 +2,13 @@ import baseEditForm from 'formiojs/components/_classes/component/Component.form'
 import EditData from './editForm/Component.edit.data';
 import EditDisplay from './editForm/Component.edit.display';
 import AdvancedEditLogic from '../Common/Advanced.edit.logic';
+import EditValidation from './editForm/Component.edit.validation';
 export default function (...extend) {
   return baseEditForm(
     [
       EditDisplay,
       EditData,
+      EditValidation,
       {
         key: 'display',
         ignore: true,

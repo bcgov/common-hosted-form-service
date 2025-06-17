@@ -59,6 +59,29 @@ const service = {
     }
   },
 
+  deleteFiles: async (ids) => {
+    let trx;
+    try {
+      trx = await FileStorage.startTransaction();
+
+      for (const id of ids) {
+        const obj = await service.read(id);
+
+        await FileStorage.query(trx).deleteById(id).throwIfNotFound();
+
+        const result = await storageService.delete(obj);
+        if (!result) {
+          throw new Error(`Failed to delete file with id ${id}`);
+        }
+      }
+
+      await trx.commit();
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
   /**
    * Move a submission file from the "upload" storage location to the
    * "submission" location. This is used when a submission is either saved as
@@ -106,6 +129,33 @@ const service = {
         });
       }
       await trx.commit();
+    } catch (err) {
+      if (trx) await trx.rollback();
+      throw err;
+    }
+  },
+
+  clone: async (data, currentUser) => {
+    let trx;
+    try {
+      trx = await FileStorage.startTransaction();
+
+      const file = await FileStorage.query().findById(data).throwIfNotFound();
+
+      // Remove the ID to avoid conflicts when inserting
+      const obj = { ...file };
+
+      const uploadResult = await storageService.clone(obj);
+      obj.id = uploadResult.id;
+      obj.path = uploadResult.path;
+      obj.storage = uploadResult.storage;
+      obj.createdBy = currentUser.usernameIdp;
+
+      await FileStorage.query(trx).insert(obj);
+
+      await trx.commit();
+      const result = await service.read(obj.id);
+      return result;
     } catch (err) {
       if (trx) await trx.rollback();
       throw err;

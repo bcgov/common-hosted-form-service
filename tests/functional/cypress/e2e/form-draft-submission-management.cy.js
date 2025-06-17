@@ -1,5 +1,4 @@
 import 'cypress-keycloak-commands';
-import 'cypress-drag-drop';
 import { formsettings } from '../support/login.js';
 
 const depEnv = Cypress.env('depEnv');
@@ -28,13 +27,9 @@ describe('Form Designer', () => {
   });
   it('Visits the form settings page', () => {
     
-    
     cy.viewport(1000, 1100);
     cy.waitForLoad();
-    
     formsettings();
-    
-
   });  
 // Publish a simple form 
 it('Verify draft submission', () => {
@@ -51,20 +46,12 @@ it('Verify draft submission', () => {
       .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
-    cy.intercept('GET', `/${depEnv}/api/v1/forms/*`).as('getForm');
+    
   // Form saving
     let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
-    savedButton.trigger('click');
-    cy.waitForLoad();
-
-
-  // Go to My forms  
-    cy.wait('@getForm').then(()=>{
-      let userFormsLinks = cy.get('[data-cy=userFormsLinks]');
-      expect(userFormsLinks).to.not.be.null;
-      userFormsLinks.trigger('click');
-    });
+    savedButton.should('be.visible').trigger('click');
+    cy.wait(2000);
   // Filter the newly created form
     cy.location('search').then(search => {
       //let pathName = fullUrl.pathname
@@ -119,7 +106,8 @@ it('Verify draft submission', () => {
     cy.get('[data-test="save-btn"] > .v-btn__content').click();
     cy.get('.v-data-table__tr > :nth-child(4)').contains('DRAFT').should('not.exist');
     cy.get('.mdi-pencil').click();
-    cy.get('.mdi-content-save').click();
+    cy.get('.ml-auto > :nth-child(3) > .v-btn').click();
+    cy.waitForLoad();
     cy.get('.v-alert__content > div').contains('Draft Saved');
     // Edit draft submission
     cy.wait(4000);

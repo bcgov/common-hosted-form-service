@@ -54,5 +54,9 @@ describe('BaseInternationalization.vue', () => {
     wrapper.vm.languageSelected('ar');
 
     expect(formStore.isRTL).toBeTruthy();
+
+    wrapper.vm.languageSelected('en');
+
+    expect(formStore.isRTL).toBeFalsy();
   });
 });

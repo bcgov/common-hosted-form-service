@@ -97,9 +97,9 @@
     "formAccess": "Acceso al formulario",
     "info": "Si utilizará este formulario para recopilar información del público en general sobre temas que son de interés general para el público, debe comunicarse con la GCPE para que su participación pueda incluirse en",
     "important": "IMPORTANTE",
-    "idimNotifyA": "Debe notificar al equipo de Gestión de Información de Identidad (IDIM) por correo electrónico",
-    "idimNotifyB": "su intención de aprovechar BCeID para verificar las identidades de los remitentes de su formulario.",
-    "referenceGuideA": "Por favor, consulte nuestro",
+    "idimNotifyA": "Debe <strong>NOTIFICAR</strong> al equipo de Identity Information Management (IDIM) por correo electrónico",
+    "idimNotifyB": "su intención de utilizar BCeID o BC Services Card para verificar las identidades de los remitentes de su formulario.",
+    "referenceGuideA": "Por favor, consulte nuestra",
     "referenceGuideB": "guía del usuario",
     "referenceGuideC": "para más detalles",
     "specificTeamMembers": "Miembros del equipo específicos",
@@ -140,6 +140,13 @@
     "summary": "Resumen",
     "submissionsOpenDateRange": "Este formulario estará abierto para envíos de",
     "to": "a",
+    "timezoneIndicator": "Todas las horas están en tu zona horaria local ({timezone})",
+    "openTime": "Hora de apertura",
+    "closeTime": "Hora de cierre",
+    "at": "a las",
+    "specifyOpenTime": "Especificar hora de apertura (opcional)",
+    "specifyCloseTime": "Especificar hora de cierre (opcional)",
+    "closingTimeInfo": "(El formulario se cerrará a las 11:59 PM en su zona horaria local en la fecha de cierre)",
     "scheduleRepetition": "El horario se repetirá cada",
     "allowLateSubmissnInterval": "permitir envíos tardíos para",
     "until": "hasta",
@@ -179,6 +186,9 @@
     "eventStreamMessage": "El servicio Event Stream Service publicará notificaciones sobre la publicación y el envío de formularios. La tecnología subyacente es NATS.io, que permite a los consumidores suscribirse o extraer los mensajes de eventos y procesarlos en sistemas externos. Los mensajes privados contendrán cargas útiles cifradas con la clave configurada aquí.",
     "natsConfiguration": "Configuración de NATS y metadatos de mensajes",
     "publishConfiguration": "Configuración de publicación de eventos",
+    "essAccountName": "Nombre de cuenta ESS",
+    "essAccountApproved": "Cuenta ESS aprobada",
+    "essAccountNotApproved": "Cuenta ESS desconocida o no aprobada",
     "enablePublicStream": "Habilitar transmisión pública",
     "enablePrivateStream": "Habilitar transmisión privada",
     "encryptionKeyAlgorithm": "Algoritmo de clave de cifrado",
@@ -442,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "Diseño de formularios",
-    "exportDesign": "Diseño de exportación",
-    "importDesign": "Diseño de importación",
+    "downloadJson": "Descargar JSON",
+    "uploadJson": "Subir JSON",
     "important": "IMPORTANTE",
     "formDesignInfoA": "Utilice el botón <strong>GUARDAR DISEÑO</strong> cuando haya terminado de crear este formulario.",
     "formDesignInfoB": "El botón <strong>ENVIAR</strong> se proporciona para que su usuario envíe este formulario y se activará después de guardarlo.",
@@ -487,13 +497,15 @@
     "download": "Descargar"
   },
   "formDisclaimer": {
-    "disclaimerAndStatement": "Descargo de responsabilidad y declaración de responsabilidad para los diseñadores de formularios:",
-    "privacyLaw": "Es su responsabilidad cumplir con las leyes de privacidad que rigen la recopilación, el uso y la divulgación de información de identificación personal.",
-    "disclosure": "El acceso a esta herramienta de diseño de formularios no otorga inherentemente permiso para recopilar, usar o divulgar ninguna información de identificación personal.",
+    "disclaimerAndStatement": "Descargo de responsabilidad y declaración de responsabilidad para diseñadores de formularios:",
+    "privacyLaw": "Es su responsabilidad cumplir con las leyes de privacidad que rigen la recopilación, el uso y la divulgación de información personal identificable.",
+    "disclosure": "El acceso a esta herramienta de diseño de formularios no otorga automáticamente permiso para recopilar, utilizar o divulgar información personal identificable.",
     "consent": "Es su responsabilidad obtener el consentimiento para recopilar información según lo exige la ley.",
     "formIntention": "Antes de publicar o distribuir su formulario, debe discutir la intención del formulario con su",
     "privacyOfficer": "Oficial de Privacidad del Ministerio",
-    "assement": "y para completar las evaluaciones según sea necesario."
+    "assement": "y completar las evaluaciones según sea necesario.",
+    "idimDisclaimerA": "Si utiliza BCeID o BC Services Card como opciones de acceso al formulario, <strong>DEBE</strong> notificar al equipo de Identity Information Management (IDIM) por correo electrónico",
+    "idimDisclaimerB": "su intención de utilizar BCeID o BC Services Card para verificar las identidades de los remitentes de su formulario. Es su responsabilidad completar estos requisitos adicionales antes de recopilar datos."
   },
   "requestReceipt": {
     "emailPriority": "Prioridad de correo electrónico",
@@ -863,10 +875,12 @@
     "failedResSubmissn": "Respuesta fallida desde el punto final de envío. Código de respuesta: {status}",
     "errSubmittingForm": "Ocurrió un error al enviar este formulario",
     "errorSavingFile": "Error al guardar archivos. Nombre de archivo: {fileName}. Error: {error}",
+    "errorDeletingFile": "Error al eliminar archivos. Nombre de archivo: {fileName}. Error: {error}",
     "submittingDraftErrMsg": "Se produjo un error al guardar un borrador",
     "submittingDraftConsErrMsg": "Error al guardar el borrador. Id de envío: {submissionId}. Error: {error}",
     "formDraftAccessErrMsg": "El envío solicitado ya se envió, redirigiendo a la página Ver",
-    "formUnauthorizedMessage": "No tienes autorización para ver este formulario, por favor contacta al propietario del formulario para acceder."
+    "formUnauthorizedMessage": "No tienes autorización para ver este formulario, por favor contacta al propietario del formulario para acceder.",
+    "fileUploadWarning": "Para cargar sus archivos adjuntos, debe hacer clic en el botón \"Guardar como borrador\" o enviar su formulario. Si sale de esta pantalla, perderá sus archivos adjuntos."
   },
   "bCGovFooter": {
     "home": "Hogar",
@@ -943,7 +957,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "Ver mis borradores/presentaciones",
-    "saveAsADraft": "Guardar como borrador",
+    "saveAsDraft": "Guardar como borrador",
     "editThisDraft": "Editar este borrador",
     "switchSingleSubmssn": "Cambiar a envío único",
     "switchMultiSubmssn": "Cambiar a envíos múltiples",
@@ -1122,6 +1136,9 @@
       "user": "Usuario"
     }
   },
+  "alert": {
+    "warning": "Advertencia"
+  },
   "eventStreamConfig": {
     "info": "Configure el flujo de eventos para su formulario.",
     "create": "Crear nueva configuración de flujo de eventos",
@@ -1205,5 +1222,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "No puedes compartir el borrador con usuarios que no se hayan añadido al formulario. Contacta con el administrador para añadirlos.",
+    "shareDraftMessage": "Compartir borrador solo con miembros del equipo del formulario"
   }
 }

@@ -114,6 +114,9 @@ tags:
       All calls are secured by a role that operational team members will be
       granted and allow fetching some details about forms without needing a
       user->form permission.
+  - name: Health
+    description: >-
+      These API endpoints are used for for health checks of CHEFS and its required services.
 paths:
   /forms:
     get:
@@ -145,6 +148,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -175,6 +180,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -213,6 +220,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -256,6 +265,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -293,6 +304,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -321,6 +334,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -348,6 +363,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -371,6 +388,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -401,6 +420,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -449,6 +470,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -496,6 +519,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -538,6 +563,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -576,6 +603,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -681,6 +710,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -735,6 +766,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -758,6 +791,8 @@ paths:
                 $ref: '#/components/schemas/FormOptions'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -799,6 +834,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -840,6 +877,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -878,6 +917,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -926,6 +967,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -966,6 +1009,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1017,6 +1062,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1058,6 +1105,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1107,6 +1156,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1143,6 +1194,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1184,6 +1237,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1233,6 +1288,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1276,6 +1333,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1322,6 +1381,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1369,6 +1430,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1425,6 +1488,8 @@ paths:
           $ref: '#/components/responses/NotFound'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1461,6 +1526,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1491,6 +1558,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1526,6 +1595,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1571,6 +1642,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1598,6 +1671,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1621,6 +1696,8 @@ paths:
                 $ref: '#/components/schemas/SubmissionFormVersionOptions'
         '404':
           $ref: '#/components/responses/NotFound'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1650,6 +1727,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1688,6 +1767,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1721,6 +1802,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1796,6 +1879,8 @@ paths:
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1871,6 +1956,8 @@ paths:
           $ref: '#/components/responses/UnprocessableEntity'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1900,6 +1987,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1930,6 +2019,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1955,6 +2046,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -1985,6 +2078,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2025,6 +2120,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2057,6 +2154,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2077,6 +2176,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2106,6 +2207,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2141,6 +2244,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2166,6 +2271,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2196,6 +2303,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2220,6 +2329,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2269,6 +2380,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2322,6 +2435,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2350,6 +2465,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/IdentityProvider'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2445,6 +2562,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2494,6 +2613,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2533,6 +2654,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2584,6 +2707,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2688,6 +2813,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2735,6 +2862,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2801,6 +2930,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2834,6 +2965,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2887,6 +3020,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2906,6 +3041,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2934,6 +3071,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2967,6 +3106,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -2988,6 +3129,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3012,6 +3155,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3040,6 +3185,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3076,6 +3223,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3105,6 +3254,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3135,6 +3286,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3160,6 +3313,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3189,6 +3344,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3220,6 +3377,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3263,6 +3422,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3292,6 +3453,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3327,6 +3490,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3362,6 +3527,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3403,6 +3570,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3437,6 +3606,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3479,6 +3650,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3521,6 +3694,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3556,6 +3731,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3593,6 +3770,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3636,6 +3815,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3670,6 +3851,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '429':
           $ref: '#/components/responses/TooManyRequests'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3715,6 +3898,8 @@ paths:
           $ref: '#/components/responses/ApiNotApproved'
         '502':
           $ref: '#/components/responses/BadGateway'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3744,6 +3929,8 @@ paths:
                 $ref: '#/components/schemas/ProxyData'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3773,6 +3960,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3809,6 +3998,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
         default:
           description: Unexpected error
           content:
@@ -3850,6 +4041,31 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /status:
+    get:
+      summary: Get the status of the CHEFS and its dependencies
+      description: >-
+        Returns the status of the CHEFS service and its dependencies, such as
+        database connectivity, external APIs, and other critical components.
+        Useful for monitoring and health checks.
+      operationId: getStatus
+      tags:
+        - Health
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceStatus'
         default:
           description: Unexpected error
           content:
@@ -4330,33 +4546,6 @@ components:
                   type: string
                   description: This string contain custom closing message message set by form designer that shows on frontend when a form is expired for a particular period.
                   example: This Form is expired.
-                keepOpenForTerm:
-                  type: string
-                  description: This contain a value that can be used with combination to another key i.e. keepOpenForInterval to calculate a period. Thats tells a form to be keep open for particular period.  40 Days, 3 Weeks, 1 Years etc.
-                  example: '15'
-                keepOpenForInterval:
-                  type: string
-                  description: This contain a value that can be used with combination to another key i.e. keepOpenForTerm to calculate a period. Thats tells a form to be keep open for particular period.  40 Days, 3 Weeks, 1 Years etc.
-                  example: '15'
-                repeatSubmission:
-                  type: object
-                  properties:
-                    enabled:
-                      type: boolean
-                      description: Used to indicate if repeatition of scheduling a form enabled or not
-                      example: true
-                    everyTerm:
-                      type: string
-                      description: This contain a value that can be used with combination to another key i.e. everyIntervalType to calculate a period. Thats tells a form to be schedule a form repetition after particular period.  40 Days, 3 Weeks, 1 Years etc.
-                      example: '15'
-                    repeatUntil:
-                      type: string
-                      description: Contains end date for repeatition of form schedule.
-                      example: '2023-12-22'
-                    everyIntervalType:
-                      type: string
-                      description: This contain a value that can be used with combination to another key i.e. everyTerm to calculate a period. Thats tells a form to be schedule a form repetition after particular period.  40 Days, 3 Weeks, 1 Years etc.
-                      example: '15'
                 allowLateSubmissions:
                   type: object
                   properties:
@@ -4385,6 +4574,32 @@ components:
                   type: string
                   description: Contains closing date of form schedule system when type of ScheduleType set to closingDate.
                   example: '2022-12-22'
+                # The following fields are deprecated and only included for backward compatibility
+                keepOpenForTerm:
+                  type: string
+                  description: Deprecated. Previously used for PERIOD scheduling.
+                  deprecated: true
+                keepOpenForInterval:
+                  type: string
+                  description: Deprecated. Previously used for PERIOD scheduling.
+                  deprecated: true
+                repeatSubmission:
+                  type: object
+                  description: Deprecated. Previously used for PERIOD scheduling.
+                  deprecated: true
+                  properties:
+                    enabled:
+                      type: boolean
+                      description: Deprecated.
+                    everyTerm:
+                      type: string
+                      description: Deprecated.
+                    repeatUntil:
+                      type: string
+                      description: Deprecated.
+                    everyIntervalType:
+                      type: string
+                      description: Deprecated.
             subscribe:
               type: object
               description: Contains subscription related data - future storage of subscribed events
@@ -4999,6 +5214,66 @@ components:
                   items:
                     type: string
         - $ref: '#/components/schemas/TimeStampUserData'
+    ServiceStatus:
+      type: object
+      properties:
+        ready:
+          type: boolean
+          description: If CHEFS is ready to accept requests
+          example: true
+        stopped:
+          type: boolean
+          description: If CHEFS is stopped or in the process of shutting down
+          example: false
+        connections:
+          type: object
+          description: Describe state of services CHEFS requires
+          properties:
+            clamAvScanner:
+              type: object
+              properties:
+                displayName:
+                  type: string
+                  description: Name of the service
+                  example: Virus Scanner
+                connected:
+                  type: boolean
+                  description: Indicate if CHEFS is currently able to connect to the service
+                  example: true
+                started:
+                  type: boolean
+                  description: Indicate if CHEFS initialized the connection to the service at startup
+                  example: true
+            dataConnection:
+              type: object
+              properties:
+                displayName:
+                  type: string
+                  description: Name of the service
+                  example: Data Connection
+                connected:
+                  type: boolean
+                  description: Indicate if CHEFS is currently able to connect to the service
+                  example: true
+                started:
+                  type: boolean
+                  description: Indicate if CHEFS initialized the connection to the service at startup
+                  example: true
+            eventStreamService:
+              type: object
+              properties:
+                displayName:
+                  type: string
+                  description: Name of the service
+                  example: Event Stream Service
+                connected:
+                  type: boolean
+                  description: Indicate if CHEFS is currently able to connect to the service
+                  example: true
+                started:
+                  type: boolean
+                  description: Indicate if CHEFS initialized the connection to the service at startup
+                  example: true
     SubmissionEditMetadata:
       type: object
       properties:
@@ -5597,6 +5872,25 @@ components:
                     example: Not Found
                   type:
                     example: https://httpstatuses.com/404
+    ServiceUnavailable:
+      description: External service is unavailable
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Problem'
+              - type: object
+                properties:
+                  detail:
+                    $ref: '#/components/schemas/ServiceStatus'
+              - type: object
+                properties:
+                  status:
+                    example: 503
+                  title:
+                    example: Service Unavailable
+                  type:
+                    example: https://httpstatuses.com/503
     TooManyRequests:
       description: BasicAuth request exceeds rate limiting
       headers:

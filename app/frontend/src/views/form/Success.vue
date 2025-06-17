@@ -14,6 +14,10 @@ defineProps({
     type: String,
     required: true,
   },
+  f: {
+    type: String,
+    required: true,
+  },
 });
 
 const { email } = storeToRefs(useAuthStore());

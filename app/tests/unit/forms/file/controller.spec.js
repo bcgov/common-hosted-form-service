@@ -27,7 +27,9 @@ const error = new Error('error');
 //
 
 service.create = jest.fn().mockReturnValue(fileStorage);
+service.clone = jest.fn().mockReturnValue(fileStorage);
 service.delete = jest.fn().mockReturnValue();
+service.deleteFiles = jest.fn().mockReturnValue();
 
 storageService.read = jest.fn().mockReturnValue(fileStorage);
 
@@ -78,6 +80,51 @@ describe('create', () => {
   });
 });
 
+describe('clone', () => {
+  // These are created by the middleware.
+  const validRequest = {
+    currentUser: currentUser,
+    params: {
+      fileId: '123',
+    },
+  };
+
+  describe('error response when', () => {
+    it('has an unsuccessful service call', async () => {
+      service.clone.mockRejectedValueOnce(error);
+      const req = getMockReq(validRequest);
+      const { res, next } = getMockRes();
+
+      await controller.clone(req, res, next);
+
+      expect(service.clone).toBeCalledWith(validRequest.params.fileId, validRequest.currentUser);
+      expect(res.json).not.toBeCalled();
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledWith(error);
+    });
+  });
+
+  describe('201 response when', () => {
+    it('has a successful service call', async () => {
+      const req = getMockReq(validRequest);
+      const { res, next } = getMockRes();
+
+      await controller.clone(req, res, next);
+
+      expect(service.clone).toBeCalledWith(validRequest.params.fileId, validRequest.currentUser);
+      expect(res.json).toBeCalledWith({
+        createdAt: fileStorage.createdAt,
+        createdBy: fileStorage.createdBy,
+        id: fileStorage.id,
+        originalName: fileStorage.originalName,
+        size: fileStorage.size,
+      });
+      expect(res.status).toBeCalledWith(201);
+      expect(next).not.toBeCalled();
+    });
+  });
+});
+
 describe('delete', () => {
   const validRequest = {
     params: {
@@ -109,6 +156,45 @@ describe('delete', () => {
       await controller.delete(req, res, next);
 
       expect(service.delete).toBeCalledWith(validRequest.params.fileId);
+      expect(res.json).not.toBeCalled();
+      expect(res.send).not.toBeCalled();
+      expect(res.sendStatus).toBeCalledWith(202);
+      expect(next).not.toBeCalled();
+    });
+  });
+});
+
+describe('deleteFiles', () => {
+  const validRequest = {
+    body: {
+      fileIds: ['123'],
+    },
+  };
+
+  describe('error response when', () => {
+    it('has an unsuccessful service call', async () => {
+      service.deleteFiles.mockRejectedValueOnce(error);
+      const req = getMockReq(validRequest);
+      const { res, next } = getMockRes();
+
+      await controller.deleteFiles(req, res, next);
+
+      expect(service.deleteFiles).toBeCalledWith(validRequest.body.fileIds);
+      expect(res.json).not.toBeCalled();
+      expect(res.status).not.toBeCalled();
+      expect(next).toBeCalledWith(error);
+    });
+  });
+
+  // TODO: the API is wrong, this should be a 204, not a 202.
+  describe('202 response when', () => {
+    it('has a successful service call', async () => {
+      const req = getMockReq(validRequest);
+      const { res, next } = getMockRes();
+
+      await controller.deleteFiles(req, res, next);
+
+      expect(service.deleteFiles).toBeCalledWith(validRequest.body.fileIds);
       expect(res.json).not.toBeCalled();
       expect(res.send).not.toBeCalled();
       expect(res.sendStatus).toBeCalledWith(202);

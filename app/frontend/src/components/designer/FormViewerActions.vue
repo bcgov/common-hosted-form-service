@@ -77,6 +77,10 @@ const showEditToggle = computed(
     properties.readOnly &&
     properties.permissions.includes(FormPermissions.SUBMISSION_UPDATE)
 );
+const loading = ref(false);
+function toggleLoading() {
+  loading.value = !loading.value;
+}
 
 function toggleWideLayout() {
   isWideLayout.value = !isWideLayout.value;
@@ -101,9 +105,13 @@ watch(
     <div v-if="formId && !publicForm">
       <v-btn
         color="primary"
+        :loading="loading"
         variant="outlined"
         :title="$t('trans.formViewerActions.viewMyDraftOrSubmissions')"
-        @click="$emit('showdoYouWantToSaveTheDraftModal')"
+        @click="
+          toggleLoading();
+          $emit('showdoYouWantToSaveTheDraftModal');
+        "
       >
         <span :lang="locale">{{
           $t('trans.formViewerActions.viewMyDraftOrSubmissions')
@@ -174,23 +182,11 @@ watch(
         v-if="canSaveDraft && draftEnabled && !bulkFile && !publicForm"
         class="ml-2"
       >
-        <v-tooltip location="bottom">
-          <template #activator="{ props }">
-            <v-btn
-              color="primary"
-              icon
-              v-bind="props"
-              size="x-small"
-              :title="$t('trans.formViewerActions.saveAsADraft')"
-              @click="$emit('save-draft')"
-            >
-              <v-icon icon="mdi:mdi-content-save"></v-icon>
-            </v-btn>
-          </template>
+        <v-btn color="primary" variant="outlined" @click="$emit('save-draft')">
           <span :lang="locale">{{
-            $t('trans.formViewerActions.saveAsADraft')
+            $t('trans.formViewerActions.saveAsDraft')
           }}</span>
-        </v-tooltip>
+        </v-btn>
       </span>
 
       <!-- Go to draft edit -->
@@ -229,6 +225,7 @@ watch(
         <ManageSubmissionUsers
           :is-draft="isDraft"
           :submission-id="submissionId"
+          :form-id="formId"
         />
       </span>
     </div>

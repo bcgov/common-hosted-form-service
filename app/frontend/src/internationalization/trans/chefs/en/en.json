@@ -159,8 +159,8 @@
     "formAccess": "Form Access",
     "info": "If you will be using this form to gather information from the general public on topics that are of general interest to the public, you are required to contact the GCPE so that your engagement can be listed on",
     "important": "IMPORTANT",
-    "idimNotifyA": "You must notify the Identity Information Management (IDIM) team by email",
-    "idimNotifyB": "your intent to leverage BCeID to verify the identities of your form submitters.",
+    "idimNotifyA": "You <strong>MUST</strong> notify the Identity Information Management (IDIM) team by email",
+    "idimNotifyB": "your intent to leverage BCeID or BC Services Card to verify the identities of your form submitters.",
     "referenceGuideA": "Please reference our",
     "referenceGuideB": "user guide",
     "referenceGuideC": "for more details",
@@ -178,6 +178,7 @@
     "loginRequired": "Log-in Required",
     "canSaveAndEditDraftLabel": "Submitters can <strong>Save and Edit Drafts</strong>",
     "canUpdateStatusAsReviewer": "Reviewers can <strong>Update the Status</strong> of this form (i.e. Submitted, Assigned, Completed)",
+    "displayAssigneeColumn": "Display assignee column for reviewers",
     "submitterCanCopyExistingSubmissn": "Submitters can<strong> Copy an existing submission</strong>",
     "submissionConfirmationToolTip": "Selecting this option controls what the submitting user of this form will see on successful submission. <br /> If checked, it will display",
     "emailNotificatnToTeam": "Send my team a notification email",
@@ -200,8 +201,15 @@
     "every": "Every",
     "repeatUntil": "Repeat until",
     "summary": "Summary",
+    "timezoneIndicator": "All times are in your local timezone ({timezone})",
+    "openTime": "Open time",
+    "closeTime": "Close time",
+    "at": "at",
+    "specifyOpenTime": "Specify open time (optional)",
+    "specifyCloseTime": "Specify close time (optional)",
     "submissionsOpenDateRange": "This form will be open for submissions from",
     "to": "to",
+    "closingTimeInfo": "(The form will close at 11:59 PM in your local time zone on the closing date)",
     "scheduleRepetition": "The schedule will repeat every",
     "allowLateSubmissnInterval": "allowing late submissions for",
     "until": "until",
@@ -241,6 +249,9 @@
     "eventStreamMessage": "Event Stream Service will publish notifications about form publishing and submissions. The underlying technology is NATS.io which allows consumers to subscribe or pull the event messages and process them in external systems. Private messages will contain encrypted payloads with the key configured here.",
     "natsConfiguration": "NATS Configuration and Message Metadata",
     "publishConfiguration": "Event Publishing Configuration",
+    "essAccountName": "ESS Account Name",
+    "essAccountApproved": "ESS Account approved",
+    "essAccountNotApproved": "ESS Account unknown or not approved",
     "enablePublicStream": "Enable Public Stream",
     "enablePrivateStream": "Enable Private Stream",
     "encryptionKeyAlgorithm": "Encryption Key Algorithm",
@@ -519,8 +530,8 @@
   },
   "formDesigner": {
     "formDesign": "Form Design",
-    "exportDesign": "Export Design",
-    "importDesign": "Import Design",
+    "downloadJson": "Download JSON",
+    "uploadJson": "Upload JSON",
     "important": "IMPORTANT",
     "formDesignInfoA": "Use the <strong>SAVE DESIGN</strong> button when you are done building this form.",
     "formDesignInfoB": "The <strong>SUBMIT</strong> button is provided for your user to submit this form and will be activated after it is saved.",
@@ -570,7 +581,9 @@
     "consent": "It is your responsibility to obtain consent to collect information as required by law.",
     "formIntention": "Before publishing or distributing your form you are required to discuss the intention of the form with your",
     "privacyOfficer": "Ministry Privacy Officer",
-    "assement": "and to complete assessments as required."
+    "assement": "and to complete assessments as required.",
+    "idimDisclaimerA": "If you use BCeID or BC Services Card as form access options, you <strong>MUST</strong> notify the Identity Information Management (IDIM) team by email",
+    "idimDisclaimerB": "your intent to leverage BCeID or BC Services Card to verify the identities of your form submitters. It is your responsibility to complete theses additional onboarding requirements before collecting data."
   },
   "requestReceipt": {
     "emailPriority": "Email Priority",
@@ -586,6 +599,8 @@
     "emailRequired": "Email is required"
   },
   "submissionsTable": {
+    "assignee": "Assignee",
+    "showAssignedToMe": "Assigned to me",
     "noMatchingRecordText": "No matching records found",
     "submissions": "Submissions",
     "submissionsTable": "SubmissionsTable",
@@ -643,6 +658,7 @@
     "formSubmission": "form submission",
     "delete": "Delete"
   },
+
   "manageSubmissionUsers": {
     "manageTeamMembers": "Manage Team Members",
     "add": "Add",
@@ -669,6 +685,10 @@
     "getUsersErrMsg": "Error getting users: {error}",
     "exactEmailOrUsername": "Enter an exact email or username.",
     "requiredField": "Enter a name, email, or username"
+  },
+  "canShareDraft": {
+    "canShareMessage": "You can't share the draft with users who haven't been added to the form. Please contact the admin to add them.",
+    "shareDraftMessage": "Share draft with form team members only"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "View This Submission",
@@ -760,7 +780,6 @@
     "loadingText": "Loading... Please wait",
     "status": "Status",
     "dateStatusChanged": "Date Status Changed",
-    "assignee": "Assignee",
     "updatedBy": "Updated By",
     "getSubmissionStatusErr": "An error occurred while trying to fetch statuses.",
     "getSubmissionStatusConsErr": "Error adding note:"
@@ -951,10 +970,12 @@
     "failedResSubmissn": "Failed response from submission endpoint. Response code: {status}",
     "errSubmittingForm": "An error occurred submitting this form",
     "errorSavingFile": "Error saving files. Filename: {fileName}. Error: {error}",
+    "errorDeletingFile": "Error deleting files. Filename: {fileName}. Error: {error}",
     "submittingDraftErrMsg": "An error occurred while saving a draft",
     "submittingDraftConsErrMsg": "Error saving draft. SubmissionId: {submissionId}. Error: {error}",
     "formDraftAccessErrMsg": "Requested submission is already submitted, redirecting to View page",
-    "formUnauthorizedMessage": "You are not authorized to view this form, please contact the form owner for access."
+    "formUnauthorizedMessage": "You are not authorized to view this form, please contact the form owner for access.",
+    "fileUploadWarning": "To upload your attachments, you must either click on the 'Save as draft' button or submit your form. If you navigate away from this screen, you will lose your attachments."
   },
   "bCGovFooter": {
     "home": "Home",
@@ -1031,7 +1052,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "View My Drafts/Submissions",
-    "saveAsADraft": "Save as a Draft",
+    "saveAsDraft": "Save as Draft",
     "editThisDraft": "Edit this Draft",
     "switchSingleSubmssn": "Switch to single submission",
     "switchMultiSubmssn": "Switch to multiple submissions",
@@ -1205,5 +1226,25 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "alert": {
+    "warning": "Warning"
+  },
+  "statusOverlay": {
+    "chefsUnavailableBoilerplate": "The Common Hosted Forms Service is temporarily unavailable. Please wait a few moments and try again, or contact your team's IT support or system administrator if the problem persists.",
+    "moreInfo": "Show More Info...",
+    "lessInfo": "Show Less Info...",
+    "moreInfoIntro": "This issue may be caused by interruption of one or more of the following services:",
+    "moreInfoOutro": "We are actively working to restore access. If you need further assistance, please have your IT support/System Admin contact us at {linkOne} or {linkTwo}.",
+    "name": "Service",
+    "status": "Status",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "msTeamsChannel": "MS Teams Channel",
+    "rocketChatChannel": "Rocket.Chat Channel",
+    "defaultStatusMessage": "Service is temporarily unavailable (503). Please try again later.",
+    "shuttingDown": "CHEFS is shutting down.",
+    "notReady": "CHEFS cannot connect to all required services.",
+    "unableToReachBackend": "Unable to reach backend service."
   }
 }

@@ -97,11 +97,11 @@
     "formAccess": "Truy cập biểu mẫu",
     "info": "Nếu bạn sẽ sử dụng biểu mẫu này để thu thập thông tin từ công chúng về các chủ đề được công chúng quan tâm, bạn phải liên hệ với GCPE để sự tham gia của bạn có thể được liệt kê trên",
     "important": "QUAN TRỌNG",
-    "idimNotifyA": "Bạn phải thông báo cho nhóm Quản lý thông tin nhận dạng (IDIM) qua email",
-    "idimNotifyB": "ý định tận dụng BCeID của bạn để xác minh danh tính của những người gửi biểu mẫu của bạn.",
-    "referenceGuideA": "Vui lòng tham khảo của chúng tôi",
+    "idimNotifyA": "Bạn <strong>PHẢI</strong> thông báo cho nhóm Quản lý Thông tin Danh tính (IDIM) qua email",
+    "idimNotifyB": "về ý định sử dụng BCeID hoặc BC Services Card để xác minh danh tính của những người gửi biểu mẫu.",
+    "referenceGuideA": "Vui lòng tham khảo",
     "referenceGuideB": "hướng dẫn sử dụng",
-    "referenceGuideC": "để biết thêm chi tiết",
+    "referenceGuideC": "để biết thêm chi tiết.",
     "specificTeamMembers": "Thành viên nhóm cụ thể",
     "teamMemberTooltip": "Thêm thành viên nhóm từ cài đặt Quản lý Nhóm sau khi tạo mẫu này.",
     "formFunctionality": "Chức năng biểu mẫu",
@@ -139,7 +139,14 @@
     "repeatUntil": "Lặp lại cho đến khi",
     "summary": "Bản tóm tắt",
     "submissionsOpenDateRange": "Biểu mẫu này sẽ được mở để gửi từ",
+    "timezoneIndicator": "Tất cả thời gian đều theo múi giờ địa phương của bạn ({timezone})",
     "to": "ĐẾN",
+    "openTime": "Thời gian mở",
+    "closeTime": "Thời gian đóng",
+    "at": "lúc",
+    "specifyOpenTime": "Chỉ định thời gian mở (tùy chọn)",
+    "specifyCloseTime": "Chỉ định thời gian đóng (tùy chọn)",
+    "closingTimeInfo": "(Biểu mẫu sẽ đóng lúc 11:59 PM theo múi giờ địa phương của bạn vào ngày đóng)",
     "scheduleRepetition": "Lịch trình sẽ lặp lại mỗi",
     "allowLateSubmissnInterval": "cho phép nộp muộn cho",
     "until": "cho đến khi",
@@ -179,6 +186,9 @@
     "eventStreamMessage": "Event Stream Service sẽ công bố thông báo về việc công bố và gửi biểu mẫu. Công nghệ cơ bản là NATS.io cho phép người dùng đăng ký hoặc kéo các thông báo sự kiện và xử lý chúng trong các hệ thống bên ngoài. Tin nhắn riêng sẽ chứa các tải trọng được mã hóa với khóa được cấu hình tại đây.",
     "natsConfiguration": "Cấu hình NATS và Siêu dữ liệu tin nhắn",
     "publishConfiguration": "Cấu hình xuất bản sự kiện",
+    "essAccountName": "Tên tài khoản ESS",
+    "essAccountApproved": "Tài khoản ESS đã được phê duyệt",
+    "essAccountNotApproved": "Tài khoản ESS không xác định hoặc chưa được phê duyệt",
     "enablePublicStream": "Bật luồng công khai",
     "enablePrivateStream": "Bật luồng riêng tư",
     "encryptionKeyAlgorithm": "Thuật toán khóa mã hóa",
@@ -442,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "thiết kế biểu mẫu",
-    "exportDesign": "Thiết kế xuất khẩu",
-    "importDesign": "Thiết kế nhập khẩu",
+    "downloadJson": "Tải xuống JSON",
+    "uploadJson": "Tải lên JSON",
     "important": "QUAN TRỌNG",
     "formDesignInfoA": "Sử dụng nút <strong>LƯU THIẾT KẾ</strong> khi bạn hoàn thành việc xây dựng biểu mẫu này.",
     "formDesignInfoB": "Nút <strong>GỬI</strong> được cung cấp để người dùng của bạn gửi biểu mẫu này và sẽ được kích hoạt sau khi được lưu.",
@@ -487,13 +497,15 @@
     "download": "Tải xuống"
   },
   "formDisclaimer": {
-    "disclaimerAndStatement": "Tuyên bố từ chối trách nhiệm và tuyên bố trách nhiệm đối với Người thiết kế biểu mẫu:",
-    "privacyLaw": "Bạn có trách nhiệm tuân thủ các luật về Quyền riêng tư điều chỉnh việc thu thập, sử dụng và tiết lộ thông tin nhận dạng cá nhân.",
-    "disclosure": "Quyền truy cập vào công cụ thiết kế biểu mẫu này vốn không cấp quyền thu thập, sử dụng hoặc tiết lộ bất kỳ thông tin nhận dạng cá nhân nào.",
-    "consent": "Bạn có trách nhiệm phải có được sự đồng ý để thu thập thông tin theo yêu cầu của pháp luật.",
-    "formIntention": "Trước khi xuất bản hoặc phân phối biểu mẫu của bạn, bạn được yêu cầu thảo luận về mục đích của biểu mẫu với",
-    "privacyOfficer": "Cán bộ Bảo mật của Bộ",
-    "assement": "và hoàn thành các đánh giá theo yêu cầu."
+    "disclaimerAndStatement": "Tuyên bố miễn trách nhiệm và trách nhiệm dành cho nhà thiết kế biểu mẫu:",
+    "privacyLaw": "Bạn có trách nhiệm tuân thủ các luật về quyền riêng tư liên quan đến việc thu thập, sử dụng và tiết lộ thông tin nhận dạng cá nhân.",
+    "disclosure": "Quyền truy cập vào công cụ thiết kế biểu mẫu này không tự động cấp quyền thu thập, sử dụng hoặc tiết lộ bất kỳ thông tin nhận dạng cá nhân nào.",
+    "consent": "Bạn có trách nhiệm lấy sự đồng ý để thu thập thông tin theo yêu cầu của pháp luật.",
+    "formIntention": "Trước khi xuất bản hoặc phân phối biểu mẫu của bạn, bạn cần thảo luận về mục đích của biểu mẫu với",
+    "privacyOfficer": "Nhân viên bảo mật của Bộ",
+    "assement": "và hoàn thành các đánh giá cần thiết.",
+    "idimDisclaimerA": "Nếu bạn sử dụng BCeID hoặc BC Services Card làm tùy chọn truy cập biểu mẫu, <strong>BẠN PHẢI</strong> thông báo cho nhóm Quản lý Thông tin Danh tính (IDIM) qua email",
+    "idimDisclaimerB": "về ý định sử dụng BCeID hoặc BC Services Card để xác minh danh tính của những người gửi biểu mẫu. Bạn có trách nhiệm hoàn thành các yêu cầu bổ sung này trước khi thu thập dữ liệu."
   },
   "requestReceipt": {
     "emailPriority": "Ưu tiên email",
@@ -863,10 +875,12 @@
     "failedResSubmissn": "Phản hồi không thành công từ điểm cuối gửi. Mã phản hồi: {status}",
     "errSubmittingForm": "Đã xảy ra lỗi khi gửi biểu mẫu này",
     "errorSavingFile": "Lỗi khi lưu tệp. Tên tệp: {fileName}. Lỗi: {error}",
+    "errorDeletingFile": "Lỗi khi xóa tệp. Tên tệp: {fileName}. Lỗi: {error}",
     "submittingDraftErrMsg": "Đã xảy ra lỗi khi lưu bản nháp",
     "submittingDraftConsErrMsg": "Lỗi khi lưu bản nháp. Đệ trìnhId: {submissionId}. Lỗi: {error}",
     "formDraftAccessErrMsg": "Yêu cầu gửi đã được gửi, chuyển hướng đến Xem trang",
-    "formUnauthorizedMessage": "Bạn không được phép xem mẫu này, vui lòng liên hệ với chủ sở hữu mẫu để được truy cập."
+    "formUnauthorizedMessage": "Bạn không được phép xem mẫu này, vui lòng liên hệ với chủ sở hữu mẫu để được truy cập.",
+    "fileUploadWarning": "Để tải lên tệp đính kèm của bạn, bạn phải nhấp vào nút 'Lưu dưới dạng bản nháp' hoặc gửi biểu mẫu của bạn. Nếu bạn thoát khỏi màn hình này, bạn sẽ mất tệp đính kèm của mình"
   },
   "bCGovFooter": {
     "home": "Trang chủ",
@@ -943,7 +957,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "Xem bản nháp/bài nộp của tôi",
-    "saveAsADraft": "Lưu dưới dạng Bản nháp",
+    "saveAsDraft": "Lưu dưới dạng Bản nháp",
     "editThisDraft": "Chỉnh sửa Bản nháp này",
     "switchSingleSubmssn": "Chuyển sang gửi một lần",
     "switchMultiSubmssn": "Chuyển sang nhiều bài nộp",
@@ -1120,6 +1134,9 @@
       "user": "Người dùng"
     }
   },
+  "alert": {
+    "warning": "Cảnh báo"
+  },
   "eventStreamConfig": {
     "info": "Cấu hình Luồng sự kiện cho biểu mẫu của bạn.",
     "create": "Tạo cấu hình luồng sự kiện mới",
@@ -1209,5 +1226,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "Bạn không thể chia sẻ bản nháp với những người dùng chưa được thêm vào biểu mẫu. Vui lòng liên hệ với quản trị viên để thêm họ.",
+    "shareDraftMessage": "Chỉ chia sẻ bản nháp với các thành viên nhóm biểu mẫu"
   }
 }

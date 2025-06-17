@@ -97,11 +97,11 @@
     "formAccess": "表格访问",
     "info": "如果您将使用此表格向公众收集有关公众普遍感兴趣的主题的信息，您需要联系 GCPE，以便将您的参与情况列在",
     "important": "重要的",
-    "idimNotifyA": "您必须通过电子邮件通知身份信息管理 (IDIM) 团队",
-    "idimNotifyB": "您打算利用 BCeID 来验证表单提交者的身份。",
+    "idimNotifyA": "您 <strong>必须</strong> 通过电子邮件通知身份信息管理 (IDIM) 团队",
+    "idimNotifyB": "您打算使用 BCeID 或 BC Services Card 来验证表单提交者的身份。",
     "referenceGuideA": "请参考我们的",
     "referenceGuideB": "用户指南",
-    "referenceGuideC": "更多细节",
+    "referenceGuideC": "了解更多详情。",
     "specificTeamMembers": "具体团队成员",
     "teamMemberTooltip": "在创建此表单后，从团队管理设置中添加团队成员。",
     "formFunctionality": "表单功能",
@@ -139,7 +139,14 @@
     "repeatUntil": "重复直到",
     "summary": "概括",
     "submissionsOpenDateRange": "此表格将开放供提交",
+    "timezoneIndicator": "所有时间均为您的本地时区 ({timezone})",
     "to": "到",
+    "openTime": "开始时间",
+    "closeTime": "结束时间",
+    "at": "于",
+    "specifyOpenTime": "指定开始时间（可选）",
+    "specifyCloseTime": "指定结束时间（可选）",
+    "closingTimeInfo": "(表单将于截止日期当天您当地时区的晚上11:59关闭)",
     "scheduleRepetition": "该时间表将重复每个",
     "allowLateSubmissnInterval": "允许延迟提交",
     "until": "直到",
@@ -179,6 +186,9 @@
     "eventStreamMessage": "Event Stream Service 将发布有关表单发布和提交的通知。底层技术是 NATS.io，它允许消费者订阅或提取事件消息并在外部系统中处理它们。私人消息将包含使用此处配置的密钥的加密有效负载。",
     "natsConfiguration": "NATS 配置和消息元数据",
     "publishConfiguration": "事件发布配置",
+    "essAccountName": "ESS账户名称",
+    "essAccountApproved": "ESS账户已批准",
+    "essAccountNotApproved": "ESS账户未知或未批准",
     "enablePublicStream": "启用公共流",
     "enablePrivateStream": "启用私人流",
     "encryptionKeyAlgorithm": "加密密钥算法",
@@ -442,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "表格设计",
-    "exportDesign": "出口设计",
-    "importDesign": "导入设计",
+    "downloadJson": "下载 JSON",
+    "uploadJson": "上传 JSON",
     "important": "重要的",
     "formDesignInfoA": "完成此表单的构建后，请使用<strong>“保存设计”</strong>按钮。",
     "formDesignInfoB": "<strong>提交</strong>按钮供您的用户提交此表单，并将在保存后激活。",
@@ -488,12 +498,14 @@
   },
   "formDisclaimer": {
     "disclaimerAndStatement": "表单设计者的免责声明和责任声明：",
-    "privacyLaw": "您有责任遵守有关收集、使用和披露个人身份信息的隐私法。",
-    "disclosure": "访问此表单设计器工具本身并不授予收集、使用或披露任何个人身份信息的权限。",
-    "consent": "您有责任按照法律要求获得同意收集信息。",
-    "formIntention": "在发布或分发您的表格之前，您需要与您的同事讨论该表格的意图。",
-    "privacyOfficer": "部隐私官员",
-    "assement": "并按要求完成评估。"
+    "privacyLaw": "您有责任遵守管理个人身份信息收集、使用和披露的隐私法律。",
+    "disclosure": "访问此表单设计工具并不自动授予您收集、使用或披露任何个人身份信息的权限。",
+    "consent": "您有责任按照法律要求获取收集信息的同意。",
+    "formIntention": "在发布或分发您的表单之前，您需要与",
+    "privacyOfficer": "部门隐私官",
+    "assement": "讨论表单的用途，并完成必要的评估。",
+    "idimDisclaimerA": "如果您使用 BCeID 或 BC Services Card 作为表单访问选项，您 <strong>必须</strong> 通过电子邮件通知身份信息管理 (IDIM) 团队",
+    "idimDisclaimerB": "您打算使用 BCeID 或 BC Services Card 来验证表单提交者的身份。在收集数据之前，您有责任完成这些额外的入驻要求。"
   },
   "requestReceipt": {
     "emailPriority": "电子邮件优先",
@@ -863,10 +875,12 @@
     "failedResSubmissn": "提交端点响应失败。响应代码：{status}",
     "errSubmittingForm": "提交此表单时出错",
     "errorSavingFile": "保存文件时出错。文件名：{fileName}。错误：{error}",
+    "errorDeletingFile": "删除文件时出错。文件名：{fileName}。错误：{error}",
     "submittingDraftErrMsg": "保存草稿时出错",
     "submittingDraftConsErrMsg": "保存草稿时出错。提交 ID：{submissionId}。错误：{error}",
     "formDraftAccessErrMsg": "请求的提交已提交，正在重定向到查看页面",
-    "formUnauthorizedMessage": "您无权查看此表单，请联系表单所有者以获取访问权限。"
+    "formUnauthorizedMessage": "您无权查看此表单，请联系表单所有者以获取访问权限。",
+    "fileUploadWarning": "要上传附件，您必须点击“另存为草稿”按钮或提交表单。如果您离开此屏幕，您将丢失附件"
   },
   "bCGovFooter": {
     "home": "家",
@@ -943,7 +957,7 @@
   },
   "formViewerActions": {
     "viewMyDraftOrSubmissions": "查看我的草稿/提交内容",
-    "saveAsADraft": "另存为草稿",
+    "saveAsDraft": "另存为草稿",
     "editThisDraft": "编辑本草稿",
     "switchSingleSubmssn": "切换到单一提交",
     "switchMultiSubmssn": "切换到多次提交",
@@ -1122,6 +1136,9 @@
       "user": "用户"
     }
   },
+  "alert": {
+    "warning": "警告"
+  },
   "eventStreamConfig": {
     "info": "为您的表单配置事件流。",
     "create": "创建新的事件流配置",
@@ -1205,5 +1222,9 @@
   },
   "test": {
     "customError": "This is a custom error message for testing."
+  },
+  "canShareDraft": {
+    "canShareMessage": "您无法与尚未添加到表单的用户共享草稿。请联系管理员添加他们。",
+    "shareDraftMessage": "仅与表单团队成员共享草稿"
   }
 }

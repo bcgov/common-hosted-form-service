@@ -1,0 +1,93 @@
+name: ClamAV Image Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: github checkout ref id
+        required: true
+        type: string
+        default: main
+      image_name:
+        description: Image Name
+        required: true
+        type: string
+        default: chefs-clamav
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Set variables
+        shell: bash
+        run: |
+          echo "SHA=sha-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "IMAGE_REVISION=$(git rev-parse HEAD)" >> $GITHUB_ENV
+          echo "IMAGE_VERSION=main" >> $GITHUB_ENV
+          if [[ "${{ inputs.ref }}" != '' ]]; then
+            git fetch origin ${{ inputs.ref }}
+            echo "SHA=sha-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+            echo "IMAGE_REVISION=$(git rev-parse HEAD)" >> $GITHUB_ENV
+            echo "IMAGE_VERSION=ref-${{ inputs.ref }}" >> $GITHUB_ENV
+          fi
+
+      - name: Parse Input Values
+        shell: bash
+        run: |
+          echo "GH_USERNAME=$(tr '[:upper:]' '[:lower:]' <<< '${{ github.repository_owner }}')" >> $GITHUB_ENV
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ env.GH_USERNAME }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prepare Container Metadata tags
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}
+          # Always updates the 'latest' tag
+          flavor: |
+            latest=true
+          # Creates tags based off of branch names and semver tags
+          tags: |
+            type=raw,value=${{ env.IMAGE_VERSION }}
+            type=raw,value=${{ env.SHA }}
+          labels: |
+            org.opencontainers.image.description=Clam AV for CHEFS
+            org.opencontainers.image.licenses=Apache-2.0
+            org.opencontainers.image.revision=${{ env.IMAGE_REVISION }}
+            org.opencontainers.image.source=https://github.com/bcgov/common-hosted-form-service/clamav
+            org.opencontainers.image.title=${{ inputs.image_name }}
+            org.opencontainers.image.version=${{ env.IMAGE_VERSION }}
+          annotations: |
+            org.opencontainers.image.description=Clam AV for CHEFS
+            org.opencontainers.image.licenses=Apache-2.0
+            org.opencontainers.image.revision=${{ env.IMAGE_REVISION }}
+            org.opencontainers.image.source=https://github.com/bcgov/common-hosted-form-service/clamav
+            org.opencontainers.image.title=${{ inputs.image_name }}
+            org.opencontainers.image.version=${{ env.IMAGE_VERSION }}
+
+      - name: Build and Push to Container Registry
+        id: builder
+        uses: docker/build-push-action@v6
+        with:
+          context: ./clamav
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Inspect Docker Image
+        shell: bash
+        run: |
+          docker image inspect ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:latest
+          docker image inspect ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:sha-$(git rev-parse --short HEAD)
+          docker image inspect ghcr.io/${{ env.GH_USERNAME }}/${{ inputs.image_name }}:ref-${{ inputs.ref }}

@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "clamav.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "clamav.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.clamav.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "clamav.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "clamav.selectorLabels" . | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      {{- if .Values.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: clamav
+        image: "{{ .Values.clamav.image }}:{{ default .Chart.AppVersion .Values.clamav.tag }}"
+        imagePullPolicy: "{{ .Values.clamav.imagePullPolicy }}"
+        {{- if .Values.containerSecurityContext.enabled }}
+        securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+        {{- end }}
+        ports:
+        - containerPort: 3310
+          name: clamav
+          protocol: TCP
+        # Give clamav up to 300s to get CVDs in place etc.
+        startupProbe:
+          exec:
+            command:
+            - /opt/app-root/clamdcheck.sh
+          failureThreshold: 30
+          periodSeconds: 10
+        livenessProbe:
+          exec:
+            command:
+            - /opt/app-root/clamdcheck.sh
+          failureThreshold: 2
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 3
+        resources:
+          {{- toYaml .Values.clamav.resources | nindent 10 }}
+        volumeMounts:
+          - mountPath: /opt/app-root/src
+            name: signatures
+          - mountPath: /run/clamav
+            name: run
+          # clamd.conf file
+          - mountPath: /etc/clamd.conf
+            name: config-volume
+            readOnly: true
+            subPath: clamd.conf
+          # freshclam.conf file
+          - mountPath: /etc/freshclam.conf
+            name: config-volume
+            readOnly: true
+            subPath: freshclam.conf
+      #securityContext:
+      #  runAsNonRoot: true
+      volumes:
+      - name: config-volume
+        configMap:
+          name: {{ include "clamav.fullname" . }}
+      - name: signatures
+        emptyDir: {}
+      - name: run
+        emptyDir: {}
+      {{- with .Values.clamav.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      # Prevent clamav pods running in same host.
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: "kubernetes.io/hostname"
+              labelSelector:
+                matchLabels:
+                  {{- include "clamav.selectorLabels" . | nindent 18 }} 
+      {{- with .Values.clamav.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+

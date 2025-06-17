@@ -40,7 +40,7 @@
       "email": "email",
       "idp": "identity_provider"
     },
-    "extra": {}
+    "extra": { "sortOrder": 10 }
   },
   {
     "code": "bceid-basic",
@@ -66,6 +66,7 @@
       "idp": "identity_provider"
     },
     "extra": {
+      "sortOrder": 30,
       "formAccessSettings": "idim",
       "addTeamMemberSearch": {
         "text": {
@@ -110,6 +111,7 @@
       "idp": "identity_provider"
     },
     "extra": {
+      "sortOrder": 40,
       "formAccessSettings": "idim",
       "addTeamMemberSearch": {
         "text": {

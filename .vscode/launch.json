@@ -7,6 +7,20 @@
   ],
   "configurations": [
     {
+      "name": "Attach by Process ID",
+      "processId": "${command:PickProcess}",
+      "request": "attach",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node"
+    },
+    {
+      "name": "Attach by Process ID",
+      "processId": "${command:PickProcess}",
+      "request": "attach",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node"
+    },
+    {
       "cwd": "${workspaceFolder}/app",
       "name": "CHEFS API",
       "outputCapture": "std",
@@ -26,7 +40,9 @@
         "VITE_CONTACT": "submit.digital@gov.bc.ca",
         "VITE_FRONTEND_BASEPATH": "/app",
         "VITE_HOWTOURL": "https://www.youtube.com/playlist?list=PL9CV_8JBQHirsQAShw45PZeU1CkU88Q53",
-        "VITE_TITLE": "Common Hosted Forms - Local"
+        "VITE_TITLE": "Common Hosted Forms - Local",
+        "VITE_MSTEAMS_URL": "https://teams.microsoft.com/l/channel/19%3A34b9d4b4deb54eebaa9be8bc1ccf02f7%40thread.tacv2/CHEFS%20(Exchange%20Lab%20Team)?groupId=bef8086f-20c7-43a4-bd07-29ce764e818c&tenantId=6fdb5200-3d0d-4a8a-b036-d3685e359adc",
+        "VITE_ROCKETCHAT_URL": "https://chat.developer.gov.bc.ca/channel/common-components"
       },
       "name": "CHEFS Frontend",
       "outputCapture": "std",
@@ -54,7 +70,7 @@
         "${file}",
         "--config",
         "${workspaceFolder}/app/jest.config.js",
-        "--coverage=false"
+        "--coverage=true"
       ],
       "console": "integratedTerminal",
       "windows": {

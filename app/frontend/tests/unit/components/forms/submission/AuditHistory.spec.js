@@ -50,7 +50,7 @@ describe('AuditHistory.vue', () => {
     await wrapper.vm.loadHistory();
 
     expect(listSubmissionEditsSpy).toHaveBeenCalledTimes(1);
-    expect(listSubmissionEditsSpy).rejects.toEqual({});
+    await expect(listSubmissionEditsSpy).rejects.toEqual({});
     expect(addNotificationSpy).toHaveBeenCalledTimes(1);
   });
 });

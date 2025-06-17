@@ -65,7 +65,7 @@ oc create -n $NAMESPACE configmap $APP_NAME-server-config \
   --from-literal=SERVER_PORT=8080
 ```
 
-_Note:_ OIDC config is for moving from a custom Keycloak realm into the BC Gov standard realm a managed SSO platform. Other KC configuration will be deprecated. Urls and Client IDs will change from environment to environment.
+_Note:_ OIDC config is for the BC Gov standard realm a managed SSO platform. Urls and Client IDs will change from environment to environment.
 
 ```sh
 oc create -n $NAMESPACE configmap $APP_NAME-oidc-config \
@@ -174,11 +174,11 @@ The backend is a standard [Node](https://nodejs.org)/[Express](https://expressjs
 
 ## Templates
 
-The CI/CD pipeline heavily leverages Openshift Templates to push environment variables, settings, and contexts to Openshift. Files ending with `.dc.yaml` specify the components required for deployment.
+The CI/CD pipeline heavily leverages Openshift Templates to push environment variables, settings, and contexts to Openshift. Files ending with `.deployment.yaml` specify the components required for deployment.
 
-### Deployment Configurations
+### Application Deployment
 
-Deployment configurations will emit and handle the deployment lifecycles of running containers based off of the previously built images. They generally contain a deploymentconfig, a service, and a route. Before our application is deployed, Patroni (a Highly Available Postgres Cluster implementation) needs to be deployed. Refer to any `patroni*` templates and their [official documentation](https://patroni.readthedocs.io/en/latest/) for more details.
+Deployment configurations will emit and handle the deployment lifecycles of running containers based off of the previously built images. They generally contain a Deployment, a Service, and a Route. Before our application is deployed, Patroni (a Highly Available Postgres Cluster implementation) needs to be deployed. Refer to any `patroni*` templates and their [official documentation](https://patroni.readthedocs.io/en/latest/) for more details.
 
 Our application template takes in the following required parameters:
 
@@ -197,10 +197,10 @@ The CI/CD pipeline will deploy to Openshift. To deploy manually:
 export NAMESPACE=<yournamespace>
 export APP_NAME=<yourappshortname>
 
-oc process -n $NAMESPACE -f openshift/app.dc.yaml -p REPO_NAME=common-hosted-form-service -p JOB_NAME=master -p NAMESPACE=$NAMESPACE -p APP_NAME=$APP_NAME -p ROUTE_HOST=$APP_NAME-dev.apps.silver.devops.gov.bc.ca -p ROUTE_PATH=master -o yaml | oc apply -n $NAMESPACE -f -
+oc process -n $NAMESPACE -f openshift/app.deployment.yaml -p REPO_NAME=common-hosted-form-service -p JOB_NAME=master -p NAMESPACE=$NAMESPACE -p APP_NAME=$APP_NAME -p ROUTE_HOST=$APP_NAME-dev.apps.silver.devops.gov.bc.ca -p ROUTE_PATH=master -o yaml | oc apply -n $NAMESPACE -f -
 ```
 
-Due to the triggers that are set in the deploymentconfig, the deployment will begin automatically. However, you can deploy manually by use the following command for example:
+Due to the settings in the Deployment, the deployment will begin automatically. However, you can deploy manually by use the following command for example:
 
 ```sh
 oc rollout -n $NAMESPACE latest dc/<buildname>-master
@@ -214,6 +214,7 @@ When a PR is closed the CI/CD pipeline will automatically clean up the resources
 export NAMESPACE=<yournamespace>
 export APP_NAME=<yourappshortname>
 
+oc delete job pre-$APP_NAME-app-pr-<PRNUMBER> -n $NAMESPACE --ignore-not-found=true
 oc delete all,secret,networkpolicy,rolebinding -n $NAMESPACE --selector app=$APP_NAME-pr-<PRNUMBER>
 oc delete all,svc,cm,sa,role,secret -n $NAMESPACE --selector cluster-name=pr-<PRNUMBER>
 ```

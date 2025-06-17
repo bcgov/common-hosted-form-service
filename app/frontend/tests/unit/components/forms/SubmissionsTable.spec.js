@@ -651,6 +651,11 @@ describe('SubmissionsTable.vue', () => {
     wrapper.vm.onShowColumnDialog();
     expect(wrapper.vm.BASE_FILTER_HEADERS).toEqual([
       {
+        title: 'trans.submissionsTable.status',
+        align: 'start',
+        key: 'status',
+      },
+      {
         title: 'trans.submissionsTable.submitter',
         align: 'start',
         key: 'submitter',
@@ -659,11 +664,6 @@ describe('SubmissionsTable.vue', () => {
         align: 'start',
         title: 'trans.submissionsTable.submissionDate',
         key: 'date',
-      },
-      {
-        title: 'trans.submissionsTable.status',
-        align: 'start',
-        key: 'status',
       },
       {
         title: 'trans.formSubmission.updatedAt',
@@ -851,6 +851,7 @@ describe('SubmissionsTable.vue', () => {
       createdBy: '',
       deletedOnly: false,
       filterformSubmissionStatusCode: true,
+      filterAssignedToCurrentUser: false,
       formId: '123-456',
       itemsPerPage: 10,
       page: 0,
@@ -876,6 +877,7 @@ describe('SubmissionsTable.vue', () => {
       ],
       createdBy: '',
       deletedOnly: false,
+      filterAssignedToCurrentUser: false,
       filterformSubmissionStatusCode: true,
       formId: '123-456',
       itemsPerPage: 10,
@@ -1161,5 +1163,159 @@ describe('SubmissionsTable.vue', () => {
     expect(getFormRolesForUserSpy).toBeCalledTimes(1);
     expect(getFormPermissionsForUserSpy).toBeCalledTimes(1);
     expect(fetchFormSpy).toBeCalledTimes(1);
+  });
+  it('BASE_HEADERS includes assignee column when showAssigneeInSubmissionsTable is enabled', async () => {
+    const getFormRolesForUserSpy = vi.spyOn(formStore, 'getFormRolesForUser');
+    getFormRolesForUserSpy.mockImplementation(() => {
+      formStore.roles = [FormRoleCodes.OWNER];
+    });
+    const getFormPermissionsForUserSpy = vi.spyOn(
+      formStore,
+      'getFormPermissionsForUser'
+    );
+    getFormPermissionsForUserSpy.mockImplementation(() => {
+      formStore.permissions = require('../../fixtures/permissions.json');
+    });
+    const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
+    fetchFormSpy.mockImplementation(() => {
+      // Set form with assignee column enabled
+      formStore.form = {
+        ...require('../../fixtures/form.json'),
+        enableStatusUpdates: true,
+        showAssigneeInSubmissionsTable: true,
+        schedule: { enabled: false },
+      };
+      return Promise.resolve();
+    });
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    fetchFormFieldsSpy.mockImplementation(() => {
+      formStore.formFields = [];
+    });
+
+    const wrapper = shallowMount(SubmissionsTable, {
+      props: { formId: formId },
+      global: {
+        plugins: [router, pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    // Should include assignee column
+    const headers = wrapper.vm.BASE_HEADERS;
+    const assigneeHeader = headers.find((h) => h.key === 'assignee');
+
+    expect(assigneeHeader).toBeTruthy();
+    expect(assigneeHeader.title).toBe('trans.submissionsTable.assignee');
+    expect(assigneeHeader.align).toBe('start');
+    expect(assigneeHeader.key).toBe('assignee');
+  });
+
+  it('BASE_HEADERS does not include assignee column when showAssigneeInSubmissionsTable is disabled', async () => {
+    const getFormRolesForUserSpy = vi.spyOn(formStore, 'getFormRolesForUser');
+    getFormRolesForUserSpy.mockImplementation(() => {
+      formStore.roles = [FormRoleCodes.OWNER];
+    });
+    const getFormPermissionsForUserSpy = vi.spyOn(
+      formStore,
+      'getFormPermissionsForUser'
+    );
+    getFormPermissionsForUserSpy.mockImplementation(() => {
+      formStore.permissions = require('../../fixtures/permissions.json');
+    });
+    const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
+    fetchFormSpy.mockImplementation(() => {
+      // Set form with assignee column disabled
+      formStore.form = {
+        ...require('../../fixtures/form.json'),
+        enableStatusUpdates: true,
+        showAssigneeInSubmissionsTable: false,
+        schedule: { enabled: false },
+      };
+      return Promise.resolve();
+    });
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    fetchFormFieldsSpy.mockImplementation(() => {
+      formStore.formFields = [];
+    });
+
+    const wrapper = shallowMount(SubmissionsTable, {
+      props: { formId: formId },
+      global: {
+        plugins: [router, pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    // Should NOT include assignee column
+    const headers = wrapper.vm.BASE_HEADERS;
+    const assigneeHeader = headers.find((h) => h.key === 'assignee');
+
+    expect(assigneeHeader).toBeFalsy();
+  });
+  it('filterAssignedToCurrentUser should be passed correctly when enabled', async () => {
+    const getFormRolesForUserSpy = vi.spyOn(formStore, 'getFormRolesForUser');
+    getFormRolesForUserSpy.mockImplementation(() => {
+      formStore.roles = [FormRoleCodes.OWNER];
+    });
+    const getFormPermissionsForUserSpy = vi.spyOn(
+      formStore,
+      'getFormPermissionsForUser'
+    );
+    getFormPermissionsForUserSpy.mockImplementation(() => {
+      formStore.permissions = require('../../fixtures/permissions.json');
+    });
+    const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
+    fetchFormSpy.mockImplementation(() => {
+      formStore.form = {
+        ...require('../../fixtures/form.json'),
+        enableStatusUpdates: true,
+        showAssigneeInSubmissionsTable: true,
+      };
+      return Promise.resolve();
+    });
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    fetchFormFieldsSpy.mockImplementation(() => {
+      formStore.formFields = ['firstName'];
+    });
+    const fetchSubmissionsSpy = vi.spyOn(formStore, 'fetchSubmissions');
+    fetchSubmissionsSpy.mockImplementation(() => {});
+
+    const wrapper = shallowMount(SubmissionsTable, {
+      props: { formId: formId },
+      global: {
+        plugins: [router, pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    // Test with filterAssignedToCurrentUser enabled
+    wrapper.vm.assignedToMeOnly = true;
+
+    fetchSubmissionsSpy.mockReset();
+    await wrapper.vm.getSubmissionData();
+
+    expect(fetchSubmissionsSpy).toBeCalledWith(
+      expect.objectContaining({
+        filterAssignedToCurrentUser: true,
+      })
+    );
+
+    // Test with filterAssignedToCurrentUser disabled
+    wrapper.vm.assignedToMeOnly = false;
+
+    fetchSubmissionsSpy.mockReset();
+    await wrapper.vm.getSubmissionData();
+
+    expect(fetchSubmissionsSpy).toBeCalledWith(
+      expect.objectContaining({
+        filterAssignedToCurrentUser: false,
+      })
+    );
   });
 });
