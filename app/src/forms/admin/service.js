@@ -96,8 +96,6 @@ const service = {
    * @returns {Promise} An objection query promise
    */
   getUsers: async (params) => {
-    console.log('params');
-    console.log(params);
     const query = User.query()
       .modify('filterUsername', params.username)
       .modify('filterFirstName', params.firstName)
@@ -197,7 +195,8 @@ const service = {
     return ExternalAPIStatusCode.query();
   },
   _processPagination: async (query, { page, itemsPerPage, totalItems, search, searchEnabled }) => {
-    let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : searchEnabled !== undefined ? JSON.parse(searchEnabled) : false;
+    let parsedIsSearchAble = searchEnabled !== undefined ? JSON.parse(searchEnabled) : false;
+    let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : parsedIsSearchAble;
     if (isSearchAble) {
       let submissionsData = await query;
       let result = {
@@ -208,6 +207,7 @@ const service = {
         return Object.keys(data).some((key) => {
           if (key !== 'submissionId' && key !== 'formVersionId' && key !== 'formId') {
             if (!Array.isArray(data[key]) && !typeUtils.isObject(data[key])) {
+              //Search for date/time match in properties
               if (
                 !typeUtils.isBoolean(data[key]) &&
                 !typeUtils.isNil(data[key]) &&
@@ -217,10 +217,13 @@ const service = {
                 result.total = result.total + 1;
                 return true;
               }
+              //Search for string match in properties
               if (typeUtils.isString(data[key]) && data[key].toLowerCase().includes(search.toLowerCase())) {
                 result.total = result.total + 1;
                 return true;
-              } else if (
+              }
+              //Search to match numeric values in properties
+              if (
                 (typeUtils.isNil(data[key]) || typeUtils.isBoolean(data[key]) || (typeUtils.isNumeric(data[key]) && typeUtils.isNumeric(search))) &&
                 parseFloat(data[key]) === parseFloat(search)
               ) {
@@ -242,6 +245,8 @@ const service = {
         return await query.page(parseInt(page), parseInt(totalItems || 0));
       } else if (itemsPerPage && parseInt(page) >= 0) {
         return await query.page(parseInt(page), parseInt(itemsPerPage));
+      } else {
+        return await query;
       }
     }
 

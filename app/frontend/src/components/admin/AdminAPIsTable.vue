@@ -104,7 +104,7 @@ async function getApis() {
     page: currentPage.value - 1,
     itemsPerPage: itemsPP.value,
     search: search.value,
-    searchEnabled: search.value.length > 0 ? true : false,
+    searchEnabled: search.value.length > 0,
   });
   loading.value = false;
 }
