@@ -26,6 +26,10 @@ $bcgov-alert-error: #f2dede;
 $bcgov-alert-warning: #f9f1c6;
 $bcgov-alert-info: #d9eaf7;
 $bcgov-alert-success: #dff0d8;
+//FORMS-1640 Update contrast for accessibility
+$danger-bg-accessible: #e35f6c;
+$secondary-bg-accessible: #848d94;
+$success-bg-accessible: #1d9f63;
 
 // Sticky Footer
 body {
@@ -212,16 +216,16 @@ a,
 
   //FORMS-1640 Update contrast for accessibility
   .btn.btn-danger {
-    background-color: #e35f6c;
-    border-color: #e35f6c;
+    background-color: $danger-bg-accessible;
+    border-color: $danger-bg-accessible;
   }
   .btn.btn-secondary {
-    background-color: #848d94;
-    border-color: #848d94;
+    background-color: $secondary-bg-accessible;
+    border-color: $secondary-bg-accessible;
   }
   .btn.btn-success {
-    background-color: #1d9f63;
-    border-color: #1d9f63;
+    background-color: $success-bg-accessible;
+    border-color: $success-bg-accessible;
   }
 
   // tabs component
