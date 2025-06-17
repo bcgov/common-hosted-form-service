@@ -168,7 +168,7 @@
     "fieldRequired": "이 필드는 필수입니다.",
     "correctDateFormat": "날짜는 올바른 형식이어야 합니다. 즉. yyyy-mm-dd",
     "dateDiffMsg": "마감 제출 날짜는 공개 제출 날짜보다 이후여야 합니다.",
-    "valueMustBeNumber": "값은 숫자여야 합니다. 즉. 1,2,3,5,99",
+    "valueMustBeNumber": "값은 1과 999 사이의 정수여야 합니다",
     "selectAnOptions": "옵션을 1개 이상 선택하세요.",
     "validInterval": "유효한 간격이어야 합니다.",
     "fieldRequiredAndInterval": "이 필드는 필수이며 간격이어야 합니다.",
