@@ -12,7 +12,11 @@ export default {
     return appAxios().get(`${ApiRoutes.FILES}/${fileId}`, options);
   },
   async uploadFile(file, config = {}) {
-    return appAxios().post(`${ApiRoutes.FILES}`, file, config);
+    const url = `${ApiRoutes.FILES}?formId=${config.formId}`;
+    return appAxios().post(url, file, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      ...config,
+    });
   },
   async cloneFile(fileId) {
     return appAxios().get(`${ApiRoutes.FILES}/${fileId}/clone`);

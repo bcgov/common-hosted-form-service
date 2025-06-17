@@ -9,7 +9,7 @@ import uniqueName = Utils.uniqueName;
 const ID = 'simplefile';
 const DISPLAY = 'File Upload';
 
-export default class Component extends (ParentComponent as any) {
+export default class Component extends ParentComponent {
   static schema(...extend) {
     return ParentComponent.schema(
       {
@@ -35,7 +35,7 @@ export default class Component extends (ParentComponent as any) {
     );
   }
 
-  public static editForm = editForm;
+  public static readonly editForm = editForm;
 
   static get builderInfo() {
     return {
@@ -49,7 +49,7 @@ export default class Component extends (ParentComponent as any) {
   }
 
   // we will read these in from runtime
-  private _enabled: boolean;
+  private readonly _enabled: boolean;
 
   constructor(...args) {
     super(...args);
@@ -58,8 +58,8 @@ export default class Component extends (ParentComponent as any) {
       const opts = this.options.componentOptions[ID];
       this.component.options = { ...this.component.options, ...opts };
       // the config.uploads object will say what size our server can handle and what path to use.
-      if (opts.config?.uploads) {
-        const remSlash = (s) => s.replace(/^\s*\/*\s*|\s*\/*\s*$/gm, '');
+      if (opts?.config?.uploads) {
+        const remSlash = (s) => s.replace(/^(\s*\/?\s*)$|^(\s*\/?\s*)$/gm, '');
 
         const cfg = opts.config;
         const uploads = cfg.uploads;
