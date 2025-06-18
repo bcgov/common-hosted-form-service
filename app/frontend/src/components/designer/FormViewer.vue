@@ -130,6 +130,15 @@ const formUnauthorizedMessage = computed(() =>
 
 const NOTIFICATIONS_TYPES = computed(() => NotificationTypes);
 
+const shouldDisableFileDownloads = computed(() => {
+  // To disable file downloads for Public forms
+  if (!form.value || !properties.readOnly) {
+    return false;
+  }
+
+  return properties.readOnly && isFormPublic(form.value);
+});
+
 const viewerOptions = computed(() => {
   // Force recomputation of viewerOptions after rerendered formio to prevent duplicate submission update calls
   reRenderFormIo.value;
@@ -891,7 +900,10 @@ async function uploadFile(file, config = {}) {
           />
           <h1 class="my-6 text-center">{{ form.name }}</h1>
         </div>
-        <div class="form-wrapper">
+        <div
+          class="form-wrapper"
+          :class="{ 'disable-file-downloads': shouldDisableFileDownloads }"
+        >
           <v-alert
             v-if="saved || saving"
             :class="
@@ -1035,6 +1047,17 @@ async function uploadFile(file, config = {}) {
     .formio-component-simpletextarea .card-body.bg-light {
       border: 1px solid #606060;
     }
+  }
+}
+
+// Only disable file downloads for public forms
+.form-wrapper.disable-file-downloads :deep(.formio-form) {
+  .formio-component-simplefile a[href],
+  .formio-component-file a[href] {
+    pointer-events: none !important;
+    color: #6c757d !important;
+    text-decoration: none !important;
+    cursor: not-allowed !important;
   }
 }
 </style>
