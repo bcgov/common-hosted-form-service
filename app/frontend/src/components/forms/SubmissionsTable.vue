@@ -44,6 +44,10 @@ const filterIgnore = ref([
 ]);
 const forceTableRefresh = ref(0);
 const itemsPP = ref(10);
+const initialSort = ref({
+  key: 'date',
+  order: 'desc',
+});
 const loading = ref(true);
 const currentPage = ref(1);
 const restoreItem = ref({});
@@ -321,6 +325,23 @@ onBeforeMount(async () => {
     formStore.getFormRolesForUser(properties.formId),
     formStore.getFormPermissionsForUser(properties.formId),
   ]).then(() => {
+    const filters =
+      userFormPreferences.value?.preferences?.submissionsTable?.filters || {};
+    // set search filters...
+    assignedToMeOnly.value = filters.assignedToMeOnly || false;
+    deletedOnly.value = filters.deletedOnly || false;
+    currentUserOnly.value = filters.currentUserOnly || false;
+    // set items per page
+    itemsPP.value =
+      userFormPreferences.value?.preferences?.submissionsTable?.itemsPerPage ||
+      10;
+    // set initial sort
+    initialSort.value = sortToSortBy(
+      userFormPreferences.value?.preferences?.submissionsTable?.sort
+    ) || {
+      key: 'date',
+      order: 'desc',
+    };
     loadingRefs.value = false;
   });
 });
@@ -346,33 +367,10 @@ async function updateTableOptions({ page, itemsPerPage, sortBy }) {
   if (page) {
     currentPage.value = page;
   }
-  let s = userFormPreferences.value?.preferences?.submissionsTable?.sort || {};
-  if (sortBy?.length > 0) {
-    if (sortBy[0].key === 'date') {
-      s.column = 'createdAt';
-    } else if (sortBy[0].key === 'submitter') {
-      s.column = 'createdBy';
-    } else if (sortBy[0].key === 'status') {
-      s.column = 'formSubmissionStatusCode';
-    } else if (sortBy[0].key === 'assignee') {
-      s.column = 'formSubmissionAssignedToUsernameIdp';
-      sort.value.column = 'formSubmissionAssignedToUsernameIdp';
-    } else {
-      s.column = sortBy[0].key;
-    }
-    s.order = sortBy[0].order;
-  }
-  sort.value = s;
-  // save the sort...
-  await updateFormPreferences(
-    properties.formId,
-    userFormPreferences.value?.preferences?.submissionsTable?.columns,
-    userFormPreferences.value?.preferences?.submissionsTable?.filters,
-    s
-  );
   if (itemsPerPage) {
     itemsPP.value = itemsPerPage;
   }
+  sort.value = await updateSort(sortBy);
   if (!firstDataLoad.value) {
     await refreshSubmissions();
   }
@@ -390,22 +388,8 @@ async function getSubmissionData() {
     search: search.value,
     searchEnabled: search.value.length > 0,
     createdAt: Object.values({
-      minDate: userFormPreferences.value?.preferences?.submissionsTable?.filter
-        ? moment(
-            userFormPreferences.value.preferences.submissionsTable.filter[0],
-            'YYYY-MM-DD'
-          )
-            .utc()
-            .format()
-        : moment().subtract(50, 'years').utc().format('YYYY-MM-DD'), //Get User filter Criteria (Min Date)
-      maxDate: userFormPreferences.value?.preferences?.submissionsTable?.filter
-        ? moment(
-            userFormPreferences.value.preferences.submissionsTable.filter[1],
-            'YYYY-MM-DD'
-          )
-            .utc()
-            .format()
-        : moment().add(50, 'years').utc().format('YYYY-MM-DD'), //Get User filter Criteria (Max Date)
+      minDate: moment().subtract(50, 'years').utc().format('YYYY-MM-DD'), //Get User filter Criteria (Min Date)
+      maxDate: moment().add(50, 'years').utc().format('YYYY-MM-DD'), //Get User filter Criteria (Max Date)
     }),
     deletedOnly: deletedOnly.value,
     createdBy: currentUserOnly.value
@@ -493,11 +477,6 @@ async function refreshSubmissions() {
     });
 }
 
-// Function to handle the assigned to me filter
-async function handleAssignedToMeFilter() {
-  await refreshSubmissions();
-}
-
 async function delSub() {
   singleSubmissionDelete.value
     ? await deleteSingleSubs()
@@ -550,7 +529,12 @@ async function restoreMultipleSubs() {
   selectedSubmissions.value = [];
 }
 
-async function updateFilter(data) {
+async function handleColumnUpdate(data) {
+  await updateColumns(data);
+  populateSubmissionsTable();
+}
+
+async function updateColumns(data) {
   showColumnsDialog.value = false;
   let columns = [];
   data.forEach((d) => {
@@ -562,7 +546,74 @@ async function updateFilter(data) {
     userFormPreferences.value?.preferences?.submissionsTable?.filters,
     userFormPreferences.value?.preferences?.submissionsTable?.sort
   );
-  await populateSubmissionsTable();
+}
+
+function sortToSortBy(s) {
+  //column/order to key/order
+  if (s?.column) {
+    let sortBy = [];
+    let key = s.column;
+    if (key === 'createdAt') {
+      key = 'date';
+    } else if (key === 'createdBy') {
+      key = 'submitter';
+    } else if (key === 'formSubmissionStatusCode') {
+      key = 'status';
+    } else if (key === 'formSubmissionAssignedToUsernameIdp') {
+      key = 'assignee';
+    }
+    sortBy.push({
+      key: key,
+      order: s.order || 'asc',
+    });
+    return sortBy;
+  }
+  return [];
+}
+
+async function updateSort(sortBy) {
+  let s = userFormPreferences.value?.preferences?.submissionsTable?.sort || {};
+  if (sortBy?.length > 0) {
+    if (sortBy[0].key === 'date') {
+      s.column = 'createdAt';
+    } else if (sortBy[0].key === 'submitter') {
+      s.column = 'createdBy';
+    } else if (sortBy[0].key === 'status') {
+      s.column = 'formSubmissionStatusCode';
+    } else if (sortBy[0].key === 'assignee') {
+      s.column = 'formSubmissionAssignedToUsernameIdp';
+    } else {
+      s.column = sortBy[0].key;
+    }
+    s.order = sortBy[0].order;
+  }
+  // save the sort...
+  await updateFormPreferences(
+    properties.formId,
+    userFormPreferences.value?.preferences?.submissionsTable?.columns,
+    userFormPreferences.value?.preferences?.submissionsTable?.filters,
+    s
+  );
+  return s;
+}
+
+async function handleFilterUpdate() {
+  await updateFilters();
+  refreshSubmissions();
+}
+
+async function updateFilters() {
+  let filters = {
+    assignedToMeOnly: assignedToMeOnly.value,
+    deletedOnly: deletedOnly.value,
+    currentUserOnly: currentUserOnly.value,
+  };
+  await updateFormPreferences(
+    properties.formId,
+    userFormPreferences.value?.preferences?.submissionsTable?.columns,
+    filters,
+    userFormPreferences.value?.preferences?.submissionsTable?.sort
+  );
 }
 
 async function updateFormPreferences(id, columns, filters, sort) {
@@ -570,8 +621,9 @@ async function updateFormPreferences(id, columns, filters, sort) {
   const prefs = userFormPreferences.value?.preferences || {};
   prefs.submissionsTable = {
     columns: columns || [],
-    filters: filters || [],
+    filters: filters || {},
     sort: sort || {},
+    itemsPerPage: itemsPP.value || 10,
   };
   await formStore.updateFormPreferencesForCurrentUser({
     formId: id,
@@ -616,12 +668,17 @@ defineExpose({
   singleSubmissionDelete,
   singleSubmissionRestore,
   sort,
-  updateFilter,
+  updateColumns,
+  updateFilters,
+  updateSort,
   userColumns,
   USER_PREFERENCES,
   assignedToMeOnly,
+  deletedOnly,
+  currentUserOnly,
   showAssigneeColumn,
-  handleAssignedToMeFilter,
+  refreshSubmissions,
+  sortToSortBy,
 });
 </script>
 
@@ -708,7 +765,7 @@ defineExpose({
           <v-checkbox
             v-model="deletedOnly"
             class="pl-3"
-            @click="refreshSubmissions"
+            @update:modelValue="handleFilterUpdate"
           >
             <template #label>
               <span :class="{ 'mr-2': isRTL }" :lang="locale">
@@ -722,7 +779,7 @@ defineExpose({
           <v-checkbox
             v-model="currentUserOnly"
             class="pl-3"
-            @click="refreshSubmissions"
+            @update:modelValue="handleFilterUpdate"
           >
             <template #label>
               <span :class="{ 'mr-2': isRTL }" :lang="locale">
@@ -737,7 +794,7 @@ defineExpose({
           <v-checkbox
             v-model="assignedToMeOnly"
             class="pl-3"
-            @click="refreshSubmissions"
+            @update:modelValue="handleFilterUpdate"
           >
             <template #label>
               <span :class="{ 'mr-2': isRTL }" :lang="locale">
@@ -778,6 +835,7 @@ defineExpose({
         item-value="submissionId"
         :items="serverItems"
         show-select
+        :sort-by="initialSort"
         :loading="loading"
         :loading-text="$t('trans.submissionsTable.loadingText')"
         :no-data-text="
@@ -985,7 +1043,7 @@ defineExpose({
           :preselected-data="PRESELECTED_DATA.map((pd) => pd.key)"
           :reset-data="RESET_HEADERS"
           :input-save-button-text="$t('trans.submissionsTable.save')"
-          @saving-filter-data="updateFilter"
+          @saving-filter-data="handleColumnUpdate"
           @cancel-filter-data="showColumnsDialog = false"
         >
           <template #filter-title
