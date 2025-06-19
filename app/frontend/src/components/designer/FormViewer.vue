@@ -1049,15 +1049,4 @@ async function uploadFile(file, config = {}) {
     }
   }
 }
-
-// Only disable file downloads for public forms
-.form-wrapper.disable-file-downloads :deep(.formio-form) {
-  .formio-component-simplefile a[href],
-  .formio-component-file a[href] {
-    pointer-events: none !important;
-    color: #6c757d !important;
-    text-decoration: none !important;
-    cursor: not-allowed !important;
-  }
-}
 </style>
