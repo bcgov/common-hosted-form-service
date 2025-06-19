@@ -584,6 +584,15 @@ a,
 .vselect .v-label {
   opacity: 1 !important;
 }
-
+// Disable file downloads for public forms in readonly mode
+.form-wrapper.disable-file-downloads .formio-form {
+  .formio-component-simplefile a[href],
+  .formio-component-file a[href] {
+    pointer-events: none !important;
+    color: #6c757d !important;
+    text-decoration: none !important;
+    cursor: not-allowed !important;
+  }
+}
 
 @import 'global-status-overlay.scss';
