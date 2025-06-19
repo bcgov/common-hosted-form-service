@@ -168,7 +168,7 @@
     "fieldRequired": "此字段是必需的。",
     "correctDateFormat": "日期格式必須正確。 IE。年-月-日",
     "dateDiffMsg": "關閉提交日期應晚於開放提交日期。",
-    "valueMustBeNumber": "值必須是數字。 IE。 1,2,3,5,99",
+    "valueMustBeNumber": "數值必須是1到999之間的整數",
     "selectAnOptions": "請至少選擇 1 個選項",
     "validInterval": "這應該是一個有效的間隔。",
     "fieldRequiredAndInterval": "該字段是必需的並且應該是一個間隔。",

@@ -168,7 +168,7 @@
     "fieldRequired": "Este campo es obligatorio.",
     "correctDateFormat": "La fecha debe estar en el formato correcto. es decir. aaaa-mm-dd",
     "dateDiffMsg": "La fecha de cierre de la presentación debe ser posterior a la fecha de apertura de la presentación.",
-    "valueMustBeNumber": "El valor debe ser un número. es decir. 1,2,3,5,99",
+    "valueMustBeNumber": "El valor debe ser un número entero entre 1 y 999",
     "selectAnOptions": "Seleccione al menos 1 opción",
     "validInterval": "Este debería ser un intervalo válido.",
     "fieldRequiredAndInterval": "Este campo es obligatorio y debe ser un intervalo.",

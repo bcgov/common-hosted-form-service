@@ -62,12 +62,25 @@ const scheduleCloseDate = ref([
 const roundNumber = ref([
   (v) => !!v || t('trans.formSettings.fieldRequired'),
   (v) =>
-    (v && new RegExp(/^[1-9]\d{0,5}(?:\.\d{1,2})?$/g).test(v)) ||
+    (v && new RegExp(/^[1-9]\d{0,2}$/g).test(v)) ||
     t('trans.formSettings.valueMustBeNumber'),
 ]);
 const scheduleTypedRules = ref([
   (v) => !!v || t('trans.formSettings.selectAnOptions'),
 ]);
+
+const handleIntegerInput = (event) => {
+  // Prevent decimal point, negative signs, plus signs, and scientific notation
+  if (
+    event.key === '.' ||
+    event.key === '-' ||
+    event.key === '+' ||
+    event.key === 'e' ||
+    event.key === 'E'
+  ) {
+    event.preventDefault();
+  }
+};
 const closeMessage = ref([(v) => !!v || t('trans.formSettings.fieldRequired')]);
 /* c8 ignore stop */
 
@@ -396,6 +409,7 @@ defineExpose({
                 :class="{ 'dir-rtl': isRTL }"
                 :lang="locale"
                 :rules="roundNumber"
+                @keydown="handleIntegerInput"
               />
             </v-col>
             <v-col cols="4" md="4" class="m-0 p-0">
