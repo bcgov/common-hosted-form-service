@@ -107,7 +107,6 @@ async function getApis() {
     searchEnabled: search.value.length > 0,
   });
   loading.value = false;
-  console.log(externalAPIList, externalAPIStatusCodes, apiTotal);
 }
 
 onMounted(async () => {
