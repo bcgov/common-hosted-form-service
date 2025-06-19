@@ -91,7 +91,7 @@ describe('ExportSubmissions.vue', () => {
 
     await flushPromises();
 
-    expect(wrapper.vm.formVersions).toEqual(['', 0, 1]);
+    expect(wrapper.vm.formVersions).toEqual([0, 1]);
   });
 
   it('onMounted, given form versions, if the form is published it should sort formVersions from greatest to least', async () => {
