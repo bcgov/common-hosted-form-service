@@ -127,7 +127,8 @@ onMounted(async () => {
       );
       formVersions.value.push(...versions.map((version) => version.version));
       // Set to first actual version
-      selectedVersion.value = versions.length > 0 ? versions[versions.length - 1].version : 0;
+      selectedVersion.value =
+        versions.length > 0 ? versions[versions.length - 1].version : 0;
     } else {
       versions.sort((a, b) => b.published - a.published);
       formVersions.value.push(...versions.map((version) => version.version));
