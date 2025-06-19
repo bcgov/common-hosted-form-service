@@ -205,7 +205,7 @@ const service = {
     return (typeUtils.isNil(data) || typeUtils.isBoolean(data) || (typeUtils.isNumeric(data) && typeUtils.isNumeric(search))) && parseFloat(data) === parseFloat(search);
   },
 
-  _processPagination: async (query, { page, itemsPerPage, totalItems, search, searchEnabled }) => {
+  _processPagination: async (query, { page, itemsPerPage, search, searchEnabled }) => {
     let parsedIsSearchAble = searchEnabled !== undefined ? JSON.parse(searchEnabled) : false;
     let isSearchAble = typeUtils.isBoolean(searchEnabled) ? searchEnabled : parsedIsSearchAble;
     if (isSearchAble) {
@@ -243,13 +243,10 @@ const service = {
       let end = page * itemsPerPage + itemsPerPage;
       result.results = searchedData.slice(start, end);
       return result;
-    } else if (itemsPerPage && parseInt(itemsPerPage) === -1) {
-      return await query.page(parseInt(page), parseInt(totalItems || 0));
-    } else if (itemsPerPage && parseInt(page) >= 0) {
+    } else if (itemsPerPage && parseInt(itemsPerPage) >= 0 && parseInt(page) >= 0) {
       return await query.page(parseInt(page), parseInt(itemsPerPage));
-    } else {
-      return await query;
     }
+    return await query;
   },
   _approveMany: async (id, data, trx) => {
     // if we are setting to approved, approve all similar endpoints.

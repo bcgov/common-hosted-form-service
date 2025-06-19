@@ -74,6 +74,7 @@ async function refreshForms() {
     itemsPerPage: itemsPP.value,
     search: search.value,
     searchEnabled: search.value.length > 0,
+    totalItems: formTotal,
   });
   loading.value = false;
 }
@@ -150,7 +151,7 @@ async function handleSearch(value) {
       item-key="title"
       :items="formList"
       :items-per-page="itemsPP"
-      :items-length="formTotal === undefined ? 0 : formTotal"
+      :items-length="formTotal"
       :search="search"
       :loading="loading"
       :lang="locale"

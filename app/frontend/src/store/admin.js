@@ -83,8 +83,8 @@ export const useAdminStore = defineStore('admin', {
           this.formList = response.data.results;
           this.formTotal = response.data.total;
         } else {
-          this.formlist = response.data;
-          this.formTotal = this.formlist.length;
+          this.formList = response.data;
+          this.formTotal = response.data.length;
         }
       } catch (error) {
         const notificationStore = useNotificationStore();
@@ -215,6 +215,7 @@ export const useAdminStore = defineStore('admin', {
         // Get all external apis
         this.externalAPIList = [];
         const response = await adminService.listExternalAPIs(params);
+        console.log(response);
         if (response.data.results) {
           this.externalAPIList = response.data.results;
           this.apiTotal = response.data.total;
@@ -222,6 +223,8 @@ export const useAdminStore = defineStore('admin', {
           this.externalAPIList = response.data;
           this.apiTotal = response.data.length;
         }
+        console.log(this.apiTotal);
+        console.log(this.externalAPIList);
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({

@@ -38,7 +38,7 @@ const itemsPP = ref(10);
 const adminStore = useAdminStore();
 const formStore = useFormStore();
 
-const { externalAPIList, externalAPIStatusCodes, totalAPI } =
+const { externalAPIList, externalAPIStatusCodes, apiTotal } =
   storeToRefs(adminStore);
 const { isRTL, lang } = storeToRefs(formStore);
 
@@ -107,6 +107,7 @@ async function getApis() {
     searchEnabled: search.value.length > 0,
   });
   loading.value = false;
+  console.log(externalAPIList, externalAPIStatusCodes, apiTotal);
 }
 
 onMounted(async () => {
@@ -221,7 +222,7 @@ async function handleSearch(value) {
       item-key="title"
       :items="items"
       :items-per-page="itemsPP"
-      :items-length="totalAPI === undefined ? 0 : totalAPI"
+      :items-length="apiTotal === undefined ? 0 : apiTotal"
       :search="search"
       :loading="loading"
       :loading-text="$t('trans.adminAPIsTable.loadingText')"
