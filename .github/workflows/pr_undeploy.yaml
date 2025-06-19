@@ -18,7 +18,7 @@ jobs:
   remove-pr-dev:
     name: Remove PR build from dev namespace
     environment:
-      name: dev
+      name: pr
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
