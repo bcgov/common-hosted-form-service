@@ -71,6 +71,7 @@ const FORM_UNPUBLISHED = computed(
   () =>
     form.value &&
     form.value.versions &&
+    form.value.versions.length > 0 &&
     form.value.versions.every((version) => !version.published)
 );
 const headers = computed(() => [
@@ -124,12 +125,14 @@ onMounted(async () => {
       versions.sort((a, b) =>
         a.version < b.version ? -1 : a.version > b.version ? 1 : 0
       );
-      formVersions.value.push('');
+      formVersions.value.push(...versions.map((version) => version.version));
+      // Set to first actual version
+      selectedVersion.value = versions.length > 0 ? versions[versions.length - 1].version : 0;
     } else {
       versions.sort((a, b) => b.published - a.published);
+      formVersions.value.push(...versions.map((version) => version.version));
+      selectedVersion.value = formVersions.value[0];
     }
-    formVersions.value.push(...versions.map((version) => version.version));
-    selectedVersion.value = formVersions.value[0];
   }
 });
 
@@ -344,7 +347,7 @@ defineExpose({
             ></v-select>
           </v-col>
         </v-row>
-        <v-row v-if="exportFormat === 'csv' && !FORM_UNPUBLISHED" class="mt-0">
+        <v-row v-if="exportFormat === 'csv'" class="mt-0">
           <v-col>
             <p class="subTitleObjectStyle" :lang="locale">
               {{ $t('trans.exportSubmissions.dataFields') }}
@@ -494,12 +497,7 @@ defineExpose({
           </v-col>
         </v-row>
         <v-row
-          v-if="
-            exportFormat === 'csv' &&
-            !loading &&
-            formFields.length > 0 &&
-            !FORM_UNPUBLISHED
-          "
+          v-if="exportFormat === 'csv' && !loading && formFields.length > 0"
           class="mt-0 pt-0"
         >
           <v-col>
@@ -589,9 +587,7 @@ defineExpose({
             // JSON export always works so we check if it's a CSV export
             exportFormat === 'csv' &&
             // Make sure a version is selected
-            ((VERSION_REQUIRED &&
-              !FORM_UNPUBLISHED &&
-              (!selectedVersion || selectedVersion === '')) ||
+            (VERSION_REQUIRED ||
               // If it's loading then disable it
               loading ||
               // If it's not loading and there just are no form fields then disable it
