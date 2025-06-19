@@ -352,7 +352,7 @@
   "adminFormsTable": {
     "showDeletedForms": "Hiển thị biểu mẫu đã xóa",
     "search": "Tìm kiếm",
-    "loadingText": "đang tải văn bản",
+    "loadingText": "Vui lòng chờ",
     "noDataText": "Không có biểu mẫu nào trong hệ thống của bạn",
     "admin": "Quản trị viên",
     "launch": "Phóng",

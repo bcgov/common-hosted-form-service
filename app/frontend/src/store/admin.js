@@ -10,10 +10,13 @@ export const useAdminStore = defineStore('admin', {
     apiKey: undefined,
     form: {},
     formList: [],
+    formTotal: undefined,
     roles: [],
     user: {},
     userList: [],
+    userTotal: undefined,
     externalAPIList: [],
+    apiTotal: undefined,
     externalAPIStatusCodes: [],
     fcProactiveHelp: {}, // Form Component Proactive Help
     fcProactiveHelpImageUrl: '',
@@ -71,12 +74,18 @@ export const useAdminStore = defineStore('admin', {
         });
       }
     },
-    async getForms(activeOnly) {
+    async getForms(params) {
       try {
         this.formList = [];
         // Get all forms
-        const response = await adminService.listForms(activeOnly);
-        this.formList = response.data;
+        const response = await adminService.listForms(params);
+        if (response.data.results) {
+          this.formList = response.data.results;
+          this.formTotal = response.data.total;
+        } else {
+          this.formList = response.data;
+          this.formTotal = response.data.length;
+        }
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
@@ -158,12 +167,18 @@ export const useAdminStore = defineStore('admin', {
     //
     // Users
     //
-    async getUsers() {
+    async getUsers(params) {
       try {
         // Get all users
         this.userList = [];
-        const response = await adminService.listUsers();
-        this.userList = response.data;
+        const response = await adminService.listUsers(params);
+        if (response.data.results) {
+          this.userList = response.data.results;
+          this.userTotal = response.data.total;
+        } else {
+          this.userList = response.data;
+          this.userTotal = response.data.length;
+        }
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
@@ -195,12 +210,18 @@ export const useAdminStore = defineStore('admin', {
     //
     // External APIs
     //
-    async getExternalAPIs() {
+    async getExternalAPIs(params) {
       try {
         // Get all external apis
         this.externalAPIList = [];
-        const response = await adminService.listExternalAPIs();
-        this.externalAPIList = response.data;
+        const response = await adminService.listExternalAPIs(params);
+        if (response.data.results) {
+          this.externalAPIList = response.data.results;
+          this.apiTotal = response.data.total;
+        } else {
+          this.externalAPIList = response.data;
+          this.apiTotal = response.data.length;
+        }
       } catch (error) {
         const notificationStore = useNotificationStore();
         notificationStore.addNotification({
