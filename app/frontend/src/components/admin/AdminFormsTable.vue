@@ -74,7 +74,6 @@ async function refreshForms() {
     itemsPerPage: itemsPP.value,
     search: search.value,
     searchEnabled: search.value.length > 0,
-    totalItems: formTotal,
   });
   loading.value = false;
 }
