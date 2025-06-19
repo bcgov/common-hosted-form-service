@@ -168,7 +168,7 @@
     "fieldRequired": "Trường này là bắt buộc.",
     "correctDateFormat": "Ngày phải ở định dạng chính xác. I E. yyyy-mm-dd",
     "dateDiffMsg": "Đóng Ngày gửi phải lớn hơn ngày gửi mở.",
-    "valueMustBeNumber": "Giá trị phải là một số. I E. 1,2,3,5,99",
+    "valueMustBeNumber": "Giá trị phải là số nguyên từ 1 đến 999",
     "selectAnOptions": "Vui lòng chọn ít nhất 1 tùy chọn",
     "validInterval": "Đây phải là một khoảng thời gian hợp lệ.",
     "fieldRequiredAndInterval": "Trường này là bắt buộc & phải là một khoảng thời gian.",

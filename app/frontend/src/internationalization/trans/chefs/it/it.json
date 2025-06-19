@@ -168,7 +168,7 @@
     "fieldRequired": "Questo campo è obbligatorio.",
     "correctDateFormat": "La data deve essere nel formato corretto. cioè. aaaa-mm-gg",
     "dateDiffMsg": "La data di chiusura dell'invio deve essere successiva alla data di apertura dell'invio.",
-    "valueMustBeNumber": "Il valore deve essere un numero. cioè. 1,2,3,5,99",
+    "valueMustBeNumber": "Il valore deve essere un numero intero tra 1 e 999",
     "selectAnOptions": "Seleziona almeno 1 opzione",
     "validInterval": "Questo dovrebbe essere un intervallo valido.",
     "fieldRequiredAndInterval": "Questo campo è obbligatorio e dovrebbe essere un intervallo.",
