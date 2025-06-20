@@ -168,7 +168,7 @@
     "fieldRequired": "این فیلد الزامی است.",
     "correctDateFormat": "تاریخ باید در قالب صحیح باشد. یعنی yyyy-mm-dd",
     "dateDiffMsg": "بستن تاریخ ارسال باید بیشتر از تاریخ ارسال باز باشد.",
-    "valueMustBeNumber": "مقدار باید یک عدد باشد. یعنی 1،2،3،5،99",
+    "valueMustBeNumber": "مقدار باید عددی صحیح بین 1 تا 999 باشد",
     "selectAnOptions": "لطفا حداقل 1 گزینه را انتخاب کنید",
     "validInterval": "این باید یک فاصله زمانی معتبر باشد.",
     "fieldRequiredAndInterval": "این فیلد الزامی است و باید یک بازه باشد.",
@@ -352,7 +352,7 @@
   "adminFormsTable": {
     "showDeletedForms": "نمایش فرم های حذف شده",
     "search": "جستجو کردن",
-    "loadingText": "بارگذاری متن",
+    "loadingText": "لطفاً صبر کنید",
     "noDataText": "هیچ فرمی در سیستم شما وجود ندارد",
     "admin": "مدیر",
     "launch": "راه اندازی",

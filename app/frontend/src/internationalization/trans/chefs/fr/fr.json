@@ -168,7 +168,7 @@
     "fieldRequired": "Ce champ est obligatoire.",
     "correctDateFormat": "La date doit être au format correct. c'est à dire. aaaa-mm-jj",
     "dateDiffMsg": "La date de clôture de la soumission doit être supérieure à la date d'ouverture de la soumission.",
-    "valueMustBeNumber": "La valeur doit être un nombre. c'est à dire. 1,2,3,5,99",
+    "valueMustBeNumber": "La valeur doit être un nombre entier entre 1 et 999",
     "selectAnOptions": "Veuillez sélectionner au moins 1 option",
     "validInterval": "Il doit s'agir d'un intervalle valide.",
     "fieldRequiredAndInterval": "Ce champ est obligatoire et doit être un intervalle.",
@@ -352,7 +352,7 @@
   "adminFormsTable": {
     "showDeletedForms": "Afficher les formulaires supprimés",
     "search": "Recherche",
-    "loadingText": "chargement-texte",
+    "loadingText": "Veuillez patienter",
     "noDataText": "Il n'y a pas de formulaires dans votre système",
     "admin": "Administrateur",
     "launch": "Lancement",

@@ -168,7 +168,7 @@
     "fieldRequired": "此字段是必需的。",
     "correctDateFormat": "日期格式必须正确。 IE。年-月-日",
     "dateDiffMsg": "关闭提交日期应晚于开放提交日期。",
-    "valueMustBeNumber": "值必须是数字。 IE。 1,2,3,5,99",
+    "valueMustBeNumber": "数值必须是1到999之间的整数",
     "selectAnOptions": "请至少选择 1 个选项",
     "validInterval": "这应该是一个有效的间隔。",
     "fieldRequiredAndInterval": "该字段是必需的并且应该是一个间隔。",
@@ -352,7 +352,7 @@
   "adminFormsTable": {
     "showDeletedForms": "显示已删除的表格",
     "search": "搜索",
-    "loadingText": "加载文本",
+    "loadingText": "请稍候",
     "noDataText": "您的系统中没有表格",
     "admin": "行政",
     "launch": "发射",

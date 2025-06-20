@@ -231,7 +231,7 @@
     "fieldRequired": "This field is required.",
     "correctDateFormat": "Date must be in correct format. ie. yyyy-mm-dd",
     "dateDiffMsg": "Close Submission date should be greater than open submission date.",
-    "valueMustBeNumber": "Value must be a number. ie. 1,2,3,5,99",
+    "valueMustBeNumber": "Value must be a whole number between 1 and 999",
     "selectAnOptions": "Please select at least 1 option",
     "validInterval": "This should be a valid interval.",
     "fieldRequiredAndInterval": "This field is required & should be an interval.",
@@ -415,7 +415,7 @@
   "adminFormsTable": {
     "showDeletedForms": "Show deleted forms",
     "search": "Search",
-    "loadingText": "loading-text",
+    "loadingText": "Loading... Please wait",
     "noDataText": "There are no forms in your system",
     "admin": "Admin",
     "launch": "Launch",

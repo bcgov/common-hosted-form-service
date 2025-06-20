@@ -168,7 +168,7 @@
     "fieldRequired": "ਇਸ ਫੀਲਡ ਦੀ ਲੋੜ ਹੈ.",
     "correctDateFormat": "ਮਿਤੀ ਸਹੀ ਫਾਰਮੈਟ ਵਿੱਚ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ। ਭਾਵ yyyy-mm-dd",
     "dateDiffMsg": "ਬੰਦ ਸਪੁਰਦਗੀ ਦੀ ਮਿਤੀ ਖੁੱਲ੍ਹੀ ਜਮ੍ਹਾਂ ਮਿਤੀ ਤੋਂ ਵੱਧ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।",
-    "valueMustBeNumber": "ਮੁੱਲ ਇੱਕ ਨੰਬਰ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ। ਭਾਵ 1,2,3,5,99",
+    "valueMustBeNumber": "ਮੁੱਲ 1 ਅਤੇ 999 ਦੇ ਵਿਚਕਾਰ ਇੱਕ ਪੂਰਾ ਨੰਬਰ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ",
     "selectAnOptions": "ਕਿਰਪਾ ਕਰਕੇ ਘੱਟੋ-ਘੱਟ 1 ਵਿਕਲਪ ਚੁਣੋ",
     "validInterval": "ਇਹ ਇੱਕ ਵੈਧ ਅੰਤਰਾਲ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।",
     "fieldRequiredAndInterval": "ਇਹ ਖੇਤਰ ਲੋੜੀਂਦਾ ਹੈ ਅਤੇ ਇੱਕ ਅੰਤਰਾਲ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।",
@@ -352,7 +352,7 @@
   "adminFormsTable": {
     "showDeletedForms": "ਮਿਟਾਏ ਗਏ ਫਾਰਮ ਦਿਖਾਓ",
     "search": "ਖੋਜ",
-    "loadingText": "ਲੋਡਿੰਗ-ਟੈਕਸਟ",
+    "loadingText": "ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ",
     "noDataText": "ਤੁਹਾਡੇ ਸਿਸਟਮ ਵਿੱਚ ਕੋਈ ਫਾਰਮ ਨਹੀਂ ਹਨ",
     "admin": "ਐਡਮਿਨ",
     "launch": "ਲਾਂਚ ਕਰੋ",

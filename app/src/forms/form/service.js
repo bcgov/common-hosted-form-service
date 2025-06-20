@@ -187,7 +187,7 @@ const service = {
       obj.submissionReceivedEmails = data.submissionReceivedEmails;
       obj.enableStatusUpdates = data.enableStatusUpdates;
       obj.enableSubmitterDraft = data.enableSubmitterDraft;
-      obj.createdBy = currentUser.usernameIdp;
+      obj.createdBy = currentUser?.usernameIdp || 'public';
       obj.allowSubmitterToUploadFile = data.allowSubmitterToUploadFile;
       obj.schedule = data.schedule;
       obj.subscribe = data.subscribe;
@@ -483,38 +483,23 @@ const service = {
     }
     return query;
   },
+
   _shouldIncludeAssignee: (form) => {
     return form.showAssigneeInSubmissionsTable && form.enableStatusUpdates && !form.identityProviders.some((idp) => idp.code === 'public');
   },
-  listFormSubmissions: async (formId, params, currentUser) => {
-    // First, get form settings to check if assignee data should be included
-    const form = await service.readForm(formId);
 
-    // Determine if assignee data should be included in response
-    const shouldIncludeAssignee = service._shouldIncludeAssignee(form);
-    const query = service._initFormSubmissionsListQuery(formId, params, currentUser, shouldIncludeAssignee);
-
-    // Base selection - always include these fields
+  _buildSelectionAndFields: (params, shouldIncludeAssignee) => {
     const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
+    let fields = [];
 
-    // Conditionally add assignee fields only if allowed
     if (shouldIncludeAssignee) {
       selection.push('formSubmissionAssignedToUserId', 'formSubmissionAssignedToUsernameIdp', 'formSubmissionAssignedToEmail');
     }
 
-    let fields = [];
     if (params.fields && params.fields.length) {
-      if (typeof params.fields !== 'string' && params.fields.includes('updatedAt')) {
-        selection.push('updatedAt');
-      }
-      if (typeof params.fields !== 'string' && params.fields.includes('updatedBy')) {
-        selection.push('updatedBy');
-      }
-      if (Array.isArray(params.fields)) {
-        fields = params.fields.flatMap((f) => f.split(',').map((s) => s.trim()));
-      } else {
-        fields = params.fields.split(',').map((s) => s.trim());
-      }
+      fields = Array.isArray(params.fields) ? params.fields.flatMap((f) => f.split(',').map((s) => s.trim())) : params.fields.split(',').map((s) => s.trim());
+      if (fields.includes('updatedAt')) selection.push('updatedAt');
+      if (fields.includes('updatedBy')) selection.push('updatedBy');
 
       // Remove updatedAt and updatedBy so they won't be pulled from submission
       // columns. Also remove empty values to handle the case of trailing commas
@@ -526,12 +511,26 @@ const service = {
     }
 
     fields.push('lateEntry');
+    return { selection, fields };
+  },
 
+  _validateSortBy: (params, selection, fields) => {
     if (params.sortBy?.column && !selection.includes(params.sortBy.column) && !fields.includes(params.sortBy.column)) {
       throw new Problem(400, {
         details: `orderBy column '${params.sortBy.column}' not in selected columns`,
       });
     }
+  },
+
+  listFormSubmissions: async (formId, params, currentUser) => {
+    // First, get form settings to check if assignee data should be included
+    const form = await service.readForm(formId);
+
+    // Determine if assignee data should be included in response
+    const shouldIncludeAssignee = service._shouldIncludeAssignee(form);
+    const query = service._initFormSubmissionsListQuery(formId, params, currentUser, shouldIncludeAssignee);
+    const { selection, fields } = service._buildSelectionAndFields(params, shouldIncludeAssignee);
+    service._validateSortBy(params, selection, fields);
 
     query.select(
       selection,
