@@ -64,29 +64,22 @@ describe("Form Designer", () => {
       cy.contains("Continue").trigger("click");
       //Submit the form
       cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
-      cy.waitForLoad();
-      cy.waitForLoad();
-      cy.waitForLoad();
+      cy.wait(2000);
       cy.get("button").contains("Submit").should("be.visible");
-      cy.waitForLoad();
-      cy.waitForLoad();
+      cy.wait(2000);
       cy.contains("Text Field").click();
       cy.contains("Text Field").type("Alex");
       //form submission
       cy.get("button").contains("Submit").click();
       cy.waitForLoad();
       cy.get('[data-test="continue-btn-continue"]').click({ force: true });
-      cy.waitForLoad();
-      cy.waitForLoad();
-      cy.waitForLoad();
+      cy.wait(2000);
       cy.get("label").contains("Text Field").should("be.visible");
       cy.get("label").contains("Text Field").should("be.visible");
       cy.location("pathname").should("eq", `/${depEnv}/form/success`);
       cy.contains("h1", "Your form has been submitted successfully");
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-      cy.waitForLoad();
-      cy.waitForLoad();
-      cy.waitForLoad();
+      cy.wait(2000);
       cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
       cy.wait(2000);
       cy.get("button").contains("Submit").should("be.visible");
@@ -239,8 +232,7 @@ describe("Form Designer", () => {
     cy.get('.mdi-delete').click();
     cy.get('[data-test="continue-btn-continue"]').click();
     cy.get('#logoutButton > .v-btn__content > span').click();
-    })
-        
+    })  
       
   });
 });
