@@ -168,7 +168,7 @@
     "fieldRequired": "この項目は必須です。",
     "correctDateFormat": "日付は正しい形式である必要があります。つまり。 yyyy-mm-dd",
     "dateDiffMsg": "閉じる提出日は、オープン提出日よりも後の日付である必要があります。",
-    "valueMustBeNumber": "値は数値である必要があります。つまり。 1、2、3、5、99",
+    "valueMustBeNumber": "値は1から999までの整数である必要があります",
     "selectAnOptions": "少なくとも 1 つのオプションを選択してください",
     "validInterval": "これは有効な間隔である必要があります。",
     "fieldRequiredAndInterval": "このフィールドは必須であり、間隔である必要があります。",
@@ -352,7 +352,7 @@
   "adminFormsTable": {
     "showDeletedForms": "削除されたフォームを表示する",
     "search": "検索",
-    "loadingText": "ローディングテキスト",
+    "loadingText": "しばらくお待ちください",
     "noDataText": "システムにフォームがありません",
     "admin": "管理者",
     "launch": "発売",
