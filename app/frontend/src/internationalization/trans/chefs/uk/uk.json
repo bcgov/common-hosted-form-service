@@ -352,7 +352,7 @@
   "adminFormsTable": {
     "showDeletedForms": "Показати видалені форми",
     "search": "Пошук",
-    "loadingText": "завантажувальний текст",
+    "loadingText": "Будь ласка, зачекайте",
     "noDataText": "У вашій системі немає форм",
     "admin": "адмін",
     "launch": "Запуск",

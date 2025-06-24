@@ -415,7 +415,7 @@
   "adminFormsTable": {
     "showDeletedForms": "Show deleted forms",
     "search": "Search",
-    "loadingText": "loading-text",
+    "loadingText": "Loading... Please wait",
     "noDataText": "There are no forms in your system",
     "admin": "Admin",
     "launch": "Launch",

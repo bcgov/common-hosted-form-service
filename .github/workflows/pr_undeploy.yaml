@@ -1,7 +1,7 @@
 name: PR Undeploy
 run-name: Undeploy PR
 description: |
-  This workflow is triggered when a pull request is closed or manually via the workflow_dispatch event.
+  This workflow is triggered manually via the workflow_dispatch event.
   It removes the deployment and associated resources for the specified pull request in the development namespace.
 
 on:
@@ -11,8 +11,6 @@ on:
         description: Pull request number
         required: true
         type: string
-  pull_request:
-    types: [closed]
 
 jobs:
   remove-pr-dev:
