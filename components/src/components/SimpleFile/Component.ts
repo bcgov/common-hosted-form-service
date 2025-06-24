@@ -25,7 +25,7 @@ export default class Component extends ParentComponent {
         webcamSize: 320,
         privateDownload: false,
         imageSize: '200',
-        filePattern: '*',
+        filePattern: '',
         fileMinSize: '0KB',
         fileMaxSize: '1GB',
         uploadOnly: false,
