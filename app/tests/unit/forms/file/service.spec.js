@@ -18,7 +18,7 @@ const mockFileStorage = {
   id: uuid.v4(),
   mimeType: 'application/pdf',
   originalName: 'testfile.pdf',
-  path: '/some/path',
+  path: '/app/uploads/testfile.pdf',
   size: 1337,
   storage: 'uploads',
 };
@@ -38,7 +38,7 @@ FileStorage.query = jest.fn().mockReturnValue({
 });
 
 storageService.upload = jest.fn().mockResolvedValue({
-  path: '/storage/uploads/file123',
+  path: '/app/storage/uploads/file123',
   storage: 'uploads',
 });
 
@@ -54,7 +54,7 @@ describe('create', () => {
           originalname: 'malware.exe',
           mimetype: 'application/octet-stream',
           size: 1024,
-          path: '/tmp/upload123',
+          path: '/app/uploads/malware.exe',
         };
 
         await expect(service.create(fileData, currentUser)).rejects.toThrow('File type .exe is not allowed for security reasons');
@@ -68,7 +68,7 @@ describe('create', () => {
           originalname: '../../../etc/passwd.txt',
           mimetype: 'text/plain',
           size: 1024,
-          path: '/tmp/upload123',
+          path: '/app/uploads/passwd.txt',
         };
 
         await expect(service.create(fileData, currentUser)).rejects.toThrow('Filename contains dangerous characters');
@@ -82,7 +82,7 @@ describe('create', () => {
           originalname: 'document.xyz',
           mimetype: 'application/unknown',
           size: 1024,
-          path: '/tmp/upload123',
+          path: '/app/uploads/document.xyz',
         };
 
         await expect(service.create(fileData, currentUser)).rejects.toThrow('File type .xyz is not in allowed types');
@@ -98,7 +98,7 @@ describe('create', () => {
           originalname: 'document.pdf',
           mimetype: 'application/pdf',
           size: 1024,
-          path: '/tmp/upload123',
+          path: '/app/uploads/document.pdf',
         };
 
         const result = await service.create(validFileData, currentUser);
