@@ -8,6 +8,11 @@ describe('GlobalStatusOverlay', () => {
   beforeEach(() => {
     wrapper = mount(GlobalStatusOverlay, {
       props: { parentReady: false },
+      global: {
+        stubs: {
+          'i18n-t': true,
+        },
+      },
     });
   });
 

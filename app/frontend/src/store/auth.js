@@ -123,29 +123,43 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     async login(idpHint) {
-      if (this.ready) {
-        if (!this.redirectUri) this.redirectUri = location.toString();
+      if (!this.ready) return;
 
-        const options = {
-          redirectUri: this.redirectUri,
-        };
+      if (!this.redirectUri) this.redirectUri = location.toString();
 
-        // Determine idpHint based on input or form
-        if (idpHint && typeof idpHint === 'string') options.idpHint = idpHint;
+      const options = {
+        redirectUri: this.redirectUri,
+        idpHint: this.resolveIdpHint(idpHint),
+      };
 
-        if (options.idpHint) {
-          // Redirect to Keycloak if idpHint is available
-          window.location.replace(await this.createLoginUrl(options));
-        } else {
-          // Navigate to internal login page if no idpHint specified
-          const router = getRouter();
-          const idpStore = useIdpStore();
-          router.replace({
-            name: 'Login',
-            query: { idpHint: idpStore.loginIdpHints },
-          });
-        }
+      if (options.idpHint) {
+        // Redirect to Keycloak if idpHint is available
+        window.location.replace(await this.createLoginUrl(options));
+        return;
       }
+
+      // Navigate to internal login page with a selection of hints
+      this.navigateToLogin(idpHint);
+    },
+
+    resolveIdpHint(idpHint) {
+      if (idpHint && typeof idpHint === 'string') return idpHint;
+      if (idpHint && Array.isArray(idpHint) && idpHint.length === 1)
+        return idpHint[0];
+      return undefined;
+    },
+
+    navigateToLogin(idpHint) {
+      const router = getRouter();
+      const idpStore = useIdpStore();
+      let hints = idpStore.loginIdpHints;
+      if (idpHint && Array.isArray(idpHint)) {
+        hints = idpHint;
+      }
+      router.replace({
+        name: 'Login',
+        query: { idpHint: hints },
+      });
     },
     logout() {
       if (this.ready) {
