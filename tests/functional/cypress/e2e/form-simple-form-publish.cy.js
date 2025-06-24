@@ -224,7 +224,8 @@ it("Validate admin tab", () => {
       cy.get('[value="apis"] > .v-btn__content').should('exist');
       cy.get('[value="infoLinks"] > .v-btn__content').should('exist');
       cy.get('[value="dashboard"] > .v-btn__content').should('exist');
+      cy.wait(2000);
       //Logout after test run
-      cy.get('#logoutButton > .v-btn__content > span').click();
+      cy.get('#logoutButton > .v-btn__content > span').should('be.visible').click();
 });  
 });
