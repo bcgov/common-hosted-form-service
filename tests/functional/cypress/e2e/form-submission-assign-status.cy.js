@@ -33,13 +33,15 @@ describe('Form Designer', () => {
 
     cy.viewport(1000, 1100);
     cy.waitForLoad();
+    cy.viewport(1000, 1800);
+    cy.waitForLoad();
     cy.get('button').contains('Basic Fields').click();
     cy.get('div.formio-builder-form').then($el => {
       const coords = $el[0].getBoundingClientRect();
       cy.get('span.btn').contains('Text Field')
       
       .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -50, { force: true })
+      .trigger('mousemove', coords.x, -110, { force: true })
       .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
@@ -71,7 +73,6 @@ describe('Form Designer', () => {
         cy.waitForLoad();
         cy.contains('Text Field').click();
         cy.contains('Text Field').type('Alex');
-        //cy.get('.form-check-input').click();
          //form submission
         cy.get('button').contains('Submit').click();
         cy.waitForLoad();
@@ -132,8 +133,24 @@ describe('Form Designer', () => {
         cy.get('div').contains('CHEFS Testing').click();
         cy.get('[data-test="updateStatusToNew"] > .v-btn__content > span').click();
         cy.wait(4000);
-        //cy.get('[data-test="showStatusList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
-        cy.get('[data-test="showStatusList"] > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
+        cy.get('.mdi-list-box-outline').click();
+        cy.get('input[type="checkbox"]').then($el => {
+          const rem1=$el[2];////Assigned to me checkbox
+          rem1.click();
+        cy.get('.v-data-table__tr > :nth-child(6)').should('exist');
+        cy.get(':nth-child(6) > .v-data-table-header__content > .mdi-arrow-up').should('exist');
+        cy.get(':nth-child(6) > .v-data-table-header__content > .mdi-arrow-up').click();
+        cy.get(':nth-child(6) > .v-data-table-header__content > .mdi-arrow-up').click();
+        cy.wait(2000);
+        cy.get('.mdi-arrow-down').should('exist');
+        rem1.click();
+        cy.wait(2000);
+        cy.get(':nth-child(1) > :nth-child(7) > a > .v-btn').click();
+        cy.wait(2000);
+        });
+        //Assign remaing statuses
+        cy.get('.status-heading > .mdi-chevron-right').click();
+        cy.get('[data-test="showStatusList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
         cy.contains('REVISING').click();
         //cy.get('.v-selection-control > .v-label').click();
         cy.get('[data-test="canAttachCommentToEmail"] > .v-input__control > .v-selection-control > .v-label').click();
@@ -141,14 +158,12 @@ describe('Form Designer', () => {
         cy.get('button').contains('REVISE').click();
         cy.get(':nth-child(1) > .v-checkbox > .v-input__control > .v-selection-control > .v-label').click();
         cy.wait(4000);
-        
         //Verify Edit submission button is disabled
         cy.get('button[title="Edit This Submission"]').should('be.disabled');
         //Verify Submission edit users history
         cy.get('.mdi-history').click();
         cy.get('.v-data-table__tr > :nth-child(1)').contains('CHEFSTST@idir');
         cy.get('.v-card-actions > .v-btn').click();
-
         //Verify History for status updation
         cy.get('[data-test="viewHistoryButton"]').click();
         cy.get('[data-test="canCloseStatusPanel"] > .v-btn__content > span').click();
@@ -170,32 +185,30 @@ describe('Form Designer', () => {
         cy.waitForLoad();
         // Checks copy submission button enabled for user
         cy.visit(`/${depEnv}/user/submissions?f=${arr[1]}`);
-        
         cy.get('.v-data-table-column--align-end > .d-flex > :nth-child(2) > a > .v-btn');
         cy.get('.mdi-pencil-box-multiple');
-        
        //Delete Submission
         cy.visit(`/${depEnv}/form/manage?f=${arr[1]}`);
         cy.waitForLoad();
         cy.waitForLoad();
         cy.get('.mdi-list-box-outline').click();
+        //Deselect Assigned to me checkbox
+        cy.contains('Assigned to me').click();
         cy.get('button[title="Delete Submission"]').then($el => {
-
           const rem=$el[0];
           rem.click();
-          
         });
         cy.get('[data-test="continue-btn-continue"] > .v-btn__content > span').click();
         cy.get('.v-data-table__tbody > :nth-child(2) > :nth-child(2)').should('not.exist');
-        
         //Delete form after test run
         cy.visit(`/${depEnv}/form/manage?f=${arr[1]}`);
         cy.wait(4000);
         cy.get('.mdi-delete').click();
         cy.get('[data-test="continue-btn-continue"]').click();
         cy.get('#logoutButton > .v-btn__content > span').click();
+        
         });
-           
+          
     });
 
 });
