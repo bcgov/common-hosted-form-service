@@ -77,7 +77,7 @@ describe('create', () => {
         expect(storageService.upload).not.toHaveBeenCalled();
       });
 
-      it('file has non-whitelisted extension', async () => {
+      it('file has extension other than allowed list', async () => {
         const fileData = {
           originalname: 'document.xyz',
           mimetype: 'application/unknown',
