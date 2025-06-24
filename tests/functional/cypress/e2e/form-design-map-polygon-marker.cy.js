@@ -164,7 +164,7 @@ describe('Form Designer', () => {
         cy.get(base_select_topographic).closest('span').contains(' Topographic').click({ force: true });
         cy.waitForLoad();
         cy.get(base_select_topographic).check();
-        cy.wait(2000);
+        cy.wait(3000);
         cy.get('img[src*="https://b.tile.opentopomap.org/"]').should('be.visible');
         cy.wait(2000);
         cy.get(base_select_test_custom).check();
