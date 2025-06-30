@@ -318,13 +318,12 @@ describe('FormFunctionalitySettings.vue', () => {
     );
     expect(assigneeCheckbox.exists()).toBe(false);
   });
-
-  it('does not display assignee checkbox for public forms', async () => {
+  it('displays assignee checkbox for public forms when status updates is enabled', async () => {
     formStore.form = ref(
       createFormObject({
         enableStatusUpdates: true,
         showAssigneeInSubmissionsTable: false,
-        userType: IdentityMode.PUBLIC, //public form
+        userType: IdentityMode.PUBLIC, // public form
       })
     );
 
@@ -346,13 +345,12 @@ describe('FormFunctionalitySettings.vue', () => {
 
     await wrapper.vm.$nextTick();
 
-    // Should NOT show assignee checkbox for public forms
+    // Should show assignee checkbox for public forms when status updates enabled
     const assigneeCheckbox = wrapper.find(
       '[data-test="showAssigneeInSubmissionsTableCheckbox"]'
     );
-    expect(assigneeCheckbox.exists()).toBe(false);
+    expect(assigneeCheckbox.exists()).toBe(true);
   });
-
   it('toggles assignee checkbox value correctly', async () => {
     formStore.form = ref(
       createFormObject({

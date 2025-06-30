@@ -126,10 +126,7 @@ const service = {
   isClosingMessageValid,
 
   _setAssigneeInSubmissionsTable: (formData) => {
-    const identityProviders = formData.identityProviders || [];
-    const isPublicForm = identityProviders.some((idp) => idp.code === 'public');
-
-    return formData.showAssigneeInSubmissionsTable === true && !isPublicForm && formData.enableStatusUpdates;
+    return formData.showAssigneeInSubmissionsTable === true && formData.enableStatusUpdates;
   },
   _findFileIds: (schema, data) => {
     const findFiles = (currentData) => {
@@ -485,7 +482,7 @@ const service = {
   },
 
   _shouldIncludeAssignee: (form) => {
-    return form.showAssigneeInSubmissionsTable && form.enableStatusUpdates && !form.identityProviders.some((idp) => idp.code === 'public');
+    return form.showAssigneeInSubmissionsTable && form.enableStatusUpdates;
   },
 
   _buildSelectionAndFields: (params, shouldIncludeAssignee) => {
