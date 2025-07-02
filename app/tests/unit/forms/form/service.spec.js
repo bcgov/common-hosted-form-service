@@ -668,18 +668,6 @@ describe('listFormSubmissions - assignment filtering', () => {
     MockTransaction.mockReset();
     resetModels();
 
-    // Mock the form that readForm will return
-    const mockForm = {
-      id: formId,
-      name: 'Test Form',
-      showAssigneeInSubmissionsTable: false,
-      enableStatusUpdates: true,
-      identityProviders: [{ code: 'idir' }],
-      versions: [],
-    };
-
-    Form.throwIfNotFound.mockResolvedValue(mockForm);
-
     // Mock submission metadata query
     MockModel.mockResolvedValue([]);
   });
@@ -688,22 +676,35 @@ describe('listFormSubmissions - assignment filtering', () => {
     jest.restoreAllMocks();
   });
 
-  it('should return all submissions when filterAssignedToCurrentUser is false', async () => {
-    const params = {
-      filterAssignedToCurrentUser: false,
-      fields: ['field1'],
+  it('should call basic query methods', async () => {
+    const mockForm = {
+      id: formId,
+      showAssigneeInSubmissionsTable: false,
+      enableStatusUpdates: true,
+      identityProviders: [{ code: 'idir' }],
+      versions: [],
     };
 
+    Form.throwIfNotFound.mockResolvedValue(mockForm);
+
+    const params = { fields: ['field1'] };
     await service.listFormSubmissions(formId, params);
 
-    // Check that Form.findById was called (from readForm)
     expect(Form.findById).toHaveBeenCalledWith(formId);
-
-    // Check that MockModel.query was called (from submission metadata query)
     expect(MockModel.query).toHaveBeenCalledTimes(1);
   });
 
   it('should handle filterAssignedToCurrentUser parameter', async () => {
+    const mockForm = {
+      id: formId,
+      showAssigneeInSubmissionsTable: false,
+      enableStatusUpdates: true,
+      identityProviders: [{ code: 'idir' }],
+      versions: [],
+    };
+
+    Form.throwIfNotFound.mockResolvedValue(mockForm);
+
     const params = {
       filterAssignedToCurrentUser: true,
       fields: ['field1'],
@@ -716,10 +717,20 @@ describe('listFormSubmissions - assignment filtering', () => {
   });
 
   it('should handle filterAssignedToCurrentUser with different field combinations', async () => {
+    const mockForm = {
+      id: formId,
+      showAssigneeInSubmissionsTable: false,
+      enableStatusUpdates: true,
+      identityProviders: [{ code: 'idir' }],
+      versions: [],
+    };
+
+    Form.throwIfNotFound.mockResolvedValue(mockForm);
+
     const params = {
-      filterAssignedToCurrentUser: true,
-      fields: ['field1', 'field2'],
+      filterAssignedToCurrentUser: false,
       submissionId: 'test-id',
+      fields: ['field1', 'assignee'],
     };
 
     await service.listFormSubmissions(formId, params);
@@ -729,32 +740,8 @@ describe('listFormSubmissions - assignment filtering', () => {
     expect(MockModel.modify).toHaveBeenCalledWith('filterSubmissionId', 'test-id');
   });
 
-  it('should include assignee fields when form allows it', async () => {
-    // Override the mock to return a form that allows assignee visibility
-    const mockFormWithAssignee = {
-      id: formId,
-      name: 'Test Form',
-      showAssigneeInSubmissionsTable: true,
-      enableStatusUpdates: true,
-      identityProviders: [{ code: 'idir' }],
-      versions: [],
-    };
-
-    Form.throwIfNotFound.mockResolvedValue(mockFormWithAssignee);
-
-    const params = { fields: ['field1'] };
-    await service.listFormSubmissions(formId, params);
-
-    expect(Form.findById).toHaveBeenCalledWith(formId);
-    expect(MockModel.select).toHaveBeenCalledWith(
-      expect.arrayContaining(['formSubmissionAssignedToUserId', 'formSubmissionAssignedToUsernameIdp', 'formSubmissionAssignedToEmail']),
-      expect.any(Array)
-    );
-  });
-
-  it('should not include assignee fields for public forms', async () => {
-    // Override the mock to return a public form
-    const mockPublicForm = {
+  it('should include assignee fields when both conditions are met', async () => {
+    const mockForm = {
       id: formId,
       name: 'Test Form',
       showAssigneeInSubmissionsTable: true,
@@ -763,14 +750,48 @@ describe('listFormSubmissions - assignment filtering', () => {
       versions: [],
     };
 
-    Form.throwIfNotFound.mockResolvedValue(mockPublicForm);
+    Form.throwIfNotFound.mockResolvedValue(mockForm);
 
-    const params = { fields: ['field1'] };
-    await service.listFormSubmissions(formId, params);
+    await service.listFormSubmissions(formId, { fields: ['field1'] });
 
-    expect(Form.findById).toHaveBeenCalledWith(formId);
+    expect(MockModel.select).toHaveBeenCalledWith(
+      expect.arrayContaining(['formSubmissionAssignedToUserId', 'formSubmissionAssignedToUsernameIdp', 'formSubmissionAssignedToEmail']),
+      expect.any(Array)
+    );
+  });
 
-    // Should NOT include assignee fields for public forms
+  it('should not include assignee fields when showAssigneeInSubmissionsTable is false', async () => {
+    const mockForm = {
+      id: formId,
+      showAssigneeInSubmissionsTable: false,
+      enableStatusUpdates: true,
+      identityProviders: [{ code: 'idir' }],
+      versions: [],
+    };
+
+    Form.throwIfNotFound.mockResolvedValue(mockForm);
+
+    await service.listFormSubmissions(formId, { fields: ['field1'] });
+
+    expect(MockModel.select).toHaveBeenCalledWith(
+      expect.not.arrayContaining(['formSubmissionAssignedToUserId', 'formSubmissionAssignedToUsernameIdp', 'formSubmissionAssignedToEmail']),
+      expect.any(Array)
+    );
+  });
+
+  it('should not include assignee fields when enableStatusUpdates is false', async () => {
+    const mockForm = {
+      id: formId,
+      showAssigneeInSubmissionsTable: true,
+      enableStatusUpdates: false,
+      identityProviders: [{ code: 'bceid' }],
+      versions: [],
+    };
+
+    Form.throwIfNotFound.mockResolvedValue(mockForm);
+
+    await service.listFormSubmissions(formId, { fields: ['field1'] });
+
     expect(MockModel.select).toHaveBeenCalledWith(
       expect.not.arrayContaining(['formSubmissionAssignedToUserId', 'formSubmissionAssignedToUsernameIdp', 'formSubmissionAssignedToEmail']),
       expect.any(Array)
@@ -1406,17 +1427,6 @@ describe('Assignee Visibility Feature Tests', () => {
       expect(result).toBe(false);
     });
 
-    it('should return false for public forms even when other conditions are met', () => {
-      const formData = {
-        showAssigneeInSubmissionsTable: true,
-        enableStatusUpdates: true,
-        identityProviders: [{ code: 'public' }, { code: 'idir' }],
-      };
-
-      const result = service._setAssigneeInSubmissionsTable(formData);
-      expect(result).toBe(false);
-    });
-
     it('should return false when status updates are not enabled', () => {
       const formData = {
         showAssigneeInSubmissionsTable: true,
@@ -1428,15 +1438,19 @@ describe('Assignee Visibility Feature Tests', () => {
       expect(result).toBe(false);
     });
 
-    it('should return true when all conditions are met', () => {
-      const formData = {
-        showAssigneeInSubmissionsTable: true,
-        enableStatusUpdates: true,
-        identityProviders: [{ code: 'idir' }],
-      };
+    it('should return true when both conditions are met regardless of form type', () => {
+      const testCases = [{ code: 'public' }, { code: 'idir' }, { code: 'bceid' }, { code: 'bceidbusiness' }];
 
-      const result = service._setAssigneeInSubmissionsTable(formData);
-      expect(result).toBe(true);
+      testCases.forEach((identityProvider) => {
+        const formData = {
+          showAssigneeInSubmissionsTable: true,
+          enableStatusUpdates: true,
+          identityProviders: [identityProvider],
+        };
+
+        const result = service._setAssigneeInSubmissionsTable(formData);
+        expect(result).toBe(true);
+      });
     });
 
     it('should handle empty identityProviders array', () => {
@@ -1460,7 +1474,6 @@ describe('Assignee Visibility Feature Tests', () => {
       expect(result).toBe(true);
     });
   });
-
   describe('createForm with assignee validation', () => {
     beforeEach(() => {
       MockModel.mockReset();
@@ -1471,34 +1484,31 @@ describe('Assignee Visibility Feature Tests', () => {
       formMetadataService.upsert = jest.fn().mockResolvedValue();
       eventStreamConfigService.upsert = jest.fn().mockResolvedValue();
 
-      // Mock the form creation flow
       const mockCreatedForm = {
         id: formId,
         name: 'Test Form',
         identityProviders: [{ code: 'idir' }],
         versions: [],
-        showAssigneeInSubmissionsTable: false, // Will be set by the function
+        showAssigneeInSubmissionsTable: false,
       };
 
       Form.insert.mockResolvedValue(mockCreatedForm);
       service.readForm = jest.fn().mockResolvedValue(mockCreatedForm);
     });
 
-    it('should set assignee to false for public forms', async () => {
+    it('should allow assignee setting for any form type when conditions are met', async () => {
       const data = {
         name: 'Test Form',
         identityProviders: [{ code: 'public' }],
         enableStatusUpdates: true,
-        showAssigneeInSubmissionsTable: true, // Trying to enable
+        showAssigneeInSubmissionsTable: true,
         schema: { components: [] },
       };
 
       const result = await service.createForm(data, currentUser);
 
-      // Should create form successfully but with assignee visibility set to false
       expect(result).toBeDefined();
       expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
-      // The actual showAssigneeInSubmissionsTable value will be determined by the function
     });
 
     it('should set assignee to true when conditions met', async () => {
@@ -1531,7 +1541,6 @@ describe('Assignee Visibility Feature Tests', () => {
       expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
     });
   });
-
   describe('updateForm with assignee validation', () => {
     beforeEach(() => {
       MockModel.mockReset();
@@ -1543,34 +1552,26 @@ describe('Assignee Visibility Feature Tests', () => {
       eventStreamConfigService.upsert = jest.fn().mockResolvedValue();
     });
 
-    it('should set assignee to false when updating to public form', async () => {
-      // Mock existing form
+    it('should allow assignee setting for any form type', async () => {
       const mockExistingForm = {
         id: formId,
         name: 'Test Form',
-        identityProviders: [{ code: 'idir' }],
+        identityProviders: [{ code: 'public' }],
         enableStatusUpdates: true,
         showAssigneeInSubmissionsTable: true,
       };
 
-      const mockUpdatedForm = {
-        ...mockExistingForm,
-        identityProviders: [{ code: 'public' }],
-        showAssigneeInSubmissionsTable: false, // Should be set to false
-      };
-
-      service.readForm = jest.fn().mockResolvedValue(mockUpdatedForm);
+      service.readForm = jest.fn().mockResolvedValue(mockExistingForm);
 
       const updateData = {
         name: 'Test Form',
         identityProviders: [{ code: 'public' }],
         enableStatusUpdates: true,
-        showAssigneeInSubmissionsTable: true, // Try to enable
+        showAssigneeInSubmissionsTable: true,
       };
 
       const result = await service.updateForm(formId, updateData, currentUser);
 
-      // Should update successfully
       expect(result).toBeDefined();
       expect(service.readForm).toHaveBeenCalledWith(formId);
       expect(MockTransaction.commit).toHaveBeenCalledTimes(1);
@@ -1747,9 +1748,9 @@ describe('listFormSubmission helpers', () => {
     expect(service._shouldIncludeAssignee(form)).toBe(true);
   });
 
-  it('should return false for _shouldIncludeAssignee when public', () => {
+  it('should return true for _shouldIncludeAssignee when public and conditions met', () => {
     const form = { showAssigneeInSubmissionsTable: true, enableStatusUpdates: true, identityProviders: [{ code: 'public' }] };
-    expect(service._shouldIncludeAssignee(form)).toBe(false);
+    expect(service._shouldIncludeAssignee(form)).toBe(true);
   });
   it('should always include lateEntry in fields from _buildSelectionAndFields', () => {
     const params = { fields: ['field1', 'updatedAt', 'updatedBy', 'assignee'] };
@@ -2134,9 +2135,9 @@ describe('Branch coverage for assignee and selection helpers', () => {
       expect(service._setAssigneeInSubmissionsTable(formData)).toBe(false);
     });
 
-    it('returns false if identityProviders includes public', () => {
+    it('returns true if identityProviders includes public', () => {
       const formData = { showAssigneeInSubmissionsTable: true, enableStatusUpdates: true, identityProviders: [{ code: 'public' }] };
-      expect(service._setAssigneeInSubmissionsTable(formData)).toBe(false);
+      expect(service._setAssigneeInSubmissionsTable(formData)).toBe(true);
     });
 
     it('returns true if all conditions met and identityProviders is missing', () => {
@@ -2156,9 +2157,9 @@ describe('Branch coverage for assignee and selection helpers', () => {
       expect(service._shouldIncludeAssignee(form)).toBe(false);
     });
 
-    it('returns false if identityProviders includes public', () => {
+    it('returns true if identityProviders includes public', () => {
       const form = { showAssigneeInSubmissionsTable: true, enableStatusUpdates: true, identityProviders: [{ code: 'public' }] };
-      expect(service._shouldIncludeAssignee(form)).toBe(false);
+      expect(service._shouldIncludeAssignee(form)).toBe(true);
     });
 
     it('returns true if all conditions met', () => {

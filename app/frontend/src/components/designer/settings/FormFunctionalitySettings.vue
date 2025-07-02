@@ -99,7 +99,7 @@ defineExpose({
       </template>
     </v-checkbox>
     <v-checkbox
-      v-if="form.enableStatusUpdates && form.userType !== ID_MODE.PUBLIC"
+      v-if="form.enableStatusUpdates"
       v-model="form.showAssigneeInSubmissionsTable"
       data-test="showAssigneeInSubmissionsTableCheckbox"
       hide-details="auto"
