@@ -7,8 +7,8 @@ const validateParameter = require('../common/middleware/validateParameter');
 routes.use(currentUser);
 
 routes.param('formId', validateParameter.validateFormId);
-routes.param('requestId', validateParameter.validateUuid);
-routes.param('domainId', validateParameter.validateUuid);
+routes.param('requestId', validateParameter.validateRequestId);
+routes.param('domainId', validateParameter.validateDomainId);
 
 // List allowed domains for a form
 routes.get('/:formId/allowed', hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
