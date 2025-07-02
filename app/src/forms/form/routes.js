@@ -5,6 +5,7 @@ const apiAccess = require('../auth/middleware/apiAccess');
 const { currentUser, hasFormPermissions } = require('../auth/middleware/userAccess');
 const P = require('../common/constants').Permissions;
 const validateParameter = require('../common/middleware/validateParameter');
+const embedSecurity = require('../common/middleware/embed');
 const controller = require('./controller');
 
 routes.use(currentUser);
@@ -22,7 +23,7 @@ routes.post('/', async (req, res, next) => {
   await controller.createForm(req, res, next);
 });
 
-routes.get('/:formId', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+routes.get('/:formId', apiAccess, embedSecurity, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.readForm(req, res, next);
 });
 
@@ -58,11 +59,11 @@ routes.put('/:formId/emailTemplate', hasFormPermissions([P.EMAIL_TEMPLATE_READ, 
   await controller.createOrUpdateEmailTemplate(req, res, next);
 });
 
-routes.get('/:formId/options', async (req, res, next) => {
+routes.get('/:formId/options', embedSecurity, async (req, res, next) => {
   await controller.readFormOptions(req, res, next);
 });
 
-routes.get('/:formId/version', apiAccess, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+routes.get('/:formId/version', apiAccess, embedSecurity, hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.readPublishedForm(req, res, next);
 });
 
