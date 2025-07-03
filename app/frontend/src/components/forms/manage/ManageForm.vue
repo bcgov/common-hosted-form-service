@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n';
 import ApiKey from '~/components/forms/manage/ApiKey.vue';
 import DocumentTemplate from '~/components/forms/manage/DocumentTemplate.vue';
 import ExternalAPIs from '~/components/forms/manage/ExternalAPIs.vue';
+import Embed from '~/components/forms/manage/Embed.vue';
 import FormSettings from '~/components/designer/FormSettings.vue';
 import ManageVersions from '~/components/forms/manage/ManageVersions.vue';
 import Subscription from '~/components/forms/manage/Subscription.vue';
@@ -25,6 +26,7 @@ const settingsPanel = ref(1);
 const subscription = ref(false);
 const subscriptionsPanel = ref(0);
 const versionsPanel = ref(0);
+const embedPanel = ref(0);
 
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
@@ -307,6 +309,24 @@ defineExpose({
         </v-expansion-panel-title>
         <v-expansion-panel-text>
           <ExternalAPIs />
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
+
+    <!-- Form embedding -->
+    <v-expansion-panels
+      v-if="canEditForm"
+      v-model="embedPanel"
+      class="nrmc-expand-collapse"
+    >
+      <v-expansion-panel flat>
+        <v-expansion-panel-title>
+          <div class="header" :lang="locale">
+            <strong>{{ $t('trans.manageForm.formEmbed') }}</strong>
+          </div>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
+          <Embed :form-id="form.id" />
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>

@@ -68,7 +68,8 @@
     "eventSubscription": "Event Subscription",
     "cdogsTemplate": "CDOGS Template",
     "externalAPIs": "External APIs",
-    "eventStreamConfig": "Event Stream Configuration"
+    "eventStreamConfig": "Event Stream Configuration",
+    "formEmbed": "Form Embedding"
   },
   "documentTemplate": {
     "uploadTemplate": "Upload CDOGS Template",
@@ -266,7 +267,8 @@
     "encryptionKeyUpdatedBy": "Encryption Key Updated By",
     "encryptionKeyCopySnackbar": "Encryption Key copied to clipboard",
     "encryptionKeyCopyTooltip": "Copy Encryption Key to clipboard",
-    "encryptionKeyGenerate": "Generate Encryption Key"
+    "encryptionKeyGenerate": "Generate Encryption Key",
+    "formEmbed": "Form Embedding"
   },
   "formProfile": {
     "message": "The CHEFS team is collecting and organizing information to serve as crucial input for crafting comprehensive business cases. These cases will play a pivotal role in guiding the strategic operation and ongoing improvement of CHEFS in the coming years. This initiative to gather data is essential for informing critical decisions and molding the trajectory of CHEFS, ensuring its adaptability and effectiveness in addressing evolving needs and challenges.",
