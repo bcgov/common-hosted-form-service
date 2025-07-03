@@ -140,7 +140,7 @@ export default class Component extends ParentComponent {
         }
 
         // Check file pattern
-        const pattern = this.component.filePattern || undefined;
+        const pattern = this.component.filePattern ?? undefined;
 
         if (pattern && !this.validatePattern(file, pattern)) {
           fileUpload.status = 'error';
