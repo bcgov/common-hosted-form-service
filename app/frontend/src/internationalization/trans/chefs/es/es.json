@@ -168,7 +168,7 @@
     "fieldRequired": "Este campo es obligatorio.",
     "correctDateFormat": "La fecha debe estar en el formato correcto. es decir. aaaa-mm-dd",
     "dateDiffMsg": "La fecha de cierre de la presentación debe ser posterior a la fecha de apertura de la presentación.",
-    "valueMustBeNumber": "El valor debe ser un número. es decir. 1,2,3,5,99",
+    "valueMustBeNumber": "El valor debe ser un número entero entre 1 y 999",
     "selectAnOptions": "Seleccione al menos 1 opción",
     "validInterval": "Este debería ser un intervalo válido.",
     "fieldRequiredAndInterval": "Este campo es obligatorio y debe ser un intervalo.",
@@ -352,7 +352,7 @@
   "adminFormsTable": {
     "showDeletedForms": "Mostrar formularios eliminados",
     "search": "Buscar",
-    "loadingText": "cargando texto",
+    "loadingText": "Por favor, espera",
     "noDataText": "No hay formularios en su sistema",
     "admin": "Administración",
     "launch": "Lanzamiento",
@@ -452,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "Diseño de formularios",
-    "exportDesign": "Diseño de exportación",
-    "importDesign": "Diseño de importación",
+    "downloadJson": "Descargar JSON",
+    "uploadJson": "Subir JSON",
     "important": "IMPORTANTE",
     "formDesignInfoA": "Utilice el botón <strong>GUARDAR DISEÑO</strong> cuando haya terminado de crear este formulario.",
     "formDesignInfoB": "El botón <strong>ENVIAR</strong> se proporciona para que su usuario envíe este formulario y se activará después de guardarlo.",
@@ -1225,6 +1225,6 @@
   },
   "canShareDraft": {
     "canShareMessage": "No puedes compartir el borrador con usuarios que no se hayan añadido al formulario. Contacta con el administrador para añadirlos.",
-    "shareDraftMessage":"Compartir borrador solo con miembros del equipo del formulario"
+    "shareDraftMessage": "Compartir borrador solo con miembros del equipo del formulario"
   }
 }

@@ -125,6 +125,9 @@ const service = {
   isLateSubmissionConfigValid,
   isClosingMessageValid,
 
+  _setAssigneeInSubmissionsTable: (formData) => {
+    return formData.showAssigneeInSubmissionsTable === true && formData.enableStatusUpdates;
+  },
   _findFileIds: (schema, data) => {
     const findFiles = (currentData) => {
       let fileIds = [];
@@ -181,7 +184,7 @@ const service = {
       obj.submissionReceivedEmails = data.submissionReceivedEmails;
       obj.enableStatusUpdates = data.enableStatusUpdates;
       obj.enableSubmitterDraft = data.enableSubmitterDraft;
-      obj.createdBy = currentUser.usernameIdp;
+      obj.createdBy = currentUser?.usernameIdp || 'public';
       obj.allowSubmitterToUploadFile = data.allowSubmitterToUploadFile;
       obj.schedule = data.schedule;
       obj.subscribe = data.subscribe;
@@ -192,6 +195,7 @@ const service = {
       obj.ministry = data.ministry;
       obj.apiIntegration = data.apiIntegration;
       obj.useCase = data.useCase;
+      obj.showAssigneeInSubmissionsTable = service._setAssigneeInSubmissionsTable(data);
 
       await Form.query(trx).insert(obj);
       if (data.identityProviders && Array.isArray(data.identityProviders) && data.identityProviders.length) {
@@ -273,6 +277,10 @@ const service = {
         ministry: data.ministry,
         apiIntegration: data.apiIntegration,
         useCase: data.useCase,
+        showAssigneeInSubmissionsTable: service._setAssigneeInSubmissionsTable({
+          ...data,
+          identityProviders: data.identityProviders,
+        }),
       };
 
       await Form.query(trx).patchAndFetchById(formId, upd);
@@ -449,7 +457,7 @@ const service = {
     return DocumentTemplate.query().findById(documentTemplateId).modify('filterActive', true).throwIfNotFound();
   },
 
-  _initFormSubmissionsListQuery: (formId, params) => {
+  _initFormSubmissionsListQuery: (formId, params, currentUser, shouldIncludeAssignee = false) => {
     const query = SubmissionMetadata.query()
       .where('formId', formId)
       .modify('filterSubmissionId', params.submissionId)
@@ -462,44 +470,64 @@ const service = {
       .modify('filterformSubmissionStatusCode', params.filterformSubmissionStatusCode)
       .modify('orderDefault', !!(params.sortBy && params.page), params);
 
+    // Only apply assigned user filter if both conditions are true
+    if (shouldIncludeAssignee && params.filterAssignedToCurrentUser && currentUser && currentUser.id) {
+      query.where('formSubmissionAssignedToUserId', currentUser.id);
+    }
+
     if (params.createdAt && Array.isArray(params.createdAt) && params.createdAt.length === 2) {
       query.modify('filterCreatedAt', params.createdAt[0], params.createdAt[1]);
     }
     return query;
   },
 
-  listFormSubmissions: async (formId, params) => {
-    const query = service._initFormSubmissionsListQuery(formId, params);
+  _shouldIncludeAssignee: (form) => {
+    return form.showAssigneeInSubmissionsTable && form.enableStatusUpdates;
+  },
 
+  _buildSelectionAndFields: (params, shouldIncludeAssignee) => {
     const selection = ['confirmationId', 'createdAt', 'formId', 'formSubmissionStatusCode', 'submissionId', 'deleted', 'createdBy', 'formVersionId'];
-
     let fields = [];
+
+    if (shouldIncludeAssignee) {
+      selection.push('formSubmissionAssignedToUserId', 'formSubmissionAssignedToUsernameIdp', 'formSubmissionAssignedToEmail');
+    }
+
     if (params.fields && params.fields.length) {
-      if (typeof params.fields !== 'string' && params.fields.includes('updatedAt')) {
-        selection.push('updatedAt');
-      }
-      if (typeof params.fields !== 'string' && params.fields.includes('updatedBy')) {
-        selection.push('updatedBy');
-      }
-      if (Array.isArray(params.fields)) {
-        fields = params.fields.flatMap((f) => f.split(',').map((s) => s.trim()));
-      } else {
-        fields = params.fields.split(',').map((s) => s.trim());
-      }
+      fields = Array.isArray(params.fields) ? params.fields.flatMap((f) => f.split(',').map((s) => s.trim())) : params.fields.split(',').map((s) => s.trim());
+      if (fields.includes('updatedAt')) selection.push('updatedAt');
+      if (fields.includes('updatedBy')) selection.push('updatedBy');
 
       // Remove updatedAt and updatedBy so they won't be pulled from submission
       // columns. Also remove empty values to handle the case of trailing commas
       // and other malformed data too.
       fields = fields.filter((f) => f !== 'updatedAt' && f !== 'updatedBy' && f.trim() !== '');
+      if (shouldIncludeAssignee) {
+        fields = fields.filter((f) => f !== 'assignee');
+      }
     }
 
     fields.push('lateEntry');
+    return { selection, fields };
+  },
 
+  _validateSortBy: (params, selection, fields) => {
     if (params.sortBy?.column && !selection.includes(params.sortBy.column) && !fields.includes(params.sortBy.column)) {
       throw new Problem(400, {
         details: `orderBy column '${params.sortBy.column}' not in selected columns`,
       });
     }
+  },
+
+  listFormSubmissions: async (formId, params, currentUser) => {
+    // First, get form settings to check if assignee data should be included
+    const form = await service.readForm(formId);
+
+    // Determine if assignee data should be included in response
+    const shouldIncludeAssignee = service._shouldIncludeAssignee(form);
+    const query = service._initFormSubmissionsListQuery(formId, params, currentUser, shouldIncludeAssignee);
+    const { selection, fields } = service._buildSelectionAndFields(params, shouldIncludeAssignee);
+    service._validateSortBy(params, selection, fields);
 
     query.select(
       selection,

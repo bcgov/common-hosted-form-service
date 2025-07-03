@@ -168,7 +168,7 @@
     "fieldRequired": "Dieses Feld ist erforderlich.",
     "correctDateFormat": "Das Datum muss im richtigen Format vorliegen. dh. jjjj-mm-tt",
     "dateDiffMsg": "Das Datum der geschlossenen Einreichung sollte nach dem Datum der offenen Einreichung liegen.",
-    "valueMustBeNumber": "Der Wert muss eine Zahl sein. dh. 1,2,3,5,99",
+    "valueMustBeNumber": "Der Wert muss eine ganze Zahl zwischen 1 und 999 sein",
     "selectAnOptions": "Bitte wählen Sie mindestens 1 Option aus",
     "validInterval": "Dies sollte ein gültiges Intervall sein.",
     "fieldRequiredAndInterval": "Dieses Feld ist erforderlich und sollte ein Intervall sein.",
@@ -352,7 +352,7 @@
   "adminFormsTable": {
     "showDeletedForms": "Gelöschte Formulare anzeigen",
     "search": "Suchen",
-    "loadingText": "Ladetext",
+    "loadingText": "Bitte warten",
     "noDataText": "In Ihrem System sind keine Formulare vorhanden",
     "admin": "Administrator",
     "launch": "Start",
@@ -452,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "Formulardesign",
-    "exportDesign": "Design exportieren",
-    "importDesign": "Design importieren",
+    "downloadJson": "JSON herunterladen",
+    "uploadJson": "JSON hochladen",
     "important": "WICHTIG",
     "formDesignInfoA": "Verwenden Sie die Schaltfläche <strong>„DESIGN SPEICHERN“</strong> , wenn Sie mit der Erstellung dieses Formulars fertig sind.",
     "formDesignInfoB": "Die Schaltfläche <strong>SENDEN</strong> steht Ihrem Benutzer zum Absenden dieses Formulars zur Verfügung und wird nach dem Speichern aktiviert.",
@@ -1225,6 +1225,6 @@
   },
   "canShareDraft": {
     "canShareMessage": "Sie können den Entwurf nicht mit Benutzern teilen, die nicht zum Formular hinzugefügt wurden. Wenden Sie sich an den Administrator, um sie hinzuzufügen.",
-    "shareDraftMessage":"Geben Sie den Entwurf nur an die Mitglieder des Formularteams weiter"
+    "shareDraftMessage": "Geben Sie den Entwurf nur an die Mitglieder des Formularteams weiter"
   }
 }

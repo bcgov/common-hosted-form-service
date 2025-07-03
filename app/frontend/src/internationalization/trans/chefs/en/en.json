@@ -178,6 +178,7 @@
     "loginRequired": "Log-in Required",
     "canSaveAndEditDraftLabel": "Submitters can <strong>Save and Edit Drafts</strong>",
     "canUpdateStatusAsReviewer": "Reviewers can <strong>Update the Status</strong> of this form (i.e. Submitted, Assigned, Completed)",
+    "displayAssigneeColumn": "Display assignee column for reviewers",
     "submitterCanCopyExistingSubmissn": "Submitters can<strong> Copy an existing submission</strong>",
     "submissionConfirmationToolTip": "Selecting this option controls what the submitting user of this form will see on successful submission. <br /> If checked, it will display",
     "emailNotificatnToTeam": "Send my team a notification email",
@@ -230,7 +231,7 @@
     "fieldRequired": "This field is required.",
     "correctDateFormat": "Date must be in correct format. ie. yyyy-mm-dd",
     "dateDiffMsg": "Close Submission date should be greater than open submission date.",
-    "valueMustBeNumber": "Value must be a number. ie. 1,2,3,5,99",
+    "valueMustBeNumber": "Value must be a whole number between 1 and 999",
     "selectAnOptions": "Please select at least 1 option",
     "validInterval": "This should be a valid interval.",
     "fieldRequiredAndInterval": "This field is required & should be an interval.",
@@ -414,7 +415,7 @@
   "adminFormsTable": {
     "showDeletedForms": "Show deleted forms",
     "search": "Search",
-    "loadingText": "loading-text",
+    "loadingText": "Loading... Please wait",
     "noDataText": "There are no forms in your system",
     "admin": "Admin",
     "launch": "Launch",
@@ -529,8 +530,8 @@
   },
   "formDesigner": {
     "formDesign": "Form Design",
-    "exportDesign": "Export Design",
-    "importDesign": "Import Design",
+    "downloadJson": "Download JSON",
+    "uploadJson": "Upload JSON",
     "important": "IMPORTANT",
     "formDesignInfoA": "Use the <strong>SAVE DESIGN</strong> button when you are done building this form.",
     "formDesignInfoB": "The <strong>SUBMIT</strong> button is provided for your user to submit this form and will be activated after it is saved.",
@@ -598,6 +599,8 @@
     "emailRequired": "Email is required"
   },
   "submissionsTable": {
+    "assignee": "Assignee",
+    "showAssignedToMe": "Assigned to me",
     "noMatchingRecordText": "No matching records found",
     "submissions": "Submissions",
     "submissionsTable": "SubmissionsTable",
@@ -655,7 +658,7 @@
     "formSubmission": "form submission",
     "delete": "Delete"
   },
-  
+
   "manageSubmissionUsers": {
     "manageTeamMembers": "Manage Team Members",
     "add": "Add",
@@ -685,7 +688,7 @@
   },
   "canShareDraft": {
     "canShareMessage": "You can't share the draft with users who haven't been added to the form. Please contact the admin to add them.",
-    "shareDraftMessage":"Share draft with form team members only"
+    "shareDraftMessage": "Share draft with form team members only"
   },
   "mySubmissionsActions": {
     "viewThisSubmission": "View This Submission",
@@ -777,7 +780,6 @@
     "loadingText": "Loading... Please wait",
     "status": "Status",
     "dateStatusChanged": "Date Status Changed",
-    "assignee": "Assignee",
     "updatedBy": "Updated By",
     "getSubmissionStatusErr": "An error occurred while trying to fetch statuses.",
     "getSubmissionStatusConsErr": "Error adding note:"
@@ -1227,5 +1229,22 @@
   },
   "alert": {
     "warning": "Warning"
+  },
+  "statusOverlay": {
+    "chefsUnavailableBoilerplate": "The Common Hosted Forms Service is temporarily unavailable. Please wait a few moments and try again, or contact your team's IT support or system administrator if the problem persists.",
+    "moreInfo": "Show More Info...",
+    "lessInfo": "Show Less Info...",
+    "moreInfoIntro": "This issue may be caused by interruption of one or more of the following services:",
+    "moreInfoOutro": "We are actively working to restore access. If you need further assistance, please have your IT support/System Admin contact us at {linkOne} or {linkTwo}.",
+    "name": "Service",
+    "status": "Status",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "msTeamsChannel": "MS Teams Channel",
+    "rocketChatChannel": "Rocket.Chat Channel",
+    "defaultStatusMessage": "Service is temporarily unavailable (503). Please try again later.",
+    "shuttingDown": "CHEFS is shutting down.",
+    "notReady": "CHEFS cannot connect to all required services.",
+    "unableToReachBackend": "Unable to reach backend service."
   }
 }

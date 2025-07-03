@@ -168,7 +168,7 @@
     "fieldRequired": "이 필드는 필수입니다.",
     "correctDateFormat": "날짜는 올바른 형식이어야 합니다. 즉. yyyy-mm-dd",
     "dateDiffMsg": "마감 제출 날짜는 공개 제출 날짜보다 이후여야 합니다.",
-    "valueMustBeNumber": "값은 숫자여야 합니다. 즉. 1,2,3,5,99",
+    "valueMustBeNumber": "값은 1과 999 사이의 정수여야 합니다",
     "selectAnOptions": "옵션을 1개 이상 선택하세요.",
     "validInterval": "유효한 간격이어야 합니다.",
     "fieldRequiredAndInterval": "이 필드는 필수이며 간격이어야 합니다.",
@@ -352,7 +352,7 @@
   "adminFormsTable": {
     "showDeletedForms": "삭제된 양식 표시",
     "search": "찾다",
-    "loadingText": "로딩 텍스트",
+    "loadingText": "잠시만 기다려 주세요",
     "noDataText": "시스템에 양식이 없습니다.",
     "admin": "관리자",
     "launch": "시작하다",
@@ -452,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "양식 디자인",
-    "exportDesign": "디자인 내보내기",
-    "importDesign": "디자인 가져오기",
+    "downloadJson": "JSON 다운로드",
+    "uploadJson": "JSON 업로드",
     "important": "중요한",
     "formDesignInfoA": "이 양식 작성을 완료하면 <strong>SAVE DESIGN</strong> 버튼을 사용하십시오.",
     "formDesignInfoB": "<strong>SUBMIT</strong> 버튼은 사용자가 이 양식을 제출할 수 있도록 제공되며 양식이 저장되면 활성화됩니다.",
@@ -1225,6 +1225,6 @@
   },
   "canShareDraft": {
     "canShareMessage": "양식에 추가되지 않은 사용자와 초안을 공유할 수 없습니다. 관리자에게 연락하여 추가하세요.",
-    "shareDraftMessage":"초안을 양식 팀원과만 공유하세요"
+    "shareDraftMessage": "초안을 양식 팀원과만 공유하세요"
   }
 }

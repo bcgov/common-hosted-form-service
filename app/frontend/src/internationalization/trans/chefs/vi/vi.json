@@ -168,7 +168,7 @@
     "fieldRequired": "Trường này là bắt buộc.",
     "correctDateFormat": "Ngày phải ở định dạng chính xác. I E. yyyy-mm-dd",
     "dateDiffMsg": "Đóng Ngày gửi phải lớn hơn ngày gửi mở.",
-    "valueMustBeNumber": "Giá trị phải là một số. I E. 1,2,3,5,99",
+    "valueMustBeNumber": "Giá trị phải là số nguyên từ 1 đến 999",
     "selectAnOptions": "Vui lòng chọn ít nhất 1 tùy chọn",
     "validInterval": "Đây phải là một khoảng thời gian hợp lệ.",
     "fieldRequiredAndInterval": "Trường này là bắt buộc & phải là một khoảng thời gian.",
@@ -352,7 +352,7 @@
   "adminFormsTable": {
     "showDeletedForms": "Hiển thị biểu mẫu đã xóa",
     "search": "Tìm kiếm",
-    "loadingText": "đang tải văn bản",
+    "loadingText": "Vui lòng chờ",
     "noDataText": "Không có biểu mẫu nào trong hệ thống của bạn",
     "admin": "Quản trị viên",
     "launch": "Phóng",
@@ -452,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "thiết kế biểu mẫu",
-    "exportDesign": "Thiết kế xuất khẩu",
-    "importDesign": "Thiết kế nhập khẩu",
+    "downloadJson": "Tải xuống JSON",
+    "uploadJson": "Tải lên JSON",
     "important": "QUAN TRỌNG",
     "formDesignInfoA": "Sử dụng nút <strong>LƯU THIẾT KẾ</strong> khi bạn hoàn thành việc xây dựng biểu mẫu này.",
     "formDesignInfoB": "Nút <strong>GỬI</strong> được cung cấp để người dùng của bạn gửi biểu mẫu này và sẽ được kích hoạt sau khi được lưu.",
@@ -1229,6 +1229,6 @@
   },
   "canShareDraft": {
     "canShareMessage": "Bạn không thể chia sẻ bản nháp với những người dùng chưa được thêm vào biểu mẫu. Vui lòng liên hệ với quản trị viên để thêm họ.",
-    "shareDraftMessage":"Chỉ chia sẻ bản nháp với các thành viên nhóm biểu mẫu"
+    "shareDraftMessage": "Chỉ chia sẻ bản nháp với các thành viên nhóm biểu mẫu"
   }
 }

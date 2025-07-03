@@ -31,7 +31,14 @@ describe('AdministerFormsTable.vue', () => {
 
     // Assert
     expect(store.getForms).toHaveBeenCalledTimes(1);
-    expect(store.getForms).toHaveBeenLastCalledWith(true);
+    expect(store.getForms).toHaveBeenLastCalledWith({
+      activeOnly: true,
+      itemsPerPage: 10,
+      page: 0,
+      paginationEnabled: true,
+      search: '',
+      searchEnabled: false,
+    });
   });
 
   it('loads deleted forms after click', async () => {
@@ -53,7 +60,14 @@ describe('AdministerFormsTable.vue', () => {
 
     // Assert
     expect(store.getForms).toHaveBeenCalledTimes(2);
-    expect(store.getForms).toHaveBeenLastCalledWith(false);
+    expect(store.getForms).toHaveBeenLastCalledWith({
+      activeOnly: false,
+      itemsPerPage: 10,
+      page: 0,
+      paginationEnabled: true,
+      search: '',
+      searchEnabled: false,
+    });
   });
 
   it('loads active forms after two clicks', async () => {
@@ -77,7 +91,14 @@ describe('AdministerFormsTable.vue', () => {
 
     // Assert
     expect(store.getForms).toHaveBeenCalledTimes(3);
-    expect(store.getForms).toHaveBeenLastCalledWith(true);
+    expect(store.getForms).toHaveBeenLastCalledWith({
+      activeOnly: true,
+      itemsPerPage: 10,
+      page: 0,
+      paginationEnabled: true,
+      search: '',
+      searchEnabled: false,
+    });
   });
 
   it('headers shown active forms', async () => {

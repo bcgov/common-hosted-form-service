@@ -168,7 +168,7 @@
     "fieldRequired": "此字段是必需的。",
     "correctDateFormat": "日期格式必须正确。 IE。年-月-日",
     "dateDiffMsg": "关闭提交日期应晚于开放提交日期。",
-    "valueMustBeNumber": "值必须是数字。 IE。 1,2,3,5,99",
+    "valueMustBeNumber": "数值必须是1到999之间的整数",
     "selectAnOptions": "请至少选择 1 个选项",
     "validInterval": "这应该是一个有效的间隔。",
     "fieldRequiredAndInterval": "该字段是必需的并且应该是一个间隔。",
@@ -352,7 +352,7 @@
   "adminFormsTable": {
     "showDeletedForms": "显示已删除的表格",
     "search": "搜索",
-    "loadingText": "加载文本",
+    "loadingText": "请稍候",
     "noDataText": "您的系统中没有表格",
     "admin": "行政",
     "launch": "发射",
@@ -452,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "表格设计",
-    "exportDesign": "出口设计",
-    "importDesign": "导入设计",
+    "downloadJson": "下载 JSON",
+    "uploadJson": "上传 JSON",
     "important": "重要的",
     "formDesignInfoA": "完成此表单的构建后，请使用<strong>“保存设计”</strong>按钮。",
     "formDesignInfoB": "<strong>提交</strong>按钮供您的用户提交此表单，并将在保存后激活。",
@@ -1225,6 +1225,6 @@
   },
   "canShareDraft": {
     "canShareMessage": "您无法与尚未添加到表单的用户共享草稿。请联系管理员添加他们。",
-    "shareDraftMessage":"仅与表单团队成员共享草稿"
+    "shareDraftMessage": "仅与表单团队成员共享草稿"
   }
 }

@@ -38,7 +38,7 @@ it('Verify draft submission', () => {
       cy.get('span.btn').contains('Text Field')
       
       .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -50, { force: true })
+      .trigger('mousemove', coords.x, -110, { force: true })
       .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
@@ -124,7 +124,7 @@ it('Submission revise status Assignment', () => {
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.get('.mdi-list-box-outline').click();
     cy.waitForLoad();
-    cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn > .v-btn__content > .mdi-eye').click();
+    cy.get(':nth-child(1) > :nth-child(7) > a > .v-btn').click();
     cy.get('.status-heading > .mdi-chevron-right').click();
     cy.get('[data-test="showStatusList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
     cy.contains('ASSIGNED').click();

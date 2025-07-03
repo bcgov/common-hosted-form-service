@@ -15,7 +15,7 @@ import { formService, userService } from '~/services';
 import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useNotificationStore } from '~/store/notification';
-import { FormDesignerBuilderOptions, IdentityMode } from '~/utils/constants';
+import { FormDesignerBuilderOptions } from '~/utils/constants';
 import { generateIdps } from '~/utils/transformUtils';
 
 const { locale, t } = useI18n({ useScope: 'global' });
@@ -117,7 +117,7 @@ const designerOptions = computed(() => {
         ...FormDesignerBuilderOptions.customControls,
         components: {
           ...FormDesignerBuilderOptions.customControls.components,
-          simplefile: form.value.userType !== ID_MODE.value.PUBLIC,
+          simplefile: true,
         },
       },
     },
@@ -134,8 +134,6 @@ const designerOptions = computed(() => {
 const DISPLAY_VERSION = computed(() =>
   form.value?.versions?.length ? form.value.versions.length + 1 : 1
 );
-
-const ID_MODE = computed(() => IdentityMode);
 
 // ---------------------------------------------------------------------------------------------------
 // FormIO event handlers
@@ -394,9 +392,11 @@ async function schemaCreateNew() {
     }),
     sendSubmissionReceivedEmail: form.value.sendSubmissionReceivedEmail,
     enableSubmitterDraft: form.value.enableSubmitterDraft,
+    allowSubmitterToUploadFile: form.value.allowSubmitterToUploadFile,
     enableCopyExistingSubmission: form.value.enableCopyExistingSubmission,
     wideFormLayout: form.value.wideFormLayout,
     enableStatusUpdates: form.value.enableStatusUpdates,
+    showAssigneeInSubmissionsTable: form.value.showAssigneeInSubmissionsTable,
     showSubmissionConfirmation: form.value.showSubmissionConfirmation,
     submissionReceivedEmails: form.value.submissionReceivedEmails,
     reminder_enabled: false,
@@ -549,33 +549,27 @@ defineExpose({ designerOptions, reRenderFormIo });
       <!-- buttons -->
       <div class="d-flex flex-row">
         <div class="d-flex flex-column ma-2" style="align-items: center">
-          <span :lang="locale">{{
-            $t('trans.formDesigner.exportDesign')
-          }}</span>
           <v-btn
             class="mx-1"
             color="primary"
-            icon
-            size="x-small"
-            :title="$t('trans.formDesigner.exportDesign')"
+            :title="$t('trans.formDesigner.downloadJson')"
+            :lang="locale"
+            prepend-icon="mdi:mdi-download"
             @click="exportFormSchema(form.name, formSchema, form.snake)"
           >
-            <v-icon icon="mdi:mdi-download"></v-icon>
+            {{ $t('trans.formDesigner.downloadJson') }}
           </v-btn>
         </div>
         <div class="d-flex flex-column ma-2" style="align-items: center">
-          <span :lang="locale">{{
-            $t('trans.formDesigner.importDesign')
-          }}</span>
           <v-btn
             class="mx-1"
             color="primary"
-            icon
-            size="x-small"
-            :title="$t('trans.formDesigner.importDesign')"
+            :lang="locale"
+            prepend-icon="mdi:mdi-publish"
+            :title="$t('trans.formDesigner.uploadJson')"
             @click="$refs.uploader.click()"
           >
-            <v-icon icon="mdi:mdi-publish"></v-icon>
+            {{ $t('trans.formDesigner.uploadJson') }}
             <input
               ref="uploader"
               class="d-none"

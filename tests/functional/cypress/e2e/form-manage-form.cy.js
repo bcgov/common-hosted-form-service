@@ -35,13 +35,14 @@ describe('Form Designer', () => {
       cy.get('span.btn').contains('Text Field')
       
       .trigger('mousedown', { which: 1}, { force: true })
-      .trigger('mousemove', coords.x, -50, { force: true })
+      .trigger('mousemove', coords.x, -110, { force: true })
       .trigger('mouseup', { force: true });
       cy.get('button').contains('Save').click();
     });
   // Form saving
-    cy.wait(2000);
-    cy.get('[data-cy=saveButton]').click();
+    let savedButton = cy.get('[data-cy=saveButton]');
+    expect(savedButton).to.not.be.null;
+    savedButton.should('be.visible').trigger('click');
     cy.wait(2000);
   // Filter the newly created form
     cy.location('search').then(search => {
@@ -101,8 +102,7 @@ describe('Form Designer', () => {
       cy.get('input[placeholder="Open time"]').type('09:00');
       cy.get(':nth-child(2) > .v-col-md-8 > .v-input > .v-input__control > .v-field > .v-field__clearable > .mdi-close-circle').click();
       cy.get('input[placeholder="Close time"]').type('17:00');
-
-      cy.get('span[class="v-select__selection-text"]').contains('America/Vancouver').should('be.visible');
+      cy.waitForLoad();
       //Verify all time zones present
       cy.get(':nth-child(1) > :nth-child(2) > .v-input > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
       cy.get('div.v-list-item-title').contains('America/Atikokan').should('exist');
@@ -130,6 +130,8 @@ describe('Form Designer', () => {
       cy.get('div.v-list-item-title').contains('America/Toronto').should('exist');
       cy.get('div.v-list-item-title').contains('America/Whitehorse').should('exist');
       cy.get('div.v-list-item-title').contains('America/Winnipeg').should('exist');
+      cy.get(':nth-child(1) > :nth-child(2) > .v-input > .v-input__control > .v-field > .v-field__append-inner > .mdi-menu-down').click();
+      cy.waitForLoad();
     //Verify amount of late submission
       cy.get('.pl-3 > :nth-child(2) > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
       cy.contains('weeks').click();

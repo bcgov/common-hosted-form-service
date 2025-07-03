@@ -168,7 +168,7 @@
     "fieldRequired": "هذه الخانة مطلوبه.",
     "correctDateFormat": "يجب أن يكون التاريخ في الشكل الصحيح. أي. yyyy-mm-dd",
     "dateDiffMsg": "يجب أن يكون تاريخ التقديم إغلاق أكبر من تاريخ التقديم المفتوح.",
-    "valueMustBeNumber": "يجب أن تكون القيمة رقمًا. أي. 1،2،3،5،99",
+    "valueMustBeNumber": "يجب أن تكون القيمة رقماً صحيحاً بين 1 و 999",
     "selectAnOptions": "الرجاء تحديد خيار واحد على الأقل",
     "validInterval": "يجب أن يكون هذا الفاصل الزمني صالحًا.",
     "fieldRequiredAndInterval": "هذا الحقل مطلوب ويجب أن يكون فترة.",
@@ -352,7 +352,7 @@
   "adminFormsTable": {
     "showDeletedForms": "إظهار النماذج المحذوفة",
     "search": "يبحث",
-    "loadingText": "نص التحميل",
+    "loadingText": "من فضلك انتظر",
     "noDataText": "لا توجد نماذج في نظامك",
     "admin": "مسؤل",
     "launch": "يطلق",
@@ -452,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "تصميم النموذج",
-    "exportDesign": "تصميم التصدير",
-    "importDesign": "تصميم الاستيراد",
+    "downloadJson": "تنزيل JSON",
+    "uploadJson": "تحميل JSON",
     "important": "مهم",
     "formDesignInfoA": "استخدم زر <strong>حفظ التصميم</strong> عند الانتهاء من بناء هذا النموذج.",
     "formDesignInfoB": "يتم توفير زر <strong>إرسال</strong> للمستخدم لإرسال هذا النموذج وسيتم تنشيطه بعد حفظه.",
@@ -1225,6 +1225,6 @@
   },
   "canShareDraft": {
     "canShareMessage": "لا يُمكنك مشاركة المسودة مع المستخدمين الذين لم تتم إضافتهم إلى النموذج. يُرجى التواصل مع المشرف لإضافتهم.",
-    "shareDraftMessage":"مشاركة المسودة مع أعضاء فريق النموذج فقط"
+    "shareDraftMessage": "مشاركة المسودة مع أعضاء فريق النموذج فقط"
   }
 }

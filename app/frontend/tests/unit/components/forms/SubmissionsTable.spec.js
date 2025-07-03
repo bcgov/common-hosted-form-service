@@ -305,7 +305,7 @@ describe('SubmissionsTable.vue', () => {
 
     formStore.userFormPreferences = {
       preferences: {
-        columns: ['firstName', 'lastName'],
+        submissionsTable: { columns: ['firstName', 'lastName'] },
       },
     };
     formStore.formFields = ['firstName'];
@@ -357,7 +357,7 @@ describe('SubmissionsTable.vue', () => {
 
     formStore.userFormPreferences = {
       preferences: {
-        columns: ['firstName', 'lastName'],
+        submissionsTable: { columns: ['firstName', 'lastName'] },
       },
     };
     formStore.formFields = ['firstName'];
@@ -574,7 +574,7 @@ describe('SubmissionsTable.vue', () => {
 
     formStore.userFormPreferences = {
       preferences: {
-        columns: ['submitter'],
+        submissionsTable: { columns: ['submitter'] },
       },
     };
 
@@ -732,7 +732,7 @@ describe('SubmissionsTable.vue', () => {
 
     await wrapper.vm.updateTableOptions({});
     // should refresh submissions
-    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(0);
+    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(1);
     expect(fetchSubmissionsSpy).toBeCalledTimes(0);
     expect(wrapper.vm.currentPage).toEqual(1);
     expect(wrapper.vm.sort).toEqual({});
@@ -747,7 +747,7 @@ describe('SubmissionsTable.vue', () => {
       sortBy: [{ key: 'date', order: 'desc' }],
     });
     // should not refresh submissions
-    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(0);
+    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(1);
     expect(fetchSubmissionsSpy).toBeCalledTimes(0);
     expect(wrapper.vm.currentPage).toEqual(5);
     expect(wrapper.vm.sort).toEqual({ column: 'createdAt', order: 'desc' });
@@ -760,7 +760,7 @@ describe('SubmissionsTable.vue', () => {
       sortBy: [{ key: 'submitter', order: 'desc' }],
     });
     // should not refresh submissions
-    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(0);
+    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(2);
     expect(fetchSubmissionsSpy).toBeCalledTimes(0);
     expect(wrapper.vm.currentPage).toEqual(5);
     expect(wrapper.vm.sort).toEqual({ column: 'createdBy', order: 'desc' });
@@ -773,7 +773,7 @@ describe('SubmissionsTable.vue', () => {
       sortBy: [{ key: 'status', order: 'desc' }],
     });
     // should not refresh submissions
-    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(0);
+    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(3);
     expect(fetchSubmissionsSpy).toBeCalledTimes(0);
     expect(wrapper.vm.currentPage).toEqual(5);
     expect(wrapper.vm.sort).toEqual({
@@ -787,7 +787,7 @@ describe('SubmissionsTable.vue', () => {
       itemsPerPage: 2,
       sortBy: [{ key: 'something', order: 'desc' }],
     });
-    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(0);
+    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(4);
     expect(fetchSubmissionsSpy).toBeCalledTimes(0);
     expect(wrapper.vm.currentPage).toEqual(5);
     expect(wrapper.vm.sort).toEqual({
@@ -851,6 +851,7 @@ describe('SubmissionsTable.vue', () => {
       createdBy: '',
       deletedOnly: false,
       filterformSubmissionStatusCode: true,
+      filterAssignedToCurrentUser: false,
       formId: '123-456',
       itemsPerPage: 10,
       page: 0,
@@ -860,31 +861,6 @@ describe('SubmissionsTable.vue', () => {
       sortBy: {},
     });
 
-    fetchSubmissionsSpy.mockReset();
-    fetchSubmissionsSpy.mockImplementationOnce(() => {});
-    formStore.userFormPreferences = {
-      preferences: {
-        filter: ['2024-08-07', '2024-08-10'],
-      },
-    };
-    await wrapper.vm.getSubmissionData();
-    expect(fetchSubmissionsSpy).toBeCalledTimes(1);
-    expect(fetchSubmissionsSpy).toBeCalledWith({
-      createdAt: [
-        moment('2024-08-07').utc().format(),
-        moment('2024-08-10').utc().format(),
-      ],
-      createdBy: '',
-      deletedOnly: false,
-      filterformSubmissionStatusCode: true,
-      formId: '123-456',
-      itemsPerPage: 10,
-      page: 0,
-      paginationEnabled: true,
-      search: '',
-      searchEnabled: false,
-      sortBy: {},
-    });
     // if fetchSubmissions returns a submissionList we want to add custom columns
     fetchSubmissionsSpy.mockReset();
     fetchSubmissionsSpy.mockImplementationOnce(() => {});
@@ -912,7 +888,9 @@ describe('SubmissionsTable.vue', () => {
     // also if it's a duplicate column, then we just add an _X to the end of the key X being some incremental number
     formStore.userFormPreferences = {
       preferences: {
-        columns: ['firstName', 'customColumn', 'date', 'date'],
+        submissionsTable: {
+          columns: ['firstName', 'customColumn', 'date', 'date'],
+        },
       },
     };
     // userFormPreferences only gets used if they are in formFields
@@ -1024,62 +1002,6 @@ describe('SubmissionsTable.vue', () => {
     restoreMultiSubmissionsSpy.mockReset();
   });
 
-  it('updateFilter will call updateFormPreferencesForCurrentUser then getFormPreferencesForCurrentUser and fetchSubmissions', async () => {
-    const getFormRolesForUserSpy = vi.spyOn(formStore, 'getFormRolesForUser');
-    getFormRolesForUserSpy.mockImplementation(() => {
-      formStore.roles = [
-        FormRoleCodes.FORM_DESIGNER,
-        FormRoleCodes.FORM_SUBMITTER,
-        FormRoleCodes.OWNER,
-        FormRoleCodes.SUBMISSION_APPROVER,
-        FormRoleCodes.SUBMISSION_REVIEWER,
-        FormRoleCodes.TEAM_MANAGER,
-      ];
-    });
-    const getFormPermissionsForUserSpy = vi.spyOn(
-      formStore,
-      'getFormPermissionsForUser'
-    );
-    getFormPermissionsForUserSpy.mockImplementation(() => {
-      formStore.permissions = require('../../fixtures/permissions.json');
-    });
-    const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
-    fetchFormSpy.mockImplementation(() => {
-      return Promise.resolve();
-    });
-    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
-    fetchFormFieldsSpy.mockImplementation(() => {
-      formStore.formFields = ['firstName'];
-    });
-    const getFormPreferencesForCurrentUserSpy = vi.spyOn(
-      formStore,
-      'getFormPreferencesForCurrentUser'
-    );
-    getFormPreferencesForCurrentUserSpy.mockImplementation(() => {});
-    const fetchSubmissionsSpy = vi.spyOn(formStore, 'fetchSubmissions');
-    fetchSubmissionsSpy.mockImplementation(() => {});
-
-    const wrapper = shallowMount(SubmissionsTable, {
-      props: {
-        formId: formId,
-      },
-      global: {
-        plugins: [router, pinia],
-        stubs: STUBS,
-      },
-    });
-
-    await flushPromises();
-
-    getFormPreferencesForCurrentUserSpy.mockReset();
-    fetchSubmissionsSpy.mockReset();
-
-    await wrapper.vm.updateFilter(['firstName', 'customColumn']);
-    // should refresh submissions
-    expect(getFormPreferencesForCurrentUserSpy).toBeCalledTimes(1);
-    expect(fetchSubmissionsSpy).toBeCalledTimes(1);
-  });
-
   it('when search gets updated, it should refreshSubmissions if there is a search value otherwise it will call debounceInput', async () => {
     const getFormRolesForUserSpy = vi.spyOn(formStore, 'getFormRolesForUser');
     getFormRolesForUserSpy.mockImplementation(() => {
@@ -1161,5 +1083,392 @@ describe('SubmissionsTable.vue', () => {
     expect(getFormRolesForUserSpy).toBeCalledTimes(1);
     expect(getFormPermissionsForUserSpy).toBeCalledTimes(1);
     expect(fetchFormSpy).toBeCalledTimes(1);
+  });
+  it('BASE_HEADERS includes assignee column when showAssigneeInSubmissionsTable is enabled', async () => {
+    const getFormRolesForUserSpy = vi.spyOn(formStore, 'getFormRolesForUser');
+    getFormRolesForUserSpy.mockImplementation(() => {
+      formStore.roles = [FormRoleCodes.OWNER];
+    });
+    const getFormPermissionsForUserSpy = vi.spyOn(
+      formStore,
+      'getFormPermissionsForUser'
+    );
+    getFormPermissionsForUserSpy.mockImplementation(() => {
+      formStore.permissions = require('../../fixtures/permissions.json');
+    });
+    const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
+    fetchFormSpy.mockImplementation(() => {
+      // Set form with assignee column enabled
+      formStore.form = {
+        ...require('../../fixtures/form.json'),
+        enableStatusUpdates: true,
+        showAssigneeInSubmissionsTable: true,
+        schedule: { enabled: false },
+      };
+      return Promise.resolve();
+    });
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    fetchFormFieldsSpy.mockImplementation(() => {
+      formStore.formFields = [];
+    });
+
+    const wrapper = shallowMount(SubmissionsTable, {
+      props: { formId: formId },
+      global: {
+        plugins: [router, pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    // Should include assignee column
+    const headers = wrapper.vm.BASE_HEADERS;
+    const assigneeHeader = headers.find((h) => h.key === 'assignee');
+
+    expect(assigneeHeader).toBeTruthy();
+    expect(assigneeHeader.title).toBe('trans.submissionsTable.assignee');
+    expect(assigneeHeader.align).toBe('start');
+    expect(assigneeHeader.key).toBe('assignee');
+  });
+
+  it('BASE_HEADERS does not include assignee column when showAssigneeInSubmissionsTable is disabled', async () => {
+    const getFormRolesForUserSpy = vi.spyOn(formStore, 'getFormRolesForUser');
+    getFormRolesForUserSpy.mockImplementation(() => {
+      formStore.roles = [FormRoleCodes.OWNER];
+    });
+    const getFormPermissionsForUserSpy = vi.spyOn(
+      formStore,
+      'getFormPermissionsForUser'
+    );
+    getFormPermissionsForUserSpy.mockImplementation(() => {
+      formStore.permissions = require('../../fixtures/permissions.json');
+    });
+    const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
+    fetchFormSpy.mockImplementation(() => {
+      // Set form with assignee column disabled
+      formStore.form = {
+        ...require('../../fixtures/form.json'),
+        enableStatusUpdates: true,
+        showAssigneeInSubmissionsTable: false,
+        schedule: { enabled: false },
+      };
+      return Promise.resolve();
+    });
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    fetchFormFieldsSpy.mockImplementation(() => {
+      formStore.formFields = [];
+    });
+
+    const wrapper = shallowMount(SubmissionsTable, {
+      props: { formId: formId },
+      global: {
+        plugins: [router, pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    // Should NOT include assignee column
+    const headers = wrapper.vm.BASE_HEADERS;
+    const assigneeHeader = headers.find((h) => h.key === 'assignee');
+
+    expect(assigneeHeader).toBeFalsy();
+  });
+  it('filterAssignedToCurrentUser should be passed correctly when enabled', async () => {
+    const getFormRolesForUserSpy = vi.spyOn(formStore, 'getFormRolesForUser');
+    getFormRolesForUserSpy.mockImplementation(() => {
+      formStore.roles = [FormRoleCodes.OWNER];
+    });
+    const getFormPermissionsForUserSpy = vi.spyOn(
+      formStore,
+      'getFormPermissionsForUser'
+    );
+    getFormPermissionsForUserSpy.mockImplementation(() => {
+      formStore.permissions = require('../../fixtures/permissions.json');
+    });
+    const fetchFormSpy = vi.spyOn(formStore, 'fetchForm');
+    fetchFormSpy.mockImplementation(() => {
+      formStore.form = {
+        ...require('../../fixtures/form.json'),
+        enableStatusUpdates: true,
+        showAssigneeInSubmissionsTable: true,
+      };
+      return Promise.resolve();
+    });
+    const fetchFormFieldsSpy = vi.spyOn(formStore, 'fetchFormFields');
+    fetchFormFieldsSpy.mockImplementation(() => {
+      formStore.formFields = ['firstName'];
+    });
+    const fetchSubmissionsSpy = vi.spyOn(formStore, 'fetchSubmissions');
+    fetchSubmissionsSpy.mockImplementation(() => {});
+
+    const wrapper = shallowMount(SubmissionsTable, {
+      props: { formId: formId },
+      global: {
+        plugins: [router, pinia],
+        stubs: STUBS,
+      },
+    });
+
+    await flushPromises();
+
+    // Test with filterAssignedToCurrentUser enabled
+    wrapper.vm.assignedToMeOnly = true;
+
+    fetchSubmissionsSpy.mockReset();
+    await wrapper.vm.getSubmissionData();
+
+    expect(fetchSubmissionsSpy).toBeCalledWith(
+      expect.objectContaining({
+        filterAssignedToCurrentUser: true,
+      })
+    );
+
+    // Test with filterAssignedToCurrentUser disabled
+    wrapper.vm.assignedToMeOnly = false;
+
+    fetchSubmissionsSpy.mockReset();
+    await wrapper.vm.getSubmissionData();
+
+    expect(fetchSubmissionsSpy).toBeCalledWith(
+      expect.objectContaining({
+        filterAssignedToCurrentUser: false,
+      })
+    );
+  });
+
+  it('onBeforeMount sets filter refs from userFormPreferences', async () => {
+    formStore.userFormPreferences = {
+      preferences: {
+        submissionsTable: {
+          filters: {
+            assignedToMeOnly: true,
+            deletedOnly: true,
+            currentUserOnly: false,
+          },
+        },
+      },
+    };
+    vi.spyOn(formStore, 'getFormPreferencesForCurrentUser').mockResolvedValue(
+      {}
+    );
+    vi.spyOn(formStore, 'getFormRolesForUser').mockResolvedValue({});
+    vi.spyOn(formStore, 'getFormPermissionsForUser').mockResolvedValue({});
+    vi.spyOn(formStore, 'fetchForm').mockImplementation(() =>
+      Promise.resolve()
+    );
+    vi.spyOn(formStore, 'fetchFormFields').mockImplementation(() => {});
+
+    const wrapper = shallowMount(SubmissionsTable, {
+      props: { formId },
+      global: { plugins: [router, pinia], stubs: STUBS },
+    });
+    await flushPromises();
+
+    expect(wrapper.vm.assignedToMeOnly).toBe(true);
+    expect(wrapper.vm.deletedOnly).toBe(true);
+    expect(wrapper.vm.currentUserOnly).toBe(false);
+  });
+
+  it('updateFilters passes correct columns and sort to updateFormPreferencesForCurrentUser', async () => {
+    // Setup user preferences with columns and sort
+    formStore.userFormPreferences = {
+      preferences: {
+        submissionsTable: {
+          columns: ['firstName', 'lastName'],
+          sort: { column: 'firstName', order: 'asc' },
+          filters: {},
+        },
+      },
+    };
+
+    vi.spyOn(formStore, 'getFormPreferencesForCurrentUser').mockResolvedValue(
+      {}
+    );
+
+    const updateFormPreferencesForCurrentUser = vi
+      .spyOn(formStore, 'updateFormPreferencesForCurrentUser')
+      .mockResolvedValue({});
+
+    vi.spyOn(formStore, 'fetchForm').mockImplementation(() => {
+      return Promise.resolve();
+    });
+
+    const wrapper = shallowMount(SubmissionsTable, {
+      props: { formId },
+      global: { plugins: [router, pinia], stubs: STUBS },
+    });
+
+    await flushPromises();
+
+    // Set filter refs
+    wrapper.vm.deletedOnly = true;
+    wrapper.vm.assignedToMeOnly = false;
+    wrapper.vm.currentUserOnly = true;
+
+    await wrapper.vm.updateFilters();
+    await flushPromises();
+
+    expect(updateFormPreferencesForCurrentUser).toHaveBeenCalledWith(
+      expect.objectContaining({
+        formId,
+        preferences: expect.objectContaining({
+          submissionsTable: expect.objectContaining({
+            columns: ['firstName', 'lastName'],
+            sort: { column: 'firstName', order: 'asc' },
+            filters: {
+              deletedOnly: true,
+              assignedToMeOnly: false,
+              currentUserOnly: true,
+            },
+          }),
+        }),
+      })
+    );
+  });
+
+  it('updateSort saves sort and returns correct value', async () => {
+    formStore.userFormPreferences = {
+      preferences: {
+        submissionsTable: {
+          columns: ['firstName', 'lastName'],
+          filters: {
+            deletedOnly: true,
+            assignedToMeOnly: false,
+            currentUserOnly: true,
+          },
+          sort: {},
+        },
+      },
+    };
+    vi.spyOn(formStore, 'getFormPreferencesForCurrentUser').mockResolvedValue(
+      {}
+    );
+    const updateFormPreferencesForCurrentUserSpy = vi
+      .spyOn(formStore, 'updateFormPreferencesForCurrentUser')
+      .mockResolvedValue({});
+    vi.spyOn(formStore, 'fetchForm').mockImplementation(() =>
+      Promise.resolve()
+    );
+    vi.spyOn(formStore, 'fetchFormFields').mockImplementation(() => {});
+    vi.spyOn(formStore, 'getFormRolesForUser').mockResolvedValue({});
+    vi.spyOn(formStore, 'getFormPermissionsForUser').mockResolvedValue({});
+
+    const wrapper = shallowMount(SubmissionsTable, {
+      props: { formId },
+      global: { plugins: [router, pinia], stubs: STUBS },
+    });
+    await flushPromises();
+
+    const sortBy = [{ key: 'date', order: 'desc' }];
+    const result = await wrapper.vm.updateSort(sortBy);
+
+    expect(result).toEqual({ column: 'createdAt', order: 'desc' });
+    expect(updateFormPreferencesForCurrentUserSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        formId,
+        preferences: expect.objectContaining({
+          submissionsTable: expect.objectContaining({
+            columns: ['firstName', 'lastName'],
+            sort: { column: 'createdAt', order: 'desc' },
+            filters: {
+              deletedOnly: true,
+              assignedToMeOnly: false,
+              currentUserOnly: true,
+            },
+          }),
+        }),
+      })
+    );
+  });
+
+  it('updateColumns updates columns and calls populateSubmissionsTable', async () => {
+    formStore.userFormPreferences = {
+      preferences: {
+        submissionsTable: {
+          columns: [],
+          filters: {
+            deletedOnly: true,
+            assignedToMeOnly: false,
+            currentUserOnly: true,
+          },
+          sort: { column: 'createdAt', order: 'desc' },
+        },
+      },
+    };
+    vi.spyOn(formStore, 'getFormPreferencesForCurrentUser').mockResolvedValue(
+      {}
+    );
+    const updateFormPreferencesForCurrentUserSpy = vi
+      .spyOn(formStore, 'updateFormPreferencesForCurrentUser')
+      .mockResolvedValue({});
+    vi.spyOn(formStore, 'fetchForm').mockImplementation(() =>
+      Promise.resolve()
+    );
+    vi.spyOn(formStore, 'fetchFormFields').mockImplementation(() => {});
+    vi.spyOn(formStore, 'getFormRolesForUser').mockResolvedValue({});
+    vi.spyOn(formStore, 'getFormPermissionsForUser').mockResolvedValue({});
+
+    const wrapper = shallowMount(SubmissionsTable, {
+      props: { formId },
+      global: { plugins: [router, pinia], stubs: STUBS },
+    });
+    await flushPromises();
+
+    await wrapper.vm.updateColumns(['firstName', 'lastName']);
+    await flushPromises();
+
+    expect(updateFormPreferencesForCurrentUserSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        preferences: expect.objectContaining({
+          submissionsTable: expect.objectContaining({
+            columns: ['firstName', 'lastName'],
+          }),
+        }),
+      })
+    );
+  });
+
+  it('sortToSortBy converts sort object to sortBy array', () => {
+    vi.spyOn(formStore, 'getFormPreferencesForCurrentUser').mockResolvedValue(
+      {}
+    );
+    vi.spyOn(
+      formStore,
+      'updateFormPreferencesForCurrentUser'
+    ).mockResolvedValue({});
+    vi.spyOn(formStore, 'fetchForm').mockImplementation(() =>
+      Promise.resolve()
+    );
+    vi.spyOn(formStore, 'fetchFormFields').mockImplementation(() => {});
+    vi.spyOn(formStore, 'getFormRolesForUser').mockResolvedValue({});
+    vi.spyOn(formStore, 'getFormPermissionsForUser').mockResolvedValue({});
+
+    const wrapper = shallowMount(SubmissionsTable, {
+      props: { formId },
+      global: { plugins: [router, pinia], stubs: STUBS },
+    });
+
+    let sort = { column: 'createdAt', order: 'desc' };
+    let result = wrapper.vm.sortToSortBy(sort);
+    expect(result).toEqual([{ key: 'date', order: 'desc' }]);
+
+    sort = { column: 'createdBy', order: 'asc' };
+    result = wrapper.vm.sortToSortBy(sort);
+    expect(result).toEqual([{ key: 'submitter', order: 'asc' }]);
+
+    sort = { column: 'formSubmissionStatusCode', order: null };
+    result = wrapper.vm.sortToSortBy(sort);
+    expect(result).toEqual([{ key: 'status', order: 'asc' }]);
+
+    sort = { column: 'formSubmissionAssignedToUsernameIdp', order: 'desc' };
+    result = wrapper.vm.sortToSortBy(sort);
+    expect(result).toEqual([{ key: 'assignee', order: 'desc' }]);
+
+    sort = { column: 'randomName', order: 'asc' };
+    result = wrapper.vm.sortToSortBy(sort);
+    expect(result).toEqual([{ key: 'randomName', order: 'asc' }]);
   });
 });

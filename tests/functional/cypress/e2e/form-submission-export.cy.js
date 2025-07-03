@@ -42,26 +42,19 @@ describe("Form Designer", () => {
     cy.viewport(1000, 1100);
     cy.waitForLoad();
     cy.waitForLoad();
-    cy.intercept("GET", `/${depEnv}/api/v1/forms/*`).as("getForm");
+    //cy.intercept("GET", `/${depEnv}/api/v1/forms/*`).as("getForm");
     // Form saving
-    let savedButton = cy.get("[data-cy=saveButton]");
+    let savedButton = cy.get('[data-cy=saveButton]');
     expect(savedButton).to.not.be.null;
-    savedButton.trigger("click");
-    cy.waitForLoad();
-
-    // Go to My forms
-    cy.wait("@getForm").then(() => {
-      let userFormsLinks = cy.get("[data-cy=userFormsLinks]");
-      expect(userFormsLinks).to.not.be.null;
-      userFormsLinks.trigger("click");
-    });
+    savedButton.should('be.visible').trigger('click');
+    cy.wait(2000);
     // Filter the newly created form
     cy.location("search").then((search) => {
       let arr = search.split("=");
       let arrayValues = arr[1].split("&");
       cy.log(arrayValues[0]);
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-      cy.wait(6000);
+      cy.wait(2000);
       //Publish the form
       cy.get(".v-label > span").click();
 
@@ -71,29 +64,22 @@ describe("Form Designer", () => {
       cy.contains("Continue").trigger("click");
       //Submit the form
       cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
-      cy.waitForLoad();
-      cy.waitForLoad();
-      cy.waitForLoad();
+      cy.wait(2000);
       cy.get("button").contains("Submit").should("be.visible");
-      cy.waitForLoad();
-      cy.waitForLoad();
+      cy.wait(2000);
       cy.contains("Text Field").click();
       cy.contains("Text Field").type("Alex");
       //form submission
       cy.get("button").contains("Submit").click();
       cy.waitForLoad();
       cy.get('[data-test="continue-btn-continue"]').click({ force: true });
-      cy.waitForLoad();
-      cy.waitForLoad();
-      cy.waitForLoad();
+      cy.wait(2000);
       cy.get("label").contains("Text Field").should("be.visible");
       cy.get("label").contains("Text Field").should("be.visible");
       cy.location("pathname").should("eq", `/${depEnv}/form/success`);
       cy.contains("h1", "Your form has been submitted successfully");
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
-      cy.waitForLoad();
-      cy.waitForLoad();
-      cy.waitForLoad();
+      cy.wait(2000);
       cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
       cy.wait(2000);
       cy.get("button").contains("Submit").should("be.visible");
@@ -187,7 +173,7 @@ describe("Form Designer", () => {
     cy.waitForLoad();
     cy.get(".mdi-list-box-outline").click();
     cy.wait(2000);
-    cy.get(':nth-child(1) > :nth-child(6) > a > .v-btn').click();
+    cy.get(':nth-child(1) > :nth-child(7) > a > .v-btn').click();
      //print option
     cy.get('.mdi-printer').click();
     cy.get('.flex-container > .v-btn--elevated').should('be.enabled');
@@ -246,8 +232,7 @@ describe("Form Designer", () => {
     cy.get('.mdi-delete').click();
     cy.get('[data-test="continue-btn-continue"]').click();
     cy.get('#logoutButton > .v-btn__content > span').click();
-    })
-        
+    })  
       
   });
 });

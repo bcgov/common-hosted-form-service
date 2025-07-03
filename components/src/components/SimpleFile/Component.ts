@@ -9,7 +9,7 @@ import uniqueName = Utils.uniqueName;
 const ID = 'simplefile';
 const DISPLAY = 'File Upload';
 
-export default class Component extends (ParentComponent as any) {
+export default class Component extends ParentComponent {
   static schema(...extend) {
     return ParentComponent.schema(
       {
@@ -25,7 +25,7 @@ export default class Component extends (ParentComponent as any) {
         webcamSize: 320,
         privateDownload: false,
         imageSize: '200',
-        filePattern: '*',
+        filePattern: '',
         fileMinSize: '0KB',
         fileMaxSize: '1GB',
         uploadOnly: false,
@@ -35,7 +35,7 @@ export default class Component extends (ParentComponent as any) {
     );
   }
 
-  public static editForm = editForm;
+  public static readonly editForm = editForm;
 
   static get builderInfo() {
     return {
@@ -49,7 +49,7 @@ export default class Component extends (ParentComponent as any) {
   }
 
   // we will read these in from runtime
-  private _enabled: boolean;
+  private readonly _enabled: boolean;
 
   constructor(...args) {
     super(...args);
@@ -58,8 +58,8 @@ export default class Component extends (ParentComponent as any) {
       const opts = this.options.componentOptions[ID];
       this.component.options = { ...this.component.options, ...opts };
       // the config.uploads object will say what size our server can handle and what path to use.
-      if (opts.config?.uploads) {
-        const remSlash = (s) => s.replace(/^\s*\/*\s*|\s*\/*\s*$/gm, '');
+      if (opts?.config?.uploads) {
+        const remSlash = (s) => s.replace(/^(\s*\/?\s*)$|^(\s*\/?\s*)$/gm, '');
 
         const cfg = opts.config;
         const uploads = cfg.uploads;
@@ -103,17 +103,55 @@ export default class Component extends (ParentComponent as any) {
           status: 'info',
           message: this.t('Starting upload'),
         };
-
-        // Check file pattern
+        const fileNameLower = file.name.toLowerCase();
+        const systemBlockedExtensions = [
+          '.exe',
+          '.bat',
+          '.scr',
+          '.com',
+          '.pif',
+          '.cmd',
+          '.jar',
+          '.app',
+          '.deb',
+          '.dmg',
+          '.msi',
+          '.run',
+          '.bin',
+          '.sh',
+          '.ps1',
+          '.vbs',
+          '.js',
+          '.html',
+          '.php',
+          '.py',
+          '.rb',
+        ];
         if (
-          this.component.filePattern &&
-          !this.validatePattern(file, this.component.filePattern)
+          systemBlockedExtensions.some((ext) => fileNameLower.endsWith(ext))
         ) {
           fileUpload.status = 'error';
           fileUpload.message = this.t(
-            'File is the wrong type; it must be {{ pattern }}',
+            'This file type is not supported for security reasons.'
+          );
+          this.statuses.push(fileUpload);
+          this.redraw();
+          return; // Stop processing this file immediately
+        }
+
+        // Check file pattern
+        const secureDefaults =
+          '.pdf,.doc,.docx,.txt,.rtf,.odt,.jpg,.jpeg,.png,.gif,.bmp,.svg,.xlsx,.xls,.csv,.ods,.pptx,.ppt,.odp,.mp3,.wav,.mp4,.avi,.mov,.wmv,.json,.xml';
+        const pattern = this.component.filePattern || secureDefaults;
+
+        if (pattern && !this.validatePattern(file, pattern)) {
+          fileUpload.status = 'error';
+          fileUpload.message = this.t(
+            'File type not allowed. Supported: {{ pattern }}',
             {
-              pattern: this.component.filePattern,
+              pattern:
+                this.component.filePattern ||
+                'documents, images, spreadsheets, and media files',
             }
           );
         }

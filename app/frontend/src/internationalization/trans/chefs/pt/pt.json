@@ -168,7 +168,7 @@
     "fieldRequired": "Este campo é obrigatório.",
     "correctDateFormat": "A data deve estar no formato correto. ou seja aaaa-mm-dd",
     "dateDiffMsg": "A data de fechamento do envio deve ser posterior à data de abertura do envio.",
-    "valueMustBeNumber": "O valor deve ser um número. ou seja 1,2,3,5,99",
+    "valueMustBeNumber": "O valor deve ser um número inteiro entre 1 e 999",
     "selectAnOptions": "Selecione pelo menos 1 opção",
     "validInterval": "Este deve ser um intervalo válido.",
     "fieldRequiredAndInterval": "Este campo é obrigatório e deve ser um intervalo.",
@@ -352,7 +352,7 @@
   "adminFormsTable": {
     "showDeletedForms": "Mostrar formulários excluídos",
     "search": "Procurar",
-    "loadingText": "carregando-texto",
+    "loadingText": "Por favor, aguarde",
     "noDataText": "Não há formulários em seu sistema",
     "admin": "Administrador",
     "launch": "Lançar",
@@ -452,8 +452,8 @@
   },
   "formDesigner": {
     "formDesign": "Design de formulário",
-    "exportDesign": "Projeto de exportação",
-    "importDesign": "Design de Importação",
+    "downloadJson": "Baixar JSON",
+    "uploadJson": "Enviar JSON",
     "important": "IMPORTANTE",
     "formDesignInfoA": "Use o botão <strong>SALVAR DESIGN</strong> quando terminar de criar este formulário.",
     "formDesignInfoB": "O botão <strong>ENVIAR</strong> é fornecido para o usuário enviar este formulário e será ativado após ser salvo.",
@@ -1225,6 +1225,6 @@
   },
   "canShareDraft": {
     "canShareMessage": "Você não pode compartilhar o rascunho com usuários que não foram adicionados ao formulário. Entre em contato com o administrador para adicioná-los.",
-    "shareDraftMessage":"Compartilhar rascunho somente com membros da equipe do formulário"
+    "shareDraftMessage": "Compartilhar rascunho somente com membros da equipe do formulário"
   }
 }
