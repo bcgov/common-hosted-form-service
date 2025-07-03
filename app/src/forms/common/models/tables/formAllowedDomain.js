@@ -17,8 +17,8 @@ class FormAllowedDomain extends Timestamps(Model) {
       type: 'object',
       required: ['formId', 'domain', 'createdBy'],
       properties: {
-        id: { type: 'string', format: 'uuid', pattern: Regex.UUID },
-        formId: { type: 'string', format: 'uuid', pattern: Regex.UUID },
+        id: { type: 'string', pattern: Regex.UUID },
+        formId: { type: 'string', pattern: Regex.UUID },
         domain: { type: 'string', minLength: 1, maxLength: 255 },
         ...stamps,
       },

@@ -15,8 +15,8 @@ class FormRequestedDomain extends Model {
       type: 'object',
       required: ['formId', 'domain', 'requestedBy'],
       properties: {
-        id: { type: 'string', format: 'uuid', pattern: Regex.UUID },
-        formId: { type: 'string', format: 'uuid', pattern: Regex.UUID },
+        id: { type: 'string', pattern: Regex.UUID },
+        formId: { type: 'string', pattern: Regex.UUID },
         domain: { type: 'string', minLength: 1, maxLength: 255 },
         status: { type: 'string', enum: ['pending', 'approved', 'denied'] },
         reason: { type: ['string', 'null'] },
