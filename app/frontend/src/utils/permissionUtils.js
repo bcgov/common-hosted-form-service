@@ -84,7 +84,7 @@ export function checkSubmissionUpdate(permissions) {
  *    use the default message.
  */
 function getErrorMessage(options, error) {
-  let errorMessage = undefined;
+  let errorMessage;
   if (options.formId) {
     const status = error?.response?.status;
     if (status === 404 || status === 422) {
@@ -100,34 +100,35 @@ function getErrorMessage(options, error) {
  * @param {Object} options Object containing either a formId or submissionId attribute
  * @param {Object} next The callback function
  */
-export async function preFlightAuth(options = {}, next) {
+export async function preFlightAuth(options, next) {
+  if (!options) options = {};
   const notificationStore = useNotificationStore();
   const idpStore = useIdpStore();
-  // Support lambda functions (Consider making them util functions?)
-  const getIdpHint = (values) => {
-    return Array.isArray(values) && values.length ? values[0] : undefined;
-  };
-  const isValidIdpHint = (value) => idpStore.isValidIdpHint(value);
+  const authStore = useAuthStore();
 
-  // Determine current form or submission idpHint if available
-  let idpHint = undefined;
-  try {
+  function getValidIdpHints(values) {
+    return Array.isArray(values)
+      ? values.filter((v) => idpStore.isValidIdpHint(v))
+      : [];
+  }
+
+  async function fetchIdpHints() {
     if (options.formId) {
       const { data } = await formService.readFormOptions(options.formId);
-      idpHint = getIdpHint(data.idpHints);
-    } else if (options.submissionId) {
+      return getValidIdpHints(data.idpHints);
+    }
+    if (options.submissionId) {
       const { data } = await formService.getSubmissionOptions(
         options.submissionId
       );
-      idpHint = getIdpHint(data.form.idpHints);
-    } else {
-      throw new Error(t('trans.permissionUtils.missingFormIdAndSubmssId'));
+      return getValidIdpHints(data.form.idpHints);
     }
-  } catch (error) {
-    // Halt user with error page, use alertNavigate for "friendly" messages.
+    throw new Error(t('trans.permissionUtils.missingFormIdAndSubmssId'));
+  }
+
+  function handleError(error) {
     const message = getErrorMessage(options, error);
     if (message) {
-      // Don't display the 'An error has occurred...' popup notification.
       notificationStore.alertNavigate(
         NotificationTypes.ERROR.type,
         t('trans.permissionUtils.formNotAvailable')
@@ -137,51 +138,58 @@ export async function preFlightAuth(options = {}, next) {
         text: t('trans.permissionUtils.loadingFormErrMsg'),
         consoleError: {
           text: 'trans.permissionUtils.loadingForm',
-          options: {
-            options,
-            error,
-          },
+          options: { options, error },
         },
       });
       notificationStore.errorNavigate();
     }
-
-    return; // Short circuit this function - no point executing further logic
   }
 
-  const authStore = useAuthStore();
+  function handleAuthenticated(idpHints, userIdp) {
+    if (idpHints.length === 0 || idpHints[0] === IdentityMode.PUBLIC) {
+      next();
+      return;
+    }
+    if (userIdp?.hint && idpHints.includes(userIdp.hint)) {
+      next();
+      return;
+    }
+    const msg = {
+      text: 'trans.permissionUtils.idpHintMsg',
+      options: { idpHint: idpHints.map((x) => x.toUpperCase()) },
+    };
+    notificationStore.addNotification({
+      text: t('trans.permissionUtils.idpHintMsg'),
+      options: { idpHint: idpHints.map((x) => x.toUpperCase()) },
+      consoleError: msg,
+    });
+    notificationStore.errorNavigate(msg);
+  }
+
+  function handleUnauthenticated(idpHints) {
+    if (idpHints.length && idpHints[0] === IdentityMode.PUBLIC) {
+      next();
+    } else if (idpHints.length === 1) {
+      authStore.login(idpHints[0]);
+    } else if (idpHints.length > 1) {
+      authStore.login(idpHints);
+    } else {
+      authStore.login();
+    }
+  }
+
+  let idpHints = [];
+  try {
+    idpHints = await fetchIdpHints();
+  } catch (error) {
+    handleError(error);
+    return;
+  }
 
   if (authStore.authenticated) {
-    const userIdp = authStore.identityProvider;
-
-    if (idpHint === IdentityMode.PUBLIC || !idpHint) {
-      next(); // Permit navigation if public or team form
-    } else if (isValidIdpHint(idpHint) && userIdp?.hint === idpHint) {
-      next(); // Permit navigation if idps match
-    } else {
-      const msg = {
-        text: 'trans.permissionUtils.idpHintMsg',
-        options: {
-          idpHint: idpHint.toUpperCase(),
-        },
-      };
-      notificationStore.addNotification({
-        text: t('trans.permissionUtils.idpHintMsg'),
-        options: {
-          idpHint: idpHint.toUpperCase(),
-        },
-        consoleError: msg,
-      });
-      notificationStore.errorNavigate(msg);
-    }
+    handleAuthenticated(idpHints, authStore.identityProvider);
   } else {
-    if (idpHint === IdentityMode.PUBLIC) {
-      next(); // Permit navigation if public form
-    } else if (isValidIdpHint(idpHint)) {
-      authStore.login(idpHint); // Force login flow with specified idpHint
-    } else {
-      authStore.login(); // Force login flow with user choice
-    }
+    handleUnauthenticated(idpHints);
   }
 }
 

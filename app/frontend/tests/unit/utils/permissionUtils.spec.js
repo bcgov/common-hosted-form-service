@@ -158,7 +158,6 @@ describe('preFlightAuth', () => {
   beforeEach(() => {
     authStore.$reset();
     notificationStore.$reset();
-    //idpStore.$reset();
     mockNext.mockReset();
     addNotificationSpy.mockReset();
     alertNavigateSpy.mockReset();
@@ -319,7 +318,7 @@ describe('preFlightAuth', () => {
       },
     };
     readFormOptionsSpy.mockResolvedValue({
-      data: { idpHints: [primaryIdp.hint] },
+      data: { idpHints: [primaryIdp.code] },
     });
 
     await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
@@ -340,7 +339,7 @@ describe('preFlightAuth', () => {
     const addNotificationSpy = vi.spyOn(notificationStore, 'addNotification');
     const errorNavigateSpy = vi.spyOn(notificationStore, 'errorNavigate');
     readFormOptionsSpy.mockResolvedValue({
-      data: { idpHints: [secondaryIdp.code] },
+      data: { idpHints: [secondaryIdp.idp] },
     });
 
     await permissionUtils.preFlightAuth({ formId: 'f' }, mockNext);
