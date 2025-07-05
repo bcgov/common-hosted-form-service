@@ -2,6 +2,8 @@ const bytes = require('bytes');
 const fs = require('fs-extra');
 const multer = require('multer');
 const os = require('os');
+const path = require('path');
+const crypto = require('crypto');
 const log = require('../../../components/log')(module.filename);
 
 const Problem = require('api-problem');
@@ -20,6 +22,44 @@ let uploader;
  */
 const createBadRequestProblem = (detail) => {
   return new Problem(400, { detail });
+};
+
+/**
+ * Sanitize filename to handle Unicode characters and ensure file system compatibility
+ * @param {string} originalName - The original filename from the upload
+ * @returns {string} - Safe filename for file system storage
+ */
+const sanitizeFilename = (originalName) => {
+  if (!originalName) {
+    return `file_${Date.now()}`;
+  }
+
+  // Get file extension first
+  const ext = path.extname(originalName);
+  const nameWithoutExt = path.basename(originalName, ext);
+
+  // Replace problematic Unicode characters
+  const sanitized = nameWithoutExt
+    // Replace em/en dashes with regular dashes
+    .replace(/[–—]/g, '-')
+    // Replace smart quotes with regular quotes
+    .replace(/[""]/g, '"')
+    .replace(/['']/g, "'")
+    // Remove other problematic Unicode characters
+    .replace(/[^\w\s.-]/g, '')
+    // Replace multiple spaces/special chars with underscores
+    .replace(/[\s]+/g, '_')
+    // Remove leading/trailing underscores and dashes
+    .replace(/^[_-]+|[_-]+$/g, '')
+    .trim();
+
+  // Ensure we have a valid filename
+  const finalName = sanitized || 'file';
+
+  // Add timestamp to prevent collisions
+  const timestamp = Date.now();
+
+  return `${timestamp}_${finalName}${ext}`;
 };
 
 const fileSetup = (options) => {
@@ -55,6 +95,18 @@ const fileUpload = {
     storage = multer.diskStorage({
       destination: function (_req, _file, callback) {
         callback(null, fileUploadsDir);
+      },
+      filename: function (_req, file, callback) {
+        try {
+          // Sanitize the filename to handle Unicode characters
+          const safeFilename = sanitizeFilename(file.originalname);
+          callback(null, safeFilename);
+        } catch (error) {
+          log.error(`Error processing filename: ${file.originalname}`, error);
+          // Fallback to a safe generated name
+          const fallbackName = `file_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
+          callback(null, fallbackName);
+        }
       },
     });
 
