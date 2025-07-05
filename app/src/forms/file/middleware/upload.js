@@ -50,7 +50,8 @@ const sanitizeFilename = (originalName) => {
     // Replace multiple spaces/special chars with underscores
     .replace(/[\s]+/g, '_')
     // Remove leading/trailing underscores and dashes
-    .replace(/^[_-]+|[_-]+$/g, '')
+    .replace(/^[_-]+/, '')
+    .replace(/[_-]+$/, '')
     .trim();
 
   // Ensure we have a valid filename
