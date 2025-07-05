@@ -99,7 +99,8 @@ class ObjectStorageService {
         Key: key,
         Body: fileContent,
         Metadata: {
-          name: fileStorage.originalName,
+          // FIX: Encode Unicode filename for S3 HTTP headers
+          name: encodeURIComponent(fileStorage.originalName),
           id: fileStorage.id,
         },
       };
