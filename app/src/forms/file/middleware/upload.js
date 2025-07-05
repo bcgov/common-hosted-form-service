@@ -23,38 +23,35 @@ let uploader;
 const createBadRequestProblem = (detail) => {
   return new Problem(400, { detail });
 };
-
 /**
- * Sanitize filename to handle Unicode characters and ensure file system compatibility
- * @param {string} originalName - The original filename from the upload
- * @returns {string} - Safe filename for file system storage
+ * Unicode-aware filename sanitization
+ * @param {string} filename - Original filename
+ * @returns {string} - Safe, international-friendly filename
  */
-const sanitizeFilename = (originalName) => {
-  if (!originalName) {
-    return `file_${Date.now()}`;
-  }
+const sanitizeFilename = (filename) => {
+  const ext = path.extname(filename);
+  const nameWithoutExt = path.basename(filename, ext);
 
-  // Get file extension first
-  const ext = path.extname(originalName);
-  const nameWithoutExt = path.basename(originalName, ext);
-
-  // Replace problematic Unicode characters
-  const sanitized = nameWithoutExt
-    // Replace em/en dashes with regular dashes
-    .replace(/[–—]/g, '-')
-    // Replace smart quotes with regular quotes
-    .replace(/[""]/g, '"')
-    .replace(/['']/g, "'")
-    // Remove other problematic Unicode characters
-    .replace(/[^\w\s.-]/g, '')
-    // Replace multiple spaces/special chars with underscores
-    .replace(/[\s]+/g, '_')
-    // Remove leading/trailing underscores and dashes
-    .replace(/^[_-]+/, '')
-    .replace(/[_-]+$/, '')
+  let sanitized = nameWithoutExt
+    .normalize('NFD') // Decompose Unicode (é → e + ´)
+    .replace(/[\u0300-\u036f]/g, '') // Remove diacritical marks (´ ` ^ ~)
+    .normalize('NFC') // Recompose what's left
+    .replace(/[^\p{L}\p{N}_.-]/gu, '_') // Keep letters/numbers in ANY language
     .trim();
 
-  // Ensure we have a valid filename
+  // SAFE: Collapse multiple underscores using string methods
+  while (sanitized.includes('__')) {
+    sanitized = sanitized.replace('__', '_');
+  }
+
+  // SAFE: Remove leading/trailing underscores using while loops
+  while (sanitized.startsWith('_') || sanitized.startsWith('-')) {
+    sanitized = sanitized.slice(1);
+  }
+  while (sanitized.endsWith('_') || sanitized.endsWith('-')) {
+    sanitized = sanitized.slice(0, -1);
+  }
+
   const finalName = sanitized || 'file';
 
   // Add timestamp to prevent collisions
