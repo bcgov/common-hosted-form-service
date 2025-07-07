@@ -144,7 +144,27 @@ describe('Form Designer', () => {
     //verify file uploads to object storage
     cy.get('.col-md-9 > a').should('have.attr', 'ref').and('include', 'fileLink');
     cy.get('div.col-md-2').contains('61.48 kB');
-    cy.waitForLoad();
+    cy.wait(1000);
+    /*
+    //Remove uploaded file
+    cy.get('i[class="fa fa-remove"]').click();
+    
+    //Add invalid type files
+    cy.get('.browse').click();
+    let fileUploadInputFields = cy.get('input[type=file]');
+    cy.get('input[type=file]').should('not.to.be.null');
+    fileUploadInputFields.attachFile('test_files_public.html');
+    //Verify validation message
+    cy.get('div[class="alert alert-danger bg-error"]').contains('This file type is not supported for security reasons.').should('be.visible');
+    cy.get('i[class="fa fa-remove"]').click();
+    cy.wait(1000);
+    //Add valid type file again
+    cy.get('.browse').click();
+    let fileUploadInputFields1 = cy.get('input[type=file]');
+    cy.get('input[type=file]').should('not.to.be.null');
+    fileUploadInputFields1.attachFile('add1.png');
+    cy.wait(1000);
+    */
     //form submission
     cy.get('button').contains('Submit').click();
     //cy.get('[data-test="continue-btn-continue"]').click({force: true});
@@ -152,7 +172,7 @@ describe('Form Designer', () => {
     cy.get('label').contains('Text Field').should('be.visible');
     cy.get('label').contains('Text Field').should('be.visible');
     cy.location('pathname').should('eq', `/${depEnv}/form/success`);
-    
+    cy.wait(1000);
     cy.contains('h1', 'Your form has been submitted successfully');
     //Verify download is disabled for public form
     cy.get('li[class="list-group-item list-group-header hidden-xs hidden-sm"]').should('exist');
@@ -184,6 +204,16 @@ describe('Form Designer', () => {
     cy.get(':nth-child(7) > a > .v-btn').click();
     //Assign status submission
     cy.get('.status-heading > .mdi-chevron-right').click();
+    //Edit submission
+    cy.get('.mdi-pencil').click();
+    //check visibility of cancel button
+    cy.get('.v-col-2 > .v-btn').should('be.visible');
+    cy.get('button').contains('Submit').should('be.visible');
+    //Edit submission data
+     cy.contains('Text Field').click();
+    cy.contains('Text Field').type('Smith');
+    cy.get('button').contains('Submit').click();
+    cy.wait(2000);
     cy.get('[data-test="showStatusList"] > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
     cy.waitForLoad();
     cy.contains('ASSIGNED').should('be.visible');
@@ -240,7 +270,7 @@ describe('Form Designer', () => {
     cy.waitForLoad();
     //cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
     //cy.get('[data-test="continue-btn-continue"]').click();
-    //*/
+    //
     //Delete form after test run
     cy.get('[data-test="canRemoveForm"]').then($el => {
       const delform=$el[0];
