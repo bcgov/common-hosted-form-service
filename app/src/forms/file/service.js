@@ -33,36 +33,6 @@ const BLOCKED_EXTENSIONS = [
   '.aspx',
 ];
 
-const SECURE_EXTENSIONS = [
-  '.pdf',
-  '.doc',
-  '.docx',
-  '.txt',
-  '.rtf',
-  '.odt',
-  '.jpg',
-  '.jpeg',
-  '.png',
-  '.gif',
-  '.bmp',
-  '.svg',
-  '.xlsx',
-  '.xls',
-  '.csv',
-  '.ods',
-  '.pptx',
-  '.ppt',
-  '.odp',
-  '.mp3',
-  '.wav',
-  '.mp4',
-  '.avi',
-  '.mov',
-  '.wmv',
-  '.json',
-  '.xml',
-];
-
 /**
  * CRITICAL SECURITY: File validation at service layer
  */
@@ -76,10 +46,6 @@ const validateFileSecurity = (file) => {
 
   if (BLOCKED_EXTENSIONS.some((ext) => fileName.endsWith(ext))) {
     throw new Error(`File type ${fileExtension} is not allowed for security reasons`);
-  }
-
-  if (!SECURE_EXTENSIONS.includes(fileExtension)) {
-    throw new Error(`File type ${fileExtension} is not in allowed types`);
   }
 
   if (fileName.includes('..') || fileName.includes('/') || fileName.includes('\\')) {
