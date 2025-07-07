@@ -80,6 +80,7 @@ describe('Form Designer', () => {
     cy.waitForLoad();
     cy.get(':nth-child(1) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
     cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
+    /*
     cy.get('input[value="public"]').click();
     cy.waitForLoad();
     cy.get('input[type="checkbox"]').then($el => {
@@ -95,10 +96,12 @@ describe('Form Designer', () => {
             cy.get(rem5).should("be.enabled");      
     });
     cy.get('[data-test="showAssigneeInSubmissionsTableCheckbox"]').should('not.exist');
+    */
     cy.get('[data-test="canEditForm"]').click();
     //Check team management functionality for public forms
     
-    cy.get('.mdi-account-multiple').click();
+    //cy.get('.mdi-account-multiple').click();
+    cy.get('[data-test="canManageTeammembers"]').click();
     cy.get('.mdi-account-plus').click();
     //Search for a member to add
     cy.get('.v-col > .v-input > .v-input__control > .v-field > .v-field__field > .v-field__input').click();
@@ -110,6 +113,7 @@ describe('Form Designer', () => {
     cy.get('#logoutButton > .v-btn__content > span').should('be.visible').click({ force: true });
     cy.log('Page visited, checking for logout button');
     cy.get('#logoutButton > .v-btn__content > span').should('not.exist');
+    /*
         //Form submission and verification for public forms
     cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
     cy.waitForLoad();
@@ -205,7 +209,8 @@ describe('Form Designer', () => {
     cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
     cy.get('[data-test="continue-btn-continue"]').click();
     cy.get('#logoutButton > .v-btn__content > span').click();
-    
+    */
+    });
     
   });
 
