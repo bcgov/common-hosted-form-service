@@ -140,18 +140,14 @@ export default class Component extends ParentComponent {
         }
 
         // Check file pattern
-        const secureDefaults =
-          '.pdf,.doc,.docx,.txt,.rtf,.odt,.jpg,.jpeg,.png,.gif,.bmp,.svg,.xlsx,.xls,.csv,.ods,.pptx,.ppt,.odp,.mp3,.wav,.mp4,.avi,.mov,.wmv,.json,.xml';
-        const pattern = this.component.filePattern || secureDefaults;
+        const pattern = this.component.filePattern ?? undefined;
 
         if (pattern && !this.validatePattern(file, pattern)) {
           fileUpload.status = 'error';
           fileUpload.message = this.t(
             'File type not allowed. Supported: {{ pattern }}',
             {
-              pattern:
-                this.component.filePattern ||
-                'documents, images, spreadsheets, and media files',
+              pattern: this.component.filePattern,
             }
           );
         }
