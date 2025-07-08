@@ -18,6 +18,7 @@ routes.param('externalApiId', validateParameter.validateExternalAPIId);
 routes.param('formId', validateParameter.validateFormId);
 routes.param('formVersionId', validateParameter.validateFormVersionId);
 routes.param('userId', validateParameter.validateUserId);
+routes.param('formEmbedDomainId', validateParameter.validateFormEmbedDomainId);
 
 //
 // Forms
@@ -103,4 +104,31 @@ routes.get('/formcomponents/proactivehelp/list', async (req, res, next) => {
   await controller.listFormComponentsProactiveHelp(req, res, next);
 });
 
+//
+// Form Embedding
+//
+
+routes.get('/embed', async (req, res, next) => {
+  await controller.getFormEmbedDomains(req, res, next);
+});
+
+// Get history for a specific domain
+routes.get('/embed/:formEmbedDomainId/history', async (req, res, next) => {
+  await controller.getFormEmbedDomainHistory(req, res, next);
+});
+
+// Review a domain request (approve/deny)
+routes.put('/embed/:formEmbedDomainId/review', async (req, res, next) => {
+  await controller.reviewFormEmbedDomainRequest(req, res, next);
+});
+
+// Revoke an approved domain
+routes.put('/embed/:formEmbedDomainId/revoke', async (req, res, next) => {
+  await controller.revokeFormEmbedDomain(req, res, next);
+});
+
+// Remove a domain request
+routes.delete('/embed/:formEmbedDomainId', async (req, res, next) => {
+  await controller.removeFormEmbedDomainRequest(req, res, next);
+});
 module.exports = routes;

@@ -1,5 +1,5 @@
 const { ExternalAPIStatuses } = require('../common/constants');
-const { Form, FormVersion, User, UserFormAccess, FormComponentsProactiveHelp, AdminExternalAPI, ExternalAPI, ExternalAPIStatusCode } = require('../common/models');
+const { Form, FormVersion, User, UserFormAccess, FormComponentsProactiveHelp, AdminExternalAPI, ExternalAPI, ExternalAPIStatusCode, FormEmbedDomain, FormEmbedDomainHistory, FormEmbedDomainVw, FormEmbedDomainHistoryVw } = require('../common/models');
 const { queryUtils, typeUtils } = require('../common/utils');
 const moment = require('moment');
 const uuid = require('uuid');
@@ -420,6 +420,178 @@ const service = {
       }, Object.create(null));
     }
     return {};
+  },
+
+  //
+  // Form Embedding
+  //
+
+  /**
+   * @function getFormEmbedDomains
+   * Gets all requested domains with pagination and filtering
+   * @param {Object} params Query parameters
+   * @returns {Promise<Object>} Object with results and total count
+   */
+  getFormEmbedDomains: async (params) => {
+    const query = FormEmbedDomainVw.query()
+      .modify('filterMinistry', params.ministry)
+      .modify('filterFormName', params.formName)
+      .modify('filterDomain', params.domain)
+      .modify('filterSearch', params.search)
+      .modify('orderByRequestedAt');
+
+    if (params.paginationEnabled) {
+      return await service._processPagination(query, {
+        page: parseInt(params.page),
+        itemsPerPage: parseInt(params.itemsPerPage),
+        totalItems: params.totalItems,
+        search: params.search,
+        searchEnabled: params.searchEnabled,
+      });
+    }
+    return query;
+  },
+
+  /**
+   * @function getFormEmbedDomainHistory
+   * Gets history for a specific domain
+   * @param {string} domainId The domain uuid
+   * @returns {Promise<Array>} Domain history records
+   */
+  getFormEmbedDomainHistory: async (domainId) => {
+    return FormEmbedDomainHistoryVw.query()
+      .where('domainId', domainId)
+      .orderBy('statusChangedAt', 'desc');
+  },
+
+  /**
+   * @function reviewFormEmbedDomainRequest
+   * Reviews a domain request (approve/deny)
+   * @param {string} domainId The domain uuid
+   * @param {Object} data The review data
+   * @param {Object} currentUser The current user
+   * @returns {Promise<Object>} The updated domain
+   */
+  reviewFormEmbedDomainRequest: async (domainId, data, currentUser) => {
+    const domain = await FormEmbedDomain.query().findById(domainId);
+    if (!domain) {
+      throw new Problem(404, 'Domain request not found');
+    }
+    
+    if (domain.status !== 'pending') {
+      throw new Problem(409, 'Request has already been reviewed');
+    }
+    
+    const newStatus = data.approved ? 'approved' : 'denied';
+    
+    let trx;
+    try {
+      trx = await FormEmbedDomain.startTransaction();
+      
+      // Add history record
+      await FormEmbedDomainHistory.query(trx).insert({
+        id: uuid.v4(),
+        formEmbedDomainId: domainId,
+        previousStatus: domain.status,
+        newStatus: newStatus,
+        reason: data.reason || null,
+        createdBy: currentUser.usernameIdp,
+        updatedBy: currentUser.usernameIdp
+      });
+      
+      // Update domain status
+      const updated = await FormEmbedDomain.query(trx)
+        .patchAndFetchById(domainId, {
+          status: newStatus,
+          reviewedAt: new Date().toISOString(),
+          reviewedBy: currentUser.usernameIdp,
+          updatedBy: currentUser.usernameIdp
+        });
+      
+      await trx.commit();
+      return updated;
+    } catch (error) {
+      if (trx) await trx.rollback();
+      throw error;
+    }
+  },
+
+  /**
+   * @function revokeFormEmbedDomain
+   * Revokes an approved domain
+   * @param {string} domainId The domain uuid
+   * @param {Object} data The revoke data
+   * @param {Object} currentUser The current user
+   * @returns {Promise<Object>} The updated domain
+   */
+  revokeFormEmbedDomain: async (domainId, data, currentUser) => {
+    const domain = await FormEmbedDomain.query().findById(domainId);
+    if (!domain) {
+      throw new Problem(404, 'Domain not found');
+    }
+    
+    if (domain.status !== 'approved') {
+      throw new Problem(409, 'Only approved domains can be revoked');
+    }
+    
+    let trx;
+    try {
+      trx = await FormEmbedDomain.startTransaction();
+      
+      // Add history record
+      await FormEmbedDomainHistory.query(trx).insert({
+        id: uuid.v4(),
+        formEmbedDomainId: domainId,
+        previousStatus: domain.status,
+        newStatus: 'denied',
+        reason: data.reason || 'Domain access revoked',
+        createdBy: currentUser.usernameIdp,
+        updatedBy: currentUser.usernameIdp
+      });
+      
+      // Update domain status
+      const updated = await FormEmbedDomain.query(trx)
+        .patchAndFetchById(domainId, {
+          status: 'denied',
+          reviewedAt: new Date().toISOString(),
+          reviewedBy: currentUser.usernameIdp,
+          updatedBy: currentUser.usernameIdp
+        });
+      
+      await trx.commit();
+      return updated;
+    } catch (error) {
+      if (trx) await trx.rollback();
+      throw error;
+    }
+  },
+
+  /**
+   * @function removeFormEmbedDomain
+   * Permanently removes a domain
+   * @param {string} domainId The domain uuid
+   * @returns {Promise<number>} Number of deleted records
+   */
+  removeFormEmbedDomain: async (domainId) => {
+    let trx;
+    try {
+      trx = await FormEmbedDomain.startTransaction();
+      
+      // Delete history first
+      await FormEmbedDomainHistory.query(trx)
+        .where('formEmbedDomainId', domainId)
+        .delete();
+      
+      // Then delete the domain
+      const deleted = await FormEmbedDomain.query(trx)
+        .deleteById(domainId);
+      
+      await trx.commit();
+      return deleted;
+    } catch (error) {
+      if (trx) await trx.rollback();
+      throw error;
+    }
   },
 };
 

@@ -169,4 +169,91 @@ module.exports = {
       next(error);
     }
   },
+
+  // Form Embedding
+
+  /**
+   * @function getFormEmbedDomains
+   * Gets all requested domains with filtering and pagination
+   * @param {object} req Express request object
+   * @param {object} res Express response object
+   * @param {function} next Express next middleware function
+   * @returns {function} Express middleware function
+   */
+  getFormEmbedDomains: async (req, res, next) => {
+    try {
+      const response = await service.getFormEmbedDomains(req.query);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  /**
+   * @function getFormEmbedDomainHistory
+   * Gets history for a specific domain
+   * @param {object} req Express request object
+   * @param {object} res Express response object
+   * @param {function} next Express next middleware function
+   * @returns {function} Express middleware function
+   */
+  getFormEmbedDomainHistory: async (req, res, next) => {
+    try {
+      const response = await service.getFormEmbedDomainHistory(req.params.domainId);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  /**
+   * @function reviewFormEmbedDomainRequest
+   * Reviews a domain request (approve/deny)
+   * @param {object} req Express request object
+   * @param {object} res Express response object
+   * @param {function} next Express next middleware function
+   * @returns {function} Express middleware function
+   */
+  reviewFormEmbedDomainRequest: async (req, res, next) => {
+    try {
+      const response = await service.reviewFormEmbedDomainRequest(req.params.domainId, req.body, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  /**
+   * @function revokeFormEmbedDomain
+   * Revokes an approved domain
+   * @param {object} req Express request object
+   * @param {object} res Express response object
+   * @param {function} next Express next middleware function
+   * @returns {function} Express middleware function
+   */
+  revokeFormEmbedDomain: async (req, res, next) => {
+    try {
+      const response = await service.revokeFormEmbedDomain(req.params.domainId, req.body, req.currentUser);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  /**
+   * @function removeFormEmbedDomainRequest
+   * Permanently removes a domain request
+   * @param {object} req Express request object
+   * @param {object} res Express response object
+   * @param {function} next Express next middleware function
+   * @returns {function} Express middleware function
+   */
+  removeFormEmbedDomainRequest: async (req, res, next) => {
+    try {
+      await service.removeFormEmbedDomain(req.params.domainId);
+      res.status(204).send();
+    } catch (error) {
+      next(error);
+    }
+  },
 };

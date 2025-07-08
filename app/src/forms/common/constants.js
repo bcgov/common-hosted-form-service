@@ -112,4 +112,10 @@ module.exports = Object.freeze({
     APPROVED: 'APPROVED',
     DENIED: 'DENIED',
   },
+  FormEmbedDomainStatuses: {
+    SUBMITTED: 'SUBMITTED',
+    PENDING: 'PENDING',
+    APPROVED: 'APPROVED',
+    DENIED: 'DENIED',
+  },
 });

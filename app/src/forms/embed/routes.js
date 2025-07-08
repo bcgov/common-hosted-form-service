@@ -7,8 +7,7 @@ const validateParameter = require('../common/middleware/validateParameter');
 routes.use(currentUser);
 
 routes.param('formId', validateParameter.validateFormId);
-routes.param('requestId', validateParameter.validateRequestId);
-routes.param('domainId', validateParameter.validateDomainId);
+routes.param('formEmbedDomainId', validateParameter.validateFormEmbedDomainId);
 
 // List allowed domains for a form
 routes.get('/:formId/embed/allowed', hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
@@ -25,13 +24,13 @@ routes.post('/:formId/embed/request', hasFormPermissions([P.FORM_UPDATE]), async
   await controller.requestDomain(req, res, next);
 });
 
-// Review a domain request (admin only)
-routes.put('/:formId/embed/request/:requestId', hasFormPermissions([P.FORM_UPDATE]), async (req, res, next) => {
-  await controller.reviewDomainRequest(req, res, next);
+// Update a domain request
+routes.put('/:formId/embed/request', hasFormPermissions([P.FORM_UPDATE]), async (req, res, next) => {
+  await controller.updateDomainRequest(req, res, next);
 });
 
 // Remove a domain from allowed list
-routes.delete('/:formId/embed/allowed/:domainId', hasFormPermissions([P.FORM_UPDATE]), async (req, res, next) => {
+routes.delete('/:formId/embed/allowed/:formEmbedDomainId', hasFormPermissions([P.FORM_UPDATE]), async (req, res, next) => {
   await controller.removeDomain(req, res, next);
 });
 

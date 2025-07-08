@@ -306,34 +306,16 @@ const validateFormEncryptionKeyId = async (req, _res, next, formEncryptionKeyId)
 };
 
 /**
- * Validates that the :requestId route parameter exists and is a UUID.
+ * Validates that the :formEmbedDomainId route parameter exists and is a UUID.
  *
  * @param {*} _req the Express object representing the HTTP request - unused.
  * @param {*} _res the Express object representing the HTTP response - unused.
  * @param {*} next the Express chaining function.
- * @param {*} requestId the :requestId value from the route.
+ * @param {*} formEmbedDomainId the :formEmbedDomainId value from the route.
  */
-const validateRequestId = async (_req, _res, next, requestId) => {
+const validateFormEmbedDomainId = async (_req, _res, next, formEmbedDomainId) => {
   try {
-    _validateUuid(requestId, 'requestId');
-
-    next();
-  } catch (error) {
-    next(error);
-  }
-};
-
-/**
- * Validates that the :domainId route parameter exists and is a UUID.
- *
- * @param {*} _req the Express object representing the HTTP request - unused.
- * @param {*} _res the Express object representing the HTTP response - unused.
- * @param {*} next the Express chaining function.
- * @param {*} domainId the :domainId value from the route.
- */
-const validateDomainId = async (_req, _res, next, domainId) => {
-  try {
-    _validateUuid(domainId, 'domainId');
+    _validateUuid(formEmbedDomainId, 'formEmbedDomainId');
 
     next();
   } catch (error) {
@@ -354,6 +336,5 @@ module.exports = {
   validateRoleCode,
   validateUserId,
   validateFormEncryptionKeyId,
-  validateRequestId,
-  validateDomainId,
+  validateFormEmbedDomainId,
 };

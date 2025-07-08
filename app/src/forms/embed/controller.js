@@ -28,9 +28,9 @@ module.exports = {
     }
   },
 
-  reviewDomainRequest: async (req, res, next) => {
+  updateDomainRequest: async (req, res, next) => {
     try {
-      const response = await service.reviewDomainRequest(req.params.requestId, req.body, req.currentUser);
+      const response = await service.updateDomainRequest(req.params.requestId, req.body, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);
