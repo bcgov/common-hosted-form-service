@@ -15,7 +15,6 @@ const {
   FormEmbedDomainHistoryVw,
 } = require('../common/models');
 const { queryUtils, typeUtils } = require('../common/utils');
-const { FormEmbedDomainStatuses } = require('../common/constants');
 const moment = require('moment');
 const uuid = require('uuid');
 const service = {

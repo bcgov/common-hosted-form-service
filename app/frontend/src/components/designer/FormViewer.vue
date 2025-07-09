@@ -89,7 +89,6 @@ const form = ref({});
 const formDataEntered = ref(false);
 const formElement = ref(undefined);
 const formSchema = ref({});
-const isFormEmbedded = ref(false);
 const isFormScheduleExpired = ref(false);
 const isLateSubmissionAllowed = ref(false);
 const isLoading = ref(false);
@@ -199,8 +198,7 @@ onMounted(async () => {
   }
   window.addEventListener('beforeunload', beforeWindowUnload);
 
-  isFormEmbedded.value = isFormEmbedded();
-  if (isFormEmbedded.value === true) {
+  if (isFormEmbedded()) {
     initFormEmbed(properties.formId);
   }
 
