@@ -2583,25 +2583,32 @@ describe('_setAllowSubmitterToUploadFile', () => {
     expect(service._setAllowSubmitterToUploadFile(formData)).toBe(false);
   });
 
-  it('returns false if identityProviders is missing', () => {
+  it('returns true if identityProviders is missing (team protected) and allow is true', () => {
     const formData = {
       allowSubmitterToUploadFile: true,
+    };
+    expect(service._setAllowSubmitterToUploadFile(formData)).toBe(true);
+  });
+
+  it('returns false if identityProviders is missing (team protected) and allow is false', () => {
+    const formData = {
+      allowSubmitterToUploadFile: false,
     };
     expect(service._setAllowSubmitterToUploadFile(formData)).toBe(false);
   });
 
-  it('returns false if identityProviders is empty', () => {
+  it('returns true if identityProviders is empty and allow is true', () => {
     const formData = {
       identityProviders: [],
       allowSubmitterToUploadFile: true,
     };
-    expect(service._setAllowSubmitterToUploadFile(formData)).toBe(false);
+    expect(service._setAllowSubmitterToUploadFile(formData)).toBe(true);
   });
 
-  it('returns false if identityProviders is not array', () => {
+  it('returns false if identityProviders is empty and allow is false', () => {
     const formData = {
-      identityProviders: { code: 'idir' },
-      allowSubmitterToUploadFile: true,
+      identityProviders: [],
+      allowSubmitterToUploadFile: false,
     };
     expect(service._setAllowSubmitterToUploadFile(formData)).toBe(false);
   });

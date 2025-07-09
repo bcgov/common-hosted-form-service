@@ -129,11 +129,9 @@ const service = {
     return formData.showAssigneeInSubmissionsTable === true && formData.enableStatusUpdates;
   },
   _setAllowSubmitterToUploadFile: (formData) => {
-    if (formData.identityProviders && Array.isArray(formData.identityProviders) && formData.identityProviders.length) {
-      const isProtectedForm = formData.identityProviders.every((idp) => idp.code !== 'public');
-      return isProtectedForm && !falsey(formData.allowSubmitterToUploadFile);
-    }
-    return false;
+    // do not allow submitter to upload files if the form is public, or if allowSubmitterToUploadFile is false.
+    const isPublicForm = formData.identityProviders && Array.isArray(formData.identityProviders) && formData.identityProviders.some((idp) => idp.code === 'public');
+    return !isPublicForm && !falsey(formData.allowSubmitterToUploadFile);
   },
   _findFileIds: (schema, data) => {
     const findFiles = (currentData) => {
