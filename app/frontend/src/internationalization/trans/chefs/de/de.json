@@ -1046,7 +1046,9 @@
       "updateAPIsErrMsg": "Fehler beim Aktualisieren der externen API.",
       "updateAPIsConsErrMsg": "Fehler beim Aktualisieren der externen API: {error}",
       "getAPICodesErrMsg": "Fehler beim Abrufen der Liste mit externen API-Statuscodes.",
-      "getAPICodesConsErrMsg": "Fehler beim Abrufen der Liste mit externen API-Statuscodes: {error}"
+      "getAPICodesConsErrMsg": "Fehler beim Abrufen der Liste mit externen API-Statuscodes: {error}",
+      "getFormEmbedDomainStatusCodesErr": "Abrufen der Domain-Statuscodes fehlgeschlagen.",
+      "getFormEmbedDomainStatusCodesConsErr": "Abrufen der Domain-Statuscodes fehlgeschlagen: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Fehler beim Laden der E-Mail-Vorlagen für {formId}: {error}",
@@ -1271,7 +1273,9 @@
     "removeDomainErr": "Domain konnte nicht entfernt werden.",
     "removeDomainConsErr": "Fehler beim Entfernen der Domain: {error}",
     "getDomainHistoryErr": "Domain-Verlauf konnte nicht abgerufen werden.",
-    "getDomainHistoryConsErr": "Fehler beim Abrufen des Domain-Verlaufs: {error}"
+    "getDomainHistoryConsErr": "Fehler beim Abrufen des Domain-Verlaufs: {error}",
+    "getStatusCodesErr": "Abrufen der Domain-Statuscodes fehlgeschlagen.",
+    "getStatusCodesConsErr": "Abrufen der Domain-Statuscodes fehlgeschlagen: {error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

@@ -1046,7 +1046,9 @@
       "updateAPIsErrMsg": "ਬਾਹਰੀ API ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ।",
       "updateAPIsConsErrMsg": "ਬਾਹਰੀ API ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
       "getAPICodesErrMsg": "ਬਾਹਰੀ API ਸਥਿਤੀ ਕੋਡ ਸੂਚੀ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ।",
-      "getAPICodesConsErrMsg": "ਬਾਹਰੀ API ਸਥਿਤੀ ਕੋਡ ਸੂਚੀ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}"
+      "getAPICodesConsErrMsg": "ਬਾਹਰੀ API ਸਥਿਤੀ ਕੋਡ ਸੂਚੀ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
+      "getFormEmbedDomainStatusCodesErr": "ਡੋਮੇਨ ਸਥਿਤੀ ਕੋਡਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ।",
+      "getFormEmbedDomainStatusCodesConsErr": "ਡੋਮੇਨ ਸਥਿਤੀ ਕੋਡਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "{formId} ਲਈ ਈਮੇਲ ਟੈਮਪਲੇਟ ਲੋਡ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ: {error}",
@@ -1271,7 +1273,9 @@
     "removeDomainErr": "ਡੋਮੇਨ ਹਟਾਉਣ ਵਿੱਚ ਅਸਫਲ।",
     "removeDomainConsErr": "ਡੋਮੇਨ ਹਟਾਉਣ ਵਿੱਚ ਗਲਤੀ: {error}",
     "getDomainHistoryErr": "ਡੋਮੇਨ ਇਤਿਹਾਸ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ।",
-    "getDomainHistoryConsErr": "ਡੋਮੇਨ ਇਤਿਹਾਸ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਗਲਤੀ: {error}"
+    "getDomainHistoryConsErr": "ਡੋਮੇਨ ਇਤਿਹਾਸ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਗਲਤੀ: {error}",
+    "getStatusCodesErr": "ਡੋਮੇਨ ਸਥਿਤੀ ਕੋਡਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ।",
+    "getStatusCodesConsErr": "ਡੋਮੇਨ ਸਥਿਤੀ ਕੋਡਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ: {error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

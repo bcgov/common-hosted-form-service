@@ -10,6 +10,11 @@ routes.param('formId', validateParameter.validateFormId);
 routes.param('formEmbedDomainId', validateParameter.validateFormEmbedDomainId);
 
 // List domains for a form
+routes.get('/:formId/embed/statusCodes', hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+  await controller.getFormEmbedDomainStatusCodes(req, res, next);
+});
+
+// List domains for a form
 routes.get('/:formId/embed', hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
   await controller.listDomains(req, res, next);
 });

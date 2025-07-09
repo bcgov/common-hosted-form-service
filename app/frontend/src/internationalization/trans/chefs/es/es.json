@@ -1046,7 +1046,9 @@
       "updateAPIsErrMsg": "Error al actualizar la API externa.",
       "updateAPIsConsErrMsg": "Error al actualizar la API externa: {error}",
       "getAPICodesErrMsg": "Error al obtener la lista de códigos de estado de API externas.",
-      "getAPICodesConsErrMsg": "Error al obtener la lista de códigos de estado de API externas: {error}"
+      "getAPICodesConsErrMsg": "Error al obtener la lista de códigos de estado de API externas: {error}",
+      "getFormEmbedDomainStatusCodesErr": "Error al obtener los códigos de estado del dominio.",
+      "getFormEmbedDomainStatusCodesConsErr": "Error al obtener los códigos de estado del dominio: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Error al cargar plantillas de correo electrónico para {formId}: {error}",
@@ -1271,7 +1273,9 @@
     "removeDomainErr": "No se pudo eliminar el dominio.",
     "removeDomainConsErr": "Error al eliminar el dominio: {error}",
     "getDomainHistoryErr": "No se pudo obtener el historial del dominio.",
-    "getDomainHistoryConsErr": "No se pudo obtener el historial del dominio: {error}"
+    "getDomainHistoryConsErr": "No se pudo obtener el historial del dominio: {error}",
+    "getStatusCodesErr": "Error al obtener los códigos de estado del dominio.",
+    "getStatusCodesConsErr": "Error al obtener los códigos de estado del dominio: {error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

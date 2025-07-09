@@ -174,6 +174,23 @@ module.exports = {
 
   /**
    * @function getFormEmbedDomains
+   * Gets all requested form embed domain status codes
+   * @param {object} req Express request object
+   * @param {object} res Express response object
+   * @param {function} next Express next middleware function
+   * @returns {function} Express middleware function
+   */
+  getFormEmbedDomainStatusCodes: async (req, res, next) => {
+    try {
+      const response = await service.getFormEmbedDomainStatusCodes();
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  /**
+   * @function getFormEmbedDomains
    * Gets all requested domains with filtering and pagination
    * @param {object} req Express request object
    * @param {object} res Express response object

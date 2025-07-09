@@ -1046,7 +1046,9 @@
       "updateAPIsErrMsg": "외부 API를 업데이트하는 중 오류가 발생했습니다.",
       "updateAPIsConsErrMsg": "외부 API 업데이트 중 오류 발생: {error}",
       "getAPICodesErrMsg": "외부 API 상태 코드 목록을 가져오는 중 오류가 발생했습니다.",
-      "getAPICodesConsErrMsg": "외부 API 상태 코드 목록을 가져오는 중 오류가 발생했습니다: {error}"
+      "getAPICodesConsErrMsg": "외부 API 상태 코드 목록을 가져오는 중 오류가 발생했습니다: {error}",
+      "getFormEmbedDomainStatusCodesErr": "도메인 상태 코드를 가져오는 데 실패했습니다.",
+      "getFormEmbedDomainStatusCodesConsErr": "도메인 상태 코드를 가져오는 데 실패했습니다: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "{formId}에 대한 이메일 템플릿을 로드하는 중에 오류가 발생했습니다. {error}",
@@ -1271,7 +1273,9 @@
     "removeDomainErr": "도메인 제거에 실패했습니다.",
     "removeDomainConsErr": "도메인 제거 중 오류: {error}",
     "getDomainHistoryErr": "도메인 기록을 가져오는데 실패했습니다.",
-    "getDomainHistoryConsErr": "도메인 기록 가져오기 오류: {error}"
+    "getDomainHistoryConsErr": "도메인 기록 가져오기 오류: {error}",
+    "getStatusCodesErr": "도메인 상태 코드를 가져오는 데 실패했습니다.",
+    "getStatusCodesConsErr": "도메인 상태 코드를 가져오는 데 실패했습니다: {error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

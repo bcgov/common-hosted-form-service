@@ -1046,7 +1046,9 @@
       "updateAPIsErrMsg": "Ошибка обновления внешнего API.",
       "updateAPIsConsErrMsg": "Ошибка обновления внешнего API: {error}",
       "getAPICodesErrMsg": "Ошибка при получении списка кодов состояния внешнего API.",
-      "getAPICodesConsErrMsg": "Ошибка при получении списка кодов состояния внешнего API: {error}"
+      "getAPICodesConsErrMsg": "Ошибка при получении списка кодов состояния внешнего API: {error}",
+      "getFormEmbedDomainStatusCodesErr": "Не удалось получить коды статуса домена.",
+      "getFormEmbedDomainStatusCodesConsErr": "Не удалось получить коды статуса домена: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Ошибка загрузки шаблонов электронной почты для {formId}: {error}.",
@@ -1271,7 +1273,9 @@
     "removeDomainErr": "Не удалось удалить домен.",
     "removeDomainConsErr": "Ошибка при удалении домена: {error}",
     "getDomainHistoryErr": "Не удалось получить историю домена.",
-    "getDomainHistoryConsErr": "Не удалось получить историю домена: {error}"
+    "getDomainHistoryConsErr": "Не удалось получить историю домена: {error}",
+    "getStatusCodesErr": "Не удалось получить коды статуса домена.",
+    "getStatusCodesConsErr": "Не удалось получить коды статуса домена: {error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

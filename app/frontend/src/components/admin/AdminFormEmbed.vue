@@ -37,7 +37,11 @@ const domainHistoryMap = ref(new Map());
 const adminStore = useAdminStore();
 const formStore = useFormStore();
 
-const { formEmbedDomainsList, formEmbedDomainsTotal } = storeToRefs(adminStore);
+const {
+  formEmbedDomainsList,
+  formEmbedDomainsTotal,
+  formEmbedDomainStatusCodes,
+} = storeToRefs(adminStore);
 const { isRTL } = storeToRefs(formStore);
 
 const headers = computed(() => [
@@ -94,6 +98,10 @@ const items = computed(() =>
   }))
 );
 
+const statusCodes = computed(() =>
+  formEmbedDomainStatusCodes.value.map((code) => code.code)
+);
+
 async function getRequests() {
   loading.value = true;
   adminStore.getFormEmbedDomains({
@@ -108,6 +116,7 @@ async function getRequests() {
 
 onMounted(async () => {
   loading.value = true;
+  await adminStore.getFormEmbedDomainStatusCodes();
   await getRequests();
   debounceInput.value = _.debounce(async () => {
     forceTableRefresh.value += 1;
@@ -414,7 +423,7 @@ async function handleExpand(item, isExpanded, toggleExpand) {
 
         <v-select
           v-model="editDialog.item.status"
-          :items="['PENDING', 'APPROVED', 'DENIED']"
+          :items="statusCodes"
           item-title="status"
           item-value="status"
           :label="$t('trans.adminFormEmbed.status')"

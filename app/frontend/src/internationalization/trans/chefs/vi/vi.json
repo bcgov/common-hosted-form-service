@@ -1044,7 +1044,9 @@
       "updateAPIsErrMsg": "Lỗi khi cập nhật API bên ngoài.",
       "updateAPIsConsErrMsg": "Lỗi khi cập nhật API bên ngoài: {error}",
       "getAPICodesErrMsg": "Có lỗi khi tải danh sách Mã trạng thái API bên ngoài.",
-      "getAPICodesConsErrMsg": "Lỗi khi tải danh sách Mã trạng thái API bên ngoài: {error}"
+      "getAPICodesConsErrMsg": "Lỗi khi tải danh sách Mã trạng thái API bên ngoài: {error}",
+      "getFormEmbedDomainStatusCodesErr": "Không thể lấy các mã trạng thái tên miền.",
+      "getFormEmbedDomainStatusCodesConsErr": "Không thể lấy các mã trạng thái tên miền: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Lỗi tải mẫu email cho {formId}: {error}",
@@ -1269,7 +1271,9 @@
     "removeDomainErr": "Không thể xóa tên miền.",
     "removeDomainConsErr": "Lỗi khi xóa tên miền: {error}",
     "getDomainHistoryErr": "Không thể lấy lịch sử tên miền.",
-    "getDomainHistoryConsErr": "Lỗi khi lấy lịch sử tên miền: {error}"
+    "getDomainHistoryConsErr": "Lỗi khi lấy lịch sử tên miền: {error}",
+    "getStatusCodesErr": "Không thể lấy các mã trạng thái tên miền.",
+    "getStatusCodesConsErr": "Không thể lấy các mã trạng thái tên miền: {error}"
   },
   "download": {
     "chefsDataExport": "Xuất dữ liệu CHEFS",

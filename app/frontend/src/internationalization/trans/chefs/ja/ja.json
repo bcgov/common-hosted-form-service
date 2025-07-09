@@ -1046,7 +1046,9 @@
       "updateAPIsErrMsg": "外部 API の更新中にエラーが発生しました。",
       "updateAPIsConsErrMsg": "外部 API の更新中にエラーが発生しました: {error}",
       "getAPICodesErrMsg": "外部 API ステータス コード リストの取得中にエラーが発生しました。",
-      "getAPICodesConsErrMsg": "外部 API ステータス コード リストの取得中にエラーが発生しました: {error}"
+      "getAPICodesConsErrMsg": "外部 API ステータス コード リストの取得中にエラーが発生しました: {error}",
+      "getFormEmbedDomainStatusCodesErr": "ドメインステータスコードの取得に失敗しました。",
+      "getFormEmbedDomainStatusCodesConsErr": "ドメインステータスコードの取得に失敗しました: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "{formId} の電子メール テンプレートの読み込みエラー: {error}",
@@ -1271,7 +1273,9 @@
     "removeDomainErr": "ドメインの削除に失敗しました。",
     "removeDomainConsErr": "ドメイン削除中にエラー: {error}",
     "getDomainHistoryErr": "ドメイン履歴の取得に失敗しました。",
-    "getDomainHistoryConsErr": "ドメイン履歴の取得中にエラー: {error}"
+    "getDomainHistoryConsErr": "ドメイン履歴の取得中にエラー: {error}",
+    "getStatusCodesErr": "ドメインステータスコードの取得に失敗しました。",
+    "getStatusCodesConsErr": "ドメインステータスコードの取得に失敗しました: {error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

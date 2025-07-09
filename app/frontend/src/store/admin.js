@@ -345,6 +345,24 @@ export const useAdminStore = defineStore('admin', {
     //
     // External APIs
     //
+    async getFormEmbedDomainStatusCodes() {
+      try {
+        this.formEmbedDomainStatusCodes = [];
+        const response = await adminService.getFormEmbedDomainStatusCodes();
+        this.formEmbedDomainStatusCodes = response.data;
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.admin.getFormEmbedDomainStatusCodesErr'),
+          consoleError: i18n.t(
+            'trans.store.admin.getFormEmbedDomainStatusCodesConsErrMsg',
+            {
+              error: error,
+            }
+          ),
+        });
+      }
+    },
     async getFormEmbedDomains(params) {
       try {
         // Get all external apis

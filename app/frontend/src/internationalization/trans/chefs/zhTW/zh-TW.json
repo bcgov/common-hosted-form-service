@@ -1046,7 +1046,9 @@
       "updateAPIsErrMsg": "更新外部 API 時發生錯誤。",
       "updateAPIsConsErrMsg": "更新外部 API 時發生錯誤：{error}",
       "getAPICodesErrMsg": "取得外部 API 狀態代碼清單時發生錯誤。",
-      "getAPICodesConsErrMsg": "取得外部 API 狀態代碼清單時發生錯誤：{error}"
+      "getAPICodesConsErrMsg": "取得外部 API 狀態代碼清單時發生錯誤：{error}",
+      "getFormEmbedDomainStatusCodesErr": "獲取網域狀態碼失敗。",
+      "getFormEmbedDomainStatusCodesConsErr": "獲取網域狀態碼失敗：{error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "加載 {formId} 的電子郵件模板時出錯：{error}",
@@ -1271,7 +1273,9 @@
     "removeDomainErr": "移除網域失敗。",
     "removeDomainConsErr": "移除網域時出錯：{error}",
     "getDomainHistoryErr": "獲取網域歷史記錄失敗。",
-    "getDomainHistoryConsErr": "獲取網域歷史記錄時出錯：{error}"
+    "getDomainHistoryConsErr": "獲取網域歷史記錄時出錯：{error}",
+    "getStatusCodesErr": "獲取網域狀態碼失敗。",
+    "getStatusCodesConsErr": "獲取網域狀態碼失敗：{error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

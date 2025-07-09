@@ -239,6 +239,16 @@ export default {
   //
   // Form Embedding calls
   //
+
+  /**
+   * @function getFormEmbedDomainStatusCodes
+   * List all domain statuses
+   * @returns {Promise} An axios response
+   */
+  getFormEmbedDomainStatusCodes() {
+    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.EMBED}/statusCodes`);
+  },
+
   /**
    * @function getFormEmbedDomains
    * Read all the form embed domains in the DB
@@ -254,6 +264,7 @@ export default {
       params: params,
     });
   },
+
   /**
    * @function getFormEmbedDomainHistory
    * Read all the form embed domain history for a domain in the DB

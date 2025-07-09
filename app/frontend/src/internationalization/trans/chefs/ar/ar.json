@@ -1046,7 +1046,9 @@
       "updateAPIsErrMsg": "خطأ في تحديث واجهة برمجة التطبيقات الخارجية.",
       "updateAPIsConsErrMsg": "خطأ في تحديث واجهة برمجة التطبيقات الخارجية: {error}",
       "getAPICodesErrMsg": "حدث خطأ أثناء جلب قائمة رموز حالة واجهة برمجة التطبيقات الخارجية.",
-      "getAPICodesConsErrMsg": "حدث خطأ أثناء جلب قائمة رموز حالة واجهة برمجة التطبيقات الخارجية: {error}"
+      "getAPICodesConsErrMsg": "حدث خطأ أثناء جلب قائمة رموز حالة واجهة برمجة التطبيقات الخارجية: {error}",
+      "getFormEmbedDomainStatusCodesErr": "فشل في جلب رموز حالة النطاق.",
+      "getFormEmbedDomainStatusCodesConsErr": "فشل في جلب رموز حالة النطاق: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "خطأ في تحميل قوالب البريد الإلكتروني لـ {formId}: {error}",
@@ -1271,7 +1273,9 @@
     "removeDomainErr": "فشل في إزالة النطاق.",
     "removeDomainConsErr": "خطأ في إزالة النطاق: {error}",
     "getDomainHistoryErr": "فشل في جلب تاريخ النطاق.",
-    "getDomainHistoryConsErr": "فشل في جلب تاريخ النطاق: {error}"
+    "getDomainHistoryConsErr": "فشل في جلب تاريخ النطاق: {error}",
+    "getStatusCodesErr": "فشل في جلب رموز حالة النطاق.",
+    "getStatusCodesConsErr": "فشل في جلب رموز حالة النطاق: {error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

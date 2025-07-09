@@ -108,6 +108,11 @@ routes.get('/formcomponents/proactivehelp/list', async (req, res, next) => {
 // Form Embedding
 //
 
+// List domains for a form
+routes.get('/embed/statusCodes', async (req, res, next) => {
+  await controller.getFormEmbedDomainStatusCodes(req, res, next);
+});
+
 routes.get('/embed', async (req, res, next) => {
   await controller.getFormEmbedDomains(req, res, next);
 });

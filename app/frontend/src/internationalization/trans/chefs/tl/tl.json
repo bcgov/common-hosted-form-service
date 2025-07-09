@@ -1044,7 +1044,9 @@
       "updateAPIsErrMsg": "Error sa pag-update ng External API.",
       "updateAPIsConsErrMsg": "Error sa pag-update ng External API: {error}",
       "getAPICodesErrMsg": "Error sa pagkuha ng listahan ng External API Status Codes.",
-      "getAPICodesConsErrMsg": "Error sa pagkuha ng listahan ng External API Status Codes: {error}"
+      "getAPICodesConsErrMsg": "Error sa pagkuha ng listahan ng External API Status Codes: {error}",
+      "getFormEmbedDomainStatusCodesErr": "Hindi makuha ang mga code ng katayuan ng domain.",
+      "getFormEmbedDomainStatusCodesConsErr": "Hindi makuha ang mga code ng katayuan ng domain: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Error sa paglo-load ng mga template ng email para sa {formId}: {error}",
@@ -1269,7 +1271,9 @@
     "removeDomainErr": "Hindi matanggal ang domain.",
     "removeDomainConsErr": "Error sa pagtanggal ng domain: {error}",
     "getDomainHistoryErr": "Hindi makuha ang kasaysayan ng domain.",
-    "getDomainHistoryConsErr": "Hindi nakuha ang kasaysayan ng domain: {error}"
+    "getDomainHistoryConsErr": "Hindi nakuha ang kasaysayan ng domain: {error}",
+    "getStatusCodesErr": "Hindi makuha ang mga code ng katayuan ng domain.",
+    "getStatusCodesConsErr": "Hindi makuha ang mga code ng katayuan ng domain: {error}"
   },
   "download": {
     "chefsDataExport": "Pag-export ng Data ng CHEFS",

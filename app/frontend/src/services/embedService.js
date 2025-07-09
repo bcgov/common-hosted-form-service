@@ -3,6 +3,16 @@ import { ApiRoutes } from '~/utils/constants';
 
 export default {
   /**
+   * @function getFormEmbedDomainStatusCodes
+   * List all domain statuses
+   * @param {string} formId The form uuid
+   * @returns {Promise} An axios response
+   */
+  getFormEmbedDomainStatusCodes(formId) {
+    return appAxios().get(`${ApiRoutes.FORMS}/${formId}/embed/statusCodes`);
+  },
+
+  /**
    * @function listDomains
    * List all domains for a form
    * @param {string} formId The form uuid

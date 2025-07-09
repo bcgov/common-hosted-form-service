@@ -1046,7 +1046,9 @@
       "updateAPIsErrMsg": "बाह्य API अद्यतन करने में त्रुटि.",
       "updateAPIsConsErrMsg": "बाहरी API अपडेट करते समय त्रुटि: {error}",
       "getAPICodesErrMsg": "बाह्य API स्थिति कोड सूची प्राप्त करने में त्रुटि हुई.",
-      "getAPICodesConsErrMsg": "बाहरी API स्थिति कोड सूची प्राप्त करने में त्रुटि: {त्रुटि}"
+      "getAPICodesConsErrMsg": "बाहरी API स्थिति कोड सूची प्राप्त करने में त्रुटि: {त्रुटि}",
+      "getFormEmbedDomainStatusCodesErr": "डोमेन स्थिति कोड प्राप्त करने में विफल।",
+      "getFormEmbedDomainStatusCodesConsErr": "डोमेन स्थिति कोड प्राप्त करने में विफल: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "{formId} के लिए ईमेल टेम्पलेट लोड करने में त्रुटि: {error}",
@@ -1271,7 +1273,9 @@
     "removeDomainErr": "डोमेन हटाने में विफल।",
     "removeDomainConsErr": "डोमेन हटाने में त्रुटि: {error}",
     "getDomainHistoryErr": "डोमेन इतिहास प्राप्त करने में विफल।",
-    "getDomainHistoryConsErr": "डोमेन इतिहास प्राप्त करने में त्रुटि: {error}"
+    "getDomainHistoryConsErr": "डोमेन इतिहास प्राप्त करने में त्रुटि: {error}",
+    "getStatusCodesErr": "डोमेन स्थिति कोड प्राप्त करने में विफल।",
+    "getStatusCodesConsErr": "डोमेन स्थिति कोड प्राप्त करने में विफल: {error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

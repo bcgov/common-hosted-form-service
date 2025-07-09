@@ -1046,7 +1046,9 @@
       "updateAPIsErrMsg": "更新外部 API 时出错。",
       "updateAPIsConsErrMsg": "更新外部 API 时出错：{error}",
       "getAPICodesErrMsg": "获取外部 API 状态代码列表时出错。",
-      "getAPICodesConsErrMsg": "获取外部 API 状态代码列表时出错：{error}"
+      "getAPICodesConsErrMsg": "获取外部 API 状态代码列表时出错：{error}",
+      "getFormEmbedDomainStatusCodesErr": "获取域名状态代码失败。",
+      "getFormEmbedDomainStatusCodesConsErr": "获取域名状态代码失败：{error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "加载 {formId} 的电子邮件模板时出错：{error}",
@@ -1271,7 +1273,9 @@
     "removeDomainErr": "移除域名失败。",
     "removeDomainConsErr": "移除域名时出错：{error}",
     "getDomainHistoryErr": "获取域名历史记录失败。",
-    "getDomainHistoryConsErr": "获取域名历史记录时出错：{error}"
+    "getDomainHistoryConsErr": "获取域名历史记录时出错：{error}",
+    "getStatusCodesErr": "获取域名状态代码失败。",
+    "getStatusCodesConsErr": "获取域名状态代码失败：{error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

@@ -1,10 +1,19 @@
 const Problem = require('api-problem');
 const uuid = require('uuid');
-const { FormEmbedDomain, FormEmbedDomainHistory, FormEmbedDomainHistoryVw } = require('../common/models');
+const { FormEmbedDomain, FormEmbedDomainStatusCode, FormEmbedDomainHistory, FormEmbedDomainHistoryVw } = require('../common/models');
 const { FormEmbedDomainStatuses } = require('../common/constants');
 const log = require('../../components/log');
 
 const service = {
+  /**
+   * @function getFormEmbedDomainStatusCodes
+   * Gets all form embed domain status codes
+   * @returns {Promise} An array of requested domains
+   */
+  getFormEmbedDomainStatusCodes: async () => {
+    return FormEmbedDomainStatusCode.query();
+  },
+
   /**
    * @function listDomains
    * Gets all domains for a form

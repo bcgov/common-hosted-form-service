@@ -32,6 +32,7 @@ module.exports = {
   FormEventStreamConfig: require('./tables/formEventStreamConfig'),
   FormEmbedDomain: require('./tables/formEmbedDomain'),
   FormEmbedDomainHistory: require('./tables/formEmbedDomainHistory'),
+  FormEmbedDomainStatusCode: require('./tables/formEmbedDomainStatusCode'),
 
   // Views
   FormSubmissionUserPermissions: require('./views/formSubmissionUserPermissions'),

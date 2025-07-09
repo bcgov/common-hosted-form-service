@@ -23,6 +23,7 @@ const submitting = ref(false);
 const valid = ref(false);
 const newDomain = ref('');
 const domains = ref([]);
+const domainStatuses = ref([]);
 const domainHistoryMap = ref(new Map());
 
 const formStore = useFormStore();
@@ -72,8 +73,25 @@ const domainRules = ref([
 ]);
 
 onMounted(() => {
+  fetchDomainStatuses();
   fetchData();
 });
+
+async function fetchDomainStatuses() {
+  try {
+    const response = await embedService.getFormEmbedDomainStatusCodes(
+      properties.formId
+    );
+    domainStatuses.value = response.data;
+  } catch (error) {
+    notificationStore.addNotification({
+      text: t('trans.formEmbed.getStatusCodesErr'),
+      consoleError: t('trans.formEmbed.getStatusCodesConsErr', {
+        error: error,
+      }),
+    });
+  }
+}
 
 async function fetchData() {
   try {
@@ -105,7 +123,7 @@ async function requestDomain() {
     });
 
     notificationStore.addNotification({
-      text: 'Domain request submitted successfully.',
+      text: t('trans.formEmbed.requestDomainSuccess'),
       ...NotificationTypes.SUCCESS,
     });
 
@@ -145,16 +163,27 @@ async function removeDomain(domain) {
 }
 
 function getStatusColour(status) {
-  switch (status) {
-    case 'APPROVED':
-      return 'success';
-    case 'DENIED':
-      return 'error';
-    case 'PENDING':
-      return 'warning';
-    default:
-      return 'grey';
+  // Define a default mapping that can be used before the API data is loaded
+  const defaultMapping = {
+    APPROVED: 'success',
+    DENIED: 'error',
+    PENDING: 'warning',
+    SUBMITTED: 'info',
+  };
+
+  // If we have statuses from the API, find the matching status
+  if (Array.isArray(domainStatuses.value) && domainStatuses.value.length > 0) {
+    // Find the status in the array
+    const statusObj = domainStatuses.value.find((s) => s.code === status);
+
+    // If found, map it to a color based on the code
+    if (statusObj) {
+      return defaultMapping[statusObj.code] || 'grey';
+    }
   }
+
+  // Fall back to the default mapping if API data isn't available yet
+  return defaultMapping[status] || 'grey';
 }
 
 async function handleExpand(item, isExpanded, toggleExpand) {

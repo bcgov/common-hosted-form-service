@@ -11,6 +11,7 @@ const {
   ExternalAPIStatusCode,
   FormEmbedDomain,
   FormEmbedDomainHistory,
+  FormEmbedDomainStatusCode,
   FormEmbedDomainVw,
   FormEmbedDomainHistoryVw,
 } = require('../common/models');
@@ -439,6 +440,14 @@ const service = {
   //
   // Form Embedding
   //
+  /**
+   * @function getFormEmbedDomainStatusCodes
+   * Gets all form embed domain status codes
+   * @returns {Promise} An array of requested domains
+   */
+  getFormEmbedDomainStatusCodes: async () => {
+    return FormEmbedDomainStatusCode.query();
+  },
 
   /**
    * @function getFormEmbedDomains

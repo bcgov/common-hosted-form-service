@@ -1046,7 +1046,9 @@
       "updateAPIsErrMsg": "Errore durante l'aggiornamento dell'API esterna.",
       "updateAPIsConsErrMsg": "Errore durante l'aggiornamento dell'API esterna: {error}",
       "getAPICodesErrMsg": "Errore durante il recupero dell'elenco dei codici di stato dell'API esterna.",
-      "getAPICodesConsErrMsg": "Errore durante il recupero dell'elenco dei codici di stato dell'API esterna: {error}"
+      "getAPICodesConsErrMsg": "Errore durante il recupero dell'elenco dei codici di stato dell'API esterna: {error}",
+      "getFormEmbedDomainStatusCodesErr": "Impossibile recuperare i codici di stato del dominio.",
+      "getFormEmbedDomainStatusCodesConsErr": "Impossibile recuperare i codici di stato del dominio: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Errore durante il caricamento dei modelli di email per {formId}: {error}",
@@ -1271,7 +1273,9 @@
     "removeDomainErr": "Impossibile rimuovere il dominio.",
     "removeDomainConsErr": "Errore nella rimozione del dominio: {error}",
     "getDomainHistoryErr": "Impossibile recuperare la cronologia del dominio.",
-    "getDomainHistoryConsErr": "Errore nel recupero della cronologia del dominio: {error}"
+    "getDomainHistoryConsErr": "Errore nel recupero della cronologia del dominio: {error}",
+    "getStatusCodesErr": "Impossibile recuperare i codici di stato del dominio.",
+    "getStatusCodesConsErr": "Impossibile recuperare i codici di stato del dominio: {error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

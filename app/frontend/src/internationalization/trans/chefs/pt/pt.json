@@ -1046,7 +1046,9 @@
       "updateAPIsErrMsg": "Erro ao atualizar API externa.",
       "updateAPIsConsErrMsg": "Erro ao atualizar API externa: {error}",
       "getAPICodesErrMsg": "Erro ao buscar a lista de códigos de status da API externa.",
-      "getAPICodesConsErrMsg": "Erro ao buscar a lista de códigos de status da API externa: {error}"
+      "getAPICodesConsErrMsg": "Erro ao buscar a lista de códigos de status da API externa: {error}",
+      "getFormEmbedDomainStatusCodesErr": "Falha ao buscar códigos de status de domínio.",
+      "getFormEmbedDomainStatusCodesConsErr": "Falha ao buscar códigos de status de domínio: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Erro ao carregar modelos de e-mail para {formId}: {error}",
@@ -1271,7 +1273,9 @@
     "removeDomainErr": "Falha ao remover domínio.",
     "removeDomainConsErr": "Erro ao remover domínio: {error}",
     "getDomainHistoryErr": "Falha ao buscar histórico do domínio.",
-    "getDomainHistoryConsErr": "Falha ao buscar histórico do domínio: {error}"
+    "getDomainHistoryConsErr": "Falha ao buscar histórico do domínio: {error}",
+    "getStatusCodesErr": "Falha ao buscar códigos de status de domínio.",
+    "getStatusCodesConsErr": "Falha ao buscar códigos de status de domínio: {error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

@@ -1046,7 +1046,9 @@
       "updateAPIsErrMsg": "خطا در به‌روزرسانی API خارجی.",
       "updateAPIsConsErrMsg": "خطا در به‌روزرسانی API خارجی: {error}",
       "getAPICodesErrMsg": "خطا در واکشی لیست کدهای وضعیت API خارجی.",
-      "getAPICodesConsErrMsg": "خطا در واکشی لیست کدهای وضعیت API خارجی: {error}"
+      "getAPICodesConsErrMsg": "خطا در واکشی لیست کدهای وضعیت API خارجی: {error}",
+      "getFormEmbedDomainStatusCodesErr": "دریافت کدهای وضعیت دامنه ناموفق بود.",
+      "getFormEmbedDomainStatusCodesConsErr": "دریافت کدهای وضعیت دامنه ناموفق بود: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "خطا در بارگیری الگوهای ایمیل برای {formId}: {error}",
@@ -1271,7 +1273,9 @@
     "removeDomainErr": "حذف دامنه ناموفق بود.",
     "removeDomainConsErr": "خطا در حذف دامنه: {error}",
     "getDomainHistoryErr": "دریافت تاریخچه دامنه ناموفق بود.",
-    "getDomainHistoryConsErr": "خطا در دریافت تاریخچه دامنه: {error}"
+    "getDomainHistoryConsErr": "خطا در دریافت تاریخچه دامنه: {error}",
+    "getStatusCodesErr": "دریافت کدهای وضعیت دامنه ناموفق بود.",
+    "getStatusCodesConsErr": "دریافت کدهای وضعیت دامنه ناموفق بود: {error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."
