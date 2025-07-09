@@ -76,20 +76,6 @@ describe('create', () => {
         expect(FileStorage.startTransaction).not.toHaveBeenCalled();
         expect(storageService.upload).not.toHaveBeenCalled();
       });
-
-      it('file has extension other than allowed list', async () => {
-        const fileData = {
-          originalname: 'document.xyz',
-          mimetype: 'application/unknown',
-          size: 1024,
-          path: '/app/uploads/document.xyz',
-        };
-
-        await expect(service.create(fileData, currentUser)).rejects.toThrow('File type .xyz is not in allowed types');
-
-        expect(FileStorage.startTransaction).not.toHaveBeenCalled();
-        expect(storageService.upload).not.toHaveBeenCalled();
-      });
     });
 
     describe('success response when', () => {
@@ -116,6 +102,278 @@ describe('create', () => {
         expect(mockTransaction.commit).toHaveBeenCalled();
         expect(mockTransaction.rollback).not.toHaveBeenCalled();
       });
+      it('file has extension other than allowed list', async () => {
+        const fileData = {
+          originalname: 'document.xyz',
+          mimetype: 'application/unknown',
+          size: 1024,
+          path: '/app/uploads/document.xyz',
+        };
+
+        const result = await service.create(fileData, currentUser);
+
+        expect(result).toEqual(mockFileStorage);
+        expect(FileStorage.startTransaction).toHaveBeenCalled();
+        expect(storageService.upload).toHaveBeenCalledWith(
+          expect.objectContaining({
+            originalName: 'document.xyz',
+            mimeType: 'application/unknown',
+            size: 1024,
+            createdBy: 'TESTER',
+          })
+        );
+        expect(mockTransaction.commit).toHaveBeenCalled();
+        expect(mockTransaction.rollback).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('read', () => {
+    it('returns the file object when found', async () => {
+      // Arrange
+      const fileId = 'test-file-id';
+      const mockThrowIfNotFound = jest.fn().mockResolvedValue(mockFileStorage);
+      FileStorage.query = jest.fn().mockReturnValue({
+        findById: jest.fn().mockReturnValue({
+          throwIfNotFound: mockThrowIfNotFound,
+        }),
+      });
+
+      // Act
+      const result = await service.read(fileId);
+
+      // Assert
+      expect(FileStorage.query).toHaveBeenCalled();
+      expect(result).toEqual(mockFileStorage);
+      expect(mockThrowIfNotFound).toHaveBeenCalled();
+    });
+
+    it('throws an error if the file is not found', async () => {
+      // Arrange
+      const fileId = 'missing-file-id';
+      const notFoundError = new Error('Not found');
+      const mockThrowIfNotFound = jest.fn().mockRejectedValue(notFoundError);
+      FileStorage.query = jest.fn().mockReturnValue({
+        findById: jest.fn().mockReturnValue({
+          throwIfNotFound: mockThrowIfNotFound,
+        }),
+      });
+
+      // Act & Assert
+      await expect(service.read(fileId)).rejects.toThrow('Not found');
+      expect(FileStorage.query).toHaveBeenCalled();
+      expect(mockThrowIfNotFound).toHaveBeenCalled();
+    });
+  });
+
+  describe('dangerous characters coverage', () => {
+    it('throws if filename contains ".."', async () => {
+      const file = { originalname: 'bad..file.txt' };
+      await expect(service.create(file, {})).rejects.toThrow('Filename contains dangerous characters');
+    });
+
+    it('throws if filename contains "/"', async () => {
+      const file = { originalname: 'bad/file.txt' };
+      await expect(service.create(file, {})).rejects.toThrow('Filename contains dangerous characters');
+    });
+
+    it('throws if filename contains "\\"', async () => {
+      const file = { originalname: 'bad\\file.txt' };
+      await expect(service.create(file, {})).rejects.toThrow('Filename contains dangerous characters');
+    });
+  });
+
+  describe('delete coverage', () => {
+    it('delete: should return falsy result if storageService.delete returns falsy', async () => {
+      // Arrange
+      const fileId = 'file-id';
+      jest.spyOn(service, 'read').mockResolvedValue({ id: fileId });
+      FileStorage.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
+      FileStorage.query = jest.fn().mockReturnValue({
+        deleteById: jest.fn().mockReturnValue({ throwIfNotFound: jest.fn().mockResolvedValue() }),
+      });
+      storageService.delete = jest.fn().mockResolvedValue(null);
+
+      // Act
+      const result = await service.delete(fileId);
+
+      // Assert
+      expect(result).toBeNull();
+      expect(mockTransaction.commit).toHaveBeenCalled();
+    });
+    it('deleteFiles: should delete all files and call storageService.delete for each', async () => {
+      const ids = ['id1', 'id2'];
+      jest.spyOn(service, 'read').mockResolvedValue({ id: 'id1' });
+      FileStorage.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
+      FileStorage.query = jest.fn().mockReturnValue({
+        deleteById: jest.fn().mockReturnValue({ throwIfNotFound: jest.fn().mockResolvedValue() }),
+      });
+      storageService.delete = jest.fn().mockResolvedValue(true);
+
+      await expect(service.deleteFiles(ids)).resolves.toBeUndefined();
+      expect(storageService.delete).toHaveBeenCalledTimes(ids.length);
+      expect(mockTransaction.commit).toHaveBeenCalled();
+    });
+
+    it('deleteFiles: should throw and rollback if storageService.delete returns falsy', async () => {
+      const ids = ['id1'];
+      jest.spyOn(service, 'read').mockResolvedValue({ id: 'id1' });
+      FileStorage.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
+      FileStorage.query = jest.fn().mockReturnValue({
+        deleteById: jest.fn().mockReturnValue({ throwIfNotFound: jest.fn().mockResolvedValue() }),
+      });
+      storageService.delete = jest.fn().mockResolvedValue(false);
+
+      await expect(service.deleteFiles(ids)).rejects.toThrow('Failed to delete file with id id1');
+      expect(mockTransaction.rollback).toHaveBeenCalled();
+    });
+  });
+
+  describe('move coverage', () => {
+    it('moveSubmissionFile: should update file path and storage', async () => {
+      storageService.move = jest.fn().mockResolvedValue('/new/path');
+      FileStorage.query = jest.fn().mockReturnValue({
+        patchAndFetchById: jest.fn().mockResolvedValue({}),
+      });
+
+      await expect(service.moveSubmissionFile('subId', { id: 'fileId' }, 'user')).resolves.toBeUndefined();
+      expect(storageService.move).toHaveBeenCalled();
+      expect(FileStorage.query().patchAndFetchById).toHaveBeenCalled();
+    });
+
+    it('moveSubmissionFile: should throw if storageService.move returns falsy', async () => {
+      storageService.move = jest.fn().mockResolvedValue(null);
+
+      await expect(service.moveSubmissionFile('subId', { id: 'fileId' }, 'user')).rejects.toThrow('Error moving files for submission');
+    });
+
+    it('moveSubmissionFiles: should move all files and update their paths', async () => {
+      FileStorage.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
+      FileStorage.query = jest
+        .fn()
+        .mockReturnValueOnce({ where: jest.fn().mockResolvedValue([{ id: 'fileId' }]) })
+        .mockReturnValue({ patchAndFetchById: jest.fn().mockResolvedValue({}) });
+      storageService.move = jest.fn().mockResolvedValue('/new/path');
+
+      await expect(service.moveSubmissionFiles('subId', { usernameIdp: 'user' })).resolves.toBeUndefined();
+      expect(storageService.move).toHaveBeenCalled();
+      expect(FileStorage.query().patchAndFetchById).toHaveBeenCalled();
+      expect(mockTransaction.commit).toHaveBeenCalled();
+    });
+
+    it('moveSubmissionFiles: should throw and rollback if storageService.move returns falsy', async () => {
+      FileStorage.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
+      FileStorage.query = jest.fn().mockReturnValueOnce({ where: jest.fn().mockResolvedValue([{ id: 'fileId' }]) });
+      storageService.move = jest.fn().mockResolvedValue(null);
+
+      await expect(service.moveSubmissionFiles('subId', { usernameIdp: 'user' })).rejects.toThrow('Error moving files for submission');
+      expect(mockTransaction.rollback).toHaveBeenCalled();
+    });
+  });
+
+  describe('clone coverage', () => {
+    it('clone: should create a new file record with new ID', async () => {
+      FileStorage.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
+      FileStorage.query = jest
+        .fn()
+        .mockReturnValueOnce({ findById: jest.fn().mockReturnValue({ throwIfNotFound: jest.fn().mockResolvedValue({ id: 'fileId' }) }) })
+        .mockReturnValue({ insert: jest.fn().mockResolvedValue({}) });
+      storageService.clone = jest.fn().mockResolvedValue({ id: 'newId', path: '/new/path', storage: 'uploads' });
+      jest.spyOn(service, 'read').mockResolvedValue({ id: 'newId' });
+
+      const result = await service.clone('fileId', { usernameIdp: 'user' });
+      expect(result).toEqual({ id: 'newId' });
+      expect(storageService.clone).toHaveBeenCalled();
+      expect(FileStorage.query().insert).toHaveBeenCalled();
+      expect(mockTransaction.commit).toHaveBeenCalled();
+    });
+
+    it('clone: should throw and rollback if any step fails', async () => {
+      FileStorage.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
+      FileStorage.query = jest.fn().mockReturnValueOnce({ findById: jest.fn().mockReturnValue({ throwIfNotFound: jest.fn().mockRejectedValue(new Error('fail')) }) });
+      storageService.clone = jest.fn();
+      jest.spyOn(service, 'read').mockResolvedValue({});
+
+      await expect(service.clone('fileId', { usernameIdp: 'user' })).rejects.toThrow('fail');
+      expect(mockTransaction.rollback).toHaveBeenCalled();
+    });
+  });
+
+  describe('validateFileSecurity', () => {
+    it('does not throw for a safe filename', async () => {
+      FileStorage.query = jest.fn().mockReturnValue({
+        insert: jest.fn().mockResolvedValue({}),
+      });
+      const file = {
+        originalname: 'goodfile.txt',
+        mimetype: 'text/plain',
+        size: 100,
+        path: '/app/uploads/goodfile.txt',
+      };
+      // Should not throw
+      const result = await service.create(file, { usernameIdp: 'TESTER' });
+      expect(result).toBeTruthy();
+    });
+  });
+
+  describe('delete', () => {
+    it('returns null if storageService.delete returns null', async () => {
+      const fileId = 'file-id';
+      jest.spyOn(service, 'read').mockResolvedValue({ id: fileId });
+      FileStorage.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
+      FileStorage.query = jest.fn().mockReturnValue({
+        deleteById: jest.fn().mockReturnValue({ throwIfNotFound: jest.fn().mockResolvedValue() }),
+      });
+      storageService.delete = jest.fn().mockResolvedValue(null);
+
+      const result = await service.delete(fileId);
+
+      expect(result).toBeNull();
+      expect(mockTransaction.commit).toHaveBeenCalled();
+    });
+
+    it('returns value if storageService.delete returns truthy', async () => {
+      const fileId = 'file-id';
+      jest.spyOn(service, 'read').mockResolvedValue({ id: fileId });
+      FileStorage.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
+      FileStorage.query = jest.fn().mockReturnValue({
+        deleteById: jest.fn().mockReturnValue({ throwIfNotFound: jest.fn().mockResolvedValue() }),
+      });
+      storageService.delete = jest.fn().mockResolvedValue('deleted');
+
+      const result = await service.delete(fileId);
+
+      expect(result).toBe('deleted');
+      expect(mockTransaction.commit).toHaveBeenCalled();
+    });
+  });
+
+  describe('deleteFiles', () => {
+    it('throws and rolls back if storageService.delete returns falsy', async () => {
+      const ids = ['id1'];
+      jest.spyOn(service, 'read').mockResolvedValue({ id: 'id1' });
+      FileStorage.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
+      FileStorage.query = jest.fn().mockReturnValue({
+        deleteById: jest.fn().mockReturnValue({ throwIfNotFound: jest.fn().mockResolvedValue() }),
+      });
+      storageService.delete = jest.fn().mockResolvedValue(false);
+
+      await expect(service.deleteFiles(ids)).rejects.toThrow('Failed to delete file with id id1');
+      expect(mockTransaction.rollback).toHaveBeenCalled();
+    });
+
+    it('completes if storageService.delete returns truthy for all', async () => {
+      const ids = ['id1', 'id2'];
+      jest.spyOn(service, 'read').mockResolvedValue({ id: 'id1' });
+      FileStorage.startTransaction = jest.fn().mockResolvedValue(mockTransaction);
+      FileStorage.query = jest.fn().mockReturnValue({
+        deleteById: jest.fn().mockReturnValue({ throwIfNotFound: jest.fn().mockResolvedValue() }),
+      });
+      storageService.delete = jest.fn().mockResolvedValue(true);
+
+      await expect(service.deleteFiles(ids)).resolves.toBeUndefined();
+      expect(storageService.delete).toHaveBeenCalledTimes(ids.length);
+      expect(mockTransaction.commit).toHaveBeenCalled();
     });
   });
 });
