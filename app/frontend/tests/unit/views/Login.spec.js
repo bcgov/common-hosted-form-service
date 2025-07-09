@@ -69,6 +69,9 @@ describe('Login.vue', () => {
 
     await nextTick();
 
+    expect(
+      wrapper.vm.filteredLoginButtons.length == idpStore.loginButtons.length
+    );
     Object.values(idpStore.loginButtons).forEach((idp) => {
       const button = wrapper.find(`[data-test="${idp.code}"]`);
       expect(button.exists()).toBeTruthy();
@@ -76,7 +79,7 @@ describe('Login.vue', () => {
   });
 
   it('shows supplied login options', async () => {
-    const IDPs = ['idir', 'bceid-business'];
+    const IDPs = ['idir', 'bceidbusiness'];
     authStore.authenticated = false;
     authStore.ready = true;
     const wrapper = mount(Login, {
@@ -93,8 +96,12 @@ describe('Login.vue', () => {
 
     await nextTick();
 
-    IDPs.forEach((idp) => {
-      const button = wrapper.find(`[data-test="${idp}"]`);
+    expect(wrapper.vm.filteredLoginButtons.length == 2);
+
+    IDPs.forEach((hint) => {
+      // we pass in hints, but data test is code...
+      const code = idpStore.providers.find((x) => x.idp === hint).code;
+      const button = wrapper.find(`[data-test="${code}"]`);
       expect(button.exists()).toBeTruthy();
     });
   });
