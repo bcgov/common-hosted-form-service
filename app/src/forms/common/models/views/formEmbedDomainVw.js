@@ -47,13 +47,6 @@ class FormEmbedDomainVw extends Model {
           query.where('status', status);
         }
       },
-      search(query, term) {
-        if (term) {
-          query.where(function () {
-            this.where('formName', 'ilike', `%${term}%`).orWhere('domain', 'ilike', `%${term}%`);
-          });
-        }
-      },
       orderByMinistry(query, direction = 'asc') {
         query.orderBy('ministry', direction);
       },
