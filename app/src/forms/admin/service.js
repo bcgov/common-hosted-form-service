@@ -234,17 +234,17 @@ const service = {
           if (key !== 'submissionId' && key !== 'formVersionId' && key !== 'formId') {
             if (!Array.isArray(data[key]) && !typeUtils.isObject(data[key])) {
               //Search for date/time match in properties
-              if (this.matchDate(data[key], search)) {
+              if (service.matchDate(data[key], search)) {
                 result.total = result.total + 1;
                 return true;
               }
               //Search for string match in properties
-              if (this.matchString(data[key], search)) {
+              if (service.matchString(data[key], search)) {
                 result.total = result.total + 1;
                 return true;
               }
               //Search to match numeric values in properties
-              if (this.matchNum(data[key], search)) {
+              if (service.matchNum(data[key], search)) {
                 result.total = result.total + 1;
                 return true;
               }
