@@ -1,4 +1,5 @@
 const embedService = require('../../embed/service');
+const log = require('../../../components/log');
 
 /**
  * Middleware to check if embedding is allowed
@@ -17,12 +18,22 @@ const embedSecurityMiddleware = async (req, res, next) => {
 
     // If we have an origin and formId, check if embedding is allowed
     if (formId && origin) {
-      const isAllowed = await embedService.isEmbedAllowed(formId, origin);
+      try {
+        const isAllowed = await embedService.isEmbedAllowed(formId, origin);
 
-      if (isAllowed) {
-        // Allow embedding from the specific origin
-        csp = `frame-ancestors 'self' ${origin};`;
-        xFrameOptions = `ALLOW-FROM ${origin}`;
+        if (isAllowed) {
+          // Allow embedding from the specific origin
+          csp = `frame-ancestors 'self' ${origin};`;
+          xFrameOptions = `ALLOW-FROM ${origin}`;
+        }
+      } catch (error) {
+        // Log that we're defaulting to restrictive headers due to error
+        log.error('Error checking embed permissions - defaulting to restrictive headers', {
+          error: error.message,
+          formId,
+          origin,
+        });
+        // We intentionally continue with default restrictive headers
       }
     }
 

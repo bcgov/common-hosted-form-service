@@ -2,6 +2,7 @@ const Problem = require('api-problem');
 const uuid = require('uuid');
 const { FormEmbedDomain, FormEmbedDomainHistory, FormEmbedDomainHistoryVw } = require('../common/models');
 const { FormEmbedDomainStatuses } = require('../common/constants');
+const log = require('../../components/log');
 
 const service = {
   /**
@@ -102,15 +103,27 @@ const service = {
    * @param {string} formId The form uuid
    * @param {string} origin The origin to check
    * @returns {Promise<boolean>} True if embedding is allowed
+   * @throws {Error} If there's an error parsing the URL or querying the database
    */
   isEmbedAllowed: async (formId, origin) => {
-    if (!origin) return false;
+    if (!origin) {
+      log.debug(`Embedding denied: No origin provided for form ${formId}`);
+      return false;
+    }
 
+    let domain;
     try {
       // Parse the origin to extract domain
       const url = new URL(origin);
-      const domain = url.hostname;
+      domain = url.hostname;
+    } catch (error) {
+      log.error(`Invalid origin URL format for form ${formId}: ${origin}`, error);
+      const enhancedError = new Error(`Invalid origin URL format: ${origin}`);
+      enhancedError.originalError = error;
+      throw enhancedError;
+    }
 
+    try {
       // Check if the domain is in the approved list
       const allowed = await FormEmbedDomain.query()
         .modify('filterFormId', formId)
@@ -118,9 +131,16 @@ const service = {
         .whereRaw("? LIKE '%' || domain || '%'", [domain])
         .first();
 
-      return !!allowed;
+      const isAllowed = !!allowed;
+      if (!isAllowed) {
+        log.debug(`Embedding denied: Domain ${domain} not approved for form ${formId}`);
+      }
+      return isAllowed;
     } catch (error) {
-      return false;
+      log.error(`Database error checking allowed domains for form ${formId} and domain ${domain}`, error);
+      const enhancedError = new Error(`Database error checking allowed domains for form ${formId}`);
+      enhancedError.originalError = error;
+      throw enhancedError;
     }
   },
 };
