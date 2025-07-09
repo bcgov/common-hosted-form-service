@@ -1,37 +1,28 @@
 const Problem = require('api-problem');
 const uuid = require('uuid');
 const { FormEmbedDomain, FormEmbedDomainHistory, FormEmbedDomainHistoryVw } = require('../common/models');
+const { FormEmbedDomainStatuses } = require('../common/constants');
 
 const service = {
   /**
-   * @function listAllowedDomains
-   * Gets all allowed domains for a form
-   * @param {string} formId The form uuid
-   * @returns {Promise} An array of allowed domains
-   */
-  listAllowedDomains: async (formId) => {
-    return FormEmbedDomain.query().modify('filterFormId', formId).modify('filterStatus', 'approved');
-  },
-
-  /**
-   * @function listRequestedDomains
-   * Gets all requested domains for a form
+   * @function listDomains
+   * Gets all domains for a form
    * @param {string} formId The form uuid
    * @param {Object} params The query params
    * @returns {Promise} An array of requested domains
    */
-  listRequestedDomains: async (formId, params = {}) => {
+  listDomains: async (formId, params = {}) => {
     return FormEmbedDomain.query().modify('filterFormId', formId).modify('filterStatus', params.status);
   },
 
   /**
    * @function getDomainHistory
    * Gets the history for a domain
-   * @param {string} domainId The domain uuid
+   * @param {string} formEmbedDomainId The form embed domain uuid
    * @returns {Promise} The domain history
    */
-  getDomainHistory: async (domainId) => {
-    return FormEmbedDomainHistoryVw.query().modify('filterDomainId', domainId).modify('orderDefault');
+  getDomainHistory: async (formEmbedDomainId) => {
+    return FormEmbedDomainHistoryVw.query().modify('formEmbedDomainId', formEmbedDomainId).modify('orderDefault');
   },
 
   /**
@@ -48,7 +39,7 @@ const service = {
 
     if (existing) {
       // If it exists but was previously denied, we can resubmit
-      if (existing.status === 'denied') {
+      if (existing.status === FormEmbedDomainStatuses.DENIED) {
         let trx;
         try {
           trx = await FormEmbedDomain.startTransaction();
@@ -58,14 +49,14 @@ const service = {
             id: uuid.v4(),
             formEmbedDomainId: existing.id,
             previousStatus: existing.status,
-            newStatus: 'pending',
+            newStatus: FormEmbedDomainStatuses.PENDING,
             createdBy: currentUser.usernameIdp,
+            createdAt: new Date().toISOString(),
           });
 
           // Update status to pending
           const updated = await FormEmbedDomain.query(trx).patchAndFetchById(existing.id, {
-            status: 'pending',
-            updatedBy: currentUser.usernameIdp,
+            status: FormEmbedDomainStatuses.PENDING,
           });
 
           await trx.commit();
@@ -81,29 +72,28 @@ const service = {
     }
 
     // Create a new domain request
-    return FormEmbedDomain.query().insert({
+    return await FormEmbedDomain.query().insert({
       id: uuid.v4(),
       formId: formId,
       domain: data.domain,
-      status: 'pending',
+      status: FormEmbedDomainStatuses.SUBMITTED,
       requestedAt: new Date().toISOString(),
       requestedBy: currentUser.usernameIdp,
-      createdBy: currentUser.usernameIdp,
     });
   },
 
   /**
    * @function removeDomain
    * Permanently removes a domain
-   * @param {string} domainId The domain uuid
+   * @param {string} formEmbedDomainId The form embed domain uuid
    * @returns {Promise} The number of deleted domains
    */
-  removeDomain: async (domainId) => {
+  removeDomain: async (formEmbedDomainId) => {
     // First delete history records
-    await FormEmbedDomainHistory.query().where('formEmbedDomainId', domainId).delete();
+    await FormEmbedDomainHistory.query().where('formEmbedDomainId', formEmbedDomainId).delete();
 
     // Then delete the domain
-    return FormEmbedDomain.query().deleteById(domainId);
+    return FormEmbedDomain.query().deleteById(formEmbedDomainId);
   },
 
   /**
@@ -122,7 +112,11 @@ const service = {
       const domain = url.hostname;
 
       // Check if the domain is in the approved list
-      const allowed = await FormEmbedDomain.query().modify('filterFormId', formId).modify('filterStatus', 'approved').whereRaw("? LIKE '%' || domain || '%'", [domain]).first();
+      const allowed = await FormEmbedDomain.query()
+        .modify('filterFormId', formId)
+        .modify('filterStatus', FormEmbedDomainStatuses.APPROVED)
+        .whereRaw("? LIKE '%' || domain || '%'", [domain])
+        .first();
 
       return !!allowed;
     } catch (error) {

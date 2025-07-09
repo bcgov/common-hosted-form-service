@@ -19,12 +19,11 @@ const properties = defineProps({
 
 const newDomainForm = ref(null);
 const loading = ref(false);
-const loadingRequests = ref(false);
 const submitting = ref(false);
 const valid = ref(false);
 const newDomain = ref('');
-const allowedDomains = ref([]);
-const requestedDomains = ref([]);
+const domains = ref([]);
+const domainHistoryMap = ref(new Map());
 
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
@@ -32,23 +31,6 @@ const notificationStore = useNotificationStore();
 const { permissions, isRTL } = storeToRefs(formStore);
 
 const headers = ref([
-  {
-    title: 'Domain',
-    align: 'start',
-    key: 'domain',
-  },
-  {
-    title: 'Created At',
-    key: 'createdAt',
-  },
-  {
-    title: 'Actions',
-    value: 'actions',
-    sortable: false,
-  },
-]);
-
-const requestHeaders = ref([
   {
     title: 'Domain',
     align: 'start',
@@ -63,14 +45,23 @@ const requestHeaders = ref([
     key: 'status',
   },
   {
-    title: 'Reason',
-    key: 'reason',
+    title: 'Actions',
+    value: 'actions',
+    align: 'end',
+    sortable: false,
   },
 ]);
 
 const canUpdate = computed(() => {
   return permissions.value.includes(FormPermissions.FORM_UPDATE);
 });
+
+const items = computed(() =>
+  domains.value.map((x) => ({
+    ...x,
+    history: domainHistoryMap.value.get(x.id) || [],
+  }))
+);
 
 const domainRules = ref([
   (v) => {
@@ -87,19 +78,10 @@ onMounted(() => {
 async function fetchData() {
   try {
     loading.value = true;
-    loadingRequests.value = true;
 
     // Fetch allowed domains
-    const allowedResponse = await embedService.listAllowedDomains(
-      properties.formId
-    );
-    allowedDomains.value = allowedResponse.data;
-
-    // Fetch requested domains
-    const requestedResponse = await embedService.listRequestedDomains(
-      properties.formId
-    );
-    requestedDomains.value = requestedResponse.data;
+    const response = await embedService.listDomains(properties.formId);
+    domains.value = response.data;
   } catch (error) {
     notificationStore.addNotification({
       text: 'An error occurred while fetching embed settings.',
@@ -107,7 +89,6 @@ async function fetchData() {
     });
   } finally {
     loading.value = false;
-    loadingRequests.value = false;
   }
 }
 
@@ -132,7 +113,7 @@ async function requestDomain() {
   } catch (error) {
     notificationStore.addNotification({
       text: 'Failed to submit domain request.',
-      consoleError: error,
+      consoleError: error.response.data.title,
     });
   } finally {
     submitting.value = false;
@@ -159,14 +140,36 @@ async function removeDomain(domain) {
 
 function getStatusColour(status) {
   switch (status) {
-    case 'approved':
+    case 'APPROVED':
       return 'success';
-    case 'denied':
+    case 'DENIED':
       return 'error';
-    case 'pending':
+    case 'PENDING':
       return 'warning';
     default:
       return 'grey';
+  }
+}
+
+async function handleExpand(item, isExpanded, toggleExpand) {
+  if (!isExpanded(item)) {
+    try {
+      const history = await embedService.getDomainHistory(
+        properties.formId,
+        item.raw.id
+      );
+      domainHistoryMap.value.set(item.raw.id, history.data);
+      toggleExpand(item);
+    } catch (error) {
+      notificationStore.addNotification({
+        text: 'Failed to fetch domain history.',
+        consoleError: error,
+      });
+    } finally {
+      loading.value = false;
+    }
+  } else {
+    toggleExpand(item);
   }
 }
 </script>
@@ -186,33 +189,89 @@ function getStatusColour(status) {
         Ensure that you have permission to embed this CHEFS form in your domain
       </li>
     </ul>
-
     <v-skeleton-loader :loading="loading" type="button" class="bgtrans">
       <v-data-table
         :headers="headers"
-        :items="allowedDomains"
+        :items="items"
         :loading="loading"
-        disable-sort
-      >
-        <template #item.actions="{ item }">
-          <v-btn
-            size="small"
-            color="error"
-            :disabled="!canUpdate"
-            @click="removeDomain(item)"
-          />
-        </template>
-      </v-data-table>
-      <v-data-table
-        :headers="requestHeaders"
-        :items="requestedDomains"
-        :loading="loadingRequests"
-        disable-sort
+        show-expand
       >
         <template #item.status="{ item }">
           <v-chip :color="getStatusColour(item.status)">
             {{ item.status }}
           </v-chip>
+        </template>
+        <template #item.actions="{ item }">
+          <span>
+            <v-tooltip location="bottom">
+              <template #activator="{ props }">
+                <v-btn
+                  color="red"
+                  class="mx-1"
+                  icon
+                  v-bind="props"
+                  variant="text"
+                  :title="$t('trans.adminFormEmbed.delete')"
+                  :disabled="!canUpdate"
+                  @click="removeDomain(item)"
+                >
+                  <v-icon icon="mdi:mdi-delete" />
+                </v-btn>
+              </template>
+              <span :lang="locale">{{
+                $t('trans.adminFormEmbed.delete')
+              }}</span>
+            </v-tooltip>
+          </span>
+        </template>
+        <template
+          #item.data-table-expand="{ internalItem, isExpanded, toggleExpand }"
+        >
+          <v-btn
+            :append-icon="
+              isExpanded(internalItem) ? 'mdi-chevron-up' : 'mdi-chevron-down'
+            "
+            class="text-none"
+            color="medium-emphasis"
+            size="small"
+            variant="text"
+            border
+            slim
+            @click="handleExpand(internalItem, isExpanded, toggleExpand)"
+          >
+            {{ isExpanded(internalItem) ? 'Collapse' : 'View History' }}
+          </v-btn>
+        </template>
+        <template #expanded-row="{ columns, item }">
+          <tr>
+            <td :colspan="columns.length" class="py-2">
+              <v-sheet rounded="lg" border>
+                <v-table density="compact">
+                  <tbody class="bg-surface-light">
+                    <tr>
+                      <td>Previous Status</td>
+                      <td>New Status</td>
+                      <td>Reason</td>
+                      <td>Created By</td>
+                      <td>Created At</td>
+                    </tr>
+                  </tbody>
+                  <tbody>
+                    <tr
+                      v-for="(historyItem, index) in item.history"
+                      :key="index"
+                    >
+                      <td>{{ historyItem.previousStatus }}</td>
+                      <td>{{ historyItem.newStatus }}</td>
+                      <td>{{ historyItem.reason }}</td>
+                      <td>{{ historyItem.statusChangedBy }}</td>
+                      <td>{{ historyItem.statusChangedAt }}</td>
+                    </tr>
+                  </tbody>
+                </v-table>
+              </v-sheet>
+            </td>
+          </tr>
         </template>
       </v-data-table>
       <v-form ref="newDomainForm" v-model="valid">

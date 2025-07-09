@@ -29,6 +29,7 @@ import {
   getDisposition,
 } from '~/utils/transformUtils';
 import { FormPermissions, NotificationTypes } from '~/utils/constants';
+import { initFormEmbed, isFormEmbedded } from '~/utils/embedUtils';
 
 const { t, locale } = useI18n({ useScope: 'global' });
 
@@ -88,6 +89,7 @@ const form = ref({});
 const formDataEntered = ref(false);
 const formElement = ref(undefined);
 const formSchema = ref({});
+const isFormEmbedded = ref(false);
 const isFormScheduleExpired = ref(false);
 const isLateSubmissionAllowed = ref(false);
 const isLoading = ref(false);
@@ -196,6 +198,11 @@ onMounted(async () => {
     await getFormSchema();
   }
   window.addEventListener('beforeunload', beforeWindowUnload);
+
+  isFormEmbedded.value = isFormEmbedded();
+  if (isFormEmbedded.value === true) {
+    initFormEmbed(properties.formId);
+  }
 
   reRenderFormIo.value += 1;
 });

@@ -235,4 +235,67 @@ export default {
       `${ApiRoutes.ADMIN}/formcomponents/proactivehelp/list`
     );
   },
+
+  //
+  // Form Embedding calls
+  //
+  /**
+   * @function getFormEmbedDomains
+   * Read all the form embed domains in the DB
+   * @param {boolean} paginationEnabled if pagination is enabled for this request
+   * @param {number} page the page for the request
+   * @param {number} itemsPerPage the number of items to be returned
+   * @param {boolean} searchEnabled if the results should be searched
+   * @param {string} search the search string for the query
+   * @returns {Promise} An axios response
+   */
+  getFormEmbedDomains(params) {
+    return appAxios().get(`${ApiRoutes.ADMIN}${ApiRoutes.EMBED}`, {
+      params: params,
+    });
+  },
+  /**
+   * @function getFormEmbedDomainHistory
+   * Read all the form embed domain history for a domain in the DB
+   * @param {formEmbedDomainId} formEmbedDomainId The form embed domain uuid
+   * @param {boolean} paginationEnabled if pagination is enabled for this request
+   * @param {number} page the page for the request
+   * @param {number} itemsPerPage the number of items to be returned
+   * @param {boolean} searchEnabled if the results should be searched
+   * @param {string} search the search string for the query
+   * @returns {Promise} An axios response
+   */
+  getFormEmbedDomainHistory(formEmbedDomainId, params) {
+    return appAxios().get(
+      `${ApiRoutes.ADMIN}${ApiRoutes.EMBED}/${formEmbedDomainId}/history`,
+      {
+        params: params,
+      }
+    );
+  },
+  /**
+   * @function updateFormEmbedDomainRequest
+   * Review a Form Requested Domain record (status code only)
+   * @param {string} formEmbedDomainId The form embed domain uuid
+   * @param {Object} data An object containing an form requested domain record
+   * @returns {Promise} An axios response
+   */
+  updateFormEmbedDomainRequest(formEmbedDomainId, data) {
+    return appAxios().put(
+      `${ApiRoutes.ADMIN}${ApiRoutes.EMBED}/${formEmbedDomainId}`,
+      data
+    );
+  },
+  /**
+   * @function removeFormEmbedDomainRequest
+   * Removes a Form Requested Domain record
+   * @param {string} formEmbedDomainId The form embed domain uuid
+   * @param {Object} data An object containing ssssssan form requested domain record
+   * @returns {Promise} An axios response
+   */
+  removeFormEmbedDomainRequest(formEmbedDomainId) {
+    return appAxios().delete(
+      `${ApiRoutes.ADMIN}${ApiRoutes.EMBED}/${formEmbedDomainId}`
+    );
+  },
 };

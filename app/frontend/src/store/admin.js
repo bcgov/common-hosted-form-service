@@ -21,6 +21,9 @@ export const useAdminStore = defineStore('admin', {
     fcProactiveHelp: {}, // Form Component Proactive Help
     fcProactiveHelpImageUrl: '',
     fcProactiveHelpGroupList: [],
+    formEmbedDomainsList: [],
+    formEmbedDomainsTotal: undefined,
+    formEmbedDomainStatusCodes: [],
   }),
   getters: {},
   actions: {
@@ -334,6 +337,86 @@ export const useAdminStore = defineStore('admin', {
           consoleError: i18n.t(
             'trans.store.admin.fecthingFormBuilderCompsConsErrMsg',
             { error: error }
+          ),
+        });
+      }
+    },
+
+    //
+    // External APIs
+    //
+    async getFormEmbedDomains(params) {
+      try {
+        // Get all external apis
+        this.formEmbedDomainsList = [];
+        const response = await adminService.getFormEmbedDomains(params);
+        if (response.data.results) {
+          this.formEmbedDomainsList = response.data.results;
+          this.formEmbedDomainsTotal = response.data.total;
+        } else {
+          this.formEmbedDomainsList = response.data;
+          this.formEmbedDomainsTotal = response.data.length;
+        }
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.admin.getFormEmbedDomainsErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.admin.getFormEmbedDomainsConsErrMsg',
+            {
+              error: error,
+            }
+          ),
+        });
+      }
+    },
+    async getFormEmbedDomainHistory(formEmbedDomainId) {
+      try {
+        const response = await adminService.getFormEmbedDomainHistory(
+          formEmbedDomainId
+        );
+        return response.data;
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.admin.getFormEmbedDomainHistoryErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.admin.getFormEmbedDomainHistoryConsErrMsg',
+            {
+              error: error,
+            }
+          ),
+        });
+      }
+    },
+    async updateFormEmbedDomainRequest(id, data) {
+      try {
+        await adminService.updateFormEmbedDomainRequest(id, data);
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.admin.updateFormEmbedDomainRequestErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.admin.updateFormEmbedDomainRequestConsErrMsg',
+            {
+              error: error,
+            }
+          ),
+        });
+      }
+    },
+    async removeFormEmbedDomainRequest(formEmbedDomainId) {
+      try {
+        await adminService.removeFormEmbedDomainRequest(formEmbedDomainId);
+      } catch (error) {
+        const notificationStore = useNotificationStore();
+        notificationStore.addNotification({
+          text: i18n.t('trans.store.admin.removeFormEmbedDomainRequestErrMsg'),
+          consoleError: i18n.t(
+            'trans.store.admin.removeFormEmbedDomainRequestConsErrMsg',
+            {
+              error: error,
+            }
           ),
         });
       }

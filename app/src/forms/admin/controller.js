@@ -199,7 +199,7 @@ module.exports = {
    */
   getFormEmbedDomainHistory: async (req, res, next) => {
     try {
-      const response = await service.getFormEmbedDomainHistory(req.params.domainId);
+      const response = await service.getFormEmbedDomainHistory(req.params.formEmbedDomainId);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -216,7 +216,7 @@ module.exports = {
    */
   updateFormEmbedDomainRequest: async (req, res, next) => {
     try {
-      const response = await service.updateFormEmbedDomainRequest(req.params.domainId, req.body, req.currentUser);
+      const response = await service.updateFormEmbedDomainRequest(req.params.formEmbedDomainId, req.body, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -233,7 +233,7 @@ module.exports = {
    */
   removeFormEmbedDomainRequest: async (req, res, next) => {
     try {
-      await service.removeFormEmbedDomain(req.params.domainId);
+      await service.removeFormEmbedDomain(req.params.formEmbedDomainId);
       res.status(204).send();
     } catch (error) {
       next(error);

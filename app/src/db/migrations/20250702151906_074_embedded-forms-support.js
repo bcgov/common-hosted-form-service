@@ -61,16 +61,16 @@ exports.up = function (knex) {
         knex.schema.raw(
           `create or replace view form_embed_domain_history_vw as
               select
-                frd.id as domainId,
+                frd.id as "formEmbedDomainId",
                 f.ministry,
                 f.name as "formName",
                 frd."domain",
-                h.id as historyId,
+                h.id as "historyId",
                 h."previousStatus",
                 h."newStatus",
                 h.reason,
-                h."createdAt" as statusChangedAt,
-                h."createdBy" as statusChangedBy
+                h."createdAt" as "statusChangedAt",
+                h."createdBy" as "statusChangedBy"
               from form_embed_domain_history h
               inner join form_embed_domain frd on h."formEmbedDomainId" = frd.id
               inner join form f on frd."formId" = f.id
@@ -86,7 +86,7 @@ exports.up = function (knex) {
  */
 exports.down = function (knex) {
   return Promise.resolve()
-    .then(() => knex.schema.raw('DROP VIEW IF EXISTS form_ebmed_domain_history_vw'))
+    .then(() => knex.schema.raw('DROP VIEW IF EXISTS form_embed_domain_history_vw'))
     .then(() => knex.schema.raw('DROP VIEW IF EXISTS form_embed_domain_vw'))
     .then(() => knex.schema.dropTableIfExists('form_embed_domain_history'))
     .then(() => knex.schema.dropTableIfExists('form_embed_domain'))

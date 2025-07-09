@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 import AdminFormsTable from '~/components/admin/AdminFormsTable.vue';
 import AdminUsersTable from '~/components/admin/AdminUsersTable.vue';
 import AdminAPIsTable from '~/components/admin/AdminAPIsTable.vue';
+import AdminFormEmbed from '~/components/admin/AdminFormEmbed.vue';
 import Dashboard from '~/components/admin/Dashboard.vue';
 import Developer from '~/components/admin/Developer.vue';
 import FormComponentsProactiveHelp from '~/components/admin/FormComponentsProactiveHelp.vue';
@@ -39,6 +40,9 @@ watch(isRTL, () => {
       $t('trans.adminPage.users')
     }}</v-tab>
     <v-tab value="apis" :lang="locale">{{ $t('trans.adminPage.apis') }}</v-tab>
+    <v-tab value="embed" :lang="locale">{{
+      $t('trans.adminPage.formEmbedding')
+    }}</v-tab>
     <v-tab value="developer" :lang="locale">{{
       $t('trans.adminPage.developer')
     }}</v-tab>
@@ -60,6 +64,9 @@ watch(isRTL, () => {
       </v-window-item>
       <v-window-item value="apis">
         <AdminAPIsTable />
+      </v-window-item>
+      <v-window-item value="embed">
+        <AdminFormEmbed />
       </v-window-item>
       <v-window-item value="developer">
         <Developer />

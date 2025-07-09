@@ -1,9 +1,7 @@
 const { Model } = require('objection');
-const { Timestamps } = require('../mixins');
 const { Regex } = require('../../constants');
-const stamps = require('../jsonSchema').stamps;
 
-class FormEmbedDomain extends Timestamps(Model) {
+class FormEmbedDomain extends Model {
   static get tableName() {
     return 'form_embed_domain';
   }
@@ -23,7 +21,6 @@ class FormEmbedDomain extends Timestamps(Model) {
         status: { type: 'string', minLength: 1, maxLength: 50 },
         requestedAt: { type: ['string', 'null'] },
         requestedBy: { type: ['string', 'null'] },
-        ...stamps,
       },
     };
   }

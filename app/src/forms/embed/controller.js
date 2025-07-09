@@ -1,18 +1,18 @@
 const service = require('./service');
 
 module.exports = {
-  listAllowedDomains: async (req, res, next) => {
+  listDomains: async (req, res, next) => {
     try {
-      const response = await service.listAllowedDomains(req.params.formId);
+      const response = await service.listDomains(req.params.formId);
       res.status(200).json(response);
     } catch (error) {
       next(error);
     }
   },
 
-  listRequestedDomains: async (req, res, next) => {
+  getDomainHistory: async (req, res, next) => {
     try {
-      const response = await service.listRequestedDomains(req.params.formId, req.query);
+      const response = await service.getDomainHistory(req.params.formEmbedDomainId);
       res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -28,18 +28,9 @@ module.exports = {
     }
   },
 
-  updateDomainRequest: async (req, res, next) => {
-    try {
-      const response = await service.updateDomainRequest(req.params.requestId, req.body, req.currentUser);
-      res.status(200).json(response);
-    } catch (error) {
-      next(error);
-    }
-  },
-
   removeDomain: async (req, res, next) => {
     try {
-      await service.removeDomain(req.params.domainId);
+      await service.removeDomain(req.params.formEmbedDomainId);
       res.status(204).send();
     } catch (error) {
       next(error);

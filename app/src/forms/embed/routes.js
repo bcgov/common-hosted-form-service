@@ -9,29 +9,24 @@ routes.use(currentUser);
 routes.param('formId', validateParameter.validateFormId);
 routes.param('formEmbedDomainId', validateParameter.validateFormEmbedDomainId);
 
-// List allowed domains for a form
-routes.get('/:formId/embed/allowed', hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
-  await controller.listAllowedDomains(req, res, next);
-});
-
-// List requested domains for a form
-routes.get('/:formId/embed/requested', hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
-  await controller.listRequestedDomains(req, res, next);
+// List domains for a form
+routes.get('/:formId/embed', hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+  await controller.listDomains(req, res, next);
 });
 
 // Request a domain to be added to allowed domains
-routes.post('/:formId/embed/request', hasFormPermissions([P.FORM_UPDATE]), async (req, res, next) => {
+routes.post('/:formId/embed', hasFormPermissions([P.FORM_UPDATE]), async (req, res, next) => {
   await controller.requestDomain(req, res, next);
 });
 
-// Update a domain request
-routes.put('/:formId/embed/request', hasFormPermissions([P.FORM_UPDATE]), async (req, res, next) => {
-  await controller.updateDomainRequest(req, res, next);
+// Remove a domain from allowed list
+routes.delete('/:formId/embed/:formEmbedDomainId', hasFormPermissions([P.FORM_UPDATE]), async (req, res, next) => {
+  await controller.removeDomain(req, res, next);
 });
 
-// Remove a domain from allowed list
-routes.delete('/:formId/embed/allowed/:formEmbedDomainId', hasFormPermissions([P.FORM_UPDATE]), async (req, res, next) => {
-  await controller.removeDomain(req, res, next);
+// List status history for a domain
+routes.get('/:formId/embed/:formEmbedDomainId/history', hasFormPermissions([P.FORM_READ]), async (req, res, next) => {
+  await controller.getDomainHistory(req, res, next);
 });
 
 module.exports = routes;

@@ -14,7 +14,7 @@ class FormEmbedDomainHistoryVw extends Model {
     return {
       type: 'object',
       properties: {
-        domainId: { type: 'string', pattern: Regex.UUID },
+        formEmbedDomainId: { type: 'string', pattern: Regex.UUID },
         ministry: { type: 'string' },
         formName: { type: 'string' },
         domain: { type: 'string' },
@@ -30,9 +30,9 @@ class FormEmbedDomainHistoryVw extends Model {
 
   static get modifiers() {
     return {
-      filterDomainId(query, domainId) {
-        if (domainId) {
-          query.where('domainId', domainId);
+      formEmbedDomainId(query, formEmbedDomainId) {
+        if (formEmbedDomainId) {
+          query.where('formEmbedDomainId', formEmbedDomainId);
         }
       },
       filterMinistry(query, ministry) {

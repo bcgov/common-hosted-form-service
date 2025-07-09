@@ -15,6 +15,7 @@ const {
   FormEmbedDomainHistoryVw,
 } = require('../common/models');
 const { queryUtils, typeUtils } = require('../common/utils');
+const { FormEmbedDomainStatuses } = require('../common/constants');
 const moment = require('moment');
 const uuid = require('uuid');
 const service = {
@@ -451,7 +452,6 @@ const service = {
       .modify('filterMinistry', params.ministry)
       .modify('filterFormName', params.formName)
       .modify('filterDomain', params.domain)
-      .modify('filterSearch', params.search)
       .modify('orderByRequestedAt');
 
     if (params.paginationEnabled) {
@@ -469,32 +469,26 @@ const service = {
   /**
    * @function getFormEmbedDomainHistory
    * Gets history for a specific domain
-   * @param {string} domainId The domain uuid
+   * @param {string} formEmbedDomainId The domain uuid
    * @returns {Promise<Array>} Domain history records
    */
-  getFormEmbedDomainHistory: async (domainId) => {
-    return FormEmbedDomainHistoryVw.query().where('domainId', domainId).orderBy('statusChangedAt', 'desc');
+  getFormEmbedDomainHistory: async (formEmbedDomainId) => {
+    return FormEmbedDomainHistoryVw.query().where('formEmbedDomainId', formEmbedDomainId).orderBy('statusChangedAt', 'desc');
   },
 
   /**
    * @function updateFormEmbedDomainRequest
    * Reviews a domain request (approve/deny)
-   * @param {string} domainId The domain uuid
+   * @param {string} formEmbedDomainId The domain uuid
    * @param {Object} data The review data
    * @param {Object} currentUser The current user
    * @returns {Promise<Object>} The updated domain
    */
-  updateFormEmbedDomainRequest: async (domainId, data, currentUser) => {
-    const domain = await FormEmbedDomain.query().findById(domainId);
+  updateFormEmbedDomainRequest: async (formEmbedDomainId, data, currentUser) => {
+    const domain = await FormEmbedDomain.query().findById(formEmbedDomainId);
     if (!domain) {
       throw new Problem(404, 'Domain request not found');
     }
-
-    if (domain.status !== 'pending') {
-      throw new Problem(409, 'Request has already been reviewed');
-    }
-
-    const newStatus = data.approved ? 'approved' : 'denied';
 
     let trx;
     try {
@@ -503,20 +497,17 @@ const service = {
       // Add history record
       await FormEmbedDomainHistory.query(trx).insert({
         id: uuid.v4(),
-        formEmbedDomainId: domainId,
+        formEmbedDomainId: formEmbedDomainId,
         previousStatus: domain.status,
-        newStatus: newStatus,
+        newStatus: data.status,
         reason: data.reason || null,
         createdBy: currentUser.usernameIdp,
         updatedBy: currentUser.usernameIdp,
       });
 
       // Update domain status
-      const updated = await FormEmbedDomain.query(trx).patchAndFetchById(domainId, {
-        status: newStatus,
-        reviewedAt: new Date().toISOString(),
-        reviewedBy: currentUser.usernameIdp,
-        updatedBy: currentUser.usernameIdp,
+      const updated = await FormEmbedDomain.query(trx).patchAndFetchById(formEmbedDomainId, {
+        status: data.status,
       });
 
       await trx.commit();
@@ -530,19 +521,19 @@ const service = {
   /**
    * @function removeFormEmbedDomain
    * Permanently removes a domain
-   * @param {string} domainId The domain uuid
+   * @param {string} formEmbedDomainId The domain uuid
    * @returns {Promise<number>} Number of deleted records
    */
-  removeFormEmbedDomain: async (domainId) => {
+  removeFormEmbedDomain: async (formEmbedDomainId) => {
     let trx;
     try {
       trx = await FormEmbedDomain.startTransaction();
 
       // Delete history first
-      await FormEmbedDomainHistory.query(trx).where('formEmbedDomainId', domainId).delete();
+      await FormEmbedDomainHistory.query(trx).where('formEmbedDomainId', formEmbedDomainId).delete();
 
       // Then delete the domain
-      const deleted = await FormEmbedDomain.query(trx).deleteById(domainId);
+      const deleted = await FormEmbedDomain.query(trx).deleteById(formEmbedDomainId);
 
       await trx.commit();
       return deleted;

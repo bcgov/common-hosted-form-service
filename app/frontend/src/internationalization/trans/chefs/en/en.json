@@ -454,7 +454,8 @@
     "apis": "APIs",
     "developer": "Developer",
     "infoLinks": "Info Links",
-    "metrics": "Metrics"
+    "metrics": "Metrics",
+    "formEmbedding": "Form Embedding"
   },
   "adminAPIsTable": {
     "search": "Search",
@@ -470,6 +471,23 @@
     "edit": "Edit",
     "editTitle": "Update External API Status",
     "allowSendUserToken": "Allow 'Send User Token'"
+  },
+  "adminFormEmbed": {
+    "search": "Search",
+    "loadingText": "Loading... Please wait",
+    "ministry": "Ministry",
+    "ministryName": "Ministry Name",
+    "formName": "Form",
+    "domain": "Domain",
+    "status": "Status",
+    "reason": "Reason",
+    "requestedBy": "Requested By",
+    "requestedAt": "Requested At",
+    "actions": "Actions",
+    "edit": "Edit",
+    "editTitle": "Update Form Domain Request Status",
+    "save": "Save",
+    "delete": "Delete"
   },
   "adminUsersTable": {
     "search": "Search",
@@ -1109,7 +1127,15 @@
       "updateAPIsErrMsg": "Error updating External API.",
       "updateAPIsConsErrMsg": "Error updating External API: {error}",
       "getAPICodesErrMsg": "Error fetching External API Status Codes list.",
-      "getAPICodesConsErrMsg": "Error fetching External API Status Codes list: {error}"
+      "getAPICodesConsErrMsg": "Error fetching External API Status Codes list: {error}",
+      "getFormEmbedDomainsErrMsg": "An error occurred while fetching Form Embed Domains.",
+      "getFormEmbedDomainsConsErrMsg": "Error fetching Form Embed Domains: {error}",
+      "getFormEmbedDomainHistoryErrMsg": "An error occurred while fetching Form Embed Domain History.",
+      "getFormEmbedDomainHistoryConsErrMsg": "Error fetching Form Embed Domain History: {error}",
+      "updateFormEmbedDomainRequestErrMsg": "Error updating Form Embed Domain.",
+      "updateFormEmbedDomainRequestConsErrMsg": "Error updating Form Embed Domain: {error}",
+      "removeFormEmbedDomainRequestErrMsg": "Error removing Form Embed Domain.",
+      "removeFormEmbedDomainRequestConsErrMsg": "Error removing Form Embed Domain: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Error loading email templates for {formId}: {error}",
