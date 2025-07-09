@@ -128,6 +128,13 @@ const service = {
   _setAssigneeInSubmissionsTable: (formData) => {
     return formData.showAssigneeInSubmissionsTable === true && formData.enableStatusUpdates;
   },
+  _setAllowSubmitterToUploadFile: (formData) => {
+    if (formData.identityProviders && Array.isArray(formData.identityProviders) && formData.identityProviders.length) {
+      const isProtectedForm = formData.identityProviders.every((idp) => idp.code !== 'public');
+      return isProtectedForm && !falsey(formData.allowSubmitterToUploadFile);
+    }
+    return false;
+  },
   _findFileIds: (schema, data) => {
     const findFiles = (currentData) => {
       let fileIds = [];
@@ -185,7 +192,7 @@ const service = {
       obj.enableStatusUpdates = data.enableStatusUpdates;
       obj.enableSubmitterDraft = data.enableSubmitterDraft;
       obj.createdBy = currentUser?.usernameIdp || 'public';
-      obj.allowSubmitterToUploadFile = data.allowSubmitterToUploadFile;
+      obj.allowSubmitterToUploadFile = service._setAllowSubmitterToUploadFile(data);
       obj.schedule = data.schedule;
       obj.subscribe = data.subscribe;
       obj.reminder_enabled = data.reminder_enabled;
@@ -267,7 +274,7 @@ const service = {
         enableStatusUpdates: data.enableStatusUpdates,
         enableSubmitterDraft: data.enableSubmitterDraft,
         updatedBy: currentUser.usernameIdp,
-        allowSubmitterToUploadFile: data.allowSubmitterToUploadFile,
+        allowSubmitterToUploadFile: service._setAllowSubmitterToUploadFile(data),
         schedule: data.schedule,
         subscribe: data.subscribe,
         reminder_enabled: data.reminder_enabled,
