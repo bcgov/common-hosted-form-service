@@ -26,7 +26,7 @@ const settingsPanel = ref(1);
 const subscription = ref(false);
 const subscriptionsPanel = ref(0);
 const versionsPanel = ref(0);
-const embedPanel = ref(0);
+const embedPanel = ref(1);
 
 const formStore = useFormStore();
 const notificationStore = useNotificationStore();
