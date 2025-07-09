@@ -1,0 +1,70 @@
+name: PR Cleanup
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 10PM PST = 6AM UTC
+    - cron: '0 6 * * *'
+
+jobs:
+  cleanup-closed-prs:
+    name: Cleanup Closed PRs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      actions: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      REPO: ${{ github.repository }}
+      LAST_RUN_FILE: last_run.txt
+
+    steps:
+      - name: Fork check
+        if: github.repository != 'bcgov/common-hosted-form-service'
+        run: |
+          echo "This workflow is not permitted to run in forks."
+          exit 1
+          
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get last run timestamp
+        id: get_last_run
+        run: |
+          if gh run download -n pr-cleanup-last-run --repo "$REPO" 2>/dev/null; then
+            LAST_RUN=$(cat $LAST_RUN_FILE)
+          else
+            # Default to 24 hours ago if no previous run
+            LAST_RUN=$(date -u -d '24 hours ago' +%Y-%m-%dT%H:%M:%SZ)
+          fi
+          echo "last_run=$LAST_RUN" >> $GITHUB_OUTPUT
+
+      - name: Save current run timestamp
+        id: save_now
+        run: |
+          NOW=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          echo "$NOW" > $LAST_RUN_FILE
+
+      - name: Upload last run timestamp artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-cleanup-last-run
+          path: ${{ env.LAST_RUN_FILE }}
+          retention-days: 7
+
+      - name: Query closed PRs since last run
+        id: query_prs
+        run: |
+          prs=$(gh pr list --state closed --search "closed:>=${{ steps.get_last_run.outputs.last_run }}" --json number,closedAt --jq '.[] | .number')
+          echo "prs<<EOF" >> $GITHUB_ENV
+          echo "$prs" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Call pr_undeploy workflow for each closed PR
+        if: env.prs != ''
+        run: |
+          for pr in $prs; do
+            echo "Triggering pr_undeploy for PR #$pr"
+            gh workflow run pr_undeploy.yaml -F pr-number="$pr"
+          done
