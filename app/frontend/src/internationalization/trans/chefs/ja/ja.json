@@ -72,7 +72,8 @@
     "eventSubscription": "イベントのサブスクリプション",
     "cdogsTemplate": "CDOGS テンプレート",
     "externalAPIs": "外部API",
-    "eventStreamConfig": "イベントストリームの構成"
+    "eventStreamConfig": "イベントストリームの構成",
+    "formEmbed": "フォーム埋め込み"
   },
   "documentTemplate": {
     "uploadTemplate": "CDOGSテンプレートをアップロード",
@@ -203,7 +204,8 @@
     "encryptionKeyUpdatedBy": "暗号化キーの更新者",
     "encryptionKeyCopySnackbar": "暗号化キーがクリップボードにコピーされました",
     "encryptionKeyCopyTooltip": "暗号化キーをクリップボードにコピー",
-    "encryptionKeyGenerate": "暗号化キーの生成"
+    "encryptionKeyGenerate": "暗号化キーの生成",
+    "formEmbed": "フォーム埋め込み"
   },
   "formProfile": {
     "message": "CHEFSチームは包括的なビジネスケースの作成に重要な入力となる情報を収集し、整理しています。これらのケースは、CHEFSの戦略的な運用と今後の改善を指南するうえで重要な役割を果たします。データを収集するこの取り組みは、重要な意思決定の情報提供やCHEFSの軌道を形作るために不可欠です。これにより、CHEFSが変化するニーズと課題に対応するための適応性と効果を確保します.",
@@ -389,7 +391,8 @@
     "developer": "デベロッパー",
     "infoLinks": "情報リンク",
     "metrics": "メトリクス",
-    "apis": "APIについて"
+    "apis": "APIについて",
+    "formEmbedding": "フォーム埋め込み"
   },
   "adminUsersTable": {
     "search": "検索",
@@ -1219,6 +1222,56 @@
     "edit": "編集",
     "editTitle": "外部APIステータスの更新",
     "allowSendUserToken": "「ユーザートークンの送信」を許可する"
+  },
+  "adminFormEmbed": {
+    "search": "検索",
+    "loadingText": "読み込み中... お待ちください",
+    "ministry": "省庁",
+    "ministryName": "省庁名",
+    "formName": "フォーム",
+    "domain": "ドメイン",
+    "status": "ステータス",
+    "reason": "理由",
+    "requestedBy": "リクエスト者",
+    "requestedAt": "リクエスト日時",
+    "actions": "アクション",
+    "edit": "編集",
+    "editTitle": "フォームドメインリクエストのステータスを更新",
+    "save": "保存",
+    "delete": "削除",
+    "previousStatus": "前のステータス",
+    "newStatus": "新しいステータス",
+    "createdAt": "作成日時",
+    "createdBy": "作成者",
+    "viewHistory": "履歴を表示"
+  },
+  "formEmbed": {
+    "disclaimer": "このCHEFSフォームをあなたのドメインに埋め込む許可があることを確認してください。",
+    "domain": "ドメイン",
+    "status": "ステータス",
+    "reason": "理由",
+    "requestedAt": "リクエスト日時",
+    "actions": "アクション",
+    "delete": "削除",
+    "previousStatus": "前のステータス",
+    "newStatus": "新しいステータス",
+    "createdAt": "作成日時",
+    "createdBy": "作成者",
+    "viewHistory": "履歴を表示",
+    "requestDomain": "ドメインをリクエスト",
+    "domainRules": "有効なドメインを入力してください（例：example.com）",
+    "emptyFieldRules": "ドメインは必須です",
+    "newDomainHint": "プロトコルなしでドメインを入力してください（例：example.com）",
+    "listDomainsErr": "ドメインのリストの取得中にエラーが発生しました。",
+    "listDomainsConsErr": "ドメインの取得中にエラー: {error}",
+    "requestDomainSuccess": "ドメインリクエストが正常に送信されました。",
+    "requestDomainErr": "ドメインリクエストの送信に失敗しました。",
+    "requestDomainConsErr": "ドメインリクエスト送信中にエラー: {error}",
+    "removeDomainSuccess": "ドメインが正常に削除されました。",
+    "removeDomainErr": "ドメインの削除に失敗しました。",
+    "removeDomainConsErr": "ドメイン削除中にエラー: {error}",
+    "getDomainHistoryErr": "ドメイン履歴の取得に失敗しました。",
+    "getDomainHistoryConsErr": "ドメイン履歴の取得中にエラー: {error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

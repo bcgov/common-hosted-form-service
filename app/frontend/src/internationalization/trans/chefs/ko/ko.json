@@ -72,7 +72,8 @@
     "eventSubscription": "イベントのサブスクリプション",
     "cdogsTemplate": "CDOGS 템플릿",
     "externalAPIs": "외부 API",
-    "eventStreamConfig": "이벤트 스트림 구성"
+    "eventStreamConfig": "이벤트 스트림 구성",
+    "formEmbed": "양식 임베딩"
   },
   "documentTemplate": {
     "uploadTemplate": "CDOGS 템플릿 업로드",
@@ -203,7 +204,8 @@
     "encryptionKeyUpdatedBy": "암호화 키 업데이트됨",
     "encryptionKeyCopySnackbar": "암호화 키가 클립보드에 복사되었습니다.",
     "encryptionKeyCopyTooltip": "암호화 키를 클립보드에 복사",
-    "encryptionKeyGenerate": "암호화 키 생성"
+    "encryptionKeyGenerate": "암호화 키 생성",
+    "formEmbed": "양식 임베딩"
   },
   "formProfile": {
     "message": "CHEFS 팀은 포괄적인 비즈니스 케이스를 작성하는 데 중요한 입력으로 사용될 정보를 수집하고 조직하고 있습니다. 이러한 케이스는 향후 몇 년 동안 CHEFS의 전략적 운영과 지속적인 개선을 안내하는 데 중추적인 역할을 할 것입니다. 데이터 수집을 위한 이 이니셔티브는 중요한 결정에 정보를 제공하고 CHEFS의 궤도를 형성하는 데 필수적입니다. 이를 통해 CHEFS가 변화하는 필요와 도전에 대응하여 적응성과 효과를 보장합니다.",
@@ -389,7 +391,8 @@
     "developer": "개발자",
     "infoLinks": "정보 링크",
     "metrics": "측정항목",
-    "apis": "아피스"
+    "apis": "아피스",
+    "formEmbedding": "양식 임베딩"
   },
   "adminUsersTable": {
     "search": "찾다",
@@ -1219,6 +1222,56 @@
     "edit": "편집하다",
     "editTitle": "외부 API 상태 업데이트",
     "allowSendUserToken": "'사용자 토큰 보내기' 허용"
+  },
+  "adminFormEmbed": {
+    "search": "검색",
+    "loadingText": "로딩 중... 잠시만 기다려주세요",
+    "ministry": "부처",
+    "ministryName": "부처명",
+    "formName": "양식",
+    "domain": "도메인",
+    "status": "상태",
+    "reason": "이유",
+    "requestedBy": "요청자",
+    "requestedAt": "요청 시간",
+    "actions": "작업",
+    "edit": "편집",
+    "editTitle": "양식 도메인 요청 상태 업데이트",
+    "save": "저장",
+    "delete": "삭제",
+    "previousStatus": "이전 상태",
+    "newStatus": "새 상태",
+    "createdAt": "생성일",
+    "createdBy": "생성자",
+    "viewHistory": "기록 보기"
+  },
+  "formEmbed": {
+    "disclaimer": "이 CHEFS 양식을 귀하의 도메인에 임베드할 권한이 있는지 확인하세요.",
+    "domain": "도메인",
+    "status": "상태",
+    "reason": "이유",
+    "requestedAt": "요청 시간",
+    "actions": "작업",
+    "delete": "삭제",
+    "previousStatus": "이전 상태",
+    "newStatus": "새 상태",
+    "createdAt": "생성일",
+    "createdBy": "생성자",
+    "viewHistory": "기록 보기",
+    "requestDomain": "도메인 요청",
+    "domainRules": "유효한 도메인을 입력하세요 (예: example.com)",
+    "emptyFieldRules": "도메인은 필수입니다",
+    "newDomainHint": "프로토콜 없이 도메인을 입력하세요 (예: example.com)",
+    "listDomainsErr": "도메인 목록을 가져오는 중 오류가 발생했습니다.",
+    "listDomainsConsErr": "도메인 가져오기 오류: {error}",
+    "requestDomainSuccess": "도메인 요청이 성공적으로 제출되었습니다.",
+    "requestDomainErr": "도메인 요청 제출에 실패했습니다.",
+    "requestDomainConsErr": "도메인 요청 제출 중 오류: {error}",
+    "removeDomainSuccess": "도메인이 성공적으로 제거되었습니다.",
+    "removeDomainErr": "도메인 제거에 실패했습니다.",
+    "removeDomainConsErr": "도메인 제거 중 오류: {error}",
+    "getDomainHistoryErr": "도메인 기록을 가져오는데 실패했습니다.",
+    "getDomainHistoryConsErr": "도메인 기록 가져오기 오류: {error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

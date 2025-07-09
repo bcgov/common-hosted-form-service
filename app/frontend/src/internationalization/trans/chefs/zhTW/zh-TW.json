@@ -72,7 +72,8 @@
     "eventSubscription": "活動訂閱",
     "cdogsTemplate": "CDOGS 模板",
     "externalAPIs": "外部API",
-    "eventStreamConfig": "事件流配置"
+    "eventStreamConfig": "事件流配置",
+    "formEmbed": "表單嵌入"
   },
   "documentTemplate": {
     "uploadTemplate": "上傳CDOGS範本",
@@ -203,7 +204,8 @@
     "encryptionKeyUpdatedBy": "加密金鑰更新者",
     "encryptionKeyCopySnackbar": "加密金鑰已複製到剪貼簿",
     "encryptionKeyCopyTooltip": "將加密金鑰複製到剪貼簿",
-    "encryptionKeyGenerate": "產生加密金鑰"
+    "encryptionKeyGenerate": "產生加密金鑰",
+    "formEmbed": "表單嵌入"
   },
   "formProfile": {
     "message": "CHEFS團隊正在收集和組織信息，作為制定全面業務案例的關鍵輸入。這些案例將在指導CHEFS未來幾年的戰略運作和持續改進中發揮關鍵作用。這一收集數據的倡議對於提供關鍵決策的信息和塑造CHEFS軌跡至關重要，確保其在應對不斷變化的需求和挑戰中的適應性和有效性。",
@@ -389,7 +391,8 @@
     "developer": "開發商",
     "infoLinks": "信息鏈接",
     "metrics": "指標",
-    "apis": "蜜蜂"
+    "apis": "蜜蜂",
+    "formEmbedding": "表單嵌入"
   },
   "adminUsersTable": {
     "search": "搜索",
@@ -1219,6 +1222,56 @@
     "edit": "編輯",
     "editTitle": "更新外部 API 狀態",
     "allowSendUserToken": "允許“發送用戶令牌”"
+  },
+  "adminFormEmbed": {
+    "search": "搜尋",
+    "loadingText": "加載中... 請稍候",
+    "ministry": "部門",
+    "ministryName": "部門名稱",
+    "formName": "表單",
+    "domain": "網域",
+    "status": "狀態",
+    "reason": "原因",
+    "requestedBy": "請求者",
+    "requestedAt": "請求時間",
+    "actions": "操作",
+    "edit": "編輯",
+    "editTitle": "更新表單網域請求狀態",
+    "save": "儲存",
+    "delete": "刪除",
+    "previousStatus": "先前狀態",
+    "newStatus": "新狀態",
+    "createdAt": "建立時間",
+    "createdBy": "建立者",
+    "viewHistory": "查看歷史"
+  },
+  "formEmbed": {
+    "disclaimer": "確保您有權限在您的網域中嵌入此CHEFS表單。",
+    "domain": "網域",
+    "status": "狀態",
+    "reason": "原因",
+    "requestedAt": "請求時間",
+    "actions": "操作",
+    "delete": "刪除",
+    "previousStatus": "先前狀態",
+    "newStatus": "新狀態",
+    "createdAt": "建立時間",
+    "createdBy": "建立者",
+    "viewHistory": "查看歷史",
+    "requestDomain": "請求網域",
+    "domainRules": "輸入有效的網域（例如：example.com）",
+    "emptyFieldRules": "網域是必填項",
+    "newDomainHint": "輸入網域，不含協議（例如：example.com）",
+    "listDomainsErr": "獲取網域列表時發生錯誤。",
+    "listDomainsConsErr": "獲取網域時出錯：{error}",
+    "requestDomainSuccess": "網域請求已成功提交。",
+    "requestDomainErr": "提交網域請求失敗。",
+    "requestDomainConsErr": "提交網域請求時出錯：{error}",
+    "removeDomainSuccess": "網域已成功移除。",
+    "removeDomainErr": "移除網域失敗。",
+    "removeDomainConsErr": "移除網域時出錯：{error}",
+    "getDomainHistoryErr": "獲取網域歷史記錄失敗。",
+    "getDomainHistoryConsErr": "獲取網域歷史記錄時出錯：{error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

@@ -72,7 +72,8 @@
     "eventSubscription": "Đăng ký sự kiện",
     "cdogsTemplate": "mẫu CDOGS",
     "externalAPIs": "API bên ngoài",
-    "eventStreamConfig": "Cấu hình luồng sự kiện"
+    "eventStreamConfig": "Cấu hình luồng sự kiện",
+    "formEmbed": "Nhúng biểu mẫu"
   },
   "documentTemplate": {
     "uploadTemplate": "Tải lên mẫu CDOGS",
@@ -203,7 +204,8 @@
     "encryptionKeyUpdatedBy": "Khóa mã hóa được cập nhật bởi",
     "encryptionKeyCopySnackbar": "Khóa mã hóa đã được sao chép vào bảng tạm",
     "encryptionKeyCopyTooltip": "Sao chép Khóa mã hóa vào clipboard",
-    "encryptionKeyGenerate": "Tạo khóa mã hóa"
+    "encryptionKeyGenerate": "Tạo khóa mã hóa",
+    "formEmbed": "Nhúng biểu mẫu"
   },
   "formProfile": {
     "message": "Đội ngũ CHEFS đang thu thập và tổ chức thông tin để phục vụ như một đầu vào quan trọng cho việc xây dựng các trường hợp kinh doanh toàn diện. Những trường hợp này sẽ đóng một vai trò quan trọng trong hướng dẫn vận hành chiến lược và cải tiến liên tục của CHEFS trong những năm sắp tới. Sáng kiến này để thu thập dữ liệu là quan trọng để thông tin quyết định quan trọng và định hình quỹ đạo của CHEFS, đảm bảo tính linh hoạt và hiệu quả trong đối mặt với những nhu cầu và thách thức đang thay đổi.",
@@ -389,7 +391,8 @@
     "developer": "nhà phát triển",
     "infoLinks": "Liên kết thông tin",
     "metrics": "số liệu",
-    "apis": "API"
+    "apis": "API",
+    "formEmbedding": "Nhúng biểu mẫu"
   },
   "adminUsersTable": {
     "search": "Tìm kiếm",
@@ -1217,6 +1220,56 @@
     "edit": "Biên tập",
     "editTitle": "Cập nhật trạng thái API bên ngoài",
     "allowSendUserToken": "Cho phép 'Gửi mã thông báo người dùng'"
+  },
+  "adminFormEmbed": {
+    "search": "Tìm kiếm",
+    "loadingText": "Đang tải... Vui lòng đợi",
+    "ministry": "Bộ",
+    "ministryName": "Tên Bộ",
+    "formName": "Biểu mẫu",
+    "domain": "Tên miền",
+    "status": "Trạng thái",
+    "reason": "Lý do",
+    "requestedBy": "Yêu cầu bởi",
+    "requestedAt": "Yêu cầu lúc",
+    "actions": "Hành động",
+    "edit": "Chỉnh sửa",
+    "editTitle": "Cập nhật trạng thái yêu cầu tên miền biểu mẫu",
+    "save": "Lưu",
+    "delete": "Xóa",
+    "previousStatus": "Trạng thái trước",
+    "newStatus": "Trạng thái mới",
+    "createdAt": "Tạo lúc",
+    "createdBy": "Tạo bởi",
+    "viewHistory": "Xem lịch sử"
+  },
+  "formEmbed": {
+    "disclaimer": "Đảm bảo rằng bạn được phép nhúng biểu mẫu CHEFS này vào tên miền của bạn.",
+    "domain": "Tên miền",
+    "status": "Trạng thái",
+    "reason": "Lý do",
+    "requestedAt": "Yêu cầu lúc",
+    "actions": "Hành động",
+    "delete": "Xóa",
+    "previousStatus": "Trạng thái trước",
+    "newStatus": "Trạng thái mới",
+    "createdAt": "Tạo lúc",
+    "createdBy": "Tạo bởi",
+    "viewHistory": "Xem lịch sử",
+    "requestDomain": "Yêu cầu tên miền",
+    "domainRules": "Nhập tên miền hợp lệ (ví dụ: example.com)",
+    "emptyFieldRules": "Tên miền là bắt buộc",
+    "newDomainHint": "Nhập tên miền không có giao thức (ví dụ: example.com)",
+    "listDomainsErr": "Đã xảy ra lỗi khi lấy danh sách tên miền.",
+    "listDomainsConsErr": "Lỗi khi lấy tên miền: {error}",
+    "requestDomainSuccess": "Yêu cầu tên miền đã được gửi thành công.",
+    "requestDomainErr": "Không thể gửi yêu cầu tên miền.",
+    "requestDomainConsErr": "Lỗi khi gửi yêu cầu tên miền: {error}",
+    "removeDomainSuccess": "Đã xóa tên miền thành công.",
+    "removeDomainErr": "Không thể xóa tên miền.",
+    "removeDomainConsErr": "Lỗi khi xóa tên miền: {error}",
+    "getDomainHistoryErr": "Không thể lấy lịch sử tên miền.",
+    "getDomainHistoryConsErr": "Lỗi khi lấy lịch sử tên miền: {error}"
   },
   "download": {
     "chefsDataExport": "Xuất dữ liệu CHEFS",

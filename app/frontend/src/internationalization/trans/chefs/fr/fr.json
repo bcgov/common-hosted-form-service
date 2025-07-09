@@ -72,7 +72,8 @@
     "eventSubscription": "Abonnement à l'événement",
     "cdogsTemplate": "Modèle CDOGS",
     "externalAPIs": "API externes",
-    "eventStreamConfig": "Configuration du flux d'événements"
+    "eventStreamConfig": "Configuration du flux d'événements",
+    "formEmbed": "Intégration de formulaire"
   },
   "documentTemplate": {
     "uploadTemplate": "Télécharger le modèle CDOGS",
@@ -203,7 +204,8 @@
     "encryptionKeyUpdatedBy": "Clé de cryptage mise à jour par",
     "encryptionKeyCopySnackbar": "Clé de chiffrement copiée dans le presse-papiers",
     "encryptionKeyCopyTooltip": "Copier la clé de chiffrement dans le presse-papiers",
-    "encryptionKeyGenerate": "Générer une clé de cryptage"
+    "encryptionKeyGenerate": "Générer une clé de cryptage",
+    "formEmbed": "Intégration de formulaire"
   },
   "formProfile": {
     "message": "L'équipe CHEFS collecte et organise des informations pour servir de contribution cruciale à l'élaboration de cas d'affaires complets. Ces cas joueront un rôle central dans la direction des opérations stratégiques et l'amélioration continue de CHEFS au cours des prochaines années. Cette initiative de collecte de données est essentielle pour éclairer les décisions critiques et façonner la trajectoire de CHEFS, assurant son adaptabilité et son efficacité face aux besoins et aux défis en constante évolution.",
@@ -234,6 +236,56 @@
     "selectMinistryErr": "Veuillez sélectionner votre organisation",
     "selectUseCaseErr": "Veuillez indiquer le cas d'utilisation de votre formulaire",
     "labelSizeErr": "Les étiquettes ne peuvent pas dépasser 25 caractères"
+  },
+  "adminFormEmbed": {
+    "search": "Rechercher",
+    "loadingText": "Chargement... Veuillez patienter",
+    "ministry": "Ministère",
+    "ministryName": "Nom du ministère",
+    "formName": "Formulaire",
+    "domain": "Domaine",
+    "status": "Statut",
+    "reason": "Raison",
+    "requestedBy": "Demandé par",
+    "requestedAt": "Demandé le",
+    "actions": "Actions",
+    "edit": "Modifier",
+    "editTitle": "Mettre à jour le statut de la demande de domaine",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "previousStatus": "Statut précédent",
+    "newStatus": "Nouveau statut",
+    "createdAt": "Créé le",
+    "createdBy": "Créé par",
+    "viewHistory": "Voir l'historique"
+  },
+  "formEmbed": {
+    "disclaimer": "Assurez-vous d'avoir l'autorisation d'intégrer ce formulaire CHEFS dans votre domaine.",
+    "domain": "Domaine",
+    "status": "Statut",
+    "reason": "Raison",
+    "requestedAt": "Demandé le",
+    "actions": "Actions",
+    "delete": "Supprimer",
+    "previousStatus": "Statut précédent",
+    "newStatus": "Nouveau statut",
+    "createdAt": "Créé le",
+    "createdBy": "Créé par",
+    "viewHistory": "Voir l'historique",
+    "requestDomain": "Demander un domaine",
+    "domainRules": "Entrez un domaine valide (ex: example.com)",
+    "emptyFieldRules": "Le domaine est requis",
+    "newDomainHint": "Entrez le domaine sans protocole (ex: example.com)",
+    "listDomainsErr": "Une erreur s'est produite lors de la récupération de la liste des domaines.",
+    "listDomainsConsErr": "Erreur lors de la récupération des domaines: {error}",
+    "requestDomainSuccess": "Demande de domaine soumise avec succès.",
+    "requestDomainErr": "Échec de la soumission de la demande de domaine.",
+    "requestDomainConsErr": "Erreur lors de la soumission de la demande de domaine: {error}",
+    "removeDomainSuccess": "Domaine supprimé avec succès.",
+    "removeDomainErr": "Échec de la suppression du domaine.",
+    "removeDomainConsErr": "Erreur lors de la suppression du domaine: {error}",
+    "getDomainHistoryErr": "Échec de la récupération de l'historique du domaine.",
+    "getDomainHistoryConsErr": "Échec de la récupération de l'historique du domaine: {error}"
   },
   "ministries": {
     "AF": "Agriculture et Alimentation (AF)",
@@ -389,7 +441,8 @@
     "developer": "Développeur",
     "infoLinks": "Liens d'information",
     "metrics": "Métrique",
-    "apis": "Apis"
+    "apis": "Apis",
+    "formEmbedding": "Intégration de formulaire"
   },
   "adminUsersTable": {
     "search": "Recherche",

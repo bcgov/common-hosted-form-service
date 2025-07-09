@@ -72,7 +72,8 @@
     "eventSubscription": "Suscripción a eventos",
     "cdogsTemplate": "Plantilla CDDOGS",
     "externalAPIs": "API externas",
-    "eventStreamConfig": "Configuración de la secuencia de eventos"
+    "eventStreamConfig": "Configuración de la secuencia de eventos",
+    "formEmbed": "Incrustación de formulario"
   },
   "documentTemplate": {
     "uploadTemplate": "Subir plantilla de CDOGS",
@@ -203,7 +204,8 @@
     "encryptionKeyUpdatedBy": "Clave de cifrado actualizada por",
     "encryptionKeyCopySnackbar": "Clave de cifrado copiada al portapapeles",
     "encryptionKeyCopyTooltip": "Copiar la clave de cifrado al portapapeles",
-    "encryptionKeyGenerate": "Generar clave de cifrado"
+    "encryptionKeyGenerate": "Generar clave de cifrado",
+    "formEmbed": "Incrustación de formulario"
   },
   "formProfile": {
     "message": "El equipo de CHEFS está recopilando y organizando información para servir como entrada crucial para la elaboración de casos de negocio integrales. Estos casos jugarán un papel fundamental en la guía de la operación estratégica y la mejora continua de CHEFS en los próximos años. Esta iniciativa de recopilación de datos es esencial para informar decisiones críticas y dar forma a la trayectoria de CHEFS, asegurando su adaptabilidad y efectividad para abordar necesidades y desafíos en constante evolución.",
@@ -389,7 +391,8 @@
     "developer": "Desarrollador",
     "infoLinks": "Enlaces de información",
     "metrics": "Métrica",
-    "apis": "API"
+    "apis": "API",
+    "formEmbedding": "Incrustación de formulario"
   },
   "adminUsersTable": {
     "search": "Buscar",
@@ -1219,6 +1222,56 @@
     "edit": "Editar",
     "editTitle": "Actualizar el estado de la API externa",
     "allowSendUserToken": "Permitir 'Enviar token de usuario'"
+  },
+  "adminFormEmbed": {
+    "search": "Buscar",
+    "loadingText": "Cargando... Por favor espere",
+    "ministry": "Ministerio",
+    "ministryName": "Nombre del ministerio",
+    "formName": "Formulario",
+    "domain": "Dominio",
+    "status": "Estado",
+    "reason": "Razón",
+    "requestedBy": "Solicitado por",
+    "requestedAt": "Solicitado el",
+    "actions": "Acciones",
+    "edit": "Editar",
+    "editTitle": "Actualizar estado de solicitud de dominio",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "previousStatus": "Estado anterior",
+    "newStatus": "Nuevo estado",
+    "createdAt": "Creado el",
+    "createdBy": "Creado por",
+    "viewHistory": "Ver historial"
+  },
+  "formEmbed": {
+    "disclaimer": "Asegúrese de tener permiso para incrustar este formulario CHEFS en su dominio.",
+    "domain": "Dominio",
+    "status": "Estado",
+    "reason": "Razón",
+    "requestedAt": "Solicitado el",
+    "actions": "Acciones",
+    "delete": "Eliminar",
+    "previousStatus": "Estado anterior",
+    "newStatus": "Nuevo estado",
+    "createdAt": "Creado el",
+    "createdBy": "Creado por",
+    "viewHistory": "Ver historial",
+    "requestDomain": "Solicitar dominio",
+    "domainRules": "Introduzca un dominio válido (ej: example.com)",
+    "emptyFieldRules": "El dominio es obligatorio",
+    "newDomainHint": "Introduzca el dominio sin protocolo (ej: example.com)",
+    "listDomainsErr": "Se produjo un error al obtener la lista de dominios.",
+    "listDomainsConsErr": "Error al obtener dominios: {error}",
+    "requestDomainSuccess": "Solicitud de dominio enviada con éxito.",
+    "requestDomainErr": "No se pudo enviar la solicitud de dominio.",
+    "requestDomainConsErr": "Error al enviar la solicitud de dominio: {error}",
+    "removeDomainSuccess": "Dominio eliminado con éxito.",
+    "removeDomainErr": "No se pudo eliminar el dominio.",
+    "removeDomainConsErr": "Error al eliminar el dominio: {error}",
+    "getDomainHistoryErr": "No se pudo obtener el historial del dominio.",
+    "getDomainHistoryConsErr": "No se pudo obtener el historial del dominio: {error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

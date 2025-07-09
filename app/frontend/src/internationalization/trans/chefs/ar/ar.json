@@ -72,7 +72,8 @@
     "eventSubscription": "اشتراك الحدث",
     "cdogsTemplate": "قالب CDOGS",
     "externalAPIs": "واجهات برمجة التطبيقات الخارجية",
-    "eventStreamConfig": "تكوين تدفق الحدث"
+    "eventStreamConfig": "تكوين تدفق الحدث",
+    "formEmbed": "تضمين النماذج"
   },
   "documentTemplate": {
     "uploadTemplate": "تحميل قالب CDOGS",
@@ -203,7 +204,8 @@
     "encryptionKeyUpdatedBy": "تم تحديث مفتاح التشفير بواسطة",
     "encryptionKeyCopySnackbar": "تم نسخ مفتاح التشفير إلى الحافظة",
     "encryptionKeyCopyTooltip": "نسخ مفتاح التشفير إلى الحافظة",
-    "encryptionKeyGenerate": "إنشاء مفتاح التشفير"
+    "encryptionKeyGenerate": "إنشاء مفتاح التشفير",
+    "formEmbed": "تضمين النماذج"
   },
   "formProfile": {
     "message": "تقوم فرق CHEFS بجمع وتنظيم المعلومات لتكون مدخلات حاسمة لصياغة حالات أعمال شاملة. ستلعب هذه الحالات دورًا حيويًا في توجيه العمليات الاستراتيجية وتحسين CHEFS المستمر في السنوات القادمة. هذه المبادرة لجمع البيانات ضرورية لإعلام القرارات الحاسمة وتشكيل مسار CHEFS ، مما يضمن قابليتها للتكيف وفعاليتها في التعامل مع الاحتياجات والتحديات المتطورة.",
@@ -389,7 +391,8 @@
     "developer": "مطور",
     "infoLinks": "روابط المعلومات",
     "metrics": "المقاييس",
-    "apis": "واجهات برمجة التطبيقات"
+    "apis": "واجهات برمجة التطبيقات",
+    "formEmbedding": "تضمين النماذج"
   },
   "adminUsersTable": {
     "search": "يبحث",
@@ -1219,6 +1222,56 @@
     "edit": "يحرر",
     "editTitle": "تحديث حالة واجهة برمجة التطبيقات الخارجية",
     "allowSendUserToken": "السماح بـ &quot;إرسال رمز المستخدم&quot;"
+  },
+  "adminFormEmbed": {
+    "search": "بحث",
+    "loadingText": "جاري التحميل... يرجى الانتظار",
+    "ministry": "الوزارة",
+    "ministryName": "اسم الوزارة",
+    "formName": "النموذج",
+    "domain": "النطاق",
+    "status": "الحالة",
+    "reason": "السبب",
+    "requestedBy": "طلب بواسطة",
+    "requestedAt": "تاريخ الطلب",
+    "actions": "إجراءات",
+    "edit": "تعديل",
+    "editTitle": "تحديث حالة طلب نطاق النموذج",
+    "save": "حفظ",
+    "delete": "حذف",
+    "previousStatus": "الحالة السابقة",
+    "newStatus": "الحالة الجديدة",
+    "createdAt": "تم الإنشاء في",
+    "createdBy": "تم الإنشاء بواسطة",
+    "viewHistory": "عرض التاريخ"
+  },
+  "formEmbed": {
+    "disclaimer": "تأكد من حصولك على إذن لتضمين نموذج CHEFS هذا في نطاقك.",
+    "domain": "النطاق",
+    "status": "الحالة",
+    "reason": "السبب",
+    "requestedAt": "تاريخ الطلب",
+    "actions": "إجراءات",
+    "delete": "حذف",
+    "previousStatus": "الحالة السابقة",
+    "newStatus": "الحالة الجديدة",
+    "createdAt": "تم الإنشاء في",
+    "createdBy": "تم الإنشاء بواسطة",
+    "viewHistory": "عرض التاريخ",
+    "requestDomain": "طلب نطاق",
+    "domainRules": "أدخل نطاقًا صالحًا (مثل example.com)",
+    "emptyFieldRules": "النطاق مطلوب",
+    "newDomainHint": "أدخل النطاق بدون بروتوكول (مثل example.com)",
+    "listDomainsErr": "حدث خطأ أثناء جلب قائمة النطاقات.",
+    "listDomainsConsErr": "خطأ في جلب النطاقات: {error}",
+    "requestDomainSuccess": "تم تقديم طلب النطاق بنجاح.",
+    "requestDomainErr": "فشل في تقديم طلب النطاق.",
+    "requestDomainConsErr": "خطأ في تقديم طلب النطاق: {error}",
+    "removeDomainSuccess": "تم إزالة النطاق بنجاح.",
+    "removeDomainErr": "فشل في إزالة النطاق.",
+    "removeDomainConsErr": "خطأ في إزالة النطاق: {error}",
+    "getDomainHistoryErr": "فشل في جلب تاريخ النطاق.",
+    "getDomainHistoryConsErr": "فشل في جلب تاريخ النطاق: {error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

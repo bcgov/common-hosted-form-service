@@ -72,7 +72,8 @@
     "eventSubscription": "Subscription sa Kaganapan",
     "cdogsTemplate": "template ng CDOGS",
     "externalAPIs": "Mga panlabas na API",
-    "eventStreamConfig": "Configuration ng Stream ng Event"
+    "eventStreamConfig": "Configuration ng Stream ng Event",
+    "formEmbed": "Pag-embed ng Form"
   },
   "documentTemplate": {
     "uploadTemplate": "I-upload ang Template ng CDOGS",
@@ -203,7 +204,8 @@
     "encryptionKeyUpdatedBy": "Encryption Key Na-update Ni",
     "encryptionKeyCopySnackbar": "Nakopya ang Encryption Key sa clipboard",
     "encryptionKeyCopyTooltip": "Kopyahin ang Encryption Key sa clipboard",
-    "encryptionKeyGenerate": "Bumuo ng Encryption Key"
+    "encryptionKeyGenerate": "Bumuo ng Encryption Key",
+    "formEmbed": "Pag-embed ng Form"
   },
   "formProfile": {
     "message": "Ang CHEFS team ay nagkokolekta at nag-oorganisa ng impormasyon upang magsilbing mahalagang input para sa pagbuo ng kapsulang kaso ng negosyo. Ang mga kaso na ito ay magiging pangunahing bahagi sa paggabay sa pangangasiwa at patuloy na pagpapabuti ng CHEFS sa mga darating na taon. Ang inisyatibang ito sa pagsasama ng datos ay mahalaga para sa pagbibigay impormasyon sa mga kritikal na desisyon at pagsanay sa takbo ng CHEFS, tiyak na nagiging adaptable at epektibo sa pagsasaad sa mga nagbabagong pangangailangan at hamon.",
@@ -389,7 +391,8 @@
     "developer": "Developer",
     "infoLinks": "Mga Link ng Impormasyon",
     "metrics": "Mga sukatan",
-    "apis": "Mga API"
+    "apis": "Mga API",
+    "formEmbedding": "Pag-embed ng Form"
   },
   "adminUsersTable": {
     "search": "Maghanap",
@@ -1217,6 +1220,56 @@
     "edit": "I-edit",
     "editTitle": "I-update ang Katayuan ng Panlabas na API",
     "allowSendUserToken": "Payagan ang 'Ipadala ang Token ng User'"
+  },
+  "adminFormEmbed": {
+    "search": "Maghanap",
+    "loadingText": "Naglo-load... Mangyaring maghintay",
+    "ministry": "Ministeryo",
+    "ministryName": "Pangalan ng Ministeryo",
+    "formName": "Form",
+    "domain": "Domain",
+    "status": "Katayuan",
+    "reason": "Dahilan",
+    "requestedBy": "Hiniling Ni",
+    "requestedAt": "Hiniling Noong",
+    "actions": "Mga aksyon",
+    "edit": "I-edit",
+    "editTitle": "I-update ang Katayuan ng Kahilingan sa Domain ng Form",
+    "save": "I-save",
+    "delete": "Tanggalin",
+    "previousStatus": "Nakaraang Katayuan",
+    "newStatus": "Bagong Katayuan",
+    "createdAt": "Nilikha Noong",
+    "createdBy": "Nilikha Ni",
+    "viewHistory": "Tingnan ang Kasaysayan"
+  },
+  "formEmbed": {
+    "disclaimer": "Siguraduhing may pahintulot kang i-embed ang CHEFS form na ito sa iyong domain.",
+    "domain": "Domain",
+    "status": "Katayuan",
+    "reason": "Dahilan",
+    "requestedAt": "Hiniling Noong",
+    "actions": "Mga aksyon",
+    "delete": "Tanggalin",
+    "previousStatus": "Nakaraang Katayuan",
+    "newStatus": "Bagong Katayuan",
+    "createdAt": "Nilikha Noong",
+    "createdBy": "Nilikha Ni",
+    "viewHistory": "Tingnan ang Kasaysayan",
+    "requestDomain": "Humiling ng Domain",
+    "domainRules": "Magpasok ng wastong domain (hal., example.com)",
+    "emptyFieldRules": "Kinakailangan ang domain",
+    "newDomainHint": "Ipasok ang domain nang walang protocol (hal., example.com)",
+    "listDomainsErr": "May naganap na error habang kinukuha ang listahan ng mga domain.",
+    "listDomainsConsErr": "Error sa pagkuha ng mga domain: {error}",
+    "requestDomainSuccess": "Matagumpay na naisumite ang kahilingan sa domain.",
+    "requestDomainErr": "Hindi maipasa ang kahilingan sa domain.",
+    "requestDomainConsErr": "Error sa pagsusumite ng kahilingan sa domain: {error}",
+    "removeDomainSuccess": "Matagumpay na natanggal ang domain.",
+    "removeDomainErr": "Hindi matanggal ang domain.",
+    "removeDomainConsErr": "Error sa pagtanggal ng domain: {error}",
+    "getDomainHistoryErr": "Hindi makuha ang kasaysayan ng domain.",
+    "getDomainHistoryConsErr": "Hindi nakuha ang kasaysayan ng domain: {error}"
   },
   "download": {
     "chefsDataExport": "Pag-export ng Data ng CHEFS",

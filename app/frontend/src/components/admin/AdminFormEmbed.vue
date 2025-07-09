@@ -329,7 +329,11 @@ async function handleExpand(item, isExpanded, toggleExpand) {
           slim
           @click="handleExpand(internalItem, isExpanded, toggleExpand)"
         >
-          {{ isExpanded(internalItem) ? 'Collapse' : 'View History' }}
+          {{
+            isExpanded(internalItem)
+              ? $t('trans.formDesigner.collapse')
+              : $t('trans.adminFormEmbed.viewHistory')
+          }}
         </v-btn>
       </template>
       <template #expanded-row="{ columns, item }">
@@ -339,11 +343,11 @@ async function handleExpand(item, isExpanded, toggleExpand) {
               <v-table density="compact">
                 <tbody class="bg-surface-light">
                   <tr>
-                    <td>Previous Status</td>
-                    <td>New Status</td>
-                    <td>Reason</td>
-                    <td>Created By</td>
-                    <td>Created At</td>
+                    <td>{{ $t('trans.adminFormEmbed.previousStatus') }}</td>
+                    <td>{{ $t('trans.adminFormEmbed.newStatus') }}</td>
+                    <td>{{ $t('trans.adminFormEmbed.reason') }}</td>
+                    <td>{{ $t('trans.adminFormEmbed.createdBy') }}</td>
+                    <td>{{ $t('trans.adminFormEmbed.createdAt') }}</td>
                   </tr>
                 </tbody>
                 <tbody>

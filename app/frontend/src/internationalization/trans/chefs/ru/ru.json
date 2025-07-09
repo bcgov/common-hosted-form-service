@@ -72,7 +72,8 @@
     "eventSubscription": "Подписка на события",
     "cdogsTemplate": "Шаблон CDOGS",
     "externalAPIs": "Внешние API",
-    "eventStreamConfig": "Конфигурация потока событий"
+    "eventStreamConfig": "Конфигурация потока событий",
+    "formEmbed": "Встраивание формы"
   },
   "documentTemplate": {
     "uploadTemplate": "Загрузить шаблон CDOGS",
@@ -203,7 +204,8 @@
     "encryptionKeyUpdatedBy": "Ключ шифрования обновлен",
     "encryptionKeyCopySnackbar": "Ключ шифрования скопирован в буфер обмена",
     "encryptionKeyCopyTooltip": "Копировать ключ шифрования в буфер обмена",
-    "encryptionKeyGenerate": "Сгенерировать ключ шифрования"
+    "encryptionKeyGenerate": "Сгенерировать ключ шифрования",
+    "formEmbed": "Встраивание формы"
   },
   "formProfile": {
     "message": "Команда CHEFS собирает и систематизирует информацию для создания ключевых аргументов в пользу формирования всесторонних деловых кейсов. Эти кейсы будут играть решающую роль в направлении стратегической операции и постоянного совершенствования CHEFS в ближайшие годы. Эта инициатива по сбору данных является необходимой для принятия важных решений и формирования траектории CHEFS, обеспечивая его адаптивность и эффективность в решении изменяющихся потребностей и вызовов.",
@@ -389,7 +391,8 @@
     "developer": "Разработчик",
     "infoLinks": "Информационные ссылки",
     "metrics": "Метрики",
-    "apis": "API-интерфейсы"
+    "apis": "API-интерфейсы",
+    "formEmbedding": "Встраивание формы"
   },
   "adminUsersTable": {
     "search": "Поиск",
@@ -1219,6 +1222,56 @@
     "edit": "Редактировать",
     "editTitle": "Обновить внешний статус API",
     "allowSendUserToken": "Разрешить «Отправить токен пользователя»"
+  },
+  "adminFormEmbed": {
+    "search": "Поиск",
+    "loadingText": "Загрузка... Пожалуйста, подождите",
+    "ministry": "Министерство",
+    "ministryName": "Название министерства",
+    "formName": "Форма",
+    "domain": "Домен",
+    "status": "Статус",
+    "reason": "Причина",
+    "requestedBy": "Запрошено",
+    "requestedAt": "Запрошено в",
+    "actions": "Действия",
+    "edit": "Редактировать",
+    "editTitle": "Обновить статус запроса домена",
+    "save": "Сохранить",
+    "delete": "Удалить",
+    "previousStatus": "Предыдущий статус",
+    "newStatus": "Новый статус",
+    "createdAt": "Создано",
+    "createdBy": "Создано",
+    "viewHistory": "Просмотр истории"
+  },
+  "formEmbed": {
+    "disclaimer": "Убедитесь, что у вас есть разрешение на встраивание этой формы CHEFS в ваш домен.",
+    "domain": "Домен",
+    "status": "Статус",
+    "reason": "Причина",
+    "requestedAt": "Запрошено в",
+    "actions": "Действия",
+    "delete": "Удалить",
+    "previousStatus": "Предыдущий статус",
+    "newStatus": "Новый статус",
+    "createdAt": "Создано",
+    "createdBy": "Создано",
+    "viewHistory": "Просмотр истории",
+    "requestDomain": "Запросить домен",
+    "domainRules": "Введите действительный домен (например, example.com)",
+    "emptyFieldRules": "Домен обязателен",
+    "newDomainHint": "Введите домен без протокола (например, example.com)",
+    "listDomainsErr": "При получении списка доменов произошла ошибка.",
+    "listDomainsConsErr": "Ошибка при получении доменов: {error}",
+    "requestDomainSuccess": "Запрос домена успешно отправлен.",
+    "requestDomainErr": "Не удалось отправить запрос домена.",
+    "requestDomainConsErr": "Ошибка при отправке запроса домена: {error}",
+    "removeDomainSuccess": "Домен успешно удален.",
+    "removeDomainErr": "Не удалось удалить домен.",
+    "removeDomainConsErr": "Ошибка при удалении домена: {error}",
+    "getDomainHistoryErr": "Не удалось получить историю домена.",
+    "getDomainHistoryConsErr": "Не удалось получить историю домена: {error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

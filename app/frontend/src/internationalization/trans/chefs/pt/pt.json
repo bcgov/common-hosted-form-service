@@ -72,7 +72,8 @@
     "eventSubscription": "Assinatura de evento",
     "cdogsTemplate": "modelo CDOGS",
     "externalAPIs": "APIs externas",
-    "eventStreamConfig": "Configuração do fluxo de eventos"
+    "eventStreamConfig": "Configuração do fluxo de eventos",
+    "formEmbed": "Incorporação de formulário"
   },
   "documentTemplate": {
     "uploadTemplate": "Carregar modelo CDOGS",
@@ -203,7 +204,8 @@
     "encryptionKeyUpdatedBy": "Chave de criptografia atualizada por",
     "encryptionKeyCopySnackbar": "Chave de criptografia copiada para a área de transferência",
     "encryptionKeyCopyTooltip": "Copiar chave de criptografia para a área de transferência",
-    "encryptionKeyGenerate": "Gerar chave de criptografia"
+    "encryptionKeyGenerate": "Gerar chave de criptografia",
+    "formEmbed": "Incorporação de formulário"
   },
   "formProfile": {
     "message": "A equipe CHEFS está coletando e organizando informações para servir como entrada crucial para a criação de casos de negócios abrangentes. Esses casos desempenharão um papel fundamental na orientação da operação estratégica e na melhoria contínua do CHEFS nos próximos anos. Essa iniciativa de coleta de dados é essencial para informar decisões críticas e moldar a trajetória do CHEFS, garantindo sua adaptabilidade e eficácia em lidar com necessidades e desafios em evolução.",
@@ -389,7 +391,8 @@
     "developer": "Desenvolvedor",
     "infoLinks": "Links de informações",
     "metrics": "Métricas",
-    "apis": "APIs"
+    "apis": "APIs",
+    "formEmbedding": "Incorporação de formulário"
   },
   "adminUsersTable": {
     "search": "Procurar",
@@ -1219,6 +1222,56 @@
     "edit": "Editar",
     "editTitle": "Atualizar status da API externa",
     "allowSendUserToken": "Permitir 'Enviar Token de Usuário'"
+  },
+  "adminFormEmbed": {
+    "search": "Pesquisar",
+    "loadingText": "Carregando... Por favor, aguarde",
+    "ministry": "Ministério",
+    "ministryName": "Nome do ministério",
+    "formName": "Formulário",
+    "domain": "Domínio",
+    "status": "Status",
+    "reason": "Motivo",
+    "requestedBy": "Solicitado por",
+    "requestedAt": "Solicitado em",
+    "actions": "Ações",
+    "edit": "Editar",
+    "editTitle": "Atualizar status da solicitação de domínio",
+    "save": "Salvar",
+    "delete": "Excluir",
+    "previousStatus": "Status anterior",
+    "newStatus": "Novo status",
+    "createdAt": "Criado em",
+    "createdBy": "Criado por",
+    "viewHistory": "Ver histórico"
+  },
+  "formEmbed": {
+    "disclaimer": "Certifique-se de ter permissão para incorporar este formulário CHEFS em seu domínio.",
+    "domain": "Domínio",
+    "status": "Status",
+    "reason": "Motivo",
+    "requestedAt": "Solicitado em",
+    "actions": "Ações",
+    "delete": "Excluir",
+    "previousStatus": "Status anterior",
+    "newStatus": "Novo status",
+    "createdAt": "Criado em",
+    "createdBy": "Criado por",
+    "viewHistory": "Ver histórico",
+    "requestDomain": "Solicitar domínio",
+    "domainRules": "Digite um domínio válido (ex: exemplo.com)",
+    "emptyFieldRules": "O domínio é obrigatório",
+    "newDomainHint": "Digite o domínio sem protocolo (ex: exemplo.com)",
+    "listDomainsErr": "Ocorreu um erro ao buscar a lista de domínios.",
+    "listDomainsConsErr": "Erro ao buscar domínios: {error}",
+    "requestDomainSuccess": "Solicitação de domínio enviada com sucesso.",
+    "requestDomainErr": "Falha ao enviar solicitação de domínio.",
+    "requestDomainConsErr": "Erro ao enviar solicitação de domínio: {error}",
+    "removeDomainSuccess": "Domínio removido com sucesso.",
+    "removeDomainErr": "Falha ao remover domínio.",
+    "removeDomainConsErr": "Erro ao remover domínio: {error}",
+    "getDomainHistoryErr": "Falha ao buscar histórico do domínio.",
+    "getDomainHistoryConsErr": "Falha ao buscar histórico do domínio: {error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

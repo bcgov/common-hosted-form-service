@@ -72,7 +72,8 @@
     "eventSubscription": "Ereignisabonnement",
     "cdogsTemplate": "CDOGS-Vorlage",
     "externalAPIs": "Externe APIs",
-    "eventStreamConfig": "Event Stream-Konfiguration"
+    "eventStreamConfig": "Event Stream-Konfiguration",
+    "formEmbed": "Formulareinbettung"
   },
   "documentTemplate": {
     "uploadTemplate": "CDOGS-Vorlage hochladen",
@@ -203,7 +204,8 @@
     "encryptionKeyUpdatedBy": "Verschlüsselungsschlüssel aktualisiert von",
     "encryptionKeyCopySnackbar": "Verschlüsselungsschlüssel in die Zwischenablage kopiert",
     "encryptionKeyCopyTooltip": "Verschlüsselungsschlüssel in die Zwischenablage kopieren",
-    "encryptionKeyGenerate": "Verschlüsselungsschlüssel generieren"
+    "encryptionKeyGenerate": "Verschlüsselungsschlüssel generieren",
+    "formEmbed": "Formulareinbettung"
   },
   "formProfile": {
     "message": "Das CHEFS-Team sammelt und organisiert Informationen, um als entscheidende Grundlage für die Erstellung umfassender Geschäftsfälle zu dienen. Diese Fälle werden eine Schlüsselrolle dabei spielen, den strategischen Betrieb und die laufende Verbesserung von CHEFS in den kommenden Jahren zu leiten. Diese Initiative zur Datensammlung ist entscheidend, um kritische Entscheidungen zu informieren und die Trajektorie von CHEFS zu formen, um seine Anpassungsfähigkeit und Wirksamkeit bei der Bewältigung sich wandelnder Bedürfnisse und Herausforderungen zu gewährleisten.",
@@ -389,7 +391,8 @@
     "developer": "Entwickler",
     "infoLinks": "Info-Links",
     "metrics": "Metriken",
-    "apis": "APIs"
+    "apis": "APIs",
+    "formEmbedding": "Formulareinbettung"
   },
   "adminUsersTable": {
     "search": "Suchen",
@@ -1219,6 +1222,56 @@
     "edit": "Bearbeiten",
     "editTitle": "Externen API-Status aktualisieren",
     "allowSendUserToken": "„Benutzertoken senden“ zulassen"
+  },
+  "adminFormEmbed": {
+    "search": "Suchen",
+    "loadingText": "Wird geladen... Bitte warten",
+    "ministry": "Ministerium",
+    "ministryName": "Name des Ministeriums",
+    "formName": "Formular",
+    "domain": "Domain",
+    "status": "Status",
+    "reason": "Grund",
+    "requestedBy": "Angefragt von",
+    "requestedAt": "Angefragt am",
+    "actions": "Aktionen",
+    "edit": "Bearbeiten",
+    "editTitle": "Status der Formular-Domain-Anfrage aktualisieren",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "previousStatus": "Vorheriger Status",
+    "newStatus": "Neuer Status",
+    "createdAt": "Erstellt am",
+    "createdBy": "Erstellt von",
+    "viewHistory": "Verlauf anzeigen"
+  },
+  "formEmbed": {
+    "disclaimer": "Stellen Sie sicher, dass Sie die Berechtigung haben, dieses CHEFS-Formular in Ihre Domain einzubetten.",
+    "domain": "Domain",
+    "status": "Status",
+    "reason": "Grund",
+    "requestedAt": "Angefragt am",
+    "actions": "Aktionen",
+    "delete": "Löschen",
+    "previousStatus": "Vorheriger Status",
+    "newStatus": "Neuer Status",
+    "createdAt": "Erstellt am",
+    "createdBy": "Erstellt von",
+    "viewHistory": "Verlauf anzeigen",
+    "requestDomain": "Domain anfragen",
+    "domainRules": "Geben Sie eine gültige Domain ein (z.B. example.com)",
+    "emptyFieldRules": "Domain ist erforderlich",
+    "newDomainHint": "Geben Sie die Domain ohne Protokoll ein (z.B. example.com)",
+    "listDomainsErr": "Beim Abrufen der Domain-Liste ist ein Fehler aufgetreten.",
+    "listDomainsConsErr": "Fehler beim Abrufen der Domains: {error}",
+    "requestDomainSuccess": "Domain-Anfrage erfolgreich übermittelt.",
+    "requestDomainErr": "Domain-Anfrage konnte nicht übermittelt werden.",
+    "requestDomainConsErr": "Fehler bei der Übermittlung der Domain-Anfrage: {error}",
+    "removeDomainSuccess": "Domain erfolgreich entfernt.",
+    "removeDomainErr": "Domain konnte nicht entfernt werden.",
+    "removeDomainConsErr": "Fehler beim Entfernen der Domain: {error}",
+    "getDomainHistoryErr": "Domain-Verlauf konnte nicht abgerufen werden.",
+    "getDomainHistoryConsErr": "Fehler beim Abrufen des Domain-Verlaufs: {error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

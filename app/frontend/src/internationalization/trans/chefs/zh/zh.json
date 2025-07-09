@@ -72,7 +72,8 @@
     "eventSubscription": "E活动订阅",
     "cdogsTemplate": "CDOGS 模板",
     "externalAPIs": "外部 API",
-    "eventStreamConfig": "事件流配置"
+    "eventStreamConfig": "事件流配置",
+    "formEmbed": "表单嵌入"
   },
   "documentTemplate": {
     "uploadTemplate": "上传CDOGS模板",
@@ -203,7 +204,8 @@
     "encryptionKeyUpdatedBy": "加密密钥更新者",
     "encryptionKeyCopySnackbar": "加密密钥已复制到剪贴板",
     "encryptionKeyCopyTooltip": "将加密密钥复制到剪贴板",
-    "encryptionKeyGenerate": "生成加密密钥"
+    "encryptionKeyGenerate": "生成加密密钥",
+    "formEmbed": "表单嵌入"
   },
   "formProfile": {
     "message": "CHEFS团队正在收集和组织信息，作为制定全面业务案例的关键输入。这些案例将在指导CHEFS未来几年的战略运作和持续改进中发挥关键作用。这一收集数据的倡议对于提供关键决策的信息和塑造CHEFS轨迹至关重要，确保其在应对不断变化的需求和挑战中的适应性和有效性。",
@@ -389,7 +391,8 @@
     "developer": "开发商",
     "infoLinks": "信息链接",
     "metrics": "指标",
-    "apis": "蜜蜂"
+    "apis": "蜜蜂",
+    "formEmbedding": "表单嵌入"
   },
   "adminUsersTable": {
     "search": "搜索",
@@ -1219,6 +1222,56 @@
     "edit": "编辑",
     "editTitle": "更新外部 API 状态",
     "allowSendUserToken": "允许‘发送用户令牌’"
+  },
+  "adminFormEmbed": {
+    "search": "搜索",
+    "loadingText": "加载中... 请稍候",
+    "ministry": "部门",
+    "ministryName": "部门名称",
+    "formName": "表单",
+    "domain": "域名",
+    "status": "状态",
+    "reason": "原因",
+    "requestedBy": "请求者",
+    "requestedAt": "请求时间",
+    "actions": "操作",
+    "edit": "编辑",
+    "editTitle": "更新表单域名请求状态",
+    "save": "保存",
+    "delete": "删除",
+    "previousStatus": "先前状态",
+    "newStatus": "新状态",
+    "createdAt": "创建时间",
+    "createdBy": "创建者",
+    "viewHistory": "查看历史"
+  },
+  "formEmbed": {
+    "disclaimer": "确保您有权限在您的域名中嵌入此CHEFS表单。",
+    "domain": "域名",
+    "status": "状态",
+    "reason": "原因",
+    "requestedAt": "请求时间",
+    "actions": "操作",
+    "delete": "删除",
+    "previousStatus": "先前状态",
+    "newStatus": "新状态",
+    "createdAt": "创建时间",
+    "createdBy": "创建者",
+    "viewHistory": "查看历史",
+    "requestDomain": "请求域名",
+    "domainRules": "输入有效的域名（例如：example.com）",
+    "emptyFieldRules": "域名是必填项",
+    "newDomainHint": "输入域名，不含协议（例如：example.com）",
+    "listDomainsErr": "获取域名列表时发生错误。",
+    "listDomainsConsErr": "获取域名时出错：{error}",
+    "requestDomainSuccess": "域名请求已成功提交。",
+    "requestDomainErr": "提交域名请求失败。",
+    "requestDomainConsErr": "提交域名请求时出错：{error}",
+    "removeDomainSuccess": "域名已成功移除。",
+    "removeDomainErr": "移除域名失败。",
+    "removeDomainConsErr": "移除域名时出错：{error}",
+    "getDomainHistoryErr": "获取域名历史记录失败。",
+    "getDomainHistoryConsErr": "获取域名历史记录时出错：{error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

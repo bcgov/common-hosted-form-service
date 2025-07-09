@@ -72,7 +72,8 @@
     "eventSubscription": "اشتراک رویداد",
     "cdogsTemplate": "قالب CDOGS",
     "externalAPIs": "API های خارجی",
-    "eventStreamConfig": "پیکربندی جریان رویداد"
+    "eventStreamConfig": "پیکربندی جریان رویداد",
+    "formEmbed": "جاسازی فرم"
   },
   "documentTemplate": {
     "uploadTemplate": "بارگذاری قالب CDOGS",
@@ -203,7 +204,8 @@
     "encryptionKeyUpdatedBy": "کلید رمزگذاری به روز شده توسط",
     "encryptionKeyCopySnackbar": "کلید رمزگذاری در کلیپ بورد کپی شد",
     "encryptionKeyCopyTooltip": "کلید رمزگذاری را در کلیپ بورد کپی کنید",
-    "encryptionKeyGenerate": "ایجاد کلید رمزگذاری"
+    "encryptionKeyGenerate": "ایجاد کلید رمزگذاری",
+    "formEmbed": "جاسازی فرم"
   },
   "formProfile": {
     "message": "تیم CHEFS اطلاعات را جمع آوری و سازماندهی می‌کند تا به عنوان ورودی حیاتی برای ساخت مورد کارهای تجاری جامع عمل کند. این موارد نقش کلیدی در راهنمایی عملیات استراتژیک و بهبود مستمر CHEFS در سال‌های آینده خواهند داشت. این اقدام برای جمع‌آوری داده‌ها برای اطلاع از تصمیمات حیاتی و شکل‌دهی مسیر CHEFS جهت اطمینان از قابلیت تطبیق و کارایی آن در مواجهه با نیازها و چالش‌های در حال تحول حیاتی است.",
@@ -389,7 +391,8 @@
     "developer": "توسعه دهنده",
     "infoLinks": "لینک های اطلاعات",
     "metrics": "معیارهای",
-    "apis": "API ها"
+    "apis": "API ها",
+    "formEmbedding": "جاسازی فرم"
   },
   "adminUsersTable": {
     "search": "جستجو کردن",
@@ -1219,6 +1222,56 @@
     "edit": "ویرایش کنید",
     "editTitle": "به روز رسانی وضعیت API خارجی",
     "allowSendUserToken": "اجازه دادن به &quot;Send User Token&quot;"
+  },
+  "adminFormEmbed": {
+    "search": "جستجو",
+    "loadingText": "در حال بارگذاری... لطفا صبر کنید",
+    "ministry": "وزارتخانه",
+    "ministryName": "نام وزارتخانه",
+    "formName": "فرم",
+    "domain": "دامنه",
+    "status": "وضعیت",
+    "reason": "دلیل",
+    "requestedBy": "درخواست شده توسط",
+    "requestedAt": "درخواست شده در",
+    "actions": "عملیات",
+    "edit": "ویرایش",
+    "editTitle": "به‌روزرسانی وضعیت درخواست دامنه فرم",
+    "save": "ذخیره",
+    "delete": "حذف",
+    "previousStatus": "وضعیت قبلی",
+    "newStatus": "وضعیت جدید",
+    "createdAt": "ایجاد شده در",
+    "createdBy": "ایجاد شده توسط",
+    "viewHistory": "مشاهده تاریخچه"
+  },
+  "formEmbed": {
+    "disclaimer": "اطمینان حاصل کنید که مجوز جاسازی این فرم CHEFS را در دامنه خود دارید.",
+    "domain": "دامنه",
+    "status": "وضعیت",
+    "reason": "دلیل",
+    "requestedAt": "درخواست شده در",
+    "actions": "عملیات",
+    "delete": "حذف",
+    "previousStatus": "وضعیت قبلی",
+    "newStatus": "وضعیت جدید",
+    "createdAt": "ایجاد شده در",
+    "createdBy": "ایجاد شده توسط",
+    "viewHistory": "مشاهده تاریخچه",
+    "requestDomain": "درخواست دامنه",
+    "domainRules": "یک دامنه معتبر وارد کنید (مثلاً example.com)",
+    "emptyFieldRules": "دامنه الزامی است",
+    "newDomainHint": "دامنه را بدون پروتکل وارد کنید (مثلاً example.com)",
+    "listDomainsErr": "خطایی هنگام دریافت لیست دامنه‌ها رخ داد.",
+    "listDomainsConsErr": "خطا در دریافت دامنه‌ها: {error}",
+    "requestDomainSuccess": "درخواست دامنه با موفقیت ارسال شد.",
+    "requestDomainErr": "ارسال درخواست دامنه ناموفق بود.",
+    "requestDomainConsErr": "خطا در ارسال درخواست دامنه: {error}",
+    "removeDomainSuccess": "دامنه با موفقیت حذف شد.",
+    "removeDomainErr": "حذف دامنه ناموفق بود.",
+    "removeDomainConsErr": "خطا در حذف دامنه: {error}",
+    "getDomainHistoryErr": "دریافت تاریخچه دامنه ناموفق بود.",
+    "getDomainHistoryConsErr": "خطا در دریافت تاریخچه دامنه: {error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

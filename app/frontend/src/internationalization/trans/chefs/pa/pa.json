@@ -72,7 +72,8 @@
     "eventSubscription": "د پیښې ګډون",
     "cdogsTemplate": "CDOGS ਟੈਂਪਲੇਟ",
     "externalAPIs": "ਬਾਹਰੀ APIs",
-    "eventStreamConfig": "ਇਵੈਂਟ ਸਟ੍ਰੀਮ ਕੌਂਫਿਗਰੇਸ਼ਨ"
+    "eventStreamConfig": "ਇਵੈਂਟ ਸਟ੍ਰੀਮ ਕੌਂਫਿਗਰੇਸ਼ਨ",
+    "formEmbed": "ਫਾਰਮ ਇੰਬੈਡਿੰਗ"
   },
   "documentTemplate": {
     "uploadTemplate": "CDOGS ਟੈਂਪਲੇਟ ਅੱਪਲੋਡ ਕਰੋ",
@@ -203,7 +204,8 @@
     "encryptionKeyUpdatedBy": "ਏਨਕ੍ਰਿਪਸ਼ਨ ਕੁੰਜੀ ਦੁਆਰਾ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ",
     "encryptionKeyCopySnackbar": "ਇਨਕ੍ਰਿਪਸ਼ਨ ਕੁੰਜੀ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤੀ ਗਈ",
     "encryptionKeyCopyTooltip": "ਐਨਕ੍ਰਿਪਸ਼ਨ ਕੁੰਜੀ ਨੂੰ ਕਲਿੱਪਬੋਰਡ ਵਿੱਚ ਕਾਪੀ ਕਰੋ",
-    "encryptionKeyGenerate": "ਐਨਕ੍ਰਿਪਸ਼ਨ ਕੁੰਜੀ ਬਣਾਓ"
+    "encryptionKeyGenerate": "ਐਨਕ੍ਰਿਪਸ਼ਨ ਕੁੰਜੀ ਬਣਾਓ",
+    "formEmbed": "ਫਾਰਮ ਇੰਬੈਡਿੰਗ"
   },
   "formProfile": {
     "message": "CHEFS ਟੀਮ ਜਾਣਕਾਰੀ ਇਕੱਠੀ ਕਰ ਰਹੀ ਹੈ ਅਤੇ ਵਿਗਿਆਨ ਕੇਸਾਂ ਲਈ ਮੁਦਾਵਿਆਂ ਬਣਾਉਣ ਲਈ ਮੁਹਿਮ ਵਰਤ ਰਹੀ ਹੈ। ਇਹ ਕੇਸ ਸੀਧੇ CHEFS ਦੀ ਰਣਨੀਤਿਕ ਓਪਰੇਸ਼ਨ ਅਤੇ ਚਲਦੇ ਸਾਲਾਂ ਵਿੱਚ ਚੋਣ ਦੀ ਮੁਖਮਾਨੇ ਵਿੱਚ ਏਕ ਕੀ ਬੰਦੋਬਸਤੀ ਰੋਲ ਪਵੇਗਾ। ਡਾਟਾ ਇਕੱਠਾ ਕਰਨ ਦੀ ਇਹ ਪ੍ਰਯਾਸ਼ਾ ਜਰੂਰੀ ਹੈ ਜਿਸ ਨਾਲ ਕ੍ਰਿਟਿਕਲ ਫੈਸਲਿਆਂ ਨੂੰ ਸੂਚਿਤ ਕਰਨ ਲਈ ਅਤੇ CHEFS ਦੇ ਤਰੱਕੀਪੂਰਤ ਵਿੱਚ ਮੁਕਾਬਲਾ ਕਰਨ ਲਈ ਲੋੜੀਦਾ ਹੈ। ਇਸ ਨਾਲ ਯਹ ਸੁਨਿਸ਼ਚਿਤ ਹੋ ਜਾਂਦਾ ਹੈ ਕਿ ਇਹ ਆਪਣੇ ਅਨੁਕੂਲਨ ਅਤੇ ਚੁਣੇ ਗਏ ਚੁਣੌਤੀਆਂ ਅਤੇ ਜ਼ਰੂਰਾਤਾਂ ਦਾ ਇੱਜ਼ਤੀਕਾਰ ਅਤੇ ਯੋਜਨਾ ਵਿੱਚ ਇੱਕ ਬਦਲਾਵ ਅਤੇ ਕਾਰਗੁਜ਼ਾਰੀ ਵਿਚ ਇਹ ਗੁਣਤੀ ਹੈ।",
@@ -389,7 +391,8 @@
     "developer": "ਵਿਕਾਸਕਾਰ",
     "infoLinks": "ਜਾਣਕਾਰੀ ਲਿੰਕ",
     "metrics": "ਮੈਟ੍ਰਿਕਸ",
-    "apis": "APIs"
+    "apis": "APIs",
+    "formEmbedding": "ਫਾਰਮ ਇੰਬੈਡਿੰਗ"
   },
   "adminUsersTable": {
     "search": "ਖੋਜ",
@@ -1219,6 +1222,56 @@
     "edit": "ਸੰਪਾਦਿਤ ਕਰੋ",
     "editTitle": "ਬਾਹਰੀ API ਸਥਿਤੀ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ",
     "allowSendUserToken": "'ਯੂਜ਼ਰ ਟੋਕਨ ਭੇਜੋ' ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ"
+  },
+  "adminFormEmbed": {
+    "search": "ਖੋਜ",
+    "loadingText": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ... ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ",
+    "ministry": "ਮੰਤਰਾਲਾ",
+    "ministryName": "ਮੰਤਰਾਲੇ ਦਾ ਨਾਮ",
+    "formName": "ਫਾਰਮ",
+    "domain": "ਡੋਮੇਨ",
+    "status": "ਸਥਿਤੀ",
+    "reason": "ਕਾਰਨ",
+    "requestedBy": "ਬੇਨਤੀ ਕਰਨ ਵਾਲਾ",
+    "requestedAt": "ਬੇਨਤੀ ਦਾ ਸਮਾਂ",
+    "actions": "ਕਾਰਵਾਈਆਂ",
+    "edit": "ਸੋਧੋ",
+    "editTitle": "ਫਾਰਮ ਡੋਮੇਨ ਬੇਨਤੀ ਦੀ ਸਥਿਤੀ ਅੱਪਡੇਟ ਕਰੋ",
+    "save": "ਸੁਰੱਖਿਅਤ ਕਰੋ",
+    "delete": "ਮਿਟਾਓ",
+    "previousStatus": "ਪਿਛਲੀ ਸਥਿਤੀ",
+    "newStatus": "ਨਵੀਂ ਸਥਿਤੀ",
+    "createdAt": "ਬਣਾਇਆ ਗਿਆ",
+    "createdBy": "ਬਣਾਉਣ ਵਾਲਾ",
+    "viewHistory": "ਇਤਿਹਾਸ ਵੇਖੋ"
+  },
+  "formEmbed": {
+    "disclaimer": "ਯਕੀਨੀ ਬਣਾਓ ਕਿ ਤੁਹਾਡੇ ਕੋਲ ਇਸ CHEFS ਫਾਰਮ ਨੂੰ ਆਪਣੇ ਡੋਮੇਨ ਵਿੱਚ ਇੰਬੈਡ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਹੈ।",
+    "domain": "ਡੋਮੇਨ",
+    "status": "ਸਥਿਤੀ",
+    "reason": "ਕਾਰਨ",
+    "requestedAt": "ਬੇਨਤੀ ਦਾ ਸਮਾਂ",
+    "actions": "ਕਾਰਵਾਈਆਂ",
+    "delete": "ਮਿਟਾਓ",
+    "previousStatus": "ਪਿਛਲੀ ਸਥਿਤੀ",
+    "newStatus": "ਨਵੀਂ ਸਥਿਤੀ",
+    "createdAt": "ਬਣਾਇਆ ਗਿਆ",
+    "createdBy": "ਬਣਾਉਣ ਵਾਲਾ",
+    "viewHistory": "ਇਤਿਹਾਸ ਵੇਖੋ",
+    "requestDomain": "ਡੋਮੇਨ ਲਈ ਬੇਨਤੀ ਕਰੋ",
+    "domainRules": "ਵੈਧ ਡੋਮੇਨ ਦਰਜ ਕਰੋ (ਉਦਾਹਰਨ ਲਈ, example.com)",
+    "emptyFieldRules": "ਡੋਮੇਨ ਜ਼ਰੂਰੀ ਹੈ",
+    "newDomainHint": "ਪ੍ਰੋਟੋਕੋਲ ਤੋਂ ਬਿਨਾਂ ਡੋਮੇਨ ਦਰਜ ਕਰੋ (ਉਦਾਹਰਨ ਲਈ, example.com)",
+    "listDomainsErr": "ਡੋਮੇਨਾਂ ਦੀ ਸੂਚੀ ਪ੍ਰਾਪਤ ਕਰਨ ਦੌਰਾਨ ਇੱਕ ਗਲਤੀ ਹੋਈ ਹੈ।",
+    "listDomainsConsErr": "ਡੋਮੇਨਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਗਲਤੀ: {error}",
+    "requestDomainSuccess": "ਡੋਮੇਨ ਬੇਨਤੀ ਸਫਲਤਾਪੂਰਵਕ ਜਮ੍ਹਾਂ ਕੀਤੀ ਗਈ।",
+    "requestDomainErr": "ਡੋਮੇਨ ਬੇਨਤੀ ਜਮ੍ਹਾਂ ਕਰਨ ਵਿੱਚ ਅਸਫਲ।",
+    "requestDomainConsErr": "ਡੋਮੇਨ ਬੇਨਤੀ ਜਮ੍ਹਾਂ ਕਰਨ ਵਿੱਚ ਗਲਤੀ: {error}",
+    "removeDomainSuccess": "ਡੋਮੇਨ ਸਫਲਤਾਪੂਰਵਕ ਹਟਾਇਆ ਗਿਆ।",
+    "removeDomainErr": "ਡੋਮੇਨ ਹਟਾਉਣ ਵਿੱਚ ਅਸਫਲ।",
+    "removeDomainConsErr": "ਡੋਮੇਨ ਹਟਾਉਣ ਵਿੱਚ ਗਲਤੀ: {error}",
+    "getDomainHistoryErr": "ਡੋਮੇਨ ਇਤਿਹਾਸ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ।",
+    "getDomainHistoryConsErr": "ਡੋਮੇਨ ਇਤਿਹਾਸ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਗਲਤੀ: {error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."

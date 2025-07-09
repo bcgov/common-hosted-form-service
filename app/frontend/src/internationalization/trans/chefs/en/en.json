@@ -300,6 +300,34 @@
     "selectUseCaseErr": "Please enter the use case of your form",
     "labelSizeErr": "Labels can not exceed 25 characters"
   },
+  "formEmbed": {
+    "disclaimer": "Ensure that you have permission to embed this CHEFS form in your domain.",
+    "domain": "Domain",
+    "status": "Status",
+    "reason": "Reason",
+    "requestedAt": "Requested At",
+    "actions": "Actions",
+    "delete": "Delete",
+    "previousStatus": "Previous Status",
+    "newStatus": "New Status",
+    "createdAt": "Created At",
+    "createdBy": "Created By",
+    "viewHistory": "View History",
+    "requestDomain": "Request Domain",
+    "domainRules": "Enter a valid domain (e.g., example.com)",
+    "emptyFieldRules": "Domain is required",
+    "newDomainHint": "Enter the domain without protocol (e.g., example.com)",
+    "listDomainsErr": "An error occurred while fetching the list of domains.",
+    "listDomainsConsErr": "Error fetching domains: {error}",
+    "requestDomainSuccess": "Domain request submitted successfully.",
+    "requestDomainErr": "Failed to submit domain request.",
+    "requestDomainConsErr": "Error submitting domain request: {error}",
+    "removeDomainSuccess": "Domain removed successfully.",
+    "removeDomainErr": "Failed to remove domain.",
+    "removeDomainConsErr": "Error removing domain: {error}",
+    "getDomainHistoryErr": "Failed to fetch domain history.",
+    "getDomainHistoryConsErr": "Failed to fetch domain history: {error}"
+  },
   "ministries": {
     "AF": "Agriculture and Food (AF)",
     "AG": "Attorney General (AG)",
@@ -487,7 +515,12 @@
     "edit": "Edit",
     "editTitle": "Update Form Domain Request Status",
     "save": "Save",
-    "delete": "Delete"
+    "delete": "Delete",
+    "previousStatus": "Previous Status",
+    "newStatus": "New Status",
+    "createdAt": "Created At",
+    "createdBy": "Created By",
+    "viewHistory": "View History"
   },
   "adminUsersTable": {
     "search": "Search",

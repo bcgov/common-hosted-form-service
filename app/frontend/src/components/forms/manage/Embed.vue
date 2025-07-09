@@ -8,7 +8,7 @@ import { useNotificationStore } from '~/store/notification';
 import { FormPermissions, NotificationTypes } from '~/utils/constants';
 import { embedService } from '~/services';
 
-const { locale } = useI18n({ useScope: 'global' });
+const { t, locale } = useI18n({ useScope: 'global' });
 
 const properties = defineProps({
   formId: {
@@ -32,20 +32,20 @@ const { permissions, isRTL } = storeToRefs(formStore);
 
 const headers = ref([
   {
-    title: 'Domain',
+    title: t('trans.formEmbed.domain'),
     align: 'start',
     key: 'domain',
   },
   {
-    title: 'Requested At',
+    title: t('trans.formEmbed.requestedAt'),
     key: 'requestedAt',
   },
   {
-    title: 'Status',
+    title: t('trans.formEmbed.status'),
     key: 'status',
   },
   {
-    title: 'Actions',
+    title: t('trans.formEmbed.actions'),
     value: 'actions',
     align: 'end',
     sortable: false,
@@ -67,7 +67,7 @@ const domainRules = ref([
   (v) => {
     const pattern =
       /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](\.[a-zA-Z]{2,})+$/;
-    return pattern.test(v) || 'Enter a valid domain (e.g., example.com)';
+    return pattern.test(v) || t('trans.formEmbed.domainRules');
   },
 ]);
 
@@ -84,8 +84,10 @@ async function fetchData() {
     domains.value = response.data;
   } catch (error) {
     notificationStore.addNotification({
-      text: 'An error occurred while fetching embed settings.',
-      consoleError: error,
+      text: t('trans.formEmbed.listDomainsErr'),
+      consoleError: t('trans.formEmbed.listDomainsConsErr', {
+        error: error,
+      }),
     });
   } finally {
     loading.value = false;
@@ -112,8 +114,10 @@ async function requestDomain() {
     await fetchData();
   } catch (error) {
     notificationStore.addNotification({
-      text: 'Failed to submit domain request.',
-      consoleError: error.response.data.title,
+      text: t('trans.formEmbed.requestDomainErr'),
+      consoleError: t('trans.formEmbed.requestDomainConsErr', {
+        error: error,
+      }),
     });
   } finally {
     submitting.value = false;
@@ -125,15 +129,17 @@ async function removeDomain(domain) {
     await embedService.removeDomain(properties.formId, domain.id);
 
     notificationStore.addNotification({
-      text: 'Domain removed successfully.',
+      text: t('trans.formEmbed.removeDomainSuccess'),
       ...NotificationTypes.SUCCESS,
     });
 
     await fetchData();
   } catch (error) {
     notificationStore.addNotification({
-      text: 'Failed to remove domain.',
-      consoleError: error,
+      text: t('trans.formEmbed.removeDomainErr'),
+      consoleError: t('trans.formEmbed.removeDomainConsErr', {
+        error: error,
+      }),
     });
   }
 }
@@ -162,8 +168,10 @@ async function handleExpand(item, isExpanded, toggleExpand) {
       toggleExpand(item);
     } catch (error) {
       notificationStore.addNotification({
-        text: 'Failed to fetch domain history.',
-        consoleError: error,
+        text: t('trans.formEmbed.getDomainHistoryErr'),
+        consoleError: t('trans.formEmbed.getDomainHistoryConsErr', {
+          error: error,
+        }),
       });
     } finally {
       loading.value = false;
@@ -185,9 +193,7 @@ async function handleExpand(item, isExpanded, toggleExpand) {
       {{ $t('trans.apiKey.disclaimer') }}
     </h3>
     <ul :class="isRTL ? 'mr-6' : null">
-      <li :lang="locale">
-        Ensure that you have permission to embed this CHEFS form in your domain
-      </li>
+      <li :lang="locale">{{ $t('trans.formEmbed.disclaimer') }}</li>
     </ul>
     <v-skeleton-loader :loading="loading" type="button" class="bgtrans">
       <v-data-table
@@ -211,16 +217,14 @@ async function handleExpand(item, isExpanded, toggleExpand) {
                   icon
                   v-bind="props"
                   variant="text"
-                  :title="$t('trans.adminFormEmbed.delete')"
+                  :title="$t('trans.formEmbed.delete')"
                   :disabled="!canUpdate"
                   @click="removeDomain(item)"
                 >
                   <v-icon icon="mdi:mdi-delete" />
                 </v-btn>
               </template>
-              <span :lang="locale">{{
-                $t('trans.adminFormEmbed.delete')
-              }}</span>
+              <span :lang="locale">{{ $t('trans.formEmbed.delete') }}</span>
             </v-tooltip>
           </span>
         </template>
@@ -239,7 +243,11 @@ async function handleExpand(item, isExpanded, toggleExpand) {
             slim
             @click="handleExpand(internalItem, isExpanded, toggleExpand)"
           >
-            {{ isExpanded(internalItem) ? 'Collapse' : 'View History' }}
+            {{
+              isExpanded(internalItem)
+                ? $t('trans.formDesigner.collapse')
+                : $t('trans.formEmbed.viewHistory')
+            }}
           </v-btn>
         </template>
         <template #expanded-row="{ columns, item }">
@@ -249,11 +257,11 @@ async function handleExpand(item, isExpanded, toggleExpand) {
                 <v-table density="compact">
                   <tbody class="bg-surface-light">
                     <tr>
-                      <td>Previous Status</td>
-                      <td>New Status</td>
-                      <td>Reason</td>
-                      <td>Created By</td>
-                      <td>Created At</td>
+                      <td>{{ $t('trans.formEmbed.previousStatus') }}</td>
+                      <td>{{ $t('trans.formEmbed.newStatus') }}</td>
+                      <td>{{ $t('trans.formEmbed.reason') }}</td>
+                      <td>{{ $t('trans.formEmbed.createdBy') }}</td>
+                      <td>{{ $t('trans.formEmbed.createdAt') }}</td>
                     </tr>
                   </tbody>
                   <tbody>
@@ -277,10 +285,13 @@ async function handleExpand(item, isExpanded, toggleExpand) {
       <v-form ref="newDomainForm" v-model="valid">
         <v-text-field
           v-model="newDomain"
-          label="Domain"
+          :label="$t('trans.formEmbed.domain')"
           placeholder="example.com"
-          :rules="[(v) => !!v || 'Domain is required', domainRules]"
-          hint="Enter the domain without protocol (e.g., example.com)"
+          :rules="[
+            (v) => !!v || $t('trans.formEmbed.emptyFieldRules'),
+            domainRules,
+          ]"
+          :hint="$t('trans.formEmbed.newDomainHint')"
           persistent-hint
           required
         />
@@ -290,7 +301,7 @@ async function handleExpand(item, isExpanded, toggleExpand) {
           class="mt-4"
           @click="requestDomain"
         >
-          Request Domain
+          {{ $t('trans.formEmbed.requestDomain') }}
         </v-btn>
       </v-form>
     </v-skeleton-loader>

@@ -72,7 +72,8 @@
     "eventSubscription": "Підписка на подію",
     "cdogsTemplate": "Шаблон CDOGS",
     "externalAPIs": "Зовнішні API",
-    "eventStreamConfig": "Конфігурація потоку подій"
+    "eventStreamConfig": "Конфігурація потоку подій",
+    "formEmbed": "Вбудовування форми"
   },
   "documentTemplate": {
     "uploadTemplate": "Завантажити шаблон CDOGS",
@@ -203,7 +204,8 @@
     "encryptionKeyUpdatedBy": "Ключ шифрування оновлено",
     "encryptionKeyCopySnackbar": "Ключ шифрування скопійовано в буфер обміну",
     "encryptionKeyCopyTooltip": "Копіювати ключ шифрування в буфер обміну",
-    "encryptionKeyGenerate": "Згенерувати ключ шифрування"
+    "encryptionKeyGenerate": "Згенерувати ключ шифрування",
+    "formEmbed": "Вбудовування форми"
   },
   "formProfile": {
     "message": "Команда CHEFS збирає та організовує інформацію для надання ключового внеску у створення всебічних бізнес-кейсів. Ці кейси відіграють вирішальну роль у напрямку стратегічної операції та постійного вдосконалення CHEFS у наступні роки. Ця ініціатива зібрати дані є важливою для інформування критичних рішень та формування траєкторії CHEFS, забезпечуючи його адаптивність та ефективність у вирішенні змінюючихся потреб і викликів.",
@@ -389,7 +391,8 @@
     "developer": "Розробник",
     "infoLinks": "Інформаційні посилання",
     "metrics": "Метрики",
-    "apis": "API"
+    "apis": "API",
+    "formEmbedding": "Вбудовування форми"
   },
   "adminUsersTable": {
     "search": "Пошук",
@@ -1219,6 +1222,56 @@
     "edit": "Редагувати",
     "editTitle": "Оновити статус зовнішнього API",
     "allowSendUserToken": "Дозволити &quot;Надіслати маркер користувача&quot;"
+  },
+  "adminFormEmbed": {
+    "search": "Пошук",
+    "loadingText": "Завантаження... Будь ласка, зачекайте",
+    "ministry": "Міністерство",
+    "ministryName": "Назва міністерства",
+    "formName": "Форма",
+    "domain": "Домен",
+    "status": "Статус",
+    "reason": "Причина",
+    "requestedBy": "Запитано",
+    "requestedAt": "Запитано о",
+    "actions": "Дії",
+    "edit": "Редагувати",
+    "editTitle": "Оновити статус запиту домену форми",
+    "save": "Зберегти",
+    "delete": "Видалити",
+    "previousStatus": "Попередній статус",
+    "newStatus": "Новий статус",
+    "createdAt": "Створено",
+    "createdBy": "Створено",
+    "viewHistory": "Переглянути історію"
+  },
+  "formEmbed": {
+    "disclaimer": "Переконайтесь, що у вас є дозвіл на вбудовування цієї форми CHEFS у ваш домен.",
+    "domain": "Домен",
+    "status": "Статус",
+    "reason": "Причина",
+    "requestedAt": "Запитано о",
+    "actions": "Дії",
+    "delete": "Видалити",
+    "previousStatus": "Попередній статус",
+    "newStatus": "Новий статус",
+    "createdAt": "Створено",
+    "createdBy": "Створено",
+    "viewHistory": "Переглянути історію",
+    "requestDomain": "Запитати домен",
+    "domainRules": "Введіть дійсний домен (наприклад, example.com)",
+    "emptyFieldRules": "Домен обов'язковий",
+    "newDomainHint": "Введіть домен без протоколу (наприклад, example.com)",
+    "listDomainsErr": "Сталася помилка при отриманні списку доменів.",
+    "listDomainsConsErr": "Помилка при отриманні доменів: {error}",
+    "requestDomainSuccess": "Запит домену успішно надіслано.",
+    "requestDomainErr": "Не вдалося надіслати запит домену.",
+    "requestDomainConsErr": "Помилка при надсиланні запиту домену: {error}",
+    "removeDomainSuccess": "Домен успішно видалено.",
+    "removeDomainErr": "Не вдалося видалити домен.",
+    "removeDomainConsErr": "Помилка при видаленні домену: {error}",
+    "getDomainHistoryErr": "Не вдалося отримати історію домену.",
+    "getDomainHistoryConsErr": "Помилка при отриманні історії домену: {error}"
   },
   "test": {
     "customError": "This is a custom error message for testing."
