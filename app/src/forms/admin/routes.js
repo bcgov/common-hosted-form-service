@@ -117,14 +117,9 @@ routes.get('/embed/:formEmbedDomainId/history', async (req, res, next) => {
   await controller.getFormEmbedDomainHistory(req, res, next);
 });
 
-// Review a domain request (approve/deny)
-routes.put('/embed/:formEmbedDomainId/review', async (req, res, next) => {
-  await controller.reviewFormEmbedDomainRequest(req, res, next);
-});
-
-// Revoke an approved domain
-routes.put('/embed/:formEmbedDomainId/revoke', async (req, res, next) => {
-  await controller.revokeFormEmbedDomain(req, res, next);
+// Update a domain request (approve/deny)
+routes.put('/embed/:formEmbedDomainId', async (req, res, next) => {
+  await controller.updateFormEmbedDomainRequest(req, res, next);
 });
 
 // Remove a domain request

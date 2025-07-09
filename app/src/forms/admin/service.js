@@ -1,5 +1,19 @@
+const Problem = require('api-problem');
 const { ExternalAPIStatuses } = require('../common/constants');
-const { Form, FormVersion, User, UserFormAccess, FormComponentsProactiveHelp, AdminExternalAPI, ExternalAPI, ExternalAPIStatusCode, FormEmbedDomain, FormEmbedDomainHistory, FormEmbedDomainVw, FormEmbedDomainHistoryVw } = require('../common/models');
+const {
+  Form,
+  FormVersion,
+  User,
+  UserFormAccess,
+  FormComponentsProactiveHelp,
+  AdminExternalAPI,
+  ExternalAPI,
+  ExternalAPIStatusCode,
+  FormEmbedDomain,
+  FormEmbedDomainHistory,
+  FormEmbedDomainVw,
+  FormEmbedDomainHistoryVw,
+} = require('../common/models');
 const { queryUtils, typeUtils } = require('../common/utils');
 const moment = require('moment');
 const uuid = require('uuid');
@@ -459,35 +473,33 @@ const service = {
    * @returns {Promise<Array>} Domain history records
    */
   getFormEmbedDomainHistory: async (domainId) => {
-    return FormEmbedDomainHistoryVw.query()
-      .where('domainId', domainId)
-      .orderBy('statusChangedAt', 'desc');
+    return FormEmbedDomainHistoryVw.query().where('domainId', domainId).orderBy('statusChangedAt', 'desc');
   },
 
   /**
-   * @function reviewFormEmbedDomainRequest
+   * @function updateFormEmbedDomainRequest
    * Reviews a domain request (approve/deny)
    * @param {string} domainId The domain uuid
    * @param {Object} data The review data
    * @param {Object} currentUser The current user
    * @returns {Promise<Object>} The updated domain
    */
-  reviewFormEmbedDomainRequest: async (domainId, data, currentUser) => {
+  updateFormEmbedDomainRequest: async (domainId, data, currentUser) => {
     const domain = await FormEmbedDomain.query().findById(domainId);
     if (!domain) {
       throw new Problem(404, 'Domain request not found');
     }
-    
+
     if (domain.status !== 'pending') {
       throw new Problem(409, 'Request has already been reviewed');
     }
-    
+
     const newStatus = data.approved ? 'approved' : 'denied';
-    
+
     let trx;
     try {
       trx = await FormEmbedDomain.startTransaction();
-      
+
       // Add history record
       await FormEmbedDomainHistory.query(trx).insert({
         id: uuid.v4(),
@@ -496,68 +508,17 @@ const service = {
         newStatus: newStatus,
         reason: data.reason || null,
         createdBy: currentUser.usernameIdp,
-        updatedBy: currentUser.usernameIdp
+        updatedBy: currentUser.usernameIdp,
       });
-      
-      // Update domain status
-      const updated = await FormEmbedDomain.query(trx)
-        .patchAndFetchById(domainId, {
-          status: newStatus,
-          reviewedAt: new Date().toISOString(),
-          reviewedBy: currentUser.usernameIdp,
-          updatedBy: currentUser.usernameIdp
-        });
-      
-      await trx.commit();
-      return updated;
-    } catch (error) {
-      if (trx) await trx.rollback();
-      throw error;
-    }
-  },
 
-  /**
-   * @function revokeFormEmbedDomain
-   * Revokes an approved domain
-   * @param {string} domainId The domain uuid
-   * @param {Object} data The revoke data
-   * @param {Object} currentUser The current user
-   * @returns {Promise<Object>} The updated domain
-   */
-  revokeFormEmbedDomain: async (domainId, data, currentUser) => {
-    const domain = await FormEmbedDomain.query().findById(domainId);
-    if (!domain) {
-      throw new Problem(404, 'Domain not found');
-    }
-    
-    if (domain.status !== 'approved') {
-      throw new Problem(409, 'Only approved domains can be revoked');
-    }
-    
-    let trx;
-    try {
-      trx = await FormEmbedDomain.startTransaction();
-      
-      // Add history record
-      await FormEmbedDomainHistory.query(trx).insert({
-        id: uuid.v4(),
-        formEmbedDomainId: domainId,
-        previousStatus: domain.status,
-        newStatus: 'denied',
-        reason: data.reason || 'Domain access revoked',
-        createdBy: currentUser.usernameIdp,
-        updatedBy: currentUser.usernameIdp
-      });
-      
       // Update domain status
-      const updated = await FormEmbedDomain.query(trx)
-        .patchAndFetchById(domainId, {
-          status: 'denied',
-          reviewedAt: new Date().toISOString(),
-          reviewedBy: currentUser.usernameIdp,
-          updatedBy: currentUser.usernameIdp
-        });
-      
+      const updated = await FormEmbedDomain.query(trx).patchAndFetchById(domainId, {
+        status: newStatus,
+        reviewedAt: new Date().toISOString(),
+        reviewedBy: currentUser.usernameIdp,
+        updatedBy: currentUser.usernameIdp,
+      });
+
       await trx.commit();
       return updated;
     } catch (error) {
@@ -576,16 +537,13 @@ const service = {
     let trx;
     try {
       trx = await FormEmbedDomain.startTransaction();
-      
+
       // Delete history first
-      await FormEmbedDomainHistory.query(trx)
-        .where('formEmbedDomainId', domainId)
-        .delete();
-      
+      await FormEmbedDomainHistory.query(trx).where('formEmbedDomainId', domainId).delete();
+
       // Then delete the domain
-      const deleted = await FormEmbedDomain.query(trx)
-        .deleteById(domainId);
-      
+      const deleted = await FormEmbedDomain.query(trx).deleteById(domainId);
+
       await trx.commit();
       return deleted;
     } catch (error) {

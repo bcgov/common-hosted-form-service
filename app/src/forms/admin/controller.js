@@ -207,33 +207,16 @@ module.exports = {
   },
 
   /**
-   * @function reviewFormEmbedDomainRequest
-   * Reviews a domain request (approve/deny)
+   * @function updateFormEmbedDomainRequest
+   * Updates a domain request (approve/deny)
    * @param {object} req Express request object
    * @param {object} res Express response object
    * @param {function} next Express next middleware function
    * @returns {function} Express middleware function
    */
-  reviewFormEmbedDomainRequest: async (req, res, next) => {
+  updateFormEmbedDomainRequest: async (req, res, next) => {
     try {
-      const response = await service.reviewFormEmbedDomainRequest(req.params.domainId, req.body, req.currentUser);
-      res.status(200).json(response);
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  /**
-   * @function revokeFormEmbedDomain
-   * Revokes an approved domain
-   * @param {object} req Express request object
-   * @param {object} res Express response object
-   * @param {function} next Express next middleware function
-   * @returns {function} Express middleware function
-   */
-  revokeFormEmbedDomain: async (req, res, next) => {
-    try {
-      const response = await service.revokeFormEmbedDomain(req.params.domainId, req.body, req.currentUser);
+      const response = await service.updateFormEmbedDomainRequest(req.params.domainId, req.body, req.currentUser);
       res.status(200).json(response);
     } catch (error) {
       next(error);
