@@ -1,13 +1,13 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { useI18n } from 'vue-i18n';
-
+import { computed } from 'vue';
 import { useAuthStore } from '~/store/auth';
 import { useIdpStore } from '~/store/identityProviders';
 
 const { locale } = useI18n({ useScope: 'global' });
 
-defineProps({
+const props = defineProps({
   idpHint: {
     type: Array,
     default: () => [],
@@ -19,6 +19,15 @@ const idpStore = useIdpStore();
 
 const { authenticated, ready } = storeToRefs(authStore);
 const { loginButtons } = storeToRefs(idpStore);
+
+const filteredLoginButtons = computed(() => {
+  if (props.idpHint && props.idpHint.length > 0) {
+    return loginButtons.value.filter((btn) => props.idpHint.includes(btn.hint));
+  }
+  return loginButtons.value;
+});
+
+defineExpose({ filteredLoginButtons });
 </script>
 
 <template>
@@ -27,7 +36,11 @@ const { loginButtons } = storeToRefs(idpStore);
       <h1 class="my-6" :lang="locale">
         {{ $t('trans.login.authenticateWith') }}
       </h1>
-      <v-row v-for="button in loginButtons" :key="button.code" justify="center">
+      <v-row
+        v-for="button in filteredLoginButtons"
+        :key="button.code"
+        justify="center"
+      >
         <v-col sm="3">
           <v-btn
             block
