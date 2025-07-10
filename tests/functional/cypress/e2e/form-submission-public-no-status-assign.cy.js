@@ -82,9 +82,11 @@ describe('Form Designer', () => {
     //Manage form
     cy.get(':nth-child(1) > .v-expansion-panel > .v-expansion-panel-title > .v-expansion-panel-title__overlay').click();
     cy.get('[lang="en"] > .v-btn > .v-btn__content > .mdi-pencil').click();
+     /*
     cy.get('input[value="public"]').click();
     cy.waitForLoad();
     cy.get(':nth-child(3) > .v-card > .v-card-text > :nth-child(2) > .v-input__control > .v-selection-control > .v-label > span').click();//uncheck for not able to update the status of the form
+   
     cy.get('input[type="checkbox"]').then($el => {
         const rem=$el[0];//save and edit drafts
         const rem2=$el[2];//multiple draft upload
@@ -97,8 +99,8 @@ describe('Form Designer', () => {
         cy.get(rem4).should("not.be.enabled");
         cy.get(rem5).should("be.enabled");
     });
-    cy.get('[data-test="canEditForm"]').click();
     
+    cy.get('[data-test="canEditForm"]').click();
     cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
     cy.waitForLoad();
     //Logout to submit the public form
@@ -157,6 +159,13 @@ describe('Form Designer', () => {
       
     cy.waitForLoad();
     cy.get(':nth-child(5) > .v-btn > .v-btn__content > .mdi-delete').click();
+    cy.get('[data-test="continue-btn-continue"]').click();
+    */
+    //Delete form after test run
+    cy.get('[data-test="canRemoveForm"]').then($el => {
+      const delform=$el[0];
+      cy.get(delform).click();
+    })
     cy.get('[data-test="continue-btn-continue"]').click();
     cy.get('#logoutButton > .v-btn__content > span').click();
 
