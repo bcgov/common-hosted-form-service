@@ -30,7 +30,7 @@ export default [
     placeholder:
       'Leave empty for default or Customize to restrict: .pdf,.jpg,.png',
     tooltip:
-      'Default allows: documents (.pdf, .doc, .docx, .txt), images (.jpg, .png, .gif, .svg), spreadsheets (.xlsx, .csv), media files (.mp4, .mp3), and other safe types. Enter specific extensions to restrict further.',
+      'Default allows for all safe types (non-executables). Enter specific extensions to restrict further.',
     weight: 50,
   },
 ];

@@ -136,7 +136,9 @@ const shouldDisableFileDownloads = computed(() => {
     return false;
   }
 
-  return properties.readOnly && isFormPublic(form.value);
+  return (
+    properties.readOnly && isFormPublic(form.value) && !authenticated.value
+  );
 });
 
 const viewerOptions = computed(() => {
