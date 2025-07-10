@@ -120,6 +120,40 @@ function isClosingMessageValid(schedule) {
 }
 
 const service = {
+  /**
+   * Validates reminder settings against schedule configuration
+   * Ensures reminders are only enabled when a valid schedule exists
+   * @param {Object} data Form data containing schedule and reminder_enabled
+   * @returns {boolean} Validated reminder_enabled value
+   */
+  _validateReminderSettings: (data) => {
+    // If reminders are not enabled, no validation needed
+    if (!data.reminder_enabled) {
+      return false;
+    }
+
+    // Check if schedule exists and is properly configured
+    const hasValidSchedule =
+      data.schedule &&
+      data.schedule.enabled === true &&
+      data.schedule.scheduleType !== null &&
+      data.schedule.scheduleType !== undefined &&
+      data.schedule.scheduleType !== ScheduleType.MANUAL;
+
+    if (!hasValidSchedule) {
+      return false;
+    }
+
+    // Additional check: ensure open date exists and is in the future
+    if (data.schedule.openSubmissionDateTime) {
+      const openDate = moment(data.schedule.openSubmissionDateTime);
+      if (!openDate.isValid() || openDate.isBefore(moment())) {
+        return false;
+      }
+    }
+
+    return true;
+  },
   // Form schedule validation functions moved from scheduleService
   validateScheduleObject,
   isLateSubmissionConfigValid,
@@ -256,6 +290,8 @@ const service = {
       if (scheduleData.status !== 'success') {
         throw new Problem(422, `${scheduleData.message}`);
       }
+
+      const validatedReminderEnabled = service._validateReminderSettings(data);
       const upd = {
         name: data.name,
         description: data.description,
@@ -270,7 +306,7 @@ const service = {
         allowSubmitterToUploadFile: data.allowSubmitterToUploadFile,
         schedule: data.schedule,
         subscribe: data.subscribe,
-        reminder_enabled: data.reminder_enabled,
+        reminder_enabled: validatedReminderEnabled,
         enableCopyExistingSubmission: data.enableCopyExistingSubmission,
         deploymentLevel: data.deploymentLevel,
         wideFormLayout: data.wideFormLayout,
