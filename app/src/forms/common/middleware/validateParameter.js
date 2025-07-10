@@ -305,6 +305,24 @@ const validateFormEncryptionKeyId = async (req, _res, next, formEncryptionKeyId)
   }
 };
 
+/**
+ * Validates that the :formEmbedDomainId route parameter exists and is a UUID.
+ *
+ * @param {*} _req the Express object representing the HTTP request - unused.
+ * @param {*} _res the Express object representing the HTTP response - unused.
+ * @param {*} next the Express chaining function.
+ * @param {*} formEmbedDomainId the :formEmbedDomainId value from the route.
+ */
+const validateFormEmbedDomainId = async (_req, _res, next, formEmbedDomainId) => {
+  try {
+    _validateUuid(formEmbedDomainId, 'formEmbedDomainId');
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   validateComponentId,
   validateDocumentTemplateId,
@@ -318,4 +336,5 @@ module.exports = {
   validateRoleCode,
   validateUserId,
   validateFormEncryptionKeyId,
+  validateFormEmbedDomainId,
 };

@@ -68,7 +68,8 @@
     "eventSubscription": "Event Subscription",
     "cdogsTemplate": "CDOGS Template",
     "externalAPIs": "External APIs",
-    "eventStreamConfig": "Event Stream Configuration"
+    "eventStreamConfig": "Event Stream Configuration",
+    "formEmbed": "Form Embedding"
   },
   "documentTemplate": {
     "uploadTemplate": "Upload CDOGS Template",
@@ -266,7 +267,8 @@
     "encryptionKeyUpdatedBy": "Encryption Key Updated By",
     "encryptionKeyCopySnackbar": "Encryption Key copied to clipboard",
     "encryptionKeyCopyTooltip": "Copy Encryption Key to clipboard",
-    "encryptionKeyGenerate": "Generate Encryption Key"
+    "encryptionKeyGenerate": "Generate Encryption Key",
+    "formEmbed": "Form Embedding"
   },
   "formProfile": {
     "message": "The CHEFS team is collecting and organizing information to serve as crucial input for crafting comprehensive business cases. These cases will play a pivotal role in guiding the strategic operation and ongoing improvement of CHEFS in the coming years. This initiative to gather data is essential for informing critical decisions and molding the trajectory of CHEFS, ensuring its adaptability and effectiveness in addressing evolving needs and challenges.",
@@ -452,7 +454,8 @@
     "apis": "APIs",
     "developer": "Developer",
     "infoLinks": "Info Links",
-    "metrics": "Metrics"
+    "metrics": "Metrics",
+    "formEmbedding": "Form Embedding"
   },
   "adminAPIsTable": {
     "search": "Search",
@@ -1107,7 +1110,17 @@
       "updateAPIsErrMsg": "Error updating External API.",
       "updateAPIsConsErrMsg": "Error updating External API: {error}",
       "getAPICodesErrMsg": "Error fetching External API Status Codes list.",
-      "getAPICodesConsErrMsg": "Error fetching External API Status Codes list: {error}"
+      "getAPICodesConsErrMsg": "Error fetching External API Status Codes list: {error}",
+      "getFormEmbedDomainsErrMsg": "An error occurred while fetching Form Embed Domains.",
+      "getFormEmbedDomainsConsErrMsg": "Error fetching Form Embed Domains: {error}",
+      "getFormEmbedDomainHistoryErrMsg": "An error occurred while fetching Form Embed Domain History.",
+      "getFormEmbedDomainHistoryConsErrMsg": "Error fetching Form Embed Domain History: {error}",
+      "updateFormEmbedDomainRequestErrMsg": "Error updating Form Embed Domain.",
+      "updateFormEmbedDomainRequestConsErrMsg": "Error updating Form Embed Domain: {error}",
+      "removeFormEmbedDomainRequestErrMsg": "Error removing Form Embed Domain.",
+      "removeFormEmbedDomainRequestConsErrMsg": "Error removing Form Embed Domain: {error}",
+      "getFormEmbedDomainStatusCodesErr": "Failed to fetch domain status codes.",
+      "getFormEmbedDomainStatusCodesConsErr": "Failed to fetch domain status codes: {error}"
     },
     "form": {
       "fetchEmailTemplatesConsErrMsg": "Error loading email templates for {formId}: {error}",
@@ -1246,5 +1259,57 @@
     "shuttingDown": "CHEFS is shutting down.",
     "notReady": "CHEFS cannot connect to all required services.",
     "unableToReachBackend": "Unable to reach backend service."
+  },
+  "formEmbed": {
+    "disclaimer": "Ensure that you have permission to embed this CHEFS form in your domain.",
+    "domain": "Domain",
+    "status": "Status",
+    "reason": "Reason",
+    "requestedAt": "Requested At",
+    "actions": "Actions",
+    "delete": "Delete",
+    "previousStatus": "Previous Status",
+    "newStatus": "New Status",
+    "createdAt": "Created At",
+    "createdBy": "Created By",
+    "viewHistory": "View History",
+    "requestDomain": "Request Domain",
+    "domainRules": "Enter a valid domain (e.g., example.com)",
+    "emptyFieldRules": "Domain is required",
+    "newDomainHint": "Enter the domain without protocol (e.g., example.com)",
+    "listDomainsErr": "An error occurred while fetching the list of domains.",
+    "listDomainsConsErr": "Error fetching domains: {error}",
+    "requestDomainSuccess": "Domain request submitted successfully.",
+    "requestDomainErr": "Failed to submit domain request.",
+    "requestDomainConsErr": "Error submitting domain request: {error}",
+    "removeDomainSuccess": "Domain removed successfully.",
+    "removeDomainErr": "Failed to remove domain.",
+    "removeDomainConsErr": "Error removing domain: {error}",
+    "getDomainHistoryErr": "Failed to fetch domain history.",
+    "getDomainHistoryConsErr": "Failed to fetch domain history: {error}",
+    "getStatusCodesErr": "Failed to fetch domain status codes.",
+    "getStatusCodesConsErr": "Failed to fetch domain status codes: {error}"
+  },
+  "adminFormEmbed": {
+    "search": "Search",
+    "loadingText": "Loading... Please wait",
+    "ministry": "Ministry",
+    "ministryName": "Ministry Name",
+    "formName": "Form",
+    "domain": "Domain",
+    "status": "Status",
+    "reason": "Reason",
+    "requestedBy": "Requested By",
+    "requestedAt": "Requested At",
+    "actions": "Actions",
+    "edit": "Edit",
+    "editTitle": "Update Form Domain Request Status",
+    "save": "Save",
+    "delete": "Delete",
+    "previousStatus": "Previous Status",
+    "newStatus": "New Status",
+    "createdAt": "Created At",
+    "createdBy": "Created By",
+    "viewHistory": "View History"
   }
 }
