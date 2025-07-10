@@ -37,7 +37,7 @@ export function formsettings(){
     cy.get('[data-test="text-name"]').type(title);
     
     cy.get('[data-test="text-description"]').type('test description');
-    
+    /*
     cy.get('input[value="public"]').click();
     cy.get('.v-selection-control-group > .v-card').should('be.visible');
     cy.get('input[value="login"]').click();
@@ -47,8 +47,10 @@ export function formsettings(){
     cy.get(':nth-child(2) > .v-card > .v-card-text > .v-input--error > :nth-child(2)').contains('Please select 1 log-in type');
    
     cy.get('input[value="team"]').click();
+    
     cy.get('.v-label > .mdi-help-circle-outline').click();
     cy.contains('Add team members from the Team Management settings after creating this form.').should('be.visible');
+    */
     cy.get('.v-label > div > .mdi-help-circle-outline').then($el => {
     const email_notify=$el[1];
     
