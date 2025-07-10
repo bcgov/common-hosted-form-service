@@ -190,15 +190,23 @@ describe('Form Designer', () => {
       cy.get('span').contains('Publish Version 1');
       cy.contains('Continue').should('be.visible');
       cy.contains('Continue').trigger('click');
-    //Share link verification
-      let shareFormButton = cy.get('[data-cy=shareFormButton]');
-      expect(shareFormButton).to.not.be.null;
-      shareFormButton.trigger('click').then(()=>{
-      let shareFormLinkButton=cy.get('.mx-2');
-      expect(shareFormLinkButton).to.not.be.null;
-      shareFormLinkButton.trigger('click');
-      cy.get('.mx-2 > .v-btn').click();
-      })
+    //Form submission verification
+      cy.visit(`/${depEnv}/form/submit?f=${arrayValues[0]}`);
+      cy.wait(2000);
+      cy.get('button').contains('Submit').should('be.visible');
+      cy.wait(2000);
+      cy.get('div[title="Click to center the map on your location"]').should('exist');
+      cy.get('i[class="fa fa-location-arrow"]').then($el => {
+      const location_btn=$el[0];
+      cy.get(location_btn).click();
+      });
+      cy.wait(2000);
+      //Validate recenter option go back to default view
+      cy.get('[title="Click to recenter the map to default view"] > .leaflet-control-button > .fa').click();
+      cy.wait(2000);
+      cy.get('p').contains('Map recentered to default view').should('be.visible');
+      //Verify earlier marked point is visible 
+      cy.get('img[alt="Marker"]').should('exist');
       cy.visit(`/${depEnv}/form/manage?f=${arrayValues[0]}`);
       cy.waitForLoad();
       //
