@@ -1180,6 +1180,30 @@ describe('createOrUpdateEmailTemplates', () => {
   });
 });
 
+describe('_validateReminderSettings', () => {
+  afterEach(() => {
+    // Restore any mocked functions after each test
+    jest.restoreAllMocks();
+  });
+
+  it('returns false if reminder_enabled is false', () => {
+    const data = { reminder_enabled: false };
+    expect(service._validateReminderSettings(data)).toBe(false);
+  });
+
+  it('returns false if schedule is missing or not enabled or manual type', () => {
+    const cases = [
+      { reminder_enabled: true }, // no schedule
+      { reminder_enabled: true, schedule: { enabled: false } },
+      { reminder_enabled: true, schedule: { enabled: true, scheduleType: ScheduleType.MANUAL } },
+    ];
+
+    cases.forEach((data) => {
+      expect(service._validateReminderSettings(data)).toBe(false);
+    });
+  });
+});
+
 describe('validation helpers', () => {
   beforeEach(() => {
     MockModel.mockReset();

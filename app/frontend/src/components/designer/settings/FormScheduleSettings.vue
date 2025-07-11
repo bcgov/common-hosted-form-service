@@ -201,6 +201,36 @@ watch(
     }
   }
 );
+// Watch for schedule type changes and clear reminder when schedule is removed or set to MANUAL
+watch(
+  () => form.value.schedule.scheduleType,
+  (newValue, oldValue) => {
+    // Only act if there was a previous value (not initial load)
+    if (oldValue !== undefined) {
+      // Clear reminder when schedule type is set to null or MANUAL
+      if (
+        (newValue === null || newValue === SCHEDULE_TYPE.value.MANUAL) &&
+        form.value.reminder_enabled
+      ) {
+        form.value.reminder_enabled = false;
+      }
+    }
+  }
+);
+
+// Watch for schedule being disabled via the enabled flag
+watch(
+  () => form.value.schedule.enabled,
+  (newValue, oldValue) => {
+    // Only act if there was a previous value (not initial load)
+    if (oldValue !== undefined) {
+      // Clear reminder when schedule is disabled
+      if (newValue === false && form.value.reminder_enabled) {
+        form.value.reminder_enabled = false;
+      }
+    }
+  }
+);
 
 defineExpose({
   saveTimezone,
