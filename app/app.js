@@ -41,9 +41,8 @@ app.set('x-powered-by', false);
 if (process.env.NODE_ENV !== 'test') {
   // Initialize connections and exit if unsuccessful
   // Initialize connections and wait for completion
-  statusService.initializeAllConnections().then(() => {
-    app.use(httpLogger);
-  });
+  statusService.initializeAllConnections();
+  app.use(httpLogger);
 }
 
 const statusPath = `${config.get('server.basePath')}${config.get('server.apiPath')}/status`;
