@@ -11,14 +11,6 @@ const { logger } = require('express-winston');
  */
 class NullTransport extends Transport {
   /**
-   * Constructor
-   * @param {object} opts Winston Transport options
-   */
-  constructor(opts) {
-    super(opts);
-  }
-
-  /**
    * The transport logger
    * @param {object} _info Object to log
    * @param {function} callback Callback function
@@ -87,7 +79,7 @@ const httpLogger = logger({
       responseTime: res.responseTime,
       statusCode: res.statusCode,
       userAgent: req.get('user-agent'),
-      username: (token && token.idp_username) || undefined,
+      username: (token && token.idir_username) || (token && token.bceid_username) || (token && token.email) || undefined,
     };
   },
   expressFormat: true, // Use express style message strings
