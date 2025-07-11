@@ -5,7 +5,7 @@ import { useAuthStore } from '~/store/auth';
 import { useFormStore } from '~/store/form';
 import { useIdpStore } from '~/store/identityProviders';
 import { preFlightAuth } from '~/utils/permissionUtils';
-
+import { formService } from '~/services';
 let isFirstTransition = true;
 let router = undefined;
 
@@ -244,6 +244,32 @@ export default function getRouter(basePath = '/') {
               formSubmitMode: true,
             },
             props: createProps,
+            beforeEnter: async (to, _from, next) => {
+              const submissionId = to.query.s;
+
+              if (!submissionId) {
+                next({ name: 'NotFound' });
+                return;
+              }
+
+              try {
+                // This API call checks SUBMISSION_REVIEW permission
+                await formService.getSubmissionStatuses(submissionId);
+                next();
+              } catch (err) {
+                // Handle specific HTTP errors
+                if (
+                  err.response &&
+                  (err.response.status === 401 || err.response.status === 404)
+                ) {
+                  // Expected errors: redirect to NotFound
+                  next({ name: 'NotFound' });
+                } else {
+                  // Unexpected errors: let them propagate
+                  throw err;
+                }
+              }
+            },
           },
         ],
       },
